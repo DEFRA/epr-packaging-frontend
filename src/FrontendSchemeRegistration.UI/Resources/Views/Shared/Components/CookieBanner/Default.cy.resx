@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="CookieBanner.Title" xml:space="preserve">
+        <value>Cwcis ar y gwasanaeth ‘Rhoi gwybod am ddata pecynwaith’</value>
+    </data>
+    <data name="CookieBanner.EssentialParagraph" xml:space="preserve">
+        <value>Rydyn ni’n defnyddio cwcis hanfodol i wneud i’r gwasanaeth yma weithio.</value>
+    </data>
+    <data name="CookieBanner.AnalyticalParagraph" xml:space="preserve">
+        <value>Hoffen ni hefyd ddefnyddio cwcis dadansoddeg er mwyn deall sut rydych chi’n defnyddio’r gwasanaeth a gwneud gwelliannau.</value>
+    </data>
+    <data name="CookieBanner.AcceptAnalyticsCookies" xml:space="preserve">
+        <value>Derbyn cwcis dadansoddeg</value>
+    </data>
+    <data name="CookieBanner.RejectAnalyticsCookies" xml:space="preserve">
+        <value>Gwrthod cwcis dadansoddeg</value>
+    </data>
+    <data name="CookieBanner.ViewCookies" xml:space="preserve">
+        <value>Gweld cwcis</value>
+    </data>
+    <data name="CookieBanner.HideCookieMessage" xml:space="preserve">
+        <value>Cuddio’r neges ynghylch cwcis</value>
+    </data>
+    <data name="CookieBanner.Accepted" xml:space="preserve">
+        <value>Rydych chi wedi derbyn cwcis dadansoddeg. Gallwch chi</value>
+    </data>
+    <data name="CookieBanner.Rejected" xml:space="preserve">
+        <value>Rydych chi wedi gwrthod cwcis dadansoddeg. Gallwch chi</value>
+    </data>
+    <data name="CookieBanner.ChangeYourCookieSettings" xml:space="preserve">
+        <value>newid eich gosodiadau cwcis</value>
+    </data>
+    <data name="CookieBanner.AtAnyTime" xml:space="preserve">
+        <value>unrhyw bryd.</value>
+    </data>
+</root>

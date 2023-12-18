@@ -1,0 +1,46 @@
+@model FileReUploadConfirmationViewModel
+
+@{
+    ViewData["Title"] = Localizer["are_you_sure_you_want_to_replace_the_packaging_data_file_on_your_account"];
+}
+
+@await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-l">@Localizer["are_you_sure_you_want_to_replace_the_packaging_data_file_on_your_account"]</h1>
+            <p class="govuk-body">@Localizer["you_can_only_store_one_packaging_data_file_on_your_account"]</p>
+            <p class="govuk-body">@Localizer["this_will_not_affect_files_you_have_already_submitted_to_the_regulator"]</p>
+
+            <div class="govuk-inset-text">
+                @Localizer["this_is_to_report_packaging_data_for_the_deadline_on_x", Model.SubmissionDeadline.ToReadableLongMonthDeadlineDate()]
+            </div>
+
+            <h2 class="govuk-heading-m">@Localizer["current_file_on_account"]</h2>
+            <dl class="govuk-summary-list">
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">@Model.FileName</dt>
+                    <dd class="govuk-summary-list__value">@Localizer["uploaded_on_x", Model.FileUploadDate.ToShortReadableDate()]</dd>
+                </div>
+            </dl>
+
+            <div class="govuk-button-group">
+                @Html.ActionLink(SharedLocalizer["confirm_and_continue"], "Get", "FileUpload", new
+                {
+                    submissionId = Model.SubmissionId
+                }, new
+                {
+                    @class = "govuk-button"
+                })
+                @Html.ActionLink(SharedLocalizer["cancel"], "Get", "FileUploadSubLanding", new
+                {
+                    submissionId = Model.SubmissionId
+                }, new
+                {
+                    @class = "govuk-link"
+                })
+            </div>
+        </div>
+    </div>
+</main>

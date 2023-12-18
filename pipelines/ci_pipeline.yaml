@@ -1,0 +1,74 @@
+trigger:
+  branches:
+    include:
+      - '*'
+  paths:
+    include:
+      - 'src/*'
+
+parameters:
+- name: teamName
+  displayName: 'Select Team Name:    (works only with "development" as target env)'
+  default: 'Team-1_Pi'
+  type: string
+  values:
+    - Team-1_Pi
+    - Team-2_Wastebusters
+    - Team-3_Recyclers
+    - Team-4_QA
+    - Team-5_Phoenix
+    - Team-6_Stig
+    - Team-7_Oscar
+    - Team-8_Pre-TST
+    - Team-9_Ops
+- name: envToDeploy
+  displayName: 'Target env to deploy:    (select "development" for Teams 1 to 8)'
+  type: string
+  values:
+    - development
+  default: development
+- name: runTests
+  displayName: Run tests
+  type: boolean
+  default: true
+
+pool: DEFRA-COMMON-ubuntu2004-SSV3
+
+variables:
+  - ${{ if eq(parameters.envToDeploy, 'development') }}:
+    - template: vars/${{ parameters.teamName }}-${{ parameters.envToDeploy }}.yaml
+
+  - name: solutionFolder
+    value: src
+  - name: projectFolder
+    value: FrontendSchemeRegistration.UI
+  - name: testProjectFolder
+    value: FrontendSchemeRegistration.UI.UnitTests
+  - name: sonarQubeProjectKey
+    value: epr-packaging-frontend
+  - name: sonarQubeProjectName
+    value: epr-packaging-frontend
+  - name: runNugetTasks
+    value: true
+
+resources:
+  repositories:
+    - repository: CommonTemplates
+      name: RWD-CPR-EPR4P-ADO/epr-webapps-code-deploy-templates
+      type: git
+      ref: main
+
+extends:
+  template: epr-build-pipeline.yaml@CommonTemplates
+  parameters:
+    solutionFolder: ${{ variables.solutionFolder }}
+    projectFolder: ${{ variables.projectFolder }}
+    testProjectFolder: ${{ variables.testProjectFolder }}
+    sonarQubeProjectKey: ${{ variables.sonarQubeProjectKey }}
+    sonarQubeProjectName: ${{ variables.sonarQubeProjectName }}
+    runTests: ${{ parameters.runTests }}
+    azureSubscription: $(azureSubscription)
+    acrAzureContainerRegistryName: $(acr.azureContainerRegistryName)
+    acrRepositoryName: $(acr.repositoryName)
+    branchName: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), '/', '_') }}
+    runNugetTasks: ${{ variables.runNugetTasks }}

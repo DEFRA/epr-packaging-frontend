@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <data name="packaging_data_submitted_to_the_environmental_regulator" xml:space="preserve">
+    <value />
+  </data>
+  <data name="go_to_your_account_homepage" xml:space="preserve">
+    <value />
+  </data>
+  <data name="print_this_page" xml:space="preserve">
+    <value />
+  </data>
+  <data name="submitted_by_x_at_y_on_z" xml:space="preserve">
+    <value />
+  </data>
+  <data name="they_will_contact_your_organisation_if_there_are_any_issues" xml:space="preserve">
+    <value />
+  </data>
+  <data name="they_will_email_or_phone_your_organisation_if_there_are_any_issues" xml:space="preserve">
+    <value />
+  </data>
+  <data name="the_environmental_regulator_will_review_the_packaging_data" xml:space="preserve">
+    <value />
+  </data>
+  <data name="the_environmental_regulator_will_review_your_packaging_data" xml:space="preserve">
+    <value />
+  </data>
+  <data name="what_happens_next" xml:space="preserve">
+    <value />
+  </data>
+  <data name="you_can_save_this_page_using_the_print_option_in_your_browser" xml:space="preserve">
+    <value />
+  </data>
+</root>

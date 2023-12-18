@@ -1,0 +1,6 @@
+.govuk-notification-banner {
+  &--error {
+    background-color: $govuk-error-colour;
+    border-color: $govuk-error-colour;
+  }
+}

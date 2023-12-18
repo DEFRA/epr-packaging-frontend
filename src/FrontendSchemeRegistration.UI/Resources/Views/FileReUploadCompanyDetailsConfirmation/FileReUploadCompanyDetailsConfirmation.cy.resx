@@ -1,0 +1,95 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="report_packaging_data" xml:space="preserve">
+        <value>Rhoi gwybod am ddata pecynwaith</value>
+    </data>
+    <data name="If_you_want_to_replace_any_of" xml:space="preserve">
+        <value>Os hoffech chi amnewid unrhyw un neu ragor o’r ffeiliau yn y cyfrif, bydd angen ichi ail-uwchhlwytho’r holl ffeiliau sy’n ymwneud â manylion eich sefydliad. Bydd y rhain yn disodli’r rhai presennol.</value>
+    </data>
+    <data name="this_is_to_report_organisation_details" xml:space="preserve">
+        <value>Y bwriad yma yw rhoi gwybod am fanylion sefydliad erbyn y dyddiad cau sef 11.59pm ar y dyddiad cau {0}. Gwiriwch eich bod yn rhoi gwybod ar gyfer y dyddiad cau cywir cyn ichi barhau.</value>
+    </data>
+    <data name="file_name" xml:space="preserve">
+        <value>Enw’r ffeil</value>
+    </data>
+    <data name="uploaded_by" xml:space="preserve">
+        <value>Uwchlwythwyd gan</value>
+    </data>
+    <data name="re-upload_members_organisation_details" xml:space="preserve">
+        <value>Ail-uwchlwytho manylion y sefydliad aelodau</value>
+    </data>
+    <data name="re-upload_organisation_details" xml:space="preserve">
+        <value>Ail-uwchlwytho manylion sefydliad</value>
+    </data>
+    <data name="you_have_already_uploaded_your_organisation_details" xml:space="preserve">
+        <value>Rydych chi eisoes wedi uwchlwytho manylion eich sefydliad. </value>
+    </data>
+    <data name="you_have_already_uploaded_your_members_organisation_details" xml:space="preserve">
+        <value>Rydych chi eisoes wedi uwchlwytho manylion eich sefydliad aelodau. </value>
+    </data>
+    <data name="but_they_have_not_been_submitted" xml:space="preserve">
+        <value>ond maen nhw heb gael eu cyflwyno i’r rheoleiddiwr amgylcheddol. </value>
+    </data>
+    <data name="you_can_upload" xml:space="preserve">
+        <value>Gallwch uwchlwytho’r wybodaeth yma eto os bydd rhywbeth wedi newid. Does dim caniatâd gennych i gyflwyno ffeiliau.</value>
+    </data>
+    <data name="someone_in_your_team_with_the_right_account_permissions" xml:space="preserve">
+        <value>Bydd angen i rywun yn eich tîm sydd â’r caniatâd cywir yn y cyfrif gyflwyno’r wybodaeth yma i’r rheoleiddiwr amgylcheddol.</value>
+    </data>
+    <data name="are_you_sure_you_want_to_re-upload_your_organisation_details" xml:space="preserve">
+        <value>Ydych chi’n siŵr eich bod am ail-lwytho manylion eich sefydliad?</value>
+    </data>
+    <data name="re-upload_members_organisation_details_to_submit_to_environmental_regulator" xml:space="preserve">
+        <value>Ail-uwchlwytho manylion sefydliad aelodau i’w cyflwyno i’r rheoleiddiwr amgylcheddol</value>
+    </data>
+    <data name="you_already_submitted_your_members_organisation_details" xml:space="preserve">
+        <value>Rydych chi eisoes wedi uwchlwytho manylion eich sefydliad aelodau i’r rheoleiddiwr amgylcheddol. Gallwch uwchlwytho’r wybodaeth yma eto os bydd rhywbeth wedi newid. </value>
+    </data>
+    <data name="date_uploaded" xml:space="preserve">
+        <value>Dyddiad uwchlwytho </value>
+    </data>
+    <data name="submitted" xml:space="preserve">
+        <value>Ffeiliau rydych chi eisoes wedi’u cyflwyno</value>
+    </data>
+    <data name="uploaded" xml:space="preserve">
+        <value>Ffeiliau rydych chi wedi’u huwchlwytho i fyny ac wrthi’n eu hamnewid</value>
+    </data>
+    <data name="continue" xml:space="preserve">
+        <value>Parhau</value>
+    </data>
+    <data name="cancel" xml:space="preserve">
+        <value>Canslo</value>
+    </data>
+    <data name="tab_title_organisation_details" xml:space="preserve">
+        <value>Dywedwch os hoffech chi ail-uwchlwytho manylion eich sefydliad</value>
+    </data>
+    <data name="tab_title_members_organisation_details" xml:space="preserve">
+        <value>Dywedwch os hoffech chi ail-uwchlwytho manylion eich sefydliad aelodau</value>
+    </data>
+    <data name="your_organisation_already_submitted" xml:space="preserve">
+        <value>Mae eich sefydliad eisoes wedi uwchlwytho manylion eich sefydliad aelodau i’r rheoleiddiwr amgylcheddol. Gallwch uwchlwytho’r wybodaeth yma eto os bydd rhywbeth wedi newid. Does dim caniatâd gennych i gyflwyno ffeiliau.</value>
+    </data>
+    <data name="date_submitted" xml:space="preserve">
+        <value>Dyddiad cyflwyno</value>
+    </data>
+    <data name="submitted_by" xml:space="preserve">
+        <value>Cyflwynwyd gan </value>
+    </data>
+    <data name="detail_regarding_the_latest_file_submitted" xml:space="preserve">
+        <value>Gwybodaeth am y ffeiliau diwethaf a gyflwynwyd</value>
+    </data>
+    <data name="detail_regarding_the_latest_file_uploaded" xml:space="preserve">
+        <value>Gwybodaeth am y ffeil rydych chi wedi’i huwchlwytho ac rydych chi’n cael ei chyflwyno nawr</value>
+    </data>
+</root>

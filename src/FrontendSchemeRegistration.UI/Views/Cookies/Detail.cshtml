@@ -1,0 +1,177 @@
+﻿@using FrontendSchemeRegistration.Application.Constants;
+
+@model CookieDetailViewModel
+
+@{
+    ViewData["Title"] = Localizer["Detail.Title"];
+}
+
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                @if (Model.ShowAcknowledgement)
+                {
+                    <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" 
+                         aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+                        <div class="govuk-notification-banner__header">
+                            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                                @Localizer["Detail.Success"]
+                            </h2>
+                        </div>
+                        
+                        <div class="govuk-notification-banner__content">
+                            <p class="govuk-notification-banner__heading">
+                                @Localizer["Detail.SetCookiePreferences"]
+                            </p>
+                        </div>
+                    </div>
+                }
+                
+                <h1 class="govuk-heading-l  govuk-!-margin-bottom-4">@Localizer["Detail.Title"]</h1>
+                
+                <p class="govuk-body">@Localizer["Detail.CookieDescription1"]</p>
+                <p class="govuk-body">@Localizer["Detail.CookieDescription2"]</p>
+                
+                <h2 class="govuk-heading-m govuk-!-margin-top-6">@Localizer["Detail.EssentialCookies"]</h2>
+                
+                <p class="govuk-body">@Localizer["Detail.EssentialCookiesDescription"]</p>
+
+                <table class="cookies-table govuk-table govuk-!-margin-bottom-4">
+                    <caption class="govuk-table__caption">@Localizer["Detail.EssentialCookiesWeUse"]</caption>
+                    
+                    <thead class="govuk-table__head">
+                        <tr class="govuk-table__row">
+                            <th scope="col" class="govuk-table__header">@Localizer["Detail.Name"]</th>
+                            <th scope="col" class="govuk-table__header">@Localizer["Detail.Purpose"]</th>
+                            <th scope="col" class="govuk-table__header">@Localizer["Detail.Expires"]</th>
+                        </tr>
+                    </thead>
+                    
+                    <tbody class="govuk-table__body">
+                        <tr class="govuk-table__row">
+                            <th scope="row" class="govuk-table__header">@Model.B2CCookieName</th>
+                            <td class="govuk-table__cell">@Localizer["Detail.B2CCookiePurpose"]</td>
+                            <td class="govuk-table__cell">@Localizer["Detail.EssentialCookieExpiresSession"]</td>
+                        </tr>
+                        <tr class="govuk-table__row">
+                            <th scope="row" class="govuk-table__header">@Model.CookiePolicyCookieName</th>
+                            <td class="govuk-table__cell">@Localizer["Detail.CookiePolicyCookiePolicy"]</td>
+                            <td class="govuk-table__cell">@Localizer["Detail.CookiePolicyCookieExpires"]</td>
+                        </tr>
+                        <tr class="govuk-table__row">
+                            <th scope="row" class="govuk-table__header">@Model.TsCookieName</th>
+                            <td class="govuk-table__cell">@Localizer["Detail.TsCookiePurpose"]</td>
+                            <td class="govuk-table__cell">@Localizer["Detail.EssentialCookieExpiresSession"]</td>
+                        </tr>
+                        <tr class="govuk-table__row">
+                            <th scope="row" class="govuk-table__header">@Model.SessionCookieName</th>
+                            <td class="govuk-table__cell">@Localizer["Detail.SessionCookiePurpose"]</td>
+                            <td class="govuk-table__cell">@Localizer["Detail.EssentialCookieExpiresSession"]</td>
+                        </tr>
+                        <tr class="govuk-table__row">
+                            <th scope="row" class="govuk-table__header">@Model.AuthenticationCookieName</th>
+                            <td class="govuk-table__cell">@Localizer["Detail.AuthenticationCookiePurpose"]</td>
+                            <td class="govuk-table__cell">@Localizer["Detail.EssentialCookieExpiresSession"]</td>
+                        </tr>
+                        <tr class="govuk-table__row">
+                            <th scope="row" class="govuk-table__header">@Model.AntiForgeryCookieName</th>
+                            <td class="govuk-table__cell">@Localizer["Detail.AntiForgeryCookiePurpose"]</td>
+                            <td class="govuk-table__cell">@Localizer["Detail.EssentialCookieExpiresSession"]</td>
+                        </tr>
+                        <tr class="govuk-table__row">
+                            <th scope="row" class="govuk-table__header">@Model.TempDataCookieName</th>
+                            <td class="govuk-table__cell">@Localizer["Detail.TempDataCookiePurpose"]</td>
+                            <td class="govuk-table__cell">@Localizer["Detail.EssentialCookieExpiresSession"]</td>
+                        </tr>
+                        <tr class="govuk-table__row">
+                            <th scope="row" class="govuk-table__header">@Model.CorrelationCookieName</th>
+                            <td class="govuk-table__cell">@Localizer["Detail.CorrelationCookiePurpose"]</td>
+                            <td class="govuk-table__cell">@Localizer["Detail.CorrelationCookieExpires"]</td>
+                        </tr>
+                        <tr class="govuk-table__row">
+                            <th scope="row" class="govuk-table__header">@Model.OpenIdCookieName</th>
+                            <td class="govuk-table__cell">@Localizer["Detail.OpenIdCookiePurpose"]</td>
+                            <td class="govuk-table__cell">@Localizer["Detail.OpenIdCookieExpires"]</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h2 class="govuk-heading-m govuk-!-margin-top-8">@Localizer["Detail.AnalyticsCookies"]</h2>
+                
+                <p class="govuk-body">@Localizer["Detail.AnalyticalCookiesDescription1"]</p>
+                <p class="govuk-body">@Localizer["Detail.AnalyticalCookiesDescription2"]</p>
+                <p class="govuk-body">@Localizer["Detail.AnalyticalCookiesDescription3"]</p>
+                
+                <ul class="govuk-list govuk-list--bullet">
+                    <li>@Localizer["Detail.AnalyticalCookiesPoint1"]</li>
+                    <li>@Localizer["Detail.AnalyticalCookiesPoint2"]</li>
+                    <li>@Localizer["Detail.AnalyticalCookiesPoint3"]</li>
+                    <li>@Localizer["Detail.AnalyticalCookiesPoint4"]</li>
+                    <li>@Localizer["Detail.AnalyticalCookiesPoint5"]</li>
+                </ul>
+                
+                <table class="cookies-table govuk-table">
+                    <caption class="govuk-table__caption">@Localizer["Detail.AnalyticsCookiesWeUse"]</caption>
+                    
+                    <thead class="govuk-table__head">
+                        <tr class="govuk-table__row">
+                            <th scope="col" class="govuk-table__header">@Localizer["Detail.Name"]</th>
+                            <th scope="col" class="govuk-table__header">@Localizer["Detail.Purpose"]</th>
+                            <th scope="col" class="govuk-table__header">@Localizer["Detail.Expires"]</th>
+                        </tr>
+                    </thead>
+                    
+                    <tbody class="govuk-table__body">
+                        <tr class="govuk-table__row">
+                            <th scope="row" class="govuk-table__header">@Model.GoogleAnalyticsDefaultCookieName</th>
+                            <td class="govuk-table__cell">@Localizer["Detail.AnalyticsCookiePurpose1"]</td>
+                            <td class="govuk-table__cell">@Localizer["Detail.AnalyticsCookieExpires1"]</td>
+                        </tr>
+                        <tr class="govuk-table__row">
+                            <th scope="row" class="govuk-table__header">@Model.GoogleAnalyticsAdditionalCookieName</th>
+                            <td class="govuk-table__cell">@Localizer["Detail.AnalyticsCookiePurpose2"]</td>
+                            <td class="govuk-table__cell">@Localizer["Detail.AnalyticsCookieExpires2"]</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <form method="POST" asp-controller="Cookies" asp-action="Detail" asp-route-returnUrl="@Model.ReturnUrl">
+                    <div class="govuk-form-group">
+                        <fieldset class="govuk-fieldset js-cookies-page-form-fieldset" id="analytics">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">
+                                @Localizer["Detail.Accept"]
+                            </legend>
+                            
+                            <div class="govuk-radios" data-module="govuk-radios">
+                                <div class="govuk-radios__item">
+                                    <input class="govuk-radios__input" id="radio-analytics" 
+                                           name="cookiesAccepted" @(Model.CookiesAccepted ? "checked='checked'" : "") 
+                                           type="radio" value="@CookieAcceptance.Accept">
+                                    
+                                    <label class="govuk-label govuk-radios__label" for="radio-analytics">
+                                        @Localizer["Detail.Yes"]
+                                    </label>
+                                </div>
+                                
+                                <div class="govuk-radios__item">
+                                    <input class="govuk-radios__input" id="radio-analytics-2" 
+                                           name="cookiesAccepted" @(Model.CookiesAccepted ? "" : "checked='checked'") 
+                                           type="radio" value="@CookieAcceptance.Reject">
+                                    
+                                    <label class="govuk-label govuk-radios__label" for="radio-analytics-2">
+                                        @Localizer["Detail.No"]
+                                    </label>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                    
+                    <button class="govuk-button js-cookies-form-button" type="submit" data-module="govuk-button" hidden>
+                        @Localizer["Detail.SaveCookieSettings"]
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>

@@ -1,0 +1,23 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="problem_with_the_submit_service" xml:space="preserve">
+        <value>Mae yna broblem gyda’r gwasanaeth – wnaethon ni ddim cyflwyno manylion eich aelodau</value>
+    </data>
+    <data name="must_try_to_submit_later" xml:space="preserve">
+        <value>Rhaid ichi geisio cyflwyno manylion eich aelodau eto, gan ein bod ni wedi methu eu hanfon at y rheoleiddiwr amgylcheddol.</value>
+    </data>
+    <data name="submit_members_organisation_details" xml:space="preserve">
+        <value>Cyflwyno manylion sefydliad aelodau</value>
+    </data>
+</root>

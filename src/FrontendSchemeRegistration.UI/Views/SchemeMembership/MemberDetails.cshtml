@@ -1,0 +1,55 @@
+﻿
+@addTagHelper *, Microsoft.FeatureManagement.AspNetCore
+@model MemberDetailsViewModel
+@{
+    ViewData["Title"] = Localizer["MemberDetails.PageTitle"];
+}
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-l">
+                    @Model.OrganisationName
+                </h1>
+                <dl class="govuk-summary-list">
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">@Localizer["MemberDetails.OrganisationId"]</dt>
+                        <dd class="govuk-summary-list__value">@Model.OrganisationNumber</dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">@Localizer["MemberDetails.RegisteredNation"]</dt>
+                        <dd class="govuk-summary-list__value">@Localizer[Model.RegisteredNation]</dd>
+                    </div>
+                    @if (Model.CompanyHouseNumber is not null)
+                    {
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                @Localizer["MemberDetails.CompanyHouseNumber"]</dt>
+                            <dd class="govuk-summary-list__value">@Model.CompanyHouseNumber</dd>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">@Localizer["MemberDetails.OrganisationType"]</dt>
+                            <dd class="govuk-summary-list__value">@Localizer[Model.OrganisationType]</dd>
+                        </div>
+                    }
+                 <div class="govuk-summary-list__row">
+                   <dt class="govuk-summary-list__key">@Localizer["MemberDetails.ComplianceScheme"]</dt>
+                   <dd class="govuk-summary-list__value">@Model.ComplianceScheme</dd>
+                 </div>
+               </dl>
+
+                @if (Model.ShowRemoveLink)
+                {
+                    <div class="remove-member-link">
+                        <a class="govuk-link" href="@Url.Action("ReasonsForRemoval", new { selectedSchemeId = @Model.SelectedSchemeId })">
+                            @Localizer["MemberDetails.Remove"]
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </main>
+</div>

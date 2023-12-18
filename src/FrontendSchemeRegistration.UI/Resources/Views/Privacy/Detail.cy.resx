@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Microsoft ResX Schema
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
+    associated with the data types.
+
+    Example:
+
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+
+    There are any number of "resheader" rows that contain simple
+    name/value pairs.
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
+    mimetype set.
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
+    extensible. For a given mimetype the value must be set accordingly:
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
+    read any of the formats listed below.
+
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Privacy.Address" xml:space="preserve">
+    <value>eich cyfeiriad os yw’n cael ei ddefnyddio at ddibenion busnes, gan gynnwys y cod post</value>
+  </data>
+  <data name="Privacy.AnyChanges" xml:space="preserve">
+    <value>Bydd unrhyw newidiadau yn y polisi preifatrwydd yma yn gymwys i chi a’ch data ar unwaith. Os bydd y newidiadau hyn yn effeithio ar sut mae’ch data personol yn cael ei brosesu, byddwn yn rhoi gwybod i chi.</value>
+  </data>
+  <data name="Privacy.CalculateAdmin" xml:space="preserve">
+    <value>yn cyfrifo ffioedd gweinyddol</value>
+  </data>
+  <data name="Privacy.CalculateWaste" xml:space="preserve">
+    <value>yn cyfrifo ffioedd gwaredu gwastraff</value>
+  </data>
+  <data name="Privacy.ChangesToThisPolicy" xml:space="preserve">
+    <value>Newidiadau yn y polisi yma</value>
+  </data>
+  <data name="Privacy.Complaints" xml:space="preserve">
+    <value>Cwynion</value>
+  </data>
+  <data name="Privacy.DefraDataProtectionManager" xml:space="preserve">
+    <value>Rheolwr Diogelu Data Defra</value>
+  </data>
+  <data name="Privacy.DefraDataProtectionOfficer" xml:space="preserve">
+    <value>Swyddog Diogelu Data Defra</value>
+  </data>
+  <data name="Privacy.DefraAsDataProcessor" xml:space="preserve">
+    <value>Mae Defra yn gweithredu fel y ‘prosesydd data’ ar gyfer y data personol sy’n cael ei gasglu drwy gyfrwng gwasanaeth pEPR: Gwasanaeth i Reoleiddwyr.</value>
+  </data>
+  <data name="Privacy.DefraRespects" xml:space="preserve">
+    <value>Mae Defra yn parchu’ch preifatrwydd personol wrth ymateb i geisiadau am wybodaeth, ond fe all fod rhaid inni rannu gwybodaeth pan fo angen hynny er mwyn bodloni gofynion statudol Rheoliadau Gwybodaeth Amgylcheddol 2004 a Deddf Rhyddid Gwybodaeth 2000.</value>
+  </data>
+  <data name="Privacy.Defras" xml:space="preserve">
+    <value>Mae</value>
+  </data>
+  <data name="Privacy.DefrasMainAddress" xml:space="preserve">
+    <value>Dyma brif gyfeiriad Defra ar gyfer gohebiaeth:</value>
+  </data>
+  <data name="Privacy.DefrasPersonal" xml:space="preserve">
+    <value>Mae siarter gwybodaeth bersonol Defra</value>
+  </data>
+  <data name="Privacy.DefraWillCollectYour" xml:space="preserve">
+    <value>Byddwn yn casglu</value>
+  </data>
+  <data name="Privacy.DefraWillKeep" xml:space="preserve">
+    <value>Byddwn yn cadw’ch data personol am 7 mlynedd yn unol â gofynion y rhaglen Diwygiadau Casglu a Phecynwaith (CPR).</value>
+  </data>
+  <data name="Privacy.DefraWillOnly" xml:space="preserve">
+    <value>Dim ond i wlad arall yr bernir ei bod yn ddigonol at ddibenion diogelu data y bydd Defra’n trosglwyddo’ch data personol.</value>
+  </data>
+  <data name="Privacy.DefraWillShare" xml:space="preserve">
+    <value>Byddwn yn rhannu’r data personol sy’n cael ei gasglu o dan yr hysbysiad preifatrwydd yma gyda’r rheoleiddwyr amgylcheddol. Rydyn ni’n gwneud hyn i ddarparu gwasanaeth digidol fel rhan o’r rhaglen Diwygiadau Casglu a Phecynwaith (CPR).</value>
+  </data>
+  <data name="Privacy.EA" xml:space="preserve">
+    <value>Asiantaeth yr Amgylchedd (EA)</value>
+  </data>
+  <data name="Privacy.Email" xml:space="preserve">
+    <value>eich cyfeiriad ebost</value>
+  </data>
+  <data name="Privacy.EnvironmentAgency" xml:space="preserve">
+    <value>Asiantaeth yr Amgylchedd</value>
+  </data>
+  <data name="Privacy.ExplainsMoreAbout" xml:space="preserve">
+    <value>yn esbonio mwy am eich hawliau dros eich data personol.</value>
+  </data>
+  <data name="Privacy.FindOut" xml:space="preserve">
+    <value>Rhagor o wybodaeth am eich</value>
+  </data>
+  <data name="Privacy.GatherFeedback" xml:space="preserve">
+    <value>yn casglu adborth i wella’n gwasanaethau</value>
+  </data>
+  <data name="Privacy.HowLong" xml:space="preserve">
+    <value>Pa mor hir rydyn ni’n cadw data personol</value>
+  </data>
+  <data name="Privacy.IfYouDoNot" xml:space="preserve">
+    <value>Os na fyddwch chi’n darparu’r data personol angenrheidiol, fyddwch chi ddim yn gallu cymryd rhan yn y gwasanaeth.</value>
+  </data>
+  <data name="Privacy.IfYouNeedFurtherInformation" xml:space="preserve">
+    <value>Os oes arnoch chi angen rhagor o wybodaeth am sut mae Defra yn defnyddio’ch data personol ac am eich hawliau cysylltiedig, gallwch gysylltu â rheolwr diogelu data Defra yn</value>
+  </data>
+  <data name="Privacy.IndividualRights" xml:space="preserve">
+    <value>hawliau unigol</value>
+  </data>
+  <data name="Privacy.InformationOnHow" xml:space="preserve">
+    <value>gwybodaeth am sut rydych chi’n defnyddio’r wefan, gan ddefnyddio cwcis a thechnegau tagio tudalennau</value>
+  </data>
+  <data name="Privacy.InThatCase" xml:space="preserve">
+    <value>Os felly, bydd dyddiad y ‘diweddariad diwethaf’ ar waelod y tudalen yma yn newid hefyd.</value>
+  </data>
+  <data name="Privacy.InTheExercise" xml:space="preserve">
+    <value>er mwyn i ni wneud ein gwaith fel adran o’r llywodraeth o dan y rhaglen Diwygiadau Casglu a Phecynwaith (CPR), a gyflwynwyd i ategu Cynllun Amgylchedd 25 Mlynedd y Llywodraeth, sydd wedi’i seilio ar Ddeddf yr Amgylchedd 2021</value>
+  </data>
+  <data name="Privacy.IP" xml:space="preserve">
+    <value>eich cyfeiriad Protocol Rhyngrwyd (IP), a manylion pa fersiwn o borwr gwe a ddefnyddiwyd gennych</value>
+  </data>
+  <data name="Privacy.LastUpdated" xml:space="preserve">
+    <value>Y diweddariad diwethaf</value>
+  </data>
+  <data name="Privacy.LawfulBasis" xml:space="preserve">
+    <value>Y sail gyfreithlon dros brosesu’ch data personol</value>
+  </data>
+  <data name="Privacy.MakeAComplaint" xml:space="preserve">
+    <value>gwneud cwyn</value>
+  </data>
+  <data name="Privacy.Monitor" xml:space="preserve">
+    <value>yn monitro perfformiad a diogelwch y gwasanaeth ar-lein</value>
+  </data>
+  <data name="Privacy.Name" xml:space="preserve">
+    <value>eich enw</value>
+  </data>
+  <data name="Privacy.NationalResourcesWales" xml:space="preserve">
+    <value>Cyfoeth Naturiol Cymru</value>
+  </data>
+  <data name="Privacy.NIEA" xml:space="preserve">
+    <value>Asiantaeth Amgylchedd Gogledd Iwerddon (NIEA)</value>
+  </data>
+  <data name="Privacy.NoAutomated" xml:space="preserve">
+    <value>Nid yw’r data personol rydych chi’n ei ddarparu yn cael ei ddefnyddio</value>
+  </data>
+  <data name="Privacy.NorthernIrelandEnvironmentAgency" xml:space="preserve">
+    <value>Asiantaeth Amgylchedd Gogledd Iwerddon</value>
+  </data>
+  <data name="Privacy.NRW" xml:space="preserve">
+    <value>Cyfoeth Naturiol Cymru (CNC)</value>
+  </data>
+  <data name="Privacy.PersonalInformationCharter" xml:space="preserve">
+    <value>Siarter Gwybodaeth Bersonol </value>
+  </data>
+  <data name="Privacy.Questions" xml:space="preserve">
+    <value>eich cwestiynau, ymholiadau neu adborth rydych chi’n eu gadael</value>
+  </data>
+  <data name="Privacy.RespondToAnyFeedback" xml:space="preserve">
+    <value>yn ymateb i unrhyw adborth a anfonwch aton ni</value>
+  </data>
+  <data name="Privacy.ScottishEnvironmentalProtectionAgency" xml:space="preserve">
+    <value>Asiantaeth Diogelu Amgylchedd yr Alban</value>
+  </data>
+  <data name="Privacy.SEPA" xml:space="preserve">
+    <value>Asiantaeth Diogelu Amgylchedd yr Alban (SEPA)</value>
+  </data>
+  <data name="Privacy.ShareItCosts" xml:space="preserve">
+    <value>yn ei rannu gyda gweinyddwr y cynllun er mwyn iddyn nhw gyfrifo’r costau gwaredu</value>
+  </data>
+  <data name="Privacy.ShareItRequest" xml:space="preserve">
+    <value>yn ei rannu gyda’r rheoleiddwyr amgylcheddol fel eu bod nhw’n gwybod pwy sydd wedi cyflwyno data am sefydliad ac am becynwaith, ac yn gallu cymeradwyo neu wrthod cais i fod yn ‘berson a gymeradwywyd’ neu’n berson sydd ag ‘awdurdod dirprwyedig’</value>
+  </data>
+  <data name="Privacy.ShareItWho" xml:space="preserve">
+    <value>yn ei rannu gyda’r rheoleiddwyr amgylcheddol fel eu bod yn gwybod pwy sydd wedi cyflwyno data am sefydliad ac am becynwaith</value>
+  </data>
+  <data name="Privacy.ShareThirdParty" xml:space="preserve">
+    <value>yn ei rannu gyda sefydliad trydydd parti sydd wedi’i gontractio i reoli’r broses o anfonebu sefydliadau am eu rhwymedigaethau ynglŷn a chostau gwaredu</value>
+  </data>
+  <data name="Privacy.Telephone" xml:space="preserve">
+    <value>eich rhif ffôn neu’ch rhif ffôn symudol</value>
+  </data>
+  <data name="Privacy.TheDataProtectionOfficer" xml:space="preserve">
+    <value>Swyddog Diogelu Data Defra sy’n gyfrifol am fonitro bod Defra yn cydymffurfio â’r ddeddfwriaeth berthnasol ar ddiogelu data.</value>
+  </data>
+  <data name="Privacy.TheLawfulBasis" xml:space="preserve">
+    <value>Y sail gyfreithlon dros brosesu’ch data personol yw bod hynny yn angenrheidiol</value>
+  </data>
+  <data name="Privacy.ThisPrivacyNotice" xml:space="preserve">
+    <value>Mae’r hysbysiad preifatrwydd yma yn esbonio pa ddata personol sy’n cael ei gasglu drwy’r gwasanaeth ‘Rhoi gwybod am ddata pecynwaith’ a sut mae’r data personol hwnnw’n cael ei ddefnyddio.</value>
+  </data>
+  <data name="Privacy.Title" xml:space="preserve">
+    <value>Hysbysiad preifatrwydd</value>
+  </data>
+  <data name="Privacy.ToPerformATask" xml:space="preserve">
+    <value>er mwyn cyflawni tasg er budd y cyhoedd o dan y rhaglen Diwygiadau Casglu a Phecynwaith(CPR)</value>
+  </data>
+  <data name="Privacy.ToTheInformationCommissioner" xml:space="preserve">
+    <value>i Swyddfa’r Comisiynydd Gwybodaeth unrhyw bryd.</value>
+  </data>
+  <data name="Privacy.Transfer" xml:space="preserve">
+    <value>Trosglwyddo’ch data personol y tu allan i’r Deyrnas Unedig</value>
+  </data>
+  <data name="Privacy.UnderTheUK" xml:space="preserve">
+    <value>o dan Reoliad Cyffredinol y DU ar Ddiogelu Data (GDPR y DU) a Deddf Diogelu Data 2018 (Deddf 2018)).</value>
+  </data>
+  <data name="Privacy.UseOfAutomated" xml:space="preserve">
+    <value>Defnyddio dulliau gwneud penderfyniadau awtomataidd neu broffilio</value>
+  </data>
+  <data name="Privacy.WeCollectThisDataAnd" xml:space="preserve">
+    <value>Rydyn ni’n casglu’r data yma ac</value>
+  </data>
+  <data name="Privacy.WeMayChange" xml:space="preserve">
+    <value>Gallwn ni newid y polisi preifatrwydd yma.</value>
+  </data>
+  <data name="Privacy.WhatHappens" xml:space="preserve">
+    <value>Beth sy’n digwydd os na fyddwch chi’n darparu’r data personol</value>
+  </data>
+  <data name="Privacy.WhatPersonalData" xml:space="preserve">
+    <value>Pa ddata personol rydyn ni’n ei gasglu a sut mae’n cael ei ddefnyddio</value>
+  </data>
+  <data name="Privacy.WhereDataIsShared" xml:space="preserve">
+    <value>Pan fydd data’n cael ei rannu gyda’r rheoleiddwyr amgylcheddol, byddwn yn sicrhau bod gennyn ni’r rheolaethau cywir ar waith i ddiogelu’ch hawliau a’ch rhyddidau.</value>
+  </data>
+  <data name="Privacy.WhoCollects" xml:space="preserve">
+    <value>Pwy sy’n casglu’ch data personol</value>
+  </data>
+  <data name="Privacy.WhoWeShare" xml:space="preserve">
+    <value>Gyda phwy rydyn ni’n rhannu’ch data personol</value>
+  </data>
+  <data name="Privacy.YouCanLearn" xml:space="preserve">
+    <value>Mae’r rheoleiddwyr amgylcheddol yn rheolwyr yn eu hawl eu hunain. Gallwch ddysgu mwy am sut mae’ch data personol yn cael ei brosesu gan y rheoleiddwyr amgylcheddol ar y gwefannau a ganlyn</value>
+  </data>
+  <data name="Privacy.YouHaveTheRight" xml:space="preserve">
+    <value>Mae gennych chi hawl </value>
+  </data>
+  <data name="Privacy.YourRights" xml:space="preserve">
+    <value>Eich hawliau</value>
+  </data>
+  <data name="Privacy.DefraCollects" xml:space="preserve">
+    <value>Yn rhinwedd ein swydd fel prosesydd data, rydyn ni’n casglu ac yn rhannu data ar ran y pedwar corff rheoleiddio amgylcheddol, sef </value>
+  </data>
+  <data name="Privacy.UseAboveAddr" xml:space="preserve">
+    <value>neu drwy ddefnyddio’r cyfeiriad uchod.</value>
+  </data>
+  <data name="Privacy.DataProtectOfficer" xml:space="preserve">
+    <value>Swyddog diogelu data Defra sy’n gyfrifol am wirio bod Defra yn cydymffurfio â’r ddeddfwriaeth. Gallwch gysylltu â nhw yma</value>
+  </data>
+  <data name="Privacy.ConsentToPersonalData" xml:space="preserve">
+    <value>Cydsynio i brosesu’ch data personol</value>
+  </data>
+  <data name="Privacy.ProcessingPersonalData" xml:space="preserve">
+    <value>Nid yw’r gwaith o brosesu’ch data personol wedi’i seilio ar gydsyniad. Chewch chi ddim tynnu hyn yn ôl.</value>
+  </data>
+  <data name="Privacy.AutomatedDecision" xml:space="preserve">
+    <value>gwneud penderfyniadau awtomataidd (gwneud penderfyniad drwy ddulliau awtomataidd heb unrhyw gyfraniad gan bobl)</value>
+  </data>
+  <data name="Privacy.Profiling" xml:space="preserve">
+    <value>proffilio (prosesu data personol yn awtomatig i werthuso pethau penodol ynglŷn ag unigolyn)</value>
+  </data>
+</root>

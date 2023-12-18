@@ -1,0 +1,64 @@
+@model ComplianceSchemeMemberLandingViewModel
+
+@{
+    ViewData["Title"] = Localizer["account_name_manager", Model.OrganisationName];
+}
+
+<div class="govuk-width-container ">
+    <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+
+        @if (Model.Notification.HasNominatedNotification)
+        {
+            @await Html.PartialAsync("Partials/Notifications/_NominatedAsDelegatedPerson", Model.Notification.NominatedEnrolmentId)
+        }
+
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full govuk-!-margin-top-4">
+                <h1 class="govuk-heading-xl break-word">
+                    @Localizer["account_name_manager", Model.OrganisationName]
+                </h1>
+            </div>
+        </div>
+
+        @if (Model.Notification.HasPendingNotification)
+        {
+            @await Html.PartialAsync("Partials/Notifications/_WaitingForApproval")
+        }
+
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds govuk-!-margin-top-4">
+                <div class="govuk-inset-text">
+                    <p><b>@Localizer["organisation_id", Model.OrganisationNumber]</b></p>
+                    <p>@Localizer["compliance_scheme_name", Model.ComplianceSchemeName]</p>
+                </div>
+
+                <h2 class="govuk-heading-s govuk-!-margin-bottom-3">@Localizer["responsible_for", Model.ComplianceSchemeName]</h2>
+
+                <p class="govuk-body">@Localizer["behalf_of_responsible_for", Model.OrganisationName, Model.ComplianceSchemeName]</p>
+                <ul class="govuk-list govuk-list--bullet">
+                    <li>@Localizer["submitting_packaging_data_to_the_environmental_regulator"]</li>
+                    <li>@Localizer["reporting_organisation_details_and_keeping_them_up_to_date"]</li>
+                    <li>@Localizer["handling_packaging_recovery_notes_(PRNs)_and_packaging_export_recovery_notes_(PERNs)"]</li>
+                    <li>@Localizer["paying_fees_and_charges_to_the_environmental_regulator"]</li>
+                </ul>
+
+                <h2 class="govuk-heading-s govuk-!-margin-bottom-3">@Localizer["what_they_are_responsible_for", Model.OrganisationName]</h2>
+
+                <p class="govuk-body">@Localizer["paying_fees_and_charges_to_the_scheme_administrator"]</p>
+
+                @if (Model.CanManageComplianceScheme)
+                {
+                    <h2 class="govuk-heading-s govuk-!-margin-bottom-3">@Localizer["change_or_remove_compliance_scheme"]</h2>
+
+                    <p class="govuk-body">
+                        @Localizer["you_can"]
+                        <a class="govuk-link govuk-link--no-visited-state"
+                           asp-action="ManageComplianceScheme"
+                           asp-controller="FrontendSchemeRegistration">
+                            @Localizer["change_or_remove_compliance_scheme_link", Model.OrganisationName]</a>.
+                    </p>
+                }
+            </div>
+        </div>
+    </main>
+</div>

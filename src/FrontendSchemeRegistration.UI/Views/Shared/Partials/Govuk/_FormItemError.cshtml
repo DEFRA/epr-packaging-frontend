@@ -1,0 +1,12 @@
+﻿@model List<ErrorViewModel>?
+
+@if (Model is not null)
+{
+    for (var i = 0; i < Model.Count; i++)
+    {
+        <p id="error-@(Model[i].Key+i.ToString())" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> @Model[i].Message
+        </p>
+    }
+}
+

@@ -1,0 +1,41 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="confirm" xml:space="preserve">
+        <value>Confirm</value>
+    </data>
+    <data name="as_your_compliance_scheme" xml:space="preserve">
+        <value>as your compliance scheme.</value>
+    </data>
+    <data name="confirm_your_choice_of_compliance_scheme" xml:space="preserve">
+        <value>Confirm your choice of compliance scheme</value>
+    </data>
+    <data name="if_you_selected_the_wrong_compliance_scheme" xml:space="preserve">
+        <value>If you selected the wrong compliance scheme</value>
+    </data>
+    <data name="you_can_go_back_and_change_it" xml:space="preserve">
+        <value>you can go back and change it</value>
+    </data>
+    <data name="you_told_us_you_will_be_using" xml:space="preserve">
+        <value>You told us you’ll be using</value>
+    </data>
+    <data name="you_have_changed_your_compliance_scheme" xml:space="preserve">
+        <value>You’ve changed your compliance scheme.</value>
+    </data>
+    <data name="you_were_using" xml:space="preserve">
+        <value>You were using</value>
+    </data>
+    <data name="you_are_now_using" xml:space="preserve">
+        <value>You’re now using</value>
+    </data>
+</root>

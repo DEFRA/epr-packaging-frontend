@@ -1,0 +1,41 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="authorised_question" xml:space="preserve">
+        <value>How do I know if I’m authorised?</value>
+    </data>
+    <data name="authorised_reasons" xml:space="preserve">
+        <value>You’re authorised to act on behalf of your organisation if:</value>
+    </data>
+    <data name="authorised_reason_1" xml:space="preserve">
+        <value>you’re a sole trader, partner, company director or company secretary</value>
+    </data>
+    <data name="authorised_reason_2" xml:space="preserve">
+        <value>a company director or secretary has given you permission</value>
+    </data>
+    <data name="declaration_warning" xml:space="preserve">
+        <value>You could be prosecuted or have to pay a financial penalty if you are not authorised to act on behalf of your organisation</value>
+    </data>
+    <data name="declaration_statement" xml:space="preserve">
+        <value>I confirm that I, {0} am authorised to act on behalf of my organisation</value>
+    </data>
+    <data name="declaration" xml:space="preserve">
+        <value>Declaration</value>
+    </data>
+    <data name="authorised_reason_3" xml:space="preserve">
+        <value>it’s part of your job role to manage your organisation’s EPR obligations</value>
+    </data>
+    <data name="text_assistive.warning" xml:space="preserve">
+        <value>Warning</value>
+    </data>
+</root>

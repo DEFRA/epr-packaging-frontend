@@ -1,0 +1,43 @@
+@model InviteChangePermissionsViewModel
+@{
+    ViewData["Title"] = Localizer["InviteChangePermissions.Title"];
+}
+
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <form asp-controller="NominatedDelegatedPerson" asp-action="InviteChangePermissions" method="post">
+                    <div class="govuk-form-group">
+                        <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+                            @Localizer["InviteChangePermissions.Question"]
+                        </h1>
+                    </div>
+                    <p class="govuk-body">
+                        @Localizer["InviteChangePermissions.InvitedToChangePermissions", Model.Firstname, Model.Lastname, Model.OrganisationName]
+                    </p>
+                    
+                    <p class="govuk-body">
+                        @Localizer["InviteChangePermissions.YouNeedToAccept"]
+                    </p>
+                    
+                    <h2 class="govuk-heading-m govuk-!-margin-bottom-4">
+                        @Localizer["InviteChangePermissions.HowLongItTakes"]
+                    </h2>
+                    
+                    <p class="govuk-body">
+                        @Localizer["InviteChangePermissions.ItCanTakeUpTo"]
+                    </p>
+                    
+                    <p class="govuk-body">
+                        @Localizer["InviteChangePermissions.OnceTheyApprove"]
+                    </p>
+                    
+                    <a asp-controller="NominatedDelegatedPerson" asp-action="TelephoneNumber" asp-route-id="@Model.Id" method="get" class="govuk-button" data-module="govuk-button">
+                        @SharedLocalizer["continue"]
+                    </a>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>

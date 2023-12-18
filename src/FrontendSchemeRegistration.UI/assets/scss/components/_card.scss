@@ -1,0 +1,33 @@
+.govuk-card {
+  border: 1px solid govuk-colour("mid-grey");
+
+  &-body,
+  &-footer {
+    padding: 30px;
+  }
+
+  &--border-bottom-blue {
+    border: 0;
+    border-bottom: 5px solid govuk-colour("blue");
+  }
+
+  &--grey {
+    background-color: govuk-colour("light-grey")
+  }
+}
+
+.card-row {
+  @include govuk-media-query($from: tablet)
+  {
+    display: flex;
+    flex-flow: row wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+
+    .govuk-card {
+      flex: 1 0 0;
+      margin-left: 15px;
+      margin-right: 15px;
+    }
+  }
+}

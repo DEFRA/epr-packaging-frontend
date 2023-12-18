@@ -1,0 +1,75 @@
+@inject IAuthorizationService AuthorizationService;
+
+@{
+    ViewData["Title"] = Localizer["you_have_created_an_account_for_x", Model.OrganisationName];
+}
+
+@using Microsoft.AspNetCore.Authorization
+@using EPR.Common.Authorization.Constants
+
+@model LandingPageViewModel
+@using (Html.BeginForm("LandingPage", "FrontendSchemeRegistration", FormMethod.Post))
+{
+    @Html.HiddenFor(x => x.OrganisationId)
+    @Html.HiddenFor(x => x.OrganisationName)
+    <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+
+        @if (Model.Notification.HasNominatedNotification)
+        {
+            @await Html.PartialAsync("Partials/Notifications/_NominatedAsDelegatedPerson", Model.Notification.NominatedEnrolmentId)
+        }
+        else if (Model.Notification.HasPendingNotification)
+        {
+            @await Html.PartialAsync("Partials/Notifications/_WaitingForApproval")
+        }
+
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds govuk-!-margin-top-8">
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    @await Html.PartialAsync("Partials/Govuk/_ErrorSummary", ViewData.ModelState)
+                }
+
+                <div class="govuk-notification-banner govuk-notification-banner--success"
+                     role="alert"
+                     aria-labelledby="govuk-notification-banner-title"
+                     data-module="govuk-notification-banner">
+                    <div class="govuk-notification-banner__header">
+                        <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">@Localizer["success"]</h2>
+                    </div>
+                    <div class="govuk-notification-banner__content">
+                        <h3 class="govuk-notification-banner__heading">
+                            @Localizer["you_have_created_an_account_for_x", Model.OrganisationName]
+                        </h3>
+                    </div>
+                </div>
+                <span class="govuk-caption-xl">@Localizer["report_packaging_data"]</span><br/><br/>
+                <h1 class="govuk-heading-m">@Localizer["organisation_name", Model.OrganisationName]</h1>
+                @if (!string.IsNullOrWhiteSpace(Model.OrganisationNumber))
+                {
+                    <p class="govuk-body">@Localizer["organisation_number", Model.OrganisationNumber]</p>
+                }
+            </div>
+        </div>
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+            </div>
+        </div>
+        @if (AuthorizationService.AuthorizeAsync(User, Context, PolicyConstants.EprSelectSchemePolicy).Result.Succeeded)
+        {
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+                    <div class="govuk-inset-text">
+                        <h2 class="govuk-heading-m">@Localizer["tell_us_how_you_will_register_and_submit_data", Model.OrganisationName]</h2>
+                        <p class="govuk-body">@Localizer["before_you_can_register_and_submit_data"]</p>
+                        <button class="govuk-button" data-module="govuk-button">
+                            @SharedLocalizer["continue"]
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    </main>
+}

@@ -1,0 +1,176 @@
+@model FileUploadCheckFileAndSubmitViewModel
+
+@{
+    var title = !Model.UserCanSubmit
+        ? Localizer["file_youve_uploaded"]
+        : Model.HasSubmittedPreviously
+            ? Localizer["check_and_submit_new_file"]
+            : Model.IsComplianceScheme
+                ? Localizer["check_file_and_submit"]
+                : Localizer["check_and_submit_file"];
+
+    ViewData["Title"] = title;
+
+    var fileName = Localizer["file_name"];
+    var dateUploaded = Localizer["date_uploaded"];
+    var uploadedBy = Localizer["uploaded_by"];
+    var dateSubmitted = Localizer["date_submitted"];
+    var submittedBy = Localizer["submitted_by"];
+}
+
+@await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @await Html.PartialAsync("Partials/Govuk/_ErrorSummary", ViewData.ModelState)
+            }
+
+            <h1 class="govuk-heading-l govuk-!-margin-bottom-7">@title</h1>
+
+            @if (Model is { HasSubmittedPreviously: true, UserCanSubmit: true })
+            {
+                <p class="govuk-body">@Localizer["confirm_you_want_to_submit_the_new_packaging_data_file_to_the_environmental_regulator"]</p>
+                <p class="govuk-body govuk-!-margin-bottom-7">@Localizer["this_will_replace_the_last_packaging_data_file_that_you_submitted"]</p>
+            }
+
+            <div class="govuk-summary-card">
+                <div class="govuk-summary-card__title-wrapper">
+                    <h2 class="govuk-summary-card__title">
+                        @(Model is { HasSubmittedPreviously: true, UserCanSubmit: true }
+                            ? Localizer["file_youre_submitting"]
+                            : Localizer["file_uploaded"])
+                    </h2>
+
+                    <ul class="govuk-summary-card__actions">
+                        <li class="govuk-summary-card__action">
+                            <a class="govuk-link govuk-link--no-visited-state" asp-controller="FileUpload" asp-action="Get"
+                               asp-route-submissionId="@Model.SubmissionId">@SharedLocalizer["change"]</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="govuk-summary-card__content">
+                    <table class="govuk-table govuk-!-margin-bottom-0 responsive-table">
+                        <caption class="govuk-visually-hidden">@Localizer["detail_regarding_the_latest_file_uploaded"]</caption>
+                        <thead class="govuk-table__head">
+                        <tr class="govuk-table__row">
+                            <th scope="col" class="govuk-table__header">@fileName</th>
+                            <th scope="col" class="govuk-table__header">@dateUploaded</th>
+                            <th scope="col" class="govuk-table__header">@uploadedBy</th>
+                        </tr>
+                        </thead>
+                        <tbody class="govuk-table__body">
+                        <tr class="govuk-table__row">
+                            <td data-heading="@fileName" class="govuk-table__cell break-word">@Model.LastValidFileName</td>
+                            <td data-heading="@dateUploaded" class="govuk-table__cell break-word">@Model.LastValidFileUploadDateTime.Value.ToReadableDate()</td>
+                            <td data-heading="@uploadedBy" class="govuk-table__cell break-word">@Model.LastValidFileUploadedBy</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            @if (Model.HasSubmittedPreviously)
+            {
+                <div class="govuk-summary-card">
+                    <div class="govuk-summary-card__title-wrapper">
+                        <h2 class="govuk-summary-card__title">@Localizer["last_file_submitted"]</h2>
+                    </div>
+
+                    <div class="govuk-summary-card__content">
+                        <table class="govuk-table govuk-!-margin-bottom-0 responsive-table">
+                            <caption class="govuk-visually-hidden">@Localizer["detail_regarding_the_latest_file_submitted"]</caption>
+                            <thead class="govuk-table__head">
+                            <tr class="govuk-table__row">
+                                <th scope="col" class="govuk-table__header">@fileName</th>
+                                <th scope="col" class="govuk-table__header">@dateSubmitted</th>
+                                <th scope="col" class="govuk-table__header">@submittedBy</th>
+                            </tr>
+                            </thead>
+                            <tbody class="govuk-table__body">
+                            <tr class="govuk-table__row">
+                                <td data-heading="@fileName" class="govuk-table__cell break-word">@Model.SubmittedFileName</td>
+                                <td data-heading="@dateSubmitted" class="govuk-table__cell break-word">@Model.SubmittedDateTime.Value.ToReadableDate()</td>
+                                <td data-heading="@submittedBy" class="govuk-table__cell break-word">@Model.SubmittedBy</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <p class="govuk-body">@Localizer["if_you_need_to_make_changes_to_this_file_after_its_submitted_youll_need_to_reupload_a_new_file"]</p>
+            }
+
+            @if (Model.UserCanSubmit)
+            {
+                @using (Html.BeginForm(FormMethod.Post))
+                {
+                    <div class="govuk-form-group govuk-!-margin-top-7 @(ViewData.ModelState.IsValid ? string.Empty : "govuk-form-group--error")">
+                        @Html.HiddenFor(x => x.LastValidFileId)
+
+                        <fieldset class="govuk-fieldset" aria-describedby="environment-regulator-hint">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                                <h1 class="govuk-fieldset__heading">@Localizer["are_you_sure_you_want_to_submit_your_packaging_data_file"]</h1>
+                            </legend>
+
+                            <div id="environment-regulator-hint" class="govuk-hint">@Localizer["this_information_will_be_sent_to_the_environmental_regulator"]</div>
+
+                            @if (!ViewData.ModelState.IsValid)
+                            {
+                                @await Html.PartialAsync("Partials/Govuk/_Error", ViewData.ModelState.GetModelStateEntry(nameof(Model.Submit)))
+                            }
+
+                            <div class="govuk-radios" data-module="govuk-radios">
+                                <div class="govuk-radios__item">
+                                    @Html.RadioButtonFor(m => m.Submit, true, new
+                                    {
+                                        @class = "govuk-radios__input",
+                                        Id = "Submit"
+                                    })
+                                    <label for="Submit" class="govuk-label govuk-radios__label">@Localizer["yes_id_like_to_submit"]</label>
+                                </div>
+
+                                <div class="govuk-radios__item">
+                                    @Html.RadioButtonFor(m => m.Submit, false, new
+                                    {
+                                        @class = "govuk-radios__input",
+                                        Id = "Submit-1"
+                                    })
+                                    <label for="Submit-1" class="govuk-label govuk-radios__label">@Localizer["no_i_dont_want_to_do_this_right_now"]</label>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+
+                    @if (Model is { IsComplianceScheme: true })
+                    {
+                        <div class="govuk-warning-text govuk-!-margin-top-7">
+                            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                            <strong class="govuk-warning-text__text">
+                                <span class="govuk-warning-text__assistive">@SharedLocalizer["warning"]</span>
+                                @Localizer["your_company_may_face_enforcement_action_if_the_data_you_submit_is_inaccurate"]
+                            </strong>
+                        </div>
+                    }
+
+                    <button class="govuk-button" data-module="govuk-button">@SharedLocalizer["continue"]</button>
+                }
+            }
+            else
+            {
+                <div class="govuk-!-margin-bottom-6">
+                    <h2 class="govuk-heading-m govuk-!-margin-top-7">@Localizer["how_to_submit_your_files"]</h2>
+                    <p class="govuk-body">@Localizer["you_dont_have_permission_to_submit_files"]</p>
+                    <p class="govuk-body">@Localizer["someone_in_your_team_with_the_right_account_permissions_must_submit_these_files_to_the_environmental_regulator"]</p>
+                    <a asp-controller="Landing" asp-action="Get" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19">@Localizer["go_to_your_account_homepage"]</a>
+                </div>
+            }
+        </div>
+    </div>
+</main>

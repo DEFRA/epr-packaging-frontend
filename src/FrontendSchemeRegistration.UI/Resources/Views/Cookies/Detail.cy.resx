@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Detail.Title" xml:space="preserve">
+    <value>Cwcis</value>
+  </data>
+  <data name="Detail.EssentialCookies" xml:space="preserve">
+    <value>Cwcis hanfodol</value>
+  </data>
+  <data name="Detail.EssentialCookiesWeUse" xml:space="preserve">
+    <value>Cwcis hanfodol rydyn ni’n eu defnyddio</value>
+  </data>
+  <data name="Detail.AnalyticsCookies" xml:space="preserve">
+    <value>Cwcis dadansoddeg (dewisol)</value>
+  </data>
+  <data name="Detail.Purpose" xml:space="preserve">
+    <value>Diben</value>
+  </data>
+  <data name="Detail.Name" xml:space="preserve">
+    <value>Enw</value>
+  </data>
+  <data name="Detail.Expires" xml:space="preserve">
+    <value>Yn dod i ben</value>
+  </data>
+  <data name="Detail.No" xml:space="preserve">
+    <value>Na hoffwn</value>
+  </data>
+  <data name="Detail.Yes" xml:space="preserve">
+    <value>Hoffwn</value>
+  </data>
+  <data name="Detail.SaveCookieSettings" xml:space="preserve">
+    <value>Cadw gosodiadau cwcis</value>
+  </data>
+  <data name="Detail.Accept" xml:space="preserve">
+    <value>Hoffech chi dderbyn cwcis dadansoddeg?</value>
+  </data>
+  <data name="Detail.AnalyticsCookieExpires1" xml:space="preserve">
+    <value>400 diwrnod</value>
+  </data>
+  <data name="Detail.AnalyticsCookieExpires2" xml:space="preserve">
+    <value>400 diwrnod</value>
+  </data>
+  <data name="Detail.AnalyticsCookiePurpose1" xml:space="preserve">
+    <value>Un o gwcis parhaus Google Analytics yw’r cwci yma ac mae’n cael ei ddefnyddio i wahaniaethu rhwng ymwelwyr unigryw.</value>
+  </data>
+  <data name="Detail.AnalyticsCookiePurpose2" xml:space="preserve">
+    <value>Cwci trydydd parti yw hwn sy’n cael ei osod ar eich dyfais i’n galluogi i ddefnyddio gwasanaeth Google Analytics. Mae’r cwci yma yn cael ei ddefnyddio i gasglu gwybodaeth am sut mae ymwelwyr yn defnyddio’n gwefan. Rydyn ni’n defnyddio’r wybodaeth yma i lunio adroddiadau ac i’n helpu i wella’r wefan.</value>
+  </data>
+  <data name="Detail.CookiePolicyCookieExpires" xml:space="preserve">
+    <value>1 flwyddyn</value>
+  </data>
+  <data name="Detail.EssentialCookieExpiresSession" xml:space="preserve">
+    <value>Sesiwn</value>
+  </data>
+  <data name="Detail.CookiePolicyCookiePolicy" xml:space="preserve">
+    <value>Yn cadw’ch gosodiadau caniatâd cwcis.</value>
+  </data>
+  <data name="Detail.SessionCookiePurpose" xml:space="preserve">
+    <value>Yn cadw’ch ymatebion er mwyn ichi gael profiad gwell.</value>
+  </data>
+  <data name="Detail.AntiForgeryCookiePurpose" xml:space="preserve">
+    <value>Tocyn atal ffugio yw hwn ac mae’n cael ei ddefnyddio i atal ymosodiadau ffugio ceisiadau ar draws gwefan (CSRF). Mae’n atal eraill rhag creu dolenni i’ch gwefan.</value>
+  </data>
+  <data name="Detail.AnalyticsCookiesWeUse" xml:space="preserve">
+    <value>Cwcis dadansoddeg rydyn ni’n eu defnyddio</value>
+  </data>
+  <data name="Detail.EssentialCookiesDescription" xml:space="preserve">
+    <value>Mae cwcis hanfodol yn cadw’ch gwybodaeth yn ddiogel wrth ichi ddefnyddio’r gwasanaeth yma. Does dim angen inni ofyn am ganiatâd i’w defnyddio.</value>
+  </data>
+  <data name="Detail.AnalyticalCookiesDescription1" xml:space="preserve">
+    <value>Gyda’ch caniatâd, rydyn ni’n defnyddio Google Analytics i gasglu data am sut rydych chi’n defnyddio’r gwasanaeth yma. Mae’r wybodaeth yma yn ein helpu i wella’n gwasanaeth.</value>
+  </data>
+  <data name="Detail.AnalyticalCookiesDescription2" xml:space="preserve">
+    <value>Dyw Google ddim yn cael defnyddio na rhannu’n data dadansoddeg gyda neb.</value>
+  </data>
+  <data name="Detail.AnalyticalCookiesDescription3" xml:space="preserve">
+    <value>Mae Google Analytics yn storio gwybodaeth ddienw am y canlynol:</value>
+  </data>
+  <data name="Detail.AnalyticalCookiesPoint1" xml:space="preserve">
+    <value>y tudalennau rydych chi’n ymweld â nhw</value>
+  </data>
+  <data name="Detail.AnalyticalCookiesPoint2" xml:space="preserve">
+    <value>faint o amser rydych chi’n ei dreulio ar bob tudalen</value>
+  </data>
+  <data name="Detail.AnalyticalCookiesPoint3" xml:space="preserve">
+    <value>sut daethoch chi i’r wefan</value>
+  </data>
+  <data name="Detail.AnalyticalCookiesPoint4" xml:space="preserve">
+    <value>ar beth rydych chi’n clicio wrth ymweld â’r wefan</value>
+  </data>
+  <data name="Detail.AnalyticalCookiesPoint5" xml:space="preserve">
+    <value>y ddyfais a’r porwr rydych chi’n eu defnyddio</value>
+  </data>
+  <data name="Detail.CookieDescription1" xml:space="preserve">
+    <value>Mae cwcis yn ffeiliau bach sy’n cael eu cadw ar eich ffôn, eich llechen neu’ch cyfrifiadur pan fyddwch chi’n ymweld â gwefan.</value>
+  </data>
+  <data name="Detail.CookieDescription2" xml:space="preserve">
+    <value>Rydyn ni’n defnyddio cwcis i wneud i’r gwasanaeth ‘Rhoi gwybod am ddata pecynwaith’ weithio ac i gasglu gwybodaeth am sut rydych chi’n defnyddio’n gwasanaeth.</value>
+  </data>
+  <data name="Detail.SetCookiePreferences" xml:space="preserve">
+    <value>Rydych chi wedi gosod eich dewisiadau cwcis.</value>
+  </data>
+  <data name="Detail.Success" xml:space="preserve">
+    <value>Llwyddiant</value>
+  </data>
+  <data name="Detail.AuthenticationCookiePurpose" xml:space="preserve">
+    <value>Yn cael ei ddefnyddio i adnabod defnyddiwr sydd wedi mewngofnodi i’w alluogi i fynd at rannau diogel o wefan.</value>
+  </data>
+  <data name="Detail.TempDataCookiePurpose" xml:space="preserve">
+    <value>Yn cadw gwybodaeth am lenwi ffurflenni er mwyn ichi gael profiad gwell.</value>
+  </data>
+  <data name="Detail.TsCookiePurpose" xml:space="preserve">
+    <value>Cwci dilysu parthau a rheoli diogelwch F5 Rhwydweithiau BIG-IP ASM.</value>
+  </data>
+  <data name="Detail.B2CCookiePurpose" xml:space="preserve">
+    <value>Mae nifer o gwcis yn cael eu defnyddio fel rhan o’r broses o gofrestru a dilysu defnyddwyr.</value>
+  </data>
+  <data name="Detail.CorrelationCookieExpires" xml:space="preserve">
+    <value>15 munud</value>
+  </data>
+  <data name="Detail.CorrelationCookiePurpose" xml:space="preserve">
+    <value>Fel rhan o’r broses o greu cyfrif a mewngofnodi, mae’r cwci cydberthnasoedd yn cofio data diogelwch fel ID y cais, gwladwriaeth drosglwyddo, a nodweddion dilysu ASP.NET.</value>
+  </data>
+  <data name="Detail.OpenIdCookieExpires" xml:space="preserve">
+    <value>15 munud</value>
+  </data>
+  <data name="Detail.OpenIdCookiePurpose" xml:space="preserve">
+    <value>Fel rhan o’r broses o greu cyfrif a mewngofnodi, mae’r cwci nons yn cael ei ddefnyddio gan OpenIDConnect Microsoft i liniaru ymosodiadau ailchwarae (lle mae haciwr yn rhyng-gipio neges ac yn ailchwarae honno i’r derbynnydd arfaethedig).</value>
+  </data>
+  <data name="Details.Title" xml:space="preserve">
+    <value>WCookies</value>
+  </data>
+</root>

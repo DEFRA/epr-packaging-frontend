@@ -1,0 +1,73 @@
+@model DeclarationViewModel
+
+@{
+    ViewData["Title"] = Localizer["declaration"];
+}
+
+@await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @using (Html.BeginRouteForm("Declaration", FormMethod.Post))
+            {
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    @await Html.PartialAsync("Partials/Govuk/_ErrorSummary"
+                        , ViewData.ModelState)
+                }
+                <h1 class="govuk-heading-l">
+                    @Localizer["declaration"]
+                </h1>
+                <div class="govuk-form-group @(ViewData.ModelState.IsValid ? string.Empty : "govuk-form-group--error")">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        @await Html.PartialAsync("Partials/Govuk/_Error",
+                            ViewData.ModelState.GetModelStateEntry(nameof(Model.Approved)))
+                    }
+                    <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                        <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                            <div class="govuk-checkboxes__item">
+                                @Html.CheckBoxFor(m => m.Approved,
+                                                                          new
+                                                                          {
+                                                                              @class = "govuk-checkboxes__input"
+                                                                          })
+
+                                <label class="govuk-label govuk-checkboxes__label" for="@nameof(Model.Approved)">
+                                    @String.Format(Localizer["declaration_statement"].Value, Context.GetName())
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="govuk-warning-text">
+                    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                    <strong class="govuk-warning-text__text">
+                        <span class="govuk-warning-text__assistive">@Localizer["text_assistive.warning"]</span>
+                        @Localizer["declaration_warning"]
+                    </strong>
+                </div>
+                <details class="govuk-details" data-module="govuk-details">
+                    <summary class="govuk-details__summary">
+                        <span class="govuk-details__summary-text">
+                            @Localizer["authorised_question"]
+                        </span>
+                    </summary>
+                    <div class="govuk-details__text">
+                        @Localizer["authorised_reasons"]
+                        <ul>
+                            <li>@Localizer["authorised_reason_1"]</li>
+                            <li>@Localizer["authorised_reason_2"]</li>
+                            <li>@Localizer["authorised_reason_3"]</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <button class="govuk-button" data-module="govuk-button">
+                    @SharedLocalizer["confirm_and_continue"]
+                </button>
+            }
+        </div>
+    </div>
+</main>

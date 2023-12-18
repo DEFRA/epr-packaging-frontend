@@ -1,0 +1,54 @@
+﻿@model FileUploadBrandsSuccessViewModel
+
+@{
+    ViewData["Title"] = Localizer["brand_information_uploaded"];
+}
+
+@await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
+
+<main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds govuk-!-margin-top-8">
+
+            <div class="govuk-notification-banner govuk-notification-banner--success"
+                 role="alert"
+                 aria-labelledby="govuk-notification-banner-title"
+                 data-module="govuk-notification-banner">
+                <div class="govuk-notification-banner__header">
+                    <h2 class="govuk-notification-banner__title"
+                        id="govuk-notification-banner-title">@Localizer["success"]</h2>
+                </div>
+                <div class="govuk-notification-banner__content">
+                    <h3 class="govuk-notification-banner__heading">
+                        @Localizer["brand_information_uploaded"]
+                    </h3>
+                    <p class="govuk-body break-word">@Model.FileName</p>
+                </div>
+            </div>
+
+            @if(Model.RequiresPartnershipsFile)
+            {
+                <h2 class="govuk-heading-m">@Localizer["what_happens_next"]</h2>
+
+                <p class="govuk-body">@Localizer["you_also_need_to_give_information_about_partners"]</p>
+
+                @Html.ActionLink(Localizer["upload_partner_information"].Value,
+                    "Get",
+                    "FileUploadPartnerships",
+                    new { submissionId = Model.SubmissionId },
+                    new { @class = "govuk-button govuk-!-margin-top-5" })
+            }
+            else
+            {
+                <h2 class="govuk-heading-m">@Localizer["what_happens_next"]</h2>
+                <p class="govuk-body">@Localizer["you_do_not_need_to_report_information"]</p>
+                <p class="govuk-body">@Localizer["you_can_now_see_list_files_youve_uploaded_change_if_need"]</p>
+                    @Html.ActionLink(Localizer["continue"].Value,
+                        "Get",
+                        "ReviewCompanyDetails",
+                        new { submissionId = Model.SubmissionId },
+                        new { @class = "govuk-button govuk-!-margin-top-5" })
+            }
+        </div>
+    </div>
+</main>

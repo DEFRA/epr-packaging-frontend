@@ -1,0 +1,95 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="report_packaging_data" xml:space="preserve">
+        <value>Report packaging data</value>
+    </data>
+    <data name="If_you_want_to_replace_any_of" xml:space="preserve">
+        <value>If you want to replace any of the files in the account, you’ll need to re-upload all of the files relating to your organisation details. These will replace the current ones.</value>
+    </data>
+    <data name="this_is_to_report_organisation_details" xml:space="preserve">
+        <value>This is to report organisation details for the deadline of 11.59pm on {0} deadline. Check you’re reporting for the right deadline before you continue.</value>
+    </data>
+    <data name="file_name" xml:space="preserve">
+        <value>File name</value>
+    </data>
+    <data name="uploaded_by" xml:space="preserve">
+        <value>Uploaded by</value>
+    </data>
+    <data name="re-upload_members_organisation_details" xml:space="preserve">
+        <value>Re-upload members’ organisation details</value>
+    </data>
+    <data name="re-upload_organisation_details" xml:space="preserve">
+        <value>Re-upload organisation details</value>
+    </data>
+    <data name="you_have_already_uploaded_your_organisation_details" xml:space="preserve">
+        <value>You have already uploaded your organisation details. </value>
+    </data>
+    <data name="you_have_already_uploaded_your_members_organisation_details" xml:space="preserve">
+        <value>You have already uploaded your members’ organisation details. </value>
+    </data>
+    <data name="but_they_have_not_been_submitted" xml:space="preserve">
+        <value>but they have not been submitted to the environmental regulator. </value>
+    </data>
+    <data name="you_can_upload" xml:space="preserve">
+        <value>You can upload this information again if something has changed. You don’t have permission to submit files.</value>
+    </data>
+    <data name="someone_in_your_team_with_the_right_account_permissions" xml:space="preserve">
+        <value>Someone in your team with the right account permissions will need to submit this information to the environmental regulator.</value>
+    </data>
+    <data name="are_you_sure_you_want_to_re-upload_your_organisation_details" xml:space="preserve">
+        <value>Are you sure you want to re-upload your organisation details?</value>
+    </data>
+    <data name="re-upload_members_organisation_details_to_submit_to_environmental_regulator" xml:space="preserve">
+        <value>Re-upload members’ organisation details to submit to environmental regulator</value>
+    </data>
+    <data name="you_already_submitted_your_members_organisation_details" xml:space="preserve">
+        <value>You already submitted your members’ organisation details to the environmental regulator. You can upload and submit this information again if something has changed. </value>
+    </data>
+    <data name="date_uploaded" xml:space="preserve">
+        <value>Date uploaded </value>
+    </data>
+    <data name="submitted" xml:space="preserve">
+        <value>Files you’ve already submitted</value>
+    </data>
+    <data name="uploaded" xml:space="preserve">
+        <value>Files you’ve uploaded and are replacing</value>
+    </data>
+    <data name="continue" xml:space="preserve">
+        <value>Continue</value>
+    </data>
+    <data name="cancel" xml:space="preserve">
+        <value>Cancel</value>
+    </data>
+    <data name="tab_title_organisation_details" xml:space="preserve">
+        <value>Tell us if you want to re-upload your organisation details</value>
+    </data>
+    <data name="tab_title_members_organisation_details" xml:space="preserve">
+        <value>Tell us if you want to re-upload your members’ organisation details</value>
+    </data>
+    <data name="your_organisation_already_submitted" xml:space="preserve">
+        <value>Your organisation already submitted your members’ organisation details to the environmental regulator. You can upload this information again if something has changed. You don’t have permission to submit files. </value>
+    </data>
+    <data name="date_submitted" xml:space="preserve">
+        <value>Date submitted</value>
+    </data>
+    <data name="submitted_by" xml:space="preserve">
+        <value>Submitted by </value>
+    </data>
+    <data name="detail_regarding_the_latest_file_submitted" xml:space="preserve">
+        <value>Information about the last files submitted</value>
+    </data>
+    <data name="detail_regarding_the_latest_file_uploaded" xml:space="preserve">
+        <value>Information about the file you’ve uploaded and can now submit</value>
+    </data>
+</root>

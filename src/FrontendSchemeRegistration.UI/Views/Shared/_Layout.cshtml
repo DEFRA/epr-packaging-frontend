@@ -1,0 +1,112 @@
+@using System.Reflection
+@using FrontendSchemeRegistration.UI.Constants
+
+@inject IOptions<ExternalUrlOptions> ExternalUrlOptions;
+
+@{
+    var useGoogleAnalyticsCookie = (bool?)Context.Items[ContextKeys.UseGoogleAnalyticsCookieKey];
+    var googleTagManagerContainerId = (string?)Context.Items[ContextKeys.TagManagerContainerIdKey];
+    var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
+}
+
+<!DOCTYPE html>
+<html lang="en" class="govuk-template">
+    <head>
+        <meta charset="utf-8">
+        <title>@ViewData["Title"] - @SharedLocalizer["application_title"] - GOV.UK</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+        <meta name="theme-color" content="#0b0c0c">
+
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="application-name" content="Report Packaging Data" data-version="@Assembly.GetExecutingAssembly().GetName().Version.ToString()">
+
+        <link rel="shortcut icon" sizes="16x16 32x32 48x48" href="/images/favicon.ico" type="image/x-icon">
+        <link rel="mask-icon" href="/images/govuk-mask-icon.svg" color="#0b0c0c">
+        <link rel="apple-touch-icon" sizes="180x180" href="/images/govuk-apple-touch-icon-180x180.png">
+        <link rel="apple-touch-icon" sizes="167x167" href="/images/govuk-apple-touch-icon-167x167.png">
+        <link rel="apple-touch-icon" sizes="152x152" href="/images/govuk-apple-touch-icon-152x152.png">
+        <link rel="apple-touch-icon" href="/images/govuk-apple-touch-icon.png">
+        <link rel="stylesheet" href="~/css/application.css">
+
+        @if (useGoogleAnalyticsCookie == true)
+        {
+            <!-- Google Tag Manager -->
+            <script nonce="@scriptNonce">
+                (function (w, d, s, l, i) {
+                    w[l] = w[l] || []; w[l].push({
+                        'gtm.start':
+                            new Date().getTime(), event: 'gtm.js'
+                    }); var f = d.getElementsByTagName(s)[0],
+                        j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+                            'https://www.googletagmanager.com/gtm.js?id=' + i + dl; var n = d.querySelector('[nonce]');
+                    n && j.setAttribute('nonce', n.nonce || n.getAttribute('nonce')); f.parentNode.insertBefore(j, f);
+                })(window, document, 'script', 'dataLayer', '@googleTagManagerContainerId');</script>
+            <!-- End Google Tag Manager -->
+        }  
+    </head>
+    <body class="govuk-template__body">
+
+        @if (useGoogleAnalyticsCookie == true)
+        {
+            <!-- Google Tag Manager (noscript) -->
+            <noscript>
+                <iframe src="@("https://www.googletagmanager.com/ns.html?id="+googleTagManagerContainerId)"
+                    height="0" width="0" style="display:none;visibility:hidden" title="GoogleTagManager"></iframe>
+            </noscript>
+            <!-- End Google Tag Manager (noscript) -->
+        }
+
+        <script nonce="@scriptNonce">
+            document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');
+        </script>
+        @await Component.InvokeAsync("CookieBanner")
+        <a href="#main-content" class="govuk-skip-link" data-module="govuk-skip-link">@SharedLocalizer["skip_to_main_content_text"]</a>
+
+        @await Html.PartialAsync("Partials/Govuk/_Header", ExternalUrlOptions.Value)
+
+        <div class="govuk-width-container">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-full">
+                    @await Component.InvokeAsync("PhaseBanner")
+                    @await Component.InvokeAsync("LanguageSwitcher")
+                    @if (!string.IsNullOrWhiteSpace(ViewBag.HomeLinkToDisplay))
+                    {
+                        @await Html.PartialAsync("Partials/Govuk/_HomeLink", (string) ViewBag.HomeLinkToDisplay)
+                    }
+                    else if (!string.IsNullOrWhiteSpace(ViewBag.BackLinkToDisplay))
+                    {
+                        @await Html.PartialAsync("Partials/Govuk/_BackLink", (string) ViewBag.BackLinkToDisplay)
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="govuk-width-container">
+            @RenderBody()
+        </div>
+
+        @await Html.PartialAsync("Partials/Govuk/_Footer")
+
+        <script src="~/js/govuk.js"></script>
+    <script nonce="@scriptNonce">       
+     
+        window.GOVUKFrontend.initAll({
+            characterCount: {
+                i18n: {
+                    charactersUnderLimit: {
+                        one: "@Html.Raw(SharedLocalizer["CharacterLimit.UnderLimitSingle"])",
+                        other: "@Html.Raw(SharedLocalizer["CharacterLimit.UnderLimitPlural"])"
+                    },
+                    charactersAtLimit: "@Html.Raw(SharedLocalizer["CharacterLimit.AtLimit"])",
+                    charactersOverLimit: {
+                        one: "@Html.Raw(SharedLocalizer["CharacterLimit.OverLimitSingle"])",
+                        other: "@Html.Raw(SharedLocalizer["CharacterLimit.OverLimitPlural"])"
+                    }
+                }
+            },
+        })
+    </script>       
+
+        @await RenderSectionAsync("Scripts", required: false)
+    </body>
+</html>

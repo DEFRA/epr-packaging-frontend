@@ -1,0 +1,35 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="page_title" xml:space="preserve">
+        <value>Upload Partner Information Completed</value>
+    </data>
+    <data name="success" xml:space="preserve">
+        <value>Success</value>
+    </data>
+    <data name="what_happens_next" xml:space="preserve">
+        <value>What happens next</value>
+    </data>
+    <data name="youve_uploaded_all" xml:space="preserve">
+        <value>You’ve uploaded all the organisation details.</value>
+    </data>
+    <data name="you_can_now" xml:space="preserve">
+        <value>You can now see a list of the files you’ve uploaded, and change them if you need to.</value>
+    </data>
+    <data name="go_to_review" xml:space="preserve">
+        <value>Continue</value>
+    </data>
+    <data name="file_uploaded" xml:space="preserve">
+        <value>Partner information uploaded</value>
+    </data>
+</root>

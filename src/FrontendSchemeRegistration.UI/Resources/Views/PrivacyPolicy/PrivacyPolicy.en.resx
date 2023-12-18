@@ -1,0 +1,38 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="confirm_privacy_policy" xml:space="preserve">
+        <value>I confirm that I have read, understand and agree to the privacy policy.</value>
+    </data>
+    <data name="key_points" xml:space="preserve">
+        <value>Key points of the privacy policy:</value>
+    </data>
+    <data name="key_point_1" xml:space="preserve">
+        <value>we’ll share your information with the relevant environmental regulator and scheme administrator</value>
+    </data>
+    <data name="key_point_2" xml:space="preserve">
+        <value>we may add your organisation’s name, address and contact details to the packaging public registers</value>
+    </data>
+    <data name="key_point_3" xml:space="preserve">
+        <value>we’ll keep your personal data for 7 years after the end of each compliance year</value>
+    </data>
+    <data name="privacy_policy_not_approved" xml:space="preserve">
+        <value>You must accept the Privacy Policy in order to continue with Scheme Registration</value>
+    </data>
+    <data name="read_privacy_policy" xml:space="preserve">
+        <value>Read the full privacy policy (opens in new tab)</value>
+    </data>
+    <data name="review" xml:space="preserve">
+        <value>Review the privacy policy</value>
+    </data>
+</root>

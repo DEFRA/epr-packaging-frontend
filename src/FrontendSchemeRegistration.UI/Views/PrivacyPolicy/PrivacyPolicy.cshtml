@@ -1,0 +1,64 @@
+@model PrivacyPolicyViewModel
+
+@{
+    ViewData["Title"] = Localizer["review"];
+}
+
+@await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @await Html.PartialAsync("Partials/Govuk/_ErrorSummary"
+                    , ViewData.ModelState)
+            }
+
+            <h1 class="govuk-heading-l">@Localizer["review"]</h1>
+
+            <p class="govuk-body">@Localizer["key_points"]</p>
+
+            <ul class="govuk-list govuk-list--bullet">
+                <li>@Localizer["key_point_1"]</li>
+                <li>@Localizer["key_point_2"]</li>
+                <li>@Localizer["key_point_3"]</li>
+            </ul>
+
+            <p class="govuk-body">
+                <a href="https://www.gov.uk/help/privacy-notice" class="govuk-link" rel="noreferrer noopener" target="_blank">
+                    @Localizer["read_privacy_policy"]
+                </a>.
+            </p>
+
+            @using (Html.BeginRouteForm("PrivacyPolicy", FormMethod.Post))
+            {
+                <div class="govuk-form-group @(ViewData.ModelState.IsValid ? string.Empty : "govuk-form-group--error")">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        @await Html.PartialAsync("Partials/Govuk/_Error",
+                            ViewData.ModelState.GetModelStateEntry(nameof(Model.Approved)))
+                    }
+
+                    <div class="govuk-checkboxes" data-module="govuk-checkboxes">
+                        <div class="govuk-checkboxes__item">
+                            @Html.CheckBoxFor(m => m.Approved,
+                                new
+                                {
+                                    @class = "govuk-checkboxes__input"
+                                })
+
+                            <label class="govuk-label govuk-checkboxes__label" for="@nameof(Model.Approved)">
+                                @Localizer["confirm_privacy_policy"]
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="govuk-button" data-module="govuk-button">
+                    @SharedLocalizer["confirm_and_continue"]
+                </button>
+            }
+        </div>
+    </div>
+</main>

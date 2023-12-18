@@ -1,0 +1,75 @@
+@model SelectComplianceSchemeViewModel
+
+@{
+    ViewData["Title"] = Localizer["select_your_compliance_scheme"];
+}
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @await Html.PartialAsync("Partials/Govuk/_ErrorSummary", ViewData.ModelState)
+            }
+
+            @using (Html.BeginForm(FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                <div class="govuk-form-group">
+                    <div class="govuk-form-group @(ViewData.ModelState.IsValid ? string.Empty : "govuk-form-group--error")">
+                        <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                                <h1 class="govuk-fieldset__heading govuk-label--l">
+                                    @Localizer["what_is_the_name_of_your_cs"]
+                                </h1>
+                            </legend>
+
+                            @if (!ViewData.ModelState.IsValid)
+                            {
+                                <span class="govuk-error-message">@Localizer["error_message"]</span>
+                            }
+
+                            <div class="govuk-radios govuk-radios--small" data-module="govuk-radios">
+                                @for (var i = 0; i < Model.ComplianceSchemes.Count; i++)
+                                {
+                                    var itemIdCounter = i == 0 ? "" : i.ToString();
+                                    var itemId = $"SelectedComplianceSchemeValues{itemIdCounter}";
+
+                                    var isSelected = Model.ComplianceSchemes[i].Name.Equals(Model.SavedComplianceScheme);
+                                    
+                                    <div class="govuk-radios__item">
+                                        <input type="radio"
+                                               id=@itemId
+                                               name="SelectedComplianceSchemeValues"
+                                               checked="@isSelected"
+                                               value="@Model.ComplianceSchemes[i].Id:@Model.ComplianceSchemes[i].Name"
+                                               class="govuk-radios__input"/>
+                                        
+                                        <label for="@itemId" class="govuk-label govuk-radios__label">
+                                            @Model.ComplianceSchemes[i].Name
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+
+                <details class="govuk-details" data-module="govuk-details">
+                    <summary class="govuk-details__summary">
+                        <span class="govuk-details__summary-text">
+                            @Localizer["my_compliance_scheme_is_not_listed"]
+                        </span>
+                    </summary>
+                    <div class="govuk-details__text">
+                        <p class="govuk-body">@Localizer["if_your_compliance_scheme_is_not_listed"]</p>
+                        <p class="govuk-body">@Localizer["you_must_work_with_a_compliance_scheme"]</p>
+                    </div>
+                </details>
+
+                <button class="govuk-button" data-module="govuk-button" type="submit">
+                    @SharedLocalizer["continue"]
+                </button>
+            }
+        </div>
+    </div>
+</main>

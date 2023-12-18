@@ -1,0 +1,53 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="are_you_using_a_compliance_scheme" xml:space="preserve">
+        <value>Ydych chi’n defnyddio cynllun cydymffurfio?</value>
+    </data>
+    <data name="yes" xml:space="preserve">
+        <value>Ydw</value>
+    </data>
+    <data name="no" xml:space="preserve">
+        <value>Nac ydw</value>
+    </data>
+    <data name="what_is_a_compliance_scheme" xml:space="preserve">
+        <value>Beth yw cynllun cydymffurfio?</value>
+    </data>
+    <data name="compliance_schemes_are" xml:space="preserve">
+        <value>Mae cynlluniau cydymffurfio yn drydydd partïon sy’n helpu sefydliadau i fodloni’r EPR dros ofynion pecynwaith.</value>
+    </data>
+    <data name="compliance_schemes_can" xml:space="preserve">
+        <value>Mae cynlluniau cydymffurfio yn gallu:</value>
+    </data>
+    <data name="register_you" xml:space="preserve">
+        <value>cofrestru’ch sefydliad i roi gwybod am ddata pecynwaith</value>
+    </data>
+    <data name="pay_your_registration_fees" xml:space="preserve">
+        <value>talu’ch ffioedd cofrestru</value>
+    </data>
+    <data name="buy_prns" xml:space="preserve">
+        <value>prynu PRNs (nodiadau ailgylchu gwastraff pecynwaith neu PERNs (nodiadau ailgylchu allforio pecynwaith gwastraff) i gyflawni’r rhwymedigaethau ynglŷn ag ailgylchu</value>
+    </data>
+    <data name="report_your_packaging_data" xml:space="preserve">
+        <value>rhoi gwybod am eich data pecynwaith</value>
+    </data>
+    <data name="compliance_scheme_cannot_pay" xml:space="preserve">
+        <value>Nid yw cynllun cydymffurfio yn gallu talu’ch ffi rheoli gwastraff.</value>
+    </data>
+    <data name="using_a_compliance_schema" xml:space="preserve">
+        <value>Defnyddio cynllun cydymffurfio</value>
+    </data>
+    <data name="error_message" xml:space="preserve">
+        <value>Dewiswch a ydych chi’n defnyddio cynllun cydymffurfio</value>
+    </data>
+</root>

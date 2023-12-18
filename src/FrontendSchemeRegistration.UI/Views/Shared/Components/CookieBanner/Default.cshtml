@@ -1,0 +1,60 @@
+@using FrontendSchemeRegistration.Application.Constants
+
+@model FrontendSchemeRegistration.UI.ViewModels.Shared.CookieBannerModel
+
+@{
+    var returnUrlQuery = $"{Context.Request.PathBase.Value}{Context.Request.Path.Value}{Context.Request.QueryString}";
+}
+
+@if (Model.ShowBanner)
+{
+    <form method="POST" asp-controller="Cookies" asp-action="UpdateAcceptance" asp-route-returnUrl="@returnUrlQuery">
+        <div class="govuk-cookie-banner " data-nosnippet role="region" aria-label="@Localizer["CookieBanner.Title"]">
+            <div class="govuk-cookie-banner__message govuk-width-container">
+                <div class="govuk-grid-row">
+                    <div class="govuk-grid-column-two-thirds">
+                        <h2 class="govuk-cookie-banner__heading govuk-heading-m">@Localizer["CookieBanner.Title"]</h2>
+                        <div class="govuk-cookie-banner__content">
+                            <p class="govuk-body">@Localizer["CookieBanner.EssentialParagraph"]</p>
+                            <p class="govuk-body">@Localizer["CookieBanner.AnalyticalParagraph"]</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="govuk-button-group">
+                    <button value="@CookieAcceptance.Accept" type="submit" name="cookies" class="govuk-button" data-module="govuk-button">
+                        @Localizer["CookieBanner.AcceptAnalyticsCookies"]
+                    </button>
+                    <button value="@CookieAcceptance.Reject" type="submit" name="cookies" class="govuk-button" data-module="govuk-button">
+                        @Localizer["CookieBanner.RejectAnalyticsCookies"]
+                    </button>
+                    <a class="govuk-link" asp-controller="Cookies" asp-action="Detail" 
+                       asp-route-returnUrl="@returnUrlQuery">@Localizer["CookieBanner.ViewCookies"]</a>
+                </div>
+            </div>
+        </div>
+    </form>
+}
+else if (Model.ShowAcknowledgement)
+{
+    <form  method="POST" asp-controller="Cookies" asp-action="AcknowledgeAcceptance" asp-route-returnUrl="@returnUrlQuery">
+        <div class="govuk-cookie-banner " data-nosnippet role="region" aria-label="@Localizer["CookieBanner.Title"]">
+            <div class="govuk-cookie-banner__message govuk-width-container">
+                <div class="govuk-grid-row">
+                    <div class="govuk-grid-column-two-thirds">
+                        <div class="govuk-cookie-banner__content">
+                            <p class="govuk-body">@Localizer[ Model.AcceptAnalytics ? "CookieBanner.Accepted" : "CookieBanner.Rejected"]
+                                <a class="govuk-link" asp-controller="Cookies" asp-action="Detail" 
+                                   asp-route-returnUrl="@returnUrlQuery">@Localizer["CookieBanner.ChangeYourCookieSettings"]</a> @Localizer["CookieBanner.AtAnyTime"]
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="govuk-button-group">
+                    <button type="submit" class="govuk-button" data-module="govuk-button">
+                        @Localizer["CookieBanner.HideCookieMessage"]
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+}

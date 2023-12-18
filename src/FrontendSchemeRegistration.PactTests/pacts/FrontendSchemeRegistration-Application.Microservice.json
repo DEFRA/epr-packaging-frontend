@@ -1,0 +1,132 @@
+{
+  "consumer": {
+    "name": "FrontendSchemeRegistration"
+  },
+  "interactions": [
+    {
+      "description": "A GET request to retrieve the application",
+      "providerStates": [
+        {
+          "name": "There is an application with customer organisation id 'fe017423-e325-4543-9f44-a9d6e975bd44'"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Accept": "application/json"
+        },
+        "method": "GET",
+        "path": "/api/v1/applications/fe017423-e325-4543-9f44-a9d6e975bd44"
+      },
+      "response": {
+        "body": {
+          "customerOrganisationId": "fe017423-e325-4543-9f44-a9d6e975bd44",
+          "users": [
+            {
+              "customerId": "dea627eb-214b-4fd0-be8e-599116e30b47",
+              "privacyPolicyAccepted": true
+            }
+          ]
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "matchingRules": {
+          "body": {
+            "$.customerOrganisationId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+                }
+              ]
+            },
+            "$.users[0].customerId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+                }
+              ]
+            },
+            "$.users[0].privacyPolicyAccepted": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          },
+          "header": {}
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "A PATCH request to update the application",
+      "providerStates": [
+        {
+          "name": "There is an application with customer organisation id 'fe017423-e325-4543-9f44-a9d6e975bd44'"
+        }
+      ],
+      "request": {
+        "body": [
+          {
+            "op": "replace",
+            "path": "/users/0/privacyPolicyAccepted",
+            "value": true
+          }
+        ],
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "method": "PATCH",
+        "path": "/api/v1/applications/fe017423-e325-4543-9f44-a9d6e975bd44"
+      },
+      "response": {
+        "status": 204
+      }
+    },
+    {
+      "description": "A POST request to create the application",
+      "providerStates": [
+        {
+          "name": "There is not an application with customer organisation id 'ecc1940f-9c61-4656-8fc1-46699452b772'",
+          "params": {
+            "customerOrganisationId": "dea627eb-214b-4fd0-be8e-599116e30b47"
+          }
+        }
+      ],
+      "request": {
+        "body": {
+          "CustomerId": "00000000-0000-0000-0000-000000000000",
+          "CustomerOrganisationId": "ecc1940f-9c61-4656-8fc1-46699452b772",
+          "Id": "00000000-0000-0000-0000-000000000000",
+          "Users": []
+        },
+        "headers": {
+          "Content-Type": "application/json; charset=utf-8"
+        },
+        "method": "POST",
+        "path": "/api/v1/applications"
+      },
+      "response": {
+        "status": 201
+      }
+    }
+  ],
+  "metadata": {
+    "pactRust": {
+      "ffi": "0.4.0",
+      "models": "1.0.4"
+    },
+    "pactSpecification": {
+      "version": "3.0.0"
+    }
+  },
+  "provider": {
+    "name": "Application.Microservice"
+  }
+}

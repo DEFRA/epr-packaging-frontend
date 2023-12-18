@@ -1,0 +1,174 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="ErrorIssue" xml:space="preserve">
+        <value>Error</value>
+    </data>
+    <data name="WarningIssue" xml:space="preserve">
+        <value>Warning</value>
+    </data>
+    <data name="01" xml:space="preserve">
+        <value>Organisation ID must be a 6 digit number - for example, 100123</value>
+    </data>
+    <data name="02" xml:space="preserve">
+        <value>When packaging activity is entered, it must be one of the codes SO, PF, IM, SE, HL or OM</value>
+    </data>
+    <data name="03" xml:space="preserve">
+        <value>Packaging type must be one of the codes HH, NH, CW, OW, PB, RU, HDC, NDC or SP</value>
+    </data>
+    <data name="04" xml:space="preserve">
+        <value>When packaging class is entered, it must be one of the codes P1, P2, P3, P4, P5, P6, O1, O2 or B1</value>
+    </data>
+    <data name="05" xml:space="preserve">
+        <value>Packaging material must be one of the codes AL, FC, GL, PC, PL, ST, WD or OT</value>
+    </data>
+    <data name="07" xml:space="preserve">
+        <value>When packaging type is self-managed waste (CW or OW), from country must be one of England (EN), Northern Ireland (NI), Scotland (SC) or Wales (WS)</value>
+    </data>
+    <data name="08" xml:space="preserve">
+        <value>When packaging type is self-managed waste (CW or OW), and you send it to another country, the to country must be one of England (EN), Northern Ireland (NI), Scotland (SC) or Wales (WS)</value>
+    </data>
+    <data name="09" xml:space="preserve">
+        <value>Packaging material weight must be a whole number in kilograms. For example, 50000. Do not include the words 'kilograms' or 'kgs'.</value>
+    </data>
+    <data name="10" xml:space="preserve">
+        <value>Packaging material units must be a whole number</value>
+    </data>
+    <data name="13" xml:space="preserve">
+        <value>Cannot be going from and to the same country in the UK</value>
+    </data>
+    <data name="14" xml:space="preserve">
+        <value>To country is not needed for this packaging type</value>
+    </data>
+    <data name="15" xml:space="preserve">
+        <value>From country is not needed for this packaging type</value>
+    </data>
+    <data name="22" xml:space="preserve">
+        <value>Invalid combination of organisation size and packaging activity and packaging type</value>
+    </data>
+    <data name="23" xml:space="preserve">
+        <value>For large organisations (L), when packaging activity is supplied through an online marketplace that you own (OM), packaging type must be household packaging (HH) or non-household packaging (NH)</value>
+    </data>
+    <data name="25" xml:space="preserve">
+        <value>When packaging activity is supplied through an online marketplace that you own (OM), and packaging type is household packaging (HH), packaging class must be online marketplace total (P6)</value>
+    </data>
+    <data name="26" xml:space="preserve">
+        <value>When packaging activity is supplied through an online marketplace that you own (OM), and packaging type is non-household packaging (NH), packaging class must be online marketplace total (P6)</value>
+    </data>
+    <data name="27" xml:space="preserve">
+        <value>Invalid combination of packaging activity and packaging type and packaging class</value>
+    </data>
+    <data name="28" xml:space="preserve">
+        <value>When packaging type is non-household waste (NH), packaging class must be one of the codes P1, P2, P3 or P4</value>
+    </data>
+    <data name="29" xml:space="preserve">
+        <value>Packaging type is self-managed consumer waste (CW) so packaging class can only be self-managed consumer waste - all (O1)</value>
+    </data>
+    <data name="30" xml:space="preserve">
+        <value>Packaging type is self-managed organisation waste (OW) so packaging class can only be organisation waste - origin (O2)</value>
+    </data>
+    <data name="31" xml:space="preserve">
+        <value>Packaging type is household packaging (HH) so packaging class can only be one of primary packaging (P1), shipment packaging (P3) or online marketplace total (P6)</value>
+    </data>
+    <data name="33" xml:space="preserve">
+        <value>Packaging type is commonly ends up in public bins (PB) so packaging class can only be public bin (B1)</value>
+    </data>
+    <data name="34" xml:space="preserve">
+        <value>Packaging type is household drinks containers (HDC) or non-household drinks containers (NDC) so do not enter a packaging class</value>
+    </data>
+    <data name="35" xml:space="preserve">
+        <value>Packaging type is reusable packaging (RU) so packaging class can only be primary packaging (P1) or non-primary reusable packaging (P5)</value>
+    </data>
+    <data name="36" xml:space="preserve">
+        <value>Invalid combination of packaging class and packaging type</value>
+    </data>
+    <data name="37" xml:space="preserve">
+        <value>Packaging material for household drinks containers (HDC) and non-household drinks containers (NDC) must be one of aluminium (AL), glass (GL), plastic (PL) or steel (ST)</value>
+    </data>
+    <data name="38" xml:space="preserve">
+        <value>Packaging material units not needed for this packaging type</value>
+    </data>
+    <data name="39" xml:space="preserve">
+        <value>Packaging type is household drinks containers (HDC) or non-household drinks containers (NDC) so packaging material quantity must be a whole number</value>
+    </data>
+    <data name="40" xml:space="preserve">
+        <value>Duplicate information submitted</value>
+    </data>
+    <data name="41" xml:space="preserve">
+        <value>Organisation size must be L. Currently, only large organisations can report packaging data.</value>
+    </data>
+    <data name="99" xml:space="preserve">
+        <value>Sorry, an unexpected issue occurred (code 99).  Please try your upload again later.</value>
+    </data>
+    <data name="80" xml:space="preserve">
+        <value>Column names in the selected file might be missing, incorrect or in the wrong order. Follow the guidance on how to structure your data submission.</value>
+    </data>
+    <data name="89" xml:space="preserve">
+        <value>Sorry, an unexpected issue occurred (code 89).  Please try your upload again later.</value>
+    </data>
+    <data name="81" xml:space="preserve">
+        <value>The selected file contains a virus</value>
+    </data>
+    <data name="45" xml:space="preserve">
+        <value>When packaging material is other (OT), you must enter the name of the material in packaging material subtype. It must not include numbers or commas.</value>
+    </data>
+    <data name="47" xml:space="preserve">
+        <value>Packaging material subtype not needed for this packaging material</value>
+    </data>
+    <data name="42" xml:space="preserve">
+        <value>When packaging activity is entered, packaging type cannot be self-managed waste (CW and OW)</value>
+    </data>
+    <data name="43" xml:space="preserve">
+        <value>When packaging activity is not entered, packaging type can only be self-managed waste (CW and OW)</value>
+    </data>
+    <data name="44" xml:space="preserve">
+        <value>Enter the time period for submission</value>
+    </data>
+    <data name="46" xml:space="preserve">
+        <value>Subsidiary ID must only include letters a to z, and numbers. It must be 32 characters or less.</value>
+    </data>
+    <data name="82" xml:space="preserve">
+        <value>The selected file is empty</value>
+    </data>
+    <data name="54" xml:space="preserve">
+        <value>You're reporting packaging data for January to June 2023. Submission period must be 2023-P1 or 2023-P2.</value>
+    </data>
+    <data name="55" xml:space="preserve">
+        <value>You're reporting packaging data for July to December 2023. Submission period must be 2023-P3.</value>
+    </data>
+    <data name="83" xml:space="preserve">
+        <value>Your file was not uploaded. This is because the column headings are not in the right place.&lt;br&gt;&lt;br&gt;
+Read the guidance about how to create your organisation details file. Once you’ve fixed the problem, upload the file again.</value>
+    </data>
+    <data name="49" xml:space="preserve">
+        <value>When packaging type is self-managed waste (CW and OW), you must enter the from country</value>
+    </data>
+    <data name="50" xml:space="preserve">
+        <value>Submission period must be the same for all of this organisation's packaging data</value>
+    </data>
+    <data name="51" xml:space="preserve">
+        <value>Packaging material subtype cannot be plastic, HDPE or PET</value>
+    </data>
+    <data name="53" xml:space="preserve">
+        <value>When organisation size is large (L), packaging type cannot be small organisation packaging - all (SP)</value>
+    </data>
+    <data name="48" xml:space="preserve">
+        <value>Total weight of a single packaging material transferred to any country must not be more than the total collected. For example, you cannot transfer more plastic than you collect. Check the weight of this packaging material transferred to another country for all rows for this organisation.</value>
+    </data>
+    <data name="56" xml:space="preserve">
+        <value>Organisation ID must be the same as the identification number assigned to your organisation when your account was created</value>
+    </data>
+    <data name="59" xml:space="preserve">
+        <value>Packaging material weight is less than 100. Check all packaging weights are in kg and not tonnes.</value>
+    </data>
+</root>

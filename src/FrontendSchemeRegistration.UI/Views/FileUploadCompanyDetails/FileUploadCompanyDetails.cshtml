@@ -1,0 +1,69 @@
+ @model FileUploadCompanyDetailsViewModel;
+
+@{
+    ViewData["Title"] = Localizer["upload_organisation_details"];
+}
+
+@await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @await Html.PartialAsync("Partials/Govuk/_ErrorSummary", ViewData.ModelState)
+            }
+
+            <h1 class="govuk-heading-l">
+                @Localizer[Model.IsComplianceScheme ? "upload_organisation_details" : "upload_organisation_details_to_your_account"]
+            </h1>
+            @if (Model.IsComplianceScheme)
+            {
+                <p class="govuk-body">@Localizer["when_you_submit_an_organisation_s_packaging_data_you_also_need_to"]</p>
+
+                <p class="govuk-body">@Localizer["organisation_details_include_things_like"]</p>
+                <ul class="govuk-list govuk-list--bullet">
+                    <li>@Localizer["address"]</li>
+                    <li>@Localizer["turnover"]</li>
+                    <li>@Localizer["packaging_activities"]</li>
+                </ul>
+
+                <p class="govuk-body">@Localizer["you_may_also_need_to_report_an_organisation_s"]</p>
+                <ul class="govuk-list govuk-list--bullet">
+                    <li>@Localizer["brand_activities_if_they_supply_goods_to_the_uk_market_in_primary"]</li>
+                    <li>@Localizer["partners_if_they_re_registered_as_a_partnership_in_companies_house"]</li>
+                </ul>
+
+                <p class="govuk-body">@Localizer["once_you_submit_these_details_the_organisation_is_officially_registered"]</p>
+            }
+            else
+            {
+                <p class="govuk-body">@Localizer["upload_the_organisation_details_in_a_csv_file"]</p>
+                <p class="govuk-body">@Localizer["based_on_whats_in_the_organisation"]</p>
+            }
+
+            <h2 class="govuk-heading-m">@Localizer[Model.IsComplianceScheme ? "upload_organisation_details" : "upload_file"]</h2>
+            <p class="govuk-body">@SharedLocalizer["the_file_may_take_a_few_minutes_to_upload"]</p>
+            <p class="govuk-body">@SharedLocalizer["do_not_close_the_window_while_the_file_is_uploading"]</p>
+
+            @using (Html.BeginForm(FormMethod.Post, new
+            {
+                enctype = "multipart/form-data"
+            }))
+            {
+                <div class="govuk-form-group @(ViewData.ModelState.IsValid ? string.Empty : "govuk-form-group--error")">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        @await Html.PartialAsync("Partials/Govuk/_Error", ViewData.ModelState.GetModelStateEntry("file"))
+                    }
+
+                    <label class="govuk-label" for="file">@SharedLocalizer["upload_a_file"]</label>
+                    <input class="govuk-file-upload" id="file" name="file" type="file">
+                </div>
+
+                <button class="govuk-button" data-module="govuk-button" type="submit">@Localizer["upload_file"]</button>
+            }
+        </div>
+    </div>
+</main>

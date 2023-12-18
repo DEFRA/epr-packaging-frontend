@@ -1,0 +1,79 @@
+﻿@model ReasonForRemovalViewModel
+@{
+    ViewData["Title"] = @Localizer["ReasonForRemoval.PageTitle"];
+    var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer);
+}
+
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                @if (Model.IsApprovedUser)
+                {
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        @await Html.PartialAsync("Partials/Govuk/_ErrorsViewModelSummary", errorsViewModel)
+                    }
+
+                    @using (Html.BeginForm(FormMethod.Post))
+                    {
+                        <div class="govuk-form-group@(!ViewData.ModelState.IsValid ? " govuk-form-group--error" : "")">
+                            <fieldset class="govuk-fieldset">
+                                <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                                    <h1 class="govuk-heading-l govuk-!-margin-bottom-3">
+                                        @Localizer["ReasonForRemoval.WhyDoYouWantToRemove", Model.OrganisationName]
+                                    </h1>
+                                </legend>
+
+                                <div class="govuk-hint">
+                                    @Localizer["ReasonForRemoval.SelectOneOption"]
+                                </div>
+
+                                @if (!ViewData.ModelState.IsValid)
+                                {
+                                    <span class="govuk-error-message">@Localizer["ReasonForRemoval.Error"]</span>
+                                }
+                                <div class="govuk-radios" data-module="govuk-radios">
+                                    @for (int i = 0; i <= Model.ReasonForRemoval.Count - 1; i++)
+                                    {
+                                        var reasonCode = Model.ReasonForRemoval.ElementAt(i).Code;
+                                        var keyValue = reasonCode;
+
+                                        @if (i == 0){keyValue = "SelectedReasonForRemoval";}
+
+                                        @if (i == Model.ReasonForRemoval.Count - 1)
+                                        {
+                                            <div class="govuk-radios__divider">@SharedLocalizer["or"]</div>
+                                        }
+                                        var exampleResource = @Localizer[@reasonCode + ".Example"];
+                                        <div class="govuk-radios__item">
+                                            <input class="govuk-radios__input" id=@keyValue
+                                                   name="SelectedReasonForRemoval"
+                                                   type="radio"
+                                                   @(Model.SelectedReasonForRemoval == reasonCode ? @"checked=""checked=""" : "")
+                                                   value=@reasonCode>
+                                            <label class="govuk-label govuk-radios__label" for=@keyValue>
+                                                @Localizer[@reasonCode].Value
+                                            </label>
+                                            @if (!exampleResource.IsResourceNotFound)
+                                            {
+                                                <div id="example-hint-@reasonCode" class="govuk-hint govuk-radios__hint">
+                                                    @exampleResource.Value
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            </fieldset>
+                        </div>
+
+                        <button class="govuk-button" data-module="govuk-button">
+                            @SharedLocalizer["continue"]
+                        </button>
+
+                    }
+                }
+            </div>
+        </div>
+    </main>
+</div>

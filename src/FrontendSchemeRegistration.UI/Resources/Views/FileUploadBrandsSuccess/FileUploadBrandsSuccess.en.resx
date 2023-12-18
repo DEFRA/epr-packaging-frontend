@@ -1,0 +1,38 @@
+﻿<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="brand_information_uploaded" xml:space="preserve">
+        <value>Brand information uploaded</value>
+    </data>
+    <data name="success" xml:space="preserve">
+        <value>Success</value>
+    </data>
+    <data name="what_happens_next" xml:space="preserve">
+        <value>What happens next</value>
+    </data>
+    <data name="you_also_need_to_give_information_about_partners" xml:space="preserve">
+        <value>You need to upload partner information.</value>
+    </data>
+    <data name="upload_partner_information" xml:space="preserve">
+        <value>Continue to partner information</value>
+    </data>
+    <data name="you_can_now_see_list_files_youve_uploaded_change_if_need" xml:space="preserve">
+        <value>You can now see a list of the files you’ve uploaded, and change them if you need to.</value>
+    </data>
+    <data name="continue" xml:space="preserve">
+        <value>Continue</value>
+    </data>
+    <data name="you_do_not_need_to_report_information" xml:space="preserve">
+        <value>Based on what is in the file, you do not need to report information about partners</value>
+    </data>
+</root>

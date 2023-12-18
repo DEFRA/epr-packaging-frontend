@@ -1,0 +1,27 @@
+﻿@using FrontendSchemeRegistration.UI.ViewModels.Shared
+
+@model LanguageSwitcherModel
+
+@if (Model.SupportedCultures!.Count > 1 && Model.ShowLanguageSwitcher)
+{
+    <ul class="language-toggle">
+        @foreach (var culture in Model.SupportedCultures!)
+        {
+            <li class="language-toggle__option">
+                @if (Model.CurrentCulture!.Name == culture.Name)
+                {
+                    @SharedLocalizer[culture.NativeName]
+                }
+                else
+                {
+                    <a asp-controller="Culture" asp-action="UpdateCulture" asp-route-culture="@culture.Name" asp-route-returnUrl="@Model.ReturnUrl" class="govuk-link govuk-link--no-visited-state">@SharedLocalizer[culture.NativeName].Value</a>
+                }
+            </li>
+        }
+    </ul>
+    <div class="language-toggle govuk-!-padding-bottom-8"></div>
+}
+else
+{
+    <div class="language-toggle govuk-!-padding-bottom-8"></div>
+}

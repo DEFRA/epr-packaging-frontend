@@ -1,0 +1,41 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="authorised_question" xml:space="preserve">
+        <value>Sut ydw i’n gwybod os ydw i wedi fy awdurdodi?</value>
+    </data>
+    <data name="authorised_reasons" xml:space="preserve">
+        <value>Rydych chi wedi’ch awdurdodi i weithredu ar ran eich sefydliad:</value>
+    </data>
+    <data name="authorised_reason_1" xml:space="preserve">
+        <value>os ydych yn unig fasnachwr, partner, cyfarwyddwr cwmni neu ysgrifennydd cwmni</value>
+    </data>
+    <data name="authorised_reason_2" xml:space="preserve">
+        <value>os oes cyfarwyddwr neu ysgrifennydd cwmni wedi rhoi caniatâd ichi</value>
+    </data>
+    <data name="declaration_warning" xml:space="preserve">
+        <value>Gallech gael eich erlyn neu orfod talu cosb ariannol os nad oes gennych awdurdod i weithredu ar ran eich sefydliad.</value>
+    </data>
+    <data name="declaration_statement" xml:space="preserve">
+        <value>Dwi’n cadarnhau fy mod i, {0} wedi fy awdurdodi i weithredu ar ran fy sefydliad</value>
+    </data>
+    <data name="declaration" xml:space="preserve">
+        <value>Datganiad</value>
+    </data>
+    <data name="authorised_reason_3" xml:space="preserve">
+        <value>os yw rheoli rhwymedigaethau EPR eich sefydliad yn rhan o’ch swydd</value>
+    </data>
+    <data name="text_assistive.warning" xml:space="preserve">
+        <value>WWarning</value>
+    </data>
+</root>

@@ -1,0 +1,32 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="ConfirmRemoval.AreYouSure" xml:space="preserve">
+        <value>Ydych chi’n siŵr eich bod chi eisiau tynnu</value>
+    </data>
+    <data name="ConfirmRemoval.FromAccount" xml:space="preserve">
+        <value>o’ch cyfrif</value>
+    </data>
+    <data name="ConfirmRemoval.Yes" xml:space="preserve">
+        <value>Ydw, tynnwch yr aelod yma</value>
+    </data>
+    <data name="ConfirmRemoval.No" xml:space="preserve">
+        <value>Nac ydw, canslwch</value>
+    </data>
+    <data name="ConfirmRemoval.PageTitle" xml:space="preserve">
+        <value>Cadarnhau tynnu’r aelod</value>
+    </data>
+    <data name="ConfirmRemoval.Error" xml:space="preserve">
+        <value>Dewiswch Ydw os hoffech chi dynnu’r aelod yma o’ch cyfrif</value>
+    </data>
+</root>

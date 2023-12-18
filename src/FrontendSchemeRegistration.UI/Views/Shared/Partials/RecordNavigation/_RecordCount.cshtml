@@ -1,0 +1,16 @@
+﻿ @model PagingDetail
+@if (Model.TotalItems > 0)
+{
+    <p class="govuk-body">
+        @if (Model.PageCount > 1)
+        {
+            @Localizer["RecordCount.Showing"]
+            <span class="govuk-!-font-weight-bold">@Model.FromItem</span>
+            @Localizer["RecordCount.To"]
+            <span class="govuk-!-font-weight-bold">@Model.ToItem</span>
+            @Localizer["RecordCount.Of"]
+        }
+        <span class="govuk-!-font-weight-bold">@Model.TotalItems</span>
+        @Localizer[Model.TotalItems == 1 ? "RecordCount.Result" : "RecordCount.Results"]
+    </p>
+}

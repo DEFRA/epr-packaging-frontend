@@ -1,0 +1,27 @@
+.govuk-tabs-custom {
+  .govuk-tabs__list-item--selected {
+    border-top: 4px solid govuk-colour('blue')
+  }
+  
+  .govuk-tabs__tab {
+    cursor: pointer;
+    font-size: inherit;
+    background-color: transparent;
+    border: 0;
+
+    &:focus {
+      box-shadow: 0 -2px govuk-colour("yellow"), 0 4px govuk-colour("black");
+      background-color: govuk-colour("yellow");
+    }
+
+    &:hover {
+      text-decoration-thickness: max(3px, 0.1875rem, 0.12em);
+    }
+  }
+  
+  // fix for buttons in tabs showing white text on ios
+  .govuk-tabs__tab,button[type="submit"] {
+    -webkit-appearance: none;
+    color: govuk-colour("black");
+  }
+}

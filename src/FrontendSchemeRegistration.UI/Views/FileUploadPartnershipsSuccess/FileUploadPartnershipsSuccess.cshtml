@@ -1,0 +1,42 @@
+@model FileUploadSuccessViewModel
+
+@{
+    ViewData["Title"] = Localizer["page_title"];
+}
+
+@await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+                <div class="govuk-notification-banner__header">
+                    <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">@Localizer["success"]</h2>
+                </div>
+                <div class="govuk-notification-banner__content">
+                    <h3 class="govuk-notification-banner__heading">
+                        @Localizer["file_uploaded"]
+                    </h3>
+                    <p class="govuk-body break-word">
+                        @Model.FileName
+                    </p>
+                </div>
+            </div>
+
+            <h3 class="govuk-heading-m">@Localizer["what_happens_next"]</h3>
+
+            <p class="govuk-body">@Localizer["youve_uploaded_all"]</p>
+            <p class="govuk-body">@Localizer["you_can_now"]</p>
+
+            @Html.ActionLink(
+                Localizer["go_to_review"].Value,
+                "Get",
+                "ReviewCompanyDetails",
+                new { submissionId = Model.SubmissionId },
+                new
+                {
+                    @class = "govuk-button"
+                })
+        </div>
+    </div>
+</main>

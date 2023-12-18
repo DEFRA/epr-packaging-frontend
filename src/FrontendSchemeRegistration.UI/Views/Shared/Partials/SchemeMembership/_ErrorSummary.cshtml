@@ -1,0 +1,21 @@
+@model ErrorsViewModel
+
+@if (Model.Errors.Count > 0)
+{
+    <div aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary">
+        <div class="govuk-error-summary__body">
+            <ul class="govuk-list govuk-error-summary__list">
+                @foreach (var error in Model.Errors)
+                {
+                    var textInsert = Model.TextInserts?.FirstOrDefault(t => t.Key == error.Key).Value;
+                    <li>
+                        @for (var i = 0; i < error.Value.Count; i++)
+                        {
+                            <p class="govuk-error-message">@Html.Raw(textInsert == null ? error.Value[i].Message : string.Format(error.Value[i].Message, textInsert))</p>   
+                        }
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+}

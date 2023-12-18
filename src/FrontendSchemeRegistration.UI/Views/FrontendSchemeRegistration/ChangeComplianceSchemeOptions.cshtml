@@ -1,0 +1,81 @@
+@using FrontendSchemeRegistration.UI.Enums
+
+@model ChangeComplianceSchemeOptionsViewModel
+
+@{
+    ViewData["Title"] = Localizer["what_would_you_like_to_do"];
+    Layout = "_Layout";
+}
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @await Html.PartialAsync("Partials/Govuk/_ErrorSummary", ViewData.ModelState)
+            }
+            @using (Html.BeginForm("ManageComplianceScheme", "FrontendSchemeRegistration", FormMethod.Post))
+            {
+                var selectedValue = Model.SavedChangeComplianceSchemeOptions.HasValue 
+                    ? Model.SavedChangeComplianceSchemeOptions.Value.ToString() 
+                    : string.Empty;
+                
+                <div class="govuk-form-group @(ViewData.ModelState.IsValid ? string.Empty : "govuk-form-group--error")">
+                    <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                            <h1 class="govuk-fieldset__heading govuk-label--l">
+                                @Localizer["what_would_you_like_to_do"]
+                            </h1>
+                        </legend>
+                        
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <span class="govuk-error-message">@Localizer["error_message"]</span>
+                        }
+                        
+                        <div class="govuk-radios" data-module="govuk-radios">
+                            <div class="govuk-radios__item">
+                                <input id="changeCompliance"
+                                       type="radio"
+                                       name="ChangeComplianceSchemeOptions"
+                                       value="@ChangeComplianceSchemeOptions.ChooseNewComplianceScheme"
+                                       checked="@selectedValue.Equals(ChangeComplianceSchemeOptions.ChooseNewComplianceScheme.ToString())"
+                                       class="govuk-radios__input"
+                                       aria-labelledby="changeCompliance-label"
+                                       gov-first-option="true"
+                                       gov-for="ChangeComplianceSchemeOptions"
+                                       gov-value="@ChangeComplianceSchemeOptions.ChooseNewComplianceScheme"/>
+                                <label id="changeCompliance-label" class="govuk-label govuk-radios__label"
+                                       for="changeCompliance"> @Localizer["choose_new_compliance_scheme"]</label>
+                            </div>
+                            
+                            <div class="govuk-radios__item">
+                                <input id="removeCompliance"
+                                       type="radio"
+                                       name="ChangeComplianceSchemeOptions"
+                                       value="@ChangeComplianceSchemeOptions.StopComplianceScheme"
+                                       checked="@selectedValue.Equals(ChangeComplianceSchemeOptions.StopComplianceScheme.ToString())"
+                                       class="govuk-radios__input"
+                                       aria-labelledby="removeCompliance-label"
+                                       gov-first-option="false"
+                                       gov-for="ChangeComplianceSchemeOptions"
+                                       gov-value="@ChangeComplianceSchemeOptions.StopComplianceScheme"/>
+                                <label id="removeCompliance-label" class="govuk-label govuk-radios__label"
+                                       for="removeCompliance"> @Localizer["stop_using_compliance_scheme"]
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                
+                <br/>
+                
+                <div class="govuk-grid-column-two-thirds">
+                    <button class="govuk-button" data-module="govuk-button">
+                        @SharedLocalizer["continue"]
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</main> 

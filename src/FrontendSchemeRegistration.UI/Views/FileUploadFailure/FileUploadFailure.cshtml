@@ -1,0 +1,71 @@
+@model FileUploadFailureViewModel
+
+@{
+    ViewData["Title"] = Localizer["pageTitle"];
+}
+
+@await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @await Html.PartialAsync("Partials/Govuk/_ErrorSummary", ViewData.ModelState)
+            }
+
+            <div class="govuk-notification-banner govuk-notification-banner--error" role="alert" aria-labelledby="govuk-notification-banner-title"
+                 data-module="govuk-notification-banner" data-testid="pom-upload-error-banner">
+                <div class="govuk-notification-banner__header">
+                    <h1 class="govuk-notification-banner__title" id="govuk-notification-banner-title" data-testid="pom-upload-banner-title">@Localizer["error"]</h1>
+                </div>
+                <div class="govuk-notification-banner__content">
+                    <h3 class="govuk-notification-banner__heading" data-testid="pom-upload-banner-text">
+                        @Localizer["file_not_uploaded"]
+                    </h3>
+                    <p class="govuk-body break-word" data-testid="pom-upload-banner-filename">
+                        @Model.FileName
+                    </p>
+                </div>
+            </div>
+
+            <p class="govuk-body">@Localizer["your_data_file_has_not_been_uploaded"]</p>
+            <h3 class="govuk-notification-banner__heading" data-testid="pom-upload-banner-text">
+                @Localizer["next_steps"]
+            </h3>
+
+            <p class="govuk-body">
+                1. @Html.ActionLink(
+                         Localizer["download_error_report"].Value,
+                         "Get",
+                         "FileUploadErrorReport",
+                         new
+                         {
+                             submissionId = Model.SubmissionId
+                         },
+                         new
+                         {
+                             @class = "govuk-link govuk-!-font-size-19 govuk-!-margin-bottom-4 govuk-link govuk-link--no-visited-state"
+                         })
+            </p>
+            <p class="govuk-body">2. @Localizer["read_the_report_help_you_understand"]</p>
+            <p class="govuk-body">3. @Localizer["when_youve_fixed_the_errors_in_your_file"]</p>
+
+            <h3 class="govuk-notification-banner__heading" data-testid="pom-upload-banner-text">
+                @Localizer["how_the_error_report_works"]
+            </h3>
+            <p class="govuk-body">@Localizer["your_error_report_only_show_first_x_errors", Model.MaxErrorsToProcess]</p>
+            <p class="govuk-body">@Localizer["you_should_correct_these_errors"]</p>
+
+            @Html.ActionLink(
+                SharedLocalizer["go_to_account_home_page"],
+                "Get",
+                "FileUploadSubLanding",
+                null,
+                new
+                {
+                    @class = "govuk-button"
+                })
+        </div>
+    </div>
+</main>

@@ -1,0 +1,115 @@
+@model HomePageSelfManagedViewModel
+
+@{
+    var title = Localizer["account_home", Model.OrganisationName];
+    ViewData["Title"] = title;
+}
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+
+    @if (Model.Notification.HasNominatedNotification)
+    {
+        @await Html.PartialAsync("Partials/Notifications/_NominatedAsDelegatedPerson", Model.Notification.NominatedEnrolmentId)
+    }
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-xl govuk-!-margin-bottom-6 break-word">@title</h1>
+        </div>
+    </div>
+
+    @if (Model.Notification.HasPendingNotification)
+    {
+        @await Html.PartialAsync("Partials/Notifications/_WaitingForApproval")
+    }
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <div class="govuk-inset-text">
+                <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">@Localizer["organisation_id_x", Model.OrganisationNumber]</p>
+                <p class="govuk-body govuk-!-margin-bottom-1">@Localizer["your_account_is_set_up_so_you_can_submit_your_own_data"]</p>
+                @if (Model.CanSelectComplianceScheme)
+                {
+                    @using (Html.BeginForm(FormMethod.Post, new
+                    {
+                        @class = "govuk-!-margin-top-1"
+                    }))
+                    {
+                        <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left">
+                            @Localizer["add_a_compliance_scheme_to_your_account"]
+                        </button>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-half">
+            <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
+                <div class="govuk-card-body">
+                    <h2 class="govuk-heading-m">
+                        @Html.ActionLink(
+                            Localizer["report_organisation_details"].Value,
+                            "Get",
+                            "FileUploadCompanyDetailsSubLanding",
+                            null,
+                            new
+                            {
+                                @class = "govuk-link govuk-link--no-visited-state"
+                            })
+                    </h2>
+                    <p class="govuk-body">@Localizer["in_x_you_must_report_data_for", GlobalVariables.Value.SchemeYear]</p>
+                    <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-0">
+                        @foreach (var period in Model.SubmissionPeriods)
+                        {
+                            <li>@SharedLocalizer[period.DataPeriod]</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="govuk-grid-column-one-half">
+            <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
+                <div class="govuk-card-body">
+                    <h2 class="govuk-heading-m">
+                        @Html.ActionLink(
+                            Localizer["report_packaging_data"].Value,
+                            "Get",
+                            "FileUploadSubLanding",
+                            null,
+                            new
+                            {
+                                @class = "govuk-link govuk-link--no-visited-state"
+                            })
+                    </h2>
+                    <p class="govuk-body">@Localizer["in_x_you_must_report_data_for", GlobalVariables.Value.SchemeYear]</p>
+                    <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-0">
+                        @foreach (var period in Model.SubmissionPeriods)
+                        {
+                            <li>@SharedLocalizer[period.DataPeriod]</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-half">
+            <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
+                <div class="govuk-card-body">
+                    <h2 class="govuk-heading-m">@Localizer["waste_management_fee"]</h2>
+                    <p class="govuk-body govuk-!-margin-bottom-0">@Localizer["no_action_needed_at_the_moment"]</p>
+                </div>
+            </div>
+        </div>
+        <div class="govuk-grid-column-one-half">
+            <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
+                <div class="govuk-card-body">
+                    <h2 class="govuk-heading-m">@Localizer["packaging_recovery_notes"]</h2>
+                    <p class="govuk-body govuk-!-margin-bottom-0">@Localizer["no_action_needed_at_the_moment"]</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

@@ -1,0 +1,56 @@
+﻿@model RemovalTellUsMoreViewModel
+@{
+    ViewData["Title"] = @Localizer["RemovalTellUsMore.PageTitle"];
+    var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer, nameof(Model.TellUsMore));
+    const string errorClass = "govuk-input--error";
+}
+
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    @await Html.PartialAsync("Partials/Govuk/_ErrorsViewModelSummary", errorsViewModel)
+                }
+                @using (Html.BeginForm(FormMethod.Post))
+                {
+                    <div class="govuk-character-count" data-module="govuk-character-count" data-maxlength="200">
+
+                        <div class="govuk-form-group @(ViewData.ModelState.IsValid ? string.Empty : "govuk-form-group--error")">
+                            <h1 class="govuk-label-wrapper">
+                                <label class="govuk-label govuk-label--l" for="TellUsMore">
+                                    @Localizer["RemovalTellUsMore.TellUsMore"]
+                                </label>
+                            </h1>
+
+                            <div id="with-hint-hint" class="govuk-hint">
+                                @Localizer["RemovalTellUsMore.InfoToEnvRegulator"]
+                            </div>
+
+                            <div class="govuk-form-group@(errorsViewModel.HasErrorKey(nameof(Model.TellUsMore)) ? " govuk-form-group--error" : "")">
+                                @await Html.PartialAsync("Partials/Govuk/_FormItemError", errorsViewModel[nameof(Model.TellUsMore)])
+                            </div>                       
+
+                            <textarea class="govuk-textarea govuk-js-character-count @Html.Raw(errorsViewModel.HasErrorKey(nameof(Model.TellUsMore )) ? errorClass : " ")"
+                                      id="TellUsMore"
+                                      name="TellUsMore"
+                                      rows="5"
+                                      aria-describedby="TellUsMore-info TellUsMore-info">@Model.TellUsMore</textarea>
+                       
+                                <div id="TellUsMore-info" class="govuk-hint govuk-character-count__message">
+                                    @Localizer["RemovalTellUsMore.EnterUpto200Char"]
+                                </div>                           
+
+                        </div>
+                    </div>
+
+                    <button class="govuk-button" data-module="govuk-button">
+                        @SharedLocalizer["continue"]
+                    </button>
+                }
+            </div>
+        </div>
+    </main>
+</div>

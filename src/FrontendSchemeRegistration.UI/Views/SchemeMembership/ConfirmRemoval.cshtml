@@ -1,0 +1,66 @@
+﻿@model ConfirmRemovalViewModel
+@{
+    var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer, nameof(Model.SelectedConfirmRemoval));
+}
+@{
+    ViewData["Title"] = Localizer["ConfirmRemoval.PageTitle"];
+}
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @await Html.PartialAsync("Partials/Govuk/_ErrorsViewModelSummary", errorsViewModel)
+            }
+             @using (Html.BeginForm(FormMethod.Post))
+             {
+                 <div class="govuk-form-group@(!ViewData.ModelState.IsValid ? " govuk-form-group--error" : "")">
+                     <fieldset class="govuk-fieldset">
+                         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                             <h1 class="govuk-heading-l govuk-!-margin-bottom-0">
+                                 @Localizer["ConfirmRemoval.AreYouSure"] @Model.OrganisationName @Localizer["ConfirmRemoval.FromAccount"]?
+                             </h1>
+                         </legend>
+                     
+                      @if (!ViewData.ModelState.IsValid)
+                      {
+                          <span class="govuk-error-message">@Localizer["ConfirmRemoval.Error"]</span>
+                      }
+                     
+                     <div class="govuk-radios" data-module="govuk-radios">
+                         <div class="govuk-radios__item">
+                             <input class="govuk-radios__input"
+                                    type="radio"
+                                    gov-for="SelectedConfirmRemoval"
+                                    gov-value="@nameof(YesNoAnswer.Yes)"
+                                    gov-first-option="true">
+                             <label class="govuk-label govuk-radios__label"
+                                    gov-for="SelectedConfirmRemoval"
+                                    gov-value="@nameof(YesNoAnswer.Yes)"
+                                    gov-first-option="true">
+                                 @Localizer["ConfirmRemoval.Yes"]
+                             </label>
+                         </div>
+                         <div class="govuk-radios__item">
+                             <input class="govuk-radios__input" type="radio"
+                                    gov-for="SelectedConfirmRemoval"
+                                    gov-value="@nameof(YesNoAnswer.No)">
+                             <label class="govuk-label govuk-radios__label"
+                                    gov-for="SelectedConfirmRemoval"
+                                    gov-value="@nameof(YesNoAnswer.No)">
+                                 @Localizer["ConfirmRemoval.No"]
+                             </label>
+                         </div>
+                     </div>
+                     </fieldset>
+                 </div>
+                 
+                 <button class="govuk-button" data-module="govuk-button">
+                     @SharedLocalizer["confirm"]
+                 </button>
+             }
+            </div>
+    </div>
+</main>
+</div>

@@ -1,0 +1,21 @@
+@model FileUploadSubmissionErrorViewModel
+
+@{
+    var title = Localizer["there_is_a_problem_with_the_service"];
+    ViewData["Title"] = title;
+}
+
+@await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-l">@title</h1>
+            <p class="govuk-body">@Localizer["you_must_try_to_submit_your_file_again"]</p>
+            <a asp-controller="FileUploadCheckFileAndSubmit"
+               asp-action="Get"
+               asp-route-submissionId="@Model.SubmissionId"
+               class="govuk-button">@Localizer["submit_file"]</a>
+        </div>
+    </div>
+</main>

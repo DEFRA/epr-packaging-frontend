@@ -1,0 +1,174 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="ErrorIssue" xml:space="preserve">
+        <value>Gwall</value>
+    </data>
+    <data name="WarningIssue" xml:space="preserve">
+        <value>WWarning</value>
+    </data>
+    <data name="01" xml:space="preserve">
+        <value>Rhaid i ID y sefydliad fod yn rhif 6 digid - er enghraifft, 100123</value>
+    </data>
+    <data name="02" xml:space="preserve">
+        <value>Wrth roi gweithgaredd pecynnu, rhaid ichi roi un o'r codau SO, PF, IM, SE, HL neu OM</value>
+    </data>
+    <data name="03" xml:space="preserve">
+        <value>Rhaid i'r math o ddeunydd pecynwaith fod yn un o'r codau HH, NH, CW, OW, PB, RU, HDC, NDC neu SP</value>
+    </data>
+    <data name="04" xml:space="preserve">
+        <value>Wrth roi'r dosbarth pecynwaith, rhaid ichi roi un o'r codau P1, P2, P3, P4, P5, P6, O1, O2 neu B1</value>
+    </data>
+    <data name="05" xml:space="preserve">
+        <value>Rhaid i'r deunydd pecynwaith fod yn un o'r codau AL, FC, GL, PC, PL, ST, WD neu OT</value>
+    </data>
+    <data name="07" xml:space="preserve">
+        <value>Os gwastraff hunan-reoledig (CW neu OW) yw'r math o becynwaith, rhaid i'r wlad mae'n dod ohoni fod yn un o blith Lloegr (EN), Gogledd Iwerddon (NI), yr Alban (SC) neu Gymru (WS)</value>
+    </data>
+    <data name="08" xml:space="preserve">
+        <value>Os gwastraff hunan-reoledig (CW neu OW) yw'r math o becynwaith, a'ch bod chi'n ei anfon i wlad arall, rhaid i'r wlad mae'n cael ei anfon iddi fod yn un o blith Lloegr (EN), Gogledd Iwerddon (NI), yr Alban (SC) neu Gymru (WS)</value>
+    </data>
+    <data name="09" xml:space="preserve">
+        <value>Rhaid i bwysau'r deunydd pecynwaith fod yn rhif gyfan mewn cilogramau. Er enghraifft, 50,000. Peidiwch â chynnwys y geiriau 'cilogramau' neu 'kgs'.</value>
+    </data>
+    <data name="10" xml:space="preserve">
+        <value>Rhaid i unedau'r deunydd pecynwaith fod yn rhif cyfan</value>
+    </data>
+    <data name="13" xml:space="preserve">
+        <value>Ni all fod yn mynd o'r un wlad ac i'r un wlad yn y Deyrnas Unedig</value>
+    </data>
+    <data name="14" xml:space="preserve">
+        <value>Does dim angen y wlad mae'n cael ei anfon iddi ar gyfer y math yma o becynwaith</value>
+    </data>
+    <data name="15" xml:space="preserve">
+        <value>Does dim angen y wlad mae'n dod ohoni ar gyfer y math yma o becynwaith</value>
+    </data>
+    <data name="22" xml:space="preserve">
+        <value>Cyfuniad annilys o faint y sefydliad a gweithgaredd pecynwaith a math pecynwaith</value>
+    </data>
+    <data name="23" xml:space="preserve">
+        <value>Yn achos sefydliadau mawr (L), pan fo'r gweithgaredd pecynnu yn cael ei gyflenwi trwy farchnad ar-lein sy'n perthyn i chi (OM), rhaid i'r math o becynwaith fod yn becynwaith cartref (HH) neu becynwaith nad yw'n becynwaith cartref (NH)</value>
+    </data>
+    <data name="25" xml:space="preserve">
+        <value>Pan fo'r gweithgaredd pecynnu yn cael ei gyflenwi trwy farchnad ar-lein sy'n perthyn i chi (OM), a'r math o ddeunydd pecynwaith yw pecynwaith cartref (HH), rhaid i ddosbarth y pecynwaith fod yn gyfanswm y farchnad ar-lein (P6)</value>
+    </data>
+    <data name="26" xml:space="preserve">
+        <value>Pan fo'r gweithgaredd pecynnu yn cael ei gyflenwi trwy farchnad ar-lein sy'n perthyn i chi (OM), a'r math o ddeunydd pecynwaith yw pecynwaith nad yw'n becynwaith cartref (NH), rhaid i ddosbarth y pecynwaith fod yn gyfanswm y farchnad ar-lein (P6)</value>
+    </data>
+    <data name="27" xml:space="preserve">
+        <value>Cyfuniad annilys o weithgaredd pecynwaith a math pecynwaith a dosbarth pecynwaith</value>
+    </data>
+    <data name="28" xml:space="preserve">
+        <value>Os pecynwaith nad yw'n becynwaith cartref yw'r math o becynwaith, rhaid i ddosbarth y pecynwaith fod yn un o'r codau P1, P2, P3 neu P4</value>
+    </data>
+    <data name="29" xml:space="preserve">
+        <value>Gwastraff defnyddwyr hunan-reoledig (CW) yw'r math o becynwaith, felly gwastraff defnyddwyr hunan-reoledig - i gyd (O1) yw'r unig ddosbarth pecynwaith sy'n bosibl</value>
+    </data>
+    <data name="30" xml:space="preserve">
+        <value>Gwastraff sefydliad hunan-reoledig (OW) yw'r math o becynwaith, felly gwastraff sefydliad - tarddiad (O2) yw'r unig ddosbarth pecynwaith sy'n bosibl</value>
+    </data>
+    <data name="31" xml:space="preserve">
+        <value>Pecynwaith cartref (HH) yw'r math o becynwaith, felly un o blith pecynwaith sylfaenol (P1), pecynwaith cludo (P3) neu gyfanswm y farchnad ar-lein (P6) yw'r unig ddosbarth pecynwaith sy'n bosibl</value>
+    </data>
+    <data name="33" xml:space="preserve">
+        <value>Yn dod i ben yn gyffredin mewn biniau cyhoeddus (PB) yw'r math pecynwaith felly dim ond bin cyhoeddus (B1) all gael ei roi fel dosbarth pecynwaith.</value>
+    </data>
+    <data name="34" xml:space="preserve">
+        <value>Cynwysyddion diodydd cartref (HDC) neu gynwysyddion diodydd nad ydynt yn gynwysyddion diodydd cartref (NDC) yw'r math o becynwaith, felly peidiwch â rhoi dosbarth pecynwaith</value>
+    </data>
+    <data name="35" xml:space="preserve">
+        <value>Pecynwaith ailddefnyddiadwy (RU) yw'r math o becynwaith, felly pecynwaith sylfaenol (P1) neu becynwaith ailddefnyddiadwy nad yw'n becynwaith sylfaenol (P5) yw'r unig ddosbarth pecynwaith sy'n bosibl</value>
+    </data>
+    <data name="36" xml:space="preserve">
+        <value>Cyfuniad annilys o ddosbarth pecynwaith a math pecynwaith</value>
+    </data>
+    <data name="37" xml:space="preserve">
+        <value>Rhaid i'r deunydd pecynwaith ar gyfer cynwysyddion diodydd cartref (HDC) a chynwysyddion diodydd nad ydynt yn gynwysyddion diodydd cartref (NDC) fod yn un o blith alwminiwm (AL), gwydr (GL), plastig (PL) neu ddur (ST)</value>
+    </data>
+    <data name="38" xml:space="preserve">
+        <value>Does dim angen unedau deunydd pecynwaith ar gyfer y math yma o ddeunydd pecynwaith</value>
+    </data>
+    <data name="39" xml:space="preserve">
+        <value>Cynwysyddion diodydd cartref (HDC) neu gynwysyddion diodydd nad ydynt yn gynwysyddion diodydd cartref (NDC) yw'r math o becynwaith, felly rhaid i swm y deunydd pecynwaith fod yn rhif cyfan</value>
+    </data>
+    <data name="40" xml:space="preserve">
+        <value>Gwybodaeth ddyblyg wedi'i chyflwyno</value>
+    </data>
+    <data name="41" xml:space="preserve">
+        <value>Rhaid i faint y sefydliad fod yn L. Ar hyn o bryd, dim ond sefydliadau mawr sy'n cael rhoi gwybod am ddata pecynwaith.</value>
+    </data>
+    <data name="45" xml:space="preserve">
+        <value>Pan fo'r deunydd pecynwaith yn arall (OT), rhaid ichi nodi enw'r deunydd mewn is-deip deunydd pecynwaith. Ni chaniateir rhifau na choma.</value>
+    </data>
+    <data name="47" xml:space="preserve">
+        <value>Dim angen is-deip pecynwaith ar gyfer y math pecynwaith yma</value>
+    </data>
+    <data name="42" xml:space="preserve">
+        <value>Pan fyddwch chi'n rhoi'r gweithgaredd pecynnu, nid yw'r math o becynwaith yn cael bod yn wastraff hunan-reoledig (CW ac OW)</value>
+    </data>
+    <data name="43" xml:space="preserve">
+        <value>Pan na fyddwch chi'n rhoi'r gweithgaredd pecynnu, gwastraff hunan-reoledig (CW ac OW) yw'r unig fath o becynwaith sy'n bosibl</value>
+    </data>
+    <data name="44" xml:space="preserve">
+        <value>Rhowch y cyfnod amser ar gyfer y cyflwyniad</value>
+    </data>
+    <data name="46" xml:space="preserve">
+        <value>Mae'r ID atodol yn cael cynnwys y llythrennau a i z, a rhifau yn unig. Rhaid iddo fod yn 32 o gymeriadau neu lai.</value>
+    </data>
+    <data name="82" xml:space="preserve">
+        <value>Mae’r ffeil a ddewiswyd yn wag</value>
+    </data>
+    <data name="80" xml:space="preserve">
+        <value>Gallai enwau'r colofnau yn y ffeil a ddewiswyd fod ar goll, yn anghywir neu yn y drefn anghywir. Dilynwch y canllawiau ar sut i strwythuro'ch cyflwyniad data.</value>
+    </data>
+    <data name="81" xml:space="preserve">
+        <value>Mae’r ffeil a ddewiswyd yn cynnwys feirws</value>
+    </data>
+    <data name="89" xml:space="preserve">
+        <value>Mae’n ddrwg gennym, cododd problem annisgwyl (cod 89).  Rhowch gynnig ar yr uwchlwytho eto yn nes ymlaen.</value>
+    </data>
+    <data name="99" xml:space="preserve">
+        <value>Mae’n ddrwg gennym, cododd problem annisgwyl (cod 99).  Rhowch gynnig ar yr uwchlwytho eto yn nes ymlaen.</value>
+    </data>
+    <data name="54" xml:space="preserve">
+        <value>Rydych chi'n rhoi gwybod am ddata pecynwaith ar gyfer Ionawr i Fehefin 2023. Rhaid i'r cyfnod cyflwyno fod yn 2023-P1 neu 2023-P2.</value>
+    </data>
+    <data name="55" xml:space="preserve">
+        <value>Rydych chi'n rhoi gwybod am ddata pecynwaith ar gyfer Gorffennaf i Ragfyr 2023. Rhaid i'r cyfnod cyflwyno fod yn 2023-P3.</value>
+    </data>
+    <data name="83" xml:space="preserve">
+        <value>Chafodd eich ffeil mo’i huwchlwytho, a hynny am nad yw penawdau’r colofnau yn y lle cywir.&lt;br&gt;&lt;br&gt;
+Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi ddatrys y broblem, uwchlwythwch y ffeil eto.</value>
+    </data>
+    <data name="49" xml:space="preserve">
+        <value>Pan fo'r math pecynwaith yn wastraff hunan-reoledig (CW ac OW), rhaid ichi roi'r wlad mae'n tarddu ohoni</value>
+    </data>
+    <data name="50" xml:space="preserve">
+        <value>Rhaid i'r cyfnod amser ar gyfer cyflwyno fod yr un fath ar gyfer holl ddata pecynwaith y sefydliad yma</value>
+    </data>
+    <data name="51" xml:space="preserve">
+        <value>Nid yw is-deip y deunydd pecynwaith yn gallu bod yn blastig, HDPE neu PET</value>
+    </data>
+    <data name="53" xml:space="preserve">
+        <value>Pan fo maint y sefydliad yn fawr (L), ni chaniateir i'r math pecynwaith fod yn becynwaith sefydliad bach – y cyfan (SP)</value>
+    </data>
+    <data name="48" xml:space="preserve">
+        <value>Ni chaiff cyfanswm pwysau unrhyw un deunydd pecynwaith sy'n cael ei drosglwyddo i unrhyw wlad fod yn fwy na'r cyfanswm a gasglwyd. Er enghraifft, allwch chi ddim trosglwyddo mwy o blastig nag rydych chi'n ei gasglu. Gwiriwch bwysau'r deunydd pecynwaith yma sy'n cael ei drosglwyddo i wlad arall ym mhob rhes ar gyfer y sefydliad yma.</value>
+    </data>
+    <data name="56" xml:space="preserve">
+        <value>Rhaid i ID y sefydliad fod yr un fath â’r rhif adnabod a gafodd ei roi i’ch sefydliad pan gafodd eich cyfrif ei greu</value>
+    </data>
+    <data name="59" xml:space="preserve">
+        <value>Mae pwysau'r deunydd pecynwaith yn llai na 100. Gwiriwch fod yr holl bwysau pecynwaith mewn kg ac nid tunelli.</value>
+    </data>
+</root>

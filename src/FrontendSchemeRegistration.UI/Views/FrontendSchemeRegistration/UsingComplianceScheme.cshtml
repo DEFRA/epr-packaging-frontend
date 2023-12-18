@@ -1,0 +1,104 @@
+@model UsingComplianceSchemeViewModel
+
+@{
+    ViewData["Title"] = Localizer["using_a_compliance_schema"];
+}
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @await Html.PartialAsync("Partials/Govuk/_ErrorSummary", ViewData.ModelState)
+            }
+            
+            @using (Html.BeginForm("UsingAComplianceScheme", "FrontendSchemeRegistration", FormMethod.Post))
+            {
+                var selectedValue = Model.SavedUsingComplianceScheme.HasValue 
+                    ? Model.SavedUsingComplianceScheme.Value.ToString() 
+                    : string.Empty;
+
+                <div class="govuk-form-group @(ViewData.ModelState.IsValid ? string.Empty : "govuk-form-group--error")">
+                    <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                            <h1 class="govuk-fieldset__heading govuk-label--l">
+                                @Localizer["are_you_using_a_compliance_scheme"]
+                            </h1>
+                        </legend>
+
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <span class="govuk-error-message">@Localizer["error_message"]</span>
+                        }
+
+                        <div class="govuk-radios" data-module="govuk-radios">
+                            <div class="govuk-radios__item">
+                                <input
+                                    class="govuk-radios__input"
+                                    name="UsingComplianceScheme"
+                                    checked="@selectedValue.Equals("True")"
+                                    type="radio"
+                                    gov-first-option="true"
+                                    gov-for="UsingComplianceScheme"
+                                    gov-value="true"/>
+                                <label
+                                    class="govuk-label govuk-radios__label"
+                                    gov-first-option="true"
+                                    gov-value="true"
+                                    gov-for="UsingComplianceScheme">
+                                    @Localizer["yes"]
+                                </label>
+                            </div>
+                            
+                            <div class="govuk-radios__item">
+                                <input
+                                    class="govuk-radios__input"
+                                    name="UsingComplianceScheme"
+                                    checked="@selectedValue.Equals("False")"
+                                    type="radio"
+                                    gov-first-option="false"
+                                    gov-for="UsingComplianceScheme"
+                                    gov-value="false"/>
+                                <label
+                                    class="govuk-label govuk-radios__label"
+                                    gov-first-option="false"
+                                    gov-value="false"
+                                    gov-for="UsingComplianceScheme">
+                                    @Localizer["no"]
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                
+                <br/>
+                
+                <details class="govuk-details" data-module="govuk-details">
+                    <summary class="govuk-details__summary">
+                        <span class="govuk-details__summary-text">
+                            @Localizer["what_is_a_compliance_scheme"]
+                        </span>
+                    </summary>
+                    
+                    <div class="govuk-details__text">
+                        <p class="govuk-body">@Localizer["compliance_schemes_are"]</p>
+                        <p class="govuk-body">@Localizer["compliance_schemes_can"]</p>
+                        
+                        <ul class="govuk-list govuk-list--bullet">
+                            <li>@Localizer["register_you"]</li>
+                            <li>@Localizer["pay_your_registration_fees"]</li>
+                            <li>@Localizer["buy_prns"]</li>
+                            <li>@Localizer["report_your_packaging_data"]</li>
+                        </ul>
+                        
+                        <p class="govuk-body">@Localizer["compliance_scheme_cannot_pay"]</p>
+                    </div>
+                </details>
+                
+                <button class="govuk-button" data-module="govuk-button">
+                    @SharedLocalizer["continue"]
+                </button>
+            }
+        </div>
+    </div>
+</main>

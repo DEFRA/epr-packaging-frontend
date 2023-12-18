@@ -1,0 +1,37 @@
+﻿@model FrontendSchemeRegistration.UI.ViewModels.Shared.PrimaryNavigationModel
+
+@if (Model.Items.Any())
+{
+    <nav aria-label="Menu" class="govuk-header__navigation ">
+        <button type="button" class="govuk-header__menu-button govuk-js-header-toggle" aria-controls="navigation" aria-label="Show or hide menu" hidden>@SharedLocalizer["menu"]</button>
+        <ul id="navigation" class="govuk-header__navigation-list">
+            @foreach (var item in Model.Items)
+            {
+                @if (item.IsActive)
+                {
+                    <li class="govuk-header__navigation-item govuk-header__navigation-item--active"> <a class="govuk-header__link" href="@item.LinkValue">@SharedLocalizer[item.LocalizerKey]</a> </li>
+                }
+                else
+                {
+                    <li class="govuk-header__navigation-item"> <a class="govuk-header__link" href="@item.LinkValue">@SharedLocalizer[item.LocalizerKey]</a> </li>
+                }
+            }
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <li class="govuk-header__navigation-item"><a class="govuk-link epr-auth-nav__link" asp-controller="Account" asp-action="SignOut">@SharedLocalizer["sign_out"]</a></li>
+            }
+        </ul>
+    </nav>
+}
+else if (User.Identity?.IsAuthenticated == true)
+{
+    <nav class="epr-auth-nav">
+        <a class="govuk-link epr-auth-nav__link" asp-controller="Account" asp-action="SignOut">@SharedLocalizer["sign_out"]</a>
+    </nav>
+}
+else
+{
+    <nav class="epr-auth-nav">
+        <a class="govuk-link epr-auth-nav__link" asp-controller="Account" asp-action="SignIn">@SharedLocalizer["sign_in"]</a>
+    </nav>
+}

@@ -1,0 +1,92 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="file_youve_uploaded" xml:space="preserve">
+        <value>Ffeil rydych chi wedi’i huwchlwytho </value>
+    </data>
+    <data name="check_and_submit_new_file" xml:space="preserve">
+        <value>Gwirio a chyflwyno ffeil newydd</value>
+    </data>
+    <data name="check_file_and_submit" xml:space="preserve">
+        <value>Gwirio’r ffeil a’i chyflwyno</value>
+    </data>
+    <data name="check_and_submit_file" xml:space="preserve">
+        <value>Gwirio a chyflwyno ffeil</value>
+    </data>
+    <data name="file_uploaded" xml:space="preserve">
+        <value>Ffeil wedi’i huwchlwytho</value>
+    </data>
+    <data name="file_youre_submitting" xml:space="preserve">
+        <value>Ffeil rydych chi wrthi’n ei chyflwyno</value>
+    </data>
+    <data name="detail_regarding_the_latest_file_uploaded" xml:space="preserve">
+        <value>Manylion y ffeil ddilys ddiweddaraf a uwchlwythwyd</value>
+    </data>
+    <data name="uploaded_by" xml:space="preserve">
+        <value>Uwchlwythwyd gan</value>
+    </data>
+    <data name="file_name" xml:space="preserve">
+        <value>Enw’r ffeil</value>
+    </data>
+    <data name="date_uploaded" xml:space="preserve">
+        <value>Dyddiad uwchlwytho </value>
+    </data>
+    <data name="last_file_submitted" xml:space="preserve">
+        <value>Y ffeil ddiwethaf a gyflwynwyd</value>
+    </data>
+    <data name="detail_regarding_the_latest_file_submitted" xml:space="preserve">
+        <value>Manylion y ffeil ddiweddaraf a gyflwynwyd</value>
+    </data>
+    <data name="submitted_by" xml:space="preserve">
+        <value>Cyflwynwyd gan</value>
+    </data>
+    <data name="date_submitted" xml:space="preserve">
+        <value>Dyddiad cyflwyno</value>
+    </data>
+    <data name="confirm_you_want_to_submit_the_new_packaging_data_file_to_the_environmental_regulator" xml:space="preserve">
+        <value>Cadarnhau eich bod am gyflwyno’r ffeil data pecynwaith newydd i’r rheoleiddiwr amgylcheddol.</value>
+    </data>
+    <data name="this_will_replace_the_last_packaging_data_file_that_you_submitted" xml:space="preserve">
+        <value>Bydd hyn yn disodli’r ffeil data pecynwaith ddiwethaf a gyflwynwyd gennych.</value>
+    </data>
+    <data name="if_you_need_to_make_changes_to_this_file_after_its_submitted_youll_need_to_reupload_a_new_file" xml:space="preserve">
+        <value>Os oes angen i chi wneud newidiadau yn y ffeil yma ar ôl ei chyflwyno, bydd angen ichi ail-uwchlwytho ffeil newydd. Bydd hyn yn disodli’r un bresennol. Gallwch uwchlwytho ffeil newydd i’ch cyfrif a’i chyflwyno unrhyw bryd cyn y dyddiad cau.</value>
+    </data>
+    <data name="are_you_sure_you_want_to_submit_your_packaging_data_file" xml:space="preserve">
+        <value>Ydych chi’n siŵr yr hoffech chi gyflwyno’ch ffeil data pecynwaith?</value>
+    </data>
+    <data name="this_information_will_be_sent_to_the_environmental_regulator" xml:space="preserve">
+        <value>Bydd yr wybodaeth hon yn cael ei hanfon at y rheoleiddiwr amgylcheddol.</value>
+    </data>
+    <data name="yes_id_like_to_submit" xml:space="preserve">
+        <value>Hoffwn, fe hoffwn i gyflwyno</value>
+    </data>
+    <data name="no_i_dont_want_to_do_this_right_now" xml:space="preserve">
+        <value>Na, dwi ddim eisiau gwneud hyn nawr</value>
+    </data>
+    <data name="your_company_may_face_enforcement_action_if_the_data_you_submit_is_inaccurate" xml:space="preserve">
+        <value>Efallai y bydd eich cwmni yn wynebu camau gorfodi os yw’r data y byddwch chi’n ei gyflwyno yn anghywir.</value>
+    </data>
+    <data name="how_to_submit_your_files" xml:space="preserve">
+        <value>Sut i gyflwyno’ch ffeiliau</value>
+    </data>
+    <data name="you_dont_have_permission_to_submit_files" xml:space="preserve">
+        <value>Does dim caniatâd gennych i gyflwyno ffeiliau.</value>
+    </data>
+    <data name="someone_in_your_team_with_the_right_account_permissions_must_submit_these_files_to_the_environmental_regulator" xml:space="preserve">
+        <value>Rhaid i rywun yn eich tîm sydd â’r caniatâd cywir yn y cyfrif gyflwyno’r ffeiliau hyn i’r rheoleiddiwr amgylcheddol.</value>
+    </data>
+    <data name="go_to_your_account_homepage" xml:space="preserve">
+        <value>Mynd i dudalen hafan eich cyfrif</value>
+    </data>
+</root>

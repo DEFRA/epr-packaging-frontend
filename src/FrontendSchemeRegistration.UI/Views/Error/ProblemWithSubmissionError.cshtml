@@ -1,0 +1,17 @@
+@{
+    ViewData["Title"] = Localizer["problem_with_the_submit_service"];
+}
+
+<main class="govuk-main-wrapper govuk-!-padding-top-4" id="error-content" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds govuk-!-margin-top-8">
+                <h1 class="govuk-heading-l">@Localizer["problem_with_the_submit_service"]</h1>
+                <p class="govuk-body">@Localizer["must_try_to_submit_later"]</p>
+                @Html.ActionLink(Localizer["submit_members_organisation_details"].Value,
+                        "Get",
+                        "FileUploadCompanyDetailsSubLanding",
+                        new {  },
+                        new { @class = "govuk-button govuk-!-margin-top-5" })
+            </div>
+        </div>
+</main>

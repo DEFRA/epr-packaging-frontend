@@ -1,0 +1,16 @@
+@model FrontendSchemeRegistration.UI.ViewModels.Shared.PhaseBannerModel
+
+@if (Model.ShowBanner)
+{
+    <div class="govuk-phase-banner govuk-width-container">
+        <p class="govuk-phase-banner__content">
+            <strong class="govuk-tag govuk-phase-banner__content__tag">
+                @Localizer[Model.Status]
+            </strong>
+            <span class="govuk-phase-banner__text">
+                @Localizer["PhaseBanner.NewService"] <a class="govuk-link" rel="noreferrer noopener" target="_blank" 
+                                                        href="@Model.Url">@Localizer["PhaseBanner.Feedback"]</a> @Localizer["PhaseBanner.Improvements"]
+            </span>
+        </p>
+    </div>
+}

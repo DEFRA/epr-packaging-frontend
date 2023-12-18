@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="CookieBanner.Title" xml:space="preserve">
+        <value>Cookies on the ‘report packaging data’ service</value>
+    </data>
+    <data name="CookieBanner.EssentialParagraph" xml:space="preserve">
+        <value>We use some essential cookies to make this service work.</value>
+    </data>
+    <data name="CookieBanner.AnalyticalParagraph" xml:space="preserve">
+        <value>We’d also like to use analytics cookies so we can understand how you use the
+service and make improvements.</value>
+    </data>
+    <data name="CookieBanner.AcceptAnalyticsCookies" xml:space="preserve">
+        <value>Accept analytics cookies</value>
+    </data>
+    <data name="CookieBanner.RejectAnalyticsCookies" xml:space="preserve">
+        <value>Reject analytics cookies</value>
+    </data>
+    <data name="CookieBanner.ViewCookies" xml:space="preserve">
+        <value>View cookies</value>
+    </data>
+    <data name="CookieBanner.HideCookieMessage" xml:space="preserve">
+        <value>Hide cookie message</value>
+    </data>
+    <data name="CookieBanner.Accepted" xml:space="preserve">
+        <value>You’ve accepted analytics cookies. You can</value>
+    </data>
+    <data name="CookieBanner.Rejected" xml:space="preserve">
+        <value>You’ve rejected analytics cookies. You can</value>
+    </data>
+    <data name="CookieBanner.ChangeYourCookieSettings" xml:space="preserve">
+        <value>change your cookie settings</value>
+    </data>
+    <data name="CookieBanner.AtAnyTime" xml:space="preserve">
+        <value>at any time.</value>
+    </data>
+</root>

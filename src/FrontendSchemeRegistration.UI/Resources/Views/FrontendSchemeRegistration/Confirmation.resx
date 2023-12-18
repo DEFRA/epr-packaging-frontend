@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="confirm" xml:space="preserve">
+        <value />
+    </data>
+    <data name="as_your_compliance_scheme" xml:space="preserve">
+        <value />
+    </data>
+    <data name="confirm_your_choice_of_compliance_scheme" xml:space="preserve">
+        <value />
+    </data>
+    <data name="if_you_selected_the_wrong_compliance_scheme" xml:space="preserve">
+        <value />
+    </data>
+    <data name="you_can_go_back_and_change_it" xml:space="preserve">
+        <value />
+    </data>
+    <data name="you_told_us_you_will_be_using" xml:space="preserve">
+        <value />
+    </data>
+    <data name="you_have_changed_your_compliance_scheme" xml:space="preserve">
+        <value />
+    </data>
+    <data name="you_were_using" xml:space="preserve">
+        <value />
+    </data>
+    <data name="you_are_now_using" xml:space="preserve">
+        <value />
+    </data>
+</root>

@@ -1,0 +1,18 @@
+@model ModelStateDictionary
+
+<div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary" data-testid="error-banner">
+    <h2 class="govuk-error-summary__title" id="error-summary-title" data-testid="error-banner-title">
+        @SharedLocalizer["there_is_a_problem"]
+    </h2>
+    <div class="govuk-error-summary__body">
+        <ul class="govuk-list govuk-error-summary__list">
+            @foreach (var error in Model.SelectMany(x =>
+                x.Value.Errors.Select(y => new { x.Key, y.ErrorMessage })))
+            {
+                <li>
+                    <a href="#@error.Key" data-testid="error-banner-text">@Html.Raw(error.ErrorMessage)</a>
+                </li>
+            }
+        </ul>
+    </div>
+</div>

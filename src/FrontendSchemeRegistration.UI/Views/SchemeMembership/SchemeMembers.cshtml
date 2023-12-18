@@ -1,0 +1,90 @@
+@model SchemeMembersModel
+@{
+    ViewData["Title"] = @Localizer["SchemeMembers.PageTitle", Model.PagingDetail.CurrentPage, Model.PagingDetail.PageCount];
+}
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+
+                <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+                    @Localizer["SchemeMembers.Title", Model.Name]
+                </h1>
+
+                <div class="govuk-inset-text">
+                    <div class="govuk-!-margin-bottom-1">
+                        @Localizer[Model.MemberCount == "1" ? "SchemeMembers.AccountLinkedSingle" : "SchemeMembers.AccountLinked", Model.MemberCount]
+                    </div>
+                    <div class="govuk-hint">
+                        @Localizer["SchemeMembers.LastUpdated", Model.LastUpdated]
+                    </div>
+                </div>
+
+                <form asp-controller="SchemeMembership" asp-action="SchemeMembers" asp-route-complianceSchemeId="@Model.Id" method="get">
+                    <div class="govuk-form-group govuk-!-width-full">
+                        <label class="govuk-label govuk-!-font-weight-bold" for="search">
+                            @Localizer["SchemeMembers.SearchBy"]
+                        </label>
+                        <div class="govuk-hint">
+                            @Localizer["SchemeMembers.SearchByExample"]
+                        </div>
+
+                        <input class="govuk-input govuk-input--width-20 govuk-!-margin-bottom-2" id="search" name="search" value="@Model.SearchText" maxlength="160" type="text">
+                        <input type="submit" class="govuk-button govuk-button--primary govuk-!-margin-bottom-2" value="@Localizer["SchemeMembers.Search"]" data-module="govuk-button" />
+                        @if (!string.IsNullOrWhiteSpace(Model.ResetLink))
+                        {
+                            <div>
+                                <a href="@Model.ResetLink" class="govuk-link govuk-link--no-visited-state">@Localizer["SchemeMembers.ClearSearch"]</a>
+                            </div>
+                        }
+                    </div>
+                </form>
+
+                @if (Model.PagingDetail.TotalItems > 0)
+                {
+                    @if (Model.PagingDetail.PageCount == 1)
+                    {
+                        @await Html.PartialAsync("Partials/RecordNavigation/_RecordCount", Model.PagingDetail)
+                    }
+
+                    <table class="govuk-table">
+                        <caption class="govuk-table__caption govuk-table__caption--m govuk-visually-hidden">@Localizer["SchemeMembers.Title", Model.Name]</caption>
+                        <thead class="govuk-table__head">
+                            <tr class="govuk-table__row">
+                                <th scope="col" class="govuk-table__header">@Localizer["SchemeMembers.OrganisationName"]</th>
+                                <th scope="col" class="govuk-table__header">@Localizer["SchemeMembers.OrganisationId"]</th>
+                            </tr>
+                        </thead>
+                        <tbody class="govuk-table__body">
+                            @foreach (var member in Model.MemberList)
+                            {
+                                <tr class="govuk-table__row">
+                                    <td class="govuk-table__cell"><a class="govuk-link" href="@member.Link">@member.Name</a></td>
+                                    <td class="govuk-table__cell">@member.ReferenceNumber</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    @await Html.PartialAsync("Partials/RecordNavigation/_RecordPaging", Model.PagingDetail)
+
+                    @if (Model.PagingDetail.PageCount > 1)
+                    {
+                        @await Html.PartialAsync("Partials/RecordNavigation/_RecordCount", Model.PagingDetail)
+                    }
+                }
+                else
+                {
+
+                    <p class="govuk-body govuk-!-font-weight-bold">@Localizer["SchemeMembers.NoMatching"]</p>
+                    <p class="govuk-body">@Localizer["SchemeMembers.Improve"]</p>
+                    <ul class="govuk-list govuk-list--bullet">
+                        <li class="govuk-body">@Localizer["SchemeMembers.DoubleCheck"]</li>
+                        <li class="govuk-body">@Localizer["SchemeMembers.OfficialName"]</li>
+                    </ul>
+                }
+
+            </div>
+        </div>
+    </main>
+</div>

@@ -1,0 +1,5 @@
+@model KeyValuePair<string, ModelStateEntry>
+
+<p id="@Model.Key-error" class="govuk-error-message">
+    <span class="govuk-visually-hidden">@SharedLocalizer["hidden_error"]</span> @Html.Raw(Model.Value.Errors.FirstOrDefault().ErrorMessage)
+</p>

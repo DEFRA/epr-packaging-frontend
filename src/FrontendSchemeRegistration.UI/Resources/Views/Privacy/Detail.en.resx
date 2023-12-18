@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Microsoft ResX Schema
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
+    associated with the data types.
+
+    Example:
+
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+
+    There are any number of "resheader" rows that contain simple
+    name/value pairs.
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
+    mimetype set.
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
+    extensible. For a given mimetype the value must be set accordingly:
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
+    read any of the formats listed below.
+
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Privacy.Address" xml:space="preserve">
+    <value>address if used for business purposes, including postcode</value>
+  </data>
+  <data name="Privacy.AnyChanges" xml:space="preserve">
+    <value>Any changes to this privacy policy will apply to you and your data immediately. If these changes affect how your personal data is processed, we will let you know.</value>
+  </data>
+  <data name="Privacy.CalculateAdmin" xml:space="preserve">
+    <value>calculate administrative fees</value>
+  </data>
+  <data name="Privacy.CalculateWaste" xml:space="preserve">
+    <value>calculate waste disposal fees</value>
+  </data>
+  <data name="Privacy.ChangesToThisPolicy" xml:space="preserve">
+    <value>Changes to this policy</value>
+  </data>
+  <data name="Privacy.Complaints" xml:space="preserve">
+    <value>Complaints</value>
+  </data>
+  <data name="Privacy.DefraDataProtectionManager" xml:space="preserve">
+    <value>Defra Data Protection Manager</value>
+  </data>
+  <data name="Privacy.DefraDataProtectionOfficer" xml:space="preserve">
+    <value>Defra Data Protection Officer</value>
+  </data>
+  <data name="Privacy.DefraAsDataProcessor" xml:space="preserve">
+    <value>Defra is acting as the ‘data processor’ for the personal data being collected through the ‘report packaging data’ service.</value>
+  </data>
+  <data name="Privacy.DefraRespects" xml:space="preserve">
+    <value>Defra respects your personal privacy when responding to access to information requests, but we may have to share information when necessary to meet the statutory requirements of the Environmental Information Regulations 2004 and the Freedom of Information Act 2000.</value>
+  </data>
+  <data name="Privacy.Defras" xml:space="preserve">
+    <value>Defra’s</value>
+  </data>
+  <data name="Privacy.DefrasMainAddress" xml:space="preserve">
+    <value>Defra’s main address for correspondence is:</value>
+  </data>
+  <data name="Privacy.DefrasPersonal" xml:space="preserve">
+    <value>Defra’s personal information charter</value>
+  </data>
+  <data name="Privacy.DefraWillCollectYour" xml:space="preserve">
+    <value>We will collect your</value>
+  </data>
+  <data name="Privacy.DefraWillKeep" xml:space="preserve">
+    <value>We will keep your personal data for 7 years in line with the requirements of the Collection &amp; Packaging Reforms (CPR) programme.</value>
+  </data>
+  <data name="Privacy.DefraWillOnly" xml:space="preserve">
+    <value>Defra will only transfer your personal data to another country that is deemed adequate for data protection purposes.</value>
+  </data>
+  <data name="Privacy.DefraWillShare" xml:space="preserve">
+    <value>We will share the personal data collected under this privacy notice with the environmental regulators and the scheme administrator. We do this to provide a digital service as part of the Collection &amp; Packaging Reforms (CPR) programme.</value>
+  </data>
+  <data name="Privacy.EA" xml:space="preserve">
+    <value>the Environment Agency (EA)</value>
+  </data>
+  <data name="Privacy.Email" xml:space="preserve">
+    <value>email address</value>
+  </data>
+  <data name="Privacy.EnvironmentAgency" xml:space="preserve">
+    <value>Environment Agency</value>
+  </data>
+  <data name="Privacy.ExplainsMoreAbout" xml:space="preserve">
+    <value>explains more about your rights over your personal data.</value>
+  </data>
+  <data name="Privacy.FindOut" xml:space="preserve">
+    <value>Find out about your</value>
+  </data>
+  <data name="Privacy.GatherFeedback" xml:space="preserve">
+    <value>gather feedback to improve our services</value>
+  </data>
+  <data name="Privacy.HowLong" xml:space="preserve">
+    <value>How long we hold personal data</value>
+  </data>
+  <data name="Privacy.IfYouDoNot" xml:space="preserve">
+    <value>If you do not provide the personal data required you will not be able to participate in the service.</value>
+  </data>
+  <data name="Privacy.IfYouNeedFurtherInformation" xml:space="preserve">
+    <value>If you need further information about how Defra uses your personal data and your associated rights you can contact the Defra data protection manager at</value>
+  </data>
+  <data name="Privacy.IndividualRights" xml:space="preserve">
+    <value>individual rights</value>
+  </data>
+  <data name="Privacy.InformationOnHow" xml:space="preserve">
+    <value>information on how you use the site, using cookies and page tagging techniques</value>
+  </data>
+  <data name="Privacy.InThatCase" xml:space="preserve">
+    <value>In that case, the ‘last updated’ date at the bottom of this page will also change.</value>
+  </data>
+  <data name="Privacy.InTheExercise" xml:space="preserve">
+    <value>to do our work as a government department as part of the Collection &amp; Packaging Reforms (CPR) programme, introduced in support the Government’s 25 Year Environment Plan, which is underpinned by the Environment Act 2021</value>
+  </data>
+  <data name="Privacy.IP" xml:space="preserve">
+    <value>Internet Protocol (IP) address, and details of which version of web browser you used</value>
+  </data>
+  <data name="Privacy.LastUpdated" xml:space="preserve">
+    <value>Last updated</value>
+  </data>
+  <data name="Privacy.LawfulBasis" xml:space="preserve">
+    <value>Lawful basis for processing your personal data</value>
+  </data>
+  <data name="Privacy.MakeAComplaint" xml:space="preserve">
+    <value>make a complaint</value>
+  </data>
+  <data name="Privacy.Monitor" xml:space="preserve">
+    <value>monitor the performance and security of the online service</value>
+  </data>
+  <data name="Privacy.Name" xml:space="preserve">
+    <value>name</value>
+  </data>
+  <data name="Privacy.NationalResourcesWales" xml:space="preserve">
+    <value>Natural Resources Wales</value>
+  </data>
+  <data name="Privacy.NIEA" xml:space="preserve">
+    <value>the Northern Ireland Environment Agency (NIEA)</value>
+  </data>
+  <data name="Privacy.NoAutomated" xml:space="preserve">
+    <value>The personal data you provide is not used for</value>
+  </data>
+  <data name="Privacy.NorthernIrelandEnvironmentAgency" xml:space="preserve">
+    <value>Northern Ireland Environment Agency</value>
+  </data>
+  <data name="Privacy.NRW" xml:space="preserve">
+    <value>Natural Resources Wales (NRW)</value>
+  </data>
+  <data name="Privacy.PersonalInformationCharter" xml:space="preserve">
+    <value>personal information charter</value>
+  </data>
+  <data name="Privacy.Questions" xml:space="preserve">
+    <value>questions, queries or feedback you leave</value>
+  </data>
+  <data name="Privacy.RespondToAnyFeedback" xml:space="preserve">
+    <value>respond to any feedback you send us</value>
+  </data>
+  <data name="Privacy.ScottishEnvironmentalProtectionAgency" xml:space="preserve">
+    <value>Scottish Environment Protection Agency</value>
+  </data>
+  <data name="Privacy.SEPA" xml:space="preserve">
+    <value>the Scottish Environment Protection Agency (SEPA)</value>
+  </data>
+  <data name="Privacy.ShareItCosts" xml:space="preserve">
+    <value>share it with the scheme administrator so they can work out disposal costs</value>
+  </data>
+  <data name="Privacy.ShareItRequest" xml:space="preserve">
+    <value>share it with the environmental regulators so they know who has submitted organisation and packaging data, and so they can approve or refuse a request to be an ‘approved person’ or someone with ‘delegated authority’</value>
+  </data>
+  <data name="Privacy.ShareItWho" xml:space="preserve">
+    <value>share it with the environmental regulators so they know who has submitted organisation and packaging data</value>
+  </data>
+  <data name="Privacy.ShareThirdParty" xml:space="preserve">
+    <value>share with a third party organisation contracted to manage the invoicing of organisations for disposal cost obligations</value>
+  </data>
+  <data name="Privacy.Telephone" xml:space="preserve">
+    <value>telephone or mobile number</value>
+  </data>
+  <data name="Privacy.TheDataProtectionOfficer" xml:space="preserve">
+    <value>The Data Protection Officer for Defra is responsible for monitoring that Defra complies with the relevant data protection legislation.</value>
+  </data>
+  <data name="Privacy.TheLawfulBasis" xml:space="preserve">
+    <value>The lawful basis for processing your personal data is that it is necessary</value>
+  </data>
+  <data name="Privacy.ThisPrivacyNotice" xml:space="preserve">
+    <value>This privacy notice explains what personal data is collected through the ‘report packaging data’ service and how that personal data is used.</value>
+  </data>
+  <data name="Privacy.Title" xml:space="preserve">
+    <value>Privacy notice</value>
+  </data>
+  <data name="Privacy.ToPerformATask" xml:space="preserve">
+    <value>to perform a task in the public interest as part of the Collection &amp; Packaging Reforms (CPR) programme</value>
+  </data>
+  <data name="Privacy.ToTheInformationCommissioner" xml:space="preserve">
+    <value>to the Information Commissioner’s Office at any time.</value>
+  </data>
+  <data name="Privacy.Transfer" xml:space="preserve">
+    <value>Transfer of your personal data outside of the UK</value>
+  </data>
+  <data name="Privacy.UnderTheUK" xml:space="preserve">
+    <value>under the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018 (DPA 2018).</value>
+  </data>
+  <data name="Privacy.UseOfAutomated" xml:space="preserve">
+    <value>Use of automated decision-making or profiling</value>
+  </data>
+  <data name="Privacy.WeCollectThisDataAnd" xml:space="preserve">
+    <value>We collect this data and</value>
+  </data>
+  <data name="Privacy.WeMayChange" xml:space="preserve">
+    <value>We may change this privacy policy.</value>
+  </data>
+  <data name="Privacy.WhatHappens" xml:space="preserve">
+    <value>What happens if you do not provide the personal data</value>
+  </data>
+  <data name="Privacy.WhatPersonalData" xml:space="preserve">
+    <value>What personal data we collect and how it is used</value>
+  </data>
+  <data name="Privacy.WhereDataIsShared" xml:space="preserve">
+    <value>Where data is shared with the environmental regulators we will ensure that we have the right controls in place to protect your rights and freedoms.</value>
+  </data>
+  <data name="Privacy.WhoCollects" xml:space="preserve">
+    <value>Who collects your personal data</value>
+  </data>
+  <data name="Privacy.WhoWeShare" xml:space="preserve">
+    <value>Who we share your personal data with</value>
+  </data>
+  <data name="Privacy.YouCanLearn" xml:space="preserve">
+    <value>The environmental regulators are controllers in their own right. You can learn more about how your personal data is processed by the environmental regulators at the following websites</value>
+  </data>
+  <data name="Privacy.YouHaveTheRight" xml:space="preserve">
+    <value>You have the right to</value>
+  </data>
+  <data name="Privacy.YourRights" xml:space="preserve">
+    <value>Your rights</value>
+  </data>
+  <data name="Privacy.DefraCollects" xml:space="preserve">
+    <value>As the data processor, we collect and share data on behalf of the four environmental regulatory bodies. These are</value>
+  </data>
+  <data name="Privacy.UseAboveAddr" xml:space="preserve">
+    <value>or using the address above. </value>
+  </data>
+  <data name="Privacy.DataProtectOfficer" xml:space="preserve">
+    <value>The data protection officer for Defra is responsible for checking that Defra complies with legislation. You can contact them at</value>
+  </data>
+  <data name="Privacy.ConsentToPersonalData" xml:space="preserve">
+    <value>Consent to process your personal data</value>
+  </data>
+  <data name="Privacy.ProcessingPersonalData" xml:space="preserve">
+    <value>The processing of your personal data is not based on consent. You cannot withdraw it.</value>
+  </data>
+  <data name="Privacy.AutomatedDecision" xml:space="preserve">
+    <value>automated decision making (making a decision by automated means without any human involvement)</value>
+  </data>
+  <data name="Privacy.Profiling" xml:space="preserve">
+    <value>profiling (automated processing of personal data to evaluate certain things about an individual)</value>
+  </data>
+</root>

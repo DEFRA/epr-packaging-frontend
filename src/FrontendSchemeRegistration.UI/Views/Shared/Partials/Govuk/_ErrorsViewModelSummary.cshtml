@@ -1,0 +1,21 @@
+@model ErrorsViewModel
+
+<div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" data-module="govuk-error-summary" data-testid="error-banner">
+    <h2 class="govuk-error-summary__title" id="error-summary-title" data-testid="error-banner-title">
+        @SharedLocalizer["there_is_a_problem"]
+    </h2>
+    <div class="govuk-error-summary__body">
+        <ul class="govuk-list govuk-error-summary__list">
+            @foreach (var error in Model.Errors)
+            {
+                var textInsert = Model.TextInserts?.FirstOrDefault(t => t.Key == error.Key).Value;
+                <li>
+                    @for (var i = 0; i < error.Value.Count; i++)
+                    {
+                        <a href="#@error.Key">@Html.Raw(textInsert == null ? error.Value[i].Message : string.Format(error.Value[i].Message, textInsert))</a>   
+                    }
+                </li>
+            }
+        </ul>
+    </div>
+</div>

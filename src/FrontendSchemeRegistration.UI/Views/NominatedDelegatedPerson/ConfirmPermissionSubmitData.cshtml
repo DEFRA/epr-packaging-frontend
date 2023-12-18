@@ -1,0 +1,68 @@
+﻿@model NominationAcceptanceModel
+
+@{
+    ViewData["Title"] = Localizer["ConfirmPermissionSubmitData.Title"];
+    var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer);
+}
+
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    @await Html.PartialAsync("Partials/NominatedDelegatedPerson/_ErrorSummary", errorsViewModel)
+                }
+                
+                <form asp-controller="NominatedDelegatedPerson" asp-action="ConfirmPermissionSubmitData" 
+                      asp-route-id="@Model.EnrolmentId" method="post">
+                    <div class="govuk-form-group">
+                        <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+                            @Localizer["ConfirmPermissionSubmitData.Instruction"]
+                        </h1>
+
+                        <p class="govuk-body">@Localizer["ConfirmPermissionSubmitData.YouAreAgreeingThat"]</p>
+
+                        <ul class="govuk-list govuk-list--bullet">
+                            <li>
+                                @Localizer["ConfirmPermissionSubmitData.AgreedThat1"]
+                                @Model.NominatorFullName
+                                @Localizer["ConfirmPermissionSubmitData.AgreedThat1Continuation"]
+                                @Model.OrganisationName
+                            </li>
+                            <li>
+                                @Localizer["ConfirmPermissionSubmitData.AgreedThat2"]
+                            </li>
+                            <li>
+                                @Localizer["ConfirmPermissionSubmitData.AgreedThat3"]
+                            </li>
+                        </ul>
+
+                        <div class="govuk-form-group @(!ViewData.ModelState.IsValid ? "govuk-form-group--error" : "")">
+                            <div class="govuk-heading-m govuk-!-margin-bottom-2">
+                                <label gov-for="NomineeFullName">
+                                    @Localizer["ConfirmPermissionSubmitData.EnterYourFullName"]
+                                </label>
+                            </div>
+
+                            @if (!ViewData.ModelState.IsValid)
+                            {
+                                @await Html.PartialAsync("Partials/NominatedDelegatedPerson/_FormItemError",
+                                           errorsViewModel[nameof(NominationAcceptanceModel.NomineeFullName)])
+                            }
+
+                            <input class="govuk-input @Html.Raw(errorsViewModel.HasErrorKey(nameof(NominationAcceptanceModel.NomineeFullName)) ? "govuk-input--error" : "")"
+                                   type="text"
+                                   gov-for="NomineeFullName"
+                                   gov-value="@Model.NomineeFullName">
+                        </div>
+                    </div>
+
+                    <button class="govuk-button" data-module="govuk-button">
+                        @Localizer["ConfirmPermissionSubmitData.Confirm"]
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>

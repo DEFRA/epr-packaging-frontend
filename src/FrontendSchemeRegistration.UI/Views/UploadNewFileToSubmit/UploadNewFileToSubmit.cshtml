@@ -1,0 +1,96 @@
+@using FrontendSchemeRegistration.Application.DTOs.Submission
+
+@model UploadNewFileToSubmitViewModel
+
+@{
+    Status status = Model.Status;
+    bool nothingSubmitted = status == Status.FileUploadedButNothingSubmitted;
+    bool isApprovedOrDelegatedUser = Model.IsApprovedOrDelegatedUser;
+    bool isBasicUser = !isApprovedOrDelegatedUser;
+    bool isBasicUserAndNothingSubmitted = isBasicUser && nothingSubmitted;
+
+    var title = Localizer[isBasicUserAndNothingSubmitted
+        ? "re_upload_packaging_data"
+        : "upload_new_file_to_submit_to_environmental_regulator"];
+
+    var fileNameHeader = Localizer["file_name"];
+    var dateHeader = Localizer[nothingSubmitted || Model.HasNewFileUploaded ? "date_uploaded" : "date_submitted"];
+    var userHeader = Localizer[nothingSubmitted || Model.HasNewFileUploaded ? "uploaded_by" : "submitted_by"];
+
+    ViewData["Title"] = title;
+}
+
+@await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-l">@title</h1>
+
+            @if (isBasicUserAndNothingSubmitted)
+            {
+                <p class="govuk-body">@Localizer["you_have_already_uploaded_your_members_packaging_data"]</p>
+                <p class="govuk-body">@Localizer["you_can_upload_this_information_again"]</p>
+                <p class="govuk-body">@Localizer["someone_in_your_team_will_need_to_submit_this_information"]</p>
+            }
+            else if(isBasicUser && !Model.HasNewFileUploaded)
+            {
+                <p class="govuk-body">@Localizer["your_organisation_already_submitted_a_file"]</p>
+                <p class="govuk-body">@Localizer["someone_in_your_team_will_need_to_submit_the_file"]</p>
+            } else if (isBasicUser && Model.HasNewFileUploaded)
+            {
+                <p class="govuk-body">@Localizer["your_organisation_already_submitted_a_file_you_also_have_file_saved"]</p>
+                <p class="govuk-body">@Localizer["someone_in_your_team_will_need_to_submit_the_file"]</p>
+            }
+            else if (isApprovedOrDelegatedUser && Model.HasNewFileUploaded)
+            {
+                <p class="govuk-body">@Localizer["you_already_submitted_a_file_you_also_have_a_file_saved"]</p>
+            }
+            else if (isApprovedOrDelegatedUser && !Model.HasNewFileUploaded)
+            {
+                <p class="govuk-body">@Localizer["you_already_submitted_a_file"]</p>
+            }
+
+            <div class="govuk-summary-card">
+                <div class="govuk-summary-card__title-wrapper">
+                    <h2 class="govuk-summary-card__title">
+                        @Localizer[nothingSubmitted || Model.HasNewFileUploaded ? "file_already_uploaded" : "file_already_submitted"]
+                    </h2>
+                </div>
+                <div class="govuk-summary-card__content">
+                    <table class="govuk-table govuk-!-margin-bottom-0 responsive-table">
+                        <caption class="govuk-visually-hidden">@Localizer["detail_regarding_the_latest_file_uploaded"]</caption>
+                        <thead class="govuk-table__head">
+                        <tr class="govuk-table__row">
+                            <th scope="col" class="govuk-table__header">@fileNameHeader</th>
+                            <th scope="col" class="govuk-table__header">@dateHeader</th>
+                            <th scope="col" class="govuk-table__header">@userHeader</th>
+                        </tr>
+                        </thead>
+                        <tbody class="govuk-table__body">
+                        <tr class="govuk-table__row">
+                            <td data-heading="@fileNameHeader" class="govuk-table__cell break-word">
+                                @(nothingSubmitted || Model.HasNewFileUploaded ? Model.UploadedFileName : Model.SubmittedFileName)
+                            </td>
+                            <td data-heading="@dateHeader" class="govuk-table__cell break-word">
+                                @(nothingSubmitted || Model.HasNewFileUploaded ? Model.UploadedAt.Value.ToReadableDate() : Model.SubmittedAt.Value.ToReadableDate())
+                            </td>
+                            <td data-heading="@userHeader" class="govuk-table__cell break-word">
+                                @(nothingSubmitted || Model.HasNewFileUploaded ? Model.UploadedBy : Model.SubmittedBy)
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            @Html.ActionLink(Localizer["upload_new_file"].Value, "Get", "FileUpload",
+                new { submissionId = Model.SubmissionId }, new { @class = "govuk-button govuk-!-margin-bottom-3" })
+
+            <p class="govuk-body">
+                @Html.ActionLink(SharedLocalizer["cancel"], "Get", "FileUploadSubLanding",
+                    new { submissionId = Model.SubmissionId }, new { @class = "govuk-link" })
+            </p>
+        </div>
+    </div>
+</main>

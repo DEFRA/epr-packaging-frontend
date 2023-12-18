@@ -1,0 +1,48 @@
+@model FileUploadViewModel
+
+@{
+    ViewData["Title"] = Localizer["upload_packaging_data_to_your_account"];
+}
+
+@await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @await Html.PartialAsync("Partials/Govuk/_ErrorSummary", ViewData.ModelState)
+            }
+
+            <h1 class="govuk-heading-l">@Localizer["upload_packaging_data_to_your_account"]</h1>
+            
+            <p class="govuk-body">@Localizer[
+                                      Model.IsComplianceScheme 
+                                      ? "upload_your_members_packaging_data" 
+                                      : "upload_your_organisations_packaging_data"]</p>
+    
+            <p class="govuk-body">@Localizer["once_weve_validated_the_data"]</p>
+            
+            <h2 class="govuk-heading-m">@Localizer["upload_file"]</h2>
+            <p class="govuk-body">@SharedLocalizer["the_file_may_take_a_few_minutes_to_upload"]</p>
+            <p class="govuk-body">@SharedLocalizer["do_not_close_the_window_while_the_file_is_uploading"]</p>
+
+            @using (Html.BeginForm(FormMethod.Post, new
+            {
+                enctype = "multipart/form-data"
+            }))
+            {
+                <div class="govuk-form-group @(ViewData.ModelState.IsValid ? string.Empty : "govuk-form-group--error")" data-testid="pom-data-upload-form">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        @await Html.PartialAsync("Partials/Govuk/_Error", ViewData.ModelState.GetModelStateEntry("file"))
+                    }
+                    <label class="govuk-label" for="file">@SharedLocalizer["upload_a_file"]</label>
+                    <input class="govuk-file-upload"  name="file" type="file" id="file" data-testid="pom-upload-choose-file-button">
+                </div>
+                <button class="govuk-button" data-module="govuk-button" type="submit" data-testid="pom-data-upload-button">@Localizer["upload_file"]</button>
+            }
+        </div>
+    </div>
+</main>

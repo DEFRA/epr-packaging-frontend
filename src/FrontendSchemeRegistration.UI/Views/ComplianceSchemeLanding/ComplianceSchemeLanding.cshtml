@@ -1,0 +1,142 @@
+@using FrontendSchemeRegistration.Application.Enums
+
+@inject IOptions<SiteDateOptions> DateOptions
+
+@model ComplianceSchemeLandingViewModel
+
+@{
+    ViewData["Title"] = Localizer["home"];
+}
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+
+    @if (Model.Notification.HasNominatedNotification)
+    {
+        @await Html.PartialAsync("Partials/Notifications/_NominatedAsDelegatedPerson", Model.Notification.NominatedEnrolmentId)
+    }
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-xl break-word">@Localizer["account_home", Model.OrganisationName]</h1>
+        </div>
+    </div>
+
+    @if (Model.Notification.HasPendingNotification)
+    {
+        @await Html.PartialAsync("Partials/Notifications/_WaitingForApproval")
+    }
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <div id="compliance-scheme-tabs" class="govuk-tabs govuk-tabs-custom" data-module="govuk-tabs">
+                @using (Html.BeginForm(FormMethod.Post))
+                {
+                    <ul class="govuk-tabs__list">
+                        @foreach (var complianceScheme in Model.ComplianceSchemes)
+                        {
+                            <li class="govuk-tabs__list-item @(complianceScheme.Id == Model.CurrentComplianceSchemeId ? "govuk-tabs__list-item--selected" : "")">
+                                <button type="submit" class="govuk-tabs__tab govuk-!-text-align-left" name="selectedComplianceSchemeId" value="@complianceScheme.Id">
+                                    @complianceScheme.Name
+                                </button>
+                            </li>
+                        }
+                    </ul>
+
+                    <feature name="ShowComplianceSchemeMemberManagement">
+                        <div class="govuk-tabs__panel" id="#tab-panel-@Model.CurrentComplianceSchemeId">
+                            <div class="govuk-label--m scheme-name">@Model.CurrentTabSummary.Name</div>
+
+                            @if (Model.CurrentTabSummary.Nation.HasValue)
+                            {
+                                var theRegulator = Model.CurrentTabSummary.Nation.Value switch {
+                                    Nation.England => Localizer["summary-regulator-england"],
+                                    Nation.Scotland => Localizer["summary-regulator-scotland"],
+                                    Nation.Wales => Localizer["summary-regulator-wales"],
+                                    Nation.NorthernIreland => Localizer["summary-regulator-northern-ireland"],
+                                    _ => Localizer["summary-regulator"]
+                                    };
+
+                                <div class="govuk-heading-l">@Localizer["summary-data-for"] @theRegulator</div>
+                            }
+                            <div class="govuk-inset-text">
+                                <div>
+                                    @Localizer["summary-your-account-is-linked-to"] @Model.CurrentTabSummary.MemberCount
+                                    @(Model.CurrentTabSummary.MemberCount == 1 ? @Localizer["summary-member"] : @Localizer["summary-members"]).
+                                </div>
+                                @if (Model.CurrentTabSummary is { MemberCount: > 0,MembersLastUpdatedOn: not null })
+                                {
+                                    <div class="last-updated-date">@Localizer["summary-last-updated"]: @Model.CurrentTabSummary.MembersLastUpdatedOn.Value.ToString(DateOptions.Value.DateFormat)</div>
+
+                                    <a class="govuk-link--no-visited-state" href="@Url.Action("SchemeMembers", "SchemeMembership", new { complianceSchemeId = Model.CurrentComplianceSchemeId })">
+                                        @(Model.IsApprovedUser ? Localizer["summary-view-and-remove-members"] : Localizer["summary-view-members"])
+                                    </a>
+                                }
+                                else
+                                {
+                                    <div class="members-info">@Localizer["summary-members-info"]</div>
+                                }
+                            </div>
+                        </div>
+                    </feature>
+                    <feature name="ShowComplianceSchemeMemberManagement" negate="true">
+                        <div class="govuk-!-margin-bottom-4">&nbsp;</div>
+                    </feature>
+                }
+            </div>
+
+            <div class="two-card-row govuk-grid-row">
+                <div class="card-item govuk-grid-column-one-half govuk-card-body govuk-card govuk-card--grey govuk-card--border-bottom-blue">
+                    <h2 class="govuk-heading-m govuk-link">
+                        @Html.ActionLink(
+                            Localizer["report_organisation_details"].Value,
+                            "Get",
+                            "FileUploadCompanyDetailsSubLanding",
+                            null,
+                            new
+                            {
+                                @class = "govuk-link--no-visited-state"
+                            })
+                    </h2>
+                    <p class="govuk-body">@Localizer["in_x_you_must_report_data_for", GlobalVariables.Value.SchemeYear]</p>
+                    <ul class="govuk-list govuk-list--bullet">
+                        @foreach (var period in Model.SubmissionPeriods)
+                        {
+                            <li>@Localizer["date1_to_date2", period.StartMonth, period.EndMonth] @GlobalVariables.Value.SchemeYear</li>
+                        }
+                    </ul>
+                </div>
+                <div class="card-item govuk-grid-column-one-half govuk-card-body govuk-card govuk-card--grey govuk-card--border-bottom-blue">
+                    <h2 class="govuk-heading-m govuk-link">
+                        @Html.ActionLink(
+                            Localizer["report_packaging_data"].Value,
+                            "Get",
+                            "FileUploadSubLanding",
+                            null,
+                            new
+                            {
+                                @class = "govuk-link--no-visited-state"
+                            })
+                    </h2>
+                    <p class="govuk-body">@Localizer["in_x_you_must_report_data_for", GlobalVariables.Value.SchemeYear]</p>
+                    <ul class="govuk-list govuk-list--bullet">
+                        @foreach (var period in Model.SubmissionPeriods)
+                        {
+                            <li>@Localizer["date1_to_date2", period.StartMonth, period.EndMonth] @GlobalVariables.Value.SchemeYear</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-one-half">
+                    <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
+                        <div class="govuk-card-body">
+                            <h2 class="govuk-heading-m">@Localizer["packaging_recovery_notes"]</h2>
+                            <p class="govuk-body">@Localizer["no_action_needed"]</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

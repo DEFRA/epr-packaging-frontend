@@ -1,0 +1,81 @@
+@using static FrontendSchemeRegistration.Application.Enums.SubmissionPeriodStatus
+@using FrontendSchemeRegistration.Application.Enums
+
+@model FileUploadCompanyDetailsSubLandingViewModel
+
+@{
+    ViewData["Title"] = Localizer["tab_title"];
+}
+
+@await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
+
+@functions
+{
+    private static string GetClass(SubmissionPeriodStatus status) => status switch{
+        FileUploaded => "govuk-tag--yellow",
+        CannotStartYet => "govuk-tag--grey",
+        SubmittedToRegulator => "govuk-tag--green",
+        SubmittedAndHasRecentFileUpload => "govuk-tag--green",
+        _ => string.Empty
+        };
+}
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @if (Model.IsComplianceScheme)
+            {
+                <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0">@Model.ComplianceSchemeName</p>
+            }
+            <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">@Localizer[Model.IsComplianceScheme ? "report_your_member_organisation_detail" : "report_your_organisation_detail"]</h1>
+
+            <h2 class="govuk-heading-m">@Localizer["before_you_start"]</h2>
+            <p class="govuk-body">
+                @Localizer["read_the_guidance_on"] <a class="govuk-link" rel="noreferrer noopener" target="_blank" 
+                                                      href="@GuidanceLinks.Value.HowToReportOrganisationDetails">@Localizer["how_to_report_organisation_details"]</a>
+            </p>
+            
+            <h2 class="govuk-heading-m">@Localizer["if_youve_missed_a_deadline_to_submit"]</h2>
+            <p class="govuk-body">
+                @Localizer["if_youve_missed_a_deadline"] <a href="@GuidanceLinks.Value.HowToBuildCsvFileToReportYourOrganisationData"
+                                                            target="_blank" 
+                                                            class="govuk-link"
+                                                            rel="noreferrer noopener">@Localizer["check_the_govuk_guidance"]</a>
+            </p>
+        </div>
+    </div>
+
+    @using (Html.BeginForm(FormMethod.Post))
+    {
+        <div class="card-row govuk-!-margin-bottom-7">
+            @foreach (var submissionPeriodDetail in Model.SubmissionPeriodDetails)
+            {
+                <div class="govuk-card govuk-!-margin-top-5">
+                    <div class="govuk-card-body">
+                        <h3 class="govuk-heading-m govuk-!-margin-bottom-2">
+                            @Localizer[Model.IsComplianceScheme ? "report_member_organisation_details_for" : "report_organisation_details_for"] @SharedLocalizer[submissionPeriodDetail.DataPeriod]
+                        </h3>
+                        @if (Model.IsComplianceScheme)
+                        {
+                            <p class="govuk-heading-m">@Localizer["large_organisations"]</p>
+                        }
+                        <p class="govuk-body">@Localizer["deadline"] @submissionPeriodDetail.Deadline.ToReadableLongMonthDeadlineDate()</p>
+                        <strong class="@(("govuk-tag " + GetClass(submissionPeriodDetail.Status)).TrimEnd())">@Localizer[submissionPeriodDetail.Status.GetLocalizedName()]</strong>
+                    </div>
+                    <div class="govuk-card-body">
+                        @{
+                            if (!submissionPeriodDetail.Status.In(CannotStartYet))
+                            {
+                                <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer[Model.IsComplianceScheme ? "report_members_details" : "report_organisation_details"]</button>
+                            }
+                            else
+                            {
+                                <br/>
+                            }
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</main>

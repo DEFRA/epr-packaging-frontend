@@ -1,0 +1,23 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="problem_with_the_submit_service" xml:space="preserve">
+        <value>There is a problem with the service - we did not submit your members’ details</value>
+    </data>
+    <data name="must_try_to_submit_later" xml:space="preserve">
+        <value>You must try to submit your members’ details again, as we haven’t managed to send it to the environmental regulator.</value>
+    </data>
+    <data name="submit_members_organisation_details" xml:space="preserve">
+        <value>Submit members’ organisation details</value>
+    </data>
+</root>

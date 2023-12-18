@@ -1,0 +1,49 @@
+@{
+    ViewData["Title"] = Localizer["confirm_your_choice_of_compliance_scheme"];
+}
+@model ComplianceSchemeConfirmationViewModel
+
+@using (Html.BeginForm(FormMethod.Post))
+{
+    <main class="govuk-main-wrapper" id="main-content" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    @await Html.PartialAsync("Partials/Govuk/_ErrorSummary", ViewData.ModelState)
+                }
+
+                @Html.HiddenFor(model => model.SelectedComplianceScheme.Id)
+                @Html.HiddenFor(model => model.SelectedComplianceScheme.Name)
+                <h1 class="govuk-heading-l">@Localizer["confirm_your_choice_of_compliance_scheme"]</h1>
+                @if (Model.CurrentComplianceScheme == null)
+                {
+                    <p class="govuk-body">
+                        @Localizer["you_told_us_you_will_be_using"]
+                        <b>@Model.SelectedComplianceScheme.Name</b>
+                        @Localizer["as_your_compliance_scheme"]
+                    </p>
+                }
+                else
+                {
+                    <p class="govuk-body">
+                        @Localizer["you_have_changed_your_compliance_scheme"]<br/>
+                        @Localizer["you_were_using"] @Model.CurrentComplianceScheme.ComplianceSchemeName<br/><br/>
+                        @Localizer["you_are_now_using"] <b>@Model.SelectedComplianceScheme.Name</b>
+                    </p>
+                }
+                <p class="govuk-body">
+                    @Localizer["if_you_selected_the_wrong_compliance_scheme"],
+                    @Html.ActionLink(Localizer["you_can_go_back_and_change_it"].Value,
+                        "SelectComplianceScheme",
+                        "FrontendSchemeRegistration",
+                        null,
+                        new {@class = "govuk-link"}
+                        )
+                </p>
+                <button class="govuk-button" data-module="govuk-button" type="submit">@Localizer["confirm"]</button>
+            </div>
+        </div>
+    </main>
+}

@@ -1,0 +1,64 @@
+@model TelephoneNumberViewModel
+
+@{
+    ViewData["Title"] = Localizer["TelephoneNumber.Title"];
+    var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer);
+}
+
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    @await Html.PartialAsync("Partials/NominatedDelegatedPerson/_ErrorSummary", errorsViewModel)
+                }
+                <form asp-controller="NominatedDelegatedPerson" asp-action="TelephoneNumber" asp-route-id="@Model.EnrolmentId.ToString()" method="post">
+                    <div class="govuk-form-group">
+                        <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+                            @Localizer["TelephoneNumber.Question"]
+                        </h1>
+
+                        <p class="govuk-body">
+                            @Localizer["TelephoneNumber.Question.Hint"]
+                        </p>
+
+                        <div class="govuk-form-group@(!ViewData.ModelState.IsValid ? " govuk-form-group--error" : "")">
+                            <label class="govuk-label" gov-for="TelephoneNumber">
+                                @Localizer["TelephoneNumber.TelephoneNumber"]
+                            </label>
+                            
+                            <div id="telephone-number-hint" class="govuk-hint">
+                                @Localizer["TelephoneNumber.InternationalNumbers.Hint"]
+                            </div>
+
+                            @if (!ViewData.ModelState.IsValid)
+                            {
+                                @await Html.PartialAsync("Partials/NominatedDelegatedPerson/_FormItemError", 
+                                           errorsViewModel[nameof(TelephoneNumberViewModel.TelephoneNumber)])
+                            }
+
+                            <input class="govuk-input govuk-input--width-20 @Html.Raw(ViewData.ModelState.ErrorCount>0?"govuk-input--error":"")"
+                                   type="text"
+                                   maxlength="20"
+                                   gov-for="TelephoneNumber"
+                                   gov-value="@Model.TelephoneNumber"
+                                   aria-describedby="telephone-number-hint">
+                        </div>
+
+                        <div class="govuk-inset-text">
+                            <p class="govuk-body">
+                                @Localizer["TelephoneNumber.NotificationInfo"]
+                                <strong>@Model.EmailAddress</strong>
+                            </p>
+                        </div>
+                    </div>
+
+                    <button class="govuk-button" data-module="govuk-button">
+                        @SharedLocalizer["continue"]
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
