@@ -11,6 +11,8 @@
         {
             @await Html.PartialAsync("Partials/Notifications/_NominatedAsDelegatedPerson", Model.Notification.NominatedEnrolmentId)
         }
+        
+        @await Component.InvokeAsync("PendingApprovalNotification")
 
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full govuk-!-margin-top-4">

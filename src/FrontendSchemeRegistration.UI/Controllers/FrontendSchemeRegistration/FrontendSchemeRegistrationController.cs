@@ -1,26 +1,26 @@
-﻿namespace FrontendSchemeRegistration.UI.Controllers.FrontendSchemeRegistration;
-
-using Application.Constants;
-using Application.DTOs.ComplianceScheme;
-using Application.DTOs.Submission;
-using Application.Options;
-using Application.Services.Interfaces;
-using Attributes;
-using Constants;
-using ControllerExtensions;
-using EPR.Common.Authorization.Constants;
+﻿using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
-using Extensions;
+using FrontendSchemeRegistration.Application.Constants;
+using FrontendSchemeRegistration.Application.DTOs.ComplianceScheme;
+using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.Options;
+using FrontendSchemeRegistration.Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Constants;
+using FrontendSchemeRegistration.UI.Controllers.Attributes;
+using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
+using FrontendSchemeRegistration.UI.Extensions;
+using FrontendSchemeRegistration.UI.Resources.Views.ChangeComplianceSchemeOptions;
+using FrontendSchemeRegistration.UI.Resources.Views.Compliance;
+using FrontendSchemeRegistration.UI.Resources.Views.ComplianceSchemeStop;
+using FrontendSchemeRegistration.UI.Resources.Views.UsingComplianceScheme;
+using FrontendSchemeRegistration.UI.Sessions;
+using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
-using Resources.Views.ChangeComplianceSchemeOptions;
-using Resources.Views.Compliance;
-using Resources.Views.ComplianceSchemeStop;
-using Resources.Views.UsingComplianceScheme;
-using Sessions;
-using ViewModels;
+
+namespace FrontendSchemeRegistration.UI.Controllers.FrontendSchemeRegistration;
 
 public class FrontendSchemeRegistrationController : Controller
 {
@@ -442,6 +442,22 @@ public class FrontendSchemeRegistrationController : Controller
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
         session.RegistrationSession.Journey = new List<string> { PagePaths.HomePageSelfManaged };
         return await SaveSessionAndRedirect(session, nameof(UsingAComplianceScheme), PagePaths.HomePageSelfManaged, PagePaths.UsingAComplianceScheme);
+    }
+
+    [HttpGet]
+    [Route(PagePaths.ApprovedPersonCreated)]
+    [AuthorizeForScopes(ScopeKeySection = "FacadeAPI:DownstreamScope")]
+    public async Task<IActionResult> ApprovedPersonCreated(string notification)
+    {
+        var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+        session.RegistrationSession.NotificationMessage = notification;
+
+        return await SaveSessionAndRedirect(
+            session,
+            nameof(LandingController.Get),
+            nameof(LandingController).RemoveControllerFromName(),
+            PagePaths.ApprovedPersonCreated,
+            PagePaths.Root);
     }
 
     private static void ClearRestOfJourney(FrontendSchemeRegistrationSession session, string currentPagePath)

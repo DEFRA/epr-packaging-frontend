@@ -2,6 +2,7 @@
 
 public static class PagePaths
 {
+    public const string Root = "/";
     public const string ComplianceSchemeSelectionConfirmation = "confirmation";
     public const string ComplianceSchemeStop = "stop";
     public const string ComplianceSchemeMemberLanding = "manage-compliance-scheme";
@@ -53,4 +54,5 @@ public static class PagePaths
     public const string ConfirmationOfRemoval = "/confirmation-of-removal";
     public const string UpdateCookieAcceptance = "update-cookie-acceptance";
     public const string AcknowledgeCookieAcceptance = "acknowledge-cookie-acceptance";
+    public const string ApprovedPersonCreated = "/approved-person-created";
 }

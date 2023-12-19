@@ -30,8 +30,9 @@
                                 </div>
 
                                 @if (!ViewData.ModelState.IsValid)
-                                {
-                                    <span class="govuk-error-message">@Localizer["ReasonForRemoval.Error"]</span>
+                                {                             
+
+                                    @await Html.PartialAsync("Partials/Govuk/_ErrorsViewModelError", errorsViewModel["SelectedReasonForRemoval"])
                                 }
                                 <div class="govuk-radios" data-module="govuk-radios">
                                     @for (int i = 0; i <= Model.ReasonForRemoval.Count - 1; i++)

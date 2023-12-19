@@ -1,7 +1,7 @@
-﻿namespace FrontendSchemeRegistration.UI.Sessions;
-
-using EPR.Common.Authorization.Interfaces;
+﻿using EPR.Common.Authorization.Interfaces;
 using EPR.Common.Authorization.Models;
+
+namespace FrontendSchemeRegistration.UI.Sessions;
 
 public class FrontendSchemeRegistrationSession : IHasUserData
 {

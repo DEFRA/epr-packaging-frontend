@@ -248,5 +248,17 @@ namespace FrontendSchemeRegistration.UI.Resources {
                 return ResourceManager.GetString("sign_in", resourceCulture);
             }
         }
+        
+        internal static string created_new_approved_person {
+            get {
+                return ResourceManager.GetString("created_new_approved_person", resourceCulture);
+            }
+        }
+        
+        internal static string success {
+            get {
+                return ResourceManager.GetString("success", resourceCulture);
+            }
+        }
     }
 }

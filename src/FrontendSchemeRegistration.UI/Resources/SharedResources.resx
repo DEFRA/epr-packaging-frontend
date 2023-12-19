@@ -119,4 +119,10 @@
     <data name="sign_in" xml:space="preserve">
         <value />
     </data>
+    <data name="created_new_approved_person" xml:space="preserve">
+        <value />
+    </data>
+    <data name="success" xml:space="preserve">
+        <value />
+    </data>
 </root>
