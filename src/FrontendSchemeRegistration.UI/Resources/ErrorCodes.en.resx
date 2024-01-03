@@ -171,4 +171,7 @@ Read the guidance about how to create your organisation details file. Once youâ€
     <data name="59" xml:space="preserve">
         <value>Packaging material weight is less than 100. Check all packaging weights are in kg and not tonnes.</value>
     </data>
+    <data name="64" xml:space="preserve">
+        <value>Check packaging material weight (kg) and units are correct</value>
+    </data>
 </root>

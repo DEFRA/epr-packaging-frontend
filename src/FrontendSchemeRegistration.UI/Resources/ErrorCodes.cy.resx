@@ -171,4 +171,7 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
     <data name="59" xml:space="preserve">
         <value>Mae pwysau'r deunydd pecynwaith yn llai na 100. Gwiriwch fod yr holl bwysau pecynwaith mewn kg ac nid tunelli.</value>
     </data>
+    <data name="64" xml:space="preserve">
+        <value>Gwiriwch fod pwysau'r deunydd pecynwaith (kg) a'r unedau yn gywir</value>
+    </data>
 </root>
