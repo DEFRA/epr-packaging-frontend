@@ -1,0 +1,47 @@
+﻿<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="check_the_warnings" xml:space="preserve">
+        <value>Data pecynwaith wedi’i uwchlwytho – gwiriwch y rhybuddion</value>
+    </data>
+    <data name="decide_if_you_want_to_update" xml:space="preserve">
+        <value>Penderfynwch a ydych chi am ddiweddaru unrhyw ddata.</value>
+    </data>
+    <data name="download_warning_report" xml:space="preserve">
+        <value>Lawrlwythwch eich adroddiad gwallau (CSV, {0} ar y mwyaf)</value>
+    </data>
+    <data name="how_to_check_warnings" xml:space="preserve">
+        <value>Sut i wirio rhybuddion</value>
+    </data>
+    <data name="tells_you_where_warnings_are" xml:space="preserve">
+        <value>Mae hyn yn dweud wrthoch chi ble mae’r rhybuddion yn eich ffeil.</value>
+    </data>
+    <data name="there_are_some_warnings" xml:space="preserve">
+        <value>Mae rhywfaint o rybuddion. Mae rhybuddion yn gofnodion anarferol yn eich ffeil y bydd angen ichi eu gwirio, ond fyddan nhw ddim yn atal eich ffeil rhag cael ei chyflwyno i’r rheoleiddiwr amgylcheddol. </value>
+    </data>
+    <data name="upload_new_file_or_keep" xml:space="preserve">
+        <value>Uwchlwythwch ffeil newydd neu cadwch eich ffeil bresennol.</value>
+    </data>
+    <data name="use_the_report_to_check_warnings" xml:space="preserve">
+        <value>Defnyddiwch yr adroddiad i wirio’r rhybuddion. Efallai y bydd arnoch chi angen y</value>
+    </data>
+    <data name="we_can_only_show_x_warnings" xml:space="preserve">
+        <value>Dim ond y {0} cyntaf o rybuddion yn yr adroddiad y gallwn eu dangos ichi. </value>
+    </data>
+    <data name="your_data_file_has_been_uploaded" xml:space="preserve">
+        <value>Mae eich ffeil ddata wedi’i huwchlwytho i gyfrif eich sefydliad. Does dim gwallau.</value>
+    </data>
+    <data name="file_specification_guidance" xml:space="preserve">
+        <value>canllawiau ar fanyleb y ffeil hefyd (yn agor mewn ffenestr newydd)</value>
+    </data>
+</root>

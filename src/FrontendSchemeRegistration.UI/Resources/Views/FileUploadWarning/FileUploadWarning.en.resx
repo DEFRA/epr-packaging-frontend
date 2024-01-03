@@ -1,0 +1,47 @@
+﻿<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="check_the_warnings" xml:space="preserve">
+        <value>Packaging data uploaded – check the warnings</value>
+    </data>
+    <data name="your_data_file_has_been_uploaded" xml:space="preserve">
+        <value>Your data file has been uploaded to your organisation’s account. There are 0 errors.</value>
+    </data>
+    <data name="there_are_some_warnings" xml:space="preserve">
+        <value>There are some warnings. Warnings are unusual entries in your file you need to check, but they will not prevent your file from being submitted to the environmental regulator.</value>
+    </data>
+    <data name="download_warning_report" xml:space="preserve">
+        <value>Download your warning report (CSV, maximum {0})</value>
+    </data>
+    <data name="tells_you_where_warnings_are" xml:space="preserve">
+        <value>This tells you where the warnings are in your file.</value>
+    </data>
+    <data name="we_can_only_show_x_warnings" xml:space="preserve">
+        <value>We can only show you the first {0} warnings in the report.</value>
+    </data>
+    <data name="how_to_check_warnings" xml:space="preserve">
+        <value>How to check warnings</value>
+    </data>
+    <data name="use_the_report_to_check_warnings" xml:space="preserve">
+        <value>Use the report to check the warnings. You may also need the </value>
+    </data>
+    <data name="file_specification_guidance" xml:space="preserve">
+        <value>file specification guidance (opens in a new window)</value>
+    </data>
+    <data name="decide_if_you_want_to_update" xml:space="preserve">
+        <value>Decide if you want to update any data.</value>
+    </data>
+    <data name="upload_new_file_or_keep" xml:space="preserve">
+        <value>Upload a new file or keep your existing file.</value>
+    </data>
+</root>

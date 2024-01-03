@@ -1,34 +1,35 @@
-﻿namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
-
-using Application.Constants;
-using Application.DTOs.Submission;
-using Application.Options;
-using Application.Services.Interfaces;
-using EPR.Common.Authorization.Sessions;
+﻿using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
+using FrontendSchemeRegistration.Application.Constants;
+using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.Options;
+using FrontendSchemeRegistration.Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Controllers;
+using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
+using FrontendSchemeRegistration.UI.Sessions;
+using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Moq;
-using UI.Controllers;
-using UI.Controllers.ControllerExtensions;
-using UI.Sessions;
-using UI.ViewModels;
+
+namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
 
 [TestFixture]
-public class FileUploadFailureControllerTests
+public class FileUploadWarningControllerTests
 {
     private static readonly Guid SubmissionId = Guid.NewGuid();
     private Mock<ISubmissionService> _submissionServiceMock;
-    private FileUploadFailureController _systemUnderTest;
+    private FileUploadWarningController _systemUnderTest;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
+    private ValidationOptions _validationOptions;
 
     [SetUp]
     public void SetUp()
     {
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
-        var validationOptions = new ValidationOptions { MaxIssuesToProcess = 1000 };
+        _validationOptions = new ValidationOptions { MaxIssuesToProcess = 100 };
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
@@ -39,7 +40,11 @@ public class FileUploadFailureControllerTests
             });
 
         _submissionServiceMock = new Mock<ISubmissionService>();
-        _systemUnderTest = new FileUploadFailureController(_submissionServiceMock.Object, _sessionManagerMock.Object, Options.Create(validationOptions));
+        _systemUnderTest = new FileUploadWarningController(
+            _submissionServiceMock.Object,
+            _sessionManagerMock.Object,
+            Options.Create(_validationOptions));
+
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
@@ -92,27 +97,7 @@ public class FileUploadFailureControllerTests
     }
 
     [Test]
-    public async Task Get_RedirectsToFileUploadGet_WhenGetSubmissionAsyncReturnsSubmissionWithValidationPassTrue()
-    {
-        // Arrange
-        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(new PomSubmission
-        {
-            PomDataComplete = true,
-            ValidationPass = true
-        });
-
-        // Act
-        var result = await _systemUnderTest.Get() as RedirectToActionResult;
-
-        // Assert
-        result.ActionName.Should().Be("Get");
-        result.ControllerName.Should().Be("FileUpload");
-
-        _submissionServiceMock.Verify(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>()), Times.Once);
-    }
-
-    [Test]
-    public async Task Get_ReturnsFileUploadFailureView_WhenGetSubmissionAsyncReturnsCompletedSubmissionWithFailedValidation()
+    public async Task Get_ReturnsFileUploadWarningView_WhenGetSubmissionAsyncReturnsCompletedValidSubmissionWithOnlyWarnings()
     {
         // Arrange
         const string fileName = "example.csv";
@@ -120,19 +105,20 @@ public class FileUploadFailureControllerTests
         {
             PomFileName = fileName,
             PomDataComplete = true,
-            ValidationPass = false
+            ValidationPass = true,
+            HasWarnings = true
         });
 
         // Act
         var result = await _systemUnderTest.Get() as ViewResult;
 
         // Assert
-        result.ViewName.Should().Be("FileUploadFailure");
-        result.Model.Should().BeEquivalentTo(new FileUploadFailureViewModel
+        result.ViewName.Should().Be("FileUploadWarning");
+        result.Model.Should().BeEquivalentTo(new FileUploadWarningViewModel()
         {
             FileName = fileName,
             SubmissionId = SubmissionId,
-            MaxErrorsToProcess = 1000
+            MaxWarningsToProcess = 100
         });
 
         _submissionServiceMock.Verify(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>()), Times.Once);
@@ -147,7 +133,7 @@ public class FileUploadFailureControllerTests
         {
             PomFileName = fileName,
             PomDataComplete = true,
-            ValidationPass = false
+            ValidationPass = true
         });
 
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))

@@ -117,14 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="upload_file" xml:space="preserve">
-    <value>Uwchlwytho ffeil </value>
+  <data name="upload_your_file" xml:space="preserve">
+    <value>Uwchlwythwch eich ffeil</value>
   </data>
   <data name="file_upload_is_invalid" xml:space="preserve">
     <value>Mae’r ymgais i uwchlwytho ffeil yn annilys – rhowch gynnig arall arni</value>
   </data>
   <data name="select_a_csv_file" xml:space="preserve">
-    <value>Dewiswch ffeil CSV </value>
+    <value>Dewiswch ffeil CSV</value>
   </data>
   <data name="the_selected_file_is_empty" xml:space="preserve">
     <value>Mae’r ffeil a ddewiswyd yn wag</value>
@@ -139,15 +139,27 @@
     <value>Uwchlwytho data ar gyfer {0}</value>
   </data>
   <data name="upload_your_members_packaging_data" xml:space="preserve">
-    <value>Uwchhlwytho data pecynwaith eich aelodau mewn ffeil CSV.</value>
+    <value>Uwchlwytho data pecynwaith eich aelodau mewn ffeil CSV. Rhaid i’r ffeil fod yn llai na 256MB.</value>
   </data>
   <data name="once_weve_validated_the_data" xml:space="preserve">
-    <value>Unwaith y byddwn wedi dilysu’r data, rydym yn storio’r ffeil ar eich cyfrif. Os oes problem, rydym yn gwrthod yr ymgais i’w huwchlwytho ac yn dweud wrthoch chi sut i drwsio’r ffeil.</value>
+    <value>Unwaith y byddwn wedi dilysu’r data, rydym yn storio’r ffeil ar eich cyfrif.</value>
   </data>
   <data name="upload_your_organisations_packaging_data" xml:space="preserve">
-    <value>Uwchlwytho data pecynwaith eich sefydliadau mewn ffeil CSV.</value>
+    <value>Uwchlwytho data pecynwaith eich sefydliad mewn ffeil CSV. Rhaid i’r ffeil fod yn llai na 256MB.</value>
   </data>
   <data name="upload_packaging_data_to_your_account" xml:space="preserve">
     <value>Uwchlwytho data pecynwaith i’ch cyfrif</value>
+  </data>
+  <data name="errors_youll_need_to_fix" xml:space="preserve">
+    <value>gwallau – bydd angen ichi drwsio’r holl wallau ac uwchlwytho’ch ffeil eto</value>
+  </data>
+  <data name="if_there_is_a_problem_well_tell_you_about" xml:space="preserve">
+    <value>Os oes problem, byddwn yn dweud wrthoch chi am y canlynol:</value>
+  </data>
+  <data name="warnings_these_are_unusual_entries_youll_need_to_check" xml:space="preserve">
+    <value>rhybuddion – mae’r rhain yn gofnodion anarferol y bydd angen ichi eu gwirio, fel pwysau pecynwaith isel iawn, ond fyddan nhw ddim yn atal eich ffeil rhag cael ei chyflwyno i’r rheoleiddiwr amgylcheddol</value>
+  </data>
+  <data name="upload_file" xml:space="preserve">
+    <value>Uwchlwytho ffeil</value>
   </data>
 </root>

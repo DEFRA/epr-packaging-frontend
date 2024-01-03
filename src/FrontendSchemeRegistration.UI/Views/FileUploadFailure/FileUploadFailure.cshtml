@@ -38,7 +38,7 @@
                 1. @Html.ActionLink(
                          Localizer["download_error_report"].Value,
                          "Get",
-                         "FileUploadErrorReport",
+                         "FileUploadIssueReport",
                          new
                          {
                              submissionId = Model.SubmissionId
@@ -54,7 +54,7 @@
             <h3 class="govuk-notification-banner__heading" data-testid="pom-upload-banner-text">
                 @Localizer["how_the_error_report_works"]
             </h3>
-            <p class="govuk-body">@Localizer["your_error_report_only_show_first_x_errors", Model.MaxErrorsToProcess]</p>
+            <p class="govuk-body">@Localizer["your_error_report_only_show_first_x_errors", string.Format($"{Model.MaxErrorsToProcess:n0}")]</p>
             <p class="govuk-body">@Localizer["you_should_correct_these_errors"]</p>
 
             @Html.ActionLink(

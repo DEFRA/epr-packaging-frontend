@@ -1,16 +1,16 @@
-﻿namespace FrontendSchemeRegistration.UI.Controllers;
-
-using Application.Constants;
-using Application.DTOs.Submission;
-using Application.Services.Interfaces;
-using EPR.Common.Authorization.Constants;
+﻿using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
-using Extensions;
+using FrontendSchemeRegistration.Application.Constants;
+using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
+using FrontendSchemeRegistration.UI.Extensions;
+using FrontendSchemeRegistration.UI.Sessions;
+using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Sessions;
-using UI.Attributes.ActionFilters;
-using ViewModels;
+
+namespace FrontendSchemeRegistration.UI.Controllers;
 
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
 [Route(PagePaths.FileUploading)]
@@ -46,11 +46,11 @@ public class FileUploadingController : Controller
         }
 
         return submission.PomDataComplete || submission.Errors.Any()
-            ? GetNextPageAsync(submission.Id, submission.ValidationPass, submission.Errors.Any()).Result
+            ? GetNextPageAsync(submission.Id, submission.ValidationPass, submission.HasWarnings, submission.Errors.Any()).Result
             : View("FileUploading", new FileUploadingViewModel { SubmissionId = submissionId.ToString() });
     }
 
-    private async Task<RedirectToActionResult> GetNextPageAsync(Guid submissionId, bool validationPass, bool exceptionErrorOccurred)
+    private async Task<RedirectToActionResult> GetNextPageAsync(Guid submissionId, bool validationPass, bool hasWarnings, bool exceptionErrorOccurred)
     {
         var routeValues = new RouteValueDictionary { { "submissionId", submissionId.ToString() } };
 
@@ -68,8 +68,11 @@ public class FileUploadingController : Controller
             await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
         }
 
-        return validationPass
-            ? RedirectToAction("Get", "FileUploadCheckFileAndSubmit", routeValues)
-            : RedirectToAction("Get", "FileUploadFailure", routeValues);
+        if (!validationPass)
+        {
+            return RedirectToAction("Get", "FileUploadFailure", routeValues);
+        }
+
+        return RedirectToAction("Get", hasWarnings ? "FileUploadWarning" : "FileUploadCheckFileAndSubmit", routeValues);
     }
 }

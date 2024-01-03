@@ -74,6 +74,10 @@ docker run -d --name epr-producers- -p 6379:6379 -p 8001:8001 redis/redis-stack:
 ### Inspect Redis keys in the session
 To view the keys in Redis cache, open browser and point at: http://localhost:8001/redis-stack/browser
 
+## MaxIssuesToProcess and MaxIssueReportSize app settings
+This is currently set to 1000 in the app settings. Basic calculations/tests for this limit means the maximum error/warning report size will never be greater than 5MB. 
+If this issue limit increases the MaxIssueReportSize setting will also need changed to reflect this.
+
 # How To Test
 
 ### Unit tests

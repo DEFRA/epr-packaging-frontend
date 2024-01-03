@@ -117,8 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="upload_file" xml:space="preserve">
-    <value>Upload file</value>
+  <data name="upload_your_file" xml:space="preserve">
+    <value>Upload your file</value>
   </data>
   <data name="file_upload_is_invalid" xml:space="preserve">
     <value>File upload is invalid - try again</value>
@@ -139,15 +139,27 @@
     <value>Upload data for {0}</value>
   </data>
   <data name="upload_your_members_packaging_data" xml:space="preserve">
-    <value>Upload your members’ packaging data in a CSV file.</value>
+    <value>Upload your members’ packaging data in a CSV file. The file must be smaller than 256MB.</value>
   </data>
   <data name="once_weve_validated_the_data" xml:space="preserve">
-    <value>Once we’ve validated the data, we store the file on your account. If there’s a problem, we reject the upload and tell you how to fix the file.</value>
+    <value>Once we have validated the data, we store the file on your account.</value>
+  </data>
+  <data name="if_there_is_a_problem_well_tell_you_about" xml:space="preserve">
+    <value>If there’s a problem, we’ll tell you about:</value>
   </data>
   <data name="upload_your_organisations_packaging_data" xml:space="preserve">
-    <value>Upload your organisations’ packaging data in a CSV file.</value>
+    <value>Upload your organisation’s packaging data in a CSV file. The file must be smaller than 256MB.</value>
   </data>
   <data name="upload_packaging_data_to_your_account" xml:space="preserve">
     <value>Upload packaging data to your account</value>
+  </data>
+  <data name="errors_youll_need_to_fix" xml:space="preserve">
+    <value>errors – you’ll need to fix all errors and upload your file again</value>
+  </data>
+  <data name="warnings_these_are_unusual_entries_youll_need_to_check" xml:space="preserve">
+    <value>warnings – these are unusual entries you’ll need to check, like very low packaging weights, but they will not prevent your file from being submitted to the environmental regulator</value>
+  </data>
+  <data name="upload_file" xml:space="preserve">
+    <value>Upload file</value>
   </data>
 </root>

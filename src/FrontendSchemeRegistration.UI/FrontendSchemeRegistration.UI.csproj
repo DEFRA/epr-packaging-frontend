@@ -494,6 +494,10 @@
             <Generator>ResXFileCodeGenerator</Generator>
             <LastGenOutput>MemberDetails.en.Designer.cs</LastGenOutput>
         </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Views\FileUploadWarning\FileUploadWarning.resx">
+          <Generator>ResXFileCodeGenerator</Generator>
+          <LastGenOutput>FileUploadWarning.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Update="Resources\Views\FileUploadSubmissionError\FileUploadSubmissionError.resx">
@@ -798,6 +802,11 @@
             <DependentUpon>MemberDetails.resx</DependentUpon>
         </Compile>
         <Compile Remove="ViewModels\MemberDetailsModel.cs" />
+        <Compile Update="Resources\Views\FileUploadWarning\FileUploadWarning.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>FileUploadWarning.resx</DependentUpon>
+        </Compile>
     </ItemGroup>
     <ItemGroup>
         <Compile Update="Resources\SharedResources.Designer.cs">

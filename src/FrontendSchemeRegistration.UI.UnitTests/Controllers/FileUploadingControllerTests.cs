@@ -1,18 +1,18 @@
-﻿namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
-
-using Application.Constants;
-using Application.DTOs.Submission;
-using Application.Services.Interfaces;
-using EPR.Common.Authorization.Sessions;
+﻿using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
+using FrontendSchemeRegistration.Application.Constants;
+using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Controllers;
+using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
+using FrontendSchemeRegistration.UI.Sessions;
+using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using Moq;
-using UI.Controllers;
-using UI.Controllers.ControllerExtensions;
-using UI.Sessions;
-using UI.ViewModels;
+
+namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
 
 [TestFixture]
 public class FileUploadingControllerTests
@@ -54,14 +54,14 @@ public class FileUploadingControllerTests
     }
 
     [Test]
-    public async Task Get_RedirectsToFileUploadCheckFileAndSubmitGet_WhenUploadHasCompletedAndHasNoErrors()
+    public async Task Get_RedirectsToFileUploadCheckFileAndSubmitGet_WhenUploadHasCompletedAndHasNoErrorsOrWarnings()
     {
         // Arrange
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(new PomSubmission
         {
             Id = SubmissionId,
             PomDataComplete = true,
-            ValidationPass = true,
+            ValidationPass = true
         });
 
         // Act
@@ -70,6 +70,27 @@ public class FileUploadingControllerTests
         // Assert
         result.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("FileUploadCheckFileAndSubmit");
+        result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId.ToString());
+    }
+
+    [Test]
+    public async Task Get_RedirectsToFileUploadWarningGet_WhenUploadHasCompletedAndHasWarningsWithNoErrors()
+    {
+        // Arrange
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(new PomSubmission
+        {
+            Id = SubmissionId,
+            PomDataComplete = true,
+            ValidationPass = true,
+            HasWarnings = true
+        });
+
+        // Act
+        var result = await _systemUnderTest.Get() as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadWarning");
         result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId.ToString());
     }
 

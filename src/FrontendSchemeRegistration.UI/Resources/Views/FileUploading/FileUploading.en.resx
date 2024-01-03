@@ -124,7 +124,7 @@
     <value>Uploading file and validating data</value>
   </data>
   <data name="paragraph_1" xml:space="preserve">
-    <value>This may take a few minutes - we’ll refresh the page automatically until it is done.</value>
+    <value>This may take a few minutes. We’ll refresh the page automatically until it is done.</value>
   </data>
   <data name="paragraph_2" xml:space="preserve">
     <value>Do not close the page and do not refresh it yourself.</value>

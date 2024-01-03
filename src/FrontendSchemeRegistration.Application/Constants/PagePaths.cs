@@ -14,6 +14,7 @@ public static class PagePaths
     public const string FileUploadSubLanding = "/file-upload-sub-landing";
     public const string FileUploadSuccess = "/file-upload-success";
     public const string FileUploadFailure = "/file-upload-failure";
+    public const string FileUploadWarning = "/check-warnings";
     public const string FileUploadErrorReport = "/file-upload-error-report";
     public const string FileUploading = "/file-uploading";
     public const string FileUploadCompanyDetails = "/file-upload-company-details";

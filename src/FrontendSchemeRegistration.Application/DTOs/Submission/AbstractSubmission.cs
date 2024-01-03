@@ -1,7 +1,7 @@
-﻿namespace FrontendSchemeRegistration.Application.DTOs.Submission;
+﻿using System.Diagnostics.CodeAnalysis;
+using FrontendSchemeRegistration.Application.Enums;
 
-using System.Diagnostics.CodeAnalysis;
-using Enums;
+namespace FrontendSchemeRegistration.Application.DTOs.Submission;
 
 [ExcludeFromCodeCoverage]
 public abstract class AbstractSubmission
@@ -13,6 +13,8 @@ public abstract class AbstractSubmission
     public string SubmissionPeriod { get; set; }
 
     public bool ValidationPass { get; set; }
+
+    public bool HasWarnings { get; set; }
 
     public bool HasValidFile { get; set; }
 

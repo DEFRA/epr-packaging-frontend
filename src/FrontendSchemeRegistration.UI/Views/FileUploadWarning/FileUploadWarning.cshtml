@@ -1,0 +1,68 @@
+@model FileUploadWarningViewModel
+
+@{
+    ViewData["Title"] = Localizer["check_the_warnings"];
+}
+
+@await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @await Html.PartialAsync("Partials/Govuk/_ErrorSummary", ViewData.ModelState)
+            }
+
+            <h1 class="govuk-heading-l govuk-!-margin-bottom-7">@Localizer["check_the_warnings"]</h1>
+
+            <p class="govuk-body">@Localizer["your_data_file_has_been_uploaded"]</p>
+
+            <p class="govuk-body">@Localizer["there_are_some_warnings"]</p>
+
+            <p class="govuk-body">
+                @Html.ActionLink(
+                    string.Format(Localizer["download_warning_report"].Value, Model.MaxReportSize),
+                    "Get",
+                    "FileUploadIssueReport",
+                    new
+                    {
+                        submissionId = Model.SubmissionId
+                    },
+                    new
+                    {
+                        @class = "govuk-link govuk-!-font-size-19 govuk-!-margin-bottom-4 govuk-link govuk-link--no-visited-state"
+                    }). @Localizer["tells_you_where_warnings_are"]
+            </p>
+
+            <p class="govuk-body">@Localizer["we_can_only_show_x_warnings", string.Format($"{Model.MaxWarningsToProcess:n0}")]</p>
+
+            <details class="govuk-details" data-module="govuk-details">
+                <summary class="govuk-details__summary">
+                    <span class="govuk-details__summary-text">
+                        @Localizer["how_to_check_warnings"]
+                        </span>
+                </summary>
+                <div class="govuk-details__text">
+                    <p class="govuk-body">
+                        1. @Localizer["use_the_report_to_check_warnings"]<a href="@GuidanceLinks.Value.HowToBuildCsvFileToReportYourPackagingData"
+                              class="govuk-link" rel="noreferrer noopener" target="_blank">
+                            @Localizer["file_specification_guidance"]</a>.
+                    </p>
+                    <p class="govuk-body">2. @Localizer["decide_if_you_want_to_update"]</p>
+                    <p class="govuk-body">3. @Localizer["upload_new_file_or_keep"]</p>
+                </div>
+            </details>
+
+            @Html.ActionLink(
+                SharedLocalizer["continue"],
+                "Get",
+                "FileUploadCheckFileAndSubmit",
+                new {Model.SubmissionId},
+                new
+                {
+                    @class = "govuk-button"
+                })
+        </div>
+    </div>
+</main>
