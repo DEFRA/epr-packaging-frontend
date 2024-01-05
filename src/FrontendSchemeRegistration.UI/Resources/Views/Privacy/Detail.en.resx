@@ -348,4 +348,7 @@
   <data name="Privacy.Profiling" xml:space="preserve">
     <value>profiling (automated processing of personal data to evaluate certain things about an individual)</value>
   </data>
+  <data name="Privacy.Heading" xml:space="preserve">
+    <value>Privacy notice - ‘Report packaging data’ service</value>
+  </data>
 </root>
