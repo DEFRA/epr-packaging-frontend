@@ -2,9 +2,9 @@
 
 @{
     var title = !Model.UserCanSubmit
-        ? Localizer["file_youve_uploaded"]
+        ? Localizer["packaging_data_uploaded"]
         : Model.HasSubmittedPreviously
-            ? Localizer["check_and_submit_new_file"]
+            ? Localizer["check_and_submit_file"]
             : Model.IsComplianceScheme
                 ? Localizer["check_file_and_submit"]
                 : Localizer["check_and_submit_file"];
@@ -102,10 +102,6 @@
                     </div>
                 </div>
             }
-            else
-            {
-                <p class="govuk-body">@Localizer["if_you_need_to_make_changes_to_this_file_after_its_submitted_youll_need_to_reupload_a_new_file"]</p>
-            }
 
             @if (Model.UserCanSubmit)
             {
@@ -165,9 +161,9 @@
             else
             {
                 <div class="govuk-!-margin-bottom-6">
-                    <h2 class="govuk-heading-m govuk-!-margin-top-7">@Localizer["how_to_submit_your_files"]</h2>
+                    <h2 class="govuk-heading-m govuk-!-margin-top-7">@Localizer["how_to_submit_your_file"]</h2>
                     <p class="govuk-body">@Localizer["you_dont_have_permission_to_submit_files"]</p>
-                    <p class="govuk-body">@Localizer["someone_in_your_team_with_the_right_account_permissions_must_submit_these_files_to_the_environmental_regulator"]</p>
+                    <p class="govuk-body">@Localizer["someone_in_your_team_with_the_right_account_permissions_must_submit_these_file_to_the_environmental_regulator"]</p>
                     <a asp-controller="Landing" asp-action="Get" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19">@Localizer["go_to_your_account_homepage"]</a>
                 </div>
             }

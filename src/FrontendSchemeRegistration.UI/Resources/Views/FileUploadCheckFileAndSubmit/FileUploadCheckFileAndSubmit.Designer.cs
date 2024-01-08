@@ -46,15 +46,9 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.FileUploadCheckFileAndSu
             }
         }
         
-        internal static string file_youve_uploaded {
+        internal static string packaging_data_uploaded {
             get {
-                return ResourceManager.GetString("file_youve_uploaded", resourceCulture);
-            }
-        }
-        
-        internal static string check_and_submit_new_file {
-            get {
-                return ResourceManager.GetString("check_and_submit_new_file", resourceCulture);
+                return ResourceManager.GetString("packaging_data_uploaded", resourceCulture);
             }
         }
         
@@ -143,13 +137,6 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.FileUploadCheckFileAndSu
             }
         }
         
-        internal static string if_you_need_to_make_changes_to_this_file_after_its_submitted_youll_need_to_reupload_a_new_file {
-            get {
-                return ResourceManager.GetString("if_you_need_to_make_changes_to_this_file_after_its_submitted_youll_need_to_reuplo" +
-                        "ad_a_new_file", resourceCulture);
-            }
-        }
-        
         internal static string are_you_sure_you_want_to_submit_your_packaging_data_file {
             get {
                 return ResourceManager.GetString("are_you_sure_you_want_to_submit_your_packaging_data_file", resourceCulture);
@@ -180,9 +167,9 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.FileUploadCheckFileAndSu
             }
         }
         
-        internal static string how_to_submit_your_files {
+        internal static string how_to_submit_your_file {
             get {
-                return ResourceManager.GetString("how_to_submit_your_files", resourceCulture);
+                return ResourceManager.GetString("how_to_submit_your_file", resourceCulture);
             }
         }
         
@@ -192,10 +179,10 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.FileUploadCheckFileAndSu
             }
         }
         
-        internal static string someone_in_your_team_with_the_right_account_permissions_must_submit_these_files_to_the_environmental_regulator {
+        internal static string someone_in_your_team_with_the_right_account_permissions_must_submit_these_file_to_the_environmental_regulator {
             get {
-                return ResourceManager.GetString("someone_in_your_team_with_the_right_account_permissions_must_submit_these_files_t" +
-                        "o_the_environmental_regulator", resourceCulture);
+                return ResourceManager.GetString("someone_in_your_team_with_the_right_account_permissions_must_submit_these_file_to" +
+                        "_the_environmental_regulator", resourceCulture);
             }
         }
         

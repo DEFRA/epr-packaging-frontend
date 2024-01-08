@@ -11,17 +11,14 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
-    <data name="file_youve_uploaded" xml:space="preserve">
-        <value>File you’ve uploaded</value>
-    </data>
-    <data name="check_and_submit_new_file" xml:space="preserve">
-        <value>Check and submit new file</value>
+    <data name="packaging_data_uploaded" xml:space="preserve">
+        <value>Packaging data uploaded</value>
     </data>
     <data name="check_file_and_submit" xml:space="preserve">
         <value>Check file and submit</value>
     </data>
     <data name="check_and_submit_file" xml:space="preserve">
-        <value>Check and submit file</value>
+        <value>Packaging data uploaded – check and submit</value>
     </data>
     <data name="file_uploaded" xml:space="preserve">
         <value>File uploaded</value>
@@ -59,9 +56,6 @@
     <data name="this_will_replace_the_last_packaging_data_file_that_you_submitted" xml:space="preserve">
         <value>This will replace the last packaging data file that you submitted.</value>
     </data>
-    <data name="if_you_need_to_make_changes_to_this_file_after_its_submitted_youll_need_to_reupload_a_new_file" xml:space="preserve">
-        <value>If you need to make changes to this file after it’s submitted you’ll need to re-upload a new file. This will replace the current one. You can upload a new file to your account and submit it at any time before the deadline.</value>
-    </data>
     <data name="are_you_sure_you_want_to_submit_your_packaging_data_file" xml:space="preserve">
         <value>Are you sure you want to submit your packaging data file?</value>
     </data>
@@ -77,14 +71,14 @@
     <data name="your_company_may_face_enforcement_action_if_the_data_you_submit_is_inaccurate" xml:space="preserve">
         <value>Your company may face enforcement action if the data you submit is inaccurate.</value>
     </data>
-    <data name="how_to_submit_your_files" xml:space="preserve">
-        <value>How to submit your files</value>
+    <data name="how_to_submit_your_file" xml:space="preserve">
+        <value>How to submit your file</value>
     </data>
     <data name="you_dont_have_permission_to_submit_files" xml:space="preserve">
-        <value>You don’t have permission to submit files.</value>
+        <value>You do not have permission to submit files.</value>
     </data>
-    <data name="someone_in_your_team_with_the_right_account_permissions_must_submit_these_files_to_the_environmental_regulator" xml:space="preserve">
-        <value>Someone in your team with the right account permissions must submit these files to the environmental regulator.</value>
+    <data name="someone_in_your_team_with_the_right_account_permissions_must_submit_these_file_to_the_environmental_regulator" xml:space="preserve">
+        <value>Someone in your team with the right account permissions must submit this file to the environmental regulator.</value>
     </data>
     <data name="go_to_your_account_homepage" xml:space="preserve">
         <value>Go to your account homepage</value>
