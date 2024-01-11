@@ -1,65 +1,110 @@
 <root>
-    <resheader name="resmimetype">
-        <value>text/microsoft-resx</value>
-    </resheader>
-    <resheader name="version">
-        <value>1.3</value>
-    </resheader>
-    <resheader name="reader">
-        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
-    <resheader name="writer">
-        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
-    <data name="before_you_start" xml:space="preserve">
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="before_you_start" xml:space="preserve">
         <value>Cyn ichi ddechrau</value>
     </data>
-    <data name="report_packaging_data_for" xml:space="preserve">
+	<data name="report_packaging_data_for" xml:space="preserve">
         <value>Rhoi gwybod am ddata pecynwaith ar gyfer</value>
     </data>
-    <data name="deadline" xml:space="preserve">
+	<data name="deadline" xml:space="preserve">
         <value>Dyddiad cau:</value>
     </data>
-    <data name="how_to_build_a_csv_file_to_report_your_packaging_data" xml:space="preserve">
+	<data name="how_to_build_a_csv_file_to_report_your_packaging_data" xml:space="preserve">
         <value>sut i adeiladu ffeil CSV i roi gwybod am eich data pecynwaith (yn agor mewn ffenestr newydd)</value>
     </data>
-    <data name="not_started" xml:space="preserve">
+	<data name="not_started" xml:space="preserve">
         <value>Heb ddechrau</value>
     </data>
-    <data name="read_the_guidance_about" xml:space="preserve">
+	<data name="read_the_guidance_about" xml:space="preserve">
         <value>Darllenwch y canllawiau am:</value>
     </data>
-    <data name="report_packaging_data" xml:space="preserve">
+	<data name="report_packaging_data" xml:space="preserve">
         <value>Rhoi gwybod am ddata pecynwaith</value>
     </data>
-    <data name="file_uploaded" xml:space="preserve">
+	<data name="file_uploaded" xml:space="preserve">
         <value>Ffeil wedi’i huwchlwytho</value>
     </data>
-    <data name="start_now" xml:space="preserve">
+	<data name="start_now" xml:space="preserve">
         <value>Dechrau nawr</value>
     </data>
-    <data name="what_packaging_data_you_need_to_collect" xml:space="preserve">
+	<data name="what_packaging_data_you_need_to_collect" xml:space="preserve">
         <value>Pa ddata pecynwaith y mae angen ichi ei gasglu (yn agor mewn ffenestr newydd)</value>
     </data>
-    <data name="submitted_to_regulator" xml:space="preserve">
+	<data name="submitted_to_regulator" xml:space="preserve">
         <value>Wedi’u cyflwyno i’r rheoleiddiwr</value>
     </data>
-    <data name="cannot_start_yet" xml:space="preserve">
+	<data name="cannot_start_yet" xml:space="preserve">
         <value>Methu dechrau eto</value>
     </data>
-    <data name="report_members_packaging_data_for" xml:space="preserve">
+	<data name="report_members_packaging_data_for" xml:space="preserve">
         <value>Rhoi gwybod am ddata pecynwaith aelodau ar gyfer</value>
     </data>
-    <data name="large_organisations" xml:space="preserve">
+	<data name="large_organisations" xml:space="preserve">
         <value>Sefydliadau mawr</value>
     </data>
-    <data name="check_the_govuk_guidance" xml:space="preserve">
+	<data name="check_the_govuk_guidance" xml:space="preserve">
         <value>Gwiriwch y canllawiau ar GOV.UK (yn agor mewn ffenestr newydd)</value>
     </data>
-    <data name="if_youve_missed_a_deadline" xml:space="preserve">
+	<data name="if_youve_missed_a_deadline" xml:space="preserve">
         <value>Os ydych chi wedi colli dyddiad cau, mae’n dal yn bosibl y gallwch chi gyflwyno adroddiad heb wynebu camau gorfodi.</value>
     </data>
-    <data name="if_youve_missed_a_deadline_to_submit" xml:space="preserve">
+	<data name="if_youve_missed_a_deadline_to_submit" xml:space="preserve">
         <value>Os ydych chi wedi colli dyddiad cau cyflwyno</value>
     </data>
+	<data name="accepted_by_regulator" xml:space="preserve">
+        <value>W Accepted by Regulator</value>
+    </data>
+	<data name="check_if_you_need_to_resubmit_members_packaging_data" xml:space="preserve">
+        <value>W Check if you need to resubmit member's packaging data</value>
+    </data>
+	<data name="check_if_you_need_to_resubmit_packaging_data" xml:space="preserve">
+        <value>W Check if you need to resubmit packaging data</value>
+    </data>
+	<data name="check_if_you_need_to_update_member's_packaging_data" xml:space="preserve">
+        <value>W Check if you need to update member's packaging data</value>
+    </data>
+	<data name="check_if_you_need_to_update_packaging_data" xml:space="preserve">
+        <value>W Check if you need to update packaging data</value>
+    </data>
+	<data name="rejected_by_regulator" xml:space="preserve">
+        <value>W Rejected by Regulator</value>
+    </data>
+	<data name="resubmit_members_packaging_data" xml:space="preserve">
+        <value>W Resubmit member's packaging data</value>
+    </data>
+	<data name="update_members_packaging_data_basic" xml:space="preserve">
+        <value>W Update member's packaging data</value>
+    </data>
+	<data name="resubmit_packaging_data" xml:space="preserve">
+        <value>W Resubmit packaging data</value>
+    </data>
+	<data name="update_packaging_data_basic" xml:space="preserve">
+        <value>W Update packaging data</value>
+    </data>
+	<data name="view_submission_history" xml:space="preserve">
+        <value>W View submission history</value>
+    </data>
+	<data name="view_your_packaging_data_files" xml:space="preserve">
+        <value>W View your packaging data files</value>
+    </data>
+	<data name="your_history" xml:space="preserve">
+        <value>W Your history</value>
+    </data>
+	<data name="status_unknown" xml:space="preserve">
+		<value>W Submission status is unknown</value>
+	</data>
+	<data name="approved_by_regulator" xml:space="preserve">
+		<value>W Approved By Regulator</value>
+	</data>
 </root>

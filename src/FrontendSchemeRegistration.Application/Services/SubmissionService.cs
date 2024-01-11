@@ -67,4 +67,22 @@ public class SubmissionService : ISubmissionService
 
         await _webApiGatewayClient.SubmitAsync(submissionId, payload);
     }
+
+    public async Task<T> GetDecisionAsync<T>(
+        int? limit,
+        Guid submissionId)
+        where T : AbstractDecision
+    {
+        var queryString = $"";
+
+        if (limit is > 0)
+        {
+            queryString += $"limit={limit}";
+            queryString += $"&";
+        }
+
+        queryString += $"submissionId={submissionId}";
+
+        return await _webApiGatewayClient.GetDecisionsAsync<T>(queryString);
+    }
 }

@@ -25,4 +25,7 @@ public interface IWebApiGatewayClient
     Task<List<ProducerValidationError>> GetProducerValidationErrorsAsync(Guid submissionId);
 
     Task SubmitAsync(Guid submissionId, SubmissionPayload payload);
+
+    Task<T> GetDecisionsAsync<T>(string queryString)
+        where T : AbstractDecision;
 }

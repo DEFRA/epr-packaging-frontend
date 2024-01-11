@@ -12,4 +12,6 @@ public class FileUploadSubLandingViewModel
     public string? OrganisationRole { get; set; }
 
     public bool IsComplianceScheme => OrganisationRole == OrganisationRoles.ComplianceScheme;
+
+    public string ServiceRole { get; set; } = "Basic User";
 }

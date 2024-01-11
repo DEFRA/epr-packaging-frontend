@@ -51,11 +51,29 @@ public class FileUploadSubLandingController : Controller
         foreach (var submissionPeriod in _submissionPeriods)
         {
             var submission = submissions.FirstOrDefault(x => x.SubmissionPeriod == submissionPeriod.DataPeriod);
+
+            var decision = new PomDecision
+            {
+                IsResubmissionRequired = false,
+                Decision = string.Empty,
+                Comments = string.Empty
+            };
+
+            if (submission != null)
+            {
+                decision = await _submissionService.GetDecisionAsync<PomDecision>(
+                _submissionsLimit,
+                submission.Id);
+            }
+
             submissionPeriodDetails.Add(new SubmissionPeriodDetail
             {
                 DataPeriod = submissionPeriod.DataPeriod,
                 Deadline = submissionPeriod.Deadline,
-                Status = GetSubmissionStatus(submission, submissionPeriod)
+                Status = GetSubmissionStatus(submission, submissionPeriod, decision),
+                IsResubmissionRequired = decision.IsResubmissionRequired,
+                Decision = decision.Decision,
+                Comments = decision.Comments
             });
         }
 
@@ -73,7 +91,8 @@ public class FileUploadSubLandingController : Controller
                 {
                     SubmissionPeriodDetails = submissionPeriodDetails,
                     ComplianceSchemeName = session.RegistrationSession.SelectedComplianceScheme?.Name,
-                    OrganisationRole = organisationRole
+                    OrganisationRole = organisationRole,
+                    ServiceRole = session.UserData?.ServiceRole ?? "Basic User"
                 });
         }
 
@@ -132,7 +151,8 @@ public class FileUploadSubLandingController : Controller
 
     private static SubmissionPeriodStatus GetSubmissionStatus(
         PomSubmission? submission,
-        SubmissionPeriod submissionPeriod)
+        SubmissionPeriod submissionPeriod,
+        PomDecision decision)
     {
         if (DateTime.Now < submissionPeriod.ActiveFrom)
         {
@@ -146,7 +166,21 @@ public class FileUploadSubLandingController : Controller
 
         if (submission.LastSubmittedFile is not null)
         {
-            return SubmissionPeriodStatus.SubmittedToRegulator;
+            switch (decision.Decision)
+            {
+                case "Accepted":
+                    return SubmissionPeriodStatus.AcceptedByRegulator;
+                    break;
+                case "Rejected":
+                    return SubmissionPeriodStatus.RejectedByRegulator;
+                    break;
+                case "Approved":
+                    return SubmissionPeriodStatus.AcceptedByRegulator;
+                    break;
+                default:
+                    return SubmissionPeriodStatus.SubmittedToRegulator;
+                    break;
+            }
         }
 
         return submission is { HasValidFile: true }

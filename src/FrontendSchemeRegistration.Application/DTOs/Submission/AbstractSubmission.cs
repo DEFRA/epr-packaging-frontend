@@ -18,7 +18,7 @@ public abstract class AbstractSubmission
 
     public bool HasValidFile { get; set; }
 
-    public List<string> Errors { get; set; } = new ();
+    public List<string> Errors { get; set; } = new();
 
     public bool IsSubmitted { get; set; }
 }
