@@ -31,7 +31,7 @@
 			<h1 class="govuk-heading-xl govuk-!-margin-bottom-6">@Localizer["report_packaging_data"]</h1>
 
 			<h2 class="govuk-heading-m">@Localizer["before_you_start"]</h2>
-			<p class="govuk-body">@Localizer["read_the_guidance_about"]</p>
+			<p class="govuk-body">@Localizer["read_the_guidance_on"]</p>
 			<ul class="govuk-list govuk-list--bullet">
 				<li>
 					<a href="@GuidanceLinks.Value.WhatPackagingDataYouNeedToCollect"
@@ -45,6 +45,12 @@
 						@Localizer["how_to_build_a_csv_file_to_report_your_packaging_data"]
 					</a>
 				</li>
+	            <li>
+		            <a href="@GuidanceLinks.Value.ExampleCsvFile"
+		               class="govuk-link" rel="noreferrer noopener" target="_blank">
+			            @Localizer["an_example_csv_file"]
+		            </a>
+		        </li>
 			</ul>
 
 			<h2 class="govuk-heading-m">@Localizer["if_youve_missed_a_deadline_to_submit"]</h2>
@@ -75,7 +81,7 @@
 						}
 						@if (submissionPeriodDetail.Status is NotStarted)
 						{
-							<p class="govuk-body">@Localizer["deadline"] @submissionPeriodDetail.Deadline.ToReadableShortMonthDeadlineDate()</p>
+							<p class="govuk-body">@Localizer["deadline"] @submissionPeriodDetail.Deadline.ToReadableLongMonthDeadlineDate()</p>
 						}
 						<strong class="@(("govuk-tag " + GetClass(submissionPeriodDetail.Status)).Trim())">@Localizer[submissionPeriodDetail.Status.GetLocalizedName()]</strong>
 					</div>

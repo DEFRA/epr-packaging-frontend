@@ -52,9 +52,9 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.FileUploadSubLanding {
             }
         }
         
-        internal static string read_the_guidance_about {
+        internal static string read_the_guidance_on {
             get {
-                return ResourceManager.GetString("read_the_guidance_about", resourceCulture);
+                return ResourceManager.GetString("read_the_guidance_on", resourceCulture);
             }
         }
         
@@ -67,6 +67,12 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.FileUploadSubLanding {
         internal static string how_to_build_a_csv_file_to_report_your_packaging_data {
             get {
                 return ResourceManager.GetString("how_to_build_a_csv_file_to_report_your_packaging_data", resourceCulture);
+            }
+        }
+        
+        internal static string an_example_csv_file {
+            get {
+                return ResourceManager.GetString("an_example_csv_file", resourceCulture);
             }
         }
         

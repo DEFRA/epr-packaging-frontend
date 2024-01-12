@@ -14,4 +14,6 @@ public class GuidanceLinkOptions
     public string HowToReportOrganisationDetails { get; set; }
 
     public string HowToBuildCsvFileToReportYourOrganisationData { get; set; }
+
+    public string ExampleCsvFile { get; set; }
 }

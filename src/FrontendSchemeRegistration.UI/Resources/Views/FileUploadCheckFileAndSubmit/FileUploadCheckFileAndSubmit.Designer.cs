@@ -52,12 +52,6 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.FileUploadCheckFileAndSu
             }
         }
         
-        internal static string check_file_and_submit {
-            get {
-                return ResourceManager.GetString("check_file_and_submit", resourceCulture);
-            }
-        }
-        
         internal static string check_and_submit_file {
             get {
                 return ResourceManager.GetString("check_and_submit_file", resourceCulture);

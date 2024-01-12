@@ -21,13 +21,16 @@
     <data name="before_you_start" xml:space="preserve">
         <value />
     </data>
-    <data name="read_the_guidance_about" xml:space="preserve">
+    <data name="read_the_guidance_on" xml:space="preserve">
         <value />
     </data>
     <data name="what_packaging_data_you_need_to_collect" xml:space="preserve">
         <value />
     </data>
     <data name="how_to_build_a_csv_file_to_report_your_packaging_data" xml:space="preserve">
+        <value />
+    </data>
+    <data name="an_example_csv_file" xml:space="preserve">
         <value />
     </data>
     <data name="deadline" xml:space="preserve">

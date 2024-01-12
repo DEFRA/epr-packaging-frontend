@@ -3,11 +3,7 @@
 @{
     var title = !Model.UserCanSubmit
         ? Localizer["packaging_data_uploaded"]
-        : Model.HasSubmittedPreviously
-            ? Localizer["check_and_submit_file"]
-            : Model.IsComplianceScheme
-                ? Localizer["check_file_and_submit"]
-                : Localizer["check_and_submit_file"];
+        : Localizer["check_and_submit_file"];
 
     ViewData["Title"] = title;
 

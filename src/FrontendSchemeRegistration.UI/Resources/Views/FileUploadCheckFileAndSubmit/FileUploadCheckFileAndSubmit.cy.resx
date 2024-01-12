@@ -14,9 +14,6 @@
     <data name="packaging_data_uploaded" xml:space="preserve">
         <value>Data pecynwaith wedi’i uwchlwytho </value>
     </data>
-    <data name="check_file_and_submit" xml:space="preserve">
-        <value>Gwirio’r ffeil a’i chyflwyno</value>
-    </data>
     <data name="check_and_submit_file" xml:space="preserve">
         <value>Data pecynwaith wedi’i uwchlwytho – gwiriwch a chyflwynwch</value>
     </data>
