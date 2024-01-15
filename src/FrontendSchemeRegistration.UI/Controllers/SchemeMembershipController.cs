@@ -13,9 +13,11 @@ using global::FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.FeatureManagement.Mvc;
+using Microsoft.Identity.Web;
 using Sessions;
 
 [FeatureGate(FeatureFlags.ShowComplianceSchemeMemberManagement)]
+[AuthorizeForScopes(ScopeKeySection = "FacadeAPI:DownstreamScope")]
 public class SchemeMembershipController : Controller
 {
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
@@ -180,7 +182,7 @@ public class SchemeMembershipController : Controller
             CompanyHouseNumber = complianceSchemeMember.CompanyHouseNumber,
             ComplianceScheme = complianceSchemeMember.ComplianceScheme,
             SelectedSchemeId = selectedSchemeId,
-            ShowRemoveLink = session.UserData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved)
+            ShowRemoveLink = userData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved)
         };
 
         return View(nameof(MemberDetails), model);
@@ -216,7 +218,7 @@ public class SchemeMembershipController : Controller
             ReasonForRemoval = await _complianceSchemeMemberService.GetReasonsForRemoval(),
             OrganisationName = complianceSchemeMember.OrganisationName,
             SelectedReasonForRemoval = session.SchemeMembershipSession.SelectedReasonForRemoval,
-            IsApprovedUser = session.UserData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved)
+            IsApprovedUser = userData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved)
         };
 
         return View(nameof(ReasonsForRemoval), viewModel);
@@ -236,7 +238,7 @@ public class SchemeMembershipController : Controller
 
         SetBackLink(session, currentPagePath);
 
-        model.IsApprovedUser = session.UserData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved);
+        model.IsApprovedUser = userData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved);
 
         if (!model.IsApprovedUser)
         {
@@ -306,7 +308,9 @@ public class SchemeMembershipController : Controller
             return RedirectHome();
         }
 
-        if (!session.UserData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved))
+        var userData = User.GetUserData();
+
+        if (!userData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved))
         {
             return new UnauthorizedResult();
         }
@@ -354,7 +358,7 @@ public class SchemeMembershipController : Controller
     public async Task<IActionResult> ConfirmRemoval(Guid selectedSchemeId)
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-        var userData = ClaimsExtensions.GetUserData(User);
+        var userData = User.GetUserData();
         var organisation = userData.Organisations.Single();
 
         if (session == null)
@@ -362,7 +366,7 @@ public class SchemeMembershipController : Controller
             return RedirectHome();
         }
 
-        if (!session.UserData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved))
+        if (!userData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved))
         {
             return new UnauthorizedResult();
         }
@@ -389,7 +393,7 @@ public class SchemeMembershipController : Controller
     public async Task<IActionResult> ConfirmRemoval(Guid selectedSchemeId, ConfirmRemovalViewModel model)
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-        var userData = ClaimsExtensions.GetUserData(User);
+        var userData = User.GetUserData();
         var organisation = userData.Organisations.Single();
         var currentPagePath = $"{PagePaths.ConfirmRemoval}/{selectedSchemeId}";
         ModelState.Remove("OrganisationName");
@@ -443,7 +447,9 @@ public class SchemeMembershipController : Controller
             return RedirectHome();
         }
 
-        if (!session.UserData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved))
+        var userData = User.GetUserData();
+
+        if (!userData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved))
         {
             return new UnauthorizedResult();
         }

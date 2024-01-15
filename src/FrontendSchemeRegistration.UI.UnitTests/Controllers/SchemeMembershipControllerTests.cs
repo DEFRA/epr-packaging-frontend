@@ -385,6 +385,29 @@ public class SchemeMembershipControllerTests
             }
         };
 
+        var userData = new UserData
+        {
+            Id = Guid.NewGuid(),
+            ServiceRole = ServiceRoles.BasicUser,
+            Organisations = new()
+            {
+                new()
+                {
+                    Id = _organisationId,
+                    Name = _organisationName,
+                    OrganisationRole = "ComplianceScheme",
+                    OrganisationNumber = _organisationNumber
+                }
+            }
+        };
+
+        _claims = new List<Claim>
+        {
+            new(ClaimTypes.UserData, Newtonsoft.Json.JsonConvert.SerializeObject(userData))
+        };
+
+        _userMock.Setup(x => x.Claims).Returns(_claims);
+
         _sessionManager.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
 
         // Act

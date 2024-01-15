@@ -25,6 +25,7 @@ public class ComplianceSchemeMemberServiceTests : ServiceTestBase<IComplianceSch
 {
     private readonly Mock<HttpMessageHandler> _httpMessageHandlerMock = new();
     private readonly Mock<ILogger<ComplianceSchemeMemberService>> _loggerMock = new();
+    private readonly Mock<ICorrelationIdProvider> _correlationIdProvider = new();
     private readonly Mock<ITokenAcquisition> _tokenAcquisitionMock = new();
     private readonly Mock<IComplianceSchemeService> _complianceSchemeServiceMock = new ();
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
@@ -159,6 +160,8 @@ public class ComplianceSchemeMemberServiceTests : ServiceTestBase<IComplianceSch
         // Assert
         result.OrganisationName.Should().Be(complianceSchemes.OrganisationName);
         _complianceSchemeServiceMock.Verify(service => service.ClearSummaryCache(organisationId, complianceSchemeId), Times.Once);
+
+        _correlationIdProvider.Verify(service => service.GetCurrentCorrelationIdOrNew(), Times.Once);
     }
 
     protected override IComplianceSchemeMemberService MockService(
@@ -179,6 +182,6 @@ public class ComplianceSchemeMemberServiceTests : ServiceTestBase<IComplianceSch
         var facadeOptions = Options.Create(new AccountsFacadeApiOptions { DownstreamScope = "https://mock/test" });
         var accountServiceApiClient = new AccountServiceApiClient(client, _tokenAcquisitionMock.Object, facadeOptions);
 
-        return new ComplianceSchemeMemberService(_complianceSchemeServiceMock.Object, accountServiceApiClient, _loggerMock.Object);
+        return new ComplianceSchemeMemberService(_complianceSchemeServiceMock.Object, accountServiceApiClient, _correlationIdProvider.Object, _loggerMock.Object);
     }
 }

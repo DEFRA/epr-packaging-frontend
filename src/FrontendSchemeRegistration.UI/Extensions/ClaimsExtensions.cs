@@ -52,4 +52,13 @@ public static class ClaimsExtensions
         // We need to set the user data in the http context here to ensure it is accessible in this request
         httpContext.User.AddOrUpdateUserData(userData);
     }
+
+    public static bool TryGetCorrelationId(this ClaimsPrincipal claimsPrincipal, out Guid correlationId)
+    {
+        var claimCorrelationId = claimsPrincipal?.Claims?
+            .FirstOrDefault(claim => claim.Type == CorrelationClaimAction.CorrelationClaimType)?
+            .Value;
+
+        return Guid.TryParse(claimCorrelationId, out correlationId);
+    }
 }

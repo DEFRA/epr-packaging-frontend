@@ -138,26 +138,6 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         response.EnsureSuccessStatusCode();
     }
 
-    public async Task<T> GetDecisionsAsync<T>(string queryString)
-       where T : AbstractDecision
-    {
-        await PrepareAuthenticatedClientAsync();
-
-        try
-        {
-            var response = await _httpClient.GetAsync($"/api/v1/decisions?{queryString}");
-
-            response.EnsureSuccessStatusCode();
-
-            return await response.Content.ReadFromJsonAsync<T>();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error getting decision");
-            throw;
-        }
-    }
-
     private async Task PrepareAuthenticatedClientAsync()
     {
         var accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(_scopes);

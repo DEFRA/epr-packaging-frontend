@@ -13,17 +13,22 @@ using RequestModels;
 
 public class ComplianceSchemeMemberService : IComplianceSchemeMemberService
 {
+    private const string CorrelationIdHeaderKey = "X-EPR-Correlation";
+
     private readonly ILogger<ComplianceSchemeMemberService> _logger;
     private readonly IAccountServiceApiClient _accountServiceApiClient;
     private readonly IComplianceSchemeService _complianceSchemeService;
+    private readonly ICorrelationIdProvider _correlationIdProvider;
 
     public ComplianceSchemeMemberService(
         IComplianceSchemeService complianceSchemeService,
         IAccountServiceApiClient accountServiceApiClient,
+        ICorrelationIdProvider correlationIdProvider,
         ILogger<ComplianceSchemeMemberService> logger)
     {
         _complianceSchemeService = complianceSchemeService;
         _accountServiceApiClient = accountServiceApiClient;
+        _correlationIdProvider = correlationIdProvider;
         _logger = logger;
     }
 
@@ -83,6 +88,8 @@ public class ComplianceSchemeMemberService : IComplianceSchemeMemberService
             Code = reasonCode,
             TellUsMore = tellUsMore
         };
+
+        _accountServiceApiClient.AddHttpClientHeader(CorrelationIdHeaderKey, _correlationIdProvider.GetCurrentCorrelationIdOrNew().ToString());
 
         var result = await _accountServiceApiClient.SendPostRequest(endpoint, requestModel);
 

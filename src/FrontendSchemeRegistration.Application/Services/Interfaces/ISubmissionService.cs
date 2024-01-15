@@ -17,9 +17,4 @@ public interface ISubmissionService
     Task SubmitAsync(Guid submissionId, Guid fileId);
 
     Task SubmitAsync(Guid submissionId, Guid fileId, string submittedBy);
-
-    Task<T> GetDecisionAsync<T>(
-       int? limit,
-       Guid submissionId)
-       where T : AbstractDecision;
 }

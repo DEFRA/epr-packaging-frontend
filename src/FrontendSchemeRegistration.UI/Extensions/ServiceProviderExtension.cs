@@ -6,6 +6,7 @@ using Application.Services;
 using Application.Services.Interfaces;
 using Constants;
 using EPR.Common.Authorization.Extensions;
+using Helpers;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Localization;
@@ -120,6 +121,7 @@ public static class ServiceProviderExtension
         services.AddSingleton<IPatchService, PatchService>();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.AddTransient<UserDataCheckerMiddleware>();
+        services.AddSingleton<ICorrelationIdProvider, CorrelationIdProvider>();
     }
 
     private static void RegisterHttpClients(IServiceCollection services)
@@ -203,6 +205,7 @@ public static class ServiceProviderExtension
                     options.CorrelationCookie.Name = cookieOptions.CorrelationCookieName;
                     options.NonceCookie.Name = cookieOptions.OpenIdCookieName;
                     options.ErrorPath = "/error";
+                    options.ClaimActions.Add(new CorrelationClaimAction());
                 },
                 options =>
                 {
