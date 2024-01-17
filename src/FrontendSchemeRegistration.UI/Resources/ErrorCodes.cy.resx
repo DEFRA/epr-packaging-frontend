@@ -174,4 +174,7 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
     <data name="64" xml:space="preserve">
         <value>Gwiriwch fod pwysau'r deunydd pecynwaith (kg) a'r unedau yn gywir</value>
     </data>
+    <data name="62" xml:space="preserve">
+        <value>Rydych chi wedi rhoi gwybod am un deunydd pecynwaith yn unig ar gyfer y sefydliad yma. Gwiriwch eich bod wedi rhoi pob deunydd pecynwaith. Rhaid ichi roi gwybod am bob un ar wahân.</value>
+    </data>
 </root>

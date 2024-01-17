@@ -52,6 +52,7 @@ public class ErrorReportHelpersTests
     [TestCase("54", "You're reporting packaging data for January to June 2023. Submission period must be 2023-P1 or 2023-P2.")]
     [TestCase("55", "You're reporting packaging data for July to December 2023. Submission period must be 2023-P3.")]
     [TestCase("59", "Packaging material weight is less than 100. Check all packaging weights are in kg and not tonnes.")]
+    [TestCase("62", "Only one packaging material reported for this organisation. Check you have entered all packaging materials. All must be reported separately.")]
     [TestCase("ErrorIssue", "Error")]
     [TestCase("WarningIssue", "Warning")]
     public void ToErrorReportRows_ConvertsValidationErrorsToErrorRowsWithMessage_WhenCalled(string errorCode, string expectedMessage)

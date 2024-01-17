@@ -174,4 +174,7 @@ Read the guidance about how to create your organisation details file. Once youâ€
     <data name="64" xml:space="preserve">
         <value>Check packaging material weight (kg) and units are correct</value>
     </data>
+    <data name="62" xml:space="preserve">
+        <value>Only one packaging material reported for this organisation. Check you have entered all packaging materials. All must be reported separately.</value>
+    </data>
 </root>

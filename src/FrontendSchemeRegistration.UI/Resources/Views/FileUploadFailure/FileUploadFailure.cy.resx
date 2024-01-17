@@ -12,25 +12,22 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="file_not_uploaded" xml:space="preserve">
-        <value>Ffeil data pecynwaith heb ei uwchlwytho </value>
+        <value>Ffeil data pecynwaith heb ei uwchlwytho</value>
     </data>
     <data name="error" xml:space="preserve">
         <value>Gwall</value>
     </data>
     <data name="your_data_file_has_not_been_uploaded" xml:space="preserve">
-        <value>Mae’ch ffeil data heb gael ei huwchlwytho i gyfrif eich sefydliad, a hynny am fod rhywfaint o’r data yn eich ffeil ar goll neu yn y fformat anghywir.</value>
-    </data>
-    <data name="when_youve_fixed_the_errors_in_your_file" xml:space="preserve">
-        <value>Pan fyddwch wedi cywiro’r gwallau yn eich ffeil, uwchlwythwch y ffeil eto.</value>
+        <value>Mae’ch ffeil data heb gael ei huwchlwytho i gyfrif eich sefydliad, a hynny am fod rhywfaint o’r data yn eich ffeil ar goll neu yn anghywir. </value>
     </data>
     <data name="download_error_report" xml:space="preserve">
-        <value>Lawrlwytho’ch adroddiad gwallau</value>
+        <value>Lawrlwythwch eich adroddiad gwallau (CSV, {0} ar y mwyaf)</value>
     </data>
     <data name="pageTitle" xml:space="preserve">
         <value>Wedi methu uwchlwytho’r ffeil</value>
     </data>
     <data name="your_error_report_only_show_first_x_errors" xml:space="preserve">
-        <value>Bydd eich adroddiad gwallau yn dangos y {0} o wallau cyntaf ar y ffeil a uwchlwythwyd gennych yn unig.</value>
+        <value>Mae’r adroddiad gwallau yn dangos y {0} cyntaf o wallau yn unig yn y ffeil a uwchlwythwyd gennych. Os oes mwy o wallau, efallai y cewch chi adroddiad gwallau arall wrth uwchlwytho’ch ffeil eto.</value>
     </data>
     <data name="you_should_correct_these_errors" xml:space="preserve">
         <value>Dylech gywiro’r gwallau hyn ac ail-uwchlwytho’r ffeil. Os bydd rhagor o wallau, efallai y cewch adroddiad gwallau arall pan fyddwch yn ail-uwchlwytho’r ffeil.</value>
@@ -43,5 +40,41 @@
     </data>
     <data name="read_the_report_help_you_understand" xml:space="preserve">
         <value>Darllenwch yr adroddiad i’ch helpu i ddeall ble mae’ch gwallau.</value>
+    </data>
+    <data name="packaging_data_not_uploaded_fix_the_errors_and_check_the_warnings" xml:space="preserve">
+        <value>Data pecynwaith heb ei uwchlwytho – trwsiwch y gwallau a gwiriwch y rhybuddion</value>
+    </data>
+    <data name="packaging_data_not_uploaded_fix_the_errors_and_try_again" xml:space="preserve">
+        <value>Data pecynwaith heb ei uwchlwytho – trwsiwch y gwallau a rhowch gynnig arall arni</value>
+    </data>
+    <data name="there_are_some_warnings" xml:space="preserve">
+        <value>Mae rhywfaint o rybuddion. Mae rhybuddion yn gofnodion anarferol yn eich ffeil y bydd angen ichi eu gwirio, ond fyddan nhw ddim yn atal eich ffeil rhag cael ei chyflwyno i’r rheoleiddiwr amgylcheddol.</value>
+    </data>
+    <data name="how_to_fix_errors_and_check_warnings" xml:space="preserve">
+        <value>Sut i drwsio gwallau a gwirio rhybuddion</value>
+    </data>
+    <data name="how_to_fix_errors" xml:space="preserve">
+        <value>Sut i drwsio gwallau</value>
+    </data>
+    <data name="this_tells_you_where_the_errors_and_warnings_are" xml:space="preserve">
+        <value>Mae hyn yn dweud wrthoch chi ble mae’r gwallau a’r rhybuddion yn eich ffeil.</value>
+    </data>
+    <data name="this_tells_you_where_the_errors_are" xml:space="preserve">
+        <value>Mae hyn yn dweud wrthoch chi ble mae’r gwallau yn eich ffeil.</value>
+    </data>
+    <data name="check_warnings_update_data" xml:space="preserve">
+        <value>Gwiriwch y rhybuddion a phenderfynwch a ydych chi am ddiweddaru unrhyw ddata.</value>
+    </data>
+    <data name="fix_errors_upload_file_again" xml:space="preserve">
+        <value>Pan fyddwch chi wedi trwsio’r gwallau, uwchlwythwch eich ffeil eto.</value>
+    </data>
+    <data name="when_youve_fixed_the_errors_and_checked_warnings_in_your_file" xml:space="preserve">
+        <value>Pan fyddwch chi wedi trwsio’r gwallau ac wedi gwirio’r rhybuddion, uwchlwythwch eich ffeil eto.</value>
+    </data>
+    <data name="use_the_report_to_fix_the_errors" xml:space="preserve">
+        <value>Defnyddiwch yr adroddiad i drwsio’r gwallau. Efallai y bydd arnoch chi angen y </value>
+    </data>
+    <data name="file_specification_guidance" xml:space="preserve">
+        <value>canllawiau ar fanyleb y ffeil hefyd (yn agor mewn ffenestr newydd)</value>
     </data>
 </root>

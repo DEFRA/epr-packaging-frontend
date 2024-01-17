@@ -56,7 +56,9 @@ public class FileUploadFailureController : Controller
             {
                 FileName = submission.PomFileName,
                 SubmissionId = submissionId,
-                MaxErrorsToProcess = _validationOptions.MaxIssuesToProcess
+                HasWarnings = submission.HasWarnings,
+                MaxErrorsToProcess = _validationOptions.MaxIssuesToProcess,
+                MaxReportSize = _validationOptions.MaxIssueReportSize
             });
     }
 }

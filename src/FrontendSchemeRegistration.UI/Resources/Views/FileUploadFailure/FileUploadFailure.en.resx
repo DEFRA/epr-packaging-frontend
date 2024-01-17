@@ -18,19 +18,16 @@
         <value>Error</value>
     </data>
     <data name="your_data_file_has_not_been_uploaded" xml:space="preserve">
-        <value>Your data file has not been uploaded to your organisation’s account. This is because some of the data in your file is missing or in the wrong format.</value>
-    </data>
-    <data name="when_youve_fixed_the_errors_in_your_file" xml:space="preserve">
-        <value>When you’ve fixed the errors in your file, upload it again.</value>
+        <value>Your data file has not been uploaded to your organisation’s account. This is because some of the data in your file is missing or incorrect.</value>
     </data>
     <data name="download_error_report" xml:space="preserve">
-        <value>Download your error report</value>
+        <value>Download your error report (CSV, maximum {0})</value>
     </data>
     <data name="pageTitle" xml:space="preserve">
         <value>File Upload Failure</value>
     </data>
     <data name="your_error_report_only_show_first_x_errors" xml:space="preserve">
-        <value>Your error report will only show the first {0} errors on the file you uploaded.</value>
+        <value>The error report only shows the first {0} errors in the file you uploaded. If there are more errors, you may get another error report when you upload your file again.</value>
     </data>
     <data name="you_should_correct_these_errors" xml:space="preserve">
         <value>You should correct these errors and re-upload. If there are more errors, you may get another error report when you re-upload the file.</value>
@@ -43,5 +40,41 @@
     </data>
     <data name="read_the_report_help_you_understand" xml:space="preserve">
         <value>Read the report to help you understand where your errors are.</value>
+    </data>
+    <data name="packaging_data_not_uploaded_fix_the_errors_and_check_the_warnings" xml:space="preserve">
+        <value>Packaging data not uploaded – fix the errors and check the warnings</value>
+    </data>
+    <data name="packaging_data_not_uploaded_fix_the_errors_and_try_again" xml:space="preserve">
+        <value>Packaging data not uploaded – fix the errors and try again</value>
+    </data>
+    <data name="there_are_some_warnings" xml:space="preserve">
+        <value>There are some warnings. Warnings are unusual entries in your file you need to check, but they will not prevent your file from being submitted to the environmental regulator.</value>
+    </data>
+    <data name="how_to_fix_errors_and_check_warnings" xml:space="preserve">
+        <value>How to fix errors and check warnings</value>
+    </data>
+    <data name="how_to_fix_errors" xml:space="preserve">
+        <value>How to fix errors</value>
+    </data>
+    <data name="this_tells_you_where_the_errors_and_warnings_are" xml:space="preserve">
+        <value>This tells you where the errors and warnings are in your file.</value>
+    </data>
+    <data name="this_tells_you_where_the_errors_are" xml:space="preserve">
+        <value>This tells you where the errors are in your file.</value>
+    </data>
+    <data name="check_warnings_update_data" xml:space="preserve">
+        <value>Check the warnings and decide if you want to update any data.</value>
+    </data>
+    <data name="fix_errors_upload_file_again" xml:space="preserve">
+        <value>When you have fixed the errors, upload your file again.</value>
+    </data>
+    <data name="when_youve_fixed_the_errors_and_checked_warnings_in_your_file" xml:space="preserve">
+        <value>When you have fixed the errors and checked the warnings, upload your file again.</value>
+    </data>
+    <data name="use_the_report_to_fix_the_errors" xml:space="preserve">
+        <value>Use the report to fix the errors. You may also need the</value>
+    </data>
+    <data name="file_specification_guidance" xml:space="preserve">
+        <value>file specification guidance (opens in a new window)</value>
     </data>
 </root>
