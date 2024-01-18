@@ -1,9 +1,9 @@
-﻿namespace FrontendSchemeRegistration.Application.UnitTests.Services;
-
-using Application.Services;
-using Application.Services.Interfaces;
-using DTOs.Submission;
+﻿using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.Services;
+using FrontendSchemeRegistration.Application.Services.Interfaces;
 using Moq;
+
+namespace FrontendSchemeRegistration.Application.UnitTests.Services;
 
 [TestFixture]
 public class SubmissionServiceTests
@@ -169,5 +169,49 @@ public class SubmissionServiceTests
 
         // Assert
         _webApiGatewayClientMock.Verify(x => x.SubmitAsync(submissionId, It.IsAny<SubmissionPayload>()), Times.Once);
+    }
+
+    [Test]
+    public async Task GetDecisionAsync_CallsClientWithCorrectQueryString_WhenAllParametersArePassed()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var limit = 10;
+
+        // Act
+        await _submissionService.GetDecisionAsync<PomDecision>(limit, submissionId);
+
+        // Assert
+        var expectedQueryString = $"limit=10&submissionId={submissionId}";
+        _webApiGatewayClientMock.Verify(x => x.GetDecisionsAsync<PomDecision>(expectedQueryString), Times.Once);
+    }
+
+    [Test]
+    public async Task GetDecisionAsync_CallsClientWithCorrectQueryString_WhenSubmissionIdIsPassed()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+
+        // Act
+        await _submissionService.GetDecisionAsync<PomDecision>(null, submissionId);
+
+        // Assert
+        var expectedQueryString = $"submissionId={submissionId}";
+        _webApiGatewayClientMock.Verify(x => x.GetDecisionsAsync<PomDecision>(expectedQueryString), Times.Once);
+    }
+
+    [Test]
+    public async Task GetDecisionAsync_CallsClientWithCorrectQueryString_WhenLimitIsPassed()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var limit = 1;
+
+        // Act
+        await _submissionService.GetDecisionAsync<PomDecision>(limit, submissionId);
+
+        // Assert
+        var expectedQueryString = $"limit=1&submissionId={submissionId}";
+        _webApiGatewayClientMock.Verify(x => x.GetDecisionsAsync<PomDecision>(expectedQueryString), Times.Once);
     }
 }

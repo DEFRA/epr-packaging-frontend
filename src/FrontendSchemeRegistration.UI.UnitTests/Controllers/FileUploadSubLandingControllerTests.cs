@@ -1,23 +1,24 @@
-﻿namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
-
-using Application.Constants;
-using Application.DTOs.ComplianceScheme;
-using Application.DTOs.Submission;
-using Application.Enums;
-using Application.Options;
-using Application.Services.Interfaces;
-using Constants;
-using EPR.Common.Authorization.Models;
+﻿using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
+using FrontendSchemeRegistration.Application.Constants;
+using FrontendSchemeRegistration.Application.DTOs.ComplianceScheme;
+using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.Enums;
+using FrontendSchemeRegistration.Application.Options;
+using FrontendSchemeRegistration.Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Constants;
+using FrontendSchemeRegistration.UI.Controllers;
+using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
+using FrontendSchemeRegistration.UI.Sessions;
+using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Microsoft.FeatureManagement;
 using Moq;
-using UI.Controllers;
-using UI.Controllers.ControllerExtensions;
-using UI.Sessions;
-using UI.ViewModels;
+
+namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
 
 public class FileUploadSubLandingControllerTests
 {
@@ -37,6 +38,7 @@ public class FileUploadSubLandingControllerTests
 
     private FileUploadSubLandingController _systemUnderTest;
     private Mock<ISubmissionService> _submissionServiceMock;
+    private Mock<IFeatureManager> _featureManagerMock;
     private Mock<ISession> _httpContextSessionMock;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionMock;
 
@@ -45,9 +47,14 @@ public class FileUploadSubLandingControllerTests
     {
         _httpContextSessionMock = new Mock<ISession>();
         _submissionServiceMock = new Mock<ISubmissionService>();
+        _featureManagerMock = new Mock<IFeatureManager>();
         _sessionMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _systemUnderTest = new FileUploadSubLandingController(
-            _submissionServiceMock.Object, _sessionMock.Object, Options.Create(new GlobalVariables { SubmissionPeriods = _submissionPeriods }));
+            _submissionServiceMock.Object,
+            _sessionMock.Object,
+            _featureManagerMock.Object,
+            Options.Create(new GlobalVariables { SubmissionPeriods = _submissionPeriods }));
+
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext { Session = _httpContextSessionMock.Object }
@@ -98,13 +105,19 @@ public class FileUploadSubLandingControllerTests
                 {
                     DataPeriod = _submissionPeriods[0].DataPeriod,
                     Deadline = _submissionPeriods[0].Deadline,
-                    Status = SubmissionPeriodStatus.FileUploaded
+                    Status = SubmissionPeriodStatus.FileUploaded,
+                    Comments = string.Empty,
+                    Decision = string.Empty,
+                    IsResubmissionRequired = false
                 },
                 new()
                 {
                     DataPeriod = _submissionPeriods[1].DataPeriod,
                     Deadline = _submissionPeriods[1].Deadline,
-                    Status = SubmissionPeriodStatus.NotStarted
+                    Status = SubmissionPeriodStatus.NotStarted,
+                    Comments = string.Empty,
+                    Decision = string.Empty,
+                    IsResubmissionRequired = false
                 }
             },
             OrganisationRole = organisationRole
@@ -134,7 +147,10 @@ public class FileUploadSubLandingControllerTests
         };
 
         _systemUnderTest = new FileUploadSubLandingController(
-            _submissionServiceMock.Object, _sessionMock.Object, Options.Create(new GlobalVariables { SubmissionPeriods = submissionPeriods }));
+            _submissionServiceMock.Object,
+            _sessionMock.Object,
+            _featureManagerMock.Object,
+            Options.Create(new GlobalVariables { SubmissionPeriods = submissionPeriods }));
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext { Session = _httpContextSessionMock.Object }
@@ -169,8 +185,8 @@ public class FileUploadSubLandingControllerTests
         // Assert
         result.ViewName.Should().Be("FileUploadSubLanding");
         result.Model.Should().BeOfType<FileUploadSubLandingViewModel>();
-        result.Model.As<FileUploadSubLandingViewModel>().SubmissionPeriodDetails.Should()
-            .AllSatisfy(x => x.Status.Should().Be(SubmissionPeriodStatus.CannotStartYet));
+        result.Model.As<FileUploadSubLandingViewModel>().SubmissionPeriodDetails.
+            Should().AllSatisfy(x => x.Status.Should().Be(SubmissionPeriodStatus.CannotStartYet));
     }
 
     [Test]
@@ -613,5 +629,99 @@ public class FileUploadSubLandingControllerTests
         result.ActionName.Should().Be(nameof(FileUploadCheckFileAndSubmitController.Get));
         result.ControllerName.Should().Be(nameof(FileUploadCheckFileAndSubmitController).RemoveControllerFromName());
         result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(submission.Id);
+    }
+
+    [Test]
+    [TestCase("None", false, SubmissionPeriodStatus.SubmittedToRegulator)]
+    [TestCase("Accepted", false, SubmissionPeriodStatus.AcceptedByRegulator)]
+    [TestCase("Rejected", false, SubmissionPeriodStatus.RejectedByRegulator)]
+    [TestCase("Approved", false, SubmissionPeriodStatus.AcceptedByRegulator)]
+    [TestCase("None", true, SubmissionPeriodStatus.SubmittedToRegulator)]
+    [TestCase("Accepted", true, SubmissionPeriodStatus.AcceptedByRegulator)]
+    [TestCase("Rejected", true, SubmissionPeriodStatus.RejectedByRegulator)]
+    [TestCase("Approved", true, SubmissionPeriodStatus.AcceptedByRegulator)]
+    public async Task GetRegulatorDecision_ReturnsCorrectDecision_WhenCalled(string decisionValue, bool resubmit, SubmissionPeriodStatus submissionStatus)
+    {
+        // Arrange
+        var selectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), Name = "Acme Org Ltd" };
+        var submissionId = Guid.NewGuid();
+        var comment = "Test Comment";
+        var organisationRole = OrganisationRoles.Producer;
+
+        var pomSubmission = new PomSubmission
+        {
+            Id = submissionId,
+            HasValidFile = true,
+            SubmissionPeriod = _submissionPeriods[0].DataPeriod,
+            LastSubmittedFile = new SubmittedFileInformation
+            {
+                FileId = Guid.NewGuid(),
+                FileName = "Test_File.csv",
+                SubmittedDateTime = DateTime.Now.AddMonths(-1),
+                SubmittedBy = Guid.NewGuid()
+            }
+        };
+
+        var pomDecision = new PomDecision
+        {
+            Comments = comment,
+            Decision = decisionValue,
+            IsResubmissionRequired = resubmit
+        };
+
+        _submissionServiceMock.Setup(x => x.GetSubmissionsAsync<PomSubmission>(
+                It.IsAny<List<string>>(), 2, selectedComplianceScheme.Id, It.IsAny<bool?>()))
+            .ReturnsAsync(new List<PomSubmission> { pomSubmission });
+
+        _submissionServiceMock.Setup(x => x.GetDecisionAsync<PomDecision>(
+            It.IsAny<int>(), It.IsAny<Guid>()))
+            .ReturnsAsync(pomDecision);
+
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ShowPoMResubmission))).ReturnsAsync(true);
+
+        _sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+                    .ReturnsAsync(new FrontendSchemeRegistrationSession
+                    {
+                        RegistrationSession = new RegistrationSession { SelectedComplianceScheme = selectedComplianceScheme },
+                        UserData = new UserData
+                        {
+                            Organisations = new List<Organisation> { new() { OrganisationRole = organisationRole } }
+                        }
+                    });
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Model.Should().NotBeNull();
+        result.ViewName.Should().NotBeNull();
+        result.ViewName.Should().Be("FileUploadSubLanding");
+        result.Model.Should().BeEquivalentTo(new FileUploadSubLandingViewModel
+        {
+            ComplianceSchemeName = selectedComplianceScheme.Name,
+            SubmissionPeriodDetails = new List<SubmissionPeriodDetail>
+            {
+                new()
+                {
+                    DataPeriod = _submissionPeriods[0].DataPeriod,
+                    Deadline = _submissionPeriods[0].Deadline,
+                    Status = submissionStatus,
+                    Comments = comment,
+                    Decision = decisionValue,
+                    IsResubmissionRequired = resubmit
+                },
+                new()
+                {
+                    DataPeriod = _submissionPeriods[1].DataPeriod,
+                    Deadline = _submissionPeriods[1].Deadline,
+                    Status = SubmissionPeriodStatus.NotStarted,
+                    Comments = string.Empty,
+                    Decision = string.Empty,
+                    IsResubmissionRequired = false
+                }
+            },
+            OrganisationRole = organisationRole
+        });
     }
 }

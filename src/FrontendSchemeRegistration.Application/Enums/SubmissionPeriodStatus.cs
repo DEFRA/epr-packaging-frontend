@@ -1,6 +1,6 @@
-﻿namespace FrontendSchemeRegistration.Application.Enums;
+﻿using FrontendSchemeRegistration.Application.Attributes;
 
-using Attributes;
+namespace FrontendSchemeRegistration.Application.Enums;
 
 public enum SubmissionPeriodStatus
 {
@@ -13,5 +13,11 @@ public enum SubmissionPeriodStatus
     [LocalizedName("cannot_start_yet")]
     CannotStartYet,
     [LocalizedName("submitted_to_regulator")]
-    SubmittedAndHasRecentFileUpload
+    SubmittedAndHasRecentFileUpload,
+    [LocalizedName("accepted_by_regulator")]
+    AcceptedByRegulator,
+    [LocalizedName("rejected_by_regulator")]
+    RejectedByRegulator,
+    [LocalizedName("approved_by_regulator")]
+    ApprovedByRegulator
 }

@@ -1,19 +1,21 @@
-﻿namespace FrontendSchemeRegistration.UI.Controllers;
-
-using Application.Constants;
-using Application.DTOs.Submission;
-using Application.Enums;
-using Application.Options;
-using Application.Services.Interfaces;
-using ControllerExtensions;
-using EPR.Common.Authorization.Constants;
+﻿using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
-using Extensions;
+using FrontendSchemeRegistration.Application.Constants;
+using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.Enums;
+using FrontendSchemeRegistration.Application.Options;
+using FrontendSchemeRegistration.Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Constants;
+using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
+using FrontendSchemeRegistration.UI.Extensions;
+using FrontendSchemeRegistration.UI.Sessions;
+using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Sessions;
-using ViewModels;
+using Microsoft.FeatureManagement;
+
+namespace FrontendSchemeRegistration.UI.Controllers;
 
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
 [Route(PagePaths.FileUploadSubLanding)]
@@ -22,16 +24,19 @@ public class FileUploadSubLandingController : Controller
     private const int _submissionsLimit = 2;
     private readonly ISubmissionService _submissionService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
+    private readonly IFeatureManager _featureManager;
     private readonly List<SubmissionPeriod> _submissionPeriods;
     private readonly string _basePath;
 
     public FileUploadSubLandingController(
         ISubmissionService submissionService,
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
+        IFeatureManager featureManager,
         IOptions<GlobalVariables> globalVariables)
     {
         _submissionService = submissionService;
         _sessionManager = sessionManager;
+        _featureManager = featureManager;
         _submissionPeriods = globalVariables.Value.SubmissionPeriods;
         _basePath = globalVariables.Value.BasePath;
     }
@@ -39,6 +44,7 @@ public class FileUploadSubLandingController : Controller
     [HttpGet]
     public async Task<IActionResult> Get()
     {
+        var showPomDecision = await _featureManager.IsEnabledAsync(nameof(FeatureFlags.ShowPoMResubmission));
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         var periods = _submissionPeriods.Select(x => x.DataPeriod).ToList();
         var submissions = await _submissionService.GetSubmissionsAsync<PomSubmission>(
@@ -51,11 +57,26 @@ public class FileUploadSubLandingController : Controller
         foreach (var submissionPeriod in _submissionPeriods)
         {
             var submission = submissions.FirstOrDefault(x => x.SubmissionPeriod == submissionPeriod.DataPeriod);
+
+            var decision = new PomDecision();
+
+            if (showPomDecision && submission != null)
+            {
+                decision = await _submissionService.GetDecisionAsync<PomDecision>(
+                _submissionsLimit,
+                submission.Id);
+
+                decision ??= new PomDecision();
+            }
+
             submissionPeriodDetails.Add(new SubmissionPeriodDetail
             {
                 DataPeriod = submissionPeriod.DataPeriod,
                 Deadline = submissionPeriod.Deadline,
-                Status = GetSubmissionStatus(submission, submissionPeriod)
+                Status = GetSubmissionStatus(submission, submissionPeriod, decision, showPomDecision),
+                IsResubmissionRequired = decision.IsResubmissionRequired,
+                Decision = decision.Decision,
+                Comments = decision.Comments
             });
         }
 
@@ -73,7 +94,8 @@ public class FileUploadSubLandingController : Controller
                 {
                     SubmissionPeriodDetails = submissionPeriodDetails,
                     ComplianceSchemeName = session.RegistrationSession.SelectedComplianceScheme?.Name,
-                    OrganisationRole = organisationRole
+                    OrganisationRole = organisationRole,
+                    ServiceRole = session.UserData?.ServiceRole ?? "Basic User"
                 });
         }
 
@@ -132,7 +154,9 @@ public class FileUploadSubLandingController : Controller
 
     private static SubmissionPeriodStatus GetSubmissionStatus(
         PomSubmission? submission,
-        SubmissionPeriod submissionPeriod)
+        SubmissionPeriod submissionPeriod,
+        PomDecision decision,
+        bool showPomDecision)
     {
         if (DateTime.Now < submissionPeriod.ActiveFrom)
         {
@@ -146,7 +170,26 @@ public class FileUploadSubLandingController : Controller
 
         if (submission.LastSubmittedFile is not null)
         {
-            return SubmissionPeriodStatus.SubmittedToRegulator;
+            if (!showPomDecision)
+            {
+                return SubmissionPeriodStatus.SubmittedToRegulator;
+            }
+
+            switch (decision.Decision)
+            {
+                case "Accepted":
+                    return SubmissionPeriodStatus.AcceptedByRegulator;
+                    break;
+                case "Rejected":
+                    return SubmissionPeriodStatus.RejectedByRegulator;
+                    break;
+                case "Approved":
+                    return SubmissionPeriodStatus.AcceptedByRegulator;
+                    break;
+                default:
+                    return SubmissionPeriodStatus.SubmittedToRegulator;
+                    break;
+            }
         }
 
         return submission is { HasValidFile: true }

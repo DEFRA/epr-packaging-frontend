@@ -1,8 +1,8 @@
-﻿namespace FrontendSchemeRegistration.Application.Services;
+﻿using System.Web;
+using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.Services.Interfaces;
 
-using System.Web;
-using DTOs.Submission;
-using Interfaces;
+namespace FrontendSchemeRegistration.Application.Services;
 
 public class SubmissionService : ISubmissionService
 {
@@ -66,5 +66,23 @@ public class SubmissionService : ISubmissionService
         };
 
         await _webApiGatewayClient.SubmitAsync(submissionId, payload);
+    }
+
+    public async Task<T> GetDecisionAsync<T>(
+        int? limit,
+        Guid submissionId)
+        where T : AbstractDecision
+    {
+        var queryString = $"";
+
+        if (limit is > 0)
+        {
+            queryString += $"limit={limit}";
+            queryString += $"&";
+        }
+
+        queryString += $"submissionId={submissionId}";
+
+        return await _webApiGatewayClient.GetDecisionsAsync<T>(queryString);
     }
 }

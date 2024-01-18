@@ -1,7 +1,7 @@
-﻿namespace FrontendSchemeRegistration.UI.ViewModels;
+﻿using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.UI.Constants;
 
-using Application.DTOs.Submission;
-using Constants;
+namespace FrontendSchemeRegistration.UI.ViewModels;
 
 public class FileUploadSubLandingViewModel
 {
@@ -12,4 +12,6 @@ public class FileUploadSubLandingViewModel
     public string? OrganisationRole { get; set; }
 
     public bool IsComplianceScheme => OrganisationRole == OrganisationRoles.ComplianceScheme;
+
+    public string ServiceRole { get; set; } = "Basic User";
 }

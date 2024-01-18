@@ -51,6 +51,7 @@ public class ErrorReportHelpersTests
     [TestCase("53", "When organisation size is large (L), packaging type cannot be small organisation packaging - all (SP)")]
     [TestCase("54", "You're reporting packaging data for January to June 2023. Submission period must be 2023-P1 or 2023-P2.")]
     [TestCase("55", "You're reporting packaging data for July to December 2023. Submission period must be 2023-P3.")]
+    [TestCase("58", "Organisation ID is not linked to your compliance scheme. Check the organisation ID for all rows for this organisation.")]
     [TestCase("59", "Packaging material weight is less than 100. Check all packaging weights are in kg and not tonnes.")]
     [TestCase("62", "Only one packaging material reported for this organisation. Check you have entered all packaging materials. All must be reported separately.")]
     [TestCase("ErrorIssue", "Error")]

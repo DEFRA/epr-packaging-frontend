@@ -1,6 +1,6 @@
-﻿namespace FrontendSchemeRegistration.Application.Services.Interfaces;
+﻿using FrontendSchemeRegistration.Application.DTOs.Submission;
 
-using DTOs.Submission;
+namespace FrontendSchemeRegistration.Application.Services.Interfaces;
 
 public interface ISubmissionService
 {
@@ -17,4 +17,9 @@ public interface ISubmissionService
     Task SubmitAsync(Guid submissionId, Guid fileId);
 
     Task SubmitAsync(Guid submissionId, Guid fileId, string submittedBy);
+
+    Task<T> GetDecisionAsync<T>(
+        int? limit,
+        Guid submissionId)
+        where T : AbstractDecision;
 }

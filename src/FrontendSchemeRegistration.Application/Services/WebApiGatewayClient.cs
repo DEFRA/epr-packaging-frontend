@@ -1,17 +1,17 @@
-﻿namespace FrontendSchemeRegistration.Application.Services;
-
-using System.Net;
+﻿using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using DTOs;
-using DTOs.Submission;
-using Enums;
-using Extensions;
-using Interfaces;
+using FrontendSchemeRegistration.Application.DTOs;
+using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.Enums;
+using FrontendSchemeRegistration.Application.Extensions;
+using FrontendSchemeRegistration.Application.Options;
+using FrontendSchemeRegistration.Application.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
-using Options;
+
+namespace FrontendSchemeRegistration.Application.Services;
 
 public class WebApiGatewayClient : IWebApiGatewayClient
 {
@@ -138,9 +138,30 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         response.EnsureSuccessStatusCode();
     }
 
+    public async Task<T> GetDecisionsAsync<T>(string queryString)
+        where T : AbstractDecision
+    {
+        await PrepareAuthenticatedClientAsync();
+
+        try
+        {
+            var response = await _httpClient.GetAsync($"/api/v1/decisions?{queryString}");
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadFromJsonAsync<T>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting decision");
+            throw;
+        }
+    }
+
     private async Task PrepareAuthenticatedClientAsync()
     {
         var accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(_scopes);
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Constants.Bearer, accessToken);
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+           Microsoft.Identity.Web.Constants.Bearer, accessToken);
     }
 }

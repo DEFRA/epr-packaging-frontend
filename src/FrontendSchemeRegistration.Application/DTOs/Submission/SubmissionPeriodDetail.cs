@@ -1,7 +1,7 @@
-﻿namespace FrontendSchemeRegistration.Application.DTOs.Submission;
+﻿using System.Diagnostics.CodeAnalysis;
+using FrontendSchemeRegistration.Application.Enums;
 
-using System.Diagnostics.CodeAnalysis;
-using Enums;
+namespace FrontendSchemeRegistration.Application.DTOs.Submission;
 
 [ExcludeFromCodeCoverage]
 public class SubmissionPeriodDetail
@@ -11,4 +11,10 @@ public class SubmissionPeriodDetail
     public DateTime Deadline { get; set; }
 
     public SubmissionPeriodStatus Status { get; set; }
+
+    public bool IsResubmissionRequired { get; set; }
+
+    public string? Decision { get; set; }
+
+    public string? Comments { get; set; } = string.Empty;
 }

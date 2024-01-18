@@ -1,8 +1,8 @@
-﻿namespace FrontendSchemeRegistration.Application.Services.Interfaces;
+﻿using FrontendSchemeRegistration.Application.DTOs;
+using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.Enums;
 
-using DTOs;
-using DTOs.Submission;
-using Enums;
+namespace FrontendSchemeRegistration.Application.Services.Interfaces;
 
 public interface IWebApiGatewayClient
 {
@@ -25,4 +25,7 @@ public interface IWebApiGatewayClient
     Task<List<ProducerValidationError>> GetProducerValidationErrorsAsync(Guid submissionId);
 
     Task SubmitAsync(Guid submissionId, SubmissionPayload payload);
+
+    Task<T> GetDecisionsAsync<T>(string queryString)
+        where T : AbstractDecision;
 }
