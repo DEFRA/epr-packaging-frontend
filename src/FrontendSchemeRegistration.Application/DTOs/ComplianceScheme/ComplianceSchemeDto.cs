@@ -10,4 +10,6 @@ public class ComplianceSchemeDto
     public string Name { get; set; }
 
     public DateTimeOffset CreatedOn { get; set; }
+
+    public int NationId { get; set; }
 }

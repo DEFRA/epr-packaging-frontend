@@ -9,10 +9,12 @@ using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
+using FrontendSchemeRegistration.Application.RequestModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
+using Microsoft.FeatureManagement;
 using Moq;
 using RequestModels;
 using UI.Controllers;
@@ -29,19 +31,31 @@ public class FileUploadSubmissionDeclarationControllerTests
     private static readonly Guid _fileId = Guid.NewGuid();
     private Mock<ISubmissionService> _submissionServiceMock;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
+    private Mock<IRegulatorService> _regulatorServiceMock;
     private Mock<ClaimsPrincipal> _claimsPrincipalMock;
+    private Mock<IFeatureManager> _featureManagerMock;
     private FileUploadSubmissionDeclarationController _systemUnderTest;
 
     [SetUp]
     public void SetUp()
     {
         _submissionServiceMock = new Mock<ISubmissionService>();
+        _regulatorServiceMock = new Mock<IRegulatorService>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _claimsPrincipalMock = new Mock<ClaimsPrincipal>();
+        _featureManagerMock = new Mock<IFeatureManager>();
+
+        _featureManagerMock
+            .Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ShowPoMResubmission)))
+            .ReturnsAsync(true);
+
         _systemUnderTest = new FileUploadSubmissionDeclarationController(
             _submissionServiceMock.Object,
             _sessionManagerMock.Object,
+            _regulatorServiceMock.Object,
+            _featureManagerMock.Object,
             Mock.Of<ILogger<FileUploadSubmissionDeclarationController>>());
+
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
@@ -277,6 +291,73 @@ public class FileUploadSubmissionDeclarationControllerTests
     }
 
     [Test]
+    public async Task Post_SendResubmissionEmail_WhenDeclarationNameIsValidAndUserHasPreviousSubmission()
+    {
+        // Arrange
+        Guid lastValidFileUploadedByUserId = Guid.NewGuid();
+        var fileId = Guid.NewGuid();
+
+        var submission = new PomSubmission
+        {
+            Id = _submissionId,
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileName = "last-valid-file.csv",
+                UploadedBy = lastValidFileUploadedByUserId,
+                FileUploadDateTime = DateTime.Now,
+                FileId = fileId
+            },
+            LastSubmittedFile = new SubmittedFileInformation
+            {
+                FileName = "last-valid-file.csv",
+                FileId = fileId
+            },
+            SubmissionPeriod = "Jan to Jun 2023"
+        };
+
+        var input = new ResubmissionEmailRequestModel
+        {
+            OrganisationNumber = "123456",
+            ProducerOrganisationName = "Org Name Ltd",
+            SubmissionPeriod = "Jan to Jun 2023",
+            NationId = 1,
+            IsComplianceScheme = false,
+        };
+
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+
+        _sessionManagerMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    FileId = _fileId
+                }
+            });
+
+        var submissionDeclarationRequest = new SubmissionDeclarationRequest
+        {
+            DeclarationName = DeclarationName
+        };
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Post(submissionDeclarationRequest) as RedirectToActionResult;
+
+        // Assert
+        _regulatorServiceMock.Verify(
+            x => x.SendRegulatorResubmissionEmail(
+            It.Is<ResubmissionEmailRequestModel>(x => x.OrganisationNumber == input.OrganisationNumber
+                && x.ProducerOrganisationName == input.ProducerOrganisationName
+                && x.SubmissionPeriod == input.SubmissionPeriod
+                && x.NationId == input.NationId
+                && x.IsComplianceScheme == input.IsComplianceScheme)), Times.Once);
+    }
+
+    [Test]
     public async Task Post_RedirectsToFileUploadSubmissionErrorGet_WhenExceptionOccursDuringSubmission()
     {
         // Arrange
@@ -337,9 +418,13 @@ public class FileUploadSubmissionDeclarationControllerTests
                 {
                     Id = Guid.NewGuid(),
                     OrganisationRole = organisationRole,
-                    Name = OrganisationName
+                    Name = OrganisationName,
+                    OrganisationNumber = "123456",
+                    NationId = 1
                 }
-            }
+            },
+            FirstName = "First",
+            LastName = "Last"
         };
 
         return new List<Claim>

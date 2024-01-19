@@ -116,6 +116,7 @@ public static class ServiceProviderExtension
         services.AddScoped<IErrorReportService, ErrorReportService>();
         services.AddScoped<ICloner, Cloner>();
         services.AddScoped<IRoleManagementService, RoleManagementService>();
+        services.AddScoped<IRegulatorService, RegulatorService>();
         services.AddScoped<ISubmissionService, SubmissionService>();
         services.AddTransient<IDateTimeProvider, SystemDateTimeProvider>();
         services.AddSingleton<IPatchService, PatchService>();

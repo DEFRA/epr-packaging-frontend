@@ -10,10 +10,12 @@ using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
+using FrontendSchemeRegistration.Application.RequestModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
+using Microsoft.FeatureManagement;
 using Moq;
 using UI.Controllers;
 using UI.Sessions;
@@ -30,7 +32,9 @@ public class FileUploadCheckFileAndSubmitControllerTests
     private Mock<ISubmissionService> _submissionServiceMock;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
     private Mock<IUserAccountService> _userAccountServiceMock;
+    private Mock<IRegulatorService> _regulatorServiceMock;
     private Mock<ClaimsPrincipal> _claimsPrincipalMock;
+    private Mock<IFeatureManager> _featureManagerMock;
     private FileUploadCheckFileAndSubmitController _systemUnderTest;
 
     [SetUp]
@@ -39,15 +43,24 @@ public class FileUploadCheckFileAndSubmitControllerTests
         _submissionServiceMock = new Mock<ISubmissionService>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _userAccountServiceMock = new Mock<IUserAccountService>();
+        _regulatorServiceMock = new Mock<IRegulatorService>();
         _claimsPrincipalMock = new Mock<ClaimsPrincipal>();
+        _featureManagerMock = new Mock<IFeatureManager>();
         var personThatLastUploadedValidFile = new PersonDto { FirstName = "John", LastName = "Doe" };
         _userAccountServiceMock
             .Setup(x => x.GetPersonByUserId(_lastValidFileUploadedByUserId))
             .ReturnsAsync(personThatLastUploadedValidFile);
+
+        _featureManagerMock
+            .Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ShowPoMResubmission)))
+            .ReturnsAsync(true);
+
         _systemUnderTest = new FileUploadCheckFileAndSubmitController(
             _submissionServiceMock.Object,
             _userAccountServiceMock.Object,
             _sessionManagerMock.Object,
+            _regulatorServiceMock.Object,
+            _featureManagerMock.Object,
             Mock.Of<ILogger<FileUploadCheckFileAndSubmitController>>());
         _systemUnderTest.ControllerContext = new ControllerContext
         {
@@ -207,6 +220,78 @@ public class FileUploadCheckFileAndSubmitControllerTests
         _submissionServiceMock.Verify(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>()), Times.Once);
         _userAccountServiceMock.Verify(x => x.GetPersonByUserId(_lastValidFileUploadedByUserId), Times.Once);
         _userAccountServiceMock.Verify(x => x.GetPersonByUserId(_lastSubmittedByUserId), Times.Once);
+    }
+
+    [Test]
+    public async Task Post_SendsResubmissionEmail_WhenUserIsComplianceScheme()
+    {
+        // Arrange
+        var fileId = Guid.NewGuid();
+        var model = new FileUploadCheckFileAndSubmitViewModel { Submit = true, LastValidFileId = fileId };
+        var submission = new PomSubmission
+        {
+            Id = _submissionId,
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileName = "last-valid-file.csv",
+                UploadedBy = _lastValidFileUploadedByUserId,
+                FileUploadDateTime = DateTime.Now,
+                FileId = fileId
+            },
+            LastSubmittedFile = new SubmittedFileInformation
+            {
+                FileName = "last-valid-file.csv",
+                FileId = fileId
+            },
+            SubmissionPeriod = "Jan to Jun 2023"
+        };
+
+        var input = new ResubmissionEmailRequestModel
+        {
+            OrganisationNumber = "123456",
+            ProducerOrganisationName = "Compliance Scheme Name",
+            SubmissionPeriod = "Jan to Jun 2023",
+            NationId = 1,
+            IsComplianceScheme = true,
+            ComplianceSchemeName = "Organisation Name",
+            ComplianceSchemePersonName = "First Last"
+        };
+
+        _sessionManagerMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SelectedComplianceScheme = new Application.DTOs.ComplianceScheme.ComplianceSchemeDto
+                    {
+                        Name = "Compliance Scheme Name",
+                        NationId = 2,
+                    }
+                }
+            });
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        _regulatorServiceMock.Setup(x => x.SendRegulatorResubmissionEmail(It.IsAny<ResubmissionEmailRequestModel>())).ReturnsAsync("notificationId");
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.ComplianceScheme);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Post(model) as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadSubmissionConfirmation");
+        result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(submission.Id.ToString());
+        _regulatorServiceMock.Verify(
+            x => x.SendRegulatorResubmissionEmail(
+            It.Is<ResubmissionEmailRequestModel>(x => x.OrganisationNumber == input.OrganisationNumber
+                && x.ProducerOrganisationName == input.ProducerOrganisationName
+                && x.SubmissionPeriod == input.SubmissionPeriod
+                && x.NationId == 2
+                && x.IsComplianceScheme == input.IsComplianceScheme
+                && x.ComplianceSchemeName == input.ComplianceSchemeName
+                && x.ComplianceSchemePersonName == input.ComplianceSchemePersonName)), Times.Once);
     }
 
     [TestCase(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Enrolled)]
@@ -440,9 +525,14 @@ public class FileUploadCheckFileAndSubmitControllerTests
                 new()
                 {
                     Id = Guid.NewGuid(),
-                    OrganisationRole = organisationRole
+                    OrganisationRole = organisationRole,
+                    Name = "Organisation Name",
+                    OrganisationNumber = "123456",
+                    NationId = 1
                 }
-            }
+            },
+            FirstName = "First",
+            LastName = "Last"
         };
 
         return new List<Claim>

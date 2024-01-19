@@ -4,10 +4,15 @@ using Application.Constants;
 using Application.DTOs.Submission;
 using Application.Services.Interfaces;
 using EPR.Common.Authorization.Constants;
+using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using Extensions;
+using global::FrontendSchemeRegistration.Application.RequestModels;
+using global::FrontendSchemeRegistration.UI.Constants;
+using global::FrontendSchemeRegistration.UI.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.FeatureManagement;
 using RequestModels;
 using Sessions;
 using UI.Attributes.ActionFilters;
@@ -18,16 +23,22 @@ using ViewModels;
 public class FileUploadSubmissionDeclarationController : Controller
 {
     private readonly ISubmissionService _submissionService;
+    private readonly IRegulatorService _regulatorService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
+    private readonly IFeatureManager _featureManager;
     private readonly ILogger<FileUploadSubmissionDeclarationController> _logger;
 
     public FileUploadSubmissionDeclarationController(
         ISubmissionService submissionService,
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
+        IRegulatorService regulatorService,
+        IFeatureManager featureManager,
         ILogger<FileUploadSubmissionDeclarationController> logger)
     {
         _submissionService = submissionService;
         _sessionManager = sessionManager;
+        _regulatorService = regulatorService;
+        _featureManager = featureManager;
         _logger = logger;
     }
 
@@ -103,6 +114,14 @@ public class FileUploadSubmissionDeclarationController : Controller
 
         try
         {
+            var resubmissionEnabled = await _featureManager.IsEnabledAsync(nameof(FeatureFlags.ShowPoMResubmission));
+            if (submission.LastSubmittedFile != null && resubmissionEnabled)
+            {
+                ResubmissionEmailRequestModel input = ResubmissionEmailRequestBuilder.BuildResubmissionEmail(userData, submission, session);
+
+                _regulatorService.SendRegulatorResubmissionEmail(input);
+            }
+
             await _submissionService.SubmitAsync(submission.Id, fileId.Value, request.DeclarationName);
             return RedirectToAction("Get", "FileUploadSubmissionConfirmation", routeValues);
         }

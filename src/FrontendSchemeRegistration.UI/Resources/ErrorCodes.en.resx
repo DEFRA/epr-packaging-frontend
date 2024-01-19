@@ -180,4 +180,7 @@ Read the guidance about how to create your organisation details file. Once youâ€
     <data name="62" xml:space="preserve">
         <value>Only one packaging material reported for this organisation. Check you have entered all packaging materials. All must be reported separately.</value>
     </data>
+	<data name="63" xml:space="preserve">
+        <value>For self-managed consumer waste (CW), you may not be able to offset your own packaging against aluminium (AL), glass (GL), paper or card (PC), or steel (ST). To check what packaging materials you can offset, you'll need to contact your nation's environmental regulator.</value>
+    </data>
 </root>

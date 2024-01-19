@@ -1,9 +1,11 @@
 ﻿namespace FrontendSchemeRegistration.UI.UnitTests.Middleware;
 
 using AutoFixture;
+using Castle.Components.DictionaryAdapter.Xml;
 using Constants;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Moq;
 using UI.Middleware;
 
@@ -29,7 +31,7 @@ public class SecurityHeaderMiddlewareTests
         var context = new DefaultHttpContext();
 
         // Act
-        await _middleware.Invoke(context);
+        await _middleware.Invoke(context, new Mock<IConfiguration>().Object);
 
         // Assert
         context.Response.Headers.Should().ContainKey("Content-Security-Policy");
@@ -51,7 +53,7 @@ public class SecurityHeaderMiddlewareTests
         var context = new DefaultHttpContext();
 
         // Act
-        await _middleware.Invoke(context);
+        await _middleware.Invoke(context, new Mock<IConfiguration>().Object);
 
         // Assert
         context.Items.Should().ContainKey(ContextKeys.ScriptNonceKey);
@@ -64,7 +66,7 @@ public class SecurityHeaderMiddlewareTests
         var context = new DefaultHttpContext();
 
         // Act
-        await _middleware.Invoke(context);
+        await _middleware.Invoke(context, new Mock<IConfiguration>().Object);
 
         // Assert
         _mockRequestDelegate.Verify(d => d(It.IsAny<HttpContext>()), Times.Once);
