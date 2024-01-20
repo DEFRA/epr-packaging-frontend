@@ -234,6 +234,9 @@
   <data name="upload_a_file" xml:space="preserve">
     <value>Upload a file</value>
   </data>
+  <data name="upload_your_file_again" xml:space="preserve">
+    <value>Upload your file again</value>
+  </data>
   <data name="sign_in" xml:space="preserve">
     <value>Sign in</value>
   </data>

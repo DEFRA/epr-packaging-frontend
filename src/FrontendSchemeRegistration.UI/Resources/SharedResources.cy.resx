@@ -234,6 +234,9 @@
   <data name="upload_a_file" xml:space="preserve">
     <value>Uwchlwytho ffeil</value>
   </data>
+  <data name="upload_your_file_again" xml:space="preserve">
+    <value>Uwchlwythwch eich ffeil eto</value>
+  </data>
   <data name="sign_in" xml:space="preserve">
     <value>Mewngofnodi</value>
   </data>

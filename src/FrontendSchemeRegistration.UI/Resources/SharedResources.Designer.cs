@@ -243,6 +243,12 @@ namespace FrontendSchemeRegistration.UI.Resources {
             }
         }
         
+        internal static string upload_your_file_again {
+            get {
+                return ResourceManager.GetString("upload_your_file_again", resourceCulture);
+            }
+        }
+        
         internal static string sign_in {
             get {
                 return ResourceManager.GetString("sign_in", resourceCulture);

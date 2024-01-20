@@ -84,6 +84,15 @@
                 @Localizer["how_the_error_report_works"]
             </h2>
             <p class="govuk-body">@Localizer["your_error_report_only_show_first_x_errors", string.Format($"{Model.MaxErrorsToProcess:n0}")]</p>
+           @Html.ActionLink(
+               @SharedLocalizer["upload_your_file_again"],
+                "Get",
+                "FileUpload",
+                null,
+                new
+                {
+                    @class = "govuk-button"
+                })
         </div>
     </div>
 </main>
