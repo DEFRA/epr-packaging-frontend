@@ -152,4 +152,42 @@ public class FileUploadWarningControllerTests
         result?.ControllerName.Should().Be(nameof(FileUploadSubLandingController).RemoveControllerFromName());
         result?.ActionName.Should().Be(nameof(FileUploadSubLandingController.Get));
     }
+
+    [Test]
+    public async Task Post_WhenUserOptsToUploadNew_RedirectsToFileUploadGet()
+    {
+        // Arrange
+        var viewModel = new FileUploadWarningViewModel
+        {
+            SubmissionId = SubmissionId,
+            UploadNewFile = true
+        };
+
+        // Act
+        var result = await _systemUnderTest.FileUploadDecision(viewModel) as RedirectToActionResult;
+
+        // Assert
+        result?.ControllerName.Should().Be(nameof(FileUploadController).RemoveControllerFromName());
+        result?.ActionName.Should().Be(nameof(FileUploadController.Get));
+    }
+
+    [Test]
+    public async Task Post_WhenUserOptsNotToUploadNew_RedirectsToFileUploadCheckFileAndSubmitGet()
+    {
+        // Arrange
+        var viewModel = new FileUploadWarningViewModel
+        {
+            SubmissionId = SubmissionId,
+            UploadNewFile = false
+        };
+
+        // Act
+        var result = await _systemUnderTest.FileUploadDecision(viewModel) as RedirectToActionResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        result?.ControllerName.Should().Be(nameof(FileUploadCheckFileAndSubmitController).RemoveControllerFromName());
+        result?.ActionName.Should().Be(nameof(FileUploadCheckFileAndSubmitController.Get));
+        result.RouteValues["submissionId"].Should().Be(SubmissionId);
+    }
 }

@@ -60,4 +60,25 @@ public class FileUploadWarningController : Controller
                 MaxReportSize = _validationOptions.MaxIssueReportSize
             });
     }
+
+    [HttpPost]
+    public async Task<IActionResult> FileUploadDecision(FileUploadWarningViewModel model)
+    {
+        ModelState.Remove(nameof(model.FileName));
+        ModelState.Remove(nameof(model.MaxReportSize));
+
+        if (!ModelState.IsValid)
+        {
+            return View("FileUploadWarning", model);
+        }
+
+        if (model.UploadNewFile.HasValue)
+        {
+            return model.UploadNewFile.Value ?
+                RedirectToAction("Get", "FileUpload") :
+                RedirectToAction("Get", "FileUploadCheckFileAndSubmit", new { submissionId = model.SubmissionId });
+        }
+
+        return View("FileUploadWarning", model);
+    }
 }

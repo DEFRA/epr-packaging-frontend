@@ -45,4 +45,7 @@
     <data name="Select_yes_if_you_would_like_to_remove_this_member_from_your_account" xml:space="preserve">
         <value>Select yes if you would like to remove this member from your account</value>
     </data>
+    <data name="select_yes_if_you_want_to_upload_a_new_file" xml:space="preserve">
+        <value />
+    </data>
 </root>

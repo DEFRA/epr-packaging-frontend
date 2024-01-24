@@ -177,6 +177,9 @@ Read the guidance about how to create your organisation details file. Once youâ€
     <data name="58" xml:space="preserve">
         <value>Organisation ID is not linked to your compliance scheme. Check the organisation ID for all rows for this organisation.</value>
     </data>
+    <data name="60" xml:space="preserve">
+        <value>Check the packaging material weight for all rows for this organisation. If the total for the reporting year is between 25,000kg and 50,000kg, this organisation may only need to register as a small organisation in the following year.</value>
+    </data>
     <data name="62" xml:space="preserve">
         <value>Only one packaging material reported for this organisation. Check you have entered all packaging materials. All must be reported separately.</value>
     </data>

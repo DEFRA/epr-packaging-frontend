@@ -55,6 +55,7 @@ public class ErrorReportHelpersTests
     [TestCase("en-GB", "55", "You're reporting packaging data for July to December 2023. Submission period must be 2023-P3.")]
     [TestCase("en-GB", "58", "Organisation ID is not linked to your compliance scheme. Check the organisation ID for all rows for this organisation.")]
     [TestCase("en-GB", "59", "Packaging material weight is less than 100. Check all packaging weights are in kg and not tonnes.")]
+    [TestCase("en-GB", "60", "Check the packaging material weight for all rows for this organisation. If the total for the reporting year is between 25,000kg and 50,000kg, this organisation may only need to register as a small organisation in the following year.")]
     [TestCase("en-GB", "62", "Only one packaging material reported for this organisation. Check you have entered all packaging materials. All must be reported separately.")]
     [TestCase("en-GB", "63", "For self-managed consumer waste (CW), you may not be able to offset your own packaging against aluminium (AL), glass (GL), paper or card (PC), or steel (ST). To check what packaging materials you can offset, you'll need to contact your nation's environmental regulator.")]
 
@@ -62,7 +63,9 @@ public class ErrorReportHelpersTests
     [TestCase("en-GB", "WarningIssue", "Warning")]
 
     // Welsh
+    [TestCase("cy-GB", "60", "WCheck the packaging material weight for all rows for this organisation. If the total for the reporting year is between 25,000kg and 50,000kg, this organisation may only need to register as a small organisation in the following year.")]
     [TestCase("cy-GB", "63", "Yn achos gwastraff defnyddwyr hunan-reoledig (CW), mae'n bosibl na fyddwch chi'n gallu gwrthbwyso'ch pecynwaith eich hunan yn erbyn alwminiwm (AL), gwydr (GL), papur neu gerdyn (PC), neu ddur (ST). I wirio pa ddeunyddiau pecynwaith y gallwch eu gwrthbwyso, bydd angen ichi gysylltu â rheoleiddiwr amgylcheddol eich gwlad.")]
+
     public void ToErrorReportRows_ConvertsValidationErrorsToErrorRowsWithMessage_WhenCalled(
         string culture, string errorCode, string expectedMessage)
     {

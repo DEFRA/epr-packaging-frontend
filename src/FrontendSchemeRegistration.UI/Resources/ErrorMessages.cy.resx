@@ -38,4 +38,7 @@
     <data name="Select_yes_if_you_would_like_to_remove_this_member_from_your_account" xml:space="preserve">
         <value>Dewiswch Ydw os hoffech chi dynnu’r aelod yma o’ch cyfrif</value>
     </data>
+    <data name="select_yes_if_you_want_to_upload_a_new_file" xml:space="preserve">
+        <value>WSelect yes if you want to upload a new file</value>
+    </data>
 </root>

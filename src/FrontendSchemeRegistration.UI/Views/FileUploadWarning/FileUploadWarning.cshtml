@@ -41,28 +41,59 @@
                 <summary class="govuk-details__summary">
                     <span class="govuk-details__summary-text">
                         @Localizer["how_to_check_warnings"]
-                        </span>
+                    </span>
                 </summary>
                 <div class="govuk-details__text">
                     <p class="govuk-body">
                         1. @Localizer["use_the_report_to_check_warnings"]<a href="@GuidanceLinks.Value.HowToBuildCsvFileToReportYourPackagingData"
-                              class="govuk-link" rel="noreferrer noopener" target="_blank">
+                                                                            class="govuk-link" rel="noreferrer noopener" target="_blank">
                             @Localizer["file_specification_guidance"]</a>.
                     </p>
                     <p class="govuk-body">2. @Localizer["decide_if_you_want_to_update"]</p>
                     <p class="govuk-body">3. @Localizer["upload_new_file_or_keep"]</p>
                 </div>
             </details>
+            
+         @using (Html.BeginForm(FormMethod.Post))
+         {
+             @Html.HiddenFor(m => m.SubmissionId)
 
-            @Html.ActionLink(
-                SharedLocalizer["continue"],
-                "Get",
-                "FileUploadCheckFileAndSubmit",
-                new {Model.SubmissionId},
-                new
-                {
-                    @class = "govuk-button"
-                })
+             <div class="govuk-form-group govuk-!-margin-top-7 @(ViewData.ModelState.IsValid ? string.Empty : "govuk-form-group--error")">
+
+                 <fieldset class="govuk-fieldset" aria-describedby="environment-regulator-hint">
+                     <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                         <h1 class="govuk-fieldset__heading">@Localizer["do_you_want_to_upload_a_new_file"]</h1>
+                     </legend>
+                     
+                     @if (!ViewData.ModelState.IsValid)
+                     {
+                         @await Html.PartialAsync("Partials/Govuk/_Error", ViewData.ModelState.GetModelStateEntry(nameof(Model.UploadNewFile)))
+                     }
+
+                     <div class="govuk-radios" data-module="govuk-radios">
+                         <div class="govuk-radios__item">
+                             @Html.RadioButtonFor(m => m.UploadNewFile, true, new
+                             {
+                                 @class = "govuk-radios__input",
+                                 Id = "UploadNewFile"
+                             })
+                             <label for="UploadNewFile" class="govuk-label govuk-radios__label">@Localizer["yes"]</label>
+                         </div>
+
+                         <div class="govuk-radios__item">
+                             @Html.RadioButtonFor(m => m.UploadNewFile, false, new
+                             {
+                                 @class = "govuk-radios__input",
+                                 Id = "UploadNewFile-1"
+                             })
+                             <label for="UploadNewFile-1" class="govuk-label govuk-radios__label">@Localizer["no_keep_this_file_uploaded"]</label>
+                         </div>
+                     </div>
+                 </fieldset>
+             </div>
+
+             <button class="govuk-button" data-module="govuk-button">@SharedLocalizer["continue"]</button>
+         }
         </div>
     </div>
 </main>

@@ -44,4 +44,13 @@
     <data name="file_specification_guidance" xml:space="preserve">
         <value>canllawiau ar fanyleb y ffeil hefyd (yn agor mewn ffenestr newydd)</value>
     </data>
+    <data name="do_you_want_to_upload_a_new_file" xml:space="preserve">
+        <value>Hoffech chi uwchlwytho ffeil newydd?</value>
+    </data>
+    <data name="yes" xml:space="preserve">
+        <value>Hoffwn</value>
+    </data>
+    <data name="no_keep_this_file_uploaded" xml:space="preserve">
+        <value>Na hoffwn. Cadwch y ffeil yma wedi’i huwchlwytho i gyfrif fy sefydliad i.</value>
+    </data>
 </root>

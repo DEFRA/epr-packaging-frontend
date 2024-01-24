@@ -38,4 +38,7 @@
     <data name="select_whether_youve_changed_compliance_scheme" xml:space="preserve">
         <value>Select whether you’ve changed compliance scheme or no longer use one.</value>
     </data>
+    <data name="select_yes_if_you_want_to_upload_a_new_file" xml:space="preserve">
+        <value>Select yes if you want to upload a new file</value>
+    </data>
 </root>
