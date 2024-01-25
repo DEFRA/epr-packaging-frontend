@@ -105,51 +105,21 @@ public class FileUploadSubLandingController : Controller
     [HttpPost]
     public async Task<IActionResult> Post(string dataPeriod)
     {
-        var selectedSubmissionPeriod = _submissionPeriods.FirstOrDefault(x => x.DataPeriod == dataPeriod);
-
-        if (selectedSubmissionPeriod is null)
+        var selectedSubmissionPeriod = FindSubmissionPeriod(dataPeriod);
+        if (selectedSubmissionPeriod == null)
         {
             return RedirectToAction(nameof(Get));
         }
 
-        var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-        session.RegistrationSession.SubmissionPeriod = selectedSubmissionPeriod.DataPeriod;
-        session.RegistrationSession.SubmissionDeadline = selectedSubmissionPeriod.Deadline;
+        await UpdateSessionForSelectedPeriodAsync(selectedSubmissionPeriod);
 
-        session.RegistrationSession.Journey.AddIfNotExists(PagePaths.FileUploadSubLanding);
-        await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
-
-        var submissions = await _submissionService.GetSubmissionsAsync<PomSubmission>(
-            new List<string> { selectedSubmissionPeriod.DataPeriod },
-            _submissionsLimit,
-            session.RegistrationSession.SelectedComplianceScheme?.Id,
-            session.RegistrationSession.IsSelectedComplianceSchemeFirstCreated);
-        var submission = submissions.FirstOrDefault();
-
-        if (submission is null or { IsSubmitted: false, HasValidFile: false })
+        var submission = await FindSubmissionForPeriodAsync(selectedSubmissionPeriod.DataPeriod);
+        if (submission == null)
         {
-            return RedirectToAction(
-                nameof(FileUploadController.Get),
-                nameof(FileUploadController).RemoveControllerFromName(),
-                submission is null ? null : new RouteValueDictionary { { "submissionId", submission.Id } });
+            return RedirectToFileUploadController();
         }
 
-        var routeValueDictionary = new RouteValueDictionary { { "submissionId", submission.Id } };
-
-        if (submission is { IsSubmitted: false, HasValidFile: true })
-        {
-            return RedirectToAction(
-                nameof(FileUploadCheckFileAndSubmitController.Get),
-                nameof(FileUploadCheckFileAndSubmitController).RemoveControllerFromName(), routeValueDictionary);
-        }
-
-        return submission.LastSubmittedFile.FileId == submission.LastUploadedValidFile.FileId
-            ? RedirectToAction(
-                nameof(UploadNewFileToSubmitController.Get),
-                nameof(UploadNewFileToSubmitController).RemoveControllerFromName(), routeValueDictionary)
-            : RedirectToAction(
-                nameof(FileUploadCheckFileAndSubmitController.Get),
-                nameof(FileUploadCheckFileAndSubmitController).RemoveControllerFromName(), routeValueDictionary);
+        return HandleSubmissionBasedOnStatus(submission);
     }
 
     private static SubmissionPeriodStatus GetSubmissionStatus(
@@ -195,5 +165,115 @@ public class FileUploadSubLandingController : Controller
         return submission is { HasValidFile: true }
             ? SubmissionPeriodStatus.FileUploaded
             : SubmissionPeriodStatus.NotStarted;
+    }
+
+    private SubmissionPeriod FindSubmissionPeriod(string dataPeriod)
+    {
+        return _submissionPeriods.FirstOrDefault(period => period.DataPeriod == dataPeriod);
+    }
+
+    private async Task UpdateSessionForSelectedPeriodAsync(SubmissionPeriod selectedSubmissionPeriod)
+    {
+        var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+        session.RegistrationSession.SubmissionPeriod = selectedSubmissionPeriod.DataPeriod;
+        session.RegistrationSession.SubmissionDeadline = selectedSubmissionPeriod.Deadline;
+        session.RegistrationSession.Journey.AddIfNotExists(PagePaths.FileUploadSubLanding);
+        await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
+    }
+
+    private async Task<PomSubmission> FindSubmissionForPeriodAsync(string dataPeriod)
+    {
+        var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+        var submissions = await _submissionService.GetSubmissionsAsync<PomSubmission>(
+            new List<string> { dataPeriod },
+            _submissionsLimit,
+            session.RegistrationSession.SelectedComplianceScheme?.Id,
+            session.RegistrationSession.IsSelectedComplianceSchemeFirstCreated);
+
+        return submissions.FirstOrDefault();
+    }
+
+    private IActionResult RedirectToFileUploadController()
+    {
+        return RedirectToAction(
+            nameof(FileUploadController.Get),
+            nameof(FileUploadController).RemoveControllerFromName());
+    }
+
+    private IActionResult HandleSubmissionBasedOnStatus(PomSubmission submission)
+    {
+        if (!submission.IsSubmitted)
+        {
+            return HandleUnsubmittedSubmission(submission);
+        }
+
+        return HandleSubmittedSubmission(submission);
+    }
+
+    private IActionResult HandleUnsubmittedSubmission(PomSubmission submission)
+    {
+        var routeValueDictionary = new RouteValueDictionary { { "submissionId", submission.Id } };
+
+        if (submission.HasWarnings && submission.ValidationPass)
+        {
+            return RedirectToWarningController(routeValueDictionary);
+        }
+
+        if (submission.HasValidFile)
+        {
+            return RedirectToCheckFileAndSubmitController(routeValueDictionary);
+        }
+
+        return RedirectToAction(
+            nameof(FileUploadController.Get),
+            nameof(FileUploadController).RemoveControllerFromName(),
+            routeValueDictionary);
+    }
+
+    private IActionResult HandleSubmittedSubmission(PomSubmission submission)
+    {
+        var routeValueDictionary = new RouteValueDictionary { { "submissionId", submission.Id } };
+
+        if (SubmissionFileIdsDiffer(submission))
+        {
+            return RedirectToWarningController(routeValueDictionary);
+        }
+
+        return RedirectToAppropriateFileController(submission, routeValueDictionary);
+    }
+
+    private IActionResult RedirectToWarningController(RouteValueDictionary routeValueDictionary)
+    {
+        return RedirectToAction(
+            nameof(FileUploadWarningController.Get),
+            nameof(FileUploadWarningController).RemoveControllerFromName(),
+            routeValueDictionary);
+    }
+
+    private IActionResult RedirectToCheckFileAndSubmitController(RouteValueDictionary routeValueDictionary)
+    {
+        return RedirectToAction(
+            nameof(FileUploadCheckFileAndSubmitController.Get),
+            nameof(FileUploadCheckFileAndSubmitController).RemoveControllerFromName(),
+            routeValueDictionary);
+    }
+
+    private bool SubmissionFileIdsDiffer(PomSubmission submission)
+    {
+        return submission.LastSubmittedFile.FileId != submission.LastUploadedValidFile.FileId &&
+               submission.HasWarnings && submission.ValidationPass;
+    }
+
+    private IActionResult RedirectToAppropriateFileController(PomSubmission submission, RouteValueDictionary routeValueDictionary)
+    {
+        return submission.LastSubmittedFile.FileId == submission.LastUploadedValidFile.FileId
+            ? RedirectToAction(
+                nameof(UploadNewFileToSubmitController.Get),
+                nameof(UploadNewFileToSubmitController).RemoveControllerFromName(),
+                routeValueDictionary)
+            : RedirectToAction(
+                nameof(FileUploadCheckFileAndSubmitController.Get),
+                nameof(FileUploadCheckFileAndSubmitController).RemoveControllerFromName(),
+                routeValueDictionary);
     }
 }

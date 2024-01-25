@@ -45,7 +45,8 @@ public class FileUploadWarningController : Controller
 
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
 
-        if (session is not null && !session.RegistrationSession.Journey.Contains<string>(PagePaths.FileUploading))
+        if (session is not null && session.RegistrationSession.Journey.LastOrDefault() != PagePaths.FileUploadSubLanding &&
+            !session.RegistrationSession.Journey.Contains<string>(PagePaths.FileUploading))
         {
             return RedirectToAction("Get", "FileUploadSubLanding");
         }

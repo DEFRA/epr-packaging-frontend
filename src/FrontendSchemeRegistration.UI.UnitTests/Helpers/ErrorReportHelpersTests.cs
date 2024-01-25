@@ -53,17 +53,17 @@ public class ErrorReportHelpersTests
     [TestCase("en-GB", "53", "When organisation size is large (L), packaging type cannot be small organisation packaging - all (SP)")]
     [TestCase("en-GB", "54", "You're reporting packaging data for January to June 2023. Submission period must be 2023-P1 or 2023-P2.")]
     [TestCase("en-GB", "55", "You're reporting packaging data for July to December 2023. Submission period must be 2023-P3.")]
+    [TestCase("en-GB", "57", "Organisation ID must be the same as the identification number assigned to this organisation when they created their account. Check the organisation ID for all rows for this organisation.")]
     [TestCase("en-GB", "58", "Organisation ID is not linked to your compliance scheme. Check the organisation ID for all rows for this organisation.")]
     [TestCase("en-GB", "59", "Packaging material weight is less than 100. Check all packaging weights are in kg and not tonnes.")]
     [TestCase("en-GB", "60", "Check the packaging material weight for all rows for this organisation. If the total for the reporting year is between 25,000kg and 50,000kg, this organisation may only need to register as a small organisation in the following year.")]
     [TestCase("en-GB", "62", "Only one packaging material reported for this organisation. Check you have entered all packaging materials. All must be reported separately.")]
     [TestCase("en-GB", "63", "For self-managed consumer waste (CW), you may not be able to offset your own packaging against aluminium (AL), glass (GL), paper or card (PC), or steel (ST). To check what packaging materials you can offset, you'll need to contact your nation's environmental regulator.")]
-
     [TestCase("en-GB", "ErrorIssue", "Error")]
     [TestCase("en-GB", "WarningIssue", "Warning")]
 
     // Welsh
-    [TestCase("cy-GB", "60", "WCheck the packaging material weight for all rows for this organisation. If the total for the reporting year is between 25,000kg and 50,000kg, this organisation may only need to register as a small organisation in the following year.")]
+    [TestCase("cy-GB", "60", "Gwiriwch bwysau'r deunydd pecynwaith ar gyfer pob rhes i'r sefydliad yma. Os yw cyfanswm y flwyddyn adrodd rhwng 25,000kg a 50,000kg, efallai mai dim ond fel sefydliad bach y bydd angen i'r sefydliad yma gofrestru yn y flwyddyn ganlynol.")]
     [TestCase("cy-GB", "63", "Yn achos gwastraff defnyddwyr hunan-reoledig (CW), mae'n bosibl na fyddwch chi'n gallu gwrthbwyso'ch pecynwaith eich hunan yn erbyn alwminiwm (AL), gwydr (GL), papur neu gerdyn (PC), neu ddur (ST). I wirio pa ddeunyddiau pecynwaith y gallwch eu gwrthbwyso, bydd angen ichi gysylltu â rheoleiddiwr amgylcheddol eich gwlad.")]
 
     public void ToErrorReportRows_ConvertsValidationErrorsToErrorRowsWithMessage_WhenCalled(

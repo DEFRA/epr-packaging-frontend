@@ -549,6 +549,48 @@ public class FileUploadSubLandingControllerTests
     }
 
     [Test]
+    public async Task Post_WhenSubmissionHasWarningsAndValidationPassed_RedirectsToFileUploadWarning()
+    {
+        // Arrange
+        var fileId = Guid.NewGuid();
+        var submissionDeadline = _submissionPeriods[0].Deadline;
+        var submissionPeriod = _submissionPeriods[0].DataPeriod;
+        var submission = new PomSubmission
+        {
+            Id = Guid.NewGuid(),
+            HasWarnings = true,
+            ValidationPass = true,
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileId = fileId
+            }
+        };
+
+        _submissionServiceMock.Setup(x => x.GetSubmissionsAsync<PomSubmission>(
+                It.IsAny<List<string>>(), 2, null, It.IsAny<bool?>()))
+            .ReturnsAsync(new List<PomSubmission> { submission });
+        _sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SubmissionDeadline = submissionDeadline,
+                    SubmissionPeriod = submissionPeriod
+                }
+            });
+
+        // Act
+        var result = await _systemUnderTest.Post(submissionPeriod) as RedirectToActionResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().BeOfType<RedirectToActionResult>();
+        result.ControllerName.Should().Be(nameof(FileUploadWarningController).RemoveControllerFromName());
+        result.ActionName.Should().Be(nameof(FileUploadWarningController.Get));
+        result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(submission.Id);
+    }
+
+    [Test]
     public async Task Post_RedirectsToUploadNewFileToSubmitGetWithSubmissionIdQueryParam_WhenLastUploadedFileIdIsSameAsLastSubmittedFileId()
     {
         // Arrange
@@ -628,6 +670,41 @@ public class FileUploadSubLandingControllerTests
         // Assert
         result.ActionName.Should().Be(nameof(FileUploadCheckFileAndSubmitController.Get));
         result.ControllerName.Should().Be(nameof(FileUploadCheckFileAndSubmitController).RemoveControllerFromName());
+        result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(submission.Id);
+    }
+
+    [Test]
+    public async Task Post_WhenSubmissionHasWarningsValidationPassedAndFileIdsDiffer_RedirectsToFileUploadWarning()
+    {
+        // Arrange
+        var submissionPeriod = _submissionPeriods[0].DataPeriod;
+        var submission = CreatePomSubmissionWithWarningsAndFileIdMismatch();
+
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionsAsync<PomSubmission>(
+                It.IsAny<List<string>>(),
+                It.IsAny<int>(),
+                It.IsAny<Guid?>(),
+                It.IsAny<bool?>()))
+            .ReturnsAsync(new List<PomSubmission> { submission });
+
+        _sessionMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SubmissionPeriod = submissionPeriod
+                }
+            });
+
+        // Act
+        var result = await _systemUnderTest.Post(submissionPeriod) as RedirectToActionResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        result.ActionName.Should().Be(nameof(FileUploadWarningController.Get));
+        result.ControllerName.Should().Be(nameof(FileUploadWarningController).RemoveControllerFromName());
         result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(submission.Id);
     }
 
@@ -723,5 +800,24 @@ public class FileUploadSubLandingControllerTests
             },
             OrganisationRole = organisationRole
         });
+    }
+
+    private PomSubmission CreatePomSubmissionWithWarningsAndFileIdMismatch()
+    {
+        return new PomSubmission
+        {
+            Id = Guid.NewGuid(),
+            IsSubmitted = true,
+            HasWarnings = true,
+            ValidationPass = true,
+            LastSubmittedFile = new SubmittedFileInformation
+            {
+                FileId = Guid.NewGuid()
+            },
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileId = Guid.NewGuid()
+            }
+        };
     }
 }

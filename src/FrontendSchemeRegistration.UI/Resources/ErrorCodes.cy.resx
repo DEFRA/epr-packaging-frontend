@@ -174,6 +174,9 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
     <data name="64" xml:space="preserve">
         <value>Gwiriwch fod pwysau'r deunydd pecynwaith (kg) a'r unedau yn gywir</value>
     </data>
+    <data name="57" xml:space="preserve">
+        <value>Rhaid i ID y sefydliad fod yr un fath â'r rhif adnabod a gafodd ei roi i'r sefydliad yma pan gafodd eu cyfrif ei greu. Gwiriwch ID y sefydliad ym mhob rhes ar gyfer y sefydliad yma.</value>
+    </data>
     <data name="58" xml:space="preserve">
         <value>Nid yw ID y sefydliad wedi'i gysylltu â'ch cynllun cydymffurfio. Gwiriwch ID y sefydliad ym mhob rhes ar gyfer y sefydliad yma.</value>
     </data>
@@ -181,7 +184,7 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
         <value>Rydych chi wedi rhoi gwybod am un deunydd pecynwaith yn unig ar gyfer y sefydliad yma. Gwiriwch eich bod wedi rhoi pob deunydd pecynwaith. Rhaid ichi roi gwybod am bob un ar wahân.</value>
     </data>
     <data name="60" xml:space="preserve">
-        <value>WCheck the packaging material weight for all rows for this organisation. If the total for the reporting year is between 25,000kg and 50,000kg, this organisation may only need to register as a small organisation in the following year.</value>
+        <value>Gwiriwch bwysau'r deunydd pecynwaith ar gyfer pob rhes i'r sefydliad yma. Os yw cyfanswm y flwyddyn adrodd rhwng 25,000kg a 50,000kg, efallai mai dim ond fel sefydliad bach y bydd angen i'r sefydliad yma gofrestru yn y flwyddyn ganlynol.</value>
     </data>
     <data name="63" xml:space="preserve">
         <value>Yn achos gwastraff defnyddwyr hunan-reoledig (CW), mae'n bosibl na fyddwch chi'n gallu gwrthbwyso'ch pecynwaith eich hunan yn erbyn alwminiwm (AL), gwydr (GL), papur neu gerdyn (PC), neu ddur (ST). I wirio pa ddeunyddiau pecynwaith y gallwch eu gwrthbwyso, bydd angen ichi gysylltu â rheoleiddiwr amgylcheddol eich gwlad.</value>

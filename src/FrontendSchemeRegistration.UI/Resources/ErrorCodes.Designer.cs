@@ -458,6 +458,15 @@ namespace FrontendSchemeRegistration.UI.Resources {
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
+        internal static string _57 {
+            get {
+                return ResourceManager.GetString("57", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
         internal static string _58 {
             get {
                 return ResourceManager.GetString("58", resourceCulture);

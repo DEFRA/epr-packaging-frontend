@@ -31,6 +31,7 @@ public class JourneyAccessCheckerMiddleware
             if (attribute.JourneyType is JourneyName.SchemeMembershipStart or JourneyName.SchemeMembership)
             {
                 if (attribute.JourneyType == JourneyName.SchemeMembership &&
+                    sessionValue?.SchemeMembershipSession is not null &&
                     sessionValue.SchemeMembershipSession.Journey.Any() &&
                     !sessionValue.SchemeMembershipSession.Journey.Contains(httpContext.Request.Path))
                 {
