@@ -152,4 +152,28 @@ public class FileUploadingCompanyDetailsControllerTests
         result.ActionName.Should().Be(nameof(FileUploadCompanyDetailsController.Get));
         result.ControllerName.Should().Be(nameof(FileUploadCompanyDetailsController).RemoveControllerFromName());
     }
+
+    [Test]
+    public async Task Get_RedirectsToFileUploadCompanyDetailsErrorsGet_WhenUploadHasCompletedAndContainsRowErrors()
+    {
+        // Arrange
+        var submission = new RegistrationSubmission
+        {
+            Id = SubmissionId,
+            CompanyDetailsDataComplete = true,
+            RowErrorCount = 150
+        };
+
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(submission);
+
+        // Act
+        var result = await _systemUnderTest.Get() as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadCompanyDetailsErrors");
+        result.RouteValues.Should().HaveCount(1).And.ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId.ToString());
+    }
 }

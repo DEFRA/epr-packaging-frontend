@@ -1,0 +1,84 @@
+@model FileUploadErrorsViewModel
+
+@{
+    ViewData["Title"] = Localizer["upload_organisation_details_error"];
+}
+
+@await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @await Html.PartialAsync("Partials/Govuk/_ErrorSummary", ViewData.ModelState)
+            }
+           
+                <h1 class="govuk-heading-l">@Localizer["organisation_details"]</h1>
+                @if (Model.ErrorCount == 1)
+                 {
+                     <p class="govuk-body">
+                         @Localizer["there_is"]
+                         @Model.ErrorCount
+                         @Localizer["error_in_file"]
+                     </p>
+                      <p class="govuk-body">@Localizer["this_means"]</p>
+                 }
+                else if (Model.ErrorCount < 200)
+                {
+                    <p class="govuk-body">
+
+                        @Localizer["there_are"]
+                        @Model.ErrorCount
+                        @Localizer["in_file"]
+                    </p>
+                    <p class="govuk-body">@Localizer["this_means"]</p>
+                }
+                else
+                {
+                    <p class="govuk-body">@Localizer["errors_in_file"]</p>
+                    <p class="govuk-body">@Localizer["200_errors"]</p>
+                }
+                <h2 class="govuk-heading-m govuk-!-padding-top-0">@Localizer["how_to_fix"]</h2>
+                <ol class="govuk-list govuk-list--number">
+                    <li><a href="#" class="govuk-link">@Localizer["download_csv"]</a>. 
+                    @if (Model.ErrorCount < 200)
+                    {
+                        @Localizer["this_will"]
+                        
+                    }
+                    else
+                    {
+                        @Localizer["this_will_200"]
+                    }</li>
+                    <li>@Localizer["use_report"]
+                        <a href="https://www.gov.uk/government/publications/organisation-details-how-to-create-your-file-for-extended-producer-responsibility-epr-for-packaging/organisation-details-file-specification-for-extended-producer-responsibility" 
+                           class="govuk-link" target="_blank">
+                            @Localizer["file_specification"]</a>.</li>
+                    <li>@Localizer["upload_again"].
+                        @if (Model.ErrorCount >= 200)
+                        {
+                            @Localizer["may_get_another_error"]
+                        }</li>
+                </ol>
+                <h2 class="govuk-heading-m">@Localizer["upload_again"]</h2>
+
+                @using (Html.BeginForm("Post", "FileUploadCompanyDetails", FormMethod.Post, new
+                {
+                    enctype = "multipart/form-data"
+                }))
+                {
+                    <div class="govuk-form-group @(ViewData.ModelState.IsValid ? string.Empty : "govuk-form-group--error")">
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            @await Html.PartialAsync("Partials/Govuk/_Error", ViewData.ModelState.GetModelStateEntry("file"))
+                        }
+
+                        <input class="govuk-file-upload" id="file" name="file" type="file">
+                    </div>
+
+                    <button class="govuk-button" data-module="govuk-button" type="submit">@Localizer["upload_file"]</button>
+                }
+            </div>
+        </div>
+</main>

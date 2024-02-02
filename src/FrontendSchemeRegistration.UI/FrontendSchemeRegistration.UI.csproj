@@ -498,6 +498,18 @@
           <Generator>ResXFileCodeGenerator</Generator>
           <LastGenOutput>FileUploadWarning.Designer.cs</LastGenOutput>
         </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Views\FileUploadingCompanyDetailsErrors\FileUploadingCompanyDetailsErrors.resx">
+          <Generator>ResXFileCodeGenerator</Generator>
+          <LastGenOutput>FileUploadingCompanyDetailsErrors.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Views\FileUploadingCompanyDetailsErrors\FileUploadingCompanyDetailsErrors.cy.resx">
+          <Generator>ResXFileCodeGenerator</Generator>
+          <LastGenOutput>FileUploadingCompanyDetailsErrors.cy.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Views\FileUploadingCompanyDetailsErrors\FileUploadingCompanyDetailsErrors.en.resx">
+          <Generator>ResXFileCodeGenerator</Generator>
+          <LastGenOutput>FileUploadingCompanyDetailsErrors.en.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Update="Resources\Views\FileUploadSubmissionError\FileUploadSubmissionError.resx">
@@ -806,6 +818,21 @@
           <DesignTime>True</DesignTime>
           <AutoGen>True</AutoGen>
           <DependentUpon>FileUploadWarning.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Resources\Views\FileUploadingCompanyDetailsErrors\FileUploadingCompanyDetailsErrors.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>FileUploadingCompanyDetailsErrors.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Resources\Views\FileUploadingCompanyDetailsErrors\FileUploadingCompanyDetailsErrors.cy.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>FileUploadingCompanyDetailsErrors.cy.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Resources\Views\FileUploadingCompanyDetailsErrors\FileUploadingCompanyDetailsErrors.en.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>FileUploadingCompanyDetailsErrors.en.resx</DependentUpon>
         </Compile>
     </ItemGroup>
     <ItemGroup>

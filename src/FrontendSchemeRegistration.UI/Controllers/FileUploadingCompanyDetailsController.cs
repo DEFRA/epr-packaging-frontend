@@ -44,17 +44,36 @@ public class FileUploadingCompanyDetailsController : Controller
             return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
         }
 
-        return submission.CompanyDetailsDataComplete || submission.Errors.Any()
-            ? GetNextPage(submission.Id, submission.Errors.Any())
-            : View("FileUploadingCompanyDetails", new FileUploadingViewModel { SubmissionId = submissionId.ToString() });
+        if (!ValidationHasCompleted(submission))
+        {
+            return View("FileUploadingCompanyDetails", new FileUploadingViewModel { SubmissionId = submissionId.ToString() });
+        }
+
+        if (HasFileErrors(submission))
+        {
+            return RedirectToAction("Get", "FileUploadCompanyDetails", new { submissionId = submissionId.ToString() });
+        }
+
+        if (HasRowValidationErrors(submission))
+        {
+            return RedirectToAction("Get", "FileUploadCompanyDetailsErrors", new { submissionId = submissionId.ToString() });
+        }
+
+        return RedirectToAction("Get", "FileUploadCompanyDetailsSuccess", new { submissionId = submissionId.ToString() });
     }
 
-    private RedirectToActionResult GetNextPage(Guid submissionId, bool exceptionErrorOccurred)
+    private bool ValidationHasCompleted(RegistrationSubmission submission)
     {
-        var routeValues = new RouteValueDictionary { { "submissionId", submissionId.ToString() } };
+        return submission.CompanyDetailsDataComplete;
+    }
 
-        return exceptionErrorOccurred
-            ? RedirectToAction("Get", "FileUploadCompanyDetails", routeValues)
-            : RedirectToAction("Get", "FileUploadCompanyDetailsSuccess", routeValues);
+    private bool HasFileErrors(RegistrationSubmission submission)
+    {
+        return submission.Errors.Any();
+    }
+
+    private bool HasRowValidationErrors(RegistrationSubmission submission)
+    {
+        return submission.RowErrorCount.HasValue && submission.RowErrorCount > 0;
     }
 }

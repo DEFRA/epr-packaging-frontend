@@ -18,6 +18,7 @@ public static class PagePaths
     public const string FileUploadErrorReport = "/file-upload-error-report";
     public const string FileUploading = "/file-uploading";
     public const string FileUploadCompanyDetails = "/file-upload-company-details";
+    public const string FileUploadCompanyDetailsErrors = "/file-upload-company-details-errors";
     public const string FileUploadPartnerships = "/file-upload-partnerships";
     public const string FileUploadCompanyDetailsSubLanding = "/report-organisation-details";
     public const string FileUploadCompanyDetailsSuccess = "/file-upload-company-details-success";
