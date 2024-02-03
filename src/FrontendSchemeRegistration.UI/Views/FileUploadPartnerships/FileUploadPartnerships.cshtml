@@ -1,7 +1,7 @@
 @model FileUploadViewModel
 
 @{
-    ViewData["Title"] = Localizer["upload_partnerships"];
+    ViewData["Title"] = Localizer["upload_partner_details"];
 }
 
 @await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
@@ -14,28 +14,20 @@
             {
                 @await Html.PartialAsync("Partials/Govuk/_ErrorSummary", ViewData.ModelState)
             }
-
-            <h1 class="govuk-heading-l">@Localizer["upload_partnerships"]</h1>
             
-            @if (Model.IsComplianceScheme)
+            @using (Html.BeginForm(FormMethod.Post, new
             {
-                <h2 class="govuk-heading-m">@Localizer["before_you_start"]</h2>
-                <p class="govuk-body">@Localizer["read_guidance_on"] <a target="_blank" rel="noopener noreferrer" class="govuk-link" 
-                                                                        href="@GuidanceLinks.Value.HowToReportOrganisationDetails">@Localizer["how_to_report"]</a>.</p>
-            }
-            <h2 class="govuk-heading-m">@Localizer["upload_file"]</h2>
-            <p class="govuk-body">@SharedLocalizer["the_file_may_take_a_few_minutes_to_upload"]
-            <p class="govuk-body">@SharedLocalizer["do_not_close_the_window_while_the_file_is_uploading"]
-
-            @using (Html.BeginForm(FormMethod.Post, new { enctype = "multipart/form-data" }))
+                enctype = "multipart/form-data",
+                @class = "details-file-upload-form"
+            }))
             {
                 <div class="govuk-form-group @(ViewData.ModelState.IsValid ? string.Empty : "govuk-form-group--error")">
+                    <h1 class="govuk-heading-l">@Localizer["upload_your_partner_details_file"]</h1>
+                    <p class="govuk-caption-m">@Localizer["file_must_be_csv"].</p>
                     @if (!ViewData.ModelState.IsValid)
                     {
                         @await Html.PartialAsync("Partials/Govuk/_Error", ViewData.ModelState.GetModelStateEntry("file"))
                     }
-
-                    <label class="govuk-label" for="file">@SharedLocalizer["upload_a_file"]</label>
                     <input class="govuk-file-upload" id="file" name="file" type="file">
                 </div>
 

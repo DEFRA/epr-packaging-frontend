@@ -120,16 +120,13 @@
   <data name="upload_file" xml:space="preserve">
     <value>Upload file</value>
   </data>
-  <data name="before_you_start" xml:space="preserve">
-    <value>Before you start</value>
+  <data name="upload_partner_details" xml:space="preserve">
+    <value>Upload partner details</value>
   </data>
-  <data name="read_guidance_on" xml:space="preserve">
-    <value>Read the guidance on</value>
+  <data name="upload_your_partner_details_file" xml:space="preserve">
+    <value>Upload your partner details file</value>
   </data>
-  <data name="how_to_report" xml:space="preserve">
-    <value>how to report on organisation details (opens in a new window)</value>
-  </data>
-  <data name="upload_partnerships" xml:space="preserve">
-    <value>Upload partner information</value>
+  <data name="file_must_be_csv" xml:space="preserve">
+    <value>File must be CSV</value>
   </data>
 </root>

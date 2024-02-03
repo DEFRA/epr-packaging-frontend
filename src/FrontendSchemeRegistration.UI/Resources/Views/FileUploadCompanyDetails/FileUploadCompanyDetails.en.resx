@@ -118,45 +118,15 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="upload_organisation_details" xml:space="preserve">
-    <value>Upload organisation details</value>
-  </data>
-  <data name="when_you_submit_an_organisation_s_packaging_data_you_also_need_to" xml:space="preserve">
-    <value>When you submit an organisation’s packaging data you also need to report other details.</value>
-  </data>
-  <data name="organisation_details_include_things_like" xml:space="preserve">
-    <value>Organisation details include things like:</value>
-  </data>
-  <data name="address" xml:space="preserve">
-    <value>address</value>
-  </data>
-  <data name="turnover" xml:space="preserve">
-    <value>turnover</value>
-  </data>
-  <data name="packaging_activities" xml:space="preserve">
-    <value>packaging activities</value>
-  </data>
-  <data name="you_may_also_need_to_report_an_organisation_s" xml:space="preserve">
-    <value>You may also need to report an organisation’s:</value>
-  </data>
-  <data name="brand_activities_if_they_supply_goods_to_the_uk_market_in_primary" xml:space="preserve">
-    <value>brand activities - if they supply goods to the UK market in primary, secondary, or shipment packaging under their own brand</value>
-  </data>
-  <data name="partners_if_they_re_registered_as_a_partnership_in_companies_house" xml:space="preserve">
-    <value>partners - if they’re registered as a partnership in Companies House</value>
-  </data>
-  <data name="once_you_submit_these_details_the_organisation_is_officially_registered" xml:space="preserve">
-    <value>Once you submit these details, the organisation is officially registered for the reporting cycle.</value>
+    <value>Upload your organisation details file</value>
   </data>
   <data name="upload_file" xml:space="preserve">
     <value>Upload file</value>
   </data>
-  <data name="upload_organisation_details_to_your_account" xml:space="preserve">
-    <value>Upload organisation details to your account</value>
+  <data name="file_must_be_a_CSV" xml:space="preserve">
+    <value>File must be a CSV.</value>
   </data>
-  <data name="upload_the_organisation_details_in_a_csv_file" xml:space="preserve">
-    <value>Upload the organisation details in a CSV file.</value>
-  </data>
-  <data name="based_on_whats_in_the_organisation" xml:space="preserve">
-    <value>Based on what’s in the organisation details file, you may need to also upload separate files with information about brands and partners. If so, we’ll take you to those steps after you’ve uploaded the first file.</value>
+  <data name="upload_organisation_details_title" xml:space="preserve">
+    <value>Upload organisation details</value>
   </data>
 </root>

@@ -9,7 +9,7 @@ public static class PagePaths
     public const string ChangeComplianceSchemeOptions = "change-compliance-scheme-options";
     public const string Culture = "culture";
     public const string FileUpload = "/file-upload";
-    public const string FileUploadBrands = "/file-upload-brands";
+    public const string FileUploadBrands = "/upload-brand-details";
     public const string FileUploadBrandsSuccess = "/file-upload-brands-success";
     public const string FileUploadSubLanding = "/file-upload-sub-landing";
     public const string FileUploadSuccess = "/file-upload-success";
@@ -17,9 +17,9 @@ public static class PagePaths
     public const string FileUploadWarning = "/check-warnings";
     public const string FileUploadErrorReport = "/file-upload-error-report";
     public const string FileUploading = "/file-uploading";
-    public const string FileUploadCompanyDetails = "/file-upload-company-details";
+    public const string FileUploadCompanyDetails = "/upload-organisation-details";
     public const string FileUploadCompanyDetailsErrors = "/file-upload-company-details-errors";
-    public const string FileUploadPartnerships = "/file-upload-partnerships";
+    public const string FileUploadPartnerships = "/upload-partner-details";
     public const string FileUploadCompanyDetailsSubLanding = "/report-organisation-details";
     public const string FileUploadCompanyDetailsSuccess = "/file-upload-company-details-success";
     public const string FileUploadingCompanyDetails = "/file-uploading-company-details";

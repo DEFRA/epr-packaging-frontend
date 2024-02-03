@@ -48,7 +48,10 @@ variables:
     - name: env
       value: PRD1
     - template: vars/${{ parameters.envToDeploy }}.yaml
+# Release tags reference
   - template: pipelines/image-tags/${{ parameters.envToDeploy }}.yaml@ReleaseTags
+  - ${{ if eq(parameters.envToDeploy, 'development') }}:
+    - template: pipelines/image-tags/${{ parameters.teamName }}-${{ parameters.envToDeploy }}.yaml@ReleaseTags
 
 resources:
   repositories:

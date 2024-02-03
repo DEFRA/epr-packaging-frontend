@@ -118,45 +118,15 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="upload_organisation_details" xml:space="preserve">
-    <value>Uwchlwytho manylion sefydliad</value>
-  </data>
-  <data name="when_you_submit_an_organisation_s_packaging_data_you_also_need_to" xml:space="preserve">
-    <value>Pan fyddwch yn cyflwyno data pecynwaith sefydliad mae angen ichi hefyd roi gwybod am fanylion eraill.</value>
-  </data>
-  <data name="organisation_details_include_things_like" xml:space="preserve">
-    <value>Mae manylion sefydliad yn cynnwys pethau fel:</value>
-  </data>
-  <data name="address" xml:space="preserve">
-    <value>cyfeiriad</value>
-  </data>
-  <data name="turnover" xml:space="preserve">
-    <value>trosiant</value>
-  </data>
-  <data name="packaging_activities" xml:space="preserve">
-    <value>gweithgareddau pecynwaith</value>
-  </data>
-  <data name="you_may_also_need_to_report_an_organisation_s" xml:space="preserve">
-    <value>Gall fod angen ichi roi gwybod am y canlynol ar gyfer sefydliad hefyd:</value>
-  </data>
-  <data name="brand_activities_if_they_supply_goods_to_the_uk_market_in_primary" xml:space="preserve">
-    <value>gweithgareddau brand - os ydyn nhw’n cyflenwi nwyddau i farchnad y Deyrnas Unedig mewn pecynwaith sylfaenol, pecynwaith eilaidd neu becynwaith cludo o dan eu brand eu hunain</value>
-  </data>
-  <data name="partners_if_they_re_registered_as_a_partnership_in_companies_house" xml:space="preserve">
-    <value>partneriaid - os ydyn nhw wedi’u cofrestru fel partneriaeth yn Nhŷ’r Cwmnïau</value>
-  </data>
-  <data name="once_you_submit_these_details_the_organisation_is_officially_registered" xml:space="preserve">
-    <value>Unwaith y byddwch wedi cyflwyno’r manylion hyn, mae’r sefydliad wedi’i gofrestru’n swyddogol ar gyfer y cylch adrodd.</value>
+    <value>WUpload your organisation details file</value>
   </data>
   <data name="upload_file" xml:space="preserve">
     <value>Uwchlwytho ffeil</value>
   </data>
-  <data name="upload_organisation_details_to_your_account" xml:space="preserve">
-    <value>Uwchlwytho manylion y sefydliad i’ch cyfrif</value>
+  <data name="file_must_be_a_CSV" xml:space="preserve">
+    <value>WFile must be a CSV.</value>
   </data>
-  <data name="upload_the_organisation_details_in_a_csv_file" xml:space="preserve">
-    <value>Uwchlwytho manylion y sefydliad mewn ffeil CSV.</value>
-  </data>
-  <data name="based_on_whats_in_the_organisation" xml:space="preserve">
-    <value>Yn seiliedig ar yr hyn sydd yn ffeil manylion y sefydliad, efallai y bydd angen ichi hefyd uwchlwytho ffeiliau ar wahân gyda gwybodaeth am frandiau a phartneriaid. Os felly, byddwn yn mynd â chi at y camau hynny ar ôl ichi uwchlwytho’r ffeil gyntaf.</value>
+  <data name="upload_organisation_details_title" xml:space="preserve">
+    <value>Uwchlwytho manylion sefydliad</value>
   </data>
 </root>

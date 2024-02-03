@@ -117,19 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="upload_brand_upload" xml:space="preserve">
-    <value>Upload brand information</value>
-  </data>
-  <data name="before_you_start" xml:space="preserve">
-    <value>Before you start</value>
-  </data>
-  <data name="read_guidance_on" xml:space="preserve">
-    <value>Read the guidance on</value>
-  </data>
-  <data name="how_to_report" xml:space="preserve">
-    <value>how to report organisation information (opens in a new window).</value>
+  <data name="upload_brand_details" xml:space="preserve">
+    <value>Upload brand details</value>
   </data>
   <data name="upload_file" xml:space="preserve">
     <value>Upload file</value>
+  </data>
+  <data name="upload_your_brand_details_file" xml:space="preserve">
+    <value>Upload your brand details file</value>
+  </data>
+  <data name="file_must_be_csv" xml:space="preserve">
+    <value>File must be a CSV</value>
   </data>
 </root>
