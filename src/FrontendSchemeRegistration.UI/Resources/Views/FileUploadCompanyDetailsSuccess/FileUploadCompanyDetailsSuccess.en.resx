@@ -72,4 +72,10 @@
     <data name="you_do_not_need_to_report_brand_information" xml:space="preserve">
         <value>You do not need to report brand information.</value>
     </data>
+    <data name="the_file_has" xml:space="preserve">
+        <value>This file has details for </value>
+    </data>
+    <data name="of_your_members" xml:space="preserve">
+        <value>of your members.</value>
+    </data>
 </root>

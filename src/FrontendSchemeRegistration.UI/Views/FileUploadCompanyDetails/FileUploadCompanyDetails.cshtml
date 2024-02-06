@@ -22,7 +22,7 @@
             }))
             {
                 <div class="govuk-form-group @(ViewData.ModelState.IsValid ? string.Empty : "govuk-form-group--error")">
-                    <h1 class="govuk-heading-l">@Localizer[Model.IsComplianceScheme ? "upload_organisation_details" : "upload_file"]</h1>
+                    <h1 class="govuk-heading-l">@Localizer["upload_organisation_details"]</h1>
                     <p class="govuk-hint">@Localizer["file_must_be_a_CSV"]</p>
                     @if (!ViewData.ModelState.IsValid)
                     {

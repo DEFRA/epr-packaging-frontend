@@ -14,7 +14,7 @@ using UI.Attributes.ActionFilters;
 using ViewModels;
 
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
-[Route(PagePaths.FileUploadCompanyDetailsSuccess)]
+[Route(PagePaths.OrganisationDetailsUploaded)]
 public class FileUploadCompanyDetailsSuccessController : Controller
 {
     private readonly ISubmissionService _submissionService;
@@ -27,7 +27,7 @@ public class FileUploadCompanyDetailsSuccessController : Controller
     }
 
     [HttpGet]
-    [SubmissionIdActionFilter(PagePaths.FileUploadCompanyDetails)]
+    [SubmissionIdActionFilter(PagePaths.OrganisationDetailsUploaded)]
     public async Task<IActionResult> Get()
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
@@ -63,7 +63,8 @@ public class FileUploadCompanyDetailsSuccessController : Controller
                             RequiresPartnershipsFile = submission.RequiresPartnershipsFile,
                             SubmissionDeadline = session.RegistrationSession.SubmissionDeadline,
                             OrganisationRole = organisationRole,
-                            IsApprovedUser = session.UserData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved)
+                            IsApprovedUser = session.UserData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved),
+                            OrganisationMemberCount = submission.OrganisationMemberCount
                         });
                 }
             }

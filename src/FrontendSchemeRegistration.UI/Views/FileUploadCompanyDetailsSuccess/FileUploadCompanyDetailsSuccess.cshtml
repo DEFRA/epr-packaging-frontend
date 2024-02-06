@@ -6,28 +6,31 @@
 
 @await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
 
-<main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+<main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main" xmlns="http://www.w3.org/1999/html">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds govuk-!-margin-top-8">
 
-        <div class="govuk-notification-banner govuk-notification-banner--success"
-             role="alert"
-             aria-labelledby="govuk-notification-banner-title"
-             data-module="govuk-notification-banner">
-            <div class="govuk-notification-banner__header">
-                <h2 class="govuk-notification-banner__title"
-                    id="govuk-notification-banner-title">
-                    @Localizer["success"]
-                </h2>
+            <div class="govuk-notification-banner govuk-notification-banner--success"
+                 role="alert"
+                 aria-labelledby="govuk-notification-banner-title"
+                 data-module="govuk-notification-banner">
+                <div class="govuk-notification-banner__header">
+                    <h2 class="govuk-notification-banner__title"
+                        id="govuk-notification-banner-title">
+                        @Localizer["success"]
+                    </h2>
+                </div>
+                <div class="govuk-notification-banner__content">
+                    <h3 class="govuk-notification-banner__heading">
+                        @Localizer["organisation_details_updated"]
+                    </h3>
+                    <p class="govuk-body break-word">@Model.FileName</p>
+                </div>
             </div>
-            <div class="govuk-notification-banner__content">
-                <h3 class="govuk-notification-banner__heading">
-                    @Localizer["organisation_details_updated"]
-                </h3>
-                <p class="govuk-body break-word">@Model.FileName</p>
-            </div>
-        </div>
-
+            @if (Model.OrganisationMemberCount is not null)
+            {
+                <p class="govuk-body">@Localizer["the_file_has"] @Model.OrganisationMemberCount @Localizer["of_your_members"]</p>
+            }
         @if (Model is { RequiresBrandsFile: true,RequiresPartnershipsFile: true })
         {
             <h2 class="govuk-heading-m">@Localizer["what_happens_next"]</h2>

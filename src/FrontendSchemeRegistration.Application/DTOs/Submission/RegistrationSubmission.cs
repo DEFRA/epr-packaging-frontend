@@ -41,4 +41,6 @@ public class RegistrationSubmission : AbstractSubmission
     public UploadedRegistrationFilesInformation? LastUploadedValidFiles { get; set; }
 
     public int? RowErrorCount { get; set; }
+
+    public int? OrganisationMemberCount { get; set; }
 }

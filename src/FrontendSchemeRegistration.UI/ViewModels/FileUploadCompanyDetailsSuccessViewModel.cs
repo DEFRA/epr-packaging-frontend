@@ -16,4 +16,6 @@ public class FileUploadCompanyDetailsSuccessViewModel : ViewModelWithOrganisatio
     public DateTime SubmissionDeadline { get; set; }
 
     public bool IsApprovedUser { get; set; }
+
+    public int? OrganisationMemberCount { get; set; }
 }

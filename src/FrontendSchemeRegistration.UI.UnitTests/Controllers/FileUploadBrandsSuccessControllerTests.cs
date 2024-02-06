@@ -101,7 +101,8 @@ public class FileUploadBrandsSuccessControllerTests
                 BrandsFileName = fileName,
                 BrandsDataComplete = true,
                 RequiresBrandsFile = true,
-                RequiresPartnershipsFile = true
+                RequiresPartnershipsFile = true,
+                OrganisationMemberCount = 10
             });
 
         // Act

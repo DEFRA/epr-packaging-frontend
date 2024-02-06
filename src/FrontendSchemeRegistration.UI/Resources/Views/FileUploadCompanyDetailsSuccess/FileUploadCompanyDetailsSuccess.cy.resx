@@ -174,4 +174,10 @@
   <data name="partners_because_your_organisation_type" xml:space="preserve">
     <value>partneriaid – gan nad ‘partneriaeth’ yw eich math sefydliad</value>
   </data>
+  <data name="the_file_has" xml:space="preserve">
+    <value>wThis file has details for </value>
+  </data>
+  <data name="of_your_members" xml:space="preserve">
+    <value>of your members.</value>
+  </data>
 </root>
