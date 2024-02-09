@@ -4,6 +4,7 @@ using Application.Constants;
 using Application.DTOs.Submission;
 using Application.Enums;
 using Application.Services.Interfaces;
+using Constants;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using Extensions;
@@ -64,7 +65,7 @@ public class FileUploadCompanyDetailsSuccessController : Controller
                             SubmissionDeadline = session.RegistrationSession.SubmissionDeadline,
                             OrganisationRole = organisationRole,
                             IsApprovedUser = session.UserData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved),
-                            OrganisationMemberCount = submission.OrganisationMemberCount
+                            OrganisationMemberCount = organisationRole == OrganisationRoles.ComplianceScheme ? submission.OrganisationMemberCount : null
                         });
                 }
             }

@@ -101,7 +101,6 @@ public class FileUploadCompanyDetailsSuccessControllerTests
         // Assert
         result.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("FileUploadCompanyDetails");
-
         _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.Once);
     }
 
@@ -179,7 +178,8 @@ public class FileUploadCompanyDetailsSuccessControllerTests
                 CompanyDetailsFileName = fileName,
                 CompanyDetailsDataComplete = true,
                 RequiresBrandsFile = true,
-                RequiresPartnershipsFile = true
+                RequiresPartnershipsFile = true,
+                OrganisationMemberCount = 10
             });
 
         // Act
@@ -192,7 +192,56 @@ public class FileUploadCompanyDetailsSuccessControllerTests
             FileName = fileName,
             RequiresBrandsFile = true,
             RequiresPartnershipsFile = true,
-            OrganisationRole = OrganisationRoles.ComplianceScheme
+            OrganisationRole = OrganisationRoles.ComplianceScheme,
+            OrganisationMemberCount = 10
+        });
+
+        _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.Once);
+    }
+
+    [Test]
+    public async Task Get_DoesNotPopulateMemberCount_WhenOrganisationRoleIsProducer()
+    {
+        // Arrange
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                UserData = new UserData { ServiceRole = "Basic User", Organisations = { new Organisation { OrganisationRole = OrganisationRoles.Producer } } },
+                RegistrationSession = new RegistrationSession
+                {
+                    Journey = new List<string>
+                    {
+                        PagePaths.FileUploadCompanyDetailsSubLanding,
+                        PagePaths.FileUploadCompanyDetails,
+                        PagePaths.FileUploadBrands,
+                        PagePaths.FileUploadPartnerships
+                    }
+                }
+            });
+
+        const string fileName = "example.csv";
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(new RegistrationSubmission
+            {
+                CompanyDetailsFileName = fileName,
+                CompanyDetailsDataComplete = true,
+                RequiresBrandsFile = true,
+                RequiresPartnershipsFile = true,
+                OrganisationMemberCount = 10
+            });
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("FileUploadCompanyDetailsSuccess");
+        result.Model.Should().BeEquivalentTo(new FileUploadCompanyDetailsSuccessViewModel
+        {
+            FileName = fileName,
+            RequiresBrandsFile = true,
+            RequiresPartnershipsFile = true,
+            OrganisationRole = OrganisationRoles.Producer,
+            OrganisationMemberCount = null
         });
 
         _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.Once);
