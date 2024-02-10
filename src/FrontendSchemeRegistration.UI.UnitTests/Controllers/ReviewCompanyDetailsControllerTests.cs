@@ -12,6 +12,7 @@ using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Primitives;
 using Moq;
 using UI.Controllers;
@@ -49,7 +50,8 @@ public class ReviewCompanyDetailsControllerTests
         _systemUnderTest = new ReviewCompanyDetailsController(
             _submissionService.Object,
             _userAccountServiceMock.Object,
-            _sessionManagerMock.Object);
+            _sessionManagerMock.Object,
+            new NullLogger<ReviewCompanyDetailsController>());
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
@@ -131,9 +133,40 @@ public class ReviewCompanyDetailsControllerTests
     }
 
     [Test]
+    public async Task Post_RedirectsToFileUploadCompanyDetailsSubLanding_WhenValidationPassFalse()
+    {
+        // Arrange
+        _submissionService
+            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(new RegistrationSubmission
+            {
+                ValidationPass = false
+            });
+
+        var model = GenerateReviewCompanyDetailsModel(OrganisationRoles.Producer, true, true);
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Post(model) as RedirectToActionResult;
+
+        // Assert
+        result?.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadCompanyDetailsSubLanding");
+    }
+
+    [Test]
     public async Task Post_RedirectsToDeclarationWithFullName_WhenDirectProducerSubmits()
     {
         // Arrange
+        _submissionService
+            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(new RegistrationSubmission
+            {
+                HasValidFile = true
+            });
+
         var model = GenerateReviewCompanyDetailsModel(OrganisationRoles.Producer, true, true);
 
         var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
@@ -151,7 +184,15 @@ public class ReviewCompanyDetailsControllerTests
     public async Task Post_RedirectsToCompanyDetailsConfirmation_WhenComplianceSchemeSubmits()
     {
         // Arrange
+        _submissionService
+            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(new RegistrationSubmission
+            {
+                HasValidFile = true
+            });
+
         _submissionService.Setup(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>()));
+
         var model = GenerateReviewCompanyDetailsModel(OrganisationRoles.ComplianceScheme, true, true);
 
         var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);

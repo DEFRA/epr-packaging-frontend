@@ -15,12 +15,15 @@ using Moq;
 using UI.Controllers;
 using UI.Services.Interfaces;
 using UI.Sessions;
+using UI.ViewModels;
 
 [TestFixture]
 public class FileUploadCompanyDetailsErrorsControllerTests
 {
     private const string ContentType = "text/csv";
     private const string SubmissionPeriod = "Jul to Dec 23";
+    private static readonly DateTime SubmissionDeadline = DateTime.UtcNow.Date;
+    private static readonly int RowErrorCount = 5;
     private static readonly Guid SubmissionId = Guid.NewGuid();
     private readonly NullLogger<FileUploadCompanyDetailsErrorsController> _nullLogger = new();
     private Mock<ISubmissionService> _submissionServiceMock;
@@ -48,6 +51,7 @@ public class FileUploadCompanyDetailsErrorsControllerTests
                 RegistrationSession = new RegistrationSession
                 {
                     SubmissionPeriod = SubmissionPeriod,
+                    SubmissionDeadline = SubmissionDeadline,
                     Journey = new List<string>
                     {
                         PagePaths.FileUploadCompanyDetailsSubLanding,
@@ -70,7 +74,7 @@ public class FileUploadCompanyDetailsErrorsControllerTests
                     Query = new QueryCollection(new Dictionary<string, StringValues>
                     {
                         {
-                            "submissionId", SubmissionId.ToString()
+                            "SubmissionId", SubmissionId.ToString()
                         }
                     }),
                     ContentType = ContentType
@@ -85,11 +89,6 @@ public class FileUploadCompanyDetailsErrorsControllerTests
     public async Task Get_ReturnsFileUploadCompanyDetailsLandingPageView_WhenSessionIsNull()
     {
         // Arrange
-        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
-            .ReturnsAsync(new RegistrationSubmission
-            {
-                Id = Guid.NewGuid()
-            });
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(null as FrontendSchemeRegistrationSession);
 
@@ -107,18 +106,15 @@ public class FileUploadCompanyDetailsErrorsControllerTests
     public async Task Get_ReturnsFileUploadCompanyDetailsLandingPageView_WhenOrganisationRoleIsNull()
     {
         // Arrange
-        var submissionDeadline = DateTime.UtcNow.Date;
-        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
-            .ReturnsAsync(new RegistrationSubmission
-            {
-                Id = Guid.NewGuid()
-            });
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
                 RegistrationSession = new RegistrationSession
                 {
-                    SubmissionDeadline = submissionDeadline,
+                    Journey = new List<string>()
+                    {
+                        PagePaths.FileUploadCompanyDetailsSubLanding,
+                    }
                 }
             });
 
@@ -130,5 +126,78 @@ public class FileUploadCompanyDetailsErrorsControllerTests
         result.ControllerName.Should().Be("FileUploadCompanyDetailsSubLanding");
 
         _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.Never);
+    }
+
+    [Test]
+    public async Task Get_ReturnsFileUploadCompanyDetailsLandingPageView_WhenJourneyIsNull()
+    {
+        // Arrange
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    Journey = { },
+                }
+            });
+
+        // Act
+        var result = await _systemUnderTest.Get() as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadCompanyDetailsSubLanding");
+
+        _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.Never);
+    }
+
+    [Test]
+    public async Task Get_ReturnsFileUploadCompanyDetailsLandingPageView_WhenSubmissionIdInQuery()
+    {
+        await _systemUnderTest.Get();
+
+        // Assert
+        _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.Once);
+    }
+
+    [Test]
+    public async Task Get_ReturnsFileUploadCompanyDetailsErrorsView_WhenSubmissionIsNull()
+    {
+        // Arrange
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(null as RegistrationSubmission);
+
+        // Act
+        var result = await _systemUnderTest.Get() as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadCompanyDetailsSubLanding");
+
+        _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.Once);
+    }
+
+    [Test]
+    public async Task Get_ReturnsFileUploadCompanyDetailsLandingPageView_WhenSubmissionIsValid()
+    {
+        // Arrange
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(new RegistrationSubmission
+            {
+                RowErrorCount = 5
+            });
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        result.Model.Should().BeEquivalentTo(new FileUploadErrorsViewModel
+        {
+            SubmissionDeadline = SubmissionDeadline,
+            OrganisationRole = OrganisationRoles.Producer,
+            ErrorCount = RowErrorCount,
+            SubmissionId = SubmissionId,
+        });
+        _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.Once);
     }
 }

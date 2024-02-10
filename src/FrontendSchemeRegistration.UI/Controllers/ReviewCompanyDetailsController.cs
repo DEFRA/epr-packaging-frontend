@@ -20,15 +20,18 @@ public class ReviewCompanyDetailsController : Controller
     private readonly ISubmissionService _submissionService;
     private readonly IUserAccountService _accountService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
+    private readonly ILogger<ReviewCompanyDetailsController> _logger;
 
     public ReviewCompanyDetailsController(
         ISubmissionService submissionService,
         IUserAccountService accountService,
-        ISessionManager<FrontendSchemeRegistrationSession> sessionManager)
+        ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
+        ILogger<ReviewCompanyDetailsController> logger)
     {
         _submissionService = submissionService;
         _accountService = accountService;
         _sessionManager = sessionManager;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -42,6 +45,12 @@ public class ReviewCompanyDetailsController : Controller
 
         if (submission is null)
         {
+            return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
+        }
+
+        if (!submission.HasValidFile)
+        {
+            _logger.LogError("User {UserId} loaded a page with no valid submission files for submission ID {SubmissionId}", userData.Id, submissionId);
             return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
         }
 
@@ -106,6 +115,19 @@ public class ReviewCompanyDetailsController : Controller
         if (!ModelState.IsValid)
         {
             return View("ReviewCompanyDetails", model);
+        }
+
+        var submission = await _submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
+
+        if (submission is null)
+        {
+            return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
+        }
+
+        if (!submission.HasValidFile)
+        {
+            _logger.LogError("Blocked User {UserId} attempted post of a submission {SubmissionId} with no valid files", userData.Id, submissionId);
+            return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
         }
 
         if (model.SubmitOrganisationDetailsResponse.HasValue && !model.SubmitOrganisationDetailsResponse.Value)

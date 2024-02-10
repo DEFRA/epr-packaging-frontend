@@ -16,6 +16,7 @@ public static class PagePaths
     public const string FileUploadFailure = "/file-upload-failure";
     public const string FileUploadWarning = "/check-warnings";
     public const string FileUploadErrorReport = "/file-upload-error-report";
+    public const string FileUploadCompanyDetailsErrorReport = "/file-upload-company-details-error-report";
     public const string FileUploading = "/file-uploading";
     public const string FileUploadCompanyDetails = "/upload-organisation-details";
     public const string FileUploadCompanyDetailsErrors = "/file-upload-company-details-errors";

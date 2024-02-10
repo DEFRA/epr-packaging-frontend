@@ -41,7 +41,7 @@
                 }
                 <h2 class="govuk-heading-m govuk-!-padding-top-0">@Localizer["how_to_fix"]</h2>
                 <ol class="govuk-list govuk-list--number">
-                    <li><a href="#" class="govuk-link">@Localizer["download_csv"]</a>. 
+                    <li><a class="govuk-link" asp-controller="FileUploadCompanyDetailsIssueReport" asp-action="Get" asp-route-submissionId="@Model.SubmissionId">@Localizer["download_csv"]</a> 
                     @if (Model.ErrorCount < 200)
                     {
                         @Localizer["this_will"]

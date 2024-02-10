@@ -14,12 +14,14 @@ public class DeclarationWithFullNameController : Controller
     private const string ViewName = "DeclarationWithFullName";
     private const string ConfirmationViewName = "CompanyDetailsConfirmation";
     private const string SubmissionErrorViewName = "OrganisationDetailsSubmissionFailed";
+    private readonly ILogger<DeclarationWithFullNameController> _logger;
 
     private readonly ISubmissionService _submissionService;
 
-    public DeclarationWithFullNameController(ISubmissionService submissionService)
+    public DeclarationWithFullNameController(ISubmissionService submissionService, ILogger<DeclarationWithFullNameController> logger)
     {
         _submissionService = submissionService;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -39,6 +41,12 @@ public class DeclarationWithFullNameController : Controller
 
         if (submission is null)
         {
+            return RedirectToAction("Get", "FileUploadSubLanding");
+        }
+
+        if (!submission.HasValidFile)
+        {
+            _logger.LogError("User {UserId} loaded a page with no valid submission files for submission ID {SubmissionId}", userData.Id, submissionId);
             return RedirectToAction("Get", "FileUploadSubLanding");
         }
 
@@ -72,6 +80,12 @@ public class DeclarationWithFullNameController : Controller
 
         if (submission is null)
         {
+            return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
+        }
+
+        if (!submission.HasValidFile)
+        {
+            _logger.LogError("Blocked User {UserId} attempted post of full name for a submission {SubmissionId} with no valid files", userData.Id, submissionId);
             return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
         }
 

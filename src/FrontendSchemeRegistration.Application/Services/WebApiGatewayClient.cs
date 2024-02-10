@@ -130,6 +130,27 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         }
     }
 
+    public async Task<List<RegistrationValidationError>> GetRegistrationValidationErrorsAsync(Guid submissionId)
+    {
+        try
+        {
+            await PrepareAuthenticatedClientAsync();
+
+            var requestPath = $"/api/v1/submissions/{submissionId}/organisation-details-errors";
+
+            var response = await _httpClient.GetAsync(requestPath);
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadFromJsonAsync<List<RegistrationValidationError>>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting registration validation records with submissionId: {Id}", submissionId);
+            throw;
+        }
+    }
+
     public async Task SubmitAsync(Guid submissionId, SubmissionPayload payload)
     {
         await PrepareAuthenticatedClientAsync();

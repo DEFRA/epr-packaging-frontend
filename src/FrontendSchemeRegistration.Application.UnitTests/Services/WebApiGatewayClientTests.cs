@@ -316,4 +316,24 @@ public class WebApiGatewayClientTests
         // Act / Assert
         await _webApiGatewayClient.Invoking(x => x.SubmitAsync(submissionId, null)).Should().ThrowAsync<HttpRequestException>();
     }
+
+    [Test]
+    public async Task GetRegistrationValidationErrorsAsync_ThrowsException_WhenResponseCodeIsNotSuccessfulOr404()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.InternalServerError });
+
+        // Act / Assert
+        await _webApiGatewayClient
+            .Invoking(x => x.GetRegistrationValidationErrorsAsync(submissionId))
+            .Should()
+            .ThrowAsync<HttpRequestException>();
+        _loggerMock.VerifyLog(x => x.LogError("Error getting registration validation records with submissionId: {Id}", submissionId));
+    }
 }

@@ -10,6 +10,8 @@ using EPR.Common.Authorization.Models;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Primitives;
 using Moq;
 using UI.Controllers;
@@ -22,6 +24,7 @@ public class DeclarationWithFullNameControllerTests
     private const string OrganisationName = "Org Name Ltd";
     private const string DeclarationName = "Test Name";
     private static readonly Guid _submissionId = Guid.NewGuid();
+    private static readonly Guid _userId = Guid.NewGuid();
     private Mock<ISubmissionService> _submissionServiceMock;
     private Mock<ClaimsPrincipal> _claimsPrincipalMock;
     private DeclarationWithFullNameController _systemUnderTest;
@@ -31,7 +34,7 @@ public class DeclarationWithFullNameControllerTests
     {
         _submissionServiceMock = new Mock<ISubmissionService>();
         _claimsPrincipalMock = new Mock<ClaimsPrincipal>();
-        _systemUnderTest = new DeclarationWithFullNameController(_submissionServiceMock.Object);
+        _systemUnderTest = new DeclarationWithFullNameController(_submissionServiceMock.Object, new NullLogger<DeclarationWithFullNameController>());
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
@@ -135,6 +138,7 @@ public class DeclarationWithFullNameControllerTests
                 CompanyDetailsUploadedBy = Guid.NewGuid(),
                 CompanyDetailsFileId = Guid.NewGuid()
             },
+            HasValidFile = true
         };
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
 
@@ -171,6 +175,7 @@ public class DeclarationWithFullNameControllerTests
                 CompanyDetailsUploadedBy = Guid.NewGuid(),
                 CompanyDetailsFileId = Guid.NewGuid()
             },
+            HasValidFile = true
         };
         _submissionServiceMock
             .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
@@ -208,6 +213,7 @@ public class DeclarationWithFullNameControllerTests
                 CompanyDetailsUploadedBy = Guid.NewGuid(),
                 CompanyDetailsFileId = Guid.NewGuid()
             },
+            HasValidFile = true
         };
         _submissionServiceMock
             .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
@@ -232,10 +238,40 @@ public class DeclarationWithFullNameControllerTests
         result.ControllerName.Should().Be("OrganisationDetailsSubmissionFailed");
     }
 
+    [Test]
+    public async Task Post_RedirectsToFileUploadCompanyDetailsSubLanding_WhenValidationPassFalse()
+    {
+        // Arrange
+        var submission = new RegistrationSubmission
+        {
+            Id = Guid.NewGuid(),
+            ValidationPass = false
+        };
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(submission);
+
+        var submissionDeclarationRequest = new DeclarationWithFullNameViewModel
+        {
+            FullName = DeclarationName
+        };
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Post(submissionDeclarationRequest) as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadCompanyDetailsSubLanding");
+    }
+
     private static List<Claim> CreateUserDataClaim(string serviceRole, string enrolmentStatus, string organisationRole)
     {
         var userData = new UserData
         {
+            Id = _userId,
             ServiceRole = serviceRole,
             EnrolmentStatus = enrolmentStatus,
             Organisations = new List<Organisation>

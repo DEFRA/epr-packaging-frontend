@@ -1,7 +1,9 @@
 ﻿namespace FrontendSchemeRegistration.UI.Services;
 
+using System.Collections;
 using System.Globalization;
 using Application.ClassMaps;
+using Application.DTOs;
 using Application.Services.Interfaces;
 using CsvHelper;
 using CsvHelper.Configuration;
@@ -29,6 +31,25 @@ public class ErrorReportService : IErrorReportService
 
         csv.Context.RegisterClassMap<ErrorReportRowMap>();
         csv.WriteRecordsAsync(errorReportRows);
+        await writer.FlushAsync();
+
+        stream.Position = 0;
+
+        return stream;
+    }
+
+    public async Task<Stream> GetRegistrationErrorReportStreamAsync(Guid submissionId)
+    {
+        var registrationValidationErrors = await _webApiGatewayClient.GetRegistrationValidationErrorsAsync(submissionId);
+        var registrationErrorReportRows = registrationValidationErrors.ToRegistrationErrorReportRows();
+
+        var stream = new MemoryStream();
+
+        await using var writer = new StreamWriter(stream, leaveOpen: true);
+        await using var csv = new CsvWriter(writer, new CsvConfiguration(CultureInfo.CurrentCulture));
+
+        csv.Context.RegisterClassMap<RegistrationErrorReportRowMap>();
+        csv.WriteRecordsAsync(registrationErrorReportRows);
         await writer.FlushAsync();
 
         stream.Position = 0;

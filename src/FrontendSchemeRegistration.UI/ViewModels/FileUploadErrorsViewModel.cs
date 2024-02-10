@@ -7,4 +7,6 @@ public class FileUploadErrorsViewModel
     public string? OrganisationRole { get; set; }
 
     public DateTime SubmissionDeadline { get; set; }
+
+    public Guid SubmissionId { get; set; }
 }

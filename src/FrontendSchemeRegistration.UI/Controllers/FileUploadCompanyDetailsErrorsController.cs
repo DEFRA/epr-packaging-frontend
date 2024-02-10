@@ -41,7 +41,7 @@ public class FileUploadCompanyDetailsErrorsController : Controller
             return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
         }
 
-        if (session.RegistrationSession.Journey.Any() && !session.RegistrationSession.Journey.Contains<string>(PagePaths.FileUploadCompanyDetailsSubLanding))
+        if (!session.RegistrationSession.Journey.Any() || !session.RegistrationSession.Journey.Contains<string>(PagePaths.FileUploadCompanyDetailsSubLanding))
         {
             return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
         }
@@ -79,7 +79,8 @@ public class FileUploadCompanyDetailsErrorsController : Controller
             {
                 SubmissionDeadline = session.RegistrationSession.SubmissionDeadline,
                 OrganisationRole = organisation?.OrganisationRole,
-                ErrorCount = submission.RowErrorCount.GetValueOrDefault(0)
+                ErrorCount = submission.RowErrorCount.GetValueOrDefault(0),
+                SubmissionId = submissionId
             });
     }
 }

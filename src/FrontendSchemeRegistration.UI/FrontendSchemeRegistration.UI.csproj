@@ -262,7 +262,7 @@
             <LastGenOutput>FileUploadCompanyDetails.Designer.cs</LastGenOutput>
         </EmbeddedResource>
         <EmbeddedResource Update="Resources\Views\FileUploadCompanyDetails\FileUploadCompanyDetails.en.resx">
-            <Generator></Generator>
+            <Generator>ResXFileCodeGenerator</Generator>
         </EmbeddedResource>
         <EmbeddedResource Update="Resources\Views\FileUploadingCompanyDetails\FileUploadingCompanyDetails.resx">
         </EmbeddedResource>
@@ -507,8 +507,12 @@
           <LastGenOutput>FileUploadingCompanyDetailsErrors.cy.Designer.cs</LastGenOutput>
         </EmbeddedResource>
         <EmbeddedResource Update="Resources\Views\FileUploadingCompanyDetailsErrors\FileUploadingCompanyDetailsErrors.en.resx">
-          <Generator>ResXFileCodeGenerator</Generator>
+        <Generator>ResXFileCodeGenerator</Generator>
           <LastGenOutput>FileUploadingCompanyDetailsErrors.en.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\CompanyDetailsSubmissionErrorCodes.resx">
+          <Generator>ResXFileCodeGenerator</Generator>
+          <LastGenOutput>SubmissionErrorCodes.Designer.cs</LastGenOutput>
         </EmbeddedResource>
     </ItemGroup>
     <ItemGroup>
@@ -833,6 +837,11 @@
           <DesignTime>True</DesignTime>
           <AutoGen>True</AutoGen>
           <DependentUpon>FileUploadingCompanyDetailsErrors.en.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Resources\CompanyDetailsSubmissionErrorCodes.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>CompanyDetailsSubmissionErrorCodes.resx</DependentUpon>
         </Compile>
     </ItemGroup>
     <ItemGroup>

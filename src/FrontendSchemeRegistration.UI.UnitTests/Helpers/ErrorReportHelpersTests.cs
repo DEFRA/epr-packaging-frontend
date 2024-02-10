@@ -1,7 +1,5 @@
 ﻿namespace FrontendSchemeRegistration.UI.UnitTests.Helpers;
 
-using System.Diagnostics;
-using System.Security.Cryptography.X509Certificates;
 using Application.DTOs;
 using FluentAssertions;
 using TestHelpers;
@@ -138,6 +136,125 @@ public class ErrorReportHelpersTests
                 Issue = issueType,
                 Message = expectedMessage,
             },
+        };
+
+        result.Should().BeEquivalentTo(expected);
+    }
+
+    [Test]
+    public void ToRegistrationErrorReportRows_ConvertsRegistrationValidationErrorsToRegistrationErrorRowsWithMessageAndIndex_WhenCalled()
+    {
+        // Arrange
+        CultureHelpers.SetCulture("en-GB");
+
+        const string organisationId = "123456";
+        const string subsidiaryId = "123456";
+        var validationErrors = new List<RegistrationValidationError>
+        {
+            new ()
+            {
+                OrganisationId = organisationId,
+                SubsidiaryId = subsidiaryId,
+                RowNumber = 1,
+                ColumnErrors = new List<ColumnValidationError>
+                {
+                    new()
+                    {
+                        ErrorCode = "801",
+                        ColumnIndex = 0,
+                        ColumnName = "testColumnName"
+                    }
+                },
+            },
+            new ()
+            {
+                OrganisationId = organisationId,
+                SubsidiaryId = subsidiaryId,
+                RowNumber = 1,
+                ColumnErrors = new List<ColumnValidationError>
+                {
+                    new()
+                    {
+                        ErrorCode = "802",
+                        ColumnIndex = 10,
+                        ColumnName = "testColumnName2"
+                    }
+                },
+            },
+            new ()
+            {
+                OrganisationId = organisationId,
+                SubsidiaryId = subsidiaryId,
+                RowNumber = 1,
+                ColumnErrors = new List<ColumnValidationError>
+                {
+                    new()
+                    {
+                        ErrorCode = "803",
+                        ColumnIndex = 30,
+                        ColumnName = "testColumnName3"
+                    }
+                },
+            },
+            new ()
+            {
+                OrganisationId = organisationId,
+                SubsidiaryId = subsidiaryId,
+                RowNumber = 1,
+                ColumnErrors = new List<ColumnValidationError>
+                {
+                    new()
+                    {
+                        ErrorCode = "804",
+                        ColumnIndex = 55,
+                        ColumnName = "testColumnName4"
+                    }
+                },
+            },
+        };
+
+        // Act
+        var result = validationErrors.ToRegistrationErrorReportRows();
+
+        // Assert
+        var expected = new List<RegistrationErrorReportRow>
+        {
+            new ()
+            {
+                Row = "1",
+                OrganisationId = organisationId,
+                SubsidiaryId = subsidiaryId,
+                Column = "A",
+                ColumnName = "testColumnName",
+                Error = "Enter the organisation ID"
+            },
+            new ()
+            {
+                Row = "1",
+                OrganisationId = organisationId,
+                SubsidiaryId = subsidiaryId,
+                Column = "K",
+                ColumnName = "testColumnName2",
+                Error = "Enter the organisation name"
+            },
+            new ()
+            {
+                Row = "1",
+                OrganisationId = organisationId,
+                SubsidiaryId = subsidiaryId,
+                Column = "AE",
+                ColumnName = "testColumnName3",
+                Error = "Enter the home nation code"
+            },
+            new ()
+            {
+                Row = "1",
+                OrganisationId = organisationId,
+                SubsidiaryId = subsidiaryId,
+                Column = "BD",
+                ColumnName = "testColumnName4",
+                Error = "Home nation code must be one of EN NI SC or WS"
+            }
         };
 
         result.Should().BeEquivalentTo(expected);
