@@ -76,7 +76,7 @@ public class FileUploadWarningController : Controller
         if (model.UploadNewFile.HasValue)
         {
             return model.UploadNewFile.Value ?
-                RedirectToAction("Get", "FileUpload") :
+                RedirectToAction("Get", "FileUpload", new { submissionId = model.SubmissionId }) :
                 RedirectToAction("Get", "FileUploadCheckFileAndSubmit", new { submissionId = model.SubmissionId });
         }
 

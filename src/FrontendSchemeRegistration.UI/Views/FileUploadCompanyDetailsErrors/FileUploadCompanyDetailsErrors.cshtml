@@ -13,7 +13,7 @@
             {
                 @await Html.PartialAsync("Partials/Govuk/_ErrorSummary", ViewData.ModelState)
             }
-           
+
                 <h1 class="govuk-heading-l">@Localizer["organisation_details"]</h1>
                 @if (Model.ErrorCount == 1)
                  {
@@ -41,18 +41,18 @@
                 }
                 <h2 class="govuk-heading-m govuk-!-padding-top-0">@Localizer["how_to_fix"]</h2>
                 <ol class="govuk-list govuk-list--number">
-                    <li><a class="govuk-link" asp-controller="FileUploadCompanyDetailsIssueReport" asp-action="Get" asp-route-submissionId="@Model.SubmissionId">@Localizer["download_csv"]</a> 
+                    <li><a class="govuk-link" asp-controller="FileUploadCompanyDetailsIssueReport" asp-action="Get" asp-route-submissionId="@Model.SubmissionId">@Localizer["download_csv"]</a>
                     @if (Model.ErrorCount < 200)
                     {
                         @Localizer["this_will"]
-                        
+
                     }
                     else
                     {
                         @Localizer["this_will_200"]
                     }</li>
                     <li>@Localizer["use_report"]
-                        <a href="https://www.gov.uk/government/publications/organisation-details-how-to-create-your-file-for-extended-producer-responsibility-epr-for-packaging/organisation-details-file-specification-for-extended-producer-responsibility" 
+                        <a href="https://www.gov.uk/government/publications/organisation-details-how-to-create-your-file-for-extended-producer-responsibility-epr-for-packaging/organisation-details-file-specification-for-extended-producer-responsibility"
                            class="govuk-link" target="_blank">
                             @Localizer["file_specification"]</a>.</li>
                     <li>@Localizer["upload_again"].
@@ -63,10 +63,16 @@
                 </ol>
                 <h2 class="govuk-heading-m">@Localizer["upload_again"]</h2>
 
-                @using (Html.BeginForm("Post", "FileUploadCompanyDetails", FormMethod.Post, new
-                {
-                    enctype = "multipart/form-data"
-                }))
+                @using (Html.BeginForm(
+                    actionName: "Post",
+                    controllerName: "FileUploadCompanyDetails",
+                    routeValues: new { submissionId = Model.SubmissionId },
+                    method: FormMethod.Post,
+                    antiforgery: null,
+                    htmlAttributes: new
+                    {
+                        enctype = "multipart/form-data"
+                    }))
                 {
                     <div class="govuk-form-group @(ViewData.ModelState.IsValid ? string.Empty : "govuk-form-group--error")">
                         @if (!ViewData.ModelState.IsValid)

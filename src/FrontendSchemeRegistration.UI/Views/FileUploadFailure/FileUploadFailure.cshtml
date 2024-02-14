@@ -88,7 +88,10 @@
                @SharedLocalizer["upload_your_file_again"],
                 "Get",
                 "FileUpload",
-                null,
+               new
+               {
+                   submissionId = Model.SubmissionId
+               },
                 new
                 {
                     @class = "govuk-button"
