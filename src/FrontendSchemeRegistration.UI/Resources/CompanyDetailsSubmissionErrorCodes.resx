@@ -61,7 +61,7 @@
         <value>Enter the phone number for the registered address</value>
     </data>
     <data name="812" xml:space="preserve">
-        <value>If you enter an audit address, the country must be one of EN NI WS SC UK GB Scotland England United Kingdom Northern Ireland Wales</value>
+        <value>If you enter an audit address the country must be one of the following: EN, NI, SC, WS, UK, GB, England, Northern Ireland, Scotland, Wales, United Kingdom or Great Britain</value>
     </data>
     <data name="814" xml:space="preserve">
         <value>If you enter an audit address, it must include the first line of the address</value>
