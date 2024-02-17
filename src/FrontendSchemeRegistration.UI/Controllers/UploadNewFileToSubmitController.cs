@@ -4,11 +4,13 @@ using Application.Constants;
 using Application.DTOs.Submission;
 using Application.Extensions;
 using Application.Services.Interfaces;
+using Constants;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.FeatureManagement;
 using Sessions;
 using UI.Attributes.ActionFilters;
 using ViewModels;
@@ -21,72 +23,103 @@ public class UploadNewFileToSubmitController : Controller
     private readonly ISubmissionService _submissionService;
     private readonly IUserAccountService _userAccountService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
+    private readonly IFeatureManager _featureManager;
 
     public UploadNewFileToSubmitController(
-        ISubmissionService submissionService, IUserAccountService userAccountService, ISessionManager<FrontendSchemeRegistrationSession> sessionManager)
+        ISubmissionService submissionService, IUserAccountService userAccountService, ISessionManager<FrontendSchemeRegistrationSession> sessionManager, IFeatureManager featureManager)
     {
         _submissionService = submissionService;
         _userAccountService = userAccountService;
         _sessionManager = sessionManager;
+        _featureManager = featureManager;
     }
 
     [HttpGet]
     [SubmissionIdActionFilter(PagePaths.FileUploadSubLanding)]
     public async Task<IActionResult> Get()
     {
+        bool showPoMResubmission = await _featureManager.IsEnabledAsync(nameof(FeatureFlags.ShowPoMResubmission));
         ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadSubLanding}");
 
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         if (session is not null)
         {
             var organisationRole = session.UserData.Organisations?.FirstOrDefault()?.OrganisationRole;
+
             if (organisationRole is not null)
             {
-                var submissionId = Guid.Parse(Request.Query["submissionId"]);
-                var submission = await _submissionService.GetSubmissionAsync<PomSubmission>(submissionId);
-                if (submission is not null)
+                var submissionId = Request.Query.ContainsKey("submissionId")
+                    ? Guid.Parse(Request.Query["submissionId"])
+                    : Guid.Empty;
+
+                if (submissionId != Guid.Empty)
                 {
-                    var userData = User.GetUserData();
+                    var submission = await _submissionService.GetSubmissionAsync<PomSubmission>(submissionId);
 
-                    var uploadedByGuid = submission.LastUploadedValidFile?.UploadedBy;
-                    var submittedByGuid = submission.LastSubmittedFile?.SubmittedBy;
-
-                    var uploadedBy = (await _userAccountService.GetPersonByUserId(uploadedByGuid.Value)).GetUserName();
-
-                    string submittedBy = null;
-
-                    if (uploadedByGuid.Equals(submittedByGuid))
+                    if (submission is not null)
                     {
-                        submittedBy = uploadedBy;
+                        var userData = User.GetUserData();
+                        var decision = new PomDecision();
+
+                        if (showPoMResubmission)
+                        {
+                            decision = await _submissionService.GetDecisionAsync<PomDecision>(null, submission.Id);
+                        }
+
+                        var uploadedByGuid = submission.LastUploadedValidFile?.UploadedBy;
+                        var submittedByGuid = submission.LastSubmittedFile?.SubmittedBy;
+
+                        var uploadedBy =
+                            (await _userAccountService.GetPersonByUserId(uploadedByGuid.Value)).GetUserName();
+
+                        string submittedBy = null;
+
+                        if (uploadedByGuid.Equals(submittedByGuid))
+                        {
+                            submittedBy = uploadedBy;
+                        }
+                        else if (submittedByGuid != null)
+                        {
+                            submittedBy = (await _userAccountService.GetPersonByUserId(submittedByGuid.Value))
+                                .GetUserName();
+                        }
+
+                        var vm = new UploadNewFileToSubmitViewModel
+                        {
+                            OrganisationRole = organisationRole,
+                            IsApprovedOrDelegatedUser =
+                                userData.ServiceRole is ServiceRoles.ApprovedPerson or ServiceRoles.DelegatedPerson,
+                            SubmissionId = submission.Id,
+                            UploadedFileName = submission.LastUploadedValidFile?.FileName,
+                            UploadedAt = submission.LastUploadedValidFile?.FileUploadDateTime,
+                            UploadedBy = uploadedBy,
+                            SubmittedFileName = submission.LastSubmittedFile?.FileName,
+                            SubmittedAt = submission.LastSubmittedFile?.SubmittedDateTime,
+                            SubmittedBy = submittedBy,
+                            HasNewFileUploaded = submission.LastUploadedValidFile?.FileUploadDateTime >
+                                                 submission.LastSubmittedFile?.SubmittedDateTime,
+                            RegulatorComment = decision.Comments,
+                            RegulatorDecision = decision.Decision,
+                            IsResubmissionNeeded = decision.IsResubmissionRequired
+                        };
+
+                        if (!session.RegistrationSession.Journey.Contains(PagePaths.FileUploadSubLanding))
+                        {
+                            return RedirectToAction("Get", "FileUploadSubLanding");
+                        }
+
+                        vm.Status = vm switch
+                        {
+                            { SubmittedFileName: null, UploadedFileName: not null } =>
+                                Status.FileUploadedButNothingSubmitted,
+                            { SubmittedAt: var x, UploadedAt: var y } when x > y => Status.FileSubmitted,
+                            { SubmittedAt: var x, UploadedAt: var y } when x < y => Status
+                                .FileSubmittedAndNewFileUploadedButNotSubmitted,
+                            _ => Status.None
+                        };
+
+                        return View("UploadNewFileToSubmit", vm);
                     }
-                    else if (submittedByGuid != null)
-                    {
-                        submittedBy = (await _userAccountService.GetPersonByUserId(submittedByGuid.Value)).GetUserName();
-                    }
-
-                    var vm = new UploadNewFileToSubmitViewModel
-                    {
-                        OrganisationRole = organisationRole,
-                        IsApprovedOrDelegatedUser = userData.ServiceRole is ServiceRoles.ApprovedPerson or ServiceRoles.DelegatedPerson,
-                        SubmissionId = submission.Id,
-                        UploadedFileName = submission.LastUploadedValidFile?.FileName,
-                        UploadedAt = submission.LastUploadedValidFile?.FileUploadDateTime,
-                        UploadedBy = uploadedBy,
-                        SubmittedFileName = submission.LastSubmittedFile?.FileName,
-                        SubmittedAt = submission.LastSubmittedFile?.SubmittedDateTime,
-                        SubmittedBy = submittedBy,
-                        HasNewFileUploaded = submission.LastUploadedValidFile?.FileUploadDateTime > submission.LastSubmittedFile?.SubmittedDateTime
-                    };
-
-                    vm.Status = vm switch
-                    {
-                        { SubmittedFileName: null, UploadedFileName: { } } => Status.FileUploadedButNothingSubmitted,
-                        { SubmittedAt: var x, UploadedAt: var y } when x > y => Status.FileSubmitted,
-                        { SubmittedAt: var x, UploadedAt: var y } when x < y => Status.FileSubmittedAndNewFileUploadedButNotSubmitted,
-                        _ => Status.None
-                    };
-
-                    return View("UploadNewFileToSubmit", vm);
                 }
             }
         }

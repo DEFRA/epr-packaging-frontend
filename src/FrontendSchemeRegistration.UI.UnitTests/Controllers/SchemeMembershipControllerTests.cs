@@ -1088,4 +1088,106 @@ public class SchemeMembershipControllerTests
         result.ControllerName.Should().Be(nameof(LandingController).RemoveControllerFromName());
         result.ActionName.Should().Be(nameof(LandingController.Get));
     }
+
+    [Test]
+    public async Task GetComplianceSchemeMembers_AddsItems_ReturnsViewWithItemsAdded()
+    {
+        // Arrange
+        _sessionManager
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(Mock.Of<FrontendSchemeRegistrationSession>());
+
+        var complianceSchemeMembershipResponse = new ComplianceSchemeMembershipResponse
+        {
+            LinkedOrganisationCount = 1,
+            LastUpdated = DateTime.UtcNow,
+            PagedResult = new PaginatedResponse<ComplianceSchemeMemberDto>
+            {
+                TotalItems = 1,
+                Items = new List<ComplianceSchemeMemberDto>
+                {
+                    new() { SelectedSchemeId = Guid.NewGuid(), OrganisationName = "Test", OrganisationNumber = "12121" }
+                }
+            }
+        };
+
+        var id = Guid.NewGuid();
+        var resetLinkText = "resetlinktext";
+        var searchString = "TestSearch";
+
+        var mockUrlHelper = new Mock<IUrlHelper>(MockBehavior.Strict);
+        Expression<Func<IUrlHelper, string>> urlSetup = url => url.Action(It.Is<UrlActionContext>(uac => uac.Action == "SchemeMembers"));
+        mockUrlHelper.Setup(urlSetup).Returns(resetLinkText).Verifiable();
+        mockUrlHelper.Setup(url => url.Action(It.Is<UrlActionContext>(uac => uac.Action == "MemberDetails")))
+            .Returns("SomeUrl");
+
+        _systemUnderTest.Url = mockUrlHelper.Object;
+
+        _complianceSchemeMemberService
+            .Setup(x => x.GetComplianceSchemeMembers(
+                It.IsAny<Guid>(), id, It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
+            .ReturnsAsync(complianceSchemeMembershipResponse);
+
+        // Act
+        var result = await _systemUnderTest.SchemeMembers(id, searchString);
+
+        // Assert
+        result.Should().NotBeNull();
+        var checkResult = result as ViewResult;
+        checkResult.Should().NotBeNull();
+        checkResult.ViewName.Should().Be("SchemeMembers");
+        checkResult.Model.Should().BeOfType<SchemeMembersModel>();
+        var model = checkResult.Model as SchemeMembersModel;
+        model.Should().NotBeNull();
+        model.MemberList.Count.Should().Be(1);
+    }
+
+    [Test]
+    public async Task ConfirmRemoval_WithInvalidModelAndNullComplianceSchemeMember_ThenRedirectHome()
+    {
+        // Arrange
+        var selectedSchemeId = Guid.NewGuid();
+        var viewModel = new ConfirmRemovalViewModel
+        {
+            OrganisationName = _organisationName,
+            SelectedConfirmRemoval = YesNoAnswer.No
+        };
+        _complianceSchemeMemberService.Setup(x => x.GetComplianceSchemeMemberDetails(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(
+            (ComplianceSchemeMemberDetails)null);
+
+        _systemUnderTest.ModelState.AddModelError("ConfirmRemoval", "Test Error");
+        // Act
+        var result = await _systemUnderTest.ConfirmRemoval(selectedSchemeId, viewModel);
+
+        // Assert
+        result.Should().BeOfType<RedirectToActionResult>();
+        var checkResult = result as RedirectToActionResult;
+        checkResult.ActionName.Should().Be("Get");
+        checkResult.ControllerName.Should().Be("Landing");
+    }
+
+    [Test]
+    public async Task ConfirmRemoval_WithInvalidModelAndNullComplianceSchemeMember_ThenReturnModel()
+    {
+        // Arrange
+        var selectedSchemeId = Guid.NewGuid();
+        var viewModel = new ConfirmRemovalViewModel
+        {
+            OrganisationName = _organisationName,
+            SelectedConfirmRemoval = YesNoAnswer.No
+        };
+        _complianceSchemeMemberService.Setup(x => x.GetComplianceSchemeMemberDetails(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(
+            new ComplianceSchemeMemberDetails() { OrganisationName = "AA", OrganisationNumber = "111222", CompanyHouseNumber = "Company", ComplianceScheme = "Compliance", ProducerType = "Producer", RegisteredNation = "NI" });
+
+        _systemUnderTest.ModelState.AddModelError("ConfirmRemoval", "Test Error");
+        // Act
+        var result = await _systemUnderTest.ConfirmRemoval(selectedSchemeId, viewModel);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().BeOfType<ViewResult>();
+        var checkResult = result as ViewResult;
+        checkResult.Should().NotBeNull();
+        checkResult.Model.Should().BeOfType<ConfirmRemovalViewModel>();
+    }
 }

@@ -1,8 +1,10 @@
-﻿using EPR.Common.Authorization.Interfaces;
+﻿using System.Diagnostics.CodeAnalysis;
+using EPR.Common.Authorization.Interfaces;
 using EPR.Common.Authorization.Models;
 
 namespace FrontendSchemeRegistration.UI.Sessions;
 
+[ExcludeFromCodeCoverage]
 public class FrontendSchemeRegistrationSession : IHasUserData
 {
     public UserData UserData { get; set; } = new();

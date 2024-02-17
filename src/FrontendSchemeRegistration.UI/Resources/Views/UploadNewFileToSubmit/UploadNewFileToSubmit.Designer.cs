@@ -153,5 +153,131 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.UploadNewFileToSubmit {
                 return ResourceManager.GetString("your_organisation_already_submitted_a_file_you_also_have_file_saved", resourceCulture);
             }
         }
+        
+        internal static string if_your_circumstances_change {
+            get {
+                return ResourceManager.GetString("if_your_circumstances_change", resourceCulture);
+            }
+        }
+        
+        internal static string if_your_circumstances_change_text_approved_user {
+            get {
+                return ResourceManager.GetString("if_your_circumstances_change_text_approved_user", resourceCulture);
+            }
+        }
+        
+        internal static string upload_a_new_file_text_approved_user {
+            get {
+                return ResourceManager.GetString("upload_a_new_file_text_approved_user", resourceCulture);
+            }
+        }
+        
+        internal static string need_upload_a_new_file_text_approved_user {
+            get {
+                return ResourceManager.GetString("need_upload_a_new_file_text_approved_user", resourceCulture);
+            }
+        }
+        
+        internal static string need_upload_a_new_file_text_basic_user {
+            get {
+                return ResourceManager.GetString("need_upload_a_new_file_text_basic_user", resourceCulture);
+            }
+        }
+        
+        internal static string upload_a_new_file_text_basic_user {
+            get {
+                return ResourceManager.GetString("upload_a_new_file_text_basic_user", resourceCulture);
+            }
+        }
+        
+        internal static string upload_a_new_file_text_permission_basic_user {
+            get {
+                return ResourceManager.GetString("upload_a_new_file_text_permission_basic_user", resourceCulture);
+            }
+        }
+        
+        internal static string resubmit_packaging_data_title {
+            get {
+                return ResourceManager.GetString("resubmit-packaging-data-title", resourceCulture);
+            }
+        }
+        
+        internal static string you_need_to_resubmit_packaging_data_approved_user {
+            get {
+                return ResourceManager.GetString("you-need-to-resubmit-packaging-data-approved-user", resourceCulture);
+            }
+        }
+        
+        internal static string you_need_to_resubmit_packaging_data_basic_user {
+            get {
+                return ResourceManager.GetString("you-need-to-resubmit-packaging-data-basic-user", resourceCulture);
+            }
+        }
+        
+        internal static string you_do_not_need_to_resubmit_packaging_data_title {
+            get {
+                return ResourceManager.GetString("you-do-not-need-to-resubmit-packaging-data-title", resourceCulture);
+            }
+        }
+        
+        internal static string h1_basic_user_accepted_or_rejectednoresubmission_title {
+            get {
+                return ResourceManager.GetString("h1-basic-user-accepted-or-rejectednoresubmission-title", resourceCulture);
+            }
+        }
+        
+        internal static string h1_approved_user_rejected_title {
+            get {
+                return ResourceManager.GetString("h1-approved-user-rejected-title", resourceCulture);
+            }
+        }
+        
+        internal static string h1_basic_user_rejected_title {
+            get {
+                return ResourceManager.GetString("h1-basic-user-rejected-title", resourceCulture);
+            }
+        }
+        
+        internal static string you_do_not_need_to_resubmit_packaging_data_approved_user {
+            get {
+                return ResourceManager.GetString("you-do-not-need-to-resubmit-packaging-data-approved-user", resourceCulture);
+            }
+        }
+        
+        internal static string you_do_not_need_to_resubmit_packaging_data_basic_user {
+            get {
+                return ResourceManager.GetString("you-do-not-need-to-resubmit-packaging-data-basic-user", resourceCulture);
+            }
+        }
+        
+        internal static string packaging_data_rejected {
+            get {
+                return ResourceManager.GetString("packaging-data-rejected", resourceCulture);
+            }
+        }
+        
+        internal static string packaging_data_accepted_approved_user {
+            get {
+                return ResourceManager.GetString("packaging-data-accepted-approved-user", resourceCulture);
+            }
+        }
+        
+        internal static string packaging_data_accepted_basic_user {
+            get {
+                return ResourceManager.GetString("packaging-data-accepted-basic-user", resourceCulture);
+            }
+        }
+        
+        internal static string continue_button {
+            get {
+                return ResourceManager.GetString("continue-button", resourceCulture);
+            }
+        }
+        
+        internal static string cancel {
+            get {
+                return ResourceManager.GetString("cancel", resourceCulture);
+            }
+        }
     }
 }

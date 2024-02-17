@@ -171,4 +171,67 @@
   <data name="your_organisation_already_submitted_a_file_you_also_have_file_saved" xml:space="preserve">
     <value />
   </data>
+  <data name="if_your_circumstances_change" xml:space="preserve">
+    <value />
+  </data>
+  <data name="if_your_circumstances_change_text_approved_user" xml:space="preserve">
+    <value />
+  </data>
+  <data name="upload_a_new_file_text_approved_user" xml:space="preserve">
+    <value />
+  </data>
+  <data name="need_upload_a_new_file_text_approved_user" xml:space="preserve">
+    <value />
+  </data>
+  <data name="need_upload_a_new_file_text_basic_user" xml:space="preserve">
+    <value />
+  </data>
+  <data name="upload_a_new_file_text_basic_user" xml:space="preserve">
+    <value />
+  </data>
+  <data name="upload_a_new_file_text_permission_basic_user" xml:space="preserve">
+    <value />
+  </data>
+  <data name="resubmit-packaging-data-title" xml:space="preserve">
+    <value />
+  </data>
+  <data name="you-need-to-resubmit-packaging-data-approved-user" xml:space="preserve">
+    <value />
+  </data>
+  <data name="you-need-to-resubmit-packaging-data-basic-user" xml:space="preserve">
+    <value />
+  </data>
+  <data name="you-do-not-need-to-resubmit-packaging-data-title" xml:space="preserve">
+    <value />
+  </data>
+  <data name="h1-basic-user-accepted-or-rejectednoresubmission-title" xml:space="preserve">
+    <value />
+  </data>
+  <data name="h1-approved-user-rejected-title" xml:space="preserve">
+    <value />
+  </data>
+  <data name="h1-basic-user-rejected-title" xml:space="preserve">
+    <value />
+  </data>
+  <data name="you-do-not-need-to-resubmit-packaging-data-approved-user" xml:space="preserve">
+    <value />
+  </data>
+  <data name="you-do-not-need-to-resubmit-packaging-data-basic-user" xml:space="preserve">
+    <value />
+  </data>
+  <data name="packaging-data-rejected" xml:space="preserve">
+    <value />
+  </data>
+  <data name="packaging-data-accepted-approved-user" xml:space="preserve">
+    <value />
+  </data>
+  <data name="packaging-data-accepted-basic-user" xml:space="preserve">
+    <value />
+  </data>
+  <data name="continue-button" xml:space="preserve">
+    <value />
+  </data>
+  <data name="cancel" xml:space="preserve">
+    <value />
+  </data>
 </root>

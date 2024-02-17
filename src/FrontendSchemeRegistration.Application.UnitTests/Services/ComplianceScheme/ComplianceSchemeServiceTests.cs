@@ -237,6 +237,54 @@ public class ComplianceSchemeServiceTests : ServiceTestBase<IComplianceSchemeSer
         ex.Result.And.Message.Should().Contain(ServiceError);
     }
 
+    [Test]
+    public async Task ClearSummaryCache_WithoutCache_Returns()
+    {
+        // Arrange
+        var client = new HttpClient(_httpMessageHandlerMock.Object);
+        client.BaseAddress = new Uri("https://mock/api/test/");
+        client.Timeout = TimeSpan.FromSeconds(30);
+
+        var facadeOptions = Options.Create(new AccountsFacadeApiOptions { DownstreamScope = "https://mock/test" });
+        var accountServiceApiClient = new AccountServiceApiClient(client, _tokenAcquisitionMock.Object, facadeOptions);
+        var cachingOptions = Options.Create(new CachingOptions { CacheComplianceSchemeSummaries = true });
+
+        _complianceSchemeService =
+            new ComplianceSchemeService(accountServiceApiClient, _loggerMock.Object, cachingOptions, null);
+
+        // Act
+        await _complianceSchemeService.ClearSummaryCache(
+            It.IsAny<Guid>(),
+            It.IsAny<Guid>());
+
+        // Assert
+        _complianceSchemeService.HasCache().Should().BeFalse();
+    }
+
+    [Test]
+    public async Task ClearSummaryCache_WithCache_Removes_OrganisationID_And_ComplianceSchemeID()
+    {
+        // Arrange
+        var client = new HttpClient(_httpMessageHandlerMock.Object);
+        client.BaseAddress = new Uri("https://mock/api/test/");
+        client.Timeout = TimeSpan.FromSeconds(30);
+
+        var facadeOptions = Options.Create(new AccountsFacadeApiOptions { DownstreamScope = "https://mock/test" });
+        var accountServiceApiClient = new AccountServiceApiClient(client, _tokenAcquisitionMock.Object, facadeOptions);
+        var cachingOptions = Options.Create(new CachingOptions { CacheComplianceSchemeSummaries = true, SlidingExpirationSeconds = 1000, AbsoluteExpirationSeconds = 2000 });
+
+        _complianceSchemeService =
+            new ComplianceSchemeService(accountServiceApiClient, _loggerMock.Object, cachingOptions, new Mock<IDistributedCache>().Object);
+
+        // Act
+        await _complianceSchemeService.ClearSummaryCache(
+            It.IsAny<Guid>(),
+            It.IsAny<Guid>());
+
+        // Assert
+        _complianceSchemeService.HasCache().Should().BeTrue();
+    }
+
     protected override ComplianceSchemeService MockService(HttpStatusCode expectedStatusCode, HttpContent expectedContent, bool raiseServiceException = false)
     {
         if (raiseServiceException)

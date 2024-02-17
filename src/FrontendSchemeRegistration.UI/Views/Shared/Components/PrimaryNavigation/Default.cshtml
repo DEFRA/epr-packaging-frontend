@@ -25,13 +25,13 @@
 }
 else if (User.Identity?.IsAuthenticated == true)
 {
-    <nav class="epr-auth-nav">
+    <nav class="epr-auth-nav" aria-label="Account Options">
         <a class="govuk-link epr-auth-nav__link" asp-controller="Account" asp-action="SignOut">@SharedLocalizer["sign_out"]</a>
     </nav>
 }
 else
 {
-    <nav class="epr-auth-nav">
+    <nav class="epr-auth-nav" aria-label="Account Options">
         <a class="govuk-link epr-auth-nav__link" asp-controller="Account" asp-action="SignIn">@SharedLocalizer["sign_in"]</a>
     </nav>
 }

@@ -318,6 +318,64 @@ public class WebApiGatewayClientTests
     }
 
     [Test]
+    public async Task GetDecisionsAsync_ReturnsDecisions_WhenCalled()
+    {
+        // Arrange
+        const string queryString = "parameter=value";
+
+        var decision = new PomDecision
+        {
+            SubmissionId = Guid.NewGuid()
+        };
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonSerializer.Serialize(decision)),
+            });
+
+        // Act
+        var result = await _webApiGatewayClient.GetDecisionsAsync<PomDecision>(queryString);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.SubmissionId.Should().Be(decision.SubmissionId);
+        const string expectedUri = $"https://example.com/api/v1/decisions?{queryString}";
+        _httpMessageHandlerMock.Protected().Verify(
+            "SendAsync",
+            Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Get && req.RequestUri.ToString() == expectedUri),
+            ItExpr.IsAny<CancellationToken>());
+    }
+
+    [Test]
+    public async Task GetDecisionsAsync_ThrowsException_WhenErrorOccurs()
+    {
+        // Arrange
+        const string queryString = "parameter=value";
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ThrowsAsync(new HttpRequestException("Error"));
+
+        // Act / Assert
+        await _webApiGatewayClient
+            .Invoking(x => x.GetDecisionsAsync<PomDecision>(queryString))
+            .Should()
+            .ThrowAsync<HttpRequestException>();
+
+        _loggerMock.VerifyLog(x => x.LogError(It.IsAny<Exception>(), "Error getting decision"), Times.Once);
+    }
+
+    [Test]
     public async Task GetRegistrationValidationErrorsAsync_ThrowsException_WhenResponseCodeIsNotSuccessfulOr404()
     {
         // Arrange

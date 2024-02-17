@@ -25,4 +25,10 @@ public class UploadNewFileToSubmitViewModel : ViewModelWithOrganisationRole
     public string? SubmittedFileName { get; set; }
 
     public bool HasNewFileUploaded { get; set; }
+
+    public string? RegulatorComment { get; set; }
+
+    public string RegulatorDecision { get; set; }
+
+    public bool IsResubmissionNeeded { get; set; }
 }
