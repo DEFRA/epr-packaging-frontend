@@ -3,7 +3,7 @@
 <root>
     <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
         <xsd:element name="root" msdata:IsDataSet="true">
-            
+
         </xsd:element>
     </xsd:schema>
     <resheader name="resmimetype">
@@ -139,7 +139,7 @@
         <value>Turnover must be in millions to two decimal places</value>
     </data>
     <data name="857" xml:space="preserve">
-        <value>Turnover must be greater than 0" - this one applies if the user has entered 0, or a negative integer</value>
+        <value>Turnover must be greater than 0</value>
     </data>
     <data name="858" xml:space="preserve">
         <value>Turnover must only include numbers</value>
@@ -151,7 +151,7 @@
         <value>Companies House number not needed for this organisation type</value>
     </data>
     <data name="865" xml:space="preserve">
-        <value>Total tonnage must be greater than 0" - this one applies if the user has entered 0, or a negative integer</value>
+        <value>Total tonnage must be greater than 0</value>
     </data>
     <data name="867" xml:space="preserve">
         <value>Total tonnage must not include a comma</value>
