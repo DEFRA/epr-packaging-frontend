@@ -394,4 +394,119 @@ public class WebApiGatewayClientTests
             .ThrowAsync<HttpRequestException>();
         _loggerMock.VerifyLog(x => x.LogError("Error getting registration validation records with submissionId: {Id}", submissionId));
     }
+
+    [Test]
+    public async Task GetSubmissionIdsAsync_ReturnsSubmissionIds_WhenCalled()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        string queryString = $"type={SubmissionType.Producer}";
+        var submissionIds = new List<SubmissionPeriodId>
+        {
+            new SubmissionPeriodId
+            {
+                 SubmissionId = Guid.NewGuid(),
+                 SubmissionPeriod = "July to January 2020",
+                 Year = 2020
+            }
+        };
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonSerializer.Serialize(submissionIds)),
+            });
+
+        // Act
+        var result = await _webApiGatewayClient.GetSubmissionIdsAsync(organisationId, queryString);
+
+        // Assert
+        result.Should().BeEquivalentTo(submissionIds);
+        var expectedUri = $"https://example.com/api/v1/submissions/submission-Ids/{organisationId}?{queryString}";
+        _httpMessageHandlerMock.Protected().Verify(
+            "SendAsync",
+            Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Get && req.RequestUri.ToString() == expectedUri),
+            ItExpr.IsAny<CancellationToken>());
+    }
+
+    [Test]
+    public async Task GetSubmissionIdsAsync_ThrowsException_WhenResponseCodeIsNotSuccessful()
+    {
+        // Arrange
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.InternalServerError });
+
+        // Act / Assert
+        await _webApiGatewayClient
+            .Invoking(x => x.GetSubmissionIdsAsync(Guid.NewGuid(), $"type={SubmissionType.Producer}&year=2020"))
+            .Should()
+            .ThrowAsync<HttpRequestException>();
+        _loggerMock.VerifyLog(x => x.LogError("Error getting submission ids"));
+    }
+
+    [Test]
+    public async Task GetSubmissionHistoryAsync_ReturnsSubmissionHistory_WhenCalled()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        string queryString = $"lastTimeSync={new DateTime(2020, 1, 1)}";
+        var submissionHistory = new List<SubmissionHistory>
+        {
+            new SubmissionHistory
+            {
+                SubmissionId = submissionId,
+                FileName = "test.csv",
+                UserName = "John Doe",
+                SubmissionDate = new DateTime(2020, 8, 20),
+                Status = "Accepted",
+                DateofLatestStatusChange = new DateTime(2020, 9, 1)
+            }
+        };
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonSerializer.Serialize(submissionHistory)),
+            });
+
+        // Act
+        var result = await _webApiGatewayClient.GetSubmissionHistoryAsync(submissionId, queryString);
+
+        // Assert
+        result.Should().BeEquivalentTo(submissionHistory);
+        var expectedUri = $"https://example.com/api/v1/submissions/submission-history/{submissionId}?{queryString}";
+        _httpMessageHandlerMock.Protected().Verify(
+            "SendAsync",
+            Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Get && req.RequestUri.ToString() == expectedUri),
+            ItExpr.IsAny<CancellationToken>());
+    }
+
+    [Test]
+    public async Task GetSubmissionHistoryAsync_ThrowsException_WhenResponseCodeIsNotSuccessful()
+    {
+        // Arrange
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.InternalServerError });
+
+        // Act / Assert
+        await _webApiGatewayClient
+            .Invoking(x => x.GetSubmissionHistoryAsync(Guid.NewGuid(), $"lastTimeSync={new DateTime(2020, 1, 1)}"))
+            .Should()
+            .ThrowAsync<HttpRequestException>();
+        _loggerMock.VerifyLog(x => x.LogError("Error getting submission history"));
+    }
 }

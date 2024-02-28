@@ -1,5 +1,6 @@
 ﻿using System.Web;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 
 namespace FrontendSchemeRegistration.Application.Services;
@@ -84,5 +85,27 @@ public class SubmissionService : ISubmissionService
         queryString += $"submissionId={submissionId}";
 
         return await _webApiGatewayClient.GetDecisionsAsync<T>(queryString);
+    }
+
+    public async Task<List<SubmissionPeriodId>> GetSubmissionIdsAsync(Guid organisationId, SubmissionType type, Guid? complianceSchemeId, int? year)
+    {
+        var queryString = $"type={type}";
+
+        if (complianceSchemeId is not null && complianceSchemeId != Guid.Empty)
+        {
+            queryString += $"&complianceSchemeId={complianceSchemeId}";
+        }
+
+        if (year is not null)
+        {
+            queryString += $"&year={year}";
+        }
+
+        return await _webApiGatewayClient.GetSubmissionIdsAsync(organisationId, queryString);
+    }
+
+    public async Task<List<SubmissionHistory>> GetSubmissionHistoryAsync(Guid submissionId, DateTime lastSyncTime)
+    {
+        return await _webApiGatewayClient.GetSubmissionHistoryAsync(submissionId, $"lastSyncTime={lastSyncTime}");
     }
 }

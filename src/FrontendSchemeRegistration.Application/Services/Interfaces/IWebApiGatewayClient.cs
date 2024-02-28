@@ -30,4 +30,8 @@ public interface IWebApiGatewayClient
 
     Task<T> GetDecisionsAsync<T>(string queryString)
         where T : AbstractDecision;
+
+    Task<List<SubmissionPeriodId>> GetSubmissionIdsAsync(Guid organisationId, string queryString);
+
+    Task<List<SubmissionHistory>> GetSubmissionHistoryAsync(Guid submissionId, string queryString);
 }

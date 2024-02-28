@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -117,103 +117,37 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="before_you_start" xml:space="preserve">
-    <value>Cyn ichi ddechrau</value>
+  <data name="accepted_on" xml:space="preserve">
+    <value>Wedi'i derbyn ar</value>
   </data>
-  <data name="report_packaging_data_for" xml:space="preserve">
-    <value>Rhoi gwybod am ddata pecynwaith ar gyfer</value>
+  <data name="date_and_time_submitted" xml:space="preserve">
+    <value>Dyddiad ac amser cyflwyno</value>
   </data>
-  <data name="deadline" xml:space="preserve">
-    <value>Dyddiad cau: 11:59pm ar</value>
+  <data name="file_name" xml:space="preserve">
+    <value>Enw'r ffeil</value>
   </data>
-  <data name="how_to_build_a_csv_file_to_report_your_packaging_data" xml:space="preserve">
-    <value>sut i adeiladu ffeil CSV i roi gwybod am eich data pecynwaith (yn agor mewn ffenestr newydd)</value>
+  <data name="most_recent_packaging_data_files" xml:space="preserve">
+    <value>Y ffeiliau data pecynwaith diweddaraf</value>
   </data>
-  <data name="not_started" xml:space="preserve">
-    <value>Heb ddechrau</value>
+  <data name="rejected_on" xml:space="preserve">
+    <value>Wedi'i gwrthod ar</value>
   </data>
-  <data name="read_the_guidance_on" xml:space="preserve">
-    <value>Darllenwch y canllawiau ar y canlynol:</value>
+  <data name="status" xml:space="preserve">
+    <value>Statws</value>
   </data>
-  <data name="report_packaging_data" xml:space="preserve">
-    <value>Rhoi gwybod am ddata pecynwaith</value>
+  <data name="submitted_by" xml:space="preserve">
+    <value>Wedi'i chyflwyno gan</value>
   </data>
-  <data name="file_uploaded" xml:space="preserve">
-    <value>Ffeil wedi’i huwchlwytho</value>
+  <data name="submitted_on" xml:space="preserve">
+    <value>Wedi'i chyflwyno ar</value>
   </data>
-  <data name="start_now" xml:space="preserve">
-    <value>Dechrau nawr</value>
+  <data name="there_are_no_files_to_show" xml:space="preserve">
+    <value>Does dim ffeiliau i'w dangos</value>
   </data>
-  <data name="what_packaging_data_you_need_to_collect" xml:space="preserve">
-    <value>pa ddata pecynwaith y mae angen ichi ei gasglu (yn agor mewn ffenestr newydd)</value>
-  </data>
-  <data name="submitted_to_regulator" xml:space="preserve">
-    <value>Wedi’u cyflwyno i’r rheoleiddiwr</value>
-  </data>
-  <data name="cannot_start_yet" xml:space="preserve">
-    <value>Methu dechrau eto</value>
-  </data>
-  <data name="report_members_packaging_data_for" xml:space="preserve">
-    <value>Rhoi gwybod am ddata pecynwaith aelodau ar gyfer</value>
-  </data>
-  <data name="large_organisations" xml:space="preserve">
-    <value>Sefydliadau mawr</value>
-  </data>
-  <data name="check_the_govuk_guidance" xml:space="preserve">
-    <value>Gwiriwch y canllawiau ar GOV.UK (yn agor mewn ffenestr newydd)</value>
-  </data>
-  <data name="if_youve_missed_a_deadline" xml:space="preserve">
-    <value>Os ydych chi wedi colli dyddiad cau, mae’n dal yn bosibl y gallwch chi gyflwyno adroddiad heb wynebu camau gorfodi.</value>
-  </data>
-  <data name="if_youve_missed_a_deadline_to_submit" xml:space="preserve">
-    <value>Os ydych chi wedi colli dyddiad cau cyflwyno</value>
-  </data>
-  <data name="an_example_csv_file" xml:space="preserve">
-    <value>enghraifft o ffeil CSV (yn agor mewn ffenestr newydd)</value>
-  </data>
-  <data name="accepted_by_regulator" xml:space="preserve">
-    <value>Wedi'i dderbyn gan y Rheoleiddiwr</value>
-  </data>
-  <data name="approved_by_regulator" xml:space="preserve">
-    <value>W Approved By Regulator</value>
-  </data>
-  <data name="check_if_you_need_to_resubmit_members_packaging_data" xml:space="preserve">
-    <value>Gwiriwch a oes angen ichi ailgyflwyno data pecynwaith aelod</value>
-  </data>
-  <data name="check_if_you_need_to_resubmit_packaging_data" xml:space="preserve">
-    <value>Gwiriwch a oes angen ichi ailgyflwyno data pecynwaith</value>
-  </data>
-  <data name="check_if_you_need_to_update_member's_packaging_data" xml:space="preserve">
-    <value>Gwiriwch a oes angen ichi ddiweddaru data pecynwaith aelod</value>
-  </data>
-  <data name="rejected_by_regulator" xml:space="preserve">
-    <value>Wedi'i wrthod gan y Rheoleiddiwr</value>
-  </data>
-  <data name="resubmit_members_packaging_data" xml:space="preserve">
-    <value>Ailgyflwyno data pecynwaith aelod</value>
-  </data>
-  <data name="resubmit_packaging_data" xml:space="preserve">
-    <value>Ailgyflwyno data pecynwaith</value>
-  </data>
-  <data name="status_unknown" xml:space="preserve">
-    <value>W Submission status is unknown</value>
-  </data>
-  <data name="update_members_packaging_data_basic" xml:space="preserve">
-    <value>Ddiweddaru data pecynwaith aelod</value>
-  </data>
-  <data name="update_packaging_data_basic" xml:space="preserve">
-    <value>W Update packaging data</value>
-  </data>
-  <data name="view_submission_history" xml:space="preserve">
-    <value>Gweld eich hanes cyflwyno</value>
-  </data>
-  <data name="view_your_packaging_data_files" xml:space="preserve">
-    <value>Gweld eich ffeiliau data pecynwaith</value>
+  <data name="view_previous_packaging_data_submissions" xml:space="preserve">
+    <value>Gweld cyflwyniadau data pecynwaith blaenorol</value>
   </data>
   <data name="your_history" xml:space="preserve">
     <value>Eich hanes</value>
-  </data>
-  <data name="check_if_you_need_to_update_packaging_data" xml:space="preserve">
-    <value>Gwiriwch a oes angen ichi ddiweddaru data pecynwaith</value>
   </data>
 </root>

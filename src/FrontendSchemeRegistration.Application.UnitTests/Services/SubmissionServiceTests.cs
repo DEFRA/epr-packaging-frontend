@@ -1,4 +1,5 @@
 ﻿using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Services;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using Moq;
@@ -213,5 +214,53 @@ public class SubmissionServiceTests
         // Assert
         var expectedQueryString = $"limit=1&submissionId={submissionId}";
         _webApiGatewayClientMock.Verify(x => x.GetDecisionsAsync<PomDecision>(expectedQueryString), Times.Once);
+    }
+
+    [Test]
+    [TestCase(SubmissionType.Producer)]
+    [TestCase(SubmissionType.Registration)]
+    public async Task GetSubmissionIdsAsync_CallsClientWithCorrectQueryString_WhenCalled(SubmissionType type)
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+
+        // Act
+        await _submissionService.GetSubmissionIdsAsync(organisationId, type, null, null);
+
+        // Assert
+        var expectedQueryString = $"type={type}";
+        _webApiGatewayClientMock.Verify(x => x.GetSubmissionIdsAsync(organisationId, expectedQueryString), Times.Once);
+    }
+
+    [Test]
+    public async Task GetSubmissionIdsAsync_CallsClientWithCorrectQueryString_WhenCalledWithComplianceSchemeIdAndYear()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var type = SubmissionType.Producer;
+        var complianceSchemeId = Guid.NewGuid();
+        var year = 2020;
+
+        // Act
+        await _submissionService.GetSubmissionIdsAsync(organisationId, type, complianceSchemeId, year);
+
+        // Assert
+        var expectedQueryString = $"type={type}&complianceSchemeId={complianceSchemeId}&year={year}";
+        _webApiGatewayClientMock.Verify(x => x.GetSubmissionIdsAsync(organisationId, expectedQueryString), Times.Once);
+    }
+
+    [Test]
+    public async Task GetSubmissionHistoryAsync_CallsClientWithCorrectQueryString_WhenCalled()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var lastSyncTime = new DateTime(2020, 1, 1);
+
+        // Act
+        await _submissionService.GetSubmissionHistoryAsync(submissionId, lastSyncTime);
+
+        // Assert
+        var expectedQueryString = $"lastSyncTime={lastSyncTime}";
+        _webApiGatewayClientMock.Verify(x => x.GetSubmissionHistoryAsync(submissionId, expectedQueryString), Times.Once);
     }
 }

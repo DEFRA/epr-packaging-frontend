@@ -58,4 +58,5 @@ public static class PagePaths
     public const string UpdateCookieAcceptance = "update-cookie-acceptance";
     public const string AcknowledgeCookieAcceptance = "acknowledge-cookie-acceptance";
     public const string ApprovedPersonCreated = "/approved-person-created";
+    public const string FileUploadSubmissionHistory = "/history";
 }

@@ -1,4 +1,5 @@
 ﻿using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.Enums;
 
 namespace FrontendSchemeRegistration.Application.Services.Interfaces;
 
@@ -22,4 +23,8 @@ public interface ISubmissionService
         int? limit,
         Guid submissionId)
         where T : AbstractDecision;
+
+    Task<List<SubmissionPeriodId>> GetSubmissionIdsAsync(Guid organisationId, SubmissionType type, Guid? complianceSchemeId, int? year);
+
+    Task<List<SubmissionHistory>> GetSubmissionHistoryAsync(Guid submissionId, DateTime lastSyncTime);
 }

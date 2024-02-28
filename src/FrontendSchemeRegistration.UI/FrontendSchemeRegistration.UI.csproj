@@ -512,7 +512,7 @@
         </EmbeddedResource>
         <EmbeddedResource Update="Resources\CompanyDetailsSubmissionErrorCodes.resx">
           <Generator>ResXFileCodeGenerator</Generator>
-          <LastGenOutput>SubmissionErrorCodes.Designer.cs</LastGenOutput>
+          <LastGenOutput>CompanyDetailsSubmissionErrorCodes.Designer.cs</LastGenOutput>
         </EmbeddedResource>
     </ItemGroup>
     <ItemGroup>

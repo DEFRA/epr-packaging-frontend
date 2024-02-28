@@ -179,6 +179,44 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         }
     }
 
+    public async Task<List<SubmissionPeriodId>> GetSubmissionIdsAsync(Guid organisationId, string queryString)
+    {
+        await PrepareAuthenticatedClientAsync();
+
+        try
+        {
+            var response = await _httpClient.GetAsync($"/api/v1/submissions/submission-Ids/{organisationId}?{queryString}");
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadFromJsonAsync<List<SubmissionPeriodId>>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting submission ids");
+            throw;
+        }
+    }
+
+    public async Task<List<SubmissionHistory>> GetSubmissionHistoryAsync(Guid submissionId, string queryString)
+    {
+        await PrepareAuthenticatedClientAsync();
+
+        try
+        {
+            var response = await _httpClient.GetAsync($"/api/v1/submissions/submission-history/{submissionId}?{queryString}");
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadFromJsonAsync<List<SubmissionHistory>>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting submission history");
+            throw;
+        }
+    }
+
     private async Task PrepareAuthenticatedClientAsync()
     {
         var accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(_scopes);
