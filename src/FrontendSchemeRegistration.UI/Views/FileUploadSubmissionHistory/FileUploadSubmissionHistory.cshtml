@@ -18,7 +18,7 @@
 
             @if (Model.PreviousSubmissionHistoryExists)
             {
-                <p class="govuk-body"><a class="govuk-link govuk-link--no-visited-state" href="#">@Localizer["view_previous_packaging_data_submissions"]</a></p>
+                <p class="govuk-body"><a class="govuk-link govuk-link--no-visited-state" asp-controller="FileUploadHistoryPreviousSubmissions" asp-action="Get">@Localizer["view_previous_packaging_data_submissions"]</a></p>
             }
 
             <h2 class="govuk-heading-m">@Localizer["most_recent_packaging_data_files"]</h2>

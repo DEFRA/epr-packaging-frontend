@@ -1,0 +1,49 @@
+﻿@model FileUploadHistoryPreviousSubmissionsViewModel
+
+@{
+    ViewData["Title"] = Localizer["pageTitle", Model.PagingDetail.CurrentPage, Model.PagingDetail.PageCount];
+
+    var maxYear = Model.Years.First();
+    var minYear = Model.Years.Last();
+
+    var yearHeader = Localizer["year"];
+    var viewFilesHeader = Localizer["view_files"];
+    var viewAllPackagingDataFor = Localizer["view_all_packaging_data_for", maxYear, minYear];
+}
+
+@await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-l">@Localizer["view_previous_packaging_data_submissions"]</h1>
+            <p class="govuk-body">@viewAllPackagingDataFor</p>
+        </div>
+    </div>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <table class="govuk-table responsive-table">
+                <caption class="govuk-visually-hidden">@viewAllPackagingDataFor</caption>
+                <thead class="govuk-table__head">
+                    <tr class="govuk-table__row">
+                        <th scope="col" class="govuk-table__header">@yearHeader</th>
+                        <th scope="col" class="govuk-table__header">@viewFilesHeader</th>
+                    </tr>
+                </thead>
+                <tbody class="govuk-table__body">
+                    @foreach (var year in Model.Years)
+                    {
+                        <tr class="govuk-table__row">
+                            <td class="govuk-table__cell break-word" data-heading="@yearHeader">@year</td>
+                            <td class="govuk-table__cell break-word" data-heading="@viewFilesHeader">
+                                <a class="govuk-link" href="#" rel="noreferrer noopener" target="_blank">@Localizer["view_packaging_data_files_(opens_in_a_new_tab)"]</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            @await Html.PartialAsync("Partials/RecordNavigation/_RecordPaging", Model.PagingDetail)
+        </div>
+    </div>
+</main>
