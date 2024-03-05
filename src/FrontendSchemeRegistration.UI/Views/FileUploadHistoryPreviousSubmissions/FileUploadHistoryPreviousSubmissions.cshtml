@@ -36,7 +36,7 @@
                         <tr class="govuk-table__row">
                             <td class="govuk-table__cell break-word" data-heading="@yearHeader">@year</td>
                             <td class="govuk-table__cell break-word" data-heading="@viewFilesHeader">
-                                <a class="govuk-link" href="#" rel="noreferrer noopener" target="_blank">@Localizer["view_packaging_data_files_(opens_in_a_new_tab)"]</a>
+                                <a class="govuk-link" rel="noreferrer noopener" target="_blank" asp-controller="FileUploadHistoryPackagingDataFiles" asp-action="Get" asp-route-year="@year">@Localizer["view_packaging_data_files_(opens_in_a_new_tab)"]</a>
                             </td>
                         </tr>
                     }

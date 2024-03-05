@@ -60,4 +60,6 @@ public static class PagePaths
     public const string ApprovedPersonCreated = "/approved-person-created";
     public const string FileUploadSubmissionHistory = "/history";
     public const string FileUploadHistoryPreviousSubmissions = "/history-previous-submissions";
+    public const string FileUploadHistoryPackagingDataFiles = "/history-packaging-data-files";
+    public const string FileUploadNoSubmissionHistory = "/no-submission-history";
 }

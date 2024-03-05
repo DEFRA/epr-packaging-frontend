@@ -1,0 +1,59 @@
+﻿@model FileUploadHistoryPackagingDataFilesViewModel
+
+@{
+    var pageHeading = Localizer["packaging_data_files", Model.Year];
+
+    ViewData["Title"] = pageHeading;
+
+    var fileNameHeader = Localizer["file_name"];
+    var dateAndTimeSubmittedHeader = Localizer["date_and_time_submitted"];
+    var submittedByHeader = Localizer["submitted_by"];
+    var statusHeader = Localizer["status"];
+}
+
+@await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-l">@pageHeading</h1>
+        </div>
+    </div>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            @foreach (var viewModel in @Model.SubmissionPeriods)
+            {
+                var submissionPeriod = SharedLocalizer[viewModel.SubmissionPeriod];
+
+                <h2 class="govuk-heading-m">@submissionPeriod</h2>
+
+                <div class="govuk-summary-card">
+                    <div class="govuk-summary-card__content overflow-x-auto">
+                        <table class="govuk-table govuk-!-margin-bottom-0 responsive-table">
+                            <caption class="govuk-visually-hidden">@submissionPeriod</caption>
+                            <thead class="govuk-table__head">
+                                <tr class="govuk-table__row">
+                                    <th scope="col" class="govuk-table__header">@fileNameHeader</th>
+                                    <th scope="col" class="govuk-table__header">@dateAndTimeSubmittedHeader</th>
+                                    <th scope="col" class="govuk-table__header">@submittedByHeader</th>
+                                    <th scope="col" class="govuk-table__header">@statusHeader</th>
+                                </tr>
+                            </thead>
+                            <tbody class="govuk-table__body">
+                                @foreach (var submissionHistory in viewModel.SubmissionHistory)
+                                {
+                                    <tr class="govuk-table__row">
+                                        <td class="govuk-table__cell" data-heading="@fileNameHeader">@submissionHistory.FileName</td>
+                                        <td class="govuk-table__cell" data-heading="@dateAndTimeSubmittedHeader">@(submissionHistory.SubmissionDate.ToString("dd MMMM yyyy, h:mm") + submissionHistory.SubmissionDate.ToString("tt").ToLower())</td>
+                                        <td class="govuk-table__cell" data-heading="@submittedByHeader">@submissionHistory.UserName</td>
+                                        <td class="govuk-table__cell" data-heading="@statusHeader">@Localizer[submissionHistory.Status.ToLower() + "_on"] @(submissionHistory.DateofLatestStatusChange.ToString("dd MMMM yyyy, h:mm") + submissionHistory.DateofLatestStatusChange.ToString("tt").ToLower())</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</main>
