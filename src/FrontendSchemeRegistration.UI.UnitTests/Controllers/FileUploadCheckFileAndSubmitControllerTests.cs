@@ -223,11 +223,35 @@ public class FileUploadCheckFileAndSubmitControllerTests
     }
 
     [Test]
+    public async Task Get_ReturnsRedirectToFileUploadSublanding_WhenPageIsAccessedWithoutUploadingNewFile()
+    {
+        // Arrange
+        var fileId = Guid.NewGuid();
+
+        var submission = new PomSubmission
+        {
+            Id = _submissionId,
+            IsSubmitted = true,
+            LastUploadedValidFile = new UploadedFileInformation { FileId = fileId },
+            LastSubmittedFile = new SubmittedFileInformation { FileId = fileId }
+        };
+
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+
+        // Act
+        var result = await _systemUnderTest.Get() as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadSubLanding");
+    }
+
+    [Test]
     public async Task Post_SendsResubmissionEmail_WhenUserIsComplianceScheme()
     {
         // Arrange
         var fileId = Guid.NewGuid();
-        var model = new FileUploadCheckFileAndSubmitViewModel { Submit = true, LastValidFileId = fileId };
+        var model = new FileUploadCheckFileAndSubmitViewModel { LastValidFileId = fileId };
         var submission = new PomSubmission
         {
             Id = _submissionId,
@@ -241,7 +265,7 @@ public class FileUploadCheckFileAndSubmitControllerTests
             LastSubmittedFile = new SubmittedFileInformation
             {
                 FileName = "last-valid-file.csv",
-                FileId = fileId
+                FileId = Guid.NewGuid()
             },
             SubmissionPeriod = "Jan to Jun 2023"
         };
@@ -386,11 +410,11 @@ public class FileUploadCheckFileAndSubmitControllerTests
 
     [TestCase(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved)]
     [TestCase(ServiceRoles.DelegatedPerson, EnrolmentStatuses.Approved)]
-    public async Task Post_SubmitsSubmissionAndRedirectsToFileUploadSubmissionConfirmationGet_WhenComplianceSchemeHasSelectedYes(string serviceRole, string enrolmentStatus)
+    public async Task Post_SubmitsSubmissionAndRedirectsToFileUploadSubmissionConfirmationGet_WhenComplianceSchemeSubmits(string serviceRole, string enrolmentStatus)
     {
         // Arrange
         var fileId = Guid.NewGuid();
-        var model = new FileUploadCheckFileAndSubmitViewModel { Submit = true, LastValidFileId = fileId };
+        var model = new FileUploadCheckFileAndSubmitViewModel { LastValidFileId = fileId };
         var submission = new PomSubmission
         {
             Id = _submissionId,
@@ -422,7 +446,7 @@ public class FileUploadCheckFileAndSubmitControllerTests
     {
         // Arrange
         var fileId = Guid.NewGuid();
-        var model = new FileUploadCheckFileAndSubmitViewModel { Submit = true, LastValidFileId = fileId };
+        var model = new FileUploadCheckFileAndSubmitViewModel { LastValidFileId = fileId };
         var submission = new PomSubmission
         {
             Id = _submissionId,
@@ -452,10 +476,10 @@ public class FileUploadCheckFileAndSubmitControllerTests
 
     [TestCase(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved)]
     [TestCase(ServiceRoles.DelegatedPerson, EnrolmentStatuses.Approved)]
-    public async Task Post_RedirectsToFileUploadSubmissionDeclarationGet_WhenDirectProducerHasSelectedYes(string serviceRole, string enrolmentStatus)
+    public async Task Post_RedirectsToFileUploadSubmissionDeclarationGet_WhenDirectProducerContinues(string serviceRole, string enrolmentStatus)
     {
         // Arrange
-        var model = new FileUploadCheckFileAndSubmitViewModel { Submit = true };
+        var model = new FileUploadCheckFileAndSubmitViewModel();
         var submission = new PomSubmission
         {
             Id = _submissionId,
@@ -483,28 +507,25 @@ public class FileUploadCheckFileAndSubmitControllerTests
     }
 
     [Test]
-    public async Task Post_RedirectToFileUploadSubLandingGet_WhenUserSelectsNo()
+    public async Task Post_ReturnsRedirectToFileUploadSublanding_WhenSubmittedWithoutUploadingNewFile()
     {
         // Arrange
-        var submission = new PomSubmission
-        {
-            Id = _submissionId,
-            LastUploadedValidFile = new UploadedFileInformation
-            {
-                FileName = "last-valid-file.csv",
-                UploadedBy = _lastValidFileUploadedByUserId,
-                FileUploadDateTime = DateTime.Now
-            }
-        };
-        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
-
         var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
         _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
 
-        var model = new FileUploadCheckFileAndSubmitViewModel
+        var fileId = Guid.NewGuid();
+
+        var submission = new PomSubmission
         {
-            Submit = false
+            Id = _submissionId,
+            IsSubmitted = true,
+            LastUploadedValidFile = new UploadedFileInformation { FileId = fileId },
+            LastSubmittedFile = new SubmittedFileInformation { FileId = fileId }
         };
+
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+
+        var model = new FileUploadCheckFileAndSubmitViewModel();
 
         // Act
         var result = await _systemUnderTest.Post(model) as RedirectToActionResult;

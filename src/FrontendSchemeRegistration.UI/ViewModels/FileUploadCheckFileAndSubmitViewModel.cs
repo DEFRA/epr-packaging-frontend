@@ -1,13 +1,9 @@
 ﻿namespace FrontendSchemeRegistration.UI.ViewModels;
 
 using System.ComponentModel.DataAnnotations;
-using Resources;
 
 public class FileUploadCheckFileAndSubmitViewModel : ViewModelWithOrganisationRole
 {
-    [Required(ErrorMessageResourceName = "select_yes_if_you_want_to_submit_your_packaging_data", ErrorMessageResourceType = typeof(ErrorMessages))]
-    public bool? Submit { get; set; }
-
     public Guid? SubmissionId { get; set; }
 
     public bool UserCanSubmit { get; set; }

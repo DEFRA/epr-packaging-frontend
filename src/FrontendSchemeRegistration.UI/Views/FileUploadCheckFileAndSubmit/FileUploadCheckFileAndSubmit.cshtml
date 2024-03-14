@@ -8,9 +8,9 @@
     ViewData["Title"] = title;
 
     var fileName = Localizer["file_name"];
-    var dateUploaded = Localizer["date_uploaded"];
+    var dateAndTimeUploaded = Localizer["date_and_time_uploaded"];
     var uploadedBy = Localizer["uploaded_by"];
-    var dateSubmitted = Localizer["date_submitted"];
+    var dateAndTimeSubmittedSubmitted = Localizer["date_and_time_submitted"];
     var submittedBy = Localizer["submitted_by"];
 }
 
@@ -27,10 +27,23 @@
 
             <h1 class="govuk-heading-l govuk-!-margin-bottom-7">@title</h1>
 
-            @if (Model is { HasSubmittedPreviously: true, UserCanSubmit: true })
+            @if (Model.UserCanSubmit)
             {
-                <p class="govuk-body">@Localizer["confirm_you_want_to_submit_the_new_packaging_data_file_to_the_environmental_regulator"]</p>
-                <p class="govuk-body govuk-!-margin-bottom-7">@Localizer["this_will_replace_the_last_packaging_data_file_that_you_submitted"]</p>
+                <p class="govuk-body">@Localizer["your_file_has_saved_and_you_can_submit_it_to_the_environmental_regulator"]</p>
+
+                if (Model.HasSubmittedPreviously)
+                {   
+                    <p class="govuk-body">@Localizer["submitting_the_new_packaging_data_file_will_replace_the_last_one_that_you_submitted"]</p>
+                    <p class="govuk-body govuk-!-margin-bottom-7">@Localizer["once_you_have_submitted_your_new_file_you_can_only_make_changes_after_the_environmental_regulator_has_rejected_or_accepted_it"]</p>
+                }
+                else
+                {
+                    <p class="govuk-body govuk-!-margin-bottom-7">@Localizer["once_you_have_submitted_your_file_you_can_only_make_changes_after_the_environmental_regulator_has_rejected_or_accepted_it"]</p>
+                }
+            }
+            else
+            {
+                <p class="govuk-body govuk-!-margin-bottom-7">@Localizer["the_file_youve_uploaded_has_saved"]</p>
             }
 
             <div class="govuk-summary-card">
@@ -55,14 +68,14 @@
                         <thead class="govuk-table__head">
                         <tr class="govuk-table__row">
                             <th scope="col" class="govuk-table__header">@fileName</th>
-                            <th scope="col" class="govuk-table__header">@dateUploaded</th>
+                            <th scope="col" class="govuk-table__header">@dateAndTimeUploaded</th>
                             <th scope="col" class="govuk-table__header">@uploadedBy</th>
                         </tr>
                         </thead>
                         <tbody class="govuk-table__body">
                         <tr class="govuk-table__row">
                             <td data-heading="@fileName" class="govuk-table__cell break-word">@Model.LastValidFileName</td>
-                            <td data-heading="@dateUploaded" class="govuk-table__cell break-word">@Model.LastValidFileUploadDateTime.Value.ToReadableDate()</td>
+                            <td data-heading="@dateAndTimeUploaded" class="govuk-table__cell break-word">@(Model.LastValidFileUploadDateTime.Value.ToString("dd MMMM yyyy, h:mm") + Model.LastValidFileUploadDateTime.Value.ToString("tt").ToLower())</td>
                             <td data-heading="@uploadedBy" class="govuk-table__cell break-word">@Model.LastValidFileUploadedBy</td>
                         </tr>
                         </tbody>
@@ -83,14 +96,14 @@
                             <thead class="govuk-table__head">
                             <tr class="govuk-table__row">
                                 <th scope="col" class="govuk-table__header">@fileName</th>
-                                <th scope="col" class="govuk-table__header">@dateSubmitted</th>
+                                <th scope="col" class="govuk-table__header">@dateAndTimeSubmittedSubmitted</th>
                                 <th scope="col" class="govuk-table__header">@submittedBy</th>
                             </tr>
                             </thead>
                             <tbody class="govuk-table__body">
                             <tr class="govuk-table__row">
                                 <td data-heading="@fileName" class="govuk-table__cell break-word">@Model.SubmittedFileName</td>
-                                <td data-heading="@dateSubmitted" class="govuk-table__cell break-word">@Model.SubmittedDateTime.Value.ToReadableDate()</td>
+                                <td data-heading="@dateAndTimeSubmittedSubmitted" class="govuk-table__cell break-word">@(Model.SubmittedDateTime.Value.ToString("dd MMMM yyyy, h:mm") + Model.SubmittedDateTime.Value.ToString("tt").ToLower())</td>
                                 <td data-heading="@submittedBy" class="govuk-table__cell break-word">@Model.SubmittedBy</td>
                             </tr>
                             </tbody>
@@ -103,42 +116,7 @@
             {
                 @using (Html.BeginForm(FormMethod.Post))
                 {
-                    <div class="govuk-form-group govuk-!-margin-top-7 @(ViewData.ModelState.IsValid ? string.Empty : "govuk-form-group--error")">
-                        @Html.HiddenFor(x => x.LastValidFileId)
-
-                        <fieldset class="govuk-fieldset" aria-describedby="environment-regulator-hint">
-                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-                                <h1 class="govuk-fieldset__heading">@Localizer["are_you_sure_you_want_to_submit_your_packaging_data_file"]</h1>
-                            </legend>
-
-                            <div id="environment-regulator-hint" class="govuk-hint">@Localizer["this_information_will_be_sent_to_the_environmental_regulator"]</div>
-
-                            @if (!ViewData.ModelState.IsValid)
-                            {
-                                @await Html.PartialAsync("Partials/Govuk/_Error", ViewData.ModelState.GetModelStateEntry(nameof(Model.Submit)))
-                            }
-
-                            <div class="govuk-radios" data-module="govuk-radios">
-                                <div class="govuk-radios__item">
-                                    @Html.RadioButtonFor(m => m.Submit, true, new
-                                    {
-                                        @class = "govuk-radios__input",
-                                        Id = "Submit"
-                                    })
-                                    <label for="Submit" class="govuk-label govuk-radios__label">@Localizer["yes_id_like_to_submit"]</label>
-                                </div>
-
-                                <div class="govuk-radios__item">
-                                    @Html.RadioButtonFor(m => m.Submit, false, new
-                                    {
-                                        @class = "govuk-radios__input",
-                                        Id = "Submit-1"
-                                    })
-                                    <label for="Submit-1" class="govuk-label govuk-radios__label">@Localizer["no_i_dont_want_to_do_this_right_now"]</label>
-                                </div>
-                            </div>
-                        </fieldset>
-                    </div>
+                    @Html.HiddenFor(x => x.LastValidFileId)
 
                     @if (Model is { IsComplianceScheme: true })
                     {
@@ -149,9 +127,13 @@
                                 @Localizer["your_company_may_face_enforcement_action_if_the_data_you_submit_is_inaccurate"]
                             </strong>
                         </div>
-                    }
 
-                    <button class="govuk-button" data-module="govuk-button">@SharedLocalizer["continue"]</button>
+                        <button class="govuk-button" data-module="govuk-button">@SharedLocalizer["submit"]</button>
+                    }
+                    else
+                    {
+                        <button class="govuk-button" data-module="govuk-button">@SharedLocalizer["continue"]</button>
+                    }   
                 }
             }
             else
@@ -160,9 +142,12 @@
                     <h2 class="govuk-heading-m govuk-!-margin-top-7">@Localizer["how_to_submit_your_file"]</h2>
                     <p class="govuk-body">@Localizer["you_dont_have_permission_to_submit_files"]</p>
                     <p class="govuk-body">@Localizer["someone_in_your_team_with_the_right_account_permissions_must_submit_these_file_to_the_environmental_regulator"]</p>
-                    <a asp-controller="Landing" asp-action="Get" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19">@Localizer["go_to_your_account_homepage"]</a>
                 </div>
             }
+
+            <div class="govuk-!-margin-bottom-6">
+                <a asp-controller="Landing" asp-action="Get" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19">@Localizer["go_to_your_account_homepage"]</a>
+            </div>
         </div>
     </div>
 </main>

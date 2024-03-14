@@ -55,6 +55,11 @@ public class FileUploadCheckFileAndSubmitController : Controller
             return RedirectToAction("Get", "FileUpload");
         }
 
+        if (submission.LastSubmittedFile?.FileId == submission.LastUploadedValidFile.FileId)
+        {
+            return RedirectToAction("Get", "FileUploadSubLanding");
+        }
+
         var userData = User.GetUserData();
         var viewModel = await BuildModel(submission, userData);
 
@@ -70,8 +75,8 @@ public class FileUploadCheckFileAndSubmitController : Controller
 
         if (!userData.CanSubmit())
         {
-            var routeValues = new RouteValueDictionary { { "submissionId", submissionId.ToString() } };
-            return RedirectToAction(nameof(Get), routeValues);
+            var cannotSubmitRouteValues = new RouteValueDictionary { { "submissionId", submissionId.ToString() } };
+            return RedirectToAction(nameof(Get), cannotSubmitRouteValues);
         }
 
         var submission = await _submissionService.GetSubmissionAsync<PomSubmission>(submissionId);
@@ -81,44 +86,44 @@ public class FileUploadCheckFileAndSubmitController : Controller
             return RedirectToAction("Get", "FileUpload");
         }
 
+        if (submission.LastSubmittedFile?.FileId == submission.LastUploadedValidFile.FileId)
+        {
+            return RedirectToAction("Get", "FileUploadSubLanding");
+        }
+
         if (!ModelState.IsValid)
         {
             var viewModel = await BuildModel(submission, userData);
             return View("FileUploadCheckFileAndSubmit", viewModel);
         }
 
-        if (model.Submit.Value)
+        var routeValues = new RouteValueDictionary { { "submissionId", submissionId.ToString() } };
+
+        if (userData.Organisations.FirstOrDefault() is not { OrganisationRole: OrganisationRoles.ComplianceScheme })
         {
-            var routeValues = new RouteValueDictionary { { "submissionId", submissionId.ToString() } };
-
-            if (userData.Organisations.FirstOrDefault() is not { OrganisationRole: OrganisationRoles.ComplianceScheme })
-            {
-                _sessionManager.UpdateSessionAsync(HttpContext.Session, x => x.RegistrationSession.FileId = submission.LastUploadedValidFile.FileId);
-                return RedirectToAction("Get", "FileUploadSubmissionDeclaration", routeValues);
-            }
-
-            try
-            {
-                var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-                await _submissionService.SubmitAsync(submission.Id, model.LastValidFileId.Value);
-                var resubmissionEnabled = await _featureManager.IsEnabledAsync(nameof(FeatureFlags.ShowPoMResubmission));
-                if (submission.LastSubmittedFile != null && resubmissionEnabled)
-                {
-                    ResubmissionEmailRequestModel input = ResubmissionEmailRequestBuilder.BuildResubmissionEmail(userData, submission, session);
-
-                    _regulatorService.SendRegulatorResubmissionEmail(input);
-                }
-
-                return RedirectToAction("Get", "FileUploadSubmissionConfirmation", routeValues);
-            }
-            catch (Exception exception)
-            {
-                _logger.LogCritical(exception, "An error occurred when submitting submission with id: {submissionId}", submission.Id);
-                return RedirectToAction("Get", "FileUploadSubmissionError", routeValues);
-            }
+            _sessionManager.UpdateSessionAsync(HttpContext.Session, x => x.RegistrationSession.FileId = submission.LastUploadedValidFile.FileId);
+            return RedirectToAction("Get", "FileUploadSubmissionDeclaration", routeValues);
         }
 
-        return RedirectToAction("Get", "FileUploadSubLanding");
+        try
+        {
+            var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+            await _submissionService.SubmitAsync(submission.Id, model.LastValidFileId.Value);
+            var resubmissionEnabled = await _featureManager.IsEnabledAsync(nameof(FeatureFlags.ShowPoMResubmission));
+            if (submission.LastSubmittedFile != null && resubmissionEnabled)
+            {
+                ResubmissionEmailRequestModel input = ResubmissionEmailRequestBuilder.BuildResubmissionEmail(userData, submission, session);
+
+                _regulatorService.SendRegulatorResubmissionEmail(input);
+            }
+
+            return RedirectToAction("Get", "FileUploadSubmissionConfirmation", routeValues);
+        }
+        catch (Exception exception)
+        {
+            _logger.LogCritical(exception, "An error occurred when submitting submission with id: {submissionId}", submission.Id);
+            return RedirectToAction("Get", "FileUploadSubmissionError", routeValues);
+        }
     }
 
     private async Task<FileUploadCheckFileAndSubmitViewModel> BuildModel(PomSubmission submission, UserData userData)

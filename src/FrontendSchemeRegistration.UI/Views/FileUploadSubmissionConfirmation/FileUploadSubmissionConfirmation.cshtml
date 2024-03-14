@@ -21,7 +21,7 @@
             </div>
 
             <p class="govuk-body">
-                @Localizer["submitted_by_x_at_y_on_z", submittedBy, submittedTime, submittedDate]
+                @Localizer["submitted_by_x_at_y_on_z", submittedBy, submittedTime, submittedDate]<br />
                 <button id="printButton" class="js-show govuk-body-m govuk-link govuk-link--no-visited-state govuk-!-margin-0">@Localizer["print_this_page"]</button>
             </p>
             
@@ -31,18 +31,7 @@
 
             <h2 class="govuk-heading-m">@Localizer["what_happens_next"]</h2>
 
-            <p class="govuk-body">
-                @if (Model.IsComplianceScheme)
-                {
-                    @Localizer["the_environmental_regulator_will_review_the_packaging_data"]
-                    @Localizer["they_will_email_or_phone_your_organisation_if_there_are_any_issues"]
-                }
-                else
-                {
-                    @Localizer["the_environmental_regulator_will_review_your_packaging_data"]
-                    @Localizer["they_will_contact_your_organisation_if_there_are_any_issues"]
-                }
-            </p>
+            <p class="govuk-body">@Localizer["you_will_get_an_email_when_the_environmental_regulator_has_accepted_or_rejected_your_submission"]</p>
 
             <p class="govuk-body">
                 @Html.ActionLink(Localizer["go_to_your_account_homepage"].Value, "Get", "Landing",

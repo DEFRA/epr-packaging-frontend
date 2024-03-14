@@ -246,4 +246,7 @@
   <data name="success" xml:space="preserve">
     <value>Success</value>
   </data>
+  <data name="submit" xml:space="preserve">
+    <value>Submit</value>
+  </data>
 </root>
