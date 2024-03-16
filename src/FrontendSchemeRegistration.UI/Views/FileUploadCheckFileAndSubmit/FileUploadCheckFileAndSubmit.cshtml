@@ -75,7 +75,7 @@
                         <tbody class="govuk-table__body">
                         <tr class="govuk-table__row">
                             <td data-heading="@fileName" class="govuk-table__cell break-word">@Model.LastValidFileName</td>
-                            <td data-heading="@dateAndTimeUploaded" class="govuk-table__cell break-word">@(Model.LastValidFileUploadDateTime.Value.ToString("dd MMMM yyyy, h:mm") + Model.LastValidFileUploadDateTime.Value.ToString("tt").ToLower())</td>
+                            <td data-heading="@dateAndTimeUploaded" class="govuk-table__cell break-word">@Model.LastValidFileUploadDateTime.Value.ToReadableDateTime()</td>
                             <td data-heading="@uploadedBy" class="govuk-table__cell break-word">@Model.LastValidFileUploadedBy</td>
                         </tr>
                         </tbody>
@@ -103,7 +103,7 @@
                             <tbody class="govuk-table__body">
                             <tr class="govuk-table__row">
                                 <td data-heading="@fileName" class="govuk-table__cell break-word">@Model.SubmittedFileName</td>
-                                <td data-heading="@dateAndTimeSubmittedSubmitted" class="govuk-table__cell break-word">@(Model.SubmittedDateTime.Value.ToString("dd MMMM yyyy, h:mm") + Model.SubmittedDateTime.Value.ToString("tt").ToLower())</td>
+                                <td data-heading="@dateAndTimeSubmittedSubmitted" class="govuk-table__cell break-word">@Model.SubmittedDateTime.Value.ToReadableDateTime()</td>
                                 <td data-heading="@submittedBy" class="govuk-table__cell break-word">@Model.SubmittedBy</td>
                             </tr>
                             </tbody>

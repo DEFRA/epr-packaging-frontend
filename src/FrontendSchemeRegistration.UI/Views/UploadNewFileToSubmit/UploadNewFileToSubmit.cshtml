@@ -70,34 +70,36 @@
 
             @if (accepted && isApprovedOrDelegatedUser)
             {
-                <p class="govuk-body">@Localizer["packaging-data-accepted-approved-user"]</p>
+                <p class="govuk-body">@Localizer["packaging_data_accepted"]</p>
+                <p class="govuk-body">@Localizer["no_need_to_resubmit"]</p>
             }
             else if (accepted && isBasicUser)
             {
-                <p class="govuk-body">@Localizer["packaging-data-accepted-basic-user"]</p>
+                <p class="govuk-body">@Localizer["packaging_data_accepted"]</p>
+                <p class="govuk-body">@Localizer["no_need_to_resubmit"]</p>
             }
             else if (rejectedWithResubmissionRequired && isApprovedOrDelegatedUser)
             {
                 <p class="govuk-body">@Localizer["you-need-to-resubmit-packaging-data-approved-user"]</p>
-                <p class="govuk-body">@Localizer["packaging-data-rejected"]</p>
+                <p class="govuk-body">@Localizer["packaging_data_rejected"]</p>
                 <div class="govuk-inset-text">@regulatorComment</div>
             }
             else if (rejectedWithResubmissionRequired && isBasicUser)
             {
                 <p class="govuk-body">@Localizer["you-need-to-resubmit-packaging-data-basic-user"]</p>
-                <p class="govuk-body">@Localizer["packaging-data-rejected"]</p>
+                <p class="govuk-body">@Localizer["packaging_data_rejected"]</p>
                 <div class="govuk-inset-text">@regulatorComment</div>
             }
             else if (rejectedWithNoResubmission && isApprovedOrDelegatedUser)
             {
                 <p class="govuk-body">@Localizer["you-do-not-need-to-resubmit-packaging-data-approved-user"]</p>
-                <p class="govuk-body">@Localizer["packaging-data-rejected"]</p>
+                <p class="govuk-body">@Localizer["packaging_data_rejected"]</p>
                 <div class="govuk-inset-text">@regulatorComment</div>
             }
             else if (rejectedWithNoResubmission && isBasicUser)
             {
                 <p class="govuk-body">@Localizer["you-do-not-need-to-resubmit-packaging-data-basic-user"]</p>
-                <p class="govuk-body">@Localizer["packaging-data-rejected"]</p>
+                <p class="govuk-body">@Localizer["packaging_data_rejected"]</p>
                 <div class="govuk-inset-text">@regulatorComment</div>
             }
             else if (isBasicUserAndNothingSubmitted)
@@ -147,7 +149,7 @@
                                 @(nothingSubmitted || Model.HasNewFileUploaded ? Model.UploadedFileName : Model.SubmittedFileName)
                             </td>
                             <td data-heading="@dateHeader" class="govuk-table__cell break-word">
-                                @(nothingSubmitted || Model.HasNewFileUploaded ? Model.UploadedAt.Value.ToReadableDate() : Model.SubmittedAt.Value.ToReadableDate())
+                                @(nothingSubmitted || Model.HasNewFileUploaded ? Model.UploadedAt.Value.ToReadableDateTime() : Model.SubmittedAt.Value.ToReadableDateTime())
                             </td>
                             <td data-heading="@userHeader" class="govuk-table__cell break-word">
                                 @(nothingSubmitted || Model.HasNewFileUploaded ? Model.UploadedBy : Model.SubmittedBy)
@@ -165,64 +167,89 @@
                 if (isApprovedOrDelegatedUser)
                 {
                     <p class="govuk-body">@Localizer["if_your_circumstances_change_text_approved_user"]</p>
+
+                    @Html.ActionLink(Localizer["continue-button"].Value, "Get", "FileUpload",
+                        new { submissionId = Model.SubmissionId }, new { @class = "govuk-button govuk-!-margin-bottom-3" })
                 }
                 else if (isBasicUser)
                 {
                     <p class="govuk-body">@Localizer["upload_a_new_file_text_basic_user"]</p>
                     <p class="govuk-body">@Localizer["upload_a_new_file_text_permission_basic_user"]</p>
-                }
 
-                @Html.ActionLink(Localizer["continue-button"].Value, "Get", "FileUpload",
-                    new { submissionId = Model.SubmissionId }, new { @class = "govuk-button govuk-!-margin-bottom-3" })
-                if (isBasicUser || isApprovedOrDelegatedUser)
-                {
-                    <p class="govuk-body">
-                        @Html.ActionLink(SharedLocalizer["cancel"], "Get", "FileUploadSubLanding",
-                            new { submissionId = Model.SubmissionId }, new { @class = "govuk-link" })
-                    </p>
+                    @Html.ActionLink(Localizer["upload_new_file"].Value, "Get", "FileUpload",
+                        new { submissionId = Model.SubmissionId }, new { @class = "govuk-button govuk-!-margin-bottom-3" })
                 }
-
-            }
-            else if (rejectedWithResubmissionRequired || rejectedWithNoResubmission)
-            {
-                <h3 class="govuk-summary-card__title">@Localizer["if_your_circumstances_change"]</h3>
-                if (isApprovedOrDelegatedUser && rejectedWithNoResubmission)
-                {
-                    <p class="govuk-body">@Localizer["upload_a_new_file_text_approved_user"]</p>
-                }
-                else if (isBasicUser && rejectedWithNoResubmission)
-                {
-                    <p class="govuk-body">@Localizer["upload_a_new_file_text_basic_user"]</p>
-                    <p class="govuk-body">@Localizer["upload_a_new_file_text_permission_basic_user"]</p>
-                }
-                else if (isApprovedOrDelegatedUser && rejectedWithResubmissionRequired)
-                {
-                    <p class="govuk-body">@Localizer["need_upload_a_new_file_text_approved_user"]</p>
-                }
-                else if (isBasicUser && rejectedWithResubmissionRequired)
-                {
-                    <p class="govuk-body">@Localizer["upload_a_new_file_text_basic_user"]</p>
-                    <p class="govuk-body">@Localizer["upload_a_new_file_text_permission_basic_user"]</p>
-                }
-
-                @Html.ActionLink(Localizer["continue-button"].Value, "Get", "FileUpload",
-                    new { submissionId = Model.SubmissionId }, new { @class = "govuk-button govuk-!-margin-bottom-3" })
 
                 <p class="govuk-body">
                     @Html.ActionLink(SharedLocalizer["cancel"], "Get", "FileUploadSubLanding",
-                        new { submissionId = Model.SubmissionId }, new { @class = "govuk-link" })
+                                new { submissionId = Model.SubmissionId }, new { @class = "govuk-link" })
                 </p>
+            }
+            else if (rejectedWithResubmissionRequired || rejectedWithNoResubmission)
+            {                
+                if (isApprovedOrDelegatedUser && rejectedWithNoResubmission)
+                {
+                    <h3 class="govuk-summary-card__title govuk-!-padding-bottom-4">@Localizer["if_your_circumstances_change"]</h3>
+                    <p class="govuk-body govuk-!-padding-bottom-2">@Localizer["upload_a_new_file_text_approved_user"]</p>
+
+                    @Html.ActionLink(Localizer["continue-button"].Value, "Get", "FileUpload",
+                        new { submissionId = Model.SubmissionId }, new { @class = "govuk-button govuk-!-margin-bottom-3" })
+
+                    <p class="govuk-body">
+                        @Html.ActionLink(Localizer["go_to_account_home_page"].Value, "Get", "FileUploadSubLanding",
+                            new { submissionId = Model.SubmissionId }, new { @class = "govuk-link" })
+                    </p> 
+                }
+                else if (isBasicUser && rejectedWithNoResubmission)
+                {
+                    <h3 class="govuk-summary-card__title govuk-!-padding-bottom-4">@Localizer["if_your_circumstances_change"]</h3>
+                    <p class="govuk-body">@Localizer["upload_a_new_file_text_basic_user"]</p>
+                    <p class="govuk-body">@Localizer["upload_a_new_file_text_permission_basic_user"]</p>
+
+                    @Html.ActionLink(Localizer["upload_new_file"].Value, "Get", "FileUpload",
+                        new { submissionId = Model.SubmissionId }, new { @class = "govuk-button govuk-!-margin-bottom-3" })
+
+                    <p class="govuk-body">
+                        @Html.ActionLink(Localizer["cancel"].Value, "Get", "FileUploadSubLanding",
+                            new { submissionId = Model.SubmissionId }, new { @class = "govuk-link" })
+                    </p>
+                }
+                else if (isApprovedOrDelegatedUser && rejectedWithResubmissionRequired)
+                {
+                        <p class="govuk-body govuk-!-padding-bottom-2">@Localizer["need_upload_a_new_file_text_approved_user"]</p>
+
+                    @Html.ActionLink(Localizer["continue-button"].Value, "Get", "FileUpload",
+                        new { submissionId = Model.SubmissionId }, new { @class = "govuk-button govuk-!-margin-bottom-3" })
+
+                    <p class="govuk-body">
+                        @Html.ActionLink(Localizer["cancel"].Value, "Get", "FileUploadSubLanding",
+                            new { submissionId = Model.SubmissionId }, new { @class = "govuk-link" })
+                    </p>
+                }
+                else if (isBasicUser && rejectedWithResubmissionRequired)
+                {
+                    <p class="govuk-body">@Localizer["need_upload_a_new_file_text_basic_user"]</p>
+
+                    @Html.ActionLink(Localizer["upload_new_file"].Value, "Get", "FileUpload",
+                        new { submissionId = Model.SubmissionId }, new { @class = "govuk-button govuk-!-margin-bottom-3" })
+
+                    <p class="govuk-body">
+                        @Html.ActionLink(Localizer["cancel"].Value, "Get", "FileUploadSubLanding",
+                            new { submissionId = Model.SubmissionId }, new { @class = "govuk-link" })
+                    </p>
+                }
             }
             else
             {
                 @Html.ActionLink(Localizer["upload_new_file"].Value, "Get", "FileUpload",
-                    new { submissionId = Model.SubmissionId }, new { @class = "govuk-button govuk-!-margin-bottom-3" })
-
+                    new { submissionId = Model.SubmissionId }, new { @class = "govuk-button govuk-!-margin-bottom-3" })      
+                
                 <p class="govuk-body">
                     @Html.ActionLink(Localizer["cancel"].Value, "Get", "FileUploadSubLanding",
                         new { submissionId = Model.SubmissionId }, new { @class = "govuk-link" })
                 </p>
             }
+                
             </feature>
             <feature name="ShowPoMResubmission" negate="true">
                  <h1 class="govuk-heading-l">@title</h1>
@@ -286,11 +313,9 @@
                 
                             @Html.ActionLink(Localizer["upload_new_file"].Value, "Get", "FileUpload",
                                 new { submissionId = Model.SubmissionId }, new { @class = "govuk-button govuk-!-margin-bottom-3" })
-                
-                            <p class="govuk-body">
-                                @Html.ActionLink(SharedLocalizer["cancel"], "Get", "FileUploadSubLanding",
-                                    new { submissionId = Model.SubmissionId }, new { @class = "govuk-link" })
-                            </p>
+                            
+                            @Html.ActionLink(Localizer["go_to_account_home_page"].Value, "Get", "FileUploadSubLanding",
+                                        new { submissionId = Model.SubmissionId }, new { @class = "govuk-link" })                                                        
             </feature>
         </div>
         

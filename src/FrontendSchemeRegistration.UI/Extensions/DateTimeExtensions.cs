@@ -4,6 +4,8 @@ public static class DateTimeExtensions
 {
     public static string ToReadableDate(this DateTime dateTime) => dateTime.UtcToGmt().ToString("d MMMM yyyy");
 
+    public static string ToReadableDateTime(this DateTime dateTime) => dateTime.UtcToGmt().ToString("d MMMM yyyy, hh:mm") + dateTime.UtcToGmt().ToString("tt").ToLower();
+
     public static string ToReadableLongMonthDeadlineDate(this DateTime dateTime) => dateTime.ToString("d MMMM yyyy");
 
     public static string ToReadableShortMonthDeadlineDate(this DateTime dateTime) => dateTime.ToString("d MMM yyyy");

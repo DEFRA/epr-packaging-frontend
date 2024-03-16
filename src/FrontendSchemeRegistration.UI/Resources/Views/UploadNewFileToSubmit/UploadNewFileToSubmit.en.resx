@@ -151,7 +151,7 @@
     <value>File name</value>
   </data>
   <data name="date_submitted" xml:space="preserve">
-    <value>Date submitted</value>
+    <value>Date and time submitted</value>
   </data>
   <data name="date_uploaded" xml:space="preserve">
     <value>Date uploaded</value>
@@ -219,19 +219,22 @@
   <data name="you-do-not-need-to-resubmit-packaging-data-basic-user" xml:space="preserve">
     <value>You do not need to update packaging data.</value>
   </data>
-  <data name="packaging-data-rejected" xml:space="preserve">
+  <data name="packaging_data_rejected" xml:space="preserve">
     <value>Your packaging data was rejected by the environmental regulator because:</value>
   </data>
-  <data name="packaging-data-accepted-approved-user" xml:space="preserve">
-    <value>Your packaging data was accepted by the environmental regulator. You do not need to resubmit packaging data.</value>
-  </data>
-  <data name="packaging-data-accepted-basic-user" xml:space="preserve">
-    <value>Your packaging data was accepted by the environmental regulator. You do not need to update packaging data.</value>
+  <data name="no_need_to_resubmit" xml:space="preserve">
+    <value>You do not need to resubmit packaging data.</value>
   </data>
   <data name="continue-button" xml:space="preserve">
     <value>Continue</value>
   </data>
   <data name="cancel" xml:space="preserve">
-    <value>cancel</value>
+    <value>Cancel</value>
+  </data>
+  <data name="go_to_account_home_page" xml:space="preserve">
+    <value>Go to account home page</value>
+  </data>
+  <data name="packaging_data_accepted" xml:space="preserve">
+    <value>Your packaging data was accepted by the environmental regulator.</value>
   </data>
 </root>

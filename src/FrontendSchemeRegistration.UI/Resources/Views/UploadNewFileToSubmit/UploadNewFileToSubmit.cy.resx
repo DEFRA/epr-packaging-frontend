@@ -151,7 +151,7 @@
     <value>Enw’r ffeil</value>
   </data>
   <data name="date_submitted" xml:space="preserve">
-    <value>Dyddiad cyflwyno</value>
+    <value>Dyddiad ac amser cyflwyno</value>
   </data>
   <data name="date_uploaded" xml:space="preserve">
     <value>Dyddiad uwchlwytho </value>
@@ -219,19 +219,22 @@
   <data name="you-do-not-need-to-resubmit-packaging-data-basic-user" xml:space="preserve">
     <value>W You do not need to update packaging data.</value>
   </data>
-  <data name="packaging-data-rejected" xml:space="preserve">
+  <data name="packaging_data_rejected" xml:space="preserve">
     <value>W Your packaging data was rejected by the environmental regulator because:</value>
   </data>
-  <data name="packaging-data-accepted-approved-user" xml:space="preserve">
-    <value>W Your packaging data was accepted by the environmental regulator. You do not need to resubmit packaging data.</value>
-  </data>
-  <data name="packaging-data-accepted-basic-user" xml:space="preserve">
-    <value>W Your packaging data was accepted by the environmental regulator. You do not need to update packaging data.</value>
+  <data name="no_need_to_resubmit" xml:space="preserve">
+    <value>W You do not need to resubmit packaging data.</value>
   </data>
   <data name="continue-button" xml:space="preserve">
-    <value>W Continue</value>
+    <value>Parhau</value>
   </data>
   <data name="cancel" xml:space="preserve">
-    <value>W cancel</value>
+    <value>Canslo</value>
+  </data>
+  <data name="go_to_account_home_page" xml:space="preserve">
+    <value>Mynd i dudalen hafan y cyfrif</value>
+  </data>
+  <data name="packaging_data_accepted" xml:space="preserve">
+    <value>W Your packaging data was accepted by the environmental regulator.</value>
   </data>
 </root>
