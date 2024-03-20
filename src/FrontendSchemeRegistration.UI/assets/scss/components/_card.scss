@@ -1,8 +1,7 @@
 .govuk-card {
   border: 1px solid govuk-colour("mid-grey");
 
-  &-body,
-  &-footer {
+  &-body {
     padding: 30px;
   }
 
@@ -30,4 +29,26 @@
       margin-right: 15px;
     }
   }
+}
+
+.submission-period-card {
+    display: flex;
+    min-height: 247px;
+    flex-direction: column;
+
+    .govuk-card-body {
+        flex: 1 0 0;
+
+        .govuk-card-footer {
+            margin-top: auto;
+        }
+
+        .govuk-tag {
+            margin-bottom: 3rem;
+        }
+    }
+
+    .status-style {
+        margin-top: 45px;
+    }
 }

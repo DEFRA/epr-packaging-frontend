@@ -121,19 +121,19 @@
     <value>Data pecynwaith wedi’i uwchlwytho </value>
   </data>
   <data name="check_and_submit_file" xml:space="preserve">
-    <value>Data pecynwaith wedi’i uwchlwytho – gwiriwch a chyflwynwch</value>
+    <value>Data pecynwaith wedi’i uwchlwytho – gwirio a chyflwyno</value>
   </data>
   <data name="file_uploaded" xml:space="preserve">
     <value>Ffeil wedi’i huwchlwytho</value>
   </data>
   <data name="file_youre_submitting" xml:space="preserve">
-    <value>Ffeil rydych chi wrthi’n ei chyflwyno</value>
+    <value>Y ffeil rydych chi'n ei chyflwyno</value>
   </data>
   <data name="detail_regarding_the_latest_file_uploaded" xml:space="preserve">
     <value>Manylion y ffeil ddilys ddiweddaraf a uwchlwythwyd</value>
   </data>
   <data name="uploaded_by" xml:space="preserve">
-    <value>Uwchlwythwyd gan</value>
+    <value>Wedi'i huwchlwytho gan</value>
   </data>
   <data name="file_name" xml:space="preserve">
     <value>Enw’r ffeil</value>
@@ -148,7 +148,7 @@
     <value>Cyflwynwyd gan</value>
   </data>
   <data name="your_company_may_face_enforcement_action_if_the_data_you_submit_is_inaccurate" xml:space="preserve">
-    <value>Efallai y bydd eich cwmni yn wynebu camau gorfodi os yw’r data y byddwch chi’n ei gyflwyno yn anghywir.</value>
+    <value>Gallai'ch sefydliad chi wynebu camau gorfodi os yw'r data rydych chi'n ei gyflwyno yn anghywir.</value>
   </data>
   <data name="how_to_submit_your_file" xml:space="preserve">
     <value>Sut i gyflwyno’ch ffeil</value>
@@ -160,27 +160,27 @@
     <value>Rhaid i rywun yn eich tîm sydd â’r caniatadau cywir yn y cyfrif gyflwyno’r ffeil yma i’r rheoleiddiwr amgylcheddol.</value>
   </data>
   <data name="go_to_your_account_homepage" xml:space="preserve">
-    <value>Mynd i dudalen hafan eich cyfrif</value>
+    <value>Ewch i dudalen hafan y cyfrif</value>
   </data>
   <data name="date_and_time_submitted" xml:space="preserve">
-    <value>W Date and time submitted</value>
+    <value>Dyddiad ac amser cyflwyno</value>
   </data>
   <data name="date_and_time_uploaded" xml:space="preserve">
-    <value>W Date and time uploaded</value>
+    <value>Dyddiad ac amser cyflwyno</value>
   </data>
   <data name="once_you_have_submitted_your_file_you_can_only_make_changes_after_the_environmental_regulator_has_rejected_or_accepted_it" xml:space="preserve">
-    <value>W Once you have submitted your file you can only make changes after the environmental regulator has rejected or accepted it.</value>
+    <value>Ar ôl ichi gyflwyno'ch ffeil newydd, dim ond ar ôl i'r rheoleiddiwr amgylcheddol ei gwrthod neu ei derbyn y cewch chi wneud newidiadau.</value>
   </data>
   <data name="once_you_have_submitted_your_new_file_you_can_only_make_changes_after_the_environmental_regulator_has_rejected_or_accepted_it" xml:space="preserve">
-    <value>W Once you have submitted your new file you can only make changes after the environmental regulator has rejected or accepted it.</value>
+    <value>Ar ôl ichi gyflwyno'ch ffeil newydd, dim ond ar ôl i'r rheoleiddiwr amgylcheddol ei gwrthod neu ei derbyn y cewch chi wneud newidiadau.</value>
   </data>
   <data name="submitting_the_new_packaging_data_file_will_replace_the_last_one_that_you_submitted" xml:space="preserve">
-    <value>W Submitting the new packaging data file will replace the last one that you submitted.</value>
+    <value>Bydd cyflwyno'r ffeil data pecynwaith newydd yn disodli'r un ddiwethaf a gyflwynwyd gennych.</value>
   </data>
   <data name="the_file_youve_uploaded_has_saved" xml:space="preserve">
-    <value>W The file you’ve uploaded has saved.</value>
+    <value>Mae'r ffeil rydych chi wedi'i huwchlwytho wedi cael ei chadw.</value>
   </data>
   <data name="your_file_has_saved_and_you_can_submit_it_to_the_environmental_regulator" xml:space="preserve">
-    <value>W Your file has saved and you can submit it to the environmental regulator.</value>
+    <value>Mae'ch ffeil chi wedi'i chadw a chewch ei chyflwyno i'r rheoleiddiwr amgylcheddol.</value>
   </data>
 </root>

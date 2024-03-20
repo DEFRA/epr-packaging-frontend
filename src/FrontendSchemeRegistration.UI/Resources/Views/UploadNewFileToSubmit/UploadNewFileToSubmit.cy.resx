@@ -172,55 +172,61 @@
     <value>Mae eich sefydliad eisoes wedi cyflwyno ffeil i’r rheoleiddiwr amgylcheddol. Mae gennych chi hefyd ffeil wedi’i chadw ar eich cyfrif sydd heb ei chyflwyno eto. Rydych chi’n cael uwchlwytho ffeil newydd, ond does gennych chi ddim caniatâd i gyflwyno ffeiliau.</value>
   </data>
   <data name="if_your_circumstances_change" xml:space="preserve">
-    <value>W If your circumstances change</value>
+    <value>Os bydd eich amgylchiadau'n newid</value>
   </data>
   <data name="if_your_circumstances_change_text_approved_user" xml:space="preserve">
-    <value>W You can upload a new file and submit to the environmental regulator. This will replace the last packaging data file that you submitted.</value>
+    <value>Gallwch uwchlwytho ffeil newydd a'i chyflwyno i reoleiddiwr amgylcheddol. Bydd hyn yn disodli'r ffeil ddata pecynwaith ddiwethaf a gyflwynwyd gennych.</value>
   </data>
   <data name="upload_a_new_file_text_approved_user" xml:space="preserve">
-    <value>W You can upload a new file and submit to the environmental regulator. This will replace the last packaging data file that you submitted.</value>
+    <value>Gallwch uwchlwytho ffeil newydd a'i chyflwyno i reoleiddiwr amgylcheddol. Bydd hyn yn disodli'r ffeil ddata pecynwaith ddiwethaf a gyflwynwyd gennych.</value>
   </data>
   <data name="need_upload_a_new_file_text_approved_user" xml:space="preserve">
-    <value>W Upload a new file and submit to environmental regulator. This will replace the last packaging data file that you submitted.</value>
+    <value>Uwchlwythwch ffeil newydd a'i chyflwyno i reoleiddiwr amgylcheddol. Bydd hyn yn disodli'r ffeil ddata pecynwaith ddiwethaf a gyflwynwyd gennych.</value>
   </data>
   <data name="need_upload_a_new_file_text_basic_user" xml:space="preserve">
-    <value>W Upload a new file and submit to environmental regulator. This will replace the last packaging data file that you submitted.</value>
+    <value>Uwchlwythwch ffeil newydd a'i chyflwyno i reoleiddiwr amgylcheddol. Bydd hyn yn disodli'r ffeil ddata pecynwaith ddiwethaf a gyflwynwyd gennych.</value>
   </data>
   <data name="upload_a_new_file_text_basic_user" xml:space="preserve">
-    <value>W You can upload a new file to the environmental regulator, but you don’t have permission to submit files.</value>
+    <value>Cewch uwchlwytho ffeil newydd i'r rheoleiddiwr amgylcheddol, ond does dim caniatâd gennych i gyflwyno ffeiliau.</value>
   </data>
   <data name="upload_a_new_file_text_permission_basic_user" xml:space="preserve">
-    <value>W Someone in your team with the right account permissions will need to submit the file to the environmental regulator.</value>
+    <value>Bydd angen i rywun yn eich tîm sydd â'r caniatâd cywir yn y cyfrif gyflwyno'r ffeil i'r rheoleiddiwr amgylcheddol.</value>
   </data>
   <data name="resubmit-packaging-data-title" xml:space="preserve">
-    <value>W Resubmit packaging data</value>
+    <value>Ailgyflwyno data pecynwaith</value>
   </data>
   <data name="you-need-to-resubmit-packaging-data-approved-user" xml:space="preserve">
-    <value>W You need to resubmit packaging data.</value>
+    <value>Mae angen ichi ailgyflwyno data pecynwaith</value>
   </data>
   <data name="you-need-to-resubmit-packaging-data-basic-user" xml:space="preserve">
-    <value>W You need to update packaging data.</value>
+    <value>Mae angen ichi ddiweddaru data pecynwaith</value>
   </data>
   <data name="you-do-not-need-to-resubmit-packaging-data-title" xml:space="preserve">
-    <value>W You do not need to resubmit</value>
+    <value>Does dim angen ichi ailgyflwyno</value>
   </data>
   <data name="h1-basic-user-accepted-or-rejectednoresubmission-title" xml:space="preserve">
-    <value>W You do not need to update packaging data</value>
+    <value>Does dim angen ichi ddiweddaru data pecynwaith</value>
   </data>
   <data name="h1-approved-user-rejected-title" xml:space="preserve">
-    <value>W Resubmit packaging data</value>
+    <value>Ailgyflwyno data pecynwaith</value>
   </data>
   <data name="h1-basic-user-rejected-title" xml:space="preserve">
-    <value>W You need to update packaging data</value>
+    <value>Mae angen ichi ddiweddaru data pecynwaith</value>
   </data>
   <data name="you-do-not-need-to-resubmit-packaging-data-approved-user" xml:space="preserve">
-    <value>W You do not need to resubmit packaging data.</value>
+    <value>Does dim angen ichi ailgyflwyno data pecynwaith</value>
   </data>
   <data name="you-do-not-need-to-resubmit-packaging-data-basic-user" xml:space="preserve">
-    <value>W You do not need to update packaging data.</value>
+    <value>Does dim angen ichi ddiweddaru data pecynwaith</value>
   </data>
-  <data name="packaging_data_rejected" xml:space="preserve">
-    <value>W Your packaging data was rejected by the environmental regulator because:</value>
+  <data name="packaging-data-rejected" xml:space="preserve">
+    <value>Cafodd eich data pecynwaith ei wrthod gan y rheoleiddiwr amgylcheddol oherwydd:</value>
+  </data>
+  <data name="packaging-data-accepted-approved-user" xml:space="preserve">
+    <value>Cafodd eich data pecynwaith ei dderbyn gan y rheoleiddiwr amgylcheddol. Does dim angen ichi ailgyflwyno data pecynwaith.</value>
+  </data>
+  <data name="packaging-data-accepted-basic-user" xml:space="preserve">
+    <value>Cafodd eich data pecynwaith ei dderbyn gan y rheoleiddiwr amgylcheddol. Does dim angen ichi diweddaru data pecynwaith.</value>
   </data>
   <data name="no_need_to_resubmit" xml:space="preserve">
     <value>W You do not need to resubmit packaging data.</value>

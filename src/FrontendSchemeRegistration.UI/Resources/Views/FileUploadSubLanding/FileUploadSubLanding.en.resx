@@ -216,4 +216,7 @@
   <data name="check_if_you_need_to_update_packaging_data" xml:space="preserve">
     <value>Check if you need to update packaging data</value>
   </data>
+  <data name="start_now_compliance_scheme" xml:space="preserve">
+    <value>Report members' packaging data</value>
+  </data>
 </root>

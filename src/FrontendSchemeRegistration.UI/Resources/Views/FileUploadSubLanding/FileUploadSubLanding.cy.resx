@@ -154,7 +154,7 @@
     <value>Methu dechrau eto</value>
   </data>
   <data name="report_members_packaging_data_for" xml:space="preserve">
-    <value>Rhoi gwybod am ddata pecynwaith aelodau ar gyfer</value>
+    <value>Rhoi gwybod am ddata pecynwaith aelodau</value>
   </data>
   <data name="large_organisations" xml:space="preserve">
     <value>Sefydliadau mawr</value>
@@ -175,7 +175,7 @@
     <value>Wedi'i dderbyn gan y Rheoleiddiwr</value>
   </data>
   <data name="approved_by_regulator" xml:space="preserve">
-    <value>W Approved By Regulator</value>
+    <value>Cymeradwywyd gan y Rheoleiddiwr</value>
   </data>
   <data name="check_if_you_need_to_resubmit_members_packaging_data" xml:space="preserve">
     <value>Gwiriwch a oes angen ichi ailgyflwyno data pecynwaith aelod</value>
@@ -196,13 +196,13 @@
     <value>Ailgyflwyno data pecynwaith</value>
   </data>
   <data name="status_unknown" xml:space="preserve">
-    <value>W Submission status is unknown</value>
+    <value>Mae statws y cyflwyniad yn anhysbys</value>
   </data>
   <data name="update_members_packaging_data_basic" xml:space="preserve">
     <value>Ddiweddaru data pecynwaith aelod</value>
   </data>
   <data name="update_packaging_data_basic" xml:space="preserve">
-    <value>W Update packaging data</value>
+    <value>Diweddaru data pecynwaith</value>
   </data>
   <data name="view_submission_history" xml:space="preserve">
     <value>Gweld eich hanes cyflwyno</value>
@@ -215,5 +215,8 @@
   </data>
   <data name="check_if_you_need_to_update_packaging_data" xml:space="preserve">
     <value>Gwiriwch a oes angen ichi ddiweddaru data pecynwaith</value>
+  </data>
+  <data name="start_now_compliance_scheme" xml:space="preserve">
+    <value>W Report members' packaging data</value>
   </data>
 </root>
