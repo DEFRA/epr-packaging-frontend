@@ -169,7 +169,7 @@ namespace FrontendSchemeRegistration.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to If you enter an audit address, the country must be one of EN NI WS SC UK GB Scotland England United Kingdom Northern Ireland Wales.
+        ///   Looks up a localized string similar to If you enter an audit address the country must be one of the following: EN, NI, SC, WS, UK, GB, England, Northern Ireland, Scotland, Wales, United Kingdom or Great Britain.
         /// </summary>
         internal static string _812 {
             get {
@@ -457,6 +457,15 @@ namespace FrontendSchemeRegistration.UI.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Companies House number does not match this organisation ID - check both.
+        /// </summary>
+        internal static string _861 {
+            get {
+                return ResourceManager.GetString("861", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Total tonnage must be greater than 0&quot; - this one applies if the user has entered 0, or a negative integer.
         /// </summary>
         internal static string _865 {
@@ -498,6 +507,15 @@ namespace FrontendSchemeRegistration.UI.Resources {
         internal static string _881 {
             get {
                 return ResourceManager.GetString("881", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check organisation ID - this one is either invalid or for an organisation that does not need to submit data.
+        /// </summary>
+        internal static string _882 {
+            get {
+                return ResourceManager.GetString("882", resourceCulture);
             }
         }
     }

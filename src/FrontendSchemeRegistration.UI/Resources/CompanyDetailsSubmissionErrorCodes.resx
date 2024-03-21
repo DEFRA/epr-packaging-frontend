@@ -150,6 +150,9 @@
     <data name="860" xml:space="preserve">
         <value>Companies House number not needed for this organisation type</value>
     </data>
+    <data name="861" xml:space="preserve">
+      <value>Companies House number does not match this organisation ID - check both</value>
+    </data>
     <data name="865" xml:space="preserve">
         <value>Total tonnage must be greater than 0</value>
     </data>
@@ -164,5 +167,8 @@
     </data>
     <data name="881" xml:space="preserve">
         <value>Organisation type code must be one of SOL PAR REG PLC LLP LTD LPA COP CIC OUT OTH</value>
+    </data>
+    <data name="882" xml:space="preserve">
+      <value>Check organisation ID - this one is either invalid or for an organisation that does not need to submit data</value>
     </data>
 </root>
