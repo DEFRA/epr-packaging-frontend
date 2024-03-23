@@ -216,4 +216,7 @@
   <data name="check_if_you_need_to_update_packaging_data" xml:space="preserve">
     <value />
   </data>
+  <data name="your_file_has_been_accepted_this_does_not_mean_the_data_is_correct_or_accurate_it_is_your_responsibility_to_make_sure_you_submit_correct_accurate_data_an_approved_person_or_their_delegate_must_verify_an_organisations_data" xml:space="preserve">
+    <value />
+  </data>
 </root>

@@ -16,12 +16,14 @@
         <div class="govuk-grid-column-full">
             <h1 class="govuk-heading-l">@Localizer["your_history"]</h1>
 
-            @if (Model.PreviousSubmissionHistoryExists)
+            @*Developer note: Some of the code below was commented out to implement temporary feature.*@
+
+           @*  @if (Model.PreviousSubmissionHistoryExists)
             {
                 <p class="govuk-body"><a class="govuk-link govuk-link--no-visited-state" asp-controller="FileUploadHistoryPreviousSubmissions" asp-action="Get">@Localizer["view_previous_packaging_data_submissions"]</a></p>
-            }
+            } *@
 
-            <h2 class="govuk-heading-m">@Localizer["most_recent_packaging_data_files"]</h2>
+            @* <h2 class="govuk-heading-m">@Localizer["most_recent_packaging_data_files"]</h2> *@
 
             @if (Model.SubmissionPeriods.Count > 0)
             {
@@ -29,7 +31,8 @@
                 {
                     var submissionPeriod = SharedLocalizer[viewModel.SubmissionPeriod];
 
-                    <h3 class="govuk-heading-s">@submissionPeriod</h3>
+                    @* <h3 class="govuk-heading-s">@submissionPeriod</h3> *@
+                    <h2 class="govuk-heading-m">@submissionPeriod</h2>
 
                     <div class="govuk-summary-card">
                         <div class="govuk-summary-card__content overflow-x-auto">

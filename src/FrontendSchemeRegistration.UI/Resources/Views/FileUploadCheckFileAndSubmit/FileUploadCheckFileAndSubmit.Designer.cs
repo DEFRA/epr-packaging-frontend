@@ -163,20 +163,10 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.FileUploadCheckFileAndSu
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
-        internal static string once_you_have_submitted_your_file_you_can_only_make_changes_after_the_environmental_regulator_has_rejected_or_accepted_it {
+        internal static string once_you_have_submitted_your_new_files_you_can_only_make_changes_after_the_environmental_regulator_has_looked_at_them {
             get {
-                return ResourceManager.GetString("once_you_have_submitted_your_file_you_can_only_make_changes_after_the_environment" +
-                        "al_regulator_has_rejected_or_accepted_it", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        internal static string once_you_have_submitted_your_new_file_you_can_only_make_changes_after_the_environmental_regulator_has_rejected_or_accepted_it {
-            get {
-                return ResourceManager.GetString("once_you_have_submitted_your_new_file_you_can_only_make_changes_after_the_environ" +
-                        "mental_regulator_has_rejected_or_accepted_it", resourceCulture);
+                return ResourceManager.GetString("once_you_have_submitted_your_new_files_you_can_only_make_changes_after_the_enviro" +
+                        "nmental_regulator_has_looked_at_them", resourceCulture);
             }
         }
         

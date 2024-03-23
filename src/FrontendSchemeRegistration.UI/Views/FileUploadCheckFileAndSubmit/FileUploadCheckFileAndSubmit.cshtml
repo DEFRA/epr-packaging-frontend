@@ -34,12 +34,9 @@
                 if (Model.HasSubmittedPreviously)
                 {   
                     <p class="govuk-body">@Localizer["submitting_the_new_packaging_data_file_will_replace_the_last_one_that_you_submitted"]</p>
-                    <p class="govuk-body govuk-!-margin-bottom-7">@Localizer["once_you_have_submitted_your_new_file_you_can_only_make_changes_after_the_environmental_regulator_has_rejected_or_accepted_it"]</p>
                 }
-                else
-                {
-                    <p class="govuk-body govuk-!-margin-bottom-7">@Localizer["once_you_have_submitted_your_file_you_can_only_make_changes_after_the_environmental_regulator_has_rejected_or_accepted_it"]</p>
-                }
+
+                <p class="govuk-body govuk-!-margin-bottom-7">@Localizer["once_you_have_submitted_your_new_files_you_can_only_make_changes_after_the_environmental_regulator_has_looked_at_them"]</p>
             }
             else
             {

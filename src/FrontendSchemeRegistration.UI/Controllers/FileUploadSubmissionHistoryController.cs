@@ -28,10 +28,12 @@ namespace FrontendSchemeRegistration.UI.Controllers
 
         public async Task<IActionResult> Get()
         {
+            // Developer note: Some of the code below was commented out to implement temporary feature.
+
             var organisationId = User.GetUserData().Organisations.First().Id.Value;
             var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
             var complienceSchemaId = session.RegistrationSession.SelectedComplianceScheme?.Id;
-            var startOfCurrentYear = new DateTime(DateTime.Now.Year, 1, 1);
+            // var startOfCurrentYear = new DateTime(DateTime.Now.Year, 1, 1);
 
             var submissionIds = await _submissionService.GetSubmissionIdsAsync(
                 organisationId,
@@ -45,7 +47,7 @@ namespace FrontendSchemeRegistration.UI.Controllers
                 SubmissionPeriods = new List<FileUploadSubmissionHistoryPeriodViewModel>()
             };
 
-            foreach (var submissionId in submissionIds)
+            /*foreach (var submissionId in submissionIds)
             {
                 if (submissionId.Year == startOfCurrentYear.Year)
                 {
@@ -65,6 +67,22 @@ namespace FrontendSchemeRegistration.UI.Controllers
                 else if (!viewModel.PreviousSubmissionHistoryExists)
                 {
                     viewModel.PreviousSubmissionHistoryExists = true;
+                }
+            }*/
+
+            foreach (var submissionId in submissionIds)
+            {
+                var submissionHistory = await _submissionService.GetSubmissionHistoryAsync(
+                       submissionId.SubmissionId,
+                       new DateTime(submissionId.Year, 1, 1));
+
+                if (submissionHistory.Count > 0)
+                {
+                    viewModel.SubmissionPeriods.Add(new FileUploadSubmissionHistoryPeriodViewModel
+                    {
+                        SubmissionPeriod = submissionId.SubmissionPeriod,
+                        SubmissionHistory = submissionHistory
+                    });
                 }
             }
 

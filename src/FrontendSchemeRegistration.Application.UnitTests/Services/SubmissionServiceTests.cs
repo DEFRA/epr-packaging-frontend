@@ -260,7 +260,7 @@ public class SubmissionServiceTests
         await _submissionService.GetSubmissionHistoryAsync(submissionId, lastSyncTime);
 
         // Assert
-        var expectedQueryString = $"lastSyncTime={lastSyncTime}";
+        var expectedQueryString = $"lastSyncTime={lastSyncTime:s}";
         _webApiGatewayClientMock.Verify(x => x.GetSubmissionHistoryAsync(submissionId, expectedQueryString), Times.Once);
     }
 }

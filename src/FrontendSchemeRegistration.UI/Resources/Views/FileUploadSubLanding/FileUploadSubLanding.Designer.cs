@@ -352,6 +352,17 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.FileUploadSubLanding {
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
+        internal static string your_file_has_been_accepted_this_does_not_mean_the_data_is_correct_or_accurate_it_is_your_responsibility_to_make_sure_you_submit_correct_accurate_data_an_approved_person_or_their_delegate_must_verify_an_organisations_data {
+            get {
+                return ResourceManager.GetString("your_file_has_been_accepted_this_does_not_mean_the_data_is_correct_or_accurate_it" +
+                        "_is_your_responsibility_to_make_sure_you_submit_correct_accurate_data_an_approve" +
+                        "d_person_or_their_delegate_must_verify_an_organisations_data", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
         internal static string your_history {
             get {
                 return ResourceManager.GetString("your_history", resourceCulture);

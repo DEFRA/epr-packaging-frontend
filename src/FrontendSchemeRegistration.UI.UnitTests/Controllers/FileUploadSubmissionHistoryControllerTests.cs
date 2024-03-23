@@ -59,7 +59,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
         }
 
         [Test]
-        public async Task Get_ReturnsSubmissionPeriods_WhenCurentYearDataExists()
+        public async Task Get_ReturnsSubmissionPeriods_WhenDataExists()
         {
             // Arrange
             var currentYear = DateTime.Now.Year;
@@ -68,7 +68,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             {
                 new SubmissionPeriodId { SubmissionId = Guid.NewGuid(), SubmissionPeriod = "July to December", Year = currentYear },
                 new SubmissionPeriodId { SubmissionId = Guid.NewGuid(), SubmissionPeriod = "January to June", Year = currentYear },
-                new SubmissionPeriodId { SubmissionId = Guid.NewGuid(), SubmissionPeriod = "July to December", Year = currentYear - 2 }
+                new SubmissionPeriodId { SubmissionId = Guid.NewGuid(), SubmissionPeriod = "July to December", Year = currentYear - 1 }
             };
 
             var submissionHistoryDictionary = new Dictionary<Guid, List<SubmissionHistory>>
@@ -141,7 +141,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.FileUploadSubLanding}");
             result.Model.Should().BeEquivalentTo(new FileUploadSubmissionHistoryViewModel
             {
-                PreviousSubmissionHistoryExists = true,
+                PreviousSubmissionHistoryExists = false,
                 SubmissionPeriods = new List<FileUploadSubmissionHistoryPeriodViewModel>
                 {
                     new FileUploadSubmissionHistoryPeriodViewModel
@@ -159,28 +159,13 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
         }
 
         [Test]
-        public async Task Get_ReturnsEmptySubmissionPeriods_WhenCurrentYearDataNotExist()
+        public async Task Get_ReturnsEmptySubmissionPeriods_WhenDataDoesNotExist()
         {
             // Arrange
-            var currentYear = DateTime.Now.Year;
-
-            var submissionIds = new List<SubmissionPeriodId>
-            {
-                new SubmissionPeriodId { SubmissionId = Guid.NewGuid(), SubmissionPeriod = "January to June", Year = currentYear - 1 }
-            };
-
             var submissionHistoryDictionary = new Dictionary<Guid, List<SubmissionHistory>>();
 
             _submissionServiceMock.Setup(x => x.GetSubmissionIdsAsync(_organisationId, SubmissionType.Producer, null, null))
-                .ReturnsAsync(submissionIds);
-
-            _submissionServiceMock.Setup(x => x.GetSubmissionHistoryAsync(It.IsAny<Guid>(), It.IsAny<DateTime>()))
-                .ReturnsAsync((Guid submissionId, DateTime lastSyncTime) =>
-                {
-                    return submissionHistoryDictionary.TryGetValue(submissionId, out var submissionHistory)
-                        ? submissionHistory
-                        : new List<SubmissionHistory>();
-                });
+                .ReturnsAsync(new List<SubmissionPeriodId>());
 
             _sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
                 .ReturnsAsync(new FrontendSchemeRegistrationSession());
@@ -195,7 +180,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.FileUploadSubLanding}");
             result.Model.Should().BeEquivalentTo(new FileUploadSubmissionHistoryViewModel
             {
-                PreviousSubmissionHistoryExists = true,
+                PreviousSubmissionHistoryExists = false,
                 SubmissionPeriods = new List<FileUploadSubmissionHistoryPeriodViewModel>()
             });
         }

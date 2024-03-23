@@ -219,4 +219,7 @@
   <data name="start_now_compliance_scheme" xml:space="preserve">
     <value>W Report members' packaging data</value>
   </data>
+  <data name="your_file_has_been_accepted_this_does_not_mean_the_data_is_correct_or_accurate_it_is_your_responsibility_to_make_sure_you_submit_correct_accurate_data_an_approved_person_or_their_delegate_must_verify_an_organisations_data" xml:space="preserve">
+    <value>Mae eich ffeil wedi'i derbyn. Nid yw hyn yn golygu bod y data'n gywir. Eich cyfrifoldeb chi yw sicrhau eich bod yn cyflwyno data cywir. Rhaid i ddata sefydliad gael ei wirio gan berson a gymeradwywyd neu ei ddirprwy.</value>
+  </data>
 </root>

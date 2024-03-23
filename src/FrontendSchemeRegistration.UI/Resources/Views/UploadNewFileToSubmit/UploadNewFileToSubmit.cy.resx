@@ -243,4 +243,7 @@
   <data name="packaging_data_accepted" xml:space="preserve">
     <value>W Your packaging data was accepted by the environmental regulator.</value>
   </data>
+  <data name="it_is_your_responsibility_to_make_sure_you_submit_correct_accurate_data_an_approved_person_or_their_delegate_must_verify_an_organisations_data" xml:space="preserve">
+    <value>Eich cyfrifoldeb chi yw sicrhau eich bod yn cyflwyno data cywir. Rhaid i ddata sefydliad gael ei wirio gan berson a gymeradwywyd neu ei ddirprwy.</value>
+  </data>
 </root>

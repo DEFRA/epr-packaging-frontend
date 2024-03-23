@@ -168,12 +168,6 @@
   <data name="date_and_time_uploaded" xml:space="preserve">
     <value>Dyddiad ac amser cyflwyno</value>
   </data>
-  <data name="once_you_have_submitted_your_file_you_can_only_make_changes_after_the_environmental_regulator_has_rejected_or_accepted_it" xml:space="preserve">
-    <value>Ar ôl ichi gyflwyno'ch ffeil newydd, dim ond ar ôl i'r rheoleiddiwr amgylcheddol ei gwrthod neu ei derbyn y cewch chi wneud newidiadau.</value>
-  </data>
-  <data name="once_you_have_submitted_your_new_file_you_can_only_make_changes_after_the_environmental_regulator_has_rejected_or_accepted_it" xml:space="preserve">
-    <value>Ar ôl ichi gyflwyno'ch ffeil newydd, dim ond ar ôl i'r rheoleiddiwr amgylcheddol ei gwrthod neu ei derbyn y cewch chi wneud newidiadau.</value>
-  </data>
   <data name="submitting_the_new_packaging_data_file_will_replace_the_last_one_that_you_submitted" xml:space="preserve">
     <value>Bydd cyflwyno'r ffeil data pecynwaith newydd yn disodli'r un ddiwethaf a gyflwynwyd gennych.</value>
   </data>
@@ -182,5 +176,8 @@
   </data>
   <data name="your_file_has_saved_and_you_can_submit_it_to_the_environmental_regulator" xml:space="preserve">
     <value>Mae'ch ffeil chi wedi'i chadw a chewch ei chyflwyno i'r rheoleiddiwr amgylcheddol.</value>
+  </data>
+  <data name="once_you_have_submitted_your_new_files_you_can_only_make_changes_after_the_environmental_regulator_has_looked_at_them" xml:space="preserve">
+    <value>Ar ôl ichi gyflwyno'ch ffeiliau newydd, dim ond ar ôl i'r rheoleiddiwr amgylcheddol edrych arnyn nhw y cewch chi wneud newidiadau.</value>
   </data>
 </root>

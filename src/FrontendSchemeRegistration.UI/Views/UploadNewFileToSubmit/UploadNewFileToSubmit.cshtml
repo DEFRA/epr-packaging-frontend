@@ -127,6 +127,17 @@
                 <p class="govuk-body">@Localizer["you_already_submitted_a_file"]</p>
             }
 
+            @if (accepted)
+            {
+                <div class="govuk-warning-text govuk-!-margin-top-6 govuk-!-margin-bottom-7">
+                    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                    <strong class="govuk-warning-text__text">
+                        <span class="govuk-warning-text__assistive">@SharedLocalizer["warning"]</span>
+                        @Localizer["it_is_your_responsibility_to_make_sure_you_submit_correct_accurate_data_an_approved_person_or_their_delegate_must_verify_an_organisations_data"]
+                    </strong>
+                </div>
+            }
+
             <div class="govuk-summary-card">
                 <div class="govuk-summary-card__title-wrapper">
                     <h2 class="govuk-summary-card__title">

@@ -168,12 +168,6 @@
   <data name="date_and_time_uploaded" xml:space="preserve">
     <value>Date and time uploaded</value>
   </data>
-  <data name="once_you_have_submitted_your_file_you_can_only_make_changes_after_the_environmental_regulator_has_rejected_or_accepted_it" xml:space="preserve">
-    <value>Once you have submitted your file you can only make changes after the environmental regulator has rejected or accepted it.</value>
-  </data>
-  <data name="once_you_have_submitted_your_new_file_you_can_only_make_changes_after_the_environmental_regulator_has_rejected_or_accepted_it" xml:space="preserve">
-    <value>Once you have submitted your new file you can only make changes after the environmental regulator has rejected or accepted it.</value>
-  </data>
   <data name="submitting_the_new_packaging_data_file_will_replace_the_last_one_that_you_submitted" xml:space="preserve">
     <value>Submitting the new packaging data file will replace the last one that you submitted.</value>
   </data>
@@ -182,5 +176,8 @@
   </data>
   <data name="your_file_has_saved_and_you_can_submit_it_to_the_environmental_regulator" xml:space="preserve">
     <value>Your file has saved and you can submit it to the environmental regulator.</value>
+  </data>
+  <data name="once_you_have_submitted_your_new_files_you_can_only_make_changes_after_the_environmental_regulator_has_looked_at_them" xml:space="preserve">
+    <value>Once you have submitted your new files you can only make changes after the environmental regulator has looked at them.</value>
   </data>
 </root>

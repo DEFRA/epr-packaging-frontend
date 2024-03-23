@@ -135,7 +135,10 @@
   <data name="you_can_save_this_page_using_the_print_option_in_your_browser" xml:space="preserve">
     <value>You can save this page using the ‘print’ option in your browser.</value>
   </data>
-  <data name="you_will_get_an_email_when_the_environmental_regulator_has_accepted_or_rejected_your_submission" xml:space="preserve">
-    <value>You will get an email when the environmental regulator has accepted or rejected your submission.</value>
+  <data name="you_can_only_make_changes_to_your_submitted_packaging_data_files_after_the_environmental_regulator_has_looked_at_them" xml:space="preserve">
+    <value>You can only make changes to your submitted packaging data files after the environmental regulator has looked at them.</value>
+  </data>
+  <data name="you_will_get_an_email_about_any_next_steps_when_the_environmental_regulator_has_looked_at_your_submission" xml:space="preserve">
+    <value>You will get an email about any next steps when the environmental regulator has looked at your submission.</value>
   </data>
 </root>
