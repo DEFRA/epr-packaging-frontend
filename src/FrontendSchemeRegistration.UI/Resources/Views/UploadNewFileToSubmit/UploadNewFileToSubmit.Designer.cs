@@ -136,15 +136,6 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.UploadNewFileToSubmit {
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
-        internal static string h1_basic_user_accepted_or_rejectednoresubmission_title {
-            get {
-                return ResourceManager.GetString("h1-basic-user-accepted-or-rejectednoresubmission-title", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
         internal static string h1_basic_user_rejected_title {
             get {
                 return ResourceManager.GetString("h1-basic-user-rejected-title", resourceCulture);
@@ -163,25 +154,6 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.UploadNewFileToSubmit {
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
-        internal static string if_your_circumstances_change_text_approved_user {
-            get {
-                return ResourceManager.GetString("if_your_circumstances_change_text_approved_user", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        internal static string it_is_your_responsibility_to_make_sure_you_submit_correct_accurate_data_an_approved_person_or_their_delegate_must_verify_an_organisations_data {
-            get {
-                return ResourceManager.GetString("it_is_your_responsibility_to_make_sure_you_submit_correct_accurate_data_an_approv" +
-                        "ed_person_or_their_delegate_must_verify_an_organisations_data", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
         internal static string need_upload_a_new_file_text_approved_user {
             get {
                 return ResourceManager.GetString("need_upload_a_new_file_text_approved_user", resourceCulture);
@@ -194,6 +166,15 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.UploadNewFileToSubmit {
         internal static string need_upload_a_new_file_text_basic_user {
             get {
                 return ResourceManager.GetString("need_upload_a_new_file_text_basic_user", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string no_need_to_update {
+            get {
+                return ResourceManager.GetString("no_need_to_update", resourceCulture);
             }
         }
         

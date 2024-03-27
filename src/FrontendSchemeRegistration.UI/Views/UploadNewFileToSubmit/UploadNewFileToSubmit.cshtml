@@ -53,7 +53,7 @@
             }
             else if ((accepted || rejectedWithNoResubmission) && isBasicUser)
             {
-                <h1 class="govuk-heading-l">@Localizer["h1-basic-user-accepted-or-rejectednoresubmission-title"]</h1>
+                <h1 class="govuk-heading-l">@Localizer["no_need_to_update"]</h1>
             }
             else if (rejectedWithResubmissionRequired && isApprovedOrDelegatedUser)
             {
@@ -76,7 +76,7 @@
             else if (accepted && isBasicUser)
             {
                 <p class="govuk-body">@Localizer["packaging_data_accepted"]</p>
-                <p class="govuk-body">@Localizer["no_need_to_resubmit"]</p>
+                <p class="govuk-body">@Localizer["no_need_to_update"]</p>
             }
             else if (rejectedWithResubmissionRequired && isApprovedOrDelegatedUser)
             {

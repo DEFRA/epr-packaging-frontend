@@ -204,7 +204,7 @@
   <data name="you-do-not-need-to-resubmit-packaging-data-title" xml:space="preserve">
     <value>Does dim angen ichi ailgyflwyno</value>
   </data>
-  <data name="h1-basic-user-accepted-or-rejectednoresubmission-title" xml:space="preserve">
+  <data name="no_need_to_update" xml:space="preserve">
     <value>Does dim angen ichi ddiweddaru data pecynwaith</value>
   </data>
   <data name="h1-approved-user-rejected-title" xml:space="preserve">
@@ -219,17 +219,11 @@
   <data name="you-do-not-need-to-resubmit-packaging-data-basic-user" xml:space="preserve">
     <value>Does dim angen ichi ddiweddaru data pecynwaith</value>
   </data>
-  <data name="packaging-data-rejected" xml:space="preserve">
+  <data name="packaging_data_rejected" xml:space="preserve">
     <value>Cafodd eich data pecynwaith ei wrthod gan y rheoleiddiwr amgylcheddol oherwydd:</value>
   </data>
-  <data name="packaging-data-accepted-approved-user" xml:space="preserve">
-    <value>Cafodd eich data pecynwaith ei dderbyn gan y rheoleiddiwr amgylcheddol. Does dim angen ichi ailgyflwyno data pecynwaith.</value>
-  </data>
-  <data name="packaging-data-accepted-basic-user" xml:space="preserve">
-    <value>Cafodd eich data pecynwaith ei dderbyn gan y rheoleiddiwr amgylcheddol. Does dim angen ichi diweddaru data pecynwaith.</value>
-  </data>
   <data name="no_need_to_resubmit" xml:space="preserve">
-    <value>W You do not need to resubmit packaging data.</value>
+    <value>Does dim angen ichi ailgyflwyno data pecynwaith</value>
   </data>
   <data name="continue-button" xml:space="preserve">
     <value>Parhau</value>
@@ -241,7 +235,7 @@
     <value>Mynd i dudalen hafan y cyfrif</value>
   </data>
   <data name="packaging_data_accepted" xml:space="preserve">
-    <value>W Your packaging data was accepted by the environmental regulator.</value>
+    <value>Cafodd eich data pecynwaith ei dderbyn gan y rheoleiddiwr amgylcheddol</value>
   </data>
   <data name="it_is_your_responsibility_to_make_sure_you_submit_correct_accurate_data_an_approved_person_or_their_delegate_must_verify_an_organisations_data" xml:space="preserve">
     <value>Eich cyfrifoldeb chi yw sicrhau eich bod yn cyflwyno data cywir. Rhaid i ddata sefydliad gael ei wirio gan berson a gymeradwywyd neu ei ddirprwy.</value>
