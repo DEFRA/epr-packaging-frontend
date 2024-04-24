@@ -4,6 +4,7 @@
 @model FileUploadSubLandingViewModel
 @{
 	ViewData["Title"] = Localizer["report_packaging_data"];
+	var notStartedSubmissionExist = Model.SubmissionPeriodDetails.Any(s => (s.Status is NotStarted || s.Status is CannotStartYet));
 }
 
 @await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
@@ -104,6 +105,10 @@
 							@if (submissionPeriodDetail.Status is NotStarted || submissionPeriodDetail.Status is CannotStartYet)
 							{
 								<p class="govuk-body">@Localizer["deadline"] @submissionPeriodDetail.Deadline.ToReadableLongMonthDeadlineDate()</p>
+							}
+							else if (notStartedSubmissionExist)
+							{
+								<div class="deadline-placeholder"></div>
 							}
 							<strong class="@(("govuk-tag " + GetClassFeature(submissionPeriodDetail.Status) + " status-style"))">@Localizer[submissionPeriodDetail.Status.GetLocalizedName()]</strong>
 						</feature>

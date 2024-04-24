@@ -212,3 +212,12 @@ table.cookies-table {
 .overflow-x-auto {
     overflow-x: auto;
 }
+
+.deadline-placeholder {
+    @media (min-width: 40.0625em) {
+        height: round(calc(19px * 1.3157894737));
+    }
+
+    height: calc(16px * 1.25);
+    margin-bottom: 20px;
+}
