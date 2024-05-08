@@ -172,4 +172,93 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
             OrganisationRole = "Producer"
         });
     }
+
+    [Test]
+    public async Task Get_ReturnsCorrectViewAndModel_WhenCalledWithSubmittedFile()
+    {
+        // Arrange
+        const string orgDetailsFileName = "filename.csv";
+        DateTime orgDetailsUploadDate = DateTime.UtcNow;
+        Guid orgDetailsUploadedBy = Guid.NewGuid();
+
+        const string partnersFileName = "partners.csv";
+        DateTime partnersUploadDate = DateTime.UtcNow;
+        Guid partnersUploadedBy = Guid.NewGuid();
+
+        const string brandFileName = "brand.csv";
+        DateTime brandUploadDate = DateTime.UtcNow;
+        Guid brandUploadedBy = Guid.NewGuid();
+
+        var submitDate = orgDetailsUploadDate.AddHours(1);
+
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(SubmissionId)).ReturnsAsync(new RegistrationSubmission
+        {
+            Id = SubmissionId,
+            CompanyDetailsFileName = orgDetailsFileName,
+            CompanyDetailsUploadedDate = orgDetailsUploadDate,
+            CompanyDetailsUploadedBy = orgDetailsUploadedBy,
+            PartnershipsFileName = partnersFileName,
+            PartnershipsUploadedDate = partnersUploadDate,
+            PartnershipsUploadedBy = partnersUploadedBy,
+            BrandsFileName = brandFileName,
+            BrandsUploadedDate = brandUploadDate,
+            BrandsUploadedBy = brandUploadedBy,
+            HasValidFile = true,
+            IsSubmitted = true,
+            LastUploadedValidFiles = new UploadedRegistrationFilesInformation
+            {
+                CompanyDetailsFileName = orgDetailsFileName,
+                BrandsFileName = brandFileName,
+                PartnershipsFileName = partnersFileName,
+                CompanyDetailsFileId = default(Guid),
+                CompanyDetailsUploadedBy = orgDetailsUploadedBy,
+                CompanyDetailsUploadDatetime = orgDetailsUploadDate,
+                BrandsUploadedBy = brandUploadedBy,
+                BrandsUploadDatetime = brandUploadDate,
+                PartnershipsUploadedBy = partnersUploadedBy,
+                PartnershipsUploadDatetime = partnersUploadDate
+            },
+            LastSubmittedFiles = new SubmittedRegistrationFilesInformation
+            {
+                CompanyDetailsFileName = orgDetailsFileName,
+                BrandsFileName = brandFileName,
+                PartnersFileName = partnersFileName,
+                SubmittedBy = Guid.NewGuid(),
+                SubmittedDateTime = submitDate
+            }
+        });
+        const string firstName = "first";
+        const string lastName = "last";
+        const string fullName = $"{firstName} {lastName}";
+
+        _userAccountServiceMock.Setup(x => x.GetPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new PersonDto
+        {
+            FirstName = firstName,
+            LastName = lastName
+        });
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("FileReUploadCompanyDetailsConfirmation");
+        result.Model.Should().BeEquivalentTo(new FileReUploadCompanyDetailsConfirmationViewModel
+        {
+            SubmissionId = SubmissionId,
+            CompanyDetailsFileName = orgDetailsFileName,
+            CompanyDetailsFileUploadDate = submitDate.ToReadableDate(),
+            CompanyDetailsFileUploadedBy = fullName,
+            BrandsFileName = brandFileName,
+            BrandsFileUploadDate = submitDate.ToReadableDate(),
+            BrandsFileUploadedBy = fullName,
+            PartnersFileName = partnersFileName,
+            PartnersFileUploadDate = submitDate.ToReadableDate(),
+            PartnersFileUploadedBy = fullName,
+            SubmissionDeadline = SubmissionDeadline.ToReadableDate(),
+            IsSubmitted = true,
+            HasValidfile = true,
+            Status = SubmissionPeriodStatus.SubmittedToRegulator,
+            OrganisationRole = "Producer"
+        });
+    }
 }

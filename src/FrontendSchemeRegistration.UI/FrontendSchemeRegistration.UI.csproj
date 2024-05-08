@@ -131,13 +131,6 @@
         <PackageReference Include="Microsoft.AspNetCore.Antiforgery" Version="2.2.0" />
         <PackageReference Include="System.ComponentModel.TypeConverter" Version="4.3.0" />
     </ItemGroup>
-
-    <ItemGroup>
-      <SonarQubeSetting Include="sonar.coverage.exclusions">
-        <Value>**/Program.cs, **/gulpfile.js, **/print.js, **/refresh.js</Value>
-      </SonarQubeSetting>
-    </ItemGroup>
-
     <ItemGroup>
         <EmbeddedResource Update="Resources\Views\Application\PrivacyPolicy.en.resx">
             <Generator>ResXFileCodeGenerator</Generator>
@@ -1186,13 +1179,7 @@
     </ItemGroup>
 	<ItemGroup>
 		<SonarQubeSetting Include="sonar.coverage.exclusions">
-			<Value>Views/**/*.cshtml</Value>
-      <Value>**/Program.cs</Value>
-		</SonarQubeSetting>
-	</ItemGroup>
-	<ItemGroup>
-		<SonarQubeSetting Include="sonar.coverage.exclusions">
-			<Value>ViewModels/ComplianceSchemeLandingViewModel*.cs</Value>
+			<Value>ViewModels/ComplianceSchemeLandingViewModel*.cs,Views/**/*.cshtml,Program.cs,gulpfile.js,**/print.js,**/refresh.js</Value>
 		</SonarQubeSetting>
 	</ItemGroup>
 </Project>

@@ -1,5 +1,8 @@
-﻿namespace FrontendSchemeRegistration.Application.DTOs.ComplianceSchemeMember
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace FrontendSchemeRegistration.Application.DTOs.ComplianceSchemeMember
 {
+    [ExcludeFromCodeCoverage]
     public record ComplianceSchemeMemberDetails
     {
         public string OrganisationName { get; set; }

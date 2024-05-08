@@ -1,7 +1,9 @@
 ﻿namespace FrontendSchemeRegistration.UI.ViewModels;
 
+using System.Diagnostics.CodeAnalysis;
 using Application.Enums;
 
+[ExcludeFromCodeCoverage]
 public class FileReUploadCompanyDetailsConfirmationViewModel : ViewModelWithOrganisationRole
 {
     public Guid SubmissionId { get; set; }

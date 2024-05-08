@@ -1,6 +1,6 @@
 ﻿namespace FrontendSchemeRegistration.UI.Constants;
 
-public class RegulatorDecision
+public static class RegulatorDecision
 {
     public const string Accepted = "Accepted";
     public const string Rejected = "Rejected";

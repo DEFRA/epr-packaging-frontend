@@ -143,6 +143,32 @@ public class UploadNewFileToSubmitControllerTests
     }
 
     [Test]
+    public async Task Get_ReturnsToFileUploadSubLanding_WhenRequestQueryHasNoSubmissionId()
+    {
+        // Arrange (with no submissionId in query)
+        _systemUnderTest.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                Request =
+                {
+                    Query = new QueryCollection(new Dictionary<string, StringValues>
+                    { }),
+                },
+                User = _claimsPrincipalMock.Object,
+                Session = Mock.Of<ISession>()
+            }
+        };
+
+        // Act
+        var result = await _systemUnderTest.Get() as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadSubLanding");
+    }
+
+    [Test]
     public async Task Get_ReturnsToFileUploadSubLanding_WhenSubmissionIsNull()
     {
         // Act
@@ -320,6 +346,46 @@ public class UploadNewFileToSubmitControllerTests
         result.ViewName.Should().Be(ViewName);
         var model = (UploadNewFileToSubmitViewModel)result.ViewData.Model;
         model?.SubmittedBy.Should().Be(model?.UploadedBy);
+    }
+
+    [Test]
+    public async Task Get_ReturnsUploadNewFileToSubmitWithStatusNone_WhenSubmittedAtEqualsUploadedAt()
+    {
+        // Arrange
+        var uploadDate = new DateTime(1970, 1, 1);
+        var uploadedBy = Guid.NewGuid();
+        var submission = new PomSubmission
+        {
+            Id = Guid.NewGuid(),
+            IsSubmitted = true,
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileName = "UploadedFile",
+                FileUploadDateTime = uploadDate,
+                UploadedBy = uploadedBy,
+                FileId = Guid.NewGuid()
+            },
+            LastSubmittedFile = new SubmittedFileInformation
+            {
+                FileName = "SubmittedFile",
+                SubmittedDateTime = uploadDate,
+                SubmittedBy = uploadedBy
+            }
+        };
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(submission);
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be(ViewName);
+        var model = (UploadNewFileToSubmitViewModel)result.ViewData.Model;
+        model?.SubmittedBy.Should().Be(model?.UploadedBy);
+        model?.Status.Should().Be(Status.None);
     }
 
     [Test]

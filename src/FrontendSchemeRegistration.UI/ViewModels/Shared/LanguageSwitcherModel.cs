@@ -1,7 +1,9 @@
 ﻿namespace FrontendSchemeRegistration.UI.ViewModels.Shared;
 
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
+[ExcludeFromCodeCoverage]
 public class LanguageSwitcherModel
 {
     public CultureInfo CurrentCulture { get; set; }

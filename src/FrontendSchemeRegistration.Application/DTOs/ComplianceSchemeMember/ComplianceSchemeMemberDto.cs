@@ -1,5 +1,8 @@
-﻿namespace FrontendSchemeRegistration.Application.DTOs.ComplianceSchemeMember
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace FrontendSchemeRegistration.Application.DTOs.ComplianceSchemeMember
 {
+    [ExcludeFromCodeCoverage]
     public class ComplianceSchemeMemberDto
     {
         public Guid SelectedSchemeId { get; set; }

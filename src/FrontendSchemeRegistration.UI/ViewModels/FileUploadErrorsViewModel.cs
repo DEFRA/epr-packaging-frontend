@@ -1,5 +1,8 @@
 ﻿namespace FrontendSchemeRegistration.UI.ViewModels;
 
+using System.Diagnostics.CodeAnalysis;
+
+[ExcludeFromCodeCoverage]
 public class FileUploadErrorsViewModel
 {
     public int ErrorCount { get; set; }

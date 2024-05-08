@@ -18,7 +18,6 @@ using ViewModels;
 
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
 [Route(PagePaths.FileUploadBrands)]
-[IgnoreAntiforgeryToken]
 public class FileUploadBrandsController : Controller
 {
     private readonly ISubmissionService _submissionService;
@@ -42,38 +41,40 @@ public class FileUploadBrandsController : Controller
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
 
-        if (session is not null)
+        if (session is null)
         {
-            if (!session.RegistrationSession.Journey.Contains<string>(PagePaths.FileUploadCompanyDetails))
-            {
-                return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
-            }
+            return RedirectToAction("Get", "FileUploadCompanyDetails");
+        }
 
-            var organisationRole = session.UserData.Organisations.FirstOrDefault()?.OrganisationRole;
-            if (organisationRole is not null)
-            {
-                var submissionId = Guid.Parse(Request.Query["submissionId"]);
-                var submission = await _submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
+        if (!session.RegistrationSession.Journey.Contains<string>(PagePaths.FileUploadCompanyDetails))
+        {
+            return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
+        }
 
-                if (submission is not null)
+        var organisationRole = session.UserData.Organisations.FirstOrDefault()?.OrganisationRole;
+        if (organisationRole is not null)
+        {
+            var submissionId = Guid.Parse(Request.Query["submissionId"]);
+            var submission = await _submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
+
+            if (submission is not null)
+            {
+                if (submission.Errors.Any())
                 {
-                    if (submission.Errors.Any())
-                    {
-                        ModelStateHelpers.AddFileUploadExceptionsToModelState(submission.Errors.Distinct().ToList(), ModelState);
-                    }
+                    ModelStateHelpers.AddFileUploadExceptionsToModelState(submission.Errors.Distinct().ToList(), ModelState);
+                }
 
-                    if (submission.RequiresBrandsFile)
-                    {
-                        session.RegistrationSession.Journey.AddIfNotExists(PagePaths.FileUploadBrands);
-                        await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
+                if (submission.RequiresBrandsFile)
+                {
+                    session.RegistrationSession.Journey.AddIfNotExists(PagePaths.FileUploadBrands);
+                    await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
 
-                        return View(
-                            "FileUploadBrands",
-                            new FileUploadSuccessViewModel
-                            {
-                                OrganisationRole = organisationRole
-                            });
-                    }
+                    return View(
+                        "FileUploadBrands",
+                        new FileUploadSuccessViewModel
+                        {
+                            OrganisationRole = organisationRole
+                        });
                 }
             }
         }

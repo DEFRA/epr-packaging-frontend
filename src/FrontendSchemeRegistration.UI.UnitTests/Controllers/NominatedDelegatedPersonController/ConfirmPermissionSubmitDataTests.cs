@@ -62,6 +62,20 @@ public class ConfirmPermissionSubmitDataTests
     }
 
     [Test]
+    public async Task ConfirmPermissionSubmitData_WhenHttpGetIsCalledAndSessionIsNull_ThenRedirectHome()
+    {
+        // Arrange
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(() => null);
+
+        // Act
+        var result = await _systemUnderTest.ConfirmPermissionSubmitData(_enrolmentId) as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("Landing");
+    }
+
+    [Test]
     [TestCase(null)]
     [TestCase("Nominee Full Name")]
     public async Task ConfirmPermissionSubmitData_WhenHttpGetIsCalled_ThenNomineeFullNameGetsValueFromSession(string nomineeFullName)
@@ -184,6 +198,93 @@ public class ConfirmPermissionSubmitDataTests
         _sessionManagerMock.Verify(
             x => x.SaveSessionAsync(
                 It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()), Times.Once);
+    }
+
+    [Test]
+    public async Task ConfirmPermissionSubmitData_WhenHttpPostIsCalledAndSessionIsNull_ThenRedirectHome()
+    {
+        // Arrange
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(() => null);
+
+        // Act
+        var result = await _systemUnderTest.ConfirmPermissionSubmitData(null, _enrolmentId) as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("Landing");
+    }
+
+    [Test]
+    public async Task ConfirmPermissionSubmitData_WhenHttpPostIsCalledAndOrganisationIdNull_ThenRedirectHome()
+    {
+        // Arrange
+        FrontendSchemeRegistrationSession session = new()
+        {
+            NominatedDelegatedPersonSession = new()
+            {
+                Journey = new(),
+                NominatorFullName = "Nominator Full Name",
+                NomineeFullName = "Nominee Full Name"
+            }
+        };
+
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.UserData, JsonConvert.SerializeObject(new UserData { Email = "test@test.com" })),
+            new("http://schemas.microsoft.com/identity/claims/objectidentifier", _userId.ToString())
+        };
+
+        _userMock.Setup(x => x.Claims).Returns(claims);
+        _httpContextMock.Setup(x => x.User).Returns(_userMock.Object);
+
+        // Act
+        var result = await _systemUnderTest.ConfirmPermissionSubmitData(null, _enrolmentId) as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("Landing");
+    }
+
+    [Test]
+    public async Task ConfirmPermissionSubmitData_WhenHttpPostModelIsInvalid_ThenReturnView()
+    {
+        // Arrange
+        FrontendSchemeRegistrationSession session = new()
+        {
+            NominatedDelegatedPersonSession = new()
+            {
+                Journey = new(),
+                NominatorFullName = "Ses Nominator Full Name",
+                NomineeFullName = "Ses Nominator Full Name",
+                OrganisationName = "Ses Organisation Name"
+            }
+        };
+
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+
+        _systemUnderTest.ModelState.AddModelError("some", "error");
+
+        var model = new NominationAcceptanceModel
+        {
+            EnrolmentId = _enrolmentId,
+            NominatorFullName = "Nominator Full Name",
+            NomineeFullName = string.Empty
+        };
+
+        // Act
+        var result = await _systemUnderTest.ConfirmPermissionSubmitData(model, _enrolmentId) as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be(null);
+        result.ViewData.Model.Should().BeEquivalentTo(new NominationAcceptanceModel
+        {
+            EnrolmentId = _enrolmentId,
+            NominatorFullName = session.NominatedDelegatedPersonSession.NominatorFullName,
+            NomineeFullName = session.NominatedDelegatedPersonSession.NomineeFullName,
+            OrganisationName = session.NominatedDelegatedPersonSession.OrganisationName
+        });
     }
 
     [Test]

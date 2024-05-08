@@ -41,6 +41,105 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
     private Mock<ISubmissionService> _submissionServiceMock;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
 
+    public static object[] Post_SavesSubmissionPeriodInSessionAndRedirectsToCorrectPage_WhenSubmissionExists_Cases()
+    {
+        const string BASIC_USER = "Basic User";
+        const string DELEGATER_PERSON = "Delegated Person";
+
+        var dateTime = new DateTime(1970, 1, 1);
+
+        var uploadedFile = new UploadedRegistrationFilesInformation
+        {
+            CompanyDetailsFileId = Guid.NewGuid(),
+            CompanyDetailsFileName = "RegData",
+            CompanyDetailsUploadedBy = Guid.NewGuid(),
+            CompanyDetailsUploadDatetime = dateTime,
+            BrandsFileName = string.Empty,
+            BrandsUploadedBy = null,
+            BrandsUploadDatetime = null,
+            PartnershipsFileName = string.Empty,
+            PartnershipsUploadedBy = null,
+            PartnershipsUploadDatetime = null
+        };
+
+        var submittedFile = new SubmittedRegistrationFilesInformation
+        {
+            SubmittedDateTime = dateTime.AddHours(1)
+        };
+
+        var reuploadedFile = new UploadedRegistrationFilesInformation
+        {
+            CompanyDetailsFileId = Guid.NewGuid(),
+            CompanyDetailsFileName = "RegData",
+            CompanyDetailsUploadedBy = Guid.NewGuid(),
+            CompanyDetailsUploadDatetime = dateTime.AddHours(2),
+            BrandsFileName = string.Empty,
+            BrandsUploadedBy = null,
+            BrandsUploadDatetime = null,
+            PartnershipsFileName = string.Empty,
+            PartnershipsUploadedBy = null,
+            PartnershipsUploadDatetime = null
+        };
+
+        return new object[]
+        {
+            new object[]
+            {
+                false,
+                uploadedFile,
+                null,
+                BASIC_USER,
+                nameof(FileReUploadCompanyDetailsConfirmationController.Get),
+                nameof(FileReUploadCompanyDetailsConfirmationController).RemoveControllerFromName()
+            },
+            new object[]
+            {
+                false,
+                uploadedFile,
+                null,
+                DELEGATER_PERSON,
+                nameof(ReviewCompanyDetailsController.Get),
+                nameof(ReviewCompanyDetailsController).RemoveControllerFromName()
+            },
+            new object[]
+            {
+                true,
+                uploadedFile,
+                submittedFile,
+                DELEGATER_PERSON,
+                nameof(FileReUploadCompanyDetailsConfirmationController.Get),
+                nameof(FileReUploadCompanyDetailsConfirmationController).RemoveControllerFromName()
+            },
+            new object[]
+            {
+                true,
+                reuploadedFile,
+                submittedFile,
+                DELEGATER_PERSON,
+                nameof(ReviewCompanyDetailsController.Get),
+                nameof(ReviewCompanyDetailsController).RemoveControllerFromName()
+            },
+            new object[]
+            {
+                true,
+                uploadedFile,
+                submittedFile,
+                BASIC_USER,
+                nameof(FileReUploadCompanyDetailsConfirmationController.Get),
+                nameof(FileReUploadCompanyDetailsConfirmationController).RemoveControllerFromName()
+            },
+            new object[]
+            {
+                true,
+                reuploadedFile,
+                submittedFile,
+                BASIC_USER,
+                nameof(FileReUploadCompanyDetailsConfirmationController.Get),
+                nameof(FileReUploadCompanyDetailsConfirmationController).RemoveControllerFromName()
+            }
+        };
+    }
+
     [SetUp]
     public void SetUp()
     {
@@ -252,31 +351,25 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
     }
 
     [Test]
-    public async Task Post_SavesSubmissionPeriodInSessionAndRedirectsToFileUploadCompanyDetailsPage_WhenSubmissionExists()
+    [TestCaseSource(nameof(Post_SavesSubmissionPeriodInSessionAndRedirectsToCorrectPage_WhenSubmissionExists_Cases))]
+    public async Task Post_SavesSubmissionPeriodInSessionAndRedirectsToCorrectPage_WhenSubmissionExists(
+        bool isSubmitted,
+        UploadedRegistrationFilesInformation lastUploadedValidFiles,
+        SubmittedRegistrationFilesInformation lastSubmittedFiles,
+        string serviceRole,
+        string expectedActionName,
+        string expectedControllerName)
     {
         // Arrange
         var submission = new RegistrationSubmission
         {
             Id = Guid.NewGuid(),
             HasValidFile = true,
-            LastUploadedValidFiles = new UploadedRegistrationFilesInformation
-            {
-                CompanyDetailsFileId = Guid.NewGuid(),
-                CompanyDetailsFileName = "RegData",
-                CompanyDetailsUploadedBy = Guid.NewGuid(),
-                CompanyDetailsUploadDatetime = DateTime.Now,
-                BrandsFileName = string.Empty,
-                BrandsUploadedBy = null,
-                BrandsUploadDatetime = null,
-                PartnershipsFileName = string.Empty,
-                PartnershipsUploadedBy = null,
-                PartnershipsUploadDatetime = null
-            }
+            IsSubmitted = isSubmitted,
+            LastUploadedValidFiles = lastUploadedValidFiles,
+            LastSubmittedFiles = lastSubmittedFiles
         };
-        var sessionObj = new FrontendSchemeRegistrationSession
-        {
-            UserData = new UserData { ServiceRole = "Basic User" }
-        };
+        var sessionObj = new FrontendSchemeRegistrationSession { UserData = new UserData { ServiceRole = serviceRole } };
         _submissionServiceMock
             .Setup(x => x.GetSubmissionsAsync<RegistrationSubmission>(It.IsAny<List<string>>(), 1, null, It.IsAny<bool?>()))
             .ReturnsAsync(new List<RegistrationSubmission> { submission });
@@ -288,9 +381,39 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
         var result = await _systemUnderTest.Post(_submissionPeriods[0].DataPeriod) as RedirectToActionResult;
 
         // Assert
-        result.ActionName.Should().Be(nameof(FileReUploadCompanyDetailsConfirmationController.Get));
-        result.ControllerName.Should().Be(nameof(FileReUploadCompanyDetailsConfirmationController).RemoveControllerFromName());
+        result.ActionName.Should().Be(expectedActionName);
+        result.ControllerName.Should().Be(expectedControllerName);
         result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(submission.Id);
+
+        _sessionManagerMock.Verify(
+            x => x.SaveSessionAsync(
+                It.IsAny<ISession>(),
+                It.Is<FrontendSchemeRegistrationSession>(
+                    s =>
+                        s.RegistrationSession.SubmissionPeriod == _submissionPeriods[0].DataPeriod
+                        && s.RegistrationSession.Journey.Count == 1 && s.RegistrationSession.Journey[0] == PagePaths.FileUploadCompanyDetailsSubLanding)),
+            Times.Once());
+    }
+
+    [Test]
+    public async Task Post_SavesSubmissionPeriodInSessionAndRedirectsFileUploadCompanyDetailsController_WhenSubmissionNotStarted()
+    {
+        // Arrange
+        var submission = new RegistrationSubmission { Id = Guid.NewGuid(), HasValidFile = false };
+        var sessionObj = new FrontendSchemeRegistrationSession { UserData = new UserData { ServiceRole = "Basic User" } };
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionsAsync<RegistrationSubmission>(It.IsAny<List<string>>(), 1, null, It.IsAny<bool?>()))
+            .ReturnsAsync(new List<RegistrationSubmission> { submission });
+        _sessionManagerMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(sessionObj);
+
+        // Act
+        var result = await _systemUnderTest.Post(_submissionPeriods[0].DataPeriod) as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be(nameof(FileUploadCompanyDetailsController.Get));
+        result.ControllerName.Should().Be(nameof(FileUploadCompanyDetailsController).RemoveControllerFromName());
 
         _sessionManagerMock.Verify(
             x => x.SaveSessionAsync(

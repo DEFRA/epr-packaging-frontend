@@ -133,6 +133,30 @@ public class ReviewCompanyDetailsControllerTests
     }
 
     [Test]
+    public async Task Get_RedirectsToFileUploadCompanyDetailsSubLandingGet_WhenHasInvalidFile()
+    {
+        // Arrange
+        _submissionService
+            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(new RegistrationSubmission
+            {
+                HasValidFile = false
+            });
+
+        var model = GenerateReviewCompanyDetailsModel(OrganisationRoles.Producer, true, true);
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Post(model) as RedirectToActionResult;
+
+        // Assert
+        result?.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadCompanyDetailsSubLanding");
+    }
+
+    [Test]
     public async Task Post_RedirectsToFileUploadCompanyDetailsSubLanding_WhenValidationPassFalse()
     {
         // Arrange

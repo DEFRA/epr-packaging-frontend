@@ -209,7 +209,6 @@ public class SchemeMembershipController : Controller
         }
 
         var currentPagePath = $"{PagePaths.ReasonsForRemoval}/{selectedSchemeId}";
-        var nextPagePath = $"{PagePaths.ConfirmRemoval}/{selectedSchemeId}";
 
         SetBackLink(session, currentPagePath);
 
@@ -234,8 +233,6 @@ public class SchemeMembershipController : Controller
         var organisation = userData.Organisations.Single();
 
         var currentPagePath = $"{PagePaths.ReasonsForRemoval}/{selectedSchemeId}";
-        var nextPagePath = $"{PagePaths.ConfirmRemoval}/{selectedSchemeId}";
-
         SetBackLink(session, currentPagePath);
 
         model.IsApprovedUser = userData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved);
@@ -286,7 +283,8 @@ public class SchemeMembershipController : Controller
 
         var selectedCodeRequiresReason = model.ReasonForRemoval.First(s => s.Code == session.SchemeMembershipSession.SelectedReasonForRemoval);
 
-        if (selectedCodeRequiresReason.RequiresReason == true)
+        string nextPagePath;
+        if (selectedCodeRequiresReason.RequiresReason)
         {
             nextPagePath = $"{PagePaths.TellUsMore}/{selectedSchemeId}";
             return await SaveSessionAndRedirect(session, nameof(TellUsMore), currentPagePath, nextPagePath, selectedSchemeId);
@@ -316,7 +314,6 @@ public class SchemeMembershipController : Controller
         }
 
         var currentPagePath = $"{PagePaths.TellUsMore}/{selectedSchemeId}";
-        var nextPagePath = $"{PagePaths.ConfirmRemoval}/{selectedSchemeId}";
 
         SetBackLink(session, currentPagePath);
 

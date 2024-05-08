@@ -1,8 +1,10 @@
 ﻿namespace FrontendSchemeRegistration.UI.RequestModels;
 
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using Resources;
 
+[ExcludeFromCodeCoverage]
 public class SubmissionDeclarationRequest
 {
     [Required(ErrorMessageResourceName = "declaration_name_required_key", ErrorMessageResourceType = typeof(ErrorMessages))]

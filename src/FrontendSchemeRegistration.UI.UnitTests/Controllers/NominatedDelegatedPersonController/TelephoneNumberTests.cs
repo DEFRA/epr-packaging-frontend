@@ -56,6 +56,20 @@ public class TelephoneNumberTests
     }
 
     [Test]
+    public async Task TelephoneNumber_WhenHttpGetCalledAndSessionIsNull_ThenRedirectHome()
+    {
+        // Arrange
+        SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(() => null);
+
+        // Act
+        var result = await SystemUnderTest.TelephoneNumber(_enrolmentId) as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("Landing");
+    }
+
+    [Test]
     public async Task TelephoneNumber_WhenHttpGetCalled_ThenTelephoneViewModelReturned()
     {
         // Arrange
@@ -108,5 +122,43 @@ public class TelephoneNumberTests
         result.Should().BeOfType<RedirectToActionResult>();
         (result as RedirectToActionResult).ActionName.Should().Be(nameof(NominatedDelegatedPersonController.ConfirmPermissionSubmitData));
         SessionManagerMock.Verify(x => x.SaveSessionAsync(It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()), Times.Once);
+    }
+
+    [Test]
+    public async Task TelephoneNumber_WhenHttpPostCalledAndSessionIsNull_ThenRedirectHome()
+    {
+        // Arrange
+        SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(() => null);
+        var model = new TelephoneNumberViewModel { TelephoneNumber = "07904123456" };
+
+        // Act
+        var result = await SystemUnderTest.TelephoneNumber(model, _enrolmentId) as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("Landing");
+    }
+
+    [Test]
+    public async Task TelephoneNumber_WhenHttpPostCalledWithInvalidData_ThenReturnView()
+    {
+        // Arrange
+        var session = new FrontendSchemeRegistrationSession { NominatedDelegatedPersonSession = new NominatedDelegatedPersonSession { Journey = new List<string>() } };
+        SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+        var model = new TelephoneNumberViewModel { TelephoneNumber = "test" };
+
+        SystemUnderTest.ModelState.AddModelError("number", "error");
+
+        // Act
+        var result = await SystemUnderTest.TelephoneNumber(model, _enrolmentId) as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be(null);
+        result.ViewData.Model.Should().BeEquivalentTo(new TelephoneNumberViewModel
+        {
+            EnrolmentId = _enrolmentId,
+            TelephoneNumber = "test",
+            EmailAddress = _userData.Email
+        });
     }
 }

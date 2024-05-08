@@ -1,5 +1,8 @@
-﻿namespace FrontendSchemeRegistration.UI.Sessions;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace FrontendSchemeRegistration.UI.Sessions;
+
+[ExcludeFromCodeCoverage]
 public class NominatedDelegatedPersonSession
 {
     public List<string> Journey { get; set; } = new();

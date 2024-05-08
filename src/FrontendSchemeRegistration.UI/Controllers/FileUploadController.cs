@@ -20,7 +20,6 @@ using ViewModels;
 [Route(PagePaths.FileUpload)]
 [SubmissionPeriodActionFilter(PagePaths.FileUploadSubLanding)]
 [ComplianceSchemeIdActionFilter]
-[IgnoreAntiforgeryToken]
 public class FileUploadController : Controller
 {
     private readonly IFileUploadService _fileUploadService;

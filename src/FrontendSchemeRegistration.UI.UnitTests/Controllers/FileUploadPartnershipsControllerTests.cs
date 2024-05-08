@@ -184,6 +184,21 @@ public class FileUploadPartnershipsControllerTests
     }
 
     [Test]
+    public async Task Get_ReturnsToFileUploadSubLanding_WhenSessionIsNull()
+    {
+        // Arrange
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync((FrontendSchemeRegistrationSession)null);
+
+        // Act
+        var result = await _systemUnderTest.Get() as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadCompanyDetails");
+    }
+
+    [Test]
     public async Task Get_RedirectsToFileUploadCompanyDetails_WhenOrganisationRolesIsNull()
     {
         // Arrange

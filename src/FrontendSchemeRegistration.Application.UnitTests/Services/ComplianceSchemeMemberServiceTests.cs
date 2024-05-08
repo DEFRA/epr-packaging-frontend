@@ -123,7 +123,7 @@ public class ComplianceSchemeMemberServiceTests : ServiceTestBase<IComplianceSch
 
         var result = await _complianceSchemeMemberService.GetReasonsForRemoval();
         var reasonsForRemoval = result.ToList();
-        reasonsForRemoval.Count().Should().Be(2);
+        reasonsForRemoval.Count.Should().Be(2);
     }
 
     [Test]

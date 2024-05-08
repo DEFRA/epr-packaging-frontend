@@ -1,8 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using FrontendSchemeRegistration.Application.DTOs.ComplianceScheme;
 
 namespace FrontendSchemeRegistration.UI.ViewModels;
 
+[ExcludeFromCodeCoverage]
 public class ReasonForRemovalViewModel
 {
     public IReadOnlyCollection<ComplianceSchemeReasonsRemovalDto> ReasonForRemoval { get; set; }

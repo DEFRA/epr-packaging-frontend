@@ -26,7 +26,7 @@ namespace FrontendSchemeRegistration.UI.Helpers
                 input.ProducerOrganisationName = session.RegistrationSession.SelectedComplianceScheme?.Name;
                 input.ComplianceSchemeName = organisation.Name;
                 input.ComplianceSchemePersonName = $"{userData.FirstName} {userData.LastName}";
-                input.NationId = (int)session.RegistrationSession.SelectedComplianceScheme?.NationId;
+                input.NationId = session.RegistrationSession.SelectedComplianceScheme?.NationId ?? 0;
             }
 
             return input;

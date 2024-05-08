@@ -1,7 +1,9 @@
 ﻿namespace FrontendSchemeRegistration.UI.ViewModels;
 
+using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
 
+[ExcludeFromCodeCoverage]
 public class FileUploadCompanyDetailsSuccessViewModel : ViewModelWithOrganisationRole
 {
     public Guid SubmissionId { get; set; }

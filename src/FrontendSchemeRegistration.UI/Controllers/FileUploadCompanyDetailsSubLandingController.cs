@@ -17,7 +17,6 @@ using ViewModels;
 
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
 [Route(PagePaths.FileUploadCompanyDetailsSubLanding)]
-[IgnoreAntiforgeryToken]
 public class FileUploadCompanyDetailsSubLandingController : Controller
 {
     private const int _submissionsLimit = 1;

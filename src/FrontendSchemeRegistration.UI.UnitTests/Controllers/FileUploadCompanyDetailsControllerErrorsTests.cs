@@ -13,7 +13,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Primitives;
 using Moq;
 using UI.Controllers;
-using UI.Services.Interfaces;
 using UI.Sessions;
 using UI.ViewModels;
 
@@ -61,8 +60,6 @@ public class FileUploadCompanyDetailsErrorsControllerTests
                     },
                 }
             });
-
-        new Mock<IFileUploadService>();
 
         _systemUnderTest = new FileUploadCompanyDetailsErrorsController(_submissionServiceMock.Object, _sessionManagerMock.Object, _nullLogger);
         _systemUnderTest.ControllerContext = new ControllerContext

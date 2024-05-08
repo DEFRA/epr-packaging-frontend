@@ -18,7 +18,6 @@ using ViewModels;
 
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
 [Route(PagePaths.FileUploadPartnerships)]
-[IgnoreAntiforgeryToken]
 public class FileUploadPartnershipsController : Controller
 {
     private readonly IFileUploadService _fileUploadService;
@@ -41,35 +40,37 @@ public class FileUploadPartnershipsController : Controller
     public async Task<IActionResult> Get()
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-        if (session is not null)
+        if (session is null)
         {
-            if (!session.RegistrationSession.Journey.Contains<string>(PagePaths.FileUploadBrands))
-            {
-                return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
-            }
+            return RedirectToAction("Get", "FileUploadCompanyDetails");
+        }
 
-            var organisationRole = session.UserData.Organisations.FirstOrDefault()?.OrganisationRole;
-            if (organisationRole is not null)
-            {
-                var submissionId = new Guid(Request.Query["submissionId"]);
-                var submission = await _submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
+        if (!session.RegistrationSession.Journey.Contains<string>(PagePaths.FileUploadBrands))
+        {
+            return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
+        }
 
-                if (submission is not null)
+        var organisationRole = session.UserData.Organisations.FirstOrDefault()?.OrganisationRole;
+        if (organisationRole is not null)
+        {
+            var submissionId = new Guid(Request.Query["submissionId"]);
+            var submission = await _submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
+
+            if (submission is not null)
+            {
+                if (submission.Errors.Any())
                 {
-                    if (submission.Errors.Any())
-                    {
-                        ModelStateHelpers.AddFileUploadExceptionsToModelState(submission.Errors.Distinct().ToList(), ModelState);
-                    }
+                    ModelStateHelpers.AddFileUploadExceptionsToModelState(submission.Errors.Distinct().ToList(), ModelState);
+                }
 
-                    if (submission.RequiresPartnershipsFile)
-                    {
-                        return View(
-                            "FileUploadPartnerships",
-                            new FileUploadViewModel
-                            {
-                                OrganisationRole = organisationRole
-                            });
-                    }
+                if (submission.RequiresPartnershipsFile)
+                {
+                    return View(
+                        "FileUploadPartnerships",
+                        new FileUploadViewModel
+                        {
+                            OrganisationRole = organisationRole
+                        });
                 }
             }
         }

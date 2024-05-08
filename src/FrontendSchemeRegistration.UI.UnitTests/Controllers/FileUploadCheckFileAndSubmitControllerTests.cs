@@ -10,6 +10,7 @@ using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
+using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.RequestModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -275,7 +276,7 @@ public class FileUploadCheckFileAndSubmitControllerTests
             OrganisationNumber = "123456",
             ProducerOrganisationName = "Compliance Scheme Name",
             SubmissionPeriod = "Jan to Jun 2023",
-            NationId = 1,
+            NationId = 2,
             IsComplianceScheme = true,
             ComplianceSchemeName = "Organisation Name",
             ComplianceSchemePersonName = "First Last"
@@ -312,7 +313,75 @@ public class FileUploadCheckFileAndSubmitControllerTests
             It.Is<ResubmissionEmailRequestModel>(x => x.OrganisationNumber == input.OrganisationNumber
                 && x.ProducerOrganisationName == input.ProducerOrganisationName
                 && x.SubmissionPeriod == input.SubmissionPeriod
-                && x.NationId == 2
+                && x.NationId == input.NationId
+                && x.IsComplianceScheme == input.IsComplianceScheme
+                && x.ComplianceSchemeName == input.ComplianceSchemeName
+                && x.ComplianceSchemePersonName == input.ComplianceSchemePersonName)), Times.Once);
+    }
+
+    [Test]
+    public async Task Post_SendsResubmissionEmail_WhenUserIsComplianceSchemeIsNull()
+    {
+        // Arrange
+        var fileId = Guid.NewGuid();
+        var model = new FileUploadCheckFileAndSubmitViewModel { LastValidFileId = fileId };
+        var submission = new PomSubmission
+        {
+            Id = _submissionId,
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileName = "last-valid-file.csv",
+                UploadedBy = _lastValidFileUploadedByUserId,
+                FileUploadDateTime = DateTime.Now,
+                FileId = fileId
+            },
+            LastSubmittedFile = new SubmittedFileInformation
+            {
+                FileName = "last-valid-file.csv",
+                FileId = Guid.NewGuid()
+            },
+            SubmissionPeriod = "Jan to Jun 2023"
+        };
+
+        var input = new ResubmissionEmailRequestModel
+        {
+            OrganisationNumber = "123456",
+            ProducerOrganisationName = null,
+            SubmissionPeriod = "Jan to Jun 2023",
+            NationId = 0,
+            IsComplianceScheme = true,
+            ComplianceSchemeName = "Organisation Name",
+            ComplianceSchemePersonName = "First Last"
+        };
+
+        _sessionManagerMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SelectedComplianceScheme = null
+                }
+            });
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        _regulatorServiceMock.Setup(x => x.SendRegulatorResubmissionEmail(It.IsAny<ResubmissionEmailRequestModel>())).ReturnsAsync("notificationId");
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.ComplianceScheme);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Post(model) as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadSubmissionConfirmation");
+        result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(submission.Id.ToString());
+        _regulatorServiceMock.Verify(
+            x => x.SendRegulatorResubmissionEmail(
+            It.Is<ResubmissionEmailRequestModel>(x => x.OrganisationNumber == input.OrganisationNumber
+                && x.ProducerOrganisationName == input.ProducerOrganisationName
+                && x.SubmissionPeriod == input.SubmissionPeriod
+                && x.NationId == input.NationId
                 && x.IsComplianceScheme == input.IsComplianceScheme
                 && x.ComplianceSchemeName == input.ComplianceSchemeName
                 && x.ComplianceSchemePersonName == input.ComplianceSchemePersonName)), Times.Once);

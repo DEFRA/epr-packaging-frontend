@@ -62,17 +62,17 @@ public class FileUploadingCompanyDetailsController : Controller
         return RedirectToAction("Get", "FileUploadCompanyDetailsSuccess", new { submissionId = submissionId.ToString() });
     }
 
-    private bool ValidationHasCompleted(RegistrationSubmission submission)
+    private static bool ValidationHasCompleted(RegistrationSubmission submission)
     {
         return submission.CompanyDetailsDataComplete;
     }
 
-    private bool HasFileErrors(RegistrationSubmission submission)
+    private static bool HasFileErrors(RegistrationSubmission submission)
     {
         return submission.Errors.Any();
     }
 
-    private bool HasRowValidationErrors(RegistrationSubmission submission)
+    private static bool HasRowValidationErrors(RegistrationSubmission submission)
     {
         return submission.RowErrorCount.HasValue && submission.RowErrorCount > 0;
     }

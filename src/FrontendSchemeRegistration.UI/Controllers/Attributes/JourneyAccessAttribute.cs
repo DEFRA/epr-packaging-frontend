@@ -1,7 +1,9 @@
 ﻿namespace FrontendSchemeRegistration.UI.Controllers.Attributes;
 
+using System.Diagnostics.CodeAnalysis;
 using Constants;
 
+[ExcludeFromCodeCoverage]
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false)]
 public class JourneyAccessAttribute : Attribute
 {

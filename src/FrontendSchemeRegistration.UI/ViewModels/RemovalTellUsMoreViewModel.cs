@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FrontendSchemeRegistration.UI.ViewModels;
 
+[ExcludeFromCodeCoverage]
 public class RemovalTellUsMoreViewModel
 {
     [MaxLength(200, ErrorMessage = "RemovalTellUsMore.Error200")]

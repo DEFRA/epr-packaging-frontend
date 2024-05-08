@@ -167,6 +167,12 @@ public class FileUploadSubLandingController : Controller
             : SubmissionPeriodStatus.NotStarted;
     }
 
+    private static bool SubmissionFileIdsDiffer(PomSubmission submission)
+    {
+        return submission.LastSubmittedFile.FileId != submission.LastUploadedValidFile.FileId &&
+               submission.HasWarnings && submission.ValidationPass;
+    }
+
     private SubmissionPeriod FindSubmissionPeriod(string dataPeriod)
     {
         return _submissionPeriods.FirstOrDefault(period => period.DataPeriod == dataPeriod);
@@ -256,12 +262,6 @@ public class FileUploadSubLandingController : Controller
             nameof(FileUploadCheckFileAndSubmitController.Get),
             nameof(FileUploadCheckFileAndSubmitController).RemoveControllerFromName(),
             routeValueDictionary);
-    }
-
-    private bool SubmissionFileIdsDiffer(PomSubmission submission)
-    {
-        return submission.LastSubmittedFile.FileId != submission.LastUploadedValidFile.FileId &&
-               submission.HasWarnings && submission.ValidationPass;
     }
 
     private IActionResult RedirectToAppropriateFileController(PomSubmission submission, RouteValueDictionary routeValueDictionary)

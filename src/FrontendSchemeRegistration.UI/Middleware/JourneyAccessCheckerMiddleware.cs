@@ -23,65 +23,67 @@ public class JourneyAccessCheckerMiddleware
         var endpoint = httpContext.Features.Get<IEndpointFeature>()?.Endpoint;
         var attribute = endpoint?.Metadata.GetMetadata<JourneyAccessAttribute>();
 
-        if (attribute != null)
+        if (attribute == null)
         {
-            string? pageToRedirect = null;
-            var sessionValue = await sessionManager.GetSessionAsync(httpContext.Session);
+            await _next(httpContext);
+            return;
+        }
 
-            if (attribute.JourneyType is JourneyName.SchemeMembershipStart or JourneyName.SchemeMembership)
+        string? pageToRedirect = null;
+        var sessionValue = await sessionManager.GetSessionAsync(httpContext.Session);
+
+        if (attribute.JourneyType is JourneyName.SchemeMembershipStart or JourneyName.SchemeMembership)
+        {
+            if (attribute.JourneyType == JourneyName.SchemeMembership &&
+                sessionValue?.SchemeMembershipSession is not null &&
+                sessionValue.SchemeMembershipSession.Journey.Any() &&
+                !sessionValue.SchemeMembershipSession.Journey.Contains(httpContext.Request.Path))
             {
-                if (attribute.JourneyType == JourneyName.SchemeMembership &&
-                    sessionValue?.SchemeMembershipSession is not null &&
-                    sessionValue.SchemeMembershipSession.Journey.Any() &&
-                    !sessionValue.SchemeMembershipSession.Journey.Contains(httpContext.Request.Path))
-                {
-                    pageToRedirect = sessionValue.SchemeMembershipSession.Journey.Last();
-                    httpContext.Response.Redirect($"{globalVariables.Value.BasePath}{pageToRedirect}");
-                }
-
-                await _next(httpContext);
-
-                return;
+                pageToRedirect = sessionValue.SchemeMembershipSession.Journey.Last();
+                httpContext.Response.Redirect($"{globalVariables.Value.BasePath}{pageToRedirect}");
             }
 
-            if (attribute.JourneyType == JourneyName.NominatedDelegatedPersonStart ||
-                attribute.JourneyType == JourneyName.NominatedDelegatedPerson)
-            {
-                var id = ParseRouteId(httpContext);
+            await _next(httpContext);
+            return;
+        }
 
-                if (id == null)
+        if (attribute.JourneyType == JourneyName.NominatedDelegatedPersonStart ||
+            attribute.JourneyType == JourneyName.NominatedDelegatedPerson)
+        {
+            var id = ParseRouteId(httpContext);
+
+            if (id == null)
+            {
+                pageToRedirect = $"{globalVariables.Value.BasePath}/{PagePaths.HomePageSelfManaged}";
+            }
+            else if (attribute.JourneyType == JourneyName.NominatedDelegatedPerson)
+            {
+                if (sessionValue?.NominatedDelegatedPersonSession is null || sessionValue.NominatedDelegatedPersonSession.Journey.Count == 0)
                 {
                     pageToRedirect = $"{globalVariables.Value.BasePath}/{PagePaths.HomePageSelfManaged}";
                 }
-                else if (attribute.JourneyType == JourneyName.NominatedDelegatedPerson)
+                else if (!sessionValue.NominatedDelegatedPersonSession.Journey.Contains($"{attribute.PagePath}/{id}"))
                 {
-                    if (sessionValue?.NominatedDelegatedPersonSession is null || sessionValue.NominatedDelegatedPersonSession.Journey.Count == 0)
-                    {
-                        pageToRedirect = $"{globalVariables.Value.BasePath}/{PagePaths.HomePageSelfManaged}";
-                    }
-                    else if (!sessionValue.NominatedDelegatedPersonSession.Journey.Contains($"{attribute.PagePath}/{id}"))
-                    {
-                        pageToRedirect = $"{globalVariables.Value.BasePath}{sessionValue.NominatedDelegatedPersonSession.Journey.Last()}";
-                    }
+                    pageToRedirect = $"{globalVariables.Value.BasePath}{sessionValue.NominatedDelegatedPersonSession.Journey.Last()}";
                 }
             }
-            else
+        }
+        else
+        {
+            if (sessionValue?.NominatedDelegatedPersonSession is null || sessionValue.RegistrationSession.Journey.Count == 0)
             {
-                if (sessionValue?.NominatedDelegatedPersonSession is null || sessionValue.RegistrationSession.Journey.Count == 0)
-                {
-                    pageToRedirect = PagePaths.HomePageSelfManaged;
-                }
-                else if (!sessionValue.RegistrationSession.Journey.Contains(attribute.PagePath))
-                {
-                    pageToRedirect = sessionValue.RegistrationSession.Journey.Last();
-                }
+                pageToRedirect = PagePaths.HomePageSelfManaged;
             }
+            else if (!sessionValue.RegistrationSession.Journey.Contains(attribute.PagePath))
+            {
+                pageToRedirect = sessionValue.RegistrationSession.Journey.Last();
+            }
+        }
 
-            if (!string.IsNullOrEmpty(pageToRedirect))
-            {
-                httpContext.Response.Redirect(pageToRedirect);
-                return;
-            }
+        if (!string.IsNullOrEmpty(pageToRedirect))
+        {
+            httpContext.Response.Redirect(pageToRedirect);
+            return;
         }
 
         await _next(httpContext);

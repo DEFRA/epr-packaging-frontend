@@ -212,6 +212,37 @@ public class FileUploadBrandsControllerTests
     }
 
     [Test]
+    public async Task Get_CallsSubmissionService_WhenOrganisationRoleIsNotNull()
+    {
+        // Arrange
+        _systemUnderTest.ControllerContext.HttpContext.Request.Query = new QueryCollection(new Dictionary<string, StringValues>
+        {
+            { "submissionId", Guid.NewGuid().ToString() }
+        });
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                UserData = new UserData { Organisations = { new() { OrganisationRole = "Admin" } } },
+                RegistrationSession = new RegistrationSession
+                {
+                    Journey = new List<string>
+                    {
+                        PagePaths.FileUploadCompanyDetailsSubLanding,
+                        PagePaths.FileUploadCompanyDetails,
+                        PagePaths.FileUploadBrands,
+                        PagePaths.FileUploadPartnerships
+                    }
+                }
+            });
+
+        // Act
+        var result = await _systemUnderTest.Get();
+
+        // Assert
+        _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.Once);
+    }
+
+    [Test]
     public async Task Get_RedirectsToFileUploadBrands_WhenSubmissionIsNull()
     {
         // Arrange
@@ -231,5 +262,24 @@ public class FileUploadBrandsControllerTests
 
         // Assert
         result.Should().BeOfType<RedirectToActionResult>();
+    }
+
+    [Test]
+    public async Task Get_RedirectsToFileUploadCompanyDetails_WhenSessionIsNull()
+    {
+        // Arrange
+        _systemUnderTest.ControllerContext.HttpContext.Request.Query = new QueryCollection(new Dictionary<string, StringValues>
+        {
+            { "submissionId", Guid.NewGuid().ToString() }
+        });
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync((FrontendSchemeRegistrationSession?)null);
+
+        // Act
+        var result = await _systemUnderTest.Get() as RedirectToActionResult;
+
+        // Assert
+        result?.ActionName.Should().Be("Get");
+        result?.ControllerName.Should().Be("FileUploadCompanyDetails");
     }
 }

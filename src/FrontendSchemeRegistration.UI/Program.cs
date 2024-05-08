@@ -101,4 +101,11 @@ app.MapControllerRoute("default", "{controller=LandingController}/{action=Get}")
 app.MapRazorPages();
 app.MapControllers();
 app.UseRequestLocalization();
+
+app.Use(async (context, next) =>
+{
+    context.Request.EnableBuffering();
+    await next();
+});
+
 app.Run();

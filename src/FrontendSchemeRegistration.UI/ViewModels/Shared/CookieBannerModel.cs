@@ -1,5 +1,8 @@
 ﻿namespace FrontendSchemeRegistration.UI.ViewModels.Shared;
 
+using System.Diagnostics.CodeAnalysis;
+
+[ExcludeFromCodeCoverage]
 public class CookieBannerModel
 {
     public bool ShowBanner { get; set; }

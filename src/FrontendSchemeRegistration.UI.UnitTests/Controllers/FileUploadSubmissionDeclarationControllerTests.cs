@@ -358,6 +358,76 @@ public class FileUploadSubmissionDeclarationControllerTests
     }
 
     [Test]
+    public async Task Post_SendResubmissionEmail_WhenSelectedComplianceSchemeIsNull()
+    {
+        // Arrange
+        Guid lastValidFileUploadedByUserId = Guid.NewGuid();
+        var fileId = Guid.NewGuid();
+
+        var submission = new PomSubmission
+        {
+            Id = _submissionId,
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileName = "last-valid-file.csv",
+                UploadedBy = lastValidFileUploadedByUserId,
+                FileUploadDateTime = DateTime.Now,
+                FileId = fileId
+            },
+            LastSubmittedFile = new SubmittedFileInformation
+            {
+                FileName = "last-valid-file.csv",
+                FileId = fileId
+            },
+            SubmissionPeriod = "Jan to Jun 2023"
+        };
+
+        var input = new ResubmissionEmailRequestModel
+        {
+            OrganisationNumber = "123456",
+            ProducerOrganisationName = null,
+            SubmissionPeriod = "Jan to Jun 2023",
+            NationId = 0,
+            IsComplianceScheme = true,
+        };
+
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+
+        _sessionManagerMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    FileId = _fileId,
+                    SelectedComplianceScheme = null
+                }
+            });
+
+        _regulatorServiceMock.Setup(x => x.SendRegulatorResubmissionEmail(It.IsAny<ResubmissionEmailRequestModel>())).ReturnsAsync("notificationId");
+
+        var submissionDeclarationRequest = new SubmissionDeclarationRequest
+        {
+            DeclarationName = DeclarationName
+        };
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.ComplianceScheme);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Post(submissionDeclarationRequest) as RedirectToActionResult;
+
+        // Assert
+        _regulatorServiceMock.Verify(
+            x => x.SendRegulatorResubmissionEmail(
+            It.Is<ResubmissionEmailRequestModel>(x => x.OrganisationNumber == input.OrganisationNumber
+                && x.ProducerOrganisationName == input.ProducerOrganisationName
+                && x.SubmissionPeriod == input.SubmissionPeriod
+                && x.NationId == input.NationId
+                && x.IsComplianceScheme == input.IsComplianceScheme)), Times.Once);
+    }
+
+    [Test]
     public async Task Post_RedirectsToFileUploadSubmissionErrorGet_WhenExceptionOccursDuringSubmission()
     {
         // Arrange

@@ -1,8 +1,10 @@
 ﻿namespace FrontendSchemeRegistration.UI.Sessions;
 
+using System.Diagnostics.CodeAnalysis;
 using Application.DTOs.ComplianceScheme;
 using Enums;
 
+[ExcludeFromCodeCoverage]
 public class RegistrationSession
 {
     public List<string> Journey { get; set; } = new();

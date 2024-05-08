@@ -802,7 +802,7 @@ public class FileUploadSubLandingControllerTests
         });
     }
 
-    private PomSubmission CreatePomSubmissionWithWarningsAndFileIdMismatch()
+    private static PomSubmission CreatePomSubmissionWithWarningsAndFileIdMismatch()
     {
         return new PomSubmission
         {

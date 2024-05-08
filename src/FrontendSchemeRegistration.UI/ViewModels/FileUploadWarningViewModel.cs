@@ -1,7 +1,10 @@
 ﻿namespace FrontendSchemeRegistration.UI.ViewModels;
 
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using Resources;
+
+[ExcludeFromCodeCoverage]
 public class FileUploadWarningViewModel
 {
     public string FileName { get; set; }

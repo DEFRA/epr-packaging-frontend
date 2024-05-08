@@ -1,7 +1,9 @@
 ﻿namespace FrontendSchemeRegistration.UI.ViewModels;
 
+using System.Diagnostics.CodeAnalysis;
 using Attributes.Validation;
 
+[ExcludeFromCodeCoverage]
 public class TelephoneNumberViewModel
 {
     public Guid? EnrolmentId { get; set; }

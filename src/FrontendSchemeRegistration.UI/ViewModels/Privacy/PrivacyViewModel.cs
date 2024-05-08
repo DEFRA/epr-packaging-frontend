@@ -1,5 +1,8 @@
-﻿namespace FrontendSchemeRegistration.UI.ViewModels.Privacy;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace FrontendSchemeRegistration.UI.ViewModels.Privacy;
+
+[ExcludeFromCodeCoverage]
 public class PrivacyViewModel
 {
     public string DataProtectionPublicRegisterUrl { get; set; }

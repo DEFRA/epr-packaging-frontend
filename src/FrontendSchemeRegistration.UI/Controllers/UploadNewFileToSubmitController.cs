@@ -17,7 +17,6 @@ using ViewModels;
 
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
 [Route(PagePaths.UploadNewFileToSubmit)]
-[IgnoreAntiforgeryToken]
 public class UploadNewFileToSubmitController : Controller
 {
     private readonly ISubmissionService _submissionService;
@@ -42,88 +41,92 @@ public class UploadNewFileToSubmitController : Controller
         ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadSubLanding}");
 
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-        if (session is not null)
+        if (session is null)
         {
-            var organisationRole = session.UserData.Organisations?.FirstOrDefault()?.OrganisationRole;
-
-            if (organisationRole is not null)
-            {
-                var submissionId = Request.Query.ContainsKey("submissionId")
-                    ? Guid.Parse(Request.Query["submissionId"])
-                    : Guid.Empty;
-
-                if (submissionId != Guid.Empty)
-                {
-                    var submission = await _submissionService.GetSubmissionAsync<PomSubmission>(submissionId);
-
-                    if (submission is not null)
-                    {
-                        var userData = User.GetUserData();
-                        var decision = new PomDecision();
-
-                        if (showPoMResubmission)
-                        {
-                            decision = await _submissionService.GetDecisionAsync<PomDecision>(null, submission.Id);
-                        }
-
-                        var uploadedByGuid = submission.LastUploadedValidFile?.UploadedBy;
-                        var submittedByGuid = submission.LastSubmittedFile?.SubmittedBy;
-
-                        var uploadedBy =
-                            (await _userAccountService.GetPersonByUserId(uploadedByGuid.Value)).GetUserName();
-
-                        string submittedBy = null;
-
-                        if (uploadedByGuid.Equals(submittedByGuid))
-                        {
-                            submittedBy = uploadedBy;
-                        }
-                        else if (submittedByGuid != null)
-                        {
-                            submittedBy = (await _userAccountService.GetPersonByUserId(submittedByGuid.Value))
-                                .GetUserName();
-                        }
-
-                        var vm = new UploadNewFileToSubmitViewModel
-                        {
-                            OrganisationRole = organisationRole,
-                            IsApprovedOrDelegatedUser =
-                                userData.ServiceRole is ServiceRoles.ApprovedPerson or ServiceRoles.DelegatedPerson,
-                            SubmissionId = submission.Id,
-                            UploadedFileName = submission.LastUploadedValidFile?.FileName,
-                            UploadedAt = submission.LastUploadedValidFile?.FileUploadDateTime,
-                            UploadedBy = uploadedBy,
-                            SubmittedFileName = submission.LastSubmittedFile?.FileName,
-                            SubmittedAt = submission.LastSubmittedFile?.SubmittedDateTime,
-                            SubmittedBy = submittedBy,
-                            HasNewFileUploaded = submission.LastUploadedValidFile?.FileUploadDateTime >
-                                                 submission.LastSubmittedFile?.SubmittedDateTime,
-                            RegulatorComment = decision.Comments,
-                            RegulatorDecision = decision.Decision,
-                            IsResubmissionNeeded = decision.IsResubmissionRequired
-                        };
-
-                        if (!session.RegistrationSession.Journey.Contains(PagePaths.FileUploadSubLanding))
-                        {
-                            return RedirectToAction("Get", "FileUploadSubLanding");
-                        }
-
-                        vm.Status = vm switch
-                        {
-                            { SubmittedFileName: null, UploadedFileName: not null } =>
-                                Status.FileUploadedButNothingSubmitted,
-                            { SubmittedAt: var x, UploadedAt: var y } when x > y => Status.FileSubmitted,
-                            { SubmittedAt: var x, UploadedAt: var y } when x < y => Status
-                                .FileSubmittedAndNewFileUploadedButNotSubmitted,
-                            _ => Status.None
-                        };
-
-                        return View("UploadNewFileToSubmit", vm);
-                    }
-                }
-            }
+            return RedirectToAction("Get", "FileUploadSubLanding");
         }
 
-        return RedirectToAction("Get", "FileUploadSubLanding");
+        var organisationRole = session.UserData.Organisations?.FirstOrDefault()?.OrganisationRole;
+        if (organisationRole is null)
+        {
+            return RedirectToAction("Get", "FileUploadSubLanding");
+        }
+
+        var submissionId = Request.Query.ContainsKey("submissionId")
+            ? Guid.Parse(Request.Query["submissionId"])
+            : Guid.Empty;
+
+        if (submissionId == Guid.Empty)
+        {
+            return RedirectToAction("Get", "FileUploadSubLanding");
+        }
+
+        var submission = await _submissionService.GetSubmissionAsync<PomSubmission>(submissionId);
+        if (submission is null)
+        {
+            return RedirectToAction("Get", "FileUploadSubLanding");
+        }
+
+        var userData = User.GetUserData();
+        var decision = new PomDecision();
+
+        if (showPoMResubmission)
+        {
+            decision = await _submissionService.GetDecisionAsync<PomDecision>(null, submission.Id);
+        }
+
+        var uploadedByGuid = submission.LastUploadedValidFile?.UploadedBy;
+        var submittedByGuid = submission.LastSubmittedFile?.SubmittedBy;
+
+        var uploadedBy =
+            (await _userAccountService.GetPersonByUserId(uploadedByGuid.Value)).GetUserName();
+
+        string submittedBy = null;
+
+        if (uploadedByGuid.Equals(submittedByGuid))
+        {
+            submittedBy = uploadedBy;
+        }
+        else if (submittedByGuid != null)
+        {
+            submittedBy = (await _userAccountService.GetPersonByUserId(submittedByGuid.Value))
+                .GetUserName();
+        }
+
+        var vm = new UploadNewFileToSubmitViewModel
+        {
+            OrganisationRole = organisationRole,
+            IsApprovedOrDelegatedUser =
+                userData.ServiceRole is ServiceRoles.ApprovedPerson or ServiceRoles.DelegatedPerson,
+            SubmissionId = submission.Id,
+            UploadedFileName = submission.LastUploadedValidFile?.FileName,
+            UploadedAt = submission.LastUploadedValidFile?.FileUploadDateTime,
+            UploadedBy = uploadedBy,
+            SubmittedFileName = submission.LastSubmittedFile?.FileName,
+            SubmittedAt = submission.LastSubmittedFile?.SubmittedDateTime,
+            SubmittedBy = submittedBy,
+            HasNewFileUploaded = submission.LastUploadedValidFile?.FileUploadDateTime >
+                                    submission.LastSubmittedFile?.SubmittedDateTime,
+            RegulatorComment = decision.Comments,
+            RegulatorDecision = decision.Decision,
+            IsResubmissionNeeded = decision.IsResubmissionRequired
+        };
+
+        if (!session.RegistrationSession.Journey.Contains(PagePaths.FileUploadSubLanding))
+        {
+            return RedirectToAction("Get", "FileUploadSubLanding");
+        }
+
+        vm.Status = vm switch
+        {
+            { SubmittedFileName: null, UploadedFileName: not null } =>
+                Status.FileUploadedButNothingSubmitted,
+            { SubmittedAt: var x, UploadedAt: var y } when x > y => Status.FileSubmitted,
+            { SubmittedAt: var x, UploadedAt: var y } when x < y => Status
+                .FileSubmittedAndNewFileUploadedButNotSubmitted,
+            _ => Status.None
+        };
+
+        return View("UploadNewFileToSubmit", vm);
     }
 }
