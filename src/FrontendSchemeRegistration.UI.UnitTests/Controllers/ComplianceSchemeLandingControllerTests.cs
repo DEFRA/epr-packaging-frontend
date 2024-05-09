@@ -185,12 +185,12 @@ public class ComplianceSchemeLandingControllerTests
     {
         var notificationDtoList = new List<NotificationDto>
         {
-            new NotificationDto
+            new()
             {
                 Type = NotificationTypes.Packaging.DelegatedPersonNomination,
                 Data = new List<KeyValuePair<string, string>>
                 {
-                    new KeyValuePair<string, string>("EnrolmentId", Guid.NewGuid().ToString())
+                    new("EnrolmentId", Guid.NewGuid().ToString())
                 }
             }
         };
@@ -248,12 +248,12 @@ public class ComplianceSchemeLandingControllerTests
     {
         var notificationDtoList = new List<NotificationDto>
         {
-            new NotificationDto
+            new()
             {
                 Type = NotificationTypes.Packaging.DelegatedPersonPendingApproval,
                 Data = new List<KeyValuePair<string, string>>
                 {
-                    new KeyValuePair<string, string>("EnrolmentId", Guid.NewGuid().ToString())
+                    new("EnrolmentId", Guid.NewGuid().ToString())
                 }
             }
         };
@@ -308,7 +308,7 @@ public class ComplianceSchemeLandingControllerTests
     }
 
     [Test]
-    public async Task Post_UpdatesSessionAndRedirectsToGet_WhenSelectedComplianceSchemeIdIsValidAndIsFirstCreated()
+    public async Task Post_UpdatesSessionAndRedirectsToGet_WhenSelectedComplianceSchemeIdIsValid()
     {
         // Arrange
         var capturedSession = new FrontendSchemeRegistrationSession();
@@ -328,32 +328,6 @@ public class ComplianceSchemeLandingControllerTests
         // Assert
         result.ActionName.Should().Be(nameof(ComplianceSchemeLandingController.Get));
         capturedSession.RegistrationSession.SelectedComplianceScheme.Should().BeEquivalentTo(complianceSchemes[0]);
-        capturedSession.RegistrationSession.IsSelectedComplianceSchemeFirstCreated.Should().BeTrue();
-    }
-
-    [Test]
-    public async Task Post_UpdatesSessionAndRedirectsToGet_WhenSelectedComplianceSchemeIdIsValidAndIsNotFirstCreated()
-    {
-        // Arrange
-        var capturedSession = new FrontendSchemeRegistrationSession();
-        var complianceSchemes = GetComplianceSchemes();
-        _complianceSchemeServiceMock.Setup(x => x.GetOperatorComplianceSchemes(It.IsAny<Guid>())).ReturnsAsync(complianceSchemes);
-        _sessionManagerMock
-            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
-            .ReturnsAsync(GetSessionWithoutSelectedScheme());
-        _sessionManagerMock
-            .Setup(x => x.UpdateSessionAsync(
-                It.IsAny<ISession>(), It.IsAny<Action<FrontendSchemeRegistrationSession>>()))
-            .Callback<ISession, Action<FrontendSchemeRegistrationSession>>((_, action) => action.Invoke(capturedSession));
-
-        // Act
-        var result = await _systemUnderTest.Post(_complianceSchemeTwoId.ToString()) as RedirectToActionResult;
-
-        // Assert
-        result.ActionName.Should().Be(nameof(ComplianceSchemeLandingController.Get));
-
-        capturedSession.RegistrationSession.SelectedComplianceScheme.Should().BeEquivalentTo(complianceSchemes[1]);
-        capturedSession.RegistrationSession.IsSelectedComplianceSchemeFirstCreated.Should().BeFalse();
     }
 
     [Test]

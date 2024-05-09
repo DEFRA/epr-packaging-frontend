@@ -11,8 +11,7 @@ public interface ISubmissionService
     Task<List<T>> GetSubmissionsAsync<T>(
         List<string> periods,
         int? limit,
-        Guid? complianceSchemeId,
-        bool? isFirstComplianceScheme)
+        Guid? complianceSchemeId)
         where T : AbstractSubmission;
 
     Task SubmitAsync(Guid submissionId, Guid fileId);

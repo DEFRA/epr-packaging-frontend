@@ -56,7 +56,6 @@ public class ComplianceSchemeLandingController : Controller
         if (session.RegistrationSession.SelectedComplianceScheme == null)
         {
             session.RegistrationSession.SelectedComplianceScheme ??= defaultComplianceScheme;
-            session.RegistrationSession.IsSelectedComplianceSchemeFirstCreated = IsSelectedComplianceSchemeFirstCreated(complianceSchemes, defaultComplianceScheme.Id);
         }
 
         await SaveNewJourney(session);
@@ -110,21 +109,10 @@ public class ComplianceSchemeLandingController : Controller
             await _sessionManager.UpdateSessionAsync(HttpContext.Session, x =>
             {
                 x.RegistrationSession.SelectedComplianceScheme = selectedComplianceScheme;
-                x.RegistrationSession.IsSelectedComplianceSchemeFirstCreated = IsSelectedComplianceSchemeFirstCreated(complianceSchemes, selectedComplianceScheme.Id);
             });
         }
 
         return RedirectToAction(nameof(Get));
-    }
-
-    /*
-     * This method is used to determine whether the selected compliance scheme is the first one that was linked with
-     * the organisation. This will be used to support backwards compatibility for submissions that were created without
-     * a ComplianceSchemeId property.
-     */
-    private static bool IsSelectedComplianceSchemeFirstCreated(List<ComplianceSchemeDto> complianceSchemes, Guid selectedComplianceSchemeId)
-    {
-        return complianceSchemes.MinBy(x => x.CreatedOn)?.Id == selectedComplianceSchemeId;
     }
 
     private async Task SaveNewJourney(FrontendSchemeRegistrationSession session)

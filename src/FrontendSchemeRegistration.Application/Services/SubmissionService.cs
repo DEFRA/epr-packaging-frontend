@@ -23,8 +23,7 @@ public class SubmissionService : ISubmissionService
     public async Task<List<T>> GetSubmissionsAsync<T>(
         List<string> periods,
         int? limit,
-        Guid? complianceSchemeId,
-        bool? isFirstComplianceScheme)
+        Guid? complianceSchemeId)
         where T : AbstractSubmission
     {
         var type = Activator.CreateInstance<T>().Type;
@@ -43,11 +42,6 @@ public class SubmissionService : ISubmissionService
         if (complianceSchemeId is not null)
         {
             queryString += $"&complianceSchemeId={complianceSchemeId}";
-        }
-
-        if (isFirstComplianceScheme is not null)
-        {
-            queryString += $"&isFirstComplianceScheme={isFirstComplianceScheme}";
         }
 
         return await _webApiGatewayClient.GetSubmissionsAsync<T>(queryString);

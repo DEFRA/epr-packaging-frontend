@@ -39,7 +39,7 @@ public class SubmissionServiceTests
         var dataPeriods = new List<string>();
 
         // Act
-        await _submissionService.GetSubmissionsAsync<PomSubmission>(dataPeriods, null, null, null);
+        await _submissionService.GetSubmissionsAsync<PomSubmission>(dataPeriods, null, null);
 
         // Assert
         const string expectedQueryString = "type=Producer";
@@ -56,7 +56,7 @@ public class SubmissionServiceTests
         };
 
         // Act
-        await _submissionService.GetSubmissionsAsync<PomSubmission>(dataPeriods, null, null, null);
+        await _submissionService.GetSubmissionsAsync<PomSubmission>(dataPeriods, null, null);
 
         // Assert
         const string expectedQueryString = "type=Producer&periods=Jan+to+Jun+23";
@@ -74,7 +74,7 @@ public class SubmissionServiceTests
         };
 
         // Act
-        await _submissionService.GetSubmissionsAsync<PomSubmission>(dataPeriods, null, null, null);
+        await _submissionService.GetSubmissionsAsync<PomSubmission>(dataPeriods, null, null);
 
         // Assert
         const string expectedQueryString = "type=Producer&periods=Jan+to+Jun+23%2cJul+to+Dec+23";
@@ -88,7 +88,7 @@ public class SubmissionServiceTests
         var dataPeriods = new List<string>();
 
         // Act
-        await _submissionService.GetSubmissionsAsync<PomSubmission>(dataPeriods, 2, null, null);
+        await _submissionService.GetSubmissionsAsync<PomSubmission>(dataPeriods, 2, null);
 
         // Assert
         const string expectedQueryString = "type=Producer&limit=2";
@@ -103,7 +103,7 @@ public class SubmissionServiceTests
         var dataPeriods = new List<string>();
 
         // Act
-        await _submissionService.GetSubmissionsAsync<PomSubmission>(dataPeriods, null, complianceSchemeId, null);
+        await _submissionService.GetSubmissionsAsync<PomSubmission>(dataPeriods, null, complianceSchemeId);
 
         // Assert
         var expectedQueryString = $"type=Producer&complianceSchemeId={complianceSchemeId}";
@@ -117,10 +117,10 @@ public class SubmissionServiceTests
         var dataPeriods = new List<string>();
 
         // Act
-        await _submissionService.GetSubmissionsAsync<PomSubmission>(dataPeriods, null, null, true);
+        await _submissionService.GetSubmissionsAsync<PomSubmission>(dataPeriods, null, null);
 
         // Assert
-        var expectedQueryString = $"type=Producer&isFirstComplianceScheme=True";
+        var expectedQueryString = $"type=Producer";
         _webApiGatewayClientMock.Verify(x => x.GetSubmissionsAsync<PomSubmission>(expectedQueryString), Times.Once);
     }
 
@@ -136,10 +136,10 @@ public class SubmissionServiceTests
         };
 
         // Act
-        await _submissionService.GetSubmissionsAsync<PomSubmission>(dataPeriods, 2, complianceSchemeId, true);
+        await _submissionService.GetSubmissionsAsync<PomSubmission>(dataPeriods, 2, complianceSchemeId);
 
         // Assert
-        var expectedQueryString = $"type=Producer&periods=Jan+to+Jun+23%2cJul+to+Dec+23&limit=2&complianceSchemeId={complianceSchemeId}&isFirstComplianceScheme=True";
+        var expectedQueryString = $"type=Producer&periods=Jan+to+Jun+23%2cJul+to+Dec+23&limit=2&complianceSchemeId={complianceSchemeId}";
         _webApiGatewayClientMock.Verify(x => x.GetSubmissionsAsync<PomSubmission>(expectedQueryString), Times.Once);
     }
 

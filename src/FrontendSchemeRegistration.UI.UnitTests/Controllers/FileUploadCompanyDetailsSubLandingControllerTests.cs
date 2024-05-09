@@ -193,7 +193,7 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
         var selectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), Name = "Acme Org Ltd" };
         _submissionServiceMock
             .Setup(x => x.GetSubmissionsAsync<RegistrationSubmission>(
-                It.IsAny<List<string>>(), 1, selectedComplianceScheme.Id, It.IsAny<bool?>()))
+                It.IsAny<List<string>>(), 1, selectedComplianceScheme.Id))
             .ReturnsAsync(new List<RegistrationSubmission>
             {
                 new()
@@ -255,7 +255,7 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
     {
         // Arrange
         _submissionServiceMock
-            .Setup(x => x.GetSubmissionsAsync<RegistrationSubmission>(It.IsAny<List<string>>(), 1, null, It.IsAny<bool?>()))
+            .Setup(x => x.GetSubmissionsAsync<RegistrationSubmission>(It.IsAny<List<string>>(), 1, null))
             .ReturnsAsync(new List<RegistrationSubmission>
             {
                 new()
@@ -316,7 +316,7 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
     {
         // Arrange
         _submissionServiceMock
-            .Setup(x => x.GetSubmissionsAsync<RegistrationSubmission>(It.IsAny<List<string>>(), 1, null, It.IsAny<bool?>()))
+            .Setup(x => x.GetSubmissionsAsync<RegistrationSubmission>(It.IsAny<List<string>>(), 1, null))
             .ReturnsAsync(new List<RegistrationSubmission>
             {
                 new()
@@ -371,7 +371,7 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
         };
         var sessionObj = new FrontendSchemeRegistrationSession { UserData = new UserData { ServiceRole = serviceRole } };
         _submissionServiceMock
-            .Setup(x => x.GetSubmissionsAsync<RegistrationSubmission>(It.IsAny<List<string>>(), 1, null, It.IsAny<bool?>()))
+            .Setup(x => x.GetSubmissionsAsync<RegistrationSubmission>(It.IsAny<List<string>>(), 1, null))
             .ReturnsAsync(new List<RegistrationSubmission> { submission });
         _sessionManagerMock
             .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
@@ -402,7 +402,7 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
         var submission = new RegistrationSubmission { Id = Guid.NewGuid(), HasValidFile = false };
         var sessionObj = new FrontendSchemeRegistrationSession { UserData = new UserData { ServiceRole = "Basic User" } };
         _submissionServiceMock
-            .Setup(x => x.GetSubmissionsAsync<RegistrationSubmission>(It.IsAny<List<string>>(), 1, null, It.IsAny<bool?>()))
+            .Setup(x => x.GetSubmissionsAsync<RegistrationSubmission>(It.IsAny<List<string>>(), 1, null))
             .ReturnsAsync(new List<RegistrationSubmission> { submission });
         _sessionManagerMock
             .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
@@ -430,7 +430,7 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
     {
         // Arrange
         _submissionServiceMock
-            .Setup(x => x.GetSubmissionsAsync<RegistrationSubmission>(It.IsAny<List<string>>(), 1, null, It.IsAny<bool?>()))
+            .Setup(x => x.GetSubmissionsAsync<RegistrationSubmission>(It.IsAny<List<string>>(), 1, null))
             .ReturnsAsync(new List<RegistrationSubmission>());
         _sessionManagerMock
             .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))

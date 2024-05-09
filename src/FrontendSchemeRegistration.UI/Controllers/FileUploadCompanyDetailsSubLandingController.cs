@@ -49,8 +49,7 @@ public class FileUploadCompanyDetailsSubLandingController : Controller
             var submission = await _submissionService.GetSubmissionsAsync<RegistrationSubmission>(
                 new List<string> { period },
                 _submissionsLimit,
-                session.RegistrationSession.SelectedComplianceScheme?.Id,
-                session.RegistrationSession.IsSelectedComplianceSchemeFirstCreated);
+                session.RegistrationSession.SelectedComplianceScheme?.Id);
             submissions.AddRange(submission);
         }
 
@@ -109,8 +108,7 @@ public class FileUploadCompanyDetailsSubLandingController : Controller
         var submissions = await _submissionService.GetSubmissionsAsync<RegistrationSubmission>(
             new List<string> { selectedSubmissionPeriod.DataPeriod },
             _submissionsLimit,
-            session.RegistrationSession.SelectedComplianceScheme?.Id,
-            session.RegistrationSession.IsSelectedComplianceSchemeFirstCreated);
+            session.RegistrationSession.SelectedComplianceScheme?.Id);
         var submission = submissions.FirstOrDefault();
 
         if (submission != null)

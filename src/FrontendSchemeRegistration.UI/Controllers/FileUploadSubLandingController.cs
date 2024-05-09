@@ -50,8 +50,7 @@ public class FileUploadSubLandingController : Controller
         var submissions = await _submissionService.GetSubmissionsAsync<PomSubmission>(
             periods,
             _submissionsLimit,
-            session.RegistrationSession.SelectedComplianceScheme?.Id,
-            session.RegistrationSession.IsSelectedComplianceSchemeFirstCreated);
+            session.RegistrationSession.SelectedComplianceScheme?.Id);
         var submissionPeriodDetails = new List<SubmissionPeriodDetail>();
 
         foreach (var submissionPeriod in _submissionPeriods)
@@ -193,8 +192,7 @@ public class FileUploadSubLandingController : Controller
         var submissions = await _submissionService.GetSubmissionsAsync<PomSubmission>(
             new List<string> { dataPeriod },
             _submissionsLimit,
-            session.RegistrationSession.SelectedComplianceScheme?.Id,
-            session.RegistrationSession.IsSelectedComplianceSchemeFirstCreated);
+            session.RegistrationSession.SelectedComplianceScheme?.Id);
 
         return submissions.FirstOrDefault();
     }

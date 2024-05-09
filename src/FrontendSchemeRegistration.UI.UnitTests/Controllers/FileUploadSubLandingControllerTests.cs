@@ -76,7 +76,7 @@ public class FileUploadSubLandingControllerTests
             SubmissionPeriod = _submissionPeriods[0].DataPeriod
         };
         _submissionServiceMock.Setup(x => x.GetSubmissionsAsync<PomSubmission>(
-                It.IsAny<List<string>>(), 2, selectedComplianceScheme.Id, It.IsAny<bool?>()))
+                It.IsAny<List<string>>(), 2, selectedComplianceScheme.Id))
             .ReturnsAsync(new List<PomSubmission> { pomSubmission });
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(submissionId))
             .ReturnsAsync(pomSubmission);
@@ -164,7 +164,7 @@ public class FileUploadSubLandingControllerTests
             SubmissionPeriod = _submissionPeriods[0].DataPeriod
         };
         _submissionServiceMock.Setup(x => x.GetSubmissionsAsync<PomSubmission>(
-                It.IsAny<List<string>>(), 2, selectedComplianceScheme.Id, It.IsAny<bool?>()))
+                It.IsAny<List<string>>(), 2, selectedComplianceScheme.Id))
             .ReturnsAsync(new List<PomSubmission> { pomSubmission });
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(submissionId))
             .ReturnsAsync(pomSubmission);
@@ -197,7 +197,7 @@ public class FileUploadSubLandingControllerTests
         // Arrange
         var selectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), Name = "Acme Org Ltd" };
         _submissionServiceMock.Setup(x => x.GetSubmissionsAsync<PomSubmission>(
-                It.IsAny<List<string>>(), 2, selectedComplianceScheme.Id, It.IsAny<bool?>()))
+                It.IsAny<List<string>>(), 2, selectedComplianceScheme.Id))
             .ReturnsAsync(new List<PomSubmission>());
         _sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
@@ -239,7 +239,7 @@ public class FileUploadSubLandingControllerTests
             }
         };
         _submissionServiceMock.Setup(x => x.GetSubmissionsAsync<PomSubmission>(
-                It.IsAny<List<string>>(), 2, selectedComplianceScheme.Id, It.IsAny<bool?>()))
+                It.IsAny<List<string>>(), 2, selectedComplianceScheme.Id))
             .ReturnsAsync(new List<PomSubmission> { pomSubmission });
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(submissionId))
             .ReturnsAsync(pomSubmission);
@@ -280,7 +280,7 @@ public class FileUploadSubLandingControllerTests
             LastSubmittedFile = null
         };
         _submissionServiceMock.Setup(x => x.GetSubmissionsAsync<PomSubmission>(
-                It.IsAny<List<string>>(), 2, selectedComplianceScheme.Id, It.IsAny<bool?>()))
+                It.IsAny<List<string>>(), 2, selectedComplianceScheme.Id))
             .ReturnsAsync(new List<PomSubmission> { pomSubmission });
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(submissionId))
             .ReturnsAsync(pomSubmission);
@@ -325,7 +325,7 @@ public class FileUploadSubLandingControllerTests
             }
         };
         _submissionServiceMock.Setup(x => x.GetSubmissionsAsync<PomSubmission>(
-                It.IsAny<List<string>>(), 2, selectedComplianceScheme.Id, It.IsAny<bool?>()))
+                It.IsAny<List<string>>(), 2, selectedComplianceScheme.Id))
             .ReturnsAsync(new List<PomSubmission> { pomSubmission });
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(submissionId))
             .ReturnsAsync(pomSubmission);
@@ -362,7 +362,7 @@ public class FileUploadSubLandingControllerTests
             SubmissionPeriod = _submissionPeriods[0].DataPeriod
         };
         _submissionServiceMock.Setup(x => x.GetSubmissionsAsync<PomSubmission>(
-                It.IsAny<List<string>>(), 2, selectedComplianceScheme.Id, It.IsAny<bool?>()))
+                It.IsAny<List<string>>(), 2, selectedComplianceScheme.Id))
             .ReturnsAsync(new List<PomSubmission> { pomSubmission });
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(submissionId))
             .ReturnsAsync(pomSubmission);
@@ -423,7 +423,7 @@ public class FileUploadSubLandingControllerTests
             IsSubmitted = false
         };
         _submissionServiceMock.Setup(x => x.GetSubmissionsAsync<PomSubmission>(
-                It.IsAny<List<string>>(), 2, null, It.IsAny<bool?>()))
+                It.IsAny<List<string>>(), 2, null))
             .ReturnsAsync(new List<PomSubmission> { submission });
         _sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
@@ -457,7 +457,7 @@ public class FileUploadSubLandingControllerTests
         // Arrange
         _submissionServiceMock
             .Setup(x => x.GetSubmissionsAsync<PomSubmission>(
-                It.IsAny<List<string>>(), 2, null, It.IsAny<bool?>()))
+                It.IsAny<List<string>>(), 2, null))
             .ReturnsAsync(new List<PomSubmission>());
         _sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession());
@@ -482,7 +482,7 @@ public class FileUploadSubLandingControllerTests
     {
         // Arrange
         _submissionServiceMock.Setup(x => x.GetSubmissionsAsync<PomSubmission>(
-                It.IsAny<List<string>>(), 2, null, It.IsAny<bool?>()))
+                It.IsAny<List<string>>(), 2, null))
             .ReturnsAsync(new List<PomSubmission>());
         _sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
@@ -527,7 +527,7 @@ public class FileUploadSubLandingControllerTests
             }
         };
         _submissionServiceMock.Setup(x => x.GetSubmissionsAsync<PomSubmission>(
-                It.IsAny<List<string>>(), 2, null, It.IsAny<bool?>()))
+                It.IsAny<List<string>>(), 2, null))
             .ReturnsAsync(new List<PomSubmission> { submission });
         _sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
@@ -567,7 +567,7 @@ public class FileUploadSubLandingControllerTests
         };
 
         _submissionServiceMock.Setup(x => x.GetSubmissionsAsync<PomSubmission>(
-                It.IsAny<List<string>>(), 2, null, It.IsAny<bool?>()))
+                It.IsAny<List<string>>(), 2, null))
             .ReturnsAsync(new List<PomSubmission> { submission });
         _sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
@@ -611,7 +611,7 @@ public class FileUploadSubLandingControllerTests
             }
         };
         _submissionServiceMock.Setup(x => x.GetSubmissionsAsync<PomSubmission>(
-                It.IsAny<List<string>>(), 2, null, It.IsAny<bool?>()))
+                It.IsAny<List<string>>(), 2, null))
             .ReturnsAsync(new List<PomSubmission> { submission });
         _sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
@@ -652,7 +652,7 @@ public class FileUploadSubLandingControllerTests
             }
         };
         _submissionServiceMock.Setup(x => x.GetSubmissionsAsync<PomSubmission>(
-                It.IsAny<List<string>>(), 2, null, It.IsAny<bool?>()))
+                It.IsAny<List<string>>(), 2, null))
             .ReturnsAsync(new List<PomSubmission> { submission });
         _sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
@@ -684,8 +684,7 @@ public class FileUploadSubLandingControllerTests
             .Setup(x => x.GetSubmissionsAsync<PomSubmission>(
                 It.IsAny<List<string>>(),
                 It.IsAny<int>(),
-                It.IsAny<Guid?>(),
-                It.IsAny<bool?>()))
+                It.IsAny<Guid?>()))
             .ReturnsAsync(new List<PomSubmission> { submission });
 
         _sessionMock
@@ -747,7 +746,7 @@ public class FileUploadSubLandingControllerTests
         };
 
         _submissionServiceMock.Setup(x => x.GetSubmissionsAsync<PomSubmission>(
-                It.IsAny<List<string>>(), 2, selectedComplianceScheme.Id, It.IsAny<bool?>()))
+                It.IsAny<List<string>>(), 2, selectedComplianceScheme.Id))
             .ReturnsAsync(new List<PomSubmission> { pomSubmission });
 
         _submissionServiceMock.Setup(x => x.GetDecisionAsync<PomDecision>(

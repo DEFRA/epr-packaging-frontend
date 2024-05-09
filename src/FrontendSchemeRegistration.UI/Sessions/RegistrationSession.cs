@@ -17,8 +17,6 @@ public class RegistrationSession
 
     public ComplianceSchemeDto? SelectedComplianceScheme { get; set; }
 
-    public bool? IsSelectedComplianceSchemeFirstCreated { get; set; }
-
     public ProducerComplianceSchemeDto? CurrentComplianceScheme { get; set; }
 
     public bool IsUpdateJourney { get; set; }
