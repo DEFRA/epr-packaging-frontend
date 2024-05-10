@@ -421,7 +421,7 @@ namespace FrontendSchemeRegistration.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Turnover must be greater than 0&quot; - this one applies if the user has entered 0, or a negative integer.
+        ///   Looks up a localized string similar to Turnover must be greater than 0.
         /// </summary>
         internal static string _857 {
             get {
@@ -466,7 +466,7 @@ namespace FrontendSchemeRegistration.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Total tonnage must be greater than 0&quot; - this one applies if the user has entered 0, or a negative integer.
+        ///   Looks up a localized string similar to Total tonnage must be greater than 0.
         /// </summary>
         internal static string _865 {
             get {

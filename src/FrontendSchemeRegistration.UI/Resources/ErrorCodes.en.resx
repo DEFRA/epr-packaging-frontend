@@ -192,4 +192,10 @@ Read the guidance about how to create your organisation details file. Once youâ€
     <data name="813" xml:space="preserve">
         <value>All fields must contain 4000 characters or less</value>
     </data>
+    <data name="890" xml:space="preserve">
+        <value>The list in this file needs to match the one in the organisation details file, that shows organisations that supply packaging under their own brand. Check both files</value>
+    </data>
+    <data name="891" xml:space="preserve">
+        <value>This list of partners needs to match the one in the organisation details file. Check both files</value>
+    </data>
 </root>
