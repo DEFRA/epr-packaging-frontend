@@ -175,6 +175,9 @@
             <LastGenOutput>SignedOut.en.Designer.cs</LastGenOutput>
             <Generator>ResXFileCodeGenerator</Generator>
         </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Views\Shared\Partials\Notifications\_NominatedApprovedPerson.cy.resx">
+          <SubType>Designer</SubType>
+        </EmbeddedResource>
         <EmbeddedResource Update="Resources\Views\UploadNewFileToSubmit\UploadNewFileToSubmit.en.resx">
             <SubType>Designer</SubType>
         </EmbeddedResource>

@@ -7,7 +7,11 @@ public class NotificationViewModel
 {
     public bool HasNominatedNotification { get; set; }
 
+    public bool HasApprovedPersonNominatedNotification { get; set; }
+
     public string? NominatedEnrolmentId { get; set; }
+
+    public string? NominatedApprovedPersonEnrolmentId { get; set; }
 
     public bool HasPendingNotification { get; set; }
 
@@ -15,6 +19,7 @@ public class NotificationViewModel
     {
         NotificationDto delegatedPersonPendingApproval = null;
         NotificationDto delegatedPersonNomination = null;
+        NotificationDto approvedPersonNomination = null;
 
         if (notificationList != null)
         {
@@ -24,6 +29,8 @@ public class NotificationViewModel
             {
                 delegatedPersonPendingApproval = notificationList.FirstOrDefault(n => n.Type == NotificationTypes.Packaging.DelegatedPersonPendingApproval);
             }
+
+            approvedPersonNomination = notificationList.FirstOrDefault(n => n.Type == NotificationTypes.Packaging.ApprovedsPersonNomination);
         }
 
         if (delegatedPersonNomination != null && !delegatedPersonNomination.Data.Any(d => d.Key == "EnrolmentId"))
@@ -32,7 +39,9 @@ public class NotificationViewModel
         }
 
         HasNominatedNotification = delegatedPersonNomination != null;
+        HasApprovedPersonNominatedNotification = approvedPersonNomination != null;
         NominatedEnrolmentId = delegatedPersonNomination != null ? delegatedPersonNomination.Data.First(d => d.Key == "EnrolmentId").Value : string.Empty;
+        NominatedApprovedPersonEnrolmentId = approvedPersonNomination != null ? approvedPersonNomination.Data.First(d => d.Key == "EnrolmentId").Value : string.Empty;
         HasPendingNotification = delegatedPersonPendingApproval != null;
     }
 }

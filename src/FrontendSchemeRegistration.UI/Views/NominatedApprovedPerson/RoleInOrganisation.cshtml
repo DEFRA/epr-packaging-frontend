@@ -1,0 +1,107 @@
+﻿@using FrontendSchemeRegistration.UI.ViewModels.NominatedApprovedPerson
+@using FrontendSchemeRegistration.UI.Enums;
+
+
+@model RoleInOrganisationViewModel
+
+@{
+    ViewData["Title"] = Localizer["RoleInOrganisation.Title"];
+    var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer);
+}
+
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    @await Html.PartialAsync("Partials/NominatedDelegatedPerson/_ErrorSummary", errorsViewModel)
+                }
+
+                <form asp-controller="NominatedApprovedPerson" asp-action="RoleInOrganisation" asp-route-id="@Model.Id" method="post">
+                    <div class="govuk-form-group@(!ViewData.ModelState.IsValid ? " govuk-form-group--error" : "")">
+                        <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                                <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+                                    @Localizer["RoleInOrganisation.Question"]
+                                </h1>
+                            </legend>
+
+                            @if (!ViewData.ModelState.IsValid)
+                            {
+                                @await Html.PartialAsync("Partials/NominatedDelegatedPerson/_FormItemError",
+                                         errorsViewModel[nameof(RoleInOrganisationViewModel.RoleInOrganisation)])
+                            }
+
+                            <div class="govuk-radios" data-module="govuk-radios">
+                                <div class="govuk-radios__item">
+                                    <input class="govuk-radios__input" type="radio"
+                                           gov-for="RoleInOrganisation"
+                                           gov-value="@nameof(RoleInOrganisation.Director)"
+                                           gov-first-option="true">
+                                    <label class="govuk-label govuk-radios__label"
+                                           gov-for="RoleInOrganisation"
+                                           gov-value="@nameof(RoleInOrganisation.Director)"
+                                           gov-first-option="true">
+                                        @Localizer["RoleInOrganisation.Director"]
+                                    </label>
+                                </div>
+
+                                <div class="govuk-radios__item">
+                                    <input class="govuk-radios__input" type="radio"
+                                           gov-for="RoleInOrganisation"
+                                           gov-value="@nameof(RoleInOrganisation.CompanySecretary)">
+                                    <label class="govuk-label govuk-radios__label"
+                                           gov-for="RoleInOrganisation"
+                                           gov-value="@nameof(RoleInOrganisation.CompanySecretary)">
+                                        @Localizer["RoleInOrganisation.CompanySecretary"]
+                                    </label>
+                                </div>
+
+                                <div class="govuk-radios__item">
+                                    <input class="govuk-radios__input" type="radio"
+                                           gov-for="RoleInOrganisation"
+                                           gov-value="@nameof(RoleInOrganisation.Partner)">
+                                    <label class="govuk-label govuk-radios__label"
+                                           gov-for="RoleInOrganisation"
+                                           gov-value="@nameof(RoleInOrganisation.Partner)">
+                                        @Localizer["RoleInOrganisation.Partner"]
+                                    </label>
+                                </div>
+
+                                <div class="govuk-radios__item">
+                                    <input class="govuk-radios__input" type="radio"
+                                           gov-for="RoleInOrganisation"
+                                           gov-value="@nameof(RoleInOrganisation.Member)">
+                                    <label class="govuk-label govuk-radios__label"
+                                           gov-for="RoleInOrganisation"
+                                           gov-value="@nameof(RoleInOrganisation.Member)">
+                                        @Localizer["RoleInOrganisation.Member"]
+                                    </label>
+                                </div>
+
+                                <div class="govuk-radios__divider">@SharedLocalizer["Or"]</div>
+
+                                <div class="govuk-radios__item">
+                                    <input class="govuk-radios__input" type="radio"
+                                           gov-for="RoleInOrganisation"
+                                           gov-value="@nameof(RoleInOrganisation.NoneOfTheAbove)">
+                                    <label class="govuk-label govuk-radios__label"
+                                           gov-for="RoleInOrganisation"
+                                           gov-value="@nameof(RoleInOrganisation.NoneOfTheAbove)">
+                                        @Localizer["RoleInOrganisation.NoneOfTheAbove"]
+                                    </label>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+
+                    <button class="govuk-button" data-module="govuk-button">
+                        @SharedLocalizer["Continue"]
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>

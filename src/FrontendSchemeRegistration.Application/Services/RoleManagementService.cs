@@ -45,4 +45,15 @@ public class RoleManagementService : IRoleManagementService
 
         return response;
     }
+
+    public async Task<HttpResponseMessage> AcceptNominationToApprovedPerson(Guid enrolmentId, Guid organisationId, string serviceKey, AcceptApprovedPersonRequest acceptApprovedPersonRequest)
+    {
+        var endpoint = $"enrolments/{enrolmentId}/approved-person-acceptance?serviceKey={serviceKey}";
+
+        var response = await _accountServiceApiClient.PutAsJsonAsync<AcceptApprovedPersonRequest>(organisationId, endpoint, acceptApprovedPersonRequest);
+
+        response.EnsureSuccessStatusCode();
+
+        return response;
+    }
 }

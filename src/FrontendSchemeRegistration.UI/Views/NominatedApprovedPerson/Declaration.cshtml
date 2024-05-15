@@ -1,0 +1,68 @@
+﻿@using FrontendSchemeRegistration.UI.ViewModels.NominatedApprovedPerson
+@model DeclarationApprovedPersonViewModel;
+
+@{
+    ViewData["Title"] = Localizer["Declaration.Title"];
+    var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer);
+}
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    @await Html.PartialAsync("Partials/NominatedDelegatedPerson/_ErrorSummary", errorsViewModel)
+                }
+
+                <form asp-controller="NominatedApprovedPerson" asp-action="Declaration" asp-route-id="@Model.Id"
+                       method="post">
+                    <div class="govuk-form-group">
+                        <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+                            @Localizer["Declaration.Instruction"]
+                        </h1>
+
+                        <p class="govuk-body">@Localizer["Declaration.YouAreAgreeingThat"]</p>
+                        
+                        <ul class="govuk-list govuk-list--bullet">
+                            <li>
+                                @Localizer["Declaration.AgreedThat1"]
+                                @Model.OrganisationName
+                                
+                            </li>
+                            <li>
+                                @Localizer["Declaration.AgreedThat2"]
+                            </li>
+                            <li>
+                                @Localizer["Declaration.AgreedThat3"]
+                            </li>
+                        </ul>
+
+                        <div class="govuk-form-group @(!ViewData.ModelState.IsValid ? "govuk-form-group--error" : "")">
+                            <div class="govuk-heading-m govuk-!-margin-bottom-2">
+                                <label gov-for="DeclarationFullName">
+                                    @Localizer["Declaration.EnterYourFullName"]
+                                </label>
+                            </div>
+
+                            @if (!ViewData.ModelState.IsValid)
+                            {
+                                @await Html.PartialAsync("Partials/NominatedDelegatedPerson/_FormItemError",
+                                         errorsViewModel[nameof(DeclarationApprovedPersonViewModel.DeclarationFullName)])
+                            }
+
+                            <input class="govuk-input @Html.Raw(errorsViewModel.HasErrorKey(nameof(DeclarationApprovedPersonViewModel.DeclarationFullName)) ? "govuk-input--error" : "")"
+                                   type="text"
+                                   gov-for="DeclarationFullName"
+                                   gov-value="@Model.DeclarationFullName">
+                        </div>
+                    </div>
+
+                    <button class="govuk-button" data-module="govuk-button">
+                        @SharedLocalizer["continue"]
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+

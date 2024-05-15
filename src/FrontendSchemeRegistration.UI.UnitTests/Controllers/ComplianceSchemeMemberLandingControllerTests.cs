@@ -165,7 +165,8 @@ public class ComplianceSchemeMemberLandingControllerTests
             {
                 HasNominatedNotification = false,
                 HasPendingNotification = true,
-                NominatedEnrolmentId = string.Empty
+                NominatedEnrolmentId = string.Empty,
+                NominatedApprovedPersonEnrolmentId = string.Empty
             }
         });
     }
@@ -217,7 +218,8 @@ public class ComplianceSchemeMemberLandingControllerTests
             {
                 HasNominatedNotification = true,
                 HasPendingNotification = false,
-                NominatedEnrolmentId = notificationDtoList.First().Data.ToList().FirstOrDefault().Value
+                NominatedEnrolmentId = notificationDtoList.First().Data.ToList().FirstOrDefault().Value,
+                NominatedApprovedPersonEnrolmentId = string.Empty,
             }
         });
     }

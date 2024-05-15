@@ -12,4 +12,6 @@ public class InviteChangePermissionsViewModel
     public string Lastname { get; set; }
 
     public string OrganisationName { get; set; }
+
+    public bool IsInCompaniesHouse { get; set; }
 }

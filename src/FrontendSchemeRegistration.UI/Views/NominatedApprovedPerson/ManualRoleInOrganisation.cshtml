@@ -1,0 +1,53 @@
+﻿@using FrontendSchemeRegistration.UI.ViewModels.NominatedApprovedPerson;
+
+@model ManualRoleInOrganisationViewModel
+@{
+    ViewData["Title"] = Localizer["ManualRoleInOrganisation.Title"];
+    var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer);
+}
+
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    @await Html.PartialAsync("Partials/NominatedDelegatedPerson/_ErrorSummary", errorsViewModel)
+                }
+
+                <form asp-controller="NominatedApprovedPerson" asp-action="ManualRoleInOrganisation" asp-route-id="@Model.Id" method="post">
+                    <div class="govuk-form-group@(!ViewData.ModelState.IsValid ? " govuk-form-group--error" : "")">
+                        <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+                            <label for="RoleInOrganisation">
+                                @Localizer["ManualRoleInOrganisation.Question"]
+                            </label>
+                        </h1>
+
+                        <div class="govuk-hint" id="RoleInOrganisation-hint">
+                            @Localizer["ManualRoleInOrganisation.Hint"]
+                        </div>
+
+                       
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            @await Html.PartialAsync("Partials/NominatedDelegatedPerson/_FormItemError",
+                                     errorsViewModel[nameof(ManualRoleInOrganisationViewModel.RoleInOrganisation)])
+                        }
+                        
+                        <div class="govuk-form-group">
+                            <input class="govuk-input govuk-!-width-full @Html.Raw(ViewData.ModelState.ErrorCount > 0 ? "govuk-input--error" : "")"
+                                   type="text"
+                                   gov-for="RoleInOrganisation"
+                                   gov-value="@Model.RoleInOrganisation"
+                                   aria-describedby="RoleInOrganisation-hint">
+                        </div>
+                    </div>
+
+                    <button class="govuk-button" data-module="govuk-button">
+                        @SharedLocalizer["continue"]
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>

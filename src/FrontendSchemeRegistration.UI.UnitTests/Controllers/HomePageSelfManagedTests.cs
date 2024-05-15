@@ -105,7 +105,8 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
             {
                 HasPendingNotification = false,
                 HasNominatedNotification = false,
-                NominatedEnrolmentId = string.Empty
+                NominatedEnrolmentId = string.Empty,
+                NominatedApprovedPersonEnrolmentId = string.Empty
             },
             SubmissionPeriods = new()
             {

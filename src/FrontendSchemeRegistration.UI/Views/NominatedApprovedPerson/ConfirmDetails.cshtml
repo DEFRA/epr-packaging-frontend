@@ -1,0 +1,58 @@
+﻿@using FrontendSchemeRegistration.Application.Constants
+@using FrontendSchemeRegistration.UI.ViewModels.NominatedApprovedPerson
+       
+
+@model ConfirmDetailsApprovedPersonViewModel
+
+@{
+    ViewData["Title"] = Localizer["ConfirmDetails.Title"];
+}
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <div class="govuk-form-group">
+                    <h1 class="govuk-heading-l govuk-!-margin-bottom-6">
+                        @Localizer["ConfirmDetails.Header"]
+                    </h1>
+
+                    <dl class="govuk-summary-list govuk-!-margin-bottom-4">
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                @Localizer["ConfirmDetails.Role"]
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @Model.RoleInOrganisation
+                            </dd>
+                            <dd class="govuk-summary-list__actions">
+                                <a href="@Model.RoleChangeUrl" class="govuk-link govuk-link--no-visited-state">
+                                    @SharedLocalizer["Change"]
+                                    <span class="govuk-visually-hidden"></span>
+                                </a>
+                            </dd>
+                        </div>
+                    </dl>
+                    <dl class="govuk-summary-list govuk-!-margin-bottom-4">
+                        <div class="govuk-summary-list__row">
+                            <dt class="govuk-summary-list__key">
+                                @Localizer["ConfirmDetails.Telephone"]
+                            </dt>
+                            <dd class="govuk-summary-list__value">
+                                @Model.TelephoneNumber
+                            </dd>
+                            <dd class="govuk-summary-list__actions">
+                                <a href="@Model.TelephoneChangeUrl" class="govuk-link govuk-link--no-visited-state">
+                                    @SharedLocalizer["Change"]
+                                    <span class="govuk-visually-hidden"></span>
+                                </a>
+                            </dd>
+                        </div>
+                    </dl>
+                    <a asp-controller="NominatedApprovedPerson" asp-action="Declaration" asp-route-id="@Model.Id" method="get" class="govuk-button" data-module="govuk-button">
+                        @SharedLocalizer["continue"]
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>    
+</div>

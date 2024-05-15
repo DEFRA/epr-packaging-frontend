@@ -38,9 +38,15 @@ public static class PagePaths
     public const string FileUploadPartnershipsSuccess = "/file-upload-partnerships-success";
     public const string FileUploadingBrands = "/file-uploading-brands";
     public const string InviteChangePermissions = "/invite-change-permissions";
+    public const string InviteChangePermissionsAP = "/invite-change-permissions-ap";
+    public const string RoleInOrganisation = "/role-in-Organisation-ap";
+    public const string ManualInputRoleInOrganisation = "/manual-input-role-in-organisation-ap";
     public const string TelephoneNumber = "/telephone-number";
+    public const string TelephoneNumberAP = "/telephone-number-ap";
     public const string ConfirmPermissionSubmitData = "/confirm-permission-submit-data";
+    public const string ConfirmDetailsAP = "/confirm-details-ap";
     public const string DeclarationWithFullName = "/declaration-enter-full-name";
+    public const string DeclarationWithFullNameAP = "/declaration-enter-full-name-ap";
     public const string OrganisationDetailsSubmissionFailed = "/organisation-details-submission-failed";
     public const string FileUploadCheckFileAndSubmit = "/file-upload-check-file-and-submit";
     public const string FileUploadSubmissionDeclaration = "/file-upload-submission-declaration";

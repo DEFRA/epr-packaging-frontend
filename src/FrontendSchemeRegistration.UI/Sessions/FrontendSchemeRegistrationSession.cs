@@ -14,4 +14,6 @@ public class FrontendSchemeRegistrationSession : IHasUserData
     public NominatedDelegatedPersonSession NominatedDelegatedPersonSession { get; set; } = new();
 
     public SchemeMembershipSession SchemeMembershipSession { get; set; } = new();
+
+    public NominatedApprovedPersonSession NominatedApprovedPersonSession { get; set; } = new();
 }

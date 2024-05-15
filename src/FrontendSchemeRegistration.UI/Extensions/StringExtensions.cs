@@ -43,4 +43,10 @@ public static class StringExtensions
 
         return str;
     }
+
+    public static bool IsCompaniesHouseCompany(this string str)
+    {
+        const string CompaniesHouseCompany = "Companies House Company";
+        return str == CompaniesHouseCompany;
+    }
 }

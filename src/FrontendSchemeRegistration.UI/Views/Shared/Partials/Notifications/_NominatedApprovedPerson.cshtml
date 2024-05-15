@@ -1,0 +1,22 @@
+﻿@model string
+
+<div class="govuk-grid-row govuk-!-margin-bottom-8">
+    <div class="govuk-grid-column-full">
+        <div class="govuk-notification-banner govuk-!-margin-bottom-0" role="region" aria-labelledby="show-nominated-notification-title"
+             data-module="govuk-notification-banner">
+            <div class="govuk-notification-banner__header">
+                <h2 class="govuk-notification-banner__title" id="show-nominated-notification-title">
+                    @Localizer["important"]
+                </h2>
+            </div>
+            <div class="govuk-notification-banner__content">
+                <p class="govuk-notification-banner__heading">
+                    @Localizer["youve_been_invited"]
+                </p>
+                <p class="govuk-notification-banner__heading">
+                    <a asp-controller="NominatedApprovedPerson" asp-action="InviteChangePermissions" asp-route-id="@Model" class="govuk-notification-banner__link">@Localizer["view-invitation"]</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

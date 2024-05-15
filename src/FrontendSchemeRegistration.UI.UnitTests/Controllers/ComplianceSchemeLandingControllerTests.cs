@@ -229,7 +229,8 @@ public class ComplianceSchemeLandingControllerTests
                 {
                     NominatedEnrolmentId = notificationDtoList.First().Data.ToList().FirstOrDefault().Value,
                     HasNominatedNotification = true,
-                    HasPendingNotification = false
+                    HasPendingNotification = false,
+                    NominatedApprovedPersonEnrolmentId = string.Empty
                 },
                 SubmissionPeriods = _submissionPeriods.Select(period => new DatePeriod
                 {
@@ -293,7 +294,8 @@ public class ComplianceSchemeLandingControllerTests
                 {
                     NominatedEnrolmentId = string.Empty,
                     HasNominatedNotification = false,
-                    HasPendingNotification = true
+                    HasPendingNotification = true,
+                    NominatedApprovedPersonEnrolmentId = string.Empty
                 },
                 SubmissionPeriods = _submissionPeriods.Select(period => new DatePeriod
                 {
