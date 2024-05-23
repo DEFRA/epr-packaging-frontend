@@ -4,6 +4,7 @@ using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Middleware;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.FeatureManagement;
 using Microsoft.IdentityModel.Logging;
 
@@ -67,6 +68,13 @@ services.AddAppHttpClient();
 var app = builder.Build();
 
 app.MapHealthChecks("/admin/health").AllowAnonymous();
+app.MapHealthChecks("/admin/error", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    ResultStatusCodes =
+    {
+        [HealthStatus.Healthy] = StatusCodes.Status500InternalServerError
+    }
+}).AllowAnonymous();
 
 app.UsePathBase(basePath);
 
