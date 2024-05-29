@@ -2,7 +2,9 @@
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.Enums;
+using FrontendSchemeRegistration.Application.Extensions;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Enums;
 using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
@@ -81,6 +83,9 @@ namespace FrontendSchemeRegistration.UI.Controllers
                     viewModel.SubmissionPeriods.Add(new FileUploadSubmissionHistoryPeriodViewModel
                     {
                         SubmissionPeriod = submissionId.SubmissionPeriod,
+                        DatePeriodStartMonth = submissionId.LocalisedMonth(MonthType.Start),
+                        DatePeriodEndMonth = submissionId.LocalisedMonth(MonthType.End),
+                        DatePeriodYear = submissionId.Year.ToString(),
                         SubmissionHistory = submissionHistory
                     });
                 }

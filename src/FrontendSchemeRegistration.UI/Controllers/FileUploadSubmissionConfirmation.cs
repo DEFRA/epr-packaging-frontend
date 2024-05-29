@@ -43,6 +43,8 @@ public class FileUploadSubmissionConfirmation : Controller
             return RedirectToAction("Get", "FileUpload");
         }
 
+        ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadSubLanding}");
+
         var lastSubmittedFile = submission.LastSubmittedFile;
 
         var model = new FileUploadSubmissionConfirmationViewModel

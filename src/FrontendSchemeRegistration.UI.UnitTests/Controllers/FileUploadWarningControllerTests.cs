@@ -10,6 +10,7 @@ using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Moq;
@@ -24,10 +25,15 @@ public class FileUploadWarningControllerTests
     private FileUploadWarningController _systemUnderTest;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
     private ValidationOptions _validationOptions;
+    private Mock<IUrlHelper> _urlHelperMock;
 
     [SetUp]
     public void SetUp()
     {
+        _urlHelperMock = new Mock<IUrlHelper>();
+        _urlHelperMock.Setup(url => url.Action(It.Is<UrlActionContext>(uac => uac.Action == "Get")))
+            .Returns(PagePaths.FileUploadSubLanding);
+        _urlHelperMock.Setup(x => x.Content(It.IsAny<string>())).Returns((string contentPath) => contentPath);
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _validationOptions = new ValidationOptions { MaxIssuesToProcess = 100 };
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
@@ -59,6 +65,8 @@ public class FileUploadWarningControllerTests
                 Session = new Mock<ISession>().Object
             },
         };
+
+        _systemUnderTest.Url = _urlHelperMock.Object;
     }
 
     [Test]
@@ -114,6 +122,9 @@ public class FileUploadWarningControllerTests
 
         // Assert
         result.ViewName.Should().Be("FileUploadWarning");
+        result.ViewData.Keys.Should().HaveCount(1);
+        result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
+        result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.FileUploadSubLanding}");
         result.Model.Should().BeEquivalentTo(new FileUploadWarningViewModel()
         {
             FileName = fileName,

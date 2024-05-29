@@ -10,6 +10,7 @@ using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Primitives;
 using Moq;
 using UI.Controllers;
@@ -26,10 +27,15 @@ public class CompanyDetailsConfirmationControllerTests
     private Mock<IUserAccountService> _userAccountServiceMock;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
     private CompanyDetailsConfirmationController _systemUnderTest;
+    private Mock<IUrlHelper> _urlHelperMock;
 
     [SetUp]
     public void SetUp()
     {
+        _urlHelperMock = new Mock<IUrlHelper>();
+        _urlHelperMock.Setup(url => url.Action(It.Is<UrlActionContext>(uac => uac.Action == "Get")))
+            .Returns(PagePaths.FileUploadCompanyDetailsSubLanding);
+        _urlHelperMock.Setup(x => x.Content(It.IsAny<string>())).Returns((string contentPath) => contentPath);
         _submissionServiceMock = new Mock<ISubmissionService>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _userAccountServiceMock = new Mock<IUserAccountService>();
@@ -73,6 +79,8 @@ public class CompanyDetailsConfirmationControllerTests
                 Session = new Mock<ISession>().Object
             }
         };
+
+        _systemUnderTest.Url = _urlHelperMock.Object;
     }
 
     [Test]
@@ -109,6 +117,9 @@ public class CompanyDetailsConfirmationControllerTests
 
         // Assert
         result.ViewName.Should().Be("CompanyDetailsConfirmation");
+        result.ViewData.Keys.Should().HaveCount(1);
+        result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
+        result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
         result.Model.Should().BeEquivalentTo(new CompanyDetailsConfirmationModel
         {
             SubmissionTime = submissionTime.ToTimeHoursMinutes(),

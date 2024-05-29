@@ -56,6 +56,8 @@ public class ReviewCompanyDetailsController : Controller
 
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
 
+        ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
+
         return View(
             "ReviewCompanyDetails",
             new ReviewCompanyDetailsViewModel
@@ -105,6 +107,8 @@ public class ReviewCompanyDetailsController : Controller
     {
         var submissionId = Guid.Parse(Request.Query["submissionId"]);
         var userData = User.GetUserData();
+
+        ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
 
         if (!userData.CanSubmit())
         {

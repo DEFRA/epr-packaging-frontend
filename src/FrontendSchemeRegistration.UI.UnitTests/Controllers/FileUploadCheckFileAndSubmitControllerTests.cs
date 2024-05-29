@@ -10,10 +10,11 @@ using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
-using FrontendSchemeRegistration.Application.Enums;
+using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.RequestModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Microsoft.FeatureManagement;
@@ -37,10 +38,15 @@ public class FileUploadCheckFileAndSubmitControllerTests
     private Mock<ClaimsPrincipal> _claimsPrincipalMock;
     private Mock<IFeatureManager> _featureManagerMock;
     private FileUploadCheckFileAndSubmitController _systemUnderTest;
+    private Mock<IUrlHelper> _urlHelperMock;
 
     [SetUp]
     public void SetUp()
     {
+        _urlHelperMock = new Mock<IUrlHelper>();
+        _urlHelperMock.Setup(url => url.Action(It.Is<UrlActionContext>(uac => uac.Action == "Get")))
+            .Returns(PagePaths.FileUploadSubLanding);
+        _urlHelperMock.Setup(x => x.Content(It.IsAny<string>())).Returns((string contentPath) => contentPath);
         _submissionServiceMock = new Mock<ISubmissionService>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _userAccountServiceMock = new Mock<IUserAccountService>();
@@ -78,6 +84,8 @@ public class FileUploadCheckFileAndSubmitControllerTests
                 Session = Mock.Of<ISession>()
             },
         };
+
+        _systemUnderTest.Url = _urlHelperMock.Object;
     }
 
     [Test]
@@ -134,6 +142,9 @@ public class FileUploadCheckFileAndSubmitControllerTests
 
         // Assert
         result.ViewName.Should().Be(ViewName);
+        result.ViewData.Keys.Should().HaveCount(1);
+        result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
+        result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.FileUploadSubLanding}");
         result.Model.Should().BeEquivalentTo(new FileUploadCheckFileAndSubmitViewModel
         {
             SubmissionId = submission.Id,
@@ -204,6 +215,9 @@ public class FileUploadCheckFileAndSubmitControllerTests
 
         // Assert
         result.ViewName.Should().Be(ViewName);
+        result.ViewData.Keys.Should().HaveCount(1);
+        result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
+        result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.FileUploadSubLanding}");
         result.Model.Should().BeEquivalentTo(new FileUploadCheckFileAndSubmitViewModel
         {
             SubmissionId = submission.Id,

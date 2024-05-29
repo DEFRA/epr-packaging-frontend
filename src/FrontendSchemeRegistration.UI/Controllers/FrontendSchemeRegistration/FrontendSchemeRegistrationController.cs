@@ -414,8 +414,7 @@ public class FrontendSchemeRegistrationController : Controller
         {
             OrganisationName = organisation.Name,
             OrganisationNumber = organisation.OrganisationNumber.ToReferenceNumberFormat(),
-            CanSelectComplianceScheme = userData.ServiceRole is ServiceRoles.ApprovedPerson or ServiceRoles.DelegatedPerson,
-            SubmissionPeriods = _submissionPeriods
+            CanSelectComplianceScheme = userData.ServiceRole is ServiceRoles.ApprovedPerson or ServiceRoles.DelegatedPerson
         };
 
         var notificationsList = await _notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id.Value);

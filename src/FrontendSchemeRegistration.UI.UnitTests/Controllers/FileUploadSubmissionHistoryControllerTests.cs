@@ -66,9 +66,30 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
 
             var submissionIds = new List<SubmissionPeriodId>
             {
-                new SubmissionPeriodId { SubmissionId = Guid.NewGuid(), SubmissionPeriod = "July to December", Year = currentYear },
-                new SubmissionPeriodId { SubmissionId = Guid.NewGuid(), SubmissionPeriod = "January to June", Year = currentYear },
-                new SubmissionPeriodId { SubmissionId = Guid.NewGuid(), SubmissionPeriod = "July to December", Year = currentYear - 1 }
+                new SubmissionPeriodId
+                {
+                    SubmissionId = Guid.NewGuid(),
+                    SubmissionPeriod = "July to December",
+                    DatePeriodStartMonth = "July",
+                    DatePeriodEndMonth = "December",
+                    Year = currentYear
+                },
+                new SubmissionPeriodId
+                {
+                    SubmissionId = Guid.NewGuid(),
+                    SubmissionPeriod = "January to June",
+                    DatePeriodStartMonth = "January",
+                    DatePeriodEndMonth = "June",
+                    Year = currentYear
+                },
+                new SubmissionPeriodId
+                {
+                    SubmissionId = Guid.NewGuid(),
+                    SubmissionPeriod = "July to December",
+                    DatePeriodStartMonth = "July",
+                    DatePeriodEndMonth = "December",
+                    Year = currentYear - 1
+                }
             };
 
             var submissionHistoryDictionary = new Dictionary<Guid, List<SubmissionHistory>>
@@ -147,11 +168,17 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                     new FileUploadSubmissionHistoryPeriodViewModel
                     {
                         SubmissionPeriod = submissionIds[0].SubmissionPeriod,
+                        DatePeriodStartMonth = submissionIds[0].DatePeriodStartMonth,
+                        DatePeriodEndMonth = submissionIds[0].DatePeriodEndMonth,
+                        DatePeriodYear = submissionIds[0].Year.ToString(),
                         SubmissionHistory = submissionHistoryDictionary[submissionIds[0].SubmissionId]
                     },
                     new FileUploadSubmissionHistoryPeriodViewModel
                     {
                         SubmissionPeriod = submissionIds[1].SubmissionPeriod,
+                        DatePeriodStartMonth = submissionIds[1].DatePeriodStartMonth,
+                        DatePeriodEndMonth = submissionIds[1].DatePeriodEndMonth,
+                        DatePeriodYear = submissionIds[1].Year.ToString(),
                         SubmissionHistory = submissionHistoryDictionary[submissionIds[1].SubmissionId]
                     }
                 }
@@ -193,8 +220,22 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
 
             var submissionIds = new List<SubmissionPeriodId>
             {
-                new SubmissionPeriodId { SubmissionId = Guid.NewGuid(), SubmissionPeriod = "July to December", Year = currentYear },
-                new SubmissionPeriodId { SubmissionId = Guid.NewGuid(), SubmissionPeriod = "January to June", Year = currentYear }
+                new SubmissionPeriodId
+                {
+                    SubmissionId = Guid.NewGuid(),
+                    SubmissionPeriod = "July to December",
+                    DatePeriodStartMonth = "July",
+                    DatePeriodEndMonth = "December",
+                    Year = currentYear
+                },
+                new SubmissionPeriodId
+                {
+                    SubmissionId = Guid.NewGuid(),
+                    SubmissionPeriod = "January to June",
+                    DatePeriodStartMonth = "January",
+                    DatePeriodEndMonth = "June",
+                    Year = currentYear
+                }
             };
 
             var submissionHistoryDictionary = new Dictionary<Guid, List<SubmissionHistory>>
@@ -270,11 +311,17 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                     new FileUploadSubmissionHistoryPeriodViewModel
                     {
                         SubmissionPeriod = submissionIds[0].SubmissionPeriod,
+                        DatePeriodStartMonth = submissionIds[0].DatePeriodStartMonth,
+                        DatePeriodEndMonth = submissionIds[0].DatePeriodEndMonth,
+                        DatePeriodYear = submissionIds[0].Year.ToString(),
                         SubmissionHistory = submissionHistoryDictionary[submissionIds[0].SubmissionId]
                     },
                     new FileUploadSubmissionHistoryPeriodViewModel
                     {
                         SubmissionPeriod = submissionIds[1].SubmissionPeriod,
+                        DatePeriodStartMonth = submissionIds[1].DatePeriodStartMonth,
+                        DatePeriodEndMonth = submissionIds[1].DatePeriodEndMonth,
+                        DatePeriodYear = submissionIds[1].Year.ToString(),
                         SubmissionHistory = submissionHistoryDictionary[submissionIds[1].SubmissionId]
                     }
                 }

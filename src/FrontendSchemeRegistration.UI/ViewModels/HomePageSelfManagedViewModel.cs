@@ -1,7 +1,6 @@
 ﻿namespace FrontendSchemeRegistration.UI.ViewModels;
 
 using System.Diagnostics.CodeAnalysis;
-using Application.DTOs.Submission;
 
 [ExcludeFromCodeCoverage]
 public class HomePageSelfManagedViewModel
@@ -13,6 +12,4 @@ public class HomePageSelfManagedViewModel
     public bool CanSelectComplianceScheme { get; set; }
 
     public NotificationViewModel Notification { get; set; } = new NotificationViewModel();
-
-    public List<SubmissionPeriod> SubmissionPeriods { get; set; } = new List<SubmissionPeriod>();
 }

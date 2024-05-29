@@ -1,8 +1,6 @@
 ﻿namespace FrontendSchemeRegistration.UI.Controllers;
 
 using Application.Constants;
-using Application.DTOs.ComplianceScheme;
-using Application.DTOs.Submission;
 using Application.Enums;
 using Application.Options;
 using Application.Services.Interfaces;
@@ -23,8 +21,6 @@ public class ComplianceSchemeLandingController : Controller
     private readonly IComplianceSchemeService _complianceSchemeService;
     private readonly INotificationService _notificationService;
     private readonly ILogger<ComplianceSchemeLandingController> _logger;
-    private readonly List<SubmissionPeriod> _submissionPeriods;
-    private readonly int _schemeYear;
 
     public ComplianceSchemeLandingController(
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
@@ -37,8 +33,6 @@ public class ComplianceSchemeLandingController : Controller
         _complianceSchemeService = complianceSchemeService;
         _notificationService = notificationService;
         _logger = logger;
-        _submissionPeriods = globalVariables.Value.SubmissionPeriods;
-        _schemeYear = globalVariables.Value.SchemeYear;
     }
 
     [HttpGet]
@@ -70,12 +64,7 @@ public class ComplianceSchemeLandingController : Controller
             IsApprovedUser = userData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved),
             CurrentTabSummary = currentSummary,
             OrganisationName = organisation.Name,
-            ComplianceSchemes = complianceSchemes,
-            SubmissionPeriods = _submissionPeriods.Select(period => new DatePeriod
-            {
-                StartMonth = LocalisedMonthName(period.StartMonth),
-                EndMonth = LocalisedMonthName(period.EndMonth)
-            }).ToList()
+            ComplianceSchemes = complianceSchemes
         };
 
         var notificationsList = await _notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id.Value);
@@ -120,13 +109,5 @@ public class ComplianceSchemeLandingController : Controller
         session.SchemeMembershipSession.Journey.Clear();
 
         await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
-    }
-
-    private string LocalisedMonthName(string month)
-    {
-        return DateTime.Parse($"1 {month} {_schemeYear}")
-            .ToString("MMMM")
-            .Replace("Mehefin", "Fehefin")
-            .Replace("Rhagfyr", "Ragfyr");
     }
 }

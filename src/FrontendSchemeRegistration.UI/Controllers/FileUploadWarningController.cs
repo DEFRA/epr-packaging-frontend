@@ -51,6 +51,8 @@ public class FileUploadWarningController : Controller
             return RedirectToAction("Get", "FileUploadSubLanding");
         }
 
+        ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadSubLanding}");
+
         return View(
             "FileUploadWarning",
             new FileUploadWarningViewModel
@@ -67,6 +69,8 @@ public class FileUploadWarningController : Controller
     {
         ModelState.Remove(nameof(model.FileName));
         ModelState.Remove(nameof(model.MaxReportSize));
+
+        ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadSubLanding}");
 
         if (!ModelState.IsValid)
         {

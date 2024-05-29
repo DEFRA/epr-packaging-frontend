@@ -60,6 +60,8 @@ public class FileUploadCheckFileAndSubmitController : Controller
             return RedirectToAction("Get", "FileUploadSubLanding");
         }
 
+        ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadSubLanding}");
+
         var userData = User.GetUserData();
         var viewModel = await BuildModel(submission, userData);
 

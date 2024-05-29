@@ -249,4 +249,7 @@
   <data name="submit" xml:space="preserve">
     <value>Cyflwyno</value>
   </data>
+  <data name="date1_to_date2" xml:space="preserve">
+    <value>{0} i {1}</value>
+  </data>
 </root>

@@ -9,6 +9,7 @@ using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Primitives;
 using Moq;
 using UI.Controllers;
@@ -22,10 +23,15 @@ public class FileUploadCompanyDetailsSuccessControllerTests
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
     private FileUploadCompanyDetailsSuccessController _systemUnderTest;
     private Mock<ISubmissionService> _submissionServiceMock;
+    private Mock<IUrlHelper> _urlHelperMock;
 
     [SetUp]
     public void SetUp()
     {
+        _urlHelperMock = new Mock<IUrlHelper>();
+        _urlHelperMock.Setup(url => url.Action(It.Is<UrlActionContext>(uac => uac.Action == "Get")))
+            .Returns(PagePaths.FileUploadingCompanyDetails);
+        _urlHelperMock.Setup(x => x.Content(It.IsAny<string>())).Returns((string contentPath) => contentPath);
         _submissionServiceMock = new Mock<ISubmissionService>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
@@ -70,6 +76,8 @@ public class FileUploadCompanyDetailsSuccessControllerTests
                 Session = new Mock<ISession>().Object
             }
         };
+
+        _systemUnderTest.Url = _urlHelperMock.Object;
     }
 
     [Test]
@@ -187,6 +195,9 @@ public class FileUploadCompanyDetailsSuccessControllerTests
 
         // Assert
         result.ViewName.Should().Be("FileUploadCompanyDetailsSuccess");
+        result.ViewData.Keys.Should().HaveCount(1);
+        result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
+        result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.FileUploadingCompanyDetails}");
         result.Model.Should().BeEquivalentTo(new FileUploadCompanyDetailsSuccessViewModel
         {
             FileName = fileName,
@@ -235,6 +246,9 @@ public class FileUploadCompanyDetailsSuccessControllerTests
 
         // Assert
         result.ViewName.Should().Be("FileUploadCompanyDetailsSuccess");
+        result.ViewData.Keys.Should().HaveCount(1);
+        result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
+        result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.FileUploadingCompanyDetails}");
         result.Model.Should().BeEquivalentTo(new FileUploadCompanyDetailsSuccessViewModel
         {
             FileName = fileName,

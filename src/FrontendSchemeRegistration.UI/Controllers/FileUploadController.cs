@@ -85,6 +85,8 @@ public class FileUploadController : Controller
             return RedirectToPage(PagePaths.FileUploadSubLanding);
         }
 
+        ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadSubLanding}");
+
         session.RegistrationSession.Journey.AddIfNotExists(PagePaths.FileUpload);
         await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
 

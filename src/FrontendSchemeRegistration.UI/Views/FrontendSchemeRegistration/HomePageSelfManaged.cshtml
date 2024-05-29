@@ -57,7 +57,7 @@
                 <div class="govuk-card-body">
                     <h2 class="govuk-heading-m">
                         @Html.ActionLink(
-                            Localizer["report_organisation_details"].Value,
+                            Localizer["organisation_details"].Value,
                             "Get",
                             "FileUploadCompanyDetailsSubLanding",
                             null,
@@ -66,12 +66,12 @@
                                 @class = "govuk-link govuk-link--no-visited-state"
                             })
                     </h2>
-                    <p class="govuk-body">@Localizer["in_x_you_must_report_data_for", GlobalVariables.Value.SchemeYear]</p>
-                    <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-0">
-                        @foreach (var period in Model.SubmissionPeriods)
-                        {
-                            <li>@SharedLocalizer[period.DataPeriod]</li>
-                        }
+                    <p class="govuk-body">@Localizer["every_year_you_must_report_data_for"]</p>
+                    <p class="govuk-body">@Localizer["you_can_also"]</p>
+                    <ul class="govuk-list govuk-list--bullet">
+                        <li>@Localizer["resubmit_your_organisation_details"]</li>
+                        <li>@Localizer["report_changes_to_your_organisation_details"]</li>
+                        <li>@Localizer["view_your_history"]</li>
                     </ul>
                 </div>
             </div>
@@ -81,7 +81,7 @@
                 <div class="govuk-card-body">
                     <h2 class="govuk-heading-m">
                         @Html.ActionLink(
-                            Localizer["report_packaging_data"].Value,
+                            Localizer["packaging_data"].Value,
                             "Get",
                             "FileUploadSubLanding",
                             null,
@@ -90,12 +90,11 @@
                                 @class = "govuk-link govuk-link--no-visited-state"
                             })
                     </h2>
-                    <p class="govuk-body">@Localizer["in_x_you_must_report_data_for", GlobalVariables.Value.SchemeYear]</p>
-                    <ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-0">
-                        @foreach (var period in Model.SubmissionPeriods)
-                        {
-                            <li>@SharedLocalizer[period.DataPeriod]</li>
-                        }
+                    <p class="govuk-body">@Localizer["you_must_report_packaging_data"]</p>
+                    <p class="govuk-body">@Localizer["you_can_also"]</p>
+                    <ul class="govuk-list govuk-list--bullet">
+                        <li>@Localizer["resubmit_your_packaging_data"]</li>
+                        <li>@Localizer["view_your_history"]</li>
                     </ul>
                 </div>
             </div>

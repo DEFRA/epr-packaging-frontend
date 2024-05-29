@@ -8,6 +8,12 @@ namespace FrontendSchemeRegistration.UI.ViewModels
     {
         public string SubmissionPeriod { get; set; }
 
+        public string DatePeriodStartMonth { get; set; }
+
+        public string DatePeriodEndMonth { get; set; }
+
+        public string DatePeriodYear { get; set; }
+
         public List<SubmissionHistory> SubmissionHistory { get; set; }
     }
 }

@@ -35,6 +35,8 @@ public class CompanyDetailsConfirmationController : Controller
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
 
+        ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
+
         if (session is not null)
         {
             var organisationRole = session.UserData.Organisations?.FirstOrDefault()?.OrganisationRole;

@@ -18,13 +18,37 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
-    <data name="in_x_you_must_report_data_for" xml:space="preserve">
+    <data name="every_year_you_must_report_data_for" xml:space="preserve">
         <value />
     </data>
-    <data name="report_organisation_details" xml:space="preserve">
+	<data name="you_can_also" xml:space="preserve">
+        <value />
+    </data>
+	<data name="resubmit_your_organisation_details" xml:space="preserve">
+        <value />
+    </data>
+	<data name="report_changes_to_your_organisation_details" xml:space="preserve">
+        <value />
+    </data>
+	<data name="view_your_history" xml:space="preserve">
+        <value />
+    </data>
+	<data name="report_organisation_details" xml:space="preserve">
+        <value />
+    </data>
+	<data name="organisation_details" xml:space="preserve">
         <value />
     </data>
     <data name="report_packaging_data" xml:space="preserve">
+        <value />
+    </data>
+	<data name="packaging_data" xml:space="preserve">
+        <value />
+    </data>
+	<data name="you_must_report_packaging_data" xml:space="preserve">
+        <value />
+    </data>
+	<data name="resubmit_your_packaging_data" xml:space="preserve">
         <value />
     </data>
     <data name="packaging_recovery_notes" xml:space="preserve">

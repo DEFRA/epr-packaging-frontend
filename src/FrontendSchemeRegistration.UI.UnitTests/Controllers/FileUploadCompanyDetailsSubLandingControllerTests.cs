@@ -27,13 +27,19 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
         {
             DataPeriod = "Data period 1",
             Deadline = DateTime.Today,
-            ActiveFrom = DateTime.Today
+            ActiveFrom = DateTime.Today,
+            Year = "2023",
+            StartMonth = "January",
+            EndMonth = "June"
         },
         new SubmissionPeriod
         {
             DataPeriod = "Data period 2",
             Deadline = DateTime.Today.AddDays(5),
-            ActiveFrom = DateTime.Today.AddDays(5)
+            ActiveFrom = DateTime.Today.AddDays(5),
+            Year = "2024",
+            StartMonth = "July",
+            EndMonth = "December"
         }
     };
 
@@ -228,24 +234,46 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
 
         // Assert
         result.ViewName.Should().Be("FileUploadCompanyDetailsSubLanding");
-        result.Model.Should().BeEquivalentTo(new FileUploadCompanyDetailsSubLandingViewModel
-        {
-            ComplianceSchemeName = selectedComplianceScheme.Name,
-            SubmissionPeriodDetails = new List<SubmissionPeriodDetail>
+
+        var submissionPeriodDetails = new List<SubmissionPeriodDetail>
             {
                 new()
                 {
                     DataPeriod = _submissionPeriods[0].DataPeriod,
                     Deadline = _submissionPeriods.ElementAt(0).Deadline,
-                    Status = SubmissionPeriodStatus.NotStarted
+                    DatePeriodStartMonth = _submissionPeriods.ElementAt(0).StartMonth,
+                    DatePeriodEndMonth = _submissionPeriods.ElementAt(0).EndMonth,
+                    Status = SubmissionPeriodStatus.NotStarted,
+                    DatePeriodYear = _submissionPeriods[0].Year
                 },
                 new()
                 {
                     DataPeriod = _submissionPeriods.ElementAt(1).DataPeriod,
+                    DatePeriodStartMonth = _submissionPeriods.ElementAt(1).StartMonth,
+                    DatePeriodEndMonth = _submissionPeriods.ElementAt(1).EndMonth,
                     Deadline = _submissionPeriods.ElementAt(1).Deadline,
-                    Status = SubmissionPeriodStatus.CannotStartYet
+                    Status = SubmissionPeriodStatus.CannotStartYet,
+                    DatePeriodYear = _submissionPeriods[1].Year
                 }
-            },
+            };
+
+        var submissionPeriodDetailGroups = submissionPeriodDetails
+                        .GroupBy(c => new { c.DatePeriodYear })
+                        .Select(c => new SubmissionPeriodDetailGroup
+                        {
+                            DatePeriodYear = c.Key.DatePeriodYear,
+                            Quantity = c.Count()
+                        }).ToList();
+
+        foreach (var group in submissionPeriodDetailGroups)
+        {
+            group.SubmissionPeriodDetails = submissionPeriodDetails.Where(c => c.DatePeriodYear == group.DatePeriodYear).ToList();
+        }
+
+        result.Model.Should().BeEquivalentTo(new FileUploadCompanyDetailsSubLandingViewModel
+        {
+            ComplianceSchemeName = selectedComplianceScheme.Name,
+            SubmissionPeriodDetailGroups = submissionPeriodDetailGroups,
             OrganisationRole = OrganisationRoles.ComplianceScheme
         });
     }
@@ -288,25 +316,46 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
         // Act
         var result = await _systemUnderTest.Get() as ViewResult;
 
-        // Assert
-        result.ViewName.Should().Be("FileUploadCompanyDetailsSubLanding");
-        result.Model.Should().BeEquivalentTo(new FileUploadCompanyDetailsSubLandingViewModel
-        {
-            SubmissionPeriodDetails = new List<SubmissionPeriodDetail>
+        var submissionPeriodDetails = new List<SubmissionPeriodDetail>
             {
                 new()
                 {
                     DataPeriod = _submissionPeriods[0].DataPeriod,
+                    DatePeriodStartMonth = _submissionPeriods.ElementAt(0).StartMonth,
+                    DatePeriodEndMonth = _submissionPeriods.ElementAt(0).EndMonth,
                     Deadline = _submissionPeriods.ElementAt(0).Deadline,
-                    Status = SubmissionPeriodStatus.NotStarted
+                    Status = SubmissionPeriodStatus.NotStarted,
+                    DatePeriodYear = _submissionPeriods[0].Year
                 },
                 new()
                 {
                     DataPeriod = _submissionPeriods.ElementAt(1).DataPeriod,
+                    DatePeriodStartMonth = _submissionPeriods.ElementAt(1).StartMonth,
+                    DatePeriodEndMonth = _submissionPeriods.ElementAt(1).EndMonth,
                     Deadline = _submissionPeriods.ElementAt(1).Deadline,
-                    Status = SubmissionPeriodStatus.CannotStartYet
+                    Status = SubmissionPeriodStatus.CannotStartYet,
+                    DatePeriodYear = _submissionPeriods[1].Year
                 }
-            },
+            };
+
+        var submissionPeriodDetailGroups = submissionPeriodDetails
+                        .GroupBy(c => new { c.DatePeriodYear })
+                        .Select(c => new SubmissionPeriodDetailGroup
+                        {
+                            DatePeriodYear = c.Key.DatePeriodYear,
+                            Quantity = c.Count()
+                        }).ToList();
+
+        foreach (var group in submissionPeriodDetailGroups)
+        {
+            group.SubmissionPeriodDetails = submissionPeriodDetails.Where(c => c.DatePeriodYear == group.DatePeriodYear).ToList();
+        }
+
+        // Assert
+        result.ViewName.Should().Be("FileUploadCompanyDetailsSubLanding");
+        result.Model.Should().BeEquivalentTo(new FileUploadCompanyDetailsSubLandingViewModel
+        {
+            SubmissionPeriodDetailGroups = submissionPeriodDetailGroups,
             OrganisationRole = OrganisationRoles.Producer
         });
     }

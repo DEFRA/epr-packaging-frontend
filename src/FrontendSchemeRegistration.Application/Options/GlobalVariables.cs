@@ -6,8 +6,6 @@ using DTOs.Submission;
 [ExcludeFromCodeCoverage]
 public class GlobalVariables
 {
-    public int SchemeYear { get; set; }
-
     public string BasePath { get; set; }
 
     public int FileUploadLimitInBytes { get; set; }

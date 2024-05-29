@@ -44,6 +44,8 @@ public class FileUploadCompanyDetailsSuccessController : Controller
 
         var organisationRole = session.UserData.Organisations?.FirstOrDefault()?.OrganisationRole;
 
+        ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadingCompanyDetails}");
+
         if (organisationRole is not null)
         {
             var submissionId = Guid.Parse(Request.Query["submissionId"]);

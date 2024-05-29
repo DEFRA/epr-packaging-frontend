@@ -107,19 +107,6 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
                 HasNominatedNotification = false,
                 NominatedEnrolmentId = string.Empty,
                 NominatedApprovedPersonEnrolmentId = string.Empty
-            },
-            SubmissionPeriods = new()
-            {
-                new SubmissionPeriod
-                {
-                    DataPeriod = "Data period 1",
-                    Deadline = DateTime.Today
-                },
-                new SubmissionPeriod
-                {
-                    DataPeriod = "Data period 2",
-                    Deadline = DateTime.Today.AddDays(5)
-                }
             }
         });
     }

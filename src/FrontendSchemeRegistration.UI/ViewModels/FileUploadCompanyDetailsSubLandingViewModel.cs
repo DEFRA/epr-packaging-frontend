@@ -8,5 +8,5 @@ public class FileUploadCompanyDetailsSubLandingViewModel : ViewModelWithOrganisa
 {
     public string? ComplianceSchemeName { get; set; }
 
-    public List<SubmissionPeriodDetail> SubmissionPeriodDetails { get; set; }
+    public List<SubmissionPeriodDetailGroup> SubmissionPeriodDetailGroups { get; set; }
 }

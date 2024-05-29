@@ -3,10 +3,12 @@ using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
+using FrontendSchemeRegistration.Application.Extensions;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
+using FrontendSchemeRegistration.UI.Enums;
 using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
@@ -21,7 +23,7 @@ namespace FrontendSchemeRegistration.UI.Controllers;
 [Route(PagePaths.FileUploadSubLanding)]
 public class FileUploadSubLandingController : Controller
 {
-    private const int _submissionsLimit = 2;
+    private const int _submissionsLimit = 1;
     private readonly ISubmissionService _submissionService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
     private readonly IFeatureManager _featureManager;
@@ -49,7 +51,7 @@ public class FileUploadSubLandingController : Controller
         var periods = _submissionPeriods.Select(x => x.DataPeriod).ToList();
         var submissions = await _submissionService.GetSubmissionsAsync<PomSubmission>(
             periods,
-            _submissionsLimit,
+            periods.Count,
             session.RegistrationSession.SelectedComplianceScheme?.Id);
         var submissionPeriodDetails = new List<SubmissionPeriodDetail>();
 
@@ -71,6 +73,9 @@ public class FileUploadSubLandingController : Controller
             submissionPeriodDetails.Add(new SubmissionPeriodDetail
             {
                 DataPeriod = submissionPeriod.DataPeriod,
+                DatePeriodStartMonth = submissionPeriod.LocalisedMonth(MonthType.Start),
+                DatePeriodEndMonth = submissionPeriod.LocalisedMonth(MonthType.End),
+                DatePeriodYear = submissionPeriod.Year,
                 Deadline = submissionPeriod.Deadline,
                 Status = GetSubmissionStatus(submission, submissionPeriod, decision, showPomDecision),
                 IsResubmissionRequired = decision.IsResubmissionRequired,
@@ -79,8 +84,20 @@ public class FileUploadSubLandingController : Controller
             });
         }
 
-        var organisationRole = session.UserData.Organisations?.FirstOrDefault()?.OrganisationRole;
+        var submissionPeriodDetailGroups = submissionPeriodDetails
+                              .GroupBy(c => new { c.DatePeriodYear })
+                              .Select(c => new SubmissionPeriodDetailGroup
+                              {
+                                  DatePeriodYear = c.Key.DatePeriodYear,
+                                  Quantity = c.Count()
+                              }).ToList();
 
+        foreach (var group in submissionPeriodDetailGroups)
+        {
+            group.SubmissionPeriodDetails = submissionPeriodDetails.Where(c => c.DatePeriodYear == group.DatePeriodYear).ToList();
+        }
+
+        var organisationRole = session.UserData.Organisations?.FirstOrDefault()?.OrganisationRole;
         if (organisationRole is not null)
         {
             session.RegistrationSession.Journey.ClearReportPackagingDataJourney();
@@ -91,7 +108,7 @@ public class FileUploadSubLandingController : Controller
                 "FileUploadSubLanding",
                 new FileUploadSubLandingViewModel
                 {
-                    SubmissionPeriodDetails = submissionPeriodDetails,
+                    SubmissionPeriodDetailGroups = submissionPeriodDetailGroups,
                     ComplianceSchemeName = session.RegistrationSession.SelectedComplianceScheme?.Name,
                     OrganisationRole = organisationRole,
                     ServiceRole = session.UserData?.ServiceRole ?? "Basic User"
@@ -191,7 +208,7 @@ public class FileUploadSubLandingController : Controller
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         var submissions = await _submissionService.GetSubmissionsAsync<PomSubmission>(
             new List<string> { dataPeriod },
-            _submissionsLimit,
+            _submissionPeriods.Count,
             session.RegistrationSession.SelectedComplianceScheme?.Id);
 
         return submissions.FirstOrDefault();

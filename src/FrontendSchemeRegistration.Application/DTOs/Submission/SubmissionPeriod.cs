@@ -11,6 +11,8 @@ public class SubmissionPeriod
 
     public string EndMonth { get; init; }
 
+    public string Year { get; init; }
+
     public DateTime Deadline { get; init; }
 
     public DateTime ActiveFrom { get; init; }

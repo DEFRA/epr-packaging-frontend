@@ -123,11 +123,39 @@
   <data name="account_home" xml:space="preserve">
     <value>Account home - {0}</value>
   </data>
+
+  <data name="members_organisation_details" xml:space="preserve">
+    <value>Members’ organisation details</value>
+  </data>
+  <data name="you_must_report_org_data" xml:space="preserve">
+    <value>You must report organisation details for January to June and July to December.</value>
+  </data>
+  <data name="you_can_also" xml:space="preserve">
+    <value>You can also:</value>
+  </data>
   <data name="report_packaging_data" xml:space="preserve">
     <value>Report your members’ packaging data</value>
   </data>
+  <data name="report_changes_to_your_organisation_details" xml:space="preserve">
+    <value>report changes to your members’ organisation details</value>
+  </data>
+  <data name="resubmit_your_organisation_details" xml:space="preserve">
+    <value>resubmit your members’ organisation details</value>
+  </data>
+  <data name="view_your_history" xml:space="preserve">
+    <value>view your history</value>
+  </data>
+  <data name="you_must_report_packaging_data" xml:space="preserve">
+    <value>You must report packaging data for January to June and July to December.</value>
+  </data>
   <data name="report_organisation_details" xml:space="preserve">
     <value>Report your members’ organisation details</value>
+  </data>
+  <data name="members_packaging_data" xml:space="preserve">
+    <value>Members’ packaging data</value>
+  </data>
+  <data name="resubmit_your_packaging_data" xml:space="preserve">
+    <value>resubmit your members’ packaging data</value>
   </data>
   <data name="packaging_recovery_notes" xml:space="preserve">
     <value>Packaging waste recycling note (PRN) and packaging waste export recycling note (PERN)</value>
@@ -185,9 +213,6 @@
   </data>
   <data name="summary-regulator" xml:space="preserve">
     <value>the regulator</value>
-  </data>
-  <data name="in_x_you_must_report_data_for" xml:space="preserve">
-    <value>In {0}, you must report data for:</value>
   </data>
   <data name="date1_to_date2" xml:space="preserve">
     <value>{0} to {1}</value>

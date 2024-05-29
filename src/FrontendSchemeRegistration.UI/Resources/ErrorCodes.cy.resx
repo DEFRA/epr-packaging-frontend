@@ -193,9 +193,12 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
         <value>WAll fields must contain 4000 characters or less</value>
     </data>
     <data name="890" xml:space="preserve">
-        <value>WThe list in this file needs to match the one in the organisation details file, that shows organisations that supply packaging under their own brand. Check both files</value>
+        <value>WThe organisation_id list in this file does not match the organisation_id list in your organisation file</value>
     </data>
     <data name="891" xml:space="preserve">
         <value>WThis list of partners needs to match the one in the organisation details file. Check both files</value>
+    </data>
+	<data name="892" xml:space="preserve">
+        <value>WThe subsidiary_id list in this file does not match the subsidiary_id list in your organisation file</value>
     </data>
 </root>

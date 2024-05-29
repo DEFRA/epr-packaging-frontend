@@ -6,8 +6,10 @@ using Application.Services.Interfaces;
 using Constants;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
+using FrontendSchemeRegistration.Application.Constants;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Primitives;
 using Moq;
 using UI.Controllers;
@@ -23,10 +25,15 @@ public class FileUploadSubmissionConfirmationControllerTests
     private Mock<IUserAccountService> _userAccountServiceMock;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
     private FileUploadSubmissionConfirmation _systemUnderTest;
+    private Mock<IUrlHelper> _urlHelperMock;
 
     [SetUp]
     public void SetUp()
     {
+        _urlHelperMock = new Mock<IUrlHelper>();
+        _urlHelperMock.Setup(url => url.Action(It.Is<UrlActionContext>(uac => uac.Action == "Get")))
+            .Returns(PagePaths.FileUploadSubLanding);
+        _urlHelperMock.Setup(x => x.Content(It.IsAny<string>())).Returns((string contentPath) => contentPath);
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
@@ -47,6 +54,8 @@ public class FileUploadSubmissionConfirmationControllerTests
                 Session = Mock.Of<ISession>()
             }
         };
+
+        _systemUnderTest.Url = _urlHelperMock.Object;
     }
 
     [Test]
@@ -94,6 +103,9 @@ public class FileUploadSubmissionConfirmationControllerTests
 
         // Assert
         result.ViewName.Should().Be("FileUploadSubmissionConfirmation");
+        result.ViewData.Keys.Should().HaveCount(1);
+        result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
+        result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.FileUploadSubLanding}");
         result.Model.Should().BeEquivalentTo(new FileUploadSubmissionConfirmationViewModel
         {
             OrganisationRole = OrganisationRoles.ComplianceScheme,

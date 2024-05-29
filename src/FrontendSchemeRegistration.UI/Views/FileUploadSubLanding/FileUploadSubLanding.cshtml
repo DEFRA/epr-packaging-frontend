@@ -3,241 +3,249 @@
 
 @model FileUploadSubLandingViewModel
 @{
-	ViewData["Title"] = Localizer["report_packaging_data"];
-	var notStartedSubmissionExist = Model.SubmissionPeriodDetails.Any(s => (s.Status is NotStarted || s.Status is CannotStartYet));
+    ViewData["Title"] = Localizer["report_packaging_data"];
+    var notStartedSubmissionExist = Model.SubmissionPeriodDetailGroups.Any(x => x.SubmissionPeriodDetails.Any(s => (s.Status is NotStarted || s.Status is CannotStartYet)));
 }
 
 @await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
 
 @functions
 {
-	private static string GetClass(SubmissionPeriodStatus status) => status switch
-	{
-		CannotStartYet => "govuk-tag--grey",
-		FileUploaded => "govuk-tag--yellow",
-		SubmittedToRegulator => "govuk-tag--yellow",
-		_ => string.Empty
-	};
+    private static string GetClass(SubmissionPeriodStatus status) => status switch
+    {
+        CannotStartYet => "govuk-tag--grey",
+        FileUploaded => "govuk-tag--yellow",
+        SubmittedToRegulator => "govuk-tag--yellow",
+        _ => string.Empty
+    };
 
-	private static string GetClassFeature(SubmissionPeriodStatus status) =>	status switch
-	{
-		CannotStartYet => "govuk-tag--grey",
-		FileUploaded => "govuk-tag--yellow",
-		SubmittedToRegulator => "govuk-tag--yellow",
-		AcceptedByRegulator => "govuk-tag--green",
-		RejectedByRegulator => "govuk-tag--red",
-		_ => string.Empty
-	};
+    private static string GetClassFeature(SubmissionPeriodStatus status) => status switch
+    {
+        CannotStartYet => "govuk-tag--grey",
+        FileUploaded => "govuk-tag--yellow",
+        SubmittedToRegulator => "govuk-tag--yellow",
+        AcceptedByRegulator => "govuk-tag--green",
+        RejectedByRegulator => "govuk-tag--red",
+        _ => string.Empty
+    };
 }
 
 <main class="govuk-main-wrapper" id="main-content" role="main">
-	<div class="govuk-grid-row">
-		<div class="govuk-grid-column-two-thirds">
-			@if (Model.IsComplianceScheme)
-			{
-				<p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0">@Model.ComplianceSchemeName</p>
-			}
-			<h1 class="govuk-heading-xl govuk-!-margin-bottom-6">@Localizer["report_packaging_data"]</h1>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @if (Model.IsComplianceScheme)
+            {
+                <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0">@Model.ComplianceSchemeName</p>
+            }
+            <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">@Localizer["report_packaging_data"]</h1>
 
-			<h2 class="govuk-heading-m">@Localizer["before_you_start"]</h2>
-			<p class="govuk-body">@Localizer["read_the_guidance_on"]</p>
-			<ul class="govuk-list govuk-list--bullet">
-				<li>
-					<a href="@GuidanceLinks.Value.WhatPackagingDataYouNeedToCollect"
-					class="govuk-link" rel="noreferrer noopener" target="_blank">
-						@Localizer["what_packaging_data_you_need_to_collect"]
-					</a>
-				</li>
-				<li>
-					<a href="@GuidanceLinks.Value.HowToBuildCsvFileToReportYourPackagingData"
-					class="govuk-link" rel="noreferrer noopener" target="_blank">
-						@Localizer["how_to_build_a_csv_file_to_report_your_packaging_data"]
-					</a>
-				</li>
-				<li>
-					<a href="@GuidanceLinks.Value.ExampleCsvFile"
-					class="govuk-link" rel="noreferrer noopener" target="_blank">
-						@Localizer["an_example_csv_file"]
-					</a>
-				</li>
-			</ul>
+            <h2 class="govuk-heading-m">@Localizer["before_you_start"]</h2>
+            <p class="govuk-body">@Localizer["read_the_guidance_on"]</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>
+                    <a href="@GuidanceLinks.Value.WhatPackagingDataYouNeedToCollect"
+                       class="govuk-link" rel="noreferrer noopener" target="_blank">
+                        @Localizer["what_packaging_data_you_need_to_collect"]
+                    </a>
+                </li>
+                <li>
+                    <a href="@GuidanceLinks.Value.HowToBuildCsvFileToReportYourPackagingData"
+                       class="govuk-link" rel="noreferrer noopener" target="_blank">
+                        @Localizer["how_to_build_a_csv_file_to_report_your_packaging_data"]
+                    </a>
+                </li>
+                <li>
+                    <a href="@GuidanceLinks.Value.ExampleCsvFile"
+                       class="govuk-link" rel="noreferrer noopener" target="_blank">
+                        @Localizer["an_example_csv_file"]
+                    </a>
+                </li>
+            </ul>
 
-			<h2 class="govuk-heading-m">@Localizer["if_youve_missed_a_deadline_to_submit"]</h2>
-			<p class="govuk-body">
-				@Localizer["if_youve_missed_a_deadline"] <a href="@GuidanceLinks.Value.HowToBuildCsvFileToReportYourPackagingData"
-				class="govuk-link"
-				target="_blank"
-				rel="noreferrer noopener">@Localizer["check_the_govuk_guidance"]</a>
-			</p>
+            <h2 class="govuk-heading-m">@Localizer["if_youve_missed_a_deadline_to_submit"]</h2>
+            <p class="govuk-body">
+                @Localizer["if_youve_missed_a_deadline"] <a href="@GuidanceLinks.Value.HowToBuildCsvFileToReportYourPackagingData"
+                                                            class="govuk-link"
+                                                            target="_blank"
+                                                            rel="noreferrer noopener">@Localizer["check_the_govuk_guidance"]</a>
+            </p>
 
-			@if (Model.SubmissionPeriodDetails.Any(x => x.Status == SubmissionPeriodStatus.AcceptedByRegulator))
-			{
-				<div class="govuk-warning-text govuk-!-margin-top-7 govuk-!-margin-bottom-2">
-					<span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-					<strong class="govuk-warning-text__text">
-						<span class="govuk-warning-text__assistive">@SharedLocalizer["warning"]</span>
-						@Localizer["your_file_has_been_accepted_this_does_not_mean_the_data_is_correct_or_accurate_it_is_your_responsibility_to_make_sure_you_submit_correct_accurate_data_an_approved_person_or_their_delegate_must_verify_an_organisations_data"]
-					</strong>
-				</div>
-			}
-		</div>
-	</div>
+            @if (Model.SubmissionPeriodDetailGroups.Any(x => x.SubmissionPeriodDetails.Any(x => x.Status == SubmissionPeriodStatus.AcceptedByRegulator)))
+            {
+                <div class="govuk-warning-text govuk-!-margin-top-7 govuk-!-margin-bottom-2">
+                    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                    <strong class="govuk-warning-text__text">
+                        <span class="govuk-warning-text__assistive">@SharedLocalizer["warning"]</span>
+                        @Localizer["your_file_has_been_accepted_this_does_not_mean_the_data_is_correct_or_accurate_it_is_your_responsibility_to_make_sure_you_submit_correct_accurate_data_an_approved_person_or_their_delegate_must_verify_an_organisations_data"]
+                    </strong>
+                </div>
+            }
+        </div>
+    </div>
 
-	@using (Html.BeginForm(FormMethod.Post))
-	{
-		<div class="card-row govuk-!-margin-bottom-7">
-			@foreach (var submissionPeriodDetail in Model.SubmissionPeriodDetails)
-			{
-				<div class="govuk-card govuk-!-margin-top-5 submission-period-card">
-					<div class="govuk-card-body">
-						<div class="govuk-card-headers">
-							@if (Model.IsComplianceScheme)
-							{
-								<h3 class="govuk-heading-m govuk-!-margin-bottom-0">@Localizer["report_members_packaging_data_for"] @SharedLocalizer[submissionPeriodDetail.DataPeriod]</h3>
-								<h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["large_organisations"]</h3>
-							}
-							else
-							{
-								<h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_packaging_data_for"] @SharedLocalizer[submissionPeriodDetail.DataPeriod]</h3>
-							}
-						</div>
-						<feature name="ShowPoMResubmission">
-							@if (submissionPeriodDetail.Status is NotStarted || submissionPeriodDetail.Status is CannotStartYet)
-							{
-								<p class="govuk-body">@Localizer["deadline"] @submissionPeriodDetail.Deadline.ToReadableLongMonthDeadlineDate()</p>
-							}
-							else if (notStartedSubmissionExist)
-							{
-								<div class="deadline-placeholder"></div>
-							}
-							<strong class="@(("govuk-tag " + GetClassFeature(submissionPeriodDetail.Status) + " status-style"))">@Localizer[submissionPeriodDetail.Status.GetLocalizedName()]</strong>
-						</feature>
-						<feature name="ShowPoMResubmission" negate="true">
-							<p class="govuk-body">@Localizer["deadline"] @submissionPeriodDetail.Deadline.ToReadableLongMonthDeadlineDate()</p>
-							<strong class="@(("govuk-tag " + GetClass(submissionPeriodDetail.Status)).Trim())">@Localizer[submissionPeriodDetail.Status.GetLocalizedName()]</strong>
-						</feature>
-						
-					
-					<feature name="ShowPoMResubmission">
-						@if (submissionPeriodDetail.Status is not NotStarted && submissionPeriodDetail.Status is not FileUploaded)
-						{
-							@if (!Model.IsComplianceScheme)
-							{
-								@if (submissionPeriodDetail.IsResubmissionRequired && submissionPeriodDetail.Decision is "Rejected")
-								{
-									@if (Model.ServiceRole is "Basic User")
-									{
-										<div class="govuk-card-footer">
-											<button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["update_packaging_data_basic"]</button>
-										</div>
-									}
-									else
-									{
-										<div class="govuk-card-footer">
-											<button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["resubmit_packaging_data"]</button>
-										</div>
-									}
-								}
-								else if (submissionPeriodDetail.Decision is "Rejected")
-								{
-									@if (Model.ServiceRole is "Basic User")
-									{
-										<div class="govuk-card-footer">
-											<button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["check_if_you_need_to_update_packaging_data"]</button>
-										</div>
-									}
-									else
-									{
-										<div class="govuk-card-footer">
-											<button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["check_if_you_need_to_resubmit_packaging_data"]</button>
-										</div>
-									}										
-								}
-								else if (submissionPeriodDetail.Decision is "Accepted" || submissionPeriodDetail.Decision is "Approved")
-								{
-									<div class="govuk-card-footer">
-										<button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["check_if_you_need_to_update_packaging_data"]</button>
-									</div>
-								}
-							}
-							else
-							{
-								@if (submissionPeriodDetail.IsResubmissionRequired && submissionPeriodDetail.Decision is "Rejected")
-								{
-									@if (Model.ServiceRole is "Basic User")
-									{
-										<div class="govuk-card-footer">
-											<button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["update_members_packaging_data_basic"]</button>
-										</div>
-									}
-									else
-									{
-										<div class="govuk-card-footer">
-											<button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["resubmit_members_packaging_data"]</button>
-										</div>
-									}
-								}
-								else if (submissionPeriodDetail.Decision is "Rejected")
-								{
-									@if (Model.ServiceRole is "Basic User")
-									{
-										<div class="govuk-card-footer">
-											<button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["check_if_you_need_to_update_member's_packaging_data"]</button>
-										</div>
-									}
-									else
-									{
-										<div class="govuk-card-footer">
-											<button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["check_if_you_need_to_resubmit_members_packaging_data"]</button>
-										</div>
-									}										
-								}
-								else if (submissionPeriodDetail.Decision is "Accepted" || submissionPeriodDetail.Decision is "Approved")
-								{
-									<div class="govuk-card-footer">
-										<button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["check_if_you_need_to_update_member's_packaging_data"]</button>
-									</div>
-								}
-							}
-						}
-						else if (submissionPeriodDetail.Status is FileUploaded)
-						{
-							<div class="govuk-card-footer">
-								<button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["start_now"]</button>
-							</div>
-						}
-						else if (submissionPeriodDetail.Status is NotStarted)
-						{
-							<div class="govuk-card-footer">
-								<button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["start_now"]</button>
-							</div>
-						}
-						else
-						{
-							<div class="govuk-card-footer">
-								<button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["status_unknown"]</button>
-							</div>
-						}
-					</feature>
-					<feature name="ShowPoMResubmission" negate="true">
-						@if (submissionPeriodDetail.Status is not CannotStartYet)
-						{
-							<div class="govuk-card-footer">
-								<button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["start_now"]</button>
-							</div>
-						}
-					</feature>
-					</div>
-				</div>
-			}
-		</div>
-	}
+    @using (Html.BeginForm(FormMethod.Post))
+    {
+        <div class="govuk-!-margin-bottom-7">
 
-	<div class="govuk-grid-row">
-		<div class="govuk-grid-column-two-thirds">
-			<h2 class="govuk-heading-m">@Localizer["your_history"]</h2>
-			<p class="govuk-body">@Localizer["view_your_packaging_data_files"]</p>
-			<p class="govuk-body"><a class="govuk-link govuk-link--no-visited-state" asp-controller="FileUploadSubmissionHistory" asp-action="Get">@Localizer["view_submission_history"]</a></p>
-		</div>
-	</div>
+            @foreach (var submissionPeriodGroup in Model.SubmissionPeriodDetailGroups)
+            {
+                <div class="govuk-!-margin-top-2 govuk-!-margin-bottom-5 govuk-list">
+                    <h2 class="govuk-heading-m">@submissionPeriodGroup.DatePeriodYear</h2>
+                    <div class="card-row govuk-!-margin-bottom-2">
+                        @foreach (var submissionPeriodDetail in submissionPeriodGroup.SubmissionPeriodDetails)
+                        {
+                            <div class="govuk-card govuk-!-margin-top-2 submission-period-card">
+                                <div class="govuk-card-body">
+                                    <div class="govuk-card-headers">
+                                        @if (Model.IsComplianceScheme)
+                                        {
+                                            <h3 class="govuk-heading-m govuk-!-margin-bottom-0">@Localizer["report_members_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear</h3>
+                                            <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["large_organisations"]</h3>
+                                        }
+                                        else
+                                        {
+                                            <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear</h3>
+                                        }
+                                    </div>
+                                    <feature name="ShowPoMResubmission">
+                                        @if (submissionPeriodDetail.Status is NotStarted || submissionPeriodDetail.Status is CannotStartYet)
+                                        {
+                                            <p class="govuk-body">@Localizer["deadline"] @submissionPeriodDetail.Deadline.ToReadableLongMonthDeadlineDate()</p>
+                                        }
+                                        else if (notStartedSubmissionExist)
+                                        {
+                                            <div class="deadline-placeholder"></div>
+                                        }
+                                        <strong class="@(("govuk-tag " + GetClassFeature(submissionPeriodDetail.Status) + " status-style"))">@Localizer[submissionPeriodDetail.Status.GetLocalizedName()]</strong>
+                                    </feature>
+                                    <feature name="ShowPoMResubmission" negate="true">
+                                        <p class="govuk-body">@Localizer["deadline"] @submissionPeriodDetail.Deadline.ToReadableLongMonthDeadlineDate()</p>
+                                        <strong class="@(("govuk-tag " + GetClass(submissionPeriodDetail.Status)).Trim())">@Localizer[submissionPeriodDetail.Status.GetLocalizedName()]</strong>
+                                    </feature>
+
+                                    <feature name="ShowPoMResubmission">
+                                        @if (submissionPeriodDetail.Status is not NotStarted && submissionPeriodDetail.Status is not FileUploaded)
+                                        {
+                                            @if (!Model.IsComplianceScheme)
+                                            {
+                                                @if (submissionPeriodDetail.IsResubmissionRequired && submissionPeriodDetail.Decision is "Rejected")
+                                                {
+                                                    @if (Model.ServiceRole is "Basic User")
+                                                    {
+                                                        <div class="govuk-card-footer">
+                                                            <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["update_packaging_data_basic"]</button>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="govuk-card-footer">
+                                                            <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["resubmit_packaging_data"]</button>
+                                                        </div>
+                                                    }
+                                                }
+                                                else if (submissionPeriodDetail.Decision is "Rejected")
+                                                {
+                                                    @if (Model.ServiceRole is "Basic User")
+                                                    {
+                                                        <div class="govuk-card-footer">
+                                                            <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["check_if_you_need_to_update_packaging_data"]</button>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="govuk-card-footer">
+                                                            <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["check_if_you_need_to_resubmit_packaging_data"]</button>
+                                                        </div>
+                                                    }
+                                                }
+                                                else if (submissionPeriodDetail.Decision is "Accepted" || submissionPeriodDetail.Decision is "Approved")
+                                                {
+                                                    <div class="govuk-card-footer">
+                                                        <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["check_if_you_need_to_update_packaging_data"]</button>
+                                                    </div>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                @if (submissionPeriodDetail.IsResubmissionRequired && submissionPeriodDetail.Decision is "Rejected")
+                                                {
+                                                    @if (Model.ServiceRole is "Basic User")
+                                                    {
+                                                        <div class="govuk-card-footer">
+                                                            <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["update_members_packaging_data_basic"]</button>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="govuk-card-footer">
+                                                            <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["resubmit_members_packaging_data"]</button>
+                                                        </div>
+                                                    }
+                                                }
+                                                else if (submissionPeriodDetail.Decision is "Rejected")
+                                                {
+                                                    @if (Model.ServiceRole is "Basic User")
+                                                    {
+                                                        <div class="govuk-card-footer">
+                                                            <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["check_if_you_need_to_update_member's_packaging_data"]</button>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="govuk-card-footer">
+                                                            <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["check_if_you_need_to_resubmit_members_packaging_data"]</button>
+                                                        </div>
+                                                    }
+                                                }
+                                                else if (submissionPeriodDetail.Decision is "Accepted" || submissionPeriodDetail.Decision is "Approved")
+                                                {
+                                                    <div class="govuk-card-footer">
+                                                        <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["check_if_you_need_to_update_member's_packaging_data"]</button>
+                                                    </div>
+                                                }
+                                            }
+                                        }
+                                        else if (submissionPeriodDetail.Status is FileUploaded)
+                                        {
+                                            <div class="govuk-card-footer">
+                                                <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["start_now"]</button>
+                                            </div>
+                                        }
+                                        else if (submissionPeriodDetail.Status is NotStarted)
+                                        {
+                                            <div class="govuk-card-footer">
+                                                <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["start_now"]</button>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="govuk-card-footer">
+                                                <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["status_unknown"]</button>
+                                            </div>
+                                        }
+                                    </feature>
+                                    <feature name="ShowPoMResubmission" negate="true">
+                                        @if (submissionPeriodDetail.Status is not CannotStartYet)
+                                        {
+                                            <div class="govuk-card-footer">
+                                                <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["start_now"]</button>
+                                            </div>
+                                        }
+                                    </feature>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h2 class="govuk-heading-m">@Localizer["your_history"]</h2>
+            <p class="govuk-body">@Localizer["view_your_packaging_data_files"]</p>
+            <p class="govuk-body"><a class="govuk-link govuk-link--no-visited-state" asp-controller="FileUploadSubmissionHistory" asp-action="Get">@Localizer["view_submission_history"]</a></p>
+        </div>
+    </div>
 </main>

@@ -9,6 +9,10 @@ namespace FrontendSchemeRegistration.Application.DTOs.Submission
 
         public string SubmissionPeriod { get; set; }
 
+        public string DatePeriodStartMonth { get; set; }
+
+        public string DatePeriodEndMonth { get; set; }
+
         public int Year { get; set; }
     }
 }

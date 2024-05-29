@@ -11,13 +11,14 @@
 
 @functions
 {
-    private static string GetClass(SubmissionPeriodStatus status) => status switch{
+    private static string GetClass(SubmissionPeriodStatus status) => status switch
+    {
         FileUploaded => "govuk-tag--yellow",
         CannotStartYet => "govuk-tag--grey",
         SubmittedToRegulator => "govuk-tag--green",
         SubmittedAndHasRecentFileUpload => "govuk-tag--green",
         _ => string.Empty
-        };
+    };
 }
 
 <main class="govuk-main-wrapper" id="main-content" role="main">
@@ -31,14 +32,14 @@
 
             <h2 class="govuk-heading-m">@Localizer["before_you_start"]</h2>
             <p class="govuk-body">
-                @Localizer["read_the_guidance_on"] <a class="govuk-link" rel="noreferrer noopener" target="_blank" 
+                @Localizer["read_the_guidance_on"] <a class="govuk-link" rel="noreferrer noopener" target="_blank"
                                                       href="@GuidanceLinks.Value.HowToReportOrganisationDetails">@Localizer["how_to_report_organisation_details"]</a>
             </p>
-            
+
             <h2 class="govuk-heading-m">@Localizer["if_youve_missed_a_deadline_to_submit"]</h2>
             <p class="govuk-body">
                 @Localizer["if_youve_missed_a_deadline"] <a href="@GuidanceLinks.Value.HowToBuildCsvFileToReportYourOrganisationData"
-                                                            target="_blank" 
+                                                            target="_blank"
                                                             class="govuk-link"
                                                             rel="noreferrer noopener">@Localizer["check_the_govuk_guidance"]</a>
             </p>
@@ -47,31 +48,39 @@
 
     @using (Html.BeginForm(FormMethod.Post))
     {
-        <div class="card-row govuk-!-margin-bottom-7">
-            @foreach (var submissionPeriodDetail in Model.SubmissionPeriodDetails)
+        <div class="govuk-!-margin-bottom-7">
+            @foreach (var submissionPeriodGroup in Model.SubmissionPeriodDetailGroups)
             {
-                <div class="govuk-card govuk-!-margin-top-5">
-                    <div class="govuk-card-body">
-                        <h3 class="govuk-heading-m govuk-!-margin-bottom-2">
-                            @Localizer[Model.IsComplianceScheme ? "report_member_organisation_details_for" : "report_organisation_details_for"] @SharedLocalizer[submissionPeriodDetail.DataPeriod]
-                        </h3>
-                        @if (Model.IsComplianceScheme)
+                <div class="govuk-!-margin-top-2 govuk-!-margin-bottom-5 govuk-list">
+                    <h2 class="govuk-heading-m">@submissionPeriodGroup.DatePeriodYear</h2>
+                    <div class="card-row govuk-!-margin-bottom-2">
+                        @foreach (var submissionPeriodDetail in submissionPeriodGroup.SubmissionPeriodDetails)
                         {
-                            <p class="govuk-heading-m">@Localizer["large_organisations"]</p>
-                        }
-                        <p class="govuk-body">@Localizer["deadline"] @submissionPeriodDetail.Deadline.ToReadableLongMonthDeadlineDate()</p>
-                        <strong class="@(("govuk-tag " + GetClass(submissionPeriodDetail.Status)).TrimEnd())">@Localizer[submissionPeriodDetail.Status.GetLocalizedName()]</strong>
-                    </div>
-                    <div class="govuk-card-body">
-                        @{
-                            if (!submissionPeriodDetail.Status.In(CannotStartYet))
-                            {
-                                <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer[Model.IsComplianceScheme ? "report_members_details" : "report_organisation_details"]</button>
-                            }
-                            else
-                            {
-                                <br/>
-                            }
+                            <div class="govuk-card govuk-!-margin-top-2">
+                                <div class="govuk-card-body">
+                                    <h3 class="govuk-heading-m govuk-!-margin-bottom-2">
+                                        @Localizer[Model.IsComplianceScheme ? "report_member_organisation_details_for" : "report_organisation_details_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear
+                                    </h3>
+                                    @if (Model.IsComplianceScheme)
+                                    {
+                                        <p class="govuk-heading-m">@Localizer["large_organisations"]</p>
+                                    }
+                                    <p class="govuk-body">@Localizer["deadline"] @submissionPeriodDetail.Deadline.ToReadableLongMonthDeadlineDate()</p>
+                                    <strong class="@(("govuk-tag " + GetClass(submissionPeriodDetail.Status)).TrimEnd())">@Localizer[submissionPeriodDetail.Status.GetLocalizedName()]</strong>
+                                </div>
+                                <div class="govuk-card-body">
+                                    @{
+                                        if (!submissionPeriodDetail.Status.In(CannotStartYet))
+                                        {
+                                            <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer[Model.IsComplianceScheme ? "report_members_details" : "report_organisation_details"]</button>
+                                        }
+                                        else
+                                        {
+                                            <br />
+                                        }
+                                    }
+                                </div>
+                            </div>
                         }
                     </div>
                 </div>

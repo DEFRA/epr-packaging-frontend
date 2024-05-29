@@ -10,8 +10,10 @@ using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
+using FrontendSchemeRegistration.Application.Constants;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Primitives;
 using Moq;
@@ -30,10 +32,15 @@ public class ReviewCompanyDetailsControllerTests
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
     private Mock<IUserAccountService> _userAccountServiceMock;
     private Mock<ClaimsPrincipal> _claimsPrincipalMock;
+    private Mock<IUrlHelper> _urlHelperMock;
 
     [SetUp]
     public void SetUp()
     {
+        _urlHelperMock = new Mock<IUrlHelper>();
+        _urlHelperMock.Setup(url => url.Action(It.Is<UrlActionContext>(uac => uac.Action == "Get")))
+            .Returns(PagePaths.FileUploadCompanyDetailsSubLanding);
+        _urlHelperMock.Setup(x => x.Content(It.IsAny<string>())).Returns((string contentPath) => contentPath);
         _submissionService = new Mock<ISubmissionService>();
         _userAccountServiceMock = new Mock<IUserAccountService>();
         _claimsPrincipalMock = new Mock<ClaimsPrincipal>();
@@ -67,6 +74,8 @@ public class ReviewCompanyDetailsControllerTests
                 User = _claimsPrincipalMock.Object
             }
         };
+
+        _systemUnderTest.Url = _urlHelperMock.Object;
     }
 
     [TestCase(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, true)]
@@ -107,6 +116,9 @@ public class ReviewCompanyDetailsControllerTests
 
         // Assert
         result.ViewName.Should().Be("ReviewCompanyDetails");
+        result.ViewData.Keys.Should().HaveCount(1);
+        result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
+        result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
         var model = result.Model.As<ReviewCompanyDetailsViewModel>();
         model.OrganisationDetailsUploadedBy.Should().BeEquivalentTo($"{firstName} {lastName}");
         model.RegistrationSubmissionDeadline.Should().BeEquivalentTo(SubmissionDeadline.ToReadableDate());

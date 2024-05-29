@@ -29,10 +29,9 @@
             {
                 @foreach (var viewModel in @Model.SubmissionPeriods)
                 {
-                    var submissionPeriod = SharedLocalizer[viewModel.SubmissionPeriod];
+                    var submissionPeriod = SharedLocalizer["date1_to_date2", viewModel.DatePeriodStartMonth, viewModel.DatePeriodEndMonth];
 
-                    @* <h3 class="govuk-heading-s">@submissionPeriod</h3> *@
-                    <h2 class="govuk-heading-m">@submissionPeriod</h2>
+                    <h2 class="govuk-heading-m"> @submissionPeriod @viewModel.DatePeriodYear</h2>
 
                     <div class="govuk-summary-card">
                         <div class="govuk-summary-card__content overflow-x-auto">

@@ -1,21 +1,21 @@
 ﻿namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
 
-using System.Security.Claims;
 using Application.Constants;
 using Application.DTOs.ComplianceScheme;
 using Application.DTOs.Notification;
 using Application.DTOs.Submission;
+using Application.Options;
 using Application.Services.Interfaces;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
-using Application.Options;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
 using Newtonsoft.Json;
+using System.Security.Claims;
 using UI.Controllers;
 using UI.Sessions;
 using UI.ViewModels;
@@ -89,7 +89,7 @@ public class ComplianceSchemeLandingControllerTests
             _complianceSchemeServiceMock.Object,
             _notificationServiceMock.Object,
             _nullLogger,
-            Options.Create(new GlobalVariables { SubmissionPeriods = _submissionPeriods, SchemeYear = 2023 }))
+            Options.Create(new GlobalVariables { SubmissionPeriods = _submissionPeriods }))
         {
             ControllerContext = { HttpContext = _httpContextMock.Object }
         };
@@ -125,12 +125,7 @@ public class ComplianceSchemeLandingControllerTests
                 CurrentComplianceSchemeId = _complianceSchemeOneId,
                 CurrentTabSummary = new ComplianceSchemeSummary(),
                 ComplianceSchemes = complianceSchemes,
-                IsApprovedUser = true,
-                SubmissionPeriods = _submissionPeriods.Select(period => new DatePeriod
-                {
-                    StartMonth = period.StartMonth,
-                    EndMonth = period.EndMonth
-                }).ToList()
+                IsApprovedUser = true
             });
 
         _sessionManagerMock.Verify(
@@ -167,12 +162,7 @@ public class ComplianceSchemeLandingControllerTests
                 OrganisationName = OrganisationName,
                 CurrentTabSummary = new ComplianceSchemeSummary(),
                 ComplianceSchemes = complianceSchemes,
-                IsApprovedUser = true,
-                SubmissionPeriods = _submissionPeriods.Select(period => new DatePeriod
-                {
-                    StartMonth = period.StartMonth,
-                    EndMonth = period.EndMonth
-                }).ToList()
+                IsApprovedUser = true
             });
 
         _sessionManagerMock.Verify(
@@ -231,12 +221,7 @@ public class ComplianceSchemeLandingControllerTests
                     HasNominatedNotification = true,
                     HasPendingNotification = false,
                     NominatedApprovedPersonEnrolmentId = string.Empty
-                },
-                SubmissionPeriods = _submissionPeriods.Select(period => new DatePeriod
-                {
-                    StartMonth = period.StartMonth,
-                    EndMonth = period.EndMonth
-                }).ToList()
+                }
             });
 
         _sessionManagerMock.Verify(
@@ -296,12 +281,7 @@ public class ComplianceSchemeLandingControllerTests
                     HasNominatedNotification = false,
                     HasPendingNotification = true,
                     NominatedApprovedPersonEnrolmentId = string.Empty
-                },
-                SubmissionPeriods = _submissionPeriods.Select(period => new DatePeriod
-                {
-                    StartMonth = period.StartMonth,
-                    EndMonth = period.EndMonth
-                }).ToList()
+                }
             });
 
         _sessionManagerMock.Verify(

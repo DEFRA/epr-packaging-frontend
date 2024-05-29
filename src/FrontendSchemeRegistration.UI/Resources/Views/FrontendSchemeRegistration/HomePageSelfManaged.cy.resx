@@ -1,44 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
 <root>
-    <resheader name="resmimetype">
-        <value>text/microsoft-resx</value>
-    </resheader>
-    <resheader name="version">
-        <value>1.3</value>
-    </resheader>
-    <resheader name="reader">
-        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
-    <resheader name="writer">
-        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
-    <data name="in_x_you_must_report_data_for" xml:space="preserve">
-        <value>Yn {0}, rhaid ichi roi gwybod am ddata ar gyfer:</value>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
     </data>
-    <data name="report_organisation_details" xml:space="preserve">
-        <value>Rhoi gwybod am fanylion sefydliad</value>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
     </data>
-    <data name="report_packaging_data" xml:space="preserve">
-        <value>Rhoi gwybod am ddata pecynwaith</value>
-    </data>
-    <data name="packaging_recovery_notes" xml:space="preserve">
-        <value>Nodiadau ailgylchu gwastraff pecynwaith (PRNs) a nodiadau ailgylchu allforio pecynwaith gwastraff (PERNs)</value>
-    </data>
-    <data name="no_action_needed_at_the_moment" xml:space="preserve">
-        <value>Dim angen gweithredu ar hyn o bryd</value>
-    </data>
-    <data name="account_home" xml:space="preserve">
-        <value>Hafan y cyfrif - {0}</value>
-    </data>
-    <data name="waste_management_fee" xml:space="preserve">
-        <value>Ffi rheoli gwastraff</value>
-    </data>
-    <data name="your_account_is_set_up_so_you_can_submit_your_own_data" xml:space="preserve">
-        <value>Mae eich cyfrif wedi’i sefydlu felly gallwch gyflwyno eich data eich hun</value>
-    </data>
-    <data name="add_a_compliance_scheme_to_your_account" xml:space="preserve">
-        <value>Ychwanegu cynllun cydymffurfio at eich cyfrif</value>
-    </data>
-    <data name="organisation_id_x" xml:space="preserve">
-        <value>ID y sefydliad: {0}</value>
-    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="every_year_you_must_report_data_for" xml:space="preserve">
+    <value>WYou must report organisation details for January to June and July to December:</value>
+  </data>
+  <data name="you_can_also" xml:space="preserve">
+    <value>WYou can also:</value>
+  </data>
+  <data name="resubmit_your_organisation_details" xml:space="preserve">
+    <value>Wresubmit your organisation details</value>
+  </data>
+  <data name="report_changes_to_your_organisation_details" xml:space="preserve">
+    <value>Wreport changes to your organisation details</value>
+  </data>
+  <data name="view_your_history" xml:space="preserve">
+    <value>Wview your history</value>
+  </data>
+
+  <data name="report_organisation_details" xml:space="preserve">
+    <value>Rhoi gwybod am fanylion sefydliad</value>
+  </data>
+  <data name="organisation_details" xml:space="preserve">
+    <value>WOrganisation details</value>
+  </data>
+
+  <data name="report_packaging_data" xml:space="preserve">
+    <value>Rhoi gwybod am ddata pecynwaith</value>
+  </data>
+  <data name="packaging_data" xml:space="preserve">
+    <value>WPackaging data</value>
+  </data>
+  <data name="resubmit_your_packaging_data" xml:space="preserve">
+    <value>Wresubmit your packaging data</value>
+  </data>  
+  <data name="packaging_recovery_notes" xml:space="preserve">
+    <value>Nodiadau ailgylchu gwastraff pecynwaith (PRNs) a nodiadau ailgylchu allforio pecynwaith gwastraff (PERNs)</value>
+  </data>
+  <data name="no_action_needed_at_the_moment" xml:space="preserve">
+    <value>Dim angen gweithredu ar hyn o bryd</value>
+  </data>
+  <data name="account_home" xml:space="preserve">
+    <value>Hafan y cyfrif - {0}</value>
+  </data>
+  <data name="waste_management_fee" xml:space="preserve">
+    <value>Ffi rheoli gwastraff</value>
+  </data>
+  <data name="your_account_is_set_up_so_you_can_submit_your_own_data" xml:space="preserve">
+    <value>Mae eich cyfrif wedi’i sefydlu felly gallwch gyflwyno eich data eich hun</value>
+  </data>
+  <data name="add_a_compliance_scheme_to_your_account" xml:space="preserve">
+    <value>Ychwanegu cynllun cydymffurfio at eich cyfrif</value>
+  </data>
+  <data name="organisation_id_x" xml:space="preserve">
+    <value>ID y sefydliad: {0}</value>
+  </data>
 </root>

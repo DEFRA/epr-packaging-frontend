@@ -3,12 +3,14 @@
 using Application.Constants;
 using Application.DTOs.Submission;
 using Application.Enums;
+using Application.Extensions;
 using Application.Options;
 using Application.Services.Interfaces;
 using ControllerExtensions;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using Extensions;
+using global::FrontendSchemeRegistration.UI.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -61,10 +63,26 @@ public class FileUploadCompanyDetailsSubLandingController : Controller
             submissionPeriodDetails.Add(new SubmissionPeriodDetail
             {
                 DataPeriod = submissionPeriod.DataPeriod,
+                DatePeriodStartMonth = submissionPeriod.LocalisedMonth(MonthType.Start),
+                DatePeriodEndMonth = submissionPeriod.LocalisedMonth(MonthType.End),
+                DatePeriodYear = submissionPeriod.Year,
                 Deadline = submissionPeriod.Deadline,
                 Status = DateTime.Now < submissionPeriod.ActiveFrom ?
                         SubmissionPeriodStatus.CannotStartYet : submission?.GetSubmissionStatus() ?? SubmissionPeriodStatus.NotStarted
             });
+        }
+
+        var submissionPeriodDetailGroups = submissionPeriodDetails
+                                .GroupBy(c => new { c.DatePeriodYear })
+                                .Select(c => new SubmissionPeriodDetailGroup
+                                {
+                                    DatePeriodYear = c.Key.DatePeriodYear,
+                                    Quantity = c.Count()
+                                }).ToList();
+
+        foreach (var group in submissionPeriodDetailGroups)
+        {
+            group.SubmissionPeriodDetails = submissionPeriodDetails.Where(c => c.DatePeriodYear == group.DatePeriodYear).ToList();
         }
 
         if (session is not null)
@@ -79,7 +97,7 @@ public class FileUploadCompanyDetailsSubLandingController : Controller
                     "FileUploadCompanyDetailsSubLanding",
                     new FileUploadCompanyDetailsSubLandingViewModel
                     {
-                        SubmissionPeriodDetails = submissionPeriodDetails,
+                        SubmissionPeriodDetailGroups = submissionPeriodDetailGroups,
                         ComplianceSchemeName = session.RegistrationSession.SelectedComplianceScheme?.Name,
                         OrganisationRole = organisationRole
                     });
