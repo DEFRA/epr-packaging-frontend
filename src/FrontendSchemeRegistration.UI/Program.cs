@@ -68,13 +68,16 @@ services.AddAppHttpClient();
 var app = builder.Build();
 
 app.MapHealthChecks("/admin/health").AllowAnonymous();
-app.MapHealthChecks("/admin/error", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+if (builder.Configuration.GetValue<bool>("FeatureManagement:AllowAlertTestEndpoint"))
 {
-    ResultStatusCodes =
+    app.MapHealthChecks("/admin/error", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+    {
+        ResultStatusCodes =
     {
         [HealthStatus.Healthy] = StatusCodes.Status500InternalServerError
     }
-}).AllowAnonymous();
+    }).AllowAnonymous();
+}
 
 app.UsePathBase(basePath);
 
