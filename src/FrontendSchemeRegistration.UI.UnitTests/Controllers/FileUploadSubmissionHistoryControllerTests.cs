@@ -7,6 +7,7 @@ using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Controllers;
+using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Http;
@@ -69,7 +70,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                 new SubmissionPeriodId
                 {
                     SubmissionId = Guid.NewGuid(),
-                    SubmissionPeriod = "July to December",
+                    SubmissionPeriod = "July to December 2024",
                     DatePeriodStartMonth = "July",
                     DatePeriodEndMonth = "December",
                     Year = currentYear
@@ -77,7 +78,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                 new SubmissionPeriodId
                 {
                     SubmissionId = Guid.NewGuid(),
-                    SubmissionPeriod = "January to June",
+                    SubmissionPeriod = "January to June 2024",
                     DatePeriodStartMonth = "January",
                     DatePeriodEndMonth = "June",
                     Year = currentYear
@@ -85,7 +86,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                 new SubmissionPeriodId
                 {
                     SubmissionId = Guid.NewGuid(),
-                    SubmissionPeriod = "July to December",
+                    SubmissionPeriod = "July to December 2024",
                     DatePeriodStartMonth = "July",
                     DatePeriodEndMonth = "December",
                     Year = currentYear - 1
@@ -170,7 +171,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                         SubmissionPeriod = submissionIds[0].SubmissionPeriod,
                         DatePeriodStartMonth = submissionIds[0].DatePeriodStartMonth,
                         DatePeriodEndMonth = submissionIds[0].DatePeriodEndMonth,
-                        DatePeriodYear = submissionIds[0].Year.ToString(),
+                        DatePeriodYear = submissionIds[0].SubmissionPeriod.ToStartEndDate().Start.Year.ToString(),
                         SubmissionHistory = submissionHistoryDictionary[submissionIds[0].SubmissionId]
                     },
                     new FileUploadSubmissionHistoryPeriodViewModel
@@ -178,7 +179,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                         SubmissionPeriod = submissionIds[1].SubmissionPeriod,
                         DatePeriodStartMonth = submissionIds[1].DatePeriodStartMonth,
                         DatePeriodEndMonth = submissionIds[1].DatePeriodEndMonth,
-                        DatePeriodYear = submissionIds[1].Year.ToString(),
+                        DatePeriodYear = submissionIds[1].SubmissionPeriod.ToStartEndDate().Start.Year.ToString(),
                         SubmissionHistory = submissionHistoryDictionary[submissionIds[1].SubmissionId]
                     }
                 }
@@ -223,7 +224,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                 new SubmissionPeriodId
                 {
                     SubmissionId = Guid.NewGuid(),
-                    SubmissionPeriod = "July to December",
+                    SubmissionPeriod = "July to December 2024",
                     DatePeriodStartMonth = "July",
                     DatePeriodEndMonth = "December",
                     Year = currentYear
@@ -231,7 +232,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                 new SubmissionPeriodId
                 {
                     SubmissionId = Guid.NewGuid(),
-                    SubmissionPeriod = "January to June",
+                    SubmissionPeriod = "January to June 2024",
                     DatePeriodStartMonth = "January",
                     DatePeriodEndMonth = "June",
                     Year = currentYear
@@ -313,7 +314,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                         SubmissionPeriod = submissionIds[0].SubmissionPeriod,
                         DatePeriodStartMonth = submissionIds[0].DatePeriodStartMonth,
                         DatePeriodEndMonth = submissionIds[0].DatePeriodEndMonth,
-                        DatePeriodYear = submissionIds[0].Year.ToString(),
+                        DatePeriodYear = submissionIds[0].SubmissionPeriod.ToStartEndDate().Start.Year.ToString(),
                         SubmissionHistory = submissionHistoryDictionary[submissionIds[0].SubmissionId]
                     },
                     new FileUploadSubmissionHistoryPeriodViewModel
@@ -321,7 +322,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                         SubmissionPeriod = submissionIds[1].SubmissionPeriod,
                         DatePeriodStartMonth = submissionIds[1].DatePeriodStartMonth,
                         DatePeriodEndMonth = submissionIds[1].DatePeriodEndMonth,
-                        DatePeriodYear = submissionIds[1].Year.ToString(),
+                        DatePeriodYear = submissionIds[1].SubmissionPeriod.ToStartEndDate().Start.Year.ToString(),
                         SubmissionHistory = submissionHistoryDictionary[submissionIds[1].SubmissionId]
                     }
                 }

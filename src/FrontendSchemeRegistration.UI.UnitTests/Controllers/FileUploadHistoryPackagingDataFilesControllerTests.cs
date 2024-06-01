@@ -62,9 +62,9 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
 
             var submissionIds = new List<SubmissionPeriodId>
             {
-                new SubmissionPeriodId { SubmissionId = Guid.NewGuid(), SubmissionPeriod = "July to December", Year = year },
-                new SubmissionPeriodId { SubmissionId = Guid.NewGuid(), SubmissionPeriod = "January to June", Year = year },
-                new SubmissionPeriodId { SubmissionId = Guid.NewGuid(), SubmissionPeriod = "July to December", Year = year - 1 }
+                new SubmissionPeriodId { SubmissionId = Guid.NewGuid(), SubmissionPeriod = "July to December 2020", Year = year },
+                new SubmissionPeriodId { SubmissionId = Guid.NewGuid(), SubmissionPeriod = "January to June 2020", Year = year },
+                new SubmissionPeriodId { SubmissionId = Guid.NewGuid(), SubmissionPeriod = "July to December 2020", Year = year - 1 }
             };
 
             var submissionHistoryDictionary = new Dictionary<Guid, List<SubmissionHistory>>

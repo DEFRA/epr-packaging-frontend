@@ -80,12 +80,14 @@ namespace FrontendSchemeRegistration.UI.Controllers
 
                 if (submissionHistory.Count > 0)
                 {
+                    var extractYear = submissionId.SubmissionPeriod.ToStartEndDate();
+
                     viewModel.SubmissionPeriods.Add(new FileUploadSubmissionHistoryPeriodViewModel
                     {
                         SubmissionPeriod = submissionId.SubmissionPeriod,
                         DatePeriodStartMonth = submissionId.LocalisedMonth(MonthType.Start),
                         DatePeriodEndMonth = submissionId.LocalisedMonth(MonthType.End),
-                        DatePeriodYear = submissionId.Year.ToString(),
+                        DatePeriodYear = extractYear.Start.Year.ToString(),
                         SubmissionHistory = submissionHistory
                     });
                 }

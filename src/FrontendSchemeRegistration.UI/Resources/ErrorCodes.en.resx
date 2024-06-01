@@ -193,12 +193,18 @@ Read the guidance about how to create your organisation details file. Once youâ€
         <value>All fields must contain 4000 characters or less</value>
     </data>
     <data name="890" xml:space="preserve">
-        <value>The organisation_id list in this file does not match the organisation_id list in your organisation file</value>
+        <value>The Organisation ID list in this file does not match the Organisation ID list in your organisation file</value>
     </data>
     <data name="891" xml:space="preserve">
         <value>This list of partners needs to match the one in the organisation details file. Check both files</value>
     </data>
     <data name="892" xml:space="preserve">
-        <value>The subsidiary_id list in this file does not match the subsidiary_id list in your organisation file</value>
+        <value>The Subsidiary ID list in this file does not match the Subsidiary ID list in your organisation file</value>
+    </data>
+	<data name="65" xml:space="preserve">
+        <value>You're reporting packaging data for January to June 2024. Submission period must be 2024-P1, 2024-P2 or 2024 P3.</value>
+    </data>
+	<data name="66" xml:space="preserve">
+        <value>You're reporting packaging data for July to December 2024. Submission period must be 2024-P4.</value>
     </data>
 </root>

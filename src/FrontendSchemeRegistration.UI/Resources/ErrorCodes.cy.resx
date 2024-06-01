@@ -193,12 +193,18 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
         <value>WAll fields must contain 4000 characters or less</value>
     </data>
     <data name="890" xml:space="preserve">
-        <value>WThe organisation_id list in this file does not match the organisation_id list in your organisation file</value>
+        <value>WThe Organisation ID list in this file does not match the Organisation ID list in your organisation file</value>
     </data>
     <data name="891" xml:space="preserve">
         <value>WThis list of partners needs to match the one in the organisation details file. Check both files</value>
     </data>
 	<data name="892" xml:space="preserve">
-        <value>WThe subsidiary_id list in this file does not match the subsidiary_id list in your organisation file</value>
+        <value>WThe Subsidiary ID list in this file does not match the Subsidiary ID list in your organisation file</value>
+    </data>
+    <data name="65" xml:space="preserve">
+        <value>Rydych chi'n rhoi gwybod am ddata pecynwaith ar gyfer Ionawr i Fehefin 2024. Rhaid i'r cyfnod cyflwyno fod yn 2024-P1, 2024-P2 neu 2024-P2.</value>
+    </data>
+    <data name="66" xml:space="preserve">
+        <value>Rydych chi'n rhoi gwybod am ddata pecynwaith ar gyfer Gorffennaf i Ragfyr 2024. Rhaid i'r cyfnod cyflwyno fod yn 2024-P4.</value>
     </data>
 </root>
