@@ -57,6 +57,8 @@
          @using (Html.BeginForm(FormMethod.Post))
          {
              @Html.HiddenFor(m => m.SubmissionId)
+             @Html.HiddenFor(m => m.MaxReportSize)
+             @Html.HiddenFor(m => m.MaxWarningsToProcess)
 
              <div class="govuk-form-group govuk-!-margin-top-7 @(ViewData.ModelState.IsValid ? string.Empty : "govuk-form-group--error")">
 

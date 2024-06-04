@@ -206,10 +206,10 @@ else
                             new
                             {
                                 @class = "govuk-input govuk-radios__input",
-                                id = "radio-button-yes"
+                                id = "SubmitOrganisationDetailsResponse"
                             })
 
-                        <label for="radio-button-yes" class="govuk-label govuk-radios__label">
+                        <label for="SubmitOrganisationDetailsResponse" class="govuk-label govuk-radios__label">
                             @Localizer[Model is { HasPreviousSubmission: true, IsComplianceScheme: true } ? "yes_resubmit" : "yes_submit"]
                         </label>
                     </div>
@@ -219,10 +219,10 @@ else
                             new
                             {
                                 @class = "govuk-input govuk-radios__input",
-                                id = "radio-button-no"
+                                id = "SubmitOrganisationDetailsResponse-1"
                             })
 
-                        <label for="radio-button-no" class="govuk-label govuk-radios__label">@Localizer["no_not_right_now"]</label>
+                        <label for="SubmitOrganisationDetailsResponse-1" class="govuk-label govuk-radios__label">@Localizer["no_not_right_now"]</label>
                     </div>
                 </div>
             </fieldset>
