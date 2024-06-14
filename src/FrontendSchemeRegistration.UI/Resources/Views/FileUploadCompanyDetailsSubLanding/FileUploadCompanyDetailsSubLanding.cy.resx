@@ -86,4 +86,13 @@
     <data name="if_youve_missed_a_deadline_to_submit" xml:space="preserve">
         <value>Os ydych chi wedi colli dyddiad cau cyflwyno</value>
     </data>
+	 <data name="your_history" xml:space="preserve">
+        <value>Eich hanes</value>
+     </data>
+	 <data name="view_your_organisation_data_files" xml:space="preserve">
+        <value>WView your organisation data files</value>
+     </data>
+	 <data name="view_submission_history" xml:space="preserve">
+        <value>Gweld eich hanes cyflwyno</value>
+      </data>
 </root>

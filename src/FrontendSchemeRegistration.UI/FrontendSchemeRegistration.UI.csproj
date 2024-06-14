@@ -166,6 +166,9 @@
             <SubType>Designer</SubType>
             <LastGenOutput>FileUploadSubmissionConfirmation.Designer.cs</LastGenOutput>
         </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Views\FileUploadCompanyDetailsSubmissionHistory\FileUploadCompanyDetailsSubmissionHistory.en.resx">
+          <SubType>Designer</SubType>
+        </EmbeddedResource>
         <EmbeddedResource Update="Resources\Views\SchemeMembership\SchemeMembers.cy.resx">
             <SubType>Designer</SubType>
             <LastGenOutput>SignedOut.en.Designer.cs</LastGenOutput>
