@@ -99,6 +99,15 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.Shared.Partials.Govuk {
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
+        internal static string Footer_Email {
+            get {
+                return ResourceManager.GetString("Footer.Email", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
         internal static string Footer_ExceptWhere {
             get {
                 return ResourceManager.GetString("Footer.ExceptWhere", resourceCulture);
@@ -108,9 +117,27 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.Shared.Partials.Govuk {
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
+        internal static string Footer_GetHelp {
+            get {
+                return ResourceManager.GetString("Footer.GetHelp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
         internal static string Footer_OpenGovernment {
             get {
                 return ResourceManager.GetString("Footer.OpenGovernment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string Footer_OpeningTime {
+            get {
+                return ResourceManager.GetString("Footer.OpeningTime", resourceCulture);
             }
         }
         
@@ -129,6 +156,15 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.Shared.Partials.Govuk {
         internal static string Footer_SupportLinks {
             get {
                 return ResourceManager.GetString("Footer.SupportLinks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string Footer_Telephone {
+            get {
+                return ResourceManager.GetString("Footer.Telephone", resourceCulture);
             }
         }
     }

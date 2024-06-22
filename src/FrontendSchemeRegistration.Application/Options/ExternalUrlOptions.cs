@@ -24,4 +24,8 @@ public class ExternalUrlOptions
     public string PrivacyDefrasPersonalInformationCharter { get; set; }
 
     public string PrivacyInformationCommissioner { get; set; }
+
+    public string PrivacyPage { get; set; }
+
+    public string AccessibilityPage { get; set; }
 }

@@ -141,4 +141,16 @@
   <data name="Footer.SupportLinks" xml:space="preserve">
     <value>Support links</value>
   </data>
+  <data name="Footer.Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Footer.GetHelp" xml:space="preserve">
+    <value>Get help</value>
+  </data>
+  <data name="Footer.OpeningTime" xml:space="preserve">
+    <value>Monday to Friday, 8:30am to 4:30pm</value>
+  </data>
+  <data name="Footer.Telephone" xml:space="preserve">
+    <value>Telephone</value>
+  </data>
 </root>
