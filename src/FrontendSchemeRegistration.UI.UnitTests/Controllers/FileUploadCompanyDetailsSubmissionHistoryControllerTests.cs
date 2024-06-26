@@ -6,6 +6,7 @@ using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers;
 using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Sessions;
@@ -60,6 +61,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
         }
 
         [Test]
+        [SetUICulture(Language.English)]
         public async Task Get_ReturnsSubmissionPeriods_WhenDataExists()
         {
             // Arrange
@@ -93,6 +95,16 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                 }
             };
 
+            var submissionDate = new DateTime(submissionIds[0].Year, 2, 20, 8, 0, 0, DateTimeKind.Utc);
+            var dateofLatestStatusChange = new DateTime(submissionIds[0].Year, 3, 1, 5, 0, 0, DateTimeKind.Utc);
+            var submissionDate1 = new DateTime(submissionIds[0].Year, 8, 1, 0, 0, 0, DateTimeKind.Utc);
+            var dateofLatestStatusChange1 = new DateTime(submissionIds[0].Year, 8, 10, 6, 0, 0, DateTimeKind.Utc);
+
+            var expectedLocalSubmissionDate = new DateTime(submissionIds[0].Year, 2, 20, 8, 0, 0, DateTimeKind.Local);
+            var expectedLocalDateofLatestStatusChange = new DateTime(submissionIds[0].Year, 3, 1, 5, 0, 0, DateTimeKind.Local);
+            var expectedLocalSubmissionDate1 = new DateTime(submissionIds[0].Year, 8, 1, 1, 0, 0, DateTimeKind.Local);
+            var expectedLocalDateofLatestStatusChange1 = new DateTime(submissionIds[0].Year, 8, 10, 7, 0, 0, DateTimeKind.Local);
+
             var submissionHistoryDictionary = new Dictionary<Guid, List<SubmissionHistory>>
             {
                 {
@@ -104,18 +116,18 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                             SubmissionId = submissionIds[0].SubmissionId,
                             FileName = "test.csv",
                             UserName = "John Doe",
-                            SubmissionDate = new DateTime(submissionIds[0].Year, 8, 20),
+                            SubmissionDate = submissionDate,
                             Status = "Accepted",
-                            DateofLatestStatusChange = new DateTime(submissionIds[0].Year, 9, 1)
+                            DateofLatestStatusChange = dateofLatestStatusChange
                         },
                         new SubmissionHistory
                         {
                             SubmissionId = submissionIds[0].SubmissionId,
                             FileName = "test.csv",
                             UserName = "John Doe",
-                            SubmissionDate = new DateTime(submissionIds[0].Year, 8, 1),
+                            SubmissionDate = submissionDate1,
                             Status = "Rejected",
-                            DateofLatestStatusChange = new DateTime(submissionIds[0].Year, 8, 10)
+                            DateofLatestStatusChange = dateofLatestStatusChange1
                         }
                     }
                 },
@@ -128,9 +140,9 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                             SubmissionId = submissionIds[1].SubmissionId,
                             FileName = "test.csv",
                             UserName = "John Doe",
-                            SubmissionDate = new DateTime(submissionIds[1].Year, 8, 20),
+                            SubmissionDate = submissionDate,
                             Status = "Accepted",
-                            DateofLatestStatusChange = new DateTime(submissionIds[1].Year, 9, 1)
+                            DateofLatestStatusChange = dateofLatestStatusChange
                         }
                     }
                 }
@@ -184,6 +196,15 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                     }
                 }
             });
+
+            var model = result.ViewData.Model as FileUploadCompanyDetailsSubmissionHistoryViewModel;
+
+            model.SubmissionPeriods[0].SubmissionHistory[0].SubmissionDate.Should().Be(expectedLocalSubmissionDate);
+            model.SubmissionPeriods[0].SubmissionHistory[0].DateofLatestStatusChange.Should().Be(expectedLocalDateofLatestStatusChange);
+            model.SubmissionPeriods[0].SubmissionHistory[1].SubmissionDate.Should().Be(expectedLocalSubmissionDate1);
+            model.SubmissionPeriods[0].SubmissionHistory[1].DateofLatestStatusChange.Should().Be(expectedLocalDateofLatestStatusChange1);
+            model.SubmissionPeriods[1].SubmissionHistory[0].SubmissionDate.Should().Be(expectedLocalSubmissionDate);
+            model.SubmissionPeriods[1].SubmissionHistory[0].DateofLatestStatusChange.Should().Be(expectedLocalDateofLatestStatusChange);
         }
 
         [Test]

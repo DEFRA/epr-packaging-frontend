@@ -258,17 +258,14 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
             };
 
         var submissionPeriodDetailGroups = submissionPeriodDetails
+                        .OrderByDescending(c => c.DatePeriodYear)
                         .GroupBy(c => new { c.DatePeriodYear })
                         .Select(c => new SubmissionPeriodDetailGroup
                         {
                             DatePeriodYear = c.Key.DatePeriodYear,
+                            SubmissionPeriodDetails = c.ToList(),
                             Quantity = c.Count()
                         }).ToList();
-
-        foreach (var group in submissionPeriodDetailGroups)
-        {
-            group.SubmissionPeriodDetails = submissionPeriodDetails.Where(c => c.DatePeriodYear == group.DatePeriodYear).ToList();
-        }
 
         result.Model.Should().BeEquivalentTo(new FileUploadCompanyDetailsSubLandingViewModel
         {
@@ -339,17 +336,14 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
             };
 
         var submissionPeriodDetailGroups = submissionPeriodDetails
+                        .OrderByDescending(c => c.DatePeriodYear)
                         .GroupBy(c => new { c.DatePeriodYear })
                         .Select(c => new SubmissionPeriodDetailGroup
                         {
                             DatePeriodYear = c.Key.DatePeriodYear,
+                            SubmissionPeriodDetails = c.ToList(),
                             Quantity = c.Count()
                         }).ToList();
-
-        foreach (var group in submissionPeriodDetailGroups)
-        {
-            group.SubmissionPeriodDetails = submissionPeriodDetails.Where(c => c.DatePeriodYear == group.DatePeriodYear).ToList();
-        }
 
         // Assert
         result.ViewName.Should().Be("FileUploadCompanyDetailsSubLanding");
@@ -501,5 +495,53 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
                         s.RegistrationSession.SubmissionPeriod == _submissionPeriods[0].DataPeriod
                         && s.RegistrationSession.Journey.Count == 1 && s.RegistrationSession.Journey[0] == PagePaths.FileUploadCompanyDetailsSubLanding)),
             Times.Once);
+    }
+
+    [Test]
+    public async Task Get_ReturnsSubmissionPeriods_CorrectOrder_WhenCalled()
+    {
+        // Arrange
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionsAsync<RegistrationSubmission>(
+                It.IsAny<List<string>>(), It.IsAny<int?>(), It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<RegistrationSubmission>
+            {
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    HasValidFile = true,
+                    SubmissionPeriod = _submissionPeriods[0].DataPeriod
+                }
+            });
+        _sessionManagerMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                },
+                UserData = new UserData
+                {
+                    Organisations =
+                    {
+                        new()
+                        {
+                            OrganisationRole = OrganisationRoles.Producer
+                        }
+                    }
+                }
+            });
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        var viewModel = result.Model as FileUploadCompanyDetailsSubLandingViewModel;
+        viewModel.Should().NotBeNull();
+
+        var submissionPeriodYear1 = int.Parse(viewModel.SubmissionPeriodDetailGroups[0].DatePeriodYear);
+        var submissionPeriodYear2 = int.Parse(viewModel.SubmissionPeriodDetailGroups[1].DatePeriodYear);
+
+        submissionPeriodYear1.Should().BeGreaterThanOrEqualTo(submissionPeriodYear2);
     }
 }

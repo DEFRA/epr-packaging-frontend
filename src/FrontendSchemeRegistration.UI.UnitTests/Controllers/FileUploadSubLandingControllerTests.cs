@@ -852,6 +852,78 @@ public class FileUploadSubLandingControllerTests
         });
     }
 
+    [Test]
+    [TestCase(OrganisationRoles.Producer)]
+    public async Task Get_ReturnsSubmissionPeriods_CorrectOrder_WhenCalled(string organisationRole)
+    {
+        var submissionPeriodsForMultipleYears = new List<SubmissionPeriod>
+        {
+            new SubmissionPeriod
+            {
+                DataPeriod = "Data period 1",
+                Deadline = DateTime.Today,
+                ActiveFrom = DateTime.Today,
+                Year = "2023",
+                StartMonth = "January",
+                EndMonth = "June"
+            },
+            new SubmissionPeriod
+            {
+                DataPeriod = "Data period 2",
+                Deadline = DateTime.Today.AddDays(5),
+                ActiveFrom = DateTime.Today.AddDays(5),
+                Year = "2024",
+                StartMonth = "July",
+                EndMonth = "December"
+            }
+        };
+
+        _systemUnderTest = new FileUploadSubLandingController(
+        _submissionServiceMock.Object,
+        _sessionMock.Object,
+        _featureManagerMock.Object,
+        Options.Create(new GlobalVariables { SubmissionPeriods = submissionPeriodsForMultipleYears }));
+        _systemUnderTest.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext { Session = _httpContextSessionMock.Object }
+        };
+        var selectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), Name = "Acme Org Ltd" };
+        var submissionId = Guid.NewGuid();
+        var pomSubmission = new PomSubmission
+        {
+            Id = submissionId,
+            HasValidFile = true,
+            SubmissionPeriod = _submissionPeriods[0].DataPeriod
+        };
+        _submissionServiceMock.Setup(x => x.GetSubmissionsAsync<PomSubmission>(
+                It.IsAny<List<string>>(), 2, selectedComplianceScheme.Id))
+            .ReturnsAsync(new List<PomSubmission> { pomSubmission });
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(submissionId))
+            .ReturnsAsync(pomSubmission);
+
+        _sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession { SelectedComplianceScheme = selectedComplianceScheme },
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation> { new() { OrganisationRole = organisationRole } }
+                }
+            });
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        var viewModel = result.Model as FileUploadSubLandingViewModel;
+        viewModel.Should().NotBeNull();
+
+        var submissionPeriodYear1 = int.Parse(viewModel.SubmissionPeriodDetailGroups[0].DatePeriodYear);
+        var submissionPeriodYear2 = int.Parse(viewModel.SubmissionPeriodDetailGroups[1].DatePeriodYear);
+
+        submissionPeriodYear1.Should().BeGreaterThanOrEqualTo(submissionPeriodYear2);
+    }
+
     private static PomSubmission CreatePomSubmissionWithWarningsAndFileIdMismatch()
     {
         return new PomSubmission

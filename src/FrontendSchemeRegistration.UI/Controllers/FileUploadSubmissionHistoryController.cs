@@ -82,6 +82,12 @@ namespace FrontendSchemeRegistration.UI.Controllers
                 {
                     var extractYear = submissionId.SubmissionPeriod.ToStartEndDate();
 
+                    submissionHistory.ForEach(submission =>
+                    {
+                        submission.SubmissionDate = submission.SubmissionDate.UtcToGmt();
+                        submission.DateofLatestStatusChange = submission.DateofLatestStatusChange.UtcToGmt();
+                    });
+
                     viewModel.SubmissionPeriods.Add(new FileUploadSubmissionHistoryPeriodViewModel
                     {
                         SubmissionPeriod = submissionId.SubmissionPeriod,

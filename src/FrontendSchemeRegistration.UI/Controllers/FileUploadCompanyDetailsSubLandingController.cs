@@ -73,17 +73,14 @@ public class FileUploadCompanyDetailsSubLandingController : Controller
         }
 
         var submissionPeriodDetailGroups = submissionPeriodDetails
+                                .OrderByDescending(c => c.DatePeriodYear)
                                 .GroupBy(c => new { c.DatePeriodYear })
                                 .Select(c => new SubmissionPeriodDetailGroup
                                 {
                                     DatePeriodYear = c.Key.DatePeriodYear,
+                                    SubmissionPeriodDetails = c.ToList(),
                                     Quantity = c.Count()
                                 }).ToList();
-
-        foreach (var group in submissionPeriodDetailGroups)
-        {
-            group.SubmissionPeriodDetails = submissionPeriodDetails.Where(c => c.DatePeriodYear == group.DatePeriodYear).ToList();
-        }
 
         if (session is not null)
         {
