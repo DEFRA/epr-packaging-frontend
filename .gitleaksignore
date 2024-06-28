@@ -1,4 +1,3 @@
-16bcba964e5a035af78a808918ea1d4b463090e4:src/FrontendSchemeRegistration.UI/appsettings.json:generic-api-key:118
 16bcba964e5a035af78a808918ea1d4b463090e4:src/FrontendSchemeRegistration.UI/appsettings.json:azure-client-secret:120
 7eb536d6d44adb0726017d50ad59f8b4c910107c:src/FrontendSchemeRegistration.Application/Services/WebApiGatewayClient.cs:jwt:18
 767f9116b15a03109b63b50fe09c50b52198c468:src/FrontendSchemeRegistration.UI/appsettings.json:azure-messaging-connection-string-shared-access-key:105
