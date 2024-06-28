@@ -241,7 +241,7 @@
     <value>Sign in</value>
   </data>
   <data name="created_new_approved_person" xml:space="preserve">
-    <value>You've created an account. We'll email you when the environment regulator has given you permission to submit data. This may take up to 28 days.</value>
+    <value>You've created an account. We'll email you when the environmental regulator has given you permission to submit data. This may take up to 28 days.</value>
   </data>
   <data name="success" xml:space="preserve">
     <value>Success</value>
@@ -253,6 +253,6 @@
     <value>{0} to {1}</value>
   </data>
   <data name="AapprovedPerconInvitationSubmittedNotification" xml:space="preserve">
-    <value>You've created an account. We'll email you when the environment regulator has given you permission to submit data. This may take up to 28 days.</value>
+    <value>You've created an account. We'll email you when the environmental regulator has given you permission to submit data. This may take up to 28 days.</value>
   </data>	
 </root>

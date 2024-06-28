@@ -241,7 +241,7 @@
     <value>Mewngofnodi</value>
   </data>
   <data name="created_new_approved_person" xml:space="preserve">
-    <value>WYou've created an account. We'll email you when the environment regulator has given you permission to submit data. This may take up to 28 days.</value>
+    <value>WYou've created an account. We'll email you when the environmental regulator has given you permission to submit data. This may take up to 28 days.</value>
   </data>
   <data name="success" xml:space="preserve">
     <value>WSuccess</value>
