@@ -13,3 +13,4 @@ b10c5a018a7ebe4a3d1237b49309b65a7e4849fd:src/FrontendSchemeRegistration.UI/Contr
 2e5771a8df4346eba94015ab297b8bb26127db62:src/FrontendSchemeRegistration.Application.UnitTests/Services/TokenParserTests.cs:jwt:35
 
 b4b72b867073be4447b583f94d19b0780cc1666d:fakesecrettest:generic-api-key:2
+eff8f5f03d1dd9844940fb06b339b0ffe0b6c9b0:fakesecrettest.txt:generic-api-key:3
