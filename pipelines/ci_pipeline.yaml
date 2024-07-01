@@ -39,11 +39,9 @@ variables:
 resources:
   repositories:
     - repository: CommonTemplates
-      name: defra/epr-webapps-code-deploy-templates
-      type: github
-      ref: feature/webapps-template-gitleak-hardfail-GitHub
-      endpoint: defra
-
+      name: RWD-CPR-EPR4P-ADO/epr-webapps-code-deploy-templates
+      type: git
+      ref: feature/webapps-template-gitleak-hardfail
 extends:
   template: epr-build-pipeline.yaml@CommonTemplates
   parameters:
