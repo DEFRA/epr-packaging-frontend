@@ -778,7 +778,7 @@ public class FileUploadSubLandingControllerTests
             .ReturnsAsync(new List<PomSubmission> { pomSubmission });
 
         _submissionServiceMock.Setup(x => x.GetDecisionAsync<PomDecision>(
-            It.IsAny<int>(), It.IsAny<Guid>()))
+            It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<SubmissionType>()))
             .ReturnsAsync(pomDecision);
 
         _featureManagerMock.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ShowPoMResubmission))).ReturnsAsync(true);

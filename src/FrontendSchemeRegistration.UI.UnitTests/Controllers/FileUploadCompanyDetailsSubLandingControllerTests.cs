@@ -13,6 +13,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Microsoft.FeatureManagement;
 using Moq;
 using UI.Controllers;
 using UI.Controllers.ControllerExtensions;
@@ -46,6 +47,7 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
     private FileUploadCompanyDetailsSubLandingController _systemUnderTest;
     private Mock<ISubmissionService> _submissionServiceMock;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
+    private Mock<IFeatureManager> _featureManagerMock;
 
     public static object[] Post_SavesSubmissionPeriodInSessionAndRedirectsToCorrectPage_WhenSubmissionExists_Cases()
     {
@@ -177,11 +179,13 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
                     }
                 }
             });
+        _featureManagerMock = new Mock<IFeatureManager>();
 
         _systemUnderTest = new FileUploadCompanyDetailsSubLandingController(
             _submissionServiceMock.Object,
             _sessionManagerMock.Object,
-            Options.Create(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods }));
+            Options.Create(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods }),
+            _featureManagerMock.Object);
 
         _systemUnderTest.ControllerContext = new ControllerContext
         {
@@ -378,6 +382,364 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
 
         // Assert
         actionResult.ActionName.Should().Be("LandingPage");
+    }
+
+    [Test]
+    public async Task Get_ReturnsCorrectViewModel_WhenShowRegistrationResubmissionIsEnabled()
+    {
+        // Arrange
+        var selectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), Name = "Acme Org Ltd" };
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionsAsync<RegistrationSubmission>(
+                It.IsAny<List<string>>(), 1, selectedComplianceScheme.Id))
+            .ReturnsAsync(new List<RegistrationSubmission>
+            {
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    HasValidFile = true,
+                    SubmissionPeriod = _submissionPeriods[0].DataPeriod,
+                    IsSubmitted = true
+                }
+            });
+        _sessionManagerMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SelectedComplianceScheme = selectedComplianceScheme,
+                },
+                UserData = new UserData
+                {
+                    Organisations =
+                    {
+                        new()
+                        {
+                            OrganisationRole = OrganisationRoles.ComplianceScheme
+                        }
+                    }
+                }
+            });
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(It.IsAny<string>())).ReturnsAsync(true);
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("FileUploadCompanyDetailsSubLanding");
+
+        var submissionPeriodDetails = new List<SubmissionPeriodDetail>
+            {
+                new()
+                {
+                    DataPeriod = _submissionPeriods[0].DataPeriod,
+                    Deadline = _submissionPeriods.ElementAt(0).Deadline,
+                    DatePeriodStartMonth = _submissionPeriods.ElementAt(0).StartMonth,
+                    DatePeriodEndMonth = _submissionPeriods.ElementAt(0).EndMonth,
+                    Status = SubmissionPeriodStatus.SubmittedToRegulator,
+                    DatePeriodYear = _submissionPeriods[0].Year
+                },
+                new()
+                {
+                    DataPeriod = _submissionPeriods.ElementAt(1).DataPeriod,
+                    DatePeriodStartMonth = _submissionPeriods.ElementAt(1).StartMonth,
+                    DatePeriodEndMonth = _submissionPeriods.ElementAt(1).EndMonth,
+                    Deadline = _submissionPeriods.ElementAt(1).Deadline,
+                    Status = SubmissionPeriodStatus.CannotStartYet,
+                    DatePeriodYear = _submissionPeriods[1].Year
+                }
+            };
+
+        var submissionPeriodDetailGroups = submissionPeriodDetails
+                        .OrderByDescending(c => c.DatePeriodYear)
+                        .GroupBy(c => new { c.DatePeriodYear })
+                        .Select(c => new SubmissionPeriodDetailGroup
+                        {
+                            DatePeriodYear = c.Key.DatePeriodYear,
+                            SubmissionPeriodDetails = c.ToList(),
+                            Quantity = c.Count()
+                        }).ToList();
+
+        result.Model.Should().BeEquivalentTo(new FileUploadCompanyDetailsSubLandingViewModel
+        {
+            ComplianceSchemeName = selectedComplianceScheme.Name,
+            SubmissionPeriodDetailGroups = submissionPeriodDetailGroups,
+            OrganisationRole = OrganisationRoles.ComplianceScheme
+        });
+    }
+
+    [Test]
+    public async Task Get_ReturnsCorrectViewModel_WhenShowRegistrationResubmissionIsEnabled_And_DecisionIsApproved()
+    {
+        // Arrange
+        var selectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), Name = "Acme Org Ltd" };
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionsAsync<RegistrationSubmission>(
+                It.IsAny<List<string>>(), 1, selectedComplianceScheme.Id))
+            .ReturnsAsync(new List<RegistrationSubmission>
+            {
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    HasValidFile = true,
+                    SubmissionPeriod = _submissionPeriods[0].DataPeriod,
+                    IsSubmitted = true
+                }
+            });
+        _sessionManagerMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SelectedComplianceScheme = selectedComplianceScheme,
+                },
+                UserData = new UserData
+                {
+                    Organisations =
+                    {
+                        new()
+                        {
+                            OrganisationRole = OrganisationRoles.ComplianceScheme
+                        }
+                    }
+                }
+            });
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(It.IsAny<string>())).ReturnsAsync(true);
+        _submissionServiceMock.Setup(x => x.GetDecisionAsync<RegistrationDecision>(
+            It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<SubmissionType>()))
+        .ReturnsAsync(new RegistrationDecision
+        {
+            Decision = "Approved"
+        });
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("FileUploadCompanyDetailsSubLanding");
+
+        var submissionPeriodDetails = new List<SubmissionPeriodDetail>
+            {
+                new()
+                {
+                    DataPeriod = _submissionPeriods[0].DataPeriod,
+                    Deadline = _submissionPeriods.ElementAt(0).Deadline,
+                    DatePeriodStartMonth = _submissionPeriods.ElementAt(0).StartMonth,
+                    DatePeriodEndMonth = _submissionPeriods.ElementAt(0).EndMonth,
+                    Status = SubmissionPeriodStatus.AcceptedByRegulator,
+                    DatePeriodYear = _submissionPeriods[0].Year
+                },
+                new()
+                {
+                    DataPeriod = _submissionPeriods.ElementAt(1).DataPeriod,
+                    DatePeriodStartMonth = _submissionPeriods.ElementAt(1).StartMonth,
+                    DatePeriodEndMonth = _submissionPeriods.ElementAt(1).EndMonth,
+                    Deadline = _submissionPeriods.ElementAt(1).Deadline,
+                    Status = SubmissionPeriodStatus.CannotStartYet,
+                    DatePeriodYear = _submissionPeriods[1].Year
+                }
+            };
+
+        var submissionPeriodDetailGroups = submissionPeriodDetails
+                        .OrderByDescending(c => c.DatePeriodYear)
+                        .GroupBy(c => new { c.DatePeriodYear })
+                        .Select(c => new SubmissionPeriodDetailGroup
+                        {
+                            DatePeriodYear = c.Key.DatePeriodYear,
+                            SubmissionPeriodDetails = c.ToList(),
+                            Quantity = c.Count()
+                        }).ToList();
+
+        result.Model.Should().BeEquivalentTo(new FileUploadCompanyDetailsSubLandingViewModel
+        {
+            ComplianceSchemeName = selectedComplianceScheme.Name,
+            SubmissionPeriodDetailGroups = submissionPeriodDetailGroups,
+            OrganisationRole = OrganisationRoles.ComplianceScheme
+        });
+    }
+
+    [Test]
+    public async Task Get_ReturnsCorrectViewModel_WhenShowRegistrationResubmissionIsEnabled_And_DecisionIsRjected()
+    {
+        // Arrange
+        var selectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), Name = "Acme Org Ltd" };
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionsAsync<RegistrationSubmission>(
+                It.IsAny<List<string>>(), 1, selectedComplianceScheme.Id))
+            .ReturnsAsync(new List<RegistrationSubmission>
+            {
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    HasValidFile = true,
+                    SubmissionPeriod = _submissionPeriods[0].DataPeriod,
+                    IsSubmitted = true
+                }
+            });
+        _sessionManagerMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SelectedComplianceScheme = selectedComplianceScheme,
+                },
+                UserData = new UserData
+                {
+                    Organisations =
+                    {
+                        new()
+                        {
+                            OrganisationRole = OrganisationRoles.ComplianceScheme
+                        }
+                    }
+                }
+            });
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(It.IsAny<string>())).ReturnsAsync(true);
+        _submissionServiceMock.Setup(x => x.GetDecisionAsync<RegistrationDecision>(
+            It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<SubmissionType>()))
+        .ReturnsAsync(new RegistrationDecision
+        {
+            Decision = "Rejected"
+        });
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("FileUploadCompanyDetailsSubLanding");
+
+        var submissionPeriodDetails = new List<SubmissionPeriodDetail>
+            {
+                new()
+                {
+                    DataPeriod = _submissionPeriods[0].DataPeriod,
+                    Deadline = _submissionPeriods.ElementAt(0).Deadline,
+                    DatePeriodStartMonth = _submissionPeriods.ElementAt(0).StartMonth,
+                    DatePeriodEndMonth = _submissionPeriods.ElementAt(0).EndMonth,
+                    Status = SubmissionPeriodStatus.RejectedByRegulator,
+                    DatePeriodYear = _submissionPeriods[0].Year
+                },
+                new()
+                {
+                    DataPeriod = _submissionPeriods.ElementAt(1).DataPeriod,
+                    DatePeriodStartMonth = _submissionPeriods.ElementAt(1).StartMonth,
+                    DatePeriodEndMonth = _submissionPeriods.ElementAt(1).EndMonth,
+                    Deadline = _submissionPeriods.ElementAt(1).Deadline,
+                    Status = SubmissionPeriodStatus.CannotStartYet,
+                    DatePeriodYear = _submissionPeriods[1].Year
+                }
+            };
+
+        var submissionPeriodDetailGroups = submissionPeriodDetails
+                        .OrderByDescending(c => c.DatePeriodYear)
+                        .GroupBy(c => new { c.DatePeriodYear })
+                        .Select(c => new SubmissionPeriodDetailGroup
+                        {
+                            DatePeriodYear = c.Key.DatePeriodYear,
+                            SubmissionPeriodDetails = c.ToList(),
+                            Quantity = c.Count()
+                        }).ToList();
+
+        result.Model.Should().BeEquivalentTo(new FileUploadCompanyDetailsSubLandingViewModel
+        {
+            ComplianceSchemeName = selectedComplianceScheme.Name,
+            SubmissionPeriodDetailGroups = submissionPeriodDetailGroups,
+            OrganisationRole = OrganisationRoles.ComplianceScheme
+        });
+    }
+
+    [Test]
+    public async Task Get_ReturnsCorrectViewModel_WhenShowRegistrationResubmissionIsEnabled_And_DecisionIsAccepted()
+    {
+        // Arrange
+        var selectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), Name = "Acme Org Ltd" };
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionsAsync<RegistrationSubmission>(
+                It.IsAny<List<string>>(), 1, selectedComplianceScheme.Id))
+            .ReturnsAsync(new List<RegistrationSubmission>
+            {
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    HasValidFile = true,
+                    SubmissionPeriod = _submissionPeriods[0].DataPeriod,
+                    IsSubmitted = true
+                }
+            });
+        _sessionManagerMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SelectedComplianceScheme = selectedComplianceScheme,
+                },
+                UserData = new UserData
+                {
+                    Organisations =
+                    {
+                        new()
+                        {
+                            OrganisationRole = OrganisationRoles.ComplianceScheme
+                        }
+                    }
+                }
+            });
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(It.IsAny<string>())).ReturnsAsync(true);
+        _submissionServiceMock.Setup(x => x.GetDecisionAsync<RegistrationDecision>(
+            It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<SubmissionType>()))
+        .ReturnsAsync(new RegistrationDecision
+        {
+            Decision = "Accepted"
+        });
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("FileUploadCompanyDetailsSubLanding");
+
+        var submissionPeriodDetails = new List<SubmissionPeriodDetail>
+            {
+                new()
+                {
+                    DataPeriod = _submissionPeriods[0].DataPeriod,
+                    Deadline = _submissionPeriods.ElementAt(0).Deadline,
+                    DatePeriodStartMonth = _submissionPeriods.ElementAt(0).StartMonth,
+                    DatePeriodEndMonth = _submissionPeriods.ElementAt(0).EndMonth,
+                    Status = SubmissionPeriodStatus.AcceptedByRegulator,
+                    DatePeriodYear = _submissionPeriods[0].Year
+                },
+                new()
+                {
+                    DataPeriod = _submissionPeriods.ElementAt(1).DataPeriod,
+                    DatePeriodStartMonth = _submissionPeriods.ElementAt(1).StartMonth,
+                    DatePeriodEndMonth = _submissionPeriods.ElementAt(1).EndMonth,
+                    Deadline = _submissionPeriods.ElementAt(1).Deadline,
+                    Status = SubmissionPeriodStatus.CannotStartYet,
+                    DatePeriodYear = _submissionPeriods[1].Year
+                }
+            };
+
+        var submissionPeriodDetailGroups = submissionPeriodDetails
+                        .OrderByDescending(c => c.DatePeriodYear)
+                        .GroupBy(c => new { c.DatePeriodYear })
+                        .Select(c => new SubmissionPeriodDetailGroup
+                        {
+                            DatePeriodYear = c.Key.DatePeriodYear,
+                            SubmissionPeriodDetails = c.ToList(),
+                            Quantity = c.Count()
+                        }).ToList();
+
+        result.Model.Should().BeEquivalentTo(new FileUploadCompanyDetailsSubLandingViewModel
+        {
+            ComplianceSchemeName = selectedComplianceScheme.Name,
+            SubmissionPeriodDetailGroups = submissionPeriodDetailGroups,
+            OrganisationRole = OrganisationRoles.ComplianceScheme
+        });
     }
 
     [Test]

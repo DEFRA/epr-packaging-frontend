@@ -3,7 +3,6 @@ using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
-using FrontendSchemeRegistration.Application.Extensions;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Constants;
@@ -65,7 +64,8 @@ public class FileUploadSubLandingController : Controller
             {
                 decision = await _submissionService.GetDecisionAsync<PomDecision>(
                 _submissionsLimit,
-                submission.Id);
+                submission.Id,
+                SubmissionType.Producer);
 
                 decision ??= new PomDecision();
             }
@@ -161,13 +161,11 @@ public class FileUploadSubLandingController : Controller
             switch (decision.Decision)
             {
                 case "Accepted":
+                case "Approved":
                     return SubmissionPeriodStatus.AcceptedByRegulator;
                     break;
                 case "Rejected":
                     return SubmissionPeriodStatus.RejectedByRegulator;
-                    break;
-                case "Approved":
-                    return SubmissionPeriodStatus.AcceptedByRegulator;
                     break;
                 default:
                     return SubmissionPeriodStatus.SubmittedToRegulator;

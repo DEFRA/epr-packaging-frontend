@@ -178,12 +178,13 @@ public class SubmissionServiceTests
         // Arrange
         var submissionId = Guid.NewGuid();
         var limit = 10;
+        var type = SubmissionType.Producer;
 
         // Act
-        await _submissionService.GetDecisionAsync<PomDecision>(limit, submissionId);
+        await _submissionService.GetDecisionAsync<PomDecision>(limit, submissionId, type);
 
         // Assert
-        var expectedQueryString = $"limit=10&submissionId={submissionId}";
+        var expectedQueryString = $"limit=10&submissionId={submissionId}&type={type}";
         _webApiGatewayClientMock.Verify(x => x.GetDecisionsAsync<PomDecision>(expectedQueryString), Times.Once);
     }
 
@@ -192,12 +193,13 @@ public class SubmissionServiceTests
     {
         // Arrange
         var submissionId = Guid.NewGuid();
+        var type = SubmissionType.Producer;
 
         // Act
-        await _submissionService.GetDecisionAsync<PomDecision>(null, submissionId);
+        await _submissionService.GetDecisionAsync<PomDecision>(null, submissionId, type);
 
         // Assert
-        var expectedQueryString = $"submissionId={submissionId}";
+        var expectedQueryString = $"submissionId={submissionId}&type={type}";
         _webApiGatewayClientMock.Verify(x => x.GetDecisionsAsync<PomDecision>(expectedQueryString), Times.Once);
     }
 
@@ -207,12 +209,13 @@ public class SubmissionServiceTests
         // Arrange
         var submissionId = Guid.NewGuid();
         var limit = 1;
+        var type = SubmissionType.Producer;
 
         // Act
-        await _submissionService.GetDecisionAsync<PomDecision>(limit, submissionId);
+        await _submissionService.GetDecisionAsync<PomDecision>(limit, submissionId, type);
 
         // Assert
-        var expectedQueryString = $"limit=1&submissionId={submissionId}";
+        var expectedQueryString = $"limit=1&submissionId={submissionId}&type={type}";
         _webApiGatewayClientMock.Verify(x => x.GetDecisionsAsync<PomDecision>(expectedQueryString), Times.Once);
     }
 

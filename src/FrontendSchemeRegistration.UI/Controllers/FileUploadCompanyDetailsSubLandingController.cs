@@ -3,17 +3,18 @@
 using Application.Constants;
 using Application.DTOs.Submission;
 using Application.Enums;
-using Application.Extensions;
 using Application.Options;
 using Application.Services.Interfaces;
 using ControllerExtensions;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using Extensions;
+using global::FrontendSchemeRegistration.UI.Constants;
 using global::FrontendSchemeRegistration.UI.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Microsoft.FeatureManagement;
 using Sessions;
 using ViewModels;
 
@@ -26,16 +27,19 @@ public class FileUploadCompanyDetailsSubLandingController : Controller
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
     private readonly List<SubmissionPeriod> _submissionPeriods;
     private readonly string _basePath;
+    private readonly IFeatureManager _featureManager;
 
     public FileUploadCompanyDetailsSubLandingController(
         ISubmissionService submissionService,
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
-        IOptions<GlobalVariables> globalVariables)
+        IOptions<GlobalVariables> globalVariables,
+        IFeatureManager featureManager)
     {
         _submissionService = submissionService;
         _sessionManager = sessionManager;
         _basePath = globalVariables.Value.BasePath;
         _submissionPeriods = globalVariables.Value.SubmissionPeriods;
+        _featureManager = featureManager;
     }
 
     [HttpGet]
@@ -45,6 +49,7 @@ public class FileUploadCompanyDetailsSubLandingController : Controller
         var periods = _submissionPeriods.Select(x => x.DataPeriod).ToList();
         var submissions = new List<RegistrationSubmission>();
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+        var showRegistrationResubmission = await _featureManager.IsEnabledAsync(nameof(FeatureFlags.ShowRegistrationResubmission));
 
         foreach (var period in periods)
         {
@@ -60,6 +65,19 @@ public class FileUploadCompanyDetailsSubLandingController : Controller
         foreach (var submissionPeriod in _submissionPeriods)
         {
             var submission = submissions.FirstOrDefault(x => x.SubmissionPeriod == submissionPeriod.DataPeriod);
+
+            var decision = new RegistrationDecision();
+
+            if (showRegistrationResubmission && submission != null)
+            {
+                decision = await _submissionService.GetDecisionAsync<RegistrationDecision>(
+                _submissionsLimit,
+                submission.Id,
+                SubmissionType.Registration);
+
+                decision ??= new RegistrationDecision();
+            }
+
             submissionPeriodDetails.Add(new SubmissionPeriodDetail
             {
                 DataPeriod = submissionPeriod.DataPeriod,
@@ -67,8 +85,7 @@ public class FileUploadCompanyDetailsSubLandingController : Controller
                 DatePeriodEndMonth = submissionPeriod.LocalisedMonth(MonthType.End),
                 DatePeriodYear = submissionPeriod.Year,
                 Deadline = submissionPeriod.Deadline,
-                Status = DateTime.Now < submissionPeriod.ActiveFrom ?
-                        SubmissionPeriodStatus.CannotStartYet : submission?.GetSubmissionStatus() ?? SubmissionPeriodStatus.NotStarted
+                Status = submission.GetSubmissionStatus(submissionPeriod, decision, showRegistrationResubmission)
             });
         }
 

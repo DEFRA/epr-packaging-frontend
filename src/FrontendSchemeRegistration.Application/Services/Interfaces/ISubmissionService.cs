@@ -20,7 +20,8 @@ public interface ISubmissionService
 
     Task<T> GetDecisionAsync<T>(
         int? limit,
-        Guid submissionId)
+        Guid submissionId,
+        SubmissionType type)
         where T : AbstractDecision;
 
     Task<List<SubmissionPeriodId>> GetSubmissionIdsAsync(Guid organisationId, SubmissionType type, Guid? complianceSchemeId, int? year);

@@ -95,4 +95,13 @@
 	 <data name="view_submission_history" xml:space="preserve">
         <value>Gweld eich hanes cyflwyno</value>
       </data>
+	 <data name="accepted_by_regulator" xml:space="preserve">
+        <value>Wedi'i dderbyn gan y Rheoleiddiwr</value>
+      </data>
+	 <data name="approved_by_regulator" xml:space="preserve">
+        <value>Cymeradwywyd gan y Rheoleiddiwr</value>
+      </data>
+	 <data name="rejected_by_regulator" xml:space="preserve">
+        <value>Wedi'i wrthod gan y Rheoleiddiwr</value>
+      </data>
 </root>

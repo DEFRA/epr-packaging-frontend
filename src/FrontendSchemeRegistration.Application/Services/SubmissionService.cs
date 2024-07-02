@@ -65,7 +65,8 @@ public class SubmissionService : ISubmissionService
 
     public async Task<T> GetDecisionAsync<T>(
         int? limit,
-        Guid submissionId)
+        Guid submissionId,
+        SubmissionType type)
         where T : AbstractDecision
     {
         var queryString = $"";
@@ -76,7 +77,7 @@ public class SubmissionService : ISubmissionService
             queryString += $"&";
         }
 
-        queryString += $"submissionId={submissionId}";
+        queryString += $"submissionId={submissionId}&type={type}";
 
         return await _webApiGatewayClient.GetDecisionsAsync<T>(queryString);
     }

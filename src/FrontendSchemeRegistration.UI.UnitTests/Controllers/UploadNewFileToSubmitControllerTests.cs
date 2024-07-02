@@ -5,6 +5,7 @@ using System.Text.Json;
 using Application.Constants;
 using Application.DTOs.Submission;
 using Application.DTOs.UserAccount;
+using Application.Enums;
 using Application.Services.Interfaces;
 using Constants;
 using EPR.Common.Authorization.Constants;
@@ -74,7 +75,7 @@ public class UploadNewFileToSubmitControllerTests
             });
 
         _submissionServiceMock.Setup(x => x.GetDecisionAsync<PomDecision>(
-                null, It.IsAny<Guid>()))
+                null, It.IsAny<Guid>(), It.IsAny<SubmissionType>()))
             .ReturnsAsync(new PomDecision());
         _systemUnderTest = new UploadNewFileToSubmitController(
             _submissionServiceMock.Object, _userAccountServiceMock.Object, _sessionManagerMock.Object,

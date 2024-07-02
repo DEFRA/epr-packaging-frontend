@@ -72,7 +72,7 @@ public class UploadNewFileToSubmitController : Controller
 
         if (showPoMResubmission)
         {
-            decision = await _submissionService.GetDecisionAsync<PomDecision>(null, submission.Id);
+            decision = await _submissionService.GetDecisionAsync<PomDecision>(null, submission.Id, Application.Enums.SubmissionType.Producer);
         }
 
         var uploadedByGuid = submission.LastUploadedValidFile?.UploadedBy;

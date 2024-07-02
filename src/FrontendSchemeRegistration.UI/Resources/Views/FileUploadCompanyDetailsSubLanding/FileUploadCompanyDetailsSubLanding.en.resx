@@ -95,4 +95,13 @@
 	<data name="view_submission_history" xml:space="preserve">
         <value>View submission history</value>
     </data>
+	<data name="accepted_by_regulator" xml:space="preserve">
+        <value>Accepted by Regulator</value>
+    </data>
+	<data name="approved_by_regulator" xml:space="preserve">
+        <value>Approved By Regulator</value>
+     </data>
+	<data name="rejected_by_regulator" xml:space="preserve">
+        <value>Rejected by Regulator</value>
+     </data>
 </root>

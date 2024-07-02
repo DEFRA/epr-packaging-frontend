@@ -15,8 +15,10 @@
     {
         FileUploaded => "govuk-tag--yellow",
         CannotStartYet => "govuk-tag--grey",
-        SubmittedToRegulator => "govuk-tag--green",
-        SubmittedAndHasRecentFileUpload => "govuk-tag--green",
+        SubmittedToRegulator => "govuk-tag--yellow",
+        SubmittedAndHasRecentFileUpload => "govuk-tag--yellow",
+        AcceptedByRegulator => "govuk-tag--green",
+        RejectedByRegulator => "govuk-tag--red",
         _ => string.Empty
     };
 }
@@ -70,7 +72,7 @@
                                 </div>
                                 <div class="govuk-card-body">
                                     @{
-                                        if (!submissionPeriodDetail.Status.In(CannotStartYet))
+                                        if (submissionPeriodDetail.Status.In(AcceptedByRegulator, RejectedByRegulator, FileUploaded, NotStarted))
                                         {
                                             <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer[Model.IsComplianceScheme ? "report_members_details" : "report_organisation_details"]</button>
                                         }
