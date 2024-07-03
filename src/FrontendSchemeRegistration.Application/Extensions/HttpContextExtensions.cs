@@ -57,7 +57,7 @@ public static class HttpContextExtensions
 
     public static Guid GetCustomerOrganisationId(this HttpContext context)
     {
-        return GetUserData(context).Organisations.FirstOrDefault()!.Id.Value;
+        return GetUserData(context).Organisations.FirstOrDefault() !.Id.Value;
     }
 
     private static CookieOptions GetCookieOptions() => new CookieOptions
