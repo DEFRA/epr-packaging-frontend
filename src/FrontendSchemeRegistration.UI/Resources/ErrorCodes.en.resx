@@ -196,7 +196,7 @@ Read the guidance about how to create your organisation details file. Once youâ€
         <value>The Organisation ID list in this file does not match the Organisation ID list in your organisation file</value>
     </data>
     <data name="891" xml:space="preserve">
-        <value>This list of partners needs to match the one in the organisation details file. Check both files</value>
+        <value>This list of partners needs to match the one in the organisation details file. Check both files.</value>
     </data>
     <data name="892" xml:space="preserve">
         <value>The Subsidiary ID list in this file does not match the Subsidiary ID list in your organisation file</value>

@@ -39,6 +39,6 @@
         <value>Rhaid i’r enw llawn fod yn 200 neu lai o gymeriadau</value>
     </data>
     <data name="text_assistive.warning" xml:space="preserve">
-        <value>WWarning</value>
+        <value>Rhybudd</value>
     </data>
 </root>

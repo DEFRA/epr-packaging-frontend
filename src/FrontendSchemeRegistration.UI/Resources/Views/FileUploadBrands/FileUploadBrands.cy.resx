@@ -13,15 +13,15 @@
     </resheader>
 
     <data name="upload_brand_details" xml:space="preserve">
-        <value>WUpload brand details</value>
+        <value>Uwchlwytho manylion brandiau</value>
     </data>
     <data name="upload_file" xml:space="preserve">
         <value>Uwchlwytho ffeil </value>
     </data>
     <data name="upload_your_brand_details_file" xml:space="preserve">
-        <value>WUpload your brand details file</value>
+        <value>Uwchlwythwch eich ffeil manylion brandiau</value>
     </data>
     <data name="file_must_be_csv" xml:space="preserve">
-        <value>WFile must be a CSV</value>
+        <value>Rhaid i'r ffeil fod yn ffeil CSV</value>
     </data>
 </root>

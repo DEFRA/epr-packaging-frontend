@@ -19,57 +19,57 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="organisation_details" xml:space="preserve">
-        <value>WOrganisation details not uploaded – fix errors and try again</value>
+        <value>Manylion y sefydliad heb eu huwchlwytho – cywirwch y gwallau a rhowch gynnig arall arni.</value>
     </data>
     <data name="there_are" xml:space="preserve">
-        <value>wThere are</value>
+        <value>Mae yna</value>
     </data>
     <data name="in_file" xml:space="preserve">
-        <value>werrors in your file.</value>
+        <value>o wallau yn eich ffeil.</value>
     </data>
     <data name="this_means" xml:space="preserve">
-        <value>wThis means the organisation details were not uploaded.</value>
+        <value>Mae hyn yn golygu bod manylion y sefydliad heb gael eu huwchlwytho.</value>
     </data>
     <data name="how_to_fix" xml:space="preserve">
-        <value>WHow to fix the errors</value>
+        <value>Sut i gywiro'r gwallau</value>
     </data>
     <data name="download_csv" xml:space="preserve">
-        <value>wDownload your error report (CSV, maximum 5MB)</value>
+        <value>Lawrlwythwch eich adroddiad gwallau (CSV, 5MB ar y mwyaf)</value>
     </data>
     <data name="this_will" xml:space="preserve">
-        <value>wThis will tell you where the errors are in your file.</value>
+        <value>Bydd hwn yn dweud ble mae'r gwallau yn eich ffeil.</value>
     </data>
     <data name="use_report" xml:space="preserve">
-        <value>wUse the report to fix the errors. You may also need the </value>
+        <value>Defnyddiwch yr adroddiad i gywiro'r gwallau. Efallai y bydd arnoch chi angen</value>
     </data>
     <data name="file_specification" xml:space="preserve">
-        <value>wfile specification guidance (opens in new tab)</value>
+        <value>y canllawiau am fanyleb y ffeil hefyd (yn agor mewn ffenestr newydd)</value>
     </data>
     <data name="upload_again" xml:space="preserve">
-        <value>WUpload the file again</value>
+        <value>Uwchlwythwch y ffeil eto</value>
     </data>
     <data name="upload_file" xml:space="preserve">
-        <value>wUpload file</value>
+        <value>Uwchlwytho ffeil</value>
     </data>
     <data name="errors_in_file" xml:space="preserve">
-        <value>wThere are errors in your file. This means the organisation details were not uploaded</value>
+        <value>Mae yna wallau yn eich ffeil. Mae hyn yn golygu bod manylion y sefydliad heb gael eu huwchlwytho</value>
     </data>
     <data name="200_errors" xml:space="preserve">
-        <value>wThe file has 200 errors or more.</value>
+        <value>Mae gan y ffeil 200 neu ragor o wallau.</value>
     </data>
     <data name="upload_organisation_details_error" xml:space="preserve">
-        <value>WOrganisation details not uploaded</value>
+        <value>Manylion y sefydliad heb gael eu huwchlwytho</value>
     </data>
     <data name="this_will_200" xml:space="preserve">
-        <value>wThis will show you the first 200 errors in your file.</value>
+        <value>Bydd hwn yn dangos y 200 gwall cyntaf yn eich ffeil.</value>
     </data>
     <data name="error_in_file" xml:space="preserve">
-        <value>error in your file.</value>
+        <value>gwall yn eich ffeil.</value>
     </data>
     <data name="there_is" xml:space="preserve">
-        <value>wThere is </value>
+        <value>Mae yna</value>
     </data>
     <data name="may_get_another_error" xml:space="preserve">
-        <value>wIf there are more errors, you may get another error report.</value>
+        <value>Os oes rhagor o wallau, efallai y cewch chi adroddiad gwallau arall.</value>
     </data>
 </root>

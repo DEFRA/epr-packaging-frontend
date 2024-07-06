@@ -118,30 +118,30 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Declaration.AgreedThat1" xml:space="preserve">
-    <value>Ware able to submit packaging data to the environment regulator for</value>
+    <value>yn gallu cyflwyno data pecynwaith i'r rheoleiddiwr amgylcheddol ar ran</value>
   </data>
   <data name="Declaration.AgreedThat2" xml:space="preserve">
-    <value>Wunderstand the regulations</value>
+    <value>yn deall y rheoliadau</value>
   </data>
   <data name="Declaration.AgreedThat3" xml:space="preserve">
-    <value>Whave access to the information you need to submit data correctly</value>
+    <value>yn gallu cael gafael ar yr wybodaeth sydd arnoch ei hangen er mwyn cyflwyno data'n gywir</value>
   </data>
   <data name="Declaration.Confirm" xml:space="preserve">
-    <value>WConfirm</value>
+    <value>Cadarnhau</value>
   </data>
   <data name="Declaration.EnterYourFullName" xml:space="preserve">
-    <value>WEnter your full name</value>
+    <value>Rhowch eich enw llawn</value>
   </data>
   <data name="Declaration.FullNameError" xml:space="preserve">
-    <value>WEnter your full name</value>
+    <value>Rhowch eich enw llawn</value>
   </data>
   <data name="Declaration.FullNameMaxLengthError" xml:space="preserve">
-    <value>WFull name must be 200 characters or less</value>
+    <value>Rhaid i'r enw llawn fod yn 200 o gymeriadau neu lai</value>
   </data>
   <data name="Declaration.Instruction" xml:space="preserve">
-    <value>WConfirm that you want to be an approved person</value>
+    <value>Rhowch gadarnhad yr hoffech chi fod yn berson a gymeradwywyd</value>
   </data>
   <data name="Declaration.YouAreAgreeingThat" xml:space="preserve">
-    <value>WBy entering your name. you’re agreeing that the information you 've given is complete and correct, and that you:</value>
+    <value>Trwy roi eich enw , rydych chi'n cadarnhau bod yr wybodaeth rydych chi wedi'i rhoi yn gywir a'ch bod chi:</value>
   </data>
 </root>

@@ -130,31 +130,31 @@
     <value>Rhoi gwybod am fanylion eich sefydliad aelodau</value>
   </data>
   <data name="members_organisation_details" xml:space="preserve">
-    <value>WMembers’ organisation details</value>
+    <value>Manylion y sefydliad aelodau</value>
   </data>
     <data name="you_must_report_org_data" xml:space="preserve">
-    <value>WYou must report organisation details for January to June and July to December:</value>
+    <value>Rhaid ichi roi gwybod am fanylion eich sefydliad ar gyfer Ionawr i Fehefin a Gorffennaf i Ragfyr:</value>
   </data>
     <data name="you_can_also" xml:space="preserve">
-    <value>WYou can also:</value>
+    <value>Rydych chi hefyd yn cael:</value>
   </data>
   <data name="report_changes_to_your_organisation_details" xml:space="preserve">
-    <value>Wreport changes to your members’ organisation details</value>
+    <value>rhoi gwybod am newidiadau ym manylion eich sefydliad aelodau</value>
   </data>
     <data name="resubmit_your_organisation_details" xml:space="preserve">
-    <value>Wresubmit your members’ organisation details</value>
+    <value>ailgyflwyno manylion eich sefydliad aelodau</value>
   </data>
     <data name="view_your_history" xml:space="preserve">
-    <value>Wview your history</value>
+    <value>gweld eich hanes</value>
   </data>
     <data name="members_packaging_data" xml:space="preserve">
-    <value>WMembers’ packaging data</value>
+    <value>Data pecynwaith yr aelodau</value>
   </data>
   <data name="you_must_report_packaging_data" xml:space="preserve">
-    <value>WYou must report packaging data for January to June and July to December.</value>
+    <value>Rhaid ichi roi gwybod am ddata pecynwaith ar gyfer Ionawr i Fehefin a Gorffennaf i Ragfyr.</value>
   </data>
     <data name="resubmit_your_packaging_data" xml:space="preserve">
-    <value>Wresubmit your members’ packaging data</value>
+    <value>ailgyflwyno data pecynwaith eich aelodau</value>
   </data>
     <data name="packaging_recovery_notes" xml:space="preserve">
     <value>Nodyn ailgylchu gwastraff pecynwaith (PRN) a nodyn ailgylchu allforio pecynwaith gwastraff (PERN)</value>
@@ -211,7 +211,7 @@
     <value>Cyfoeth Naturiol Cymru</value>
   </data>
     <data name="summary-regulator" xml:space="preserve">
-    <value>Wthe regulator</value>
+    <value>y rheoleiddiwr</value>
   </data>
   <data name="date1_to_date2" xml:space="preserve">
     <value>{0} i {1}</value>

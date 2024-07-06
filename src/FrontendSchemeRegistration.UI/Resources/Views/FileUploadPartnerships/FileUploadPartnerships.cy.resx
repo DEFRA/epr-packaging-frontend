@@ -121,12 +121,12 @@
     <value>Uwchlwytho ffeil</value>
   </data>
   <data name="upload_partner_details" xml:space="preserve">
-    <value>WUpload partner details</value>
+    <value>Uwchlwytho manylion partneriaid</value>
   </data>
   <data name="upload_your_partner_details_file" xml:space="preserve">
-    <value>WUpload your partner details file</value>
+    <value>Uwchlwythwch eich ffeil manylion partneriaid</value>
   </data>
   <data name="file_must_be_csv" xml:space="preserve">
-    <value>WFile must be CSV</value>
+    <value>Rhaid i'r ffeil fod yn ffeil CSV</value>
   </data>
 </root>

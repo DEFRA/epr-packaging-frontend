@@ -181,28 +181,28 @@
     <value>Gorffennaf i Ragfyr 2023</value>
   </data>
   <data name="sorry_problem_service" xml:space="preserve">
-    <value>WSorry, there is a problem with the service</value>
+    <value>Ymddiheuriadau, mae yna broblem gyda'r gwasanaeth</value>
   </data>
   <data name="try_again_later" xml:space="preserve">
-    <value>WTry again later.</value>
+    <value>Rhowch gynnig arall arni yn nes ymlaen.</value>
   </data>
   <data name="scheme_members" xml:space="preserve">
-    <value>WScheme members</value>
+    <value>Aelodau'r cynllun</value>
   </data>
   <data name="defra" xml:space="preserve">
     <value>Department for Environment, Food and Rural Affairs</value>
   </data>
   <data name="member_details" xml:space="preserve">
-    <value>WMember detail</value>
+    <value>Manylion yr aelod</value>
   </data>
   <data name="next_page" xml:space="preserve">
-    <value>WNext page</value>
+    <value>Tudalen nesaf</value>
   </data>
   <data name="menu" xml:space="preserve">
     <value>Dewislen</value>
   </data>
   <data name="hidden_error" xml:space="preserve">
-    <value>WError:</value>
+    <value>Gwall:</value>
   </data>
   <data name="confirm" xml:space="preserve">
     <value>Cadarnhau</value>
@@ -241,10 +241,10 @@
     <value>Mewngofnodi</value>
   </data>
   <data name="created_new_approved_person" xml:space="preserve">
-    <value>WYou've created an account. We'll email you when the environmental regulator has given you permission to submit data. This may take up to 28 days.</value>
+    <value>Rydych chi wedi creu cyfrif. Byddwn yn anfon neges ebost atoch pan fydd y rheoleiddiwr amgylcheddol wedi rhoi caniatâd ichi gyflwyno data. Gall hyn gymryd hyd at 28 diwrnod.</value>
   </data>
   <data name="success" xml:space="preserve">
-    <value>WSuccess</value>
+    <value>Llwyddiant</value>
   </data>
   <data name="submit" xml:space="preserve">
     <value>Cyflwyno</value>

@@ -118,24 +118,24 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="InviteChangePermissions.HowLongItTakes" xml:space="preserve">
-    <value>WHow long it takes</value>
+    <value>Faint o amser mae'n ei gymryd</value>
   </data>
   <data name="InviteChangePermissions.InvitedToChangePermissions" xml:space="preserve">
-    <value>W{0} has invited you to change your account permission. This means you’ll be able to manage and submit packaging data to the environmental regulator.</value>
+    <value>Mae {0} wedi’ch gwahodd i newid eich caniatâd cyfrif. Mae hyn yn golygu y byddwch yn gallu rheoli a chyflwyno data pecynwaith i'r rheoleiddiwr amgylcheddol.</value>
   </data>
   <data name="InviteChangePermissions.ItCanTakeUpTo" xml:space="preserve">
-    <value>WIt can take up to 28 days for the environmental regulator to approve this request.</value>
+    <value>Gall gymryd hyd at 28 diwrnod i'r rheoleiddiwr amgylcheddol gymeradwyo'r cais yma.</value>
   </data>
   <data name="InviteChangePermissions.OnceTheyApprove" xml:space="preserve">
-    <value>WOnce they’ve approved the request, your organisation will be able to submit data. We’ll let you know when they’ve approved the request.</value>
+    <value>Unwaith y byddan nhw wedi cymeradwyo'r cais, byddwch yn gallu cyflwyno data. Byddwn yn rhoi gwybod i chi pan fyddan nhw wedi cymeradwyo'r cais.</value>
   </data>
   <data name="InviteChangePermissions.Question" xml:space="preserve">
-    <value>WInvitation to change account permissions</value>
+    <value>Gwahoddiad i newid caniatadau cyfrif</value>
   </data>
   <data name="InviteChangePermissions.Title" xml:space="preserve">
-    <value>WInvite change permissions approved person</value>
+    <value>Gwahodd person a gymeradwywyd i newid caniatadau</value>
   </data>
   <data name="InviteChangePermissions.YouNeedToAccept" xml:space="preserve">
-    <value>WYou need to accept this invitation and give us some more information.</value>
+    <value>Mae angen ichi dderbyn y gwahoddiad yma a rhoi rhagor o wybodaeth inni.</value>
   </data>
 </root>

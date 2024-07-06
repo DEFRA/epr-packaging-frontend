@@ -118,24 +118,24 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="TelephoneNumber.InternationalNumbers.Hint" xml:space="preserve">
-    <value>WFor international numbers include the country code</value>
+    <value>Yn achos rhifau rhyngwladol cynhwyswch y cod gwlad</value>
   </data>
   <data name="TelephoneNumber.NotificationInfo" xml:space="preserve">
-    <value>WWe may also contact you by email using the address you used to create your account:</value>
+    <value>Efallai y byddwn hefyd yn cysylltu â chi drwy’r ebost gan ddefnyddio'r cyfeiriad a ddefnyddiwyd gennych i greu eich cyfrif:</value>
   </data>
   <data name="TelephoneNumber.Question" xml:space="preserve">
-    <value>WWhat is your telephone number?</value>
+    <value>Beth yw eich rhif ffôn?</value>
   </data>
   <data name="TelephoneNumber.Question.ErrorMessage" xml:space="preserve">
-    <value>WEnter a valid telephone number</value>
+    <value>Rhowch rif ffôn dilys</value>
   </data>
   <data name="TelephoneNumber.Question.Hint" xml:space="preserve">
-    <value>WWe ask for this in case we need to call you directly about your organisation’s account.</value>
+    <value>Rydyn ni’n gofyn am hyn rhag ofn y bydd angen inni eich ffonio'n uniongyrchol am gyfrif eich sefydliad.</value>
   </data>
   <data name="TelephoneNumber.TelephoneNumber" xml:space="preserve">
-    <value>WTelephone number</value>
+    <value>Rhif ffôn</value>
   </data>
   <data name="TelephoneNumber.Title" xml:space="preserve">
-    <value>WTelephone number</value>
+    <value>Rhif ffôn</value>
   </data>
 </root>

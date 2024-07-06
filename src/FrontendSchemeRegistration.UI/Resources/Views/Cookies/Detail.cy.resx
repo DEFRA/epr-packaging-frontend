@@ -244,6 +244,6 @@
     <value>Fel rhan o’r broses o greu cyfrif a mewngofnodi, mae’r cwci nons yn cael ei ddefnyddio gan OpenIDConnect Microsoft i liniaru ymosodiadau ailchwarae (lle mae haciwr yn rhyng-gipio neges ac yn ailchwarae honno i’r derbynnydd arfaethedig).</value>
   </data>
   <data name="Details.Title" xml:space="preserve">
-    <value>WCookies</value>
+    <value>Cwcis</value>
   </data>
 </root>

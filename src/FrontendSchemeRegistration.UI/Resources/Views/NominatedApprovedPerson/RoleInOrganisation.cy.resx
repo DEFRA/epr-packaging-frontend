@@ -118,27 +118,27 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="RoleInOrganisation.CompanySecretary" xml:space="preserve">
-    <value>WCompany secretary</value>
+    <value>Ysgrifennydd Cwmni</value>
   </data>
   <data name="RoleInOrganisation.Director" xml:space="preserve">
-    <value>WDirector</value>
+    <value>Cyfarwyddwr</value>
   </data>
   <data name="RoleInOrganisation.ErrorMessage" xml:space="preserve">
-    <value>WSelect your role in the Organisation</value>
+    <value>Dewiswch eich rôl yn y Sefydliad</value>
   </data>
   <data name="RoleInOrganisation.Member" xml:space="preserve">
-    <value>WMember</value>
+    <value>Aelod</value>
   </data>
   <data name="RoleInOrganisation.NoneOfTheAbove" xml:space="preserve">
-    <value>WNone of the above</value>
+    <value>Dim un o'r uchod</value>
   </data>
   <data name="RoleInOrganisation.Partner" xml:space="preserve">
-    <value>WPartner</value>
+    <value>Partner</value>
   </data>
   <data name="RoleInOrganisation.Question" xml:space="preserve">
-    <value>WWhat is your role in the Organisation, as shown on Companies House?</value>
+    <value>Beth yw eich rôl yn y Sefydliad, fel mae'n cael ei ddangos ar wefan Tŷ'r Cwmnïau?</value>
   </data>
   <data name="RoleInOrganisation.Title" xml:space="preserve">
-    <value>WRole in Organisation</value>
+    <value>Rôl yn y Sefydliad</value>
   </data>
 </root>

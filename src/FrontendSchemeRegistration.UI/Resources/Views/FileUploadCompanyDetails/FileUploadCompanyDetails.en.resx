@@ -124,7 +124,7 @@
     <value>Upload file</value>
   </data>
   <data name="file_must_be_a_CSV" xml:space="preserve">
-    <value>File must be a CSV.</value>
+    <value>File must be a CSV</value>
   </data>
   <data name="upload_organisation_details_title" xml:space="preserve">
     <value>Upload organisation details</value>

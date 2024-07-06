@@ -118,18 +118,18 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ManualRoleInOrganisation.ErrorMessage" xml:space="preserve">
-    <value>WEnter your role in the Organisation</value>
+    <value>Rhowch eich rôl yn y Sefydliad</value>
   </data>
   <data name="ManualRoleInOrganisation.LengthErrorMessage" xml:space="preserve">
-    <value>WYour role in the Organisation must be 450 characters or less</value>
+    <value>Rhaid i'ch rôl yn y Sefydliad fod yn 450 o gymeriadau neu lai</value>
   </data>
   <data name="ManualRoleInOrganisation.Hint" xml:space="preserve">
-    <value>WFor example, a director or owner.</value>
+    <value>Er enghraifft, cyfarwyddwr neu berchennog.</value>
   </data>
   <data name="ManualRoleInOrganisation.Question" xml:space="preserve">
-    <value>WWhat is your role in the Organisation?</value>
+    <value>Beth yw eich rôl yn y Sefydliad?</value>
   </data>
   <data name="ManualRoleInOrganisation.Title" xml:space="preserve">
-    <value>WRole in Organisation</value>
+    <value>Rôl yn y Sefydliad</value>
   </data>
 </root>
