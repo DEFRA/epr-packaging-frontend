@@ -1,0 +1,73 @@
+﻿@using FrontendSchemeRegistration.UI.ViewModels.Prns
+@model PrnListViewModel
+
+<main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+
+            <form class="form" method="POST">
+                <h2 class="govuk-heading-l">Accept or reject PRNs and PERNs</h2>
+
+                <div class="govuk-inset-text">
+                    Number of PRNs and PERNs awaiting acceptance
+                    <br>
+                    <br>
+                    <h2 class="govuk-heading-l">@Model.Prns.Count()</h2>
+                </div>
+
+                @{int counter = 0;}
+                @foreach (var group in Model.Prns.GroupBy(p => p.Material))
+                {
+                    var prnsPerMaterial = group.ToList();
+                    <table class="govuk-table">
+                        <thead class="govuk-table__head">
+                            <tr class="govuk-table__row">
+                                <h2 class="govuk-heading-m">@group.Key</h2>
+                                <div id="waste-hint" class="govuk-hint">
+                                    Select the PRNs and PERNs you want to accept or reject.
+                                </div>
+                            </tr>
+                            <tr class="govuk-table__row">
+                                <th scope="col" class="govuk-table__header">PRN or PERN number</th>
+                                <th scope="col" class="govuk-table__header">Date issued</th>
+                                <th scope="col" class="govuk-table__header">December waste</th>
+                                <th scope="col" class="govuk-table__header">Issued by</th>
+                                <th scope="col" class="govuk-table__header">Tonnage</th>
+                                <th scope="col" class="govuk-table__header">Note</th>
+                            </tr>
+                        </thead>
+
+                        @for (int i = 0; i < Model?.Prns?.Where(x => x.Material == group.Key)?.Count(); i++, counter++)
+                        {
+                            <tbody class="govuk-table__body">
+                                <tr class="govuk-table__row">
+                                    <td class="govuk-table__cell">
+                                        <div class="govuk-checkboxes__item">
+                                            @Html.CheckBoxFor(x => x.Prns[counter].IsSelected, new { @id = "chkSeletPrn", @class = "govuk-checkboxes__input" })
+
+                                            <label class="govuk-label govuk-checkboxes__label" for="waste-3">
+                                                <a href="selected-prn">@Html.DisplayFor(x => x.Prns[counter].PrnOrPernNumber)</a>
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[counter].DateIssuedDisplay)</td>
+                                    <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[counter].DecemberWasteDisplay)</td>
+                                    <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[counter].IssuedBy)</td>
+                                    <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[counter].Tonnage)</td>
+                                    <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[counter].Note)</td>
+                                </tr>
+                            </tbody>
+                        }
+                    </table>
+                }
+
+                <button class="govuk-button" asp-action="AcceptPrns" asp-controller="Prns">
+                    Accept selected PRNs and PERNs
+                </button>
+
+                @* <button class="govuk-button" formaction="accept-bulk">Accept selected PRNs and PERNs</button> *@
+                <button class=" govuk-button govuk-button--secondary" formaction="reject-bulk" style="margin-left: 20px;">Reject selected PRNs and PERNs</button>
+            </form>
+        </div>
+    </div>
+</main>
