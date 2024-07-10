@@ -1,9 +1,11 @@
 ﻿using FrontendSchemeRegistration.UI.Services;
 using FrontendSchemeRegistration.UI.ViewModels.Prns;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.FeatureManagement.Mvc;
 
 namespace FrontendSchemeRegistration.UI.Controllers.Prns
 {
+    [FeatureGate("ShowPrn")]
     public class PrnsController : Controller
     {
         [HttpGet]

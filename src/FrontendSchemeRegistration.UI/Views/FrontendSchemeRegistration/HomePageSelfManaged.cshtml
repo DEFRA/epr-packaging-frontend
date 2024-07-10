@@ -113,7 +113,12 @@
             <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
                 <div class="govuk-card-body">
                     <h2 class="govuk-heading-m">
-                        <a href="./prns-home" class="govuk-link--no-visited-state">Manage your recycling obligation </a>
+                        <feature name="ShowPrn">
+                            <a href="./prns-home" class="govuk-link--no-visited-state">Manage your recycling obligation</a>
+                        </feature>
+                        <feature name="ShowPrn" negate="true">
+                            @Localizer["packaging_recovery_notes"]
+                        </feature>
                      </h2>
                     <p class="govuk-body govuk-!-margin-bottom-0">@Localizer["no_action_needed_at_the_moment"]</p>
                 </div>
