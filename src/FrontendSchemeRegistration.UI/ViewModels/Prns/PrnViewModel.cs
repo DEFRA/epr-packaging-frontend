@@ -26,10 +26,18 @@
         // e.g. AWAITING ACCEPTANCE, ACCEPTED, REJECTED, CANCELLED
         public string ApprovalStatus { get; set; }
 
+        public string ReproccessingSite { get; set; }
+
+        public string AuthorisedBy { get; set; }
+
+        public string AccreditationNumber { get; set; }
+
+        public string ProducerOrComplianceScheme { get; set; }
+
         // True if selected in the user interface.
         public bool IsSelected { get; set; }
 
-        public string DecemberWasteDisplay => IsDecemberWaste ? "Yes" : "No";
+        public string DecemberWasteDisplay { get; set; }
 
         public string DateIssuedDisplay => DateIssued.ToString("dd MMM yyyy");
     }

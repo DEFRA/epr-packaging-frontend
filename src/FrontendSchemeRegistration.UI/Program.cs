@@ -63,6 +63,7 @@ services.AddHsts(options =>
 builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
 
 services.AddAppHttpClient();
+builder.Services.AddTransient<FrontendSchemeRegistration.UI.Services.PrnService>();
 
 var app = builder.Build();
 
@@ -83,6 +84,7 @@ else
 
 app.UseForwardedHeaders();
 
+app.UseMiddleware<SecurityHeaderMiddleware>();
 app.UseCookiePolicy();
 app.UseStatusCodePagesWithReExecute("/error", "?statusCode={0}");
 app.UseHttpsRedirection();

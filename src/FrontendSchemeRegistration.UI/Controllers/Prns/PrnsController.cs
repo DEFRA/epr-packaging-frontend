@@ -8,6 +8,13 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
     [FeatureGate("ShowPrn")]
     public class PrnsController : Controller
     {
+        private readonly PrnService _prnService;
+
+        public PrnsController(PrnService prnService)
+        {
+            _prnService = prnService;
+        }
+
         [HttpGet]
         [Route("prns-home")]
         public async Task<IActionResult> HomePagePrn()
@@ -19,8 +26,7 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         [Route("view-all-prns")]
         public async Task<IActionResult> ViewAllPrns()
         {
-            var prnService = new PrnService();
-            var prns = prnService.GetAllPrns();
+            var prns = _prnService.GetAllPrns();
             return View(prns);
         }
 
@@ -28,8 +34,7 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         [Route("select-prns")]
         public async Task<IActionResult> SelectPrnsToAcceptOrReject()
         {
-            var prnService = new PrnService();
-            var prns = prnService.GetPrnsAwaitingAcceptance();
+            var prns = _prnService.GetPrnsAwaitingAcceptance();
             return View(prns);
         }
 
@@ -37,7 +42,8 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         [Route("accept-prn")]
         public async Task<IActionResult> AcceptSinglePrn([FromQuery]string prnOrPernNumber)
         {
-            return View();
+            var prn = _prnService.GetPrnByNumber(prnOrPernNumber);
+            return View(prn);
         }
 
         [HttpPost]

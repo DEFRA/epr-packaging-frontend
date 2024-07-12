@@ -1,4 +1,7 @@
-﻿<main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+﻿@using FrontendSchemeRegistration.UI.ViewModels.Prns
+@model PrnViewModel
+
+<main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
             <form class="form" action="accept-prn" method="POST">
@@ -98,7 +101,7 @@
                 <h1 class="govuk-heading-l">Packaging Recycling Note</h1>
                 <div class="govuk-inset-text app-inset-text">
                     <div class="govuk-heading-m">
-                        PRN number: <strong>ER454545540M</strong>
+                        PRN number: <strong>@Html.DisplayFor(x => x.PrnOrPernNumber)</strong>
                     </div>
                     <div class="govuk-heading-m">
                         Year: <strong>2025</strong>
@@ -113,8 +116,9 @@
                             <td class="govuk-table__cell">@Localizer["status"]</td>
                             <th scope="row" class="govuk-table__header">
                                 <strong class="govuk-tag govuk-tag--grey">
-                                    Awaiting acceptance
+                                    @Html.DisplayFor(x => x.ApprovalStatus)
                                 </strong>
+                            </th>
                         </tr>
                         <tr class="govuk-table__row">
                             <td class="govuk-table__cell">@Localizer["status_meaning"]</td>
@@ -125,25 +129,25 @@
                         <tr class="govuk-table__row">
                             <td class="govuk-table__cell">@Localizer["issued_by"]</td>
                             <th scope="row" class="govuk-table__header">
-                                Recycling Ltd
+                                @Html.DisplayFor(x => x.IssuedBy)
                             </th>
                         </tr>
                         <tr class="govuk-table__row">
                             <td class="govuk-table__cell">@Localizer["reproccessing_site"]</td>
                             <th scope="row" class="govuk-table__header">
-                                23 Ruby Street, London, NW N32
+                                @Html.DisplayFor(x => x.ReproccessingSite)
                             </th>
                         </tr>
                         <tr class="govuk-table__row">
                             <td class="govuk-table__cell">@Localizer["authorised_by"]</td>
                             <th scope="row" class="govuk-table__header">
-                                John Smith
+                                @Html.DisplayFor(x => x.AuthorisedBy)
                             </th>
                         </tr>
                         <tr class="govuk-table__row">
                             <td class="govuk-table__cell">@Localizer["accreditation_number"]</td>
                             <th scope="row" class="govuk-table__header">
-                                ER123456789
+                                @Html.DisplayFor(x => x.AccreditationNumber)
                             </th>
                         </tr>
 
@@ -158,37 +162,37 @@
                         <tr class="govuk-table__row">
                             <td class="govuk-table__cell">@Localizer["date_issued"]</td>
                             <th scope="row" class="govuk-table__header">
-                                20 November 2025
+                                @Html.DisplayFor(x => x.DateIssuedDisplay)
                             </th>
                         </tr>
                         <tr class="govuk-table__row">
                             <td class="govuk-table__cell">@Localizer["relates_to_waste_received_in_december"]</td>
                             <th scope="row" class="govuk-table__header">
-                                No
+                                @Html.DisplayFor(x => x.DecemberWasteDisplay)
                             </th>
                         </tr>
                         <tr class="govuk-table__row">
                             <td class="govuk-table__cell">@Localizer["material"]</td>
                             <th scope="row" class="govuk-table__header">
-                                Paper and board
+                                @Html.DisplayFor(x => x.Material)
                             </th>
                         </tr>
                         <tr class="govuk-table__row">
                             <td class="govuk-table__cell">@Localizer["tonnage"]</td>
                             <th scope="row" class="govuk-table__header">
-                                170
+                                @Html.DisplayFor(x => x.Tonnage)
                             </th>
                         </tr>
                         <tr class="govuk-table__row">
                             <td class="govuk-table__cell">@Localizer["packaging_producer_or_compliance_scheme"]</td>
                             <th scope="row" class="govuk-table__header">
-                                Tesco
+                                @Html.DisplayFor(x => x.ProducerOrComplianceScheme)
                             </th>
                         </tr>
                         <tr class="govuk-table__row">
                             <td class="govuk-table__cell">@Localizer["note"]</td>
                             <th scope="row" class="govuk-table__header">
-                                Purchase order number 12354
+                                @Html.DisplayFor(x => x.AdditionalNotes)
                             </th>
                         </tr>
 
