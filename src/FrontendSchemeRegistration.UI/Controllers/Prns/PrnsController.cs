@@ -16,19 +16,40 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         }
 
         [HttpGet]
+        [Route("view-all-prns")]
+        public async Task<IActionResult> ViewAllPrns()
+        {
+            var prnService = new PrnService();
+            var prns = prnService.GetAllPrns();
+            return View(prns);
+        }
+
+        [HttpGet]
         [Route("select-prns")]
         public async Task<IActionResult> SelectPrnsToAcceptOrReject()
         {
             var prnService = new PrnService();
-            var prns = prnService.GetPrns();
+            var prns = prnService.GetPrnsAwaitingAcceptance();
             return View(prns);
+        }
+
+        [HttpGet]
+        [Route("accept-prn")]
+        public async Task<IActionResult> AcceptSinglePrn([FromQuery]string prnOrPernNumber)
+        {
+            return View();
         }
 
         [HttpPost]
         [Route("accept-prns")]
-        public async Task<ActionResult> AcceptPrns(PrnListViewModel selections)
+        public async Task<ActionResult> AcceptPrns(PrnListViewModel model)
         {
-            var bla = selections;
+            var selections = model.Prns.Where(x => x.IsSelected);
+            if (selections.Count() == 1)
+            {
+                return View(selections);
+            }
+
             return View();
         }
     }

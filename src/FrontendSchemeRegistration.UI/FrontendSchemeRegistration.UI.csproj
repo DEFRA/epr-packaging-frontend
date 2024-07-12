@@ -83,11 +83,6 @@
             <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
             <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
         </Content>
-        <Content Remove="Views\ComplianceSchemeConfirmation\Confirm.cshtml" />
-        <Content Remove="Views\HomePageComplianceScheme\HomePageComplianceScheme.cshtml" />
-        <Content Remove="Views\ChangeComplianceSchemeOptions\ChangeComplianceSchemeOptions.cshtml" />
-        <Content Remove="Views\ComplianceSchemeConfirmation\Confirmation.cshtml" />
-        <Content Remove="Views\HomePageSelfManaged\HomePageSelfManaged.cshtml" />
         <Content Update="assets\js\print.js">
             <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
             <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
@@ -850,6 +845,7 @@
             <DependentUpon>SharedResources.resx</DependentUpon>
         </Compile>
         <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
+        <_ContentIncludedByDefault Remove="Views\Prns\AcceptSinglePrn.cshtml" />
         <Compile Update="Resources\Views\Application\Declaration.Designer.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
@@ -866,6 +862,7 @@
         <_ContentIncludedByDefault Remove="Views\TaskList\TaskList.cshtml" />
     </ItemGroup>
     <ItemGroup>
+        <None Include="Views\Prns\AcceptSinglePrn.cshtml" />
         <None Include="wwwroot\images\spinner.gif" />
     </ItemGroup>
 
@@ -1187,5 +1184,8 @@
 		<SonarQubeSetting Include="sonar.coverage.exclusions">
 			<Value>ViewModels/ComplianceSchemeLandingViewModel*.cs,Views/**/*.cshtml,Program.cs,gulpfile.js,**/print.js,**/refresh.js</Value>
 		</SonarQubeSetting>
+	</ItemGroup>
+	<ItemGroup>
+	  <UpToDateCheckInput Remove="Views\Prns\AcceptSinglePrn.cshtml" />
 	</ItemGroup>
 </Project>

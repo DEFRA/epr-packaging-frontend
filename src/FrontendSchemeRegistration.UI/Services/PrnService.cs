@@ -5,36 +5,64 @@ namespace FrontendSchemeRegistration.UI.Services
 {
     public class PrnService
     {
-        public PrnListViewModel GetPrns()
+        private readonly List<PrnViewModel> _prns;
+
+        public PrnService()
         {
-            var prns = new PrnListViewModel();
-            prns.Prns = new List<PrnViewModel>();
+            _prns = new List<PrnViewModel>();
 
-            prns.Prns.Add(GeneratePrn("ER454545540M", "20 Nov 2025", false, "XYZ Reprocessing", 65, "Purchase order number 34XFY68", "Paper and board"));
-            prns.Prns.Add(GeneratePrn("EX454545540M", "20 Dec 2024", true, "Exporting International", 151, "T2E reference 5689344....", "Paper and board"));
-            prns.Prns.Add(GeneratePrn("EX454545560M", "01 Nov 2025", false, "Packaging reprocessing Ltd", 20, "Not provided", "Paper and board"));
-            prns.Prns.Add(GeneratePrn("ER454545540M", "10 Nov 2025", false, "Paperlink International Ltd", 100, "Ref 345678F", "Paper and board"));
-            prns.Prns.Add(GeneratePrn("ER454545540M", "10 Nov 2025", false, "Monoworlded Recycling Ltd", 100, "Ref 345678F", "Paper and board"));
-            prns.Prns.Add(GeneratePrn("ER454545540M", "10 Nov 2025", false, "Bolted Brothers Ltd", 100, "Ref 345678F", "Paper and board"));
+            _prns.Add(GeneratePrn("ER3484743570M", "PRN", "20 Nov 2025", false, "XYZ Reprocessing", 65, "na", "Paper and board", "AWAITING ACCEPTANCE"));
+            _prns.Add(GeneratePrn("EX3484743570M", "PERN", "20 Nov 2025", false, "Exporting International", 151, "na", "Paper and board", "ACCEPTED"));
+            _prns.Add(GeneratePrn("EX3484743570M", "PERN", "20 Nov 2025", false, "Exporting International", 100, "na", "Wood", "ACCEPTED"));
+            _prns.Add(GeneratePrn("EX3484743570M", "PERN", "20 Nov 2025", false, "Exporting International", 60, "na", "Paper and board", "ACCEPTED"));
+            _prns.Add(GeneratePrn("EX3484743570M", "PERN", "20 Nov 2024", true, "Packaging reprocessing Ltd", 70, "na", "Paper and board", "ACCEPTED"));
+            _prns.Add(GeneratePrn("EX3484743570M", "PERN", "20 Nov 2024", false, "Packaging reprocessing Ltd", 100, "na", "Plastic", "REJECTED"));
+            _prns.Add(GeneratePrn("EX3484743570M", "PERN", "20 Nov 2024", true, "Packaging reprocessing Ltd", 80, "na", "Paper and board", "CANCELLED"));
+            _prns.Add(GeneratePrn("EX3484743570M", "PERN", "20 Nov 2024", true, "Packaging reprocessing Ltd", 65, "na", "Wood", "ACCEPTED"));
+            _prns.Add(GeneratePrn("EX3484743570M", "PERN", "20 Nov 2024", true, "Packaging reprocessing Ltd", 70, "na", "Paper and board", "ACCEPTED"));
 
-            prns.Prns.Add(GeneratePrn("ER454545540M", "20 Nov 2025", false, "XYZ Reprocessing", 65, "Purchase order number 34XFY68", "Wood"));
-            prns.Prns.Add(GeneratePrn("EX454545540M", "20 Dec 2024", true, "Exporting International", 151, "T2E reference 5689344....", "Wood"));
-            prns.Prns.Add(GeneratePrn("ER454545540M", "01 Nov 2025", false, "Packaging reprocessing Ltd", 20, "Not provided", "Wood"));
-            prns.Prns.Add(GeneratePrn("ER454545540M", "10 Nov 2025", false, "Paperlink International Ltd", 100, "Ref 345678F", "Wood"));
-            return prns;
+            _prns.Add(GeneratePrn("ER454545540M", "PRN", "20 Nov 2025", false, "XYZ Reprocessing", 65, "Purchase order number 34XFY68", "Paper and board", "AWAITING ACCEPTANCE"));
+            _prns.Add(GeneratePrn("EX454545540M", "PERN", "20 Dec 2024", true, "Exporting International", 151, "T2E reference 5689344....", "Paper and board", "AWAITING ACCEPTANCE"));
+            _prns.Add(GeneratePrn("EX454545560M", "PERN", "01 Nov 2025", false, "Packaging reprocessing Ltd", 20, "Not provided", "Paper and board", "AWAITING ACCEPTANCE"));
+            _prns.Add(GeneratePrn("ER454545540M", "PRN", "10 Nov 2025", false, "Paperlink International Ltd", 100, "Ref 345678F", "Paper and board", "AWAITING ACCEPTANCE"));
+            _prns.Add(GeneratePrn("ER454545540M", "PRN", "10 Nov 2025", false, "Monoworlded Recycling Ltd", 100, "Ref 345678F", "Paper and board", "AWAITING ACCEPTANCE"));
+            _prns.Add(GeneratePrn("ER454545540M", "PRN", "10 Nov 2025", false, "Bolted Brothers Ltd", 100, "Ref 345678F", "Paper and board", "AWAITING ACCEPTANCE"));
+
+            _prns.Add(GeneratePrn("ER454545540M", "PRN", "20 Nov 2025", false, "XYZ Reprocessing", 65, "Purchase order number 34XFY68", "Wood", "AWAITING ACCEPTANCE"));
+            _prns.Add(GeneratePrn("EX454545540M", "PERN", "20 Dec 2024", true, "Exporting International", 151, "T2E reference 5689344....", "Wood", "AWAITING ACCEPTANCE"));
+            _prns.Add(GeneratePrn("ER454545540M", "PRN", "01 Nov 2025", false, "Packaging reprocessing Ltd", 20, "Not provided", "Wood", "AWAITING ACCEPTANCE"));
+            _prns.Add(GeneratePrn("ER454545540M", "PRN", "10 Nov 2025", false, "Paperlink International Ltd", 100, "Ref 345678F", "Wood", "AWAITING ACCEPTANCE"));
         }
 
-        private PrnViewModel GeneratePrn(string number, string dateIssued, bool isDecemberWaste, string issuedBy, int tons, string note, string material)
+        // Used by "View all PRNs and PERNs" page
+        public PrnListViewModel GetAllPrns()
+        {
+            var model = new PrnListViewModel();
+            model.Prns = _prns.Take(9).ToList();
+            return model;
+        }
+
+        // Used by "Accept or reject PRNs and PERNs" page
+        public PrnListViewModel GetPrnsAwaitingAcceptance()
+        {
+            var model = new PrnListViewModel();
+            model.Prns = _prns.Where(x => x.ApprovalStatus == "AWAITING ACCEPTANCE").ToList();
+            return model;
+        }
+
+        private PrnViewModel GeneratePrn(string number, string type, string dateIssued, bool isDecemberWaste, string issuedBy, int tons, string note, string material, string status)
         {
             return new PrnViewModel
             {
                 PrnOrPernNumber = number,
+                NoteType = type,
                 DateIssued = DateTime.Parse(dateIssued, new CultureInfo("en-GB", true)),
                 IsDecemberWaste = isDecemberWaste,
                 IssuedBy = issuedBy,
                 Tonnage = tons,
-                Note = note,
-                Material = material
+                AdditionalNotes = note,
+                Material = material,
+                ApprovalStatus = status
             };
         }
     }
