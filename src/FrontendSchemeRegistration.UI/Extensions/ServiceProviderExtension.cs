@@ -123,6 +123,7 @@ public static class ServiceProviderExtension
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.AddTransient<UserDataCheckerMiddleware>();
         services.AddSingleton<ICorrelationIdProvider, CorrelationIdProvider>();
+        services.AddScoped<IPrnService, PrnService>();
     }
 
     private static void RegisterHttpClients(IServiceCollection services)

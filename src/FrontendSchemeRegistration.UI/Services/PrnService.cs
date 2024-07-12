@@ -1,10 +1,32 @@
 ﻿using System.Globalization;
+using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.ViewModels.Prns;
 
 namespace FrontendSchemeRegistration.UI.Services
 {
-    public class PrnService
+    public class PrnService : IPrnService
     {
+        public AcceptedPernsOrPrnsViewModel? GetPrn(string prnOrPernNumber)
+        {
+            var model = new AcceptedPernsOrPrnsViewModel()
+            {
+                PrnOrPernNumber = "EX4545452026",
+                Tonnage = 170,
+                Material = "paper and board",
+                Year = 2024,
+                DateIssued = DateTime.Now,
+                AuthorisedBy = "PRNAuthoriser",
+                IsDecemberWaste = false,
+                IsPern = true,
+                IssuedBy = "PRNIssuer",
+                Note = "Note123",
+                ProducerOrComplianceSchemeName = "Tesco",
+                ProducerOrComplianceSchemeNumber = "TEC12345"
+            };
+
+            return model;
+        }
+
         public PrnListViewModel GetPrns()
         {
             var prns = new PrnListViewModel();

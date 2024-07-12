@@ -4,6 +4,8 @@
     {
         public bool IsPern { get; set; }
 
+        public string Status { get; set; }
+
         public string PrnOrPernNumber { get; set; }
 
         public int Year { get; set; }
