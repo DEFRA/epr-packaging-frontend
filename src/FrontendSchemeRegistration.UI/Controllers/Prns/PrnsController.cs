@@ -24,6 +24,15 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
             return View(prns);
         }
 
+        [HttpGet]
+        [Route("prn-accept")]
+        public async Task<IActionResult> AcceptPRN()
+        {
+            var prnService = new PrnService();
+            var prnAccept = prnService.GetAcceptPrn();
+            return View(prnAccept);
+        }
+
         [HttpPost]
         [Route("accept-prns")]
         public async Task<ActionResult> AcceptPrns(PrnListViewModel selections)

@@ -24,6 +24,15 @@ namespace FrontendSchemeRegistration.UI.Services
             return prns;
         }
 
+        public PrnAcceptViewModel GetAcceptPrn()
+        {
+            var prnAccept = new PrnAcceptViewModel();
+            var prn = GeneratePrn("ER454545540M", "20 Nov 2025", false, "XYZ Reprocessing", 65, "Purchase order number 34XFY68", "Paper and board");
+            prnAccept.PrnOrPernNumber = prn.PrnOrPernNumber;
+            prnAccept.PrnAmount = 100;
+            return prnAccept;
+        }
+
         private PrnViewModel GeneratePrn(string number, string dateIssued, bool isDecemberWaste, string issuedBy, int tons, string note, string material)
         {
             return new PrnViewModel
