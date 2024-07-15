@@ -28,7 +28,7 @@ public static class PagePaths
     public const string FileUploadCompanyDetailsSubmissionHistory = "/report-organisation-history";
     public const string UploadNewFileToSubmit = "/upload-new-file-to-submit";
     public const string HomePageComplianceScheme = "producer-compliance-scheme";
-    public const string HomePageSelfManaged = "home-self-managed";
+    public const string HomePageSelfManaged = "/home-self-managed";
     public const string LandingPage = "landing";
     public const string ComplianceSchemeLanding = "home-compliance-scheme";
     public const string SelectComplianceScheme = "select-compliance-scheme";

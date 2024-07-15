@@ -23,16 +23,14 @@
                 @Model.IssuedBy
             </th>
         </tr>
-        @{
-            if (!Model.IsPern)
-            {
-                <tr class="govuk-table__row">
-                    <td class="govuk-table__cell">@Localizer["reproccessing_site"]</td>
-                    <th scope="row" class="govuk-table__header">
-                        @Model.ReproccessingSite
-                    </th>
-                </tr>
-            }
+        @if (!Model.IsPern)
+        {
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">@Localizer["reproccessing_site"]</td>
+                <th scope="row" class="govuk-table__header">
+                    @Model.ReproccessingSite
+                </th>
+            </tr>
         }
         <tr class="govuk-table__row">
             <td class="govuk-table__cell">@Localizer["authorised_by"]</td>
@@ -41,9 +39,9 @@
             </th>
         </tr>
         <tr class="govuk-table__row">
-            <td class="govuk-table__cell">@Localizer["packaging_producer_or_compliance_scheme"]</td>
+            <td class="govuk-table__cell">@Localizer["accreditation_number"]</td>
             <th scope="row" class="govuk-table__header">
-                @Model.ProducerOrComplianceSchemeNumber
+                @Model.AccreditationNumber
             </th>
         </tr>
 

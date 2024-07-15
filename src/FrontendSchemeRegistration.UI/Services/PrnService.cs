@@ -22,7 +22,7 @@ namespace FrontendSchemeRegistration.UI.Services
                 IssuedBy = "PRNIssuer",
                 Note = "Note123",
                 ProducerOrComplianceSchemeName = "Tesco",
-                ProducerOrComplianceSchemeNumber = "TEC12345",
+                AccreditationNumber = "TEC12345",
                 ReproccessingSite = "Repo123"
             };
 

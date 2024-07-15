@@ -28,7 +28,7 @@
 
         public string Note { get; set; }
 
-        public string ProducerOrComplianceSchemeNumber { get; set; }
+        public string AccreditationNumber { get; set; }
 
         public string ProducerOrComplianceSchemeName { get; set; }
 

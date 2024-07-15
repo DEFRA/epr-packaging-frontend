@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="accreditation_number" xml:space="preserve">
+    <value>Accreditation number -cy</value>
+  </data>
   <data name="authorised_by" xml:space="preserve">
     <value>Authorised by -cy</value>
   </data>

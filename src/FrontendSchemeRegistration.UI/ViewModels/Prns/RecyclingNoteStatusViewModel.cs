@@ -14,7 +14,7 @@
 
         public string StatusMeaning { get; set; }
 
-        public string ProducerOrComplianceSchemeNumber { get; set; }
+        public string AccreditationNumber { get; set; }
 
         public bool DisplayReporcessingSite { get; set; }
     }
