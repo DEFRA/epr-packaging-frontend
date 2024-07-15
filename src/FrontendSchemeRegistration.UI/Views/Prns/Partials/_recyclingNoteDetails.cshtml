@@ -1,0 +1,48 @@
+﻿@using FrontendSchemeRegistration.UI.ViewModels.Prns
+
+@model RecyclingNoteDteailsViewModel
+
+<table class="govuk-table">
+    <caption class="govuk-table__caption govuk-table__caption--m">@Localizer["prn_or_pern_details", Model.PrnOrPernText]</caption>
+    <tbody class="govuk-table__body">
+
+
+        <tr class="govuk-table__row">
+            <td class="govuk-table__cell">@Localizer["date_issued"]</td>
+            <th scope="row" class="govuk-table__header">
+                @Model.DateIssuedDisplay
+            </th>
+        </tr>
+        <tr class="govuk-table__row">
+            <td class="govuk-table__cell">@Localizer["relates_to_waste_received_in_december"]</td>
+            <th scope="row" class="govuk-table__header">
+                @Model.DecemberWasteDisplay
+            </th>
+        </tr>
+        <tr class="govuk-table__row">
+            <td class="govuk-table__cell">@Localizer["material"]</td>
+            <th scope="row" class="govuk-table__header">
+                @Model.Material
+            </th>
+        </tr>
+        <tr class="govuk-table__row">
+            <td class="govuk-table__cell">@Localizer["tonnage"]</td>
+            <th scope="row" class="govuk-table__header">
+                @Model.Tonnage
+            </th>
+        </tr>
+        <tr class="govuk-table__row">
+            <td class="govuk-table__cell">@Localizer["packaging_producer_or_compliance_scheme"]</td>
+            <th scope="row" class="govuk-table__header">
+                @Model.ProducerOrComplianceSchemeName
+            </th>
+        </tr>
+        <tr class="govuk-table__row">
+            <td class="govuk-table__cell">@Localizer["note"]</td>
+            <th scope="row" class="govuk-table__header">
+                @Model.Note
+            </th>
+        </tr>
+
+    </tbody>
+</table>

@@ -10,6 +10,7 @@ namespace FrontendSchemeRegistration.UI.Services
         {
             var model = new AcceptedPernsOrPrnsViewModel()
             {
+                Status = "Accepted",
                 PrnOrPernNumber = "EX4545452026",
                 Tonnage = 170,
                 Material = "paper and board",
@@ -17,11 +18,12 @@ namespace FrontendSchemeRegistration.UI.Services
                 DateIssued = DateTime.Now,
                 AuthorisedBy = "PRNAuthoriser",
                 IsDecemberWaste = false,
-                IsPern = true,
+                IsPern = false,
                 IssuedBy = "PRNIssuer",
                 Note = "Note123",
                 ProducerOrComplianceSchemeName = "Tesco",
-                ProducerOrComplianceSchemeNumber = "TEC12345"
+                ProducerOrComplianceSchemeNumber = "TEC12345",
+                ReproccessingSite = "Repo123"
             };
 
             return model;
