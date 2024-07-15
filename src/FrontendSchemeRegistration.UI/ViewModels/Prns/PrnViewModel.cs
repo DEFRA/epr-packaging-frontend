@@ -32,7 +32,13 @@
 
         public string AccreditationNumber { get; set; }
 
-        public string ProducerOrComplianceScheme { get; set; }
+        // E.g. Tesco
+        public string NameOfProducerOrComplianceScheme { get; set; }
+
+        // Unclear how Year is obtained
+        public int Year => DateIssued.Year;
+
+        public bool IsPrn => NoteType == "PRN";
 
         // True if selected in the user interface.
         public bool IsSelected { get; set; }
@@ -40,5 +46,25 @@
         public string DecemberWasteDisplay { get; set; }
 
         public string DateIssuedDisplay => DateIssued.ToString("dd MMM yyyy");
+
+        public string ApprovalStatusDisplayColour
+        {
+            get
+            {
+                switch (ApprovalStatus)
+                {
+                    case "AWAITING ACCEPTANCE":
+                        return "grey";
+                    case "ACCEPTED":
+                        return "green";
+                    case "CANCELLED":
+                        return "yellow";
+                    case "REJECTED":
+                        return "red";
+                    default:
+                        return "grey";
+                }
+            }
+        }
     }
 }

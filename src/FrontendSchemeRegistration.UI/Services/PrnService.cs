@@ -75,7 +75,7 @@ namespace FrontendSchemeRegistration.UI.Services
                 ReproccessingSite = "23 Ruby Street, London, NW N32",
                 AuthorisedBy = "John Smith",
                 AccreditationNumber = "ER123456789",
-                ProducerOrComplianceScheme = "Tesco",
+                NameOfProducerOrComplianceScheme = "Tesco",
                 DecemberWasteDisplay = isDecemberWaste ? _localizer["Yes"] : _localizer["No"]
             };
         }

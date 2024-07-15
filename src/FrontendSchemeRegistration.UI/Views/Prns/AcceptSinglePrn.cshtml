@@ -98,13 +98,13 @@
                     </defs>
                 </svg>
 
-                <h1 class="govuk-heading-l">Packaging Recycling Note</h1>
+                <h1 class="govuk-heading-l">@Localizer[(Model.IsPrn ? "packaging_recycling_note" : "packaging_export_recycling_note")]</h1>
                 <div class="govuk-inset-text app-inset-text">
                     <div class="govuk-heading-m">
-                        PRN number: <strong>@Html.DisplayFor(x => x.PrnOrPernNumber)</strong>
+                        @Localizer[(Model.IsPrn ? "prn_number" : "pern_number")]: <strong>@Html.DisplayFor(x => x.PrnOrPernNumber)</strong>
                     </div>
                     <div class="govuk-heading-m">
-                        Year: <strong>2025</strong>
+                        @Localizer["year"]: <strong>@Html.DisplayFor(x => x.Year)</strong>
                     </div>
                 </div>
 
@@ -115,7 +115,7 @@
                         <tr class="govuk-table__row">
                             <td class="govuk-table__cell">@Localizer["status"]</td>
                             <th scope="row" class="govuk-table__header">
-                                <strong class="govuk-tag govuk-tag--grey">
+                                <strong class="govuk-tag govuk-tag--@Model.ApprovalStatusDisplayColour">
                                     @Html.DisplayFor(x => x.ApprovalStatus)
                                 </strong>
                             </th>
@@ -132,12 +132,15 @@
                                 @Html.DisplayFor(x => x.IssuedBy)
                             </th>
                         </tr>
-                        <tr class="govuk-table__row">
-                            <td class="govuk-table__cell">@Localizer["reproccessing_site"]</td>
-                            <th scope="row" class="govuk-table__header">
-                                @Html.DisplayFor(x => x.ReproccessingSite)
-                            </th>
-                        </tr>
+                        @if (Model.IsPrn)
+                        {
+                            <tr class="govuk-table__row">
+                                <td class="govuk-table__cell">@Localizer["reproccessing_site"]</td>
+                                <th scope="row" class="govuk-table__header">
+                                    @Html.DisplayFor(x => x.ReproccessingSite)
+                                </th>
+                            </tr>
+                        }
                         <tr class="govuk-table__row">
                             <td class="govuk-table__cell">@Localizer["authorised_by"]</td>
                             <th scope="row" class="govuk-table__header">
@@ -157,7 +160,9 @@
                 <br>
 
                 <table class="govuk-table">
-                    <caption class="govuk-table__caption govuk-table__caption--m">PRN details</caption>
+                    <caption class="govuk-table__caption govuk-table__caption--m">
+                        @Localizer[(Model.IsPrn ? "prn_details" : "pern_details")]
+                    </caption>
                     <tbody class="govuk-table__body">
                         <tr class="govuk-table__row">
                             <td class="govuk-table__cell">@Localizer["date_issued"]</td>
@@ -186,7 +191,7 @@
                         <tr class="govuk-table__row">
                             <td class="govuk-table__cell">@Localizer["packaging_producer_or_compliance_scheme"]</td>
                             <th scope="row" class="govuk-table__header">
-                                @Html.DisplayFor(x => x.ProducerOrComplianceScheme)
+                                @Html.DisplayFor(x => x.NameOfProducerOrComplianceScheme)
                             </th>
                         </tr>
                         <tr class="govuk-table__row">
@@ -202,8 +207,9 @@
                 <br>
                 <br>
 
-                <button class="govuk-button" formaction="accept-prn">Accept this PRN</button> <button class=" govuk-button govuk-button--secondary" formaction="reject-prn" style="margin-left: 20px;">Reject this PRN</button>
-                <p><a href="#">Download this PRN</a></p>
+                <button class="govuk-button" formaction="accept-prn">@Localizer[(Model.IsPrn ? "accept_this_prn" : "accept_this_pern")]</button>
+                <button class="govuk-button govuk-button--secondary" formaction="reject-prn" style="margin-left: 20px;">@Localizer[(Model.IsPrn ? "reject_this_prn" : "reject_this_pern")]</button>
+                <p><a href="#">@Localizer[(Model.IsPrn ? "download_this_prn" : "download_this_pern")]</a></p>
             </form>
 
         </div>
