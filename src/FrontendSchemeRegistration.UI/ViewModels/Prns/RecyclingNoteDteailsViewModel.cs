@@ -2,7 +2,7 @@
 {
     public class RecyclingNoteDteailsViewModel
     {
-        public string PrnOrPernText { get; set; }
+        public bool IsPern { get; set; }
 
         public DateTime DateIssued { get; set; }
 

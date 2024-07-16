@@ -3,7 +3,7 @@
 @model RecyclingNoteDteailsViewModel
 
 <table class="govuk-table">
-    <caption class="govuk-table__caption govuk-table__caption--m">@Localizer["prn_or_pern_details", Model.PrnOrPernText]</caption>
+    <caption class="govuk-table__caption govuk-table__caption--m">@Localizer[Model.IsPern ? "pern_details": "prn_details"]</caption>
     <tbody class="govuk-table__body">
 
 

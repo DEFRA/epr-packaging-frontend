@@ -1,4 +1,5 @@
 ﻿using FrontendSchemeRegistration.UI.Services.Interfaces;
+using FrontendSchemeRegistration.UI.ViewModels.Prns;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
 
@@ -14,6 +15,19 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
             _prnService = prnService;
         }
 
+        [HttpPost]
+        [Route("accepted-prn")]
+        [Route("accepted-pern")]
+        public IActionResult AcceptedPernsOrPrns(AcceptedPernsOrPrnsViewModel model)
+        {
+            if (model == null || model.Status != "accepted")
+            {
+                return RedirectToAction(nameof(PrnsController.HomePagePrn), "Prns");
+            }
+
+            return View("Views/Prns/AcceptedPernsOrPrns.cshtml", model);
+        }
+
         [HttpGet]
         [Route("accepted-prn")]
         [Route("accepted-pern")]
@@ -21,12 +35,7 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         {
             var model = _prnService.GetPrn(prnOrPernNumber);
 
-            if (model == null || model.Status != "Accepted")
-            {
-                return RedirectToAction(nameof(PrnsController.HomePagePrn), "Prns");
-            }
-
-            return View("Views/Prns/AcceptedPernsOrPrns.cshtml", model);
+            return AcceptedPernsOrPrns(model);
         }
 
         [HttpGet]

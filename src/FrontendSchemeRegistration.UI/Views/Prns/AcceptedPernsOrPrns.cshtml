@@ -3,28 +3,28 @@
 
 @{
     ViewData["Title"] = Localizer["page_title"];
-    var prnOrPernText = Model.IsPern ? "PERN" : "PRN";
     var recyclingNoteDetails = new RecyclingNoteDteailsViewModel()
-    {
-        PrnOrPernText = prnOrPernText,
-        DateIssued = Model.DateIssued,
-        IsDecemberWaste = Model.IsDecemberWaste,
-        Material = Model.Material,
-        Tonnage = Model.Tonnage,
-        ProducerOrComplianceSchemeName = Model.ProducerOrComplianceSchemeName,
-        Note = Model.Note
-    };
+            {
+                IsPern = Model.IsPern,
+                DateIssued = Model.DateIssued,
+                IsDecemberWaste = Model.IsDecemberWaste,
+                Material = Model.Material,
+                Tonnage = Model.Tonnage,
+                ProducerOrComplianceSchemeName = Model.ProducerOrComplianceSchemeName,
+                Note = Model.Note
+            };
 
     var recyclingNoteStatus = new RecyclingNoteStatusViewModel()
-    {
-        IsPern = Model.IsPern,
-        AuthorisedBy = Model.AuthorisedBy,
-        IssuedBy = Model.IssuedBy,
-        ReproccessingSite = Model.ReproccessingSite,
-        AccreditationNumber = Model.AccreditationNumber,
-        Status = Model.Status,
-        StatusMeaning = $"The producer or compliance scheme accepted the {prnOrPernText}."
-    };
+            {
+                IsPern = Model.IsPern,
+                AuthorisedBy = Model.AuthorisedBy,
+                IssuedBy = Model.IssuedBy,
+                ReproccessingSite = Model.ReproccessingSite,
+                AccreditationNumber = Model.AccreditationNumber,
+                Status = Model.Status,
+                StatusMeaning = Model.IsPern ? "The producer or compliance scheme accepted the PERN." :
+                                               "The producer or compliance scheme accepted the PRN."
+            };
 }
 
 <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
@@ -132,9 +132,9 @@
                 </div>
                 <div class="govuk-notification-banner__content">
                     <h3 class="govuk-notification-banner__heading">
-                        @prnOrPernText @Localizer["accepted"].
+                        @Localizer[Model.IsPern ? "pern_accepted" : "prn_accepted"]
                     </h3>
-                    <p class="govuk-body">@Localizer["tonnage_credited_towards_your_obligation",Model.Tonnage,Model.Material]</p>
+                    <p class="govuk-body">@Localizer["tonnage_credited_towards_your_obligation", Model.Tonnage, Model.Material]</p>
                 </div>
             </div>
 
@@ -144,7 +144,7 @@
 
             <div class="govuk-inset-text app-inset-text">
                 <div class="govuk-heading-m">
-                    @prnOrPernText @Localizer["number"]: <strong>@Model.PrnOrPernNumber</strong>
+                    @Localizer[Model.IsPern ? "pern_number" : "prn_number"]: <strong>@Model.PrnOrPernNumber</strong>
                 </div>
                 <div class="govuk-heading-m">
                     @Localizer["year"]: <strong>@Model.Year</strong>
@@ -152,7 +152,7 @@
             </div>
 
             @await Html.PartialAsync("Partials/_recyclingNoteStatus.cshtml", recyclingNoteStatus)
-            
+
             <br>
 
             @await Html.PartialAsync("Partials/_recyclingNoteDetails.cshtml", recyclingNoteDetails)
@@ -165,14 +165,12 @@
                          {
                              @class = "govuk-button"
                          })
-                @Html.ActionLink(string.Format(Localizer["download_this_prn"].Value, prnOrPernText), "DownloadPrn", "AcceptedPernsOrPrns",
+                @Html.ActionLink(string.Format(Localizer[Model.IsPern ? "download_this_pern" : "download_this_prn"].Value), null, null,
+                         null,
                          new
                          {
-                             prnId = Model.PrnOrPernNumber
-                         },
-                         new
-                         {
-                             @class = "govuk-button govuk-button--secondary"
+                             @class = "govuk-button govuk-button--secondary",
+                             @href = "#"
                          })
             </div>
             <p class="govuk-body">

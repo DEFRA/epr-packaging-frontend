@@ -129,8 +129,11 @@
   <data name="packaging_producer_or_compliance_scheme" xml:space="preserve">
     <value>Packaging producer or compliance scheme</value>
   </data>
-  <data name="prn_or_pern_details" xml:space="preserve">
-    <value>{0} details</value>
+  <data name="pern_details" xml:space="preserve">
+    <value>PERN details</value>
+  </data>
+  <data name="prn_details" xml:space="preserve">
+    <value>PRN details</value>
   </data>
   <data name="relates_to_waste_received_in_december" xml:space="preserve">
     <value>Relates to waste received in December</value>

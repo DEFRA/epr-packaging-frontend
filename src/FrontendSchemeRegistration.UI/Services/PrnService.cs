@@ -10,7 +10,7 @@ namespace FrontendSchemeRegistration.UI.Services
         {
             var model = new AcceptedPernsOrPrnsViewModel()
             {
-                Status = "Accepted",
+                Status = "accepted",
                 PrnOrPernNumber = "EX4545452026",
                 Tonnage = 170,
                 Material = "paper and board",
