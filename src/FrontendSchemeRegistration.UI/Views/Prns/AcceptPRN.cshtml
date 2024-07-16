@@ -6,18 +6,18 @@
         <div class="govuk-grid-column-full">
 
             <form class="form" method="POST">
-                <h2 class="govuk-heading-l">Accept this PRN?</h2>
+                <h2 class="govuk-heading-l">@Localizer["Heading"]</h2>
 
                 <div class="govuk-inset-text">
-                    This will credit @Model.PrnAmount tonnes towards your obligation.
+                    @Localizer["TitleFirstPart"] @Model.PrnAmount @Localizer["TitleSecondPart"]
                 </div>
 
                 <button class="govuk-button" asp-action="AcceptPRN" asp-controller="Prns">
-                    Yes, accept
+                    @Localizer["YesAcceptButton"]
                 </button>
 
                 <button class="govuk-button" asp-action="RejectPRN" asp-controller="Prns">
-                    No, go back
+                    @Localizer["NoBackButton"]
                 </button>
 
             </form>
