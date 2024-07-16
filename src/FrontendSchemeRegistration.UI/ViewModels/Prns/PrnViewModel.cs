@@ -26,8 +26,13 @@
         // e.g. AWAITING ACCEPTANCE, ACCEPTED, REJECTED, CANCELLED
         public string ApprovalStatus { get; set; }
 
-        public string ReproccessingSite { get; set; }
+        // Provides description of what ApprovalStatus means
+        public string ApprovalStatusExplanation { get; set; }
 
+        // Address of site, applies to PRNs only
+        public string ReproccessingSiteAddress { get; set; }
+
+        // Name of person who authorised the PRN or PERN
         public string AuthorisedBy { get; set; }
 
         public string AccreditationNumber { get; set; }
@@ -47,7 +52,7 @@
 
         public string DateIssuedDisplay => DateIssued.ToString("dd MMM yyyy");
 
-        public string ApprovalStatusDisplayColour
+        public string ApprovalStatusDisplayCssColour
         {
             get
             {

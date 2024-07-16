@@ -1,0 +1,47 @@
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="Wood" xml:space="preserve">
+		<value>Yew</value>
+	</data>
+	<data name="Plastic" xml:space="preserve">
+		<value>[Welsh]Plastic</value>
+	</data>
+	<data name="Paper and board" xml:space="preserve">
+		<value>[Welsh]Paper and board</value>
+	</data>
+	<data name="AWAITING ACCEPTANCE" xml:space="preserve">
+		<value>[Welsh]AWAITING ACCEPTANCE</value>
+	</data>
+	<data name="ACCEPTED" xml:space="preserve">
+		<value>[Welsh]ACCEPTED</value>
+	</data>
+	<data name="CANCELLED" xml:space="preserve">
+		<value>[Welsh]CANCELLED</value>
+	</data>
+	<data name="REJECTED" xml:space="preserve">
+		<value>[Welsh]REJECTED</value>
+	</data>
+	<data name="AWAITING ACCEPTANCE EXPLANATION" xml:space="preserve">
+		<value>[Welsh]The reprocessor issued the {0} to the producer or compliance scheme. The producer or compliance scheme has not yet accepted the {0}.</value>
+	</data>
+	<data name="ACCEPTED EXPLANATION" xml:space="preserve">
+		<value>[Welsh]{0} accepted</value>
+	</data>
+	<data name="CANCELLED EXPLANATION" xml:space="preserve">
+		<value>[Welsh]{0} cancellled</value>
+	</data>
+	<data name="REJECTED EXPLANATION" xml:space="preserve">
+		<value>[Welsh]{0} rejected</value>
+	</data>
+</root>

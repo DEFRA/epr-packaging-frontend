@@ -115,7 +115,7 @@
                         <tr class="govuk-table__row">
                             <td class="govuk-table__cell">@Localizer["status"]</td>
                             <th scope="row" class="govuk-table__header">
-                                <strong class="govuk-tag govuk-tag--@Model.ApprovalStatusDisplayColour">
+                                <strong class="govuk-tag govuk-tag--@Model.ApprovalStatusDisplayCssColour">
                                     @Html.DisplayFor(x => x.ApprovalStatus)
                                 </strong>
                             </th>
@@ -123,7 +123,7 @@
                         <tr class="govuk-table__row">
                             <td class="govuk-table__cell">@Localizer["status_meaning"]</td>
                             <th scope="row" class="govuk-table__header">
-                                The reprocessor issued the PRN to the producer or compliance scheme. The producer or compliance scheme has not yet accepted the PRN.
+                                @Html.DisplayFor(x => x.ApprovalStatusExplanation)
                             </th>
                         </tr>
                         <tr class="govuk-table__row">
@@ -137,7 +137,7 @@
                             <tr class="govuk-table__row">
                                 <td class="govuk-table__cell">@Localizer["reproccessing_site"]</td>
                                 <th scope="row" class="govuk-table__header">
-                                    @Html.DisplayFor(x => x.ReproccessingSite)
+                                    @Html.DisplayFor(x => x.ReproccessingSiteAddress)
                                 </th>
                             </tr>
                         }

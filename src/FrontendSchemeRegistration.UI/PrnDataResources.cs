@@ -1,6 +1,6 @@
 ﻿namespace FrontendSchemeRegistration.UI
 {
-    public class PrnWordsAndPhrases
+    public class PrnDataResources
     {
     }
 }

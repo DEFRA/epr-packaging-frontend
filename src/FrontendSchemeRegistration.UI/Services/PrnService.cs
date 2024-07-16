@@ -6,12 +6,14 @@ namespace FrontendSchemeRegistration.UI.Services
 {
     public class PrnService
     {
-        private readonly IStringLocalizer<PrnWordsAndPhrases> _localizer;
+        private readonly IStringLocalizer<SharedResources> _localizer;
+        private readonly IStringLocalizer<PrnDataResources> _prnDataLocalizer;
         private readonly List<PrnViewModel> _prns;
 
-        public PrnService(IStringLocalizer<PrnWordsAndPhrases> localizer)
+        public PrnService(IStringLocalizer<SharedResources> localizer, IStringLocalizer<PrnDataResources> prnDatalocalizer)
         {
             _localizer = localizer;
+            _prnDataLocalizer = prnDatalocalizer;
             _prns = new List<PrnViewModel>();
 
             _prns.Add(GeneratePrn("ER3484743570M", "PRN", "20 Nov 2025", false, "XYZ Reprocessing", 65, "na", "Paper and board", "AWAITING ACCEPTANCE"));
@@ -70,9 +72,10 @@ namespace FrontendSchemeRegistration.UI.Services
                 IssuedBy = issuedBy,
                 Tonnage = tons,
                 AdditionalNotes = note,
-                Material = _localizer[material.ToLowerInvariant()],
-                ApprovalStatus = status,
-                ReproccessingSite = "23 Ruby Street, London, NW N32",
+                Material = _prnDataLocalizer?[material],
+                ApprovalStatus = _prnDataLocalizer?[status],
+                ApprovalStatusExplanation = string.Format(_prnDataLocalizer?[string.Concat(status, " ", "EXPLANATION")], type),
+                ReproccessingSiteAddress = "23 Ruby Street, London, NW N32",
                 AuthorisedBy = "John Smith",
                 AccreditationNumber = "ER123456789",
                 NameOfProducerOrComplianceScheme = "Tesco",
