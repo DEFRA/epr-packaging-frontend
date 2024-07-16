@@ -30,6 +30,9 @@
         <Content Update="wwwroot\css\application.css">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+        <Content Update="wwwroot\css\prn.css">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
         <Content Update="wwwroot\fonts\bold-affa96571d-v2.woff">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>

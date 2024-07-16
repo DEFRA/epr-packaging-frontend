@@ -208,7 +208,9 @@
                 <br>
 
                 <button class="govuk-button" formaction="accept-prn">@Localizer[(Model.IsPrn ? "accept_this_prn" : "accept_this_pern")]</button>
-                <button class="govuk-button govuk-button--secondary" formaction="reject-prn" style="margin-left: 20px;">@Localizer[(Model.IsPrn ? "reject_this_prn" : "reject_this_pern")]</button>
+                <div class="prn-margin-left-20">
+                    <button class="govuk-button govuk-button--secondary" formaction="reject-prn">@Localizer[(Model.IsPrn ? "reject_this_prn" : "reject_this_pern")]</button>
+                </div>
                 <p><a href="#">@Localizer[(Model.IsPrn ? "download_this_prn" : "download_this_pern")]</a></p>
             </form>
 

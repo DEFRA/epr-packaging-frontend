@@ -1,65 +1,8 @@
-﻿<main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
-
-    <style media="screen">
-        .card {
-            background-color: #f3f2f1;
-            padding: 30px 30px 10px 30px;
-        }
-    </style>
-
-    <style type="text/css">
-        .card-container {
-            background-color: #f8f8f8;
-            border: 1px solid #dee0e2;
-            border-bottom: 5px solid #1d70b8;
-            padding-bottom: 5px;
-            width: 450px;
-            margin-right: 50px;
-        }
-        .cards {
-            display: flex;
-            flex-direction: row;
-        }
-    </style>
-
-    <style type="text/css">
-        .card-container2 {
-            margin-left: 2px;
-            margin-right: 2px;
-            padding-left: 20px;
-            padding-top: 15px;
-            padding-bottom: 15px;
-            background-color: #ffffff;
-            width: 425px;
-        }
-    </style>
-
-    <style type="text/css">
-        .card-container3 {
-            background-color: #f8f8f8;
-            border: 1px solid #dee0e2;
-            border-bottom: 5px solid #1d70b8;
-            padding-bottom: 5px;
-            width: 450px;
-            margin-right: 0px;
-        }
-        .cards {
-            display: flex;
-            flex-direction: row;
-        }
-    </style>
-
-    <style type="text/css">
-        .card-container4 {
-            margin-left: 2px;
-            margin-right: 2px;
-            padding-left: 20px;
-            padding-top: 15px;
-            padding-bottom: 15px;
-            background-color: #ffffff;
-            width: 425px;
-        }
-    </style>
+﻿@using FrontendSchemeRegistration.UI.Constants
+@{
+    var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
+}
+<main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
     <section>
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">

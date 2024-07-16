@@ -7,26 +7,30 @@
         <div class="govuk-grid-column-full">
 
             <h1 class="govuk-heading-xl">View all PRNs and PERNs</h1>
-            <div class="govuk-form-group" style="float:right">
-                <label class="govuk-visually-hidden" for="select-status ">Select a filter</label>
-                <select class="govuk-select" id="select-status" name="sort">
-                    <option selected>Filter by </option>
-                    <option value="published">Accepted </option>
-                    <option value="comments">Awaiting acceptance</option>
-                    <option value="comments">Cancelled</option>
-                    <option value="updated">Rejected</option>
-                </select>
+            <div class="govuk-form-group">
+                <div class="prn-align-right">
+                    <label class="govuk-visually-hidden" for="select-status ">Select a filter</label>
+                    <select class="govuk-select" id="select-status" name="sort">
+                        <option selected>Filter by </option>
+                        <option value="published">Accepted </option>
+                        <option value="comments">Awaiting acceptance</option>
+                        <option value="comments">Cancelled</option>
+                        <option value="updated">Rejected</option>
+                    </select>
+                </div>
             </div>
 
-            <div class="govuk-form-group" style="float:right">
-                <label class="govuk-visually-hidden" for="select-status ">Select a filter</label>
-                <select class="govuk-select" id="select-status" name="sort">
-                    <option selected>Sort by </option>
-                    <option value="published">Date issued</option>
-                    <option value="updated">Issued by</option>
-                    <option value="updated">Tonnage</option>
-                    <option value="updated">Material</option>
-                </select>
+            <div class="govuk-form-group">
+                <div class="prn-align-right">
+                    <label class="govuk-visually-hidden" for="select-status ">Select a filter</label>
+                    <select class="govuk-select" id="select-status" name="sort">
+                        <option selected>Sort by </option>
+                        <option value="published">Date issued</option>
+                        <option value="updated">Issued by</option>
+                        <option value="updated">Tonnage</option>
+                        <option value="updated">Material</option>
+                    </select>
+                </div>
             </div>
 
             <table class="govuk-table">
