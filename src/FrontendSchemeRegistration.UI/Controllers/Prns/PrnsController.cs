@@ -39,10 +39,11 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         }
 
         [HttpGet]
-        [Route("accept-prn")]
-        public async Task<IActionResult> AcceptSinglePrn([FromQuery]string prnOrPernNumber)
+        [Route("accept-prn/{id}")]
+        public async Task<IActionResult> AcceptSinglePrn(int id)
         {
-            var prn = _prnService.GetPrnByNumber(prnOrPernNumber);
+            var prn = _prnService.GetPrnById(id);
+
             return View(prn);
         }
 
@@ -50,8 +51,8 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         [Route("accept-prns")]
         public async Task<ActionResult> AcceptPrns(PrnListViewModel model)
         {
-            var selections = model.Prns.Where(x => x.IsSelected);
-            if (selections.Count() == 1)
+            var selections = model.Prns.Where(x => x.IsSelected).Select(x => x.Id);
+            if (selections.Any())
             {
                 return View(selections);
             }

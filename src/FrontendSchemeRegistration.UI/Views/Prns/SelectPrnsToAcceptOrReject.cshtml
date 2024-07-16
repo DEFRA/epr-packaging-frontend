@@ -39,13 +39,17 @@
 
                         @for (int i = 0; i < Model?.Prns?.Where(x => x.Material == group.Key)?.Count(); i++, counter++)
                         {
+                            @Html.HiddenFor(x => x.Prns[counter].Id)
                             <tbody class="govuk-table__body">
                                 <tr class="govuk-table__row">
                                     <td class="govuk-table__cell">
                                         <div class="govuk-checkboxes__item">
-                                            @Html.CheckBoxFor(x => x.Prns[counter].IsSelected, new { @id = "chkSeletPrn", @class = "govuk-checkboxes__input" })
+                                            @{
+                                                var checkBoxId = string.Concat("chkSeletPrn_", Model?.Prns[counter].Id);
+                                            }
+                                            @Html.CheckBoxFor(x => x.Prns[counter].IsSelected, new { @id = @checkBoxId, @class = "govuk-checkboxes__input" })
 
-                                            <label class="govuk-label govuk-checkboxes__label" for="waste-3">
+                                            <label class="govuk-label govuk-checkboxes__label" for="@checkBoxId">
                                                 <a href="selected-prn">@Html.DisplayFor(x => x.Prns[counter].PrnOrPernNumber)</a>
                                             </label>
                                         </div>

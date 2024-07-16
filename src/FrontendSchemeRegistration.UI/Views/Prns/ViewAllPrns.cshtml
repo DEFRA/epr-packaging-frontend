@@ -46,7 +46,7 @@
                     {
                         <tr class="govuk-table__row">
                             <td class="govuk-table__cell">
-                                <a class="govuk-link" href="@Url.Action("AcceptSinglePrn", "Prns", new { prnOrPernNumber = Model.Prns[i].PrnOrPernNumber })">@Model.Prns[i].PrnOrPernNumber<span class="govuk-visually-hidden"> PER or PERN number</span></a>
+                                <a class="govuk-link" href="@Url.Action("AcceptSinglePrn", "Prns", new { id = Model.Prns[i].Id })">@Model.Prns[i].PrnOrPernNumber<span class="govuk-visually-hidden"> PER or PERN number</span></a>
                             </td>
                             <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[i].Material)</td>
                             <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[i].DateIssuedDisplay)</td>

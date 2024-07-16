@@ -5,6 +5,8 @@
     /// </summary>
     public class PrnViewModel
     {
+        public int Id { get; set; }
+
         public string PrnOrPernNumber { get; set; }
 
         // Gets or sets get or sets value, either PRN or PERN.
