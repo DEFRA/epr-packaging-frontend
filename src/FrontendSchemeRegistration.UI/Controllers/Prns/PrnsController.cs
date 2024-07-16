@@ -48,6 +48,15 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         }
 
         [HttpPost]
+        [Route("confirm-accept-prn")]
+        public async Task<ActionResult> ConfirmAcceptSinglePrn(PrnViewModel model)
+        {
+            // save row and redirect placeholder
+            var bla = model.Id;
+            return View(model);
+        }
+
+        [HttpPost]
         [Route("accept-prns")]
         public async Task<ActionResult> AcceptPrns(PrnListViewModel model)
         {

@@ -4,7 +4,7 @@
 <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
-            <form class="form" action="accept-prn" method="POST">
+            <form class="form" method="POST">
                 <svg width="650" height="80" viewBox="0 0 650 80" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                     <path fill-rule="evenodd" clip-rule="evenodd" d="M17.0003 57C7.61682 57 0 49.3825 0 40.0003C0 30.6168 7.61682 23 17.0003 23C26.3832 23 34 30.6168 34 40.0003C33.9993 49.3825 26.3825 57 17.0003 57Z" fill="#7D9B21" />
                     <path fill-rule="evenodd" clip-rule="evenodd" d="M17.0005 55.8281C8.27965 55.8281 1.21484 48.7627 1.21484 39.9875C1.21484 31.2667 8.27965 24.2012 17.0005 24.2012C25.7763 24.2012 32.8411 31.266 32.8411 39.9875C32.8456 42.069 32.4389 44.1308 31.6444 46.0547C30.85 47.9786 29.6833 49.7267 28.2115 51.1985C26.7397 52.6703 24.9916 53.837 23.0677 54.6315C21.1438 55.4259 19.082 55.8326 17.0005 55.8281Z" fill="white" />
@@ -207,7 +207,10 @@
                 <br>
                 <br>
 
-                <button class="govuk-button" formaction="accept-prn">@Localizer[(Model.IsPrn ? "accept_this_prn" : "accept_this_pern")]</button>
+                <button class="govuk-button" type="submit" asp-action="ConfirmAcceptSinglePrn" asp-controller="Prns">
+                    @Localizer[(Model.IsPrn ? "accept_this_prn" : "accept_this_pern")]
+                </button>
+
                 <div class="prn-margin-left-20">
                     <button class="govuk-button govuk-button--secondary" formaction="reject-prn">@Localizer[(Model.IsPrn ? "reject_this_prn" : "reject_this_pern")]</button>
                 </div>
