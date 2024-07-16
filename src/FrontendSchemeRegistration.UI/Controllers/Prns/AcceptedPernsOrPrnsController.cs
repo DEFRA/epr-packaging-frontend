@@ -37,12 +37,5 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
 
             return AcceptedPernsOrPrns(model);
         }
-
-        [HttpGet]
-        [Route("download-prn")]
-        public IActionResult DownloadPrn(string prnOrPernNumber)
-        {
-            throw new NotImplementedException("Downlaod functionality is yet to develop");
-        }
     }
 }

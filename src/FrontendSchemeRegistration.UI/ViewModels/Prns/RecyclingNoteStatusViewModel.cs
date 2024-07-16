@@ -12,7 +12,8 @@
 
         public string AuthorisedBy { get; set; }
 
-        public string StatusMeaning { get; set; }
+        public string StatusMeaning => IsPern ? "The producer or compliance scheme accepted the PERN." :
+                                               "The producer or compliance scheme accepted the PRN.";
 
         public string AccreditationNumber { get; set; }
 
