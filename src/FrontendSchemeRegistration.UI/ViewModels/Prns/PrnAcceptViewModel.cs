@@ -2,6 +2,8 @@
 {
     public class PrnAcceptViewModel
     {
+        public int Id { get; set; }
+
         public string PrnOrPernNumber { get; set; }
 
         public decimal? PrnAmount { get; set; }

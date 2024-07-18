@@ -27,7 +27,7 @@ public class PrnsControllerTests
         GivenOnLoadAcceptPrnPage_WhenCalledByDefault_ThenLoadTheStandardResponse()
     {
         // Act
-        var result = await _prnsController.AcceptPRN() as ViewResult;
+        var result = await _prnsController.ConfirmAcceptPrn() as ViewResult;
 
         // Assert
         result.ViewName.Should().BeNull();

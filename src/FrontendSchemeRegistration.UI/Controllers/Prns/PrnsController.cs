@@ -25,12 +25,19 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         }
 
         [HttpGet]
-        [Route("prn-accept")]
-        public async Task<IActionResult> AcceptPRN()
+        [Route("confirm-accept-prn/id")]
+        public async Task<IActionResult> ConfirmAcceptPrn(int id)
         {
             var prnService = new PrnService();
-            var prnAccept = prnService.GetAcceptPrn();
-            return View(prnAccept);
+            var prnConfirmAccept = prnService.GetPrnById(id);
+            return View(prnConfirmAccept);
+        }
+
+        [HttpPost]
+        [Route("confirm-accept-prn")]
+        public async Task<IActionResult> ConfirmAcceptPrn()
+        {
+            return View();
         }
 
         [HttpPost]
