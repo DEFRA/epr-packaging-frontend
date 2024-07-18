@@ -39,21 +39,26 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         }
 
         [HttpGet]
+        [Route("confirm-accept-prn/{id}")]
+        public async Task<IActionResult> ConfirmAcceptSinglePrn(int id)
+        {
+            var model = _prnService.GetPrnById(id);
+
+            var prnConfirmAccept = new PrnAcceptViewModel();
+            prnConfirmAccept.Id = model.Id;
+            prnConfirmAccept.PrnOrPernNumber = model.PrnOrPernNumber;
+            prnConfirmAccept.PrnAmount = model.Tonnage;
+
+            return View(prnConfirmAccept);
+        }
+
+        [HttpGet]
         [Route("accept-prn/{id}")]
         public async Task<IActionResult> AcceptSinglePrn(int id)
         {
             var prn = _prnService.GetPrnById(id);
 
             return View(prn);
-        }
-
-        [HttpPost]
-        [Route("confirm-accept-prn")]
-        public async Task<ActionResult> ConfirmAcceptSinglePrn(PrnViewModel model)
-        {
-            // save row and redirect placeholder
-            var bla = model.Id;
-            return View(model);
         }
 
         [HttpPost]
