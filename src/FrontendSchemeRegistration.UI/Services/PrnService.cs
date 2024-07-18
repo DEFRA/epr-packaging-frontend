@@ -61,12 +61,6 @@ namespace FrontendSchemeRegistration.UI.Services
             return model;
         }
 
-        public PrnViewModel GetPrnByNumber(string prnOrPernNumber)
-        {
-            var model = _prns.SingleOrDefault(x => x.PrnOrPernNumber == prnOrPernNumber);
-            return model;
-        }
-
         private PrnViewModel GeneratePrn(int id, string number, string type, string dateIssued, bool isDecemberWaste, string issuedBy, int tons, string note, string material, string status)
         {
             return new PrnViewModel
