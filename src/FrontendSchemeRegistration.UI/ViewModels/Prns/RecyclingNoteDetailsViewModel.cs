@@ -1,6 +1,6 @@
 ﻿namespace FrontendSchemeRegistration.UI.ViewModels.Prns
 {
-    public class RecyclingNoteDteailsViewModel
+    public class RecyclingNoteDetailsViewModel
     {
         public bool IsPrn { get; set; }
 

@@ -81,7 +81,7 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
             var prn = _prnService.GetPrnById(model.Id);
 
             // Save data to the facade updating approval status to ""ACCEPTED"
-            return RedirectToAction(nameof(AcceptedPernsOrPrnsController.AcceptedPernsOrPrns), "AcceptedPernsOrPrns", new { id = model.Id });
+            return RedirectToAction(nameof(AcceptedPrnController.AcceptedPrn), "AcceptedPrn", new { id = model.Id });
         }
     }
 }

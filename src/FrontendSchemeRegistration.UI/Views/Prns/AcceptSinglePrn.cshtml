@@ -14,7 +14,7 @@
                 StatusMeaning = Model.ApprovalStatusExplanation
             };
 
-    var recyclingNoteDetails = new RecyclingNoteDteailsViewModel()
+    var recyclingNoteDetails = new RecyclingNoteDetailsViewModel()
             {
                 IsPrn = Model.IsPrn,
                 DateIssued = Model.DateIssued,
@@ -41,110 +41,11 @@
                         @Localizer["year"]: <strong>@Html.DisplayFor(x => x.Year)</strong>
                     </div>
                 </div>
-
                 @await Html.PartialAsync("Partials/_recyclingNoteStatus.cshtml", recyclingNoteStatus)
-
-                @*               <table class="govuk-table">
-                <caption class="govuk-table__caption govuk-table__caption--m"></caption>
-                <tbody class="govuk-table__body">
-
-                <tr class="govuk-table__row">
-                <td class="govuk-table__cell">@Localizer["status"]</td>
-                <th scope="row" class="govuk-table__header">
-                <strong class="govuk-tag govuk-tag--@Model.ApprovalStatusDisplayCssColour">
-                @Html.DisplayFor(x => x.ApprovalStatus)
-                </strong>
-                </th>
-                </tr>
-                <tr class="govuk-table__row">
-                <td class="govuk-table__cell">@Localizer["status_meaning"]</td>
-                <th scope="row" class="govuk-table__header">
-                @Html.DisplayFor(x => x.ApprovalStatusExplanation)
-                </th>
-                </tr>
-                <tr class="govuk-table__row">
-                <td class="govuk-table__cell">@Localizer["issued_by"]</td>
-                <th scope="row" class="govuk-table__header">
-                @Html.DisplayFor(x => x.IssuedBy)
-                </th>
-                </tr>
-                @if (Model.IsPrn)
-                {
-                <tr class="govuk-table__row">
-                <td class="govuk-table__cell">@Localizer["reproccessing_site"]</td>
-                <th scope="row" class="govuk-table__header">
-                @Html.DisplayFor(x => x.ReproccessingSiteAddress)
-                </th>
-                </tr>
-                }
-                <tr class="govuk-table__row">
-                <td class="govuk-table__cell">@Localizer["authorised_by"]</td>
-                <th scope="row" class="govuk-table__header">
-                @Html.DisplayFor(x => x.AuthorisedBy)
-                </th>
-                </tr>
-                <tr class="govuk-table__row">
-                <td class="govuk-table__cell">@Localizer["accreditation_number"]</td>
-                <th scope="row" class="govuk-table__header">
-                @Html.DisplayFor(x => x.AccreditationNumber)
-                </th>
-                </tr>
-
-                </tbody>
-                </table> *@
-
                 <br>
-
                 @await Html.PartialAsync("Partials/_recyclingNoteDetails.cshtml", recyclingNoteDetails)
-
- @*                <table class="govuk-table">
-                    <caption class="govuk-table__caption govuk-table__caption--m">
-                        @Localizer[(Model.IsPrn ? "prn_details" : "pern_details")]
-                    </caption>
-                    <tbody class="govuk-table__body">
-                        <tr class="govuk-table__row">
-                            <td class="govuk-table__cell">@Localizer["date_issued"]</td>
-                            <th scope="row" class="govuk-table__header">
-                                @Html.DisplayFor(x => x.DateIssuedDisplay)
-                            </th>
-                        </tr>
-                        <tr class="govuk-table__row">
-                            <td class="govuk-table__cell">@Localizer["relates_to_waste_received_in_december"]</td>
-                            <th scope="row" class="govuk-table__header">
-                                @Html.DisplayFor(x => x.DecemberWasteDisplay)
-                            </th>
-                        </tr>
-                        <tr class="govuk-table__row">
-                            <td class="govuk-table__cell">@Localizer["material"]</td>
-                            <th scope="row" class="govuk-table__header">
-                                @Html.DisplayFor(x => x.Material)
-                            </th>
-                        </tr>
-                        <tr class="govuk-table__row">
-                            <td class="govuk-table__cell">@Localizer["tonnage"]</td>
-                            <th scope="row" class="govuk-table__header">
-                                @Html.DisplayFor(x => x.Tonnage)
-                            </th>
-                        </tr>
-                        <tr class="govuk-table__row">
-                            <td class="govuk-table__cell">@Localizer["packaging_producer_or_compliance_scheme"]</td>
-                            <th scope="row" class="govuk-table__header">
-                                @Html.DisplayFor(x => x.NameOfProducerOrComplianceScheme)
-                            </th>
-                        </tr>
-                        <tr class="govuk-table__row">
-                            <td class="govuk-table__cell">@Localizer["note"]</td>
-                            <th scope="row" class="govuk-table__header">
-                                @Html.DisplayFor(x => x.AdditionalNotes)
-                            </th>
-                        </tr>
-
-                    </tbody>
-                </table> *@
-
                 <br>
                 <br>
-
                 <button class="govuk-button" type="submit" asp-action="ConfirmAcceptSinglePrn" asp-controller="Prns" asp-route-id="@Model.Id">
                     @Localizer[(Model.IsPrn ? "accept_this_prn" : "accept_this_pern")]
                 </button>
