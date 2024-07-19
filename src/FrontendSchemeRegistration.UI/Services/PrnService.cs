@@ -69,13 +69,6 @@ namespace FrontendSchemeRegistration.UI.Services
             return model;
         }
 
-        public PrnAcceptViewModel GetAcceptPrnById(int id)
-        {
-            var prnAccept = new PrnAcceptViewModel();
-            var prn = CurrentPrns.Single(x => x.Id == id);
-            return prnAccept;
-        }
-
         public void UpdatePrnStatus(int id, string approvalStatus)
         {
             var model = CurrentPrns.Single(x => x.Id == id);

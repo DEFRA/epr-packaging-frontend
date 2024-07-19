@@ -43,13 +43,7 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         public async Task<IActionResult> ConfirmAcceptSinglePrn(int id)
         {
             var model = _prnService.GetPrnById(id);
-
-            var prnConfirmAccept = new PrnAcceptViewModel();
-            prnConfirmAccept.Id = model.Id;
-            prnConfirmAccept.PrnOrPernNumber = model.PrnOrPernNumber;
-            prnConfirmAccept.PrnAmount = model.Tonnage;
-
-            return View(prnConfirmAccept);
+            return View(model);
         }
 
         [HttpGet]
@@ -76,7 +70,7 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
 
         [HttpPost]
         [Route("confirm-accept-prn")]
-        public async Task<ActionResult> ConfirmAcceptPrn(PrnAcceptViewModel model)
+        public async Task<ActionResult> ConfirmAcceptPrn(PrnViewModel model)
         {
             var prn = _prnService.GetPrnById(model.Id);
             _prnService.UpdatePrnStatus(prn.Id, "ACCEPTED");

@@ -1,5 +1,5 @@
 ﻿@using FrontendSchemeRegistration.UI.ViewModels.Prns
-@model PrnAcceptViewModel
+@model PrnViewModel
 
 <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
     <div class="govuk-grid-row">
@@ -7,10 +7,10 @@
 
             <form class="form" method="POST">
                 <input name="Id" type="hidden" value="@Model.Id" />
-                <h2 class="govuk-heading-l">@Localizer["Heading"]</h2>
+                <h2 class="govuk-heading-l">@Localizer[(Model.IsPrn ? "prn_heading" : "pern_heading")]</h2>
 
                 <div class="govuk-inset-text">
-                    @Localizer["TitleFirstPart"] @Model.PrnAmount @Localizer["TitleSecondPart"]
+                    @Localizer["TitleFirstPart"] @Model.Tonnage @Localizer["TitleSecondPart"]
                 </div>
 
                 <button class="govuk-button" type="submit" asp-action="ConfirmAcceptPrn" asp-controller="Prns">

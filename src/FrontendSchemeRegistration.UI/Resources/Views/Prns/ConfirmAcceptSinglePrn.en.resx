@@ -117,11 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Heading" xml:space="preserve">
-    <value>Accept this PRN?</value>
-  </data>
   <data name="NoBackButton" xml:space="preserve">
     <value>No, go back</value>
+  </data>
+  <data name="pern_heading" xml:space="preserve">
+    <value>Accept this PERN?</value>
+  </data>
+  <data name="prn_heading" xml:space="preserve">
+    <value>Accept this PRN?</value>
   </data>
   <data name="TitleFirstPart" xml:space="preserve">
     <value>This will credit tonnes</value>
