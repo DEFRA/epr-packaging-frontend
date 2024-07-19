@@ -79,6 +79,7 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         public async Task<ActionResult> ConfirmAcceptPrn(PrnAcceptViewModel model)
         {
             var prn = _prnService.GetPrnById(model.Id);
+            _prnService.UpdatePrnStatus(prn.Id, "ACCEPTED");
 
             // Save data to the facade updating approval status to ""ACCEPTED"
             return RedirectToAction(nameof(AcceptedPrnController.AcceptedPrn), "AcceptedPrn", new { id = model.Id });

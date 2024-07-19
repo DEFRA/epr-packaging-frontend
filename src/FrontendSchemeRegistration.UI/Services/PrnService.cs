@@ -38,13 +38,20 @@ namespace FrontendSchemeRegistration.UI.Services
             _prns.Add(GeneratePrn(17, "EX454545540M", "PERN", "20 Dec 2024", true, "Exporting International", 151, "T2E reference 5689344....", "Wood", "AWAITING ACCEPTANCE"));
             _prns.Add(GeneratePrn(18, "ER454545540M", "PRN", "01 Nov 2025", false, "Packaging reprocessing Ltd", 20, "Not provided", "Wood", "AWAITING ACCEPTANCE"));
             _prns.Add(GeneratePrn(19, "ER454545540M", "PRN", "10 Nov 2025", false, "Paperlink International Ltd", 100, "Ref 345678F", "Wood", "AWAITING ACCEPTANCE"));
+
+            if (CurrentPrns == null)
+            {
+                CurrentPrns = _prns;
+            }
         }
+
+        public static List<PrnViewModel> CurrentPrns { get; set; }
 
         // Used by "View all PRNs and PERNs" page
         public PrnListViewModel GetAllPrns()
         {
             var model = new PrnListViewModel();
-            model.Prns = _prns.Take(9).ToList();
+            model.Prns = CurrentPrns.Take(9).ToList();
             return model;
         }
 
@@ -52,21 +59,27 @@ namespace FrontendSchemeRegistration.UI.Services
         public PrnListViewModel GetPrnsAwaitingAcceptance()
         {
             var model = new PrnListViewModel();
-            model.Prns = _prns.Where(x => x.ApprovalStatus == "AWAITING ACCEPTANCE").ToList();
+            model.Prns = CurrentPrns.Where(x => x.ApprovalStatus == "AWAITING ACCEPTANCE").ToList();
             return model;
         }
 
         public PrnViewModel GetPrnById(int id)
         {
-            var model = _prns.Single(x => x.Id == id);
+            var model = CurrentPrns.Single(x => x.Id == id);
             return model;
         }
 
         public PrnAcceptViewModel GetAcceptPrnById(int id)
         {
             var prnAccept = new PrnAcceptViewModel();
-            var prn = _prns.Single(x => x.Id == id);
+            var prn = CurrentPrns.Single(x => x.Id == id);
             return prnAccept;
+        }
+
+        public void UpdatePrnStatus(int id, string approvalStatus)
+        {
+            var model = CurrentPrns.Single(x => x.Id == id);
+            model.ApprovalStatus = approvalStatus;
         }
 
         private PrnViewModel GeneratePrn(int id, string number, string type, string dateIssued, bool isDecemberWaste, string issuedBy, int tons, string note, string material, string status)
