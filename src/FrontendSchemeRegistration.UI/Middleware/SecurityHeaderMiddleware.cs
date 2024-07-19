@@ -52,8 +52,7 @@ public class SecurityHeaderMiddleware
         const string blockAllMixedContent = "block-all-mixed-content";
         const string imgSrc =
            "img-src 'self' www.googletagmanager.com https://ssl.gstatic.com https://www.gstatic.com " +
-           "https://*.google-analytics.com https://*.googletagmanager.com " +
-           "data: ";
+           "https://*.google-analytics.com https://*.googletagmanager.com ";
         string scriptSrc =
             $"script-src 'self' 'nonce-{scriptNonce}' https://tagmanager.google.com https://*.googletagmanager.com";
         string formAction = $"form-action 'self' {whitelistedFormActionAddresses}";

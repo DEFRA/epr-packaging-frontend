@@ -2,7 +2,7 @@
 {
     public class RecyclingNoteStatusViewModel
     {
-        public bool IsPern { get; set; }
+        public bool IsPrn { get; set; }
 
         public string Status { get; set; }
 
@@ -12,11 +12,12 @@
 
         public string AuthorisedBy { get; set; }
 
-        public string StatusMeaning => IsPern ? "The producer or compliance scheme accepted the PERN." :
-                                               "The producer or compliance scheme accepted the PRN.";
+        public string StatusMeaning => IsPrn ? "The producer or compliance scheme accepted the PRN." : "The producer or compliance scheme accepted the PERN.";
 
         public string AccreditationNumber { get; set; }
 
         public bool DisplayReporcessingSite { get; set; }
+
+        public string ApprovalStatusDisplayCssColour { get; set; }
     }
 }

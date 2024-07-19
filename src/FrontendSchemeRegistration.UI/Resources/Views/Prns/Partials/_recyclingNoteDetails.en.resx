@@ -136,7 +136,7 @@
     <value>PRN details</value>
   </data>
   <data name="relates_to_waste_received_in_december" xml:space="preserve">
-    <value>Relates to waste received in December</value>
+    <value>Relates to waste received in December?</value>
   </data>
   <data name="tonnage" xml:space="preserve">
     <value>Tonnage</value>

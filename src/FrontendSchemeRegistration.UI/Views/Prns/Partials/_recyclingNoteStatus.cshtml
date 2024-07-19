@@ -8,8 +8,8 @@
         <tr class="govuk-table__row">
             <td class="govuk-table__cell">@Localizer["status"]</td>
             <th scope="row" class="govuk-table__header">
-                <strong class="govuk-tag govuk-tag--green">
-                    @Model.Status
+                <strong class="govuk-tag govuk-tag--@Model.ApprovalStatusDisplayCssColour">
+                    @Html.DisplayFor(x => x.Status)
                 </strong>
             </th>
         </tr>
@@ -23,7 +23,7 @@
                 @Model.IssuedBy
             </th>
         </tr>
-        @if (!Model.IsPern)
+        @if (Model.IsPrn)
         {
             <tr class="govuk-table__row">
                 <td class="govuk-table__cell">@Localizer["reproccessing_site"]</td>
