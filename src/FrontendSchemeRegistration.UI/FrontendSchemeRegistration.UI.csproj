@@ -529,6 +529,7 @@
             <DependentUpon>PrivacyPolicy.en.resx</DependentUpon>
         </Compile>
         <Compile Remove="Attributes\ActionFilters\ApplicationActionFilterAttribute.cs" />
+        <Compile Remove="ViewModels\Prns\AcceptedPernsOrPrnsViewModel.cs" />
         <Compile Update="Resources\ErrorMessages.Designer.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>

@@ -1,10 +1,11 @@
 ﻿using System.Globalization;
+using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.ViewModels.Prns;
 using Microsoft.Extensions.Localization;
 
 namespace FrontendSchemeRegistration.UI.Services
 {
-    public class PrnService
+    public class PrnService : IPrnService
     {
         private readonly IStringLocalizer<SharedResources> _localizer;
         private readonly IStringLocalizer<PrnDataResources> _prnDataLocalizer;

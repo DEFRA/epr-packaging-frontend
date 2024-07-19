@@ -6,6 +6,7 @@ using Application.Services;
 using Application.Services.Interfaces;
 using Constants;
 using EPR.Common.Authorization.Extensions;
+using FrontendSchemeRegistration.UI.Services.Interfaces;
 using Helpers;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.DataProtection;
@@ -123,6 +124,7 @@ public static class ServiceProviderExtension
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.AddTransient<UserDataCheckerMiddleware>();
         services.AddSingleton<ICorrelationIdProvider, CorrelationIdProvider>();
+        services.AddScoped<IPrnService, PrnService>();
     }
 
     private static void RegisterHttpClients(IServiceCollection services)

@@ -1,0 +1,91 @@
+﻿@using FrontendSchemeRegistration.UI.ViewModels.Prns
+@model PrnViewModel
+
+@{
+    ViewData["Title"] = Localizer["page_title"];
+    var recyclingNoteDetails = new RecyclingNoteDteailsViewModel()
+            {
+                IsPern = !Model.IsPrn,
+                DateIssued = Model.DateIssued,
+                IsDecemberWaste = Model.IsDecemberWaste,
+                Material = Model.Material,
+                Tonnage = Model.Tonnage,
+                ProducerOrComplianceSchemeName = Model.NameOfProducerOrComplianceScheme,
+                Note = Model.AdditionalNotes
+            };
+
+    var recyclingNoteStatus = new RecyclingNoteStatusViewModel()
+            {
+                IsPern = !Model.IsPrn,
+                AuthorisedBy = Model.AuthorisedBy,
+                IssuedBy = Model.IssuedBy,
+                ReproccessingSite = Model.ReproccessingSiteAddress,
+                AccreditationNumber = Model.AccreditationNumber,
+                Status = Model.ApprovalStatus
+            };
+}
+
+<main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @await Html.PartialAsync("Partials/_agenciesLogo.cshtml")
+            <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+                <div class="govuk-notification-banner__header">
+                    <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                        @Localizer["success"]
+                    </h2>
+                </div>
+                <div class="govuk-notification-banner__content">
+                    <h3 class="govuk-notification-banner__heading">
+                        @Localizer[Model.IsPrn ? "prn_accepted" : "pern_accepted"]
+                    </h3>
+                    <p class="govuk-body">@Localizer["tonnage_credited_towards_your_obligation", Model.Tonnage, Model.Material]</p>
+                </div>
+            </div>
+
+            <h1 class="govuk-heading-l">
+                @((!Model.IsPrn) ? "Packaging Exporter Recycling Note" : "Packaging Recycling Note")
+            </h1>
+
+            <div class="govuk-inset-text app-inset-text">
+                <div class="govuk-heading-m">
+                    @Localizer[!Model.IsPrn ? "pern_number" : "prn_number"]: <strong>@Model.PrnOrPernNumber</strong>
+                </div>
+                <div class="govuk-heading-m">
+                    @Localizer["year"]: <strong>@Model.Year</strong>
+                </div>
+            </div>
+
+            @await Html.PartialAsync("Partials/_recyclingNoteStatus.cshtml", recyclingNoteStatus)
+
+            <br>
+
+            @await Html.PartialAsync("Partials/_recyclingNoteDetails.cshtml", recyclingNoteDetails)
+
+            <br>
+            <br>
+            <div class="govuk-button-group">
+                @Html.ActionLink(Localizer["accept_or_reject_more_prns_and_perns"].Value, "SelectPrnsToAcceptOrReject", "Prns", null,
+                         new
+                         {
+                             @class = "govuk-button"
+                         })
+                @Html.ActionLink(string.Format(Localizer[!Model.IsPrn ? "download_this_pern" : "download_this_prn"].Value), null, null,
+                         null,
+                         new
+                         {
+                             @class = "govuk-button govuk-button--secondary",
+                             @href = "#"
+                         })
+            </div>
+            <p class="govuk-body">
+                @Html.ActionLink(Localizer["manage_obligation_home"].Value, "HomePagePrn", "Prns", null,
+                         new
+                         {
+                             @class = "govuk-link govuk-link--no-visited-state"
+                         })
+            </p>
+        </div>
+    </div>
+</main>
