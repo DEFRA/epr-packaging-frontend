@@ -78,5 +78,12 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
             // Save data to the facade updating approval status to ""ACCEPTED"
             return RedirectToAction(nameof(AcceptedPrnController.AcceptedPrn), "AcceptedPrn", new { id = model.Id });
         }
+
+        [HttpPost]
+        [Route("RejectPRN")]
+        public async Task<ActionResult> RejectPRN(PrnViewModel model)
+        {
+            return RedirectToAction(nameof(PrnsController.ViewAllPrns));
+        }
     }
 }
