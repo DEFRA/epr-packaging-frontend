@@ -1,5 +1,5 @@
 ﻿@using FrontendSchemeRegistration.UI.ViewModels.Prns
-
+@inject IStringLocalizer<PrnDataResources> PrnDataLocalizer
 @model RecyclingNoteStatusViewModel
 
 <table class="govuk-table">
@@ -9,13 +9,13 @@
             <td class="govuk-table__cell">@Localizer["status"]</td>
             <th scope="row" class="govuk-table__header">
                 <strong class="govuk-tag govuk-tag--@Model.ApprovalStatusDisplayCssColour">
-                    @Html.DisplayFor(x => x.Status)
+                    @PrnDataLocalizer[Model.Status]
                 </strong>
             </th>
         </tr>
         <tr class="govuk-table__row">
             <td class="govuk-table__cell">@Localizer["status_meaning"]</td>
-            <th scope="row" class="govuk-table__header">@Model.StatusMeaning</th>
+            <th scope="row" class="govuk-table__header">@string.Format(PrnDataLocalizer[string.Concat(Model.Status, " ", "EXPLANATION")], Model.NoteType)</th>
         </tr>
         <tr class="govuk-table__row">
             <td class="govuk-table__cell">@Localizer["issued_by"]</td>

@@ -86,4 +86,10 @@
 	<data name="download_this_pern" xml:space="preserve">
 		<value>[Welsh]Download this PERN</value>
 	</data>
+	<data name="packaging_recycling_note" xml:space="preserve">
+		<value>[Welsh]Packaging Recycling Note</value>
+	</data>
+	<data name="packaging_export_recycling_note" xml:space="preserve">
+		<value>[Welsh]Packaging Export Recycling Note</value>
+	</data>
 </root>

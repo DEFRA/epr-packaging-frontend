@@ -1,5 +1,5 @@
 ﻿@using FrontendSchemeRegistration.UI.ViewModels.Prns
-
+@inject IStringLocalizer<PrnDataResources> PrnDataLocalizer
 @model RecyclingNoteDetailsViewModel
 
 <table class="govuk-table">
@@ -16,13 +16,13 @@
         <tr class="govuk-table__row">
             <td class="govuk-table__cell">@Localizer["relates_to_waste_received_in_december"]</td>
             <th scope="row" class="govuk-table__header">
-                @Model.DecemberWasteDisplay
+                @SharedLocalizer[@Model.DecemberWasteDisplay]
             </th>
         </tr>
         <tr class="govuk-table__row">
             <td class="govuk-table__cell">@Localizer["material"]</td>
             <th scope="row" class="govuk-table__header">
-                @Model.Material
+                @PrnDataLocalizer[Model.Material]
             </th>
         </tr>
         <tr class="govuk-table__row">

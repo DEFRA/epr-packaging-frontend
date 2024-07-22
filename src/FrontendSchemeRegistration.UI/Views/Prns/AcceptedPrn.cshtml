@@ -3,16 +3,6 @@
 
 @{
     ViewData["Title"] = Localizer["page_title"];
-    var recyclingNoteDetails = new RecyclingNoteDetailsViewModel()
-            {
-                IsPrn = Model.IsPrn,
-                DateIssued = Model.DateIssued,
-                IsDecemberWaste = Model.IsDecemberWaste,
-                Material = Model.Material,
-                Tonnage = Model.Tonnage,
-                ProducerOrComplianceSchemeName = Model.NameOfProducerOrComplianceScheme,
-                Note = Model.AdditionalNotes
-            };
 
     var recyclingNoteStatus = new RecyclingNoteStatusViewModel()
             {
@@ -23,10 +13,20 @@
                 AccreditationNumber = Model.AccreditationNumber,
                 Status = Model.ApprovalStatus,
                 ApprovalStatusDisplayCssColour = Model.ApprovalStatusDisplayCssColour,
-                StatusMeaning = Model.ApprovalStatusExplanation
+                NoteType = Model.NoteType
+            };
+
+    var recyclingNoteDetails = new RecyclingNoteDetailsViewModel()
+            {
+                IsPrn = Model.IsPrn,
+                DateIssued = Model.DateIssued,
+                IsDecemberWaste = Model.IsDecemberWaste,
+                Material = Model.Material,
+                Tonnage = Model.Tonnage,
+                ProducerOrComplianceSchemeName = Model.NameOfProducerOrComplianceScheme,
+                Note = Model.AdditionalNotes
             };
 }
-
 <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
 
     <div class="govuk-grid-row">
@@ -47,9 +47,8 @@
             </div>
 
             <h1 class="govuk-heading-l">
-                @(Model.IsPrn ? "Packaging Recycling Note" : "Packaging Exporter Recycling Note")
+                @Localizer[(Model.IsPrn ? "packaging_recycling_note" : "packaging_export_recycling_note")]
             </h1>
-
             <div class="govuk-inset-text app-inset-text">
                 <div class="govuk-heading-m">
                     @Localizer[Model.IsPrn ? "prn_number" : "pern_number"]: <strong>@Model.PrnOrPernNumber</strong>
@@ -60,7 +59,6 @@
             </div>
 
             @await Html.PartialAsync("Partials/_recyclingNoteStatus.cshtml", recyclingNoteStatus)
-
             <br>
 
             @await Html.PartialAsync("Partials/_recyclingNoteDetails.cshtml", recyclingNoteDetails)

@@ -19,5 +19,7 @@
         public bool DisplayReporcessingSite { get; set; }
 
         public string ApprovalStatusDisplayCssColour { get; set; }
+
+        public string NoteType { get; set; }
     }
 }

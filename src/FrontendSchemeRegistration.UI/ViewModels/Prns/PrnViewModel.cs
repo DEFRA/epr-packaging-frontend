@@ -28,9 +28,6 @@
         // e.g. AWAITING ACCEPTANCE, ACCEPTED, REJECTED, CANCELLED
         public string ApprovalStatus { get; set; }
 
-        // Provides description of what ApprovalStatus means
-        public string ApprovalStatusExplanation { get; set; }
-
         // Address of site, applies to PRNs only
         public string ReproccessingSiteAddress { get; set; }
 
