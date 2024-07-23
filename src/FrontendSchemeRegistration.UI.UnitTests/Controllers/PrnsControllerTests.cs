@@ -1,6 +1,5 @@
 ﻿namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
 
-using AutoFixture;
 using FluentAssertions;
 using FrontendSchemeRegistration.UI.Controllers.Prns;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
@@ -11,7 +10,6 @@ using Moq;
 public class PrnsControllerTests
 {
     private PrnsController _prnsController;
-    private Fixture _fixture;
 
     [SetUp]
     public void SetUp()
