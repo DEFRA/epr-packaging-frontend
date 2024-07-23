@@ -60,16 +60,19 @@
 	<data name="tonnage" xml:space="preserve">
 		<value>Tonnage</value>
 	</data>
-	<data name="tonnage_credited_towards_your_obligation" xml:space="preserve">
-		<value>{0} tonnes credited towards your {1} obligation.</value>
+	<data name="prn_tonnage_credited_towards_your_obligation" xml:space="preserve">
+		<value>{0} tonnes credited towards your PRN obligation.</value>
+	</data>
+	<data name="pern_tonnage_credited_towards_your_obligation" xml:space="preserve">
+		<value>{0} tonnes credited towards your PERN obligation.</value>
 	</data>
 	<data name="year" xml:space="preserve">
 		<value>Year</value>
 	</data>
-	<data name="packaging_recycling_note" xml:space="preserve">
+	<data name="prn_note" xml:space="preserve">
 		<value>Packaging Recycling Note</value>
 	</data>
-	<data name="packaging_export_recycling_note" xml:space="preserve">
+	<data name="pern_note" xml:space="preserve">
 		<value>Packaging Export Recycling Note</value>
 	</data>
 </root>
