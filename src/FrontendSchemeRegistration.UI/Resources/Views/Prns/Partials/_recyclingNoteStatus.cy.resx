@@ -124,7 +124,7 @@
     <value>Authorised by -cy</value>
   </data>
   <data name="issued_by" xml:space="preserve">
-    <value>Issued By -cy</value>
+    <value>Issued by -cy</value>
   </data>
   <data name="packaging_producer_or_compliance_scheme" xml:space="preserve">
     <value>Packaging producer or compliance scheme -cy</value>
@@ -136,6 +136,6 @@
     <value>Status -cy</value>
   </data>
   <data name="status_meaning" xml:space="preserve">
-    <value>Status Meaning -cy</value>
+    <value>Status meaning -cy</value>
   </data>
 </root>

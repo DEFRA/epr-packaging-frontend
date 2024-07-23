@@ -124,7 +124,7 @@
     <value>Authorised by</value>
   </data>
   <data name="issued_by" xml:space="preserve">
-    <value>Issued By</value>
+    <value>Issued by</value>
   </data>
   <data name="packaging_producer_or_compliance_scheme" xml:space="preserve">
     <value>Packaging producer or compliance scheme</value>
@@ -136,6 +136,6 @@
     <value>Status</value>
   </data>
   <data name="status_meaning" xml:space="preserve">
-    <value>Status Meaning</value>
+    <value>Status meaning</value>
   </data>
 </root>
