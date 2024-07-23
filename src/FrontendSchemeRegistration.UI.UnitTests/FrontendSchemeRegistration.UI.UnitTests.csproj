@@ -33,8 +33,4 @@
       <ProjectReference Include="..\FrontendSchemeRegistration.UI\FrontendSchemeRegistration.UI.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Controllers\Prns\" />
-    </ItemGroup>
-
 </Project>
