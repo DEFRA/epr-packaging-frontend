@@ -9,5 +9,7 @@ namespace FrontendSchemeRegistration.UI.Services.Interfaces
         PrnViewModel GetPrnById(int id);
 
         PrnListViewModel GetPrnsAwaitingAcceptance();
-     }
+
+        void UpdatePrnStatus(int id, string status);
+    }
 }

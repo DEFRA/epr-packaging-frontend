@@ -15,7 +15,7 @@ namespace FrontendSchemeRegistration.UI.Services
                 _prns = new List<PrnViewModel>();
 
                 _prns.Add(GeneratePrn(1, "ER3484743570M", "PRN", "20 Nov 2025", false, "XYZ Reprocessing", 65, "na", "Paper and board", "AWAITING ACCEPTANCE"));
-                _prns.Add(GeneratePrn(2, "EX3484743570M", "PERN", "20 Nov 2025", false, "Exporting International", 151, "na", "Paper and board", "ACCEPTED"));
+                _prns.Add(GeneratePrn(2, "EX3484743570M", "PERN", "20 Nov 2025", false, "Exporting International", 151, "na", "Paper and board", "AWAITING ACCEPTANCE"));
                 _prns.Add(GeneratePrn(3, "EX3484743571M", "PERN", "20 Nov 2025", false, "Exporting International", 100, "na", "Wood", "ACCEPTED"));
                 _prns.Add(GeneratePrn(4, "EX3484743572M", "PERN", "20 Nov 2025", false, "Exporting International", 60, "na", "Paper and board", "ACCEPTED"));
                 _prns.Add(GeneratePrn(5, "EX3484743573M", "PERN", "20 Nov 2024", true, "Packaging reprocessing Ltd", 70, "na", "Paper and board", "ACCEPTED"));

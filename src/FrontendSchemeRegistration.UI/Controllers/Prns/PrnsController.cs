@@ -1,4 +1,5 @@
 ﻿using FrontendSchemeRegistration.UI.Services;
+using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.ViewModels.Prns;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
@@ -8,9 +9,9 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
     [FeatureGate("ShowPrn")]
     public class PrnsController : Controller
     {
-        private readonly PrnService _prnService;
+        private readonly IPrnService _prnService;
 
-        public PrnsController(PrnService prnService)
+        public PrnsController(IPrnService prnService)
         {
             _prnService = prnService;
         }

@@ -3,7 +3,7 @@
 using AutoFixture;
 using FluentAssertions;
 using FrontendSchemeRegistration.UI.Controllers.Prns;
-using FrontendSchemeRegistration.UI.Services;
+using FrontendSchemeRegistration.UI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
@@ -16,11 +16,9 @@ public class PrnsControllerTests
     [SetUp]
     public void SetUp()
     {
-        _prnsController = new PrnsController(null);
-        _fixture = new Fixture();
-        var mockUrlHelper = new Mock<IUrlHelper>();
-        mockUrlHelper.Setup(x => x.IsLocalUrl(It.IsAny<string>())).Returns<string>(url => !string.IsNullOrEmpty(url));
-        _prnsController.Url = mockUrlHelper.Object;
+        var mockPrnService = new Mock<IPrnService>();
+        mockPrnService.Setup(x => x.GetPrnById(It.IsAny<int>())).Returns(new UI.ViewModels.Prns.PrnViewModel());
+        _prnsController = new PrnsController(mockPrnService.Object);
     }
 
     [Test]
