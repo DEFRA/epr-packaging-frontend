@@ -1,31 +1,6 @@
 ﻿@using FrontendSchemeRegistration.UI.ViewModels.Prns
 @model PrnViewModel
 
-@{
-    var recyclingNoteStatus = new RecyclingNoteStatusViewModel()
-            {
-                IsPrn = Model.IsPrn,
-                AuthorisedBy = Model.AuthorisedBy,
-                IssuedBy = Model.IssuedBy,
-                ReproccessingSite = Model.ReproccessingSiteAddress,
-                AccreditationNumber = Model.AccreditationNumber,
-                Status = Model.ApprovalStatus,
-                ApprovalStatusDisplayCssColour = Model.ApprovalStatusDisplayCssColour,
-                NoteType = Model.NoteType
-            };
-
-    var recyclingNoteDetails = new RecyclingNoteDetailsViewModel()
-            {
-                IsPrn = Model.IsPrn,
-                DateIssued = Model.DateIssued,
-                IsDecemberWaste = Model.IsDecemberWaste,
-                Material = Model.Material,
-                Tonnage = Model.Tonnage,
-                ProducerOrComplianceSchemeName = Model.NameOfProducerOrComplianceScheme,
-                Note = Model.AdditionalNotes
-            };
-}
-
 <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
@@ -41,9 +16,9 @@
                         @Localizer["year"]: <strong>@Html.DisplayFor(x => x.Year)</strong>
                     </div>
                 </div>
-                @await Html.PartialAsync("Partials/_recyclingNoteStatus.cshtml", recyclingNoteStatus)
+                @await Html.PartialAsync("Partials/_recyclingNoteStatus.cshtml", Model)
                 <br>
-                @await Html.PartialAsync("Partials/_recyclingNoteDetails.cshtml", recyclingNoteDetails)
+                @await Html.PartialAsync("Partials/_recyclingNoteDetails.cshtml", Model)
                 <br>
                 <br>
                 <button class="govuk-button" type="submit" asp-action="ConfirmAcceptSinglePrn" asp-controller="Prns" asp-route-id="@Model.Id">

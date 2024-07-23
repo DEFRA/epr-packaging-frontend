@@ -1,11 +1,10 @@
 ﻿@using FrontendSchemeRegistration.UI.ViewModels.Prns
 @inject IStringLocalizer<PrnDataResources> PrnDataLocalizer
-@model RecyclingNoteDetailsViewModel
+@model PrnViewModel
 
 <table class="govuk-table">
     <caption class="govuk-table__caption govuk-table__caption--m">@Localizer[Model.IsPrn ? "prn_details" : "pern_details"]</caption>
     <tbody class="govuk-table__body">
-
 
         <tr class="govuk-table__row">
             <td class="govuk-table__cell">@Localizer["date_issued"]</td>
@@ -34,13 +33,13 @@
         <tr class="govuk-table__row">
             <td class="govuk-table__cell">@Localizer["packaging_producer_or_compliance_scheme"]</td>
             <th scope="row" class="govuk-table__header">
-                @Model.ProducerOrComplianceSchemeName
+                @Model.NameOfProducerOrComplianceScheme
             </th>
         </tr>
         <tr class="govuk-table__row">
             <td class="govuk-table__cell">@Localizer["note"]</td>
             <th scope="row" class="govuk-table__header">
-                @Model.Note
+                @Model.AdditionalNotes
             </th>
         </tr>
 
