@@ -21,42 +21,97 @@ public class PrnsControllerTests
         _sut = new PrnsController(_mockPrnService.Object);
     }
 
+    // Step 2
     [Test]
-    public void Get_ReturnsCorrectView_IfPernOrPrnExists()
+    public async Task AcceptSinglePrn_LoadTheStandardResponse()
     {
-        var model = new PrnViewModel();
-        model.ApprovalStatus = "ACCEPTED";
-        model.PrnOrPernNumber = "test";
+        _mockPrnService.Setup(x => x.GetPrnById(It.IsAny<int>())).Returns(new PrnViewModel());
 
+        // Act
+        var result = await _sut.AcceptSinglePrn(0) as ViewResult;
+
+        // Assert
+        result.ViewName.Should().BeNull();
+        result.ViewData.Model.Should().NotBeNull();
+    }
+
+    // Step 3
+    [Test]
+    public async Task ConfirmAcceptSinglePrn_LoadTheStandardResponse()
+    {
+        _mockPrnService.Setup(x => x.GetPrnById(It.IsAny<int>())).Returns(new PrnViewModel());
+
+        // Act
+        var result = await _sut.ConfirmAcceptSinglePrn(new PrnViewModel()) as ViewResult;
+
+        // Assert
+        result.ViewName.Should().BeNull();
+        result.ViewData.Model.Should().NotBeNull();
+    }
+
+    // Step 4
+    [Test]
+    public async Task ConfirmAcceptPrn_RedirectToAcceptedPage()
+    {
+        // Arrange
+        var model = new PrnViewModel
+        {
+            ApprovalStatus = "AWAITING ACCEPTANCE"
+        };
         _mockPrnService.Setup(x => x.GetPrnById(It.IsAny<int>())).Returns(model);
+
+        // Act
+        var result = await _sut.ConfirmAcceptPrn(model) as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be(nameof(PrnsController.AcceptedPrn));
+        result.ControllerName.Should().Be("Prns");
+        _mockPrnService.Verify(x => x.UpdatePrnStatus(It.IsAny<int>(), It.IsAny<string>()), Times.Once);
+    }
+
+    // Step 5
+    [Test]
+    public void AcceptedPrn_ReturnsCorrectView_WhenPernOrPrnIsAccepted()
+    {
+        // Arrange
+        var model = new PrnViewModel
+        {
+            ApprovalStatus = "ACCEPTED"
+        };
+        _mockPrnService.Setup(x => x.GetPrnById(It.IsAny<int>())).Returns(model);
+
         // Act
         var result = _sut.AcceptedPrn(model.Id) as ViewResult;
 
         result.ViewName.Should().BeNull();
     }
 
+    // Step 5
     [Test]
-    public void Get_RedirectToLandingPage_IfPernOrPrnDoesnotExists()
+    public void AcceptedPrn_RedirectToLandingPage_WhenPernOrPrnIsNotAccepted()
     {
-        var model = new PrnViewModel();
+        // Arrange
+        var model = new PrnViewModel
+        {
+            ApprovalStatus = "AWAITING ACCEPTANCE"
+        };
+        _mockPrnService.Setup(x => x.GetPrnById(It.IsAny<int>())).Returns(model);
+
         // Act
-        var result = _sut.AcceptedPrn(0) as RedirectToActionResult;
+        var result = _sut.AcceptedPrn(model.Id) as RedirectToActionResult;
 
         result.ActionName.Should().Be(nameof(PrnsController.HomePagePrn));
         result.ControllerName.Should().Be("Prns");
     }
 
+    // Step 5
     [Test]
-    public async Task
-    GivenOnLoadAcceptPrnPage_WhenCalledByDefault_ThenLoadTheStandardResponse()
+    public void AcceptedPrn_RedirectToLandingPage_WhenPernOrPrnDoesNotExist()
     {
-        _mockPrnService.Setup(x => x.GetPrnById(It.IsAny<int>())).Returns(new UI.ViewModels.Prns.PrnViewModel());
         // Act
-        var prn = new UI.ViewModels.Prns.PrnViewModel();
-        var result = await _sut.ConfirmAcceptSinglePrn(prn) as ViewResult;
+        var result = _sut.AcceptedPrn(0) as RedirectToActionResult;
 
-        // Assert
-        result.ViewName.Should().BeNull();
-        result.ViewData.Model.Should().NotBeNull();
+        result.ActionName.Should().Be(nameof(PrnsController.HomePagePrn));
+        result.ControllerName.Should().Be("Prns");
     }
 }
