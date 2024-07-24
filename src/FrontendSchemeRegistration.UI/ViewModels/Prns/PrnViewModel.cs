@@ -1,8 +1,11 @@
-﻿namespace FrontendSchemeRegistration.UI.ViewModels.Prns
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace FrontendSchemeRegistration.UI.ViewModels.Prns
 {
     /// <summary>
     /// Packaging Recovery Note (PRN) or Packaging Waste Export Recycling Note (PERN).
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class PrnViewModel
     {
         public int Id { get; set; }
