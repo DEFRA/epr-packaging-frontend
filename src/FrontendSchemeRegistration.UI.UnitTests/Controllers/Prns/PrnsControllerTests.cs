@@ -42,7 +42,7 @@ public class PrnsControllerTests
         _mockPrnService.Setup(x => x.GetPrnById(It.IsAny<int>())).Returns(new PrnViewModel());
 
         // Act
-        var result = await _sut.ConfirmAcceptSinglePrn(new PrnViewModel()) as ViewResult;
+        var result = await _sut.ConfirmAcceptSinglePrn(0) as ViewResult;
 
         // Assert
         result.ViewName.Should().BeNull();
@@ -51,7 +51,7 @@ public class PrnsControllerTests
 
     // Step 4
     [Test]
-    public async Task ConfirmAcceptPrn_RedirectToAcceptedPage()
+    public async Task SetPrnStatusToAccepted_RedirectToAcceptedPage()
     {
         // Arrange
         var model = new PrnViewModel
@@ -61,7 +61,7 @@ public class PrnsControllerTests
         _mockPrnService.Setup(x => x.GetPrnById(It.IsAny<int>())).Returns(model);
 
         // Act
-        var result = await _sut.ConfirmAcceptPrn(model) as RedirectToActionResult;
+        var result = await _sut.SetPrnStatusToAccepted(model) as RedirectToActionResult;
 
         // Assert
         result.ActionName.Should().Be(nameof(PrnsController.AcceptedPrn));

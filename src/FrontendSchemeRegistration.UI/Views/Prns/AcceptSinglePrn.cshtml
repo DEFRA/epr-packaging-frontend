@@ -4,7 +4,7 @@
 <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
-            <form class="form" method="POST">
+
                 @await Html.PartialAsync("Partials/_agenciesLogo.cshtml")
 
                 <h1 class="govuk-heading-l">@Localizer[(Model.IsPrn ? "packaging_recycling_note" : "packaging_export_recycling_note")]</h1>
@@ -21,15 +21,23 @@
                 @await Html.PartialAsync("Partials/_recyclingNoteDetails.cshtml", Model)
                 <br>
                 <br>
-                <input name="Id" type="hidden" value="@Model.Id" />
-                <button class="govuk-button" type="submit" asp-action="ConfirmAcceptSinglePrn" asp-controller="Prns">
-                    @Localizer[(Model.IsPrn ? "accept_this_prn" : "accept_this_pern")]
-                </button>
 
-                <div class="prn-margin-left-20"></div>
-                <button class="govuk-button govuk-button--secondary" type="submit" asp-action="ConfirmRejectSinglePrn" asp-controller="Prns">
-                    @Localizer[(Model.IsPrn ? "reject_this_prn" : "reject_this_pern")]
-                </button>
+                <div class="govuk-button-group">
+                    @Html.ActionLink(Localizer[(Model.IsPrn ? "accept_this_prn" : "accept_this_pern")].Value, "ConfirmAcceptSinglePrn", "Prns",
+                         new
+                         {
+                             @id = Model.Id
+                         },
+                         new
+                         {
+                             @class = "govuk-button"
+                         })
+
+                    <button class="govuk-button govuk-button--secondary" type="submit" asp-action="ConfirmRejectSinglePrn" asp-controller="Prns">
+                        @Localizer[(Model.IsPrn ? "reject_this_prn" : "reject_this_pern")]
+                    </button>
+
+                </div>
 
                 <p class="govuk-body">
                     @Html.ActionLink(Localizer[(Model.IsPrn ? "download_this_prn" : "download_this_pern")].Value, null, null, null,
@@ -39,7 +47,6 @@
                                  @href = "#"
                              })
                 </p>
-            </form>
 
         </div>
     </div>

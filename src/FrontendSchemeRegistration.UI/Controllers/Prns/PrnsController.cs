@@ -30,17 +30,43 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         public async Task<IActionResult> AcceptSinglePrn(int id)
         {
             var prn = _prnService.GetPrnById(id);
-
             return View(prn);
         }
 
-        // Step 3, between chosing a PRN and accepting the PRN
+        // Step 3, are you sure?
+        [HttpGet]
+        [Route("accept-prn/{id}")]
+        public async Task<IActionResult> ConfirmAcceptSinglePrn(int id)
+        {
+            var prn = _prnService.GetPrnById(id);
+            return View(prn);
+        }
+
+        // Step 4 update PRN to accpted
         [HttpPost]
-        [Route("accept-prn")]
-        public async Task<IActionResult> ConfirmAcceptSinglePrn(PrnViewModel model)
+        [Route("confirm-accept-prn")]
+        public async Task<ActionResult> SetPrnStatusToAccepted(PrnViewModel model)
         {
             var prn = _prnService.GetPrnById(model.Id);
-            return View(prn);
+            _prnService.UpdatePrnStatus(prn.Id, "ACCEPTED");
+
+            // Save data to the facade updating approval status to ""ACCEPTED"
+            return RedirectToAction(nameof(PrnsController.AcceptedPrn), "Prns", new { id = model.Id });
+        }
+
+        // Step 5 show updated PRN details
+        [HttpGet]
+        [Route("accepted-prn/{id}")]
+        public IActionResult AcceptedPrn(int id)
+        {
+            var model = _prnService.GetPrnById(id);
+
+            if (model == null || !model.ApprovalStatus.EndsWith("ACCEPTED"))
+            {
+                return RedirectToAction(nameof(PrnsController.HomePagePrn), "Prns");
+            }
+
+            return View(model);
         }
 
         // Landing page
@@ -77,33 +103,6 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         public async Task<ActionResult> RejectPRN(PrnViewModel model)
         {
             return RedirectToAction(nameof(PrnsController.ViewAllPrns));
-        }
-
-        // Step 4 update PRN
-        [HttpPost]
-        [Route("confirm-accept-prn")]
-        public async Task<ActionResult> ConfirmAcceptPrn(PrnViewModel model)
-        {
-            var prn = _prnService.GetPrnById(model.Id);
-            _prnService.UpdatePrnStatus(prn.Id, "ACCEPTED");
-
-            // Save data to the facade updating approval status to ""ACCEPTED"
-            return RedirectToAction(nameof(PrnsController.AcceptedPrn), "Prns", new { id = model.Id });
-        }
-
-        // Step 5 show updated PRN details
-        [HttpGet]
-        [Route("accepted-prn/{id}")]
-        public IActionResult AcceptedPrn(int id)
-        {
-            var model = _prnService.GetPrnById(id);
-
-            if (model == null || !model.ApprovalStatus.EndsWith("ACCEPTED"))
-            {
-                return RedirectToAction(nameof(PrnsController.HomePagePrn), "Prns");
-            }
-
-            return View(model);
         }
     }
 }
