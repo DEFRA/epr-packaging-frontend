@@ -1,4 +1,5 @@
 ﻿using FrontendSchemeRegistration.Application.DTOs;
+using FrontendSchemeRegistration.Application.DTOs.Prns;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
 
@@ -34,4 +35,10 @@ public interface IWebApiGatewayClient
     Task<List<SubmissionPeriodId>> GetSubmissionIdsAsync(Guid organisationId, string queryString);
 
     Task<List<SubmissionHistory>> GetSubmissionHistoryAsync(Guid submissionId, string queryString);
+
+    Task<List<PrnModel>> GetPrnsByOrganisationExternalIdAsync(Guid id);
+
+    Task<PrnModel> GetPrnByExternalIdAsync(Guid id);
+
+    Task SetPrnApprovalStatusToAcceptedAsync(Guid id);
 }

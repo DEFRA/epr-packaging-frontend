@@ -25,10 +25,10 @@ public class PrnsControllerTests
     [Test]
     public async Task AcceptSinglePrn_LoadTheStandardResponse()
     {
-        _mockPrnService.Setup(x => x.GetPrnById(It.IsAny<int>())).Returns(new PrnViewModel());
+        _mockPrnService.Setup(x => x.GetPrnByExternalIdAsync(It.IsAny<Guid>())).ReturnsAsync(new PrnViewModel());
 
         // Act
-        var result = await _sut.AcceptSinglePrn(0) as ViewResult;
+        var result = await _sut.AcceptSinglePrn(Guid.NewGuid()) as ViewResult;
 
         // Assert
         result.ViewName.Should().BeNull();
@@ -39,10 +39,10 @@ public class PrnsControllerTests
     [Test]
     public async Task ConfirmAcceptSinglePrn_LoadTheStandardResponse()
     {
-        _mockPrnService.Setup(x => x.GetPrnById(It.IsAny<int>())).Returns(new PrnViewModel());
+        _mockPrnService.Setup(x => x.GetPrnByExternalIdAsync(It.IsAny<Guid>())).ReturnsAsync(new PrnViewModel());
 
         // Act
-        var result = await _sut.ConfirmAcceptSinglePrn(0) as ViewResult;
+        var result = await _sut.ConfirmAcceptSinglePrn(Guid.NewGuid()) as ViewResult;
 
         // Assert
         result.ViewName.Should().BeNull();
@@ -58,7 +58,7 @@ public class PrnsControllerTests
         {
             ApprovalStatus = "AWAITING ACCEPTANCE"
         };
-        _mockPrnService.Setup(x => x.GetPrnById(It.IsAny<int>())).Returns(model);
+        _mockPrnService.Setup(x => x.GetPrnByExternalIdAsync(It.IsAny<Guid>())).ReturnsAsync(model);
 
         // Act
         var result = await _sut.SetPrnStatusToAccepted(model) as RedirectToActionResult;
@@ -66,39 +66,39 @@ public class PrnsControllerTests
         // Assert
         result.ActionName.Should().Be(nameof(PrnsController.AcceptedPrn));
         result.ControllerName.Should().Be("Prns");
-        _mockPrnService.Verify(x => x.UpdatePrnStatus(It.IsAny<int>(), It.IsAny<string>()), Times.Once);
+        _mockPrnService.Verify(x => x.AcceptPrnAsync(It.IsAny<Guid>()), Times.Once);
     }
 
     // Step 5
     [Test]
-    public void AcceptedPrn_ReturnsCorrectView_WhenPernOrPrnIsAccepted()
+    public async Task AcceptedPrn_ReturnsCorrectView_WhenPernOrPrnIsAccepted()
     {
         // Arrange
         var model = new PrnViewModel
         {
             ApprovalStatus = "ACCEPTED"
         };
-        _mockPrnService.Setup(x => x.GetPrnById(It.IsAny<int>())).Returns(model);
+        _mockPrnService.Setup(x => x.GetPrnByExternalIdAsync(It.IsAny<Guid>())).ReturnsAsync(model);
 
         // Act
-        var result = _sut.AcceptedPrn(model.Id) as ViewResult;
+        var result = await _sut.AcceptedPrn(model.ExternalId) as ViewResult;
 
         result.ViewName.Should().BeNull();
     }
 
     // Step 5
     [Test]
-    public void AcceptedPrn_RedirectToLandingPage_WhenPernOrPrnIsNotAccepted()
+    public async Task AcceptedPrn_RedirectToLandingPage_WhenPernOrPrnIsNotAccepted()
     {
         // Arrange
         var model = new PrnViewModel
         {
             ApprovalStatus = "AWAITING ACCEPTANCE"
         };
-        _mockPrnService.Setup(x => x.GetPrnById(It.IsAny<int>())).Returns(model);
+        _mockPrnService.Setup(x => x.GetPrnByExternalIdAsync(It.IsAny<Guid>())).ReturnsAsync(model);
 
         // Act
-        var result = _sut.AcceptedPrn(model.Id) as RedirectToActionResult;
+        var result = await _sut.AcceptedPrn(model.ExternalId) as RedirectToActionResult;
 
         result.ActionName.Should().Be(nameof(PrnsController.HomePagePrn));
         result.ControllerName.Should().Be("Prns");
@@ -106,10 +106,10 @@ public class PrnsControllerTests
 
     // Step 5
     [Test]
-    public void AcceptedPrn_RedirectToLandingPage_WhenPernOrPrnDoesNotExist()
+    public async Task AcceptedPrn_RedirectToLandingPage_WhenPernOrPrnDoesNotExist()
     {
         // Act
-        var result = _sut.AcceptedPrn(0) as RedirectToActionResult;
+        var result = await _sut.AcceptedPrn(Guid.NewGuid()) as RedirectToActionResult;
 
         result.ActionName.Should().Be(nameof(PrnsController.HomePagePrn));
         result.ControllerName.Should().Be("Prns");

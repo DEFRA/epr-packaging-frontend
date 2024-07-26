@@ -4,12 +4,12 @@ namespace FrontendSchemeRegistration.UI.Services.Interfaces
 {
     public interface IPrnService
     {
-        PrnListViewModel GetAllPrns();
+        Task<PrnListViewModel> GetAllPrnsAsync();
 
-        PrnViewModel GetPrnById(int id);
+        Task<PrnViewModel> GetPrnByExternalIdAsync(Guid id);
 
-        PrnListViewModel GetPrnsAwaitingAcceptance();
+        Task<PrnListViewModel> GetPrnsAwaitingAcceptanceAsync();
 
-        void UpdatePrnStatus(int id, string status);
+        Task AcceptPrnAsync(Guid id);
     }
 }

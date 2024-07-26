@@ -7,7 +7,7 @@
         <div class="govuk-grid-column-full">
 
             <form class="form" method="POST">
-                <input name="Id" type="hidden" value="@Model.Id" />
+                @Html.HiddenFor(model => model.ExternalId)
                 <h2 class="govuk-heading-l">@Localizer[(Model.IsPrn ? "prn_heading" : "pern_heading")]</h2>
 
                 <div class="govuk-inset-text">

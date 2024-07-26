@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using FrontendSchemeRegistration.Application.DTOs.Prns;
 
 namespace FrontendSchemeRegistration.UI.ViewModels.Prns
 {
@@ -9,6 +10,8 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
     public class PrnViewModel
     {
         public int Id { get; set; }
+
+        public Guid ExternalId { get; set; }
 
         public string PrnOrPernNumber { get; set; }
 
@@ -43,14 +46,14 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
         public string NameOfProducerOrComplianceScheme { get; set; }
 
         // Unclear how Year is obtained
-        public int Year => DateIssued.Year;
+        public int Year { get; set; }
 
         public bool IsPrn => NoteType == "PRN";
 
         // True if selected in the user interface.
         public bool IsSelected { get; set; }
 
-        public string DecemberWasteDisplay { get; set; }
+        public string DecemberWasteDisplay => IsDecemberWaste ? "Yes" : "No";
 
         public string DateIssuedDisplay => DateIssued.ToString("dd MMM yyyy");
 
@@ -72,6 +75,45 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
                         return "grey";
                 }
             }
+        }
+
+        public static implicit operator PrnViewModel(PrnModel prn)
+        {
+            return new PrnViewModel
+            {
+                Id = prn.Id,
+                ExternalId = prn.ExternalId,
+                PrnOrPernNumber = prn.PrnNumber,
+                NoteType = prn.IsExport ? "PERN" : "PRN",
+                DateIssued = prn.IssueDate,
+                IsDecemberWaste = prn.DecemberWaste,
+                IssuedBy = prn.IssuedByOrg,
+                Tonnage = prn.TonnageValue,
+                AdditionalNotes = prn.IssuerNotes,
+                Material = prn.MaterialName,
+                ApprovalStatus = prn.PrnStatusId.ToString(),
+                ReproccessingSiteAddress = prn.ReprocessingSite,
+                AuthorisedBy = prn.PrnSignatory,
+                AccreditationNumber = prn.AccreditationNumber,
+                NameOfProducerOrComplianceScheme = prn.OrganisationName,
+                Year = int.Parse(prn.AccreditationYear)
+
+                // CancelledDate = prn.CancelledDate,
+                // CreatedOn = prn.CreatedOn,
+                // CreatedBy = prn.CreatedBy,
+                // IsExport = prn.IsExport,
+                // IssuerReference = prn.IssuerReference,
+                // LastUpdatedBy = prn.LastUpdatedBy,
+                // LastUpdatedDate = prn.LastUpdatedDate,
+                // ObligationYear = prn.ObligationYear,
+                // OrganisationId = prn.OrganisationId,
+                // PackagingProducer = prn.PackagingProducer,
+                // PrnSignatoryPosition = prn.PrnSignatoryPosition,
+                // ProcessToBeUsed = prn.ProcessToBeUsed,
+                // ProducerAgency = prn.ProducerAgency,
+                // ReprocessorExporterAgency = prn.ReprocessorExporterAgency,
+                // Signature = prn.Signature,
+            };
         }
     }
 }

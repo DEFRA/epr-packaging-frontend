@@ -2,6 +2,7 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FrontendSchemeRegistration.Application.DTOs;
+using FrontendSchemeRegistration.Application.DTOs.Prns;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Extensions;
@@ -213,6 +214,63 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting submission history");
+            throw;
+        }
+    }
+
+    // Gets all PRNs assigned to an organisation
+    public async Task<List<PrnModel>> GetPrnsByOrganisationExternalIdAsync(Guid id)
+    {
+        await PrepareAuthenticatedClientAsync();
+
+        try
+        {
+            var response = await _httpClient.GetAsync($"/api/v1/prn/organisation/{id}");
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadFromJsonAsync<List<PrnModel>>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting recycling notes for organisation {id}", id);
+            throw;
+        }
+    }
+
+    // Get single PRN
+    public async Task<PrnModel> GetPrnByExternalIdAsync(Guid id)
+    {
+        await PrepareAuthenticatedClientAsync();
+
+        try
+        {
+            var response = await _httpClient.GetAsync($"/api/v1/prn/{id}");
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadFromJsonAsync<PrnModel>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting recycling note {id}", id);
+            throw;
+        }
+    }
+
+    public async Task SetPrnApprovalStatusToAcceptedAsync(Guid id)
+    {
+        await PrepareAuthenticatedClientAsync();
+
+        try
+        {
+            var response = await _httpClient.PatchAsync($"/api/v1/prn/status/{id}", null);
+
+            response.EnsureSuccessStatusCode();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error accepting recycling note {id}", id);
             throw;
         }
     }

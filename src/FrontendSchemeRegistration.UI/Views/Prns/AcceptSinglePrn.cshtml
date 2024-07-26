@@ -26,7 +26,7 @@
                     @Html.ActionLink(Localizer[(Model.IsPrn ? "accept_this_prn" : "accept_this_pern")].Value, "ConfirmAcceptSinglePrn", "Prns",
                          new
                          {
-                             @id = Model.Id
+                             @id = Model.ExternalId
                          },
                          new
                          {

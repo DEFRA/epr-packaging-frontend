@@ -20,25 +20,25 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         [Route("view-awaiting-acceptance")]
         public async Task<IActionResult> ViewAllPrns()
         {
-            var prns = _prnService.GetAllPrns();
+            var prns = await _prnService.GetAllPrnsAsync();
             return View(prns);
         }
 
         // Step 2, show more details of PRN
         [HttpGet]
         [Route("selected-prn/{id}")]
-        public async Task<IActionResult> AcceptSinglePrn(int id)
+        public async Task<IActionResult> AcceptSinglePrn(Guid id)
         {
-            var prn = _prnService.GetPrnById(id);
+            var prn = await _prnService.GetPrnByExternalIdAsync(id);
             return View(prn);
         }
 
         // Step 3, are you sure?
         [HttpGet]
         [Route("accept-prn/{id}")]
-        public async Task<IActionResult> ConfirmAcceptSinglePrn(int id)
+        public async Task<IActionResult> ConfirmAcceptSinglePrn(Guid id)
         {
-            var prn = _prnService.GetPrnById(id);
+            var prn = await _prnService.GetPrnByExternalIdAsync(id);
             return View(prn);
         }
 
@@ -47,19 +47,17 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         [Route("confirm-accept-prn")]
         public async Task<ActionResult> SetPrnStatusToAccepted(PrnViewModel model)
         {
-            var prn = _prnService.GetPrnById(model.Id);
-            _prnService.UpdatePrnStatus(prn.Id, "ACCEPTED");
+            await _prnService.AcceptPrnAsync(model.ExternalId);
 
-            // Save data to the facade updating approval status to ""ACCEPTED"
-            return RedirectToAction(nameof(PrnsController.AcceptedPrn), "Prns", new { id = model.Id });
+            return RedirectToAction(nameof(PrnsController.AcceptedPrn), "Prns", new { id = model.ExternalId });
         }
 
         // Step 5 show updated PRN details
         [HttpGet]
         [Route("accepted-prn/{id}")]
-        public IActionResult AcceptedPrn(int id)
+        public async Task<IActionResult> AcceptedPrn(Guid id)
         {
-            var model = _prnService.GetPrnById(id);
+            var model = await _prnService.GetPrnByExternalIdAsync(id);
 
             if (model == null || !model.ApprovalStatus.EndsWith("ACCEPTED"))
             {
@@ -81,7 +79,7 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         [Route("view-awaiting-acceptance-alt")]
         public async Task<IActionResult> SelectPrnsToAcceptOrReject()
         {
-            var prns = _prnService.GetPrnsAwaitingAcceptance();
+            var prns = await _prnService.GetPrnsAwaitingAcceptanceAsync();
             return View(prns);
         }
 
