@@ -511,7 +511,7 @@ namespace FrontendSchemeRegistration.UI.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Check organisation ID - this one is either invalid or for an organisation that does not need to submit data.
+        ///   Looks up a localized string similar to Check that the organisation ID is correct.
         /// </summary>
         internal static string _882 {
             get {
