@@ -12,6 +12,7 @@ using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Resources.Views.ChangeComplianceSchemeOptions;
 using FrontendSchemeRegistration.UI.Resources.Views.Compliance;
 using FrontendSchemeRegistration.UI.Resources.Views.ComplianceSchemeStop;
+using FrontendSchemeRegistration.UI.Resources.Views.HomePageSelfManaged;
 using FrontendSchemeRegistration.UI.Resources.Views.UsingComplianceScheme;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
@@ -127,6 +128,7 @@ public class FrontendSchemeRegistrationController : Controller
     public async Task<IActionResult> UsingAComplianceScheme()
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+        session.RegistrationSession.Journey = new List<string> { PagePaths.HomePageSelfManaged, PagePaths.UsingAComplianceScheme };
 
         SetBackLink(session, PagePaths.UsingAComplianceScheme);
 
@@ -433,14 +435,43 @@ public class FrontendSchemeRegistrationController : Controller
         return View(nameof(HomePageSelfManaged), viewModel);
     }
 
-    [HttpPost]
+    [HttpGet]
     [Authorize(Policy = PolicyConstants.EprSelectSchemePolicy)]
-    [Route(PagePaths.HomePageSelfManaged)]
-    public async Task<IActionResult> HomePageSelfManaged()
+    [Route(PagePaths.HomeUseComplianceScheme)]
+    public async Task<IActionResult> HomeUseComplianceScheme()
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
         session.RegistrationSession.Journey = new List<string> { PagePaths.HomePageSelfManaged };
-        return await SaveSessionAndRedirect(session, nameof(UsingAComplianceScheme), PagePaths.HomePageSelfManaged, PagePaths.UsingAComplianceScheme);
+        return await SaveSessionAndRedirect(session, nameof(UsingAComplianceScheme), PagePaths.HomeUseComplianceScheme, PagePaths.UsingAComplianceScheme);
+    }
+
+    [HttpGet]
+    [Authorize(Policy = PolicyConstants.EprSelectSchemePolicy)]
+    [Route(PagePaths.ChooseProducerSize)]
+    public async Task<IActionResult> ChooseProducerSize()
+    {
+        var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+        session.RegistrationSession.Journey = new List<string> { PagePaths.HomePageSelfManaged, PagePaths.ChooseProducerSize };
+
+        SetBackLink(session, PagePaths.ChooseProducerSize);
+
+        return View(new ChooseProducerSizeViewModel());
+    }
+
+    [HttpPost]
+    [Authorize(Policy = PolicyConstants.EprSelectSchemePolicy)]
+    [Route(PagePaths.ChooseProducerSize)]
+    public async Task<IActionResult> ConfirmProducerSize(ChooseProducerSizeViewModel model)
+    {
+        var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+
+        if (!ModelState.IsValid)
+        {
+            SetBackLink(session, PagePaths.ChooseProducerSize);
+            return View("ChooseProducerSize", model);
+        }
+
+        return await SaveSessionAndRedirect(session, nameof(VisitHomePageSelfManaged), PagePaths.ChooseProducerSize, PagePaths.HomePageSelfManaged);
     }
 
     [HttpGet]

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <root>
     <resheader name="resmimetype">
         <value>text/microsoft-resx</value>
@@ -40,5 +41,8 @@
     </data>
     <data name="select_yes_if_you_want_to_upload_a_new_file" xml:space="preserve">
         <value>Select yes if you want to upload a new file</value>
+    </data>
+    <data name="select_size_of_your_organisation" xml:space="preserve">
+        <value>Select the size of your organisation</value>
     </data>
 </root>

@@ -35,17 +35,18 @@
             <div class="govuk-inset-text">
                 <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">@Localizer["organisation_id_x", Model.OrganisationNumber]</p>
                 <p class="govuk-body govuk-!-margin-bottom-1">@Localizer["your_account_is_set_up_so_you_can_submit_your_own_data"]</p>
+                <p class="govuk-body">
+                    <a asp-controller="FrontendSchemeRegistration" asp-action="ChooseProducerSize" class="govuk-link govuk-link--no-visited-state">
+                        @Localizer["choose_size_of_your_organisation"]
+                    </a>
+                </p>
                 @if (Model.CanSelectComplianceScheme)
                 {
-                    @using (Html.BeginForm(FormMethod.Post, new
-                    {
-                        @class = "govuk-!-margin-top-1"
-                    }))
-                    {
-                        <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left">
+                    <p class="govuk-body">
+                        <a asp-controller="FrontendSchemeRegistration" asp-action="HomeUseComplianceScheme" class="govuk-link govuk-link--no-visited-state">
                             @Localizer["add_a_compliance_scheme_to_your_account"]
-                        </button>
-                    }
+                        </a>
+                    </p>
                 }
             </div>
         </div>

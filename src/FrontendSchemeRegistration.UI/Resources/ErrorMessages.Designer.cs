@@ -104,5 +104,11 @@ namespace FrontendSchemeRegistration.UI.Resources {
                 return ResourceManager.GetString("select_yes_if_you_want_to_upload_a_new_file", resourceCulture);
             }
         }
+        
+        internal static string select_size_of_your_organisation {
+            get {
+                return ResourceManager.GetString("select_size_of_your_organisation", resourceCulture);
+            }
+        }
     }
 }

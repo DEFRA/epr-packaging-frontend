@@ -33,8 +33,10 @@ public static class PagePaths
     public const string ComplianceSchemeLanding = "home-compliance-scheme";
     public const string SelectComplianceScheme = "select-compliance-scheme";
     public const string SignedOut = "signed-out";
+    public const string HomeUseComplianceScheme = "home-use-compliance-scheme";
     public const string UsingAComplianceScheme = "using-a-compliance-scheme";
     public const string ReviewOrganisationData = "review-organisation-data";
+    public const string ChooseProducerSize = "choose-producer-size";
     public const string FileUploadingPartnerships = "/file-uploading-partnerships";
     public const string FileUploadPartnershipsSuccess = "/file-upload-partnerships-success";
     public const string FileUploadingBrands = "/file-uploading-brands";
