@@ -986,7 +986,7 @@
         <Folder Include="ViewModels\GovUk\NewFolder\" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="EPR.Common.Authorization" Version="1.0.15" />
+		<PackageReference Include="EPR.Common.Authorization" Version="1.0.15-rc.630743" />
         <PackageReference Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="7.0.10" />
         <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="7.0.10" />
         <PackageReference Include="Microsoft.Identity.Web" Version="2.19.1" />

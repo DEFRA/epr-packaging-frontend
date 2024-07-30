@@ -8,7 +8,7 @@
         <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
         <PackageReference Include="Azure.Identity" Version="1.12.0" />
         <PackageReference Include="CsvHelper" Version="30.0.1" />
-        <PackageReference Include="EPR.Common.Authorization" Version="1.0.15" />
+		<PackageReference Include="EPR.Common.Authorization" Version="1.0.15-rc.630743" />
         <PackageReference Include="libphonenumber-csharp" Version="8.13.22" />
         <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
         <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
