@@ -117,5 +117,23 @@
                 </div>
             </div>
         </div>
+        <div class="govuk-grid-column-one-half">
+            <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
+                <div class="govuk-card-body">
+                    <h2 class="govuk-heading-m">
+                        @Html.ActionLink(
+                                 Localizer["subsidiaries"].Value,
+                                 "Index",
+                                 "FileUploadSubsidiaries",
+                                 null,
+                                 new
+                                 {
+                                     @class = "govuk-link govuk-link--no-visited-state"
+                                 })
+                    </h2>
+                    <p class="govuk-body govuk-!-margin-bottom-0">@Localizer["add-manage-subsidiaries"]</p>
+                </div>
+            </div>
+        </div>
     </div>
 </main>

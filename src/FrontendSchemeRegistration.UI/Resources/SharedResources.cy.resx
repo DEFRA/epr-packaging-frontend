@@ -252,4 +252,7 @@
   <data name="date1_to_date2" xml:space="preserve">
     <value>{0} i {1}</value>
   </data>
+  <data name="upload_file" xml:space="preserve">
+    <value>Uwchlwytho ffeil</value>
+  </data>
 </root>

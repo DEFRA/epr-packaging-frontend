@@ -22,6 +22,8 @@ public static class PagePaths
     public const string FileUploadCompanyDetailsErrors = "/file-upload-company-details-errors";
     public const string FileUploadPartnerships = "/upload-partner-details";
     public const string FileUploadCompanyDetailsSubLanding = "/report-organisation-details";
+    public const string FileUploadSubsidiaries = "/subsidiaries-details";
+    public const string FileUploadSubsidiariesSuccess = "/subsidiaries-details-success";
     public const string OrganisationDetailsUploaded = "/organisation-details-uploaded";
     public const string FileUploadingCompanyDetails = "/file-uploading-company-details";
     public const string FileReUploadCompanyDetailsConfirmation = "/file-upload-company-details/confirm-upload";

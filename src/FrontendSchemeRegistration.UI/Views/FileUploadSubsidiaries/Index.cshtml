@@ -1,0 +1,30 @@
+﻿@{
+    //ViewData["Title"] = Localizer["header"];
+    ViewData["Title"] = "Subsidiary Data";
+}
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @await Html.PartialAsync("Partials/Govuk/_ErrorSummary", ViewData.ModelState)
+            }
+            @using (Html.BeginForm(FormMethod.Post, new
+            {
+                enctype = "multipart/form-data"
+            }))
+            {
+                <div class="govuk-form-group @(ViewData.ModelState.IsValid ? string.Empty : "govuk-form-group--error")" data-testid="subsidiary-data-upload-form">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        @await Html.PartialAsync("Partials/Govuk/_Error", ViewData.ModelState.GetModelStateEntry("file"))
+                    }
+                    <label class="govuk-label" for="file">@SharedLocalizer["upload_a_file"]</label>
+                    <input class="govuk-file-upload" name="file" type="file" id="file" data-testid="subsidiary-upload-choose-file-button">
+                </div>
+                <button class="govuk-button" data-module="govuk-button" type="submit" data-testid="subsidiary-data-upload-button">@SharedLocalizer["upload_file"]</button>
+            }
+        </div>
+    </div>
+ </main>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -117,63 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="every_year_you_must_report_data_for" xml:space="preserve">
-    <value>Rhaid ichi roi gwybod am fanylion y sefydliad ar gyfer Ionawr i Fehefin a Gorffennaf i Ragfyr.</value>
+  <data name="File_uploaded_successfully" xml:space="preserve">
+    <value>WFile uploaded successfully</value>
   </data>
-  <data name="you_can_also" xml:space="preserve">
-    <value>Rydych chi hefyd yn cael:</value>
+  <data name="Return_to_the_dashboard" xml:space="preserve">
+    <value>WReturn to the dashboard</value>
   </data>
-  <data name="resubmit_your_organisation_details" xml:space="preserve">
-    <value>ailgyflwyno manylion eich sefydliad</value>
+  <data name="subsidiaries_have_been_added_to_ your_account" xml:space="preserve">
+    <value>Wsubsidiaries have been added to your account</value>
   </data>
-  <data name="report_changes_to_your_organisation_details" xml:space="preserve">
-    <value>rhoi gwybod am newidiadau ym manylion eich sefydliad</value>
+  <data name="View_your_subsidiaries" xml:space="preserve">
+    <value>WView your subsidiaries</value>
   </data>
-  <data name="view_your_history" xml:space="preserve">
-    <value>gweld eich hanes</value>
-  </data>
-
-  <data name="report_organisation_details" xml:space="preserve">
-    <value>Rhoi gwybod am fanylion sefydliad</value>
-  </data>
-  <data name="organisation_details" xml:space="preserve">
-    <value>Manylion y sefydliad</value>
-  </data>
-
-  <data name="report_packaging_data" xml:space="preserve">
-    <value>Rhoi gwybod am ddata pecynwaith</value>
-  </data>
-  <data name="packaging_data" xml:space="preserve">
-    <value>Data pecynwaith</value>
-  </data>
-  <data name="resubmit_your_packaging_data" xml:space="preserve">
-    <value>ailgyflwyno'ch data pecynwaith</value>
-  </data>  
-  <data name="packaging_recovery_notes" xml:space="preserve">
-    <value>Nodiadau ailgylchu gwastraff pecynwaith (PRNs) a nodiadau ailgylchu allforio pecynwaith gwastraff (PERNs)</value>
-  </data>
-  <data name="no_action_needed_at_the_moment" xml:space="preserve">
-    <value>Dim angen gweithredu ar hyn o bryd</value>
-  </data>
-  <data name="account_home" xml:space="preserve">
-    <value>Hafan y cyfrif - {0}</value>
-  </data>
-  <data name="waste_management_fee" xml:space="preserve">
-    <value>Ffi rheoli gwastraff</value>
-  </data>
-  <data name="your_account_is_set_up_so_you_can_submit_your_own_data" xml:space="preserve">
-    <value>Mae eich cyfrif wedi’i sefydlu felly gallwch gyflwyno eich data eich hun</value>
-  </data>
-  <data name="add_a_compliance_scheme_to_your_account" xml:space="preserve">
-    <value>Ychwanegu cynllun cydymffurfio at eich cyfrif</value>
-  </data>
-  <data name="organisation_id_x" xml:space="preserve">
-    <value>ID y sefydliad: {0}</value>
-  </data>
-  <data name="subsidiaries" xml:space="preserve">
-    <value>WSubsidiaries</value>
-  </data>
-  <data name="add-manage-subsidiaries" xml:space="preserve">
-    <value>WAdd, manage subsidaries</value>
+  <data name="what_happens_next" xml:space="preserve">
+    <value>Wwhat happens next</value>
   </data>
 </root>

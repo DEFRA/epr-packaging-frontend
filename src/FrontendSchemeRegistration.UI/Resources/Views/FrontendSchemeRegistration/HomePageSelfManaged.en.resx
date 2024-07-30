@@ -171,4 +171,10 @@
   <data name="organisation_id_x" xml:space="preserve">
     <value>Organisation ID: {0}</value>
   </data>
+  <data name="subsidiaries" xml:space="preserve">
+    <value>Subsidiaries</value>
+  </data>
+  <data name="add-manage-subsidiaries" xml:space="preserve">
+    <value>Add, manage subsidaries</value>
+  </data>
 </root>
