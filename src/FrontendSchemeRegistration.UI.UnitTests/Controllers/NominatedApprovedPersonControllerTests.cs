@@ -121,7 +121,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                               .Which.Model.Should().BeOfType<RoleInOrganisationViewModel>()
                               .Subject.As<RoleInOrganisationViewModel>();
             model.Id.Should().Be(id);
-            model.RoleInOrganisation.Should().Be(RoleInOrganisation.CompanySecretary);
+            model.RoleInOrganisation.Should().Be(FrontendSchemeRegistration.UI.Enums.RoleInOrganisation.CompanySecretary);
         }
 
         [Test]
@@ -164,7 +164,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             var id = Guid.NewGuid();
             var frontendSchemeRegistrationSession = new FrontendSchemeRegistrationSession();
             _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(frontendSchemeRegistrationSession);
-            var model = new RoleInOrganisationViewModel { RoleInOrganisation = RoleInOrganisation.CompanySecretary };
+            var model = new RoleInOrganisationViewModel { RoleInOrganisation = FrontendSchemeRegistration.UI.Enums.RoleInOrganisation.CompanySecretary };
 
             // Act
             var result = await _systemUnderTest.RoleInOrganisation(model, id);

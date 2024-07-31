@@ -28,4 +28,6 @@ public class ExternalUrlOptions
     public string PrivacyPage { get; set; }
 
     public string AccessibilityPage { get; set; }
+
+    public string FindAndUpdateCompanyInformation { get; set; }
 }

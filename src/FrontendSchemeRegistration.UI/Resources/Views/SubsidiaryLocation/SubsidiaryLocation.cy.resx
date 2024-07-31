@@ -1,0 +1,26 @@
+﻿<root>
+	<data name="report-packaging-data" xml:space="preserve">
+        <value>Rhoi gwybod am ddata pecynwaith</value>
+    </data>
+	<data name="where-in-the-uk-is-the-subsidiary-based" xml:space="preserve">
+        <value>WWhere in the UK is the subsidiary based?</value>
+    </data>
+	<data name="uk-nation-hint" xml:space="preserve">
+        <value>WChoose the nation where the subsidiary is based.</value>
+    </data>
+	<data name="uk-nation-england" xml:space="preserve">
+        <value>Lloegr</value>
+    </data>
+	<data name="uk-nation-scotland" xml:space="preserve">
+        <value>Yr Alban</value>
+    </data>
+	<data name="uk-nation-wales" xml:space="preserve">
+        <value>Cymru</value>
+    </data>
+	<data name="uk-nation-northernIreland" xml:space="preserve">
+        <value>Gogledd Iwerddon</value>
+    </data>
+	<data name="uk-nation-errormessage" xml:space="preserve">
+        <value>WSelect where in the UK the subsidiary is based</value>
+    </data>
+</root>

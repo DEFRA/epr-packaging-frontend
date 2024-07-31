@@ -1,0 +1,72 @@
+﻿@using FrontendSchemeRegistration.UI.ViewModels
+
+@model SubsidiaryCheckDetailsViewModel
+
+@{
+    ViewData["Title"] = Localizer["report-packaging-data"];
+    var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer);
+}
+@await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
+<main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            @using (Html.BeginForm("Get", "Landing", null, FormMethod.Get))
+            {
+                <div class="govuk-form-group">
+                    <h1 class="govuk-heading-l govuk-!-margin-top-4 govuk-!-margin-bottom-7">
+                        @Localizer["check-details"]
+                    </h1>
+                </div>
+            }
+            @using (Html.BeginForm("Post", "SubsidiaryCheckDetails", Model))
+            {
+                <dl class="govuk-summary-list">
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            @Localizer["companies-house-number"]
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @Model.CompaniesHouseNumber
+                        </dd>
+                        <dd class="govuk-summary-list__actions">
+                            <a class="govuk-link govuk-link--no-visited-state" asp-controller="SubsidiaryCompaniesHouseNumber" asp-action="Get"
+                               asp-route-submissionId="">@SharedLocalizer["change"]</a><span class="govuk-visually-hidden"> @Localizer["companies-house-number"]</span>
+                        </dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            @Localizer["organisation-details"]
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @Model.CompanyName<br /><br />
+                            @Model.BusinessAddress.AddressSingleLine<br />
+                            @Model.BusinessAddress.Street<br />
+                            @Model.BusinessAddress.Town<br />
+                            @Model.BusinessAddress.County<br />
+                            @Model.BusinessAddress.Country<br />
+                            @Model.BusinessAddress.Postcode
+                        </dd>
+                        <dd class="govuk-summary-list__actions">
+                            <a class="govuk-link govuk-link--no-visited-state" asp-controller="SubsidiaryConfirmCompanyDetails" asp-action="Get">@SharedLocalizer["change"]</a><span class="govuk-visually-hidden"> @Localizer["organisation-details"]</span>
+                        </dd>
+                    </div>
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key">
+                            @Localizer["uk-nation"]
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @Model.BusinessAddress.Country
+                        </dd>
+                        <dd class="govuk-summary-list__actions">
+                            <ul class="govuk-summary-list__actions-list">
+                                <a class="govuk-link govuk-link--no-visited-state" asp-controller="SubsidiaryLocation" asp-action="Get">@SharedLocalizer["change"]</a><span class="govuk-visually-hidden"> @Localizer["uk-nation"]</span>
+                            </ul>
+                        </dd>
+                    </div>
+                </dl>
+
+                <button class="govuk-button" data-module="govuk-button">@SharedLocalizer["confirm_and_continue"]</button>
+            }
+        </div>
+    </div>
+</main>

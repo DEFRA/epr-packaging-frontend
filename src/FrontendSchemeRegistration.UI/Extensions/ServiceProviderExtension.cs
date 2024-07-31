@@ -10,6 +10,7 @@ using Helpers;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.TokenCacheProviders.Distributed;
@@ -30,7 +31,7 @@ public static class ServiceProviderExtension
         ConfigureAuthorization(services, configuration);
         ConfigureSession(services);
         RegisterServices(services);
-        RegisterHttpClients(services);
+        RegisterHttpClients(services, configuration);
 
         return services;
     }
@@ -51,11 +52,11 @@ public static class ServiceProviderExtension
             {
                 if (exception is RedisConnectionException)
                 {
-                    buildLogger.LogError(exception, "L2 Cache Failure Redis connection exception: {message}", exception.Message);
+                    buildLogger.LogError(exception, "L2 Cache Failure Redis connection exception: {Message}", exception.Message);
                     return true;
                 }
 
-                buildLogger.LogError(exception, "L2 Cache Failure: {message}", exception.Message);
+                buildLogger.LogError(exception, "L2 Cache Failure: {Message}", exception.Message);
                 return false;
             };
         });
@@ -97,6 +98,7 @@ public static class ServiceProviderExtension
         services.Configure<AzureAdB2COptions>(configuration.GetSection(AzureAdB2COptions.ConfigSection));
         services.Configure<HttpClientOptions>(configuration.GetSection(HttpClientOptions.ConfigSection));
         services.Configure<AccountsFacadeApiOptions>(configuration.GetSection(AccountsFacadeApiOptions.ConfigSection));
+        services.Configure<IntegrationFacadeApiOptions>(configuration.GetSection(IntegrationFacadeApiOptions.ConfigSection));
         services.Configure<WebApiOptions>(configuration.GetSection(WebApiOptions.ConfigSection));
         services.Configure<ValidationOptions>(configuration.GetSection(ValidationOptions.ConfigSection));
         services.Configure<RedisOptions>(configuration.GetSection(RedisOptions.ConfigSection));
@@ -106,6 +108,7 @@ public static class ServiceProviderExtension
 
     private static void RegisterServices(IServiceCollection services)
     {
+        services.AddScoped<ICompaniesHouseService, CompaniesHouseService>();
         services.AddScoped<IComplianceSchemeMemberService, ComplianceSchemeMemberService>();
         services.AddScoped<ICookieService, CookieService>();
         services.AddScoped<INotificationService, NotificationService>();
@@ -118,6 +121,7 @@ public static class ServiceProviderExtension
         services.AddScoped<IRoleManagementService, RoleManagementService>();
         services.AddScoped<IRegulatorService, RegulatorService>();
         services.AddScoped<ISubmissionService, SubmissionService>();
+        services.AddScoped<ISubsidiaryService, SubsidiaryService>();
         services.AddTransient<IDateTimeProvider, SystemDateTimeProvider>();
         services.AddSingleton<IPatchService, PatchService>();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -125,7 +129,7 @@ public static class ServiceProviderExtension
         services.AddSingleton<ICorrelationIdProvider, CorrelationIdProvider>();
     }
 
-    private static void RegisterHttpClients(IServiceCollection services)
+    private static void RegisterHttpClients(IServiceCollection services, IConfiguration configuration)
     {
         services.AddHttpClient<IAccountServiceApiClient, AccountServiceApiClient>((sp, client) =>
         {
@@ -135,6 +139,23 @@ public static class ServiceProviderExtension
             client.BaseAddress = new Uri(facadeApiOptions.BaseEndpoint);
             client.Timeout = TimeSpan.FromSeconds(httpClientOptions.TimeoutSeconds);
         });
+
+        var useMockData = configuration.GetValue<bool>("IntegrationFacadeAPI:UseMockData");
+        if (useMockData)
+        {
+            services.AddSingleton<IIntegrationServiceApiClient, MockIntegrationServiceApiClient>();
+        }
+        else
+        {
+            services.AddHttpClient<IIntegrationServiceApiClient, IntegrationServiceApiClient>((sp, client) =>
+            {
+                var facadeApiOptions = sp.GetRequiredService<IOptions<IntegrationFacadeApiOptions>>().Value;
+                var httpClientOptions = sp.GetRequiredService<IOptions<HttpClientOptions>>().Value;
+
+                client.BaseAddress = new Uri(facadeApiOptions.BaseEndpoint);
+                client.Timeout = TimeSpan.FromSeconds(httpClientOptions.TimeoutSeconds);
+            });
+        }
     }
 
     private static void ConfigureLocalization(IServiceCollection services)

@@ -12,6 +12,17 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="ViewModels\Shared\GovUK\**" />
+      <Compile Remove="Views\SubsidiaryCompaniesHouseNumberSearch\**" />
+      <Content Remove="ViewModels\Shared\GovUK\**" />
+      <Content Remove="Views\SubsidiaryCompaniesHouseNumberSearch\**" />
+      <EmbeddedResource Remove="ViewModels\Shared\GovUK\**" />
+      <EmbeddedResource Remove="Views\SubsidiaryCompaniesHouseNumberSearch\**" />
+      <None Remove="ViewModels\Shared\GovUK\**" />
+      <None Remove="Views\SubsidiaryCompaniesHouseNumberSearch\**" />
+    </ItemGroup>
+
+    <ItemGroup>
         <ProjectReference Include="..\FrontendSchemeRegistration.Application\FrontendSchemeRegistration.Application.csproj" />
     </ItemGroup>
 
@@ -180,6 +191,9 @@
         </EmbeddedResource>
         <EmbeddedResource Update="Resources\Views\Shared\Partials\Notifications\_NominatedApprovedPerson.cy.resx">
           <SubType>Designer</SubType>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Views\SubsidiaryAdded\SubsidiaryAdded.resx">
+          <Generator></Generator>
         </EmbeddedResource>
         <EmbeddedResource Update="Resources\Views\UploadNewFileToSubmit\UploadNewFileToSubmit.en.resx">
             <SubType>Designer</SubType>
@@ -531,6 +545,7 @@
             <DependentUpon>PrivacyPolicy.en.resx</DependentUpon>
         </Compile>
         <Compile Remove="Attributes\ActionFilters\ApplicationActionFilterAttribute.cs" />
+        <Compile Remove="Controllers\SubsidiaryCompaniesHouseNumberSearchController.cs" />
         <Compile Update="Resources\ErrorMessages.Designer.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>

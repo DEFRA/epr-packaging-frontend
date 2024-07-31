@@ -167,6 +167,6 @@
     <value>Organisation type code must be one of SOL PAR REG PLC LLP LTD LPA COP CIC OUT OTH</value>
   </data>
   <data name="882" xml:space="preserve">
-    <value>Check that the organisation ID is correct</value>
+        <value>Check that the organisation ID is correct</value>
   </data>
 </root>

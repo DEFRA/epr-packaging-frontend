@@ -1,0 +1,42 @@
+﻿@model SubsidiaryAddedViewModel
+
+@{
+    ViewData["Title"] = Localizer["page_title_subsidiary_added"];
+}
+
+@await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
+
+<main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds govuk-!-margin-top-8">
+            <div class="govuk-panel govuk-panel--confirmation">
+                <h1 class="govuk-panel__title">
+                    @Localizer["subsidiary_added"]
+                </h1>
+                <div class="govuk-panel__body">
+                    @Localizer["organisation_id_for"] @Model.OrganisationName
+                    <br />
+                    <strong>@Model.OrganisationId</strong>
+                </div>
+            </div>
+            <h2 class="govuk-heading-m">@Localizer["what_happens_next"]</h2>
+            <p class="govuk-body">
+                @Localizer["you_will_need_to_use_this_id"]
+            </p>
+            <div class="govuk-button-group">
+                @* TODO: Correct links to subsequent pages once they have been added *@
+                @Html.ActionLink(Localizer["continue_reporting"].Value,
+                         "Get",
+                         "FileUploadSubLanding",
+                         new { organisationId = Model.OrganisationId },
+                         new { @class = "govuk-button", @datamodule = "govuk-button" })
+
+               @*  @Html.ActionLink(Localizer["manage_subsidiaries"].Value,
+                         "Get",
+                         "TODO",
+                         new { organisationId = Model.OrganisationId },
+                         new { @class = "govuk-button govuk-button--secondary" }) *@
+            </div>
+        </div>
+    </div>
+</main>

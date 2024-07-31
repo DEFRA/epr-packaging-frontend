@@ -91,6 +91,21 @@ dotnet test
 ## How To Debug
 Use debugging tools in your chosen IDE.
 
+## Integration Facade
+
+The Integration Facade is used to call the Companies House service via an integration service. A separate setting is
+used so that developers can point to an instance on the server to avoid IP restrictions outside of the cloud. 
+Add this to your appsettings.Development.json, using the same url as your Accounts Facade API in Azure.
+
+```
+  "IntegrationFacadeAPI": {
+    "BaseEndpoint": "https://<accounts__facade>/api/",
+    "UseMockData": false
+  }
+```
+
+If you don't need to get live Companies House data, set `UseMockData` to `true`.
+
 ## Environment Variables - deployed environments
 The structure of the appsettings can be found in the repository. Example configurations for the different environments can be found in [epr-app-config-settings](https://dev.azure.com/defragovuk/RWD-CPR-EPR4P-ADO/_git/epr-app-config-settings).
 
@@ -134,6 +149,8 @@ The structure of the appsettings can be found in the repository. Example configu
 | AzureAdB2C__CallbackPath                                   | Callback path for Azure ADB2C                                                                                    |
 | AccountsFacadeAPI__BaseEndpoint                            | URL of the account facade                                                                                        |
 | AccountsFacadeAPI__DownstreamScope                         | Downstream scope for the account facade                                                                          |
+| IntegrationFacadeAPI__BaseEndpoint                         | URL of the integration facade (same as the accounts facade, seperated for developer convenience)                 |
+| IntegrationFacadeAPI__DownstreamScope                      | Downstream scope for the integration facade                                                                      |
 | WebAPI__BaseEndpoint                                       | Base endpoint for the Web API                                                                                    |
 | WebAPI__DownstreamScope                                    | Downstream scope for the Web API                                                                                 |
 | Caching__CacheNotifications                                | Enable or disable caching notifications                                                                          |

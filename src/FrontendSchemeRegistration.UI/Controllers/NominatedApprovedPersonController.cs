@@ -76,7 +76,7 @@ namespace FrontendSchemeRegistration.UI.Controllers
 
             if (!session.NominatedApprovedPersonSession.RoleInOrganisation.IsNullOrEmpty())
             {
-                model.RoleInOrganisation = (RoleInOrganisation)Enum.Parse(typeof(RoleInOrganisation), session.NominatedApprovedPersonSession.RoleInOrganisation);
+                model.RoleInOrganisation = (Enums.RoleInOrganisation)Enum.Parse(typeof(Enums.RoleInOrganisation), session.NominatedApprovedPersonSession.RoleInOrganisation);
             }
 
             var currentPagePath = $"{PagePaths.RoleInOrganisation}/{id}";

@@ -1,0 +1,87 @@
+﻿@using FrontendSchemeRegistration.Application.Enums
+@using FrontendSchemeRegistration.UI.ViewModels
+
+@model SubsidiaryLocationViewModel
+
+@{
+    ViewData["Title"] = Localizer["report-packaging-data"];
+    var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer);
+}
+
+@await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
+
+<main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @await Html.PartialAsync("Partials/Govuk/_ErrorsViewModelSummary", errorsViewModel)
+            }
+
+            @using (Html.BeginForm("Post", "SubsidiaryLocation", Model))
+            {
+                <div class="govuk-form-group @(ViewData.ModelState.IsValid ? String.Empty : "govuk-form-group--error")">
+                    <fieldset class="govuk-fieldset" aria-describedby="uk-nation-hint">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                            <h2 class="govuk-fieldset__heading govuk-heading-m  govuk-!-margin-top-4 govuk-!-margin-bottom-7">@Localizer["where-in-the-uk-is-the-subsidiary-based"]</h2>
+                        </legend>
+
+                        <div id="uk-nation-hint" class="govuk-hint">
+                            @Localizer["uk-nation-hint"]
+                        </div>
+
+                        <div class="govuk-radios" data-module="govuk-radios">
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" type="radio"
+                                       gov-for="UkNation"
+                                       gov-value="@nameof(Nation.England)"
+                                       gov-first-option="true">
+                                <label class="govuk-label govuk-radios__label"
+                                       gov-for="UkNation"
+                                       gov-value="@nameof(Nation.England)"
+                                       gov-first-option="true">
+                                    @Localizer["uk-nation-england"]
+                                </label>
+                            </div>
+
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" type="radio"
+                                       gov-for="UkNation"
+                                       gov-value="@nameof(Nation.Scotland)">
+                                <label class="govuk-label govuk-radios__label"
+                                       gov-for="UkNation"
+                                       gov-value="@nameof(Nation.Scotland)">
+                                    @Localizer["uk-nation-scotland"]
+                                </label>
+                            </div>
+
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" type="radio"
+                                       gov-for="UkNation"
+                                       gov-value="@nameof(Nation.Wales)">
+                                <label class="govuk-label govuk-radios__label"
+                                       gov-for="UkNation"
+                                       gov-value="@nameof(Nation.Wales)">
+                                    @Localizer["uk-nation-wales"]
+                                </label>
+                            </div>
+
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" type="radio"
+                                       gov-for="UkNation"
+                                       gov-value="@nameof(Nation.NorthernIreland)">
+                                <label class="govuk-label govuk-radios__label"
+                                       gov-for="UkNation"
+                                       gov-value="@nameof(Nation.NorthernIreland)">
+                                    @Localizer["uk-nation-northernIreland"]
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <button class="govuk-button" data-module="govuk-button">@SharedLocalizer["continue"]</button>
+            }
+        </div>
+    </div>
+</main>

@@ -1,23 +1,26 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrontendSchemeRegistration.UI", "FrontendSchemeRegistration.UI\FrontendSchemeRegistration.UI.csproj", "{FFD5EAA2-1F8C-4DF0-8116-FCF5BB81E960}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FrontendSchemeRegistration.UI", "FrontendSchemeRegistration.UI\FrontendSchemeRegistration.UI.csproj", "{FFD5EAA2-1F8C-4DF0-8116-FCF5BB81E960}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrontendSchemeRegistration.Application", "FrontendSchemeRegistration.Application\FrontendSchemeRegistration.Application.csproj", "{BAB4890C-D400-45CE-BA89-AED9F958FAB7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FrontendSchemeRegistration.Application", "FrontendSchemeRegistration.Application\FrontendSchemeRegistration.Application.csproj", "{BAB4890C-D400-45CE-BA89-AED9F958FAB7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrontendSchemeRegistration.Application.UnitTests", "FrontendSchemeRegistration.Application.UnitTests\FrontendSchemeRegistration.Application.UnitTests.csproj", "{65DCD8FF-12CB-4381-81F0-5189774ACDF0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FrontendSchemeRegistration.Application.UnitTests", "FrontendSchemeRegistration.Application.UnitTests\FrontendSchemeRegistration.Application.UnitTests.csproj", "{65DCD8FF-12CB-4381-81F0-5189774ACDF0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrontendSchemeRegistration.UI.UnitTests", "FrontendSchemeRegistration.UI.UnitTests\FrontendSchemeRegistration.UI.UnitTests.csproj", "{1A8DA2A3-4FDE-4E46-A99C-F26049F4C8FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FrontendSchemeRegistration.UI.UnitTests", "FrontendSchemeRegistration.UI.UnitTests\FrontendSchemeRegistration.UI.UnitTests.csproj", "{1A8DA2A3-4FDE-4E46-A99C-F26049F4C8FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrontendSchemeRegistration.PactTests", "FrontendSchemeRegistration.PactTests\FrontendSchemeRegistration.PactTests.csproj", "{9886CC51-26A6-44C9-9516-8A9A3CC184FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FrontendSchemeRegistration.PactTests", "FrontendSchemeRegistration.PactTests\FrontendSchemeRegistration.PactTests.csproj", "{9886CC51-26A6-44C9-9516-8A9A3CC184FC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{82A10A05-6E05-4157-AFF1-5E090BD99F95}"
 	ProjectSection(SolutionItems) = preProject
-		stylecop.ruleset = stylecop.ruleset
-		NuGet.Config = NuGet.Config
-		Directory.Build.props = Directory.Build.props
-		..\README.md = ..\README.md
 		..\CONTRIBUTING.md = ..\CONTRIBUTING.md
+		Directory.Build.props = Directory.Build.props
 		..\LICENCE.md = ..\LICENCE.md
+		NuGet.Config = NuGet.Config
+		..\README.md = ..\README.md
+		stylecop.ruleset = stylecop.ruleset
 	EndProjectSection
 EndProject
 Global
@@ -46,5 +49,8 @@ Global
 		{9886CC51-26A6-44C9-9516-8A9A3CC184FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9886CC51-26A6-44C9-9516-8A9A3CC184FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9886CC51-26A6-44C9-9516-8A9A3CC184FC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

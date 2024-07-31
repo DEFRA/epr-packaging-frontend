@@ -1,0 +1,78 @@
+﻿@using FrontendSchemeRegistration.UI.ViewModels;
+
+@model SubsidiaryConfirmCompanyDetailsViewModel
+
+@{
+    ViewData["Title"] = Localizer["ConfirmCompanyDetails.Title"];
+}
+
+@await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
+
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <form asp-controller="SubsidiaryConfirmCompanyDetails" asp-action="Post" method="post">
+                    @Html.HiddenFor(m => m.CompaniesHouseNumber)
+                    @Html.HiddenFor(m => m.CompanyName)
+                    @Html.HiddenFor(m => m.OrganisationId)
+
+                    <div class="govuk-form-group">
+                        <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+                            @Localizer["ConfirmCompanyDetails.Header"]
+                        </h1>
+
+                        <div class="govuk-inset-text">
+                            <div class="govuk-body">
+                                <div class="govuk-!-margin-bottom-1 govuk-!-font-weight-bold">
+                                    @Localizer["ConfirmCompanyDetails.CompaniesHouseNumber"]: @Model.CompaniesHouseNumber
+                                </div>
+                            </div>
+
+                            @if (@Model.OrganisationId is not null)
+                            {
+                                <div class="govuk-body">
+                                    <div class="govuk-!-margin-bottom-1 govuk-!-font-weight-bold">
+                                        @Localizer["ConfirmCompanyDetails.OrganisationId"]: @Model.OrganisationId
+                                    </div>
+                                </div>
+                            }
+
+                            <div class="govuk-body">
+                                <div class="govuk-!-margin-bottom-1">
+                                    @Model.CompanyName
+                                </div>
+                            </div>
+
+                            <div class="govuk-body">
+                                <div class="govuk-!-margin-bottom-1">
+                                    @Localizer["ConfirmCompanyDetails.Address"]:
+                                </div>
+                                <div>
+                                    @{ RenderAddressParts(Model.BusinessAddress?.AddressFields); }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="govuk-button" data-module="govuk-button">
+                        @SharedLocalizer["Continue"]
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+
+@{
+    void RenderAddressParts(string?[] addressParts)
+    {
+        if(addressParts is not null)
+        {
+            foreach (string part in addressParts.Where(p => !string.IsNullOrWhiteSpace(p)))
+            {
+                <div>@part</div>
+            }
+        }
+    }
+}

@@ -71,4 +71,12 @@ public static class PagePaths
     public const string FileUploadHistoryPreviousSubmissions = "/history-previous-submissions";
     public const string FileUploadHistoryPackagingDataFiles = "/history-packaging-data-files";
     public const string FileUploadNoSubmissionHistory = "/no-submission-history";
+    public const string SubsidiaryAdded = "/subsidiary-added";
+    public const string SubsidiaryCompaniesHouseNumberSearch = "/subsidiary-companies-house-number-search";
+    public const string SubsidiaryConfirmCompanyDetails = "/subsidiary-confirm-company-details";
+    public const string RegisteredWithCompaniesHouse = "/subsidiary-registered-with-companies-house";
+    public const string SubsidiaryCheckYourDetails = "/subsidiary-check-your-details";
+    public const string SubsidiaryUkNation = "/subsidiary-uk-nation";
+    public const string SubsidiaryLocation = "/subsidiary-location";
+    public const string SubsidiaryCheckDetails = "/subsidiary-check-details";
 }
