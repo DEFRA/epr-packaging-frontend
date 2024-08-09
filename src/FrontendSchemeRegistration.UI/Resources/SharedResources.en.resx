@@ -258,4 +258,7 @@
   <data name="upload_file" xml:space="preserve">
     <value>Upload file</value>
   </data>
-</root>
+  <data name="export" xml:space="preserve">
+    <value>Export</value>
+  </data>
+ </root>

@@ -171,6 +171,15 @@ namespace FrontendSchemeRegistration.UI.Resources {
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
+        internal static string export {
+            get {
+                return ResourceManager.GetString("export", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
         internal static string go_to_account_home_page {
             get {
                 return ResourceManager.GetString("go_to_account_home_page", resourceCulture);

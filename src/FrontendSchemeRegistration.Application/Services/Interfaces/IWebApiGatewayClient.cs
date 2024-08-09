@@ -1,5 +1,6 @@
 ﻿using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
 using FrontendSchemeRegistration.Application.Enums;
 
 namespace FrontendSchemeRegistration.Application.Services.Interfaces;
@@ -34,4 +35,6 @@ public interface IWebApiGatewayClient
     Task<List<SubmissionPeriodId>> GetSubmissionIdsAsync(Guid organisationId, string queryString);
 
     Task<List<SubmissionHistory>> GetSubmissionHistoryAsync(Guid submissionId, string queryString);
+
+    Task<List<SubsidiaryExportDto>> GetSubsidiariesAsync(int subsidiaryParentId);
 }

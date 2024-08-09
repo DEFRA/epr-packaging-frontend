@@ -222,4 +222,10 @@
 	<data name="home" xml:space="preserve">
     <value />
   </data>
+ <data name="subsidiaries" xml:space="preserve">
+	<value />
+ </data>
+ <data name="add-manage-subsidiaries" xml:space="preserve">
+	<value />
+ </data>
 </root>

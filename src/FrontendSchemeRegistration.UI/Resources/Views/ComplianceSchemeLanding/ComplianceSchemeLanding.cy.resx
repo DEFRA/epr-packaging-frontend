@@ -222,4 +222,10 @@
     <data name="home" xml:space="preserve">
     <value>Hafan</value>
   </data>
+  <data name="subsidiaries" xml:space="preserve">
+    <value>WSubsidiaries</value>
+  </data>
+	<data name="add-manage-subsidiaries" xml:space="preserve">
+    <value>WAdd, manage subsidiaries</value>
+  </data>
 </root>

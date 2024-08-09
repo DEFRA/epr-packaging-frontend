@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="every_year_you_must_report_data_for" xml:space="preserve">
-    <value>You must report organisation details for January to June and July to December.</value>
+    <value>You must report organisation details for January to June and July to Decemberxxx.</value>
   </data>
   <data name="you_can_also" xml:space="preserve">
     <value>You can also:</value>
@@ -175,6 +175,6 @@
     <value>Subsidiaries</value>
   </data>
   <data name="add-manage-subsidiaries" xml:space="preserve">
-    <value>Add, manage subsidaries</value>
+    <value>Add, manage subsidiaries</value>
   </data>
 </root>

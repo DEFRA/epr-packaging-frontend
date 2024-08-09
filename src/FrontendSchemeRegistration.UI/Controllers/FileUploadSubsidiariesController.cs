@@ -2,30 +2,37 @@
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Constants;
+using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FrontendSchemeRegistration.UI.Controllers
 {
+    [Route(PagePaths.FileUploadSubsidiaries)]
     public class FileUploadSubsidiariesController : Controller
     {
         private readonly IFileUploadService _fileUploadService;
         private readonly ISubmissionService _submissionService;
+        private readonly ISubsidiaryService _subsidiaryService;
 
         public FileUploadSubsidiariesController(
             IFileUploadService fileUploadService,
-            ISubmissionService submissionService)
+            ISubmissionService submissionService,
+            ISubsidiaryService subsidiaryService)
         {
             _fileUploadService = fileUploadService;
             _submissionService = submissionService;
+            _subsidiaryService = subsidiaryService;
         }
 
         [HttpGet]
         [Route(PagePaths.FileUploadSubsidiaries)]
         public IActionResult Index()
         {
-            return View();
+            var fileUploadSubsidiaryViewModel = new FileUploadSubsidiaryViewModel { SubsidiariesAvailable = true };
+            return View(fileUploadSubsidiaryViewModel);
         }
 
         [HttpPost]
@@ -46,7 +53,7 @@ namespace FrontendSchemeRegistration.UI.Controllers
              var routeValues = new RouteValueDictionary { { "submissionId", submissionId } };
 
              return !ModelState.IsValid
-                ? View("Index", new FileUploadViewModel { })
+                ? View("Index", new FileUploadSubsidiaryViewModel { SubsidiariesAvailable = true })
                 : RedirectToAction(nameof(FileUploading), routeValues);
         }
 
@@ -82,6 +89,18 @@ namespace FrontendSchemeRegistration.UI.Controllers
             model.RecordsAdded = int.TryParse(Request.Query["recordsAdded"], out var recordsAdded) ? recordsAdded : 0;
 
             return View("FileUplodSuccess", model);
+        }
+
+        [HttpGet]
+        [Route(PagePaths.ExportSubsidiaries)]
+        public async Task<IActionResult> ExportSubsidiaries(int subsidiaryParentId)
+        {
+            var userData = User.GetUserData();
+            var organisation = userData.Organisations.First();
+            bool isComplienceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
+            var stream = await _subsidiaryService.GetSubsidiariesStreamAsync(subsidiaryParentId, isComplienceScheme);
+
+            return File(stream, "text/csv", $"subsidiary.csv");
         }
     }
 }

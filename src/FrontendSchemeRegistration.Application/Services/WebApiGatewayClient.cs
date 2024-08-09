@@ -3,10 +3,12 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Extensions;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
@@ -213,6 +215,27 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting submission history");
+            throw;
+        }
+    }
+
+    public async Task<List<SubsidiaryExportDto>> GetSubsidiariesAsync(int subsidiaryParentId)
+    {
+        await PrepareAuthenticatedClientAsync();
+
+        try
+        {
+            var response = await _httpClient.GetAsync($"/api/v1/subsidiary/{subsidiaryParentId}");
+
+            response.EnsureSuccessStatusCode();
+
+            var subsidiaries = await response.Content.ReadFromJsonAsync<List<SubsidiaryExportDto>>();
+
+            return subsidiaries;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting subsidiaries");
             throw;
         }
     }

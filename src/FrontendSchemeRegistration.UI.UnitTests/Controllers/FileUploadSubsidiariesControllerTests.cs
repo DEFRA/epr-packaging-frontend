@@ -1,7 +1,11 @@
-﻿using FluentAssertions;
+﻿using System.Security.Claims;
+using System.Text.Json;
+using EPR.Common.Authorization.Models;
+using FluentAssertions;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.ViewModels;
@@ -17,29 +21,26 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
     {
         private Mock<IFileUploadService> _mockFileUploadService;
         private Mock<ISubmissionService> _mockSubmissionService;
+        private Mock<ISubsidiaryService> _mockSubsidiaryService;
         private FileUploadSubsidiariesController _controller;
+        private Mock<ClaimsPrincipal> _claimsPrincipalMock;
 
         [SetUp]
         public void SetUp()
         {
             _mockFileUploadService = new Mock<IFileUploadService>();
+            _claimsPrincipalMock = new Mock<ClaimsPrincipal>();
             _mockSubmissionService = new Mock<ISubmissionService>();
-            _controller = new FileUploadSubsidiariesController(_mockFileUploadService.Object, _mockSubmissionService.Object);
-            // Mock HttpContext
-            var mockHttpContext = new Mock<HttpContext>();
+            _mockSubsidiaryService = new Mock<ISubsidiaryService>();
+            _controller = new FileUploadSubsidiariesController(_mockFileUploadService.Object, _mockSubmissionService.Object, _mockSubsidiaryService.Object);
             var mockRequest = new Mock<HttpRequest>();
 
-            // Setup Request properties
-            mockRequest.Setup(r => r.ContentType).Returns("multipart/form-data");
-            mockRequest.Setup(r => r.Body).Returns(Stream.Null);
-
-            // Set the HttpContext's Request to our mockRequest
-            mockHttpContext.Setup(c => c.Request).Returns(mockRequest.Object);
-
-            // Assign HttpContext to ControllerContext
             _controller.ControllerContext = new ControllerContext
             {
-                HttpContext = mockHttpContext.Object
+                HttpContext = new DefaultHttpContext
+                {
+                    User = _claimsPrincipalMock.Object
+                }
             };
         }
 
@@ -101,7 +102,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             // Assert
             result.Should().BeOfType<ViewResult>()
                   .Which.ViewName.Should().Be("Index");
-            result.As<ViewResult>().Model.Should().BeOfType<FileUploadViewModel>();
+            result.As<ViewResult>().Model.Should().BeOfType<FileUploadSubsidiaryViewModel>();
         }
 
         [Test]
@@ -179,6 +180,71 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             viewResult.ViewName.Should().Be("FileUplodSuccess");
             var model = viewResult.Model.Should().BeOfType<SubsidiaryFileUplodSuccessViewModel>().Subject;
             model.RecordsAdded.Should().Be(5);
+        }
+
+        [Test]
+        public async Task ExportSubsidiaries_ReturnsFileResultWithCorrectContentTypeAndFileName()
+        {
+            // Arrange
+            var subsidiaryParentId = 123;
+            var mockStream = new MemoryStream();
+
+            var claims = CreateUserDataClaim(OrganisationRoles.ComplianceScheme);
+            _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(subsidiaryParentId, true))
+                .ReturnsAsync(mockStream);
+
+            // Act
+            var result = await _controller.ExportSubsidiaries(subsidiaryParentId);
+
+            // Assert
+            result.Should().BeOfType<FileStreamResult>();
+            var fileResult = result as FileStreamResult;
+            fileResult.ContentType.Should().Be("text/csv");
+            fileResult.FileDownloadName.Should().Be("subsidiary.csv");
+            fileResult.FileStream.Should().BeSameAs(mockStream);
+
+            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(subsidiaryParentId, true), Times.Once);
+        }
+
+        [Test]
+        public async Task ExportSubsidiaries_CallsGetSubsidiariesStreamAsync()
+        {
+            // Arrange
+            var subsidiaryParentId = 123;
+            var mockStream = new MemoryStream();
+            var claims = CreateUserDataClaim(OrganisationRoles.ComplianceScheme);
+            _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(subsidiaryParentId, true))
+                .ReturnsAsync(mockStream);
+
+            // Act
+            var result = await _controller.ExportSubsidiaries(subsidiaryParentId);
+
+            // Assert
+            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(subsidiaryParentId, true), Times.Once);
+        }
+
+        private static List<Claim> CreateUserDataClaim(string organisationRole)
+        {
+            var userData = new UserData
+            {
+                Organisations = new List<Organisation>
+            {
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    OrganisationRole = organisationRole
+                }
+            }
+            };
+
+            return new List<Claim>
+        {
+            new(ClaimTypes.UserData, JsonSerializer.Serialize(userData))
+        };
         }
     }
 }

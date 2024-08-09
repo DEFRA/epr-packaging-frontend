@@ -73,6 +73,15 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.ComplianceSchemeLanding 
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
+        internal static string add_manage_subsidiaries {
+            get {
+                return ResourceManager.GetString("add-manage-subsidiaries", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
         internal static string date1_to_date2 {
             get {
                 return ResourceManager.GetString("date1_to_date2", resourceCulture);
@@ -175,6 +184,15 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.ComplianceSchemeLanding 
         internal static string resubmit_your_packaging_data {
             get {
                 return ResourceManager.GetString("resubmit_your_packaging_data", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string subsidiaries {
+            get {
+                return ResourceManager.GetString("subsidiaries", resourceCulture);
             }
         }
         

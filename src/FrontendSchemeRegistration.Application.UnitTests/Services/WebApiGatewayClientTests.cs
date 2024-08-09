@@ -2,12 +2,15 @@
 
 using System.Net;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text.Json;
 using Application.Services;
 using Application.Services.Interfaces;
 using DTOs.Submission;
 using Enums;
 using FluentAssertions;
+using FluentAssertions.Common;
+using FrontendSchemeRegistration.Application.DTOs;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
@@ -508,5 +511,58 @@ public class WebApiGatewayClientTests
             .Should()
             .ThrowAsync<HttpRequestException>();
         _loggerMock.VerifyLog(x => x.LogError("Error getting submission history"));
+    }
+
+    [Test]
+    public async Task GetSubsidiariesAsync_ReturnsSubsidiaries_WhenResponseIsSuccessful()
+    {
+        // Arrange
+        var expectedSubsidiaries = new List<SubsidiaryExportDto>
+        {
+            new SubsidiaryExportDto { Subsidiary_Id = 1, Organisation_Name = "Subsidiary 1" },
+            new SubsidiaryExportDto { Subsidiary_Id = 2, Organisation_Name = "Subsidiary 2" }
+        };
+
+        var response = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = JsonContent.Create(expectedSubsidiaries)
+        };
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _webApiGatewayClient.GetSubsidiariesAsync(123);
+
+        // Assert
+        result.Should().BeEquivalentTo(expectedSubsidiaries);
+    }
+
+    [Test]
+    public async Task GetSubsidiariesAsync_ThrowsException_WhenResponseIsUnsuccessful()
+    {
+        // Arrange
+        var response = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.InternalServerError
+        };
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(response);
+
+        // Act
+        Func<Task> act = async () => await _webApiGatewayClient.GetSubsidiariesAsync(123);
+
+        // Assert
+        await act.Should().ThrowAsync<HttpRequestException>();
     }
 }

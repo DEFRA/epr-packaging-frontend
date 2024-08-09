@@ -255,4 +255,7 @@
   <data name="upload_file" xml:space="preserve">
     <value>Uwchlwytho ffeil</value>
   </data>
+  <data name="export" xml:space="preserve">
+    <value>WExport</value>
+  </data>
 </root>

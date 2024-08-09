@@ -2,12 +2,15 @@
 
 using Application.Services;
 using Application.Services.Interfaces;
-using DTOs.Subsidiary;
+using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
 using FluentAssertions;
 using FrontendSchemeRegistration.UI.Extensions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using System.Net;
+using CsvHelper;
+using FrontendSchemeRegistration.Application.DTOs;
+using System.Globalization;
 
 [TestFixture]
 public class SubsidiaryServiceTests
@@ -145,5 +148,49 @@ public class SubsidiaryServiceTests
         Func<Task> act = async () => await _sut.SaveSubsidiary(subsidiaryDto);
 
         await act.Should().ThrowAsync<Exception>();
+    }
+
+    [Test]
+    public async Task GetSubsidiariesStreamAsync_WithComplianceScheme_ReturnsExpectedStream()
+    {
+        // Arrange
+        var subsidiaryParentId = 123;
+        var isComplianceScheme = true;
+
+        // Act
+        var result = await _sut.GetSubsidiariesStreamAsync(subsidiaryParentId, isComplianceScheme);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Position.Should().Be(0);
+
+        using (var reader = new StreamReader(result))
+        {
+            var content = await reader.ReadToEndAsync();
+            content.Should().Contain("Organisation_Id,Subsidiary_Id,Organisation_Name,Companies_House_Number");
+            content.Should().Contain("100,101,Subsidiary A,CHN001");
+        }
+    }
+
+    [Test]
+    public async Task GetSubsidiariesStreamAsync_WithDirectProducer_ReturnsExpectedStream()
+    {
+        // Arrange
+        var subsidiaryParentId = 123;
+        var isComplianceScheme = false;
+
+        // Act
+        var result = await _sut.GetSubsidiariesStreamAsync(subsidiaryParentId, isComplianceScheme);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Position.Should().Be(0);
+
+        using (var reader = new StreamReader(result))
+        {
+            var content = await reader.ReadToEndAsync();
+            content.Should().Contain("Organisation_Id,Subsidiary_Id,Organisation_Name,Companies_House_Number");
+            content.Should().Contain("100,101,Subsidiary A,CHN001");
+        }
     }
 }

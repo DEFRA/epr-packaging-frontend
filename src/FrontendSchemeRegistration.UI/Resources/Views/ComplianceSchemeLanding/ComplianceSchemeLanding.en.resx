@@ -223,4 +223,10 @@
   <data name="home" xml:space="preserve">
     <value>Home</value>
   </data>
+  <data name="subsidiaries" xml:space="preserve">
+    <value>Subsidiaries</value>
+  </data>
+	<data name="add-manage-subsidiaries" xml:space="preserve">
+    <value>Add, manage subsidiaries</value>
+  </data>
 </root>
