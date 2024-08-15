@@ -1,10 +1,8 @@
 ﻿namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
 
-using System.Security.Claims;
 using Application.Constants;
 using Application.DTOs.ComplianceScheme;
 using Application.DTOs.Notification;
-using Application.DTOs.Submission;
 using Constants;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Models;
@@ -16,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using System.Security.Claims;
 using UI.Controllers;
 using UI.Controllers.ControllerExtensions;
 using UI.ViewModels;
@@ -100,6 +99,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
         {
             OrganisationName = OrganisationName,
             OrganisationNumber = OrganisationNumber.ToReferenceNumberFormat(),
+            OrganisationRole = OrganisationRole,
             CanSelectComplianceScheme = expectedCanSelectComplianceSchemeValue,
             Notification = new NotificationViewModel
             {

@@ -11,5 +11,7 @@ public class HomePageSelfManagedViewModel
 
     public bool CanSelectComplianceScheme { get; set; }
 
+    public string OrganisationRole { get; set; }
+
     public NotificationViewModel Notification { get; set; } = new NotificationViewModel();
 }
