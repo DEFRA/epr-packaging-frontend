@@ -92,7 +92,7 @@
                                 <td data-heading="@dateHeader" class="govuk-table__cell break-word">@Model.CompanyDetailsFileUploadDate</td>
                                 <td data-heading="@userHeader" class="govuk-table__cell break-word">@Model.CompanyDetailsFileUploadedBy</td>
                             </tr>
-                            @if (!Model.BrandsFileName.IsNullOrEmpty())
+                            @if (!string.IsNullOrWhiteSpace(Model.BrandsFileName))
                             {
                                 <tr class="govuk-table__row">
                                     <td data-heading="@fileNameHeader" class="govuk-table__cell break-word">@Model.BrandsFileName</td>
@@ -100,7 +100,7 @@
                                     <td data-heading="@userHeader" class="govuk-table__cell break-word">@Model.BrandsFileUploadedBy</td>
                                 </tr>
                             }
-                            @if (!Model.PartnersFileName.IsNullOrEmpty())
+                            @if (!string.IsNullOrWhiteSpace(Model.PartnersFileName))
                             {
                                 <tr class="govuk-table__row">
                                     <td data-heading="@fileNameHeader" class="govuk-table__cell break-word">@Model.PartnersFileName</td>

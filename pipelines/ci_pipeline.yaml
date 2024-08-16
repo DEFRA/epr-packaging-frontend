@@ -18,13 +18,6 @@ parameters:
   values:
   - 'SonarQube'
   - 'SonarQubeLatest'
-- name: dotnetVersion
-  displayName: 'Select dotnet for v6.0 or dotnetlatest for 8.0'
-  type: string
-  default: 'dotnetVersion6'
-  values:
-  - 'dotnetVersion6'
-  - 'dotnetVersion8'
 
 pool: DEFRA-COMMON-ubuntu2004-SSV3
 
@@ -42,6 +35,8 @@ variables:
     value: epr-packaging-frontend
   - name: runNugetTasks
     value: true
+  - name: dotnetVersion
+    value: dotnetVersion8
 
 resources:
   repositories:
@@ -66,4 +61,4 @@ extends:
     runNugetTasks: ${{ variables.runNugetTasks }}
     serviceName: $(serviceName)
     sonarqubeInstance: ${{ parameters.sonarqubeInstance }}
-    dotnetVersion: ${{ parameters.dotnetVersion }}
+    dotnetVersion: ${{ variables.dotnetVersion }}

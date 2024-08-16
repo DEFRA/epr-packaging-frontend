@@ -20,7 +20,7 @@ public static class SubmissionPeriodExtensions
             _ => string.Empty
         };
 
-        if (month.IsNullOrEmpty())
+        if (string.IsNullOrWhiteSpace(month))
         {
             return string.Empty;
         }
@@ -33,7 +33,7 @@ public static class SubmissionPeriodExtensions
 
     public static string LocalisedMonth(this SubmissionPeriodId period, Enums.MonthType? monthType)
     {
-        if (period is null || period.SubmissionPeriod.IsNullOrEmpty())
+        if (period is null || string.IsNullOrWhiteSpace(period.SubmissionPeriod))
         {
             return string.Empty;
         }

@@ -8,7 +8,7 @@ Frontend Scheme Registration handles the front end POM and Organisation Details 
 
 ### Prerequisites
 In order to run the service you will need the following dependencies:
-- .NET 6
+- .NET 8
 
 #### epr-packaging-common
 ##### Developers working for a DEFRA supplier

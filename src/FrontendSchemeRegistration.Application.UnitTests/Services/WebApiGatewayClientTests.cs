@@ -44,6 +44,12 @@ public class WebApiGatewayClientTests
             _loggerMock.Object);
     }
 
+    [TearDown]
+    public void Teardown()
+    {
+        _httpClient.Dispose();
+    }
+
     [Test]
     public async Task UploadFileAsync_DoesNotThrowException_WhenUploadIsSuccessful()
     {
