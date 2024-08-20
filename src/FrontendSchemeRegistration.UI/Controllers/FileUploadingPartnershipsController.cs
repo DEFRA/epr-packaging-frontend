@@ -44,8 +44,8 @@ public class FileUploadingPartnershipsController : Controller
             return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
         }
 
-        return submission.PartnershipsDataComplete || submission.Errors.Any()
-            ? GetNextPage(submission.Id, submission.Errors.Any())
+        return submission.PartnershipsDataComplete || submission.Errors.Count > 0
+            ? GetNextPage(submission.Id, submission.Errors.Count > 0)
             : View("FileUploadingPartnerships", new FileUploadingViewModel { SubmissionId = submissionId.ToString() });
     }
 

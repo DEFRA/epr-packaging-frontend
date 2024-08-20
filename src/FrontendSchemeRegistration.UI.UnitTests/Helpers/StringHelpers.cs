@@ -9,6 +9,6 @@ public static class StringHelpers
             return "/";
         }
 
-        return input.StartsWith("/") ? input : "/" + input;
+        return input.StartsWith('/') ? input : "/" + input;
     }
 }

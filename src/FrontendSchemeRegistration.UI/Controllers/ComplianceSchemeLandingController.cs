@@ -41,7 +41,7 @@ public class ComplianceSchemeLandingController : Controller
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
         var userData = User.GetUserData();
 
-        var organisation = userData.Organisations.First();
+        var organisation = userData.Organisations[0];
 
         var complianceSchemes = await _complianceSchemeService.GetOperatorComplianceSchemes(organisation.Id.Value);
 
@@ -88,11 +88,11 @@ public class ComplianceSchemeLandingController : Controller
     {
         var userData = User.GetUserData();
 
-        var organisation = userData.Organisations.First();
+        var organisation = userData.Organisations[0];
 
         var complianceSchemes = (await _complianceSchemeService.GetOperatorComplianceSchemes(organisation.Id.Value)).ToList();
 
-        if (Guid.TryParse(selectedComplianceSchemeId, out var id) && complianceSchemes.Any(x => x.Id == id))
+        if (Guid.TryParse(selectedComplianceSchemeId, out var id) && complianceSchemes.Exists(x => x.Id == id))
         {
             var selectedComplianceScheme = complianceSchemes.First(s => s.Id == id);
             await _sessionManager.UpdateSessionAsync(HttpContext.Session, x =>

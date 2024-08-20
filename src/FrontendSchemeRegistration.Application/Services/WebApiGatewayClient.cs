@@ -63,7 +63,9 @@ public class WebApiGatewayClient : IWebApiGatewayClient
 
         response.EnsureSuccessStatusCode();
         var responseLocation = response.Headers.Location.ToString();
-        return new Guid(responseLocation.Split('/').Last());
+        string[] parts = responseLocation.Split('/');
+
+        return new Guid(parts[parts.Length - 1]);
     }
 
     public async Task<List<T>> GetSubmissionsAsync<T>(string queryString)

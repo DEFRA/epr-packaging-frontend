@@ -14,8 +14,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Application.Options;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using UI.Controllers.FrontendSchemeRegistration;
 using UI.Sessions;
@@ -141,8 +139,7 @@ public abstract class FrontendSchemeRegistrationTestBase
             loggerMock.Object,
             ComplianceSchemeService.Object,
             AuthorizationService.Object,
-            NotificationService.Object,
-            Options.Create(new GlobalVariables { SubmissionPeriods = _submissionPeriods }));
+            NotificationService.Object);
         SystemUnderTest.ControllerContext.HttpContext = _httpContextMock.Object;
         SystemUnderTest.TempData = tempDataDictionaryMock.Object;
     }

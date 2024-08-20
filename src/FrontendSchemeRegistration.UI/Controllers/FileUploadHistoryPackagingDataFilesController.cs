@@ -40,7 +40,7 @@ namespace FrontendSchemeRegistration.UI.Controllers
             var organisationId = User.GetOrganisationId().Value;
             var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
             var complienceSchemaId = session.RegistrationSession.SelectedComplianceScheme?.Id;
-            var yearStart = new DateTime(year, 1, 1);
+            var yearStart = new DateTime(year, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
             var submissionIds = await _submissionService.GetSubmissionIdsAsync(
                 organisationId,

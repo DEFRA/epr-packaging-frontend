@@ -11,7 +11,6 @@ using Microsoft.Extensions.Options;
 using Moq;
 using TestHelpers;
 using UI.Services;
-using UI.Services.Interfaces;
 
 [TestFixture]
 public class FileUploadServiceTests
@@ -19,7 +18,7 @@ public class FileUploadServiceTests
     private const string SubmissionPeriod = "Jul to Dec 23";
     private ModelStateDictionary _modelStateDictionary;
     private Mock<IWebApiGatewayClient> _webApiGatewayClientMock;
-    private IFileUploadService _fileUploadService;
+    private FileUploadService _fileUploadService;
 
     [SetUp]
     public void Setup()

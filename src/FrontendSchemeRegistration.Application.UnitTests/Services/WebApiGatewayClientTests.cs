@@ -5,11 +5,9 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using Application.Services;
-using Application.Services.Interfaces;
 using DTOs.Submission;
 using Enums;
 using FluentAssertions;
-using FluentAssertions.Common;
 using FrontendSchemeRegistration.Application.DTOs;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -25,7 +23,7 @@ public class WebApiGatewayClientTests
     private readonly Mock<ITokenAcquisition> _tokenAcquisitionMock = new();
     private Mock<HttpMessageHandler> _httpMessageHandlerMock;
     private Mock<ILogger<WebApiGatewayClient>> _loggerMock;
-    private IWebApiGatewayClient _webApiGatewayClient;
+    private WebApiGatewayClient _webApiGatewayClient;
     private HttpClient _httpClient;
 
     [SetUp]

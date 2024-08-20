@@ -19,9 +19,12 @@ public class SubmissionPeriodExtensionsTests
     public void SubmissionPeriod_ToReferenceNumberFormat_ShouldFormatCorrectly_For_English(string month, string year, string monthType, string expectedResult)
     {
         var input = new SubmissionPeriod { StartMonth = month, EndMonth = month, Year = year };
-        Enum.TryParse<MonthType>(monthType, out var parseMonthType);
-        var result = input.LocalisedMonth(parseMonthType);
-        result.Should().Be(expectedResult);
+
+        if (Enum.TryParse<MonthType>(monthType, out var parseMonthType))
+        {
+            var result = input.LocalisedMonth(parseMonthType);
+            result.Should().Be(expectedResult);
+        }
     }
 
     [Test]
@@ -34,9 +37,12 @@ public class SubmissionPeriodExtensionsTests
     public void SubmissionPeriod_ToReferenceNumberFormat_ShouldFormatCorrectly_For_Welsh(string month, string year, string monthType, string expectedResult)
     {
         var input = new SubmissionPeriod { StartMonth = month, EndMonth = month, Year = year };
-        Enum.TryParse<MonthType>(monthType, out var parseMonthType);
-        var result = input.LocalisedMonth(parseMonthType);
-        result.Should().Be(expectedResult);
+
+        if (Enum.TryParse<MonthType>(monthType, out var parseMonthType))
+        {
+            var result = input.LocalisedMonth(parseMonthType);
+            result.Should().Be(expectedResult);
+        }
     }
 
     [Test]
@@ -49,9 +55,12 @@ public class SubmissionPeriodExtensionsTests
     public void SubmissionPeriodId_ToReferenceNumberFormat_ShouldFormatCorrectly_For_English(string submissionPeriod, string monthType, string expectedResult)
     {
         var input = new SubmissionPeriodId { SubmissionPeriod = submissionPeriod };
-        Enum.TryParse<MonthType>(monthType, out var parseMonthType);
-        var result = input.LocalisedMonth(parseMonthType);
-        result.Should().Be(expectedResult);
+
+        if (Enum.TryParse<MonthType>(monthType, out var parseMonthType))
+        {
+            var result = input.LocalisedMonth(parseMonthType);
+            result.Should().Be(expectedResult);
+        }
     }
 
     [Test]
@@ -65,8 +74,11 @@ public class SubmissionPeriodExtensionsTests
     public void SubmissionPeriodId_ToReferenceNumberFormat_ShouldFormatCorrectly_For_Welsh(string submissionPeriod, string monthType, string expectedResult)
     {
         var input = new SubmissionPeriodId { SubmissionPeriod = submissionPeriod };
-        Enum.TryParse<MonthType>(monthType, out var parseMonthType);
-        var result = input.LocalisedMonth(parseMonthType);
-        result.Should().Be(expectedResult);
+
+        if (Enum.TryParse<MonthType>(monthType, out var parseMonthType))
+        {
+            var result = input.LocalisedMonth(parseMonthType);
+            result.Should().Be(expectedResult);
+        }
     }
 }

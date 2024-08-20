@@ -43,7 +43,7 @@ public class FileUploadController : Controller
         {
             var submission = await _submissionService.GetSubmissionAsync<PomSubmission>(submissionId);
 
-            if (submission != null && submission.Errors.Any() && bool.TryParse(Request.Query["showErrors"], out var showErrors) && showErrors)
+            if (submission != null && submission.Errors.Count > 0 && bool.TryParse(Request.Query["showErrors"], out var showErrors) && showErrors)
             {
                 ModelStateHelpers.AddFileUploadExceptionsToModelState(submission.Errors.Distinct().ToList(), ModelState);
             }
@@ -106,7 +106,7 @@ public class FileUploadController : Controller
         return !ModelState.IsValid
             ? View("FileUpload", new FileUploadViewModel
             {
-                OrganisationRole = session.UserData.Organisations.First().OrganisationRole
+                OrganisationRole = session.UserData.Organisations[0].OrganisationRole
             })
             : RedirectToAction("Get", "FileUploading", routeValues);
     }

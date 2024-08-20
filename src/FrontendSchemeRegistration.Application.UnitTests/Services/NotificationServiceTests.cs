@@ -26,7 +26,7 @@ public class NotificationServiceTests
     private readonly Mock<ILogger<NotificationService>> _loggerMock = new();
     private readonly Mock<ITokenAcquisition> _tokenAcquisitionMock = new();
     private Mock<IAccountServiceApiClient> _userAccountServiceApiClientMock;
-    private IDistributedCache _cache;
+    private MemoryDistributedCache _cache;
     private NotificationService _sut;
 
     [SetUp]
@@ -164,6 +164,22 @@ public class NotificationServiceTests
         result.First().Type.Should().Be(NotificationTypes.Packaging.DelegatedPersonNomination);
         result.First().Data.FirstOrDefault().Key.Should().Be(nameof(enrolmentId));
         result.First().Data.FirstOrDefault().Value.Should().Be(enrolmentId.ToString());
+    }
+
+    [Test]
+    public async Task GetCurrentUserNotification_WhenEmptyNotificationResponse_ReturnsNull()
+    {
+        // Arrange
+        var notificationsResponse = new NotificationsResponse();
+        var response = new HttpResponseMessage(HttpStatusCode.OK);
+        response.Content = notificationsResponse.ToJsonContent();
+        _userAccountServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>())).ReturnsAsync(response);
+
+        // Act
+        var result = await _sut.GetCurrentUserNotifications(Guid.NewGuid(), Guid.NewGuid());
+
+        // Assert
+        result.Should().BeNull();
     }
 
     [Test]

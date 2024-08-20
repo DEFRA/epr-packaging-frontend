@@ -130,7 +130,7 @@ public class FileUploadCheckFileAndSubmitController : Controller
 
     private async Task<FileUploadCheckFileAndSubmitViewModel> BuildModel(PomSubmission submission, UserData userData)
     {
-        var organisation = userData.Organisations.First();
+        var organisation = userData.Organisations[0];
         var uploadedByUserId = submission.LastUploadedValidFile.UploadedBy;
         var uploadedByUserName = await GetUserNameFromId(uploadedByUserId);
         var model = new FileUploadCheckFileAndSubmitViewModel

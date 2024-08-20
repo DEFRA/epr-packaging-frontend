@@ -78,8 +78,11 @@ public class UploadNewFileToSubmitController : Controller
         var uploadedByGuid = submission.LastUploadedValidFile?.UploadedBy;
         var submittedByGuid = submission.LastSubmittedFile?.SubmittedBy;
 
-        var uploadedBy =
-            (await _userAccountService.GetPersonByUserId(uploadedByGuid.Value)).GetUserName();
+        string uploadedBy = null;
+        if (uploadedByGuid.HasValue)
+        {
+            uploadedBy = (await _userAccountService.GetPersonByUserId(uploadedByGuid.Value)).GetUserName();
+        }
 
         string submittedBy = null;
 

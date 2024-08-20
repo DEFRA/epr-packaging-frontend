@@ -69,7 +69,7 @@ public class FileUploadingCompanyDetailsController : Controller
 
     private static bool HasFileErrors(RegistrationSubmission submission)
     {
-        return submission.Errors.Any();
+        return submission.Errors.Count > 0;
     }
 
     private static bool HasRowValidationErrors(RegistrationSubmission submission)

@@ -29,7 +29,7 @@ public class ComplianceSchemeServiceTests : ServiceTestBase<IComplianceSchemeSer
     private readonly List<ProducerComplianceSchemeDto> _complianceSchemeDtos = new();
     private readonly Guid _complianceSchemeId = new Guid("{00000000-0000-0000-0000-000000000001}");
 
-    private IComplianceSchemeService _complianceSchemeService;
+    private ComplianceSchemeService _complianceSchemeService;
     private Organisation _organisation;
 
     [SetUp]

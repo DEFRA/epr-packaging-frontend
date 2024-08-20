@@ -280,7 +280,7 @@ namespace FrontendSchemeRegistration.UI.Controllers
             await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
 
             var userData = User.GetUserData();
-            var organisation = userData.Organisations.First();
+            var organisation = userData.Organisations[0];
             await _roleManagementService.AcceptNominationToApprovedPerson(enrolmentId: id, organisationId: organisationId.Value, serviceKey: "Packaging",
                 acceptApprovedPersonRequest: new AcceptApprovedPersonRequest
                 {

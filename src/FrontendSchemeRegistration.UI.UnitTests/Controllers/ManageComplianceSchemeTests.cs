@@ -108,7 +108,7 @@ public class ManageComplianceSchemeTests : FrontendSchemeRegistrationTestBase
 
         // Assert
         FrontEndSchemeRegistrationSession.RegistrationSession.IsUpdateJourney.Should().BeFalse();
-        result.ActionName.Should().Be(nameof(FrontendSchemeRegistrationController.StopComplianceScheme));
+        result.ActionName.Should().Be(nameof(FrontendSchemeRegistrationController.RemoveComplianceScheme));
         SessionManagerMock.Verify(
             x => x.SaveSessionAsync(
                 It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()), Times.Once);

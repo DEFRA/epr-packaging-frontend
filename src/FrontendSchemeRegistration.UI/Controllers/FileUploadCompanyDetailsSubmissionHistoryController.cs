@@ -30,7 +30,7 @@ namespace FrontendSchemeRegistration.UI.Controllers
 
         public async Task<IActionResult> Get()
         {
-            var organisationId = User.GetUserData().Organisations.First().Id.Value;
+            var organisationId = User.GetUserData().Organisations[0].Id.Value;
             var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
             var complianceSchemaId = session.RegistrationSession.SelectedComplianceScheme?.Id;
 
@@ -50,7 +50,7 @@ namespace FrontendSchemeRegistration.UI.Controllers
             {
                 var submissionHistory = await _submissionService.GetSubmissionHistoryAsync(
                        submissionId.SubmissionId,
-                       new DateTime(submissionId.Year, 1, 1));
+                       new DateTime(submissionId.Year, 1, 1, 0, 0, 0, DateTimeKind.Utc));
 
                 if (submissionHistory.Count > 0)
                 {

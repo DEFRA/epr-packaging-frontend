@@ -33,7 +33,7 @@ namespace FrontendSchemeRegistration.UI.Controllers
             }
 
             const int showPerPage = 5;
-            var organisationId = User.GetUserData().Organisations.First().Id.Value;
+            var organisationId = User.GetUserData().Organisations[0].Id.Value;
             var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
             var complienceSchemaId = session.RegistrationSession.SelectedComplianceScheme?.Id;
 

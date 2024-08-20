@@ -44,8 +44,8 @@ public class FileUploadingBrandsController : Controller
             return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
         }
 
-        return submission.BrandsDataComplete || submission.Errors.Any()
-            ? GetNextPage(submission.Id, submission.Errors.Any())
+        return submission.BrandsDataComplete || submission.Errors.Count > 0
+            ? GetNextPage(submission.Id, submission.Errors.Count > 0)
             : View("FileUploadingBrands", new FileUploadingViewModel { SubmissionId = submissionId.ToString() });
     }
 

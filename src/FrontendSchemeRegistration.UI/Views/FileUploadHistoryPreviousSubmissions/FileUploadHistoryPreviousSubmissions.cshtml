@@ -3,8 +3,8 @@
 @{
     ViewData["Title"] = Localizer["pageTitle", Model.PagingDetail.CurrentPage, Model.PagingDetail.PageCount];
 
-    var maxYear = Model.Years.First();
-    var minYear = Model.Years.Last();
+    var maxYear = Model.Years[0];
+    var minYear = Model.Years[Model.Years.Count - 1];
 
     var yearHeader = Localizer["year"];
     var viewFilesHeader = Localizer["view_files"];

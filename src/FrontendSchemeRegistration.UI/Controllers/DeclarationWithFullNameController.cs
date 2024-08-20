@@ -50,7 +50,7 @@ public class DeclarationWithFullNameController : Controller
             return RedirectToAction("Get", "FileUploadSubLanding");
         }
 
-        var reviewOrganisationDataPath = PagePaths.ReviewOrganisationData.StartsWith("/")
+        var reviewOrganisationDataPath = PagePaths.ReviewOrganisationData.StartsWith('/')
             ? PagePaths.ReviewOrganisationData
             : Path.Combine("/", PagePaths.ReviewOrganisationData);
 
@@ -58,7 +58,7 @@ public class DeclarationWithFullNameController : Controller
 
         return View(ViewName, new DeclarationWithFullNameViewModel
         {
-            OrganisationName = User.GetUserData().Organisations.First()?.Name,
+            OrganisationName = User.GetUserData().Organisations[0].Name,
             OrganisationDetailsFileId = submission.LastUploadedValidFiles.CompanyDetailsFileId.ToString(),
             SubmissionId = submissionId
         });

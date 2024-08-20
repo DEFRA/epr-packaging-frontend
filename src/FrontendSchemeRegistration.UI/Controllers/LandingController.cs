@@ -21,7 +21,7 @@ public class LandingController : Controller
     public async Task<IActionResult> Get()
     {
         var userData = User.GetUserData();
-        var organisation = userData.Organisations.First();
+        var organisation = userData.Organisations[0];
 
         if (organisation.OrganisationRole == OrganisationRoles.ComplianceScheme)
         {

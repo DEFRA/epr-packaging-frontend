@@ -13,7 +13,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Services
     {
         private Mock<IAccountServiceApiClient> _mockAccountServiceApiClient;
         private Mock<ILogger<RoleManagementService>> _logger;
-        private IRoleManagementService _systemUnderTest;
+        private RoleManagementService _systemUnderTest;
 
         [SetUp]
         public void SetUp()

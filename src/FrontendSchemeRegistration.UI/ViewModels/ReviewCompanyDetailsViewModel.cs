@@ -5,6 +5,8 @@ using Application.Enums;
 
 public class ReviewCompanyDetailsViewModel : ViewModelWithOrganisationRole, IValidatableObject
 {
+    private static readonly string[] OrgDetailsResponse = new[] { "SubmitOrganisationDetailsResponse" };
+
     public Guid SubmissionId { get; set; }
 
     public string OrganisationDetailsFileName { get; set; }
@@ -72,11 +74,11 @@ public class ReviewCompanyDetailsViewModel : ViewModelWithOrganisationRole, IVal
         {
             if (IsComplianceScheme)
             {
-                yield return new ValidationResult("ReviewCompanyDetails.ResponseErrorMessage", new[] { "SubmitOrganisationDetailsResponse" });
+                yield return new ValidationResult("ReviewCompanyDetails.ResponseErrorMessage", OrgDetailsResponse);
             }
             else
             {
-                yield return new ValidationResult("ReviewCompanyDetails.ResponseErrorMessage.Producer", new[] { "SubmitOrganisationDetailsResponse" });
+                yield return new ValidationResult("ReviewCompanyDetails.ResponseErrorMessage.Producer", OrgDetailsResponse);
             }
         }
     }

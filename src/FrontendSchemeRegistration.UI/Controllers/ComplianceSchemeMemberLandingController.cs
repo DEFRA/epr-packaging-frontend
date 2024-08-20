@@ -40,7 +40,7 @@ public class ComplianceSchemeMemberLandingController : Controller
                       new FrontendSchemeRegistrationSession();
         var userData = User.GetUserData();
 
-        var organisation = userData.Organisations.First();
+        var organisation = userData.Organisations[0];
 
         session.RegistrationSession.CurrentComplianceScheme =
             await _complianceSchemeService.GetProducerComplianceScheme(organisation.Id.Value);

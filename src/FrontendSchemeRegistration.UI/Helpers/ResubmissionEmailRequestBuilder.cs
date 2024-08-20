@@ -14,17 +14,17 @@ namespace FrontendSchemeRegistration.UI.Helpers
 
             var input = new ResubmissionEmailRequestModel
             {
-                OrganisationNumber = organisation.OrganisationNumber,
-                ProducerOrganisationName = organisation.Name,
+                OrganisationNumber = organisation?.OrganisationNumber,
+                ProducerOrganisationName = organisation?.Name,
                 SubmissionPeriod = submission.SubmissionPeriod,
-                NationId = (int)organisation.NationId,
-                IsComplianceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme,
+                NationId = organisation?.NationId ?? 0,
+                IsComplianceScheme = organisation?.OrganisationRole == OrganisationRoles.ComplianceScheme,
             };
 
             if (input.IsComplianceScheme)
             {
                 input.ProducerOrganisationName = session.RegistrationSession.SelectedComplianceScheme?.Name;
-                input.ComplianceSchemeName = organisation.Name;
+                input.ComplianceSchemeName = organisation?.Name;
                 input.ComplianceSchemePersonName = $"{userData.FirstName} {userData.LastName}";
                 input.NationId = session.RegistrationSession.SelectedComplianceScheme?.NationId ?? 0;
             }

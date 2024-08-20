@@ -1,5 +1,6 @@
 ﻿namespace FrontendSchemeRegistration.UI.Extensions;
 
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 public static class StringExtensions
@@ -17,9 +18,9 @@ public static class StringExtensions
         string start = $"1 {startEndMonths.FirstOrDefault()} {yearString}";
         string end = $"1 {startEndMonths.LastOrDefault()} {yearString}";
 
-        if (DateTime.TryParse(start, out var startDate) && DateTime.TryParse(end, out var endDate))
+        if (DateTime.TryParse(start, CultureInfo.CurrentCulture, out var startDate) && DateTime.TryParse(end, CultureInfo.CurrentCulture, out var endDate))
         {
-            return (Start: startDate, End: new DateTime(endDate.Year, endDate.Month, DateTime.DaysInMonth(endDate.Year, endDate.Month)));
+            return (Start: startDate, End: new DateTime(endDate.Year, endDate.Month, DateTime.DaysInMonth(endDate.Year, endDate.Month), 0, 0, 0, DateTimeKind.Utc));
         }
 
         return (Start: DateTime.MinValue, End: DateTime.MinValue);

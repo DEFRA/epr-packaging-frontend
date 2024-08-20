@@ -10,6 +10,8 @@ using Interfaces;
 [ExcludeFromCodeCoverage]
 public class MockIntegrationServiceApiClient : IIntegrationServiceApiClient
 {
+    private readonly JsonSerializerOptions options = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+
     public async Task<HttpResponseMessage> SendGetRequest(string endpoint)
     {
         var index = endpoint.IndexOf("?id=");
@@ -25,10 +27,7 @@ public class MockIntegrationServiceApiClient : IIntegrationServiceApiClient
         var response = new HttpResponseMessage(HttpStatusCode.OK);
 
         var company = GetDummyCompany(companiesHouseNumber);
-        var jsonContent = JsonSerializer.Serialize(company, new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        });
+        var jsonContent = JsonSerializer.Serialize(company, options);
 
         response.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 

@@ -1,14 +1,13 @@
 ﻿namespace FrontendSchemeRegistration.Application.UnitTests.Services;
 
 using Application.Services;
-using Application.Services.Interfaces;
 using DTOs;
 using FluentAssertions;
 
 [TestFixture]
 public class PatchServiceTests
 {
-    private readonly IPatchService _systemUnderTest;
+    private readonly PatchService _systemUnderTest;
 
     public PatchServiceTests()
     {

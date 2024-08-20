@@ -8,14 +8,13 @@ public static class EnumExtensions
     public static string? GetLocalizedName(this Enum enumValue)
     {
         return enumValue.GetType()
-            .GetMember(enumValue.ToString())
-            .First()
+            .GetMember(enumValue.ToString())[0]
             .GetCustomAttribute<LocalizedNameAttribute>()
             .Name;
     }
 
     public static bool In<T>(this T enumValue, params T[] enumValues)
-        => enumValues.Any(s => s.Equals(enumValue));
+        => enumValues.ToList().Exists(s => s.Equals(enumValue));
 
     public static T Parse<T>(this string enumValue)
     {

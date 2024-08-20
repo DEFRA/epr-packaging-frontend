@@ -28,7 +28,7 @@ public class UserDataCheckerMiddleware : IMiddleware
         var anonControllers = new List<string> { "Privacy", "Cookies", "Culture", "Account" };
         var controllerName = GetControllerName(context);
 
-        if (!anonControllers.Any(c => c == controllerName) && context.User.Identity is { IsAuthenticated: true } && context.User.TryGetUserData() is null)
+        if (!anonControllers.Contains(controllerName) && context.User.Identity is { IsAuthenticated: true } && context.User.TryGetUserData() is null)
         {
             var userAccount = await _userAccountService.GetUserAccount();
 

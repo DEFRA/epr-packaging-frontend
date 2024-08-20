@@ -45,8 +45,8 @@ public class FileUploadingController : Controller
             return RedirectToAction("Get", "FileUploadSubLanding");
         }
 
-        return submission.PomDataComplete || submission.Errors.Any()
-            ? GetNextPageAsync(submission.Id, submission.ValidationPass, submission.HasWarnings, submission.Errors.Any()).Result
+        return submission.PomDataComplete || submission.Errors.Count > 0
+            ? GetNextPageAsync(submission.Id, submission.ValidationPass, submission.HasWarnings, submission.Errors.Count > 0).Result
             : View("FileUploading", new FileUploadingViewModel { SubmissionId = submissionId.ToString() });
     }
 

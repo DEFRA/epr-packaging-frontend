@@ -41,7 +41,7 @@ public class FileUploadCompanyDetailsErrorsController : Controller
             return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
         }
 
-        if (!session.RegistrationSession.Journey.Any() || !session.RegistrationSession.Journey.Contains<string>(PagePaths.FileUploadCompanyDetailsSubLanding))
+        if (session.RegistrationSession.Journey.Count == 0 || !session.RegistrationSession.Journey.Contains<string>(PagePaths.FileUploadCompanyDetailsSubLanding))
         {
             return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
         }
@@ -64,7 +64,7 @@ public class FileUploadCompanyDetailsErrorsController : Controller
             return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
         }
 
-        if (submission.Errors.Any())
+        if (submission.Errors.Count > 0)
         {
             ModelStateHelpers.AddFileUploadExceptionsToModelState(
                 submission.Errors.Distinct().ToList(),
@@ -78,7 +78,7 @@ public class FileUploadCompanyDetailsErrorsController : Controller
             new FileUploadErrorsViewModel
             {
                 SubmissionDeadline = session.RegistrationSession.SubmissionDeadline,
-                OrganisationRole = organisation?.OrganisationRole,
+                OrganisationRole = organisation.OrganisationRole,
                 ErrorCount = submission.RowErrorCount.GetValueOrDefault(0),
                 SubmissionId = submissionId
             });

@@ -36,10 +36,11 @@ public class JourneyAccessCheckerMiddleware
         {
             if (attribute.JourneyType == JourneyName.SchemeMembership &&
                 sessionValue?.SchemeMembershipSession is not null &&
-                sessionValue.SchemeMembershipSession.Journey.Any() &&
+                sessionValue.SchemeMembershipSession.Journey.Count > 0 &&
                 !sessionValue.SchemeMembershipSession.Journey.Contains(httpContext.Request.Path))
             {
-                pageToRedirect = sessionValue.SchemeMembershipSession.Journey.Last();
+                int count = sessionValue.SchemeMembershipSession.Journey.Count;
+                pageToRedirect = sessionValue.SchemeMembershipSession.Journey[count - 1];
                 httpContext.Response.Redirect($"{globalVariables.Value.BasePath}{pageToRedirect}");
             }
 
@@ -64,7 +65,8 @@ public class JourneyAccessCheckerMiddleware
                 }
                 else if (!sessionValue.NominatedDelegatedPersonSession.Journey.Contains($"{attribute.PagePath}/{id}"))
                 {
-                    pageToRedirect = $"{globalVariables.Value.BasePath}{sessionValue.NominatedDelegatedPersonSession.Journey.Last()}";
+                    int count = sessionValue.NominatedDelegatedPersonSession.Journey.Count;
+                    pageToRedirect = $"{globalVariables.Value.BasePath}{sessionValue.NominatedDelegatedPersonSession.Journey[count - 1]}";
                 }
             }
         }
@@ -76,7 +78,8 @@ public class JourneyAccessCheckerMiddleware
             }
             else if (!sessionValue.RegistrationSession.Journey.Contains(attribute.PagePath))
             {
-                pageToRedirect = sessionValue.RegistrationSession.Journey.Last();
+                int count = sessionValue.RegistrationSession.Journey.Count;
+                pageToRedirect = sessionValue.RegistrationSession.Journey[count - 1];
             }
         }
 

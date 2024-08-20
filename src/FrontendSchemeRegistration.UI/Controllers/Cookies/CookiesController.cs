@@ -28,8 +28,8 @@ public class CookiesController : Controller
     [Route(PagePaths.Cookies)]
     public IActionResult Detail(string returnUrl, bool? cookiesAccepted = null)
     {
-        var allowedBackValues = new string[] { "/report-data", "/create-account", "/manage-account" };
-        var validBackLink = !string.IsNullOrWhiteSpace(returnUrl) && allowedBackValues.Any(a => returnUrl.StartsWith(a));
+        var allowedBackValues = new List<string> { "/report-data", "/create-account", "/manage-account" };
+        var validBackLink = !string.IsNullOrWhiteSpace(returnUrl) && allowedBackValues.Exists(a => returnUrl.StartsWith(a));
 
         string returnUrlAddress = validBackLink ? returnUrl : Url.Content("~/");
 

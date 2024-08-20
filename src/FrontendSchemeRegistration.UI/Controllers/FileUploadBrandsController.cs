@@ -59,7 +59,7 @@ public class FileUploadBrandsController : Controller
 
             if (submission is not null)
             {
-                if (submission.Errors.Any())
+                if (submission.Errors.Count > 0)
                 {
                     ModelStateHelpers.AddFileUploadExceptionsToModelState(submission.Errors.Distinct().ToList(), ModelState);
                 }

@@ -32,10 +32,9 @@ namespace FrontendSchemeRegistration.UI.Controllers
         {
             // Developer note: Some of the code below was commented out to implement temporary feature.
 
-            var organisationId = User.GetUserData().Organisations.First().Id.Value;
+            var organisationId = User.GetUserData().Organisations[0].Id.Value;
             var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
             var complienceSchemaId = session.RegistrationSession.SelectedComplianceScheme?.Id;
-            // var startOfCurrentYear = new DateTime(DateTime.Now.Year, 1, 1);
 
             var submissionIds = await _submissionService.GetSubmissionIdsAsync(
                 organisationId,
@@ -49,34 +48,11 @@ namespace FrontendSchemeRegistration.UI.Controllers
                 SubmissionPeriods = new List<FileUploadSubmissionHistoryPeriodViewModel>()
             };
 
-            /*foreach (var submissionId in submissionIds)
-            {
-                if (submissionId.Year == startOfCurrentYear.Year)
-                {
-                    var submissionHistory = await _submissionService.GetSubmissionHistoryAsync(
-                        submissionId.SubmissionId,
-                        startOfCurrentYear);
-
-                    if (submissionHistory.Count > 0)
-                    {
-                        viewModel.SubmissionPeriods.Add(new FileUploadSubmissionHistoryPeriodViewModel
-                        {
-                            SubmissionPeriod = submissionId.SubmissionPeriod,
-                            SubmissionHistory = submissionHistory
-                        });
-                    }
-                }
-                else if (!viewModel.PreviousSubmissionHistoryExists)
-                {
-                    viewModel.PreviousSubmissionHistoryExists = true;
-                }
-            }*/
-
             foreach (var submissionId in submissionIds)
             {
                 var submissionHistory = await _submissionService.GetSubmissionHistoryAsync(
                        submissionId.SubmissionId,
-                       new DateTime(submissionId.Year, 1, 1));
+                       new DateTime(submissionId.Year, 1, 1, 0, 0, 0, DateTimeKind.Utc));
 
                 if (submissionHistory.Count > 0)
                 {

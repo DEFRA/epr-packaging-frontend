@@ -2,7 +2,6 @@
 @inject IOptions<ExternalUrlOptions> urlOptions;
 
 @{
-    var baseUrl = Options.Value.BaseUrl;
     var returnUrlQuery = $"{Context.Request.PathBase.Value}{Context.Request.Path.Value}{Context.Request.QueryString}";
     string CultureCodeUrl (string url)
     {

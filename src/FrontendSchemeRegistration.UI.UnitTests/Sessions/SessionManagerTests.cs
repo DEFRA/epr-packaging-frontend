@@ -20,7 +20,7 @@ public class SessionManagerTests
     private byte[] _sessionBytes;
 
     private Mock<ISession> _sessionMock;
-    private ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
+    private SessionManager<FrontendSchemeRegistrationSession> _sessionManager;
 
     [SetUp]
     public void Setup()

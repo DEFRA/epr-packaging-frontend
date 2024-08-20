@@ -1,6 +1,5 @@
 ﻿using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
-using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Controllers.FrontendSchemeRegistration;
 using FrontendSchemeRegistration.UI.Sessions;
@@ -8,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Moq;
 
 namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
@@ -30,15 +28,13 @@ public class FrontendSchemeRegistrationControllerTests
         var mockCss = new Mock<IComplianceSchemeService>();
         var mockAs = new Mock<IAuthorizationService>();
         var mockNs = new Mock<INotificationService>();
-        var mockGv = new Mock<IOptions<GlobalVariables>>();
-        mockGv.Setup(m => m.Value).Returns(new GlobalVariables());
+
         _systemUnderTest = new FrontendSchemeRegistrationController(
             mockSessionManager.Object,
             mockLogger.Object,
             mockCss.Object,
             mockAs.Object,
-            mockNs.Object,
-            mockGv.Object);
+            mockNs.Object);
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new Mock<HttpContext>().Object

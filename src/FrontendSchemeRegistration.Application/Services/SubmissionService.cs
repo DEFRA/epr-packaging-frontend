@@ -29,7 +29,7 @@ public class SubmissionService : ISubmissionService
         var type = Activator.CreateInstance<T>().Type;
         var queryString = $"type={type}";
 
-        if (periods.Any())
+        if (periods.Count > 0)
         {
             queryString += $"&periods={HttpUtility.UrlEncode(string.Join(",", periods))}";
         }

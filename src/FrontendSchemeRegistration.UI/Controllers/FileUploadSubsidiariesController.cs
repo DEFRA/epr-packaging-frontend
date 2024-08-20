@@ -57,15 +57,15 @@ namespace FrontendSchemeRegistration.UI.Controllers
         public async Task<IActionResult> Post()
         {
             var submissionId = await _fileUploadService.ProcessUploadAsync(
-                Request.ContentType,
-                Request.Body,
-                "January to June 2024", // TODO , This period needs to be removed for sub.
-                ModelState,
-                null,
-                SubmissionType.Subsidiary,
-                null,
-                null,
-                null);
+                 Request.ContentType,
+                 Request.Body,
+                 "January to June 2024",
+                 ModelState,
+                 null,
+                 SubmissionType.Subsidiary,
+                 null,
+                 null,
+                 null);
 
             var routeValues = new RouteValueDictionary { { "submissionId", submissionId } };
 
@@ -80,7 +80,6 @@ namespace FrontendSchemeRegistration.UI.Controllers
         {
             var submissionId = Guid.Parse(Request.Query["submissionId"]);
             var submission = await _submissionService.GetSubmissionAsync<SubsidiarySubmission>(submissionId);
-            // TODO - check journey
 
             if (submission is null)
             {
@@ -92,7 +91,7 @@ namespace FrontendSchemeRegistration.UI.Controllers
                 SubmissionId = submissionId.ToString(),
                 IsFileUploadTakingLong = submission.SubsidiaryFileUploadDateTime <= DateTime.Now.AddMinutes(-5),
             };
-            return submission.SubsidiaryDataComplete || submission.Errors.Any()
+            return submission.SubsidiaryDataComplete || submission.Errors.Count > 0
                 ? RedirectToAction(nameof(FileUplodSuccess), new RouteValueDictionary { { "recordsAdded", submission.RecordsAdded } })
                 : View("FileUploading", subFileUploadViewModel);
         }
@@ -113,7 +112,7 @@ namespace FrontendSchemeRegistration.UI.Controllers
         public async Task<IActionResult> ExportSubsidiaries(int subsidiaryParentId)
         {
             var userData = User.GetUserData();
-            var organisation = userData.Organisations.First();
+            var organisation = userData.Organisations[0];
             bool isComplienceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
             var stream = await _subsidiaryService.GetSubsidiariesStreamAsync(subsidiaryParentId, isComplienceScheme);
 
@@ -177,12 +176,12 @@ namespace FrontendSchemeRegistration.UI.Controllers
             const int showPerPage = 1;
 
             var userData = User.GetUserData();
-            var organisation = userData.Organisations.First();
+            var organisation = userData.Organisations[0];
             var isDirectProducer = organisation.OrganisationRole == OrganisationRoles.Producer;
 
             ViewBag.BackLinkToDisplay = _basePath;
 
-            var organisations = GetOrganisationAndSubsidiaryList(isDirectProducer, userData.Organisations.First().Name);
+            var organisations = GetOrganisationAndSubsidiaryList(isDirectProducer, userData.Organisations[0].Name);
 
             var pageUrl = Url.Action(nameof(SubsidiariesList));
 

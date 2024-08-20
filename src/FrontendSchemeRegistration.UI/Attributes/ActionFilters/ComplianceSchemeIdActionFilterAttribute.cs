@@ -14,7 +14,7 @@ public class ComplianceSchemeIdActionFilterAttribute : Attribute, IAsyncActionFi
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
         var userData = context.HttpContext.User.GetUserData();
-        var organisation = userData.Organisations.First();
+        var organisation = userData.Organisations[0];
 
         if (organisation is { OrganisationRole: OrganisationRoles.ComplianceScheme })
         {

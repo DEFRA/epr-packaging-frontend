@@ -56,7 +56,7 @@ public class FileUploadSubLandingController : Controller
 
         foreach (var submissionPeriod in _submissionPeriods)
         {
-            var submission = submissions.FirstOrDefault(x => x.SubmissionPeriod == submissionPeriod.DataPeriod);
+            var submission = submissions.Find(x => x.SubmissionPeriod == submissionPeriod.DataPeriod);
 
             var decision = new PomDecision();
 
@@ -186,7 +186,7 @@ public class FileUploadSubLandingController : Controller
 
     private SubmissionPeriod FindSubmissionPeriod(string dataPeriod)
     {
-        return _submissionPeriods.FirstOrDefault(period => period.DataPeriod == dataPeriod);
+        return _submissionPeriods.Find(period => period.DataPeriod == dataPeriod);
     }
 
     private async Task UpdateSessionForSelectedPeriodAsync(SubmissionPeriod selectedSubmissionPeriod)
@@ -209,14 +209,14 @@ public class FileUploadSubLandingController : Controller
         return submissions.FirstOrDefault();
     }
 
-    private IActionResult RedirectToFileUploadController()
+    private RedirectToActionResult RedirectToFileUploadController()
     {
         return RedirectToAction(
             nameof(FileUploadController.Get),
             nameof(FileUploadController).RemoveControllerFromName());
     }
 
-    private IActionResult HandleSubmissionBasedOnStatus(PomSubmission submission)
+    private RedirectToActionResult HandleSubmissionBasedOnStatus(PomSubmission submission)
     {
         if (!submission.IsSubmitted)
         {
@@ -226,7 +226,7 @@ public class FileUploadSubLandingController : Controller
         return HandleSubmittedSubmission(submission);
     }
 
-    private IActionResult HandleUnsubmittedSubmission(PomSubmission submission)
+    private RedirectToActionResult HandleUnsubmittedSubmission(PomSubmission submission)
     {
         var routeValueDictionary = new RouteValueDictionary { { "submissionId", submission.Id } };
 
@@ -246,7 +246,7 @@ public class FileUploadSubLandingController : Controller
             routeValueDictionary);
     }
 
-    private IActionResult HandleSubmittedSubmission(PomSubmission submission)
+    private RedirectToActionResult HandleSubmittedSubmission(PomSubmission submission)
     {
         var routeValueDictionary = new RouteValueDictionary { { "submissionId", submission.Id } };
 
@@ -258,7 +258,7 @@ public class FileUploadSubLandingController : Controller
         return RedirectToAppropriateFileController(submission, routeValueDictionary);
     }
 
-    private IActionResult RedirectToWarningController(RouteValueDictionary routeValueDictionary)
+    private RedirectToActionResult RedirectToWarningController(RouteValueDictionary routeValueDictionary)
     {
         return RedirectToAction(
             nameof(FileUploadWarningController.Get),
@@ -266,7 +266,7 @@ public class FileUploadSubLandingController : Controller
             routeValueDictionary);
     }
 
-    private IActionResult RedirectToCheckFileAndSubmitController(RouteValueDictionary routeValueDictionary)
+    private RedirectToActionResult RedirectToCheckFileAndSubmitController(RouteValueDictionary routeValueDictionary)
     {
         return RedirectToAction(
             nameof(FileUploadCheckFileAndSubmitController.Get),
@@ -274,7 +274,7 @@ public class FileUploadSubLandingController : Controller
             routeValueDictionary);
     }
 
-    private IActionResult RedirectToAppropriateFileController(PomSubmission submission, RouteValueDictionary routeValueDictionary)
+    private RedirectToActionResult RedirectToAppropriateFileController(PomSubmission submission, RouteValueDictionary routeValueDictionary)
     {
         return submission.LastSubmittedFile.FileId == submission.LastUploadedValidFile.FileId
             ? RedirectToAction(

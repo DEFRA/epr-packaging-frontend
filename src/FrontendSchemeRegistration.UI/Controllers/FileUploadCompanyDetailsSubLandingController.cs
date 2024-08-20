@@ -64,7 +64,7 @@ public class FileUploadCompanyDetailsSubLandingController : Controller
 
         foreach (var submissionPeriod in _submissionPeriods)
         {
-            var submission = submissions.FirstOrDefault(x => x.SubmissionPeriod == submissionPeriod.DataPeriod);
+            var submission = submissions.Find(x => x.SubmissionPeriod == submissionPeriod.DataPeriod);
 
             var decision = new RegistrationDecision();
 
@@ -124,7 +124,7 @@ public class FileUploadCompanyDetailsSubLandingController : Controller
     [HttpPost]
     public async Task<IActionResult> Post(string dataPeriod)
     {
-        var selectedSubmissionPeriod = _submissionPeriods.FirstOrDefault(x => x.DataPeriod == dataPeriod);
+        var selectedSubmissionPeriod = _submissionPeriods.Find(x => x.DataPeriod == dataPeriod);
 
         if (selectedSubmissionPeriod is null)
         {

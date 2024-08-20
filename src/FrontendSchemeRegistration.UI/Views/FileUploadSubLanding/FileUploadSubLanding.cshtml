@@ -4,7 +4,7 @@
 @model FileUploadSubLandingViewModel
 @{
     ViewData["Title"] = Localizer["report_packaging_data"];
-    var notStartedSubmissionExist = Model.SubmissionPeriodDetailGroups.Any(x => x.SubmissionPeriodDetails.Any(s => (s.Status is NotStarted || s.Status is CannotStartYet)));
+    var notStartedSubmissionExist = Model.SubmissionPeriodDetailGroups.Exists(x => x.SubmissionPeriodDetails.Exists(s => (s.Status is NotStarted or CannotStartYet)));
 }
 
 @await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
@@ -70,7 +70,7 @@
                                                             rel="noreferrer noopener">@Localizer["check_the_govuk_guidance"]</a>
             </p>
 
-            @if (Model.SubmissionPeriodDetailGroups.Any(x => x.SubmissionPeriodDetails.Any(x => x.Status == SubmissionPeriodStatus.AcceptedByRegulator)))
+            @if (Model.SubmissionPeriodDetailGroups.Exists(x => x.SubmissionPeriodDetails.Exists(x => x.Status == SubmissionPeriodStatus.AcceptedByRegulator)))
             {
                 <div class="govuk-warning-text govuk-!-margin-top-7 govuk-!-margin-bottom-2">
                     <span class="govuk-warning-text__icon" aria-hidden="true">!</span>

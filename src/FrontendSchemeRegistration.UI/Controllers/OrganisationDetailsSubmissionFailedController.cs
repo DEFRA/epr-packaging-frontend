@@ -16,7 +16,7 @@ public class OrganisationDetailsSubmissionFailedController : Controller
             "OrganisationDetailsSubmissionFailed",
             new OrganisationDetailsSubmissionFailedViewModel
             {
-                IsComplianceScheme = User.GetUserData().Organisations.First().OrganisationRole == OrganisationRoles.ComplianceScheme
+                IsComplianceScheme = User.GetUserData().Organisations[0].OrganisationRole == OrganisationRoles.ComplianceScheme
             });
     }
 

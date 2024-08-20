@@ -7,14 +7,13 @@ using FluentAssertions;
 using Moq;
 using TestHelpers;
 using UI.Services;
-using UI.Services.Interfaces;
 
 [TestFixture]
 public class RegistrationErrorReportServiceTests
 {
     private static readonly Guid SubmissionId = Guid.NewGuid();
     private Mock<IWebApiGatewayClient> _webApiGatewayClientMock;
-    private IErrorReportService _systemUnderTest;
+    private ErrorReportService _systemUnderTest;
 
     [SetUp]
     public void SetUp()

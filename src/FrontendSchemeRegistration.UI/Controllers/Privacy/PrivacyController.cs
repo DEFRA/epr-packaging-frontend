@@ -28,8 +28,8 @@ public class PrivacyController : Controller
     [Route(PagePaths.Privacy)]
     public IActionResult Detail(string returnUrl)
     {
-        var allowedBackValues = new[] { "/report-data", "/create-account", "/manage-account" };
-        var validBackLink = !string.IsNullOrEmpty(returnUrl) && allowedBackValues.Any(a => returnUrl.StartsWith(a));
+        var allowedBackValues = new List<string> { "/report-data", "/create-account", "/manage-account" };
+        var validBackLink = !string.IsNullOrEmpty(returnUrl) && allowedBackValues.Exists(a => returnUrl.StartsWith(a));
         string redirect;
         if (Url.IsLocalUrl(returnUrl) && validBackLink)
         {

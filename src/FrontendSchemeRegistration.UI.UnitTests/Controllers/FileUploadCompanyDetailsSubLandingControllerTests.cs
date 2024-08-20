@@ -49,105 +49,6 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
     private Mock<IFeatureManager> _featureManagerMock;
 
-    public static object[] Post_SavesSubmissionPeriodInSessionAndRedirectsToCorrectPage_WhenSubmissionExists_Cases()
-    {
-        const string BASIC_USER = "Basic User";
-        const string DELEGATER_PERSON = "Delegated Person";
-
-        var dateTime = new DateTime(1970, 1, 1);
-
-        var uploadedFile = new UploadedRegistrationFilesInformation
-        {
-            CompanyDetailsFileId = Guid.NewGuid(),
-            CompanyDetailsFileName = "RegData",
-            CompanyDetailsUploadedBy = Guid.NewGuid(),
-            CompanyDetailsUploadDatetime = dateTime,
-            BrandsFileName = string.Empty,
-            BrandsUploadedBy = null,
-            BrandsUploadDatetime = null,
-            PartnershipsFileName = string.Empty,
-            PartnershipsUploadedBy = null,
-            PartnershipsUploadDatetime = null
-        };
-
-        var submittedFile = new SubmittedRegistrationFilesInformation
-        {
-            SubmittedDateTime = dateTime.AddHours(1)
-        };
-
-        var reuploadedFile = new UploadedRegistrationFilesInformation
-        {
-            CompanyDetailsFileId = Guid.NewGuid(),
-            CompanyDetailsFileName = "RegData",
-            CompanyDetailsUploadedBy = Guid.NewGuid(),
-            CompanyDetailsUploadDatetime = dateTime.AddHours(2),
-            BrandsFileName = string.Empty,
-            BrandsUploadedBy = null,
-            BrandsUploadDatetime = null,
-            PartnershipsFileName = string.Empty,
-            PartnershipsUploadedBy = null,
-            PartnershipsUploadDatetime = null
-        };
-
-        return new object[]
-        {
-            new object[]
-            {
-                false,
-                uploadedFile,
-                null,
-                BASIC_USER,
-                nameof(FileReUploadCompanyDetailsConfirmationController.Get),
-                nameof(FileReUploadCompanyDetailsConfirmationController).RemoveControllerFromName()
-            },
-            new object[]
-            {
-                false,
-                uploadedFile,
-                null,
-                DELEGATER_PERSON,
-                nameof(ReviewCompanyDetailsController.Get),
-                nameof(ReviewCompanyDetailsController).RemoveControllerFromName()
-            },
-            new object[]
-            {
-                true,
-                uploadedFile,
-                submittedFile,
-                DELEGATER_PERSON,
-                nameof(FileReUploadCompanyDetailsConfirmationController.Get),
-                nameof(FileReUploadCompanyDetailsConfirmationController).RemoveControllerFromName()
-            },
-            new object[]
-            {
-                true,
-                reuploadedFile,
-                submittedFile,
-                DELEGATER_PERSON,
-                nameof(ReviewCompanyDetailsController.Get),
-                nameof(ReviewCompanyDetailsController).RemoveControllerFromName()
-            },
-            new object[]
-            {
-                true,
-                uploadedFile,
-                submittedFile,
-                BASIC_USER,
-                nameof(FileReUploadCompanyDetailsConfirmationController.Get),
-                nameof(FileReUploadCompanyDetailsConfirmationController).RemoveControllerFromName()
-            },
-            new object[]
-            {
-                true,
-                reuploadedFile,
-                submittedFile,
-                BASIC_USER,
-                nameof(FileReUploadCompanyDetailsConfirmationController.Get),
-                nameof(FileReUploadCompanyDetailsConfirmationController).RemoveControllerFromName()
-            }
-        };
-    }
-
     [SetUp]
     public void SetUp()
     {
@@ -905,5 +806,104 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
         var submissionPeriodYear2 = int.Parse(viewModel.SubmissionPeriodDetailGroups[1].DatePeriodYear);
 
         submissionPeriodYear1.Should().BeGreaterThanOrEqualTo(submissionPeriodYear2);
+    }
+
+    private static object[] Post_SavesSubmissionPeriodInSessionAndRedirectsToCorrectPage_WhenSubmissionExists_Cases()
+    {
+        const string BASIC_USER = "Basic User";
+        const string DELEGATER_PERSON = "Delegated Person";
+
+        var dateTime = new DateTime(1970, 1, 1);
+
+        var uploadedFile = new UploadedRegistrationFilesInformation
+        {
+            CompanyDetailsFileId = Guid.NewGuid(),
+            CompanyDetailsFileName = "RegData",
+            CompanyDetailsUploadedBy = Guid.NewGuid(),
+            CompanyDetailsUploadDatetime = dateTime,
+            BrandsFileName = string.Empty,
+            BrandsUploadedBy = null,
+            BrandsUploadDatetime = null,
+            PartnershipsFileName = string.Empty,
+            PartnershipsUploadedBy = null,
+            PartnershipsUploadDatetime = null
+        };
+
+        var submittedFile = new SubmittedRegistrationFilesInformation
+        {
+            SubmittedDateTime = dateTime.AddHours(1)
+        };
+
+        var reuploadedFile = new UploadedRegistrationFilesInformation
+        {
+            CompanyDetailsFileId = Guid.NewGuid(),
+            CompanyDetailsFileName = "RegData",
+            CompanyDetailsUploadedBy = Guid.NewGuid(),
+            CompanyDetailsUploadDatetime = dateTime.AddHours(2),
+            BrandsFileName = string.Empty,
+            BrandsUploadedBy = null,
+            BrandsUploadDatetime = null,
+            PartnershipsFileName = string.Empty,
+            PartnershipsUploadedBy = null,
+            PartnershipsUploadDatetime = null
+        };
+
+        return new object[]
+        {
+            new object[]
+            {
+                false,
+                uploadedFile,
+                null,
+                BASIC_USER,
+                nameof(FileReUploadCompanyDetailsConfirmationController.Get),
+                nameof(FileReUploadCompanyDetailsConfirmationController).RemoveControllerFromName()
+            },
+            new object[]
+            {
+                false,
+                uploadedFile,
+                null,
+                DELEGATER_PERSON,
+                nameof(ReviewCompanyDetailsController.Get),
+                nameof(ReviewCompanyDetailsController).RemoveControllerFromName()
+            },
+            new object[]
+            {
+                true,
+                uploadedFile,
+                submittedFile,
+                DELEGATER_PERSON,
+                nameof(FileReUploadCompanyDetailsConfirmationController.Get),
+                nameof(FileReUploadCompanyDetailsConfirmationController).RemoveControllerFromName()
+            },
+            new object[]
+            {
+                true,
+                reuploadedFile,
+                submittedFile,
+                DELEGATER_PERSON,
+                nameof(ReviewCompanyDetailsController.Get),
+                nameof(ReviewCompanyDetailsController).RemoveControllerFromName()
+            },
+            new object[]
+            {
+                true,
+                uploadedFile,
+                submittedFile,
+                BASIC_USER,
+                nameof(FileReUploadCompanyDetailsConfirmationController.Get),
+                nameof(FileReUploadCompanyDetailsConfirmationController).RemoveControllerFromName()
+            },
+            new object[]
+            {
+                true,
+                reuploadedFile,
+                submittedFile,
+                BASIC_USER,
+                nameof(FileReUploadCompanyDetailsConfirmationController.Get),
+                nameof(FileReUploadCompanyDetailsConfirmationController).RemoveControllerFromName()
+            }
+        };
     }
 }

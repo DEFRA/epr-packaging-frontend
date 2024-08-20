@@ -258,11 +258,10 @@ public class ConfirmComplianceSchemeTests : FrontendSchemeRegistrationTestBase
     public async Task GivenInvalidModelState_WhenStopComplianceSchemeHttpPostCalled_ThenReturnStopView()
     {
         // Arrange
-        var viewModel = new ComplianceSchemeStopViewModel();
         SystemUnderTest.ModelState.AddModelError("PropertyName", "Error Message");
 
         // Act
-        var result = await SystemUnderTest.StopComplianceScheme(viewModel);
+        var result = await SystemUnderTest.StopComplianceScheme();
 
         // Assert
         result.Should().NotBeNull();

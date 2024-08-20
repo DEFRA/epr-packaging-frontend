@@ -1,13 +1,12 @@
 ﻿namespace FrontendSchemeRegistration.Application.UnitTests.Services;
 
 using Application.Services;
-using Application.Services.Interfaces;
 using FluentAssertions;
 
 [TestFixture]
 public class ClonerTests
 {
-    private readonly ICloner _systemUnderTest;
+    private readonly Cloner _systemUnderTest;
 
     public ClonerTests()
     {

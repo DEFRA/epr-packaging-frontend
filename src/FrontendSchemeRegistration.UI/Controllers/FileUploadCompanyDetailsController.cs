@@ -42,7 +42,7 @@ public class FileUploadCompanyDetailsController : Controller
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         if (session is not null)
         {
-            if (session.RegistrationSession.Journey.Any() && !session.RegistrationSession.Journey.Contains<string>(PagePaths.FileUploadCompanyDetailsSubLanding))
+            if (session.RegistrationSession.Journey.Count > 0 && !session.RegistrationSession.Journey.Contains<string>(PagePaths.FileUploadCompanyDetailsSubLanding))
             {
                 return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
             }
@@ -54,7 +54,7 @@ public class FileUploadCompanyDetailsController : Controller
                 if (Guid.TryParse(Request.Query["SubmissionId"], out var submissionId))
                 {
                     var submission = await _submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
-                    if (submission != null && submission.Errors.Any())
+                    if (submission != null && submission.Errors.Count > 0)
                     {
                         ModelStateHelpers.AddFileUploadExceptionsToModelState(submission.Errors.Distinct().ToList(), ModelState);
                     }

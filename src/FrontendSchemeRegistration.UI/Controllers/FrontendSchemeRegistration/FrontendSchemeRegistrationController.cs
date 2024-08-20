@@ -2,8 +2,6 @@
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.ComplianceScheme;
-using FrontendSchemeRegistration.Application.DTOs.Submission;
-using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers.Attributes;
@@ -17,7 +15,6 @@ using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
 
 namespace FrontendSchemeRegistration.UI.Controllers.FrontendSchemeRegistration;
@@ -28,7 +25,6 @@ public class FrontendSchemeRegistrationController : Controller
     private readonly IComplianceSchemeService _complianceSchemeService;
     private readonly IAuthorizationService _authorizationService;
     private readonly INotificationService _notificationService;
-    private readonly List<SubmissionPeriod> _submissionPeriods;
     private readonly ILogger<FrontendSchemeRegistrationController> _logger;
 
     public FrontendSchemeRegistrationController(
@@ -36,14 +32,12 @@ public class FrontendSchemeRegistrationController : Controller
         ILogger<FrontendSchemeRegistrationController> logger,
         IComplianceSchemeService complianceSchemeService,
         IAuthorizationService authorizationService,
-        INotificationService notificationService,
-        IOptions<GlobalVariables> globalVariables)
+        INotificationService notificationService)
     {
         _sessionManager = sessionManager;
         _complianceSchemeService = complianceSchemeService;
         _authorizationService = authorizationService;
         _notificationService = notificationService;
-        _submissionPeriods = globalVariables.Value.SubmissionPeriods;
         _logger = logger;
     }
 
@@ -344,27 +338,25 @@ public class FrontendSchemeRegistrationController : Controller
             return await SaveSessionAndRedirect(session, nameof(SelectComplianceScheme), PagePaths.ChangeComplianceSchemeOptions, PagePaths.SelectComplianceScheme);
         }
 
-        return await SaveSessionAndRedirect(session, nameof(StopComplianceScheme), PagePaths.ChangeComplianceSchemeOptions, PagePaths.ComplianceSchemeStop);
+        return await SaveSessionAndRedirect(session, nameof(RemoveComplianceScheme), PagePaths.ChangeComplianceSchemeOptions, PagePaths.ComplianceSchemeStop);
     }
 
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprSelectSchemePolicy)]
     [Route(PagePaths.ComplianceSchemeStop)]
     [JourneyAccess(PagePaths.ComplianceSchemeStop)]
-    public async Task<IActionResult> StopComplianceScheme()
+    public async Task<IActionResult> RemoveComplianceScheme()
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         SetBackLink(session, PagePaths.ComplianceSchemeStop);
 
-        var viewModel = new ComplianceSchemeStopViewModel();
-
-        return View(nameof(Stop), viewModel);
+        return View(nameof(Stop));
     }
 
     [HttpPost]
     [Authorize(Policy = PolicyConstants.EprSelectSchemePolicy)]
     [Route(PagePaths.ComplianceSchemeStop)]
-    public async Task<IActionResult> StopComplianceScheme(ComplianceSchemeStopViewModel model)
+    public async Task<IActionResult> StopComplianceScheme()
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         var userData = User.GetUserData();
@@ -374,13 +366,13 @@ public class FrontendSchemeRegistrationController : Controller
         if (!ModelState.IsValid)
         {
             SetBackLink(session, PagePaths.ComplianceSchemeStop);
-            return View(nameof(Stop), model);
+            return View(nameof(Stop));
         }
 
         var currentComplianceScheme = session.RegistrationSession.CurrentComplianceScheme;
         await _complianceSchemeService.StopComplianceScheme(currentComplianceScheme.SelectedSchemeId, organisation.Id.Value);
 
-        if (currentComplianceScheme?.ComplianceSchemeOperatorId.HasValue == true)
+        if (currentComplianceScheme.ComplianceSchemeOperatorId.HasValue)
         {
             await _complianceSchemeService.ClearSummaryCache(
                 currentComplianceScheme.ComplianceSchemeOperatorId.Value,

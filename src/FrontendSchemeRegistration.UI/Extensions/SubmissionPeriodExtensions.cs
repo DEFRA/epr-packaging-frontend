@@ -25,7 +25,7 @@ public static class SubmissionPeriodExtensions
             return string.Empty;
         }
 
-        return DateTime.Parse($"1 {month} {period.Year}")
+        return DateTime.Parse($"1 {month} {period.Year}", new CultureInfo("en-GB"))
             .ToString("MMMM")
             .Replace("Mehefin", "Fehefin")
             .Replace("Rhagfyr", "Ragfyr");

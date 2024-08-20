@@ -10,7 +10,7 @@ namespace FrontendSchemeRegistration.Application.UnitTests.Services;
 public class SubmissionServiceTests
 {
     private Mock<IWebApiGatewayClient> _webApiGatewayClientMock;
-    private ISubmissionService _submissionService;
+    private SubmissionService _submissionService;
 
     [SetUp]
     public void SetUp()

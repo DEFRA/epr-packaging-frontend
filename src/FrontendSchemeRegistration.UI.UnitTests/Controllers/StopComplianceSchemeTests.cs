@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using UI.Controllers.FrontendSchemeRegistration;
 using UI.Sessions;
-using UI.ViewModels;
 
 [TestFixture]
 public class StopComplianceSchemeTests : FrontendSchemeRegistrationTestBase
@@ -75,7 +74,7 @@ public class StopComplianceSchemeTests : FrontendSchemeRegistrationTestBase
     public async Task GivenOnStopComplianceSchemePage_WhenStopComplianceSchemeHttpGetCalled_ThenComplianceSchemeStopViewModelReturned_WithChangeComplianceSchemeOptionsPageAsTheBackLink()
     {
         // Act
-        var result = await SystemUnderTest.StopComplianceScheme() as ViewResult;
+        var result = await SystemUnderTest.RemoveComplianceScheme() as ViewResult;
 
         // Assert
         result.ViewName.Should().Be(ViewName);
@@ -94,8 +93,7 @@ public class StopComplianceSchemeTests : FrontendSchemeRegistrationTestBase
             .ReturnsAsync(new HttpResponseMessage());
 
         // Act
-        var viewModel = new ComplianceSchemeStopViewModel();
-        var result = await SystemUnderTest.StopComplianceScheme(viewModel) as RedirectToActionResult;
+        var result = await SystemUnderTest.StopComplianceScheme() as RedirectToActionResult;
 
         // Assert
         FrontEndSchemeRegistrationSession.RegistrationSession.CurrentComplianceScheme.Should().BeNull();
@@ -115,11 +113,9 @@ public class StopComplianceSchemeTests : FrontendSchemeRegistrationTestBase
         SetupBase(_userData);
 
         // Act
-        var viewModel = new ComplianceSchemeStopViewModel();
-
         try
         {
-            await SystemUnderTest.StopComplianceScheme(viewModel);
+            await SystemUnderTest.StopComplianceScheme();
         }
         catch (Exception expectedException)
         {

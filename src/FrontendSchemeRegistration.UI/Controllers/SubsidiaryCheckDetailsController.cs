@@ -103,7 +103,7 @@ public class SubsidiaryCheckDetailsController : Controller
                 IsComplianceScheme = false,
                 Nation = session.SubsidiarySession.UkNation
             },
-            ParentOrganisationId = userOrganisation.Id
+            ParentOrganisationId = userOrganisation?.Id
         });
 
         _sessionManager.UpdateSessionAsync(HttpContext.Session, x => x.SubsidiarySession.Company.OrganisationId = newReferenceNumber);

@@ -23,14 +23,14 @@ public class NotificationViewModel
 
         if (notificationList != null)
         {
-            delegatedPersonNomination = notificationList.FirstOrDefault(n => n.Type == NotificationTypes.Packaging.DelegatedPersonNomination);
+            delegatedPersonNomination = notificationList.Find(n => n.Type == NotificationTypes.Packaging.DelegatedPersonNomination);
 
             if (delegatedPersonNomination == null)
             {
-                delegatedPersonPendingApproval = notificationList.FirstOrDefault(n => n.Type == NotificationTypes.Packaging.DelegatedPersonPendingApproval);
+                delegatedPersonPendingApproval = notificationList.Find(n => n.Type == NotificationTypes.Packaging.DelegatedPersonPendingApproval);
             }
 
-            approvedPersonNomination = notificationList.FirstOrDefault(n => n.Type == NotificationTypes.Packaging.ApprovedsPersonNomination);
+            approvedPersonNomination = notificationList.Find(n => n.Type == NotificationTypes.Packaging.ApprovedsPersonNomination);
         }
 
         if (delegatedPersonNomination != null && !delegatedPersonNomination.Data.Any(d => d.Key == "EnrolmentId"))

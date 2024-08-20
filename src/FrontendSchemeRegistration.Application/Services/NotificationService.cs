@@ -43,7 +43,7 @@ public class NotificationService : INotificationService
         {
             if (_cachingOptions.CacheNotifications && _cache.TryGetValue(notificationsResponseCacheKey, out NotificationsResponse notificationsResponse))
             {
-                if (notificationsResponse?.Notifications?.Any() != true)
+                if (notificationsResponse?.Notifications?.Count == 0)
                 {
                     return null;
                 }
@@ -76,7 +76,7 @@ public class NotificationService : INotificationService
                 await _cache.SetAsync<NotificationsResponse>(notificationsResponseCacheKey, notificationsResponse, cacheEntryOptions);
             }
 
-            return notificationsResponse.Notifications.ToList();
+            return notificationsResponse?.Notifications;
         }
         catch (Exception ex)
         {
