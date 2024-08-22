@@ -129,6 +129,73 @@ public class WebApiGatewayClientTests
     }
 
     [Test]
+    public async Task UploadSubsidiaryFileAsync_DoesNotThrowException_WhenUploadIsSuccessful()
+    {
+        // Arrange
+        var byteArray = Array.Empty<byte>();
+        const string fileName = "filename.csv";
+        var submissionId = Guid.NewGuid();
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Headers = { { "Location", $"https://localhost:7265/api/v1/submissions/{submissionId}" } }
+            });
+
+        // Act
+        Func<Task> action = async () => await _webApiGatewayClient.UploadSubsidiaryFileAsync(byteArray, fileName, submissionId, SubmissionType.Subsidiary);
+
+        // Assert
+        await action.Should().NotThrowAsync();
+    }
+
+    [Test]
+    [TestCase(SubmissionType.Subsidiary)]
+    public async Task UploadSubsidiaryFileAsync_ShouldSetHttpHeaders(SubmissionType submissionType)
+    {
+        // Arrange
+        const string fileName = "filename.csv";
+        HttpRequestHeaders headers = _httpClient.DefaultRequestHeaders;
+        var submissionId = Guid.NewGuid();
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Headers = { { "Location", $"/{submissionId}" } }
+            });
+
+        // Act
+        await _webApiGatewayClient.UploadSubsidiaryFileAsync(
+            Array.Empty<byte>(), fileName, submissionId, submissionType);
+
+        // Assert
+        headers.GetValues("FileName").Single().Should().Be(fileName);
+        headers.GetValues("SubmissionType").Single().Should().Be(submissionType.ToString());
+        headers.GetValues("SubmissionId").Single().Should().Be(submissionId.ToString());
+    }
+
+    [Test]
+    public async Task UploadSubsidiaryFileAsync_ThrowsExceptions_WhenUploadIsNotSuccessful()
+    {
+        // Arrange
+        var byteArray = Array.Empty<byte>();
+        const string fileName = "filename.csv";
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.BadRequest });
+
+        // Act
+        Func<Task> action = async () => await _webApiGatewayClient.UploadSubsidiaryFileAsync(byteArray, fileName, null, SubmissionType.Subsidiary);
+
+        // Assert
+        await action.Should().ThrowAsync<HttpRequestException>();
+    }
+
+    [Test]
     public async Task GetSubmissionAsync_ReturnsSubmission_WhenSubmissionExists()
     {
         // Arrange

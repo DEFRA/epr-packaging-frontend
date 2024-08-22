@@ -3,7 +3,6 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
-using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Extensions;
 using FrontendSchemeRegistration.Application.Options;
@@ -66,6 +65,27 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         string[] parts = responseLocation.Split('/');
 
         return new Guid(parts[parts.Length - 1]);
+    }
+
+    public async Task<Guid> UploadSubsidiaryFileAsync(
+       byte[] byteArray,
+       string fileName,
+       Guid? submissionId,
+       SubmissionType submissionType,
+       Guid? complianceSchemeId = null)
+    {
+        await PrepareAuthenticatedClientAsync();
+
+        _httpClient.AddHeaderFileName(fileName);
+        _httpClient.AddHeaderSubmissionType(submissionType);
+        _httpClient.AddHeaderSubmissionIdIfNotNull(submissionId);
+        _httpClient.AddHeaderComplianceSchemeIdIfNotNull(complianceSchemeId);
+
+        var response = await _httpClient.PostAsync("api/v1/file-upload-subsidiary", new ByteArrayContent(byteArray));
+
+        response.EnsureSuccessStatusCode();
+        var responseLocation = response.Headers.Location.ToString();
+        return new Guid(responseLocation.Split('/').Last());
     }
 
     public async Task<List<T>> GetSubmissionsAsync<T>(string queryString)

@@ -235,6 +235,171 @@ public class FileUploadServiceTests
             Times.Once);
     }
 
+    [Test]
+    [TestCase(SubmissionType.Subsidiary)]
+    public async Task ProcessUpload_WithoutSubmissionPeriod_AddsErrorToModelState_WhenUploadContentTypeIsNotMultipart(
+        SubmissionType submissionType,
+        Guid? complianceSchemeId = null)
+    {
+        // Arrange
+        const string contentType = "other";
+        using var fileStream = new MemoryStream();
+
+        // Act
+        await _fileUploadService.ProcessUploadAsync(
+            contentType,
+            fileStream,
+            _modelStateDictionary,
+            null,
+            submissionType,
+            complianceSchemeId);
+
+        // Assert
+        GetModelStateErrors().Should().HaveCount(1).And.Contain("Select a CSV file");
+        _webApiGatewayClientMock.Verify(
+            x => x.UploadSubsidiaryFileAsync(
+                It.IsAny<byte[]>(),
+                It.IsAny<string>(),
+                null,
+                submissionType,
+                complianceSchemeId),
+            Times.Never);
+    }
+
+    [Test]
+    [TestCase(SubmissionType.Subsidiary)]
+    public async Task ProcessUpload_WithoutSubmissionPeriod_AddsErrorToModelState_WhenContentDispositionHeaderIsMissing(
+        SubmissionType submissionType,
+        Guid? complianceSchemeId = null)
+    {
+        // Arrange
+        const string contentType = "multipart/form-data; boundary=----WebKitFormBoundaryaTDX1qGUHmeOnwjh";
+        const string streamContent =
+            "------WebKitFormBoundaryaTDX1qGUHmeOnwjh\r\nContent-Type: text/csv\r\n\r\ncolumnOne,columnTwo\r\n------WebKitFormBoundaryaTDX1qGUHmeOnwjh--\r\n";
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(streamContent));
+
+        // Act
+        await _fileUploadService.ProcessUploadAsync(
+            contentType,
+            stream,
+            SubmissionPeriod,
+            _modelStateDictionary,
+            null,
+            submissionType,
+            null,
+            null,
+            complianceSchemeId);
+
+        // Assert
+        GetModelStateErrors().Should().HaveCount(1).And.Contain("File upload is invalid - try again");
+        _webApiGatewayClientMock.Verify(
+            x => x.UploadSubsidiaryFileAsync(
+                It.IsAny<byte[]>(),
+                It.IsAny<string>(),
+                null,
+                submissionType,
+                complianceSchemeId),
+            Times.Never);
+    }
+
+    [Test]
+    [TestCase(SubmissionType.Subsidiary)]
+    public async Task ProcessUpload_WithoutSubmissionPeriod_AddsErrorToModelState_WhenContentDispositionTypeIsNotFormData(
+        SubmissionType submissionType,
+        Guid? complianceSchemeId = null)
+    {
+        // Arrange
+        const string contentType = "multipart/form-data; boundary=----WebKitFormBoundaryaTDX1qGUHmeOnwjh";
+        const string streamContent =
+            "------WebKitFormBoundaryaTDX1qGUHmeOnwjh\r\nContent-Disposition: invalid; name=\"file\"; filename=\"temp.csv\"\r\nContent-Type: text/csv\r\n\r\ncolumnOne,columnTwo\r\n------WebKitFormBoundaryaTDX1qGUHmeOnwjh--\r\n";
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(streamContent));
+
+        // Act
+        await _fileUploadService.ProcessUploadAsync(
+            contentType,
+            stream,
+            _modelStateDictionary,
+            null,
+            submissionType,
+            complianceSchemeId);
+
+        // Assert
+        GetModelStateErrors().Should().HaveCount(1).And.Contain("Select a CSV file");
+        _webApiGatewayClientMock.Verify(
+            x => x.UploadSubsidiaryFileAsync(
+                It.IsAny<byte[]>(),
+                "temp.csv",
+                null,
+                submissionType,
+                complianceSchemeId),
+            Times.Never);
+    }
+
+    [Test]
+    [TestCase(SubmissionType.Subsidiary)]
+    public async Task ProcessUpload_WithoutSubmissionPeriod_DoesNotCallWebApiGatewayClient_WhenFormHelperAddsErrorToModelState(
+        SubmissionType submissionType)
+    {
+        // Arrange
+        const string contentType = "multipart/form-data; boundary=----WebKitFormBoundaryaTDX1qGUHmeOnwjh";
+        const string streamContent =
+            "------WebKitFormBoundaryaTDX1qGUHmeOnwjh\r\nContent-Disposition: form-data; name=\"file\"; filename=\"temp.pdf\"\r\nContent-Type: text/csv\r\n\r\ncolumnOne,columnTwo\r\n------WebKitFormBoundaryaTDX1qGUHmeOnwjh--\r\n";
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(streamContent));
+
+        // Act
+        await _fileUploadService.ProcessUploadAsync(
+            contentType,
+            stream,
+            _modelStateDictionary,
+            null,
+            submissionType,
+            null);
+
+        // Assert
+        GetModelStateErrors().Should().HaveCount(1).And.Contain("The selected file must be a CSV");
+        _webApiGatewayClientMock.Verify(
+            x => x.UploadSubsidiaryFileAsync(
+                It.IsAny<byte[]>(),
+                It.IsAny<string>(),
+                null,
+                submissionType,
+                null),
+            Times.Never);
+    }
+
+    [Test]
+    [TestCase(SubmissionType.Subsidiary)]
+    public async Task ProcessUpload_WithoutSubmissionPeriod_CallsWebApiGatewayClient_WhenFileIsValid(
+        SubmissionType submissionType)
+    {
+        // Arrange
+        const string contentType = "multipart/form-data; boundary=----WebKitFormBoundaryaTDX1qGUHmeOnwjh";
+        const string streamContent =
+            "------WebKitFormBoundaryaTDX1qGUHmeOnwjh\r\nContent-Disposition: form-data; name=\"file\"; filename=\"temp.csv\"\r\nContent-Type: text/csv\r\n\r\ncolumnOne,columnTwo\r\n------WebKitFormBoundaryaTDX1qGUHmeOnwjh--\r\n";
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(streamContent));
+        Guid? submissionId = null;
+
+        // Act
+        await _fileUploadService.ProcessUploadAsync(
+            contentType,
+            stream,
+            _modelStateDictionary,
+            submissionId,
+            submissionType,
+            null);
+
+        // Assert
+        GetModelStateErrors().Should().BeEmpty();
+        _webApiGatewayClientMock.Verify(
+            x => x.UploadSubsidiaryFileAsync(
+                It.IsAny<byte[]>(),
+                "temp.csv",
+                submissionId,
+                submissionType,
+                null),
+            Times.Once);
+    }
+
     private IEnumerable<string> GetModelStateErrors()
     {
         return _modelStateDictionary.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);

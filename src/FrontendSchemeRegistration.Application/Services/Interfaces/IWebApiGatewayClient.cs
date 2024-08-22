@@ -1,6 +1,5 @@
 ﻿using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
-using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
 using FrontendSchemeRegistration.Application.Enums;
 
 namespace FrontendSchemeRegistration.Application.Services.Interfaces;
@@ -15,6 +14,13 @@ public interface IWebApiGatewayClient
         SubmissionType submissionType,
         SubmissionSubType? submissionSubType = null,
         Guid? registrationSetId = null,
+        Guid? complianceSchemeId = null);
+
+    Task<Guid> UploadSubsidiaryFileAsync(
+        byte[] byteArray,
+        string fileName,
+        Guid? submissionId,
+        SubmissionType submissionType,
         Guid? complianceSchemeId = null);
 
     Task<T?> GetSubmissionAsync<T>(Guid id)

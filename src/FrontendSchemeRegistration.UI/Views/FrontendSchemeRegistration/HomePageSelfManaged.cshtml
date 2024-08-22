@@ -1,3 +1,4 @@
+@using FrontendSchemeRegistration.UI.Constants
 @model HomePageSelfManagedViewModel
 
 @{
@@ -117,6 +118,7 @@
                 </div>
             </div>
         </div>
+        <feature name="@FeatureFlags.ShowSubsidiaries">
         <div class="govuk-grid-column-one-half">
             <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
                 <div class="govuk-card-body">
@@ -135,5 +137,6 @@
                 </div>
             </div>
         </div>
+        </feature>
     </div>
 </main>

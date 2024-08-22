@@ -1,5 +1,5 @@
 @using FrontendSchemeRegistration.Application.Enums
-
+@using FrontendSchemeRegistration.UI.Constants
 @inject IOptions<SiteDateOptions> DateOptions
 
 @model ComplianceSchemeLandingViewModel
@@ -7,6 +7,8 @@
 @{
     ViewData["Title"] = Localizer["home"];
 }
+
+
 
 <main class="govuk-main-wrapper" id="main-content" role="main">
 
@@ -142,8 +144,8 @@
                         </div>
                     </div>
                 </div>
-                
-                <feature name="ShowSubsidiaries">
+
+                <feature name="@FeatureFlags.ShowSubsidiaries">
                     <div class="govuk-grid-column-one-half">
                     <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
                         <div class="govuk-card-body">

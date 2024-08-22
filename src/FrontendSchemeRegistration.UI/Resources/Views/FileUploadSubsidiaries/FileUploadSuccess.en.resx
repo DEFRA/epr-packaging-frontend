@@ -118,18 +118,18 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="File_uploaded_successfully" xml:space="preserve">
-    <value>WFile uploaded successfully</value>
+    <value>File uploaded successfully</value>
   </data>
   <data name="Return_to_the_dashboard" xml:space="preserve">
-    <value>WReturn to the dashboard</value>
+    <value>Return to the dashboard</value>
   </data>
   <data name="subsidiaries_have_been_added_to_ your_account" xml:space="preserve">
-    <value>Wsubsidiaries have been added to your account</value>
+    <value>subsidiaries have been added to your account</value>
   </data>
   <data name="View_your_subsidiaries" xml:space="preserve">
-    <value>WView your subsidiaries</value>
+    <value>View your subsidiaries</value>
   </data>
   <data name="what_happens_next" xml:space="preserve">
-    <value>Wwhat happens next</value>
+    <value>What happens next</value>
   </data>
 </root>

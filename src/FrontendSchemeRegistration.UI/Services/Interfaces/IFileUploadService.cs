@@ -15,4 +15,12 @@ public interface IFileUploadService
         SubmissionSubType? submissionSubType = null,
         Guid? registrationSetId = null,
         Guid? complianceSchemeId = null);
+
+    Task<Guid> ProcessUploadAsync(
+        string? contentType,
+        Stream fileStream,
+        ModelStateDictionary modelState,
+        Guid? submissionId,
+        SubmissionType submissionType,
+        Guid? complianceSchemeId = null);
 }

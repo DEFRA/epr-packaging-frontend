@@ -3,7 +3,7 @@
 namespace FrontendSchemeRegistration.UI.ViewModels
 {
     [ExcludeFromCodeCoverage]
-    public class SubsidiaryFileUplodSuccessViewModel
+    public class SubsidiaryFileUploadSuccessViewModel
     {
         public int RecordsAdded { get; set; }
     }

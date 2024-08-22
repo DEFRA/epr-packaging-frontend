@@ -96,12 +96,9 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             .Setup(service => service.ProcessUploadAsync(
                 It.IsAny<string?>(),
                 It.IsAny<Stream>(),
-                It.IsAny<string>(),
                 It.IsAny<ModelStateDictionary>(),
                 It.IsAny<Guid?>(),
                 It.IsAny<SubmissionType>(),
-                It.IsAny<SubmissionSubType?>(),
-                It.IsAny<Guid?>(),
                 It.IsAny<Guid?>()))
             .ReturnsAsync(submissionId);
 
@@ -188,12 +185,12 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
 
             // Assert
             result.Should().BeOfType<RedirectToActionResult>()
-                  .Which.ActionName.Should().Be("FileUplodSuccess");
+                  .Which.ActionName.Should().Be("FileUploadSuccess");
             result.As<RedirectToActionResult>().RouteValues["recordsAdded"].Should().Be(submission.RecordsAdded);
         }
 
         [Test]
-        public async Task FileUplodSuccess_ShouldReturnViewResultWithModel()
+        public async Task FileUploadSuccess_ShouldReturnViewResultWithModel()
         {
             // Arrange
             var mockHttpContext = new Mock<HttpContext>();
@@ -204,12 +201,12 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             };
 
             // Act
-            var result = await _controller.FileUplodSuccess();
+            var result = await _controller.FileUploadSuccess();
 
             // Assert
             var viewResult = result.Should().BeOfType<ViewResult>().Subject;
-            viewResult.ViewName.Should().Be("FileUplodSuccess");
-            var model = viewResult.Model.Should().BeOfType<SubsidiaryFileUplodSuccessViewModel>().Subject;
+            viewResult.ViewName.Should().Be("FileUploadSuccess");
+            var model = viewResult.Model.Should().BeOfType<SubsidiaryFileUploadSuccessViewModel>().Subject;
             model.RecordsAdded.Should().Be(5);
         }
 

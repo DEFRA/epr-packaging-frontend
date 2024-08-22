@@ -36,33 +36,15 @@ public class FileUploadService : IFileUploadService
         Guid? registrationSetId = null,
         Guid? complianceSchemeId = null)
     {
-        if (!MultipartRequestHelpers.IsMultipartContentType(contentType))
+        var fileValidationResult = await ValidateUploadAsync(contentType, fileStream, modelState);
+        if (!modelState.IsValid)
         {
-            modelState.AddModelError(UploadFieldName, FileUpload.select_a_csv_file);
             return Guid.Empty;
         }
 
-        var boundary = MultipartRequestHelpers.GetBoundary(contentType, FormOptions.MultipartBoundaryLengthLimit);
-        var reader = new MultipartReader(boundary, fileStream);
-        var section = await reader.ReadNextSectionAsync();
-
-        var hasContentDispositionHeader =
-            ContentDispositionHeaderValue.TryParse(section.ContentDisposition, out var contentDisposition);
-        if (!hasContentDispositionHeader)
-        {
-            modelState.AddModelError(UploadFieldName, FileUpload.file_upload_is_invalid);
-            return Guid.Empty;
-        }
-
-        if (!MultipartRequestHelpers.HasFileContentDisposition(contentDisposition))
-        {
-            modelState.AddModelError(UploadFieldName, FileUpload.select_a_csv_file);
-            return Guid.Empty;
-        }
-
-        var fileName = contentDisposition.FileName.Value;
+        var fileName = fileValidationResult.ContentDisposition.FileName.Value;
         var fileContent = await FileHelpers.ProcessFileAsync(
-            section, fileName, modelState, UploadFieldName, _fileUploadLimitInBytes);
+            fileValidationResult.Section, fileName, modelState, UploadFieldName, _fileUploadLimitInBytes);
 
         if (modelState.IsValid)
         {
@@ -78,5 +60,68 @@ public class FileUploadService : IFileUploadService
         }
 
         return Guid.Empty;
+    }
+
+    public async Task<Guid> ProcessUploadAsync(
+        string? contentType,
+        Stream fileStream,
+        ModelStateDictionary modelState,
+        Guid? submissionId,
+        SubmissionType submissionType,
+        Guid? complianceSchemeId = null)
+    {
+        var fileValidationResult = await ValidateUploadAsync(contentType, fileStream, modelState);
+        if (!modelState.IsValid)
+        {
+            return Guid.Empty;
+        }
+
+        var fileName = fileValidationResult.ContentDisposition.FileName.Value;
+        var fileContent = await FileHelpers.ProcessFileAsync(
+            fileValidationResult.Section, fileName, modelState, UploadFieldName, _fileUploadLimitInBytes);
+
+        if (modelState.IsValid)
+        {
+            return await _webApiGatewayClient.UploadSubsidiaryFileAsync(
+                fileContent,
+                fileName,
+                submissionId,
+                submissionType,
+                complianceSchemeId);
+        }
+
+        return Guid.Empty;
+    }
+
+    public async Task<(MultipartSection? Section, ContentDispositionHeaderValue? ContentDisposition)> ValidateUploadAsync(
+        string? contentType,
+        Stream fileStream,
+        ModelStateDictionary modelState)
+    {
+        if (!MultipartRequestHelpers.IsMultipartContentType(contentType))
+        {
+            modelState.AddModelError(UploadFieldName, FileUpload.select_a_csv_file);
+            return (null, null);
+        }
+
+        var boundary = MultipartRequestHelpers.GetBoundary(contentType, FormOptions.MultipartBoundaryLengthLimit);
+        var reader = new MultipartReader(boundary, fileStream);
+        var section = await reader.ReadNextSectionAsync();
+
+        var hasContentDispositionHeader =
+            ContentDispositionHeaderValue.TryParse(section.ContentDisposition, out var contentDisposition);
+        if (!hasContentDispositionHeader)
+        {
+            modelState.AddModelError(UploadFieldName, FileUpload.file_upload_is_invalid);
+            return (null, null);
+        }
+
+        if (!MultipartRequestHelpers.HasFileContentDisposition(contentDisposition))
+        {
+            modelState.AddModelError(UploadFieldName, FileUpload.select_a_csv_file);
+            return (null, null);
+        }
+
+        return (section, contentDisposition);
     }
 }
