@@ -1,17 +1,18 @@
 ﻿namespace FrontendSchemeRegistration.Application.Services;
 
-using System.Globalization;
-using System.IO;
-using System.Net;
 using Constants;
-using CsvHelper.Configuration;
 using CsvHelper;
+using CsvHelper.Configuration;
+using DTOs.Subsidiary.OrganisationSubsidiaryList;
 using FrontendSchemeRegistration.Application.ClassMaps;
+using FrontendSchemeRegistration.Application.DTOs;
+using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
 using Interfaces;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
-using FrontendSchemeRegistration.Application.DTOs;
+using System.Globalization;
+using System.IO;
+using System.Net;
 
 public class SubsidiaryService : ISubsidiaryService
 {
@@ -64,6 +65,28 @@ public class SubsidiaryService : ISubsidiaryService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to save subsidiary");
+            throw;
+        }
+    }
+
+    public async Task<OrganisationRelationshipModel> GetOrganisationSubsidiaries(Guid organisationId)
+    {
+        try
+        {
+            var result = await _accountServiceApiClient.SendGetRequest($"organisations/{organisationId}/organisationRelationships");
+            if (!result.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            result.EnsureSuccessStatusCode();
+
+            var content = await result.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<OrganisationRelationshipModel>(content);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to retrieve subsidiary data");
             throw;
         }
     }

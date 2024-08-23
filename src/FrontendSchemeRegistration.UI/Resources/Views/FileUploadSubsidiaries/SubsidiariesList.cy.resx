@@ -132,6 +132,9 @@
   <data name="normal_header" xml:space="preserve">
     <value>W Subsidiaries</value>
   </data>
+  <data name="no_ch_number" xml:space="preserve">
+    <value>W No CH Number</value>
+  </data>
   <data name="no_subsidiaries_added" xml:space="preserve">
     <value>W You have not added any subsidiaries</value>
   </data>

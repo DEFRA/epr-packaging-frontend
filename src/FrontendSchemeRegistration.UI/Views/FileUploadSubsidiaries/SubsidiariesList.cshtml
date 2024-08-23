@@ -21,45 +21,45 @@
 
             <h1 class="govuk-heading-l">@Localizer["normal_header"]</h1>
 
-            @if (Model is { Organisations.Count: > 0 })
-            {
+			@if (Model is { Organisations.Count: > 0 })
+			{
+			
+				@foreach (var organisationModel in Model.Organisations)
+				{
+					@if (organisationModel?.Subsidiaries?.Count > 0)
+					{
+						<h2 class="govuk-heading-m">@organisationModel.Name</h2>
+						<div class="govuk-grid-row">
+							<div class="govuk-grid-column-full">
+								<span class="govuk-caption-m">@Localizer["organisation_id_heading"]: @organisationModel.Id</span>
+								<span class="govuk-caption-m">@Localizer["companies_house_number_heading"]: @(!string.IsNullOrWhiteSpace(organisationModel.CompaniesHouseNumber) ? organisationModel.CompaniesHouseNumber : Localizer["no_ch_number"] )</span>
+							</div>
+						</div>
 
-                @foreach (var organisationModel in Model.Organisations)
-                {
-                    @if (organisationModel.Subsidiaries.Count > 0)
-                    {
-                        <h2 class="govuk-heading-m">@organisationModel.Name</h2>
-                        <div class="govuk-grid-row">
-                            <div class="govuk-grid-column-full">
-                                <span class="govuk-caption-m">@Localizer["organisation_id_heading"]: @organisationModel.Id</span>
-                                <span class="govuk-caption-m">@Localizer["companies_house_number_heading"]: @organisationModel.CompaniesHouseNumber</span>
-                            </div>
-                        </div>
-
-                        <div class="govuk-grid-row">
-                            <div class="govuk-grid-column-full">
-                                <table class="govuk-table responsive-table">
-                                    <caption class="govuk-visually-hidden">@Localizer["normal_header"]</caption>
-                                    <thead class="govuk-table__head">
-                                        <tr class="govuk-table__row">
-                                            <th scope="col" class="govuk-table__header">@subsidiaryNameHeader</th>
-                                            <th scope="col" class="govuk-table__header">@subsidiaryIdHeader</th>
-                                            <th scope="col" class="govuk-table__header">@companiesHouseNumberHeader</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="govuk-table__body">
-                                        @foreach (var subsidiaryViewModel in organisationModel.Subsidiaries)
-                                        {
-                                            <tr class="govuk-table__row">
-                                                <td class="govuk-table__cell break-word" data-heading="@subsidiaryNameHeader">@subsidiaryViewModel.Name</td>
-                                                <td class="govuk-table__cell break-word" data-heading="@subsidiaryIdHeader">@subsidiaryViewModel.Id</td>
-                                                <td class="govuk-table__cell break-word" data-heading="@companiesHouseNumberHeader">@subsidiaryViewModel.CompaniesHouseNumber</td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+						<div class="govuk-grid-row">
+							<div class="govuk-grid-column-full">
+								<table class="govuk-table responsive-table">
+									<caption class="govuk-visually-hidden">@Localizer["normal_header"]</caption>
+									<thead class="govuk-table__head">
+									<tr class="govuk-table__row">
+										<th scope="col" class="govuk-table__header">@subsidiaryNameHeader</th>
+										<th scope="col" class="govuk-table__header">@subsidiaryIdHeader</th>
+										<th scope="col" class="govuk-table__header">@companiesHouseNumberHeader</th>
+									</tr>
+									</thead>
+									<tbody class="govuk-table__body">
+									@foreach (var subsidiaryViewModel in organisationModel.Subsidiaries)
+									{
+										<tr class="govuk-table__row">
+											<td class="govuk-table__cell break-word" data-heading="@subsidiaryNameHeader">@subsidiaryViewModel.Name</td>
+											<td class="govuk-table__cell break-word" data-heading="@subsidiaryIdHeader">@subsidiaryViewModel.Id</td>
+																							<td class="govuk-table__cell break-word" data-heading="@companiesHouseNumberHeader">@(!string.IsNullOrWhiteSpace(subsidiaryViewModel.CompaniesHouseNumber) ? subsidiaryViewModel.CompaniesHouseNumber : Localizer["no_ch_number"] )</td>
+										</tr>
+									}
+									</tbody>
+								</table>
+							</div>
+						</div>
 
 
                         @if (Model.PagingDetail.PageCount > 1)

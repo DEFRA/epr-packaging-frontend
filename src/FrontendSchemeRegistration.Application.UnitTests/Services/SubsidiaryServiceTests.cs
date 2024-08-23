@@ -2,15 +2,13 @@
 
 using Application.Services;
 using Application.Services.Interfaces;
-using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
 using FluentAssertions;
+using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
+using FrontendSchemeRegistration.Application.DTOs.Subsidiary.OrganisationSubsidiaryList;
 using FrontendSchemeRegistration.UI.Extensions;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using System.Net;
-using CsvHelper;
-using FrontendSchemeRegistration.Application.DTOs;
-using System.Globalization;
 
 [TestFixture]
 public class SubsidiaryServiceTests
@@ -40,7 +38,8 @@ public class SubsidiaryServiceTests
         var response = new HttpResponseMessage(HttpStatusCode.OK);
         response.Content = NewOrganisationId.ToJsonContent();
 
-        _accountServiceApiClientMock.Setup(x => x.SendPostRequest<SubsidiaryAddDto>(It.IsAny<string>(), It.IsAny<SubsidiaryAddDto>()))
+        _accountServiceApiClientMock.Setup(x =>
+                x.SendPostRequest<SubsidiaryAddDto>(It.IsAny<string>(), It.IsAny<SubsidiaryAddDto>()))
             .ReturnsAsync(response);
 
         // Act
@@ -62,7 +61,8 @@ public class SubsidiaryServiceTests
 
         var response = new HttpResponseMessage(HttpStatusCode.NotFound);
 
-        _accountServiceApiClientMock.Setup(x => x.SendPostRequest<SubsidiaryAddDto>(It.IsAny<string>(), It.IsAny<SubsidiaryAddDto>()))
+        _accountServiceApiClientMock.Setup(x =>
+                x.SendPostRequest<SubsidiaryAddDto>(It.IsAny<string>(), It.IsAny<SubsidiaryAddDto>()))
             .ReturnsAsync(response);
 
         // Act
@@ -83,7 +83,8 @@ public class SubsidiaryServiceTests
         };
 
         // Act &  Assert
-        _accountServiceApiClientMock.Setup(x => x.SendPostRequest<SubsidiaryAddDto>(It.IsAny<string>(), It.IsAny<SubsidiaryAddDto>()))
+        _accountServiceApiClientMock.Setup(x =>
+                x.SendPostRequest<SubsidiaryAddDto>(It.IsAny<string>(), It.IsAny<SubsidiaryAddDto>()))
             .ThrowsAsync(new Exception());
         Func<Task> act = async () => await _sut.AddSubsidiary(subsidiaryAddDto);
 
@@ -102,7 +103,8 @@ public class SubsidiaryServiceTests
         var response = new HttpResponseMessage(HttpStatusCode.OK);
         response.Content = NewOrganisationId.ToJsonContent();
 
-        _accountServiceApiClientMock.Setup(x => x.SendPostRequest<SubsidiaryDto>(It.IsAny<string>(), It.IsAny<SubsidiaryDto>()))
+        _accountServiceApiClientMock
+            .Setup(x => x.SendPostRequest<SubsidiaryDto>(It.IsAny<string>(), It.IsAny<SubsidiaryDto>()))
             .ReturnsAsync(response);
 
         // Act
@@ -123,7 +125,8 @@ public class SubsidiaryServiceTests
 
         var response = new HttpResponseMessage(HttpStatusCode.NotFound);
 
-        _accountServiceApiClientMock.Setup(x => x.SendPostRequest<SubsidiaryDto>(It.IsAny<string>(), It.IsAny<SubsidiaryDto>()))
+        _accountServiceApiClientMock
+            .Setup(x => x.SendPostRequest<SubsidiaryDto>(It.IsAny<string>(), It.IsAny<SubsidiaryDto>()))
             .ReturnsAsync(response);
 
         // Act
@@ -143,7 +146,8 @@ public class SubsidiaryServiceTests
         };
 
         // Act &  Assert
-        _accountServiceApiClientMock.Setup(x => x.SendPostRequest<SubsidiaryAddDto>(It.IsAny<string>(), It.IsAny<SubsidiaryAddDto>()))
+        _accountServiceApiClientMock.Setup(x =>
+                x.SendPostRequest<SubsidiaryAddDto>(It.IsAny<string>(), It.IsAny<SubsidiaryAddDto>()))
             .ThrowsAsync(new Exception());
         Func<Task> act = async () => await _sut.SaveSubsidiary(subsidiaryDto);
 
@@ -192,5 +196,66 @@ public class SubsidiaryServiceTests
             content.Should().Contain("Organisation_Id,Subsidiary_Id,Organisation_Name,Companies_House_Number");
             content.Should().Contain("100,101,Subsidiary A,CHN001");
         }
+    }
+
+    [Test]
+    public async Task GetOrganisationSubsidiaries_WhenApiThrowsException_ReturnsException()
+    {
+        var organisationId = Guid.NewGuid();
+
+        _accountServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .ThrowsAsync(new Exception());
+
+        // Act and Assert
+        Func<Task> act = async () => await _sut.GetOrganisationSubsidiaries(organisationId);
+
+        await act.Should().ThrowAsync<Exception>();
+    }
+
+    [Test]
+    public async Task GetOrganisationSubsidiaries_WhenApiReturnsUnsuccessfully_ReturnsNull()
+    {
+        var organisationId = Guid.NewGuid();
+        var response = new HttpResponseMessage(HttpStatusCode.NotFound);
+
+        _accountServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _sut.GetOrganisationSubsidiaries(organisationId);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetOrganisationSubsidiaries_WhenApiReturnsSuccessfully_ReturnsResponse()
+    {
+        var organisationId = Guid.NewGuid();
+        var expectedModel = new OrganisationRelationshipModel
+        {
+            Organisation = new OrganisationDetailModel
+            {
+                Name = "Test Company",
+                OrganisationNumber = "0123456789"
+            },
+            Relationships = new List<RelationshipResponseModel>
+            {
+                new() { OrganisationName = "Subsidiary1" }
+            }
+        };
+
+        var response = new HttpResponseMessage(HttpStatusCode.OK);
+        response.Content = expectedModel.ToJsonContent();
+
+        _accountServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _sut.GetOrganisationSubsidiaries(organisationId);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().BeEquivalentTo(expectedModel);
     }
 }
