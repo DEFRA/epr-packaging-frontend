@@ -1,18 +1,19 @@
 ﻿@using FrontendSchemeRegistration.UI.Constants
 @model SubsidiaryListViewModel
 @{
-    ViewData["Title"] = "Organisations";
+	ViewData["Title"] = Localizer["subsidiaries_list"];
 
     var subsidiaryNameHeader = Localizer["subsidiary_name"];
     var subsidiaryIdHeader = Localizer["subsidiary_id"];
     var companiesHouseNumberHeader = Localizer["companies_house_number"];
+    var oldSubsidiaryIdHeader = Localizer["old_subsidiary_id"];
 
 }
 @inject Microsoft.FeatureManagement.IFeatureManager FeatureManager
 
 <main class="govuk-main-wrapper" id="main-content" role="main">
     <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-grid-column-full">
 
             @if (!ViewData.ModelState.IsValid)
             {
@@ -20,57 +21,64 @@
             }
 
             <h1 class="govuk-heading-l">@Localizer["normal_header"]</h1>
+            @if (Model is { Organisations.Count: > 0 })
+            {
+                @foreach (var organisationModel in Model.Organisations)
+                {
+                    @if (organisationModel?.Subsidiaries?.Count > 0)
+                    {
+                        <div class="govuk-warning-text">
+                            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                            <strong class="govuk-warning-text__text">
+                                <span class="govuk-warning-text__assistive">@Localizer["text_assistive.warning"]</span>
+                                @Localizer["subsidiary_accuracy_warning_text"]
+                            </strong>
+                        </div>
+                        <h2 class="govuk-heading-m">@organisationModel.Name</h2>
+                        <div class="govuk-grid-row">
+                            <div class="govuk-grid-column-full">
+                                <span class="govuk-caption-m">@Localizer["organisation_id_heading"]: @organisationModel.Id</span>
+                                <span class="govuk-caption-m">@Localizer["companies_house_number_heading"]: @(!string.IsNullOrWhiteSpace(organisationModel.CompaniesHouseNumber) ? organisationModel.CompaniesHouseNumber : Localizer["no_ch_number"])</span>
+                            </div>
+                        </div>
 
-			@if (Model is { Organisations.Count: > 0 })
-			{
-			
-				@foreach (var organisationModel in Model.Organisations)
-				{
-					@if (organisationModel?.Subsidiaries?.Count > 0)
-					{
-						<h2 class="govuk-heading-m">@organisationModel.Name</h2>
-						<div class="govuk-grid-row">
-							<div class="govuk-grid-column-full">
-								<span class="govuk-caption-m">@Localizer["organisation_id_heading"]: @organisationModel.Id</span>
-								<span class="govuk-caption-m">@Localizer["companies_house_number_heading"]: @(!string.IsNullOrWhiteSpace(organisationModel.CompaniesHouseNumber) ? organisationModel.CompaniesHouseNumber : Localizer["no_ch_number"] )</span>
-							</div>
-						</div>
-
-						<div class="govuk-grid-row">
-							<div class="govuk-grid-column-full">
-								<table class="govuk-table responsive-table">
-									<caption class="govuk-visually-hidden">@Localizer["normal_header"]</caption>
-									<thead class="govuk-table__head">
-									<tr class="govuk-table__row">
-										<th scope="col" class="govuk-table__header">@subsidiaryNameHeader</th>
-										<th scope="col" class="govuk-table__header">@subsidiaryIdHeader</th>
-										<th scope="col" class="govuk-table__header">@companiesHouseNumberHeader</th>
-									</tr>
-									</thead>
-									<tbody class="govuk-table__body">
-									@foreach (var subsidiaryViewModel in organisationModel.Subsidiaries)
-									{
-										<tr class="govuk-table__row">
-											<td class="govuk-table__cell break-word" data-heading="@subsidiaryNameHeader">@subsidiaryViewModel.Name</td>
-											<td class="govuk-table__cell break-word" data-heading="@subsidiaryIdHeader">@subsidiaryViewModel.Id</td>
-																							<td class="govuk-table__cell break-word" data-heading="@companiesHouseNumberHeader">@(!string.IsNullOrWhiteSpace(subsidiaryViewModel.CompaniesHouseNumber) ? subsidiaryViewModel.CompaniesHouseNumber : Localizer["no_ch_number"] )</td>
-										</tr>
-									}
-									</tbody>
-								</table>
-							</div>
-						</div>
-
-
-                        @if (Model.PagingDetail.PageCount > 1)
-                        {
-                            @await Html.PartialAsync("Partials/RecordNavigation/_RecordPaging", Model.PagingDetail)
-                            @await Html.PartialAsync("Partials/RecordNavigation/_RecordCount", Model.PagingDetail)
-                        }
+                        <div class="govuk-grid-row">
+                            <div class="govuk-grid-column-full">
+                                <table class="govuk-table responsive-table">
+                                    <caption class="govuk-visually-hidden">@Localizer["normal_header"]</caption>
+                                    <thead class="govuk-table__head">
+                                        <tr class="govuk-table__row">
+                                            <th scope="col" class="govuk-table__header">@subsidiaryNameHeader</th>
+                                            <th scope="col" class="govuk-table__header">@subsidiaryIdHeader</th>
+                                            <th scope="col" class="govuk-table__header">@companiesHouseNumberHeader</th>
+                                            <th scope="col" class="govuk-table__header">@oldSubsidiaryIdHeader</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="govuk-table__body">
+                                        @foreach (var subsidiaryViewModel in organisationModel.Subsidiaries)
+                                        {
+                                            <tr class="govuk-table__row">
+                                                <td class="govuk-table__cell break-word" data-heading="@subsidiaryNameHeader">@subsidiaryViewModel.Name</td>
+                                                <td class="govuk-table__cell break-word" data-heading="@subsidiaryIdHeader">@subsidiaryViewModel.Id</td>
+                                                <td class="govuk-table__cell break-word" data-heading="@companiesHouseNumberHeader">@(!string.IsNullOrWhiteSpace(subsidiaryViewModel.CompaniesHouseNumber) ? subsidiaryViewModel.CompaniesHouseNumber : Localizer["no_ch_number"])</td>
+                                                <td class="govuk-table__cell break-word" data-heading="@oldSubsidiaryIdHeader">@subsidiaryViewModel.OldSubsidiaryId</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     }
                     else
                     {
-                        <p class="govuk-body">@Localizer["no_subsidiaries_added"]</p>
+                        <h2 class="govuk-heading-m">@organisationModel.Name</h2>
+                        <div class="govuk-grid-row">
+                            <div class="govuk-grid-column-full">
+                                <span class="govuk-caption-m">@Localizer["organisation_id_heading"]: @organisationModel.Id</span>
+                                <span class="govuk-caption-m">@Localizer["companies_house_number_heading"]: @(!string.IsNullOrWhiteSpace(organisationModel.CompaniesHouseNumber) ? organisationModel.CompaniesHouseNumber : Localizer["no_ch_number"])</span>
+                            </div>
+                        </div>
+                        <p class="govuk-body blank-line-before">@Localizer["no_subsidiaries_added"]</p>
 
                         @if (await FeatureManager.IsEnabledAsync(FeatureFlags.ShowSubsidiariesFileUploadExportRemoveFeature))
                         {
@@ -89,6 +97,12 @@
                             </ul>
                             <p class="govuk-body"><label class="govuk-label" for="file">@Localizer["few_minutes_to_upload_file"]</label></p>
                         }
+                    }
+
+                    @if (Model.PagingDetail.PageCount > 1)
+                    {
+                        @await Html.PartialAsync("Partials/RecordNavigation/_RecordPaging", Model.PagingDetail)
+                        @await Html.PartialAsync("Partials/RecordNavigation/_RecordCount", Model.PagingDetail)
                     }
                 }
 

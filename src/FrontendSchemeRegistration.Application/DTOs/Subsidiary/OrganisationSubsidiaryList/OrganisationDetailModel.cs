@@ -16,4 +16,8 @@ public class OrganisationDetailModel
     public string OrganisationNumber { get; set; }
 
     public int? NationId { get; set; }
+
+    public string CompaniesHouseNumber { get; set; }
+
+    public string OldSubsidiaryId { get; set; }
 }

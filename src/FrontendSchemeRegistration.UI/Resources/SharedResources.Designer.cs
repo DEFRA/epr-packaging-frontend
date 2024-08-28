@@ -374,11 +374,22 @@ namespace FrontendSchemeRegistration.UI.Resources {
                 return ResourceManager.GetString("upload_a_file", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        internal static string upload_your_file_again {
+
+		/// <summary>
+		///   Looks up a localized string similar to .
+		/// </summary>
+		internal static string no_subsidiaries_ms
+		{
+			get
+			{
+				return ResourceManager.GetString("no_subsidiaries_ms", resourceCulture);
+			}
+		}
+
+		/// <summary>
+		///   Looks up a localized string similar to .
+		/// </summary>
+		internal static string upload_your_file_again {
             get {
                 return ResourceManager.GetString("upload_your_file_again", resourceCulture);
             }

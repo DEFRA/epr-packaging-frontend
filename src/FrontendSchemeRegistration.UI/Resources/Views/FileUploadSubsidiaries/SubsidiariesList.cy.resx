@@ -136,7 +136,10 @@
     <value>W No CH Number</value>
   </data>
   <data name="no_subsidiaries_added" xml:space="preserve">
-    <value>W You have not added any subsidiaries</value>
+    <value>W No subsidiaries added for this organisation.</value>
+  </data>
+  <data name="old_subsidiary_id" xml:space="preserve">
+    <value>W Old Subsidiary ID</value>
   </data>
   <data name="organisation_id_heading" xml:space="preserve">
     <value>W Organisation ID</value>
@@ -147,6 +150,9 @@
   <data name="subsidiaries_in_csv_format" xml:space="preserve">
     <value>W in CSV format</value>
   </data>
+  <data name="subsidiaries_list" xml:space="preserve">
+    <value>W Subsidiaries list</value>
+  </data>
   <data name="subsidiaries_need_to_upload_csv" xml:space="preserve">
     <value>W To add subsidiaries you will need to upload a CSV file.</value>
   </data>
@@ -156,8 +162,11 @@
   <data name="subsidiaries_upload_your_file" xml:space="preserve">
     <value>W Upload a file</value>
   </data>
+  <data name="subsidiary_accuracy_warning_text" xml:space="preserve">
+    <value>W Check all the information you have provided is accurate. If it is not correct or if there is any missing information you will need to provide the correct data. Use the new subsidiary IDs for all future organisation details and packaging data submissions. Do not use the old subsidiary IDs.</value>
+  </data>
   <data name="subsidiary_id" xml:space="preserve">
-    <value>W Subsidiary ID</value>
+    <value>W New Subsidiary ID</value>
   </data>
   <data name="subsidiary_name" xml:space="preserve">
     <value>W Subsidiary Name</value>
@@ -167,5 +176,8 @@
   </data>
   <data name="upload_a_file" xml:space="preserve">
     <value>W Upload a file</value>
+  </data>
+  <data name="no_subsidiaries_msg" xml:space="preserve">
+    <value>W No subsidiaries added for this organisation. To add subsidiaries, upload a CSV file</value>
   </data>
 </root>

@@ -12,6 +12,8 @@ namespace FrontendSchemeRegistration.Application.DTOs.ComplianceSchemeMember
 
         public string? OrganisationName { get; set; }
 
+        public string CompaniesHouseNumber { get; set; }
+
         public List<RelationshipResponseModel> Relationships { get; set; } = new();
     }
 }
