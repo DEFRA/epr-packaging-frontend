@@ -71,13 +71,16 @@
                     }
                     else
                     {
-                        <h2 class="govuk-heading-m">@organisationModel.Name</h2>
-                        <div class="govuk-grid-row">
-                            <div class="govuk-grid-column-full">
-                                <span class="govuk-caption-m">@Localizer["organisation_id_heading"]: @organisationModel.Id</span>
-                                <span class="govuk-caption-m">@Localizer["companies_house_number_heading"]: @(!string.IsNullOrWhiteSpace(organisationModel.CompaniesHouseNumber) ? organisationModel.CompaniesHouseNumber : Localizer["no_ch_number"])</span>
+                        @if (!Model.IsDirectProducer)
+                        {
+                            <h2 class="govuk-heading-m">@organisationModel.Name</h2>
+                            <div class="govuk-grid-row">
+                                <div class="govuk-grid-column-full">
+                                    <span class="govuk-caption-m">@Localizer["organisation_id_heading"]: @organisationModel.Id</span>
+                                    <span class="govuk-caption-m">@Localizer["companies_house_number_heading"]: @(!string.IsNullOrWhiteSpace(organisationModel.CompaniesHouseNumber) ? organisationModel.CompaniesHouseNumber : Localizer["no_ch_number"])</span>
+                                </div>
                             </div>
-                        </div>
+                        }
                         <p class="govuk-body blank-line-before">@Localizer["no_subsidiaries_added"]</p>
 
                         @if (await FeatureManager.IsEnabledAsync(FeatureFlags.ShowSubsidiariesFileUploadExportRemoveFeature))

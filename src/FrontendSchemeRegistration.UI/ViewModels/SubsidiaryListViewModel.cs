@@ -8,4 +8,6 @@ public class SubsidiaryListViewModel
     public List<SubsidiaryOrganisationViewModel> Organisations { get; set; }
 
     public PagingDetail PagingDetail { get; set; } = new();
+
+    public bool IsDirectProducer { get; set; }
 }

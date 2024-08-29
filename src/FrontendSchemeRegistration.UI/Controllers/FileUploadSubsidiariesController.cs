@@ -204,7 +204,7 @@
                 TotalItems = pageCount,
                 PagingLink = $"{pageUrl}?page="
             };
-
+            result.IsDirectProducer = isDirectProducer;
             return result;
         }
 
