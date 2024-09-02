@@ -1,6 +1,7 @@
 ﻿using FrontendSchemeRegistration.Application.Enums;
 
 namespace FrontendSchemeRegistration.Application.DTOs.Submission;
+
 using System.Diagnostics.CodeAnalysis;
 
 [ExcludeFromCodeCoverage]

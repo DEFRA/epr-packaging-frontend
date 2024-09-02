@@ -2,6 +2,7 @@
 using FrontendSchemeRegistration.Application.Enums;
 
 namespace FrontendSchemeRegistration.UI.Sessions;
+
 public class SubsidiarySession
 {
     public Company Company { get; set; }

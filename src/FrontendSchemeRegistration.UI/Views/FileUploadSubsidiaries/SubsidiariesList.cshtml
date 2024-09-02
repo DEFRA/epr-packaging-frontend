@@ -25,7 +25,7 @@
             {
                 @foreach (var organisationModel in Model.Organisations)
                 {
-                    @if (organisationModel?.Subsidiaries?.Count > 0)
+                    @if (organisationModel.Subsidiaries.Count > 0)
                     {
                         <div class="govuk-warning-text">
                             <span class="govuk-warning-text__icon" aria-hidden="true">!</span>

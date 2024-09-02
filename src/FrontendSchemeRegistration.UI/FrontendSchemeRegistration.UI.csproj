@@ -7,16 +7,20 @@
         <UserSecretsId>1439f55f-9123-4c58-8ab4-ae9114a85b11</UserSecretsId>
         <InvariantGlobalization>false</InvariantGlobalization>
         <!-- SonarCloud does not recognise file-scoped namespaces in current version. -->
-        <NoWarn>S3903</NoWarn>
+        <NoWarn>S3903,S5693</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="ViewModels\GovUk\NewFolder\**" />
       <Compile Remove="ViewModels\Shared\GovUK\**" />
       <Compile Remove="Views\SubsidiaryCompaniesHouseNumberSearch\**" />
+      <Content Remove="ViewModels\GovUk\NewFolder\**" />
       <Content Remove="ViewModels\Shared\GovUK\**" />
       <Content Remove="Views\SubsidiaryCompaniesHouseNumberSearch\**" />
+      <EmbeddedResource Remove="ViewModels\GovUk\NewFolder\**" />
       <EmbeddedResource Remove="ViewModels\Shared\GovUK\**" />
       <EmbeddedResource Remove="Views\SubsidiaryCompaniesHouseNumberSearch\**" />
+      <None Remove="ViewModels\GovUk\NewFolder\**" />
       <None Remove="ViewModels\Shared\GovUK\**" />
       <None Remove="Views\SubsidiaryCompaniesHouseNumberSearch\**" />
     </ItemGroup>
@@ -121,22 +125,16 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+        <PackageReference Include="AutoMapper" Version="13.0.1" />
         <PackageReference Include="CsvHelper" Version="33.0.1" />
         <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="8.0.7" />
         <PackageReference Include="Microsoft.FeatureManagement" Version="3.5.0" />
         <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" Version="3.5.0" />
         <PackageReference Include="PactNet" Version="4.5.0" />
-        <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
         <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.7" />
         <PackageReference Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="8.0.7" />
-        <PackageReference Include="Microsoft.AspNetCore.HttpOverrides" Version="2.2.0" />
         <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.7" />
         <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Antiforgery" Version="2.2.0" />
         <PackageReference Include="System.ComponentModel.TypeConverter" Version="4.3.0" />
         <PackageReference Include="System.Drawing.Common" Version="8.0.7" />
         <PackageReference Include="System.Security.Cryptography.Pkcs" Version="8.0.0" />
@@ -905,7 +903,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="ViewModels\GovUk\NewFolder\" />
         <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
@@ -928,7 +925,6 @@
         </Compile>
         <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
         <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
-        <Folder Include="ViewModels\GovUk\NewFolder\" />
         <EmbeddedResource Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.resx">
             <Generator>ResXFileCodeGenerator</Generator>
             <LastGenOutput>FileUploadCheckFileAndSubmit.Designer.cs</LastGenOutput>
@@ -1000,14 +996,10 @@
         </Compile>
         <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
         <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
-        <Folder Include="ViewModels\GovUk\NewFolder\" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="EPR.Common.Authorization" Version="1.0.16" />
-        <PackageReference Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="7.0.10" />
-        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="7.0.10" />
         <PackageReference Include="Microsoft.Identity.Web" Version="3.0.1" />
-        <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Update="Resources\Views\SubmissionDeclaration\SubmissionDeclaration.resx">
@@ -1076,7 +1068,6 @@
         <_ContentIncludedByDefault Remove="Views\Shared\Partials\SubmissionFailed\_SubmissionFailed.cshtml" />
     </ItemGroup>
     <ItemGroup>
-        <Folder Include="ViewModels\GovUk\NewFolder\" />
         <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
@@ -1099,7 +1090,6 @@
         </Compile>
         <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
         <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
-        <Folder Include="ViewModels\GovUk\NewFolder\" />
         <EmbeddedResource Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.resx">
             <Generator>ResXFileCodeGenerator</Generator>
             <LastGenOutput>FileUploadCheckFileAndSubmit.Designer.cs</LastGenOutput>
@@ -1198,7 +1188,6 @@
         </Compile>
         <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
         <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
-        <Folder Include="ViewModels\GovUk\NewFolder\" />
     </ItemGroup>
 	<ItemGroup>
 		<SonarQubeSetting Include="sonar.coverage.exclusions">

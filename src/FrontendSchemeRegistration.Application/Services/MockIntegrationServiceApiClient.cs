@@ -16,7 +16,7 @@ public class MockIntegrationServiceApiClient : IIntegrationServiceApiClient
     {
         var index = endpoint.IndexOf("?id=");
         var companiesHouseNumber = index >= 0
-            ? endpoint[(index + 4) ..]
+            ? endpoint[(index + 4)..]
             : null;
 
         if (string.IsNullOrEmpty(companiesHouseNumber))

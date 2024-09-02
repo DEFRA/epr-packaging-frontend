@@ -7,7 +7,6 @@ using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Extensions;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
@@ -32,7 +31,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         _tokenAcquisition = tokenAcquisition;
         _logger = logger;
 
-        _scopes = new[] { webApiOptions.Value.DownstreamScope };
+        _scopes = [webApiOptions.Value.DownstreamScope];
         _httpClient.BaseAddress = new Uri(webApiOptions.Value.BaseEndpoint);
         _httpClient.AddHeaderUserAgent(httpClientOptions.Value.UserAgent);
         _httpClient.AddHeaderAcceptJson();
@@ -62,9 +61,8 @@ public class WebApiGatewayClient : IWebApiGatewayClient
 
         response.EnsureSuccessStatusCode();
         var responseLocation = response.Headers.Location.ToString();
-        string[] parts = responseLocation.Split('/');
-
-        return new Guid(parts[parts.Length - 1]);
+        var parts = responseLocation.Split('/');
+        return new Guid(parts[^1]);
     }
 
     public async Task<Guid> UploadSubsidiaryFileAsync(
@@ -85,7 +83,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
 
         response.EnsureSuccessStatusCode();
         var responseLocation = response.Headers.Location.ToString();
-        return new Guid(responseLocation.Split('/').Last());
+        return new Guid(responseLocation.Split('/')[^1]);
     }
 
     public async Task<List<T>> GetSubmissionsAsync<T>(string queryString)

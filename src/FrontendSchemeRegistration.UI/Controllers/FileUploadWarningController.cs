@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 namespace FrontendSchemeRegistration.UI.Controllers;
 
 using Sessions;
+
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
 [Route(PagePaths.FileUploadWarning)]
 public class FileUploadWarningController : Controller

@@ -92,7 +92,6 @@
         {
             var submissionId = Guid.Parse(Request.Query["submissionId"]);
             var submission = await _submissionService.GetSubmissionAsync<SubsidiarySubmission>(submissionId);
-            // TODO - check journey
 
             if (submission is null)
             {
@@ -208,7 +207,7 @@
             return result;
         }
 
-        private SubsidiaryListViewModel GetEmptySubsidiaryListViewModel(Organisation organisation)
+        private static SubsidiaryListViewModel GetEmptySubsidiaryListViewModel(Organisation organisation)
         {
             return new SubsidiaryListViewModel
             {

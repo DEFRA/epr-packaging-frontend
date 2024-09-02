@@ -1,5 +1,6 @@
 ﻿namespace FrontendSchemeRegistration.UI.Helpers;
 
+using System.Text;
 using Application.DTOs;
 using Resources;
 
@@ -45,16 +46,16 @@ public static class ErrorReportHelpers
 
     private static string ToExcelColumn(int columnIndex)
     {
-        string columnName = string.Empty;
+        var columnName = new StringBuilder();
 
         do
         {
-            int remainder = columnIndex % 26;
-            columnName = (char)('A' + remainder) + columnName;
+            var remainder = columnIndex % 26;
+            columnName.Insert(0, (char)('A' + remainder));
             columnIndex /= 26;
         }
         while (columnIndex-- > 0);
 
-        return columnName;
+        return columnName.ToString();
     }
 }
