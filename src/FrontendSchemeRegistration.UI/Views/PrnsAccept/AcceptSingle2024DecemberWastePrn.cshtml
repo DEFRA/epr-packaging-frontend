@@ -1,0 +1,81 @@
+﻿@using FrontendSchemeRegistration.UI.Controllers.Prns
+@using FrontendSchemeRegistration.UI.ViewModels.Prns
+@inject IStringLocalizer<PrnDataResources> PrnDataLocalizer
+@model PrnViewModel
+
+@{
+    var issuedYear = Model.DateIssued.Year;
+    var nextYear = issuedYear + 1;
+    ViewData["Title"] = string.Format(Localizer["page_title"].Value, @PrnDataLocalizer[Model.NoteType], nextYear);
+}
+<main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+
+            <h1 class="govuk-heading-l">
+                @Localizer["accept_against_xx_year_obligation", PrnDataLocalizer[Model.NoteType], nextYear]
+            </h1>
+            <div class="govuk-body-m">
+                @Localizer["this_relates_to_export_counts_against_this_or_next_year", PrnDataLocalizer[Model.NoteType], issuedYear, issuedYear, nextYear]
+            </div>
+
+            <div class="govuk-warning-text">
+                <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                <strong class="govuk-warning-text__text">
+                    <span class="govuk-warning-text__assistive">@SharedLocalizer["warning"]</span>
+                    @Localizer["accepting_it_will_credit_towards_your_obligation", Model.Tonnage, nextYear]
+                </strong>
+            </div>
+        </div>
+    </div>
+    <details class="govuk-details">
+        <summary class="govuk-details__summary">
+            <span class="govuk-details__summary-text">
+                @Localizer["i_want_to_accept_it_against_my_xx_obligation", issuedYear]
+            </span>
+        </summary>
+        <div class="govuk-details__text">
+            @Localizer["follow_these_steps"]
+            <ol>
+                <li>@Localizer["go_back_to_the_pern", PrnDataLocalizer[Model.NoteType]]</li>
+                <li>@Localizer["select_reject_this_pern_at_the_bottom_of_the_pern", PrnDataLocalizer[Model.NoteType], PrnDataLocalizer[Model.NoteType]]</li>
+                <li>@Localizer["ask_the_issuer_of_the_pern_issue_new_pern_in_npwd", PrnDataLocalizer[Model.NoteType], PrnDataLocalizer[Model.NoteType]]</li>
+                <li>@Localizer["after_they_issued_sign_in_to_npwd_and_accept"]</li>
+            </ol>
+            <div class="govuk-body-m">
+                @Html.ActionLink(string.Format(Localizer["go_back_to_the_pern_action"].Value, @PrnDataLocalizer[Model.NoteType]), nameof(PrnsController.SelectSinglePrn), "Prns",
+                         new
+                         {
+                             id = @Model.ExternalId
+                         },
+                         new
+                         {
+                             @class = "govuk-link govuk-link--no-visited-state"
+                         }) @Localizer["to_reject_it"]
+            </div>
+        </div>
+
+    </details>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <form class="form" method="POST">
+                @Html.HiddenFor(model => model.ExternalId)
+                <div class="govuk-button-group">
+                    <button class="govuk-button" type="submit" asp-action=@nameof(PrnsAcceptController.ConfirmAcceptSinglePrnPassThrough) asp-controller="PrnsAccept">
+                        @Localizer["yes_accept_button"]
+                    </button>
+
+                    @Html.ActionLink(@Localizer["no_back_button"].Value, nameof(PrnsController.SelectSinglePrn), "Prns",
+                             new
+                             {
+                                 id = @Model.ExternalId
+                             },
+                             new
+                             {
+                                 @class = "govuk-button govuk-button--secondary"
+                             })
+                </div>
+            </form>
+        </div>
+    </div>
+</main>

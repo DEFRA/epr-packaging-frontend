@@ -261,4 +261,7 @@
   <data name="export" xml:space="preserve">
     <value>Export</value>
   </data>
- </root>
+  <data name="total" xml:space="preserve">
+    <value>Total</value>
+  </data>
+</root>

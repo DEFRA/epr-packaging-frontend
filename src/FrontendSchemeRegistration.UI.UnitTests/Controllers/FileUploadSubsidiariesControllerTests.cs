@@ -280,6 +280,98 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             result.As<RedirectToActionResult>().RouteValues["submissionId"].Should().Be(submissionId);
         }
 
+
+        [Test]
+        public async Task Post_WhenModelStateIsValid_ShouldRedirectToFileUploading_WithNoComplianceScheme()
+        {
+            // Arrange
+            var submissionId = Guid.NewGuid();
+
+            _mockFileUploadService
+                .Setup(service => service.ProcessUploadAsync(
+                    It.IsAny<string?>(),
+                    It.IsAny<Stream>(),
+                    It.IsAny<ModelStateDictionary>(),
+                    It.IsAny<Guid?>(),
+                    It.IsAny<SubmissionType>(),
+                    It.IsAny<Guid?>()))
+                .ReturnsAsync(submissionId);
+
+            var mockHttpContext = new Mock<HttpContext>();
+            mockHttpContext.Setup(c => c.Request.ContentType).Returns("multipart/form-data");
+            mockHttpContext.Setup(c => c.Request.Body).Returns(Stream.Null);
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = mockHttpContext.Object
+            };
+
+            _mockSessionManager.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+                .ReturnsAsync(new FrontendSchemeRegistrationSession
+                {
+                    RegistrationSession = new RegistrationSession { SelectedComplianceScheme = null }
+                });
+
+            // Act
+            var result = await _controller.Post();
+
+            // Assert
+            _mockFileUploadService.Verify(
+                s => s.ProcessUploadAsync(
+                    It.IsAny<string?>(),
+                    It.IsAny<Stream>(),
+                    It.IsAny<ModelStateDictionary>(),
+                    It.IsAny<Guid?>(),
+                    It.IsAny<SubmissionType>(),
+                    It.Is<Guid?>(g => g == null)),
+                Times.Once);
+        }
+
+        [Test]
+        public async Task Post_WhenModelStateIsValid_ShouldRedirectToFileUploading_WithComplianceSchemeId()
+        {
+            // Arrange
+            var complianceSchemeId = Guid.NewGuid();
+            var submissionId = Guid.NewGuid();
+
+            _mockFileUploadService
+                .Setup(service => service.ProcessUploadAsync(
+                    It.IsAny<string?>(),
+                    It.IsAny<Stream>(),
+                    It.IsAny<ModelStateDictionary>(),
+                    It.IsAny<Guid?>(),
+                    It.IsAny<SubmissionType>(),
+                    It.IsAny<Guid?>()))
+                .ReturnsAsync(submissionId);
+
+            var mockHttpContext = new Mock<HttpContext>();
+            mockHttpContext.Setup(c => c.Request.ContentType).Returns("multipart/form-data");
+            mockHttpContext.Setup(c => c.Request.Body).Returns(Stream.Null);
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = mockHttpContext.Object
+            };
+
+            _mockSessionManager.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+                .ReturnsAsync(new FrontendSchemeRegistrationSession
+                {
+                    RegistrationSession = new RegistrationSession { SelectedComplianceScheme = new ComplianceSchemeDto { Id = complianceSchemeId } }
+                });
+
+            // Act
+            var result = await _controller.Post();
+
+            // Assert
+            _mockFileUploadService.Verify(
+                s => s.ProcessUploadAsync(
+                    It.IsAny<string?>(),
+                    It.IsAny<Stream>(),
+                    It.IsAny<ModelStateDictionary>(),
+                    It.IsAny<Guid?>(),
+                    It.IsAny<SubmissionType>(),
+                    It.Is<Guid?>(c => c == complianceSchemeId)),
+                Times.Once);
+        }
+
         [Test]
         public async Task Post_WhenModelStateIsInvalid_ShouldReturnViewResult()
         {
@@ -368,13 +460,11 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
         public async Task ExportSubsidiaries_ReturnsFileResultWithCorrectContentTypeAndFileName()
         {
             // Arrange
-            var subsidiaryParentId = 123;
             var mockStream = new MemoryStream();
-
-            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(subsidiaryParentId, true)).ReturnsAsync(mockStream);
+            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true)).ReturnsAsync(mockStream);
 
             // Act
-            var result = await _controller.ExportSubsidiaries(subsidiaryParentId);
+            var result = await _controller.ExportSubsidiaries();
 
             // Assert
             result.Should().BeOfType<FileStreamResult>();
@@ -383,23 +473,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             fileResult.FileDownloadName.Should().Be("subsidiary.csv");
             fileResult.FileStream.Should().BeSameAs(mockStream);
 
-            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(subsidiaryParentId, true), Times.Once);
-        }
-
-        [Test]
-        public async Task ExportSubsidiaries_CallsGetSubsidiariesStreamAsync()
-        {
-            // Arrange
-            var subsidiaryParentId = 123;
-            var mockStream = new MemoryStream();
-
-            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(subsidiaryParentId, true)).ReturnsAsync(mockStream);
-
-            // Act
-            var result = await _controller.ExportSubsidiaries(subsidiaryParentId);
-
-            // Assert
-            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(subsidiaryParentId, true), Times.Once);
+            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true), Times.Once);
         }
 
         private static List<Claim> CreateUserDataClaim(string organisationRole)

@@ -1,0 +1,160 @@
+﻿@using FrontendSchemeRegistration.Application.Constants
+@using FrontendSchemeRegistration.UI.Constants
+@using FrontendSchemeRegistration.UI.Controllers.Prns
+@using FrontendSchemeRegistration.UI.ViewModels.Prns
+@inject IStringLocalizer<PrnDataResources> PrnDataLocalizer
+@model PrnListViewModel
+
+@{
+    CountBreakdown counts = Model.GetCountBreakdown(Model.Prns);
+
+    string h1HeaderText = (counts.PrnCount > 0 && counts.PernCount > 0)
+        ? string.Format(Localizer["accept_selected_prns_and_perns"].Value
+            , @PrnDataLocalizer[Model.GetPrnWord(counts.PrnCount)]
+            , @PrnDataLocalizer[Model.GetPernWord(counts.PernCount)])
+        : string.Format(Localizer["accept_selected"].Value
+            , @PrnDataLocalizer[counts.PrnCount == 0 ? Model.GetPernWord(counts.PernCount) : Model.GetPrnWord(counts.PrnCount)]);
+}
+
+<main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            @if (Model.Prns.Any())
+            {
+                <fieldset class="govuk-fieldset">
+                    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                        <h1 class="govuk-label-wrapper">
+                            <label class="govuk-label govuk-label--l" for="with-hint">@h1HeaderText</label>
+                        </h1>
+                    </legend>
+                    <br>
+                    <div class="govuk-warning-text">
+                        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                        <strong class="govuk-warning-text__text">
+                            <span class="govuk-visually-hidden">@SharedLocalizer["warning"]</span>
+                            @Localizer[counts.TotalCount == 1 ? "accepting_it_will_credit_the_tonnage_towards_your_obligation" : "accepting_them_will_credit_the_tonnage_towards_your_obligation"]
+                        </strong>
+                    </div>
+                    <br>
+
+                    <form class="form" method="POST">
+                        @if (Model.RemovedPrn != null)
+                        {
+                            string removedPrnOrPern = Model.RemovedPrn.IsPrn ? "PRN" : "PERN";
+                            <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+                                <div class="govuk-notification-banner__header">
+                                    <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                                        @SharedLocalizer["success"]
+                                    </h2>
+                                </div>
+                                <div class="govuk-notification-banner__content">
+                                    <h3 class="govuk-notification-banner__heading">
+                                        @Localizer["you_have_removed_prn_number", removedPrnOrPern, Model.RemovedPrn.PrnNumber]
+                                    </h3>
+                                </div>
+                            </div>
+                        }
+
+                       @{
+                            int counter = 0;
+                        }
+                        @foreach (var group in Model.Prns.GroupBy(p => p.Material))
+                        {
+                            var prnsPerMaterial = group.ToList();
+                            string h2HeaderText = string.Empty;
+                            CountBreakdown subCounts = Model.GetCountBreakdown(prnsPerMaterial);
+
+                            if (subCounts.PrnCount > 0 && subCounts.PernCount > 0)
+                            {
+                                h2HeaderText = string.Format(Localizer["you_selected_n_material_prn_and_perns"].Value
+                                , subCounts.TotalCount
+                                , @PrnDataLocalizer[group.Key].Value);
+                            }
+                            else
+                            {
+                                h2HeaderText = string.Format(Localizer["you_selected_n_material"].Value
+                                , subCounts.TotalCount
+                                , @PrnDataLocalizer[group.Key].Value
+                                , @PrnDataLocalizer[(subCounts.PrnCount == 0 ? Model.GetPernWord(subCounts.PernCount) : Model.GetPrnWord(subCounts.PrnCount))]);
+                            }
+                            <table class="govuk-table">
+                                <caption class="govuk-table__caption govuk-table__caption--m">
+                                    <h2 class="govuk-heading-m">@h2HeaderText</h2>
+                                </caption>
+                                <thead class="govuk-table__head">
+                                    <tr class="govuk-table__row">
+                                        <th class="govuk-table__header govuk-!-width-one-quarter">@Localizer["prn_or_pern_number"]</th>
+                                        <th class="govuk-table__header govuk-!-width-one-quarter">@Localizer["date_issued"]</th>
+                                        <th class="govuk-table__header govuk-!-width-one-half">@Localizer["issued_by"]</th>
+                                        <th class="govuk-table__header govuk-!-width-one-quarter">@Localizer["tonnage"]</th>
+                                        <th class="govuk-table__header govuk-!-width-one-half"></th>
+                                    </tr>
+                                </thead>
+
+                                <tbody class="govuk-table__body">
+                                    @for (int i = 0; i < prnsPerMaterial.Count; i++, counter++)
+                                    {
+                                        @Html.HiddenFor(x => x.Prns[counter].ExternalId)
+                                        <tr class="govuk-table__row">
+                                            <td class="govuk-table__header">@Html.DisplayFor(x => prnsPerMaterial[i].PrnOrPernNumber)</td>
+                                            <td class="govuk-table__cell">@Html.DisplayFor(x => prnsPerMaterial[i].DateIssuedDisplay)</td>
+                                            <td class="govuk-table__cell">@Html.DisplayFor(x => prnsPerMaterial[i].IssuedBy)</td>
+                                            <td class="govuk-table__cell">@Html.DisplayFor(x => prnsPerMaterial[i].Tonnage)</td>
+                                            <td class="govuk-table__cell">
+                                                <label class="govuk-label govuk-checkboxes__label">
+                                                    <a href="?id=@prnsPerMaterial[i].ExternalId" class="href-text--red">
+                                                        @Localizer["remove"]
+                                                    </a>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                    }
+                                    <tr class="govuk-table__row">
+                                        <td class="govuk-table__header">@SharedLocalizer["total"]</td>
+                                        <td class="govuk-table__cell"></td>
+                                        <td class="govuk-table__cell"></td>
+                                        <td class="govuk-table__cell"><strong>@prnsPerMaterial.Sum(x => x.Tonnage)</strong></td>
+                                        <td class="govuk-table__cell"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <br>
+                            <br>
+                        }
+
+                        <div class="govuk-button-group">
+
+                            <button class="govuk-button" type="submit" asp-action=@nameof(PrnsAcceptController.ConfirmAcceptMultiplePrnsPassThrough) asp-controller="PrnsAccept">
+                                @Localizer["yes_accept"]
+                            </button>
+
+                            @Html.ActionLink(@Localizer["no_go_back"].Value, nameof(PrnsController.SelectMultiplePrns), "Prns", null,
+                                new
+                                {
+                                    @class = "govuk-button govuk-button--secondary"
+                                })
+                        </div>
+                    </form>
+
+                </fieldset>
+            }
+            else
+            {
+                ViewBag.BackLinkToDisplay = Url?.Content(PagePaths.Prns.ShowAwaitingAcceptance);
+                string noteTypes = (string)TempData.Peek("InitialNoteTypes");
+
+                var noteTypesLocalised = noteTypes == PrnConstants.PrnsAndPernsText ?
+                    string.Format(Localizer["you_have_remove_all_mix_selected_notes"].Value, PrnDataLocalizer[PrnConstants.PrnsText], PrnDataLocalizer[PrnConstants.PernsText]) :
+                    string.Format(Localizer["you_have_remove_only_selected_notes"].Value, PrnDataLocalizer[noteTypes]);
+
+                <h1 class="govuk-heading-l">@noteTypesLocalised</h1>
+
+                @Html.ActionLink(Localizer["accept_or_reject_prns_perns"].Value, nameof(PrnsController.SelectMultiplePrns), "Prns", null,
+                    new
+                    {
+                        @class = "govuk-button"
+                    })
+            }
+        </div>
+    </div>
+</main>

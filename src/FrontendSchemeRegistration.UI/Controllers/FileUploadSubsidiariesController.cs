@@ -18,6 +18,7 @@
     using Microsoft.FeatureManagement.Mvc;
     using Services.Interfaces;
     using ViewModels;
+    using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
     [ComplianceSchemeIdActionFilter]
@@ -71,13 +72,15 @@
         [FeatureGate(FeatureFlags.ShowSubsidiariesFileUploadExportRemoveFeature)]
         public async Task<IActionResult> Post()
         {
+            var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+
             var submissionId = await _fileUploadService.ProcessUploadAsync(
                 Request.ContentType,
                 Request.Body,
                 ModelState,
                 null,
                 SubmissionType.Subsidiary,
-                null);
+                session.RegistrationSession.SelectedComplianceScheme?.Id);
 
             var routeValues = new RouteValueDictionary { { "submissionId", submissionId } };
 
@@ -121,14 +124,16 @@
 
         [HttpGet]
         [Route(PagePaths.ExportSubsidiaries)]
-        public async Task<IActionResult> ExportSubsidiaries(int subsidiaryParentId)
+        public async Task<IActionResult> ExportSubsidiaries()
         {
             var userData = User.GetUserData();
             var organisation = userData.Organisations[0];
-            bool isComplienceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
-            var stream = await _subsidiaryService.GetSubsidiariesStreamAsync(subsidiaryParentId, isComplienceScheme);
+            var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+            var complianceSchemeId = session.RegistrationSession?.SelectedComplianceScheme?.Id;
+            var isComplianceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
+            var stream = await _subsidiaryService.GetSubsidiariesStreamAsync(organisation.Id.Value, complianceSchemeId, isComplianceScheme);
 
-            return File(stream, "text/csv", $"subsidiary.csv");
+            return File(stream, "text/csv", "subsidiary.csv");
         }
 
         private async Task<SubsidiaryListViewModel> GetSubsidiaryListViewModel(int? page)

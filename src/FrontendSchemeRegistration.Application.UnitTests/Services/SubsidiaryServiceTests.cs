@@ -158,44 +158,76 @@ public class SubsidiaryServiceTests
     public async Task GetSubsidiariesStreamAsync_WithComplianceScheme_ReturnsExpectedStream()
     {
         // Arrange
-        var subsidiaryParentId = 123;
-        var isComplianceScheme = true;
+        const bool isComplianceScheme = true;
+        const string companiesHouseNumber = "CHN001";
+        const string organisationName = "CS Subsidiary 1";
+        const string organisationId = "100";
+        const string subsidiaryId = "123";
+
+        var expectedModel = new List<ExportOrganisationSubsidiariesResponseModel>
+        {
+            new()
+            {
+                CompaniesHouseNumber = companiesHouseNumber, OrganisationName = organisationName, OrganisationId = organisationId, SubsidiaryId = subsidiaryId
+            }
+        };
+
+        var response = new HttpResponseMessage(HttpStatusCode.OK);
+        response.Content = expectedModel.ToJsonContent();
+
+        _accountServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .ReturnsAsync(response);
 
         // Act
-        var result = await _sut.GetSubsidiariesStreamAsync(subsidiaryParentId, isComplianceScheme);
+        var result = await _sut.GetSubsidiariesStreamAsync(Guid.NewGuid(), Guid.NewGuid(), isComplianceScheme);
 
         // Assert
         result.Should().NotBeNull();
         result.Position.Should().Be(0);
+        _accountServiceApiClientMock.Verify(client => client.SendGetRequest(It.Is<string>(s => s.Contains("compliance-schemes"))), Times.Once);
 
-        using (var reader = new StreamReader(result))
-        {
-            var content = await reader.ReadToEndAsync();
-            content.Should().Contain("Organisation_Id,Subsidiary_Id,Organisation_Name,Companies_House_Number");
-            content.Should().Contain("100,101,Subsidiary A,CHN001");
-        }
+        using var reader = new StreamReader(result);
+        var content = await reader.ReadToEndAsync();
+        content.Should().Contain("organisation_id,subsidiary_id,organisation_name,companies_house_number");
+        content.Should().Contain($"{organisationId},{subsidiaryId},{organisationName},{companiesHouseNumber}");
     }
 
     [Test]
     public async Task GetSubsidiariesStreamAsync_WithDirectProducer_ReturnsExpectedStream()
     {
         // Arrange
-        var subsidiaryParentId = 123;
-        var isComplianceScheme = false;
+        const bool isComplianceScheme = false;
+        const string companiesHouseNumber = "CHN001";
+        const string organisationName = "DP Subsidiary 1";
+        const string organisationId = "500";
+        const string subsidiaryId = "523";
+
+        var expectedModel = new List<ExportOrganisationSubsidiariesResponseModel>
+        {
+            new()
+            {
+                CompaniesHouseNumber = companiesHouseNumber, OrganisationName = organisationName, OrganisationId = organisationId, SubsidiaryId = subsidiaryId
+            }
+        };
+
+        var response = new HttpResponseMessage(HttpStatusCode.OK);
+        response.Content = expectedModel.ToJsonContent();
+
+        _accountServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .ReturnsAsync(response);
 
         // Act
-        var result = await _sut.GetSubsidiariesStreamAsync(subsidiaryParentId, isComplianceScheme);
+        var result = await _sut.GetSubsidiariesStreamAsync(Guid.NewGuid(), Guid.NewGuid(), isComplianceScheme);
 
         // Assert
         result.Should().NotBeNull();
         result.Position.Should().Be(0);
+        _accountServiceApiClientMock.Verify(client => client.SendGetRequest(It.Is<string>(s => s.Contains("organisations"))), Times.Once);
 
-        using (var reader = new StreamReader(result))
-        {
-            var content = await reader.ReadToEndAsync();
-            content.Should().Contain("Organisation_Id,Subsidiary_Id,Organisation_Name,Companies_House_Number");
-            content.Should().Contain("100,101,Subsidiary A,CHN001");
-        }
+        using var reader = new StreamReader(result);
+        var content = await reader.ReadToEndAsync();
+        content.Should().Contain("organisation_id,subsidiary_id,organisation_name,companies_house_number");
+        content.Should().Contain($"{organisationId},{subsidiaryId},{organisationName},{companiesHouseNumber}");
     }
 
     [Test]

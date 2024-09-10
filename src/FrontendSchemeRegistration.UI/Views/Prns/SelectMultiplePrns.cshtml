@@ -1,0 +1,89 @@
+﻿@using FrontendSchemeRegistration.UI.Controllers.Prns
+@using FrontendSchemeRegistration.UI.ViewModels.Prns
+@inject IStringLocalizer<PrnDataResources> PrnDataLocalizer
+@model PrnListViewModel
+
+@{
+    var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer);
+}
+
+<main class="govuk-main-wrapper govuk-!-padding-top-4" id="select-multiple-prns">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @await Html.PartialAsync("../Shared/Partials/Govuk/_ErrorsViewModelSummary", errorsViewModel)
+            }
+            
+            <h1 class="govuk-heading-l">@Localizer["accept_or_reject_prns_and_perns"]</h1>
+
+            <div class="govuk-inset-text">
+                @Localizer["number_of_prns_and_perns_awaiting_acceptance"]
+                <br>
+                <br>
+                <h2 class="govuk-heading-l">@Model.Prns.Count</h2>
+            </div>
+
+            <form class="form" method="POST">
+                @{int counter = 0;}
+                @foreach (var group in Model.Prns.GroupBy(p => p.Material))
+                {
+                    <table class="govuk-table">
+                        <thead class="govuk-table__head">
+                            <tr class="govuk-table__row">
+                                <h2 class="govuk-heading-m">@PrnDataLocalizer[group.Key]</h2>
+                                <div id="waste-hint" class="govuk-hint">
+                                    @Localizer["select_the_prns_and_perns_you_want_to_accept_or_reject"]
+                                </div>
+                            </tr>
+                            <tr class="govuk-table__row">
+                                <th class="govuk-table__header">@Localizer["prn_or_pern_number"]</th>
+                                <th class="govuk-table__header">@Localizer["date_issued"]</th>
+                                <th class="govuk-table__header">@Localizer["december_waste"]</th>
+                                <th class="govuk-table__header">@Localizer["issued_by"]</th>
+                                <th class="govuk-table__header">@Localizer["tonnage"]</th>
+                                <th class="govuk-table__header">@Localizer["note"]</th>
+                            </tr>
+                        </thead>
+
+                        <tbody class="govuk-table__body">
+                        @for (int i = 0; i < Model?.Prns?.Where(x => x.Material == group.Key)?.Count(); i++, counter++)
+                        {
+                            @Html.HiddenFor(x => x.Prns[counter].ExternalId)
+
+                            <tr class="govuk-table__row">
+                                <td class="govuk-table__cell">
+                                    <div class="govuk-checkboxes__item">
+                                        @{
+                                            var checkBoxId = string.Concat("chkSeletPrn_", Model?.Prns[counter].Id);
+                                        }
+                                        @Html.CheckBoxFor(x => x.Prns[counter].IsSelected, new { @id = @checkBoxId, @class = "govuk-checkboxes__input" })
+
+                                        <label class="govuk-label govuk-checkboxes__label" for="@checkBoxId">
+                                            <a class="govuk-link" href="@Url.Action(nameof(PrnsController.SelectSinglePrn), "Prns", new { id = Model.Prns[counter].ExternalId })">@Model.Prns[counter].PrnOrPernNumber<span class="govuk-visually-hidden">PER or PERN number</span></a>
+                                        </label>
+                                    </div>
+                                </td>
+                                <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[counter].DateIssuedDisplay)</td>
+                                <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[counter].DecemberWasteDisplay)</td>
+                                <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[counter].IssuedBy)</td>
+                                <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[counter].Tonnage)</td>
+                                <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[counter].AdditionalNotes)</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                }
+
+                <div class="govuk-button-group">
+                    <button class="govuk-button" type="submit" asp-action=@nameof(PrnsAcceptController.AcceptMultiplePrnsPassThrough) asp-controller="PrnsAccept">
+                        @Localizer["accept_selected_prns_and_perns"]
+                    </button>
+
+                    <button class=" govuk-button govuk-button--secondary" formaction="reject-bulk">@Localizer["reject_selected_prns_and_perns"]</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>

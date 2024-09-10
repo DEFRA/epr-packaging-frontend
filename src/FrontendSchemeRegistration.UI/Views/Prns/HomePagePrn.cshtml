@@ -1,0 +1,45 @@
+﻿@using FrontendSchemeRegistration.Application.Constants
+@using FrontendSchemeRegistration.UI.ViewModels.Prns
+@model PrnListViewModel
+
+<main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+    <section>
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <h1 class="govuk-heading-xl">Manage your recycling obligation</h1>
+                <div class="govuk-inset-text">
+                    <span class="govuk-caption-l">Number of PRNs and PERNs awaiting acceptance</span>
+                    <br>
+                    <h1 class="govuk-heading-xl">@Model.Prns.Count</h1>
+                </div>
+                <br>
+                <br>
+                <div class="cards">
+                    <div class="card-container3" id="cardAmount">
+                        <div class="card-body" style="width: 425px; border-bottom: 0px;">
+                            <h3 class="govuk-heading-m" style="padding-left: 20px; margin-top: 20px;">
+                                Manage PRNs and PERNs
+                            </h3>
+                            <div class="card-container2" id="cardAmount">
+                                <div class="card-body" style="width: 330px;">
+                                    <p class="govuk-!-margin-bottom-3">
+                                        <a href="@PagePaths.Prns.ShowAwaitingAcceptance" class="govuk-link govuk-link--no-visited-state">Accept or reject PRNs and PERNs</a>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="card-container4" id="cardAmount">
+                                <div class="card-body" style="width: 330px;">
+                                    <p class="govuk-!-margin-bottom-3">
+                                        <a href="@PagePaths.Prns.ShowAll" class="govuk-link govuk-link--no-visited-state">View all PRNs and PERNs</a>
+                                    </p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <br>
+            </div>
+        </div>
+    </section>
+</main>

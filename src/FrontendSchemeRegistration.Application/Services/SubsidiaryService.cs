@@ -91,18 +91,30 @@ public class SubsidiaryService : ISubsidiaryService
         }
     }
 
-    public async Task<Stream> GetSubsidiariesStreamAsync(int subsidiaryParentId, bool isComplienceScheme)
+    public async Task<Stream> GetSubsidiariesStreamAsync(Guid organisationId, Guid? complianceSchemeId, bool isComplianceScheme)
     {
-        // This needs to be replaced with the call to Account Service during intigration
+        HttpResponseMessage result;
+        if (isComplianceScheme)
+        {
+            result = await _accountServiceApiClient.SendGetRequest($"compliance-schemes/{organisationId}/schemes/{complianceSchemeId}/export-subsidiaries");
+            result.EnsureSuccessStatusCode();
+        }
+        else
+        {
+            result = await _accountServiceApiClient.SendGetRequest($"organisations/{organisationId}/export-subsidiaries");
+            result.EnsureSuccessStatusCode();
+        }
 
-        var subsidiaries = await GetMockSubsidairyExportData(isComplienceScheme);
+        var content = await result.Content.ReadAsStringAsync();
+        var subsidiaries = JsonConvert.DeserializeObject<List<ExportOrganisationSubsidiariesResponseModel>>(content);
 
         var stream = new MemoryStream();
 
         await using (var writer = new StreamWriter(stream, leaveOpen: true))
         {
-            await using (var csv = new CsvWriter(writer, new CsvConfiguration(CultureInfo.CurrentCulture)))
+            await using (var csv = new CsvWriter(writer, new CsvConfiguration(CultureInfo.InvariantCulture)))
             {
+                csv.Context.RegisterClassMap<ExportOrganisationSubsidiariesRowMap>();
                 csv.Context.RegisterClassMap<ErrorReportRowMap>();
                 await csv.WriteRecordsAsync(subsidiaries);
             }
@@ -112,55 +124,5 @@ public class SubsidiaryService : ISubsidiaryService
 
         stream.Position = 0;
         return stream;
-    }
-
-    private static async Task<IList<SubsidiaryExportDto>> GetMockSubsidairyExportData(bool isComplienceScheme)
-    {
-        var subsidiaries = new List<SubsidiaryExportDto>();
-
-        if (isComplienceScheme)
-        {
-            subsidiaries = new List<SubsidiaryExportDto>
-            {
-            new SubsidiaryExportDto { Organisation_Id = 100, Subsidiary_Id = 101, Organisation_Name = "Subsidiary A", Companies_House_Number = "CHN001" },
-            new SubsidiaryExportDto { Organisation_Id = 100, Subsidiary_Id = 102, Organisation_Name = "Subsidiary B", Companies_House_Number = "CHN002" },
-            new SubsidiaryExportDto { Organisation_Id = 200, Subsidiary_Id = 103, Organisation_Name = "Subsidiary C", Companies_House_Number = "CHN003" },
-            new SubsidiaryExportDto { Organisation_Id = 200, Subsidiary_Id = 104, Organisation_Name = "Subsidiary D", Companies_House_Number = "CHN004" },
-            new SubsidiaryExportDto { Organisation_Id = 200, Subsidiary_Id = 105, Organisation_Name = "Subsidiary E", Companies_House_Number = "CHN005" },
-            new SubsidiaryExportDto { Organisation_Id = 200, Subsidiary_Id = 106, Organisation_Name = "Subsidiary F", Companies_House_Number = "CHN006" },
-            new SubsidiaryExportDto { Organisation_Id = 200, Subsidiary_Id = 107, Organisation_Name = "Subsidiary G", Companies_House_Number = "CHN007" },
-            new SubsidiaryExportDto { Organisation_Id = 200, Subsidiary_Id = 108, Organisation_Name = "Subsidiary H", Companies_House_Number = "CHN008" },
-            new SubsidiaryExportDto { Organisation_Id = 200, Subsidiary_Id = 109, Organisation_Name = "Subsidiary I", Companies_House_Number = "CHN009" },
-            new SubsidiaryExportDto { Organisation_Id = 200, Subsidiary_Id = 110, Organisation_Name = "Subsidiary J", Companies_House_Number = "CHN010" },
-            new SubsidiaryExportDto { Organisation_Id = 300, Subsidiary_Id = 101, Organisation_Name = "Subsidiary A", Companies_House_Number = "CHN001" },
-            new SubsidiaryExportDto { Organisation_Id = 300, Subsidiary_Id = 202, Organisation_Name = "Subsidiary B", Companies_House_Number = "CHN002" },
-            new SubsidiaryExportDto { Organisation_Id = 300, Subsidiary_Id = 303, Organisation_Name = "Subsidiary C", Companies_House_Number = "CHN003" },
-            new SubsidiaryExportDto { Organisation_Id = 300, Subsidiary_Id = 304, Organisation_Name = "Subsidiary D", Companies_House_Number = "CHN004" },
-            new SubsidiaryExportDto { Organisation_Id = 300, Subsidiary_Id = 305, Organisation_Name = "Subsidiary E", Companies_House_Number = "CHN005" },
-            new SubsidiaryExportDto { Organisation_Id = 300, Subsidiary_Id = 306, Organisation_Name = "Subsidiary F", Companies_House_Number = "CHN006" },
-            new SubsidiaryExportDto { Organisation_Id = 300, Subsidiary_Id = 307, Organisation_Name = "Subsidiary G", Companies_House_Number = "CHN007" },
-            new SubsidiaryExportDto { Organisation_Id = 300, Subsidiary_Id = 308, Organisation_Name = "Subsidiary H", Companies_House_Number = "CHN008" },
-            new SubsidiaryExportDto { Organisation_Id = 300, Subsidiary_Id = 309, Organisation_Name = "Subsidiary I", Companies_House_Number = "CHN009" },
-            new SubsidiaryExportDto { Organisation_Id = 300, Subsidiary_Id = 310, Organisation_Name = "Subsidiary J", Companies_House_Number = "CHN010" }
-            };
-        }
-        else
-        {
-            subsidiaries = new List<SubsidiaryExportDto>
-            {
-            new SubsidiaryExportDto { Organisation_Id = 100, Subsidiary_Id = 101, Organisation_Name = "Subsidiary A", Companies_House_Number = "CHN001" },
-            new SubsidiaryExportDto { Organisation_Id = 100, Subsidiary_Id = 102, Organisation_Name = "Subsidiary B", Companies_House_Number = "CHN002" },
-            new SubsidiaryExportDto { Organisation_Id = 100, Subsidiary_Id = 103, Organisation_Name = "Subsidiary C", Companies_House_Number = "CHN003" },
-            new SubsidiaryExportDto { Organisation_Id = 100, Subsidiary_Id = 104, Organisation_Name = "Subsidiary D", Companies_House_Number = "CHN004" },
-            new SubsidiaryExportDto { Organisation_Id = 100, Subsidiary_Id = 105, Organisation_Name = "Subsidiary E", Companies_House_Number = "CHN005" },
-            new SubsidiaryExportDto { Organisation_Id = 100, Subsidiary_Id = 106, Organisation_Name = "Subsidiary F", Companies_House_Number = "CHN006" },
-            new SubsidiaryExportDto { Organisation_Id = 100, Subsidiary_Id = 107, Organisation_Name = "Subsidiary G", Companies_House_Number = "CHN007" },
-            new SubsidiaryExportDto { Organisation_Id = 100, Subsidiary_Id = 108, Organisation_Name = "Subsidiary H", Companies_House_Number = "CHN008" },
-            new SubsidiaryExportDto { Organisation_Id = 100, Subsidiary_Id = 109, Organisation_Name = "Subsidiary I", Companies_House_Number = "CHN009" },
-            new SubsidiaryExportDto { Organisation_Id = 100, Subsidiary_Id = 110, Organisation_Name = "Subsidiary J", Companies_House_Number = "CHN010" }
-            };
-        }
-
-        return subsidiaries;
     }
 }

@@ -5,10 +5,13 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using Application.Services;
+using Application.Services.Interfaces;
+using AutoFixture.NUnit3;
 using DTOs.Submission;
 using Enums;
 using FluentAssertions;
 using FrontendSchemeRegistration.Application.DTOs;
+using FrontendSchemeRegistration.Application.DTOs.Prns;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
@@ -635,5 +638,220 @@ public class WebApiGatewayClientTests
 
         // Assert
         await act.Should().ThrowAsync<HttpRequestException>();
+    }
+
+    [Theory]
+    [AutoData]
+    public async Task GetPrnsForLoggedOnUserAsync_ReturnsPrns_WhenSuccessful(List<PrnModel> data)
+    {
+        // Arrange
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonSerializer.Serialize(data)),
+            });
+
+        var result = await _webApiGatewayClient.GetPrnsForLoggedOnUserAsync();
+
+        result.Should().BeEquivalentTo(data);
+    }
+
+    [Theory]
+    [AutoData]
+    public async Task GetPrnsForLoggedOnUserAsync_ThrowsException_WhenResponseCodeIsNotSuccessful()
+    {
+        // Arrange
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.InternalServerError });
+
+        // Act / Assert
+        await _webApiGatewayClient
+            .Invoking(x => x.GetPrnsForLoggedOnUserAsync())
+            .Should()
+            .ThrowAsync<HttpRequestException>();
+    }
+
+    [Theory]
+    [AutoData]
+    public async Task GetPrnByExternalIdAsync_ReturnsPrn_WhenSuccessful(PrnModel data)
+    {
+        // Arrange
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonSerializer.Serialize(data)),
+            });
+
+        var result = await _webApiGatewayClient.GetPrnByExternalIdAsync(data.ExternalId);
+
+        result.Should().BeEquivalentTo(data);
+    }
+
+    [Theory]
+    [AutoData]
+    public async Task GetPrnByExternalIdAsync_ThrowsException_WhenResponseCodeIsNotSuccessful()
+    {
+        // Arrange
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.InternalServerError });
+
+        // Act / Assert
+        await _webApiGatewayClient
+            .Invoking(x => x.GetPrnByExternalIdAsync(Guid.NewGuid()))
+            .Should()
+            .ThrowAsync<HttpRequestException>();
+    }
+
+    [Test]
+    public async Task SetPrnApprovalStatusToAcceptedAsyncForSinglePrn_ThrowsException_WhenResponseCodeIsNotSuccessful()
+    {
+        // Arrange
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.InternalServerError });
+
+        // Act / Assert
+        await _webApiGatewayClient
+            .Invoking(x => x.SetPrnApprovalStatusToAcceptedAsync(Guid.NewGuid()))
+            .Should()
+            .ThrowAsync<HttpRequestException>();
+    }
+
+    [Test]
+    public async Task SetPrnApprovalStatusToAcceptedAsyncForSinglePrn_CallsFacadeWithCorrectPayload()
+    {
+        // Arrange
+        var prnsToUpdate = Guid.NewGuid();
+
+        HttpRequestMessage expectedRequest = null;
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .Callback<HttpRequestMessage, CancellationToken>((request, ct) => expectedRequest = request)
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.OK });
+
+        // Act / Assert
+        await _webApiGatewayClient.SetPrnApprovalStatusToAcceptedAsync(prnsToUpdate);
+
+        expectedRequest.RequestUri.Should().Be("https://example.com/api/v1/prn/status");
+
+        var body = await expectedRequest.Content.ReadFromJsonAsync<List<UpdatePrnStatus>>();
+
+        body.Should().BeEquivalentTo(new List<UpdatePrnStatus>()
+        {
+            new() { PrnId = prnsToUpdate, Status = "ACCEPTED" }
+        });
+    }
+
+    [Test]
+    public async Task SetPrnApprovalStatusToAcceptedAsyncForMultiple_CallsFacadeWithCorrectPayload()
+    {
+        // Arrange
+        var prnsToUpdate = new Guid[] { Guid.NewGuid(), Guid.NewGuid() };
+
+        HttpRequestMessage expectedRequest = null;
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .Callback<HttpRequestMessage, CancellationToken>((request, ct) => expectedRequest = request)
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.OK });
+
+        // Act / Assert
+        await _webApiGatewayClient.SetPrnApprovalStatusToAcceptedAsync(prnsToUpdate);
+
+        expectedRequest.RequestUri.Should().Be("https://example.com/api/v1/prn/status");
+
+        var body = await expectedRequest.Content.ReadFromJsonAsync<List<UpdatePrnStatus>>();
+
+        body.Should().BeEquivalentTo(prnsToUpdate.Select(x => new UpdatePrnStatus() { PrnId = x, Status = "ACCEPTED" }));
+    }
+
+    [Test]
+    public async Task SetPrnApprovalStatusToAcceptedAsyncForMultiplePrn_ThrowsException_WhenResponseCodeIsNotSuccessful()
+    {
+        // Arrange
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.InternalServerError });
+
+        // Act / Assert
+        await _webApiGatewayClient
+            .Invoking(x => x.SetPrnApprovalStatusToAcceptedAsync(new Guid[2]))
+            .Should()
+            .ThrowAsync<HttpRequestException>();
+    }
+
+    [Test]
+    public async Task SetPrnApprovalStatusToRejectedAsyncForSinglePrn_ThrowsException_WhenResponseCodeIsNotSuccessful()
+    {
+        // Arrange
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.InternalServerError });
+
+        // Act / Assert
+        await _webApiGatewayClient
+            .Invoking(x => x.SetPrnApprovalStatusToRejectedAsync(Guid.NewGuid()))
+            .Should()
+            .ThrowAsync<HttpRequestException>();
+    }
+
+    [Test]
+    public async Task SetPrnApprovalStatusToRejectedAsyncForSinglePrn_CallsFacadeWithCorrectPayload()
+    {
+        // Arrange
+        var prnsToUpdate = Guid.NewGuid();
+
+        HttpRequestMessage expectedRequest = null;
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .Callback<HttpRequestMessage, CancellationToken>((request, ct) => expectedRequest = request)
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.OK });
+
+        // Act / Assert
+        await _webApiGatewayClient.SetPrnApprovalStatusToRejectedAsync(prnsToUpdate);
+
+        expectedRequest.RequestUri.Should().Be("https://example.com/api/v1/prn/status");
+
+        var body = await expectedRequest.Content.ReadFromJsonAsync<List<UpdatePrnStatus>>();
+
+        body.Should().BeEquivalentTo(new List<UpdatePrnStatus>()
+        {
+            new() { PrnId = prnsToUpdate, Status = "REJECTED" }
+        });
     }
 }

@@ -1,18 +1,28 @@
 .govuk-card {
-  border: 1px solid govuk-colour("mid-grey");
+    border: 1px solid govuk-colour("mid-grey");
 
-  &-body {
-    padding: 30px;
-  }
+    &-body {
+        padding: 30px;
+    }
 
-  &--border-bottom-blue {
-    border: 0;
-    border-bottom: 5px solid govuk-colour("blue");
-  }
+    &--border-bottom-blue {
+        border: 0;
+        border-bottom: 5px solid govuk-colour("blue");
+    }
 
-  &--grey {
-    background-color: govuk-colour("light-grey")
-  }
+    &--grey {
+        background-color: govuk-colour("light-grey")
+    }
+
+    &--blue {
+        background-color: govuk-colour("blue")
+    }
+}
+
+.govuk-card-body-text {
+    &--white {
+        color: govuk-colour("white")
+    }
 }
 
 .card-row {

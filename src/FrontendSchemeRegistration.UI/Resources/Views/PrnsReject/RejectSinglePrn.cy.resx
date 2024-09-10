@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="reject_this_prn" xml:space="preserve">
+		<value>[Welsh]Reject this PRN?</value>
+	</data>
+	<data name="reject_this_pern" xml:space="preserve">
+		<value>[Welsh]Reject this PERN?</value>
+	</data>
+	<data name="this_is_permanent_and_cannot_be_undone" xml:space="preserve">
+		<value>[Welsh]This is permanent and cannot be undone.</value>
+	</data>
+	<data name="yes_reject" xml:space="preserve">
+		<value>[Welsh]Yes, reject</value>
+	</data>
+	<data name="no_go_back" xml:space="preserve">
+		<value>[Welsh]No, go back</value>
+	</data>
+</root>

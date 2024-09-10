@@ -80,4 +80,28 @@ public static class PagePaths
     public const string SubsidiaryUkNation = "/subsidiary-uk-nation";
     public const string SubsidiaryLocation = "/subsidiary-location";
     public const string SubsidiaryCheckDetails = "/subsidiary-check-details";
+
+    public static class Prns
+    {
+        public const string Home = "manage-prn-home-complete";
+        public const string ShowAll = "view-awaiting-acceptance";
+        public const string ShowAwaitingAcceptance = "view-awaiting-acceptance-alt";
+        public const string ShowSelected = "selected-prn";
+
+        // Accept single PRN
+        public const string AskToAccept = "accept-prn";
+        public const string ConfirmAccept = "confirm-accept-prn";
+        public const string Accepted = "accepted-prn";
+
+        // Accept multiples PRNS
+        public const string BeforeAskToAcceptMany = "accept-bulk-passthrough";
+        public const string AskToAcceptMany = "accept-bulk";
+        public const string ConfirmAcceptMany = "confirm-accept-bulk";
+        public const string AcceptedMany = "accepted-prns";
+
+        // Reject single PRN
+        public const string AskToReject = "reject-prn";
+        public const string ConfirmReject = "confirm-reject-prn";
+        public const string Rejected = "rejected-prn";
+    }
 }

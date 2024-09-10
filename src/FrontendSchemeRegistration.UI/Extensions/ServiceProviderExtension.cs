@@ -6,17 +6,18 @@ using Application.Services;
 using Application.Services.Interfaces;
 using Constants;
 using EPR.Common.Authorization.Extensions;
+using FrontendSchemeRegistration.UI.Services.Interfaces;
 using Helpers;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Time.Testing;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.TokenCacheProviders.Distributed;
 using Middleware;
 using Services;
-using Services.Interfaces;
 using Sessions;
 using StackExchange.Redis;
 
@@ -32,6 +33,7 @@ public static class ServiceProviderExtension
         ConfigureSession(services);
         RegisterServices(services);
         RegisterHttpClients(services, configuration);
+        RegisterPrnTimeProviderServices(services, configuration);
 
         return services;
     }
@@ -127,6 +129,20 @@ public static class ServiceProviderExtension
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.AddTransient<UserDataCheckerMiddleware>();
         services.AddSingleton<ICorrelationIdProvider, CorrelationIdProvider>();
+        services.AddScoped<IPrnService, PrnService>();
+    }
+
+    // When testing PRNs use a configurable date in place of the current date
+    private static void RegisterPrnTimeProviderServices(IServiceCollection services, IConfiguration configuration)
+    {
+        // Check feature flags, [FeatureGate] wont work here
+        if (configuration.IsFeatureEnabled(FeatureFlags.ShowPrn) && configuration.IsFeatureEnabled(FeatureFlags.OverridePrnCurrentDateForTestingPurposes))
+        {
+            var prnOptions = configuration.GetSection("Prn").Get<PrnOptions>();
+            var fake = new FakeTimeProvider();
+            fake.SetUtcNow(new DateTimeOffset(new DateTime(prnOptions.Year, prnOptions.Month, prnOptions.Day)));
+            services.AddSingleton(typeof(TimeProvider), fake as TimeProvider);
+        }
     }
 
     private static void RegisterHttpClients(IServiceCollection services, IConfiguration configuration)

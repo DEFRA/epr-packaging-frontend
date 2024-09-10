@@ -1,7 +1,9 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs;
+using FrontendSchemeRegistration.Application.DTOs.Prns;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Extensions;
@@ -256,6 +258,101 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting subsidiaries");
+            throw;
+        }
+    }
+
+    // Gets all PRNs assigned to an organisation
+    public async Task<List<PrnModel>> GetPrnsForLoggedOnUserAsync()
+    {
+        await PrepareAuthenticatedClientAsync();
+
+        try
+        {
+            var response = await _httpClient.GetAsync($"/api/v1/prn/organisation");
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadFromJsonAsync<List<PrnModel>>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting recycling notes for organisation");
+            throw;
+        }
+    }
+
+    // Get single PRN
+    public async Task<PrnModel> GetPrnByExternalIdAsync(Guid id)
+    {
+        await PrepareAuthenticatedClientAsync();
+
+        try
+        {
+            var response = await _httpClient.GetAsync($"/api/v1/prn/{id}");
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadFromJsonAsync<PrnModel>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting recycling note {id}", id);
+            throw;
+        }
+    }
+
+    public async Task SetPrnApprovalStatusToAcceptedAsync(Guid id)
+    {
+        await PrepareAuthenticatedClientAsync();
+
+        try
+        {
+            UpdatePrnStatus prnStatus = new() { PrnId = id, Status = PrnStatus.Accepted };
+            List<UpdatePrnStatus> payload = new() { prnStatus };
+            var response = await _httpClient.PostAsJsonAsync($"/api/v1/prn/status", payload);
+
+            response.EnsureSuccessStatusCode();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error accepting recycling note {id}", id);
+            throw;
+        }
+    }
+
+    public async Task SetPrnApprovalStatusToAcceptedAsync(Guid[] ids)
+    {
+        await PrepareAuthenticatedClientAsync();
+        try
+        {
+            var payload = ids.Select(x => new UpdatePrnStatus() { PrnId = x, Status = PrnStatus.Accepted });
+            var response = await _httpClient.PostAsJsonAsync("/api/v1/prn/status", payload);
+
+            response.EnsureSuccessStatusCode();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error accepting recycling note {ids}", ids);
+            throw;
+        }
+    }
+
+    public async Task SetPrnApprovalStatusToRejectedAsync(Guid id)
+    {
+        await PrepareAuthenticatedClientAsync();
+
+        try
+        {
+            UpdatePrnStatus prnStatus = new() { PrnId = id, Status = PrnStatus.Rejected };
+            List<UpdatePrnStatus> payload = new() { prnStatus };
+            var response = await _httpClient.PostAsJsonAsync($"/api/v1/prn/status", payload);
+
+            response.EnsureSuccessStatusCode();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error rejecting recycling note {id}", id);
             throw;
         }
     }

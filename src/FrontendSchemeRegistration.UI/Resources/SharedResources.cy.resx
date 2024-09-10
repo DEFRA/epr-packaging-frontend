@@ -258,4 +258,7 @@
   <data name="export" xml:space="preserve">
     <value>WExport</value>
   </data>
+  <data name="total" xml:space="preserve">
+    <value>WTotal</value>
+  </data>
 </root>

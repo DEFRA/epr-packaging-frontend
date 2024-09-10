@@ -1,7 +1,7 @@
 ﻿@using FrontendSchemeRegistration.UI.Constants
 @model SubsidiaryListViewModel
 @{
-	ViewData["Title"] = Localizer["subsidiaries_list"];
+    ViewData["Title"] = Localizer["subsidiaries_list"];
 
     var subsidiaryNameHeader = Localizer["subsidiary_name"];
     var subsidiaryIdHeader = Localizer["subsidiary_id"];
@@ -86,8 +86,6 @@
                         @if (await FeatureManager.IsEnabledAsync(FeatureFlags.ShowSubsidiariesFileUploadExportRemoveFeature))
                         {
                             <p class="govuk-body">@Localizer["subsidiaries_need_to_upload_csv"]</p>
-
-
                             <h2 class="govuk-heading-m">@Localizer["subsidiaries_upload_your_file"]</h2>
                             <p class="govuk-body">@Localizer["subsidiaries_file_must_be"]</p>
                             <ul>
@@ -102,6 +100,32 @@
                         }
                     }
 
+                    @if (await FeatureManager.IsEnabledAsync(FeatureFlags.ShowSubsidiariesFileUploadExportRemoveFeature))
+                    {
+                        @using (Html.BeginForm(FormMethod.Post, new
+                        {
+                            enctype = "multipart/form-data"
+                        }))
+                        {
+                            <div class="govuk-form-group @(ViewData.ModelState.IsValid ? string.Empty : "govuk-form-group--error")" data-testid="subsidiary-data-upload-form">
+                                @if (!ViewData.ModelState.IsValid)
+                                {
+                                    @await Html.PartialAsync("Partials/Govuk/_Error", ViewData.ModelState.GetModelStateEntry("file"))
+                                }
+                                <label class="govuk-label" for="file">@Localizer["upload_a_file"]</label>
+                                <input class="govuk-file-upload" name="file" type="file" id="file" data-testid="subsidiary-upload-choose-file-button">
+                            </div>
+                            <button class="govuk-button" data-module="govuk-button" type="submit" data-testid="subsidiary-data-upload-button">@SharedLocalizer["upload_file"]</button>
+
+                            @if (organisationModel.Subsidiaries.Count > 0)
+                            {
+                                <a class="govuk-button govuk-button--secondary govuk-!-margin-left-4" href="@Url.Action("ExportSubsidiaries", "FileUploadSubsidiaries")" role="button" data-module="govuk-button">
+                                    @SharedLocalizer["export"]
+                                </a>
+                            }
+                        }
+                    }
+
                     @if (Model.PagingDetail.PageCount > 1)
                     {
                         @await Html.PartialAsync("Partials/RecordNavigation/_RecordPaging", Model.PagingDetail)
@@ -109,28 +133,6 @@
                     }
                 }
 
-            }
-
-            @if (await FeatureManager.IsEnabledAsync(FeatureFlags.ShowSubsidiariesFileUploadExportRemoveFeature))
-            {
-                @using (Html.BeginForm(FormMethod.Post, new
-                {
-                    enctype = "multipart/form-data"
-                }))
-                {
-                    <div class="govuk-form-group @(ViewData.ModelState.IsValid ? string.Empty : "govuk-form-group--error")" data-testid="subsidiary-data-upload-form">
-                        @if (!ViewData.ModelState.IsValid)
-                        {
-                            @await Html.PartialAsync("Partials/Govuk/_Error", ViewData.ModelState.GetModelStateEntry("file"))
-                        }
-                        <label class="govuk-label" for="file">@Localizer["upload_a_file"]</label>
-                        <input class="govuk-file-upload" name="file" type="file" id="file" data-testid="subsidiary-upload-choose-file-button">
-                    </div>
-                    <button class="govuk-button" data-module="govuk-button" type="submit" data-testid="subsidiary-data-upload-button">@SharedLocalizer["upload_file"]</button>
-                    <a class="govuk-button govuk-button--secondary govuk-!-margin-left-4" href="@Url.Action("ExportSubsidiaries", "FileUploadSubsidiaries", new { subsidiaryParentId = 123 })" role="button" data-module="govuk-button">
-                        @SharedLocalizer["export"]
-                    </a>
-                }
             }
         </div>
     </div>

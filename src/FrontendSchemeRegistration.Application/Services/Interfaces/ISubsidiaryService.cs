@@ -9,7 +9,7 @@ public interface ISubsidiaryService
 
     Task<string> AddSubsidiary(SubsidiaryAddDto subsidiary);
 
-    Task<Stream> GetSubsidiariesStreamAsync(int subsidiaryParentId, bool isComplienceScheme);
+    Task<Stream> GetSubsidiariesStreamAsync(Guid organisationId, Guid? complianceSchemeId, bool isComplianceScheme);
 
     Task<OrganisationRelationshipModel> GetOrganisationSubsidiaries(Guid organisationId);
 }

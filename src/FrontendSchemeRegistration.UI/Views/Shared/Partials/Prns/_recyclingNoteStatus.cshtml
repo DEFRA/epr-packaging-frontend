@@ -1,0 +1,51 @@
+﻿@using FrontendSchemeRegistration.UI.ViewModels.Prns
+@inject IStringLocalizer<PrnDataResources> PrnDataLocalizer
+@model PrnViewModel
+
+<table class="govuk-table">
+    <tbody class="govuk-table__body">
+
+        <tr class="govuk-table__row">
+            <td class="govuk-table__cell">@Localizer["status"]</td>
+            <th scope="row" class="govuk-table__header">
+                <strong class="govuk-tag govuk-tag--@Model.ApprovalStatusDisplayCssColour">
+                    @PrnDataLocalizer[Model.ApprovalStatus]
+                </strong>
+            </th>
+        </tr>
+        <tr class="govuk-table__row">
+            <td class="govuk-table__cell">@Localizer["status_meaning"]</td>
+            <th scope="row" class="govuk-table__header">
+                @Localizer[Model.ApprovalStatusExplanationTranslation]
+            </th>
+        </tr>
+        <tr class="govuk-table__row">
+            <td class="govuk-table__cell">@Localizer["issued_by"]</td>
+            <th scope="row" class="govuk-table__header">
+                @Model.IssuedBy
+            </th>
+        </tr>
+        @if (Model.IsPrn)
+        {
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell">@Localizer["reproccessing_site"]</td>
+                <th scope="row" class="govuk-table__header">
+                    @Model.ReproccessingSiteAddress
+                </th>
+            </tr>
+        }
+        <tr class="govuk-table__row">
+            <td class="govuk-table__cell">@Localizer["authorised_by"]</td>
+            <th scope="row" class="govuk-table__header">
+                @Model.AuthorisedBy
+            </th>
+        </tr>
+        <tr class="govuk-table__row">
+            <td class="govuk-table__cell">@Localizer["accreditation_number"]</td>
+            <th scope="row" class="govuk-table__header">
+                @Model.AccreditationNumber
+            </th>
+        </tr>
+
+    </tbody>
+</table>

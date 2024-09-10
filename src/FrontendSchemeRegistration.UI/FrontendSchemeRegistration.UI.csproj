@@ -128,6 +128,7 @@
         <PackageReference Include="AutoMapper" Version="13.0.1" />
         <PackageReference Include="CsvHelper" Version="33.0.1" />
         <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="8.0.7" />
+        <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" Version="8.8.0" />
         <PackageReference Include="Microsoft.FeatureManagement" Version="3.5.0" />
         <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" Version="3.5.0" />
         <PackageReference Include="PactNet" Version="4.5.0" />
@@ -178,6 +179,12 @@
           <SubType>Designer</SubType>
         </EmbeddedResource>
         <EmbeddedResource Update="Resources\Views\FileUploadSubsidiaries\SubsidiariesList.cy.resx">
+          <SubType>Designer</SubType>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Views\Prns\RejectedPrn.cy.resx">
+          <SubType>Designer</SubType>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Views\Prns\RejectedPrn.en.resx">
           <SubType>Designer</SubType>
         </EmbeddedResource>
         <EmbeddedResource Update="Resources\Views\SchemeMembership\SchemeMembers.cy.resx">
