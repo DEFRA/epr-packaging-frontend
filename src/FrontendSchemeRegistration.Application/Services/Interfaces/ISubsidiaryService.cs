@@ -12,4 +12,6 @@ public interface ISubsidiaryService
     Task<Stream> GetSubsidiariesStreamAsync(Guid organisationId, Guid? complianceSchemeId, bool isComplianceScheme);
 
     Task<OrganisationRelationshipModel> GetOrganisationSubsidiaries(Guid organisationId);
+
+    Task<SubsidiaryFileUploadTemplateDto> GetFileUploadTemplateAsync();
 }

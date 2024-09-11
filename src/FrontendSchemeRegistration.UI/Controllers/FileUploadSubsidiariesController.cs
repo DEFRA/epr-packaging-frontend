@@ -69,7 +69,6 @@
 
         [HttpPost]
         [Route(PagePaths.FileUploadSubsidiaries)]
-        [FeatureGate(FeatureFlags.ShowSubsidiariesFileUploadExportRemoveFeature)]
         public async Task<IActionResult> Post()
         {
             var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
@@ -165,7 +164,7 @@
                                 Name = response.Organisation.Name,
                                 Id = response.Organisation.OrganisationNumber,
                                 CompaniesHouseNumber = response.Organisation.CompaniesHouseNumber,
-                                Subsidiaries = response.Relationships.Select(r => new SubsidiaryViewModel(r.OrganisationNumber, r.OrganisationName, r.CompaniesHouseNumber, r.OldSubsidiaryId)).ToList()
+                                Subsidiaries = response.Relationships.Select(r => new SubsidiaryViewModel(r.OrganisationNumber, r.OrganisationName, r.CompaniesHouseNumber)).ToList()
                             }
 
                         ]
@@ -191,7 +190,7 @@
                                 Name = c.OrganisationName,
                                 Id = c.OrganisationNumber,
                                 CompaniesHouseNumber = c.CompaniesHouseNumber,
-                                Subsidiaries = c.Relationships.Select(s => new SubsidiaryViewModel(s.OrganisationNumber, s.OrganisationName, s.CompaniesHouseNumber, s.OldSubsidiaryId)).ToList()
+                                Subsidiaries = c.Relationships.Select(s => new SubsidiaryViewModel(s.OrganisationNumber, s.OrganisationName, s.CompaniesHouseNumber)).ToList()
                             }).ToList()
                     };
                 }

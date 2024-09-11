@@ -16,13 +16,15 @@ public class SubsidiaryServiceTests
     private const string NewOrganisationId = "123456";
 
     private Mock<IAccountServiceApiClient> _accountServiceApiClientMock;
+    private Mock<IWebApiGatewayClient> _webApiGatewayClientMock;
     private SubsidiaryService _sut;
 
     [SetUp]
     public void Init()
     {
         _accountServiceApiClientMock = new Mock<IAccountServiceApiClient>();
-        _sut = new SubsidiaryService(_accountServiceApiClientMock.Object, new NullLogger<SubsidiaryService>());
+        _webApiGatewayClientMock = new Mock<IWebApiGatewayClient>();
+        _sut = new SubsidiaryService(_accountServiceApiClientMock.Object, _webApiGatewayClientMock.Object, new NullLogger<SubsidiaryService>());
     }
 
     [Test]
@@ -289,5 +291,25 @@ public class SubsidiaryServiceTests
         // Assert
         result.Should().NotBeNull();
         result.Should().BeEquivalentTo(expectedModel);
+    }
+
+    [Test]
+    public async Task GetFileUploadTemplateAsync__WhenCallSuccessful_ReturnsResponse()
+    {
+        // Arrange
+        var expectedDto = new SubsidiaryFileUploadTemplateDto
+        {
+            Name = "test.csv",
+            ContentType = "text/csv",
+            Content = new MemoryStream([1])
+        };
+
+        _webApiGatewayClientMock.Setup(x => x.GetSubsidiaryFileUploadTemplateAsync()).ReturnsAsync(expectedDto);
+
+        // Act
+        var result = await _sut.GetFileUploadTemplateAsync();
+
+        // Assert
+        result.Should().Be(expectedDto);
     }
 }

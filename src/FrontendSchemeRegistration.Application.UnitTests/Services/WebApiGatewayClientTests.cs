@@ -3,6 +3,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Net.Mime;
 using System.Text.Json;
 using Application.Services;
 using Application.Services.Interfaces;
@@ -853,5 +854,121 @@ public class WebApiGatewayClientTests
         {
             new() { PrnId = prnsToUpdate, Status = "REJECTED" }
         });
+    }
+
+    [Test]
+    public async Task GetSubsidiaryFileUploadTemplateAsync_ReturnsDto_WhenResponseIsSuccessful()
+    {
+        // Arrange
+        const string ExpectedName = "test.csv";
+        const string ExpectedContentType = "text/csv";
+        var expectedBytes = new byte[] { 1 };
+
+        var response = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new ByteArrayContent(expectedBytes)
+        };
+
+        response.Content.Headers.ContentType = new MediaTypeHeaderValue(ExpectedContentType);
+        response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue(DispositionTypeNames.Inline)
+        {
+            FileName = ExpectedName
+        };
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _webApiGatewayClient.GetSubsidiaryFileUploadTemplateAsync();
+
+        // Assert
+        result.Name.Should().BeEquivalentTo(ExpectedName);
+        result.ContentType.Should().BeEquivalentTo(ExpectedContentType);
+        result.Content.ReadByte().Should().Be(expectedBytes[0]);
+        result.Content.ReadByte().Should().Be(-1);
+    }
+
+    [Test]
+    public async Task GetSubsidiaryFileUploadTemplateAsync_ThrowsException_WhenResponseIsUnsuccessful()
+    {
+        // Arrange
+        var response = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.InternalServerError
+        };
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(response);
+
+        // Act
+        Func<Task> act = async () => await _webApiGatewayClient.GetSubsidiaryFileUploadTemplateAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<HttpRequestException>();
+    }
+
+    [Test]
+    public async Task GetSubsidiaryFileUploadTemplateAsync_ReturnsNull_WhenFileNameIsNull()
+    {
+        // Arrange
+        var response = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new ByteArrayContent([1])
+        };
+
+        response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/csv");
+        response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue(DispositionTypeNames.Inline);
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _webApiGatewayClient.GetSubsidiaryFileUploadTemplateAsync();
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetSubsidiaryFileUploadTemplateAsync_ReturnsNull_WhenContentTypeIsNull()
+    {
+        // Arrange
+        var response = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new ByteArrayContent([1])
+        };
+
+        response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue(DispositionTypeNames.Inline)
+        {
+            FileName = "test.csv"
+        };
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _webApiGatewayClient.GetSubsidiaryFileUploadTemplateAsync();
+
+        // Assert
+        result.Should().BeNull();
     }
 }

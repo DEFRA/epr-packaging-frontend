@@ -18,11 +18,13 @@ public class SubsidiaryService : ISubsidiaryService
 {
     private readonly ILogger<SubsidiaryService> _logger;
     private readonly IAccountServiceApiClient _accountServiceApiClient;
+    private readonly IWebApiGatewayClient _webApiGatewayClient;
 
-    public SubsidiaryService(IAccountServiceApiClient accountServiceApiClient, ILogger<SubsidiaryService> logger)
+    public SubsidiaryService(IAccountServiceApiClient accountServiceApiClient, IWebApiGatewayClient webApiGatewayClient, ILogger<SubsidiaryService> logger)
     {
         _logger = logger;
         _accountServiceApiClient = accountServiceApiClient;
+        _webApiGatewayClient = webApiGatewayClient;
     }
 
     public async Task<string> SaveSubsidiary(SubsidiaryDto subsidiary)
@@ -124,5 +126,10 @@ public class SubsidiaryService : ISubsidiaryService
 
         stream.Position = 0;
         return stream;
+    }
+
+    public async Task<SubsidiaryFileUploadTemplateDto> GetFileUploadTemplateAsync()
+    {
+        return await _webApiGatewayClient.GetSubsidiaryFileUploadTemplateAsync();
     }
 }

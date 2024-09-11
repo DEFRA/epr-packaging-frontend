@@ -18,6 +18,4 @@ public class OrganisationDetailModel
     public int? NationId { get; set; }
 
     public string CompaniesHouseNumber { get; set; }
-
-    public string OldSubsidiaryId { get; set; }
 }

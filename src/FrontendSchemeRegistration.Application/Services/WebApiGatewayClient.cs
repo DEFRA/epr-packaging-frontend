@@ -5,6 +5,7 @@ using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.DTOs.Prns;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Extensions;
 using FrontendSchemeRegistration.Application.Options;
@@ -258,6 +259,44 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting subsidiaries");
+            throw;
+        }
+    }
+
+    public async Task<SubsidiaryFileUploadTemplateDto> GetSubsidiaryFileUploadTemplateAsync()
+    {
+        await PrepareAuthenticatedClientAsync();
+
+        try
+        {
+            var response = await _httpClient.GetAsync("api/v1/file-upload-subsidiary/template");
+
+            response.EnsureSuccessStatusCode();
+
+            if (response.Content.Headers.ContentDisposition?.FileName == null)
+            {
+                _logger.LogError("Failed to read subsidiary file upload template filename");
+
+                return null;
+            }
+
+            if (response.Content.Headers.ContentType?.MediaType == null)
+            {
+                _logger.LogError("Failed to read subsidiary file upload template content type");
+
+                return null;
+            }
+
+            return new SubsidiaryFileUploadTemplateDto
+            {
+                Name = response.Content.Headers.ContentDisposition.FileName,
+                ContentType = response.Content.Headers.ContentType.MediaType,
+                Content = await response.Content.ReadAsStreamAsync()
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting subsidiary file upload template");
             throw;
         }
     }

@@ -138,9 +138,6 @@
   <data name="no_subsidiaries_added" xml:space="preserve">
     <value>No subsidiaries added for this organisation.</value>
   </data>
-  <data name="old_subsidiary_id" xml:space="preserve">
-    <value>Old Subsidiary ID</value>
-  </data>
   <data name="organisation_id_heading" xml:space="preserve">
     <value>Organisation ID</value>
   </data>
@@ -163,10 +160,10 @@
     <value>Upload a file</value>
   </data>
   <data name="subsidiary_accuracy_warning_text" xml:space="preserve">
-    <value>Check all the information you have provided is accurate. If it is not correct or if there is any missing information you will need to provide the correct data. Use the new subsidiary IDs for all future organisation details and packaging data submissions. Do not use the old subsidiary IDs.</value>
+    <value>Check all the information you have provided is accurate. If it is not correct or if there is any missing information you will need to provide the correct data. Use the subsidiary IDs for all future organisation details and packaging data submissions.</value>
   </data>
   <data name="subsidiary_id" xml:space="preserve">
-    <value>New Subsidiary ID</value>
+    <value>Subsidiary ID</value>
   </data>
   <data name="subsidiary_name" xml:space="preserve">
     <value>Subsidiary Name</value>
@@ -177,7 +174,10 @@
   <data name="upload_a_file" xml:space="preserve">
     <value>Upload a file</value>
   </data>
- <data name="no_subsidiaries_msg" xml:space="preserve">
+  <data name="no_subsidiaries_msg" xml:space="preserve">
     <value>No subsidiaries added for this organisation. To add subsidiaries, upload a CSV file</value>
+  </data>
+  <data name="how_to_complete_file" xml:space="preserve">
+    <value>How to complete a file (opens in new tab)</value>
   </data>
 </root>

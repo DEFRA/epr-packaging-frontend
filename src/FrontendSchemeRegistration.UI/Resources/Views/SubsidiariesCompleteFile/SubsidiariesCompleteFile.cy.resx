@@ -118,66 +118,33 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="companies_house_number" xml:space="preserve">
-    <value>W Companies House Number</value>
+    <value>W ‘companies house number’ – enter the 8 digit long number</value>
   </data>
-  <data name="companies_house_number_heading" xml:space="preserve">
-    <value>W Companies House Number</value>
+  <data name="download_CSV_template" xml:space="preserve">
+    <value>W Download CSV template</value>
   </data>
-  <data name="few_minutes_to_upload_file" xml:space="preserve">
-    <value>W It may take a few minutes for your file to upload - do not close the window while the file is uploading.</value>
+  <data name="enter_the_required_data" xml:space="preserve">
+    <value>W Enter the required data in the CSV file and use the following column headers:</value>
   </data>
-  <data name="file_specification" xml:space="preserve">
-    <value>W How to complete a file (opens in a new tab)</value>
+  <data name="franchisee_licensee_tenant" xml:space="preserve">
+    <value>W ‘franchisee_licensee_tenant’ - enter Y if the child entity is a franchisee, licensee or tenant</value>
   </data>
-  <data name="normal_header" xml:space="preserve">
-    <value>W Subsidiaries</value>
+  <data name="how_to_complete" xml:space="preserve">
+    <value>W How to complete a CSV file</value>
   </data>
-  <data name="no_ch_number" xml:space="preserve">
-    <value>W No CH Number</value>
+  <data name="if_you_are_entering_data_from_an_organisation_details" xml:space="preserve">
+    <value>W If you are entering data from an organisation details CSV file, you can use the data in column A to populate Column 1, and Columns B, C and E for columns two to four.</value>
   </data>
-  <data name="no_subsidiaries_added" xml:space="preserve">
-    <value>W No subsidiaries added for this organisation.</value>
+  <data name="organisation_id" xml:space="preserve">
+    <value>W ‘organisation_id’ - enter the 6 digit long identification number created when the holding company registered with EPR</value>
   </data>
-  <data name="organisation_id_heading" xml:space="preserve">
-    <value>W Organisation ID</value>
+  <data name="organisation_name" xml:space="preserve">
+    <value>W ‘organisation_name’ – enter any names exactly as they appear on Companies House</value>
   </data>
-  <data name="subsidiaries_file_must_be" xml:space="preserve">
-    <value>W The file must be:</value>
-  </data>
-  <data name="subsidiaries_in_csv_format" xml:space="preserve">
-    <value>W in CSV format</value>
-  </data>
-  <data name="subsidiaries_list" xml:space="preserve">
-    <value>W Subsidiaries list</value>
-  </data>
-  <data name="subsidiaries_need_to_upload_csv" xml:space="preserve">
-    <value>W To add subsidiaries you will need to upload a CSV file.</value>
-  </data>
-  <data name="subsidiaries_smaller_than_60kb" xml:space="preserve">
-    <value>W smaller than 60KB</value>
-  </data>
-  <data name="subsidiaries_upload_your_file" xml:space="preserve">
-    <value>W Upload a file</value>
-  </data>
-  <data name="subsidiary_accuracy_warning_text" xml:space="preserve">
-    <value>W Check all the information you have provided is accurate. If it is not correct or if there is any missing information you will need to provide the correct data. Use the subsidiary IDs for all future organisation details and packaging data submissions.</value>
+  <data name="parent_child" xml:space="preserve">
+    <value>W ‘parent_child’ – enter Parent or child</value>
   </data>
   <data name="subsidiary_id" xml:space="preserve">
-    <value>W Subsidiary ID</value>
-  </data>
-  <data name="subsidiary_name" xml:space="preserve">
-    <value>W Subsidiary Name</value>
-  </data>
-  <data name="subsidiary_remove" xml:space="preserve">
-    <value>W Remove</value>
-  </data>
-  <data name="upload_a_file" xml:space="preserve">
-    <value>W Upload a file</value>
-  </data>
-  <data name="no_subsidiaries_msg" xml:space="preserve">
-    <value>W No subsidiaries added for this organisation. To add subsidiaries, upload a CSV file</value>
-  </data>
-  <data name="how_to_complete_file" xml:space="preserve">
-    <value>W How to complete a file (opens in new tab)</value>
+    <value>W ‘subsidiary_id’ - enter the self-assigned id used if you have previously submitted data for this subsidiary</value>
   </data>
 </root>

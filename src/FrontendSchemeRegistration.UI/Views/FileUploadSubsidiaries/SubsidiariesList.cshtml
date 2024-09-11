@@ -1,13 +1,10 @@
-﻿@using FrontendSchemeRegistration.UI.Constants
-@model SubsidiaryListViewModel
+﻿@model SubsidiaryListViewModel
 @{
     ViewData["Title"] = Localizer["subsidiaries_list"];
 
     var subsidiaryNameHeader = Localizer["subsidiary_name"];
     var subsidiaryIdHeader = Localizer["subsidiary_id"];
     var companiesHouseNumberHeader = Localizer["companies_house_number"];
-    var oldSubsidiaryIdHeader = Localizer["old_subsidiary_id"];
-
 }
 @inject Microsoft.FeatureManagement.IFeatureManager FeatureManager
 
@@ -51,7 +48,6 @@
                                             <th scope="col" class="govuk-table__header">@subsidiaryNameHeader</th>
                                             <th scope="col" class="govuk-table__header">@subsidiaryIdHeader</th>
                                             <th scope="col" class="govuk-table__header">@companiesHouseNumberHeader</th>
-                                            <th scope="col" class="govuk-table__header">@oldSubsidiaryIdHeader</th>
                                         </tr>
                                     </thead>
                                     <tbody class="govuk-table__body">
@@ -61,7 +57,6 @@
                                                 <td class="govuk-table__cell break-word" data-heading="@subsidiaryNameHeader">@subsidiaryViewModel.Name</td>
                                                 <td class="govuk-table__cell break-word" data-heading="@subsidiaryIdHeader">@subsidiaryViewModel.Id</td>
                                                 <td class="govuk-table__cell break-word" data-heading="@companiesHouseNumberHeader">@(!string.IsNullOrWhiteSpace(subsidiaryViewModel.CompaniesHouseNumber) ? subsidiaryViewModel.CompaniesHouseNumber : Localizer["no_ch_number"])</td>
-                                                <td class="govuk-table__cell break-word" data-heading="@oldSubsidiaryIdHeader">@subsidiaryViewModel.OldSubsidiaryId</td>
                                             </tr>
                                         }
                                     </tbody>
@@ -83,56 +78,56 @@
                         }
                         <p class="govuk-body blank-line-before">@Localizer["no_subsidiaries_added"]</p>
 
-                        @if (await FeatureManager.IsEnabledAsync(FeatureFlags.ShowSubsidiariesFileUploadExportRemoveFeature))
-                        {
-                            <p class="govuk-body">@Localizer["subsidiaries_need_to_upload_csv"]</p>
-                            <h2 class="govuk-heading-m">@Localizer["subsidiaries_upload_your_file"]</h2>
-                            <p class="govuk-body">@Localizer["subsidiaries_file_must_be"]</p>
-                            <ul>
-                                <li>
-                                    <p class="govuk-body">@Localizer["subsidiaries_smaller_than_60kb"]</p>
-                                </li>
-                                <li>
-                                    <p class="govuk-body">@Localizer["subsidiaries_in_csv_format"]</p>
-                                </li>
-                            </ul>
-                            <p class="govuk-body"><label class="govuk-label" for="file">@Localizer["few_minutes_to_upload_file"]</label></p>
-                        }
+                        <p class="govuk-body">@Localizer["subsidiaries_need_to_upload_csv"]</p>
+
+                        <p class="govuk-body">
+                            <a href="@Url.Action("Get", "SubsidiariesCompleteFile")" class="govuk-link" rel="noreferrer noopener" target="_blank">@Localizer["how_to_complete_file"]</a>
+                        </p>
+
+                        <h2 class="govuk-heading-m">@Localizer["subsidiaries_upload_your_file"]</h2>
+                        <p class="govuk-body">@Localizer["subsidiaries_file_must_be"]</p>
+                        <ul>
+                            <li>
+                                <p class="govuk-body">@Localizer["subsidiaries_smaller_than_60kb"]</p>
+                            </li>
+                            <li>
+                                <p class="govuk-body">@Localizer["subsidiaries_in_csv_format"]</p>
+                            </li>
+                        </ul>
+                        <p class="govuk-body"><label class="govuk-label" for="file">@Localizer["few_minutes_to_upload_file"]</label></p>
                     }
 
-                    @if (await FeatureManager.IsEnabledAsync(FeatureFlags.ShowSubsidiariesFileUploadExportRemoveFeature))
+                    @using (Html.BeginForm(FormMethod.Post, new
                     {
-                        @using (Html.BeginForm(FormMethod.Post, new
-                        {
-                            enctype = "multipart/form-data"
-                        }))
-                        {
-                            <div class="govuk-form-group @(ViewData.ModelState.IsValid ? string.Empty : "govuk-form-group--error")" data-testid="subsidiary-data-upload-form">
-                                @if (!ViewData.ModelState.IsValid)
-                                {
-                                    @await Html.PartialAsync("Partials/Govuk/_Error", ViewData.ModelState.GetModelStateEntry("file"))
-                                }
-                                <label class="govuk-label" for="file">@Localizer["upload_a_file"]</label>
-                                <input class="govuk-file-upload" name="file" type="file" id="file" data-testid="subsidiary-upload-choose-file-button">
-                            </div>
-                            <button class="govuk-button" data-module="govuk-button" type="submit" data-testid="subsidiary-data-upload-button">@SharedLocalizer["upload_file"]</button>
-
-                            @if (organisationModel.Subsidiaries.Count > 0)
+                        enctype = "multipart/form-data"
+                    }))
+                    {
+                        <div class="govuk-form-group @(ViewData.ModelState.IsValid ? string.Empty : "govuk-form-group--error")" data-testid="subsidiary-data-upload-form">
+                            @if (!ViewData.ModelState.IsValid)
                             {
-                                <a class="govuk-button govuk-button--secondary govuk-!-margin-left-4" href="@Url.Action("ExportSubsidiaries", "FileUploadSubsidiaries")" role="button" data-module="govuk-button">
-                                    @SharedLocalizer["export"]
-                                </a>
+                                @await Html.PartialAsync("Partials/Govuk/_Error", ViewData.ModelState.GetModelStateEntry("file"))
                             }
-                        }
-                    }
+                            <label class="govuk-label" for="file">@Localizer["upload_a_file"]</label>
+                            <input class="govuk-file-upload" name="file" type="file" id="file" data-testid="subsidiary-upload-choose-file-button">
+                        </div>
+                        <button class="govuk-button" data-module="govuk-button" type="submit" data-testid="subsidiary-data-upload-button">@SharedLocalizer["upload_file"]</button>
 
-                    @if (Model.PagingDetail.PageCount > 1)
-                    {
-                        @await Html.PartialAsync("Partials/RecordNavigation/_RecordPaging", Model.PagingDetail)
-                        @await Html.PartialAsync("Partials/RecordNavigation/_RecordCount", Model.PagingDetail)
+                        @if (organisationModel.Subsidiaries.Count > 0)
+                        {
+                            <a class="govuk-button govuk-button--secondary govuk-!-margin-left-4" href="@Url.Action("ExportSubsidiaries", "FileUploadSubsidiaries")" role="button" data-module="govuk-button">
+                                @SharedLocalizer["export"]
+                            </a>
+
+                            <span class="govuk-body govuk-!-margin-left-4"><a href="@Url.Action("Get", "SubsidiariesCompleteFile")" class="govuk-link" rel="noreferrer noopener" target="_blank">@Localizer["how_to_complete_file"]</a></span>
+                        }
                     }
                 }
 
+                @if (Model.PagingDetail.PageCount > 1)
+                {
+                    @await Html.PartialAsync("Partials/RecordNavigation/_RecordPaging", Model.PagingDetail)
+                    @await Html.PartialAsync("Partials/RecordNavigation/_RecordCount", Model.PagingDetail)
+                }
             }
         </div>
     </div>

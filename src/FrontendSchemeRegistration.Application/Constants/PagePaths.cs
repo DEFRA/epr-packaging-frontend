@@ -25,6 +25,7 @@ public static class PagePaths
     public const string FileUploadSubsidiaries = "/subsidiaries-list";
     public const string ExportSubsidiaries = "/subsidiaries-export";
     public const string FileUploadSubsidiariesSuccess = "/subsidiaries-details-success";
+    public const string SubsidiariesCompleteFile = "/subsidiaries-complete-file";
     public const string OrganisationDetailsUploaded = "/organisation-details-uploaded";
     public const string FileUploadingCompanyDetails = "/file-uploading-company-details";
     public const string FileReUploadCompanyDetailsConfirmation = "/file-upload-company-details/confirm-upload";

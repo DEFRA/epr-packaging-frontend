@@ -1,6 +1,7 @@
 ﻿using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.DTOs.Prns;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
 using FrontendSchemeRegistration.Application.Enums;
 
 namespace FrontendSchemeRegistration.Application.Services.Interfaces;
@@ -44,6 +45,8 @@ public interface IWebApiGatewayClient
     Task<List<SubmissionHistory>> GetSubmissionHistoryAsync(Guid submissionId, string queryString);
 
     Task<List<SubsidiaryExportDto>> GetSubsidiariesAsync(int subsidiaryParentId);
+
+    Task<SubsidiaryFileUploadTemplateDto> GetSubsidiaryFileUploadTemplateAsync();
 
     Task<List<PrnModel>> GetPrnsForLoggedOnUserAsync();
 
