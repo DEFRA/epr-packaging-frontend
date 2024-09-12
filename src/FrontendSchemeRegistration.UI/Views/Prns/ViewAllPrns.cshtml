@@ -36,37 +36,38 @@
             </div>
 
             <table class="govuk-table">
-                <thead class="govuk-table__head">
-                    <tr class="govuk-table__row">
-                        <th class="govuk-table__header">PRN and PERN number</th>
-                        <th class="govuk-table__header">Material</th>
-                        <th class="govuk-table__header">Date issued</th>
-                        <th class="govuk-table__header">December waste</th>
-                        <th class="govuk-table__header">Issued by</th>
-                        <th class="govuk-table__header">Tonnage</th>
-                        <th class="govuk-table__header">Status</th>
-                    </tr>
-                </thead>
-                <tbody class="govuk-table__body">
-                    @for (int i = 0; i < Model?.Prns?.Count(); i++)
-                    {
-                        <tr class="govuk-table__row">
-                            <td class="govuk-table__cell">
-                                <a class="govuk-link" href="@Url.Action(nameof(PrnsController.SelectSinglePrn), "Prns", new { id = Model.Prns[i].ExternalId })">@Model.Prns[i].PrnOrPernNumber<span class="govuk-visually-hidden">PER or PERN number</span></a>
-                            </td>
-                            <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[i].Material)</td>
-                            <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[i].DateIssuedDisplay)</td>
-                            <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[i].DecemberWasteDisplay)</td>
-                            <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[i].IssuedBy)</td>
-                            <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[i].Tonnage)</td>
-                            <td class="govuk-table__cell">
-                                <strong class="govuk-tag govuk-tag--@Model?.Prns?[i].ApprovalStatusDisplayCssColour">
-                                    @PrnDataLocalizer[Model.Prns[i].ApprovalStatus]
-                                </strong>
-                            </td>
-                        </tr>
-                    }
-                 </tbody>
+	            <caption class="govuk-table__caption govuk-table__caption--m govuk-visually-hidden">@Localizer["view_and_select_prns_table_description"]</caption>
+	            <thead class="govuk-table__head">
+	            <tr class="govuk-table__row">
+		            <th class="govuk-table__header">PRN and PERN number</th>
+		            <th class="govuk-table__header">Material</th>
+		            <th class="govuk-table__header">Date issued</th>
+		            <th class="govuk-table__header">December waste</th>
+		            <th class="govuk-table__header">Issued by</th>
+		            <th class="govuk-table__header">Tonnage</th>
+		            <th class="govuk-table__header">Status</th>
+	            </tr>
+	            </thead>
+	            <tbody class="govuk-table__body">
+	            @for (int i = 0; i < Model?.Prns?.Count(); i++)
+	            {
+		            <tr class="govuk-table__row">
+			            <td class="govuk-table__cell">
+				            <a class="govuk-link" href="@Url.Action(nameof(PrnsController.SelectSinglePrn), "Prns", new { id = Model.Prns[i].ExternalId })">@Model.Prns[i].PrnOrPernNumber<span class="govuk-visually-hidden">PER or PERN number</span></a>
+			            </td>
+			            <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[i].Material)</td>
+			            <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[i].DateIssuedDisplay)</td>
+			            <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[i].DecemberWasteDisplay)</td>
+			            <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[i].IssuedBy)</td>
+			            <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[i].Tonnage)</td>
+			            <td class="govuk-table__cell">
+				            <strong class="govuk-tag govuk-tag--@Model?.Prns?[i].ApprovalStatusDisplayCssColour">
+					            @PrnDataLocalizer[Model.Prns[i].ApprovalStatus]
+				            </strong>
+			            </td>
+		            </tr>
+	            }
+	            </tbody>
             </table>
 
             <nav class="govuk-pagination" role="navigation" aria-label="Pagination">

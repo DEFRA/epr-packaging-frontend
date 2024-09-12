@@ -50,4 +50,7 @@
 	<data name="select_one_or_more_prn_or_perns_to_reject_them">
 		<value>[Welsh]Select one or more PRNs or PERNs to reject them</value>
 	</data>
+	<data name="view_and_select_prns_table_description" xml:space="preserve">
+		<value>[Welsh]A list of PRNs and PERNs to select from.</value>
+	</data>
 </root>

@@ -60,4 +60,7 @@
 	<data name="missing_status_explanation" xml:space="preserve">
 		<value>Status not found.</value>
 	</data>
+	<data name="view_prns_status_table_description" xml:space="preserve">
+		<value>A list of PRNs showing the current status.</value>
+	</data>
 </root>

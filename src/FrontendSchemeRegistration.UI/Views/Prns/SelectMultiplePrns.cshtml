@@ -30,7 +30,8 @@
                 @foreach (var group in Model.Prns.GroupBy(p => p.Material))
                 {
                     <table class="govuk-table">
-                        <thead class="govuk-table__head">
+                        <caption class="govuk-table__caption govuk-table__caption--m govuk-visually-hidden">@Localizer["view_and_select_prns_table_description"]</caption>
+	                    <thead class="govuk-table__head">
                             <tr class="govuk-table__row">
                                 <h2 class="govuk-heading-m">@PrnDataLocalizer[group.Key]</h2>
                                 <div id="waste-hint" class="govuk-hint">

@@ -104,7 +104,7 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
             TempData[BulkAcceptPrn] = string.Join(",", selectedPrnIds);
 
             var viewModel = await _prnService.GetPrnsAwaitingAcceptanceAsync();
-            var selectedPrns = viewModel?.Prns?.Where(x => selectedPrnIds.Contains(x.ExternalId)).OrderBy(x => x.Material).ThenByDescending(x => x.DateIssued);
+            var selectedPrns = viewModel.Prns.Where(x => selectedPrnIds.Contains(x.ExternalId)).OrderBy(x => x.Material).ThenByDescending(x => x.DateIssued).ToList();
 
             if (id != Guid.Empty)
             {
