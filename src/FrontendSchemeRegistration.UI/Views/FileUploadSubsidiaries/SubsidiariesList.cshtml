@@ -94,7 +94,7 @@
                                 <p class="govuk-body">@Localizer["subsidiaries_in_csv_format"]</p>
                             </li>
                         </ul>
-                        <p class="govuk-body"><label class="govuk-label" for="file">@Localizer["few_minutes_to_upload_file"]</label></p>
+                        <p class="govuk-body" id="file-upload-instructions">@Localizer["few_minutes_to_upload_file"]</p>
                     }
 
                     @using (Html.BeginForm(FormMethod.Post, new
@@ -108,7 +108,7 @@
                                 @await Html.PartialAsync("Partials/Govuk/_Error", ViewData.ModelState.GetModelStateEntry("file"))
                             }
                             <label class="govuk-label" for="file">@Localizer["upload_a_file"]</label>
-                            <input class="govuk-file-upload" name="file" type="file" id="file" data-testid="subsidiary-upload-choose-file-button">
+                            <input class="govuk-file-upload" name="file" type="file" id="file" data-testid="subsidiary-upload-choose-file-button" aria-describedby="file-upload-instructions">
                         </div>
                         <button class="govuk-button" data-module="govuk-button" type="submit" data-testid="subsidiary-data-upload-button">@SharedLocalizer["upload_file"]</button>
 

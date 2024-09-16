@@ -120,16 +120,16 @@
   <data name="File_uploaded_successfully" xml:space="preserve">
     <value>File uploaded successfully</value>
   </data>
-  <data name="Return_to_the_dashboard" xml:space="preserve">
-    <value>Return to the dashboard</value>
-  </data>
-  <data name="subsidiaries_have_been_added_to_ your_account" xml:space="preserve">
-    <value>subsidiaries have been added to your account</value>
+  <data name="return_to_account_home" xml:space="preserve">
+    <value>Return to account home</value>
   </data>
   <data name="View_your_subsidiaries" xml:space="preserve">
-    <value>View your subsidiaries</value>
+    <value>View subsidiaries</value>
   </data>
   <data name="what_happens_next" xml:space="preserve">
     <value>What happens next</value>
+  </data>
+  <data name="you_added_subsidiaries" xml:space="preserve">
+    <value>You added subsidiaries</value>
   </data>
 </root>

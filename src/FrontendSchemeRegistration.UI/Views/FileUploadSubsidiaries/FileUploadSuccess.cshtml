@@ -3,12 +3,12 @@
 @{
     ViewData["Title"] = Localizer["File_uploaded_successfully"];
 }
-<div class="govuk-panel govuk-panel--confirmation">
-    <h1 class="govuk-panel__title">
-        @Localizer["File_uploaded_successfully"]
-    </h1>
-    <div class="govuk-panel__body">
-        @Model.RecordsAdded @Localizer["subsidiaries_have_been_added_to_ your_account"].
+
+<div class="govuk-grid-column-two-thirds">
+    <div class="govuk-panel govuk-panel--confirmation">
+        <h1 class="govuk-panel__title">
+            @Localizer["File_uploaded_successfully"]
+        </h1>
     </div>
 </div>
 
@@ -16,25 +16,18 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <div class="govuk-grid-column-full">
-                <h2 class="govuk-heading-l">@Localizer["what_happens_next"]</h2>
-                <p>@Model.RecordsAdded @Localizer["subsidiaries_have_been_added_to_ your_account"].</p>
-                
+                <p class="govuk-body govuk-!-margin-top-4 govuk-!-margin-bottom-7">@Localizer["you_added_subsidiaries"].</p>
             </div>
-            <div class="govuk-grid-column-full">
-                
-                <form method="get" action="@Url.Action("SubsidiariesList")">
-                    <button class="govuk-button" data-module="govuk-button" type="submit">@Localizer["View_your_subsidiaries"]</button>
-                </form>
+            <form method="get" action="@Url.Action("SubsidiariesList")">
+                <div class="govuk-grid-column-full">
+                    <div class="govuk-button-group">
 
-                
-
-            </div>
-            <div class="govuk-grid-column-full">
-                <a class="govuk-link govuk-link--no-visited-state" asp-controller="FrontendSchemeRegistration" asp-action="VisitHomePageSelfManaged">@Localizer["Return_to_the_dashboard"]</a>
-            
-            </div>
+                        <button class="govuk-button" data-module="govuk-button" type="submit">@Localizer["View_your_subsidiaries"]</button>
+                        @Html.ActionLink(Localizer["return_to_account_home"].Value, "Get", "Landing",
+                                 null, new { @class = "govuk-link govuk-link--no-visited-state" })
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </main>
-<p></p>
-
