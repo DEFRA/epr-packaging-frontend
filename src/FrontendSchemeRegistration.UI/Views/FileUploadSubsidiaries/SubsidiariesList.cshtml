@@ -84,18 +84,20 @@
                             <a href="@Url.Action("Get", "SubsidiariesCompleteFile")" class="govuk-link" rel="noreferrer noopener" target="_blank">@Localizer["how_to_complete_file"]</a>
                         </p>
 
-                        <h2 class="govuk-heading-m">@Localizer["subsidiaries_upload_your_file"]</h2>
-                        <p class="govuk-body">@Localizer["subsidiaries_file_must_be"]</p>
-                        <ul>
-                            <li>
-                                <p class="govuk-body">@Localizer["subsidiaries_smaller_than_60kb"]</p>
-                            </li>
-                            <li>
-                                <p class="govuk-body">@Localizer["subsidiaries_in_csv_format"]</p>
-                            </li>
-                        </ul>
-                        <p class="govuk-body" id="file-upload-instructions">@Localizer["few_minutes_to_upload_file"]</p>
                     }
+
+                    <h2 class="govuk-heading-m">@Localizer["subsidiaries_upload_your_file"]</h2>
+                    <p class="govuk-body">@Localizer["subsidiaries_file_must_be"]</p>
+                    <ul>
+                        <li>
+                            <p class="govuk-body">@Localizer["subsidiaries_smaller_than_60kb"]</p>
+                        </li>
+                        <li>
+                            <p class="govuk-body">@Localizer["subsidiaries_in_csv_format"]</p>
+                        </li>
+                    </ul>
+                    <p class="govuk-body" id="file-upload-instructions">@Localizer["few_minutes_to_upload_file"]</p>
+
 
                     @using (Html.BeginForm(FormMethod.Post, new
                     {
