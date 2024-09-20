@@ -204,32 +204,14 @@
   <data name="hidden_error" xml:space="preserve">
     <value>Gwall:</value>
   </data>
-  <data name="confirm" xml:space="preserve">
-    <value>Cadarnhau</value>
-  </data>
-  <data name="or" xml:space="preserve">
-    <value>neu</value>
-  </data>
-  <data name="CharacterLimit.OverLimitPlural" xml:space="preserve">
-    <value>Mae gennych chi %{count} o gymeriadau yn ormod</value>
-  </data>
-  <data name="CharacterLimit.OverLimitSingle" xml:space="preserve">
-    <value>Mae gennych chi %{count} cymeriad yn ormod</value>
-  </data>
-  <data name="CharacterLimit.UnderLimitPlural" xml:space="preserve">
-    <value>Mae gennych chi %{count} o gymeriadau ar ôl</value>
-  </data>
-  <data name="CharacterLimit.UnderLimitSingle" xml:space="preserve">
-    <value>Mae gennych chi 1 cymeriad ar ôl</value>
-  </data>
-  <data name="CharacterLimit.AtLimit" xml:space="preserve">
-    <value>Does gennych chi 0 cymeriad ar ôl</value>
+  <data name="Yes" xml:space="preserve">
+    <value>WYes</value>
   </data>
   <data name="No" xml:space="preserve">
     <value>WNo</value>
   </data>
-  <data name="Yes" xml:space="preserve">
-    <value>WYes</value>
+  <data name="confirm" xml:space="preserve">
+    <value>Cadarnhau</value>
   </data>
   <data name="upload_a_file" xml:space="preserve">
     <value>Uwchlwytho ffeil</value>
@@ -249,16 +231,43 @@
   <data name="submit" xml:space="preserve">
     <value>Cyflwyno</value>
   </data>
+  <data name="export" xml:space="preserve">
+    <value>WExport</value>
+  </data>
+  <data name="or" xml:space="preserve">
+    <value>neu</value>
+  </data>
+  <data name="CharacterLimit.OverLimitPlural" xml:space="preserve">
+    <value>Mae gennych chi %{count} o gymeriadau yn ormod</value>
+  </data>
+  <data name="CharacterLimit.OverLimitSingle" xml:space="preserve">
+    <value>Mae gennych chi %{count} cymeriad yn ormod</value>
+  </data>
+  <data name="CharacterLimit.UnderLimitPlural" xml:space="preserve">
+    <value>Mae gennych chi %{count} o gymeriadau ar ôl</value>
+  </data>
+  <data name="CharacterLimit.UnderLimitSingle" xml:space="preserve">
+    <value>Mae gennych chi 1 cymeriad ar ôl</value>
+  </data>
+  <data name="CharacterLimit.AtLimit" xml:space="preserve">
+    <value>Does gennych chi 0 cymeriad ar ôl</value>
+  </data>
   <data name="date1_to_date2" xml:space="preserve">
     <value>{0} i {1}</value>
   </data>
   <data name="upload_file" xml:space="preserve">
     <value>Uwchlwytho ffeil</value>
   </data>
-  <data name="export" xml:space="preserve">
-    <value>WExport</value>
+  <data name="link-how-to-complete-csv-file" xml:space="preserve">
+    <value>WGo back to 'How to complete a CSV file'</value>
+  </data>
+  <data name="try-again" xml:space="preserve">
+    <value>WTry again</value>
   </data>
   <data name="total" xml:space="preserve">
     <value>WTotal</value>
+  </data>
+  <data name="link-go-back-to-subsidiaries-list" xml:space="preserve">
+    <value>WGo back to subsidiaries list</value>
   </data>
 </root>

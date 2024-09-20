@@ -23,6 +23,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
     using Application.Options;
     using Constants;
     using EPR.Common.Authorization.Sessions;
+    using Microsoft.AspNetCore.Mvc.ViewFeatures;
     using UI.Sessions;
 
     [TestFixture]
@@ -455,6 +456,37 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             var model = viewResult.Model.Should().BeOfType<SubsidiaryFileUploadSuccessViewModel>().Subject;
             model.RecordsAdded.Should().Be(5);
         }
+        [Test]
+        public async Task SubsidiariesDownload_ReturnsRedirectToActionResult()
+        {
+            // Arrange
+            var mockStream = new MemoryStream();
+            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true)).ReturnsAsync(mockStream);
+            _controller.TempData = new Mock<ITempDataDictionary>().Object;
+
+            // Act
+            var result = _controller.SubsidiariesDownload() as RedirectToActionResult;
+
+            // Assert
+            result.ActionName.Should().Be("SubsidiariesDownloadView");
+            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true), Times.Never);
+        }
+
+        [Test]
+        public async Task SubsidiariesDownloadView_ReturnsRedirectToActionResult()
+        {
+            // Arrange
+            var mockStream = new MemoryStream();
+            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true)).ReturnsAsync(mockStream);
+            _controller.TempData = new Mock<ITempDataDictionary>().Object;
+
+            // Act
+            var result = _controller.SubsidiariesDownloadView();
+
+            // Assert
+            ((Microsoft.AspNetCore.Mvc.ViewResult)result).ViewName.Should().Be("SubsidiariesDownload");
+            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true), Times.Never);
+        }
 
         [Test]
         public async Task ExportSubsidiaries_ReturnsFileResultWithCorrectContentTypeAndFileName()
@@ -462,6 +494,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             // Arrange
             var mockStream = new MemoryStream();
             _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true)).ReturnsAsync(mockStream);
+            _controller.TempData = new Mock<ITempDataDictionary>().Object;
 
             // Act
             var result = await _controller.ExportSubsidiaries();
@@ -476,6 +509,35 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true), Times.Once);
         }
 
+        [Test]
+        public async Task ExportSubsidiaries_WhenError_ReturnsRedirectToActionResult()
+        {
+            // Arrange
+            var mockStream = new MemoryStream();
+            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true)).ThrowsAsync(new Exception("Some message"));
+
+            // Act
+            var result = await _controller.ExportSubsidiaries() as RedirectToActionResult;
+
+            // Assert
+            result.ActionName.Should().Be("SubsidiariesDownloadFailed");
+            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true), Times.Once);
+        }
+
+        [Test]
+        public async Task ExportSubsidiaries_WhenStreamIsNull_ReturnsRedirectToActionResult()
+        {
+            // Arrange
+            var mockStream = new MemoryStream();
+            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true)).ReturnsAsync((MemoryStream)null);
+
+            // Act
+            var result = await _controller.ExportSubsidiaries() as RedirectToActionResult;
+
+            // Assert
+            result.ActionName.Should().Be("SubsidiariesDownloadFailed");
+            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true), Times.Once);
+        }
         private static List<Claim> CreateUserDataClaim(string organisationRole)
         {
             var userData = new UserData

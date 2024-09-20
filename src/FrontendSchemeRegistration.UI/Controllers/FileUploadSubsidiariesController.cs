@@ -122,17 +122,53 @@
         }
 
         [HttpGet]
+        [Route(PagePaths.SubsidiariesDownload)]
+        public IActionResult SubsidiariesDownload()
+        {
+            TempData["DownloadCompleted"] = false;
+            return RedirectToAction(nameof(SubsidiariesDownloadView), "FileUploadSubsidiaries");
+        }
+
+        [HttpGet]
+        [Route(PagePaths.SubsidiariesDownloadView)] 
+        public IActionResult SubsidiariesDownloadView() 
+        {          
+            return View(nameof(SubsidiariesDownload));
+        }
+
+
+        [HttpGet]
+        [Route(PagePaths.SubsidiariesDownloadFailed)]
+        public IActionResult SubsidiariesDownloadFailed()
+        {
+            return View(nameof(SubsidiariesDownloadFailed));
+        }
+        [HttpGet]
         [Route(PagePaths.ExportSubsidiaries)]
         public async Task<IActionResult> ExportSubsidiaries()
         {
-            var userData = User.GetUserData();
-            var organisation = userData.Organisations[0];
-            var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-            var complianceSchemeId = session.RegistrationSession?.SelectedComplianceScheme?.Id;
-            var isComplianceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
-            var stream = await _subsidiaryService.GetSubsidiariesStreamAsync(organisation.Id.Value, complianceSchemeId, isComplianceScheme);
+            try
+            {
+                var userData = User.GetUserData();
+                var organisation = userData.Organisations[0];
+                var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+                var complianceSchemeId = session.RegistrationSession?.SelectedComplianceScheme?.Id;
+                var isComplianceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
+                var stream = await _subsidiaryService.GetSubsidiariesStreamAsync(organisation.Id.Value, complianceSchemeId, isComplianceScheme);
 
-            return File(stream, "text/csv", "subsidiary.csv");
+                if (stream == null)
+                {
+                    return RedirectToAction(nameof(SubsidiariesDownloadFailed));
+                }
+
+                TempData["DownloadCompleted"] = true;
+                return File(stream, "text/csv", "subsidiary.csv");
+
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction(nameof(SubsidiariesDownloadFailed));
+            }
         }
 
         private async Task<SubsidiaryListViewModel> GetSubsidiaryListViewModel(int? page)

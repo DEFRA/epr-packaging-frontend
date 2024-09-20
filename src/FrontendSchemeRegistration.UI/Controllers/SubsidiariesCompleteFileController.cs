@@ -23,16 +23,45 @@ public class SubsidiariesCompleteFileController : Controller
         return View("SubsidiariesCompleteFile");
     }
 
+    [HttpGet]
+    [Route(PagePaths.SubsidiaryTemplateDownload)]
+    public IActionResult TemplateFileDownload()
+    {
+        TempData["DownloadCompleted"] = false;
+        return RedirectToAction(nameof(TemplateFileUploadView), "SubsidiariesCompleteFile");
+    }
+
+    [HttpGet]
+    [Route(PagePaths.SubsidiaryTemplateDownloadView)]
+    public IActionResult TemplateFileUploadView() 
+    {
+        return View(nameof(TemplateFileDownload));
+    }
+
+    [HttpGet]
+    [Route(PagePaths.SubsidiaryTemplateDownloadFailed)]
+    public IActionResult TemplateFileDownloadFailed()
+    {
+        return View(nameof(TemplateFileDownloadFailed));
+    }
+
     [HttpGet("template")]
     public async Task<IActionResult> GetFileUploadTemplate()
     {
-        var file = await _subsidiaryService.GetFileUploadTemplateAsync();
-
-        if (file == null)
+        try
         {
-            return Redirect("/errors");
-        }
+            var file = await _subsidiaryService.GetFileUploadTemplateAsync();
 
-        return File(file.Content, file.ContentType, file.Name);
+            if (file == null)
+            {
+                return RedirectToAction(nameof(TemplateFileDownloadFailed));
+            }
+            TempData["DownloadCompleted"] = true;
+            return File(file.Content, file.ContentType, file.Name);
+        }
+        catch (Exception ex)
+        {
+            return RedirectToAction(nameof(TemplateFileDownloadFailed));
+        }
     }
 }

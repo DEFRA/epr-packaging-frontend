@@ -3,6 +3,7 @@ using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Controllers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Moq;
 
 namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
@@ -41,9 +42,12 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             };
 
             _subsidiaryServiceMock.Setup(x => x.GetFileUploadTemplateAsync()).ReturnsAsync(expectedFile);
+            _systemUnderTest.TempData = new Mock<ITempDataDictionary>().Object;
 
             // Act
+
             var result = await _systemUnderTest.GetFileUploadTemplate() as FileStreamResult;
+
             // Assert
 
             result.FileStream.Should().BeSameAs(expectedFile.Content);
@@ -60,12 +64,62 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             _subsidiaryServiceMock.Setup(x => x.GetFileUploadTemplateAsync()).ReturnsAsync((SubsidiaryFileUploadTemplateDto)null);
 
             // Act
-            var result = await _systemUnderTest.GetFileUploadTemplate() as RedirectResult;
+            var result = await _systemUnderTest.GetFileUploadTemplate() as RedirectToActionResult;
 
             // Assert
-            result.Url.Should().Be("/errors");
+            result.ActionName.Should().Be("TemplateFileDownloadFailed");
 
             _subsidiaryServiceMock.Verify(x => x.GetFileUploadTemplateAsync(), Times.Once);
+        }
+
+        [Test]
+        public void TemplateFileDownload_Redirect_To_Correct_Action()
+        {
+            // Arrange
+            _systemUnderTest.TempData = new Mock<ITempDataDictionary>().Object;
+
+            // Act
+            var result = _systemUnderTest.TemplateFileDownload() as RedirectToActionResult;
+
+            // Assert
+            result.Should().NotBeNull(); 
+            result.ActionName.Should().Be("TemplateFileUploadView");  
+            result.ControllerName.Should().Be("SubsidiariesCompleteFile");
+        }
+
+        [Test]
+        public void TemplateFileDownloadFailed_Returns_ViewResult_With_Correct_ViewName()
+        {
+            // Act
+            var result = _systemUnderTest.TemplateFileDownloadFailed() as ViewResult;
+
+            // Assert
+            result.ViewName.Should().Be("TemplateFileDownloadFailed");
+        }
+
+        [Test]
+        public void TemplateFileUploadView_Returns_With_Correct_ViewName()
+        {
+            // Act
+            var result = _systemUnderTest.TemplateFileUploadView() as ViewResult;
+
+            // Assert
+            result.ViewName.Should().Be("TemplateFileDownload");
+        }
+
+        [Test]
+        public async Task GetFileUploadTemplate_ShouldRedirectToTemplateFileDownloadFailed_OnException()
+        {
+            // Arrange
+            _subsidiaryServiceMock.Setup(service => service.GetFileUploadTemplateAsync())
+                        .ThrowsAsync(new Exception("Service error"));
+
+            // Act
+            var result = await _systemUnderTest.GetFileUploadTemplate() as RedirectToActionResult;
+
+            // Assert
+            result.Should().NotBeNull();
+            result.ActionName.Should().Be(nameof(_systemUnderTest.TemplateFileDownloadFailed));
         }
     }
 }

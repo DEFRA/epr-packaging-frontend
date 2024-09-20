@@ -165,11 +165,11 @@
   <data name="warning" xml:space="preserve">
     <value>Warning</value>
   </data>
-  <data name="English" xml:space="preserve">
-    <value>English</value>
-  </data>
   <data name="Cymraeg" xml:space="preserve">
     <value>Cymraeg</value>
+  </data>
+  <data name="English" xml:space="preserve">
+    <value>English</value>
   </data>
   <data name="Welsh" xml:space="preserve">
     <value>Cymraeg</value>
@@ -204,9 +204,6 @@
   <data name="hidden_error" xml:space="preserve">
     <value>Error:</value>
   </data>
-  <data name="or" xml:space="preserve">
-    <value>or</value>
-  </data>
   <data name="Yes" xml:space="preserve">
     <value>Yes</value>
   </data>
@@ -215,21 +212,6 @@
   </data>
   <data name="confirm" xml:space="preserve">
     <value>Confirm</value>
-  </data>
-  <data name="CharacterLimit.OverLimitPlural" xml:space="preserve">
-    <value>You have %{count} characters too many</value>
-  </data>
-  <data name="CharacterLimit.OverLimitSingle" xml:space="preserve">
-    <value>You have %{count} character too many</value>
-  </data>
-  <data name="CharacterLimit.UnderLimitPlural" xml:space="preserve">
-    <value>You have %{count} characters remaining</value>
-  </data>
-  <data name="CharacterLimit.UnderLimitSingle" xml:space="preserve">
-    <value>You have %{count} character remaining</value>
-  </data>
-  <data name="CharacterLimit.AtLimit" xml:space="preserve">
-    <value>You have 0 characters remaining</value>
   </data>
   <data name="upload_a_file" xml:space="preserve">
     <value>Upload a file</value>
@@ -249,19 +231,46 @@
   <data name="submit" xml:space="preserve">
     <value>Submit</value>
   </data>
+  <data name="export" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="or" xml:space="preserve">
+    <value>or</value>
+  </data>
+  <data name="CharacterLimit.OverLimitPlural" xml:space="preserve">
+    <value>You have %{count} characters too many</value>
+  </data>
+  <data name="CharacterLimit.OverLimitSingle" xml:space="preserve">
+    <value>You have %{count} character too many</value>
+  </data>
+  <data name="CharacterLimit.UnderLimitPlural" xml:space="preserve">
+    <value>You have %{count} characters remaining</value>
+  </data>
+  <data name="CharacterLimit.UnderLimitSingle" xml:space="preserve">
+    <value>You have %{count} character remaining</value>
+  </data>
+  <data name="CharacterLimit.AtLimit" xml:space="preserve">
+    <value>You have 0 characters remaining</value>
+  </data>
   <data name="date1_to_date2" xml:space="preserve">
     <value>{0} to {1}</value>
-  </data>
-  <data name="AapprovedPerconInvitationSubmittedNotification" xml:space="preserve">
-    <value>You've created an account. We'll email you when the environmental regulator has given you permission to submit data. This may take up to 28 days.</value>
   </data>
   <data name="upload_file" xml:space="preserve">
     <value>Upload file</value>
   </data>
-  <data name="export" xml:space="preserve">
-    <value>Export</value>
+  <data name="AapprovedPerconInvitationSubmittedNotification" xml:space="preserve">
+    <value>You've created an account. We'll email you when the environmental regulator has given you permission to submit data. This may take up to 28 days.</value>
+  </data>
+  <data name="link-how-to-complete-csv-file" xml:space="preserve">
+    <value>Go back to 'How to complete a CSV file'</value>
+  </data>
+  <data name="try-again" xml:space="preserve">
+    <value>Try again</value>
   </data>
   <data name="total" xml:space="preserve">
     <value>Total</value>
+  </data>
+  <data name="link-go-back-to-subsidiaries-list" xml:space="preserve">
+    <value>Go back to subsidiaries list</value>
   </data>
 </root>

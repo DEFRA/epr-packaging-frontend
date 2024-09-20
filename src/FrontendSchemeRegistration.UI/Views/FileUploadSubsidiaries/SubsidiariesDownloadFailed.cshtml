@@ -1,0 +1,19 @@
+﻿<h2 class="govuk-heading-m">@Localizer["Title"]</h2>
+<p class="govuk-body">@Localizer["Info1"]</p>
+<h3 class="govuk-heading-m">@Localizer["Info2"]</h3>
+<p class="govuk-body">@Localizer["Info3"]</p>
+
+<form class="govuk-!-display-inline-block" method="get" asp-controller="FileUploadSubsidiaries" asp-action="SubsidiariesDownload">
+    <button class="govuk-button" data-module="govuk-button">
+        @SharedLocalizer["try-again"]
+    </button>
+</form>
+<div class="govuk-\!-margin-bottom-4">
+    @Html.ActionLink(@SharedLocalizer["link-go-back-to-subsidiaries-list"],
+            "Get",
+            "subsidiaries-list",
+            null,
+            new { @class = "govuk-body govuk-link govuk-link--no-visited-state" })
+</div>
+<br />
+

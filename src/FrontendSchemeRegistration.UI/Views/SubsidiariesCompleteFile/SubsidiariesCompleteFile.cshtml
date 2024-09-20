@@ -20,7 +20,10 @@
 
             <p class="govuk-body">@Localizer["if_you_are_entering_data_from_an_organisation_details"]</p>
 
-            <a href="@Url.Action("GetFileUploadTemplate", "SubsidiariesCompleteFile")" class="govuk-button govuk-!-margin-top-4">@Localizer["download_CSV_template"]</a>
+            <a href="@Url.Action("TemplateFileDownload", "SubsidiariesCompleteFile")" class="govuk-button govuk-!-margin-top-4">
+                @Localizer["download_CSV_template"]
+            </a>
+            
         </div>
     </div>
 </main>

@@ -81,6 +81,12 @@ public static class PagePaths
     public const string SubsidiaryUkNation = "/subsidiary-uk-nation";
     public const string SubsidiaryLocation = "/subsidiary-location";
     public const string SubsidiaryCheckDetails = "/subsidiary-check-details";
+    public const string SubsidiariesDownload = "/subsidiaries-download";
+    public const string SubsidiariesDownloadView = "/subsidiaries-download-view";
+    public const string SubsidiariesDownloadFailed = "/subsidiaries-download-failed";
+    public const string SubsidiaryTemplateDownload = "/subsidiary-template-download";
+    public const string SubsidiaryTemplateDownloadView = "/subsidiary-template-download-view";
+    public const string SubsidiaryTemplateDownloadFailed = "/subsidiary-template-download-failed";
 
     public static class Prns
     {

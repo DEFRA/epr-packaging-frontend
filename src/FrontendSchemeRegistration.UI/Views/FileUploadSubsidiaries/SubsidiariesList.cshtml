@@ -116,7 +116,7 @@
 
                         @if (organisationModel.Subsidiaries.Count > 0)
                         {
-                            <a class="govuk-button govuk-button--secondary govuk-!-margin-left-4" href="@Url.Action("ExportSubsidiaries", "FileUploadSubsidiaries")" role="button" data-module="govuk-button">
+                            <a class="govuk-button govuk-button--secondary govuk-!-margin-left-4" href="@Url.Action("SubsidiariesDownload", "FileUploadSubsidiaries")" role="button" data-module="govuk-button">
                                 @SharedLocalizer["export"]
                             </a>
 

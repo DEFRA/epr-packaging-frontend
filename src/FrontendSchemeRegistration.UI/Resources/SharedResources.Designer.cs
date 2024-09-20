@@ -72,6 +72,15 @@ namespace FrontendSchemeRegistration.UI.Resources {
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
+        internal static string AapprovedPerconInvitationSubmittedNotification {
+            get {
+                return ResourceManager.GetString("AapprovedPerconInvitationSubmittedNotification", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
         internal static string application_title {
             get {
                 return ResourceManager.GetString("application_title", resourceCulture);
@@ -108,6 +117,51 @@ namespace FrontendSchemeRegistration.UI.Resources {
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
+        internal static string CharacterLimit_AtLimit {
+            get {
+                return ResourceManager.GetString("CharacterLimit.AtLimit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string CharacterLimit_OverLimitPlural {
+            get {
+                return ResourceManager.GetString("CharacterLimit.OverLimitPlural", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string CharacterLimit_OverLimitSingle {
+            get {
+                return ResourceManager.GetString("CharacterLimit.OverLimitSingle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string CharacterLimit_UnderLimitPlural {
+            get {
+                return ResourceManager.GetString("CharacterLimit.UnderLimitPlural", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string CharacterLimit_UnderLimitSingle {
+            get {
+                return ResourceManager.GetString("CharacterLimit.UnderLimitSingle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
         internal static string confirm {
             get {
                 return ResourceManager.GetString("confirm", resourceCulture);
@@ -138,6 +192,15 @@ namespace FrontendSchemeRegistration.UI.Resources {
         internal static string Cymraeg {
             get {
                 return ResourceManager.GetString("Cymraeg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string date1_to_date2 {
+            get {
+                return ResourceManager.GetString("date1_to_date2", resourceCulture);
             }
         }
         
@@ -225,6 +288,24 @@ namespace FrontendSchemeRegistration.UI.Resources {
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
+        internal static string link_go_back_to_subsidiaries_list {
+            get {
+                return ResourceManager.GetString("link-go-back-to-subsidiaries-list", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string link_how_to_complete_csv_file {
+            get {
+                return ResourceManager.GetString("link-how-to-complete-csv-file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
         internal static string manage_account {
             get {
                 return ResourceManager.GetString("manage_account", resourceCulture);
@@ -273,6 +354,15 @@ namespace FrontendSchemeRegistration.UI.Resources {
         internal static string No {
             get {
                 return ResourceManager.GetString("No", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string or {
+            get {
+                return ResourceManager.GetString("or", resourceCulture);
             }
         }
         
@@ -360,6 +450,15 @@ namespace FrontendSchemeRegistration.UI.Resources {
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
+        internal static string try_again {
+            get {
+                return ResourceManager.GetString("try-again", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
         internal static string try_again_later {
             get {
                 return ResourceManager.GetString("try_again_later", resourceCulture);
@@ -374,22 +473,20 @@ namespace FrontendSchemeRegistration.UI.Resources {
                 return ResourceManager.GetString("upload_a_file", resourceCulture);
             }
         }
-
-		/// <summary>
-		///   Looks up a localized string similar to .
-		/// </summary>
-		internal static string no_subsidiaries_ms
-		{
-			get
-			{
-				return ResourceManager.GetString("no_subsidiaries_ms", resourceCulture);
-			}
-		}
-
-		/// <summary>
-		///   Looks up a localized string similar to .
-		/// </summary>
-		internal static string upload_your_file_again {
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string upload_file {
+            get {
+                return ResourceManager.GetString("upload_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string upload_your_file_again {
             get {
                 return ResourceManager.GetString("upload_your_file_again", resourceCulture);
             }
