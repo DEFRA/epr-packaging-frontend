@@ -2,6 +2,9 @@
 @using FrontendSchemeRegistration.UI.ViewModels.Prns
 @model PrnViewModel
 
+@{
+    ViewData["Title"] = Localizer[(Model.IsPrn ? "prn_page_title" : "pern_page_title")];
+}
 <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">

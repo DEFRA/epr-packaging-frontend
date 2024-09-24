@@ -5,6 +5,10 @@
         padding: 30px;
     }
 
+    &--no-border {
+        border: 0;
+    }
+
     &--border-bottom-blue {
         border: 0;
         border-bottom: 5px solid govuk-colour("blue");

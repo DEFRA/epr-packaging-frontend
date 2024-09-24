@@ -1,6 +1,11 @@
-﻿@using FrontendSchemeRegistration.UI.Controllers.Prns
+﻿@using FrontendSchemeRegistration.Application.Constants
+@using FrontendSchemeRegistration.UI.Controllers.Prns
 @using FrontendSchemeRegistration.UI.ViewModels.Prns
 @model PrnViewModel
+
+@{
+    ViewData["Title"] = Localizer[(Model.IsPrn ? "page_title_prn" : "page_title_pern")];
+}
 
 <main class="govuk-main-wrapper govuk-!-padding-top-4">
     <div class="govuk-grid-row">
@@ -32,29 +37,30 @@
                 @await Html.PartialAsync("../Shared/Partials/Prns/_recyclingNoteDetails.cshtml", Model)
                 <br>
                 <br>
+                @if (Model.ApprovalStatus == PrnStatus.AwaitingAcceptance)
+                {
+                    <div class="govuk-button-group">
+                        @Html.ActionLink(Localizer[(Model.IsPrn ? "accept_this_prn" : "accept_this_pern")].Value, nameof(PrnsAcceptController.AcceptSinglePrn), "PrnsAccept",
+                             new
+                             {
+                                 @id = Model.ExternalId
+                             },
+                             new
+                             {
+                                 @class = "govuk-button"
+                             })
 
-                <div class="govuk-button-group">
-                    @Html.ActionLink(Localizer[(Model.IsPrn ? "accept_this_prn" : "accept_this_pern")].Value, nameof(PrnsAcceptController.AcceptSinglePrn), "PrnsAccept",
-                         new
-                         {
-                             @id = Model.ExternalId
-                         },
-                         new
-                         {
-                             @class = "govuk-button"
-                         })
-
-                    @Html.ActionLink(Localizer[(Model.IsPrn ? "reject_this_prn" : "reject_this_pern")].Value, nameof(PrnsRejectController.RejectSinglePrn), "PrnsReject",
-                         new
-                         {
-                             @id = Model.ExternalId
-                         },
-                         new
-                         {
-                             @class = "govuk-button govuk-button--secondary"
-                         })
-                </div>
-
+                        @Html.ActionLink(Localizer[(Model.IsPrn ? "reject_this_prn" : "reject_this_pern")].Value, nameof(PrnsRejectController.RejectSinglePrn), "PrnsReject",
+                             new
+                             {
+                                 @id = Model.ExternalId
+                             },
+                             new
+                             {
+                                 @class = "govuk-button govuk-button--secondary"
+                             })
+                    </div>
+                }
                 <p class="govuk-body">
                     @Html.ActionLink(Localizer[(Model.IsPrn ? "download_this_prn" : "download_this_pern")].Value, null, null, null,
                         new

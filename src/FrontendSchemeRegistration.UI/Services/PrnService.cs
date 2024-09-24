@@ -1,10 +1,13 @@
-﻿using FrontendSchemeRegistration.Application.DTOs.Prns;
+﻿using FrontendSchemeRegistration.Application.DTOs;
+using FrontendSchemeRegistration.Application.DTOs.Prns;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
+using FrontendSchemeRegistration.UI.ViewModels;
 using FrontendSchemeRegistration.UI.ViewModels.Prns;
 
 namespace FrontendSchemeRegistration.UI.Services
 {
+
     public class PrnService : IPrnService
     {
         private readonly IWebApiGatewayClient _webApiGatewayClient;
@@ -67,5 +70,27 @@ namespace FrontendSchemeRegistration.UI.Services
         {
             await _webApiGatewayClient.SetPrnApprovalStatusToRejectedAsync(id);
         }
-    }
+
+		public async Task<PrnSearchResultListViewModel> GetPrnSearchResultsAsync(SearchPrnsViewModel request)
+		{
+			PaginatedRequest paginatedRequest = request;
+			var prnSearchResults = await _webApiGatewayClient.GetSearchPrnsAsync(paginatedRequest);
+
+            var pagingDetail = new PagingDetail
+            {
+                CurrentPage = prnSearchResults.CurrentPage,
+                PageSize = request.PageSize,
+                TotalItems = prnSearchResults.TotalItems,
+                TotalPages = prnSearchResults.PageCount
+            };
+
+            return new PrnSearchResultListViewModel
+			{
+                SearchString = prnSearchResults.SearchTerm,
+				ActivePageOfResults = prnSearchResults.Items.Select(item => (PrnSearchResultViewModel)item).ToList(),
+                PagingDetail = pagingDetail,
+                TypeAhead = prnSearchResults.TypeAhead
+            };
+		}
+	}
 }

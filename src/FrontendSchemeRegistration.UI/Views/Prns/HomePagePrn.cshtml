@@ -2,6 +2,9 @@
 @using FrontendSchemeRegistration.UI.ViewModels.Prns
 @model PrnListViewModel
 
+@{
+    ViewData["Title"] = Localizer["page_title"];
+}
 <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
     <section>
         <div class="govuk-grid-row">
@@ -30,7 +33,7 @@
                             <div class="card-container4" id="cardAmount">
                                 <div class="card-body" style="width: 330px;">
                                     <p class="govuk-!-margin-bottom-3">
-                                        <a href="@PagePaths.Prns.ShowAll" class="govuk-link govuk-link--no-visited-state">View all PRNs and PERNs</a>
+                                        <a href="@PagePaths.Prns.Search" class="govuk-link govuk-link--no-visited-state">Search PRNs and PERNs</a>
                                     </p>
                                 </div>
                             </div>

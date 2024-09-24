@@ -123,8 +123,14 @@
   <data name="pern_heading" xml:space="preserve">
     <value>Accept this PERN?</value>
   </data>
+  <data name="pern_page_title" xml:space="preserve">
+    <value>Accept this PRN</value>
+  </data>
   <data name="prn_heading" xml:space="preserve">
     <value>Accept this PRN?</value>
+  </data>
+  <data name="prn_page_title" xml:space="preserve">
+    <value>Accept this PRN</value>
   </data>
   <data name="TitleFirstPart" xml:space="preserve">
     <value>This will credit tonnes</value>

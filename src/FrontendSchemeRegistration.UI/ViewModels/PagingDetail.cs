@@ -1,6 +1,7 @@
 ﻿namespace FrontendSchemeRegistration.UI.ViewModels
 {
-    public class PagingDetail
+
+	public class PagingDetail
     {
         public int CurrentPage { get; set; }
 
@@ -92,6 +93,11 @@
         {
             get
             {
+                if (TotalPages > 0)
+                {
+                    return TotalPages;
+                }
+
                 if (PageSize == 0)
                 {
                     return 0;
@@ -99,6 +105,11 @@
 
                 return (TotalItems + (PageSize - 1)) / PageSize;
             }
+        }
+        public int TotalPages
+        {
+            get;
+            set;
         }
     }
 }

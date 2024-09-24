@@ -53,4 +53,7 @@
 	<data name="view_and_select_prns_table_description" xml:space="preserve">
 		<value>[Welsh]A list of PRNs and PERNs to select from.</value>
 	</data>
+	<data name="page_title" xml:space="preserve">
+		<value>[Welsh] Accept or reject PRNs and PERNs</value>
+	</data>
 </root>

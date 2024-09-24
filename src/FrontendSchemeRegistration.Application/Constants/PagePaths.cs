@@ -91,7 +91,7 @@ public static class PagePaths
     public static class Prns
     {
         public const string Home = "manage-prn-home-complete";
-        public const string ShowAll = "view-awaiting-acceptance";
+        public const string Search = "view-awaiting-acceptance";
         public const string ShowAwaitingAcceptance = "view-awaiting-acceptance-alt";
         public const string ShowSelected = "selected-prn";
 

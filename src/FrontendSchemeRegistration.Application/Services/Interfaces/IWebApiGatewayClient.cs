@@ -57,4 +57,6 @@ public interface IWebApiGatewayClient
     Task SetPrnApprovalStatusToAcceptedAsync(Guid[] ids);
 
     Task SetPrnApprovalStatusToRejectedAsync(Guid id);
+
+	Task<PaginatedResponse<PrnModel>> GetSearchPrnsAsync(PaginatedRequest request);
 }

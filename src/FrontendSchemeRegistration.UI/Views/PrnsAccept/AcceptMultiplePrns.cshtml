@@ -6,6 +6,10 @@
 @model PrnListViewModel
 
 @{
+    ViewData["Title"] = Localizer["page_title"];
+}
+
+@{
     CountBreakdown counts = Model.GetCountBreakdown(Model.Prns);
 
     string h1HeaderText = (counts.PrnCount > 0 && counts.PernCount > 0)
@@ -83,11 +87,11 @@
                                 </caption>
                                 <thead class="govuk-table__head">
                                     <tr class="govuk-table__row">
-                                        <th class="govuk-table__header govuk-!-width-one-quarter">@Localizer["prn_or_pern_number"]</th>
-                                        <th class="govuk-table__header govuk-!-width-one-quarter">@Localizer["date_issued"]</th>
-                                        <th class="govuk-table__header govuk-!-width-one-half">@Localizer["issued_by"]</th>
-                                        <th class="govuk-table__header govuk-!-width-one-quarter">@Localizer["tonnage"]</th>
-                                        <th class="govuk-table__header govuk-!-width-one-half"></th>
+                                        <th class="govuk-table__header">@Localizer["prn_or_pern_number"]</th>
+                                        <th class="govuk-table__header">@Localizer["date_issued"]</th>
+                                        <th class="govuk-table__header">@Localizer["issued_by"]</th>
+                                        <th class="govuk-table__header">@Localizer["tonnage"]</th>
+                                        <th class="govuk-table__header"></th>
                                     </tr>
                                 </thead>
 
@@ -99,7 +103,7 @@
                                             <td class="govuk-table__header">@Html.DisplayFor(x => prnsPerMaterial[i].PrnOrPernNumber)</td>
                                             <td class="govuk-table__cell">@Html.DisplayFor(x => prnsPerMaterial[i].DateIssuedDisplay)</td>
                                             <td class="govuk-table__cell">@Html.DisplayFor(x => prnsPerMaterial[i].IssuedBy)</td>
-                                            <td class="govuk-table__cell">@Html.DisplayFor(x => prnsPerMaterial[i].Tonnage)</td>
+                                            <td class="govuk-table__cell govuk-table__cell--numeric">@Html.DisplayFor(x => prnsPerMaterial[i].Tonnage)</td>
                                             <td class="govuk-table__cell">
                                                 <label class="govuk-label govuk-checkboxes__label">
                                                     <a href="?id=@prnsPerMaterial[i].ExternalId" class="href-text--red">
@@ -113,7 +117,7 @@
                                         <td class="govuk-table__header">@SharedLocalizer["total"]</td>
                                         <td class="govuk-table__cell"></td>
                                         <td class="govuk-table__cell"></td>
-                                        <td class="govuk-table__cell"><strong>@prnsPerMaterial.Sum(x => x.Tonnage)</strong></td>
+                                        <td class="govuk-table__cell govuk-table__cell--numeric"><strong>@prnsPerMaterial.Sum(x => x.Tonnage)</strong></td>
                                         <td class="govuk-table__cell"></td>
                                     </tr>
                                 </tbody>
@@ -141,7 +145,7 @@
             else
             {
                 ViewBag.BackLinkToDisplay = Url?.Content(PagePaths.Prns.ShowAwaitingAcceptance);
-                string noteTypes = (string)TempData.Peek("InitialNoteTypes");
+                string noteTypes = ViewBag.StartNoteTypes;
 
                 var noteTypesLocalised = noteTypes == PrnConstants.PrnsAndPernsText ?
                     string.Format(Localizer["you_have_remove_all_mix_selected_notes"].Value, PrnDataLocalizer[PrnConstants.PrnsText], PrnDataLocalizer[PrnConstants.PernsText]) :

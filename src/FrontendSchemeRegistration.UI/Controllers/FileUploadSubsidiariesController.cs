@@ -1,6 +1,7 @@
 ﻿namespace FrontendSchemeRegistration.UI.Controllers
 {
-    using Application.Constants;
+	using System.Diagnostics.CodeAnalysis;
+	using Application.Constants;
     using Application.DTOs.Submission;
     using Application.Enums;
     using Application.Options;
@@ -17,10 +18,10 @@
     using Microsoft.Extensions.Options;
     using Microsoft.FeatureManagement.Mvc;
     using Services.Interfaces;
-    using ViewModels;
+	using ViewModels;
     using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
-    [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
+	[Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
     [ComplianceSchemeIdActionFilter]
     public class FileUploadSubsidiariesController : Controller
     {

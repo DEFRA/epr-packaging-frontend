@@ -1,14 +1,14 @@
 ﻿namespace FrontendSchemeRegistration.UI.UnitTests.Controllers.Prns;
 
-using AutoFixture.NUnit3;
+using AutoFixture;
+using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
-using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers.Prns;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels.Prns;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Time.Testing;
 using Moq;
 
@@ -17,16 +17,25 @@ public class PrnsAcceptControllerTests
 {
     private Mock<IPrnService> _mockPrnService;
     private FakeTimeProvider _timeProvider;
+    private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
     private PrnsAcceptController _sut;
+    private static readonly IFixture _fixture = new Fixture();
 
     [SetUp]
     public void SetUp()
     {
         _mockPrnService = new Mock<IPrnService>();
         _timeProvider = new();
-        _sut = new PrnsAcceptController(_mockPrnService.Object, _timeProvider);
-        var tempData = new TempDataDictionary(Mock.Of<HttpContext>(), Mock.Of<ITempDataProvider>());
-        _sut.TempData = tempData;
+        _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
+        _sut = new PrnsAcceptController(_mockPrnService.Object, _timeProvider, _sessionManagerMock.Object);
+        
+        _sut.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                Session = new Mock<ISession>().Object
+            }
+        };
     }
 
     // Accept single Prn. Step 3 of 5
@@ -44,14 +53,15 @@ public class PrnsAcceptControllerTests
     }
 
     [Theory]
-    [InlineAutoData("2024-12-01", "2025-01-01", "AcceptSingle2024DecemberWastePrn")]
-    [InlineAutoData("2024-12-15", "2025-01-15", "AcceptSingle2024DecemberWastePrn")]
-    [InlineAutoData("2024-12-01", "2025-01-31T23:59:59Z", "AcceptSingle2024DecemberWastePrn")]
-    [InlineAutoData("2024-12-01", "2025-02-01T00:00:00Z", "AcceptSinglePrn")]
-    [InlineAutoData("2024-12-01", "2025-02-01T00:00:01Z", "AcceptSinglePrn")]
-    [InlineAutoData("2025-01-01", "2025-02-01", "AcceptSinglePrn")]
-    public async Task AcceptSinglePrn_Returns_CorrectViewIf2024DecemberWasteAndAcceptedOn(string issuedDate, string acceptedOn, string viewName, PrnViewModel prn)
+    [TestCase("2024-12-01", "2025-01-01", "AcceptSingle2024DecemberWastePrn")]
+    [TestCase("2024-12-15", "2025-01-15", "AcceptSingle2024DecemberWastePrn")]
+    [TestCase("2024-12-01", "2025-01-31T23:59:59Z", "AcceptSingle2024DecemberWastePrn")]
+    [TestCase("2024-12-01", "2025-02-01T00:00:00Z", "AcceptSinglePrn")]
+    [TestCase("2024-12-01", "2025-02-01T00:00:01Z", "AcceptSinglePrn")]
+    [TestCase("2025-01-01", "2025-02-01", "AcceptSinglePrn")]
+    public async Task AcceptSinglePrn_Returns_CorrectViewIf2024DecemberWasteAndAcceptedOn(string issuedDate, string acceptedOn, string viewName)
     {
+        var prn = _fixture.Create<PrnViewModel>();
         _timeProvider.SetUtcNow(DateTime.Parse(acceptedOn));
         prn.IsDecemberWaste = true;
         prn.DateIssued = DateTime.Parse(issuedDate);
@@ -142,8 +152,7 @@ public class PrnsAcceptControllerTests
     }
 
     // Accept multiple Prns. Step 2 of 5 recover from timeout
-    [Theory]
-    [AutoData]
+    [Test]
     public async Task AcceptMultiplePrnsPassThrough_OnGet_RedirectToSelectMultiplePrns()
     {
         var result = await _sut.AcceptMultiplePrnsPassThrough();
@@ -153,10 +162,10 @@ public class PrnsAcceptControllerTests
     }
 
     // Accept multiple Prns. Step 2 of 5 zero selections error
-    [Theory]
-    [AutoData]
-    public async Task AcceptMultiplePrnsPassThrough_RedirectToSelectMultiplePrns_IfNoneIsSelectedForAcceptance(PrnListViewModel model)
+    [Test]
+    public async Task AcceptMultiplePrnsPassThrough_RedirectToSelectMultiplePrns_IfNoneIsSelectedForAcceptance()
     {
+        var model = _fixture.Create<PrnListViewModel>();
         model.Prns.ForEach(x => x.IsSelected = false);
 
         var result = await _sut.AcceptMultiplePrnsPassThrough(model);
@@ -167,7 +176,7 @@ public class PrnsAcceptControllerTests
     }
 
     // Accept multiple Prns. Step 2 of 5 zero model is null error
-    [Theory]
+    [Test]
     public async Task AcceptMultiplePrnsPassThrough_RedirectToSelectMultiplePrns_WhenModelIsNulll()
     {
         PrnListViewModel model = new();
@@ -179,77 +188,40 @@ public class PrnsAcceptControllerTests
     }
 
     // Accept multiple Prns. Step 2 of 5
-    [Theory]
-    [AutoData]
-    public async Task AcceptMultiplePrnsPassThrough_RedirectToAcceptMultiplePrns_IfPrnsAreSelectedForAcceptance(PrnListViewModel model)
+    [Test]
+    public async Task AcceptMultiplePrnsPassThrough_RedirectToAcceptMultiplePrns_IfPrnsAreSelectedForAcceptance()
     {
+        var model = _fixture.Create<PrnListViewModel>();
         model.Prns[0].IsSelected = true;
 
         var result = await _sut.AcceptMultiplePrnsPassThrough(model);
 
         var view = result.Should().BeOfType<RedirectToActionResult>().Which;
         view.ActionName.Should().Be("AcceptMultiplePrns");
-        _sut.TempData["bulkacceptprn"].Should().BeOfType<string>().Which.Should().Contain(model.Prns[0].ExternalId.ToString());
+        _sessionManagerMock.Verify(x => x.SaveSessionAsync(It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession?>()), Times.Once);
     }
 
     // Accept multiple Prns. Step 3 of 5 pass PRN id
-    [Theory]
-    [AutoData]
-    public async Task AcceptMultiplePrns_RemoveIdsFromTempDataIfIdIsNotNull(PrnListViewModel model)
+    [Test]
+    public async Task AcceptMultiplePrns_RemoveIdFromSessionIfIdIsNotNull()
     {
-        _sut.TempData["bulkacceptprn"] = string.Join(",", model.Prns.Select(x => x.ExternalId).ToList());
+        var model = _fixture.Create<PrnListViewModel>();
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+        {
+            PrnSession = new PrnSession
+            {
+                SelectedPrnIds = model.Prns.Select(x => x.ExternalId).ToList()
+            }
+        });
+
         _mockPrnService.Setup(x => x.GetPrnsAwaitingAcceptanceAsync()).ReturnsAsync(model);
-        var expectedTempData = $"{model.Prns[1].ExternalId},{model.Prns[2].ExternalId}";
         var removedPrnNumber = model.Prns[0].PrnOrPernNumber;
 
+        // Act
         var result = await _sut.AcceptMultiplePrns(model.Prns[0].ExternalId) as ViewResult;
 
         ((PrnListViewModel)result.Model).RemovedPrn.PrnNumber.Should().Be(removedPrnNumber);
-        _sut.TempData["bulkacceptprn"].Should().BeOfType<string>().Which.Should().Be(expectedTempData);
-    }
-
-    // Accept multiple Prns. Step 3 of 5
-    [Theory]
-    [AutoData]
-    public async Task AcceptMultiplePrns_SetsInitialNotesTypeInTempDataToPrns_IfAllSelectedArePrn(PrnListViewModel model)
-    {
-        model.Prns.ForEach(p => p.NoteType = "PRN");
-        _sut.TempData["bulkacceptprn"] = string.Join(",", model.Prns.Select(x => x.ExternalId).ToList());
-        _mockPrnService.Setup(x => x.GetPrnsAwaitingAcceptanceAsync()).ReturnsAsync(model);
-
-        var result = await _sut.AcceptMultiplePrns(Guid.Empty);
-
-        _sut.TempData["InitialNoteTypes"].Should().BeOfType<string>().Which.Should().Be(PrnConstants.PrnsText);
-    }
-
-    // Accept multiple Prns. Step 3 of 5 nomenclature check PERNs
-    [Theory]
-    [AutoData]
-    public async Task AcceptMultiplePrns_SetsInitialNotesTypeInTempDataToPerns_IfAllSelectedArePrn(PrnListViewModel model)
-    {
-        model.Prns.ForEach(p => p.NoteType = "PERN");
-        _sut.TempData["bulkacceptprn"] = string.Join(",", model.Prns.Select(x => x.ExternalId).ToList());
-        _mockPrnService.Setup(x => x.GetPrnsAwaitingAcceptanceAsync()).ReturnsAsync(model);
-
-        var result = await _sut.AcceptMultiplePrns(Guid.Empty);
-
-        _sut.TempData["InitialNoteTypes"].Should().BeOfType<string>().Which.Should().Be(PrnConstants.PernsText);
-    }
-
-    // Accept multiple Prns. Step 3 of 5 nomenclature check PRNs and PERNs
-    [Theory]
-    [AutoData]
-    public async Task AcceptMultiplePrns_SetsInitialNotesTypeInTempDataToPrnsAndPerns_IfAllSelectedAreMixOfPrnAndPern(PrnListViewModel model)
-    {
-        model.Prns.ForEach(p => p.NoteType = "PRN");
-        model.Prns[0].NoteType = "PERN";
-
-        _sut.TempData["bulkacceptprn"] = string.Join(",", model.Prns.Select(x => x.ExternalId).ToList());
-        _mockPrnService.Setup(x => x.GetPrnsAwaitingAcceptanceAsync()).ReturnsAsync(model);
-
-        var result = await _sut.AcceptMultiplePrns(Guid.Empty);
-
-        _sut.TempData["InitialNoteTypes"].Should().BeOfType<string>().Which.Should().Be(PrnConstants.PrnsAndPernsText);
+        _sessionManagerMock.Verify(x => x.SaveSessionAsync(It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession?>()), Times.Once);
     }
 
     // Step 4, return after login timeout
@@ -264,27 +236,35 @@ public class PrnsAcceptControllerTests
     }
 
     // Accept multiple Prns. Step 4 of 5
-    [Theory]
-    [AutoData]
-    public async Task ConfirmAcceptMultiplePrnsPassThrough_OnPostRedirectToAcceptedPrnsBySettingTempData(PrnListViewModel model)
+    [Test]
+    public async Task ConfirmAcceptMultiplePrnsPassThrough_OnPostRedirectToAcceptedPrnsBySettingTempData()
     {
+        var model = _fixture.Create<PrnListViewModel>();
         _mockPrnService.Setup(x => x.AcceptPrnsAsync(It.IsAny<Guid[]>())).Returns(Task.CompletedTask);
 
-        var expectedIds = $"{model.Prns[0].ExternalId},{model.Prns[1].ExternalId},{model.Prns[2].ExternalId}";
+        // Act
         var result = await _sut.ConfirmAcceptMultiplePrnsPassThrough(model);
 
         var view = result.Should().BeOfType<RedirectToActionResult>().Which;
         view.ActionName.Should().Be("AcceptedPrns");
-        _sut.TempData["bulkacceptprn"].Should().BeOfType<string>().Which.Should().Be(expectedIds);
         _mockPrnService.VerifyAll();
     }
 
     // Accept multiple PRNs. Step 5 of 5
-    [Theory]
-    [AutoData]
-    public async Task AcceptedPrns_ConstructCorrectVMFromTempData(List<Guid> acceptedPrns, PrnListViewModel model)
+    [Test]
+    public async Task AcceptedPrns_ConstructCorrectVMFromSession()
     {
-        _sut.TempData["bulkacceptprn"] = string.Join(",", acceptedPrns.ToList());
+        var acceptedPrns = _fixture.CreateMany<Guid>().ToList();
+        var model = _fixture.Create<PrnListViewModel>();
+        
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+        {
+            PrnSession = new PrnSession
+            {
+                SelectedPrnIds = acceptedPrns,
+                InitialNoteTypes = string.Empty
+            }
+        });
 
         model.Prns[0].ExternalId = acceptedPrns[0];
         model.Prns[1].ExternalId = acceptedPrns[1];

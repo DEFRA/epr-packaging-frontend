@@ -1,0 +1,94 @@
+﻿@using FrontendSchemeRegistration.UI.Controllers.Prns
+@using FrontendSchemeRegistration.UI.ViewModels.Prns
+@inject IStringLocalizer<PrnDataResources> PrnDataLocalizer
+@model PrnSearchResultListViewModel
+
+@{
+    ViewData["Title"] = Localizer["search_prns_and_perns"];
+    var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer);
+}
+
+<main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content">
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @await Html.PartialAsync("../Shared/Partials/Govuk/_ErrorsViewModelSummary", errorsViewModel)
+            }
+
+            <h1 class="govuk-heading-xl">@Localizer["search_prns_and_perns"]</h1>
+            <p class="govuk-body">@Localizer["you_can_search_for_prns_and_perns"]</p>
+
+				<form id="findprns" name="findprns" method="get" asp-controller="Prns" asp-action="SearchPrns">
+	            <div class="govuk-card govuk-card--grey govuk-card--no-border govuk-!-margin-bottom-7">
+		            <div class="govuk-card-body">
+			            <div class="govuk-form-group">
+				            <div id="search-hint" class="govuk-body govuk-!-margin-bottom-2">
+					            @Localizer["enter_prn_or_pern_number"]
+				            </div>
+				            <input type="text" class="govuk-input" id="search" name="search" aria-describedby="search-hint" value="@Model.SearchString" list="search_values" autocomplete="off">
+				            <datalist id="search_values">
+					            @foreach (var searchOption in Model.TypeAhead)
+					            {
+						            <option value="@searchOption"></option>
+					            }
+				            </datalist>
+				            <input type="hidden" name="source" value="button">
+			            </div>
+			            <button type="submit" class="govuk-button">
+				            @Localizer["search"]
+			            </button>
+		            </div>
+	            </div>
+
+	            <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+            </form>
+            <div class="govuk-grid-row">
+                <br/><br />
+            </div>
+            @if (Model.PagingDetail.TotalItems > 0)
+            {
+	            <table class="govuk-table">
+		            <caption class="govuk-table__caption govuk-table__caption--m govuk-visually-hidden">@Localizer["view_and_select_prns_table_description"]</caption>
+		            <thead class="govuk-table__head">
+		            <thead class="govuk-table__head">
+		            <tr class="govuk-table__row">
+			            <th class="govuk-table__header">@Localizer["prn_or_pern_number"]</th>
+			            <th class="govuk-table__header">@Localizer["material"]</th>
+			            <th class="govuk-table__header">@Localizer["date_issued"]</th>
+			            <th class="govuk-table__header">@Localizer["december_waste"]</th>
+			            <th class="govuk-table__header">@Localizer["issued_by"]</th>
+			            <th class="govuk-table__header">@Localizer["tonnage"]</th>
+			            <th class="govuk-table__header">@Localizer["status"]</th>
+		            </tr>
+		            </thead>
+		            <tbody class="govuk-table__body">
+		            @foreach (var prn in Model.ActivePageOfResults)
+		            {
+			            <tr class="govuk-table__row">
+				            <td class="govuk-table__cell">
+					            <a class="govuk-link" href="@Url.Action(nameof(PrnsController.SelectSinglePrn), "Prns", new { id = prn.ExternalId })">@prn.PrnOrPernNumber<span class="govuk-visually-hidden">@Localizer["prn_or_pern_number"]</span></a>
+				            </td>
+				            <td class="govuk-table__cell">@PrnDataLocalizer[prn.Material]</td>
+				            <td class="govuk-table__cell">@prn.DateIssuedDisplay</td>
+				            <td class="govuk-table__cell">@SharedLocalizer[prn.DecemberWasteDisplay]</td>
+				            <td class="govuk-table__cell">@prn.IssuedBy</td>
+				            <td class="govuk-table__cell govuk-table__cell--numeric">@prn.Tonnage</td>
+				            <td class="govuk-table__cell">
+					            <div class="govuk-table__cell--numeric">
+						            <span class="govuk-tag govuk-tag--@prn.ApprovalStatusDisplayCssColour">
+							            @PrnDataLocalizer[prn.ApprovalStatus]
+						            </span>
+					            </div>
+				            </td>
+			            </tr>
+		            }
+		            </tbody>
+	            </table>
+                @await Html.PartialAsync("Partials/RecordNavigation/_RecordPaging", Model.PagingDetail)
+            }
+        </div>
+    </div>
+</main>

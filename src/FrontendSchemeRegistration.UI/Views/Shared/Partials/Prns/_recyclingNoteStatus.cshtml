@@ -2,51 +2,62 @@
 @inject IStringLocalizer<PrnDataResources> PrnDataLocalizer
 @model PrnViewModel
 
-<table class="govuk-table">
-	<caption class="govuk-table__caption govuk-table__caption--m govuk-visually-hidden">@Localizer["view_prns_status_table_description"]</caption>
-	<tbody class="govuk-table__body">
-
-	<tr class="govuk-table__row">
-		<td class="govuk-table__cell">@Localizer["status"]</td>
-		<th scope="row" class="govuk-table__header">
-			<strong class="govuk-tag govuk-tag--@Model.ApprovalStatusDisplayCssColour">
-				@PrnDataLocalizer[Model.ApprovalStatus]
-			</strong>
-		</th>
-	</tr>
-	<tr class="govuk-table__row">
-		<td class="govuk-table__cell">@Localizer["status_meaning"]</td>
-		<th scope="row" class="govuk-table__header">
-			@Localizer[Model.ApprovalStatusExplanationTranslation]
-		</th>
-	</tr>
-	<tr class="govuk-table__row">
-		<td class="govuk-table__cell">@Localizer["issued_by"]</td>
-		<th scope="row" class="govuk-table__header">
-			@Model.IssuedBy
-		</th>
-	</tr>
-	@if (Model.IsPrn)
-	{
-		<tr class="govuk-table__row">
-			<td class="govuk-table__cell">@Localizer["reproccessing_site"]</td>
-			<th scope="row" class="govuk-table__header">
-				@Model.ReproccessingSiteAddress
-			</th>
-		</tr>
-	}
-	<tr class="govuk-table__row">
-		<td class="govuk-table__cell">@Localizer["authorised_by"]</td>
-		<th scope="row" class="govuk-table__header">
-			@Model.AuthorisedBy
-		</th>
-	</tr>
-	<tr class="govuk-table__row">
-		<td class="govuk-table__cell">@Localizer["accreditation_number"]</td>
-		<th scope="row" class="govuk-table__header">
-			@Model.AccreditationNumber
-		</th>
-	</tr>
-
-	</tbody>
-</table>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+        <label class="govuk-label" for="status">@Localizer["status"]</label>
+    </div>
+    <div class="govuk-grid-column-one-half">
+        <strong class="govuk-tag govuk-tag--@Model.ApprovalStatusDisplayCssColour" id="status">
+            @PrnDataLocalizer[Model.ApprovalStatus]
+        </strong>
+    </div>
+</div>
+<hr/>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+        <label class="govuk-label" for="status-meaning">@Localizer["status_meaning"]</label>
+    </div>
+    <div class="govuk-grid-column-one-half">
+        <div class="govuk-label" id="status-meaning"><strong>@Localizer[Model.ApprovalStatusExplanationTranslation]</strong></div>
+    </div>
+</div>
+<hr/>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+        <label class="govuk-label" for="issued-by">@Localizer["issued_by"]</label>
+    </div>
+    <div class="govuk-grid-column-one-half">
+        <div class="govuk-label" id="issued-by"><strong>@Model.IssuedBy</strong></div>
+    </div>
+</div>
+<hr />
+@if (Model.IsPrn)
+{
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-half">
+            <label class="govuk-label" for="reproccessing-site">@Localizer["reproccessing_site"]</label>
+        </div>
+        <div class="govuk-grid-column-one-half">
+            <div class="govuk-label" id="reproccessing-site"><strong>@Model.ReproccessingSiteAddress</strong></div>
+        </div>
+    </div>
+    <hr />
+}
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+        <label class="govuk-label" for="authorised-by">@Localizer["authorised_by"]</label>
+    </div>
+    <div class="govuk-grid-column-one-half">
+        <div class="govuk-label" id="authorised-by"><strong>@Model.AuthorisedBy</strong></div>
+    </div>
+</div>
+<hr />
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half">
+        <label class="govuk-label" for="accreditation-number">@Localizer["accreditation_number"]</label>
+    </div>
+    <div class="govuk-grid-column-one-half">
+        <div class="govuk-label" id="accreditation-number"><strong>@Model.AccreditationNumber</strong></div>
+    </div>
+</div>
+<hr />

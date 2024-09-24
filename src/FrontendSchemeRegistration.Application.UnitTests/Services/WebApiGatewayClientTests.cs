@@ -7,7 +7,7 @@ using System.Net.Mime;
 using System.Text.Json;
 using Application.Services;
 using Application.Services.Interfaces;
-using AutoFixture.NUnit3;
+using AutoFixture;
 using DTOs.Submission;
 using Enums;
 using FluentAssertions;
@@ -29,6 +29,7 @@ public class WebApiGatewayClientTests
     private Mock<ILogger<WebApiGatewayClient>> _loggerMock;
     private WebApiGatewayClient _webApiGatewayClient;
     private HttpClient _httpClient;
+    private static readonly IFixture _fixture = new Fixture();
 
     [SetUp]
     public void SetUp()
@@ -641,11 +642,11 @@ public class WebApiGatewayClientTests
         await act.Should().ThrowAsync<HttpRequestException>();
     }
 
-    [Theory]
-    [AutoData]
-    public async Task GetPrnsForLoggedOnUserAsync_ReturnsPrns_WhenSuccessful(List<PrnModel> data)
+    [Test]
+    public async Task GetPrnsForLoggedOnUserAsync_ReturnsPrns_WhenSuccessful()
     {
         // Arrange
+        var data = _fixture.CreateMany<PrnModel>().ToList();
         _httpMessageHandlerMock.Protected()
             .Setup<Task<HttpResponseMessage>>(
                 "SendAsync",
@@ -662,8 +663,7 @@ public class WebApiGatewayClientTests
         result.Should().BeEquivalentTo(data);
     }
 
-    [Theory]
-    [AutoData]
+    [Test]
     public async Task GetPrnsForLoggedOnUserAsync_ThrowsException_WhenResponseCodeIsNotSuccessful()
     {
         // Arrange
@@ -681,11 +681,53 @@ public class WebApiGatewayClientTests
             .ThrowAsync<HttpRequestException>();
     }
 
-    [Theory]
-    [AutoData]
-    public async Task GetPrnByExternalIdAsync_ReturnsPrn_WhenSuccessful(PrnModel data)
+    [Test]
+    public async Task GetSearchPrnsAsync_ReturnsPrn_WhenSuccessful()
     {
         // Arrange
+        var request = _fixture.Create<PaginatedRequest>();
+        var data = _fixture.Create<PaginatedResponse<PrnModel>>();
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonSerializer.Serialize(data)),
+            });
+
+        var result = await _webApiGatewayClient.GetSearchPrnsAsync(request);
+
+        result.Should().BeEquivalentTo(data);
+    }
+
+    [Test]
+    public async Task GetSearchPrnsAsync_ThrowsException_WhenResponseCodeIsNotSuccessful()
+    {
+        // Arrange
+        var request = _fixture.Create<PaginatedRequest>();
+        var data = _fixture.Create<PaginatedResponse<PrnModel>>();
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.InternalServerError });
+
+        // Act / Assert
+        await _webApiGatewayClient
+            .Invoking(x => x.GetSearchPrnsAsync(request))
+            .Should()
+            .ThrowAsync<HttpRequestException>();
+    }
+
+    [Test]
+    public async Task GetPrnByExternalIdAsync_ReturnsPrn_WhenSuccessful()
+    {
+        // Arrange
+        var data = _fixture.Create<PrnModel>();
         _httpMessageHandlerMock.Protected()
             .Setup<Task<HttpResponseMessage>>(
                 "SendAsync",
@@ -702,8 +744,7 @@ public class WebApiGatewayClientTests
         result.Should().BeEquivalentTo(data);
     }
 
-    [Theory]
-    [AutoData]
+    [Test]
     public async Task GetPrnByExternalIdAsync_ThrowsException_WhenResponseCodeIsNotSuccessful()
     {
         // Arrange

@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FrontendSchemeRegistration.Application.Constants;
@@ -16,7 +17,7 @@ using Microsoft.Identity.Web;
 
 namespace FrontendSchemeRegistration.Application.Services;
 
-public class WebApiGatewayClient : IWebApiGatewayClient
+public class WebApiGatewayClient : ServiceClientBase, IWebApiGatewayClient
 {
     private readonly HttpClient _httpClient;
     private readonly string[] _scopes;
@@ -321,8 +322,28 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         }
     }
 
-    // Get single PRN
-    public async Task<PrnModel> GetPrnByExternalIdAsync(Guid id)
+	public async Task<PaginatedResponse<PrnModel>> GetSearchPrnsAsync(PaginatedRequest request)
+	{
+		await PrepareAuthenticatedClientAsync();
+
+		try
+		{
+			var response = await _httpClient.GetAsync($"/api/v1/prn/search{BuildUrlWithQueryString(request)}");
+
+			response.EnsureSuccessStatusCode();
+
+			return await response.Content.ReadFromJsonAsync<PaginatedResponse<PrnModel>>();
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error getting recycling notes for organisation");
+			throw;
+		}
+
+	}
+
+	// Get single PRN
+	public async Task<PrnModel> GetPrnByExternalIdAsync(Guid id)
     {
         await PrepareAuthenticatedClientAsync();
 

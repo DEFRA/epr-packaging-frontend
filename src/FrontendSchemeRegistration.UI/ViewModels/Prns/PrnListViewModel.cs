@@ -32,14 +32,14 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
             return count == 1 ? PrnConstants.PernText : PrnConstants.PernsText;
         }
 
-        // retuns nomenclature e.g. PRN, PRNs, PERN, PERNs, PERs and PERNs
+        // retuns nomenclature e.g. PRN, PRNs, PERN, PERNs, PRNs and PERNs
         public string GetNoteType(IEnumerable<PrnViewModel> prns)
         {
             var counts = GetCountBreakdown(prns);
 
             if ((counts.PrnCount > 0) && (counts.PernCount > 0))
             {
-                return PrnConstants.PrnsAndPernsText; // PERs and PERNs
+                return PrnConstants.PrnsAndPernsText;
             }
             else if (counts.PrnCount > 0)
             {
@@ -48,6 +48,27 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
             else if (counts.PernCount > 0)
             {
                 return GetPernWord(counts.PernCount);
+            }
+
+            return string.Empty;
+        }
+
+        // PRNs, PERNs, PRNs and PERNs
+        public string GetPluralNoteType(IEnumerable<PrnViewModel> prns)
+        {
+            var counts = GetCountBreakdown(prns);
+
+            if ((counts.PrnCount > 0) && (counts.PernCount > 0))
+            {
+                return PrnConstants.PrnsAndPernsText;
+            }
+            else if (counts.PrnCount > 0)
+            {
+                return PrnConstants.PrnsText;
+            }
+            else if (counts.PernCount > 0)
+            {
+                return PrnConstants.PernsText;
             }
 
             return string.Empty;

@@ -1,7 +1,9 @@
-﻿using FrontendSchemeRegistration.Application.Constants;
+﻿using EPR.Common.Authorization.Sessions;
+using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels.Prns;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
@@ -11,15 +13,15 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
     [FeatureGate(FeatureFlags.ShowPrn)]
     public class PrnsAcceptController : Controller
     {
-        private const string BulkAcceptPrn = "bulkacceptprn";
-        private const string StartNoteTypes = "InitialNoteTypes";
         private readonly IPrnService _prnService;
         private readonly TimeProvider _timeProvider;
+        private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
 
-        public PrnsAcceptController(IPrnService prnService, TimeProvider timeProvider)
+        public PrnsAcceptController(IPrnService prnService, TimeProvider timeProvider, ISessionManager<FrontendSchemeRegistrationSession> sessionManager)
         {
             _prnService = prnService;
             _timeProvider = timeProvider;
+            _sessionManager = sessionManager;
         }
 
         // Note steps 1 and 2 are in the PrnsController
@@ -84,10 +86,15 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         [Route(PagePaths.Prns.BeforeAskToAcceptMany)]
         public async Task<ActionResult> AcceptMultiplePrnsPassThrough(PrnListViewModel model)
         {
-            var selectedPrnIds = model?.Prns?.Where(x => x.IsSelected).Select(x => x.ExternalId);
-            if (selectedPrnIds != null && selectedPrnIds.Any())
-            {
-                TempData[BulkAcceptPrn] = string.Join(",", selectedPrnIds.ToList());
+            var selectedPrns= model?.Prns?.Where(x => x.IsSelected);
+            if (selectedPrns != null && selectedPrns.Any())
+            {               
+                var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+                session.PrnSession = new PrnSession();
+                session.PrnSession.SelectedPrnIds = selectedPrns.Select(x => x.ExternalId).ToList();
+                session.PrnSession.InitialNoteTypes = model.GetPluralNoteType(selectedPrns);
+                await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
+
                 return RedirectToAction(nameof(PrnsAcceptController.AcceptMultiplePrns));
             }
 
@@ -99,37 +106,26 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         [Route(PagePaths.Prns.AskToAcceptMany + "/{id?}")]
         public async Task<ActionResult> AcceptMultiplePrns(Guid id)
         {
-            List<Guid> selectedPrnIds = GetPrnIdsFromTempdata(BulkAcceptPrn);
-            selectedPrnIds.Remove(id);
-            TempData[BulkAcceptPrn] = string.Join(",", selectedPrnIds);
-
-            var viewModel = await _prnService.GetPrnsAwaitingAcceptanceAsync();
-            var selectedPrns = viewModel.Prns.Where(x => selectedPrnIds.Contains(x.ExternalId)).OrderBy(x => x.Material).ThenByDescending(x => x.DateIssued).ToList();
+            var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+            List<Guid> selectedPrnIds = session.PrnSession.SelectedPrnIds;
+            ViewBag.StartNoteTypes = session.PrnSession.InitialNoteTypes;
+            PrnListViewModel viewModel = await _prnService.GetPrnsAwaitingAcceptanceAsync();
 
             if (id != Guid.Empty)
             {
                 var removedPrn = viewModel.Prns.First(x => x.ExternalId == id);
                 viewModel.RemovedPrn = new RemovedPrn(removedPrn.PrnOrPernNumber, removedPrn.IsPrn);
+                
+                selectedPrnIds.Remove(id);         
+                session.PrnSession.SelectedPrnIds = selectedPrnIds.ToList();
+                await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
             }
-            else
+
+            var selectedPrns = viewModel?.Prns?.Where(x => selectedPrnIds.Contains(x.ExternalId)).OrderBy(x => x.Material).ThenByDescending(x => x.DateIssued);
+            if (selectedPrns != null)
             {
-                var counts = viewModel.GetCountBreakdown(selectedPrns);
-
-                if (counts.PrnCount > 0 && counts.PernCount > 0)
-                {
-                    TempData[StartNoteTypes] = PrnConstants.PrnsAndPernsText;
-                }
-                else if (counts.PrnCount > 0)
-                {
-                    TempData[StartNoteTypes] = PrnConstants.PrnsText;
-                }
-                else
-                {
-                    TempData[StartNoteTypes] = PrnConstants.PernsText;
-                }
+                viewModel.Prns = selectedPrns.ToList();
             }
-
-            viewModel.Prns = selectedPrns.ToList();
             return View(viewModel);
         }
 
@@ -147,9 +143,7 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         public async Task<ActionResult> ConfirmAcceptMultiplePrnsPassThrough(PrnListViewModel model)
         {
             var selectedPrnIds = model.Prns.Select(x => x.ExternalId);
-
             await _prnService.AcceptPrnsAsync(selectedPrnIds.ToArray());
-            TempData[BulkAcceptPrn] = string.Join(",", selectedPrnIds.ToList());
             return RedirectToAction(nameof(PrnsAcceptController.AcceptedPrns));
         }
 
@@ -158,8 +152,8 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         [Route(PagePaths.Prns.AcceptedMany)]
         public async Task<IActionResult> AcceptedPrns()
         {
-            TempData.Keep(BulkAcceptPrn);
-            List<Guid> selectedPrnIds = GetPrnIdsFromTempdata(BulkAcceptPrn);
+            var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+            List<Guid> selectedPrnIds = session.PrnSession.SelectedPrnIds;
 
             var viewModel = await _prnService.GetAllAcceptedPrnsAsync();
             var justUpdatedPrns = viewModel.Prns?.Where(x => selectedPrnIds.Contains(x.ExternalId)).ToList();
@@ -173,14 +167,8 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
                             .Select(x => new AcceptedDetails(x.Key, x.Sum(t => t.Tonnage)))
                             .ToList()
             };
-            return View(summaryModel);
-        }
 
-        private List<Guid> GetPrnIdsFromTempdata(string key)
-        {
-            TempData.TryGetValue(key, out object o);
-            string idsString = o == null ? string.Empty : o.ToString();
-            return idsString.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(x => Guid.Parse(x)).ToList<Guid>();
+            return View(summaryModel);
         }
     }
 }

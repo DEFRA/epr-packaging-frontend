@@ -1,5 +1,6 @@
-﻿using AutoFixture.NUnit3;
+﻿using AutoFixture;
 using FluentAssertions;
+using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.DTOs.Prns;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Services;
@@ -14,6 +15,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Services
     {
         private Mock<IWebApiGatewayClient> _webApiGatewayClientMock;
         private IPrnService _systemUnderTest;
+        private static readonly IFixture _fixture = new Fixture();
 
         [SetUp]
         public void SetUp()
@@ -22,20 +24,20 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Services
             _systemUnderTest = new PrnService(_webApiGatewayClientMock.Object);
         }
 
-        [Theory]
-        [AutoData]
-        public async Task GetAllPrnsAsync_ReturnsListOfPrnViewModels(List<PrnModel> data)
+        [Test]
+        public async Task GetAllPrnsAsync_ReturnsListOfPrnViewModels()
         {
+            var data = _fixture.CreateMany<PrnModel>().ToList();
             data[0].AccreditationYear = data[1].AccreditationYear = data[2].AccreditationYear = "2024";
             _webApiGatewayClientMock.Setup(x => x.GetPrnsForLoggedOnUserAsync()).ReturnsAsync(data);
             var model = await _systemUnderTest.GetAllPrnsAsync();
             model.Should().NotBeNull();
         }
 
-        [Theory]
-        [AutoData]
-        public async Task GetPrnsAwaitingAcceptanceAsync_ReturnsListOfPrnViewModels(List<PrnModel> data)
+        [Test]
+        public async Task GetPrnsAwaitingAcceptanceAsync_ReturnsListOfPrnViewModels()
         {
+            var data = _fixture.CreateMany<PrnModel>().ToList();
             data[0].PrnStatus = "AWAITING ACCEPTANCE";
             data[0].AccreditationYear = data[1].AccreditationYear = data[2].AccreditationYear = "2024";
             _webApiGatewayClientMock.Setup(x => x.GetPrnsForLoggedOnUserAsync()).ReturnsAsync(data);
@@ -43,10 +45,10 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Services
             model.Should().NotBeNull();
         }
 
-        [Theory]
-        [AutoData]
-        public async Task GetAllAcceptedPrnsAsync_ReturnsListOfAcceptedPrnViewModels(List<PrnModel> data)
+        [Test]
+        public async Task GetAllAcceptedPrnsAsync_ReturnsListOfAcceptedPrnViewModels()
         {
+            var data = _fixture.CreateMany<PrnModel>().ToList();
             data[0].PrnStatus = data[1].PrnStatus = "ACCEPTED";
             data[0].AccreditationYear = data[1].AccreditationYear = data[2].AccreditationYear = "2024";
 
@@ -56,28 +58,28 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Services
             model.Prns.Should().AllSatisfy(x => x.ApprovalStatus.Should().Be("ACCEPTED"));
         }
 
-        [Theory]
-        [AutoData]
-        public async Task AcceptPrnsAsync_CallsWebApiClientWIthCorrectParams(Guid[] ids)
+        [Test]
+        public async Task AcceptPrnsAsync_CallsWebApiClientWIthCorrectParams()
         {
+            var ids = _fixture.CreateMany<Guid>().ToArray();
             _webApiGatewayClientMock.Setup(x => x.SetPrnApprovalStatusToAcceptedAsync(ids)).Returns(Task.CompletedTask);
             await _systemUnderTest.AcceptPrnsAsync(ids);
             _webApiGatewayClientMock.Verify(x => x.SetPrnApprovalStatusToAcceptedAsync(ids), Times.Once);
         }
 
-        [Theory]
-        [AutoData]
-        public async Task AcceptPrnAsync_CallsWebApiClientWIthCorrectParams(Guid id)
+        [Test]
+        public async Task AcceptPrnAsync_CallsWebApiClientWIthCorrectParams()
         {
+            var id = Guid.NewGuid();
             _webApiGatewayClientMock.Setup(x => x.SetPrnApprovalStatusToAcceptedAsync(id)).Returns(Task.CompletedTask);
             await _systemUnderTest.AcceptPrnAsync(id);
             _webApiGatewayClientMock.Verify(x => x.SetPrnApprovalStatusToAcceptedAsync(id), Times.Once);
         }
 
-        [Theory]
-        [AutoData]
-        public async Task GetPrnByExternalIdAsync_ReturnsPrn(PrnModel model)
+        [Test]
+        public async Task GetPrnByExternalIdAsync_ReturnsPrn()
         {
+            var model = _fixture.Create<PrnModel>();
             model.AccreditationYear = "2024";
             _webApiGatewayClientMock.Setup(x => x.GetPrnByExternalIdAsync(model.ExternalId)).ReturnsAsync(model);
             var result = await _systemUnderTest.GetPrnByExternalIdAsync(model.ExternalId);
@@ -85,13 +87,47 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Services
             result.Should().BeEquivalentTo((PrnViewModel)model);
         }
 
-        [Theory]
-        [AutoData]
-        public async Task RejectPrnAsync_CallsWebApiClientWIthCorrectParams(Guid id)
+        [Test]
+        public async Task RejectPrnAsync_CallsWebApiClientWIthCorrectParams()
         {
+            var id = Guid.NewGuid();
             _webApiGatewayClientMock.Setup(x => x.SetPrnApprovalStatusToRejectedAsync(id)).Returns(Task.CompletedTask);
             await _systemUnderTest.RejectPrnAsync(id);
             _webApiGatewayClientMock.Verify(x => x.SetPrnApprovalStatusToRejectedAsync(id), Times.Once);
+        }
+
+        [Test]
+        public async Task GetPrnSearchResultsAsync_ReturnsMatchingPrns()
+        {
+            SearchPrnsViewModel request = new SearchPrnsViewModel { PageSize = 5, Search = "search me" };
+            var pageOne = new List<PrnModel>();
+            for (int i = 0; i < request.PageSize; i++)
+            {
+                pageOne.Add(_fixture.Create<PrnModel>());
+            }
+            var pageTwo = new List<PrnModel> { _fixture.Create<PrnModel>() };
+            PaginatedResponse<PrnModel> paginatedResposne = new PaginatedResponse<PrnModel>();
+
+            paginatedResposne.SearchTerm = request.Search;
+            paginatedResposne.Items = pageTwo;
+            paginatedResposne.CurrentPage = 2;
+            paginatedResposne.TotalItems = pageTwo.Count + pageOne.Count;
+            paginatedResposne.PageSize = request.PageSize;
+            paginatedResposne.TypeAhead  = new List<string> { "prn number", "issued by" };
+
+            _webApiGatewayClientMock.Setup(x => x.GetSearchPrnsAsync(It.IsAny<PaginatedRequest>())).ReturnsAsync(paginatedResposne);
+
+            // Act
+            var prnSearchResults = await _systemUnderTest.GetPrnSearchResultsAsync(request);
+
+            // Assert
+            prnSearchResults.SearchString.Should().Be(request.Search);
+            prnSearchResults.ActivePageOfResults.Count.Should().Be(pageTwo.Count);
+            prnSearchResults.PagingDetail.CurrentPage.Should().Be(paginatedResposne.CurrentPage);
+            prnSearchResults.PagingDetail.PageSize.Should().Be(request.PageSize);
+            prnSearchResults.PagingDetail.TotalItems.Should().Be(paginatedResposne.TotalItems);
+            prnSearchResults.TypeAhead.Should().BeEquivalentTo(paginatedResposne.TypeAhead);
+
         }
     }
 }

@@ -4,6 +4,10 @@
 @model PrnListViewModel
 
 @{
+    ViewData["Title"] = Localizer["page_title"];
+}
+
+@{
     var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer);
 }
 
@@ -52,6 +56,7 @@
                         @for (int i = 0; i < Model?.Prns?.Where(x => x.Material == group.Key)?.Count(); i++, counter++)
                         {
                             @Html.HiddenFor(x => x.Prns[counter].ExternalId)
+                            @Html.HiddenFor(x => x.Prns[counter].NoteType)
 
                             <tr class="govuk-table__row">
                                 <td class="govuk-table__cell">
@@ -69,7 +74,7 @@
                                 <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[counter].DateIssuedDisplay)</td>
                                 <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[counter].DecemberWasteDisplay)</td>
                                 <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[counter].IssuedBy)</td>
-                                <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[counter].Tonnage)</td>
+                                <td class="govuk-table__cell govuk-table__cell--numeric">@Html.DisplayFor(x => x.Prns[counter].Tonnage)</td>
                                 <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[counter].AdditionalNotes)</td>
                             </tr>
                         }
