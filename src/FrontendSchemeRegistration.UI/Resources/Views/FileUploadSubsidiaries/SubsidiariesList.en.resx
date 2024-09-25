@@ -171,9 +171,6 @@
   <data name="subsidiary_remove" xml:space="preserve">
     <value>Remove</value>
   </data>
-  <data name="upload_a_file" xml:space="preserve">
-    <value>Upload a file</value>
-  </data>
   <data name="no_subsidiaries_msg" xml:space="preserve">
     <value>No subsidiaries added for this organisation. To add subsidiaries, upload a CSV file</value>
   </data>

@@ -24,7 +24,7 @@
                 {
                     @if (organisationModel.Subsidiaries.Count > 0)
                     {
-                        <div class="govuk-warning-text">
+                        <div class="govuk-warning-text govuk-!-padding-bottom-7 govuk-phase-banner">
                             <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
                             <strong class="govuk-warning-text__text">
                                 <span class="govuk-warning-text__assistive">@Localizer["text_assistive.warning"]</span>
@@ -35,7 +35,7 @@
                         <div class="govuk-grid-row">
                             <div class="govuk-grid-column-full">
                                 <span class="govuk-caption-m">@Localizer["organisation_id_heading"]: @organisationModel.Id</span>
-                                <span class="govuk-caption-m">@Localizer["companies_house_number_heading"]: @(!string.IsNullOrWhiteSpace(organisationModel.CompaniesHouseNumber) ? organisationModel.CompaniesHouseNumber : Localizer["no_ch_number"])</span>
+                                <span class="govuk-caption-m govuk-!-margin-bottom-7">@Localizer["companies_house_number_heading"]: @(!string.IsNullOrWhiteSpace(organisationModel.CompaniesHouseNumber) ? organisationModel.CompaniesHouseNumber : Localizer["no_ch_number"])</span>
                             </div>
                         </div>
 
@@ -72,7 +72,7 @@
                             <div class="govuk-grid-row">
                                 <div class="govuk-grid-column-full">
                                     <span class="govuk-caption-m">@Localizer["organisation_id_heading"]: @organisationModel.Id</span>
-                                    <span class="govuk-caption-m">@Localizer["companies_house_number_heading"]: @(!string.IsNullOrWhiteSpace(organisationModel.CompaniesHouseNumber) ? organisationModel.CompaniesHouseNumber : Localizer["no_ch_number"])</span>
+                                    <span class="govuk-caption-m govuk-!-margin-bottom-7">@Localizer["companies_house_number_heading"]: @(!string.IsNullOrWhiteSpace(organisationModel.CompaniesHouseNumber) ? organisationModel.CompaniesHouseNumber : Localizer["no_ch_number"])</span>
                                 </div>
                             </div>
                         }
@@ -109,8 +109,7 @@
                             {
                                 @await Html.PartialAsync("Partials/Govuk/_Error", ViewData.ModelState.GetModelStateEntry("file"))
                             }
-                            <label class="govuk-label" for="file">@Localizer["upload_a_file"]</label>
-                            <input class="govuk-file-upload" name="file" type="file" id="file" data-testid="subsidiary-upload-choose-file-button" aria-describedby="file-upload-instructions">
+                            <input class="govuk-file-upload" title="Choose a file" name="file" type="file" id="file" data-testid="subsidiary-upload-choose-file-button">
                         </div>
                         <button class="govuk-button" data-module="govuk-button" type="submit" data-testid="subsidiary-data-upload-button">@SharedLocalizer["upload_file"]</button>
 
@@ -119,8 +118,9 @@
                             <a class="govuk-button govuk-button--secondary govuk-!-margin-left-4" href="@Url.Action("SubsidiariesDownload", "FileUploadSubsidiaries")" role="button" data-module="govuk-button">
                                 @SharedLocalizer["export"]
                             </a>
-
-                            <span class="govuk-body govuk-!-margin-left-4"><a href="@Url.Action("Get", "SubsidiariesCompleteFile")" class="govuk-link" rel="noreferrer noopener" target="_blank">@Localizer["how_to_complete_file"]</a></span>
+                            <div class="govuk-button-group">
+                                <span class="govuk-body"><a href="@Url.Action("Get", "SubsidiariesCompleteFile")" class="govuk-link" rel="noreferrer noopener" target="_blank">@Localizer["how_to_complete_file"]</a></span>
+                            </div>
                         }
                     }
                 }
