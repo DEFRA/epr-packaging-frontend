@@ -1,3 +1,4 @@
+@model FrontendSchemeRegistration.UI.ViewModels.Shared.ErrorViewModel
 @{
     ViewData["Title"] = Localizer["problem_with_service"];
 }
@@ -7,6 +8,7 @@
           <div class="govuk-grid-column-two-thirds govuk-!-margin-top-8">
               <h1 class="govuk-heading-l">@Localizer["problem_with_service"]</h1>
               <p class="govuk-body">@Localizer["try_again_later"]</p>
-          </div>
+              <p><b>@Html.Raw(Model.Timestamp)</b></p>
+        </div>
       </div>
 </main>
