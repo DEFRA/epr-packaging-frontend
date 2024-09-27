@@ -7,125 +7,191 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace FrontendSchemeRegistration.UI.Resources.Views.FileUpload {
+namespace FrontendSchemeRegistration.UI.Resources.Views.FileUpload
+{
     using System;
-    
-    
+
+
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class FileUpload {
-        
+    internal class FileUpload
+    {
+
         private static System.Resources.ResourceManager resourceMan;
-        
+
         private static System.Globalization.CultureInfo resourceCulture;
-        
+
         [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal FileUpload() {
+        internal FileUpload()
+        {
         }
-        
+
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static System.Resources.ResourceManager ResourceManager {
-            get {
-                if (object.Equals(null, resourceMan)) {
+        internal static System.Resources.ResourceManager ResourceManager
+        {
+            get
+            {
+                if (object.Equals(null, resourceMan))
+                {
                     System.Resources.ResourceManager temp = new System.Resources.ResourceManager("FrontendSchemeRegistration.UI.Resources.Views.FileUpload.FileUpload", typeof(FileUpload).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
             }
         }
-        
+
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static System.Globalization.CultureInfo Culture {
-            get {
+        internal static System.Globalization.CultureInfo Culture
+        {
+            get
+            {
                 return resourceCulture;
             }
-            set {
+            set
+            {
                 resourceCulture = value;
             }
         }
-        
-        internal static string upload_your_file {
-            get {
+
+        internal static string upload_your_file
+        {
+            get
+            {
                 return ResourceManager.GetString("upload_your_file", resourceCulture);
             }
         }
-        
-        internal static string file_upload_is_invalid {
-            get {
+
+        internal static string file_upload_is_invalid
+        {
+            get
+            {
                 return ResourceManager.GetString("file_upload_is_invalid", resourceCulture);
             }
         }
-        
-        internal static string select_a_csv_file {
-            get {
+
+        internal static string select_a_csv_file
+        {
+            get
+            {
                 return ResourceManager.GetString("select_a_csv_file", resourceCulture);
             }
         }
-        
-        internal static string the_selected_file_is_empty {
-            get {
+
+        internal static string the_selected_file_is_empty
+        {
+            get
+            {
                 return ResourceManager.GetString("the_selected_file_is_empty", resourceCulture);
             }
         }
-        
-        internal static string the_selected_file_must_be_a_csv {
-            get {
+
+        internal static string the_selected_file_must_be_a_csv
+        {
+            get
+            {
                 return ResourceManager.GetString("the_selected_file_must_be_a_csv", resourceCulture);
             }
         }
-        
-        internal static string the_selected_file_must_be_smaller_than {
-            get {
+
+        internal static string the_selected_file_must_be_smaller_than
+        {
+            get
+            {
                 return ResourceManager.GetString("the_selected_file_must_be_smaller_than", resourceCulture);
             }
         }
-        
-        internal static string upload_packaging_data_to_your_account {
-            get {
+
+        internal static string upload_packaging_data_to_your_account
+        {
+            get
+            {
                 return ResourceManager.GetString("upload_packaging_data_to_your_account", resourceCulture);
             }
         }
-        
-        internal static string upload_your_members_packaging_data {
-            get {
+
+        internal static string upload_your_members_packaging_data
+        {
+            get
+            {
                 return ResourceManager.GetString("upload_your_members_packaging_data", resourceCulture);
             }
         }
-        
-        internal static string once_weve_validated_the_data {
-            get {
+
+        internal static string once_weve_validated_the_data
+        {
+            get
+            {
                 return ResourceManager.GetString("once_weve_validated_the_data", resourceCulture);
             }
         }
-        
-        internal static string upload_your_organisations_packaging_data {
-            get {
+
+        internal static string upload_your_organisations_packaging_data
+        {
+            get
+            {
                 return ResourceManager.GetString("upload_your_organisations_packaging_data", resourceCulture);
             }
         }
-        
-        internal static string if_there_is_a_problem_well_tell_you_about {
-            get {
+
+        internal static string if_there_is_a_problem_well_tell_you_about
+        {
+            get
+            {
                 return ResourceManager.GetString("if_there_is_a_problem_well_tell_you_about", resourceCulture);
             }
         }
-        
-        internal static string errors_youll_need_to_fix {
-            get {
+
+        internal static string errors_youll_need_to_fix
+        {
+            get
+            {
                 return ResourceManager.GetString("errors_youll_need_to_fix", resourceCulture);
             }
         }
-        
-        internal static string warnings_these_are_unusual_entries_youll_need_to_check {
-            get {
+
+        internal static string warnings_these_are_unusual_entries_youll_need_to_check
+        {
+            get
+            {
                 return ResourceManager.GetString("warnings_these_are_unusual_entries_youll_need_to_check", resourceCulture);
             }
         }
-        
-        internal static string upload_file {
-            get {
+
+        internal static string upload_file
+        {
+            get
+            {
                 return ResourceManager.GetString("upload_file", resourceCulture);
+            }
+        }
+
+        internal static string no_file_uploaded
+        {
+            get
+            {
+                return ResourceManager.GetString("no_file_uploaded", resourceCulture);
+            }
+        }
+        internal static string incorrect_file_type
+        {
+            get
+            {
+                return ResourceManager.GetString("incorrect_file_type", resourceCulture);
+            }
+        }
+        internal static string file_did_not_contain_any_data
+        {
+            get
+            {
+                return ResourceManager.GetString("file_did_not_contain_any_data", resourceCulture);
+            }
+        }
+        internal static string file_size_exceeded_max_allowed
+        {
+            get
+            {
+                return ResourceManager.GetString("file_size_exceeded_max_allowed", resourceCulture);
             }
         }
     }

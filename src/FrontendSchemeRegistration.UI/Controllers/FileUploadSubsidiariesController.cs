@@ -12,6 +12,8 @@
     using EPR.Common.Authorization.Sessions;
     using Extensions;
     using global::FrontendSchemeRegistration.UI.Attributes.ActionFilters;
+    using global::FrontendSchemeRegistration.UI.Services.FileUploadLimits;
+    using global::FrontendSchemeRegistration.UI.Services.Messages;
     using global::FrontendSchemeRegistration.UI.Sessions;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -30,6 +32,7 @@
         private readonly ISubsidiaryService _subsidiaryService;
         private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
         private readonly IComplianceSchemeMemberService _complianceSchemeMemberService;
+        private IOptions<GlobalVariables> _globalVariables;
 
         private readonly string _basePath;
 
@@ -47,6 +50,7 @@
             _basePath = globalVariables.Value.BasePath;
             _sessionManager = sessionManager;
             _complianceSchemeMemberService = complianceSchemeMemberService;
+            _globalVariables = globalVariables;
         }
 
         [HttpGet]
@@ -70,6 +74,7 @@
 
         [HttpPost]
         [Route(PagePaths.FileUploadSubsidiaries)]
+        [RequestSizeLimit(FileSizeLimit.FileSizeLimitInBytes)]
         public async Task<IActionResult> Post()
         {
             var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
@@ -79,7 +84,9 @@
                 Request.Body,
                 ModelState,
                 null,
-                SubmissionType.Subsidiary,
+                SubmissionType.Subsidiary, 
+                new SubsidiaryFileUploadMessages(), 
+                new SubsidiariesFileUploadLimit(_globalVariables),
                 session.RegistrationSession.SelectedComplianceScheme?.Id);
 
             var routeValues = new RouteValueDictionary { { "submissionId", submissionId } };

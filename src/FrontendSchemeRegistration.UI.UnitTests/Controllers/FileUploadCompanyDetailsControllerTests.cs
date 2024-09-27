@@ -8,9 +8,12 @@ using Constants;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
+using FrontendSchemeRegistration.Application.Options;
+using FrontendSchemeRegistration.UI.Services.Messages;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Moq;
 using TestHelpers;
@@ -64,7 +67,11 @@ public class FileUploadCompanyDetailsControllerTests
 
         _fileUploadServiceMock = new Mock<IFileUploadService>();
 
-        _systemUnderTest = new FileUploadCompanyDetailsController(_submissionServiceMock.Object, _fileUploadServiceMock.Object, _sessionManagerMock.Object);
+        _systemUnderTest = new FileUploadCompanyDetailsController
+            (_submissionServiceMock.Object,
+            _fileUploadServiceMock.Object,
+            _sessionManagerMock.Object,
+            Options.Create(new GlobalVariables { FileUploadLimitInBytes = 268435456, SubsidiaryFileUploadLimitInBytes = 61440 }));
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
@@ -293,6 +300,8 @@ public class FileUploadCompanyDetailsControllerTests
                 It.IsAny<ModelStateDictionary>(),
                 null,
                 SubmissionType.Registration,
+                It.IsAny<IFileUploadMessages>(),
+                It.IsAny<IFileUploadSize>(),
                 SubmissionSubType.CompanyDetails,
                 It.IsAny<Guid?>(),
                 It.IsAny<Guid?>()),
@@ -324,6 +333,8 @@ public class FileUploadCompanyDetailsControllerTests
                 It.IsAny<ModelStateDictionary>(),
                 submissionId,
                 SubmissionType.Registration,
+                It.IsAny<IFileUploadMessages>(),
+                It.IsAny<IFileUploadSize>(),
                 SubmissionSubType.CompanyDetails,
                 It.IsAny<Guid?>(),
                 It.IsAny<Guid?>()))

@@ -159,4 +159,16 @@
   <data name="upload_file" xml:space="preserve">
     <value />
   </data>
+  <data name="no_file_uploaded" xml:space="preserve">
+    <value/>
+  </data>
+  <data name="incorrect_file_type" xml:space="preserve">
+    <value/>
+  </data>
+  <data name="file_did_not_contain_any_data" xml:space="preserve">
+    <value/>
+  </data>
+  <data name="file_size_exceeded_max_allowed" xml:space="preserve">
+    <value/>
+  </data>
 </root>

@@ -3,6 +3,7 @@
 using Application.Enums;
 using Application.Options;
 using Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Services.Messages;
 using Helpers;
 using Interfaces;
 using Microsoft.AspNetCore.Http.Features;
@@ -17,12 +18,10 @@ public class FileUploadService : IFileUploadService
     private const string UploadFieldName = "file";
     private static readonly FormOptions FormOptions = new ();
     private readonly IWebApiGatewayClient _webApiGatewayClient;
-    private readonly int _fileUploadLimitInBytes;
 
-    public FileUploadService(IWebApiGatewayClient webApiGatewayClient, IOptions<GlobalVariables> globalVariables)
+    public FileUploadService(IWebApiGatewayClient webApiGatewayClient)
     {
         _webApiGatewayClient = webApiGatewayClient;
-        _fileUploadLimitInBytes = globalVariables.Value.FileUploadLimitInBytes;
     }
 
     public async Task<Guid> ProcessUploadAsync(
@@ -32,6 +31,8 @@ public class FileUploadService : IFileUploadService
         ModelStateDictionary modelState,
         Guid? submissionId,
         SubmissionType submissionType,
+        IFileUploadMessages fileUploadMessages,
+        IFileUploadSize fileUploadSize,
         SubmissionSubType? submissionSubType = null,
         Guid? registrationSetId = null,
         Guid? complianceSchemeId = null)
@@ -44,7 +45,7 @@ public class FileUploadService : IFileUploadService
 
         var fileName = fileValidationResult.ContentDisposition.FileName.Value;
         var fileContent = await FileHelpers.ProcessFileAsync(
-            fileValidationResult.Section, fileName, modelState, UploadFieldName, _fileUploadLimitInBytes);
+            fileValidationResult.Section, fileName, modelState, UploadFieldName, fileUploadSize, new DefaultFileUploadMessages());
 
         if (modelState.IsValid)
         {
@@ -68,6 +69,8 @@ public class FileUploadService : IFileUploadService
         ModelStateDictionary modelState,
         Guid? submissionId,
         SubmissionType submissionType,
+        IFileUploadMessages fileUploadMessages,
+        IFileUploadSize fileUploadSize,
         Guid? complianceSchemeId = null)
     {
         var fileValidationResult = await ValidateUploadAsync(contentType, fileStream, modelState);
@@ -78,7 +81,7 @@ public class FileUploadService : IFileUploadService
 
         var fileName = fileValidationResult.ContentDisposition.FileName.Value;
         var fileContent = await FileHelpers.ProcessFileAsync(
-            fileValidationResult.Section, fileName, modelState, UploadFieldName, _fileUploadLimitInBytes);
+            fileValidationResult.Section, fileName, modelState, UploadFieldName, fileUploadSize, fileUploadMessages);
 
         if (modelState.IsValid)
         {

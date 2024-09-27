@@ -262,6 +262,8 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                     It.IsAny<ModelStateDictionary>(),
                     It.IsAny<Guid?>(),
                     It.IsAny<SubmissionType>(),
+                    It.IsAny<IFileUploadMessages>(),
+                    It.IsAny<IFileUploadSize>(),
                     It.IsAny<Guid?>()))
                 .ReturnsAsync(submissionId);
 
@@ -295,6 +297,8 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                     It.IsAny<ModelStateDictionary>(),
                     It.IsAny<Guid?>(),
                     It.IsAny<SubmissionType>(),
+                    It.IsAny<IFileUploadMessages>(),
+                    It.IsAny<IFileUploadSize>(),
                     It.IsAny<Guid?>()))
                 .ReturnsAsync(submissionId);
 
@@ -323,6 +327,8 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                     It.IsAny<ModelStateDictionary>(),
                     It.IsAny<Guid?>(),
                     It.IsAny<SubmissionType>(),
+                    It.IsAny<IFileUploadMessages>(),
+                    It.IsAny<IFileUploadSize>(),
                     It.Is<Guid?>(g => g == null)),
                 Times.Once);
         }
@@ -341,6 +347,8 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                     It.IsAny<ModelStateDictionary>(),
                     It.IsAny<Guid?>(),
                     It.IsAny<SubmissionType>(),
+                    It.IsAny<IFileUploadMessages>(),
+                    It.IsAny<IFileUploadSize>(),
                     It.IsAny<Guid?>()))
                 .ReturnsAsync(submissionId);
 
@@ -369,6 +377,8 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                     It.IsAny<ModelStateDictionary>(),
                     It.IsAny<Guid?>(),
                     It.IsAny<SubmissionType>(),
+                    It.IsAny<IFileUploadMessages>(),
+                    It.IsAny<IFileUploadSize>(),
                     It.Is<Guid?>(c => c == complianceSchemeId)),
                 Times.Once);
         }

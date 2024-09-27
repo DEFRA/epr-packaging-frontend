@@ -8,9 +8,12 @@ using Constants;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
+using FrontendSchemeRegistration.Application.Options;
+using FrontendSchemeRegistration.UI.Services.Messages;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Moq;
 using UI.Controllers;
@@ -56,7 +59,7 @@ public class FileUploadControllerTests
         _submissionServiceMock = new Mock<ISubmissionService>();
         _fileUploadServiceMock = new Mock<IFileUploadService>();
 
-        _fileUploadController = new FileUploadController(_submissionServiceMock.Object, _fileUploadServiceMock.Object, _sessionManagerMock.Object);
+        _fileUploadController = new FileUploadController(_submissionServiceMock.Object, _fileUploadServiceMock.Object, _sessionManagerMock.Object, Options.Create(new GlobalVariables { FileUploadLimitInBytes = 268435456, SubsidiaryFileUploadLimitInBytes =  61440}));
         _fileUploadController.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
@@ -230,6 +233,8 @@ public class FileUploadControllerTests
                 It.IsAny<ModelStateDictionary>(),
                 null,
                 SubmissionType.Producer,
+                It.IsAny<IFileUploadMessages>(),
+                It.IsAny<IFileUploadSize>(),
                 null,
                 null,
                 null),
@@ -246,7 +251,7 @@ public class FileUploadControllerTests
 
         _fileUploadServiceMock
             .Setup(x =>
-                x.ProcessUploadAsync(ContentType, It.IsAny<Stream>(), SubmissionPeriod, new ModelStateDictionary(), SubmissionId, SubmissionType.Producer, null, null, null))
+                x.ProcessUploadAsync(ContentType, It.IsAny<Stream>(), SubmissionPeriod, new ModelStateDictionary(), SubmissionId, SubmissionType.Producer, It.IsAny<IFileUploadMessages>(), It.IsAny<IFileUploadSize>(), null, null, null))
             .ReturnsAsync(SubmissionId);
 
         // Act
@@ -268,7 +273,9 @@ public class FileUploadControllerTests
 
         _fileUploadServiceMock
             .Setup(x =>
-                x.ProcessUploadAsync(ContentType, It.IsAny<Stream>(), SubmissionPeriod, new ModelStateDictionary(), SubmissionId, SubmissionType.Producer, null, null, null))
+                x.ProcessUploadAsync(ContentType, It.IsAny<Stream>(), SubmissionPeriod, new ModelStateDictionary(), SubmissionId, SubmissionType.Producer, It.IsAny<IFileUploadMessages>(), It.IsAny<IFileUploadSize>(),
+
+                null, null, null))
             .ReturnsAsync(SubmissionId);
 
         // Act

@@ -6,6 +6,9 @@ using Application.Enums;
 using Application.Options;
 using Application.Services.Interfaces;
 using FluentAssertions;
+using FrontendSchemeRegistration.UI.Services.FileUploadLimits;
+using FrontendSchemeRegistration.UI.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Services.Messages;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -19,6 +22,9 @@ public class FileUploadServiceTests
     private ModelStateDictionary _modelStateDictionary;
     private Mock<IWebApiGatewayClient> _webApiGatewayClientMock;
     private FileUploadService _fileUploadService;
+    private Mock<IFileUploadService> _fileUploadServiceMock;
+    private Mock<IFileUploadSize> _fileUploadSize;
+    private IOptions<GlobalVariables> _globalVariables;
 
     [SetUp]
     public void Setup()
@@ -26,9 +32,10 @@ public class FileUploadServiceTests
         Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
         _modelStateDictionary = new ModelStateDictionary();
         _webApiGatewayClientMock = new Mock<IWebApiGatewayClient>();
-        _fileUploadService = new FileUploadService(
-            _webApiGatewayClientMock.Object,
-            Options.Create(new GlobalVariables { FileUploadLimitInBytes = 1024 }));
+        _fileUploadServiceMock = new Mock<IFileUploadService>();
+        _fileUploadService = new FileUploadService(_webApiGatewayClientMock.Object);
+        _globalVariables = Options.Create(new GlobalVariables { FileUploadLimitInBytes = 1024 });
+        _fileUploadSize = new Mock<IFileUploadSize>();
     }
 
     [Test]
@@ -52,6 +59,8 @@ public class FileUploadServiceTests
             _modelStateDictionary,
             null,
             submissionType,
+            new DefaultFileUploadMessages(),
+            new DefaultFileUploadLimit(_globalVariables),
             submissionSubType,
             registrationSetId,
             complianceSchemeId);
@@ -94,6 +103,8 @@ public class FileUploadServiceTests
             _modelStateDictionary,
             null,
             submissionType,
+            new DefaultFileUploadMessages(),
+            new DefaultFileUploadLimit(_globalVariables),
             submissionSubType,
             registrationSetId,
             complianceSchemeId);
@@ -136,6 +147,8 @@ public class FileUploadServiceTests
             _modelStateDictionary,
             null,
             submissionType,
+            new DefaultFileUploadMessages(),
+            new DefaultFileUploadLimit(_globalVariables),
             submissionSubType,
             registrationSetId,
             complianceSchemeId);
@@ -178,6 +191,8 @@ public class FileUploadServiceTests
             _modelStateDictionary,
             null,
             submissionType,
+            new DefaultFileUploadMessages(),
+            new DefaultFileUploadLimit(_globalVariables),
             submissionSubType,
             registrationSetId,
             complianceSchemeId);
@@ -218,7 +233,7 @@ public class FileUploadServiceTests
         Guid? submissionId = withSubmissionId ? Guid.NewGuid() : null;
 
         // Act
-        await _fileUploadService.ProcessUploadAsync(contentType, stream, SubmissionPeriod, _modelStateDictionary, submissionId, submissionType, submissionSubType, registrationSetId, complianceSchemeId);
+        await _fileUploadService.ProcessUploadAsync(contentType, stream, SubmissionPeriod, _modelStateDictionary, submissionId, submissionType, new DefaultFileUploadMessages(), new DefaultFileUploadLimit(_globalVariables), submissionSubType, registrationSetId, complianceSchemeId);
 
         // Assert
         GetModelStateErrors().Should().BeEmpty();
@@ -252,6 +267,8 @@ public class FileUploadServiceTests
             _modelStateDictionary,
             null,
             submissionType,
+            new DefaultFileUploadMessages(),
+            new DefaultFileUploadLimit(_globalVariables),
             complianceSchemeId);
 
         // Assert
@@ -285,7 +302,9 @@ public class FileUploadServiceTests
             SubmissionPeriod,
             _modelStateDictionary,
             null,
-            submissionType,
+            submissionType, 
+            It.IsAny<IFileUploadMessages>(), 
+            It.IsAny<IFileUploadSize>(),
             null,
             null,
             complianceSchemeId);
@@ -321,6 +340,8 @@ public class FileUploadServiceTests
             _modelStateDictionary,
             null,
             submissionType,
+            new DefaultFileUploadMessages(),
+            new DefaultFileUploadLimit(_globalVariables),
             complianceSchemeId);
 
         // Assert
@@ -352,7 +373,7 @@ public class FileUploadServiceTests
             stream,
             _modelStateDictionary,
             null,
-            submissionType,
+            submissionType, new DefaultFileUploadMessages(),
             null);
 
         // Assert
@@ -378,6 +399,7 @@ public class FileUploadServiceTests
             "------WebKitFormBoundaryaTDX1qGUHmeOnwjh\r\nContent-Disposition: form-data; name=\"file\"; filename=\"temp.csv\"\r\nContent-Type: text/csv\r\n\r\ncolumnOne,columnTwo\r\n------WebKitFormBoundaryaTDX1qGUHmeOnwjh--\r\n";
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes(streamContent));
         Guid? submissionId = null;
+        _fileUploadSize.Setup(x => x.FileUploadLimitInBytes).Returns(268435456);
 
         // Act
         await _fileUploadService.ProcessUploadAsync(
@@ -386,6 +408,8 @@ public class FileUploadServiceTests
             _modelStateDictionary,
             submissionId,
             submissionType,
+            It.IsAny<IFileUploadMessages>(),
+            _fileUploadSize.Object,
             null);
 
         // Assert

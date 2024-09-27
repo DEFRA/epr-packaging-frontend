@@ -189,4 +189,16 @@
   <data name="tell_us_who_is_submitting_on_your_behalf_if_you_are_part_of_a" xml:space="preserve">
     <value>tell us who's submitting on your behalf if you're part of a</value>
   </data>
+ <data name="no_file_uploaded" xml:space="preserve">
+    <value>No file uploaded</value>
+  </data>
+  <data name="incorrect_file_type" xml:space="preserve">
+    <value>Incorrect file type. CSV format only</value>
+  </data>
+  <data name="file_did_not_contain_any_data" xml:space="preserve">
+    <value>File did not contain any data</value>
+  </data>
+  <data name="file_size_exceeded_max_allowed" xml:space="preserve">
+    <value>File size exceeded {0}KB</value>
+  </data>
 </root>

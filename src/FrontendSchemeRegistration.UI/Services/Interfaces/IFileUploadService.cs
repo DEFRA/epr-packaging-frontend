@@ -12,6 +12,8 @@ public interface IFileUploadService
         ModelStateDictionary modelState,
         Guid? submissionId,
         SubmissionType submissionType,
+        IFileUploadMessages fileUploadMessages,
+        IFileUploadSize fileUploadSize,
         SubmissionSubType? submissionSubType = null,
         Guid? registrationSetId = null,
         Guid? complianceSchemeId = null);
@@ -22,5 +24,7 @@ public interface IFileUploadService
         ModelStateDictionary modelState,
         Guid? submissionId,
         SubmissionType submissionType,
+        IFileUploadMessages fileUploadMessages,
+        IFileUploadSize fileUploadSize,
         Guid? complianceSchemeId = null);
 }

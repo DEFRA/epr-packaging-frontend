@@ -8,9 +8,13 @@ using Constants;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using Extensions;
+using global::FrontendSchemeRegistration.Application.Options;
+using global::FrontendSchemeRegistration.UI.Services.FileUploadLimits;
+using global::FrontendSchemeRegistration.UI.Services.Messages;
 using Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Services.Interfaces;
 using Sessions;
 using UI.Attributes.ActionFilters;
@@ -25,15 +29,18 @@ public class FileUploadController : Controller
     private readonly IFileUploadService _fileUploadService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
     private readonly ISubmissionService _submissionService;
+    private IOptions<GlobalVariables> _globalVariables;
 
     public FileUploadController(
         ISubmissionService submissionService,
         IFileUploadService fileUploadService,
-        ISessionManager<FrontendSchemeRegistrationSession> sessionManager)
+        ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
+        IOptions<GlobalVariables> globalVariables)
     {
         _submissionService = submissionService;
         _fileUploadService = fileUploadService;
         _sessionManager = sessionManager;
+        _globalVariables = globalVariables;
     }
 
     [HttpGet]
@@ -96,7 +103,9 @@ public class FileUploadController : Controller
             session.RegistrationSession.SubmissionPeriod,
             ModelState,
             submissionId,
-            SubmissionType.Producer,
+            SubmissionType.Producer, 
+            new DefaultFileUploadMessages(), 
+            new DefaultFileUploadLimit(_globalVariables),
             null,
             null,
             session.RegistrationSession.SelectedComplianceScheme?.Id);
