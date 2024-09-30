@@ -117,19 +117,34 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="delayed_header" xml:space="preserve">
-    <value>WYour file is being uploaded</value>
+  <data name="button" xml:space="preserve">
+    <value>W View subsidiaries</value>
   </data>
   <data name="normal_header" xml:space="preserve">
-    <value>WUploading and validating your file</value>
+    <value>W Uploading and validating file</value>
+  </data>
+  <data name="noscript_paragraph_1" xml:space="preserve">
+    <value>W This may take a few minutes.</value>
+  </data>
+  <data name="noscript_paragraph_2" xml:space="preserve">
+    <value>W To check if the upload has finished,</value>
+  </data>
+  <data name="noscript_paragraph_2_link" xml:space="preserve">
+    <value>W refresh this page</value>
+  </data>
+  <data name="noscript_paragraph_3" xml:space="preserve">
+    <value>W Do not close the page.</value>
   </data>
   <data name="paragraph_1" xml:space="preserve">
-    <value>WYour file is currently being uploaded and automatically checked for errors. which can take few minutes. The page will refresh automatically once this process is complete.</value>
+    <value>W This may take a few minutes. We’ll refresh the page automatically until it is done.</value>
   </data>
   <data name="paragraph_2" xml:space="preserve">
-    <value>WKeep this page open and do not refresh it manually.</value>
+    <value>W Do not close the page and do not refresh it yourself.</value>
   </data>
   <data name="paragraph_3" xml:space="preserve">
-    <value>WThis may take sevral minutes.Do not refresh your screen.</value>
+    <value>W Your file is currently being uploaded and checked for errors. This is taking longer than expected.</value>
+  </data>
+  <data name="paragraph_4" xml:space="preserve">
+    <value>W Come back later to check the status of this file.</value>
   </data>
 </root>

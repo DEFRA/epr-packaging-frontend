@@ -111,7 +111,7 @@
             var subFileUploadViewModel = new SubFileUploadingViewModel()
             {
                 SubmissionId = submissionId.ToString(),
-                IsFileUploadTakingLong = submission.SubsidiaryFileUploadDateTime <= DateTime.Now.AddMinutes(-5),
+                IsFileUploadTakingLong = submission.SubsidiaryFileUploadDateTime <= DateTime.UtcNow.AddMinutes(-5),
             };
             return submission.SubsidiaryDataComplete || submission.Errors.Count > 0
                 ? RedirectToAction(nameof(FileUploadSuccess), new RouteValueDictionary { { "recordsAdded", submission.RecordsAdded } })

@@ -1,64 +1,94 @@
 @model SubFileUploadingViewModel
+@using FrontendSchemeRegistration.UI.Constants
 
 @{
     ViewData["Title"] = Localizer["header"];
+    var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
 }
 
 <main class="govuk-main-wrapper" id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <div class="govuk-grid-column-full">
-                @if (Model.IsFileUploadTakingLong)
-                {
-                    <h1 class="govuk-heading-l">
-                        @Localizer["delayed_header"]
-                    </h1>
-                }
-                else
-                {
-                    <h1 class="govuk-heading-l">
-                        @Localizer["normal_header"]
-                    </h1>
-                }
+                <h1 class="govuk-heading-l">@Localizer["normal_header"]</h1>
                 
-
                 <noscript>
-                    <p class="govuk-body">@Localizer["noscript_paragraph_1"]</p>
-                    <p class="govuk-body">
-                        @Localizer["noscript_paragraph_2"]
-                        @Html.ActionLink(
-                            Localizer["noscript_paragraph_2_link"].Value,
-                            "Get",
-                            "FileUploading",
-                            new
-                            {
-                                submissionId = Model.SubmissionId
-                            },
-                            new
-                            {
-                                @class = "govuk-link"
-                            })
-                    </p>
-                    <p class="govuk-body">@Localizer["noscript_paragraph_3"]</p>
-                </noscript>
-
-                <div class="js-show">
                     @if (Model.IsFileUploadTakingLong)
                     {
                         <p class="govuk-body">@Localizer["paragraph_3"]</p>
+
+                        <p class="govuk-body">
+                            @Localizer["noscript_paragraph_2"]
+                            @Html.ActionLink(
+                                     Localizer["noscript_paragraph_2_link"].Value,
+                                     "FileUploading",
+                                     "FileUploadSubsidiaries",
+                                     new
+                                     {
+                                         submissionId = Model.SubmissionId
+                                     },
+                                     new
+                                     {
+                                         @class = "govuk-link"
+                                     })
+                        </p>
+
+                        <p class="govuk-body">@Localizer["paragraph_4"]</p>
+
+                        <a class="govuk-button" href="@Url.Action("SubsidiariesList", "FileUploadSubsidiaries")" role="button" data-module="govuk-button">
+                            @Localizer["button"]
+                        </a>
+                    }
+                    else
+                    {
+                        <p class="govuk-body">@Localizer["noscript_paragraph_1"]</p>
+                        <p class="govuk-body">
+                            @Localizer["noscript_paragraph_2"]
+                            @Html.ActionLink(
+                                     Localizer["noscript_paragraph_2_link"].Value,
+                                     "FileUploading",
+                                     "FileUploadSubsidiaries",
+                                     new
+                                     {
+                                         submissionId = Model.SubmissionId
+                                     },
+                                     new
+                                     {
+                                         @class = "govuk-link"
+                                     })
+                        </p>
+
+                        <p class="govuk-body">@Localizer["noscript_paragraph_3"]</p>
+
+                        <img src="~/images/spinner.gif" width="50" height="50" alt="@Localizer["spinner_alt_text"]" runat="server">
+                    }
+                </noscript>
+
+                <div class="js-on govuk-!-display-none govuk-!-display-none-print">
+                    @if (Model.IsFileUploadTakingLong)
+                    {
+                        <p class="govuk-body">@Localizer["paragraph_3"]</p>
+                        <p class="govuk-body">@Localizer["paragraph_4"]</p>
+
+                        <a class="govuk-button" href="@Url.Action("SubsidiariesList", "FileUploadSubsidiaries")" role="button" data-module="govuk-button">
+                            @Localizer["button"]
+                        </a>
                     } 
                     else
                     {
                         <p class="govuk-body">@Localizer["paragraph_1"]</p>
                         <p class="govuk-body">@Localizer["paragraph_2"]</p>
+
+                        <img src="~/images/spinner.gif" width="50" height="50" alt="@Localizer["spinner_alt_text"]" runat="server">
                     }
-                    
-                    
-                    <img src="~/images/spinner.gif" width="50" height="50" alt="@Localizer["spinner_alt_text"]" runat="server">
                 </div>
             </div>
         </div>
     </div>
 </main>
+
+<script nonce="@scriptNonce">
+    document.querySelector('.js-on').classList.remove('govuk-!-display-none', 'govuk-!-display-none-print');
+</script>
 
 <script src="~/js/refresh.js"></script>
