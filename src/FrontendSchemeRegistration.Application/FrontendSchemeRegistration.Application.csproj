@@ -2,7 +2,8 @@
 
     <PropertyGroup>
         <Nullable>enable</Nullable>
-    </PropertyGroup>
+		<NoWarn>S3903,S5693,S5144</NoWarn>
+	</PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Azure.Identity" Version="1.12.0" />
