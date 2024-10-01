@@ -3,6 +3,7 @@
 using Application.Services;
 using Application.Services.Interfaces;
 using FluentAssertions;
+using FrontendSchemeRegistration.Application.DTOs.Organisation;
 using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
 using FrontendSchemeRegistration.Application.DTOs.Subsidiary.OrganisationSubsidiaryList;
 using FrontendSchemeRegistration.UI.Extensions;
@@ -312,4 +313,97 @@ public class SubsidiaryServiceTests
         // Assert
         result.Should().Be(expectedDto);
     }
+
+    [Test]
+    public async Task GetOrganisationByReferenceNumber_WhenApiReturnsSuccessfully_ReturnsResponse()
+    {
+        var referenceNumber = "abc";
+
+        var expectedOrganisationDto = new OrganisationDto
+        {
+            CompaniesHouseNumber = "abc",
+            Id = 12345,
+            ExternalId = Guid.NewGuid(),
+            Name = "Test",
+            RegistrationNumber = "ABC",
+            TradingName = "DEF"
+        };
+
+        var response = new HttpResponseMessage(HttpStatusCode.OK);
+        response.Content = expectedOrganisationDto.ToJsonContent();
+
+        _accountServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _sut.GetOrganisationByReferenceNumber(referenceNumber);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().BeEquivalentTo(expectedOrganisationDto);
+    }
+
+    [Test]
+    public async Task GetOrganisationByReferenceNumber_WhenApiReturnsError_ReturnsResponse()
+    {
+        var referenceNumber = "abc";
+
+        var response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+        response.Content = null;
+
+        _accountServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _sut.GetOrganisationByReferenceNumber(referenceNumber);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetOrganisationByReferenceNumber_WhenApiThrowsException_ThrowsException()
+    {
+        var referenceNumber = "abc";
+
+        _accountServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .Throws<Exception>();
+
+        // Act & Assert
+        Assert.ThrowsAsync<Exception>(async () => await _sut.GetOrganisationByReferenceNumber(referenceNumber));
+    }
+
+
+    [Test]
+    public async Task TerminateSubsidiary_WhenApiReturnsSuccessfully_ReturnsResponse()
+    {
+        var parentOrganisationExternalId = Guid.NewGuid();
+        var childOrganisationId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+
+        var response = new HttpResponseMessage(HttpStatusCode.OK);
+
+        _accountServiceApiClientMock.Setup(x => x.SendPostRequest(It.IsAny<string>(), It.IsAny<object>()))
+            .ReturnsAsync(response);
+
+        // Act/Assert
+        Assert.DoesNotThrowAsync(async () => await _sut.TerminateSubsidiary(parentOrganisationExternalId, childOrganisationId, userId));
+    }
+
+    [Test]
+    public async Task TerminateSubsidiary_WhenApiReturnsError_ThrowsException()
+    {
+        var parentOrganisationExternalId = Guid.NewGuid();
+        var childOrganisationId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+
+        var response = new HttpResponseMessage(HttpStatusCode.BadRequest);
+
+        _accountServiceApiClientMock.Setup(x => x.SendPostRequest(It.IsAny<string>(), It.IsAny<object>()))
+            .ReturnsAsync(response);
+
+        // Act/Assert
+        Assert.ThrowsAsync<HttpRequestException>(async () => await _sut.TerminateSubsidiary(parentOrganisationExternalId, childOrganisationId, userId));
+    }
+
 }

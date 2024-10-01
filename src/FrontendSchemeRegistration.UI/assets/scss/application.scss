@@ -229,3 +229,7 @@ table.cookies-table {
 .href-text--red {
     color: govuk-colour("red");
 }
+
+.no-visited-highlight:visited {
+    color: inherit;
+}

@@ -123,6 +123,9 @@
   <data name="companies_house_number_heading" xml:space="preserve">
     <value>Companies House number</value>
   </data>
+	<data name="remove_subsidiary" xml:space="preserve">
+		<value>Remove</value>
+	</data>
   <data name="few_minutes_to_upload_file" xml:space="preserve">
     <value>It may take a few minutes for your file to upload - do not close the window while the file is uploading.</value>
   </data>

@@ -87,6 +87,7 @@ public static class PagePaths
     public const string SubsidiaryTemplateDownload = "/subsidiary-template-download";
     public const string SubsidiaryTemplateDownloadView = "/subsidiary-template-download-view";
     public const string SubsidiaryTemplateDownloadFailed = "/subsidiary-template-download-failed";
+    public const string ConfirmSubsidiaryRemoval = "/confirm-remove-subsidiary";
 
     public static class Prns
     {

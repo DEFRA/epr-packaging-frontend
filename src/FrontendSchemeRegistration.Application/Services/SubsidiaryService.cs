@@ -10,6 +10,7 @@ using CsvHelper.Configuration;
 using DTOs;
 using DTOs.Subsidiary;
 using DTOs.Subsidiary.OrganisationSubsidiaryList;
+using FrontendSchemeRegistration.Application.DTOs.Organisation;
 using Interfaces;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -67,6 +68,26 @@ public class SubsidiaryService : ISubsidiaryService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to save subsidiary");
+            throw;
+        }
+    }
+
+    public async Task<OrganisationDto> GetOrganisationByReferenceNumber(string referenceNumber)
+    {
+        try
+        {
+            var result = await _accountServiceApiClient.SendGetRequest($"organisations/organisation-by-reference-number/{referenceNumber}");
+            if (!result.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            var content = await result.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<OrganisationDto>(content);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to retrieve subsidiary data");
             throw;
         }
     }
@@ -131,5 +152,25 @@ public class SubsidiaryService : ISubsidiaryService
     public async Task<SubsidiaryFileUploadTemplateDto> GetFileUploadTemplateAsync()
     {
         return await _webApiGatewayClient.GetSubsidiaryFileUploadTemplateAsync();
+    }
+
+    public async Task TerminateSubsidiary(Guid parentOrganisationExternalId, Guid childOrganisationId, Guid userId)
+    {
+        try
+        {
+            var result = await _accountServiceApiClient.SendPostRequest($"organisations/terminate-subsidiary", new
+            {
+                ParentOrganisationId = parentOrganisationExternalId,
+                ChildOrganisationId = childOrganisationId,
+                UserId = userId
+            });
+
+            result.EnsureSuccessStatusCode();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to terminate subsidiary");
+            throw;
+        }
     }
 }

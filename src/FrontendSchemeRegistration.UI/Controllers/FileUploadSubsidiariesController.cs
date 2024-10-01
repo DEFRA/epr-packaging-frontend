@@ -1,7 +1,6 @@
 ﻿namespace FrontendSchemeRegistration.UI.Controllers
 {
-	using System.Diagnostics.CodeAnalysis;
-	using Application.Constants;
+    using Application.Constants;
     using Application.DTOs.Submission;
     using Application.Enums;
     using Application.Options;
@@ -20,10 +19,9 @@
     using Microsoft.Extensions.Options;
     using Microsoft.FeatureManagement.Mvc;
     using Services.Interfaces;
-	using ViewModels;
-    using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
+    using ViewModels;
 
-	[Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
+    [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
     [ComplianceSchemeIdActionFilter]
     public class FileUploadSubsidiariesController : Controller
     {
@@ -42,7 +40,8 @@
             ISubsidiaryService subsidiaryService,
             IOptions<GlobalVariables> globalVariables,
             ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
-            IComplianceSchemeMemberService complianceSchemeMemberService)
+            IComplianceSchemeMemberService complianceSchemeMemberService
+            )
         {
             _fileUploadService = fileUploadService;
             _submissionService = submissionService;
@@ -179,6 +178,47 @@
             }
         }
 
+        [HttpPost]
+        [Route(PagePaths.ConfirmSubsidiaryRemoval)]
+        public async Task<IActionResult> ConfirmRemoveSubsidiary(SubsidiaryConfirmRemovalViewModel model)
+        {
+            switch (model.SelectedConfirmRemoval)
+            {
+                case YesNoAnswer.Yes:
+                    var userId = HttpContext.User.GetUserData().Id.Value;
+                    await _subsidiaryService.TerminateSubsidiary(model.ParentOrganisationExternalId, model.SubsidiaryExternalId, userId);
+                    return RedirectToAction(nameof(SubsidiariesList));
+                case YesNoAnswer.No:
+                    return RedirectToAction(nameof(SubsidiariesList));
+            }
+
+            return View(model);
+        }
+
+
+        [HttpGet]
+        [Route(PagePaths.ConfirmSubsidiaryRemoval + "/{subsidiaryReference}")]
+        public async Task<IActionResult> ConfirmRemoveSubsidiary(string subsidiaryReference, Guid parentOrganisationExternalId)
+        {
+            var userData = User.GetUserData();
+
+            if (!userData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved))
+            {
+                return new UnauthorizedResult();
+            }
+
+            var subsidiaryDetails = await _subsidiaryService.GetOrganisationByReferenceNumber(subsidiaryReference);
+
+            var model = new SubsidiaryConfirmRemovalViewModel
+            {
+                SubsidiaryName = subsidiaryDetails.Name,
+                SubsidiaryExternalId = subsidiaryDetails.ExternalId,
+                ParentOrganisationExternalId = parentOrganisationExternalId,
+            };
+
+            return View(model);
+        }
+
         private async Task<SubsidiaryListViewModel> GetSubsidiaryListViewModel(int? page)
         {
             const int showPerPage = 1;
@@ -205,12 +245,12 @@
                         [
                             new()
                             {
+                                ExternalId = response.Organisation.Id,
                                 Name = response.Organisation.Name,
                                 Id = response.Organisation.OrganisationNumber,
                                 CompaniesHouseNumber = response.Organisation.CompaniesHouseNumber,
                                 Subsidiaries = response.Relationships.Select(r => new SubsidiaryViewModel(r.OrganisationNumber, r.OrganisationName, r.CompaniesHouseNumber)).ToList()
                             }
-
                         ]
                     };
                 }
@@ -228,9 +268,11 @@
                     pageCount = complianceSchemeMembershipResponse.PagedResult.TotalItems;
                     result = new SubsidiaryListViewModel
                     {
+                        
                         Organisations = complianceSchemeMembershipResponse.PagedResult.Items.Select(c =>
                             new SubsidiaryOrganisationViewModel
                             {
+                                ExternalId = c.SelectedSchemeOrganisationExternalId,
                                 Name = c.OrganisationName,
                                 Id = c.OrganisationNumber,
                                 CompaniesHouseNumber = c.CompaniesHouseNumber,

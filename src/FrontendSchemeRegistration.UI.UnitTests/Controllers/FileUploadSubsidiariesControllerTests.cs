@@ -22,7 +22,10 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
     using Application.DTOs.Subsidiary.OrganisationSubsidiaryList;
     using Application.Options;
     using Constants;
+    using EPR.Common.Authorization.Extensions;
     using EPR.Common.Authorization.Sessions;
+    using FrontendSchemeRegistration.Application.DTOs.Organisation;
+    using FrontendSchemeRegistration.Application.DTOs.Prns;
     using Microsoft.AspNetCore.Mvc.ViewFeatures;
     using UI.Sessions;
 
@@ -39,6 +42,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
         private Mock<IOptions<GlobalVariables>> _globalVariablesMock;
         private Mock<ClaimsPrincipal> _claimsPrincipalMock;
         private Mock<IUrlHelper> _mockUrlHelper;
+        private readonly Guid UserId = Guid.NewGuid();
 
         [SetUp]
         public void SetUp()
@@ -548,7 +552,123 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             result.ActionName.Should().Be("SubsidiariesDownloadFailed");
             _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true), Times.Once);
         }
-        private static List<Claim> CreateUserDataClaim(string organisationRole)
+
+        [Test]
+        public async Task ConfirmRemoveSubsidiary_SelectedConfirmRemovalYes_TerminatesSubsidiaryAndRedirects()
+        {
+            // Arrange
+            var model = new SubsidiaryConfirmRemovalViewModel
+            {
+                SelectedConfirmRemoval = YesNoAnswer.Yes,
+                ParentOrganisationExternalId = Guid.NewGuid(),
+                SubsidiaryExternalId = Guid.NewGuid()
+            };
+
+            // Act
+            var result = await _controller.ConfirmRemoveSubsidiary(model);
+
+            // Assert
+            _mockSubsidiaryService.Verify(s => s.TerminateSubsidiary(
+                model.ParentOrganisationExternalId, model.SubsidiaryExternalId, UserId), Times.Once);
+
+            result.Should().BeOfType<RedirectToActionResult>()
+                .Which.ActionName.Should().Be(nameof(_controller.SubsidiariesList));
+        }
+
+        [Test]
+        public async Task ConfirmRemoveSubsidiary_SelectedConfirmRemovalNo_RedirectsWithoutTerminating()
+        {
+            // Arrange
+            var model = new SubsidiaryConfirmRemovalViewModel
+            {
+                SelectedConfirmRemoval = YesNoAnswer.No,
+                ParentOrganisationExternalId = Guid.NewGuid(),
+                SubsidiaryExternalId = Guid.NewGuid()
+            };
+
+            // Act
+            var result = await _controller.ConfirmRemoveSubsidiary(model);
+
+            // Assert
+            _mockSubsidiaryService.Verify(s => s.TerminateSubsidiary(
+                It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>()), Times.Never);
+
+            result.Should().BeOfType<RedirectToActionResult>()
+              .Which.ActionName.Should().Be(nameof(_controller.SubsidiariesList));
+        }
+
+        [Test]
+        public async Task ConfirmRemoveSubsidiary_InvalidSelection_ReturnsViewWithModel()
+        {
+            // Arrange
+            var model = new SubsidiaryConfirmRemovalViewModel
+            {
+                SelectedConfirmRemoval = (YesNoAnswer)999, // Invalid value
+                ParentOrganisationExternalId = Guid.NewGuid(),
+                SubsidiaryExternalId = Guid.NewGuid()
+            };
+
+            // Act
+            var result = await _controller.ConfirmRemoveSubsidiary(model);
+
+            // Assert
+            _mockSubsidiaryService.Verify(s => s.TerminateSubsidiary(
+                It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>()), Times.Never);
+
+            result.Should().BeOfType<ViewResult>()
+                .Which.Model.Should().Be(model);
+        }
+
+
+        [Test]
+        public async Task ConfirmRemoveSubsidiary_UserNotInRole_ReturnsUnauthorizedResult()
+        {
+            // Arrange
+            var subsidiaryReference = "validSubsidiaryRef";
+            var parentOrganisationExternalId = Guid.NewGuid();
+
+            var claims = CreateUserDataClaim(OrganisationRoles.Producer, "Basic User");
+            _userMock.Setup(x => x.Claims).Returns(claims);
+            _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+            // Act
+            var result = await _controller.ConfirmRemoveSubsidiary(subsidiaryReference, parentOrganisationExternalId);
+
+            // Assert
+            result.Should().BeOfType<UnauthorizedResult>();
+        }
+
+        [Test]
+        public async Task ConfirmRemoveSubsidiary_UserInRole_ReturnsViewWithModel()
+        {
+            // Arrange
+            var subsidiaryReference = "validSubsidiaryRef";
+            var parentOrganisationExternalId = Guid.NewGuid();
+            var subsidiaryDetails = new OrganisationDto
+            {
+                Name = "Subsidiary Name",
+                ExternalId = Guid.NewGuid()
+            };
+
+            var claims = CreateUserDataClaim(OrganisationRoles.Producer, "Approved Person");
+            _userMock.Setup(x => x.Claims).Returns(claims);
+            _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+            _mockSubsidiaryService.Setup(s => s.GetOrganisationByReferenceNumber(subsidiaryReference))
+                .ReturnsAsync(subsidiaryDetails);
+
+            // Act
+            var result = await _controller.ConfirmRemoveSubsidiary(subsidiaryReference, parentOrganisationExternalId);
+
+            // Assert
+            result.Should().BeOfType<ViewResult>()
+                .Which.Model.Should().BeOfType<SubsidiaryConfirmRemovalViewModel>()
+                .Which.Should().Match<SubsidiaryConfirmRemovalViewModel>(model =>
+                    model.SubsidiaryName == subsidiaryDetails.Name &&
+                    model.SubsidiaryExternalId == subsidiaryDetails.ExternalId &&
+                    model.ParentOrganisationExternalId == parentOrganisationExternalId);
+        }
+
+        private List<Claim> CreateUserDataClaim(string organisationRole, string serviceRole = null)
         {
             var userData = new UserData
             {
@@ -561,7 +681,9 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                         Name = "Test Name",
                         OrganisationNumber = "Test Number"
                     }
-                }
+                },
+                Id = UserId,
+                ServiceRole = serviceRole
             };
 
             return new List<Claim>

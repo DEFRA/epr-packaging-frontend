@@ -1,10 +1,12 @@
-﻿@model SubsidiaryListViewModel
+﻿@using FrontendSchemeRegistration.Application.Constants
+@model SubsidiaryListViewModel
 @{
     ViewData["Title"] = Localizer["subsidiaries_list"];
 
     var subsidiaryNameHeader = Localizer["subsidiary_name"];
     var subsidiaryIdHeader = Localizer["subsidiary_id"];
     var companiesHouseNumberHeader = Localizer["companies_house_number"];
+    var removeSubsidiaryLinkText = Localizer["remove_subsidiary"];
 }
 @inject Microsoft.FeatureManagement.IFeatureManager FeatureManager
 
@@ -48,6 +50,7 @@
                                             <th scope="col" class="govuk-table__header">@subsidiaryNameHeader</th>
                                             <th scope="col" class="govuk-table__header">@subsidiaryIdHeader</th>
                                             <th scope="col" class="govuk-table__header">@companiesHouseNumberHeader</th>
+                                            <th scope="col" class="govuk-table__header">@removeSubsidiaryLinkText</th>
                                         </tr>
                                     </thead>
                                     <tbody class="govuk-table__body">
@@ -57,6 +60,11 @@
                                                 <td class="govuk-table__cell break-word" data-heading="@subsidiaryNameHeader">@subsidiaryViewModel.Name</td>
                                                 <td class="govuk-table__cell break-word" data-heading="@subsidiaryIdHeader">@subsidiaryViewModel.Id</td>
                                                 <td class="govuk-table__cell break-word" data-heading="@companiesHouseNumberHeader">@(!string.IsNullOrWhiteSpace(subsidiaryViewModel.CompaniesHouseNumber) ? subsidiaryViewModel.CompaniesHouseNumber : Localizer["no_ch_number"])</td>
+                                                <td class="govuk-table__cell break-word" data-heading="@removeSubsidiaryLinkText">
+                                                    <a href="@($"/report-data{PagePaths.ConfirmSubsidiaryRemoval}/{@subsidiaryViewModel.Id}?parentOrganisationExternalId={organisationModel.ExternalId}")" aria-label="@Localizer["aria-confirm-subsidiary-removal-description"]" class="no-visited-highlight">
+                                                        @removeSubsidiaryLinkText
+                                                    </a>
+                                                </td>
                                             </tr>
                                         }
                                     </tbody>

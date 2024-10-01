@@ -1,4 +1,5 @@
-﻿using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
+﻿using FrontendSchemeRegistration.Application.DTOs.Organisation;
+using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
 using FrontendSchemeRegistration.Application.DTOs.Subsidiary.OrganisationSubsidiaryList;
 
 namespace FrontendSchemeRegistration.Application.Services.Interfaces;
@@ -14,4 +15,8 @@ public interface ISubsidiaryService
     Task<OrganisationRelationshipModel> GetOrganisationSubsidiaries(Guid organisationId);
 
     Task<SubsidiaryFileUploadTemplateDto> GetFileUploadTemplateAsync();
+
+    Task<OrganisationDto> GetOrganisationByReferenceNumber(string referenceNumber);
+
+    Task TerminateSubsidiary(Guid parentOrganisationExternalId, Guid childOrganisationId, Guid userId);
 }
