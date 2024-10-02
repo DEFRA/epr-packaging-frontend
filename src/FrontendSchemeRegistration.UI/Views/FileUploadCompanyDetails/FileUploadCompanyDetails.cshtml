@@ -14,7 +14,32 @@
             {
                 @await Html.PartialAsync("Partials/Govuk/_ErrorSummary", ViewData.ModelState)
             }
+            <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">@Localizer[Model.IsComplianceScheme ? "report_your_member_organisation_detail" : "report_your_organisation_detail"]</h1>
 
+            <h2 class="govuk-heading-m">@Localizer["before_you_start"]</h2>
+            <p class="govuk-body">
+                @Localizer["read_the_guidance_on"] <a class="govuk-link" rel="noreferrer noopener" target="_blank"
+                                                      href="@GuidanceLinks.Value.HowToReportOrganisationDetails">@Localizer["how_to_report_organisation_details"]</a>
+            </p>
+            <p class="govuk-body">
+                @Localizer["there_are_template_documents_you_can_use_to_build_your_files"]
+            </p>
+            @* <div class="govuk-warning-text govuk-!-padding-bottom-7 govuk-phase-banner"> *@
+            <div class="govuk-warning-text govuk-!-padding-bottom-2">
+                <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                <strong class="govuk-warning-text__text">
+                    <span class="govuk-warning-text__assistive">@Localizer["text_assistive.warning"]</span>
+                    @Localizer["file_rejection_warning_text"]
+                    @Html.ActionLink( Localizer["manage_your_subsidiaries"].Value,
+                                             "SubsidiariesList",
+                                         "FileUploadSubsidiaries",
+                                         null,
+                                         new
+                                         {
+                                             @class = "govuk-link govuk-link--no-visited-state"
+                                         })
+                </strong>
+            </div>
             @using (Html.BeginForm(FormMethod.Post, new
             {
                 enctype = "multipart/form-data",
