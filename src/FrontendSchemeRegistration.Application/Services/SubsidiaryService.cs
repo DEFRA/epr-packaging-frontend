@@ -76,7 +76,7 @@ public class SubsidiaryService : ISubsidiaryService
     {
         try
         {
-            var result = await _accountServiceApiClient.SendGetRequest($"organisations/organisation-by-reference-number/{referenceNumber}");
+            var result = await _accountServiceApiClient.SendGetRequest($"organisations/organisation-by-reference-number/{WebUtility.UrlEncode(referenceNumber)}");
             if (!result.IsSuccessStatusCode)
             {
                 return null;

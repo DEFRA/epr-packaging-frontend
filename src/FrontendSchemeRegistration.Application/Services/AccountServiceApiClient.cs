@@ -28,7 +28,12 @@ public class AccountServiceApiClient : IAccountServiceApiClient
     public async Task<HttpResponseMessage> SendGetRequest(string endpoint)
     {
         await PrepareAuthenticatedClient();
-        return await _httpClient.GetAsync(endpoint);
+
+        if (Uri.TryCreate(endpoint, UriKind.Relative, out var validEndpointUri))
+        {
+            return await _httpClient.GetAsync(endpoint);
+        }
+        throw new ArgumentException("Invalid endpoint format, possibly malicious");
     }
 
     public async Task<HttpResponseMessage> SendGetRequest(Guid organisationId, string endpoint)

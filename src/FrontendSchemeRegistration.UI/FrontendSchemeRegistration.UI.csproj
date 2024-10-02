@@ -7,7 +7,7 @@
         <UserSecretsId>1439f55f-9123-4c58-8ab4-ae9114a85b11</UserSecretsId>
         <InvariantGlobalization>false</InvariantGlobalization>
         <!-- SonarCloud does not recognise file-scoped namespaces in current version. -->
-        <NoWarn>S3903,S5693</NoWarn>
+        <NoWarn>S3903,S5693,S5144</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
