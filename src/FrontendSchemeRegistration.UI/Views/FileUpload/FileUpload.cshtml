@@ -17,21 +17,15 @@
                 @await Html.PartialAsync("Partials/Govuk/_ErrorSummary", ViewData.ModelState)
             }
 
-            <h1 class="govuk-heading-l">@Localizer["upload_packaging_data_to_your_account"]</h1>
+            @* <h1 class="govuk-heading-l">@Localizer["upload_packaging_data_to_your_account"]</h1> *@
             
             <p class="govuk-body">@Localizer[
                                       Model.IsComplianceScheme 
-                                      ? "upload_your_members_packaging_data" 
-                                      : "upload_your_organisations_packaging_data"]</p>
+                                      ? "report_your_member_organisation_detail" 
+                                      : "report_your_organisation_detail"]</p>
     
-            <p class="govuk-body">@Localizer["once_weve_validated_the_data"]</p>
-            
-            <p class="govuk-body">@Localizer["if_there_is_a_problem_well_tell_you_about"]</p>
 
-            <ul class="govuk-list govuk-list--bullet">
-                <li>@Localizer["errors_youll_need_to_fix"]</li>
-                <li>@Localizer["warnings_these_are_unusual_entries_youll_need_to_check"]</li>
-            </ul>
+
             <feature name="@FeatureFlags.ShowDirectProducerSubsidiaries">
             @if (!Model.IsComplianceScheme)
             {

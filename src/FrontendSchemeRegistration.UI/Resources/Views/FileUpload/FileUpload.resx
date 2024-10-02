@@ -171,4 +171,28 @@
   <data name="file_size_exceeded_max_allowed" xml:space="preserve">
     <value/>
   </data>
+	<data name="report_your_organisation_detail" xml:space="preserve">
+        <value/>
+    </data>
+	<data name="report_your_member_organisation_detail" xml:space="preserve">
+        <value/>
+    </data>
+	<data name="before_you_start" xml:space="preserve">
+        <value/>
+    </data>
+	<data name="read_the_guidance_on" xml:space="preserve">
+        <value/>
+    </data>
+	<data name="how_to_report_organisation_details" xml:space="preserve">
+        <value/>
+    </data>
+	<data name="there_are_template_documents_you_can_use_to_build_your_files" xml:space="preserve">
+        <value/>
+    </data>
+	<data name="file_rejection_warning_text" xml:space="preserve">
+        <value/>
+    </data>
+	<data name="manage_your_subsidiaries" xml:space="preserve">
+        <value/>
+    </data>
 </root>

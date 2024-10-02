@@ -204,4 +204,28 @@
   <data name="file_size_exceeded_max_allowed" xml:space="preserve">
     <value>W File size exceeded {0}KB</value>
   </data>
+	<data name="report_your_organisation_detail" xml:space="preserve">
+        <value>W Report your organisation details</value>
+    </data>
+	<data name="report_your_member_organisation_detail" xml:space="preserve">
+        <value>W Report your members' organisation details</value>
+    </data>
+	<data name="before_you_start" xml:space="preserve">
+        <value>W Before you start - read the guidance</value>
+    </data>
+	<data name="read_the_guidance_on" xml:space="preserve">
+        <value>W Read the guidance on</value>
+    </data>
+	<data name="how_to_report_organisation_details" xml:space="preserve">
+        <value>W how to report organisation details (opens in a new window)</value>
+    </data>
+	<data name="there_are_template_documents_you_can_use_to_build_your_files" xml:space="preserve">
+        <value>There are template documents you can use to build your files.</value>
+    </data>
+	<data name="file_rejection_warning_text" xml:space="preserve">
+        <value>W Your file will be rejected if you are reporting for subsidiaries and have not used the subsidiary ID we provided.</value>
+    </data>
+	<data name="manage_your_subsidiaries" xml:space="preserve">
+        <value>W Manage your subsidiaries</value>
+    </data>
 </root>
