@@ -180,18 +180,18 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.FileUpload {
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
-        internal static string report_your_member_organisation_detail {
+        internal static string report_your_members_packaging_data {
             get {
-                return ResourceManager.GetString("report_your_member_organisation_detail", resourceCulture);
+                return ResourceManager.GetString("report_your_members_packaging_data", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
-        internal static string report_your_organisation_detail {
+        internal static string report_your_packaging_data {
             get {
-                return ResourceManager.GetString("report_your_organisation_detail", resourceCulture);
+                return ResourceManager.GetString("report_your_packaging_data", resourceCulture);
             }
         }
         

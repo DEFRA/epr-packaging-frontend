@@ -201,11 +201,11 @@
   <data name="file_size_exceeded_max_allowed" xml:space="preserve">
     <value>File size exceeded {0}KB</value>
   </data>
-	<data name="report_your_organisation_detail" xml:space="preserve">
-        <value>Report your organisation details</value>
+	<data name="report_your_packaging_data" xml:space="preserve">
+        <value>Report your packaging data</value>
     </data>
-	<data name="report_your_member_organisation_detail" xml:space="preserve">
-        <value>Report your members' organisation details</value>
+	<data name="report_your_members_packaging_data" xml:space="preserve">
+        <value>Report your members' packaging data</value>
     </data>
 	<data name="before_you_start" xml:space="preserve">
         <value>Before you start - read the guidance</value>

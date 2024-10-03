@@ -204,10 +204,10 @@
   <data name="file_size_exceeded_max_allowed" xml:space="preserve">
     <value>W File size exceeded {0}KB</value>
   </data>
-	<data name="report_your_organisation_detail" xml:space="preserve">
+	<data name="report_your_packaging_data" xml:space="preserve">
         <value>W Report your organisation details</value>
     </data>
-	<data name="report_your_member_organisation_detail" xml:space="preserve">
+	<data name="report_your_members_packaging_data" xml:space="preserve">
         <value>W Report your members' organisation details</value>
     </data>
 	<data name="before_you_start" xml:space="preserve">
