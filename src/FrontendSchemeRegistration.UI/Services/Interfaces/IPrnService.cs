@@ -19,5 +19,8 @@ namespace FrontendSchemeRegistration.UI.Services.Interfaces
         Task RejectPrnAsync(Guid id);
 
 		Task<PrnSearchResultListViewModel> GetPrnSearchResultsAsync(SearchPrnsViewModel request);
+
+        Task<AwaitingAcceptancePrnsViewModel> GetPrnAwaitingAcceptanceSearchResultsAsync(SearchPrnsViewModel request);
+        Task<int> GetAwaitingAcceptancePrnsCount();
     }
 }

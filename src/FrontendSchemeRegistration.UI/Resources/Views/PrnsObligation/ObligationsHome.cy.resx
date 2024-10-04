@@ -117,43 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Wood" xml:space="preserve">
-	  <value>Wood</value>
+  <data name="epr_for_packaging_data_homepage" xml:space="preserve">
+    <value>[W]EPR for packaging data homepage</value>
   </data>
-  <data name="Plastic" xml:space="preserve">
-    <value>Plastic</value>
+  <data name="home" xml:space="preserve">
+    <value>[W]Home</value>
   </data>
-  <data name="Paper and board" xml:space="preserve">
-    <value>Paper and board</value>
-  </data>
-  <data name="AWAITING ACCEPTANCE" xml:space="preserve">
-    <value>AWAITING ACCEPTANCE</value>
-  </data>
-  <data name="AWAITINGACCEPTANCE" xml:space="preserve">
-    <value>AWAITING ACCEPTANCE</value>
-  </data>
-  <data name="ACCEPTED" xml:space="preserve">
-    <value>ACCEPTED</value>
-  </data>
-  <data name="CANCELLED" xml:space="preserve">
-    <value>CANCELLED</value>
-  </data>
-  <data name="REJECTED" xml:space="preserve">
-    <value>REJECTED</value>
-  </data>
-  <data name="PRN" xml:space="preserve">
-    <value>PRN</value>
-  </data>
-  <data name="PRNs" xml:space="preserve">
-    <value>PRNs</value>
-  </data>
-  <data name="PERN" xml:space="preserve">
-    <value>PERN</value>
-  </data>
-  <data name="PERNs" xml:space="preserve">
-    <value>PERNs</value>
-  </data>
-  <data name="PERs and PERNs" xml:space="preserve">
-    <value>PERs and PERNs</value>
+  <data name="manage_your_recycling_obligations" xml:space="preserve">
+    <value>[W]Manage your {0} recycling obligations</value>
   </data>
 </root>

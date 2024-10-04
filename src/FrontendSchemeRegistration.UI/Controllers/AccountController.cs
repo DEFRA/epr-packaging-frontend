@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
+using System.Diagnostics.CodeAnalysis;
 
 /// <summary>
 /// Controller used in web apps to manage accounts.
@@ -45,6 +46,7 @@ public class AccountController : Controller
     /// </summary>
     /// <param name="scheme">Authentication scheme.</param>
     /// <returns>Sign out result.</returns>
+    [ExcludeFromCodeCoverage(Justification = "Unable to mock authentication")]
     [HttpGet("{scheme?}")]
     public IActionResult SignOut(
         [FromRoute] string? scheme)
@@ -60,7 +62,7 @@ public class AccountController : Controller
         }
 
         scheme ??= OpenIdConnectDefaults.AuthenticationScheme;
-        var callbackUrl = Url.Action(action: "SignedOut", controller: nameof(HomeController).RemoveControllerFromName(), values: null, protocol: Request.Scheme);
+        var callbackUrl = Url.Action(action: "Get", controller: nameof(LandingController).RemoveControllerFromName(), values: null, protocol: Request.Scheme);
         return SignOut(
             new AuthenticationProperties
             {

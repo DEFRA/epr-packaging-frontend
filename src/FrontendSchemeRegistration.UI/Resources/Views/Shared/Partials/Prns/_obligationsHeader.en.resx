@@ -117,43 +117,40 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Wood" xml:space="preserve">
-	  <value>Wood</value>
+  <data name="compliance_scheme" xml:space="preserve">
+    <value>Compliance Scheme</value>
   </data>
-  <data name="Plastic" xml:space="preserve">
-    <value>Plastic</value>
+  <data name="enforcement_action_warning" xml:space="preserve">
+    <value>You may face enforcement action if you miss this deadline.</value>
   </data>
-  <data name="Paper and board" xml:space="preserve">
-    <value>Paper and board</value>
+  <data name="january" xml:space="preserve">
+    <value>31 January</value>
   </data>
-  <data name="AWAITING ACCEPTANCE" xml:space="preserve">
-    <value>AWAITING ACCEPTANCE</value>
+  <data name="manage_your_recycling_obligations" xml:space="preserve">
+    <value>Manage your {0} recycling obligations</value>
   </data>
-  <data name="AWAITINGACCEPTANCE" xml:space="preserve">
-    <value>AWAITING ACCEPTANCE</value>
+  <data name="producer" xml:space="preserve">
+    <value>Producer</value>
   </data>
-  <data name="ACCEPTED" xml:space="preserve">
-    <value>ACCEPTED</value>
+  <data name="regulator" xml:space="preserve">
+    <value>Regulator</value>
   </data>
-  <data name="CANCELLED" xml:space="preserve">
-    <value>CANCELLED</value>
+  <data name="regulator_england" xml:space="preserve">
+    <value>Environment Agency (England)</value>
   </data>
-  <data name="REJECTED" xml:space="preserve">
-    <value>REJECTED</value>
+  <data name="regulator_northern_ireland" xml:space="preserve">
+    <value>Environment Agency (Northern Ireland)</value>
   </data>
-  <data name="PRN" xml:space="preserve">
-    <value>PRN</value>
+  <data name="regulator_scotland" xml:space="preserve">
+    <value>Environment Agency (Scotland)</value>
   </data>
-  <data name="PRNs" xml:space="preserve">
-    <value>PRNs</value>
+  <data name="regulator_wales" xml:space="preserve">
+    <value>Environment Agency (Wales)</value>
   </data>
-  <data name="PERN" xml:space="preserve">
-    <value>PERN</value>
+  <data name="to_meet_your_recycling_obligations_for" xml:space="preserve">
+    <value>to meet your recycling obligations for</value>
   </data>
-  <data name="PERNs" xml:space="preserve">
-    <value>PERNs</value>
-  </data>
-  <data name="PERs and PERNs" xml:space="preserve">
-    <value>PERs and PERNs</value>
+  <data name="you_have_until" xml:space="preserve">
+    <value>You have until</value>
   </data>
 </root>

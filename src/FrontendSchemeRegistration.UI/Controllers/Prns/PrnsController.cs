@@ -13,6 +13,7 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns;
 public class PrnsController : Controller
 {
     private const string ShowPrnPageName = "SelectSinglePrn";
+    private const string NoPrnsSelected = "NoPrnsSelected";
     private readonly IPrnService _prnService;
     private readonly TimeProvider _timeProvider;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
@@ -38,7 +39,7 @@ public class PrnsController : Controller
 	public async Task<IActionResult> SearchPrns([FromQuery] SearchPrnsViewModel request)
 	{
 		var prnsResultViewModel = await _prnService.GetPrnSearchResultsAsync(request);
-
+        
 		if (request.Source == "button")
 		{
 			if (string.IsNullOrWhiteSpace(request.Search))
@@ -51,7 +52,8 @@ public class PrnsController : Controller
 			}
 		}
 
-		var qs = string.IsNullOrWhiteSpace(request.Search) ? "?page=" : "?search=" + request.Search + "&page=";
+		var qs = $"?search={request.Search}&sortBy={request.SortBy}&filterBy={request.FilterBy}&page=";
+
 		prnsResultViewModel.PagingDetail.PagingLink = Url.Action(nameof(SearchPrns)) + qs;
 
         await SetSessionBackLinkForShowPrnPage(Url.Action(nameof(SearchPrns)) + qs + request.Page);
@@ -59,20 +61,31 @@ public class PrnsController : Controller
         return View(prnsResultViewModel);
     }
 
-	// Select single or multiple Prns to accept or reject. Step 1 of 5 choose PRN(s) from list
-	[HttpGet]
-    [Route(PagePaths.Prns.ShowAwaitingAcceptance + "/{error?}")]
-    public async Task<IActionResult> SelectMultiplePrns(string? error)
+    // Select single or multiple Prns to accept or reject. Step 1 of 5 choose PRN(s) from list
+    [HttpGet]
+    [HttpPost]
+    [Route(PagePaths.Prns.ShowAwaitingAcceptance)]
+    public async Task<IActionResult> SelectMultiplePrns(SearchPrnsViewModel request)
     {
-        if (error != null)
+        if (TempData[NoPrnsSelected] != null)
         {
-            ViewData.ModelState.AddModelError("Error", "select_one_or_more_prns_or_perns_to_accept_them");
+            ViewData.ModelState.AddModelError("Error", TempData[NoPrnsSelected].ToString());
         }
 
         await SetSessionBackLinkForShowPrnPage(Url?.Content(string.Concat("~/", PagePaths.Prns.ShowAwaitingAcceptance)));
 
-        var prns = await _prnService.GetPrnsAwaitingAcceptanceAsync();
-        return View(prns);
+        if (string.IsNullOrEmpty(request.FilterBy))
+        {
+            request.FilterBy = PrnConstants.Filters.AwaitingAll;
+        }
+
+        var awaitingAcceptanceViewModel = await _prnService.GetPrnAwaitingAcceptanceSearchResultsAsync(request);
+        awaitingAcceptanceViewModel.SelectedFilter = request.FilterBy;
+        awaitingAcceptanceViewModel.SelectedSort = request.SortBy;
+        awaitingAcceptanceViewModel.TotalAwaitingPrns = await _prnService.GetAwaitingAcceptancePrnsCount();
+        var qs = $"?sortBy={request.SortBy}&filterBy={request.FilterBy}&page=";
+        awaitingAcceptanceViewModel.PagingDetail.PagingLink = Url.Action(nameof(SelectMultiplePrns)) + qs;
+        return View(awaitingAcceptanceViewModel);
     }
 
     // Accept or reject single Prn. Step 2 of 5 for single PRN not multiple PRNS, show details of PRN

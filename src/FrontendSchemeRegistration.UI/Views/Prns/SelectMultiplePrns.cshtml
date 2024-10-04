@@ -1,95 +1,242 @@
-﻿@using FrontendSchemeRegistration.UI.Controllers.Prns
+﻿@using FrontendSchemeRegistration.UI.Constants
+@using FrontendSchemeRegistration.UI.Controllers.Prns
 @using FrontendSchemeRegistration.UI.ViewModels.Prns
 @inject IStringLocalizer<PrnDataResources> PrnDataLocalizer
-@model PrnListViewModel
+@model AwaitingAcceptancePrnsViewModel
 
 @{
     ViewData["Title"] = Localizer["page_title"];
-}
-
-@{
+    var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
     var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer);
 }
 
 <main class="govuk-main-wrapper govuk-!-padding-top-4" id="select-multiple-prns">
     <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
-            
-            @if (!ViewData.ModelState.IsValid)
-            {
-                @await Html.PartialAsync("../Shared/Partials/Govuk/_ErrorsViewModelSummary", errorsViewModel)
-            }
-            
-            <h1 class="govuk-heading-l">@Localizer["accept_or_reject_prns_and_perns"]</h1>
+    <div class="govuk-grid-column-full">
 
-            <div class="govuk-inset-text">
-                @Localizer["number_of_prns_and_perns_awaiting_acceptance"]
-                <br>
-                <br>
-                <h2 class="govuk-heading-l">@Model.Prns.Count</h2>
-            </div>
+	    @if (!ViewData.ModelState.IsValid)
+	    {
+		    @await Html.PartialAsync("../Shared/Partials/Govuk/_ErrorsViewModelSummary", errorsViewModel)
+	    }
 
-            <form class="form" method="POST">
-                @{int counter = 0;}
-                @foreach (var group in Model.Prns.GroupBy(p => p.Material))
-                {
-                    <table class="govuk-table">
-                        <caption class="govuk-table__caption govuk-table__caption--m govuk-visually-hidden">@Localizer["view_and_select_prns_table_description"]</caption>
-	                    <thead class="govuk-table__head">
-                            <tr class="govuk-table__row">
-                                <h2 class="govuk-heading-m">@PrnDataLocalizer[group.Key]</h2>
-                                <div id="waste-hint" class="govuk-hint">
-                                    @Localizer["select_the_prns_and_perns_you_want_to_accept_or_reject"]
-                                </div>
-                            </tr>
-                            <tr class="govuk-table__row">
-                                <th class="govuk-table__header">@Localizer["prn_or_pern_number"]</th>
-                                <th class="govuk-table__header">@Localizer["date_issued"]</th>
-                                <th class="govuk-table__header">@Localizer["december_waste"]</th>
-                                <th class="govuk-table__header">@Localizer["issued_by"]</th>
-                                <th class="govuk-table__header">@Localizer["tonnage"]</th>
-                                <th class="govuk-table__header">@Localizer["note"]</th>
-                            </tr>
-                        </thead>
+	    <h1 class="govuk-heading-xl">@Localizer["accept_or_reject_prns_and_perns"]</h1>
+	    <p class="govuk-body">@Localizer["select_the_prns_and_perns_you_want_to_accept"]</p>
+	    <hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible">
+	    @if (Model.TotalAwaitingPrns == 0)
+	    {
+		    <h1 class="govuk-body">@Localizer["you_have_no_prns_or_perns_awaiting_acceptance"]</h1>
+	    }
+	    else
+	    {
+		    <form class="form" id="selectMultiplePrns" method="POST" asp-action=@nameof(PrnsAcceptController.AcceptMultiplePrnsPassThrough) asp-controller="PrnsAccept">
+			    <div class="prn-sort-filter-clear">
+				    <div class="govuk-!-margin-bottom-6">
+					    <label class="govuk-label" for="sort" id="lblSort">@Localizer["sort_by"]</label>
+					    <select class="govuk-select" id="sort" name="SortBy" aria-labelledby="lblSort">
+						    @foreach (var item in Model.SortOptions)
+						    {
+							    if (item.Selected)
+							    {
+								    <option value="@item.Value" selected="selected">@Localizer[item.Text]</option>
+							    }
+							    else
+							    {
+								    <option value="@item.Value">@Localizer[item.Text]</option>
+							    }
+						    }
+					    </select>
+				    </div>
+				    <div class="govuk-!-margin-bottom-6">
+					    <label class="govuk-label" for="filter" id="lblFilter">@Localizer["filter_by"]</label>
+					    <select class="govuk-select" id="filter" name="FilterBy" aria-labelledby="lblFilter">
+						    @foreach (var item in Model.FilterOptions)
+						    {
+							    if (item.Selected)
+							    {
+								    <option value="@item.Value" selected="selected">@Localizer[item.Text]</option>
+							    }
+							    else
+							    {
+								    <option value="@item.Value">@Localizer[item.Text]</option>
+							    }
+						    }
+					    </select>
+				    </div>
+				    <noscript>
+					    <div class="govuk-!-margin-bottom-6">
+						    <button type="submit" asp-action=@nameof(PrnsController.SelectMultiplePrns) asp-controller="Prns">@Localizer["apply_filter"]</button>
+					    </div>
+				    </noscript>
+				    <div class="govuk-!-margin-bottom-6">
+					    @Html.ActionLink(Localizer["clear_sort_and_filter"].Value, nameof(PrnsController.SelectMultiplePrns), "Prns", null,
+						    new
+						    {
+							    @class = "govuk-link",
+							    @id = "clearSortFilter"
+						    })
+				    </div>
+			    </div>
 
-                        <tbody class="govuk-table__body">
-                        @for (int i = 0; i < Model?.Prns?.Where(x => x.Material == group.Key)?.Count(); i++, counter++)
-                        {
-                            @Html.HiddenFor(x => x.Prns[counter].ExternalId)
-                            @Html.HiddenFor(x => x.Prns[counter].NoteType)
+			    <div class="govuk-form-group">
+				    <fieldset class="govuk-fieldset" aria-describedby="checkboxes-hint">
+					    <legend class="govuk-fieldset__legend"></legend>
+					    <div class="govuk-table-container">
+						    <table class="govuk-table prn-responsive-table" id="prns-table">
+							    <caption class="govuk-table__caption govuk-table__caption--m govuk-visually-hidden">@Localizer["view_and_select_prns_table_description"]</caption>
+							    <thead class="govuk-table__head">
+							    <tr class="govuk-table__row">
+								    <th scope="col" class="govuk-table__header">@Localizer["prn_or_pern_number"]</th>
+								    <th scope="col" class="govuk-table__header">@Localizer["material"]</th>
+								    <th scope="col" class="govuk-table__header">@Localizer["date_issued"]</th>
+								    <th scope="col" class="govuk-table__header">@Localizer["december_waste"]</th>
+								    <th scope="col" class="govuk-table__header">@Localizer["issued_by"]</th>
+								    <th scope="col" class="govuk-table__header">@Localizer["tonnage"]</th>
+								    <th scope="col" class="govuk-table__header">@Localizer["issuer_note"]</th>
+							    </tr>
+							    </thead>
+							    <tbody class="govuk-table__body">
+							    @for (var i = 0; i < Model.Prns.Count; i++)
+							    {
+								    <tr class="govuk-table__row">
+									    @Html.HiddenFor(x => x.Prns[i].ExternalId)
+									    @Html.HiddenFor(x => x.Prns[i].NoteType)
+									    <td class="govuk-table__cell" data-label=@Localizer["prn_or_pern_number"]>
 
-                            <tr class="govuk-table__row">
-                                <td class="govuk-table__cell">
-                                    <div class="govuk-checkboxes__item">
-                                        @{
-                                            var checkBoxId = string.Concat("chkSeletPrn_", Model?.Prns[counter].Id);
-                                        }
-                                        @Html.CheckBoxFor(x => x.Prns[counter].IsSelected, new { @id = @checkBoxId, @class = "govuk-checkboxes__input" })
+										    <div class="govuk-checkboxes govuk-checkboxes--small">
+											    <div class="govuk-checkboxes__item">
+												    @{
+													    var checkBoxId = string.Concat("chkBoxSelectPrn_", Model.Prns[i].NoteType, "_", Model.Prns[i].ExternalId);
+												    }
+												    @Html.CheckBoxFor(x => x.Prns[i].IsSelected, new { @id = checkBoxId, @class = "govuk-checkboxes__input" })
 
-                                        <label class="govuk-label govuk-checkboxes__label" for="@checkBoxId">
-                                            <a class="govuk-link" href="@Url.Action(nameof(PrnsController.SelectSinglePrn), "Prns", new { id = Model.Prns[counter].ExternalId })">@Model.Prns[counter].PrnOrPernNumber<span class="govuk-visually-hidden">PER or PERN number</span></a>
-                                        </label>
-                                    </div>
-                                </td>
-                                <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[counter].DateIssuedDisplay)</td>
-                                <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[counter].DecemberWasteDisplay)</td>
-                                <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[counter].IssuedBy)</td>
-                                <td class="govuk-table__cell govuk-table__cell--numeric">@Html.DisplayFor(x => x.Prns[counter].Tonnage)</td>
-                                <td class="govuk-table__cell">@Html.DisplayFor(x => x.Prns[counter].AdditionalNotes)</td>
-                            </tr>
-                        }
-                        </tbody>
-                    </table>
-                }
+												    <label class="govuk-label govuk-checkboxes__label" for=@checkBoxId>
+													    @Html.ActionLink(Model.Prns[i].PrnOrPernNumber, nameof(PrnsController.SelectSinglePrn), "Prns", new { id = Model.Prns[i].ExternalId },
+														    new
+														    {
+															    @class = "govuk-link"
+														    })
+												    </label>
+											    </div>
+										    </div>
+									    </td>
+									    <td class="govuk-table__cell" data-label=@Localizer["material"]>@PrnDataLocalizer[Model.Prns[i].Material]</td>
+									    <td class="govuk-table__cell" data-label=@Localizer["date_issued"]>@Model.Prns[i].DateIssuedDisplay</td>
+									    <td class="govuk-table__cell" data-label=@Localizer["december_waste"]>@SharedLocalizer[Model.Prns[i].DecemberWasteDisplay]</td>
+									    <td class="govuk-table__cell" data-label=@Localizer["issued_by"]>@Model.Prns[i].IssuedBy</td>
+									    <td class="govuk-table__cell govuk-table__cell--numeric" data-label=@Localizer["tonnage"]>@Model.Prns[i].Tonnage</td>
+									    <td class="govuk-table__cell" data-label=@Localizer["issuer_note"]>@Model.Prns[i].AdditionalNotes</td>
+								    </tr>
+							    }
+							    </tbody>
+						    </table>
+					    </div>
 
-                <div class="govuk-button-group">
-                    <button class="govuk-button" type="submit" asp-action=@nameof(PrnsAcceptController.AcceptMultiplePrnsPassThrough) asp-controller="PrnsAccept">
-                        @Localizer["accept_selected_prns_and_perns"]
-                    </button>
+					    @await Html.PartialAsync("Partials/RecordNavigation/_RecordPaging", Model.PagingDetail)
+					    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--xl">
 
-                    <button class=" govuk-button govuk-button--secondary" formaction="reject-bulk">@Localizer["reject_selected_prns_and_perns"]</button>
-                </div>
-            </form>
-        </div>
+					    <div class="govuk-button-group">
+						    <button class="govuk-button" type="submit">
+							    @Localizer["accept_selected_prns_and_perns"]
+						    </button>
+					    </div>
+					    @* </div> *@
+				    </fieldset>
+			    </div>
+		    </form>
+	    }
+    </div>
     </div>
 </main>
+@section Scripts
+{
+    <script type="text/javascript" nonce="@scriptNonce">
+        window.onload = function () {
+
+            document.getElementById('clearSortFilter')
+                .addEventListener('click', function () {
+                    clearSelection();
+                });
+
+            document.getElementById('selectMultiplePrns')
+                .addEventListener('submit', function Submit(event) {
+                    event.preventDefault();
+                    let submitData = [];
+
+                    for (let i = 0; i < sessionStorage.length; i++) {
+                        const key = sessionStorage.key(i);
+                        if (key.startsWith("chkBoxSelectPrn_")) {
+                            let [_, noteType, id] = key.split("_");
+                            submitData.push({ id: id, noteType: noteType });
+                            sessionStorage.removeItem(key);
+                            i--;
+                        }
+                    }
+
+                    let submittedForm = event.target;
+                    for (let i = 0; i < submitData.length; i++) {
+                        submittedForm.appendChild(createHiddenElement('hidden', `PreviousSelectedPrns[${i}].ExternalId`, submitData[i].id));
+                        submittedForm.appendChild(createHiddenElement('hidden', `PreviousSelectedPrns[${i}].NoteType`, submitData[i].noteType));
+                        submittedForm.appendChild(createHiddenElement('hidden', `PreviousSelectedPrns[${i}].IsSelected`, true));
+                    }
+
+                    submittedForm.submit();
+                    function createHiddenElement(type, name, value) {
+                        const hiddenElement = document.createElement('input');
+
+                        hiddenElement.type = type;
+                        hiddenElement.name = name;
+                        hiddenElement.value = value;
+
+                        return hiddenElement;
+                    }
+                });
+
+            document.getElementById('prns-table').querySelectorAll('input[type="checkbox"]')
+                .forEach(checkbox => {
+                    if (sessionStorage.getItem(checkbox.id)) {
+                        checkbox.checked = true;
+                    }
+                    checkbox.addEventListener('change', function () {
+                        setSessionStorageState(this.id, this.checked);
+                    });
+                });
+
+            document.getElementById('filter')
+                .addEventListener('change', function (event) {
+                    const sortValue = document.getElementById('sort').value;
+                    const filtervalue = event.target.value;
+                    clearSelection();
+                    window.location.href = `${window.location.pathname}?sortBy=${sortValue}&filterBy=${filtervalue}`;
+
+                });
+
+            document.getElementById('sort')
+                .addEventListener('change', function (event) {
+                    const filtervalue = document.getElementById('filter').value;
+                    const sortValue = event.target.value;
+                    clearSelection();
+                    window.location.href = `${window.location.pathname}?sortBy=${sortValue}&filterBy=${filtervalue}`;
+
+            });
+
+            function clearSelection() {
+                for (let i = 0; i < sessionStorage.length; i++) {
+                    const key = sessionStorage.key(i);
+                    if (key.startsWith("chkBoxSelectPrn_")) {
+                        sessionStorage.removeItem(key);
+                        i--;
+                    }
+                }
+            }
+
+            function setSessionStorageState(id, isChecked) {
+                if (isChecked == true) {
+                    sessionStorage.setItem(id, isChecked);
+                }
+                else {
+                    sessionStorage.removeItem(id);
+                }
+            }
+        }
+    </script>
+}

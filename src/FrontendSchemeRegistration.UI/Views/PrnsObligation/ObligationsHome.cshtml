@@ -1,0 +1,21 @@
+﻿@using FrontendSchemeRegistration.UI.ViewModels.Prns
+@model PrnObligationViewModel
+@{
+    var pageTitle = Localizer["manage_your_recycling_obligations", Model.CurrentYear];
+    ViewData["Title"] = pageTitle;
+}
+<div class="govuk-width-container ">
+    <a href="/report-data" class="govuk-back-link">@Localizer["home"]<span class="govuk-visually-hidden">@Localizer["epr_for_packaging_data_homepage"]</span></a>
+    <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                @await Html.PartialAsync("Partials/Prns/_obligationsHeader", Model)
+            </div>
+        </div>
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-one-half">
+                @await Html.PartialAsync("Partials/Prns/_reviewPRNsAndPERNs")
+            </div>
+        </div>
+    </main>
+</div>

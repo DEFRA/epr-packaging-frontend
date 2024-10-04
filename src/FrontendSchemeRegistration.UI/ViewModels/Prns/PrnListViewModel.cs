@@ -10,10 +10,14 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
     [ExcludeFromCodeCoverage]
     public class PrnListViewModel
     {
+        public string FilterBy { get; set; }
+
+        public string SortBy { get; set; }
         public RemovedPrn? RemovedPrn { get; set; }
 
-        public List<PrnViewModel> Prns { get; set; }
+        public List<PrnViewModel> Prns { get; set; } = new();
 
+        public List<PrnViewModel> PreviousSelectedPrns { get; set; } = new();
         public CountBreakdown GetCountBreakdown(IEnumerable<PrnViewModel> prns)
         {
             int prnCount = prns?.Count(x => x.IsPrn) ?? 0;

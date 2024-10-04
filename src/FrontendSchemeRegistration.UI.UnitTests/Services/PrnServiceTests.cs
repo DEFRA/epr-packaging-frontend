@@ -3,8 +3,8 @@ using FluentAssertions;
 using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.DTOs.Prns;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Services;
-using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.ViewModels.Prns;
 using Moq;
 
@@ -14,7 +14,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Services
     public class PrnServiceTests
     {
         private Mock<IWebApiGatewayClient> _webApiGatewayClientMock;
-        private IPrnService _systemUnderTest;
+        private PrnService _systemUnderTest;
         private static readonly IFixture _fixture = new Fixture();
 
         [SetUp]
@@ -128,6 +128,35 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Services
             prnSearchResults.PagingDetail.TotalItems.Should().Be(paginatedResposne.TotalItems);
             prnSearchResults.TypeAhead.Should().BeEquivalentTo(paginatedResposne.TypeAhead);
 
+        }
+
+        [Test]
+        public async Task GetAwaitingAcceptancePrnsCount_SetFilterBy_AwaitngAll_AndReturnTotalItemsAsCount()
+        {
+            var response = _fixture.Create<PaginatedResponse<PrnModel>>();
+
+             _webApiGatewayClientMock.Setup(x => x.GetSearchPrnsAsync(It.Is<PaginatedRequest>(
+                                x => x.FilterBy == PrnConstants.Filters.AwaitingAll))).ReturnsAsync(response);
+            
+            var count = await _systemUnderTest.GetAwaitingAcceptancePrnsCount();
+
+            count.Should().Be(response.TotalItems);
+
+        }
+
+        [Test]
+        public async Task GetPrnAwaitingAcceptanceSearchResultsAsync__ReturnsMatchingPrns()
+        {
+            var request = _fixture.Create<SearchPrnsViewModel>();
+            var response = _fixture.Create<PaginatedResponse<PrnModel>>();
+            _webApiGatewayClientMock.Setup(x => x.GetSearchPrnsAsync(It.IsAny<PaginatedRequest>())).ReturnsAsync(response);
+
+            var awaitngPrns = await _systemUnderTest.GetPrnAwaitingAcceptanceSearchResultsAsync(request);
+
+            awaitngPrns.Prns.Count.Should().Be(response.Items.Count);
+            awaitngPrns.PagingDetail.CurrentPage.Should().Be(response.CurrentPage);
+            awaitngPrns.PagingDetail.PageSize.Should().Be(request.PageSize);
+            awaitngPrns.PagingDetail.TotalItems.Should().Be(response.TotalItems);
         }
     }
 }

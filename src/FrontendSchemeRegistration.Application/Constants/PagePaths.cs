@@ -1,4 +1,6 @@
-﻿namespace FrontendSchemeRegistration.Application.Constants;
+﻿using System.Collections.Generic;
+
+namespace FrontendSchemeRegistration.Application.Constants;
 
 public static class PagePaths
 {
@@ -91,10 +93,12 @@ public static class PagePaths
 
     public static class Prns
     {
+        public const string ObligationsHome = "manage-your-recycling-obligations";
         public const string Home = "manage-prn-home-complete";
         public const string Search = "view-awaiting-acceptance";
         public const string ShowAwaitingAcceptance = "view-awaiting-acceptance-alt";
         public const string ShowSelected = "selected-prn";
+        public const string DownloadAllPRNsAndPERNs = "#";
 
         // Accept single PRN
         public const string AskToAccept = "accept-prn";

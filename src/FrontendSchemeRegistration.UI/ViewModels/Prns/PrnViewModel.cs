@@ -37,6 +37,11 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
         // True if selected in the user interface.
         public bool IsSelected { get; set; }
 
+        // SignatoryPosition from prn
+        public string Position { get; set; }
+
+        public string RecyclingProcess { get; set; }
+
         // Refer to Resources/Views/Shared/Partials/Prns/_recyclingNoteDetails.en.resx and _recyclingNoteDetails.cy.resx
         public string ApprovalStatusExplanationTranslation
         {
@@ -44,8 +49,6 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
             {
                 switch (ApprovalStatus)
                 {
-                    case "AWAITINGACCEPTANCE":
-                        return string.Concat(IsPrn ? "prn" : "pern", "_awaiting_acceptance_explanation");
                     case PrnStatus.AwaitingAcceptance:
                         return string.Concat(IsPrn ? "prn" : "pern", "_awaiting_acceptance_explanation");
                     case PrnStatus.Accepted:
@@ -79,22 +82,8 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
                 AuthorisedBy = prn.PrnSignatory,
                 AccreditationNumber = prn.AccreditationNumber,
                 NameOfProducerOrComplianceScheme = prn.OrganisationName,
-
-                // CancelledDate = prn.CancelledDate,
-                // CreatedOn = prn.CreatedOn,
-                // CreatedBy = prn.CreatedBy,
-                // IsExport = prn.IsExport,
-                // IssuerReference = prn.IssuerReference,
-                // LastUpdatedBy = prn.LastUpdatedBy,
-                // LastUpdatedDate = prn.LastUpdatedDate,
-                // ObligationYear = int.Parse(prn.ObligationYear)
-                // OrganisationId = prn.OrganisationId,
-                // PackagingProducer = prn.PackagingProducer,
-                // PrnSignatoryPosition = prn.PrnSignatoryPosition,
-                // ProcessToBeUsed = prn.ProcessToBeUsed,
-                // ProducerAgency = prn.ProducerAgency,
-                // ReprocessorExporterAgency = prn.ReprocessorExporterAgency,
-                // Signature = prn.Signature,
+                Position = prn.PrnSignatoryPosition ?? string.Empty,
+                RecyclingProcess = prn.ProcessToBeUsed ?? string.Empty,
             };
         }
 

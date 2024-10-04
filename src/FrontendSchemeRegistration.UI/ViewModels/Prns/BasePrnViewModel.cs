@@ -26,41 +26,20 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
 
         public string DateIssuedDisplay => DateIssued.ToString("dd MMM yyyy");
 
-        public string ApprovalStatusDisplayCssColour
+        public string ApprovalStatusDisplayCssColour => ApprovalStatus switch
         {
-            get
-            {
-                switch (ApprovalStatus)
-                {
-                    case PrnStatus.AwaitingAcceptance:
-                        return "grey";
-                    case PrnStatus.Accepted:
-                        return "green";
-                    case PrnStatus.Cancelled:
-                        return "yellow";
-                    case PrnStatus.Rejected:
-                        return "red";
-                    default:
-                        return "grey";
-                }
-            }
-        }
+	        PrnStatus.AwaitingAcceptance => "grey",
+	        PrnStatus.Accepted => "green",
+	        PrnStatus.Cancelled => "yellow",
+	        PrnStatus.Rejected => "red",
+	        _ => "grey"
+        };
 
-        public static string MapStatus(string oldStatus)
-        {
-            if (oldStatus == "AWAITINGACCEPTANCE")
-            {
-                return PrnStatus.AwaitingAcceptance;
-            }
-            else if (oldStatus == "CANCELED")
-            {
-                return PrnStatus.Cancelled;
-            }
-            else
-            {
-                return oldStatus;
-            }
-
-        }
-    }
+		public static string MapStatus(string oldStatus) => oldStatus switch
+		{
+			"AWAITINGACCEPTANCE" => PrnStatus.AwaitingAcceptance,
+			"CANCELED" => PrnStatus.Cancelled,
+			_ => oldStatus
+		};
+	}
 }

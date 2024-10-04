@@ -177,4 +177,17 @@
   <data name="add-manage-subsidiaries" xml:space="preserve">
     <value>Add and manage your subsidiary companies.</value>
   </data>
+  <data name="prn_heading_text" xml:space="preserve">
+    <value>Manage your {0} recycling obligations</value>
+  </data>
+  <data name="prn_paragraph_1" xml:space="preserve">
+    <value>Review your recycling obligations calculations and accept PRNs or PERNs to meet them.
+You can also:</value>
+  </data>
+  <data name="prn_unordered_list_point_1" xml:space="preserve">
+    <value>view recycling obligations by material</value>
+  </data>
+  <data name="prn_unordered_list_point_2" xml:space="preserve">
+    <value>check your recycling obligations progress</value>
+  </data>
 </root>

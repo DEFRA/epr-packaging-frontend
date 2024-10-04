@@ -72,10 +72,10 @@
 		<value>[Welsh]December Waste</value>
 	</data>
 	<data name="sort_date_issued_asc" xml:space="preserve">
-		<value>[Welsh]Date issued (newest first)</value>
+		<value>[Welsh]Date issued (oldest first)</value>
 	</data>
 	<data name="sort_date_issued_desc" xml:space="preserve">
-		<value>[Welsh]Date issued (oldest first)</value>
+		<value>[Welsh]Date issued (newest first)</value>
 	</data>
 	<data name="sort_december_waste" xml:space="preserve">
 		<value>[Welsh]December waste (yes to no)</value>

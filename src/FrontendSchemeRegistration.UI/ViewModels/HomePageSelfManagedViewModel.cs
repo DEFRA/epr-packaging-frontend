@@ -13,5 +13,7 @@ public class HomePageSelfManagedViewModel
 
     public string OrganisationRole { get; set; }
 
+    public string CurrentYear => (DateTime.Now.Year).ToString();
+
     public NotificationViewModel Notification { get; set; } = new NotificationViewModel();
 }

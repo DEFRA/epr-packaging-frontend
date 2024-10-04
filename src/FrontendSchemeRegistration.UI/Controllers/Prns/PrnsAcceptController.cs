@@ -16,6 +16,7 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         private readonly IPrnService _prnService;
         private readonly TimeProvider _timeProvider;
         private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
+        private const string NoPrnsSelected = "NoPrnsSelected";
 
         public PrnsAcceptController(IPrnService prnService, TimeProvider timeProvider, ISessionManager<FrontendSchemeRegistrationSession> sessionManager)
         {
@@ -86,9 +87,12 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         [Route(PagePaths.Prns.BeforeAskToAcceptMany)]
         public async Task<ActionResult> AcceptMultiplePrnsPassThrough(PrnListViewModel model)
         {
-            var selectedPrns= model?.Prns?.Where(x => x.IsSelected);
-            if (selectedPrns != null && selectedPrns.Any())
-            {               
+            var selectedPrns = model.Prns.Where(x => x.IsSelected)
+                            .Concat(model.PreviousSelectedPrns.Where(x => x.IsSelected))
+                            .DistinctBy(x => x.ExternalId).ToList();
+
+            if (selectedPrns.Count != 0)
+            {
                 var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
                 session.PrnSession = new PrnSession();
                 session.PrnSession.SelectedPrnIds = selectedPrns.Select(x => x.ExternalId).ToList();
@@ -97,8 +101,12 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
 
                 return RedirectToAction(nameof(PrnsAcceptController.AcceptMultiplePrns));
             }
-
-            return RedirectToAction(nameof(PrnsController.SelectMultiplePrns), nameof(PrnsController).RemoveControllerFromName(), new { error = "zero-accepted" });
+            TempData[NoPrnsSelected] = "select_one_or_more_prns_or_perns_to_accept_them";
+            return RedirectToAction(nameof(PrnsController.SelectMultiplePrns), nameof(PrnsController).RemoveControllerFromName(), 
+            new SearchPrnsViewModel()
+            {
+                FilterBy = model.FilterBy, SortBy = model.SortBy  
+            });
         }
 
         // Accept multiple Prns. Step 3 of 5 display chosen PRNs with option to deselect

@@ -9,6 +9,7 @@ using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels.Prns;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Time.Testing;
 using Moq;
 
@@ -36,6 +37,8 @@ public class PrnsAcceptControllerTests
                 Session = new Mock<ISession>().Object
             }
         };
+        var tempData = new TempDataDictionary(Mock.Of<HttpContext>(), Mock.Of<ITempDataProvider>());
+        _sut.TempData = tempData;
     }
 
     // Accept single Prn. Step 3 of 5
@@ -167,12 +170,12 @@ public class PrnsAcceptControllerTests
     {
         var model = _fixture.Create<PrnListViewModel>();
         model.Prns.ForEach(x => x.IsSelected = false);
+        model.PreviousSelectedPrns.ForEach(x => x.IsSelected = false);
 
         var result = await _sut.AcceptMultiplePrnsPassThrough(model);
 
         var view = result.Should().BeOfType<RedirectToActionResult>().Which;
         view.ActionName.Should().Be("SelectMultiplePrns");
-        view.RouteValues.Should().ContainSingle().Which.Value.Should().Be("zero-accepted");
     }
 
     // Accept multiple Prns. Step 2 of 5 zero model is null error
@@ -184,7 +187,6 @@ public class PrnsAcceptControllerTests
 
         var view = result.Should().BeOfType<RedirectToActionResult>().Which;
         view.ActionName.Should().Be("SelectMultiplePrns");
-        view.RouteValues.Should().ContainSingle().Which.Value.Should().Be("zero-accepted");
     }
 
     // Accept multiple Prns. Step 2 of 5
@@ -193,6 +195,21 @@ public class PrnsAcceptControllerTests
     {
         var model = _fixture.Create<PrnListViewModel>();
         model.Prns[0].IsSelected = true;
+
+        var result = await _sut.AcceptMultiplePrnsPassThrough(model);
+
+        var view = result.Should().BeOfType<RedirectToActionResult>().Which;
+        view.ActionName.Should().Be("AcceptMultiplePrns");
+        _sessionManagerMock.Verify(x => x.SaveSessionAsync(It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession?>()), Times.Once);
+    }
+
+    [Test]
+    public async Task AcceptMultiplePrnsPassThrough_RedirectToAcceptMultiplePrnsByCallingGetAllPrnsAndSavingThemOnSession_IfAllPrnsIsSelected()
+    {
+        var model = _fixture.Create<PrnListViewModel>();
+        var allPrns = _fixture.Create<PrnListViewModel>();
+
+        _mockPrnService.Setup(x => x.GetPrnsAwaitingAcceptanceAsync()).ReturnsAsync(allPrns);
 
         var result = await _sut.AcceptMultiplePrnsPassThrough(model);
 

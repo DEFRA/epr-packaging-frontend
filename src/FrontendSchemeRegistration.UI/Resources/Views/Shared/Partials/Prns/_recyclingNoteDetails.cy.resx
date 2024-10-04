@@ -1,45 +1,48 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
-	<resheader name="resmimetype">
-		<value>text/microsoft-resx</value>
-	</resheader>
-	<resheader name="version">
-		<value>1.3</value>
-	</resheader>
-	<resheader name="reader">
-		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<resheader name="writer">
-		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<data name="date_issued" xml:space="preserve">
-		<value>[Welsh]Date issued</value>
-	</data>
-	<data name="material" xml:space="preserve">
-		<value>[Welsh]Material</value>
-	</data>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="date_issued" xml:space="preserve">
+    <value>[Welsh]Date issued</value>
+  </data>
+  <data name="material" xml:space="preserve">
+    <value>[Welsh]Material</value>
+  </data>
 	<data name="note" xml:space="preserve">
-		<value>[Welsh]Note</value>
+		<value>[Welsh]Issuer note</value>
 	</data>
-	<data name="packaging_producer_or_compliance_scheme" xml:space="preserve">
-		<value>[Welsh]Packaging producer or compliance scheme</value>
-	</data>
-	<data name="pern_details" xml:space="preserve">
-		<value>[Welsh]PERN details</value>
-	</data>
-	<data name="prn_details" xml:space="preserve">
-		<value>[Welsh]PRN details</value>
-	</data>
+  <data name="packaging_producer_or_compliance_scheme" xml:space="preserve">
+    <value>[Welsh]Packaging producer or compliance scheme</value>
+  </data>
+  <data name="pern_details" xml:space="preserve">
+    <value>[Welsh]PERN details</value>
+  </data>
+  <data name="prn_details" xml:space="preserve">
+    <value>[Welsh]PRN details</value>
+  </data>
 	<data name="relates_to_waste_received_in_december" xml:space="preserve">
-		<value>[Welsh]Relates to waste received in December?</value>
+		<value>[Welsh]December waste?</value>
 	</data>
-	<data name="relates_to_waste_received_in_december_yes" xml:space="preserve">
-		<value>[Welsh]Yes, can count towards {0} or {1} obligation</value>
-	</data>
-	<data name="relates_to_waste_received_in_december_no" xml:space="preserve">
-		<value>[Welsh]No</value>
-	</data>
-	<data name="tonnage" xml:space="preserve">
-		<value>[Welsh]Tonnage</value>
-	</data>
+  <data name="relates_to_waste_received_in_december_yes" xml:space="preserve">
+    <value>[Welsh]Yes, can count towards {0} or {1} obligation</value>
+  </data>
+  <data name="relates_to_waste_received_in_december_no" xml:space="preserve">
+    <value>[Welsh]No</value>
+  </data>
+  <data name="tonnage" xml:space="preserve">
+    <value>[Welsh]Tonnage</value>
+  </data>
+  <data name="recycling_process" xml:space="preserve">
+    <value>[Welsh]Recycling process</value>
+  </data>
 </root>

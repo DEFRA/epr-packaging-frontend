@@ -1,0 +1,30 @@
+﻿@using FrontendSchemeRegistration.Application.Constants
+
+<h2 class="govuk-heading-l">
+    @Localizer["what_to_do_next"]
+</h2>
+<div class="govuk-card" id="cardWhatNext">
+    <div class="govuk-card-body">
+        <h2 class="govuk-heading-m">
+            @Localizer["review_your_prns_and_perns"]
+        </h2>
+        <p class="govuk-body">
+            @Localizer["view_and_accept_prns_and_perns"]
+        </p>
+        <p class="govuk-body">
+            <a href="@PagePaths.Prns.ShowAwaitingAcceptance" class="govuk-link govuk-link--no-visited-state">
+                @Localizer["accept_or_reject_prns_and_perns"]
+            </a>
+        </p>
+        <p class="govuk-body">
+            <a href="@PagePaths.Prns.Search" class="govuk-link govuk-link--no-visited-state">
+                @Localizer["search_prns_and_perns"]
+            </a>
+        </p>
+        <p class="govuk-body">
+            <a href="@PagePaths.Prns.DownloadAllPRNsAndPERNs" class="govuk-link govuk-link--no-visited-state">
+                @Localizer["download_all_prns_and_perns"]
+            </a>
+        </p>
+    </div>
+</div>

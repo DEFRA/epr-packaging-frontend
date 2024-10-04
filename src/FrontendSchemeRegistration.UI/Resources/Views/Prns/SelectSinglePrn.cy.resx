@@ -193,12 +193,18 @@
     <value>[Welsh]Download this PERN</value>
   </data>
   <data name="this_prn_relates_to_waste_received_for_reprocessing_in_December" xml:space="preserve">
-    <value>[Welsh]This PRN relates to waste received for reprocessing in December {0}. It can count towards your {0} or {1} obligation.</value>
+    <value>[Welsh]This PRN relates to waste received for reprocessing in December {0}.</value>
   </data>
   <data name="this_pern_relates_to_waste_exported_for_reprocessing_in_December" xml:space="preserve">
-    <value>[Welsh]This PERN relates to waste exported for reprocessing in December {0}. It can count towards your {0} or {1} obligation.</value>
+    <value>[Welsh]This PERN relates to waste exported for reprocessing in December {0}.</value>
   </data>
-  <data name="page_title" xml:space="preserve">
+  <data name="it_can_count_towards_your_obligation" xml:space="preserve">
+    <value>[Welsh]It can count towards your {0} or {1} obligation.</value>
+  </data>
+  <data name="page_title_pern" xml:space="preserve">
     <value>[Welsh]Accept this PERN</value>
+  </data>
+  <data name="page_title_prn" xml:space="preserve">
+    <value>[Welsh]Accept this PRN</value>
   </data>
 </root>

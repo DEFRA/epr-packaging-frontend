@@ -1,6 +1,7 @@
 ﻿using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.DTOs.Prns;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.ViewModels;
 using FrontendSchemeRegistration.UI.ViewModels.Prns;
@@ -71,10 +72,10 @@ namespace FrontendSchemeRegistration.UI.Services
             await _webApiGatewayClient.SetPrnApprovalStatusToRejectedAsync(id);
         }
 
-		public async Task<PrnSearchResultListViewModel> GetPrnSearchResultsAsync(SearchPrnsViewModel request)
-		{
-			PaginatedRequest paginatedRequest = request;
-			var prnSearchResults = await _webApiGatewayClient.GetSearchPrnsAsync(paginatedRequest);
+        public async Task<PrnSearchResultListViewModel> GetPrnSearchResultsAsync(SearchPrnsViewModel request)
+        {
+            PaginatedRequest paginatedRequest = request;
+            var prnSearchResults = await _webApiGatewayClient.GetSearchPrnsAsync(paginatedRequest);
 
             var pagingDetail = new PagingDetail
             {
@@ -85,12 +86,50 @@ namespace FrontendSchemeRegistration.UI.Services
             };
 
             return new PrnSearchResultListViewModel
-			{
+            {
                 SearchString = prnSearchResults.SearchTerm,
-				ActivePageOfResults = prnSearchResults.Items.Select(item => (PrnSearchResultViewModel)item).ToList(),
+                ActivePageOfResults = prnSearchResults.Items.Select(item => (PrnSearchResultViewModel)item).ToList(),
                 PagingDetail = pagingDetail,
-                TypeAhead = prnSearchResults.TypeAhead
+                TypeAhead = prnSearchResults.TypeAhead,
+                SelectedFilter = request.FilterBy,
+                SelectedSort = request.SortBy
             };
-		}
-	}
+        }
+
+        public async Task<AwaitingAcceptancePrnsViewModel> GetPrnAwaitingAcceptanceSearchResultsAsync(SearchPrnsViewModel request)
+        {
+            PaginatedRequest paginatedRequest = request;
+            var prnSearchResults = await _webApiGatewayClient.GetSearchPrnsAsync(paginatedRequest);
+
+            var pagingDetail = new PagingDetail
+            {
+                CurrentPage = prnSearchResults.CurrentPage,
+                PageSize = request.PageSize,
+                TotalItems = prnSearchResults.TotalItems,
+                TotalPages = prnSearchResults.PageCount
+            };
+
+            return new AwaitingAcceptancePrnsViewModel
+            {
+                Prns = prnSearchResults.Items.Select(item => (AwaitingAcceptanceResultViewModel)item).ToList(),
+                PagingDetail = pagingDetail
+            };
+        }
+
+        public async Task<int> GetAwaitingAcceptancePrnsCount()
+        {
+            var count = 0;
+            //default awaiting request and take item counts from it or else seperate api to pull count
+            var searchPrns = new SearchPrnsViewModel()
+            {
+                FilterBy = PrnConstants.Filters.AwaitingAll
+            };
+
+            var awaitingSearchResponse = await GetPrnAwaitingAcceptanceSearchResultsAsync(searchPrns);
+
+            count = awaitingSearchResponse.PagingDetail.TotalItems;
+            
+            return count;
+        }
+    }
 }
