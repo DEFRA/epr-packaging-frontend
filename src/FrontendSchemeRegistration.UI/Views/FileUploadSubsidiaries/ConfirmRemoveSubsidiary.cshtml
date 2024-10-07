@@ -25,12 +25,16 @@
                     <div class="govuk-form-group@(!ViewData.ModelState.IsValid ? " govuk-form-group--error" : "")">
                         <fieldset class="govuk-fieldset">
                             <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                                @* <span class="govuk-heading-l govuk-!-margin-bottom-0"> *@
-                                @Localizer["confirm_subsidiary_removal_header"]
-                                @* </span> *@
-                                <br/>
-                                @Model.SubsidiaryName
+                                <span class="govuk-heading-l govuk-!-margin-bottom-0">
+                                    @Localizer["confirm-subsidiary-removal-header"]
+                                </span>
                             </legend>
+                            <p class="govuk-body">
+                                <span aria-labelledby="subsidiary-label">
+                                    <span id="subsidiary-label" class="govuk-visually-hidden">Subsidiary being removed:</span>
+                                    @Model.SubsidiaryName
+                                </span>
+                            </p>
 
                             @if (!ViewData.ModelState.IsValid)
                             {
@@ -66,7 +70,7 @@
                     </div>
 
                     <button class="govuk-button" data-module="govuk-button">
-                        @SharedLocalizer["confirm"]
+                        @SharedLocalizer["continue"]
                     </button>
                 </form>
             </div>

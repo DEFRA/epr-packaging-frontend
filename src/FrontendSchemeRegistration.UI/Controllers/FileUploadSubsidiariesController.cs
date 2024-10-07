@@ -216,6 +216,8 @@
                 ParentOrganisationExternalId = parentOrganisationExternalId,
             };
 
+            ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadSubsidiaries}");
+
             return View(model);
         }
 
