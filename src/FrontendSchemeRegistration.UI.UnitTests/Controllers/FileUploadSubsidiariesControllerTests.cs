@@ -22,10 +22,9 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
     using Application.DTOs.Subsidiary.OrganisationSubsidiaryList;
     using Application.Options;
     using Constants;
-    using EPR.Common.Authorization.Extensions;
     using EPR.Common.Authorization.Sessions;
+    using FrontendSchemeRegistration.Application.Constants;
     using FrontendSchemeRegistration.Application.DTOs.Organisation;
-    using FrontendSchemeRegistration.Application.DTOs.Prns;
     using Microsoft.AspNetCore.Mvc.ViewFeatures;
     using UI.Sessions;
 
@@ -192,6 +191,48 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                     It.IsAny<int>(),
                     It.IsAny<string>(),
                     It.IsAny<int>()), Times.Once);
+        }
+
+        [Theory]
+        [TestCase(PagePaths.FileUploadSubsidiariesSuccess)]
+        [TestCase(PagePaths.SubsidiariesDownload)]
+        [TestCase(PagePaths.SubsidiariesDownloadFailed)]
+        [TestCase(PagePaths.ConfirmSubsidiaryRemoval)]
+        public async Task SubsidiariesList_WhenFromAccountLinkPage_SetAccountHomeLink(string pagePath)
+        {
+            // Arrange
+            var mockSessionManager = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
+            mockSessionManager.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+                .ReturnsAsync(new FrontendSchemeRegistrationSession
+                {
+                    RegistrationSession = new RegistrationSession { SelectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid() } },
+                    SubsidiarySession = new SubsidiarySession { Journey = [pagePath] }
+                });
+
+            var controller = new FileUploadSubsidiariesController(
+                _mockFileUploadService.Object,
+                _mockSubmissionService.Object,
+                _mockSubsidiaryService.Object,
+                _globalVariablesMock.Object,
+                mockSessionManager.Object,
+                _mockComplianceSchemeMemberService.Object);
+
+            controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = _claimsPrincipalMock.Object,
+                    Session = new Mock<ISession>().Object
+                }
+            };
+            controller.Url = _mockUrlHelper.Object;
+
+            // Act
+            var result = await controller.SubsidiariesList();
+
+            // Assert
+            result.Should().BeOfType<ViewResult>().Which.ViewData.Should().Contain(pair => 
+                pair.Key == "ShouldShowAccountHomeLink" && (bool)pair.Value == true);
         }
 
         [Test]
@@ -479,7 +520,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             _controller.TempData = new Mock<ITempDataDictionary>().Object;
 
             // Act
-            var result = _controller.SubsidiariesDownload() as RedirectToActionResult;
+            var result = await _controller.SubsidiariesDownload() as RedirectToActionResult;
 
             // Assert
             result.ActionName.Should().Be("SubsidiariesDownloadView");
@@ -666,6 +707,17 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                     model.SubsidiaryName == subsidiaryDetails.Name &&
                     model.SubsidiaryExternalId == subsidiaryDetails.ExternalId &&
                     model.ParentOrganisationExternalId == parentOrganisationExternalId);
+        }
+
+        [Test]
+        public async Task SubsidiariesDownloadFailed_ReturnsSuccessfully()
+        {
+            // Act
+            var result = await _controller.SubsidiariesDownloadFailed();
+
+            // Assert
+            result.Should().BeOfType<ViewResult>()
+                .Which.ViewName.Should().Be(nameof(_controller.SubsidiariesDownloadFailed));
         }
 
         private List<Claim> CreateUserDataClaim(string organisationRole, string serviceRole = null)

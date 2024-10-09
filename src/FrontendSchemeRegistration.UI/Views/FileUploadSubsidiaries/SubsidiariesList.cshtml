@@ -126,10 +126,25 @@
                             <a class="govuk-button govuk-button--secondary govuk-!-margin-left-4" href="@Url.Action("SubsidiariesDownload", "FileUploadSubsidiaries")" role="button" data-module="govuk-button">
                                 @SharedLocalizer["export"]
                             </a>
-                            <div class="govuk-button-group">
-                                <span class="govuk-body"><a href="@Url.Action("Get", "SubsidiariesCompleteFile")" class="govuk-link" rel="noreferrer noopener" target="_blank">@Localizer["how_to_complete_file"]</a></span>
+                        }
+
+                        if (ViewBag.ShouldShowAccountHomeLink)
+                        {
+                            <div class="govuk-grid-row">
+                                <div class="govuk-grid-column-full">
+                                    @Html.ActionLink(Localizer["return_to_account_home"].Value, "Get", "Landing",
+                                             null, new { @class = "govuk-body govuk-link govuk-link--no-visited-state" })
+                                </div>
                             </div>
                         }
+
+                        @if (organisationModel.Subsidiaries.Count > 0)
+                        {
+                            <div class="govuk-button-group">
+                                <span class="govuk-body govuk-!-margin-top-4"><a href="@Url.Action("Get", "SubsidiariesCompleteFile")" class="govuk-link" rel="noreferrer noopener" target="_blank">@Localizer["how_to_complete_file"]</a></span>
+                            </div>
+                        }
+
                     }
                 }
 

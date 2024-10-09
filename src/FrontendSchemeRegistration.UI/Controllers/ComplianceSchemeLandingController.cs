@@ -80,6 +80,8 @@ public class ComplianceSchemeLandingController : Controller
             }
         }
 
+        session.SubsidiarySession.Journey.Clear();
+
         return View("ComplianceSchemeLanding", model);
     }
 

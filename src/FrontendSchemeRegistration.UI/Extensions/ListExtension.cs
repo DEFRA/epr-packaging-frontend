@@ -17,7 +17,7 @@ public static class ListExtension
         var index = list.LastIndexOf(value);
         return index > 0 ? list[index - 1] : default(T);
     }
-
+    
     public static void ClearReportPackagingDataJourney<T>(this List<T> source)
         where T : IComparable<string>
     {

@@ -17,7 +17,7 @@ public class FrontendSchemeRegistrationSession : IHasUserData
 
     public NominatedApprovedPersonSession NominatedApprovedPersonSession { get; set; } = new();
 
-    public SubsidiarySession? SubsidiarySession { get; set; }
+    public SubsidiarySession? SubsidiarySession { get; set; } = new();
 
     public PrnSession PrnSession { get; set; } = new();
 }

@@ -67,7 +67,10 @@
             {
                 return new NotFoundResult();
             }
-
+            
+            var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+            SetBackLink(session);
+            
             return View(vm);
         }
 
@@ -121,18 +124,25 @@
         [Route(PagePaths.FileUploadSubsidiariesSuccess)]
         public async Task<IActionResult> FileUploadSuccess()
         {
-            var model = new SubsidiaryFileUploadSuccessViewModel();
-
-            model.RecordsAdded = int.TryParse(Request.Query["recordsAdded"], out var recordsAdded) ? recordsAdded : 0;
+            var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+            await SaveSession(session, PagePaths.FileUploadSubsidiariesSuccess);
+            
+            var model = new SubsidiaryFileUploadSuccessViewModel
+            {
+                RecordsAdded = int.TryParse(Request.Query["recordsAdded"], out var recordsAdded) ? recordsAdded : 0
+            };
 
             return View("FileUploadSuccess", model);
         }
 
         [HttpGet]
         [Route(PagePaths.SubsidiariesDownload)]
-        public IActionResult SubsidiariesDownload()
+        public async Task<IActionResult> SubsidiariesDownload()
         {
             TempData["DownloadCompleted"] = false;
+            var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+            await SaveSession(session, PagePaths.SubsidiariesDownload);
+
             return RedirectToAction(nameof(SubsidiariesDownloadView), "FileUploadSubsidiaries");
         }
 
@@ -142,14 +152,17 @@
         {          
             return View(nameof(SubsidiariesDownload));
         }
-
-
+        
         [HttpGet]
         [Route(PagePaths.SubsidiariesDownloadFailed)]
-        public IActionResult SubsidiariesDownloadFailed()
+        public async Task<IActionResult> SubsidiariesDownloadFailed()
         {
+            var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+            await SaveSession(session, PagePaths.SubsidiariesDownloadFailed);
+
             return View(nameof(SubsidiariesDownloadFailed));
         }
+
         [HttpGet]
         [Route(PagePaths.ExportSubsidiaries)]
         public async Task<IActionResult> ExportSubsidiaries()
@@ -215,6 +228,8 @@
                 SubsidiaryExternalId = subsidiaryDetails.ExternalId,
                 ParentOrganisationExternalId = parentOrganisationExternalId,
             };
+            var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+            await SaveSession(session, PagePaths.ConfirmSubsidiaryRemoval);
 
             ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadSubsidiaries}");
 
@@ -283,9 +298,7 @@
                     };
                 }
             }
-
-            ViewBag.BackLinkToDisplay = _basePath;
-
+            
             var pageUrl = Url.Action(nameof(SubsidiariesList));
 
             result.PagingDetail = new PagingDetail
@@ -314,6 +327,37 @@
 
                 ]
             };
+        }
+
+        private async Task SaveSession(FrontendSchemeRegistrationSession session, string currentPagePath)
+        {
+            session.SubsidiarySession.Journey.Clear();
+            session.SubsidiarySession.Journey.AddIfNotExists(currentPagePath);
+
+            await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
+        }
+
+        private void SetBackLink(FrontendSchemeRegistrationSession session)
+        {
+            var pageFrom = session.SubsidiarySession.Journey.LastOrDefault();
+            if (ShouldShowAccountHomeLink(pageFrom))
+            {
+                ViewBag.ShouldShowAccountHomeLink = true;
+                ViewBag.BackLinkToDisplay = string.Empty;
+            }
+            else
+            {
+                ViewBag.BackLinkToDisplay = _basePath;
+                ViewBag.ShouldShowAccountHomeLink = false;
+            }
+        }
+        
+        private static bool ShouldShowAccountHomeLink(string previousPage)
+        {
+            return previousPage is PagePaths.FileUploadSubsidiariesSuccess 
+                or PagePaths.SubsidiariesDownload 
+                or PagePaths.SubsidiariesDownloadFailed
+                or PagePaths.ConfirmSubsidiaryRemoval;
         }
     }
 }

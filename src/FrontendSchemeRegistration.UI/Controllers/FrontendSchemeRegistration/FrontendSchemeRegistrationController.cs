@@ -423,6 +423,8 @@ public class FrontendSchemeRegistrationController : Controller
             }
         }
 
+        var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+        session.SubsidiarySession.Journey.Clear();
         return View(nameof(HomePageSelfManaged), viewModel);
     }
 
