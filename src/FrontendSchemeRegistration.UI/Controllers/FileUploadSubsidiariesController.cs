@@ -80,6 +80,7 @@
         public async Task<IActionResult> Post()
         {
             var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+            SetBackLink(session);
 
             var submissionId = await _fileUploadService.ProcessUploadAsync(
                 Request.ContentType,
