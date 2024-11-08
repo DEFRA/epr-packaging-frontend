@@ -163,7 +163,11 @@
                                 @(nothingSubmitted || Model.HasNewFileUploaded ? Model.UploadedAt.Value.ToReadableDateTime() : Model.SubmittedAt.Value.ToReadableDateTime())
                             </td>
                             <td data-heading="@userHeader" class="govuk-table__cell break-word">
-                                @(nothingSubmitted || Model.HasNewFileUploaded ? Model.UploadedBy : Model.SubmittedBy)
+                                @(nothingSubmitted || Model.HasNewFileUploaded ? Model.UploadedBy : Model.SubmittedBy)<br />
+                                    @if (Model.IsUploadByPersonDeleted)
+                                    {
+                                        <span>(@SharedLocalizer["no_longer_in_this_organisation"])</span>
+                                    }
                             </td>
                         </tr>
                         </tbody>

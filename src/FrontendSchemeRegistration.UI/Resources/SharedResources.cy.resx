@@ -264,10 +264,13 @@
   <data name="try-again" xml:space="preserve">
     <value>WTry again</value>
   </data>
+  <data name="link-go-back-to-subsidiaries-list" xml:space="preserve">
+    <value>WGo back to subsidiaries list</value>
+  </data>
   <data name="total" xml:space="preserve">
     <value>WTotal</value>
   </data>
-  <data name="link-go-back-to-subsidiaries-list" xml:space="preserve">
-    <value>WGo back to subsidiaries list</value>
+  <data name="no_longer_in_this_organisation" xml:space="preserve">
+    <value>WNo longer in this organisation</value>
   </data>
 </root>

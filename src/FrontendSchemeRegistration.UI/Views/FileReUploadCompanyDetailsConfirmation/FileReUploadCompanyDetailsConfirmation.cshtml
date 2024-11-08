@@ -90,14 +90,24 @@
                             <tr class="govuk-table__row">
                                 <td data-heading="@fileNameHeader" class="govuk-table__cell break-word">@Model.CompanyDetailsFileName</td>
                                 <td data-heading="@dateHeader" class="govuk-table__cell break-word">@Model.CompanyDetailsFileUploadDate</td>
-                                <td data-heading="@userHeader" class="govuk-table__cell break-word">@Model.CompanyDetailsFileUploadedBy</td>
+                                <td data-heading="@userHeader" class="govuk-table__cell break-word">@Model.CompanyDetailsFileUploadedBy
+                                        @if (Model.IsCompanyDetailsFileUploadedByDeleted)
+                                        {
+                                            <span>(@SharedLocalizer["no_longer_in_this_organisation"])</span>
+                                        }
+                                </td>
                             </tr>
                             @if (!string.IsNullOrWhiteSpace(Model.BrandsFileName))
                             {
                                 <tr class="govuk-table__row">
                                     <td data-heading="@fileNameHeader" class="govuk-table__cell break-word">@Model.BrandsFileName</td>
                                     <td data-heading="@dateHeader" class="govuk-table__cell break-word">@Model.BrandsFileUploadDate</td>
-                                    <td data-heading="@userHeader" class="govuk-table__cell break-word">@Model.BrandsFileUploadedBy</td>
+                                    <td data-heading="@userHeader" class="govuk-table__cell break-word">@Model.BrandsFileUploadedBy
+                                            @if (Model.IsBrandsFileUploadedByDeleted)
+                                            {
+                                                <span>(@SharedLocalizer["no_longer_in_this_organisation"])</span>
+                                            }
+                                    </td>
                                 </tr>
                             }
                             @if (!string.IsNullOrWhiteSpace(Model.PartnersFileName))
@@ -105,7 +115,12 @@
                                 <tr class="govuk-table__row">
                                     <td data-heading="@fileNameHeader" class="govuk-table__cell break-word">@Model.PartnersFileName</td>
                                     <td data-heading="@dateHeader" class="govuk-table__cell break-word">@Model.PartnersFileUploadDate</td>
-                                    <td data-heading="@userHeader" class="govuk-table__cell break-word">@Model.PartnersFileUploadedBy</td>
+                                    <td data-heading="@userHeader" class="govuk-table__cell break-word">@Model.PartnersFileUploadedBy
+                                            @if (Model.IsPartnersFileUploadedByDeleted)
+                                            {
+                                                <span>(@SharedLocalizer["no_longer_in_this_organisation"])</span>
+                                            }
+                                    </td>
                                 </tr>
                             }
                             </tbody>
