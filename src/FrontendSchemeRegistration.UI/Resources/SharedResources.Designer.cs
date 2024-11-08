@@ -99,15 +99,6 @@ namespace FrontendSchemeRegistration.UI.Resources {
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
-        internal static string cancel {
-            get {
-                return ResourceManager.GetString("cancel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
         internal static string change {
             get {
                 return ResourceManager.GetString("change", resourceCulture);
@@ -180,33 +171,6 @@ namespace FrontendSchemeRegistration.UI.Resources {
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
-        internal static string created_new_approved_person {
-            get {
-                return ResourceManager.GetString("created_new_approved_person", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        internal static string Cymraeg {
-            get {
-                return ResourceManager.GetString("Cymraeg", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        internal static string date1_to_date2 {
-            get {
-                return ResourceManager.GetString("date1_to_date2", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
         internal static string defra {
             get {
                 return ResourceManager.GetString("defra", resourceCulture);
@@ -225,27 +189,9 @@ namespace FrontendSchemeRegistration.UI.Resources {
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
-        internal static string English {
-            get {
-                return ResourceManager.GetString("English", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
         internal static string export {
             get {
                 return ResourceManager.GetString("export", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        internal static string go_to_account_home_page {
-            get {
-                return ResourceManager.GetString("go_to_account_home_page", resourceCulture);
             }
         }
         
@@ -270,24 +216,6 @@ namespace FrontendSchemeRegistration.UI.Resources {
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
-        internal static string January_to_June_2023 {
-            get {
-                return ResourceManager.GetString("January to June 2023", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        internal static string July_to_December_2023 {
-            get {
-                return ResourceManager.GetString("July to December 2023", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
         internal static string link_go_back_to_subsidiaries_list {
             get {
                 return ResourceManager.GetString("link-go-back-to-subsidiaries-list", resourceCulture);
@@ -306,33 +234,6 @@ namespace FrontendSchemeRegistration.UI.Resources {
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
-        internal static string manage_account {
-            get {
-                return ResourceManager.GetString("manage_account", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        internal static string manage_account_details {
-            get {
-                return ResourceManager.GetString("manage_account_details", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        internal static string member_details {
-            get {
-                return ResourceManager.GetString("member_details", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
         internal static string menu {
             get {
                 return ResourceManager.GetString("menu", resourceCulture);
@@ -342,36 +243,9 @@ namespace FrontendSchemeRegistration.UI.Resources {
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
-        internal static string next_page {
-            get {
-                return ResourceManager.GetString("next_page", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        internal static string No {
-            get {
-                return ResourceManager.GetString("No", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
         internal static string or {
             get {
                 return ResourceManager.GetString("or", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        internal static string scheme_members {
-            get {
-                return ResourceManager.GetString("scheme_members", resourceCulture);
             }
         }
         
@@ -498,24 +372,6 @@ namespace FrontendSchemeRegistration.UI.Resources {
         internal static string warning {
             get {
                 return ResourceManager.GetString("warning", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        internal static string Welsh {
-            get {
-                return ResourceManager.GetString("Welsh", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        internal static string Yes {
-            get {
-                return ResourceManager.GetString("Yes", resourceCulture);
             }
         }
     }

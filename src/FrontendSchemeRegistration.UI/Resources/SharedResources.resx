@@ -123,9 +123,6 @@
   <data name="confirm_and_continue" xml:space="preserve">
     <value />
   </data>
-  <data name="manage_account" xml:space="preserve">
-    <value />
-  </data>
   <data name="sign_out" xml:space="preserve">
     <value />
   </data>
@@ -135,9 +132,6 @@
   <data name="skip_to_main_content_text" xml:space="preserve">
     <value />
   </data>
-  <data name="go_to_account_home_page" xml:space="preserve">
-    <value />
-  </data>
   <data name="continue" xml:space="preserve">
     <value />
   </data>
@@ -145,12 +139,6 @@
     <value />
   </data>
   <data name="home" xml:space="preserve">
-    <value />
-  </data>
-  <data name="cancel" xml:space="preserve">
-    <value />
-  </data>
-  <data name="manage_account_details" xml:space="preserve">
     <value />
   </data>
   <data name="the_file_may_take_a_few_minutes_to_upload" xml:space="preserve">
@@ -165,49 +153,19 @@
   <data name="warning" xml:space="preserve">
     <value />
   </data>
-  <data name="Cymraeg" xml:space="preserve">
-    <value />
-  </data>
-  <data name="English" xml:space="preserve">
-    <value />
-  </data>
-  <data name="Welsh" xml:space="preserve">
-    <value />
-  </data>
-  <data name="January to June 2023" xml:space="preserve">
-    <value />
-  </data>
-  <data name="July to December 2023" xml:space="preserve">
-    <value />
-  </data>
   <data name="sorry_problem_service" xml:space="preserve">
     <value />
   </data>
   <data name="try_again_later" xml:space="preserve">
     <value />
   </data>
-  <data name="scheme_members" xml:space="preserve">
-    <value />
-  </data>
   <data name="defra" xml:space="preserve">
-    <value />
-  </data>
-  <data name="member_details" xml:space="preserve">
-    <value />
-  </data>
-  <data name="next_page" xml:space="preserve">
     <value />
   </data>
   <data name="menu" xml:space="preserve">
     <value />
   </data>
   <data name="hidden_error" xml:space="preserve">
-    <value />
-  </data>
-  <data name="Yes" xml:space="preserve">
-    <value />
-  </data>
-  <data name="No" xml:space="preserve">
     <value />
   </data>
   <data name="confirm" xml:space="preserve">
@@ -220,9 +178,6 @@
     <value />
   </data>
   <data name="sign_in" xml:space="preserve">
-    <value />
-  </data>
-  <data name="created_new_approved_person" xml:space="preserve">
     <value />
   </data>
   <data name="success" xml:space="preserve">
@@ -250,9 +205,6 @@
     <value />
   </data>
   <data name="CharacterLimit.AtLimit" xml:space="preserve">
-    <value />
-  </data>
-  <data name="date1_to_date2" xml:space="preserve">
     <value />
   </data>
   <data name="upload_file" xml:space="preserve">
