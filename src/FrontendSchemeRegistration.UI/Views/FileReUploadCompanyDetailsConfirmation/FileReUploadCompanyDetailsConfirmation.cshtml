@@ -1,5 +1,4 @@
 @using static FrontendSchemeRegistration.Application.Enums.SubmissionPeriodStatus
-@using Microsoft.IdentityModel.Tokens
 @using FrontendSchemeRegistration.Application.Enums
 
 @model FileReUploadCompanyDetailsConfirmationViewModel
@@ -10,6 +9,7 @@
     var fileNameHeader = Localizer["file_name"];
     var dateHeader = Localizer[Model.Status == SubmittedToRegulator ? "date_submitted" : "date_uploaded"];
     var userHeader = Localizer[Model.Status == SubmittedToRegulator ? "submitted_by" : "uploaded_by"];
+    bool isFileUploadJourneyInvokedViaRegistration = (bool)ViewData["IsFileUploadJourneyInvokedViaRegistration"];
 }
 
 @functions
@@ -36,7 +36,7 @@
                     <p class="govuk-body">@Localizer[Model.IsComplianceScheme ? "your_organisation_already_submitted" : "If_you_want_to_replace_any_of"]</p>
                     if (Model.IsComplianceScheme)
                     {
-                        <p class="govuk-body">@Localizer["someone_in_your_team_with_the_right_account_permissions"]</p>
+                        <p class="govuk-body">@Localizer[isFileUploadJourneyInvokedViaRegistration ? "someone_in_your_team_with_the_right_account_permissions_nonregulator" : "someone_in_your_team_with_the_right_account_permissions"]</p>
                     }
                     else
                     {
@@ -52,10 +52,10 @@
                     </h1>
                     <p class="govuk-body">
                         @Localizer[Model.IsComplianceScheme ? "you_have_already_uploaded_your_members_organisation_details" : "you_have_already_uploaded_your_organisation_details"]
-                        @Localizer["but_they_have_not_been_submitted"]
+                        @Localizer[isFileUploadJourneyInvokedViaRegistration ? "but_they_have_not_been_submitted_nonregulator" : "but_they_have_not_been_submitted"]
                     </p>
                     <p class="govuk-body">@Localizer["you_can_upload"]</p>
-                    <p class="govuk-body">@Localizer["someone_in_your_team_with_the_right_account_permissions"]</p>
+                    <p class="govuk-body">@Localizer[isFileUploadJourneyInvokedViaRegistration ? "someone_in_your_team_with_the_right_account_permissions_nonregulator" : "someone_in_your_team_with_the_right_account_permissions"]</p>
                 }
                 else if (Model is {IsApprovedUser : true, Status : SubmittedToRegulator or SubmittedAndHasRecentFileUpload})
                 {

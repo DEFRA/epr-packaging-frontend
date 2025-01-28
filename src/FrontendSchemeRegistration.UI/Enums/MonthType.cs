@@ -3,5 +3,6 @@
 public enum MonthType
 {
     Start,
-    End
+    End,
+    None
 }

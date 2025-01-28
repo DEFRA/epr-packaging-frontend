@@ -8,7 +8,6 @@ using EPR.Common.Authorization.Sessions;
 using Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using Sessions;
 using UI.Attributes.ActionFilters;
 using ViewModels;
@@ -56,7 +55,11 @@ public class ReviewCompanyDetailsController : Controller
 
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
 
-        ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
+        var isFileUploadJourneyInvokedViaRegistration = session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration;
+
+        ViewBag.BackLinkToDisplay = isFileUploadJourneyInvokedViaRegistration ? PagePaths.RegistrationTaskList : Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
+
+        ViewData["IsFileUploadJourneyInvokedViaRegistration"] = isFileUploadJourneyInvokedViaRegistration;
 
         return View(
             "ReviewCompanyDetails",
@@ -110,6 +113,10 @@ public class ReviewCompanyDetailsController : Controller
 
         ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
 
+        var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+        var isFileUploadJourneyInvokedViaRegistration = session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration;
+        ViewData["IsFileUploadJourneyInvokedViaRegistration"] = isFileUploadJourneyInvokedViaRegistration;
+
         if (!userData.CanSubmit())
         {
             var routeValues = new RouteValueDictionary { { "submissionId", submissionId.ToString() } };
@@ -136,7 +143,7 @@ public class ReviewCompanyDetailsController : Controller
 
         if (model.SubmitOrganisationDetailsResponse.HasValue && !model.SubmitOrganisationDetailsResponse.Value)
         {
-            return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
+            return isFileUploadJourneyInvokedViaRegistration ? Redirect(PagePaths.RegistrationTaskList) : RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
         }
 
         if (!model.IsApprovedUser)

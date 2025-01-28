@@ -118,39 +118,27 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="compliance_scheme" xml:space="preserve">
-    <value>[W]Compliance Scheme</value>
-  </data>
-  <data name="enforcement_action_warning" xml:space="preserve">
-    <value>[W]You may face enforcement action if you miss this deadline.</value>
+	  <value>Cynllun Cydymffurfio</value>
   </data>
   <data name="january" xml:space="preserve">
-    <value>[W]31 January</value>
-  </data>
-  <data name="manage_your_recycling_obligations" xml:space="preserve">
-    <value>[W]Manage your {0} recycling obligations</value>
+	  <value>31 Ionawr </value>
   </data>
   <data name="producer" xml:space="preserve">
-    <value>[W]Producer</value>
+	  <value>Cynhyrchydd</value>
   </data>
   <data name="regulator" xml:space="preserve">
-    <value>[W]Regulator</value>
+	  <value>Rheoleiddiwr</value>
   </data>
   <data name="regulator_england" xml:space="preserve">
-    <value>[W]Environment Agency (England)</value>
+	  <value>Environment Agency (England)</value>
   </data>
   <data name="regulator_northern_ireland" xml:space="preserve">
-    <value>[W]Environment Agency (Northern Ireland)</value>
+	  <value>Environment Agency (Northern Ireland)</value>
   </data>
   <data name="regulator_scotland" xml:space="preserve">
-    <value>[W]Environment Agency (Scotland)</value>
+	  <value>Environment Agency (Scotland)</value>
   </data>
   <data name="regulator_wales" xml:space="preserve">
-    <value>[W]Environment Agency (Wales)</value>
-  </data>
-  <data name="to_meet_your_recycling_obligations_for" xml:space="preserve">
-    <value>[W]to meet your recycling obligations for</value>
-  </data>
-  <data name="you_have_until" xml:space="preserve">
-    <value>[W]You have until</value>
+	  <value>Environment Agency (Wales)</value>
   </data>
 </root>

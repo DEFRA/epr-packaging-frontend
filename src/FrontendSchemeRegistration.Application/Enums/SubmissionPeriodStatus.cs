@@ -19,5 +19,9 @@ public enum SubmissionPeriodStatus
     [LocalizedName("rejected_by_regulator")]
     RejectedByRegulator,
     [LocalizedName("approved_by_regulator")]
-    ApprovedByRegulator
+    ApprovedByRegulator,
+    [LocalizedName("Cancelled_by_regulator")]
+    CancelledByRegulator,
+    [LocalizedName("queried_by_regulator")]
+    QueriedByRegulator
 }

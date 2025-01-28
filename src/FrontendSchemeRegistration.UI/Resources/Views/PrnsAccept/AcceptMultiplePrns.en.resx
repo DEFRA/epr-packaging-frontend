@@ -124,7 +124,7 @@
     <value>Accept selected {0}?</value>
   </data>
   <data name="accepting_them_will_credit_the_tonnage_towards_your_obligation" xml:space="preserve">
-    <value>Accepting them will credit the tonnage towards your obligation</value>
+	  <value>Accepting them will credit the tonnage towards your obligation.</value>
   </data>
   <data name="accepting_it_will_credit_the_tonnage_towards_your_obligation" xml:space="preserve">
     <value>Accepting it will credit the tonnage towards your obligation</value>
@@ -167,5 +167,38 @@
   </data>
   <data name="you_have_remove_only_selected_notes" xml:space="preserve">
     <value>You’ve removed all the selected {0}</value>
+  </data>
+  <data name="review_your_selection" xml:space="preserve">
+	  <value>Review your selection before accepting</value>
+  </data>
+  <data name="remove_from_selection" xml:space="preserve">
+	  <value>Remove from selection</value>
+  </data>
+  <data name="prn_number" xml:space="preserve">
+	  <value>PRN number</value>
+  </data>
+  <data name="pern_number" xml:space="preserve">
+	  <value>PERN number</value>
+  </data>
+  <data name="prn_and_pern_number" xml:space="preserve">
+	  <value>PRN and PERN number</value>
+  </data>
+  <data name="remove_prn_from_selection" xml:space="preserve">
+	  <value>Remove PRN from selection</value>
+  </data>
+  <data name="remove_pern_from_selection" xml:space="preserve">
+	  <value>Remove PERN from selection</value>
+  </data>
+  <data name="remove_prn_or_pern_from_selection" xml:space="preserve">
+	  <value>Remove PRN or PERN from selection</value>
+  </data>
+  <data name="page_title" xml:space="preserve">
+	  <value>Accept or reject PRNs and PERNs</value>
+  </data>
+  <data name="now_accept" xml:space="preserve">
+	  <value>Now accept</value>
+  </data>
+  <data name="accept" xml:space="preserve">
+	  <value>Accept</value>
   </data>
 </root>

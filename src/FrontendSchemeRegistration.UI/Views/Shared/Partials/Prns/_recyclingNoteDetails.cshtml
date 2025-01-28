@@ -1,7 +1,10 @@
 ﻿@using FrontendSchemeRegistration.UI.ViewModels.Prns
 @inject IStringLocalizer<PrnDataResources> PrnDataLocalizer
 @model PrnViewModel
-
+@{
+    string twoLetterISOLanguageName = System.Threading.Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName;
+    var isPdf = ViewData["IsPdf"] as bool? ?? false;
+}
 <fieldset class="govuk-fieldset">
     <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
         <span class="govuk-fieldset__heading">
@@ -23,16 +26,7 @@
         </div>
         <div class="govuk-grid-column-one-half">
             <div class="govuk-label" id="relates-to-waste-received-in-december">
-                <strong>
-                    @if ((bool)(ViewBag.DecemberWasteRulesApply ?? false))
-                    {
-                        @Localizer[(Model.IsDecemberWaste ? "relates_to_waste_received_in_december_yes" : "relates_to_waste_received_in_december_no"), Model.IssueYear, Model.IssueYear + 1]
-                    }
-                    else
-                    {
-                        @SharedLocalizer[Model.DecemberWasteDisplay]
-                    }
-                </strong>
+                <strong>@SharedLocalizer[Model.DecemberWasteDisplay]</strong>
             </div>
         </div>
     </div>
@@ -42,7 +36,20 @@
             <label class="govuk-label" for="material">@Localizer["material"]</label>
         </div>
         <div class="govuk-grid-column-one-half">
-            <div class="govuk-label" id="material"><strong>@PrnDataLocalizer[Model.Material]</strong></div>
+            <div class="govuk-label" id="material">
+                <strong>
+                    @if (isPdf && (PrnDataLocalizer[Model.Material].Value.ToLowerInvariant() == "paper, board or fibre-based composite material"
+                    || PrnDataLocalizer[Model.Material].Value.ToLowerInvariant() == "papur, bwrdd neu ddeunydd cyfansawdd sy'n seiliedig ar ffeibrau"))
+                    {
+                        @* special case, match the material type on the NPWD version of the PDF *@
+                        @Localizer["paper_and_board_pdf"]
+                    }
+                    else
+                    {
+                        @PrnDataLocalizer[Model.Material]
+                    }
+                </strong>
+             </div>
         </div>
     </div>
     <hr />
@@ -64,6 +71,18 @@
         </div>
     </div>
     <hr />
+    @if (isPdf)
+    {
+        <div class="govuk-grid-row only-print">
+            <div class="govuk-grid-column-one-half">
+                <label class="govuk-label" for="tonnageinwords">@Localizer["tonnage_in_words"]</label>
+            </div>
+            <div class="govuk-grid-column-one-half">
+                <div class="govuk-label" id="tonnageinwords"><strong>@Model.Tonnage.ToDigitsAsWords(twoLetterISOLanguageName)</strong></div>
+            </div>
+        </div>
+        <hr />
+    }
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-one-half">
             <label class="govuk-label" for="packaging-producer-or-compliance-scheme">@Localizer["packaging_producer_or_compliance_scheme"]</label>
@@ -78,8 +97,22 @@
             <label class="govuk-label" for="note">@Localizer["note"]</label>
         </div>
         <div class="govuk-grid-column-one-half">
-            <div class="govuk-label" id="note"><strong>@Model.AdditionalNotes</strong></div>
+            <div class="govuk-label" id="note">
+                <strong>
+                    @if (string.IsNullOrWhiteSpace(@Model.AdditionalNotes))
+                    {
+                        @Localizer["not_provided"]
+                    }
+                    else
+                    {
+                        @Model.AdditionalNotes
+                    }
+                </strong>
+            </div>
         </div>
     </div>
-    <hr />
+    @if (!isPdf)
+    {
+        <hr />
+    }
 </fieldset>

@@ -1,6 +1,6 @@
 ﻿namespace FrontendSchemeRegistration.Application.Services
 {
-    public class ServiceClientBase
+    public static class ServiceClientBase
     {
         public static string BuildUrlWithQueryString(object dto)
         {

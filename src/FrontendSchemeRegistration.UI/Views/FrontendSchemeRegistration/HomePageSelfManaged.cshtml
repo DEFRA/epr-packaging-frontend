@@ -1,4 +1,6 @@
+@using FrontendSchemeRegistration.Application.DTOs.Submission
 @using FrontendSchemeRegistration.UI.Constants
+@using FrontendSchemeRegistration.UI.Sessions
 @model HomePageSelfManagedViewModel
 
 @{
@@ -16,10 +18,10 @@
     {
         @await Html.PartialAsync("Partials/Notifications/_NominatedApprovedPerson", Model.Notification.NominatedApprovedPersonEnrolmentId)
     }
-    
+
     @await Component.InvokeAsync("PendingApprovalNotification")
     @await Component.InvokeAsync("ApprovedPerconInvitationSubmittedNotification")
-    
+
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
             <h1 class="govuk-heading-xl govuk-!-margin-bottom-6 break-word">@title</h1>
@@ -52,23 +54,34 @@
         </div>
     </div>
 
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-one-half">
+    <div class="govuk-grid-row box-container">
+        <feature name="@FeatureFlags.ShowRegistration">
+            <div class="govuk-grid-column-one-half box">
+                <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
+                    <div class="govuk-card-body">
+                        <h2 class="govuk-heading-m">
+                            <a asp-controller="FrontendSchemeRegistration" asp-action="ProducerRegistrationGuidance" class="govuk-link govuk-link--no-visited-state">
+                                @Localizer["registration"]
+                            </a>
+                        </h2>
+                        <p class="govuk-body">
+                            @{
+                                ShowProgressStatus(Model);
+                            }
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </feature>
+        <div class="govuk-grid-column-one-half box">
             <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
                 <div class="govuk-card-body">
                     <h2 class="govuk-heading-m">
-                        @Html.ActionLink(
-                            Localizer["organisation_details"].Value,
-                            "Get",
-                            "FileUploadCompanyDetailsSubLanding",
-                            null,
-                            new
-                            {
-                                @class = "govuk-link govuk-link--no-visited-state"
-                            })
+                        <a asp-controller="FileUploadCompanyDetailsSubLanding" asp-action="Get" class="govuk-link govuk-link--no-visited-state">
+                            @Localizer["report_your_organisation_details"]
+                        </a>
                     </h2>
-                    <p class="govuk-body">@Localizer["every_year_you_must_report_data_for"]</p>
-                    <p class="govuk-body">@Localizer["you_can_also"]</p>
+                    <p class="govuk-body">@Localizer["you_can"]</p>
                     <ul class="govuk-list govuk-list--bullet">
                         <li>@Localizer["resubmit_your_organisation_details"]</li>
                         <li>@Localizer["report_changes_to_your_organisation_details"]</li>
@@ -77,19 +90,22 @@
                 </div>
             </div>
         </div>
-        <div class="govuk-grid-column-one-half">
+    </div>
+
+    <div class="govuk-grid-row box-container">
+        <div class="govuk-grid-column-one-half box">
             <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
                 <div class="govuk-card-body">
                     <h2 class="govuk-heading-m">
                         @Html.ActionLink(
-                            Localizer["packaging_data"].Value,
-                            "Get",
-                            "FileUploadSubLanding",
-                            null,
-                            new
-                            {
-                                @class = "govuk-link govuk-link--no-visited-state"
-                            })
+                                 Localizer["packaging_data"].Value,
+                                 "Get",
+                                 "FileUploadSubLanding",
+                                 null,
+                                 new
+                                 {
+                                     @class = "govuk-link govuk-link--no-visited-state"
+                                 })
                     </h2>
                     <p class="govuk-body">@Localizer["you_must_report_packaging_data"]</p>
                     <p class="govuk-body">@Localizer["you_can_also"]</p>
@@ -100,9 +116,8 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-one-half">
+
+        <div class="govuk-grid-column-one-half box">
             <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
                 <div class="govuk-card-body">
                     <h2 class="govuk-heading-m">@Localizer["waste_management_fee"]</h2>
@@ -110,44 +125,122 @@
                 </div>
             </div>
         </div>
-        <div class="govuk-grid-column-one-half">
-            <feature name="@FeatureFlags.ShowPrn">
+    </div>
+
+    <div class="govuk-grid-row box-container">
+        <feature name="@FeatureFlags.ShowPrn">
+            <div class="govuk-grid-column-one-half box">
                 <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
                     <div class="govuk-card-body">
-                        <h2 class="govuk-heading-m">                        
-                           <a href="@FrontendSchemeRegistration.Application.Constants.PagePaths.Prns.ObligationsHome" 
-                           class="govuk-link--no-visited-state">@Localizer["prn_heading_text", Model.CurrentYear]</a>
+                        <h2 class="govuk-heading-m">
+                            <a href="@FrontendSchemeRegistration.Application.Constants.PagePaths.Prns.ObligationsHome"
+                                class="govuk-link--no-visited-state"
+                                aria-labelledby="@Localizer["prn_heading_text", Model.CurrentYear]">@Localizer["prn_heading_text", Model.CurrentYear]</a>
                         </h2>
-                        <p class="govuk-body">
-                            @Localizer["prn_paragraph_1"]
-                        </p>
+                        <p class="govuk-body">@Localizer["prn_paragraph_1"]</p>
+                        <p class="govuk-body">@Localizer["you_can_also"]</p>
                         <ul class="govuk-list govuk-list--bullet">
                             <li>@Localizer["prn_unordered_list_point_1"]</li>
                             <li>@Localizer["prn_unordered_list_point_2"]</li>
                         </ul>
                     </div>
                 </div>
-            </feature>
-        </div>
+            </div>
+        </feature>
+
         <feature name="@FeatureFlags.ShowSubsidiaries">
-        <div class="govuk-grid-column-one-half">
-            <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
-                <div class="govuk-card-body">
-                    <h2 class="govuk-heading-m">
-                        @Html.ActionLink(
-                                 Localizer["subsidiaries"].Value,
-                                 "SubsidiariesList",
-                                 "FileUploadSubsidiaries",
-                                 null,
-                                 new
-                                 {
-                                     @class = "govuk-link govuk-link--no-visited-state"
-                                 })
-                    </h2>
-                    <p class="govuk-body govuk-!-margin-bottom-0">@Localizer["add-manage-subsidiaries"]</p>
+            <div class="govuk-grid-column-one-half box">
+                <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
+                    <div class="govuk-card-body">
+                        <h2 class="govuk-heading-m">
+                            @Html.ActionLink(
+                                     Localizer["subsidiaries"].Value,
+                                     "SubsidiariesList",
+                                     "FileUploadSubsidiaries",
+                                     null,
+                                     new
+                                     {
+                                         @class = "govuk-link govuk-link--no-visited-state"
+                                     })
+                        </h2>
+                        <p class="govuk-body govuk-!-margin-bottom-0">@Localizer["add-manage-subsidiaries"]</p>
+                    </div>
                 </div>
             </div>
-        </div>
         </feature>
     </div>
 </main>
+
+@{
+    void ShowProgressStatus(HomePageSelfManagedViewModel model)
+    {
+        if (model.ApplicationStatus == ApplicationStatusType.AcceptedByRegulator)
+        {
+            <div>
+                <p class="govuk-body">@Localizer["Your_registration_for_x_has_been_granted", model.CurrentYear]</p>
+                <p class="govuk-body">@Localizer["Your_registration_reference_number_is_x", model.RegistrationReferenceNumber]</p>
+                <p class="govuk-body">@Localizer["If_anything_changes_you_should_resubmit"]</p>
+            </div>
+            return;
+        }
+        if (model.ApplicationStatus == ApplicationStatusType.QueriedByRegulator)
+        {
+            <div>
+                <p class="govuk-body">@Localizer["The_regulator_has_identified_a_potential_issue"]</p>
+                <p class="govuk-body">@Localizer["You_will_need_to_submit_a_corrected_registration_data_file"]</p>
+            </div>
+            return;
+        }
+        if (model.ApplicationStatus == ApplicationStatusType.RejectedByRegulator)
+        {
+            <div>
+                <p class="govuk-body">@Localizer["Your_registration_application_for_x_has_been_refused", model.CurrentYear]</p>
+                <p class="govuk-body">@Localizer["Contact_the_regulator_for_further_advice"]</p>
+            </div>
+            return;
+        }
+        if (model.ApplicationStatus == ApplicationStatusType.CancelledByRegulator)
+        {
+            <div>
+                <p class="govuk-body">@Localizer["Your_registration_for_X_has_been_cancelled", model.CurrentYear]</p>
+                <p class="govuk-body">@Localizer["Contact_your_regulator_if_you_need_advice"]</p>
+            </div>
+            return;
+        }
+        if (model.AdditionalDetailsStatus == RegistrationTaskListStatus.Completed)
+        {
+            <div>
+                <p class="govuk-body">@Localizer["Your_registration_application_for_x_has_been_submitted", model.CurrentYear]</p>
+            </div>
+        }
+        if (model is { FileUploadStatus: RegistrationTaskListStatus.Completed, PaymentViewStatus: RegistrationTaskListStatus.Completed, AdditionalDetailsStatus: RegistrationTaskListStatus.Pending or RegistrationTaskListStatus.NotStarted })
+        {
+            <div>
+                <p class="govuk-body">@Localizer["You_have_viewed_your_registration_fees"]</p>
+                <p class="govuk-body">@Localizer["Payment_must_be_made_before_submitting_your_x", model.CurrentYear]</p>
+            </div>
+            return;
+        }
+        if (model.FileUploadStatus is RegistrationTaskListStatus.Completed && model.PaymentViewStatus is RegistrationTaskListStatus.Pending or RegistrationTaskListStatus.NotStarted)
+        {
+            <div>
+                <p class="govuk-body">@Localizer["You_have_submitted_your_registration_data_for_x", Model.CurrentYear]</p>
+                <p class="govuk-body">@Localizer["View_your_registration_fees_and_payment_methods"]</p>
+            </div>
+            return;
+        }
+        if (model.FileUploadStatus is RegistrationTaskListStatus.Pending && model.ApplicationStatus != ApplicationStatusType.FileUploaded)
+        {
+            <div>
+                <p class="govuk-body">@Localizer["You_have_submitted_your_registration_data"]</p>
+                <p class="govuk-body">@Localizer["You_will_then_need_to_pay_your_registration_fee"]</p>
+            </div>
+            return;
+        }
+        if (model.FileUploadStatus is RegistrationTaskListStatus.NotStarted 
+            || (model.FileUploadStatus is RegistrationTaskListStatus.Pending && model.ApplicationStatus is ApplicationStatusType.FileUploaded))
+        {
+            <p class="govuk-body govuk-!-margin-bottom-0">@Localizer["you_need_to_register_by_1_April", Model.CurrentYear] @Localizer["Apply_by_1st_April_x", Model.CurrentYear]</p>
+        }
+    }
+}

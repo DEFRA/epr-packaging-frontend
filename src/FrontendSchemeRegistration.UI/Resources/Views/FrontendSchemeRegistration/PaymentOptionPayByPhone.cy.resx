@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="pay_by_phone_title" xml:space="preserve">
+        <value>Talu dros y ffôn</value>
+    </data>
+    <data name="pay_by_phone_heading" xml:space="preserve">
+        <value>Talu dros y ffôn</value>
+    </data>
+    <data name="pay_registration_fee_of" xml:space="preserve">
+        <value>Talu’r ffi gofrestru o </value>
+    </data>
+    <data name="by_phone" xml:space="preserve">
+        <value> dros y ffôn.</value>
+    </data>
+    <data name="have_bank_details_ready" xml:space="preserve">
+        <value>Byddwch yn barod â’ch manylion banc er mwyn ffonio.</value>
+    </data>
+    <data name="payment_details_section" xml:space="preserve">
+        <value>Manylion talu</value>
+    </data>
+    <data name="enquires_subsection" xml:space="preserve">
+        <value>Ymholiadau</value>
+    </data>
+    <data name="england" xml:space="preserve">
+        <value>Lloegr</value>
+    </data>
+    <data name="use_application_payment_ref" xml:space="preserve">
+        <value>Defnyddiwch y cyfeirnod taliad am gais: </value>
+    </data>
+    <data name="environment_agency" xml:space="preserve">
+        <value>Asiantaeth yr Amgylchedd</value>
+    </data>
+    <data name="telephone_within_UK" xml:space="preserve">
+        <value>Ffôn: 03708 506 506</value>
+    </data>
+    <data name="telephone_from_abroad" xml:space="preserve">
+        <value>Ffôn o'r tu allan i'r Deyrnas Unedig: +44 (0) 114 282 5312</value>
+    </data>
+    <data name="working_hours" xml:space="preserve">
+        <value>Dydd Llun i ddydd Gwener, 8am i 6pm </value>
+    </data>
+    <data name="more_about_call_charges" xml:space="preserve">
+        <value>Gwybodaeth am daliadau am alwadau</value>
+    </data>
+    <data name="submit_application_from_dashboard_once_payment_been_made" xml:space="preserve">
+        <value>Cyflwynwch eich cais o'r dangosfwrdd cofrestru pan fydd y taliad wedi'i wneud.</value>
+    </data>
+    <data name="you_can" xml:space="preserve">
+        <value>Gallwch chi </value>
+    </data>
+    <data name="print_or_save_as_PDF" xml:space="preserve">
+        <value>argraffu’r tudalen yma neu ei gadw fel PDF</value>
+    </data>
+    <data name="return_to_dashboard" xml:space="preserve">
+        <value>Yn ôl i’r dangosfwrdd</value>
+    </data>
+</root>

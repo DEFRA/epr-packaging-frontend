@@ -80,7 +80,7 @@
                             @await Html.PartialAsync("Partials/Govuk/_Error", ViewData.ModelState.GetModelStateEntry("file"))
                         }
 
-                        <input class="govuk-file-upload" id="file" name="file" type="file">
+                        <input class="govuk-file-upload" title="Choose a file" id="file" name="file" type="file">
                     </div>
 
                     <button class="govuk-button" data-module="govuk-button" type="submit">@Localizer["upload_file"]</button>

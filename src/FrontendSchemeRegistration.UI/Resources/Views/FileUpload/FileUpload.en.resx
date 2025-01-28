@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="upload_your_file" xml:space="preserve">
-    <value>Upload your file</value>
+    <value>Upload your packaging data file</value>
   </data>
   <data name="file_upload_is_invalid" xml:space="preserve">
     <value>File upload is invalid - try again</value>
@@ -200,5 +200,38 @@
   </data>
   <data name="file_size_exceeded_max_allowed" xml:space="preserve">
     <value>File size exceeded {0}KB</value>
+  </data>
+  <data name="report_your_packaging_data" xml:space="preserve">
+    <value>Report your packaging data</value>
+  </data>
+  <data name="report_your_members_packaging_data" xml:space="preserve">
+    <value>Report your members’ packaging data</value>
+  </data>
+  <data name="before_you_start" xml:space="preserve">
+    <value>Before you start</value>
+  </data>
+  <data name="read_the_guidance_on" xml:space="preserve">
+    <value>Read the guidance on</value>
+  </data>
+  <data name="how_to_report_organisation_details" xml:space="preserve">
+    <value>how to report packaging data (opens in a new window)</value>
+  </data>
+  <data name="there_are_template_documents_you_can_use_to_build_your_files" xml:space="preserve">
+    <value>There are template documents you can use to build your files.</value>
+  </data>
+  <data name="file_rejection_warning_text" xml:space="preserve">
+    <value>Your file will be rejected if you are reporting for subsidiaries and have not used the subsidiary ID we provided.</value>
+  </data>
+  <data name="manage_your_subsidiaries" xml:space="preserve">
+    <value>Manage your subsidiaries</value>
+  </data>
+  <data name="it_may_take_a_few_minutes_for_your_file_upload..." xml:space="preserve">
+      <value>It may take a few minutes for your file to upload - do not close the window while the file is uploading.</value>
+  </data>
+	<data name="the_file_must_be:" xml:space="preserve">
+      <value>The file must be:</value>
+  </data>
+  <data name="file_must_be_a_csv" xml:space="preserve">
+    <value>The uploaded file must be in .csv format</value>
   </data>
 </root>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="producer_registration_guidance_title" xml:space="preserve">
+        <value>Canllawiau i Gynhyrchwyr ar Gofrestru</value>
+    </data>
+    <data name="register_company" xml:space="preserve">
+        <value>{0} cofrestru</value>
+    </data>
+    <data name="scheme_registration_details" xml:space="preserve">
+        <value>Manylion cofrestru'r cynllun</value>
+    </data>
+    <data name="organisation_id_x" xml:space="preserve">
+        <value>ID y sefydliad: {0}</value>
+    </data>
+    <data name="compliance_scheme_x" xml:space="preserve">
+        <value>Cynllun cydymffurfio: {0}</value>
+    </data>
+    <data name="regulator" xml:space="preserve">
+        <value>Rheoleiddiwr: </value>
+    </data>
+    <data name="england.environmental_regulator" xml:space="preserve">
+        <value>Asiantaeth yr Amgylchedd (EA)</value>
+    </data>
+    <data name="scotland.environmental_regulator" xml:space="preserve">
+        <value>Asiantaeth Diogelu Amgylchedd yr Alban (SEPA)</value>
+    </data>
+    <data name="wales.environmental_regulator" xml:space="preserve">
+        <value>Cyfoeth Naturiol Cymru (CNC)</value>
+    </data>
+    <data name="northernireland.environmental_regulator" xml:space="preserve">
+        <value>Asiantaeth Amgylchedd Gogledd Iwerddon (NIEA)</value>
+    </data>
+    <data name="if_you_are_obligated_under_PRO_2024_you_must_register" xml:space="preserve">
+        <value>Os ydych chi o dan rwymedigaeth o dan Reoliadau Rhwymedigaethau Cyfrifoldeb Cynhyrchwyr (Pecynwaith a Gwastraff Pecynwaith) 2024, rhaid ichi gofrestru.</value>
+    </data>
+    <data name="to_apply_for_registration_you_must" xml:space="preserve">
+        <value>I wneud cais am gofrestru mae'n rhaid ichi:</value>
+    </data>
+    <data name="upload_your_organisation_data" xml:space="preserve">
+        <value>uwchlwytho manylion eich sefydliad</value>
+    </data>
+    <data name="make_payment" xml:space="preserve">
+        <value>gwneud taliad.</value>
+    </data>
+    <data name="submit_your_application" xml:space="preserve">
+        <value>cyflwyno’ch cais.</value>
+    </data>
+    <data name="you_must_be_approved_or_delegated_person_to_submit_data_complete_registration" xml:space="preserve">
+        <value>Rhaid i chi fod yn berson wedi’i gymeradwyo neu wedi’i ddirprwyo er mwyn cyflwyno'ch data a chwblhau'r cais.</value>
+    </data>
+    <data name="more_about_packaging_responsibilities_and_check_need_for_action" xml:space="preserve">
+        <value>Rhagor o wybodaeth am gyfrifoldebau pecynwaith a gwirio a oes angen ichi weithredu (yn agor mewn tab newydd)</value>
+    </data>
+    <data name="ensure_your_packaging_data_for_year_been_reported_before_registering" xml:space="preserve">
+        <value>Gwnewch yn siŵr eich bod wedi rhoi gwybod am eich data pecynwaith ar gyfer {0} cyn cofrestru. Gall methiant arwain at oedi wrth asesu’ch cofrestriad.</value>
+    </data>
+</root>

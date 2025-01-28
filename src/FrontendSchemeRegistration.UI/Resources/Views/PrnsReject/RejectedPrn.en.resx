@@ -121,10 +121,10 @@
     <value>Accept or reject more {0} and {1}</value>
   </data>
   <data name="download_this_prn" xml:space="preserve">
-    <value>Download this {0}</value>
+    <value>Download this {0} as a PDF</value>
   </data>
   <data name="manage_obligation_home" xml:space="preserve">
-    <value>Manage obligation home</value>
+    <value>View recycling obligations progress</value>
   </data>
   <data name="page_title" xml:space="preserve">
     <value>EPR for packaging data: manage your recycling obligation</value>
@@ -142,6 +142,6 @@
     <value>Packaging Export Recycling Note</value>
   </data>
   <data name="year" xml:space="preserve">
-    <value>Year</value>
+    <value>Year of issue</value>
   </data>
 </root>

@@ -31,12 +31,30 @@
     </data>
     <data name="if_there_are_changes_producer" xml:space="preserve">
         <value>Os oes unrhyw newidiadau ym manylion eich sefydliad, rhaid i chi roi gwybod amdanyn nhw o fewn 28 diwrnod ar ôl iddyn nhw ddigwydd. Gallwch wneud hyn drwy ail-gyflwyno’ch ffeiliau CSV.</value>
-    </data>
+    </data>	
     <data name="if_there_are_changes_compliance" xml:space="preserve">
         <value>Os oes unrhyw newidiadau ym manylion eich sefydliad aelodau, rhaid i chi roi gwybod amdanyn nhw o fewn 28 diwrnod ar ôl iddyn nhw ddigwydd. Gallwch wneud hyn drwy ail-gyflwyno’ch ffeiliau CSV. </value>
     </data>
     <data name="organisation_details_submitted" xml:space="preserve">
         <value>Manylion y sefydliad wedi’u cyflwyno i’r rheoleiddiwr amgylcheddol</value>
+    </data>
+	<data name="organisation_details_submitted_registration" xml:space="preserve">
+        <value>Manylion y sefydliad wedi'u cyflwyno</value>
+    </data>
+	<data name="it_may_take_an_hour" xml:space="preserve">
+		Gall gymryd hyd at awr i'n systemau gael eu diweddaru
+	</data>
+	<data name="you_still_need_to" xml:space="preserve">
+        <value>Mae'n dal yn angenrheidiol ichi:</value>
+    </data>
+	<data name="pay_your_registration_fee" xml:space="preserve">
+        <value>talu'ch ffi gofrestru</value>
+    </data>
+	<data name="apply_for_registration" xml:space="preserve">
+        <value>gwneud cais am gofrestru</value>
+    </data>
+	<data name="return_to_registration" xml:space="preserve">
+        <value>Yn ôl i gofrestru</value>
     </data>
     <data name="page_title_producer" xml:space="preserve">
         <value>Cadarnhad bod manylion eich sefydliad wedi’u cyflwyno </value>

@@ -18,18 +18,35 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
         public List<PrnViewModel> Prns { get; set; } = new();
 
         public List<PrnViewModel> PreviousSelectedPrns { get; set; } = new();
+        
         public CountBreakdown GetCountBreakdown(IEnumerable<PrnViewModel> prns)
         {
-            int prnCount = prns?.Count(x => x.IsPrn) ?? 0;
-            int pernCount = prns?.Count(x => !x.IsPrn) ?? 0;
+            var prnCount = prns?.Count(x => x.IsPrn) ?? 0;
+            var pernCount = prns?.Count(x => !x.IsPrn) ?? 0;
+            
+            string columnHeaderLabel;
+            if (prnCount > 0 && pernCount > 0)
+                columnHeaderLabel = "prn_and_pern_number";
+            else if (prnCount > 0)
+                columnHeaderLabel = "prn_number";
+            else
+                columnHeaderLabel = "pern_number";
 
-            return new CountBreakdown(prns?.Count() ?? 0, prnCount, pernCount);
+            string removeLinkText;
+            if (prnCount > 0 && pernCount > 0)
+                removeLinkText = "remove_prn_or_pern_from_selection";
+            else if (prnCount > 0)
+                removeLinkText = "remove_prn_from_selection";
+            else
+                removeLinkText = "remove_pern_from_selection";
+
+            return new CountBreakdown(prns?.Count() ?? 0, prnCount, pernCount, columnHeaderLabel, removeLinkText);
         }
 
         public string GetPrnWord(int count)
         {
             return count == 1 ? PrnConstants.PrnText : PrnConstants.PrnsText;
-        }
+        }   
 
         public string GetPernWord(int count)
         {
@@ -40,20 +57,18 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
         public string GetNoteType(IEnumerable<PrnViewModel> prns)
         {
             var counts = GetCountBreakdown(prns);
-
-            if ((counts.PrnCount > 0) && (counts.PernCount > 0))
+            if (counts.PrnCount > 0 && counts.PernCount > 0)
             {
                 return PrnConstants.PrnsAndPernsText;
             }
-            else if (counts.PrnCount > 0)
+            if (counts.PrnCount > 0)
             {
                 return GetPrnWord(counts.PrnCount);
             }
-            else if (counts.PernCount > 0)
+            if (counts.PernCount > 0)
             {
                 return GetPernWord(counts.PernCount);
             }
-
             return string.Empty;
         }
 
@@ -61,25 +76,24 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
         public string GetPluralNoteType(IEnumerable<PrnViewModel> prns)
         {
             var counts = GetCountBreakdown(prns);
-
-            if ((counts.PrnCount > 0) && (counts.PernCount > 0))
+            if (counts.PrnCount > 0 && counts.PernCount > 0)
             {
                 return PrnConstants.PrnsAndPernsText;
             }
-            else if (counts.PrnCount > 0)
+            if (counts.PrnCount > 0)
             {
                 return PrnConstants.PrnsText;
             }
-            else if (counts.PernCount > 0)
+            if (counts.PernCount > 0)
             {
                 return PrnConstants.PernsText;
             }
-
+            
             return string.Empty;
         }
     }
 
     public record RemovedPrn(string PrnNumber, bool IsPrn);
 
-    public record CountBreakdown(int TotalCount, int PrnCount, int PernCount);
+    public record CountBreakdown(int TotalCount, int PrnCount, int PernCount, string ColumnHeaderLabel, string RemoveLinkText);
 }

@@ -21,9 +21,9 @@
 				<div class="govuk-card govuk-card--grey govuk-card--no-border govuk-!-margin-bottom-7">
 					<div class="govuk-card-body">
 						<div class="govuk-form-group">
-							<div id="search-hint" class="govuk-body govuk-!-margin-bottom-2">
+							<label id="search-hint" for="search" class="govuk-body govuk-!-margin-bottom-2">
 								@Localizer["enter_prn_or_pern_number"]
-							</div>
+							</label>
 							<input type="text" class="govuk-input" id="search" name="search" aria-describedby="search-hint" value="@Model.SearchString" list="search_values" autocomplete="off">
 							<datalist id="search_values">
 								@foreach (var searchOption in Model.TypeAhead)
@@ -86,45 +86,57 @@
 			<div class="govuk-grid-row">
 				<br /><br />
 			</div>
-			@if (Model.PagingDetail.TotalItems > 0)
-			{
-				<table class="govuk-table prn-responsive-table">
-					<caption class="govuk-table__caption govuk-table__caption--m govuk-visually-hidden">@Localizer["view_and_select_prns_table_description"]</caption>
-					<thead class="govuk-table__head">
-						<tr class="govuk-table__row">
-							<th class="govuk-table__header">@Localizer["prn_or_pern_number"]</th>
-							<th class="govuk-table__header">@Localizer["material"]</th>
-							<th class="govuk-table__header">@Localizer["date_issued"]</th>
-							<th class="govuk-table__header">@Localizer["december_waste"]</th>
-							<th class="govuk-table__header">@Localizer["issued_by"]</th>
-							<th class="govuk-table__header">@Localizer["tonnage"]</th>
-							<th class="govuk-table__header">@Localizer["status"]</th>
-						</tr>
-					</thead>
-					<tbody class="govuk-table__body">
-							@foreach (var prn in Model.ActivePageOfResults)
-							{
+			<table class="govuk-table prn-responsive-table">
+				<caption class="govuk-table__caption govuk-table__caption--m govuk-visually-hidden">@Localizer["view_and_select_prns_table_description"]</caption>
+				<thead class="govuk-table__head">
+					<tr class="govuk-table__row">
+						<th class="govuk-table__header">@Localizer["prn_or_pern_number"]</th>
+						<th class="govuk-table__header">@Localizer["material"]</th>
+						<th class="govuk-table__header">@Localizer["date_issued"]</th>
+						<th class="govuk-table__header">@Localizer["december_waste"]</th>
+						<th class="govuk-table__header">@Localizer["issued_by"]</th>
+						<th class="govuk-table__header">@Localizer["tonnage"]</th>
+						<th class="govuk-table__header">@Localizer["status"]</th>
+					</tr>
+				</thead>
+
+				@if (Model.PagingDetail.TotalItems > 0)
+				{
+					@foreach (var prn in Model.ActivePageOfResults)
+					{
+						<tbody class="govuk-table__body">
 							<tr class="govuk-table__row">
 								<td class="govuk-table__cell">
-									<a class="govuk-link" href="@Url.Action(nameof(PrnsController.SelectSinglePrn), "Prns", new { id = prn.ExternalId })">@prn.PrnOrPernNumber<span class="govuk-visually-hidden">@Localizer["prn_or_pern_number"]</span></a>
+									<a class="govuk-link" href="@Url.Action(nameof(PrnsController.SelectSinglePrn), "Prns", new { id = prn.ExternalId })" aria-label="@Localizer["prn_or_pern_number"] @prn.PrnOrPernNumber">
+										@prn.PrnOrPernNumber
+										<span class="govuk-visually-hidden">@Localizer["prn_or_pern_number"]</span>
+									</a>
 								</td>
 								<td class="govuk-table__cell" data-label=@Localizer["material"]>@PrnDataLocalizer[prn.Material]</td>
-								<td class="govuk-table__cell"data-label=@Localizer["date_issued"]>@prn.DateIssuedDisplay</td>
-								<td class="govuk-table__cell"data-label=@Localizer["december_waste"]>@SharedLocalizer[prn.DecemberWasteDisplay]</td>
+								<td class="govuk-table__cell" data-label=@Localizer["date_issued"]>@prn.DateIssuedDisplay</td>
+								<td class="govuk-table__cell" data-label=@Localizer["december_waste"]>@SharedLocalizer[prn.DecemberWasteDisplay]</td>
 								<td class="govuk-table__cell" data-label=@Localizer["issued_by"]>@prn.IssuedBy</td>
 								<td class="govuk-table__cell govuk-table__cell--numeric" data-label=@Localizer["tonnage"]>@prn.Tonnage</td>
 								<td class="govuk-table__cell">
 									<div class="govuk-table__cell--numeric">
 										<span class="govuk-tag govuk-tag--@prn.ApprovalStatusDisplayCssColour">
-												@PrnDataLocalizer[prn.ApprovalStatus]
+											@PrnDataLocalizer[prn.ApprovalStatus]
 										</span>
 									</div>
 								</td>
 							</tr>
-							}
-					</tbody>
-				</table>
-				@await Html.PartialAsync("Partials/RecordNavigation/_RecordPaging", Model.PagingDetail)
+						</tbody>
+					}
+				}
+			</table>
+
+			@await Html.PartialAsync("Partials/RecordNavigation/_RecordPaging", Model.PagingDetail)
+
+			@if (Model.PagingDetail.TotalItems == 0)
+			{
+				<h1 class="govuk-heading-xl">@Localizer["no_prns_or_perns_found"]</h1>
+				<p class="govuk-body">@Localizer["no_prns_or_perns_found_body"]</p>
+				<p class="govuk-body">@Localizer["no_prns_or_perns_found_body_extra"]</p>
 			}
 		</div>
 	</div>

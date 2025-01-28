@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System.Security.Claims;
+using Application.DTOs.Submission;
+using Application.Enums;
 using UI.Controllers;
 using UI.Controllers.ControllerExtensions;
 using UI.ViewModels;
@@ -90,6 +92,13 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
         var notificationList = new List<NotificationDto>();
         NotificationService.Setup(x => x.GetCurrentUserNotifications(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(notificationList));
 
+        SubmissionService
+            .Setup(s => s.GetSubmissionsAsync<RegistrationSubmission>(
+                It.IsAny<List<string>>(),
+                It.IsAny<int?>(),
+                It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<RegistrationSubmission>());
+
         // Act
         var result = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
 
@@ -101,6 +110,8 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
             OrganisationNumber = OrganisationNumber.ToReferenceNumberFormat(),
             OrganisationRole = OrganisationRole,
             CanSelectComplianceScheme = expectedCanSelectComplianceSchemeValue,
+            ApplicationReferenceNumber = string.Empty,
+            RegistrationReferenceNumber = string.Empty,
             Notification = new NotificationViewModel
             {
                 HasPendingNotification = false,
@@ -114,6 +125,9 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
     [Test]
     public async Task GivenOnHomePageSelfManagedPage_WhenUserHasPendingNotification_ThenHomePageComplianceSchemeViewModelWithNotificationReturned()
     {
+        var submissionId = Guid.NewGuid();
+        var reference = "TestS";
+
         var notificationList = new List<NotificationDto>
         {
             new()
@@ -122,6 +136,13 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
             }
         };
         NotificationService.Setup(x => x.GetCurrentUserNotifications(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(notificationList));
+
+        SubmissionService
+            .Setup(s => s.GetSubmissionsAsync<RegistrationSubmission>(
+                It.IsAny<List<string>>(),
+                It.IsAny<int?>(),
+                It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<RegistrationSubmission>());
 
         var result = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
 
@@ -134,6 +155,8 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
     [Test]
     public async Task GivenOnHomePageSelfManagedPage_WhenUserHasNominatedNotifHomeication_ThenHomePageComplianceSchemeViewModelWithNotificationReturned()
     {
+        var submissionId = Guid.NewGuid();
+        var reference = "TestS";
         var notificationList = new List<NotificationDto>();
         var nominatedEnrolmentId = Guid.NewGuid().ToString();
         var notificationData = new List<KeyValuePair<string, string>>
@@ -146,6 +169,26 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
             Data = notificationData
         });
         NotificationService.Setup(x => x.GetCurrentUserNotifications(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(notificationList));
+        
+        SubmissionService
+            .Setup(s => s.GetSubmissionsAsync<RegistrationSubmission>(
+                It.IsAny<List<string>>(),
+                It.IsAny<int?>(),
+                It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<RegistrationSubmission> {
+                new RegistrationSubmission
+                {
+                    Id = Guid.NewGuid(), IsSubmitted = true,
+                    LastUploadedValidFiles = new UploadedRegistrationFilesInformation{ CompanyDetailsUploadDatetime = DateTime.Now },
+                    LastSubmittedFiles = new SubmittedRegistrationFilesInformation{ SubmittedDateTime = DateTime.Now.AddSeconds(30) }
+                } });
+
+        SubmissionService
+            .Setup(s => s.GetDecisionAsync<RegistrationDecision>(
+                It.IsAny<int>(),
+                It.IsAny<Guid>(),
+                It.IsAny<SubmissionType>()))
+            .ReturnsAsync((RegistrationDecision)null);
 
         var result = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
 

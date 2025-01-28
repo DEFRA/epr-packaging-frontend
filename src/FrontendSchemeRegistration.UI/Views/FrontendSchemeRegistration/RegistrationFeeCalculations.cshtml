@@ -1,0 +1,67 @@
+@model FeeCalculationBreakdownViewModel
+
+@{
+    ViewData["Title"] = Localizer["registration_fee_calculations"];
+}
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+                @Localizer[!Model.RegistrationFeePaid ? "registration_fee_due" : "registration_fee"]
+            </h1>
+            @if (!Model.RegistrationFeePaid)
+            {
+                <p class="govuk-body">
+                    @Localizer["registration_fee_due_x", ConvertToThousandSeparatedDecimal(Model.TotalAmountOutstanding)]
+                </p>
+                <p class="govuk-body govuk-!-margin-bottom-4">
+                    @Localizer["registration_fees_calculated_from_your_information"]
+                </p>
+                <p class="govuk-body govuk-!-margin-bottom-4">
+                    <a href="@GuidanceLinks.Value.EPR_IllustrativeFeesAndCharges"
+                       class="govuk-link govuk-link--no-visited-state" 
+                       rel="noreferrer noopener" 
+                       target="_blank" >@Localizer["more_about_EPR_fees_and_charges"]
+                    </a>
+                </p>
+            }
+
+            <partial name="_FeeCalculationBreakdown" model="@Model" />
+
+            <dl class="govuk-summary-list">
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__value">
+                    </dt>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__key">
+                        @Localizer["total_outstanding"]
+                    </dt>
+                    <dt class="govuk-summary-list__value">
+                    </dt>
+                    <dd class="govuk-summary-list__actions">
+                        <b>&pound;@ConvertToThousandSeparatedDecimal(Model.TotalAmountOutstanding)</b>
+                    </dd>
+                </div>
+            </dl>
+            @if (!Model.RegistrationApplicationSubmitted)
+            {
+                <a asp-action="SelectPaymentOptions" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+                    @SharedLocalizer["continue"]
+                </a>
+            }
+            else
+            {
+                <a asp-action="RegistrationTaskList" class="govuk-link govuk-link--no-visited-state">
+                    @Localizer["return_to_registration_steps"]
+                </a>
+            }
+        </div>
+    </div>
+</main>
+
+@functions
+{
+    private static string ConvertToThousandSeparatedDecimal(int number) => (number / 100).ToString("#,##0.00");
+}

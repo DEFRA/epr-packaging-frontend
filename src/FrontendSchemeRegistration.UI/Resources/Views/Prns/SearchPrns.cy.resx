@@ -12,90 +12,96 @@
 		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
 	</resheader>
 	<data name="search_prns_and_perns" xml:space="preserve">
-		<value>[Welsh]Search PRNs and PERNs</value>
+		<value>Chwilio PRNs a PERNs</value>
 	</data>
 	<data name="you_can_search_for_prns_and_perns" xml:space="preserve">
-		<value>[Welsh]You can search for PRNs and PERNs issued to your 2025 recycling obligation. To search your 2024 recycling obligation you need to do this in NPWD.</value>
+		<value>Gallwch chi chwilio am PRNs a PERNs sydd wedi'u rhoi ar gyfer eich rhwymedigaethau ailgylchu ar gyfer 2025 yn unig. I ddod o hyd i gofnodion y blynyddoedd cynt, defnyddiwch y Gronfa Ddata Gwastraff Pecynwaith Gwladol (NPWD).</value>
 	</data>
 	<data name="enter_prn_or_pern_number" xml:space="preserve">
-		<value>[Welsh]Enter PRN or PERN number, or the name of the reprocessor or exporter.</value>
+		<value>Rhowch rif PRN neu PERN, neu enw'r ailbrosesydd neu'r allforiwr.</value>
 	</data>
 	<data name="search" xml:space="preserve">
-		<value>[Welsh]Search</value>
+		<value>Chwilio</value>
 	</data>
 	<data name="sort_by" xml:space="preserve">
-		<value>[Welsh]Sort by</value>
+		<value>Didoli yn ol</value>
 	</data>
 	<data name="filter_by" xml:space="preserve">
-		<value>[Welsh]Filter by</value>
+		<value>Hidlo yn ol</value>
 	</data>
 	<data name="clear_sort_and_filter" xml:space="preserve">
-		<value>[Welsh]Clear sort and filter</value>
+		<value>Clirio'r cyfan</value>
 	</data>
 	<data name="prn_or_pern_number" xml:space="preserve">
-		<value>[Welsh]PRN or PERN number</value>
+		<value>Rhif PRN neu PERN</value>
 	</data>
 	<data name="material" xml:space="preserve">
-		<value>[Welsh]Material</value>
+		<value>Deunydd</value>
 	</data>
 	<data name="date_issued" xml:space="preserve">
-		<value>[Welsh]Date issued</value>
+		<value>Dyddiad rhoi</value>
 	</data>
 	<data name="december_waste" xml:space="preserve">
-		<value>[Welsh]December waste</value>
+		<value>Gwastraff Rhagfyr</value>
 	</data>
 	<data name="issued_by" xml:space="preserve">
-		<value>[Welsh]Issued by</value>
+		<value>Wedi'i roi gan</value>
 	</data>
 	<data name="tonnage" xml:space="preserve">
-		<value>[Welsh]Tonnage</value>
+		<value>Tunelli</value>
 	</data>
 	<data name="status" xml:space="preserve">
-		<value>[Welsh]Status</value>
+		<value>Statws</value>
 	</data>
 	<data name="filter_all_statuses" xml:space="preserve">
-		<value>[Welsh]All statuses</value>
+		<value>Pob statws</value>
 	</data>
 	<data name="filter_accepted" xml:space="preserve">
-		<value>[Welsh]Accepted</value>
+		<value>Wedi'i dderbyn</value>
 	</data>
 	<data name="filter_awaiting_acceptance" xml:space="preserve">
-		<value>[Welsh]Awaiting acceptance</value>
+		<value>Yn aros i gael ei dderbyn</value>
 	</data>
 	<data name="filter_cancelled" xml:space="preserve">
-		<value>[Welsh]Cancelled</value>
+		<value>Wedi'i ganslo</value>
 	</data>
 	<data name="filter_rejected" xml:space="preserve">
-		<value>[Welsh]Rejected</value>
+		<value>Wedi'i wrthod</value>
 	</data>
 	<data name="filter_december_waste" xml:space="preserve">
-		<value>[Welsh]December Waste</value>
+		<value>Gwastraff Rhagfyr</value>
 	</data>
 	<data name="sort_date_issued_asc" xml:space="preserve">
-		<value>[Welsh]Date issued (oldest first)</value>
+		<value>Dyddiad rhoi (diweddaraf yn gyntaf)</value>
 	</data>
 	<data name="sort_date_issued_desc" xml:space="preserve">
-		<value>[Welsh]Date issued (newest first)</value>
+		<value>Dyddiad rhoi (hynaf yn gyntaf)</value>
 	</data>
 	<data name="sort_december_waste" xml:space="preserve">
-		<value>[Welsh]December waste (yes to no)</value>
+		<value>Gwastraff Rhagfyr (ie i nage)</value>
 	</data>
 	<data name="sort_material_asc" xml:space="preserve">
-		<value>[Welsh]Material (A to Z)</value>
+		<value>Deunydd (A i Z)</value>
 	</data>
 	<data name="sort_material_desc" xml:space="preserve">
-		<value>[Welsh]Material (Z to A)</value>
+		<value>Deunydd (Z i A)</value>
 	</data>
 	<data name="sort_tonnage_asc" xml:space="preserve">
-		<value>[Welsh]Tonnage: (lightest first)</value>
+		<value>Tunelli (ysgafnaf yn gyntaf)</value>
 	</data>
 	<data name="sort_tonnage_desc" xml:space="preserve">
-		<value>[Welsh]Tonnage: (heaviest first)</value>
-	</data>
-	<data name="enter_the_exact_prn_or_pern_number" xml:space="preserve">
-		<value>[Welsh]Enter the exact PRN or PERN number, or the exact name of the issuing organisation.</value>
+		<value>Tunelli (trymaf yn gyntaf)</value>
 	</data>
 	<data name="no_prns_or_perns_found" xml:space="preserve">
-		<value>[Welsh]No PRNs or PERNs found.</value>
+		<value>Dim PRNs neu PERNs wedi'u canfod.</value>
+	</data>
+	<data name="no_prns_or_perns_found_body" xml:space="preserve">
+		<value>Os oeddech chi'n chwilio am rif PRN neu PERN, gwiriwch eich bod wedi rhoi'r rhif cywir.</value>
+	</data>
+	<data name="no_prns_or_perns_found_body_extra" xml:space="preserve">
+		<value>Os oeddech chi'n chwilio am enw ailbrosesydd neu allforiwr, gwiriwch y sillafu.</value>
+	</data>
+	<data name="page_title" xml:space="preserve">
+		<value>Chwilio PRNs a PERNs</value>
 	</data>
 </root>

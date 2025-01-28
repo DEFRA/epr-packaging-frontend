@@ -11,7 +11,6 @@ using Moq;
 
 namespace FrontendSchemeRegistration.UI.UnitTests.Middleware.JourneyAccessChecker;
 
-using System.Configuration;
 using Constants;
 
 public class SchemeMembershipTests

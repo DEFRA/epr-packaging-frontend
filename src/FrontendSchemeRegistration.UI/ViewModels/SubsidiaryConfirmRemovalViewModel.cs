@@ -7,7 +7,7 @@ namespace FrontendSchemeRegistration.UI.ViewModels
     [ExcludeFromCodeCoverage]
     public class SubsidiaryConfirmRemovalViewModel
     {
-        [Required(ErrorMessageResourceName = "Select_yes_if_you_would_like_to_remove_this_member_from_your_account", ErrorMessageResourceType = typeof(ErrorMessages))]
+        [Required(ErrorMessageResourceName = "select_yes_to_remove_this_subsidiary", ErrorMessageResourceType = typeof(ErrorMessages))]
         public YesNoAnswer? SelectedConfirmRemoval { get; set; }
         
         public string SubsidiaryName { get; set; }
@@ -18,5 +18,7 @@ namespace FrontendSchemeRegistration.UI.ViewModels
         public Guid SubsidiaryExternalId { get; set; }
 
         public Guid ParentOrganisationExternalId { get; set; }
+
+        public string SubsidiaryReference { get; set; }
     }
 }

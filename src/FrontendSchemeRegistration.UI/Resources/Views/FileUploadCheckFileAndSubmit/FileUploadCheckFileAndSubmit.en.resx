@@ -132,11 +132,11 @@
   <data name="detail_regarding_the_latest_file_uploaded" xml:space="preserve">
     <value>Detail regarding the latest valid file uploaded</value>
   </data>
-  <data name="uploaded_by" xml:space="preserve">
-    <value>Uploaded by</value>
-  </data>
   <data name="file_name" xml:space="preserve">
     <value>File name</value>
+  </data>
+  <data name="uploaded_by" xml:space="preserve">
+    <value>Uploaded by</value>
   </data>
   <data name="last_file_submitted" xml:space="preserve">
     <value>Last file submitted</value>
@@ -179,5 +179,8 @@
   </data>
   <data name="once_you_have_submitted_your_new_files_you_can_only_make_changes_after_the_environmental_regulator_has_looked_at_them" xml:space="preserve">
     <value>Once you have submitted your new files you can only make changes after the environmental regulator has looked at them.</value>
+  </data>
+  <data name="download" xml:space="preserve">
+    <value>Download</value>
   </data>
 </root>

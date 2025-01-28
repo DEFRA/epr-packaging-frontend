@@ -77,7 +77,7 @@ public class SchemeMembershipController : Controller
         await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
 
         var complianceSchemeMembership = await _complianceSchemeMemberService
-            .GetComplianceSchemeMembers(organisation.Id.Value, complianceSchemeId, _pageSize, search, page);
+            .GetComplianceSchemeMembers(organisation.Id.Value, complianceSchemeId, _pageSize, search, page, false);
 
         if (complianceSchemeMembership == null)
         {

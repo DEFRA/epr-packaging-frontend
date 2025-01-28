@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="pay_online_title" xml:space="preserve">
+        <value>Pay online</value>
+    </data>
+    <data name="pay_online_through_GovUK" xml:space="preserve">
+        <value>Pay online through GOV.UK</value>
+    </data>
+    <data name="pay_registration_fee_of" xml:space="preserve">
+        <value>Pay the registration fee of </value>
+    </data>
+    <data name="using_GovUk_secure_payments_service" xml:space="preserve">
+        <value> direct using the GOV.UK secure payments service.</value>
+    </data>
+    <data name="your_application_payment_ref" xml:space="preserve">
+        <value>Your application payment reference: </value>
+    </data>
+    <data name="pay_online_now" xml:space="preserve">
+        <value>Pay online now</value>
+    </data>
+    <data name="return_to_dashboard" xml:space="preserve">
+        <value>Return to the dashboard</value>
+    </data>
+</root>

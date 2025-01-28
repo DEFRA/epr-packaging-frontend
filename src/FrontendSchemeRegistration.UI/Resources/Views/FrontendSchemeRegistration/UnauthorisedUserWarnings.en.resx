@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="unauthorised_user_warning_title" xml:space="preserve">
+        <value>Unauthorised user</value>
+    </data>
+	<data name="register_company" xml:space="preserve">
+        <value>{0} registration</value>
+    </data>
+	<data name="organisation_id_x" xml:space="preserve">
+        <value>Organisation ID: {0}</value>
+    </data>
+	<data name="members_organisation_details" xml:space="preserve">
+        <value>Scheme registration details</value>
+    </data>
+	<data name="compliance_scheme_x" xml:space="preserve">
+        <value>Compliance scheme: {0}</value>
+    </data>
+	<data name="regulator" xml:space="preserve">
+        <value>Regulator: </value>
+    </data>
+	<data name="england.environmental_regulator" xml:space="preserve">
+        <value>The Environment Agency (EA)</value>
+    </data>
+	<data name="scotland.environmental_regulator" xml:space="preserve">
+        <value>The Scottish Environment Protection Agency (SEPA)</value>
+    </data>
+	<data name="wales.environmental_regulator" xml:space="preserve">
+        <value>Natural Resources Wales (NRW)</value>
+    </data>
+	<data name="northernireland.environmental_regulator" xml:space="preserve">
+        <value>The Northern Ireland Environment Agency (NIEA)</value>
+    </data>
+	<data name="you-cannot-submit-your-date-and-complete-your-application" xml:space="preserve">
+        <value>You cannot submit your data and complete your application as you are not an approved or delegated person.</value>
+    </data>
+	<data name="your-approved-person-is-the-person-in-charge-of-submitting-information" xml:space="preserve">
+        <value>Your approved person is the person in charge of submitting information to the environmental regulator. The approved person will usually be the person who created an account for your organisation.</value>
+    </data>
+	<data name="your-delegated-person-is-another-person-who-can-submit-information" xml:space="preserve">
+        <value>Your delegated person is another person who can submit information to the environmental regulator.</value>
+    </data>
+	<data name="your-need-to-get-your-approved-or-delegated-person-to-submit-your-data" xml:space="preserve">
+        <value>You need to get your approved or delegated person to submit your data and finish your application.</value>
+    </data>
+	<data name="return_to_registration_steps" xml:space="preserve">
+		<value>Return to the registration steps</value>
+	</data>
+</root>

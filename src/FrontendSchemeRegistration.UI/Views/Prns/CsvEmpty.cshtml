@@ -1,0 +1,26 @@
+﻿@using FrontendSchemeRegistration.UI.Controllers.Prns
+@inject IStringLocalizer<PrnDataResources> PrnDataLocalizer
+
+@{
+    ViewData["Title"] = Localizer["page_title"];
+}
+
+<main class="govuk-main-wrapper govuk-!-padding-top-4" id="select-multiple-prns">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+
+            <h1 class="govuk-heading-xl">@Localizer["download_a_list_of_all_prns_and_perns"]</h1>
+            <p class="govuk-body">
+                @Localizer["you_have_no_prns_or_perns_issued_to_your_yyyy_recycling_obligations", DateTime.Now.Year]
+            </p>
+            <hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible">
+
+            @Html.ActionLink(Localizer["manage_your_recycling_obligations"].Value, nameof(PrnsObligationController.ObligationsHome), "PrnsObligation",
+                     null,
+                     new
+                     {
+                         @class = "govuk-button govuk-button--primary"
+                     })
+        </div>
+    </div>
+</main>

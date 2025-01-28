@@ -243,6 +243,22 @@ table.cookies-table {
     flex-direction: column;
 }
 
+.prn-pdf-logo{
+    height:30px;
+}
+
+.prn-logos-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-evenly;
+
+    .prn-logos-items {
+        flex: 0 0 25%;
+        margin-bottom: 20px;
+    }
+}
+
 .prn-responsive-table {
     width: 100%;
     border-collapse: collapse;
@@ -268,6 +284,7 @@ table.cookies-table {
         tr {
             display: block;
             margin-bottom: 10px;
+            border-bottom: 2px solid #ccc; /* Add this line for the border */
         }
 
         td {
@@ -313,4 +330,78 @@ table.cookies-table {
 
 .no-wrap-text {
     white-space: nowrap;
+}
+
+.prn-obligation-responsive-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    .header,
+    .govuk-table__cell {
+        text-align: left;
+    }
+
+    .govuk-table__header--numeric,
+    .govuk-table__cell--numeric {
+        text-align: right;
+    }
+
+    .govuk-table__head th:first-child {
+        width: 15%;
+    }
+
+    .govuk-table__head th:last-child {
+        width: 13%;
+    }
+
+    @media screen and (max-width: $narrow-media-width) {
+        .govuk-table__head {
+            display: none;
+        }
+
+        .govuk-table__row {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .govuk-table__cell,
+        .govuk-table__header {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            position: relative;
+        }
+
+        .govuk-table__cell::before {
+            content: attr(data-header);
+            font-weight: bold;
+            display: inline-block;
+            margin-right: 10px;
+            width: 50%;
+        }
+
+        .govuk-table__cell--numeric {
+            text-align: left;
+        }
+
+        .govuk-table__cell {
+            display: flex;
+            justify-content: space-between;
+        }
+    }
+}
+
+.no-bottom-margin {
+    margin-bottom: 0;
+}
+
+.box-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+}
+
+.box {
+    box-sizing: border-box;
+    display: grid;
+    width: 100%;
 }

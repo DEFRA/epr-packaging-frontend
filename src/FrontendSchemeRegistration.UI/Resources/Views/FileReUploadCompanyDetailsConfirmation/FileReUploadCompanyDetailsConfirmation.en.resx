@@ -41,11 +41,17 @@
     <data name="but_they_have_not_been_submitted" xml:space="preserve">
         <value>but they have not been submitted to the environmental regulator. </value>
     </data>
+	<data name="but_they_have_not_been_submitted_nonregulator" xml:space="preserve">
+        <value>but they have not been submitted.</value>
+    </data>
     <data name="you_can_upload" xml:space="preserve">
         <value>You can upload this information again if something has changed. You don’t have permission to submit files.</value>
     </data>
     <data name="someone_in_your_team_with_the_right_account_permissions" xml:space="preserve">
         <value>Someone in your team with the right account permissions will need to submit this information to the environmental regulator.</value>
+    </data>
+	<data name="someone_in_your_team_with_the_right_account_permissions_nonregulator" xml:space="preserve">
+        <value>Someone in your team with the right account permissions will need to submit this information.</value>
     </data>
     <data name="are_you_sure_you_want_to_re-upload_your_organisation_details" xml:space="preserve">
         <value>Are you sure you want to re-upload your organisation details?</value>

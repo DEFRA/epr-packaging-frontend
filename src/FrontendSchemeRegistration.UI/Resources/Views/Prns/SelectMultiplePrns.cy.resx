@@ -118,120 +118,108 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="accept_or_reject_prns_and_perns" xml:space="preserve">
-    <value>[Welsh]Accept or reject PRNs and PERNs</value>
+    <value>Derbyn neu wrthod PRNs a PERNs</value>
   </data>
   <data name="accept_selected_prns_and_perns" xml:space="preserve">
-    <value>[Welsh]Accept selected PRNs and PERNs</value>
-  </data>
-  <data name="apply_filter" xml:space="preserve">
-    <value>[Welsh]Apply filter</value>
+    <value>Derbyn y PRNs a'r PERNs sydd wedi'u dewis</value>
   </data>
   <data name="clear_sort_and_filter" xml:space="preserve">
-    <value>[Welsh]Clear sort and filter</value>
+	  <value>Clirio'r cyfan</value>
   </data>
   <data name="date_issued" xml:space="preserve">
-    <value>[Welsh]Date issued</value>
+    <value>Dyddiad rhoi</value>
   </data>
   <data name="december_waste" xml:space="preserve">
-    <value>[Welsh]December waste</value>
+    <value>Gwastraff Rhagfyr</value>
   </data>
   <data name="filter_all_materials" xml:space="preserve">
-    <value>[Welsh]All materials</value>
+    <value>Pob deunydd</value>
   </data>
   <data name="filter_aluminium" xml:space="preserve">
-    <value>[Welsh]Aluminium</value>
+    <value>Alwminiwm</value>
   </data>
   <data name="filter_by" xml:space="preserve">
-    <value>[Welsh]Filter by</value>
+    <value>Hidlo yn ol</value>
   </data>
   <data name="filter_glass_other" xml:space="preserve">
-    <value>[Welsh]Glass other</value>
+    <value>Gwydr arall</value>
   </data>
   <data name="filter_glass_remelt" xml:space="preserve">
-    <value>[Welsh]Glass re-melt</value>
+    <value>Gwydr aildoddi</value>
   </data>
   <data name="filter_paper_board_fiber" xml:space="preserve">
-    <value>[Welsh]Paper, board or fibre-based composite material</value>
+    <value>Papur, bwrdd neu ddeunydd cyfansawdd sy'n seiliedig ar ffeibrau</value>
   </data>
   <data name="filter_plastic" xml:space="preserve">
-    <value>[Welsh]Plastic</value>
+    <value>Plastig</value>
   </data>
   <data name="filter_steel" xml:space="preserve">
-    <value>[Welsh]Steel</value>
+    <value>Dur</value>
   </data>
   <data name="filter_wood" xml:space="preserve">
-    <value>[Welsh]Wood</value>
+    <value>Pren</value>
   </data>
   <data name="issued_by" xml:space="preserve">
-    <value>[Welsh]Issued by</value>
+    <value>Wedi'i roi gan</value>
   </data>
   <data name="issued_by_asc" xml:space="preserve">
-    <value>[Welsh]Issued by (A to Z)</value>
+    <value>Wedi'u rhoi gan (A i Z)</value>
   </data>
   <data name="issued_by_desc" xml:space="preserve">
-    <value>[Welsh]Issued by (Z to A)</value>
+    <value>Wedi'u rhoi gan (Z i A)</value>
   </data>
   <data name="issuer_note" xml:space="preserve">
-    <value>[Welsh]Issuer note</value>
+    <value>Nodyn rhoddwr</value>
   </data>
   <data name="material" xml:space="preserve">
-    <value>[Welsh]Material</value>
+    <value>Deunydd</value>
   </data>
   <data name="note" xml:space="preserve">
-    <value>[Welsh]Note</value>
-  </data>
-  <data name="number_of_prns_and_perns_awaiting_acceptance" xml:space="preserve">
-    <value>[Welsh]Number of PRNs and PERNs awaiting acceptance</value>
+	  <value>Nodyn cyhoeddwr</value>
   </data>
   <data name="page_title" xml:space="preserve">
-    <value>[Welsh]Accept or reject PRNs and PERNs</value>
+    <value>Derbyn neu wrthod PRNs a PERNs</value>
   </data>
   <data name="prn_or_pern_number" xml:space="preserve">
-    <value>[Welsh]PRN or PERN number</value>
-  </data>
-  <data name="reject_selected_prns_and_perns" xml:space="preserve">
-    <value>[Welsh]Reject selected PRNs and PERNs</value>
+    <value>Rhif PRN neu PERN</value>
   </data>
   <data name="select_one_or_more_prns_or_perns_to_accept_them" xml:space="preserve">
-    <value>[Welsh]Select one or more PRNs or PERNs to accept them</value>
-  </data>
-  <data name="select_one_or_more_prn_or_perns_to_reject_them" xml:space="preserve">
-    <value>[Welsh]Select one or more PRNs or PERNs to reject them</value>
+    <value>Dewiswch un neu ragor o PRNs neu PERNs i'w derbyn</value>
   </data>
   <data name="select_or_unselect_all_prns" xml:space="preserve">
-    <value>[Welsh]Select or unselect all PRNs and PERNs</value>
+    <value>Dewis pob PRN a PERN neu ddileu'r dewis</value>
   </data>
   <data name="select_the_prns_and_perns_you_want_to_accept" xml:space="preserve">
-    <value>[Welsh]Select the PRNs and PERNs you want to accept. You can also review each one by opening it and selecting 'accept' or 'reject'.</value>
-  </data>
-  <data name="select_the_prns_and_perns_you_want_to_accept_or_reject" xml:space="preserve">
-    <value>[Welsh]Select the PRNs and PERNs you want to accept or reject.</value>
+    <value>Dewiswch y PRNs a'r PERNs yr hoffech eu derbyn. Rydych chi hefyd yn gallu adolygu pob un drwy ei agor a dewis 'derbyn' neu 'gwrthod'.</value>
   </data>
   <data name="sort_by" xml:space="preserve">
-    <value>[Welsh]Sort by</value>
+    <value>Didoli yn ôl</value>
   </data>
   <data name="sort_date_issued_asc" xml:space="preserve">
-    <value>[Welsh]Date issued (oldest first)</value>
+    <value>Dyddiad rhoi (hynaf yn gyntaf)</value>
   </data>
   <data name="sort_date_issued_desc" xml:space="preserve">
-    <value>[Welsh]Date issued (newest first)</value>
+    <value>Dyddiad rhoi (diweddaraf yn gyntaf)</value>
   </data>
   <data name="sort_december_waste" xml:space="preserve">
-    <value>[Welsh]December waste (yes to no)</value>
+    <value>Gwastraff Rhagfyr (ie i nage)</value>
   </data>
   <data name="sort_tonnage_asc" xml:space="preserve">
-    <value>[Welsh]Tonnage: (lightest first)</value>
+    <value>Tunelli (ysgafnaf yn gyntaf)</value>
   </data>
   <data name="sort_tonnage_desc" xml:space="preserve">
-    <value>[Welsh]Tonnage: (heaviest first)</value>
+    <value>Tunelli (trymaf yn gyntaf)</value>
   </data>
   <data name="tonnage" xml:space="preserve">
-    <value>[Welsh]Tonnage</value>
+    <value>Tunelli</value>
   </data>
   <data name="view_and_select_prns_table_description" xml:space="preserve">
-    <value>[Welsh]A list of PRNs and PERNs to select from.</value>
+	  <value>Rhestr o PRNs a PERNs i ddewis ohonynt.</value>
   </data>
-  <data name="you_have_no_prns_or_perns_awaiting_acceptance" xml:space="preserve">
-    <value>[Welsh]You have no PRNs or PERNs awaiting acceptance.</value>
+   <data name="not_provided" xml:space="preserve">
+    <value>Heb ei ddarparu</value>
+  </data>
+  <data name="checkboxes-hint" xml:space="preserve">
+	  <value>Dewiswch y PRNs yr hoffech eu derbyn neu eu gwrthod.</value>
   </data>
 </root>

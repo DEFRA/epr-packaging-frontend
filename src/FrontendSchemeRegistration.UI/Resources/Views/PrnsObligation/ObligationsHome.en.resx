@@ -123,7 +123,43 @@
   <data name="home" xml:space="preserve">
     <value>Home</value>
   </data>
+  <data name="how_to_meet_the_glass_recycling_obligation" xml:space="preserve">
+    <value>How to meet the glass recycling obligation</value>
+  </data>
+  <data name="how_to_meet_the_glass_recycling_obligation_description" xml:space="preserve">
+    <value>A minimum of {0}% of your glass recycling obligation must be made up of glass re-melt PRNs or PERNs. This will make up a proportion of your overall glass recycling obligation. The remaining glass recycling obligation can be met by either glass re-melt, glass other or a mix of both.</value>
+  </data>
+  <data name="how_to_meet_your_recycling_obligations" xml:space="preserve">
+    <value>How to meet your recycling obligations</value>
+  </data>
   <data name="manage_your_recycling_obligations" xml:space="preserve">
     <value>Manage your {0} recycling obligations</value>
   </data>
+  <data name="the_regulator_accepts_your_data_submissions" xml:space="preserve">
+    <value>the regulator accepts your data submissions</value>
+  </data>
+  <data name="your_recycling_obligations_will_be" xml:space="preserve">
+    <value>Your recycling obligations will be calculated after:</value>
+  </data>
+  <data name="you_can_start_acquiring_and_accepting" xml:space="preserve">
+    <value>You can start acquiring and accepting PRNs and PERNs to meet your recycling obligations.</value>
+  </data>
+  <data name="you_submit_your_packaging_data_for" xml:space="preserve">
+    <value>you submit your packaging data for {0}</value>
+  </data>
+  <data name="to_meet_your_recycling_obligations_for" xml:space="preserve">
+    <value>to meet your recycling obligations for</value>
+  </data>
+  <data name="you_have_until" xml:space="preserve">
+    <value>You have until</value>
+  </data>
+  <data name="enforcement_action_warning" xml:space="preserve">
+    <value>You may face enforcement action if you miss this deadline.</value>
+  </data>
+  <data name="january" xml:space="preserve">
+    <value>31 January</value>
+  </data>
+    <data name="acquire_and_accept_advisory_text" xml:space="preserve">
+    <value>Acquire and accept PRNs and PERNs until your recycling obligations are fully met. Select a material for information on how the data was calculated and view your progress towards meeting your {0} recycling obligations.</value>
+  </data> 
 </root>

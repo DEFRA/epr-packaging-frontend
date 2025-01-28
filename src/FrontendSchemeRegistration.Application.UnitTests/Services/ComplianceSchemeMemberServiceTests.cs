@@ -6,10 +6,9 @@ using Application.Services.Interfaces;
 using AutoFixture;
 using AutoFixture.AutoMoq;
 using DTOs.ComplianceSchemeMember;
-using DTOs.UserAccount;
 using FluentAssertions;
 using FrontendSchemeRegistration.Application.DTOs.ComplianceScheme;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
@@ -17,7 +16,6 @@ using Moq;
 using Moq.Protected;
 using Options;
 using RequestModels;
-using UI.Constants;
 using UI.Extensions;
 
 [TestFixture]
@@ -30,13 +28,8 @@ public class ComplianceSchemeMemberServiceTests : ServiceTestBase<IComplianceSch
     private readonly Mock<IComplianceSchemeService> _complianceSchemeServiceMock = new ();
     private readonly IFixture _fixture = new Fixture().Customize(new AutoMoqCustomization());
     private IComplianceSchemeMemberService _complianceSchemeMemberService;
-    private Organisation _organisation;
 
-    [SetUp]
-    public void Setup()
-    {
-        _organisation = UserAccount.Organisations.SingleOrDefault(x => x.OrganisationRole == OrganisationRoles.Producer);
-    }
+    private const string ComplianceSchemeId = "ComplianceSchemeId";
 
     [Test]
     public async Task GetComplianceSchemeMembers_RecordExists_ReturnResult()
@@ -46,7 +39,7 @@ public class ComplianceSchemeMemberServiceTests : ServiceTestBase<IComplianceSch
         _complianceSchemeMemberService = MockService(HttpStatusCode.OK, stringContent);
 
         var result = await _complianceSchemeMemberService.GetComplianceSchemeMembers(
-            Guid.NewGuid(), Guid.NewGuid(), 50, string.Empty, 1);
+            Guid.NewGuid(), Guid.NewGuid(), 50, string.Empty, 1, false);
         result.Should().NotBeNull();
         result.Should().BeOfType<ComplianceSchemeMembershipResponse>();
     }
@@ -60,7 +53,7 @@ public class ComplianceSchemeMemberServiceTests : ServiceTestBase<IComplianceSch
         _complianceSchemeMemberService = MockService(HttpStatusCode.InternalServerError, string.Empty.ToJsonContent());
 
         Assert.ThrowsAsync<HttpRequestException>(() => _complianceSchemeMemberService.GetComplianceSchemeMembers(
-            organisationId, schemeId, 50, string.Empty, 1));
+            organisationId, schemeId, 50, string.Empty, 1, false));
         _loggerMock.VerifyLog(
             logger => logger.LogError(
                 "Failed to get Scheme Members for scheme {schemeId} in organisation {organisationId}", schemeId, organisationId), Times.Once);
@@ -174,14 +167,202 @@ public class ComplianceSchemeMemberServiceTests : ServiceTestBase<IComplianceSch
                 StatusCode = expectedStatusCode,
                 Content = expectedContent,
             });
-
         var client = new HttpClient(_httpMessageHandlerMock.Object);
         client.BaseAddress = new Uri("https://mock/api/test/");
         client.Timeout = TimeSpan.FromSeconds(30);
-
         var facadeOptions = Options.Create(new AccountsFacadeApiOptions { DownstreamScope = "https://mock/test" });
         var accountServiceApiClient = new AccountServiceApiClient(client, _tokenAcquisitionMock.Object, facadeOptions);
+        // Mock or create IHttpContextAccessor
+        var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+        var httpContextAccessor = httpContextAccessorMock.Object;
+        return new ComplianceSchemeMemberService(
+            _complianceSchemeServiceMock.Object,
+            accountServiceApiClient,
+            _correlationIdProvider.Object,
+            _loggerMock.Object,
+            httpContextAccessor); // Pass the new dependency
+    }
 
-        return new ComplianceSchemeMemberService(_complianceSchemeServiceMock.Object, accountServiceApiClient, _correlationIdProvider.Object, _loggerMock.Object);
+    [Test]
+    public async Task GetComplianceSchemeIdAsync_WhenItemsContainsNonGuidValue_ReturnsNull()
+    {
+        // Arrange
+        var httpContext = new DefaultHttpContext
+        {
+            Items =
+            {
+                [ComplianceSchemeId] = "InvalidValue"
+            }
+        };
+        var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+        httpContextAccessorMock.Setup(x => x.HttpContext).Returns(httpContext);
+        var accountServiceApiClientMock = new Mock<IAccountServiceApiClient>();
+        _complianceSchemeMemberService = new ComplianceSchemeMemberService(
+            _complianceSchemeServiceMock.Object,
+            accountServiceApiClientMock.Object,
+            _correlationIdProvider.Object,
+            _loggerMock.Object,
+            httpContextAccessorMock.Object);
+        // Act
+        var result = _complianceSchemeMemberService.GetComplianceSchemeId();
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetComplianceSchemeIdAsync_WhenContextIsNull_ReturnsNull()
+    {
+        // Arrange
+        var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+        httpContextAccessorMock.Setup(x => x.HttpContext).Returns((HttpContext)null);
+        var accountServiceApiClientMock = new Mock<IAccountServiceApiClient>();
+        var complianceSchemeMemberService = new ComplianceSchemeMemberService(
+            _complianceSchemeServiceMock.Object,
+            accountServiceApiClientMock.Object,
+            _correlationIdProvider.Object,
+            _loggerMock.Object,
+            httpContextAccessorMock.Object);
+        // Act
+        var result = complianceSchemeMemberService.GetComplianceSchemeId();
+
+        // Assert
+        result.Should().BeNull();
+    }
+    
+    [Test]
+    public async Task GetComplianceSchemeIdAsync_WhenContextDoesNotContainKey_ReturnsNull()
+    {
+        // Arrange
+        var httpContext = new DefaultHttpContext();
+        var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+        httpContextAccessorMock.Setup(x => x.HttpContext).Returns(httpContext);
+        var accountServiceApiClientMock = new Mock<IAccountServiceApiClient>();
+        var complianceSchemeMemberService = new ComplianceSchemeMemberService(
+            _complianceSchemeServiceMock.Object,
+            accountServiceApiClientMock.Object,
+            _correlationIdProvider.Object,
+            _loggerMock.Object,
+            httpContextAccessorMock.Object);
+
+        // Act
+        var result = complianceSchemeMemberService.GetComplianceSchemeId();
+
+        // Assert
+        result.Should().BeNull();
+    }
+    
+    [Test]
+    public void GetComplianceSchemeIdAsync_WhenValueIsNotGuid_ReturnsNull()
+    {
+        // Arrange
+        var httpContext = new DefaultHttpContext
+        {
+            Items =
+        {
+            [ComplianceSchemeId] = "InvalidValue"
+        }
+        };
+        var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+        httpContextAccessorMock.Setup(x => x.HttpContext).Returns(httpContext);
+        var accountServiceApiClientMock = new Mock<IAccountServiceApiClient>();
+        var complianceSchemeMemberService = new ComplianceSchemeMemberService(
+            _complianceSchemeServiceMock.Object,
+            accountServiceApiClientMock.Object,
+            _correlationIdProvider.Object,
+            _loggerMock.Object,
+            httpContextAccessorMock.Object);
+        // Act
+        var result = complianceSchemeMemberService.GetComplianceSchemeId();
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public void GetComplianceSchemeId_ReturnsNull_WhenHttpContextIsNull()
+    {
+        // Arrange
+        var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+        httpContextAccessorMock.Setup(x => x.HttpContext).Returns((HttpContext?)null);
+        var service = new ComplianceSchemeMemberService(
+            Mock.Of<IComplianceSchemeService>(),
+            Mock.Of<IAccountServiceApiClient>(),
+            Mock.Of<ICorrelationIdProvider>(),
+            Mock.Of<ILogger<ComplianceSchemeMemberService>>(),
+            httpContextAccessorMock.Object);
+        // Act
+        var result = service.GetComplianceSchemeId(); // Ensure the method is invoked here
+        // Assert
+        Assert.That(result, Is.Null);
+    }
+
+    [Test]
+    public async Task GetComplianceSchemeIdAsync_ReturnsNull_WhenComplianceSchemeIdIsNotGuid()
+    {
+        // Arrange
+        var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+        var httpContext = new DefaultHttpContext
+        {
+            Items =
+            {
+                [ComplianceSchemeId] = "InvalidGuid"
+            }
+        };
+        httpContextAccessorMock.Setup(x => x.HttpContext).Returns(httpContext);
+        var service = new ComplianceSchemeMemberService(
+            Mock.Of<IComplianceSchemeService>(),
+            Mock.Of<IAccountServiceApiClient>(),
+            Mock.Of<ICorrelationIdProvider>(),
+            Mock.Of<ILogger<ComplianceSchemeMemberService>>(),
+            httpContextAccessorMock.Object);
+        // Act
+        var result = service.GetComplianceSchemeId();
+        // Assert
+        Assert.That(result, Is.Null);
+    }
+    
+    [Test]
+    public async Task GetComplianceSchemeIdAsync_ReturnsNull_WhenComplianceSchemeIdIsMissing()
+    {
+        // Arrange
+        var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+        var httpContext = new DefaultHttpContext();
+        httpContextAccessorMock.Setup(x => x.HttpContext).Returns(httpContext);
+        var service = new ComplianceSchemeMemberService(
+            Mock.Of<IComplianceSchemeService>(),
+            Mock.Of<IAccountServiceApiClient>(),
+            Mock.Of<ICorrelationIdProvider>(),
+            Mock.Of<ILogger<ComplianceSchemeMemberService>>(),
+            httpContextAccessorMock.Object);
+        // Act
+        var result =  service.GetComplianceSchemeId();
+        // Assert
+        Assert.That(result, Is.Null);
+    }
+
+    [Test]
+    public async Task GetComplianceSchemeIdAsync_ReturnsComplianceSchemeId_WhenValueIsGuid()
+    {
+        // Arrange
+        var complianceSchemeId = Guid.NewGuid();
+        var httpContext = new DefaultHttpContext
+        {
+            Items =
+            {
+                [ComplianceSchemeId] = complianceSchemeId
+            }
+        };
+        var httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+        httpContextAccessorMock.Setup(x => x.HttpContext).Returns(httpContext);
+        var service = new ComplianceSchemeMemberService(
+            Mock.Of<IComplianceSchemeService>(),
+            Mock.Of<IAccountServiceApiClient>(),
+            Mock.Of<ICorrelationIdProvider>(),
+            Mock.Of<ILogger<ComplianceSchemeMemberService>>(),
+            httpContextAccessorMock.Object);
+        // Act
+        var result = service.GetComplianceSchemeId();
+        // Assert
+        Assert.That(result, Is.EqualTo(complianceSchemeId));
     }
 }

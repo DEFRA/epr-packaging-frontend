@@ -5,6 +5,78 @@ namespace FrontendSchemeRegistration.UI.UnitTests.ViewModels.Prns
 {
     public class PrnListViewModelTests
     {
+        [Test]
+        public void GetCountBreakdown_WhenPrnsIsNull_Returns_ZeroCounts()
+        {
+            var sut = new PrnListViewModel();
+            var actual = sut.GetCountBreakdown(null);
+            actual.TotalCount.Should().Be(0);
+            actual.PrnCount.Should().Be(0);
+            actual.PernCount.Should().Be(0);
+            actual.ColumnHeaderLabel.Should().Be("pern_number");
+            actual.RemoveLinkText.Should().Be("remove_pern_from_selection");
+        }
+        [Test]
+        public void GetCountBreakdown_WhenPrnsIsEmpty_Returns_ZeroCounts()
+        {
+            var sut = new PrnListViewModel();
+            var actual = sut.GetCountBreakdown(new List<PrnViewModel>());
+            actual.TotalCount.Should().Be(0);
+            actual.PrnCount.Should().Be(0);
+            actual.PernCount.Should().Be(0);
+            actual.ColumnHeaderLabel.Should().Be("pern_number");
+            actual.RemoveLinkText.Should().Be("remove_pern_from_selection");
+        }
+        [Test]
+        public void GetCountBreakdown_WhenGivenMixedPrnsAndPerns_Returns_CorrectCountsAndLabels()
+        {
+            var recyclingNotes = new List<PrnViewModel>
+    {
+        new PrnViewModel { NoteType = "PRN" },
+        new PrnViewModel { NoteType = "PERN" },
+        new PrnViewModel { NoteType = "PRN" }
+    };
+            var sut = new PrnListViewModel();
+            var actual = sut.GetCountBreakdown(recyclingNotes);
+            actual.TotalCount.Should().Be(3);
+            actual.PrnCount.Should().Be(2);
+            actual.PernCount.Should().Be(1);
+            actual.ColumnHeaderLabel.Should().Be("prn_and_pern_number");
+            actual.RemoveLinkText.Should().Be("remove_prn_or_pern_from_selection");
+        }
+        [Test]
+        public void GetCountBreakdown_WhenGivenOnlyPrns_Returns_CorrectCountsAndLabels()
+        {
+            var prns = new List<PrnViewModel>
+    {
+        new PrnViewModel { NoteType = "PRN" },
+        new PrnViewModel { NoteType = "PRN" }
+    };
+            var sut = new PrnListViewModel();
+            var actual = sut.GetCountBreakdown(prns);
+            actual.TotalCount.Should().Be(2);
+            actual.PrnCount.Should().Be(2);
+            actual.PernCount.Should().Be(0);
+            actual.ColumnHeaderLabel.Should().Be("prn_number");
+            actual.RemoveLinkText.Should().Be("remove_prn_from_selection");
+        }
+        [Test]
+        public void GetCountBreakdown_WhenGivenOnlyPerns_Returns_CorrectCountsAndLabels()
+        {
+            var perns = new List<PrnViewModel>
+    {
+        new PrnViewModel { NoteType = "PERN" },
+        new PrnViewModel { NoteType = "PERN" }
+    };
+            var sut = new PrnListViewModel();
+            var actual = sut.GetCountBreakdown(perns);
+            actual.TotalCount.Should().Be(2);
+            actual.PrnCount.Should().Be(0);
+            actual.PernCount.Should().Be(2);
+            actual.ColumnHeaderLabel.Should().Be("pern_number");
+            actual.RemoveLinkText.Should().Be("remove_pern_from_selection");
+        }
+
 
         [Test]
         [TestCase(0)]
@@ -141,5 +213,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.ViewModels.Prns
             var actual = sut.GetPluralNoteType(recyclingNotes);
             actual.Should().Be(expected);
         }
+        
+        
     }
 }

@@ -1,4 +1,5 @@
-﻿@model FileUploadCompanyDetailsSubmissionHistoryViewModel
+﻿@using FrontendSchemeRegistration.UI.Constants
+@model FileUploadCompanyDetailsSubmissionHistoryViewModel
 
 @{
     ViewData["Title"] = Localizer["your_history"];
@@ -7,6 +8,7 @@
     var dateAndTimeSubmittedHeader = Localizer["date_and_time_submitted"];
     var submittedByHeader = Localizer["submitted_by"];
     var statusHeader = Localizer["status"];
+    var download = Localizer["download"];
 }
 
 @await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
@@ -34,6 +36,9 @@
                                         <th scope="col" class="govuk-table__header">@dateAndTimeSubmittedHeader</th>
                                         <th scope="col" class="govuk-table__header">@submittedByHeader</th>
                                         <th scope="col" class="govuk-table__header">@statusHeader</th>
+                                         <feature name="@FeatureFlags.EnableCsvDownload">
+                                            <td class="govuk-table__header no-wrap-text"></td>
+                                        </feature>
                                     </tr>
                                 </thead>
                                 <tbody class="govuk-table__body">
@@ -44,6 +49,11 @@
                                             <td class="govuk-table__cell" data-heading="@dateAndTimeSubmittedHeader">@(submissionHistory.SubmissionDate.ToString("dd MMMM yyyy, h:mm") + submissionHistory.SubmissionDate.ToString("tt").ToLower())</td>
                                             <td class="govuk-table__cell" data-heading="@submittedByHeader">@submissionHistory.UserName</td>
                                             <td class="govuk-table__cell" data-heading="@statusHeader">@Localizer[submissionHistory.Status.ToLower() + "_on"] @(submissionHistory.DateofLatestStatusChange.ToString("dd MMMM yyyy, h:mm") + submissionHistory.DateofLatestStatusChange.ToString("tt").ToLower())</td>
+                                            <feature name="@FeatureFlags.EnableCsvDownload">
+                                                <td class="govuk-table__cell" data-heading="@download">
+                                                    <a class="govuk-link--no-visited-state download-button" asp-controller="FileDownloadCompanyDetails" asp-action="Get" asp-route-submissionId="@submissionHistory.SubmissionId">@download</a>
+                                                </td>
+                                            </feature>
                                         </tr>
                                     }
                                 </tbody>

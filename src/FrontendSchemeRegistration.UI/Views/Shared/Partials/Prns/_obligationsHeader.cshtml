@@ -2,19 +2,12 @@
 @using FrontendSchemeRegistration.UI.Constants
 @using FrontendSchemeRegistration.UI.ViewModels.Prns
 @model PrnObligationViewModel
-<h1 class="govuk-heading-l govuk-!-margin-bottom-5">
-    @Localizer["manage_your_recycling_obligations", Model.CurrentYear]
-</h1>
+
 <p class="govuk-body">
-    @if (Model.OrganisationRole == OrganisationRoles.Producer)
-    {
-        @Localizer["producer"]
+    @{
+        var role = (Model.OrganisationRole == OrganisationRoles.Producer) ? @Localizer["producer"] : @Localizer["compliance_scheme"];
     }
-    else
-    {
-        @Localizer["compliance_scheme"]        
-    }
-    : @Model.OrganisationName<br>
+    @role: @Model.OrganisationName<br>
     @Localizer["regulator"]:
     @if (Model.NationId.HasValue)
     {
@@ -28,11 +21,3 @@
             }]
     }
 </p>
-<p class="govuk-body">@Localizer["you_have_until"] <strong>@Localizer["january"] @Model.DeadlineYear</strong> @Localizer["to_meet_your_recycling_obligations_for"] @Model.CurrentYear.</p>
-<div class="govuk-warning-text">
-    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-    <strong class="govuk-warning-text__text">
-        <span class="govuk-visually-hidden">Warning</span>
-        @Localizer["enforcement_action_warning"]
-    </strong>
-</div>

@@ -1,0 +1,74 @@
+﻿@using FrontendSchemeRegistration.Application.Enums
+@using FrontendSchemeRegistration.UI.Controllers.Prns
+@using FrontendSchemeRegistration.UI.ViewModels.Prns
+@model PrnMaterialObligationTableViewModel
+
+<table class="govuk-table prn-obligation-responsive-table">
+    <caption class="govuk-table__caption govuk-table__caption--m">
+        @Localizer[Model.TableCaption]
+    </caption>
+    <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">@Localizer["material"]</th>
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric">@Localizer["recycling_obligations_to_meet"]</th>
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric">@Localizer["tonnage_awaiting_acceptance"]</th>
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric">@Localizer["tonnage_accepted"]</th>
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric">@Localizer["tonnage_outstanding"]</th>
+            <th scope="col" class="govuk-table__header">@Localizer["status"]</th>
+        </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+        @foreach (var obligation in Model.PrnMaterialObligationViewModels)
+        {
+            <tr class="govuk-table__row">
+                <td class="govuk-table__cell" data-header="@Localizer["material"]">
+                    <strong>
+                        @if (Model.ShowMaterialsAsHyperlink && obligation.MaterialName != MaterialType.Totals)
+                        {
+                            @Html.ActionLink(Localizer[PrnMaterialObligationViewModel.MaterialNameResource(obligation.MaterialName)].Value
+                                , nameof(PrnsObligationController.ObligationPerMaterial)
+                                , "PrnsObligation"
+                                , new { material = obligation.MaterialName }
+                                , new { @class = "govuk-link", aria_labelledby = Localizer["arialabel_" + PrnMaterialObligationViewModel.MaterialNameResource(obligation.MaterialName)].Value }
+                            )
+                        }
+                        else
+                        {
+                            @Localizer[PrnMaterialObligationViewModel.MaterialNameResource(obligation.MaterialName)]
+                        }
+                    </strong>
+                </td>
+
+                <td class="govuk-table__cell govuk-table__cell--numeric" data-header="@Localizer["recycling_obligations_to_meet"]">
+                    @if(obligation.ObligationToMeet == null)
+                    {
+                        <span class="govuk-visually-hidden">@Localizer["not_available_yet"]</span>
+                        <span aria-hidden="true">-</span>
+                    }
+                    else
+                    {
+                        @obligation.ObligationToMeet
+                    }
+                </td>
+                <td class="govuk-table__cell govuk-table__cell--numeric" data-header="@Localizer["tonnage_awaiting_acceptance"]">@obligation.TonnageAwaitingAcceptance</td>
+                <td class="govuk-table__cell govuk-table__cell--numeric" data-header="@Localizer["tonnage_accepted"]">@obligation.TonnageAccepted</td>
+                <td class="govuk-table__cell govuk-table__cell--numeric" data-header="@Localizer["tonnage_outstanding"]">
+                    @if (obligation.TonnageOutstanding == null)
+                    {
+                        <span class="govuk-visually-hidden">@Localizer["not_available_yet"]</span>
+                        <span aria-hidden="true">-</span>
+                    }
+                    else
+                    {
+                        @obligation.TonnageOutstanding
+                    }
+                </td>
+                <td class="govuk-table__cell" data-header="@Localizer["status"]">
+                    <strong class="govuk-tag govuk-tag--@obligation.StatusDisplayCssColor">
+                        @Localizer[obligation.StatusResource]
+                    </strong>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

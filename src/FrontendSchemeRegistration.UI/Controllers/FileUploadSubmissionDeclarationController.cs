@@ -4,7 +4,6 @@ using Application.Constants;
 using Application.DTOs.Submission;
 using Application.Services.Interfaces;
 using EPR.Common.Authorization.Constants;
-using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using Extensions;
 using global::FrontendSchemeRegistration.Application.RequestModels;

@@ -38,7 +38,7 @@ public class FileUploadCompanyDetailsIssueReportController : Controller
             return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
         }
 
-        var splitFileName = Path.GetFileNameWithoutExtension(submission.CompanyDetailsFileName);
-        return File(stream, "text/csv", $"{splitFileName} error report.csv");
+        var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(submission.CompanyDetailsFileName);
+        return File(stream, "text/csv", $"Error-report-{fileNameWithoutExtension}.csv");
     }
 }

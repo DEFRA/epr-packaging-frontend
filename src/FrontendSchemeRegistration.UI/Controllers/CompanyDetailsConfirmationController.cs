@@ -47,6 +47,12 @@ public class CompanyDetailsConfirmationController : Controller
 
                 if (submission is not null && submission.IsSubmitted)
                 {
+                    var isFileUploadJourneyInvokedViaRegistration = session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration;
+
+                    ViewBag.BackLinkToDisplay = isFileUploadJourneyInvokedViaRegistration ? $"/report-data/{PagePaths.RegistrationTaskList}" : Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
+
+                    ViewData["IsFileUploadJourneyInvokedViaRegistration"] = isFileUploadJourneyInvokedViaRegistration;
+
                     var submittedDateTime = submission.LastSubmittedFiles.SubmittedDateTime.Value;
                     return View(
                         "CompanyDetailsConfirmation",

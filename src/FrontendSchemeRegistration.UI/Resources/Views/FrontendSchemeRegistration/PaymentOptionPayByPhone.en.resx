@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="pay_by_phone_title" xml:space="preserve">
+        <value>Pay by phone</value>
+    </data>
+    <data name="pay_by_phone_heading" xml:space="preserve">
+        <value>Pay by phone</value>
+    </data>
+    <data name="pay_registration_fee_of" xml:space="preserve">
+        <value>Pay the registration fee of </value>
+    </data>
+    <data name="by_phone" xml:space="preserve">
+        <value> by phone.</value>
+    </data>
+    <data name="have_bank_details_ready" xml:space="preserve">
+        <value>Have your bank details ready to call.</value>
+    </data>
+    <data name="payment_details_section" xml:space="preserve">
+        <value>Payment details</value>
+    </data>
+    <data name="enquires_subsection" xml:space="preserve">
+        <value>Enquires</value>
+    </data>
+    <data name="england" xml:space="preserve">
+        <value>England</value>
+    </data>
+    <data name="use_application_payment_ref" xml:space="preserve">
+        <value>Use the application payment reference: </value>
+    </data>
+    <data name="environment_agency" xml:space="preserve">
+        <value>Environment Agency</value>
+    </data>
+    <data name="telephone_within_UK" xml:space="preserve">
+        <value>Telephone: 03708 506 506</value>
+    </data>
+    <data name="telephone_from_abroad" xml:space="preserve">
+        <value>Telephone from outside the UK: +44 (0) 114 282 5312</value>
+    </data>
+    <data name="working_hours" xml:space="preserve">
+        <value>Monday to Friday, 8am to 6pm</value>
+    </data>
+    <data name="more_about_call_charges" xml:space="preserve">
+        <value>Find out about call charges</value>
+    </data>
+    <data name="submit_application_from_dashboard_once_payment_been_made" xml:space="preserve">
+        <value>Submit your application from the registration dashboard when payment has been made.</value>
+    </data>
+    <data name="you_can" xml:space="preserve">
+        <value>You can </value>
+    </data>
+    <data name="print_or_save_as_PDF" xml:space="preserve">
+        <value>print or save this page as a PDF</value>
+    </data>
+    <data name="return_to_dashboard" xml:space="preserve">
+        <value>Return to the dashboard</value>
+    </data>
+</root>

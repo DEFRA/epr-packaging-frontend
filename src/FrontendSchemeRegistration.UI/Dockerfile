@@ -5,7 +5,7 @@ USER root
 ARG PORT=3000
 ENV ASPNETCORE_URLS=http://*:${PORT}
 EXPOSE ${PORT}
- 
+
 FROM defradigital/dotnetcore-development:dotnet8.0 AS build
 USER root
 WORKDIR /src
@@ -56,6 +56,7 @@ FROM base AS final
 USER dotnet
  
 WORKDIR /app
+
 COPY --from=publish /app/publish .
 USER dotnet
 ENTRYPOINT ["dotnet", "FrontendSchemeRegistration.UI.dll"]

@@ -1,17 +1,14 @@
-﻿namespace FrontendSchemeRegistration.UI.Sessions;
-
 using System.Diagnostics.CodeAnalysis;
-using Application.DTOs.ComplianceScheme;
-using Enums;
+using FrontendSchemeRegistration.Application.DTOs.ComplianceScheme;
+using FrontendSchemeRegistration.UI.Enums;
+using static FrontendSchemeRegistration.Application.DTOs.Submission.RegistrationApplicationDetails;
+
+namespace FrontendSchemeRegistration.UI.Sessions;
 
 [ExcludeFromCodeCoverage]
 public class RegistrationSession
 {
     public List<string> Journey { get; set; } = new();
-
-    public string OrganisationNumber { get; set; }
-
-    public Guid? SubmissionId { get; set; }
 
     public Guid? FileId { get; set; }
 
@@ -32,4 +29,6 @@ public class RegistrationSession
     public ChangeComplianceSchemeOptions? ChangeComplianceSchemeOptions { get; set; }
 
     public string? NotificationMessage { get; set; }
+
+    public bool IsFileUploadJourneyInvokedViaRegistration { get; set; }
 }

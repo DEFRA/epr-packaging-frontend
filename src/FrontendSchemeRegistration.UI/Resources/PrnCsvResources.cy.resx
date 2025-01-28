@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="column_header_prn_or_pern_number" xml:space="preserve">
+		<value>Rhif PRN neu PERN</value>
+	</data>
+	<data name="column_header_prn_or_pern" xml:space="preserve">
+		<value>PRN neu PERN</value>
+	</data>
+	<data name="column_header_status" xml:space="preserve">
+		<value>Statws</value>
+	</data>
+	<data name="column_header_issued_by" xml:space="preserve">
+		<value>Wedi'u rhoi gan</value>
+	</data>
+	<data name="column_header_issued_to" xml:space="preserve">
+		<value>Wedi'u rhoi i</value>
+	</data>
+	<data name="column_header_accreditation_number" xml:space="preserve">
+		<value>Rhif achredu</value>
+	</data>
+	<data name="column_header_date_issued" xml:space="preserve">
+		<value>Dyddiad rhoi</value>
+	</data>
+	<data name="column_header_december_waste" xml:space="preserve">
+		<value>Gwastraff Rhagfyr</value>
+	</data>
+	<data name="column_header_material" xml:space="preserve">
+		<value>Deunydd</value>
+	</data>
+	<data name="column_header_recycling_process" xml:space="preserve">
+		<value>Proses ailgylchu</value>
+	</data>
+	<data name="column_header_tonnes" xml:space="preserve">
+		<value>Tunelli</value>
+	</data>
+	<data name="column_header_date_accepted" xml:space="preserve">
+		<value>Dyddiad derbyn</value>
+	</data>
+	<data name="column_header_date_cancelled" xml:space="preserve">
+		<value>Dyddiad canslo</value>
+	</data>
+	<data name="column_header_issuer_note" xml:space="preserve">
+		<value>Nodyn rhoddwr</value>
+	</data>
+	<data name="not_accepted" xml:space="preserve">
+		<value>heb ei derbyn</value>
+	</data>
+	<data name="not_cancelled" xml:space="preserve">
+		<value>heb ei chanslo</value>
+	</data>
+	<data name="not_provided" xml:space="preserve">
+		<value>heb ei ddarparu</value>
+	</data>
+		<data name="AWAITING ACCEPTANCE" xml:space="preserve">
+		<value>Yn aros i gael ei dderbyn</value>
+	</data>
+	<data name="ACCEPTED" xml:space="preserve">
+		<value>Wedi'i dderbyn</value>
+	</data>
+	<data name="CANCELLED" xml:space="preserve">
+		<value>Wedi'i ganslo</value>
+	</data>
+	<data name="REJECTED" xml:space="preserve">
+		<value>Wedi'i wrthod</value>
+	</data>
+	<data name="Yes" xml:space="preserve">
+		<value>Ie</value>
+	</data>
+	<data name="No" xml:space="preserve">
+		<value>Nage</value>
+	</data>
+</root>

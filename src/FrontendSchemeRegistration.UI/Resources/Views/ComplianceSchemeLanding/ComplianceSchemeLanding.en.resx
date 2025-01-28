@@ -1,232 +1,199 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!-- 
-    Microsoft ResX Schema 
-    
-    Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
-    associated with the data types.
-    
-    Example:
-    
-    ... ado.net/XML headers & schema ...
-    <resheader name="resmimetype">text/microsoft-resx</resheader>
-    <resheader name="version">2.0</resheader>
-    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-        <value>[base64 mime encoded serialized .NET Framework object]</value>
-    </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
-        <comment>This is a comment</comment>
-    </data>
-                
-    There are any number of "resheader" rows that contain simple 
-    name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
-    mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
-    extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
-    read any of the formats listed below.
-    
-    mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
-            : and then encoded with base64 encoding.
-    
-    mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-            : and then encoded with base64 encoding.
-
-    mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
-            : using a System.ComponentModel.TypeConverter
-            : and then encoded with base64 encoding.
-    -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xsd:element name="root" msdata:IsDataSet="true">
-      <xsd:complexType>
-        <xsd:choice maxOccurs="unbounded">
-          <xsd:element name="metadata">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
-              </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="assembly">
-            <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="data">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="resheader">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
-            </xsd:complexType>
-          </xsd:element>
-        </xsd:choice>
-      </xsd:complexType>
-    </xsd:element>
-  </xsd:schema>
-  <resheader name="resmimetype">
-    <value>text/microsoft-resx</value>
-  </resheader>
-  <resheader name="version">
-    <value>2.0</value>
-  </resheader>
-  <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-  <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-  <data name="title" xml:space="preserve">
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="title" xml:space="preserve">
     <value>Home</value>
   </data>
-  <data name="account_home" xml:space="preserve">
+    <data name="account_home" xml:space="preserve">
     <value>Account home - {0}</value>
   </data>
-
-  <data name="members_organisation_details" xml:space="preserve">
+    <data name="members_organisation_details" xml:space="preserve">
     <value>Members’ organisation details</value>
   </data>
-  <data name="you_must_report_org_data" xml:space="preserve">
+    <data name="you_must_report_org_data" xml:space="preserve">
     <value>You must report organisation details for January to June and July to December.</value>
   </data>
-  <data name="you_can_also" xml:space="preserve">
+    <data name="you_can_also" xml:space="preserve">
     <value>You can also:</value>
   </data>
-  <data name="report_packaging_data" xml:space="preserve">
+    <data name="report_packaging_data" xml:space="preserve">
     <value>Report your members’ packaging data</value>
   </data>
-  <data name="report_changes_to_your_organisation_details" xml:space="preserve">
+    <data name="report_changes_to_your_organisation_details" xml:space="preserve">
     <value>report changes to your members’ organisation details</value>
   </data>
-  <data name="resubmit_your_organisation_details" xml:space="preserve">
+    <data name="resubmit_your_organisation_details" xml:space="preserve">
     <value>resubmit your members’ organisation details</value>
   </data>
-  <data name="view_your_history" xml:space="preserve">
+    <data name="view_your_history" xml:space="preserve">
     <value>view your history</value>
   </data>
-  <data name="you_must_report_packaging_data" xml:space="preserve">
-    <value>You must report packaging data for January to June and July to December.</value>
+    <data name="you_must_report_packaging_data" xml:space="preserve">
+    <value>You must report packaging data for 2024. Report this data by 1st April, 2025.</value>
   </data>
-  <data name="report_organisation_details" xml:space="preserve">
+    <data name="report_organisation_details" xml:space="preserve">
     <value>Report your members’ organisation details</value>
   </data>
-  <data name="members_packaging_data" xml:space="preserve">
+    <data name="members_packaging_data" xml:space="preserve">
     <value>Members’ packaging data</value>
   </data>
-  <data name="resubmit_your_packaging_data" xml:space="preserve">
+    <data name="resubmit_your_packaging_data" xml:space="preserve">
     <value>resubmit your members’ packaging data</value>
   </data>
-  <data name="packaging_recovery_notes" xml:space="preserve">
+    <data name="packaging_recovery_notes" xml:space="preserve">
     <value>Packaging waste recycling note (PRN) and packaging waste export recycling note (PERN)</value>
   </data>
-  <data name="no_action_needed" xml:space="preserve">
+    <data name="no_action_needed" xml:space="preserve">
     <value>No action needed at the moment</value>
   </data>
-  <data name="important" xml:space="preserve">
+    <data name="important" xml:space="preserve">
     <value>Important</value>
   </data>
-  <data name="view-invitation" xml:space="preserve">
+    <data name="view-invitation" xml:space="preserve">
     <value>View invitation</value>
   </data>
-  <data name="youve-been-invited" xml:space="preserve">
+    <data name="youve-been-invited" xml:space="preserve">
     <value>You’ve been invited to change your account permission, so you can submit data to the environmental regulator.</value>
   </data>
-  <data name="waiting-for-approval" xml:space="preserve">
+    <data name="waiting-for-approval" xml:space="preserve">
     <value>Waiting for approval to submit data</value>
   </data>
-  <data name="well-email-you" xml:space="preserve">
+    <data name="well-email-you" xml:space="preserve">
     <value>We’ll email you when the environmental regulator has given you permission to submit data.</value>
   </data>
-  <data name="summary-data-for" xml:space="preserve">
+    <data name="summary-data-for" xml:space="preserve">
     <value>Data for</value>
   </data>
-  <data name="summary-your-account-is-linked-to" xml:space="preserve">
+    <data name="summary-your-account-is-linked-to" xml:space="preserve">
     <value>Your account is linked to</value>
   </data>
-  <data name="summary-members" xml:space="preserve">
+    <data name="summary-members" xml:space="preserve">
     <value>members</value>
   </data>
-  <data name="summary-view-members" xml:space="preserve">
+    <data name="summary-view-members" xml:space="preserve">
     <value>View members</value>
   </data>
-  <data name="summary-view-and-remove-members" xml:space="preserve">
+    <data name="summary-view-and-remove-members" xml:space="preserve">
     <value>View and remove members</value>
   </data>
-  <data name="summary-members-info" xml:space="preserve">
+    <data name="summary-members-info" xml:space="preserve">
     <value>When a member selects your compliance scheme in their ‘report packaging data’ account we’ll link them to your account.</value>
   </data>
-  <data name="summary-last-updated" xml:space="preserve">
+    <data name="summary-last-updated" xml:space="preserve">
     <value>Last updated</value>
   </data>
-  <data name="summary-regulator-england" xml:space="preserve">
+    <data name="summary-regulator-england" xml:space="preserve">
     <value>the Environment Agency</value>
   </data>
-  <data name="summary-regulator-northern-ireland" xml:space="preserve">
+    <data name="summary-regulator-northern-ireland" xml:space="preserve">
     <value>the Northern Ireland Environment Agency</value>
   </data>
-  <data name="summary-regulator-scotland" xml:space="preserve">
+    <data name="summary-regulator-scotland" xml:space="preserve">
     <value>the Scottish Environment Protection Agency</value>
   </data>
-  <data name="summary-regulator-wales" xml:space="preserve">
+    <data name="summary-regulator-wales" xml:space="preserve">
     <value>Natural Resources Wales</value>
   </data>
-  <data name="summary-regulator" xml:space="preserve">
+    <data name="summary-regulator" xml:space="preserve">
     <value>the regulator</value>
   </data>
-  <data name="date1_to_date2" xml:space="preserve">
+    <data name="date1_to_date2" xml:space="preserve">
     <value>{0} to {1}</value>
   </data>
-  <data name="summary-member" xml:space="preserve">
+    <data name="summary-member" xml:space="preserve">
     <value>member</value>
   </data>
-  <data name="home" xml:space="preserve">
+    <data name="home" xml:space="preserve">
     <value>Home</value>
   </data>
-  <data name="subsidiaries" xml:space="preserve">
+    <data name="subsidiaries" xml:space="preserve">
     <value>Subsidiaries</value>
   </data>
-	<data name="add-manage-subsidiaries" xml:space="preserve">
+    <data name="add-manage-subsidiaries" xml:space="preserve">
     <value>Add and manage your subsidiary companies.</value>
+  </data>
+    <data name="prn_heading_text" xml:space="preserve">
+    <value>Manage your {0} recycling obligations</value>
+  </data>
+    <data name="prn_paragraph_1" xml:space="preserve">
+    <value>Review your recycling obligations calculations and accept PRNs or PERNs to meet them.
+You can also:</value>
+  </data>
+    <data name="prn_unordered_list_point_1" xml:space="preserve">
+    <value>view recycling obligations by material</value>
+  </data>
+    <data name="prn_unordered_list_point_2" xml:space="preserve">
+    <value>check your recycling obligations progress</value>
+  </data>
+    <data name="registration" xml:space="preserve">
+    <value>Registration</value>
+  </data>
+    <data name="you_need_to_register_by_31_April" xml:space="preserve">
+    <value>You need to register by 31 April for the current year</value>
+  </data>
+   <data name="You_have_submitted_your_registration_data" xml:space="preserve">
+    <value>You have submitted your registration data. It may take up to an hour for our systems to update.</value>
+  </data>
+  <data name="You_will_then_need_to_pay_your_registration_fee" xml:space="preserve">
+    <value>You will then need to pay your registration fee and submit your registration application.</value>
+  </data>
+  <data name="You_have_submitted_your_registration_data_for_x" xml:space="preserve">
+    <value>You have submitted your registration data for {0}.</value>
+  </data>
+  <data name="View_your_registration_fees_and_payment_methods" xml:space="preserve">
+    <value>View your registration fees and payment methods.</value>
+  </data>
+  <data name="You_have_viewed_your_registration_fees" xml:space="preserve">
+    <value>You have viewed your registration fees, and methods of payment.</value>
+  </data>
+  <data name="Payment_must_be_made_before_submitting_your_x" xml:space="preserve">
+    <value>Payment must be made before submitting your {0} application.</value>
+  </data>
+  <data name="Your_registration_application_for_x_has_been_submitted" xml:space="preserve">
+    <value>Your registration application for {0} has been submitted.</value>
+  </data>
+  <data name="Your_registration_for_x_has_been_granted" xml:space="preserve">
+    <value>Your registration for {0} has been granted by the regulator.</value>
+  </data>
+  <data name="Your_registration_reference_number_is_x" xml:space="preserve">
+    <value>Your producer registration number is {0}.</value>
+  </data>
+  <data name="If_anything_changes_you_should_resubmit" xml:space="preserve">
+    <value>If anything changes you should resubmit your registration data to update it within 28 days.</value>
+  </data>
+  <data name="The_regulator_has_identified_a_potential_issue" xml:space="preserve">
+    <value>The regulator has identified a potential issue with your application and will contact you.</value>
+  </data>
+  <data name="You_will_need_to_submit_a_corrected_registration_data_file" xml:space="preserve">
+    <value>You will need to submit a corrected registration data file.</value>
+  </data>
+  <data name="Your_registration_application_for_x_has_been_refused" xml:space="preserve">
+    <value>Your registration application for {0} has been refused.</value>
+  </data>
+  <data name="Contact_the_regulator_for_further_advice" xml:space="preserve">
+    <value>Contact the regulator for further advice.</value>
+  </data>
+  <data name="Your_registration_for_X_has_been_cancelled" xml:space="preserve">
+    <value>Your registration for {0} has been cancelled by the regulator.</value>
+  </data>
+  <data name="Contact_your_regulator_if_you_need_advice" xml:space="preserve">
+    <value>Contact your regulator if you need advice.</value>
+  </data>
+  <data name="you_need_to_register_by_1_April" xml:space="preserve">
+    <value>You must register your organisation for {0}.</value>
+  </data>
+  <data name="Apply_by_1st_April_x" xml:space="preserve">
+    <value>Apply by 1st April, {0}</value>
   </data>
 </root>

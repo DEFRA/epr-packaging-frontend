@@ -43,7 +43,7 @@
     <value>The producer or compliance scheme rejected the PRN.</value>
   </data>
   <data name="prn_cancelled_explanation" xml:space="preserve">
-    <value>The regulator cancelled the PRN.</value>
+    <value>PRN cancelled</value>
   </data>
   <data name="pern_awaiting_acceptance_explanation" xml:space="preserve">
     <value>The exporter issued the PERN to the producer or compliance scheme. The producer or compliance scheme has not yet accepted the PERN.</value>
@@ -55,7 +55,7 @@
     <value>The producer or compliance scheme rejected the PERN.</value>
   </data>
   <data name="pern_cancelled_explanation" xml:space="preserve">
-    <value>The regulator cancelled the PERN.</value>
+    <value>PERN cancelled</value>
   </data>
   <data name="missing_status_explanation" xml:space="preserve">
     <value>Status not found.</value>
@@ -65,5 +65,11 @@
   </data>
   <data name="position" xml:space="preserve">
     <value>Position</value>
+  </data>
+  <data name="cancel_status_for_pdf" xml:space="preserve">
+    <value>Awaiting cancellation</value>
+  </data>
+  <data name="prn_awaiting_cancellation_explanation" xml:space="preserve">
+    <value>The producer or compliance scheme rejected this {0}. The reprocessor or exporter has not yet cancelled it.</value>
   </data>
 </root>

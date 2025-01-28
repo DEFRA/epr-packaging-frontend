@@ -1,5 +1,6 @@
 ﻿using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
+using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
@@ -11,18 +12,20 @@ using Microsoft.FeatureManagement.Mvc;
 namespace FrontendSchemeRegistration.UI.Controllers.Prns
 {
     [FeatureGate(FeatureFlags.ShowPrn)]
+    [ServiceFilter(typeof(ComplianceSchemeIdHttpContextFilterAttribute))]
     public class PrnsAcceptController : Controller
     {
         private readonly IPrnService _prnService;
-        private readonly TimeProvider _timeProvider;
         private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
         private const string NoPrnsSelected = "NoPrnsSelected";
+        private readonly IDownloadPrnService _downloadPrnService;
 
-        public PrnsAcceptController(IPrnService prnService, TimeProvider timeProvider, ISessionManager<FrontendSchemeRegistrationSession> sessionManager)
+        public PrnsAcceptController(IPrnService prnService, ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
+            IDownloadPrnService downloadPrnService)
         {
             _prnService = prnService;
-            _timeProvider = timeProvider;
             _sessionManager = sessionManager;
+            _downloadPrnService = downloadPrnService; 
         }
 
         // Note steps 1 and 2 are in the PrnsController
@@ -32,13 +35,9 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         public async Task<IActionResult> AcceptSinglePrn(Guid id)
         {
             var prn = await _prnService.GetPrnByExternalIdAsync(id);
-            if (prn.DecemberWasteRulesApply(_timeProvider.GetUtcNow().Date) && prn.IssueYear.Equals(2024))
-            {
-                return View("AcceptSingle2024DecemberWastePrn", prn);
-            }
-
+            
             return View("AcceptSinglePrn", prn);
-        }
+        }        
 
         // Unexpected hit, assume user has timed out and been redirected here after relogin
         [HttpGet]
@@ -67,10 +66,18 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
 
             if (model == null || !model.ApprovalStatus.EndsWith(PrnStatus.Accepted))
             {
-                return RedirectToAction(nameof(PrnsController.HomePagePrn), nameof(PrnsController).RemoveControllerFromName());
+                return RedirectToAction(nameof(PrnsObligationController.ObligationsHome), nameof(PrnsObligationController).RemoveControllerFromName());
             }
 
             return View(model);
+        }
+
+        [HttpGet]
+        [Route(PagePaths.Prns.DownloadAcceptedPRNPdf + "/{id:guid}")]
+        public async Task<IActionResult> DownloadPrn(Guid id)
+        {
+            var actionContext = new ActionContext(HttpContext, RouteData, ControllerContext.ActionDescriptor, ModelState);
+            return await _downloadPrnService.DownloadPrnAsync(id, "AcceptedPrn", actionContext);
         }
 
         // Note step 1 is in the PrnsController
@@ -134,6 +141,9 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
             {
                 viewModel.Prns = selectedPrns.ToList();
             }
+            
+            ViewBag.BackLinkToDisplay = Url.Content($"~/{PagePaths.Prns.ShowAwaitingAcceptance}");
+            
             return View(viewModel);
         }
 
@@ -166,9 +176,16 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
             var viewModel = await _prnService.GetAllAcceptedPrnsAsync();
             var justUpdatedPrns = viewModel.Prns?.Where(x => selectedPrnIds.Contains(x.ExternalId)).ToList();
 
+            string obligationYearsCsv = string.Empty;
+            if (justUpdatedPrns != null)
+            {
+                obligationYearsCsv = string.Join(",", justUpdatedPrns.Select(x => x.ObligationYear).Distinct());
+            }
+
             var summaryModel = new AcceptedPrnsModel()
             {
                 NoteTypes = viewModel.GetNoteType(justUpdatedPrns),
+                ObligationYears = obligationYearsCsv,
                 Count = justUpdatedPrns.Count,
                 Details = justUpdatedPrns
                             .GroupBy(x => x.Material)

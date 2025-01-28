@@ -41,11 +41,17 @@
     <data name="but_they_have_not_been_submitted" xml:space="preserve">
         <value>ond maen nhw heb gael eu cyflwyno i’r rheoleiddiwr amgylcheddol. </value>
     </data>
+	<data name="but_they_have_not_been_submitted_nonregulator" xml:space="preserve">
+        <value>ond maen nhw heb gael eu cyflwyno.</value>
+    </data>
     <data name="you_can_upload" xml:space="preserve">
         <value>Gallwch uwchlwytho’r wybodaeth yma eto os bydd rhywbeth wedi newid. Does dim caniatâd gennych i gyflwyno ffeiliau.</value>
     </data>
     <data name="someone_in_your_team_with_the_right_account_permissions" xml:space="preserve">
         <value>Bydd angen i rywun yn eich tîm sydd â’r caniatâd cywir yn y cyfrif gyflwyno’r wybodaeth yma i’r rheoleiddiwr amgylcheddol.</value>
+    </data>
+	<data name="someone_in_your_team_with_the_right_account_permissions_nonregulator" xml:space="preserve">
+        <value>Bydd angen i'r wybodaeth yma gael ei chyflwyno gan rywun yn eich tîm sydd â'r caniatadau cywir ar gyfer y cyfrif.</value>
     </data>
     <data name="are_you_sure_you_want_to_re-upload_your_organisation_details" xml:space="preserve">
         <value>Ydych chi’n siŵr eich bod am ail-lwytho manylion eich sefydliad?</value>

@@ -7,7 +7,7 @@
         <UserSecretsId>1439f55f-9123-4c58-8ab4-ae9114a85b11</UserSecretsId>
         <InvariantGlobalization>false</InvariantGlobalization>
         <!-- SonarCloud does not recognise file-scoped namespaces in current version. -->
-        <NoWarn>S3903,S5693,S5144</NoWarn>
+        <NoWarn>S3903,S5693,S5144,S4507,S4792</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
@@ -41,6 +41,10 @@
     </Target>
 
     <ItemGroup>
+        <Content Update="Views\Shared\Partials\Prns\_calculationsNonGlass.cshtml">
+          <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+          <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </Content>
         <Content Update="wwwroot\css\application.css">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
@@ -141,6 +145,10 @@
         <PackageReference Include="System.Security.Cryptography.Pkcs" Version="8.0.0" />
     </ItemGroup>
     <ItemGroup>
+        <EmbeddedResource Update="Resources\CompanyDetailsSubmissionErrorCodes.cy.resx">
+          <SubType>Designer</SubType>
+          <Generator></Generator>
+        </EmbeddedResource>
         <EmbeddedResource Update="Resources\Views\Application\PrivacyPolicy.en.resx">
             <Generator>ResXFileCodeGenerator</Generator>
             <LastGenOutput>PrivacyPolicy.en.Designer.cs</LastGenOutput>
@@ -178,6 +186,15 @@
         <EmbeddedResource Update="Resources\Views\FileUploadCompanyDetailsSubmissionHistory\FileUploadCompanyDetailsSubmissionHistory.en.resx">
           <SubType>Designer</SubType>
         </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Views\FileUploadSubsidiaries\ConfirmRemoveSubsidiary.cy.resx">
+          <SubType>Designer</SubType>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Views\FileUploadSubsidiaries\ConfirmRemoveSubsidiarySuccess.en.resx">
+          <SubType>Designer</SubType>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Views\FileUploadSubsidiaries\ConfirmRemoveSubsidiarySuccess.cy.resx">
+          <SubType>Designer</SubType>
+        </EmbeddedResource>
         <EmbeddedResource Update="Resources\Views\FileUploadSubsidiaries\SubsidiariesList.cy.resx">
           <SubType>Designer</SubType>
         </EmbeddedResource>
@@ -197,6 +214,12 @@
             <Generator>ResXFileCodeGenerator</Generator>
         </EmbeddedResource>
         <EmbeddedResource Update="Resources\Views\Shared\Partials\Notifications\_NominatedApprovedPerson.cy.resx">
+          <SubType>Designer</SubType>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Views\Shared\Partials\Prns\_calculationsNonGlass.cy.resx">
+          <SubType>Designer</SubType>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Views\Shared\Partials\Prns\_calculationsNonGlass.en.resx">
           <SubType>Designer</SubType>
         </EmbeddedResource>
         <EmbeddedResource Update="Resources\Views\SubsidiaryAdded\SubsidiaryAdded.resx">
@@ -284,15 +307,15 @@
         <EmbeddedResource Update="Resources\Views\FileUploadCompanyDetails\FileUploadCompanyDetails.en.resx">
             <Generator>ResXFileCodeGenerator</Generator>
         </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadingCompanyDetails\FileUploadingCompanyDetails.resx">
+        <EmbeddedResource Update="Resources\Views\UploadingOrganisationDetails\UploadingOrganisationDetails.resx">
         </EmbeddedResource>
         <EmbeddedResource Update="Resources\Views\FileUploadBrands\FileUploadBrands.resx">
             <Generator>ResXFileCodeGenerator</Generator>
             <LastGenOutput>FileUploadBrands.Designer.cs</LastGenOutput>
         </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadingCompanyDetails\FileUploadingCompanyDetails.resx">
+        <EmbeddedResource Update="Resources\Views\UploadingOrganisationDetails\UploadingOrganisationDetails.resx">
             <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>FileUploadingCompanyDetails.Designer.cs</LastGenOutput>
+            <LastGenOutput>UploadingOrganisationDetails.Designer.cs</LastGenOutput>
         </EmbeddedResource>
         <EmbeddedResource Update="Resources\Views\Compliance\Confirmation.resx">
             <Generator>ResXFileCodeGenerator</Generator>
@@ -530,9 +553,8 @@
         <Generator>ResXFileCodeGenerator</Generator>
           <LastGenOutput>FileUploadingCompanyDetailsErrors.en.Designer.cs</LastGenOutput>
         </EmbeddedResource>
-        <EmbeddedResource Update="Resources\CompanyDetailsSubmissionErrorCodes.resx">
-          <Generator>ResXFileCodeGenerator</Generator>
-          <LastGenOutput>CompanyDetailsSubmissionErrorCodes.Designer.cs</LastGenOutput>
+        <EmbeddedResource Update="Resources\CompanyDetailsSubmissionErrorCodes.en.resx">
+          <Generator></Generator>
         </EmbeddedResource>
     </ItemGroup>
     <ItemGroup>
@@ -642,17 +664,17 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>FileUploadCompanyDetails.resx</DependentUpon>
         </Compile>
-        <Compile Update="Resources\Views\FileUploadingCompanyDetails\FileUploadingCompanyDetails.Designer.cs">
+        <Compile Update="Resources\Views\UploadingOrganisationDetails\UploadingOrganisationDetails.Designer.cs">
         </Compile>
         <Compile Update="Resources\Views\FileUploadBrands\FileUploadBrands.Designer.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
             <DependentUpon>FileUploadBrands.resx</DependentUpon>
         </Compile>
-        <Compile Update="Resources\Views\FileUploadingCompanyDetails\FileUploadingCompanyDetails.Designer.cs">
+        <Compile Update="Resources\Views\UploadingOrganisationDetails\UploadingOrganisationDetails.Designer.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
-            <DependentUpon>FileUploadingCompanyDetails.resx</DependentUpon>
+            <DependentUpon>UploadingOrganisationDetails.resx</DependentUpon>
         </Compile>
         <Compile Update="Resources\Views\Shared\Partials\Govuk\_Header.Designer.cs">
             <DesignTime>True</DesignTime>
@@ -859,11 +881,6 @@
           <AutoGen>True</AutoGen>
           <DependentUpon>FileUploadingCompanyDetailsErrors.en.resx</DependentUpon>
         </Compile>
-        <Compile Update="Resources\CompanyDetailsSubmissionErrorCodes.Designer.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>CompanyDetailsSubmissionErrorCodes.resx</DependentUpon>
-        </Compile>
     </ItemGroup>
     <ItemGroup>
         <Compile Update="Resources\SharedResources.Designer.cs">
@@ -893,7 +910,7 @@
 
     <ItemGroup>
         <AdditionalFiles Include="Views\FileUploadFailure\FileUploadFailure.cshtml" />
-        <AdditionalFiles Include="Views\FileUploadingCompanyDetails\FileUploadingCompanyDetails.cshtml" />
+        <AdditionalFiles Include="Views\UploadingOrganisationDetails\UploadingOrganisationDetails.cshtml" />
         <AdditionalFiles Include="Views\FrontendSchemeRegistration\LandingPage.cshtml" />
         <AdditionalFiles Include="Views\FrontendSchemeRegistration\SelectComplianceScheme.cshtml" />
         <AdditionalFiles Include="Views\FrontendSchemeRegistration\Stop.cshtml" />
@@ -1198,7 +1215,14 @@
     </ItemGroup>
 	<ItemGroup>
 		<SonarQubeSetting Include="sonar.coverage.exclusions">
-			<Value>ViewModels/ComplianceSchemeLandingViewModel*.cs,Views/**/*.cshtml,Program.cs,gulpfile.js,**/print.js,**/refresh.js</Value>
+			<Value>ViewModels/ComplianceSchemeLandingViewModel*.cs,Views/**/*.cshtml,Program.cs,gulpfile.js,**/print.js,**/refresh.js,**/sub-status-refresh.js,**/download-pdf.js</Value>
 		</SonarQubeSetting>
+        <SonarQubeSetting Include="sonar.cpd.exclusions">
+            <Value>Views/**/*.cshtml</Value>
+        </SonarQubeSetting>
 	</ItemGroup>
+
+  <PropertyGroup>
+    <NoWarn>S4507,S4792</NoWarn>
+  </PropertyGroup>
 </Project>

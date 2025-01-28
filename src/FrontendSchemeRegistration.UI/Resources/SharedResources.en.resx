@@ -123,9 +123,6 @@
   <data name="confirm_and_continue" xml:space="preserve">
     <value>Confirm and continue</value>
   </data>
-  <data name="manage_account" xml:space="preserve">
-    <value>Manage Account</value>
-  </data>
   <data name="sign_out" xml:space="preserve">
     <value>Sign out</value>
   </data>
@@ -135,9 +132,6 @@
   <data name="skip_to_main_content_text" xml:space="preserve">
     <value>Skip to main content</value>
   </data>
-  <data name="go_to_account_home_page" xml:space="preserve">
-    <value>Go to account home page</value>
-  </data>
   <data name="continue" xml:space="preserve">
     <value>Continue</value>
   </data>
@@ -146,6 +140,9 @@
   </data>
   <data name="home" xml:space="preserve">
     <value>Home</value>
+  </data>
+  <data name="arialabel_home" xml:space="preserve">
+    <value>Manage obligations homepage</value>
   </data>
   <data name="cancel" xml:space="preserve">
     <value>Cancel</value>
@@ -165,50 +162,20 @@
   <data name="warning" xml:space="preserve">
     <value>Warning</value>
   </data>
-  <data name="Cymraeg" xml:space="preserve">
-    <value>Cymraeg</value>
-  </data>
-  <data name="English" xml:space="preserve">
-    <value>English</value>
-  </data>
-  <data name="Welsh" xml:space="preserve">
-    <value>Cymraeg</value>
-  </data>
-  <data name="January to June 2023" xml:space="preserve">
-    <value>January to June 2023</value>
-  </data>
-  <data name="July to December 2023" xml:space="preserve">
-    <value>July to December 2023</value>
-  </data>
   <data name="sorry_problem_service" xml:space="preserve">
     <value>Sorry, there is a problem with the service</value>
   </data>
   <data name="try_again_later" xml:space="preserve">
     <value>Try again later.</value>
   </data>
-  <data name="scheme_members" xml:space="preserve">
-    <value>Scheme members</value>
-  </data>
   <data name="defra" xml:space="preserve">
     <value>Department for Environment, Food and Rural Affairs</value>
-  </data>
-  <data name="member_details" xml:space="preserve">
-    <value>Member detail</value>
-  </data>
-  <data name="next_page" xml:space="preserve">
-    <value>Next page</value>
   </data>
   <data name="menu" xml:space="preserve">
     <value>Menu</value>
   </data>
   <data name="hidden_error" xml:space="preserve">
     <value>Error:</value>
-  </data>
-  <data name="Yes" xml:space="preserve">
-    <value>Yes</value>
-  </data>
-  <data name="No" xml:space="preserve">
-    <value>No</value>
   </data>
   <data name="confirm" xml:space="preserve">
     <value>Confirm</value>
@@ -221,9 +188,6 @@
   </data>
   <data name="sign_in" xml:space="preserve">
     <value>Sign in</value>
-  </data>
-  <data name="created_new_approved_person" xml:space="preserve">
-    <value>You've created an account. We'll email you when the environmental regulator has given you permission to submit data. This may take up to 28 days.</value>
   </data>
   <data name="success" xml:space="preserve">
     <value>Success</value>
@@ -272,5 +236,8 @@
   </data>
   <data name="link-go-back-to-subsidiaries-list" xml:space="preserve">
     <value>Go back to subsidiaries list</value>
+  </data>
+  <data name="created_new_approved_person" xml:space="preserve">
+    <value>You've created an account. We'll email you when the environmental regulator has given you permission to submit data. This may take up to 28 days.</value>
   </data>
 </root>

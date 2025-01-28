@@ -15,7 +15,7 @@
 		<value>Search PRNs and PERNs</value>
 	</data>
 	<data name="you_can_search_for_prns_and_perns" xml:space="preserve">
-		<value>You can search for PRNs and PERNs issued to your 2025 recycling obligation. To search your 2024 recycling obligation you need to do this in NPWD.</value>
+		<value>You can only search for PRNs and PERNs issued to your 2025 recycling obligations. To find records from earlier years, use the National Packaging Waste Database (NPWD).</value>
 	</data>
 	<data name="enter_prn_or_pern_number" xml:space="preserve">
 		<value>Enter PRN or PERN number, or the name of the reprocessor or exporter.</value>
@@ -30,7 +30,7 @@
 		<value>Filter by</value>
 	</data>
 	<data name="clear_sort_and_filter" xml:space="preserve">
-		<value>Clear sort and filter</value>
+		<value>Clear all</value>
 	</data>
 	<data name="prn_or_pern_number" xml:space="preserve">
 		<value>PRN or PERN number</value>
@@ -92,10 +92,16 @@
 	<data name="sort_tonnage_desc" xml:space="preserve">
 		<value>Tonnage: (heaviest first)</value>
 	</data>
-	<data name="enter_the_exact_prn_or_pern_number" xml:space="preserve">
-		<value>Enter the exact PRN or PERN number, or the exact name of the issuing organisation.</value>
-	</data>
 	<data name="no_prns_or_perns_found" xml:space="preserve">
 		<value>No PRNs or PERNs found.</value>
+	</data>
+	<data name="no_prns_or_perns_found_body" xml:space="preserve">
+		<value>If you searched for a PRN or PERN number, check you entered the correct number.</value>
+	</data>
+	<data name="no_prns_or_perns_found_body_extra" xml:space="preserve">
+		<value>If you searched for the name of a reprocessor or exporter, check the spelling.</value>
+	</data>
+	<data name="page_title" xml:space="preserve">
+		<value>Search PRNs and PERNs</value>
 	</data>
 </root>

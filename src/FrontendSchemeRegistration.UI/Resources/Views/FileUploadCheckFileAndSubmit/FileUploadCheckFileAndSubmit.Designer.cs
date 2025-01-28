@@ -109,6 +109,15 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.FileUploadCheckFileAndSu
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
+        internal static string download {
+            get {
+                return ResourceManager.GetString("download", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
         internal static string file_name {
             get {
                 return ResourceManager.GetString("file_name", resourceCulture);

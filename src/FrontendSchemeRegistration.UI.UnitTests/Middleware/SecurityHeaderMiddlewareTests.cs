@@ -1,7 +1,6 @@
 ﻿namespace FrontendSchemeRegistration.UI.UnitTests.Middleware;
 
 using AutoFixture;
-using Castle.Components.DictionaryAdapter.Xml;
 using Constants;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;

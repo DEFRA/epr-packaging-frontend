@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="item" xml:space="preserve">
+    <value>Items</value>
+  </data>
+  <data name="description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="amount" xml:space="preserve">
+    <value>Amount</value>
+  </data>
+  <data name="application_fee" xml:space="preserve">
+    <value>Application fee</value>
+  </data>
+  <data name="compliance_scheme" xml:space="preserve">
+    <value>Compliance scheme</value>
+  </data>
+	<data name="small_producers_sentence_text" xml:space="preserve">
+    <value>Small producers</value>
+  </data>
+	<data name="small_producers_sentence_text_singular" xml:space="preserve">
+    <value>Small producer</value>
+  </data>
+  <data name="large_producers_sentence_text" xml:space="preserve">
+    <value>Large producers</value>
+  </data>
+	<data name="large_producers_sentence_text_singular" xml:space="preserve">
+    <value>Large producer</value>
+  </data>
+	<data name="online_marketplaces_sentence_text" xml:space="preserve">
+    <value>are online marketplaces</value>
+  </data>
+  <data name="online_marketplaces_sentence_text_singular" xml:space="preserve">
+    <value>is an online marketplace</value>
+  </data>
+  <data name="subsidiary_companies_sentence_text" xml:space="preserve">
+    <value>subsidiary companies</value>
+  </data>
+  <data name="subsidiary_companies_sentence_text_singular" xml:space="preserve">
+    <value>subsidiary company</value>
+  </data>
+  <data name="late_producer_fees_text" xml:space="preserve">
+    <value>late producer fees</value>
+  </data>
+  <data name="late_producer_fees_text_singular" xml:space="preserve">
+    <value>late producer fee</value>
+  </data>
+  <data name="scheme_members" xml:space="preserve">
+    <value>Scheme Members</value>
+  </data>
+	<data name="sub_total_amount" xml:space="preserve">
+    <value>Sub-total</value>
+  </data>
+	 <data name="previous_payments" xml:space="preserve">
+    <value>Previous payments</value>
+  </data>
+  <data name="total_previous_payments_received" xml:space="preserve">
+    <value>Total payments received</value>
+  </data>
+  <data name="total_outstanding" xml:space="preserve">
+    <value>Total Outstanding</value>
+  </data>
+</root>

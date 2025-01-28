@@ -13,57 +13,63 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="accreditation_number" xml:space="preserve">
-    <value>[Welsh]Accreditation number</value>
+    <value>Rhif achredu</value>
   </data>
   <data name="authorised_by" xml:space="preserve">
-    <value>[Welsh]Authorised by</value>
+    <value>Wedi'i awdurdodi gan</value>
   </data>
   <data name="issued_by" xml:space="preserve">
-    <value>[Welsh]Issued by</value>
+    <value>Wedi'i roi gan</value>
   </data>
   <data name="packaging_producer_or_compliance_scheme" xml:space="preserve">
-    <value>[Welsh]Packaging producer or compliance scheme</value>
+    <value>Cynhyrchydd y pecynwaith neu'r cynllun cydymffurfio</value>
   </data>
   <data name="reproccessing_site" xml:space="preserve">
-    <value>[Welsh]Reproccessing site</value>
+    <value>Safle ailbrosesu</value>
   </data>
   <data name="status" xml:space="preserve">
-    <value>[Welsh]Status</value>
+    <value>Statws</value>
   </data>
   <data name="status_meaning" xml:space="preserve">
-    <value>[Welsh]Status meaning</value>
+    <value>Ystyr y statws</value>
   </data>
   <data name="prn_awaiting_acceptance_explanation" xml:space="preserve">
-    <value>[Welsh]The reprocessor issued the PRN to the producer or compliance scheme. The producer or compliance scheme has not yet accepted the PRN.</value>
+    <value>Cafodd y PRN ei roi gan yr ailbrosesydd i'r cynhyrchydd neu'r cynllun cydymffurfio. Mae'r cynhyrchydd neu'r cynllun cydymffurfio heb dderbyn y PERN eto.</value>
   </data>
   <data name="prn_accepted_explanation" xml:space="preserve">
-    <value>[Welsh]The producer or compliance scheme accepted the PRN.</value>
+    <value>Cafodd y PRN ei dderbyn gan y cynhyrchydd neu'r cynllun cydymffurfio.</value>
   </data>
   <data name="prn_rejected_explanation" xml:space="preserve">
-    <value>[Welsh]The producer or compliance scheme rejected the PRN.</value>
+    <value>Cafodd y PRN ei wrthod gan y cynhyrchydd neu'r cynllun cydymffurfio.</value>
   </data>
   <data name="prn_cancelled_explanation" xml:space="preserve">
-    <value>[Welsh]The regulator cancelled the PRN.</value>
+    <value>PRN Wedi'i ganslo</value>
   </data>
   <data name="pern_awaiting_acceptance_explanation" xml:space="preserve">
-    <value>[Welsh]The exporter issued the PERN to the producer or compliance scheme. The producer or compliance scheme has not yet accepted the PERN.</value>
+    <value>Cafodd y PERN ei roi gan yr allforiwr i'r cynhyrchydd neu'r cynllun cydymffurfio. Mae'r cynhyrchydd neu'r cynllun cydymffurfio heb dderbyn y PERN eto.</value>
   </data>
   <data name="pern_accepted_explanation" xml:space="preserve">
-    <value>[Welsh]The producer or compliance scheme accepted the PERN.</value>
+    <value>Cafodd y PERN ei dderbyn gan y cynhyrchydd neu'r cynllun cydymffurfio.</value>
   </data>
   <data name="pern_rejected_explanation" xml:space="preserve">
-    <value>[Welsh]The producer or compliance scheme rejected the PERN.</value>
+    <value>Cafodd y PERN ei wrthod gan y cynhyrchydd neu'r cynllun cydymffurfio.</value>
   </data>
   <data name="pern_cancelled_explanation" xml:space="preserve">
-    <value>[Welsh]The regulator cancelled the PERN.</value>
+    <value>PERN Wedi'i ganslo</value>
   </data>
   <data name="missing_status_explanation" xml:space="preserve">
-    <value>[Welsh]Status not found.</value>
+    <value>Statws heb ei ganfod</value>
   </data>
   <data name="view_prns_status_table_description" xml:space="preserve">
-    <value>[Welsh]A list of PRNs showing the current status.</value>
+    <value>Rhestr o PRNs sy'n dangos y statws cyfredol.</value>
   </data>
   <data name="position" xml:space="preserve">
-    <value>[Welsh]Position</value>
+    <value>Swydd</value>
+  </data>
+  <data name="cancel_status_for_pdf" xml:space="preserve">
+    <value>Yn aros i gael ei ganslo</value>
+  </data>
+  <data name="prn_awaiting_cancellation_explanation" xml:space="preserve">
+    <value>Cafodd y PRN yma ei wrthod gan y cynhyrchydd neu'r cynllun cydymffurfio. Dyw'r ailbrosesydd neu'r allforiwr ddim wedi'i ganslo eto</value>
   </data>
 </root>

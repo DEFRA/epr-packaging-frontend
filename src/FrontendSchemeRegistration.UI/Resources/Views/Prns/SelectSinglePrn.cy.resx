@@ -118,93 +118,96 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="status" xml:space="preserve">
-    <value>[Welsh]Status</value>
+    <value>Statws</value>
   </data>
   <data name="status_meaning" xml:space="preserve">
-    <value>[Welsh]Status meaning</value>
+    <value>Ystyr y statws</value>
   </data>
   <data name="issued_by" xml:space="preserve">
-    <value>[Welsh]Issued by</value>
+    <value>Wedi'i roi gan</value>
   </data>
   <data name="reproccessing_site" xml:space="preserve">
-    <value>[Welsh]Reproccessing site</value>
+    <value>Safle ailbrosesu</value>
   </data>
   <data name="authorised_by" xml:space="preserve">
-    <value>[Welsh]Authorised by</value>
+    <value>Wedi'i awdurdodi gan</value>
   </data>
   <data name="accreditation_number" xml:space="preserve">
-    <value>[Welsh]Accreditation number</value>
+    <value>Rhif achredu</value>
   </data>
   <data name="date_issued" xml:space="preserve">
-    <value>[Welsh]Date issued</value>
+    <value>Dyddiad rhoi</value>
   </data>
   <data name="relates_to_waste_received_in_december" xml:space="preserve">
-    <value>[Welsh]Relates to waste received in December?</value>
+	  <value>Gwastraff Rhagfyr?</value>
   </data>
   <data name="material" xml:space="preserve">
-    <value>[Welsh]Material</value>
+    <value>Deunydd</value>
   </data>
   <data name="tonnage" xml:space="preserve">
-    <value>[Welsh]Tonnage</value>
+    <value>Tunelli</value>
   </data>
   <data name="packaging_producer_or_compliance_scheme" xml:space="preserve">
-    <value>[Welsh]Packaging producer or compliance scheme</value>
+    <value>Cynhyrchydd y pecynwaith neu'r cynllun cydymffurfio</value>
   </data>
   <data name="note" xml:space="preserve">
-    <value>[Welsh]Note</value>
+    <value>Nodi</value>
   </data>
   <data name="year" xml:space="preserve">
-    <value>[Welsh]Year</value>
+    <value>Blwyddyn Cyhoeddi'r</value>
   </data>
   <data name="packaging_recycling_note" xml:space="preserve">
-    <value>[Welsh]Packaging Recycling Note</value>
+    <value>Nodyn Ailgylchu Pecynnu</value>
   </data>
   <data name="packaging_export_recycling_note" xml:space="preserve">
-    <value>[Welsh]Packaging Export Recycling Note</value>
+    <value>Nodyn Ailgylchu Allforio Pecynnu</value>
   </data>
   <data name="prn_number" xml:space="preserve">
-    <value>[Welsh]PRN number</value>
+    <value>Rhif PRN</value>
   </data>
   <data name="pern_number" xml:space="preserve">
-    <value>[Welsh]PERN number</value>
+    <value>Rhif PERN</value>
   </data>
   <data name="prn_details" xml:space="preserve">
-    <value>[Welsh]PRN details</value>
+    <value>Manylion y PRN</value>
   </data>
   <data name="pern_details" xml:space="preserve">
-    <value>[Welsh]PERN details</value>
+    <value>Manylion y PERN</value>
   </data>
   <data name="accept_this_prn" xml:space="preserve">
-    <value>[Welsh]Accept this PRN</value>
+    <value>Derbyn y PRN yma</value>
   </data>
   <data name="accept_this_pern" xml:space="preserve">
-    <value>[Welsh]Accept this PERN</value>
+    <value>Derbyn y PERN yma</value>
   </data>
   <data name="reject_this_prn" xml:space="preserve">
-    <value>[Welsh]Reject this PRN</value>
+    <value>Gwrthod y PRN yma</value>
   </data>
   <data name="reject_this_pern" xml:space="preserve">
-    <value>[Welsh]Reject this PERN</value>
+    <value>Gwrthod y PERN yma</value>
   </data>
   <data name="download_this_prn" xml:space="preserve">
-    <value>[Welsh]Download this PRN</value>
+    <value>Lawrlwytho'r PRN yma fel PDF</value>
   </data>
-  <data name="download_this_pern" xml:space="preserve">
-    <value>[Welsh]Download this PERN</value>
+	<data name="download_this_prn_awaiting_acceptance" xml:space="preserve">
+    <value>Lawrlwytho'r PRN yma sy'n aros i gael ei dderbyn fel PDF</value>
+  </data>
+	<data name="download_this_pern" xml:space="preserve">
+    <value>Lawrlwytho'r PERN yma fel PDF</value>
+  </data>
+	<data name="download_this_pern_awaiting_acceptance" xml:space="preserve">
+    <value>Lawrlwytho'r PERN yma sy'n aros i gael ei dderbyn fel PDF</value>
   </data>
   <data name="this_prn_relates_to_waste_received_for_reprocessing_in_December" xml:space="preserve">
-    <value>[Welsh]This PRN relates to waste received for reprocessing in December {0}.</value>
+    <value>Mae'r PRN yma yn ymwneud â gwastraff a gafodd ei allforio i'w ailbrosesu ym mis Rhagfyr {0}.</value>
   </data>
   <data name="this_pern_relates_to_waste_exported_for_reprocessing_in_December" xml:space="preserve">
-    <value>[Welsh]This PERN relates to waste exported for reprocessing in December {0}.</value>
-  </data>
-  <data name="it_can_count_towards_your_obligation" xml:space="preserve">
-    <value>[Welsh]It can count towards your {0} or {1} obligation.</value>
+    <value>Mae'r PERN yma yn ymwneud â gwastraff a gafodd ei allforio i'w ailbrosesu ym mis Rhagfyr {0}.</value>
   </data>
   <data name="page_title_pern" xml:space="preserve">
-    <value>[Welsh]Accept this PERN</value>
+    <value>Derbyn y PERN yma</value>
   </data>
-  <data name="page_title_prn" xml:space="preserve">
-    <value>[Welsh]Accept this PRN</value>
+	<data name="page_title_prn" xml:space="preserve">
+    <value>Derbyn y PRN yma</value>
   </data>
 </root>

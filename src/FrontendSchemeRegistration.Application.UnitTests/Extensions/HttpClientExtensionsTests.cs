@@ -2,6 +2,7 @@
 
 using Application.Extensions;
 using FluentAssertions;
+using FrontendSchemeRegistration.Application.Constants;
 
 [TestFixture]
 public class HttpClientExtensionsTests
@@ -65,7 +66,7 @@ public class HttpClientExtensionsTests
         _httpClient.DefaultRequestHeaders.Should()
             .HaveCount(1)
             .And
-            .ContainKey("ComplianceSchemeId")
+            .ContainKey(ComplianceScheme.ComplianceSchemeId)
             .WhoseValue
             .Should()
             .BeEquivalentTo(complianceSchemeId.ToString());

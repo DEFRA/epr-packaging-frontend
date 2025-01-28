@@ -1,0 +1,80 @@
+﻿@using FrontendSchemeRegistration.Application.Enums
+@using FrontendSchemeRegistration.UI.ViewModels.Prns
+
+@model PrnObligationViewModel
+
+@{
+
+	string totalRecyclingTargetTonnage = string.Empty;
+	double totalRecyclingTargetPercentage = 0;
+	double remeltRecyclingTargetPercentage = 0;
+	string remeltRecyclingTargetTonnage = string.Empty;
+	string remainingRecyclingTargetTonnage = string.Empty;
+	double remainingGlassTonnage = 0;
+
+	PrnMaterialObligationViewModel? total = Model.GlassMaterialObligationViewModels.FirstOrDefault(x => x.MaterialName == MaterialType.Totals);
+	PrnMaterialObligationViewModel? remelt = Model.GlassMaterialObligationViewModels.FirstOrDefault(x => x.MaterialName == MaterialType.GlassRemelt);
+	PrnMaterialObligationViewModel? remaining = Model.GlassMaterialObligationViewModels.FirstOrDefault(x => x.MaterialName == MaterialType.RemainingGlass);
+
+	if (total != null)
+	{
+		totalRecyclingTargetTonnage = total.ObligationToMeet?.ToString("N0", Thread.CurrentThread.CurrentCulture);
+	}
+
+	if (remelt != null)
+	{
+		remeltRecyclingTargetPercentage = remelt.MaterialTarget * 100;
+		remeltRecyclingTargetTonnage = remelt.ObligationToMeet?.ToString("N0", Thread.CurrentThread.CurrentCulture);
+	}
+
+	if (remaining != null)
+	{
+		remainingGlassTonnage = remaining.Tonnage;
+		totalRecyclingTargetPercentage = remaining.MaterialTarget * 100;
+		remainingRecyclingTargetTonnage = remaining.ObligationToMeet?.ToString("N0", Thread.CurrentThread.CurrentCulture);
+	}
+}
+
+@if (!string.IsNullOrEmpty(totalRecyclingTargetTonnage) && !string.IsNullOrEmpty(remeltRecyclingTargetTonnage))
+{
+	<h2 class="govuk-heading-m">@Localizer["how_we_calculated_your_recycling_obligation"]</h2>
+	<h3 class="govuk-heading-s">@Localizer["total_glass_obligation"]</h3>
+	<p class="govuk-body">@Localizer["we_applied_this_formula_to_calculate_your_total_glass_obligation"]: </p>
+	<p class="govuk-body">
+		<strong>X x Y = Z</strong>
+	</p>
+
+	<ul class="govuk-list govuk-list--bullet">
+		<li><strong>X</strong> @Localizer["is_n_tonnes_the_total_glass_you_reported_to_the_nearest_tonne", remainingGlassTonnage]</li>
+		<li><strong>Y</strong> @Localizer["is_n_percent_recycling_target_for_glass_set_by_the_yyyy_regulations", totalRecyclingTargetPercentage, 2024]</li>
+	</ul>
+
+	<p class="govuk-body">
+		@Localizer["your_total_glass_recycling_obligation_z_is"]:<br>
+		<strong>@remainingGlassTonnage @Localizer["tonnes"] x @totalRecyclingTargetPercentage% = @totalRecyclingTargetTonnage</strong>.
+	</p>
+
+	<h3 class="govuk-heading-s">@Localizer["glass_remelt_obligation"]</h3>
+	<p class="govuk-body">@Localizer["your_glass_remelt_obligation_is_part_of_your_total_yyyy_glass_obligation", 2024]:</p>
+	<p class="govuk-body">
+		<strong>T x (L x Y) = G</strong>
+	</p>
+
+	<ul class="govuk-list govuk-list--bullet">
+		<li><strong>T</strong> @Localizer["is_n_percent_the_percentage_recycling_target_for_glass_remelt", remeltRecyclingTargetPercentage]</li>
+		<li><strong>L</strong> @Localizer["is_n_tonnes_the_total_glass_you_reported_to_the_nearest_tonne", remainingGlassTonnage]</li>
+		<li><strong>Y</strong> @Localizer["is_n_percent_recycling_target_for_glass_set_by_the_yyyy_regulations", totalRecyclingTargetPercentage, 2024]</li>
+	</ul>
+
+	<p class="govuk-body">
+		@Localizer["glass_remelt_obligation"] (<strong>G</strong>) @Localizer["is"]:<br>
+		<strong>@remeltRecyclingTargetPercentage% x (@remainingGlassTonnage @Localizer["tonnes"] x @totalRecyclingTargetPercentage%) = @remeltRecyclingTargetTonnage @Localizer["tonnes"]</strong>.
+	</p>
+
+	<h3 class="govuk-heading-s">@Localizer["remaining_glass_obligation"]</h3>
+	<p class="govuk-body">@Localizer["to_determine_your_remaining_glass_obligation"]</p>
+	<p class="govuk-body">
+		@Localizer["your_remaining_glass_obligation_is"]:<br>
+		<strong>@totalRecyclingTargetTonnage @Localizer["tonnes"] - @remeltRecyclingTargetTonnage @Localizer["tonnes"] = @remainingRecyclingTargetTonnage @Localizer["tonnes"]</strong>.
+	</p>
+}

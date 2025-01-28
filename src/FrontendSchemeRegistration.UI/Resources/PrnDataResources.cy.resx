@@ -117,43 +117,70 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Wood" xml:space="preserve">
-    <value>Yew</value>
+  <data name="Aluminium" xml:space="preserve">
+	  <value>Alwminiwm</value>
   </data>
-  <data name="Plastic" xml:space="preserve">
-    <value>[Welsh]Plastic</value>
+  <data name="Glass" xml:space="preserve">
+    <value>Gwydr</value>
+  </data>
+  <data name="Glass other" xml:space="preserve">
+    <value>Gwydr arall</value>
+  </data>
+  <data name="Glass re-melt" xml:space="preserve">
+    <value>Gwydr aildoddi</value>
+  </data>
+  <data name="Paper, board or fibre-based composite material" xml:space="preserve">
+    <value>Papur, bwrdd neu ddeunydd cyfansawdd sy'n seiliedig ar ffeibrau</value>
   </data>
   <data name="Paper and board" xml:space="preserve">
-    <value>[Welsh]Paper and board</value>
+    <value>Papur, bwrdd neu ddeunydd cyfansawdd sy'n seiliedig ar ffeibrau</value>
   </data>
+  <data name="Paper/board" xml:space="preserve">
+    <value>Papur, bwrdd neu ddeunydd cyfansawdd sy'n seiliedig ar ffeibrau</value>
+  </data>
+  <data name="Paper" xml:space="preserve">
+    <value>Papur, bwrdd neu ddeunydd cyfansawdd sy'n seiliedig ar ffeibrau</value>
+  </data> 
+  <data name="Plastic" xml:space="preserve">
+    <value>Plastig</value>
+  </data>
+   <data name="Steel" xml:space="preserve">
+    <value>Dur</value>
+  </data>
+  <data name="Wood" xml:space="preserve">
+    <value>Pren</value>
+  </data>
+	<data name="Wood Composting" xml:space="preserve">
+		<value>Postio Coed</value>
+	</data>
   <data name="AWAITING ACCEPTANCE" xml:space="preserve">
-    <value>[Welsh]AWAITING ACCEPTANCE</value>
+    <value>YN AROS I GAEL EI DDERBYN</value>
   </data>
   <data name="AWAITINGACCEPTANCE" xml:space="preserve">
-    <value>[Welsh]AWAITING ACCEPTANCE</value>
+    <value>YN AROS I GAEL EI DDERBYN</value>
   </data>
   <data name="ACCEPTED" xml:space="preserve">
-    <value>[Welsh]ACCEPTED</value>
+    <value>WEDI'I DDERBYN</value>
   </data>
   <data name="CANCELLED" xml:space="preserve">
-    <value>[Welsh]CANCELLED</value>
+    <value>WEDI'I GANSLO</value>
   </data>
   <data name="REJECTED" xml:space="preserve">
-    <value>[Welsh]REJECTED</value>
+    <value>WEDI'I WRTHOD</value>
   </data>
   <data name="PRN" xml:space="preserve">
-    <value>[Welsh]PRN</value>
+    <value>PRN</value>
   </data>
   <data name="PRNs" xml:space="preserve">
-    <value>[Welsh]PRNs</value>
+    <value>PRNs</value>
   </data>
   <data name="PERN" xml:space="preserve">
-    <value>[Welsh]PERN</value>
+    <value>PERN</value>
   </data>
   <data name="PERNs" xml:space="preserve">
-    <value>[Welsh]PERNs</value>
+    <value>PERNs</value>
   </data>
   <data name="PERs and PERNs" xml:space="preserve">
-    <value>[Welsh]PERs and PERNs</value>
+    <value>PERs a PERNs</value>
   </data>
 </root>

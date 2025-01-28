@@ -66,7 +66,8 @@ public class CookieBannerTests
             CookiePolicyDurationInMonths = 60,
             SessionCookieName = null,
             TempDataCookie = null,
-            TsCookieName = null
+            TsCookieName = null,
+            ShowBanner = true,
         };
 
         var options = Options.Create(eprCookieOptions);

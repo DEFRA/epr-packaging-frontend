@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="additional_info_title" xml:space="preserve">
+        <value>Gwybodaeth ychwanegol</value>
+    </data>
+    <data name="register_company" xml:space="preserve">
+        <value>{0} cofrestru</value>
+    </data>
+    <data name="members_organisation_details" xml:space="preserve">
+        <value>Manylion cofrestru'r cynllun</value>
+    </data>
+    <data name="organisation_id_x" xml:space="preserve">
+        <value>ID y sefydliad: {0}</value>
+    </data>
+    <data name="compliance_scheme_x" xml:space="preserve">
+        <value>Cynllun cydymffurfio: {0}</value>
+    </data>
+    <data name="regulator" xml:space="preserve">
+        <value>Rheoleiddiwr: </value>
+    </data>
+    <data name="england.environmental_regulator" xml:space="preserve">
+        <value>Asiantaeth yr Amgylchedd (EA)</value>
+    </data>
+    <data name="scotland.environmental_regulator" xml:space="preserve">
+        <value>Asiantaeth Diogelu Amgylchedd yr Alban (SEPA)</value>
+    </data>
+    <data name="wales.environmental_regulator" xml:space="preserve">
+        <value>Cyfoeth Naturiol Cymru (CNC)</value>
+    </data>
+    <data name="northernireland.environmental_regulator" xml:space="preserve">
+        <value>Asiantaeth Amgylchedd Gogledd Iwerddon (NIEA)</value>
+    </data>
+    <data name="ensure_x_year_reporting_of_packaging_data_before_registering" xml:space="preserve">
+        <value>Gwnewch yn siŵr eich bod wedi rhoi gwybod am eich data pecynwaith ar gyfer {0} cyn cofrestru. Gall methiant arwain at oedi wrth asesu’ch cofrestriad.</value>
+    </data>
+    <data name="you_must_be_approved_or_delegated_person_to_submit_data_complete_registration" xml:space="preserve">
+        <value>Rhaid ichi fod yn berson wedi’i gymeradwyo neu wedi’i ddirprwyo er mwyn cyflwyno'ch data a chwblhau'r cais.</value>
+    </data>
+    <data name="additional_information" xml:space="preserve">
+        <value>Gwybodaeth ychwanegol</value>
+    </data>
+    <data name="use_comment_box_for_additional_info_to_assist_regulator" xml:space="preserve">
+        <value>Defnyddiwch y blwch sylwadau i roi gwybodaeth ychwanegol a allai fod o gymorth i'r rheoleiddiwr. Er enghraifft, cytundeb ynghylch taliad rhannol.</value>
+    </data>
+    <data name="submit_registration_application" xml:space="preserve">
+        <value>cyflwyno’ch cais</value>
+    </data>
+</root>

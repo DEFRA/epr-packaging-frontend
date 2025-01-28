@@ -2,6 +2,7 @@
 using FrontendSchemeRegistration.Application.DTOs.Prns;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
+using FrontendSchemeRegistration.Application.DTOs.Subsidiary.FileUploadStatus;
 using FrontendSchemeRegistration.Application.Enums;
 
 namespace FrontendSchemeRegistration.Application.Services.Interfaces;
@@ -37,6 +38,10 @@ public interface IWebApiGatewayClient
 
     Task SubmitAsync(Guid submissionId, SubmissionPayload payload);
 
+    Task SubmitAsync(CreateRegistrationSubmission submission);
+
+    Task SubmitRegistrationApplication(Guid submissionId, RegistrationApplicationPayload applicationPayload);
+
     Task<T> GetDecisionsAsync<T>(string queryString)
         where T : AbstractDecision;
 
@@ -45,8 +50,6 @@ public interface IWebApiGatewayClient
     Task<List<SubmissionHistory>> GetSubmissionHistoryAsync(Guid submissionId, string queryString);
 
     Task<List<SubsidiaryExportDto>> GetSubsidiariesAsync(int subsidiaryParentId);
-
-    Task<SubsidiaryFileUploadTemplateDto> GetSubsidiaryFileUploadTemplateAsync();
 
     Task<List<PrnModel>> GetPrnsForLoggedOnUserAsync();
 
@@ -58,5 +61,17 @@ public interface IWebApiGatewayClient
 
     Task SetPrnApprovalStatusToRejectedAsync(Guid id);
 
+    Task<UploadFileErrorResponse> GetSubsidiaryFileUploadStatusAsync(Guid userId, Guid organisationId);
+
 	Task<PaginatedResponse<PrnModel>> GetSearchPrnsAsync(PaginatedRequest request);
+
+	Task<SubsidiaryUploadStatusDto> GetSubsidiaryUploadStatus(Guid userId, Guid organisationId);
+
+    Task<PrnObligationModel> GetObligations(int year);
+
+    Task<RegistrationApplicationDetails?> GetRegistrationApplicationDetails(GetRegistrationApplicationDetailsRequest request);
+
+    Task<ComplianceSchemeDetailsDto> GetComplianceSchemeDetails(string organisationId);
+
+    Task<byte[]?> FileDownloadAsync(string queryString);
 }

@@ -38,6 +38,24 @@
     <data name="organisation_details_submitted" xml:space="preserve">
         <value>Organisation details submitted to the environmental regulator</value>
     </data>
+	<data name="organisation_details_submitted_registration" xml:space="preserve">
+        <value>Organisation details submitted</value>
+    </data>
+	<data name="it_may_take_an_hour" xml:space="preserve">
+		It may take up to an hour for our systems to update.
+	</data> 
+	<data name="you_still_need_to" xml:space="preserve">
+        <value>You still need to:</value>
+    </data>
+	<data name="pay_your_registration_fee" xml:space="preserve">
+        <value>pay your registration fee</value>
+    </data>
+	<data name="apply_for_registration" xml:space="preserve">
+        <value>apply for registration</value>
+    </data>
+	<data name="return_to_registration" xml:space="preserve">
+        <value>Return to registration</value>
+    </data>
     <data name="page_title_producer" xml:space="preserve">
         <value>Confirmation that your organisation details have been submitted</value>
     </data>

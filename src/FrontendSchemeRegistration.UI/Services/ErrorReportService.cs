@@ -1,9 +1,7 @@
 ﻿namespace FrontendSchemeRegistration.UI.Services;
 
-using System.Collections;
 using System.Globalization;
 using Application.ClassMaps;
-using Application.DTOs;
 using Application.Services.Interfaces;
 using CsvHelper;
 using CsvHelper.Configuration;

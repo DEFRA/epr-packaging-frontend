@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="pay_by_bank_transfer_title" xml:space="preserve">
+        <value>Pay by bank transfer</value>
+    </data>
+    <data name="pay_by_bank_transfer_heading" xml:space="preserve">
+        <value>Pay by bank transfer</value>
+    </data>
+    <data name="pay_registration_fee_of" xml:space="preserve">
+        <value>Pay the registration fee of</value>
+    </data>
+    <data name="by_bank_transfer" xml:space="preserve">
+        <value> by bank transfer.</value>
+    </data>
+    <data name="payment_details_section" xml:space="preserve">
+        <value>Payment details</value>
+    </data>
+    <data name="england" xml:space="preserve">
+        <value>EA (England)</value>
+    </data>
+    <data name="wales" xml:space="preserve">
+        <value>NRW (Wales)</value>
+    </data>
+    <data name="northernireland" xml:space="preserve">
+        <value>NIEA (Northern Ireland)</value>
+    </data>
+    <data name="scotland" xml:space="preserve">
+        <value>SEPA (Scotland)</value>
+    </data>
+    <data name="use_application_payment_ref" xml:space="preserve">
+        <value>Use the application payment reference:</value>
+    </data>
+    <data name="england.account_name" xml:space="preserve">
+        <value>Account name: EA Receipts</value>
+    </data>
+    <data name="england.account_number" xml:space="preserve">
+        <value>Account number: 10014411</value>
+    </data>
+    <data name="england.sort_code" xml:space="preserve">
+        <value>Sort code: 60-70-80</value>
+    </data>
+    <data name="england.bank_name" xml:space="preserve">
+        <value>Bank name: Royal Bank of Scotland, London Corporate Service Centre, CPB Services, 2nd floor, 280 Bishopsgate, London EC2M 4RB</value>
+    </data>
+    <data name="wales.account_name" xml:space="preserve">
+        <value>Account name: Natural Resources Wales</value>
+    </data>
+    <data name="wales.account_number" xml:space="preserve">
+        <value>Account number: 10014438</value>
+    </data>
+    <data name="wales.sort_code" xml:space="preserve">
+        <value>Sort code: 60-70-80</value>
+    </data>
+    <data name="wales.bank_name" xml:space="preserve">
+        <value>Bank name: National Westminster Bank PLC, 2 ½ Devonshire Square, London EC2M 4BA</value>
+    </data>
+    <data name="northernireland.account_name" xml:space="preserve">
+        <value>Account name: DAERA General Account</value>
+    </data>
+    <data name="northernireland.account_number" xml:space="preserve">
+        <value>Account number: 61253506</value>
+    </data>
+    <data name="northernireland.sort_code" xml:space="preserve">
+        <value>Sort code: 95-01-21</value>
+    </data>
+    <data name="northernireland.bank_name" xml:space="preserve">
+        <value>Bank name: Danske Bank, PO BOX 183, Donegall Square West, Belfast, BT1 6JS</value>
+    </data>
+    <data name="scotland.account_name" xml:space="preserve">
+        <value>Account name: Scottish Environment Protection Agency</value>
+    </data>
+    <data name="scotland.account_number" xml:space="preserve">
+        <value>Account number: 00137187</value>
+    </data>
+    <data name="scotland.sort_code" xml:space="preserve">
+        <value>Sort code: 83-34-00</value>
+    </data>
+    <data name="scotland.bank_name" xml:space="preserve">
+        <value>Bank name: Royal Bank of Scotland, 30 Nicholson Street, Edinburgh, EH8 9DL</value>
+    </data>
+    <data name="scotland_online_payment_link" xml:space="preserve">
+        <value>Online payments | Beta | SEPA | Scottish Environment Protection Agency</value>
+    </data>
+    <data name="northernireland.cheques_payable_to_DAERA_General_Account" xml:space="preserve">
+        <value>NIEA also accepts cheques.Cheques should be payable to DAERA General Account, and sent to:</value>
+    </data>
+	<data name="you_can_also" xml:space="preserve">
+        <value>You can also</value>
+    </data>
+		<data name="pay_sepa_direct" xml:space="preserve">
+        <value>pay SEPA direct</value>
+    </data>
+    <data name="northernireland.environment_agency" xml:space="preserve">
+        <value>Northern Ireland Environment Agency</value>
+    </data>
+    <data name="northernireland.extended_producer_responsibility" xml:space="preserve">
+        <value>Extended Producer Responsibility Unit</value>
+    </data>
+    <data name="northernireland.NIEA_Lisburn" xml:space="preserve">
+        <value>1st Floor Bradan, NIEA Lisburn</value>
+    </data>
+    <data name="northernireland.17Antrim_Road" xml:space="preserve">
+        <value>17 Antrim Road</value>
+    </data>
+    <data name="northernireland.Tonagh_LISBURN" xml:space="preserve">
+        <value>Tonagh, LISBURN BT28 3AL</value>
+    </data>
+    <data name="northernireland.application_reference_on_back_of_cheque" xml:space="preserve">
+        <value>Write your application reference ({0}) on the back of the cheque.</value>
+    </data>
+    <data name="after_payment_is_made" xml:space="preserve">
+        <value>After payment is made</value>
+    </data>
+    <data name="submit_application_from_registration_dashboard" xml:space="preserve">
+        <value>1. Submit your application from the registration dashboard.</value>
+    </data>
+    <data name="northernireland.send_remittance_advice_to" xml:space="preserve">
+        <value>2. If you have paid by bank transfer, send remittance advice to</value>
+    </data>
+    <data name="northernireland.bill_to_cash_team_account" xml:space="preserve">
+        <value>billtocashteam@accountni.gov.uk</value>
+    </data>
+    <data name="northernireland.packaging_daera" xml:space="preserve">
+        <value>packaging@daera-ni.gov.uk</value>
+    </data>
+    <data name="england.for_BACS_remittance_send_details" xml:space="preserve">
+        <value>2. Send BACS remittance to </value>
+    </data>
+    <data name="england.packaging_producers_EA" xml:space="preserve">
+        <value>packagingproducers@environment-agency.gov.uk</value>
+    </data>
+    <data name="you_can" xml:space="preserve">
+        <value>You can </value>
+    </data>
+    <data name="and_space" xml:space="preserve">
+        <value> and </value>
+    </data>
+    <data name="print_or_save_as_PDF" xml:space="preserve">
+        <value>print or save this page as a PDF</value>
+    </data>
+    <data name="return_to_dashboard" xml:space="preserve">
+        <value>Return to the dashboard</value>
+    </data>
+    <data name="submit_your_application_from_registration_dashboard" xml:space="preserve">
+        <value>Submit your application from the registration dashboard</value>
+    </data>
+</root>

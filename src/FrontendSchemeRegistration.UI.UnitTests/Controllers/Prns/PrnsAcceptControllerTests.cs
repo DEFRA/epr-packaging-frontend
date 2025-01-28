@@ -9,15 +9,16 @@ using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels.Prns;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.Extensions.Time.Testing;
+using Microsoft.AspNetCore.Routing;
 using Moq;
 
 [TestFixture]
 public class PrnsAcceptControllerTests
 {
     private Mock<IPrnService> _mockPrnService;
-    private FakeTimeProvider _timeProvider;
+    private Mock<IDownloadPrnService> _mockDownloadPrnService;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
     private PrnsAcceptController _sut;
     private static readonly IFixture _fixture = new Fixture();
@@ -26,16 +27,18 @@ public class PrnsAcceptControllerTests
     public void SetUp()
     {
         _mockPrnService = new Mock<IPrnService>();
-        _timeProvider = new();
+        _mockDownloadPrnService = new Mock<IDownloadPrnService>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
-        _sut = new PrnsAcceptController(_mockPrnService.Object, _timeProvider, _sessionManagerMock.Object);
+        _sut = new PrnsAcceptController(_mockPrnService.Object, _sessionManagerMock.Object, _mockDownloadPrnService.Object);
         
         _sut.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
             {
                 Session = new Mock<ISession>().Object
-            }
+            },
+            RouteData = new RouteData(),
+            ActionDescriptor = new ControllerActionDescriptor()
         };
         var tempData = new TempDataDictionary(Mock.Of<HttpContext>(), Mock.Of<ITempDataProvider>());
         _sut.TempData = tempData;
@@ -56,16 +59,15 @@ public class PrnsAcceptControllerTests
     }
 
     [Theory]
-    [TestCase("2024-12-01", "2025-01-01", "AcceptSingle2024DecemberWastePrn")]
-    [TestCase("2024-12-15", "2025-01-15", "AcceptSingle2024DecemberWastePrn")]
-    [TestCase("2024-12-01", "2025-01-31T23:59:59Z", "AcceptSingle2024DecemberWastePrn")]
-    [TestCase("2024-12-01", "2025-02-01T00:00:00Z", "AcceptSinglePrn")]
-    [TestCase("2024-12-01", "2025-02-01T00:00:01Z", "AcceptSinglePrn")]
-    [TestCase("2025-01-01", "2025-02-01", "AcceptSinglePrn")]
-    public async Task AcceptSinglePrn_Returns_CorrectViewIf2024DecemberWasteAndAcceptedOn(string issuedDate, string acceptedOn, string viewName)
+    [TestCase("2024-12-01", "2025-01-01")]
+    [TestCase("2024-12-15", "2025-01-15")]
+    [TestCase("2024-12-01", "2025-01-31T23:59:59Z")]
+    [TestCase("2024-12-01", "2025-02-01T00:00:00Z")]
+    [TestCase("2024-12-01", "2025-02-01T00:00:01Z")]
+    [TestCase("2025-01-01", "2025-02-01")]
+    public async Task AcceptSinglePrn_Returns_CorrectView(string issuedDate, string acceptedOn)
     {
         var prn = _fixture.Create<PrnViewModel>();
-        _timeProvider.SetUtcNow(DateTime.Parse(acceptedOn));
         prn.IsDecemberWaste = true;
         prn.DateIssued = DateTime.Parse(issuedDate);
         _mockPrnService.Setup(x => x.GetPrnByExternalIdAsync(It.IsAny<Guid>())).ReturnsAsync(prn);
@@ -74,7 +76,7 @@ public class PrnsAcceptControllerTests
         var result = await _sut.AcceptSinglePrn(Guid.NewGuid()) as ViewResult;
 
         // Assert
-        result.ViewName.Should().Be(viewName);
+        result.ViewName.Should().Be("AcceptSinglePrn");
     }
 
     // Step 4, return after login timeout
@@ -139,8 +141,8 @@ public class PrnsAcceptControllerTests
         // Act
         var result = await _sut.AcceptedPrn(model.ExternalId) as RedirectToActionResult;
 
-        result.ActionName.Should().Be(nameof(PrnsController.HomePagePrn));
-        result.ControllerName.Should().Be("Prns");
+        result.ActionName.Should().Be(nameof(PrnsObligationController.ObligationsHome));
+        result.ControllerName.Should().Be("PrnsObligation");
     }
 
     // Accept single Prn. Step 5 of 5 null status
@@ -150,8 +152,8 @@ public class PrnsAcceptControllerTests
         // Act
         var result = await _sut.AcceptedPrn(Guid.NewGuid()) as RedirectToActionResult;
 
-        result.ActionName.Should().Be(nameof(PrnsController.HomePagePrn));
-        result.ControllerName.Should().Be("Prns");
+        result.ActionName.Should().Be(nameof(PrnsObligationController.ObligationsHome));
+        result.ControllerName.Should().Be("PrnsObligation");
     }
 
     // Accept multiple Prns. Step 2 of 5 recover from timeout
@@ -230,16 +232,18 @@ public class PrnsAcceptControllerTests
                 SelectedPrnIds = model.Prns.Select(x => x.ExternalId).ToList()
             }
         });
-
         _mockPrnService.Setup(x => x.GetPrnsAwaitingAcceptanceAsync()).ReturnsAsync(model);
         var removedPrnNumber = model.Prns[0].PrnOrPernNumber;
-
+        // Mock the Url property to return a valid URL
+        var urlHelperMock = new Mock<IUrlHelper>();
+        urlHelperMock.Setup(x => x.Content(It.IsAny<string>())).Returns("http://valid-url");
+        _sut.Url = urlHelperMock.Object;
         // Act
         var result = await _sut.AcceptMultiplePrns(model.Prns[0].ExternalId) as ViewResult;
-
         ((PrnListViewModel)result.Model).RemovedPrn.PrnNumber.Should().Be(removedPrnNumber);
         _sessionManagerMock.Verify(x => x.SaveSessionAsync(It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession?>()), Times.Once);
     }
+
 
     // Step 4, return after login timeout
     [Test]
@@ -287,6 +291,7 @@ public class PrnsAcceptControllerTests
         model.Prns[1].ExternalId = acceptedPrns[1];
         model.Prns[2].ExternalId = acceptedPrns[2];
         model.Prns[0].NoteType = model.Prns[1].NoteType = model.Prns[2].NoteType = "PRN";
+        model.Prns[0].ObligationYear = model.Prns[1].ObligationYear = model.Prns[2].ObligationYear = 2025;
 
         _mockPrnService.Setup(x => x.GetAllAcceptedPrnsAsync()).ReturnsAsync(model);
 
@@ -296,6 +301,7 @@ public class PrnsAcceptControllerTests
         {
             Count = 3,
             NoteTypes = "PRNs",
+            ObligationYears = "2025",
             Details = new List<AcceptedDetails>
             {
                 new(model.Prns[0].Material, model.Prns[0].Tonnage),
@@ -305,5 +311,26 @@ public class PrnsAcceptControllerTests
         });
 
         _mockPrnService.Verify(x => x.GetAllAcceptedPrnsAsync(), Times.Once);
+    }
+
+    [Test]
+    public async Task DownloadPrn_CallsDownloadPrnAsync_AndReturnsOkObjectResult()
+    {
+        // Arrange
+        var prnId = Guid.NewGuid();
+        var expectedResult = new OkObjectResult(new { fileName = "PRN123", htmlContent = "<html><body>Sample Content</body></html>" });
+
+        _mockDownloadPrnService
+            .Setup(x => x.DownloadPrnAsync(prnId, "AcceptedPrn", It.IsAny<ActionContext>()))
+            .ReturnsAsync(expectedResult);
+
+        // Act
+        var result = await _sut.DownloadPrn(prnId) as OkObjectResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Value.Should().BeEquivalentTo(new { fileName = "PRN123", htmlContent = "<html><body>Sample Content</body></html>" });
+
+        _mockDownloadPrnService.Verify(x => x.DownloadPrnAsync(prnId, "AcceptedPrn", It.IsAny<ActionContext>()), Times.Once);
     }
 }

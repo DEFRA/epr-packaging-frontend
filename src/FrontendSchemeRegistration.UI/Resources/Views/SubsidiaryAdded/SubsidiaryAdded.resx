@@ -117,13 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="continue_reporting" xml:space="preserve">
-    <value />
-  </data>
   <data name="manage_subsidiaries" xml:space="preserve">
-    <value />
-  </data>
-  <data name="organisation_id_for" xml:space="preserve">
     <value />
   </data>
   <data name="page_title_subsidiary_added" xml:space="preserve">
@@ -135,7 +129,20 @@
   <data name="what_happens_next" xml:space="preserve">
     <value />
   </data>
-  <data name="you_will_need_to_use_this_id" xml:space="preserve">
+  <data name="when_you_report_on_this_subsidiary" xml:space="preserve">
+    <value />
+  </data>
+  <data name="subsidiary_id_for" xml:space="preserve">
+    <value />
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="you_have_linked_this_subsidiary" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
+  </data>
+  <data name="view_subsidiaries" xml:space="preserve">
+    <value />
+  </data>
+  <data name="return_to_account_home" xml:space="preserve">
     <value />
   </data>
 </root>

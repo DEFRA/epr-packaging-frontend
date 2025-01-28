@@ -1,4 +1,8 @@
-﻿<h2 class="govuk-heading-m">@Localizer["Title"]</h2>
+﻿@{
+    ViewData["Title"] = Localizer["PageTitle"];
+}
+
+<h2 class="govuk-heading-m">@Localizer["Title"]</h2>
 <p class="govuk-body">@Localizer["Info1"]</p>
 <h3 class="govuk-heading-m">@Localizer["Info2"]</h3>
 <p class="govuk-body">@Localizer["Info3"]</p>
@@ -8,12 +12,10 @@
         @SharedLocalizer["try-again"]
     </button>
 </form>
-<div class="govuk-\!-margin-bottom-4">
-    @Html.ActionLink(@SharedLocalizer["link-go-back-to-subsidiaries-list"],
-            "Get",
-            "subsidiaries-list",
-            null,
-            new { @class = "govuk-body govuk-link govuk-link--no-visited-state" })
+<div class="govuk-!-margin-bottom-4">
+    <a asp-action="subsidiarieslist" class="govuk-link govuk-link--no-visited-state govuk-body-m">
+        @SharedLocalizer["link-go-back-to-subsidiaries-list"]
+    </a>
 </div>
 <br />
 

@@ -10,29 +10,43 @@
 
 <main class="govuk-main-wrapper" id="main-content" role="main">
     <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-grid-column-full">
 
             @if (!ViewData.ModelState.IsValid)
             {
                 @await Html.PartialAsync("Partials/Govuk/_ErrorSummary", ViewData.ModelState)
             }
-
-            <h1 class="govuk-heading-l">@Localizer["upload_packaging_data_to_your_account"]</h1>
             
-            <p class="govuk-body">@Localizer[
-                                      Model.IsComplianceScheme 
-                                      ? "upload_your_members_packaging_data" 
-                                      : "upload_your_organisations_packaging_data"]</p>
+            <h1 class="govuk-heading-l govuk-!-margin-bottom-6">@Localizer[Model.IsComplianceScheme ? "report_your_members_packaging_data" : "report_your_packaging_data"]</h1>
+
+            <h2 class="govuk-heading-m">@Localizer["before_you_start"]</h2>
+            <p class="govuk-body no-bottom-margin">
+                @Localizer["read_the_guidance_on"] <a class="govuk-link" rel="noreferrer noopener" target="_blank"
+                                                      href="@GuidanceLinks.Value.HowToReportPackagingData">@Localizer["how_to_report_organisation_details"]</a>.
+            </p>
+            <p class="govuk-body">
+                @Localizer["there_are_template_documents_you_can_use_to_build_your_files"]
+            </p>
+            <div class="govuk-warning-text govuk-!-padding-bottom-2">
+                <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                <strong class="govuk-warning-text__text">
+                    <span class="govuk-warning-text__assistive">@Localizer["text_assistive.warning"]</span>
+                    @Localizer["file_rejection_warning_text"]
+                    @Html.ActionLink(Localizer["manage_your_subsidiaries"].Value,
+                             "SubsidiariesList",
+                             "FileUploadSubsidiaries",
+                             null,
+                             new
+                             {
+                                 @class = "govuk-link govuk-link--no-visited-state"
+                             }).
+                </strong>
+            </div>
+
     
-            <p class="govuk-body">@Localizer["once_weve_validated_the_data"]</p>
-            
-            <p class="govuk-body">@Localizer["if_there_is_a_problem_well_tell_you_about"]</p>
 
-            <ul class="govuk-list govuk-list--bullet">
-                <li>@Localizer["errors_youll_need_to_fix"]</li>
-                <li>@Localizer["warnings_these_are_unusual_entries_youll_need_to_check"]</li>
-            </ul>
-            <feature name="@FeatureFlags.ShowDirectProducerSubsidiaries">
+
+            <feature name="@FeatureFlags.ShowSubsidiariesSingleUploadJourney">
             @if (!Model.IsComplianceScheme)
             {
                 <h2 class="govuk-heading-m">@Localizer["before_you_upload_your_file"]</h2>
@@ -48,8 +62,12 @@
             }
             </feature>
             <h2 class="govuk-heading-m">@Localizer["upload_your_file"]</h2>
-            <p class="govuk-body">@SharedLocalizer["the_file_may_take_a_few_minutes_to_upload"]</p>
-            <p class="govuk-body">@SharedLocalizer["do_not_close_the_window_while_the_file_is_uploading"]</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>@Localizer["file_must_be_a_csv"]</li>
+            </ul>
+            <p class="govuk-body">
+                @Localizer["it_may_take_a_few_minutes_for_your_file_upload..."]
+            </p>
 
             @using (Html.BeginForm(FormMethod.Post, new
             {
@@ -61,8 +79,7 @@
                     {
                         @await Html.PartialAsync("Partials/Govuk/_Error", ViewData.ModelState.GetModelStateEntry("file"))
                     }
-                    <label class="govuk-label" for="file">@SharedLocalizer["upload_a_file"]</label>
-                    <input class="govuk-file-upload"  name="file" type="file" id="file" data-testid="pom-upload-choose-file-button">
+                    <input class="govuk-file-upload" title="Choose a file" name="file" type="file" id="file" data-testid="pom-upload-choose-file-button">
                 </div>
                 <button class="govuk-button" data-module="govuk-button" type="submit" data-testid="pom-data-upload-button">@Localizer["upload_file"]</button>
             }

@@ -1,0 +1,17 @@
+﻿@using FrontendSchemeRegistration.UI.ViewModels.Prns
+@using FrontendSchemeRegistration.Application.Constants
+@model PrnObligationViewModel
+
+<div class="govuk-inset-text">
+    <span class="govuk-body-m">
+        @Localizer["number_of_prns_and_perns_awaiting_acceptance"]
+    </span>
+    <p class="govuk-body">
+        <h1>@Model.NumberOfPrnsAwaitingAcceptance</h1>
+    </p>
+    <p class="govuk-body">
+        <a href="@PagePaths.Prns.ShowAwaitingAcceptance" class="govuk-link govuk-link--no-visited-state" aria-labelledby="@Localizer["accept_or_reject_prns_and_perns"]">
+            @Localizer["accept_or_reject_prns_and_perns"]
+        </a>
+    </p>
+</div>

@@ -8,11 +8,13 @@ using Application.Services.Interfaces;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
+using FrontendSchemeRegistration.Application.Options;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using Newtonsoft.Json;
 using UI.Controllers.FrontendSchemeRegistration;
@@ -96,11 +98,17 @@ public abstract class FrontendSchemeRegistrationTestBase
 
     protected Mock<INotificationService> NotificationService { get; private set; }
 
+    protected Mock<ISubmissionService> SubmissionService { get; private set; }
+
     protected Mock<IComplianceSchemeService> ComplianceSchemeService { get; private set; }
 
     protected Mock<IUserAccountService> UserAccountService { get; private set; }
 
     protected Mock<IAuthorizationService> AuthorizationService { get; private set; }
+
+    protected Mock<IPaymentCalculationService> PaymentCalculationService { get; private set; }
+
+	protected Mock<ILogger<FrontendSchemeRegistrationController>> LoggerMock { get; set; }
 
     protected FrontendSchemeRegistrationSession FrontEndSchemeRegistrationSession { get; set; }
 
@@ -128,18 +136,23 @@ public abstract class FrontendSchemeRegistrationTestBase
         SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
             .Returns(Task.FromResult(new FrontendSchemeRegistrationSession()));
 
-        var loggerMock = new Mock<ILogger<FrontendSchemeRegistrationController>>();
+        LoggerMock = new Mock<ILogger<FrontendSchemeRegistrationController>>();
         ComplianceSchemeService = new Mock<IComplianceSchemeService>();
         UserAccountService = new Mock<IUserAccountService>();
         AuthorizationService = new Mock<IAuthorizationService>();
         NotificationService = new Mock<INotificationService>();
+        SubmissionService   = new Mock<ISubmissionService>();
+        PaymentCalculationService = new Mock<IPaymentCalculationService>();
 
-        SystemUnderTest = new FrontendSchemeRegistrationController(
+		SystemUnderTest = new FrontendSchemeRegistrationController(
             SessionManagerMock.Object,
-            loggerMock.Object,
+            LoggerMock.Object,
             ComplianceSchemeService.Object,
             AuthorizationService.Object,
-            NotificationService.Object);
+            NotificationService.Object,
+            SubmissionService.Object,
+            Options.Create(new GlobalVariables { ApplicationDeadline = new DateTime(2025, 4, 1) }),
+            PaymentCalculationService.Object);
         SystemUnderTest.ControllerContext.HttpContext = _httpContextMock.Object;
         SystemUnderTest.TempData = tempDataDictionaryMock.Object;
     }

@@ -6,6 +6,7 @@ using Application.Services;
 using Application.Services.Interfaces;
 using Constants;
 using EPR.Common.Authorization.Extensions;
+using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using Helpers;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -100,6 +101,7 @@ public static class ServiceProviderExtension
         services.Configure<AzureAdB2COptions>(configuration.GetSection(AzureAdB2COptions.ConfigSection));
         services.Configure<HttpClientOptions>(configuration.GetSection(HttpClientOptions.ConfigSection));
         services.Configure<AccountsFacadeApiOptions>(configuration.GetSection(AccountsFacadeApiOptions.ConfigSection));
+        services.Configure<PaymentFacadeApiOptions>(configuration.GetSection(PaymentFacadeApiOptions.ConfigSection));
         services.Configure<IntegrationFacadeApiOptions>(configuration.GetSection(IntegrationFacadeApiOptions.ConfigSection));
         services.Configure<WebApiOptions>(configuration.GetSection(WebApiOptions.ConfigSection));
         services.Configure<ValidationOptions>(configuration.GetSection(ValidationOptions.ConfigSection));
@@ -124,12 +126,18 @@ public static class ServiceProviderExtension
         services.AddScoped<IRegulatorService, RegulatorService>();
         services.AddScoped<ISubmissionService, SubmissionService>();
         services.AddScoped<ISubsidiaryService, SubsidiaryService>();
+        services.AddScoped<IPaymentCalculationService, PaymentCalculationService>();
+        services.AddScoped<ISubsidiaryUtilityService,SubsidiaryUtilityService>();
         services.AddTransient<IDateTimeProvider, SystemDateTimeProvider>();
         services.AddSingleton<IPatchService, PatchService>();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.AddTransient<UserDataCheckerMiddleware>();
         services.AddSingleton<ICorrelationIdProvider, CorrelationIdProvider>();
         services.AddScoped<IPrnService, PrnService>();
+        services.AddScoped<IViewRenderService, ViewRenderService>();
+        services.AddScoped<IDownloadPrnService, DownloadPrnService>();
+        services.AddScoped<IFileDownloadService, FileDownloadService>();
+        services.AddScoped<ComplianceSchemeIdHttpContextFilterAttribute>();
     }
 
     // When testing PRNs use a configurable date in place of the current date
@@ -140,7 +148,7 @@ public static class ServiceProviderExtension
         {
             var prnOptions = configuration.GetSection("Prn").Get<PrnOptions>();
             var fake = new FakeTimeProvider();
-            fake.SetUtcNow(new DateTimeOffset(new DateTime(prnOptions.Year, prnOptions.Month, prnOptions.Day)));
+            fake.SetUtcNow(new DateTimeOffset(new DateTime(prnOptions.Year, prnOptions.Month, prnOptions.Day, 0, 0, 0, DateTimeKind.Utc)));
             services.AddSingleton(typeof(TimeProvider), fake as TimeProvider);
         }
     }
@@ -153,6 +161,15 @@ public static class ServiceProviderExtension
             var httpClientOptions = sp.GetRequiredService<IOptions<HttpClientOptions>>().Value;
 
             client.BaseAddress = new Uri(facadeApiOptions.BaseEndpoint);
+            client.Timeout = TimeSpan.FromSeconds(httpClientOptions.TimeoutSeconds);
+        });
+        
+        services.AddHttpClient<IPaymentCalculationServiceApiClient, PaymentCalculationServiceApiClient>((sp, client) =>
+        {
+            var facadeApiOptions = sp.GetRequiredService<IOptions<PaymentFacadeApiOptions>>().Value;
+            var httpClientOptions = sp.GetRequiredService<IOptions<HttpClientOptions>>().Value;
+
+            client.BaseAddress = new Uri(facadeApiOptions.BaseUrl);
             client.Timeout = TimeSpan.FromSeconds(httpClientOptions.TimeoutSeconds);
         });
 

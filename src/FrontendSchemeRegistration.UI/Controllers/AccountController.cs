@@ -62,7 +62,8 @@ public class AccountController : Controller
         }
 
         scheme ??= OpenIdConnectDefaults.AuthenticationScheme;
-        var callbackUrl = Url.Action(action: "Get", controller: nameof(LandingController).RemoveControllerFromName(), values: null, protocol: Request.Scheme);
+        var callbackUrl = Url.Action(action: "SignedOut", controller: nameof(HomeController).RemoveControllerFromName(), values: null, protocol: Request.Scheme);
+
         return SignOut(
             new AuthenticationProperties
             {

@@ -10,4 +10,8 @@ public class SubsidiaryListViewModel
     public PagingDetail PagingDetail { get; set; } = new();
 
     public bool IsDirectProducer { get; set; }
+
+    public bool IsFileUploadInProgress { get; set; }
+
+    public int MemberCount { get; set; }
 }

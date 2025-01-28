@@ -48,10 +48,16 @@
     <data name="but_they_have_not_been_submitted" xml:space="preserve">
         <value />
     </data>
+	<data name="but_they_have_not_been_submitted_nonregulator" xml:space="preserve">
+        <value />
+    </data>
     <data name="you_can_upload" xml:space="preserve">
         <value />
     </data>
     <data name="someone_in_your_team_with_the_right_account_permissions" xml:space="preserve">
+        <value />
+    </data>
+	<data name="someone_in_your_team_with_the_right_account_permissions_nonregulator" xml:space="preserve">
         <value />
     </data>
     <data name="are_you_sure_you_want_to_re-upload_your_organisation_details" xml:space="preserve">

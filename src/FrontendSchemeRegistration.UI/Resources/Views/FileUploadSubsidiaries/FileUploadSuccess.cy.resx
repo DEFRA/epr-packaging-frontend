@@ -118,18 +118,24 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="File_uploaded_successfully" xml:space="preserve">
-    <value>WFile uploaded successfully</value>
+    <value>Ffeil wedi’i huwchlwytho’n llwyddiannus</value>
   </data>
   <data name="return_to_account_home" xml:space="preserve">
-    <value>WReturn to account home</value>
+    <value>Dychwelyd i hafan y cyfrif</value>
+  </data>
+  <data name="subsidiaries_have_been_added" xml:space="preserve">
+    <value>Mae {0} o is-gwmnïau wedi'u hychwanegu at eich cyfrif</value>
+  </data>
+  <data name="total_number_of_subsidiaries" xml:space="preserve">
+    <value>Cyfanswm yr is-gwmnïau yn eich cyfrif erbyn hyn yw</value>
   </data>
   <data name="View_your_subsidiaries" xml:space="preserve">
-    <value>WView subsidiaries</value>
+    <value>Gweld is-gwmnïau</value>
   </data>
   <data name="what_happens_next" xml:space="preserve">
-    <value>WWhat happens next</value>
+    <value>Beth sy'n digwydd nesaf</value>
   </data>
   <data name="you_added_subsidiaries" xml:space="preserve">
-    <value>WYou added subsidiaries</value>
+    <value>Rydych chi wedi ychwanegu is-gwmnïau.</value>
   </data>
 </root>

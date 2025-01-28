@@ -1,9 +1,11 @@
 ﻿@using FrontendSchemeRegistration.UI.Controllers.Prns
 @using FrontendSchemeRegistration.UI.ViewModels.Prns
+@inject IStringLocalizer<PrnDataResources> PrnDataLocalizer
 @model PrnViewModel
 
 @{
     ViewData["Title"] = Localizer[(Model.IsPrn ? "prn_page_title" : "pern_page_title")];
+    var headerText = string.Format(Localizer[(Model.IsPrn ? "prn_heading" : "pern_heading")].Value.ToString(), Model.ObligationYear.ToString());
 }
 <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
     <div class="govuk-grid-row">
@@ -11,10 +13,10 @@
 
             <form class="form" method="POST">
                 @Html.HiddenFor(model => model.ExternalId)
-                <h2 class="govuk-heading-l">@Localizer[(Model.IsPrn ? "prn_heading" : "pern_heading")]</h2>
+                <h2 class="govuk-heading-l">@headerText</h2>
 
-                <div class="govuk-inset-text">
-                    @Localizer["TitleFirstPart"] @Model.Tonnage @Localizer["TitleSecondPart"]
+                <div class="govuk-inset-text">                   
+                    @string.Format(Localizer["Title"].Value, Model.Tonnage, @PrnDataLocalizer[Model.Material].Value)
                 </div>
 
                 <div class="govuk-button-group">

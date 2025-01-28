@@ -1,37 +1,34 @@
 ﻿using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
+using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels.Prns;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
+using Newtonsoft.Json;
 
 namespace FrontendSchemeRegistration.UI.Controllers.Prns;
 
 [FeatureGate(FeatureFlags.ShowPrn)]
+[ServiceFilter(typeof(ComplianceSchemeIdHttpContextFilterAttribute))]
 public class PrnsController : Controller
 {
     private const string ShowPrnPageName = "SelectSinglePrn";
     private const string NoPrnsSelected = "NoPrnsSelected";
+    private const string FileName = "PRNDetail.csv";
+    private const string MimeType = "text/csv";
     private readonly IPrnService _prnService;
-    private readonly TimeProvider _timeProvider;
+    private readonly IDownloadPrnService _downloadPrnService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
 
-    public PrnsController(IPrnService prnService, TimeProvider timeProvider, ISessionManager<FrontendSchemeRegistrationSession> sessionManager)
+    public PrnsController(IPrnService prnService, ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
+                          IDownloadPrnService downloadPrnService)
     {
         _prnService = prnService;
-        _timeProvider = timeProvider;
         _sessionManager = sessionManager;
-    }
-
-    // Landing page
-    [HttpGet]
-    [Route(PagePaths.Prns.Home)]
-    public async Task<IActionResult> HomePagePrn()
-    {
-        var viewModel = await _prnService.GetPrnsAwaitingAcceptanceAsync();
-        return View("HomePagePrn", viewModel);
+        _downloadPrnService = downloadPrnService;
     }
 
 	[HttpGet]
@@ -39,24 +36,37 @@ public class PrnsController : Controller
 	public async Task<IActionResult> SearchPrns([FromQuery] SearchPrnsViewModel request)
 	{
 		var prnsResultViewModel = await _prnService.GetPrnSearchResultsAsync(request);
-        
-		if (request.Source == "button")
+
+        // stop, there are zero matching PRNs
+        if (prnsResultViewModel?.ActivePageOfResults.Count == 0)
+        {
+            var newRequest = new SearchPrnsViewModel();
+            if (JsonConvert.SerializeObject(request) == JsonConvert.SerializeObject(newRequest))
+            {
+                return View("SearchPrnsEmpty");
+            }
+
+            var allResults = await _prnService.GetPrnSearchResultsAsync(newRequest);
+            if (allResults?.ActivePageOfResults.Count == 0)
+            {
+                return View("SearchPrnsEmpty");
+            }
+        }
+
+        if (request.Source == "button" && string.IsNullOrWhiteSpace(request.Search))
 		{
-			if (string.IsNullOrWhiteSpace(request.Search))
-			{
-				ViewData.ModelState.AddModelError("search", "enter_the_exact_prn_or_pern_number");
-			}
-			else if (prnsResultViewModel.ActivePageOfResults.Count == 0)
-			{
-				ViewData.ModelState.AddModelError("search", "no_prns_or_perns_found");
-			}
+				ViewData.ModelState.AddModelError("search", "enter_prn_or_pern_number");
 		}
 
 		var qs = $"?search={request.Search}&sortBy={request.SortBy}&filterBy={request.FilterBy}&page=";
 
-		prnsResultViewModel.PagingDetail.PagingLink = Url.Action(nameof(SearchPrns)) + qs;
+        if (prnsResultViewModel != null)
+        {
+            prnsResultViewModel.PagingDetail.PagingLink = Url.Action(nameof(SearchPrns)) + qs;
+        }
 
         await SetSessionBackLinkForShowPrnPage(Url.Action(nameof(SearchPrns)) + qs + request.Page);
+        ViewBag.BackLinkToDisplay = Url.Content($"~/{PagePaths.Prns.ObligationsHome}");
 
         return View(prnsResultViewModel);
     }
@@ -72,17 +82,24 @@ public class PrnsController : Controller
             ViewData.ModelState.AddModelError("Error", TempData[NoPrnsSelected].ToString());
         }
 
-        await SetSessionBackLinkForShowPrnPage(Url?.Content(string.Concat("~/", PagePaths.Prns.ShowAwaitingAcceptance)));
-
         if (string.IsNullOrEmpty(request.FilterBy))
         {
             request.FilterBy = PrnConstants.Filters.AwaitingAll;
         }
 
         var awaitingAcceptanceViewModel = await _prnService.GetPrnAwaitingAcceptanceSearchResultsAsync(request);
+
+        // stop, there are zero PRNs awaiting acceptance
+        if ((awaitingAcceptanceViewModel.Prns.Count == 0) && (request.FilterBy == PrnConstants.Filters.AwaitingAll))
+        {
+            return View("SelectMultiplePrnsEmpty");
+        }
+
+		await SetSessionBackLinkForShowPrnPage(Url?.Content(string.Concat("~/", PagePaths.Prns.ShowAwaitingAcceptance)));
+        ViewBag.BackLinkToDisplay = Url.Content($"~/{PagePaths.Prns.ObligationsHome}");
+
         awaitingAcceptanceViewModel.SelectedFilter = request.FilterBy;
         awaitingAcceptanceViewModel.SelectedSort = request.SortBy;
-        awaitingAcceptanceViewModel.TotalAwaitingPrns = await _prnService.GetAwaitingAcceptancePrnsCount();
         var qs = $"?sortBy={request.SortBy}&filterBy={request.FilterBy}&page=";
         awaitingAcceptanceViewModel.PagingDetail.PagingLink = Url.Action(nameof(SelectMultiplePrns)) + qs;
         return View(awaitingAcceptanceViewModel);
@@ -98,8 +115,30 @@ public class PrnsController : Controller
         ViewBag.BackLinkToDisplay = (backLink != null)? backLink.ToString(): Url?.Content(string.Concat("~/", PagePaths.Prns.ShowAwaitingAcceptance));
 
         var prn = await _prnService.GetPrnByExternalIdAsync(id);
-        ViewBag.DecemberWasteRulesApply = prn.DecemberWasteRulesApply(_timeProvider.GetUtcNow().DateTime);
         return View(prn);
+    }
+
+    [HttpGet]
+    [Route(PagePaths.Prns.DownloadSelectedPRNPdf + "/{id:guid}")]
+    public async Task<IActionResult> DownloadPrn(Guid id)
+    {
+        var actionContext = new ActionContext(HttpContext, RouteData, ControllerContext.ActionDescriptor, ModelState);
+        return await _downloadPrnService.DownloadPrnAsync(id, "SelectSinglePrn", actionContext);
+    }
+
+    [HttpGet]
+    [Route(PagePaths.Prns.DownloadAllPRNsAndPERNs)]
+    public async Task<IActionResult> DownloadPrnsToCsv()
+    {
+        var stream = await _prnService.GetPrnsCsvStreamAsync();
+
+        // stop, there are zero PRNs to download
+        if (stream.Length == 0)
+        {
+            return View("CsvEmpty");
+        }
+
+        return File(stream, MimeType, FileName);
     }
 
     private async Task SetSessionBackLinkForShowPrnPage(string backLink)

@@ -1,0 +1,35 @@
+@model PaymentOptionPayOnlineViewModel
+
+@{
+    ViewData["Title"] = Localizer["pay_online_title"];
+    var totalAmount = (Model.TotalAmountOutstanding / 100).ToString("#,##0.00");
+}
+
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+                    @Localizer["pay_online_through_GovUK"]
+                </h1>
+
+                <p class="govuk-body">
+                    @Localizer["pay_registration_fee_of"]<b>&pound;@totalAmount</b>
+                    @Localizer["using_GovUk_secure_payments_service"]
+                </p>
+                <p class="govuk-body">
+                    @Localizer["your_application_payment_ref"]<b>@Model.ApplicationReferenceNumber</b>
+                </p>
+                <form asp-controller="FrontendSchemeRegistration" asp-action="PayOnlineSaveSession" method="post">
+                    <a class="govuk-button govuk-body" href="@Model.PaymentLink">@Localizer["pay_online_now"]</a>
+
+                    <p class="govuk-body govuk-!-margin-top-4">
+                        <button class="govuk-link govuk-link--no-visited-state govuk-body-m" data-module="govuk-button" type="submit">
+                            @Localizer["return_to_dashboard"]
+                        </button>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>

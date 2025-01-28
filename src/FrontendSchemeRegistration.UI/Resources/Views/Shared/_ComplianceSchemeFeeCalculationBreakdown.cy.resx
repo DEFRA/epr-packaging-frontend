@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="item" xml:space="preserve">
+    <value>Eitem</value>
+  </data>
+  <data name="description" xml:space="preserve">
+    <value>Disgrifiad </value>
+  </data>
+  <data name="amount" xml:space="preserve">
+    <value>Swm</value>
+  </data>
+  <data name="application_fee" xml:space="preserve">
+    <value>Ffi ymgeisio</value>
+  </data>
+  <data name="compliance_scheme" xml:space="preserve">
+    <value>Cynllun cydymffurfio</value>
+  </data>
+	<data name="small_producers_sentence_text" xml:space="preserve">
+    <value>o gynhyrchwyr bach</value>
+  </data>
+	<data name="small_producers_sentence_text_singular" xml:space="preserve">
+    <value>Cynhyrchydd bach</value>
+  </data>
+	<data name="large_producers_sentence_text" xml:space="preserve">
+    <value>o gynhyrchwyr mawr</value>
+  </data>
+	<data name="large_producers_sentence_text_singular" xml:space="preserve">
+    <value>Cynhyrchydd mawr</value>
+  </data>
+	<data name="online_marketplaces_sentence_text" xml:space="preserve">
+    <value>Mae yn farchnadoedd ar-lein</value>
+  </data>
+	<data name="online_marketplaces_sentence_text_singular" xml:space="preserve">
+    <value>Mae yn farchnad ar-lein</value>
+  </data>
+	<data name="subsidiary_companies_sentence_text" xml:space="preserve">
+    <value>o is-gwmnïau</value>
+  </data>
+	<data name="subsidiary_companies_sentence_text_singular" xml:space="preserve">
+    <value>Mae yn is-gwmni</value>
+  </data>
+  <data name="late_producer_fees_text" xml:space="preserve">
+    <value>ffioedd cynhyrchydd hwyr</value>
+  </data>
+  <data name="late_producer_fees_text_singular" xml:space="preserve">
+    <value>ffi cynhyrchydd hwyr</value>
+  </data>
+	<data name="scheme_members" xml:space="preserve">
+    <value>Aelodau'r cynllun</value>
+  </data>
+	<data name="sub_total_amount" xml:space="preserve">
+    <value>Is-gyfanswm</value>
+  </data>
+	 <data name="previous_payments" xml:space="preserve">
+    <value>Taliadau blaenorol</value>
+  </data>
+  <data name="total_previous_payments_received" xml:space="preserve">
+    <value>Cyfanswm y taliadau sydd wedi dod i law</value>
+  </data>
+	<data name="total_outstanding" xml:space="preserve">
+    <value>Y cyfanswm sydd heb ei dalu</value>
+  </data>
+</root>

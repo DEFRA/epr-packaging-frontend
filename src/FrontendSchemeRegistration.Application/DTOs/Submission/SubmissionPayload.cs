@@ -8,4 +8,6 @@ public class SubmissionPayload
     public Guid FileId { get; set; }
 
     public string? SubmittedBy { get; set; }
+    
+    public string? AppReferenceNumber { get; set; }
 }

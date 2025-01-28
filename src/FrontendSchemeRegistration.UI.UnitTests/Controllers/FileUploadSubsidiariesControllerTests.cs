@@ -23,25 +23,34 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
     using Application.Options;
     using Constants;
     using EPR.Common.Authorization.Sessions;
+    using FrontendSchemeRegistration.Application.DTOs.Subsidiary.FileUploadStatus;
+    using Microsoft.AspNetCore.Mvc.Routing;
     using FrontendSchemeRegistration.Application.Constants;
     using FrontendSchemeRegistration.Application.DTOs.Organisation;
+    using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
     using Microsoft.AspNetCore.Mvc.ViewFeatures;
+    using Microsoft.AspNetCore.Routing;
     using UI.Sessions;
 
     [TestFixture]
     public class FileUploadSubsidiariesControllerTests
     {
+        private const string DummySubsidiaryName = "DummySubsidiaryName";
+
         private readonly Mock<ClaimsPrincipal> _userMock = new();
         private Mock<IFileUploadService> _mockFileUploadService;
         private Mock<ISubmissionService> _mockSubmissionService;
         private Mock<ISubsidiaryService> _mockSubsidiaryService;
         private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _mockSessionManager;
         private Mock<IComplianceSchemeMemberService> _mockComplianceSchemeMemberService;
+        private Mock<IComplianceSchemeService> _mockComplianceSchemeService;
         private FileUploadSubsidiariesController _controller;
         private Mock<IOptions<GlobalVariables>> _globalVariablesMock;
         private Mock<ClaimsPrincipal> _claimsPrincipalMock;
         private Mock<IUrlHelper> _mockUrlHelper;
+        private Mock<ISubsidiaryUtilityService> _mockSubsidiaryUtilityService;
         private readonly Guid UserId = Guid.NewGuid();
+        private readonly Guid OrganisationId = Guid.NewGuid();
 
         [SetUp]
         public void SetUp()
@@ -63,10 +72,16 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             _mockSessionManager.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
                 .ReturnsAsync(new FrontendSchemeRegistrationSession
                 {
-                    RegistrationSession = new RegistrationSession { SelectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid() } }
+                    RegistrationSession = new RegistrationSession { SelectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid() } },
+                    SubsidiarySession = new SubsidiarySession { ReturnToSubsidiaryPage = 5 }
                 });
 
             _mockComplianceSchemeMemberService = new Mock<IComplianceSchemeMemberService>();
+            _mockComplianceSchemeService = new Mock<IComplianceSchemeService>();
+            _mockComplianceSchemeService
+                .Setup(service => service.GetComplianceSchemeSummary(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                .ReturnsAsync(() => new ComplianceSchemeSummary { MemberCount = 3 });
+
             _globalVariablesMock = new Mock<IOptions<GlobalVariables>>();
             _globalVariablesMock.Setup(g => g.Value).Returns(new GlobalVariables()
             {
@@ -100,17 +115,24 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                     It.IsAny<Guid>(),
                     It.IsAny<int>(),
                     It.IsAny<string>(),
-                    It.IsAny<int>()))
+                    It.IsAny<int>(),
+                    It.IsAny<bool>()))
                 .ReturnsAsync(complianceApiResponse);
-
+            _mockSubsidiaryUtilityService = new Mock<ISubsidiaryUtilityService>();
             _controller = new FileUploadSubsidiariesController(
                 _mockFileUploadService.Object,
                 _mockSubmissionService.Object,
                 _mockSubsidiaryService.Object,
                 _globalVariablesMock.Object,
                 _mockSessionManager.Object,
-                _mockComplianceSchemeMemberService.Object);
+                _mockComplianceSchemeMemberService.Object,
+                _mockComplianceSchemeService.Object,
+                _mockSubsidiaryUtilityService.Object);
 
+            var tempDataMock = new Mock<ITempDataDictionary>();
+            tempDataMock.Setup(dictionary => dictionary["SubsidiaryNameToRemove"]).Returns(DummySubsidiaryName);
+            _controller.TempData = tempDataMock.Object;
+            
             // Mock HttpContext
             var mockHttpContext = new Mock<HttpContext>();
             var mockRequest = new Mock<HttpRequest>();
@@ -129,7 +151,8 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                 HttpContext = new DefaultHttpContext
                 {
                     User = _claimsPrincipalMock.Object,
-                    Session = new Mock<ISession>().Object
+                    Session = new Mock<ISession>().Object,
+                    
                 }
             };
             _controller.Url = _mockUrlHelper.Object;
@@ -138,6 +161,10 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
         [Test]
         public async Task SubsidiariesList_WhenDirectProducer_ShouldCallSubsidiaryServiceAndReturnViewResult()
         {
+            // Arrange
+            _mockSubsidiaryService.Setup(x => x.GetSubsidiaryFileUploadStatusAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                .ReturnsAsync(SubsidiaryFileUploadStatus.NoFileUploadActive);
+
             // Arrange
             var orgModel = new OrganisationRelationshipModel
             {
@@ -173,8 +200,36 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
         }
 
         [Test]
+        public async Task SubsidiariesList_WhenDirectProducer_WithNullOrganisation_ShouldCallSubsidiaryServiceAndReturnViewResult()
+        {
+            // Arrange
+            var claims = CreateUserDataClaim(OrganisationRoles.Producer);
+            _userMock.Setup(x => x.Claims).Returns(claims);
+            _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+            _mockSubsidiaryService.Setup(s => s.GetOrganisationSubsidiaries(It.IsAny<Guid>())).ReturnsAsync(() => null);
+            _mockSubsidiaryService.Setup(service => service.GetSubsidiaryFileUploadStatusViewedAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+            .ReturnsAsync(true);
+            
+            // Act
+            var result = await _controller.SubsidiariesList();
+
+            // Assert
+            result.Should().BeOfType<ViewResult>().Which.ViewName.Should().BeNull();
+            var viewResult = (result as ViewResult).Model as SubsidiaryListViewModel;
+            viewResult.Should().NotBeNull();
+            viewResult.Organisations.Should().HaveCount(1);
+            viewResult.Organisations[0].Subsidiaries.Should().HaveCount(0);
+            _mockSubsidiaryService.Verify(service => service.GetOrganisationSubsidiaries(It.IsAny<Guid>()), Times.Once);
+        }
+
+        [Test]
         public async Task SubsidiariesList_WhenComplianceScheme_ShouldCallComplianceServiceAndReturnViewResult()
         {
+            // Arrange
+            _mockSubsidiaryService.Setup(x => x.GetSubsidiaryFileUploadStatusAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                .ReturnsAsync(SubsidiaryFileUploadStatus.NoFileUploadActive);
+            
+            
             // Act
             var result = await _controller.SubsidiariesList();
 
@@ -190,7 +245,8 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                     It.IsAny<Guid>(),
                     It.IsAny<int>(),
                     It.IsAny<string>(),
-                    It.IsAny<int>()), Times.Once);
+                    It.IsAny<int>(),
+                    It.IsAny<bool>()), Times.Once);
         }
 
         [Theory]
@@ -215,7 +271,9 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                 _mockSubsidiaryService.Object,
                 _globalVariablesMock.Object,
                 mockSessionManager.Object,
-                _mockComplianceSchemeMemberService.Object);
+                _mockComplianceSchemeMemberService.Object,
+                _mockComplianceSchemeService.Object,
+                _mockSubsidiaryUtilityService.Object);
 
             controller.ControllerContext = new ControllerContext
             {
@@ -226,12 +284,13 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                 }
             };
             controller.Url = _mockUrlHelper.Object;
-
+            _mockSubsidiaryService.Setup(service => service.GetSubsidiaryFileUploadStatusViewedAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+            .ReturnsAsync(true);
             // Act
             var result = await controller.SubsidiariesList();
 
             // Assert
-            result.Should().BeOfType<ViewResult>().Which.ViewData.Should().Contain(pair => 
+            result.Should().BeOfType<ViewResult>().Which.ViewData.Should().Contain(pair =>
                 pair.Key == "ShouldShowAccountHomeLink" && (bool)pair.Value == true);
         }
 
@@ -252,9 +311,16 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
         public async Task SubsidiariesList_WhenComplianceSchemeAndNoApiResponse_ThenEmptySubsidiaryListReturned()
         {
             // Arrange
+            _mockSubsidiaryService.Setup(x => x.GetSubsidiaryFileUploadStatusAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                .ReturnsAsync(SubsidiaryFileUploadStatus.NoFileUploadActive);
+
+            // Arrange
             var complianceApiResponse = new ComplianceSchemeMembershipResponse
             {
-                PagedResult = null
+                PagedResult = new PaginatedResponse<ComplianceSchemeMemberDto>()
+                {
+                    Items = []
+                }
             };
 
             var mockComplianceSchemeMemberService = new Mock<IComplianceSchemeMemberService>();
@@ -263,7 +329,8 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                     It.IsAny<Guid>(),
                     It.IsAny<int>(),
                     It.IsAny<string>(),
-                    It.IsAny<int>()))
+                    It.IsAny<int>(),
+                    It.IsAny<bool>()))
                 .ReturnsAsync(complianceApiResponse);
 
             var controller = new FileUploadSubsidiariesController(
@@ -272,7 +339,9 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                 _mockSubsidiaryService.Object,
                 _globalVariablesMock.Object,
                 _mockSessionManager.Object,
-                mockComplianceSchemeMemberService.Object);
+                mockComplianceSchemeMemberService.Object,
+                _mockComplianceSchemeService.Object,
+                _mockSubsidiaryUtilityService.Object);
 
             controller.ControllerContext = new ControllerContext
             {
@@ -293,6 +362,23 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             viewResult.Should().NotBeNull();
             viewResult.Organisations.Should().HaveCount(1);
             viewResult.Organisations[0].Subsidiaries.Should().BeEmpty();
+        }
+        
+        [Test]
+        public async Task SubsidiariesList_WhenComplianceSchemePage2RequestedButDoesNotExist_ThenPage1DataReturn()
+        {
+            // Arrange
+            _mockSubsidiaryService.Setup(service => service.GetSubsidiaryFileUploadStatusViewedAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+            .ReturnsAsync(true);
+
+            // Act
+            var result = await _controller.SubsidiariesList(2);
+            
+            // Assert
+            result.Should().BeOfType<ViewResult>().Which.ViewName.Should().BeNull();
+            var viewResult = (result as ViewResult).Model as SubsidiaryListViewModel;
+            viewResult.Should().NotBeNull();
+            viewResult.PagingDetail.CurrentPage.Should().Be(1);
         }
 
         [Test]
@@ -464,7 +550,102 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
         }
 
         [Test]
-        public async Task FileUploading_WhenSubmissionIsComplete_ShouldRedirectToFileUploadSuccess()
+        public async Task FileUploading_FileUploadedSuccessfully_ReturnsRedirectToAction_FileUploadSuccess()
+        {
+            // Arrange
+            var userId = Guid.NewGuid();
+            var organisationId = Guid.NewGuid();
+            var submissionId = Guid.NewGuid();
+            var subFileUploadViewModel = new SubFileUploadingViewModel { SubmissionId = submissionId.ToString() };
+            var submission = new SubsidiarySubmission
+            {
+                SubsidiaryFileUploadDateTime = DateTime.Now.AddMinutes(-3)
+            };
+
+            var uploadStatus = new SubsidiaryUploadStatusDto
+            {
+                Status = SubsidiaryUploadStatus.Finished,
+                RowsAdded = 1
+            };
+
+            _mockSubmissionService.Setup(service => service.GetSubmissionAsync<SubsidiarySubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+
+            var claims = CreateUserDataClaim(OrganisationRoles.Producer, "Approved Person");
+            _userMock.Setup(x => x.Claims).Returns(claims);
+            _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+            _mockSubsidiaryService.Setup(s => s.GetUploadStatus(UserId, OrganisationId)).ReturnsAsync(uploadStatus);
+
+            var mockHttpContext = new Mock<HttpContext>();
+            mockHttpContext.Setup(c => c.User).Returns(_claimsPrincipalMock.Object);
+            mockHttpContext.Setup(c => c.Request.Query["submissionId"]).Returns(submissionId.ToString());
+            mockHttpContext.Setup(c => c.User).Returns(_claimsPrincipalMock.Object);
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = mockHttpContext.Object
+            };
+            // Act
+            var result = await _controller.FileUploading();
+
+            // Assert
+            result.Should().BeOfType<RedirectToActionResult>()
+                .Which.ActionName.Should().Be(nameof(_controller.FileUploadSuccess));
+        }
+
+        [TestCase(0, false)]
+        [TestCase(-10, true)]
+        public async Task FileUploading_WhenSubmissionIsInProcess_ShouldReturnCorrectView(int uploadMinutesToAdd, bool expectedIsFileTakingLongToUpload)
+        {
+            // Arrange
+            var submissionId = Guid.NewGuid();
+            var submission = new SubsidiarySubmission
+            {
+                SubsidiaryDataComplete = true,
+                RecordsAdded = 5,
+                Errors = new List<string>(),
+                SubsidiaryFileUploadDateTime = DateTime.UtcNow.AddMinutes(uploadMinutesToAdd)
+            };
+
+            var uploadStatus = new SubsidiaryUploadStatusDto
+            {
+                Status = SubsidiaryUploadStatus.Uploading,
+                RowsAdded = null,
+                Errors = null
+            };
+
+            _mockSubmissionService.Setup(service => service.GetSubmissionAsync<SubsidiarySubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+
+            var claims = CreateUserDataClaim(OrganisationRoles.Producer, "Approved Person");
+            _userMock.Setup(x => x.Claims).Returns(claims);
+            _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+            _mockSubsidiaryService.Setup(s => s.GetUploadStatus(UserId, OrganisationId)).ReturnsAsync(uploadStatus);
+
+            var mockHttpContext = new Mock<HttpContext>();
+            mockHttpContext.Setup(c => c.User).Returns(_claimsPrincipalMock.Object);
+            mockHttpContext.Setup(c => c.Request.Query["submissionId"]).Returns(submissionId.ToString());
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = mockHttpContext.Object
+            };
+
+            var expectedViewModel = new SubFileUploadingViewModel
+            {
+                SubmissionId = submissionId.ToString(),
+                IsFileUploadTakingLong = expectedIsFileTakingLongToUpload
+            };
+
+            // Act
+            var result = await _controller.FileUploading() as ViewResult;
+
+            // Assert
+            result.ViewName.Should().Be("FileUploading");
+            result.ViewData.Model.Should().BeEquivalentTo(expectedViewModel);
+        }
+
+        [TestCase(0, nameof(FileUploadSubsidiariesController.SubsidiariesFileNotUploaded))]
+        [TestCase(1, nameof(FileUploadSubsidiariesController.SubsidiariesIncompleteFileUpload))]
+        public async Task FileUploading_WhenSubmissionHasErrors_ShouldReturnCorrectRedirect(int rowsAdded, string actionName)
         {
             // Arrange
             var submissionId = Guid.NewGuid();
@@ -474,9 +655,27 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                 RecordsAdded = 5,
                 Errors = new List<string>()
             };
+
+            var uploadStatus = new SubsidiaryUploadStatusDto
+            {
+                Status = SubsidiaryUploadStatus.Finished,
+                RowsAdded = rowsAdded,
+                Errors = new SubsidiaryUploadErrorDto[]
+                {
+                    new SubsidiaryUploadErrorDto()
+                }
+            };
+
             _mockSubmissionService.Setup(service => service.GetSubmissionAsync<SubsidiarySubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
 
+            var claims = CreateUserDataClaim(OrganisationRoles.Producer, "Approved Person");
+            _userMock.Setup(x => x.Claims).Returns(claims);
+            _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+            _mockSubsidiaryService.Setup(s => s.GetUploadStatus(UserId, OrganisationId)).ReturnsAsync(uploadStatus);
+
             var mockHttpContext = new Mock<HttpContext>();
+            mockHttpContext.Setup(c => c.User).Returns(_claimsPrincipalMock.Object);
             mockHttpContext.Setup(c => c.Request.Query["submissionId"]).Returns(submissionId.ToString());
             _controller.ControllerContext = new ControllerContext
             {
@@ -484,11 +683,11 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             };
 
             // Act
-            var result = await _controller.FileUploading();
+            var result = await _controller.FileUploading() as RedirectToActionResult;
 
             // Assert
-            result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("FileUploadSuccess");
-            result.As<RedirectToActionResult>().RouteValues["recordsAdded"].Should().Be(submission.RecordsAdded);
+            result.ActionName.Should().Be(actionName);
+            result.ControllerName.Should().BeNull();
         }
 
         [Test]
@@ -496,7 +695,19 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
         {
             // Arrange
             var mockHttpContext = new Mock<HttpContext>();
-            mockHttpContext.Setup(c => c.Request.Query["recordsAdded"]).Returns("5");
+                       
+            mockHttpContext.Setup(c => c.User).Returns(_claimsPrincipalMock.Object);
+            mockHttpContext.Setup(c => c.Session).Returns(new Mock<ISession>().Object);
+
+            var expectedUploadStatus = new SubsidiaryUploadStatusDto 
+            {
+                Status = "Completed",
+                RowsAdded = 5
+            };
+
+            _mockSubsidiaryService.Setup(service => service.GetUploadStatus(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                .ReturnsAsync(expectedUploadStatus);
+
             _controller.ControllerContext = new ControllerContext
             {
                 HttpContext = mockHttpContext.Object
@@ -511,13 +722,218 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             var model = viewResult.Model.Should().BeOfType<SubsidiaryFileUploadSuccessViewModel>().Subject;
             model.RecordsAdded.Should().Be(5);
         }
+
+        [TestCase(1, "1B")]
+        [TestCase(1024, "1KB")]
+        [TestCase(1048576, "1MB")]
+        public async Task SubsidiariesIncompleteFileUpload_WhenCalled_ShouldReturnCorrectView(long size, string expectedSizeToDisplay)
+        {
+            // Arrange
+            var bytes = new byte[size];
+
+            var expectedViewModel = new SubsidiariesUnsuccessfulFileUploadViewModel
+            {
+                PartialSuccess = true,
+                WarningsReportDisplaySize = expectedSizeToDisplay
+            };
+
+            var claims = CreateUserDataClaim(OrganisationRoles.Producer, "Approved Person");
+            _userMock.Setup(x => x.Claims).Returns(claims);
+            _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+            _mockSubsidiaryService.Setup(x => x.GetUploadErrorsReport(UserId, OrganisationId)).ReturnsAsync(new MemoryStream(bytes));
+
+            // Act
+            var result = await _controller.SubsidiariesIncompleteFileUpload() as ViewResult;
+
+            // Assert
+            result.ViewName.Should().Be("SubsidiariesUnsuccessfulFileUpload");
+            result.ViewData.Model.Should().BeEquivalentTo(expectedViewModel);
+            _mockSubsidiaryService.Verify(
+                s => s.SetSubsidiaryFileUploadStatusViewedAsync(true, It.IsAny<Guid>(), It.IsAny<Guid>()),
+                Times.Once);
+        }
+
+        [TestCaseSource(nameof(SubsidiariesUnsuccessfulFileUploadDecisionCases))]
+        public async Task SubsidiariesIncompleteFileUploadDecision_WhenCalled_ShouldReturnCorrectRedirect(
+            bool uploadNewFile,
+            string actionName,
+            string controllerName,
+            RouteValueDictionary routeValues)
+        {
+            // Act
+            var result = await _controller.SubsidiariesIncompleteFileUploadDecision(new SubsidiaryUnsuccessfulUploadDecisionViewModel
+            {
+                UploadNewFile = uploadNewFile
+            }) as RedirectToActionResult;
+
+            // Assert
+            result.ActionName.Should().Be(actionName);
+            result.ControllerName.Should().Be(controllerName);
+            result.RouteValues.Should().BeEquivalentTo(routeValues);
+        }
+
+        [Test]
+        public async Task SubsidiariesIncompleteFileUploadDecision_WhenCalled_ShouldReturnCorrectView()
+        {
+            // Arrange
+            var bytes = new byte[1];
+
+            _controller.ModelState.AddModelError("test", "test");
+
+            var expectedViewModel = new SubsidiariesUnsuccessfulFileUploadViewModel
+            {
+                PartialSuccess = true,
+                WarningsReportDisplaySize = "1B"
+            };
+
+            var claims = CreateUserDataClaim(OrganisationRoles.Producer, "Approved Person");
+            _userMock.Setup(x => x.Claims).Returns(claims);
+            _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+            _mockSubsidiaryService.Setup(x => x.GetUploadErrorsReport(UserId, OrganisationId)).ReturnsAsync(new MemoryStream(bytes));
+
+            // Act
+            var result = await _controller.SubsidiariesIncompleteFileUploadDecision(new SubsidiaryUnsuccessfulUploadDecisionViewModel()) as ViewResult;
+
+            // Assert
+            result.ViewName.Should().Be("SubsidiariesUnsuccessfulFileUpload");
+            result.ViewData.Model.Should().BeEquivalentTo(expectedViewModel);
+            _mockSubsidiaryService.Verify(x => x.GetUploadErrorsReport(UserId, OrganisationId), Times.Once);
+        }
+
+        [Test]
+        public async Task SubsidiariesFileNotUploaded_WhenCalled_ShouldReturnCorrectView()
+        {
+            // Arrange
+            var bytes = new byte[1];
+
+            var expectedViewModel = new SubsidiariesUnsuccessfulFileUploadViewModel
+            {
+                PartialSuccess = false,
+                WarningsReportDisplaySize = "1B"
+            };
+
+            var claims = CreateUserDataClaim(OrganisationRoles.Producer, "Approved Person");
+            _userMock.Setup(x => x.Claims).Returns(claims);
+            _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+            _mockSubsidiaryService.Setup(x => x.GetUploadErrorsReport(UserId, OrganisationId)).ReturnsAsync(new MemoryStream(bytes));
+
+            // Act
+            var result = await _controller.SubsidiariesFileNotUploaded() as ViewResult;
+
+            // Assert
+            result.ViewName.Should().Be("SubsidiariesUnsuccessfulFileUpload");
+            result.ViewData.Model.Should().BeEquivalentTo(expectedViewModel);
+        }
+
+        [Test]
+        public async Task SubsidiariesFileNotUploaded_ShouldCallSetSubsidiaryFileUploadStatusViewedAsync_WithCorrectParameters()
+        {
+            // Arrange
+            var bytes = new byte[1];
+
+            var expectedViewModel = new SubsidiariesUnsuccessfulFileUploadViewModel
+            {
+                PartialSuccess = false,
+                WarningsReportDisplaySize = "1B"
+            };
+
+            var claims = CreateUserDataClaim(OrganisationRoles.Producer, "Approved Person");
+            _userMock.Setup(x => x.Claims).Returns(claims);
+            _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+            _mockSubsidiaryService.Setup(x => x.GetUploadErrorsReport(UserId, OrganisationId)).ReturnsAsync(new MemoryStream(bytes));
+
+            // Act
+            var result = await _controller.SubsidiariesFileNotUploaded();
+
+            // Assert
+            _mockSubsidiaryService.Verify(
+                s => s.SetSubsidiaryFileUploadStatusViewedAsync(true, It.IsAny<Guid>(), It.IsAny<Guid>()),
+                Times.Once
+            );
+        }
+
+        [TestCaseSource(nameof(SubsidiariesUnsuccessfulFileUploadDecisionCases))]
+        public async Task SubsidiariesFileNotUploadedDecision_WhenCalled_ShouldReturnCorrecRedirect(
+            bool uploadNewFile,
+            string actionName,
+            string controllerName,
+            RouteValueDictionary routeValues)
+        {
+            // Act
+            var result = await _controller.SubsidiariesFileNotUploadedDecision(new SubsidiaryUnsuccessfulUploadDecisionViewModel
+            {
+                UploadNewFile = uploadNewFile
+            }) as RedirectToActionResult;
+
+            // Assert
+            result.ActionName.Should().Be(actionName);
+            result.ControllerName.Should().Be(controllerName);
+            result.RouteValues.Should().BeEquivalentTo(routeValues);
+        }
+
+        [Test]
+        public async Task SubsidiariesFileNotUploadedDecision_WhenCalled_ShouldReturnCorrectView()
+        {
+            // Arrange
+            var bytes = new byte[1];
+
+            _controller.ModelState.AddModelError("test", "test");
+
+            var expectedViewModel = new SubsidiariesUnsuccessfulFileUploadViewModel
+            {
+                PartialSuccess = false,
+                WarningsReportDisplaySize = "1B"
+            };
+
+            var claims = CreateUserDataClaim(OrganisationRoles.Producer, "Approved Person");
+            _userMock.Setup(x => x.Claims).Returns(claims);
+            _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+            _mockSubsidiaryService.Setup(x => x.GetUploadErrorsReport(UserId, OrganisationId)).ReturnsAsync(new MemoryStream(bytes));
+
+            // Act
+            var result = await _controller.SubsidiariesFileNotUploadedDecision(new SubsidiaryUnsuccessfulUploadDecisionViewModel()) as ViewResult;
+
+            // Assert
+            result.ViewName.Should().Be("SubsidiariesUnsuccessfulFileUpload");
+            result.ViewData.Model.Should().BeEquivalentTo(expectedViewModel);
+            _mockSubsidiaryService.Verify(x => x.GetUploadErrorsReport(UserId, OrganisationId), Times.Once);
+        }
+
+        [Test]
+        public async Task SubsidiariesFileUploadWarningsReport_ReturnsStream_WhenCalled()
+        {
+            // Arrange
+            var bytes = new byte[1];
+
+            var claims = CreateUserDataClaim(OrganisationRoles.Producer, "Approved Person");
+            _userMock.Setup(x => x.Claims).Returns(claims);
+            _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+            _mockSubsidiaryService.Setup(x => x.GetUploadErrorsReport(UserId, OrganisationId)).ReturnsAsync(new MemoryStream(bytes));
+
+            // Act
+            var result = await _controller.SubsidiariesFileUploadWarningsReport() as FileStreamResult;
+
+            // Assert
+            result.ContentType.Should().Be("text/csv");
+            result.FileDownloadName.Should().Be("subsidiary_validation_report.csv");
+            result.FileStream.ReadByte().Should().Be(bytes[0]);
+            result.FileStream.ReadByte().Should().Be(-1);
+
+            _mockSubsidiaryService.Verify(x => x.GetUploadErrorsReport(UserId, OrganisationId), Times.Once);
+        }
+
         [Test]
         public async Task SubsidiariesDownload_ReturnsRedirectToActionResult()
         {
             // Arrange
             var mockStream = new MemoryStream();
             _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true)).ReturnsAsync(mockStream);
-            _controller.TempData = new Mock<ITempDataDictionary>().Object;
 
             // Act
             var result = await _controller.SubsidiariesDownload() as RedirectToActionResult;
@@ -533,7 +949,6 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             // Arrange
             var mockStream = new MemoryStream();
             _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true)).ReturnsAsync(mockStream);
-            _controller.TempData = new Mock<ITempDataDictionary>().Object;
 
             // Act
             var result = _controller.SubsidiariesDownloadView();
@@ -549,7 +964,6 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             // Arrange
             var mockStream = new MemoryStream();
             _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true)).ReturnsAsync(mockStream);
-            _controller.TempData = new Mock<ITempDataDictionary>().Object;
 
             // Act
             var result = await _controller.ExportSubsidiaries();
@@ -563,6 +977,159 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
 
             _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true), Times.Once);
         }
+
+        [Test]
+        public async Task SubsidiariesList_FileUploadedSuccessfully_RedirectsToFileUploadSuccess()
+        {
+            // Arrange
+            _mockSubsidiaryService
+                .Setup(s => s.GetSubsidiaryFileUploadStatusAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                .ReturnsAsync(SubsidiaryFileUploadStatus.FileUploadedSuccessfully);
+
+            // Act
+            var result = await _controller.SubsidiariesList(1);
+
+            // Assert
+            result.Should().BeOfType<RedirectToActionResult>()
+               .Which.ActionName.Should().Be(nameof(_controller.FileUploadSuccess));
+        }
+
+        [Test]
+        public async Task SubsidiariesList_HasErrors_RedirectsToSubsidiariesFileNotUploaded()
+        {
+            // Arrange
+            _mockSubsidiaryService
+                .Setup(s => s.GetSubsidiaryFileUploadStatusAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                .ReturnsAsync(SubsidiaryFileUploadStatus.HasErrors);
+
+            // Act
+            var result = await _controller.SubsidiariesList(1);
+
+            // Assert
+            result.Should().BeOfType<RedirectToActionResult>()
+                .Which.ActionName.Should().Be(nameof(_controller.SubsidiariesFileNotUploaded));
+        }
+
+        [Test]
+        public async Task SubsidiariesList_HasPartialErrors_RedirectsToSubsidiariesIncompleteFileUpload()
+        {
+            // Arrange
+            _mockSubsidiaryService
+                .Setup(s => s.GetSubsidiaryFileUploadStatusAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                .ReturnsAsync(SubsidiaryFileUploadStatus.PartialUpload);
+
+            // Act
+            var result = await _controller.SubsidiariesList(1);
+
+            // Assert
+            result.Should().BeOfType<RedirectToActionResult>()
+                .Which.ActionName.Should().Be(nameof(_controller.SubsidiariesIncompleteFileUpload));
+        }
+
+        [Test]
+        public async Task SubsidiariesList_FileUploadInProgress_ReturnFlagInViewModel()
+        {
+            // Arrange
+            _mockSubsidiaryService
+                .Setup(s => s.GetSubsidiaryFileUploadStatusAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                .ReturnsAsync(SubsidiaryFileUploadStatus.FileUploadInProgress);
+
+            // Act
+            var result = await _controller.SubsidiariesList(1);
+
+            // Assert
+            var viewResult = result as ViewResult;
+            viewResult.Should().NotBeNull();
+
+            var model = viewResult.Model as SubsidiaryListViewModel;
+            model.Should().NotBeNull();
+            model!.IsFileUploadInProgress.Should().BeTrue("because the file upload is in progress");
+
+        }
+
+        [Test]
+        public async Task CheckFileUploadStatus_FileUploadedSuccessfully_ReturnsRedirectToFileUploadSuccess()
+        {
+            // Arrange
+            
+            _mockSubsidiaryService
+                .Setup(s => s.GetSubsidiaryFileUploadStatusAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                .ReturnsAsync(SubsidiaryFileUploadStatus.FileUploadedSuccessfully);
+
+            var expectedRedirectUrl = "expectedRedirectUrl";
+       
+            var urlHelperMock = new Mock<IUrlHelper>(MockBehavior.Strict);
+            urlHelperMock.Setup(x => x.Action(It.IsAny<UrlActionContext>()))
+                         .Returns(expectedRedirectUrl);
+            _controller.Url = urlHelperMock.Object;
+
+            // Act
+            var result = await _controller.CheckFileUploadSatus();
+
+            result.Should().BeOfType<JsonResult>()
+                 .Which.Value.Should().BeAssignableTo<object>() 
+                 .Which.Should().BeEquivalentTo(new { redirectUrl = expectedRedirectUrl });
+        }
+
+        [Test]
+        public async Task CheckFileUploadStatus_HasErrors_ReturnsRedirectToFileUploadFailed()
+        {
+            _mockSubsidiaryService
+                .Setup(s => s.GetSubsidiaryFileUploadStatusAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                .ReturnsAsync(SubsidiaryFileUploadStatus.HasErrors);
+
+            var expectedRedirectUrl = "SubsidiariesFileNotUploaded";
+            var urlHelperMock = new Mock<IUrlHelper>(MockBehavior.Strict);
+            urlHelperMock.Setup(x => x.Action(It.IsAny<UrlActionContext>()))
+                         .Returns(expectedRedirectUrl);
+
+           _controller.Url = urlHelperMock.Object;
+            // Act
+            var result = await _controller.CheckFileUploadSatus();
+
+            result.Should().BeOfType<JsonResult>()
+                      .Which.Value.Should().BeAssignableTo<object>() 
+                      .Which.Should().BeEquivalentTo(new { redirectUrl = expectedRedirectUrl });
+        }
+
+        [Test]
+        public async Task CheckFileUploadStatus_PartialUpload_ReturnsRedirectToSubsidiariesIncompleteFileUpload()
+        {
+            _mockSubsidiaryService
+                .Setup(s => s.GetSubsidiaryFileUploadStatusAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                .ReturnsAsync(SubsidiaryFileUploadStatus.PartialUpload);
+
+            var expectedRedirectUrl = "SubsidiariesIncompleteFileUpload";
+            var urlHelperMock = new Mock<IUrlHelper>(MockBehavior.Strict);
+            urlHelperMock.Setup(x => x.Action(It.IsAny<UrlActionContext>()))
+                         .Returns(expectedRedirectUrl);
+
+            _controller.Url = urlHelperMock.Object;
+            // Act
+            var result = await _controller.CheckFileUploadSatus();
+
+            result.Should().BeOfType<JsonResult>()
+                      .Which.Value.Should().BeAssignableTo<object>()
+                      .Which.Should().BeEquivalentTo(new { redirectUrl = expectedRedirectUrl });
+        }
+
+        [Test]
+        public async Task CheckFileUploadStatus_FileUploadInProgress_ReturnsIsFileUploadInProgressTrue()
+        {
+            // Arrange
+            _mockSubsidiaryService
+                .Setup(s => s.GetSubsidiaryFileUploadStatusAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                .ReturnsAsync(SubsidiaryFileUploadStatus.FileUploadInProgress);
+
+            // Act
+            var result = await _controller.CheckFileUploadSatus();
+
+            // Assert using Fluent Assertions
+            result.Should().BeOfType<JsonResult>()
+          .Which.Value.Should().BeAssignableTo<object>()  
+          .Which.Should().BeEquivalentTo(new { isFileUploadInProgress = true });
+        }
+
 
         [Test]
         public async Task ExportSubsidiaries_WhenError_ReturnsRedirectToActionResult()
@@ -602,7 +1169,8 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             {
                 SelectedConfirmRemoval = YesNoAnswer.Yes,
                 ParentOrganisationExternalId = Guid.NewGuid(),
-                SubsidiaryExternalId = Guid.NewGuid()
+                SubsidiaryExternalId = Guid.NewGuid(),
+                SubsidiaryName = "SomeSubsidiaryToRemove"
             };
 
             // Act
@@ -613,7 +1181,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                 model.ParentOrganisationExternalId, model.SubsidiaryExternalId, UserId), Times.Once);
 
             result.Should().BeOfType<RedirectToActionResult>()
-                .Which.ActionName.Should().Be(nameof(_controller.SubsidiariesList));
+                .Which.ActionName.Should().Be(nameof(_controller.ConfirmRemoveSubsidiarySuccess));
         }
 
         [Test]
@@ -660,25 +1228,6 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                 .Which.Model.Should().Be(model);
         }
 
-
-        [Test]
-        public async Task ConfirmRemoveSubsidiary_UserNotInRole_ReturnsUnauthorizedResult()
-        {
-            // Arrange
-            var subsidiaryReference = "validSubsidiaryRef";
-            var parentOrganisationExternalId = Guid.NewGuid();
-
-            var claims = CreateUserDataClaim(OrganisationRoles.Producer, "Basic User");
-            _userMock.Setup(x => x.Claims).Returns(claims);
-            _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
-
-            // Act
-            var result = await _controller.ConfirmRemoveSubsidiary(subsidiaryReference, parentOrganisationExternalId);
-
-            // Assert
-            result.Should().BeOfType<UnauthorizedResult>();
-        }
-
         [Test]
         public async Task ConfirmRemoveSubsidiary_UserInRole_ReturnsViewWithModel()
         {
@@ -720,6 +1269,30 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                 .Which.ViewName.Should().Be(nameof(_controller.SubsidiariesDownloadFailed));
         }
 
+        [Test]
+        public async Task ConfirmRemoveSubsidiarySuccess_ReturnsSuccessfully()
+        {
+            // Arrange
+            var expectedModel = new ConfirmRemoveSubsidiarySuccessViewModel
+            {
+                ReturnToSubsidiaryPage = 5,
+                SubsidiaryName = DummySubsidiaryName
+            };
+
+            // Act
+            var result = await _controller.ConfirmRemoveSubsidiarySuccess();
+
+            // Assert
+            result.Should().BeOfType<ViewResult>()
+                .Which.Model.Should().BeOfType<ConfirmRemoveSubsidiarySuccessViewModel>()
+                .Which.Should().BeEquivalentTo(expectedModel);
+        }
+
+        public static object[] SubsidiariesUnsuccessfulFileUploadDecisionCases() => [
+            new object[] { true, "SubsidiariesList", null, new RouteValueDictionary { { "page", 1 } } },
+            new object[] { false, "Get", "Landing", null }
+        ];
+
         private List<Claim> CreateUserDataClaim(string organisationRole, string serviceRole = null)
         {
             var userData = new UserData
@@ -728,7 +1301,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                 {
                     new()
                     {
-                        Id = Guid.NewGuid(),
+                        Id = OrganisationId,
                         OrganisationRole = organisationRole,
                         Name = "Test Name",
                         OrganisationNumber = "Test Number"

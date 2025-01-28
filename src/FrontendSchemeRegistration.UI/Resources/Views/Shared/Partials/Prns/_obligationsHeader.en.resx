@@ -120,14 +120,8 @@
   <data name="compliance_scheme" xml:space="preserve">
     <value>Compliance Scheme</value>
   </data>
-  <data name="enforcement_action_warning" xml:space="preserve">
-    <value>You may face enforcement action if you miss this deadline.</value>
-  </data>
   <data name="january" xml:space="preserve">
     <value>31 January</value>
-  </data>
-  <data name="manage_your_recycling_obligations" xml:space="preserve">
-    <value>Manage your {0} recycling obligations</value>
   </data>
   <data name="producer" xml:space="preserve">
     <value>Producer</value>
@@ -146,11 +140,5 @@
   </data>
   <data name="regulator_wales" xml:space="preserve">
     <value>Environment Agency (Wales)</value>
-  </data>
-  <data name="to_meet_your_recycling_obligations_for" xml:space="preserve">
-    <value>to meet your recycling obligations for</value>
-  </data>
-  <data name="you_have_until" xml:space="preserve">
-    <value>You have until</value>
   </data>
 </root>

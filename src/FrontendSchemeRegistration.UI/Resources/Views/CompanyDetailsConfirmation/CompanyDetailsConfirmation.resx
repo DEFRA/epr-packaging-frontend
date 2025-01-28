@@ -48,6 +48,21 @@
     <data name="organisation_details_submitted" xml:space="preserve">
         <value />
     </data>
+	<data name="organisation_details_submitted_registration" xml:space="preserve">
+        <value />
+    </data>
+	<data name="you_still_need_to" xml:space="preserve">
+        <value />
+    </data>
+	<data name="pay_your_registration_fee" xml:space="preserve">
+        <value />
+    </data>
+	<data name="apply_for_registration" xml:space="preserve">
+        <value />
+    </data>
+	<data name="return_to_registration" xml:space="preserve">
+        <value />
+    </data>
     <data name="page_title_compliance" xml:space="preserve">
         <value />
     </data>

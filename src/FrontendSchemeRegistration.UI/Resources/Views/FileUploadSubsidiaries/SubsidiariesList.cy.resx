@@ -118,22 +118,22 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="companies_house_number" xml:space="preserve">
-    <value>W Companies House number</value>
+    <value>Rhif Tŷ’r Cwmnïau</value>
   </data>
   <data name="companies_house_number_heading" xml:space="preserve">
-    <value>W Companies House number</value>
+    <value>Rhif Tŷ’r Cwmnïau</value>
   </data>
   <data name="remove_subsidiary" xml:space="preserve">
-    <value>WRemove</value>
+    <value>Tynnu</value>
   </data>
   <data name="few_minutes_to_upload_file" xml:space="preserve">
-    <value>W It may take a few minutes for your file to upload - do not close the window while the file is uploading.</value>
+    <value>Gallai gymryd ychydig funudau i’ch ffeil uwchlwytho. Peidiwch â chau’r ffenestr tra bo’r ffeil wrthi’n uwchlwytho.</value>
   </data>
   <data name="file_specification" xml:space="preserve">
-    <value>W How to complete a file (opens in a new tab)</value>
+    <value>Sut i gwblhau ffeil (yn agor mewn tab newydd)</value>
   </data>
   <data name="normal_header" xml:space="preserve">
-    <value>W Subsidiaries</value>
+    <value>Is-gwmnïau</value>
   </data>
   <data name="no_ch_number" xml:space="preserve">
     <value>W No CH Number</value>
@@ -142,48 +142,57 @@
     <value>W No subsidiaries added for this organisation.</value>
   </data>
   <data name="organisation_id_heading" xml:space="preserve">
-    <value>W Organisation ID</value>
+    <value>ID y sefydliad</value>
   </data>
   <data name="subsidiaries_file_must_be" xml:space="preserve">
-    <value>W The file must be:</value>
+    <value>Rhaid i’r ffeil fod:</value>
   </data>
   <data name="subsidiaries_in_csv_format" xml:space="preserve">
-    <value>W in CSV format</value>
+    <value>ar fformat CSV</value>
   </data>
   <data name="subsidiaries_list" xml:space="preserve">
-    <value>W Subsidiaries list</value>
+    <value>Rhestr is-gwmnïau</value>
   </data>
   <data name="subsidiaries_need_to_upload_csv" xml:space="preserve">
-    <value>W To add subsidiaries you will need to upload a CSV file.</value>
+    <value>I ychwanegu is-gwmnïau, bydd angen ichi uwchlwytho ffeil CSV.</value>
   </data>
   <data name="subsidiaries_smaller_than_60kb" xml:space="preserve">
-    <value>W smaller than 60KB</value>
+    <value>yn llai na 60KB</value>
   </data>
   <data name="subsidiaries_upload_your_file" xml:space="preserve">
-    <value>W Upload a file</value>
+    <value>Uwchlwytho ffeil</value>
   </data>
   <data name="subsidiary_accuracy_warning_text" xml:space="preserve">
-    <value>W Check all the information you have provided is accurate. If it is not correct or if there is any missing information you will need to provide the correct data. Use the subsidiary IDs for all future organisation details and packaging data submissions.</value>
+    <value>Gwiriwch fod yr holl wybodaeth rydych chi wedi'i darparu yn gywir. Os nad yw'n gywir neu os oes unrhyw wybodaeth ar goll, bydd angen ichi ddarparu'r data cywir. Defnyddiwch IDs yr is-gwmnïau ar gyfer holl fanylion y sefydliad a phob cyflwyniad data pecynwaith yn y dyfodol.</value>
   </data>
   <data name="subsidiary_id" xml:space="preserve">
-    <value>W Subsidiary ID</value>
+    <value>ID yr is-gwmni</value>
   </data>
   <data name="subsidiary_name" xml:space="preserve">
-    <value>W Subsidiary name</value>
+    <value>Enw’r is-gwmni</value>
   </data>
   <data name="subsidiary_remove" xml:space="preserve">
     <value>W Remove</value>
   </data>
   <data name="how_to_complete_file" xml:space="preserve">
-    <value>W How to complete a file (opens in new tab)</value>
+    <value>Sut i gwblhau ffeil (yn agor mewn tab newydd)</value>
   </data>
   <data name="upload_a_file" xml:space="preserve">
-    <value>W Upload a file</value>
+    <value>Uwchlwytho ffeil</value>
   </data>
   <data name="no_subsidiaries_msg" xml:space="preserve">
-    <value>W No subsidiaries added for this organisation. To add subsidiaries, upload a CSV file</value>
+    <value>Dim is-gwmnïau wedi'u hychwanegu ar gyfer y sefydliad yma. I ychwanegu is-gwmnïau, uwchlwythwch ffeil CSV.</value>
   </data>
   <data name="return_to_account_home" xml:space="preserve">
-    <value>W Account home</value>
+    <value>Hafan y cyfrif</value>
+  </data>
+  <data name="you_have_not_added_any_subsidiaries" xml:space="preserve">
+    <value>Rydych chi heb ychwanegu is-gwmnïau.</value>
+  </data>
+  <data name="you_have_not_added_any_subsidiaries_for_your_members" xml:space="preserve">
+    <value>Rydych chi heb ychwanegu unrhyw is-gwmnïau ar gyfer eich aelodau.</value>
+  </data>
+  <data name="subsidiaries_will_appear" xml:space="preserve">
+    <value>Bydd is-gwmnïau yn ymddangos yma ar ôl cael eu prosesu.</value>
   </data>
 </root>

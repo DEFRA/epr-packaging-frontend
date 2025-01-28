@@ -67,7 +67,8 @@ public class FileUploadCompanyDetailsController : Controller
                     }
                 }
 
-                ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
+                SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration);
+
                 return View(
                     "FileUploadCompanyDetails",
                     new FileUploadCompanyDetailsViewModel
@@ -79,7 +80,7 @@ public class FileUploadCompanyDetailsController : Controller
         }
 
         return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
-    }
+    }    
 
     [HttpPost]
     [RequestSizeLimit(FileSizeLimit.FileSizeLimitInBytes)]
@@ -121,12 +122,17 @@ public class FileUploadCompanyDetailsController : Controller
                 })
             : RedirectToAction(
                 "Get",
-                "FileUploadingCompanyDetails",
+                "UploadingOrganisationDetails",
                 new RouteValueDictionary
                 {
                     {
                         "submissionId", submissionId
                     }
                 });
+    }
+
+    private void SetBackLink(bool isFileUploadJourneyInvokedViaRegistration)
+    {
+        ViewBag.BackLinkToDisplay = isFileUploadJourneyInvokedViaRegistration ? Url.Content($"~/{PagePaths.RegistrationTaskList}") : Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
     }
 }

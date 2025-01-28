@@ -204,10 +204,22 @@
 	<data name="892" xml:space="preserve">
         <value />
     </data>
+	<data name="893" xml:space="preserve">
+        <value />
+    </data>
 	<data name="65" xml:space="preserve">
         <value />
     </data>
 	<data name="66" xml:space="preserve">
         <value />
+    </data>
+    <data name="70" xml:space="preserve">
+      <value />
+    </data>
+    <data name="71" xml:space="preserve">
+      <value />
+    </data>
+	<data name="72" xml:space="preserve">
+      <value />
     </data>
 </root>

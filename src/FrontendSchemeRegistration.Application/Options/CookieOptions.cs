@@ -9,6 +9,7 @@ public class CookieOptions
 
     public int CookiePolicyDurationInMonths { get; set; }
 
+    public bool ShowBanner { get; set; }
     public string SessionCookieName { get; set; }
 
     public string CookiePolicyCookieName { get; set; }

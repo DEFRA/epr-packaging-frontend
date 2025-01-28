@@ -118,33 +118,33 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="button" xml:space="preserve">
-    <value>W View subsidiaries</value>
+    <value>Gweld is-gwmnïau</value>
   </data>
   <data name="normal_header" xml:space="preserve">
-    <value>W Uploading and validating file</value>
+    <value>Wrthi’n uwchlwytho ac yn dilysu ffeil</value>
   </data>
   <data name="noscript_paragraph_1" xml:space="preserve">
-    <value>W This may take a few minutes.</value>
+    <value>Gallai hyn gymryd ychydig funudau.</value>
   </data>
   <data name="noscript_paragraph_2" xml:space="preserve">
-    <value>W To check if the upload has finished,</value>
+    <value>I wirio a yw'r uwchlwytho wedi gorffen,</value>
   </data>
   <data name="noscript_paragraph_2_link" xml:space="preserve">
-    <value>W refresh this page</value>
+    <value>adnewyddwch y tudalen yma</value>
   </data>
   <data name="noscript_paragraph_3" xml:space="preserve">
-    <value>W Do not close the page.</value>
+    <value>Peidiwch â chau'r tudalen.</value>
   </data>
   <data name="paragraph_1" xml:space="preserve">
-    <value>W This may take a few minutes. We’ll refresh the page automatically until it is done.</value>
+    <value>Gallai hyn gymryd ychydig funudau. Byddwn ni’n adnewyddu’r tudalen yn awtomatig nes ei fod wedi gorffen.</value>
   </data>
   <data name="paragraph_2" xml:space="preserve">
-    <value>W Do not close the page and do not refresh it yourself.</value>
+    <value>Peidiwch â chau’r tudalen a pheidiwch ag adnewyddu’r tudalen eich hunan.</value>
   </data>
   <data name="paragraph_3" xml:space="preserve">
-    <value>W Your file is currently being uploaded and checked for errors. This is taking longer than expected.</value>
+    <value>Mae eich ffeil wrthi’n cael ei huwchlwytho a'i gwirio am wallau. Mae hyn yn cymryd mwy o amser na'r disgwyl.</value>
   </data>
   <data name="paragraph_4" xml:space="preserve">
-    <value>W Come back later to check the status of this file.</value>
+    <value>Dewch yn ôl wedyn i wirio statws y ffeil yma.</value>
   </data>
 </root>

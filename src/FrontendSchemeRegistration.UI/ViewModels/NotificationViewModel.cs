@@ -2,7 +2,9 @@
 
 using Application.Constants;
 using Application.DTOs.Notification;
+using System.Diagnostics.CodeAnalysis;
 
+[ExcludeFromCodeCoverage]
 public class NotificationViewModel
 {
     public bool HasNominatedNotification { get; set; }

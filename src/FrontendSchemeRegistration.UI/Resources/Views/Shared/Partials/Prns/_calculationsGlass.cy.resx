@@ -1,0 +1,59 @@
+﻿<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="how_we_calculated_your_recycling_obligation" xml:space="preserve">
+		<value>Sut cafodd eich rhwymedigaeth ailgylchu ei gyfrifo</value>
+	</data>
+	<data name="total_glass_obligation" xml:space="preserve">
+		<value>Cyfanswm y rhwymedigaeth gwydr</value>
+	</data>
+	<data name="we_applied_this_formula_to_calculate_your_total_glass_obligation" xml:space="preserve">
+		<value>Fe ddefnyddion ni'r fformwla yma i gyfrifo cyfanswm eich rhwymedigaeth gwydr</value>
+	</data>
+	<data name="is_n_tonnes_the_total_glass_you_reported_to_the_nearest_tonne" xml:space="preserve">
+		<value>yw {0} o dunelli (cyfanswm y gwydr y rhoesoch chi wybod amdano ar gyfer 2024, i'r dunnell agosaf)</value>
+	</data>
+	<data name="is_n_percent_recycling_target_for_glass_set_by_the_yyyy_regulations" xml:space="preserve">
+		<value> yw {0} (y targed ailgylchu ar gyfer {1} ar gyfer gwydr)</value>
+	</data>
+	<data name="your_remaining_glass_obligation_is" xml:space="preserve">
+		<value>Cyfanswm eich rhwymedigaeth ailgylchu gwydr yw</value>
+	</data>
+	<data name="tonnes" xml:space="preserve">
+		<value>o dunelli</value>
+	</data>
+	<data name="glass_remelt_obligation" xml:space="preserve">
+		<value>Rhwymedigaeth gwydr aildoddi</value>
+	</data>
+	<data name="your_glass_remelt_obligation_is_part_of_your_total_yyyy_glass_obligation" xml:space="preserve">
+		<value>Mae'ch rhwymedigaeth gwydr aildoddi yn rhan o gyfanswm eich rhwymedigaeth gwydr. Mae bob amser yn cael ei dalgrynnu i fyny i'r dunnell agosaf. Fe ddefnyddion ni'r fformwla sydd wedi'i nodi yn rheoliadau {0} i'w chyfrif</value>
+	</data>
+	<data name="is_n_percent_the_percentage_recycling_target_for_glass_remelt" xml:space="preserve">
+		<value>yw (0)% (y targed ailgylchu ar gyfer gwydr aildoddi a osodwyd gan reoliadau 2024)</value>
+	</data>
+	<data name="your_glass_remelt_obligation" xml:space="preserve">
+		<value>Eich rhwymedigaeth gwydr aildoddi</value>
+	</data>
+	<data name="is" xml:space="preserve">
+		<value>yw</value>
+	</data>
+	<data name="remaining_glass_obligation" xml:space="preserve">
+		<value>Rhwymedigaeth gweddill y gwydr</value>
+	</data>
+	<data name="to_determine_your_remaining_glass_obligation" xml:space="preserve">
+		<value>I bennu'ch rhwymedigaeth ar gyfer gweddill y gwydr, rydyn ni'n tynnu'r rhwymedigaeth gwydr aildoddi o gyfanswm eich rhwymedigaeth.</value>
+	</data>
+	<data name="your_total_glass_recycling_obligation_z_is" xml:space="preserve">
+		<value>Cyfanswm eich rhwymedigaeth ailgylchu gwydr (Z) yw</value>
+	</data>
+</root>

@@ -5,75 +5,88 @@
 
 @{
     ViewData["Title"] = Localizer[(Model.IsPrn ? "page_title_prn" : "page_title_pern")];
+    var isPdf = ViewData["IsPdf"] as bool? ?? false;
+}
+
+@{
+    string downloadText = string.Empty;
+    if (Model.ApprovalStatus == PrnStatus.AwaitingAcceptance)
+    {
+        downloadText = Localizer[(Model.IsPrn ? "download_this_prn_awaiting_acceptance" : "download_this_pern_awaiting_acceptance"), Model.ApprovalStatus].Value;
+    }
+    else
+    {
+        downloadText = Localizer[(Model.IsPrn ? "download_this_prn" : "download_this_pern"), Model.ApprovalStatus].Value;
+    }
 }
 
 <main class="govuk-main-wrapper govuk-!-padding-top-4">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
 
-                @await Html.PartialAsync("../Shared/Partials/Prns/_agenciesLogo.cshtml")
+            @await Html.PartialAsync("../Shared/Partials/Prns/_agenciesLogo.cshtml")
 
-                <h1 class="govuk-heading-l">@Localizer[(Model.IsPrn ? "packaging_recycling_note" : "packaging_export_recycling_note")]</h1>
-                <div class="govuk-inset-text app-inset-text">
-                    <div class="govuk-heading-m">
-                        @Localizer[(Model.IsPrn ? "prn_number" : "pern_number")]: <strong>@Html.DisplayFor(x => x.PrnOrPernNumber)</strong>
-                    </div>
-                    <div class="govuk-heading-m">
-                        @Localizer["year"]: <strong>@Html.DisplayFor(x => x.IssueYear)</strong>
-                    </div>
+            <h1 class="govuk-heading-l">@Localizer[(Model.IsPrn ? "packaging_recycling_note" : "packaging_export_recycling_note")]</h1>
+            <div class="govuk-inset-text app-inset-text">
+                <div class="govuk-heading-m">
+                    @Localizer[(Model.IsPrn ? "prn_number" : "pern_number")]: <strong>@Html.DisplayFor(x => x.PrnOrPernNumber)</strong>
                 </div>
-                @if (Model.IsDecemberWaste)
-                {
-                    <div class="govuk-warning-text">
-                        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-                        <strong class="govuk-warning-text__text">
-                            <span class="govuk-visually-hidden">@SharedLocalizer["warning"]</span>
-                            @Localizer[(Model.IsPrn ? "this_prn_relates_to_waste_received_for_reprocessing_in_December" : "this_pern_relates_to_waste_exported_for_reprocessing_in_December"), Model.IssueYear]
-                            @if ((bool)(ViewBag.DecemberWasteRulesApply ?? false))
-                            {
-                                @Localizer["it_can_count_towards_your_obligation", Model.IssueYear, Model.IssueYear + 1]
-                            }
+                <div class="govuk-heading-m">
+                    @Localizer["year"]: <strong>@Html.DisplayFor(x => x.IssueYear)</strong>
+                </div>
+            </div>
+            @if (Model.IsDecemberWaste)
+            {
+                <div class="govuk-warning-text">
+                    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                    <strong class="govuk-warning-text__text">
+                        <span class="govuk-visually-hidden">@SharedLocalizer["warning"]</span>
+                        @Localizer[(Model.IsPrn ? "this_prn_relates_to_waste_received_for_reprocessing_in_December" : "this_pern_relates_to_waste_exported_for_reprocessing_in_December"), Model.IssueYear]
                     </strong>
-                    </div>
-                }
-                @await Html.PartialAsync("../Shared/Partials/Prns/_recyclingNoteStatus.cshtml", Model)
-                <br>
-                @await Html.PartialAsync("../Shared/Partials/Prns/_recyclingNoteDetails.cshtml", Model)
+                </div>
+            }
+            @await Html.PartialAsync("../Shared/Partials/Prns/_recyclingNoteStatus.cshtml", Model)
+            <br>
+            @await Html.PartialAsync("../Shared/Partials/Prns/_recyclingNoteDetails.cshtml", Model)
+            @if(!isPdf)
+            {
                 <br>
                 <br>
                 @if (Model.ApprovalStatus == PrnStatus.AwaitingAcceptance)
                 {
                     <div class="govuk-button-group">
                         @Html.ActionLink(Localizer[(Model.IsPrn ? "accept_this_prn" : "accept_this_pern")].Value, nameof(PrnsAcceptController.AcceptSinglePrn), "PrnsAccept",
-                             new
-                             {
-                                 @id = Model.ExternalId
-                             },
-                             new
-                             {
-                                 @class = "govuk-button"
-                             })
+                                 new
+                                 {
+                                     @id = Model.ExternalId
+                                 },
+                                 new
+                                 {
+                                     @class = "govuk-button"
+                                 })
 
                         @Html.ActionLink(Localizer[(Model.IsPrn ? "reject_this_prn" : "reject_this_pern")].Value, nameof(PrnsRejectController.RejectSinglePrn), "PrnsReject",
-                             new
-                             {
-                                 @id = Model.ExternalId
-                             },
-                             new
-                             {
-                                 @class = "govuk-button govuk-button--secondary"
-                             })
+                                 new
+                                 {
+                                     @id = Model.ExternalId
+                                 },
+                                 new
+                                 {
+                                     @class = "govuk-button govuk-button--secondary"
+                                 })
                     </div>
                 }
-                <p class="govuk-body">
-                    @Html.ActionLink(Localizer[(Model.IsPrn ? "download_this_prn" : "download_this_pern")].Value, null, null, null,
-                        new
-                        {
-                            @class = "govuk-link govuk-link--no-visited-state",
-                            @href = "#"
-                        })
-                </p>
 
+                <p class="govuk-body">
+                    <button id="downloadPDFButton" class="govuk-body govuk-link">
+                        @downloadText
+                    </button>
+                </p>
+            }
         </div>
     </div>
 </main>
+@section Scripts {
+    <script src="~/js/html2pdf-0.9.3.min.js"></script>
+    <script src="~/js/download-pdf.js"></script>
+}

@@ -118,24 +118,27 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="reject_this_prn" xml:space="preserve">
-    <value>[Welsh]Reject this PRN?</value>
+    <value>Gwrthod y PRN yma?</value>
   </data>
   <data name="reject_this_pern" xml:space="preserve">
-    <value>[Welsh]Reject this PERN?</value>
+    <value>Gwrthod y PERN yma?</value>
   </data>
   <data name="this_is_permanent_and_cannot_be_undone" xml:space="preserve">
-    <value>[Welsh]This is permanent and cannot be undone.</value>
+    <value>Mae hyn yn barhaol a does dim modd ei ddad-wneud.</value>
   </data>
   <data name="yes_reject" xml:space="preserve">
-    <value>[Welsh]Yes, reject</value>
+    <value>Ie, gwrthod</value>
   </data>
   <data name="no_go_back" xml:space="preserve">
-    <value>[Welsh]No, go back</value>
+    <value>Nage, mynd yn ôl</value>
   </data>
   <data name="page_title_pern" xml:space="preserve">
-    <value>[Welsh]Reject this PERN</value>
+    <value>Gwrthod y PERN yma</value>
   </data>
   <data name="page_title_prn" xml:space="preserve">
-    <value>[Welsh]Reject this PRN</value>
+    <value>Gwrthod y PRN yma</value>
+  </data>
+  <data name="tonnage_in_words" xml:space="preserve">
+	  <value>Tunelli mewn geiriau</value>
   </data>
 </root>

@@ -1,21 +1,73 @@
 ﻿@using FrontendSchemeRegistration.UI.ViewModels.Prns
+@using FrontendSchemeRegistration.Application.Enums
 @model PrnObligationViewModel
 @{
     var pageTitle = Localizer["manage_your_recycling_obligations", Model.CurrentYear];
     ViewData["Title"] = pageTitle;
 }
-<div class="govuk-width-container ">
-    <a href="/report-data" class="govuk-back-link">@Localizer["home"]<span class="govuk-visually-hidden">@Localizer["epr_for_packaging_data_homepage"]</span></a>
-    <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-two-thirds">
-                @await Html.PartialAsync("Partials/Prns/_obligationsHeader", Model)
+
+<main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-l govuk-!-margin-bottom-5" aria-labelledby="@Localizer["manage_your_recycling_obligations", Model.CurrentYear]">
+            @Localizer["manage_your_recycling_obligations", Model.CurrentYear]
+            </h1>
+            
+            @await Html.PartialAsync("Partials/Prns/_obligationsHeader", Model)
+            <p class="govuk-body">@Localizer["you_have_until"] <strong>@Localizer["january"] @Model.DeadlineYear</strong> @Localizer["to_meet_your_recycling_obligations_for"] @Model.CurrentYear.</p>
+            
+            <div class="govuk-warning-text">
+                <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                <strong class="govuk-warning-text__text">
+                    <span class="govuk-visually-hidden">Warning</span>
+                    @Localizer["enforcement_action_warning"]
+                </strong>
             </div>
+
         </div>
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-one-half">
-                @await Html.PartialAsync("Partials/Prns/_reviewPRNsAndPERNs")
-            </div>
+    </div>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-half">
+            @await Html.PartialAsync("Partials/Prns/_numberOfPrns")
         </div>
-    </main>
-</div>
+    </div>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h2 class="govuk-heading-l">@Localizer["how_to_meet_your_recycling_obligations"]</h2>
+            @if (Model.OverallStatus == ObligationStatus.NoDataYet)
+            {
+                <p class="govuk-body">@Localizer["your_recycling_obligations_will_be"]</p>
+                <ul class="govuk-list govuk-list--bullet">
+                    <li>@Localizer["you_submit_your_packaging_data_for", Model.CurrentYear]</li>
+                    <li>@Localizer["the_regulator_accepts_your_data_submissions"]</li>
+                </ul>
+                <p class="govuk-body">@Localizer["you_can_start_acquiring_and_accepting"]</p>
+            }
+            else
+            {
+                <p class="govuk-body">@Localizer["acquire_and_accept_advisory_text", Model.CurrentYear]</p>
+            }
+            @await Html.PartialAsync("Partials/Prns/_prnMaterialTable",
+                new PrnMaterialObligationTableViewModel
+                {
+                    TableCaption = "your_recycling_obligations_progress",
+                    ShowMaterialsAsHyperlink = true,
+                    PrnMaterialObligationViewModels = Model.MaterialObligationViewModels
+                })
+            <h3 class="govuk-heading-m">@Localizer["how_to_meet_the_glass_recycling_obligation"]</h3>
+            <p class="govuk-body">@Localizer["how_to_meet_the_glass_recycling_obligation_description", Model.GlassMaterialObligationViewModels[0].MaterialTargetPercentage]</p>
+            @await Html.PartialAsync("Partials/Prns/_prnMaterialTable",
+                new PrnMaterialObligationTableViewModel
+                {
+                    TableCaption = "glass_recycling_obligation_breakdown",
+                    ShowMaterialsAsHyperlink = true,
+                    PrnMaterialObligationViewModels = Model.GlassMaterialObligationViewModels
+                })
+        </div>
+    </div>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-half">
+            @await Html.PartialAsync("Partials/Prns/_reviewPRNsAndPERNs")
+        </div>
+    </div>
+</main>

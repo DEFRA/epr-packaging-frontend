@@ -15,11 +15,12 @@
                     @await Html.PartialAsync("Partials/Govuk/_ErrorsViewModelSummary", errorsViewModel)
                 }
 
-                <form action="@($"/report-data{PagePaths.ConfirmSubsidiaryRemoval}")" method="post">
+                <form action="@($"/report-data{PagePaths.ConfirmSubsidiaryRemoval}/{Model.SubsidiaryReference}?ParentOrganisationExternalId={Model.ParentOrganisationExternalId}")" method="post">
 
                     @Html.AntiForgeryToken()
                     @Html.HiddenFor(_ => _.SubsidiaryExternalId)
                     @Html.HiddenFor(_ => _.ParentOrganisationExternalId)
+                    @Html.HiddenFor(_ => _.SubsidiaryReference)
                     @Html.HiddenFor(_ => _.SubsidiaryName)
 
                     <div class="govuk-form-group@(!ViewData.ModelState.IsValid ? " govuk-form-group--error" : "")">

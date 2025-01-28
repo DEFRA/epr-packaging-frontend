@@ -1,3 +1,4 @@
+@using FrontendSchemeRegistration.UI.Constants
 @model FileUploadCheckFileAndSubmitViewModel
 
 @{
@@ -12,6 +13,7 @@
     var uploadedBy = Localizer["uploaded_by"];
     var dateAndTimeSubmittedSubmitted = Localizer["date_and_time_submitted"];
     var submittedBy = Localizer["submitted_by"];
+    var download = Localizer["download"];
 }
 
 @await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
@@ -67,6 +69,10 @@
                             <th scope="col" class="govuk-table__header">@fileName</th>
                             <th scope="col" class="govuk-table__header">@dateAndTimeUploaded</th>
                             <th scope="col" class="govuk-table__header">@uploadedBy</th>
+                            <feature name="@FeatureFlags.EnableCsvDownload">
+                                    <td class="govuk-table__header no-wrap-text"></td>
+                                    
+                            </feature>
                         </tr>
                         </thead>
                         <tbody class="govuk-table__body">
@@ -74,6 +80,19 @@
                             <td data-heading="@fileName" class="govuk-table__cell break-word">@Model.LastValidFileName</td>
                             <td data-heading="@dateAndTimeUploaded" class="govuk-table__cell break-word">@Model.LastValidFileUploadDateTime.Value.ToReadableDateTime()</td>
                             <td data-heading="@uploadedBy" class="govuk-table__cell break-word">@Model.LastValidFileUploadedBy</td>
+                            <feature name="@FeatureFlags.EnableCsvDownload">
+                                    <td data-heading="@download" class="govuk-table__cell no-wrap-text">
+                                    @Html.ActionLink(
+                                        download.Value,
+                                        "Get",
+                                        "FileDownloadPackaging",
+                                        new { SubmissionId = Model.SubmissionId },
+                                        new
+                                        {
+                                            @class = "govuk-link--no-visited-state download-button"
+                                        })
+                                </td>
+                            </feature>
                         </tr>
                         </tbody>
                     </table>
@@ -95,6 +114,9 @@
                                 <th scope="col" class="govuk-table__header">@fileName</th>
                                 <th scope="col" class="govuk-table__header">@dateAndTimeSubmittedSubmitted</th>
                                 <th scope="col" class="govuk-table__header">@submittedBy</th>
+                                <feature name="@FeatureFlags.EnableCsvDownload">
+                                        <td class="govuk-table__header no-wrap-text"></td>
+                                </feature>
                             </tr>
                             </thead>
                             <tbody class="govuk-table__body">
@@ -102,6 +124,19 @@
                                 <td data-heading="@fileName" class="govuk-table__cell break-word">@Model.SubmittedFileName</td>
                                 <td data-heading="@dateAndTimeSubmittedSubmitted" class="govuk-table__cell break-word">@Model.SubmittedDateTime.Value.ToReadableDateTime()</td>
                                 <td data-heading="@submittedBy" class="govuk-table__cell break-word">@Model.SubmittedBy</td>
+                                <feature name="@FeatureFlags.EnableCsvDownload">
+                                        <td data-heading="@download" class="govuk-table__cell no-wrap-text">
+                                        @Html.ActionLink(
+                                            download.Value,
+                                            "Get",
+                                            "FileDownloadCompanyDetails",
+                                            new { SubmissionId = Model.SubmissionId },
+                                            new
+                                            {
+                                                @class = "govuk-link--no-visited-state download-button"
+                                            })
+                                    </td>
+                                </feature>
                             </tr>
                             </tbody>
                         </table>

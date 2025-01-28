@@ -1,0 +1,29 @@
+﻿
+@using FrontendSchemeRegistration.UI.ViewModels.Prns;
+@using System;
+@model PrnObligationViewModel
+
+@{
+    var materialResourceName = ViewData["GlassOrNonGlassResource"].ToString();
+    var materialName = Localizer[materialResourceName].Value;
+
+    var materialTarget = (Model.MaterialObligationViewModels.First().MaterialTarget * 100).ToString("F0");
+    var tonnage = Model.MaterialObligationViewModels.First().Tonnage.ToString("N0", Thread.CurrentThread.CurrentCulture);
+    var total = Convert.ToDouble(Model.MaterialObligationViewModels.First().ObligationToMeet).ToString("N0", Thread.CurrentThread.CurrentCulture);
+}
+
+@{
+    @if (Model.MaterialObligationViewModels.First().Tonnage > 0)
+    {
+        <h2 class="govuk-heading-m">@Localizer["how_we_calculated_your_recycling_obligation"]</h2>
+        <p class="govuk-body">@Localizer["page_header", Model.CurrentYear, materialName]</p>
+
+        <p class="govuk-body"><strong>@Localizer["obligation_formula"]</strong></p>
+
+        <p class="govuk-body"><strong>@Localizer["firstParam_formaula"]</strong>@Localizer["firstParam_formaula_definition", tonnage, materialName]</p>
+
+        <p class="govuk-body"><strong>@Localizer["secondParam_formaula"]</strong>@Localizer["secondParam_formaula_definition", materialTarget, materialName, Model.CurrentYear]</p>
+
+        <p class="govuk-body">@Localizer["param_summary", materialName, tonnage, materialTarget, total]</p>
+    }
+}

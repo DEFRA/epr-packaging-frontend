@@ -42,6 +42,14 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
 
         public string RecyclingProcess { get; set; }
 
+        // Unreliable, actually the cancellation date. Needs work in backend to make reliable
+        public DateTime? StatusUpdatedOn { get; set; }
+
+        public int ObligationYear {get; set; }
+
+        // Use because StatusUpdatedOn cannot be relied on
+        public DateTime LastUpdatedDate { get; set; }
+
         // Refer to Resources/Views/Shared/Partials/Prns/_recyclingNoteDetails.en.resx and _recyclingNoteDetails.cy.resx
         public string ApprovalStatusExplanationTranslation
         {
@@ -84,13 +92,10 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
                 NameOfProducerOrComplianceScheme = prn.OrganisationName,
                 Position = prn.PrnSignatoryPosition ?? string.Empty,
                 RecyclingProcess = prn.ProcessToBeUsed ?? string.Empty,
+                StatusUpdatedOn = prn.StatusUpdatedOn,
+                ObligationYear = int.TryParse(prn.ObligationYear, out int oYear) ? oYear : 0,
+                LastUpdatedDate = prn.LastUpdatedDate
             };
-        }
-
-        public bool DecemberWasteRulesApply(DateTime now)
-        {
-            return IsDecemberWaste
-                && (IssueYear == now.Year || (IssueYear == now.Year - 1 && now.Month == 1));
         }
     }
 }

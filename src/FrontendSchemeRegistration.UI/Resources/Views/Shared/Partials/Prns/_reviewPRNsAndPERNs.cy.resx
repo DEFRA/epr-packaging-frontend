@@ -99,21 +99,21 @@
 		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
 	</resheader>
 	<data name="review_your_prns_and_perns" xml:space="preserve">
-	  <value>[W]Review your PRNs and PERNs</value>
+		<value>Adolygu'ch PRNs a'ch PERNs</value>
 	</data>
 	<data name="view_and_accept_prns_and_perns" xml:space="preserve">
-	  <value>[W]View and accept any issued PRNs and PERNs to meet your recycling obligations.</value>
+		<value>Gweld a derbyn unrhyw PRNs a PERNs sydd wedi'u rhoi er mwyn cyflawni'ch rhwymedigaethau ailgylchu.</value>
 	</data>
 	<data name="what_to_do_next" xml:space="preserve">
-		<value>[W]What to do next</value>
+		<value>Beth i'w wneud nesaf</value>
 	</data>
 	<data name="accept_or_reject_prns_and_perns" xml:space="preserve">
-	  <value>[W]Accept or reject PRNs and PERNs</value>
+	  <value>Derbyn neu wrthod PRNs a PERNs</value>
 	</data>
 	<data name="search_prns_and_perns" xml:space="preserve">
-	  <value>[W]Search PRNs and PERNs</value>
+	  <value>Chwilio PRNs a PERNs</value>
 	</data>
 	<data name="download_all_prns_and_perns" xml:space="preserve">
-	  <value>[W]Download a list of all PRNs and PERNs (CSV)</value>
+	  <value>Lawrlwytho rhestr o'r holl PRNs a PERNs</value>
 	</data>
 </root>

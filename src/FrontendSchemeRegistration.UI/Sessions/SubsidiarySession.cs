@@ -12,4 +12,6 @@ public class SubsidiarySession
     public List<string> Journey { get; set; } = new();
 
     public Nation? UkNation { get; set; }
+    
+    public int? ReturnToSubsidiaryPage { get; set; }
 }

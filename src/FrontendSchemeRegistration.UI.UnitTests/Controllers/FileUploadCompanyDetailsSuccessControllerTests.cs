@@ -30,7 +30,7 @@ public class FileUploadCompanyDetailsSuccessControllerTests
     {
         _urlHelperMock = new Mock<IUrlHelper>();
         _urlHelperMock.Setup(url => url.Action(It.Is<UrlActionContext>(uac => uac.Action == "Get")))
-            .Returns(PagePaths.FileUploadingCompanyDetails);
+            .Returns(PagePaths.UploadingOrganisationDetails);
         _urlHelperMock.Setup(x => x.Content(It.IsAny<string>())).Returns((string contentPath) => contentPath);
         _submissionServiceMock = new Mock<ISubmissionService>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
@@ -197,7 +197,7 @@ public class FileUploadCompanyDetailsSuccessControllerTests
         result.ViewName.Should().Be("FileUploadCompanyDetailsSuccess");
         result.ViewData.Keys.Should().HaveCount(1);
         result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
-        result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.FileUploadingCompanyDetails}");
+        result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.UploadingOrganisationDetails}");
         result.Model.Should().BeEquivalentTo(new FileUploadCompanyDetailsSuccessViewModel
         {
             FileName = fileName,
@@ -248,7 +248,7 @@ public class FileUploadCompanyDetailsSuccessControllerTests
         result.ViewName.Should().Be("FileUploadCompanyDetailsSuccess");
         result.ViewData.Keys.Should().HaveCount(1);
         result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
-        result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.FileUploadingCompanyDetails}");
+        result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.UploadingOrganisationDetails}");
         result.Model.Should().BeEquivalentTo(new FileUploadCompanyDetailsSuccessViewModel
         {
             FileName = fileName,

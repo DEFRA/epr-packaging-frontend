@@ -3,14 +3,12 @@ using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
-using FrontendSchemeRegistration.UI.Enums;
 using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
 using FrontendSchemeRegistration.UI.ViewModels.NominatedApprovedPerson;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 
 namespace FrontendSchemeRegistration.UI.Controllers
 {
@@ -226,7 +224,8 @@ namespace FrontendSchemeRegistration.UI.Controllers
                 TelephoneNumber = session.NominatedApprovedPersonSession.TelephoneNumber,
                 RoleInOrganisation = session.NominatedApprovedPersonSession.RoleInOrganisation,
                 RoleChangeUrl = roleChangeUrl,
-                TelephoneChangeUrl = $"{_globalVariables.BasePath}{PagePaths.TelephoneNumberAP}/{id}"
+                TelephoneChangeUrl = $"{_globalVariables.BasePath}{PagePaths.TelephoneNumberAP}/{id}",
+                IsInCompanyHouse = isInCompaniesHouse
             };
             var currentPagePath = $"{PagePaths.ConfirmDetailsAP}/{id}";
             var nextPagePath = $"{PagePaths.DeclarationWithFullNameAP}/{id}";

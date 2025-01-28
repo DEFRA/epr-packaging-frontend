@@ -118,54 +118,87 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="accept_selected_prns_and_perns" xml:space="preserve">
-    <value>[Welsh]Accept selected {0} and {1}?</value>
+	  <value>Ydych chi'n derbyn {0} a {1} dethol?</value>
   </data>
   <data name="accept_selected" xml:space="preserve">
-    <value>[Welsh]Accept selected {0}?</value>
+	  <value>Derbyn {0} dewisedig?</value>
   </data>
   <data name="accepting_them_will_credit_the_tonnage_towards_your_obligation" xml:space="preserve">
-    <value>[Welsh]Accepting them will credit the tonnage towards your obligation</value>
+	  <value>Bydd eu derbyn nhw yn credydu'r tunelli tuag at eich rhwymedigaethau ailgylchu.</value>
   </data>
   <data name="accepting_it_will_credit_the_tonnage_towards_your_obligation" xml:space="preserve">
-    <value>[Welsh]Accepting it will credit the tonnage towards your obligation</value>
+	  <value>Bydd derbyn hyn yn credydu'r tunelli tuag at eich rhwymedigaeth ailgylchu</value>
   </data>
   <data name="you_selected_n_material_prn_and_perns" xml:space="preserve">
-    <value>[Welsh]You selected {0} {1} PRNs and PERNs</value>
+	  <value>Fe wnaethoch chi ddewis {0} {1} PRNs a PERNs</value>
   </data>
   <data name="you_selected_n_material" xml:space="preserve">
-    <value>[Welsh]You selected {0} {1} {2}</value>
+	  <value>Rydych chi wedi dewis {0} {1} {2}</value>
   </data>
   <data name="prn_or_pern_number" xml:space="preserve">
-    <value>[Welsh]PRN or PERN number</value>
+    <value>Rhif PRN neu PERN</value>
   </data>
   <data name="date_issued" xml:space="preserve">
-    <value>[Welsh]Date issued</value>
+    <value>Dyddiad rhoi</value>
   </data>
   <data name="issued_by" xml:space="preserve">
-    <value>[Welsh]Issued by</value>
+    <value>Wedi'i roi gan</value>
   </data>
   <data name="tonnage" xml:space="preserve">
-    <value>[Welsh]Tonnage</value>
+    <value>Tunelli</value>
   </data>
   <data name="remove" xml:space="preserve">
-    <value>[Welsh]Remove</value>
+	  <value>Dileu</value>
   </data>
   <data name="yes_accept" xml:space="preserve">
-    <value>[Welsh]Yes, accept</value>
+    <value>Ie, derbyn</value>
   </data>
   <data name="no_go_back" xml:space="preserve">
-    <value>[Welsh]No, go back</value>
+    <value>Nage, mynd yn ôl</value>
   </data>
   <data name="accept_or_reject_prns_perns" xml:space="preserve">
-    <value>Accept or reject PRNs and PERNs -cy</value>
+	  <value>Derbyn neu wrthod PRNs a PERNs</value>
   </data>
   <data name="you_have_removed_prn_number" xml:space="preserve">
-    <value>You've removed {0} number {1} -cy</value>
+	  <value>Rydych chi wedi tynnu'{0} rhif {1}</value>
   </data>
   <data name="you_have_remove_all_mix_selected_notes" xml:space="preserve">
-    <value>You’ve removed all the selected {0} and {1} -cy</value>
+	  <value>Rydych chi wedi cael gwared ar yr holl {0} a {1} a ddewiswyd</value>
   </data>
   <data name="you_have_remove_only_selected_notes" xml:space="preserve">
-    <value>You’ve removed all the selected {0} -cy</value>
+	  <value>Rydych chi wedi dileu'r holl {0} a ddewiswyd</value>
+  </data>
+  <data name="review_your_selection" xml:space="preserve">
+	  <value>Adolygwch eich dewis cyn derbyn</value>
+  </data>
+  <data name="remove_from_selection" xml:space="preserve">
+	  <value>Tynnu o'r dewis</value>
+  </data>
+  <data name="prn_number" xml:space="preserve">
+	  <value>Rhif PRN</value>
+  </data>
+  <data name="pern_number" xml:space="preserve">
+	  <value>Rhif PERN</value>
+  </data>
+  <data name="prn_and_pern_number" xml:space="preserve">
+	  <value>Rhif PRN a PERN</value>
+  </data>
+  <data name="remove_pern_from_selection" xml:space="preserve">
+	  <value>Tynnu PERN o ddewis</value>
+  </data>
+  <data name="remove_prn_from_selection" xml:space="preserve">
+	  <value>Tynnu PRN o ddewis</value>
+  </data>
+  <data name="remove_prn_or_pern_from_selection" xml:space="preserve">
+	  <value>Tynnwch PRN neu PERN o ddethol</value>
+  </data>
+  <data name="page_title" xml:space="preserve">
+	  <value>Derbyn neu wrthod PRNs a PERNs</value>
+  </data>
+  <data name="now_accept" xml:space="preserve">
+	  <value>Nawr derbyn</value>
+  </data>
+  <data name="accept" xml:space="preserve">
+	  <value>Derbyn</value>
   </data>
 </root>

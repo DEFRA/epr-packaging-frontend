@@ -174,13 +174,22 @@
   <data name="subsidiary_remove" xml:space="preserve">
     <value>Remove</value>
   </data>
-  <data name="no_subsidiaries_msg" xml:space="preserve">
-    <value>No subsidiaries added for this organisation. To add subsidiaries, upload a CSV file</value>
-  </data>
   <data name="how_to_complete_file" xml:space="preserve">
     <value>How to complete a file (opens in new tab)</value>
   </data>
+  <data name="no_subsidiaries_msg" xml:space="preserve">
+    <value>No subsidiaries added for this organisation. To add subsidiaries, upload a CSV file</value>
+  </data>
   <data name="return_to_account_home" xml:space="preserve">
     <value>Account home</value>
+  </data>
+  <data name="you_have_not_added_any_subsidiaries" xml:space="preserve">
+    <value>You have not added any subsidiaries.</value>
+  </data>
+  <data name="you_have_not_added_any_subsidiaries_for_your_members" xml:space="preserve">
+    <value>You have not added any subsidiaries for your members</value>
+  </data>
+  <data name="subsidiaries_will_appear" xml:space="preserve">
+    <value>Subsidiaries will appear here after they have been processed.</value>
   </data>
 </root>

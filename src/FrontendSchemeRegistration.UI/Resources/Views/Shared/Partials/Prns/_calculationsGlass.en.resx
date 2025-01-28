@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="total_glass_obligation" xml:space="preserve">
+    <value>Total glass obligation</value>
+  </data>
+  <data name="we_applied_this_formula_to_calculate_your_total_glass_obligation" xml:space="preserve">
+    <value>We applied this formula to calculate your total glass obligation</value>
+  </data>
+	<data name="is_n_tonnes_the_total_glass_you_reported_to_the_nearest_tonne" xml:space="preserve">
+		<value>is {0} tonnes (the total glass material you reported for 2024 to the nearest tonne)</value>
+	</data>
+  <data name="is_n_percent_recycling_target_for_glass_set_by_the_yyyy_regulations" xml:space="preserve">
+    <value>is {0}% (recycling target for glass set by the {1} regulations)</value>
+  </data>
+  <data name="your_total_glass_recycling_obligation_z_is" xml:space="preserve">
+    <value>Your total glass recycling obligation (Z) is</value>
+  </data>
+  <data name="tonnes" xml:space="preserve">
+    <value>tonnes</value>
+  </data>
+  <data name="glass_remelt_obligation" xml:space="preserve">
+    <value>Glass re-melt obligation</value>
+  </data>
+  <data name="your_glass_remelt_obligation_is_part_of_your_total_yyyy_glass_obligation" xml:space="preserve">
+    <value>Your glass re-melt obligation is part of your total glass obligation. It is always rounded up to the nearest tonne. We used the formula set out in the {0} regulations to calculate it</value>
+  </data>
+	<data name="is_n_percent_the_percentage_recycling_target_for_glass_remelt" xml:space="preserve">
+		<value>is {0}% (recycling target for glass re-melt set by the 2024 regulations)</value>
+	</data>
+  <data name="your_glass_remelt_obligation" xml:space="preserve">
+    <value>Your glass re-melt obligation</value>
+  </data>
+  <data name="is" xml:space="preserve">
+    <value>is</value>
+  </data>
+  <data name="remaining_glass_obligation" xml:space="preserve">
+    <value>Remaining glass obligation</value>
+  </data>
+  <data name="to_determine_your_remaining_glass_obligation" xml:space="preserve">
+    <value>To determine your remaining glass obligation, we subtract the glass re-melt obligation from your total obligation.</value>
+  </data>
+  <data name="your_remaining_glass_obligation_is" xml:space="preserve">
+    <value>Your remaining glass obligation is</value>
+  </data>
+	<data name="how_we_calculated_your_recycling_obligation" xml:space="preserve">
+		<value>How we calculated your recycling obligation</value>
+	</data>
+</root>

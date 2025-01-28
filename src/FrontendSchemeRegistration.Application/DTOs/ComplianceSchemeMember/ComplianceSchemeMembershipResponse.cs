@@ -12,5 +12,7 @@ namespace FrontendSchemeRegistration.Application.DTOs.ComplianceSchemeMember
         public DateTimeOffset? LastUpdated { get; set; }
 
         public int LinkedOrganisationCount { get; set; }
+
+        public int SubsidiariesCount { get; set; }
     }
 }

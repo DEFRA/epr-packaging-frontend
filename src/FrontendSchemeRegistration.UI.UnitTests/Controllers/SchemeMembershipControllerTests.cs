@@ -102,7 +102,7 @@ public class SchemeMembershipControllerTests
             .ReturnsAsync(Mock.Of<FrontendSchemeRegistrationSession>());
         _complianceSchemeMemberService
             .Setup(x => x.GetComplianceSchemeMembers(
-                It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
+                It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>()))
             .ReturnsAsync((ComplianceSchemeMembershipResponse)null);
 
         var result = await _systemUnderTest.SchemeMembers(It.IsAny<Guid>(), string.Empty, 1) as RedirectToActionResult;
@@ -122,7 +122,7 @@ public class SchemeMembershipControllerTests
 
         _complianceSchemeMemberService
             .Setup(x => x.GetComplianceSchemeMembers(
-                It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
+                It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>()))
             .ReturnsAsync(complianceSchemeMembershipResponse);
 
         var result = await _systemUnderTest.SchemeMembers(It.IsAny<Guid>(), string.Empty, 1) as RedirectToActionResult;
@@ -151,7 +151,7 @@ public class SchemeMembershipControllerTests
 
         _complianceSchemeMemberService
             .Setup(x => x.GetComplianceSchemeMembers(
-                It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
+                It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>()))
             .ReturnsAsync(complianceSchemeMembershipResponse);
 
         // Act
@@ -234,7 +234,7 @@ public class SchemeMembershipControllerTests
 
         _complianceSchemeMemberService
             .Setup(x => x.GetComplianceSchemeMembers(
-                It.IsAny<Guid>(), id, It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
+                It.IsAny<Guid>(), id, It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>()))
             .ReturnsAsync(complianceSchemeMembershipResponse);
 
         var result = await _systemUnderTest.SchemeMembers(id, searchString, 1) as ViewResult;
@@ -279,7 +279,7 @@ public class SchemeMembershipControllerTests
 
         _complianceSchemeMemberService
             .Setup(x => x.GetComplianceSchemeMembers(
-                It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
+                It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>()))
             .ReturnsAsync(complianceSchemeMembershipResponse);
 
         var result = await _systemUnderTest.SchemeMembers(Guid.NewGuid(), page: totalPages + 1) as RedirectToActionResult;
@@ -315,7 +315,7 @@ public class SchemeMembershipControllerTests
 
         _complianceSchemeMemberService
             .Setup(x => x.GetComplianceSchemeMembers(
-                It.IsAny<Guid>(), id, It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
+                It.IsAny<Guid>(), id, It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>()))
             .ReturnsAsync(complianceSchemeMembershipResponse);
 
         // Act
@@ -1125,7 +1125,7 @@ public class SchemeMembershipControllerTests
 
         _complianceSchemeMemberService
             .Setup(x => x.GetComplianceSchemeMembers(
-                It.IsAny<Guid>(), id, It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
+                It.IsAny<Guid>(), id, It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>()))
             .ReturnsAsync(complianceSchemeMembershipResponse);
 
         // Act

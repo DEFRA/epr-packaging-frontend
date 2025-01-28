@@ -118,12 +118,49 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="epr_for_packaging_data_homepage" xml:space="preserve">
-    <value>[W]EPR for packaging data homepage</value>
+    <value>EPR ar gyfer deunydd pacio hafan data</value>
   </data>
   <data name="home" xml:space="preserve">
-    <value>[W]Home</value>
+    <value>Cartref</value>
+  </data>
+  <data name="how_to_meet_the_glass_recycling_obligation" xml:space="preserve">
+    <value>Sut i gyflawni'r rhwymedigaeth ailgylchu gwydr</value>
+  </data>
+  <data name="how_to_meet_the_glass_recycling_obligation_description" xml:space="preserve">
+    <value>Rhaid i {0}% o leiaf o'ch rhwymedigaeth ailgylchu gwydr fod yn PRNs neu PERNs gwydr aildoddi. Bydd hyn yn ffurfio cyfran o gyfanswm eich rhwymedigaeth ailgylchu gwydr. Gall gweddill y rhwymedigaeth ailgylchu gwydr gael ei gyflawni ar ffurf gwydr aildoddi, gwydr arall neu gymysgedd o'r ddau.</value>
+  </data>
+  <data name="how_to_meet_your_recycling_obligations" xml:space="preserve">
+    <value>Sut i gyflawni'ch rhwymedigaethau ailgylchu</value>
   </data>
   <data name="manage_your_recycling_obligations" xml:space="preserve">
-    <value>[W]Manage your {0} recycling obligations</value>
+    <value>Rheoli'ch rhwymedigaethau ailgylchu ar gyfer {0}</value>
+  </data>
+  <data name="the_regulator_accepts_your_data_submissions" xml:space="preserve">
+    <value>ar ôl i'r rheoleiddiwr dderbyn eich cyflwyniadau data </value>
+  </data>
+  <data name="your_recycling_obligations_will_be" xml:space="preserve">
+    <value>Bydd eich rhwymedigaethau ailgylchu yn cael eu cyfrifo:</value>
+  </data>
+  <data name="you_can_start_acquiring_and_accepting" xml:space="preserve">
+    <value>Gallwch chi ddechrau sicrhau a derbyn PRNs a PERNs i gyflawni'ch rhwymedigaethau ailgylchu.</value>
+  </data>
+  <data name="you_submit_your_packaging_data_for" xml:space="preserve">
+    <value>ar ôl ichi gyflwyno'ch data pecynwaith ar gyfer {0}</value>
+  </data>
+  <data name="to_meet_your_recycling_obligations_for" xml:space="preserve">
+    <value>i gyflawni'ch rhwymedigaethau ailgylchu ar gyfer </value>
+  </data>
+  <data name="you_have_until" xml:space="preserve">
+    <value>Mae gennych chi tan</value>
+  </data>
+  <data name="enforcement_action_warning" xml:space="preserve">
+    <value>Os collwch chi'r dyddiad cau yma, fe allech chi wynebu camau gorfodi.
+Nifer y PRNs a'r PERNs sy'n aros i gael eu derbyn</value>
+  </data>
+  <data name="january" xml:space="preserve">
+    <value>31 Ionawr</value>
+  </data>
+    <data name="acquire_and_accept_advisory_text" xml:space="preserve">
+    <value>Ewch ati i sicrhau a derbyn PRNs a PERNs nes bod eich rhwymedigaethau ailgylchu wedi'u cyflawni'n llwyr. Dewiswch ddeunydd ar gyfer gwybodaeth am sut cafodd y data ei gasglu ac i weld eich cynnydd tuag at gyflawni'ch rhwymedigaethau ailgylchu ar gyfer {0}.</value>
   </data>
 </root>

@@ -50,7 +50,15 @@ public static class FileHelpers
         if (memoryStream.Length >= fileUploadSize.FileUploadLimitInBytes)
         {
             var fileUploadLimit = fileUploadSize.FileUploadLimitInBytes;
-            var sizeLimit = fileUploadLimit >= OneMB ? fileUploadLimit / OneMB : (fileUploadLimit >= OneKB ? fileUploadLimit /OneKB : fileUploadLimit);
+
+            int sizeLimit;
+            if (fileUploadLimit >= OneMB)
+                sizeLimit = fileUploadLimit / OneMB;
+            else if (fileUploadLimit >= OneKB)
+                sizeLimit = fileUploadLimit / OneKB;
+            else
+                sizeLimit = fileUploadLimit;
+
             modelState.AddModelError(uploadFieldName, string.Format(fileUploadMessages.TheSelectedFileMustBeSmallerThan, sizeLimit));
 
             return Array.Empty<byte>();

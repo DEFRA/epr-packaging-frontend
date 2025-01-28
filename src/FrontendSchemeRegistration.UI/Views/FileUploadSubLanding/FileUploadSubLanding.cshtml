@@ -99,12 +99,31 @@
                                     <div class="govuk-card-headers">
                                         @if (Model.IsComplianceScheme)
                                         {
-                                            <h3 class="govuk-heading-m govuk-!-margin-bottom-0">@Localizer["report_members_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear</h3>
-                                            <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["large_organisations"]</h3>
+                                            if (submissionPeriodDetail.DataPeriod.Contains("January to June 2024"))
+                                            {
+                                                <h3 class="govuk-heading-m govuk-!-margin-bottom-0">@Localizer["report_members_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) </h3>
+
+                                            }
+                                            else if (submissionPeriodDetail.DatePeriodYear.Contains("2023"))
+                                            {
+                                                <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear </h3>
+                                            }
+                                            else
+                                            {
+                                                <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) @Localizer["or"] @Localizer["January_to_December"] @submissionPeriodDetail.DatePeriodYear (@Localizer["small_producers_sentence_text"]) </h3>
+                                            }
+                                        }
+                                        else if (submissionPeriodDetail.DataPeriod.Contains("January to June 2024"))
+                                        {
+                                            <h3 class="govuk-heading-m govuk-!-margin-bottom-0">@Localizer["report_members_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) </h3>                                           
+                                        }
+                                        else if (submissionPeriodDetail.DatePeriodYear.Contains("2023"))
+                                        {
+                                            <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear </h3>
                                         }
                                         else
                                         {
-                                            <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear</h3>
+                                            <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) @Localizer["or"] @Localizer["January_to_December"] @submissionPeriodDetail.DatePeriodYear (@Localizer["small_producers_sentence_text"]) </h3>
                                         }
                                     </div>
                                     <feature name="ShowPoMResubmission">
@@ -133,7 +152,7 @@
                                                     @if (Model.ServiceRole is "Basic User")
                                                     {
                                                         <div class="govuk-card-footer">
-                                                            <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["update_packaging_data_basic"]</button>
+                                                            <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.">@Localizer["update_packaging_data_basic"]</button>
                                                         </div>
                                                     }
                                                     else

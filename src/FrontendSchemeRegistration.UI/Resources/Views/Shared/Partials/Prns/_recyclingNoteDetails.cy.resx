@@ -13,36 +13,39 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="date_issued" xml:space="preserve">
-    <value>[Welsh]Date issued</value>
+    <value>Dyddiad rhoi</value>
   </data>
   <data name="material" xml:space="preserve">
-    <value>[Welsh]Material</value>
+    <value>Deunydd</value>
   </data>
-	<data name="note" xml:space="preserve">
-		<value>[Welsh]Issuer note</value>
-	</data>
+  <data name="note" xml:space="preserve">
+    <value>Nodyn rhoddwr</value>
+  </data>
   <data name="packaging_producer_or_compliance_scheme" xml:space="preserve">
-    <value>[Welsh]Packaging producer or compliance scheme</value>
+    <value>Cynhyrchydd y pecynwaith neu'r cynllun cydymffurfio</value>
   </data>
   <data name="pern_details" xml:space="preserve">
-    <value>[Welsh]PERN details</value>
+    <value>Manylion y PERN</value>
   </data>
   <data name="prn_details" xml:space="preserve">
-    <value>[Welsh]PRN details</value>
+    <value>Manylion y PRN</value>
   </data>
-	<data name="relates_to_waste_received_in_december" xml:space="preserve">
-		<value>[Welsh]December waste?</value>
-	</data>
-  <data name="relates_to_waste_received_in_december_yes" xml:space="preserve">
-    <value>[Welsh]Yes, can count towards {0} or {1} obligation</value>
-  </data>
-  <data name="relates_to_waste_received_in_december_no" xml:space="preserve">
-    <value>[Welsh]No</value>
+  <data name="relates_to_waste_received_in_december" xml:space="preserve">
+    <value>Gwastraff Rhagfyr?</value>
   </data>
   <data name="tonnage" xml:space="preserve">
-    <value>[Welsh]Tonnage</value>
+    <value>Tunelli</value>
   </data>
   <data name="recycling_process" xml:space="preserve">
-    <value>[Welsh]Recycling process</value>
+    <value>Proses ailgylchu</value>
+  </data>
+  <data name="tonnage_in_words" xml:space="preserve">
+    <value>Tunelli mewn geiriau</value>
+  </data>
+  <data name="not_provided" xml:space="preserve">
+    <value>Heb ei ddarparu</value>
+  </data>
+  <data name="paper_and_board_pdf" xml:space="preserve">
+    <value>Papur a bwrdd</value>
   </data>
 </root>

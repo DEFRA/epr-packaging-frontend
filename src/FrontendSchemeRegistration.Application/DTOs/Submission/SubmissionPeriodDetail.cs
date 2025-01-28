@@ -14,6 +14,9 @@ public class SubmissionPeriodDetail
 
     public string DatePeriodEndMonth { get; set; }
 
+    public string DatePeriodShortStartMonth { get; set; }
+    public string DatePeriodShortEndMonth { get; set; }
+
     public DateTime Deadline { get; set; }
 
     public SubmissionPeriodStatus Status { get; set; }

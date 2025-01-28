@@ -6,6 +6,7 @@ using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.DTOs.Prns;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
+using FrontendSchemeRegistration.Application.DTOs.Subsidiary.FileUploadStatus;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Extensions;
 using FrontendSchemeRegistration.Application.Options;
@@ -16,24 +17,27 @@ using Microsoft.Identity.Web;
 
 namespace FrontendSchemeRegistration.Application.Services;
 
-public class WebApiGatewayClient : ServiceClientBase, IWebApiGatewayClient
+public class WebApiGatewayClient : IWebApiGatewayClient
 {
     private readonly HttpClient _httpClient;
     private readonly string[] _scopes;
     private readonly ILogger<WebApiGatewayClient> _logger;
     private readonly ITokenAcquisition _tokenAcquisition;
+    private readonly IComplianceSchemeMemberService _complianceSchemeSvc;
 
     public WebApiGatewayClient(
         HttpClient httpClient,
         ITokenAcquisition tokenAcquisition,
+        
         IOptions<HttpClientOptions> httpClientOptions,
         IOptions<WebApiOptions> webApiOptions,
-        ILogger<WebApiGatewayClient> logger)
+        ILogger<WebApiGatewayClient> logger, 
+        IComplianceSchemeMemberService complianceSchemeSvc)
     {
         _httpClient = httpClient;
         _tokenAcquisition = tokenAcquisition;
         _logger = logger;
-
+        _complianceSchemeSvc = complianceSchemeSvc;
         _scopes = [webApiOptions.Value.DownstreamScope];
         _httpClient.BaseAddress = new Uri(webApiOptions.Value.BaseEndpoint);
         _httpClient.AddHeaderUserAgent(httpClientOptions.Value.UserAgent);
@@ -184,6 +188,23 @@ public class WebApiGatewayClient : ServiceClientBase, IWebApiGatewayClient
         response.EnsureSuccessStatusCode();
     }
 
+    public async Task SubmitRegistrationApplication(Guid submissionId, RegistrationApplicationPayload applicationPayload)
+    {
+        await PrepareAuthenticatedClientAsync();
+        var requestPath = $"/api/v1/submissions/{submissionId}/submit-registration-application";
+        var response = await _httpClient.PostAsJsonAsync(requestPath, applicationPayload);
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task SubmitAsync(CreateRegistrationSubmission submission)
+    {
+        await PrepareAuthenticatedClientAsync();
+        var requestPath = $"/api/v1/submissions/create-submission";
+
+        var response = await _httpClient.PostAsJsonAsync(requestPath, submission);
+        response.EnsureSuccessStatusCode();
+    }
+
     public async Task<T> GetDecisionsAsync<T>(string queryString)
         where T : AbstractDecision
     {
@@ -263,47 +284,10 @@ public class WebApiGatewayClient : ServiceClientBase, IWebApiGatewayClient
         }
     }
 
-    public async Task<SubsidiaryFileUploadTemplateDto> GetSubsidiaryFileUploadTemplateAsync()
-    {
-        await PrepareAuthenticatedClientAsync();
-
-        try
-        {
-            var response = await _httpClient.GetAsync("api/v1/file-upload-subsidiary/template");
-
-            response.EnsureSuccessStatusCode();
-
-            if (response.Content.Headers.ContentDisposition?.FileName == null)
-            {
-                _logger.LogError("Failed to read subsidiary file upload template filename");
-
-                return null;
-            }
-
-            if (response.Content.Headers.ContentType?.MediaType == null)
-            {
-                _logger.LogError("Failed to read subsidiary file upload template content type");
-
-                return null;
-            }
-
-            return new SubsidiaryFileUploadTemplateDto
-            {
-                Name = response.Content.Headers.ContentDisposition.FileName,
-                ContentType = response.Content.Headers.ContentType.MediaType,
-                Content = await response.Content.ReadAsStreamAsync()
-            };
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error getting subsidiary file upload template");
-            throw;
-        }
-    }
-
     // Gets all PRNs assigned to an organisation
     public async Task<List<PrnModel>> GetPrnsForLoggedOnUserAsync()
     {
+        AddComplianceSchemeHeader();
         await PrepareAuthenticatedClientAsync();
 
         try
@@ -323,11 +307,12 @@ public class WebApiGatewayClient : ServiceClientBase, IWebApiGatewayClient
 
 	public async Task<PaginatedResponse<PrnModel>> GetSearchPrnsAsync(PaginatedRequest request)
 	{
-		await PrepareAuthenticatedClientAsync();
+        AddComplianceSchemeHeader();
+        await PrepareAuthenticatedClientAsync();
 
 		try
 		{
-			var response = await _httpClient.GetAsync($"/api/v1/prn/search{BuildUrlWithQueryString(request)}");
+			var response = await _httpClient.GetAsync($"/api/v1/prn/search{ServiceClientBase.BuildUrlWithQueryString(request)}");
 
 			response.EnsureSuccessStatusCode();
 
@@ -344,6 +329,7 @@ public class WebApiGatewayClient : ServiceClientBase, IWebApiGatewayClient
 	// Get single PRN
 	public async Task<PrnModel> GetPrnByExternalIdAsync(Guid id)
     {
+        AddComplianceSchemeHeader();
         await PrepareAuthenticatedClientAsync();
 
         try
@@ -363,6 +349,7 @@ public class WebApiGatewayClient : ServiceClientBase, IWebApiGatewayClient
 
     public async Task SetPrnApprovalStatusToAcceptedAsync(Guid id)
     {
+        AddComplianceSchemeHeader();
         await PrepareAuthenticatedClientAsync();
 
         try
@@ -382,6 +369,7 @@ public class WebApiGatewayClient : ServiceClientBase, IWebApiGatewayClient
 
     public async Task SetPrnApprovalStatusToAcceptedAsync(Guid[] ids)
     {
+        AddComplianceSchemeHeader();
         await PrepareAuthenticatedClientAsync();
         try
         {
@@ -399,6 +387,7 @@ public class WebApiGatewayClient : ServiceClientBase, IWebApiGatewayClient
 
     public async Task SetPrnApprovalStatusToRejectedAsync(Guid id)
     {
+        AddComplianceSchemeHeader();
         await PrepareAuthenticatedClientAsync();
 
         try
@@ -416,10 +405,142 @@ public class WebApiGatewayClient : ServiceClientBase, IWebApiGatewayClient
         }
     }
 
+    public async Task<UploadFileErrorResponse> GetSubsidiaryFileUploadStatusAsync(Guid userId, Guid organisationId)
+    {
+        await PrepareAuthenticatedClientAsync();
+
+        try
+        {
+            var response = await _httpClient.GetAsync($"/api/v1/subsidiary/{userId}/{organisationId}");
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadFromJsonAsync<UploadFileErrorResponse>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting subsidiary file upload status for user {UserId} and organisation {OrganisationId}", userId, organisationId);
+            throw;
+        }
+    }
+    public async Task<SubsidiaryUploadStatusDto> GetSubsidiaryUploadStatus(Guid userId, Guid organisationId)
+    {
+        await PrepareAuthenticatedClientAsync();
+
+        try
+        {
+            var response = await _httpClient.GetAsync($"/api/v1/subsidiary/{userId}/{organisationId}");
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadFromJsonAsync<SubsidiaryUploadStatusDto>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting subsidiary upload validation result");
+            throw;
+        }
+    }
+
     private async Task PrepareAuthenticatedClientAsync()
     {
         var accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(_scopes);
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
            Microsoft.Identity.Web.Constants.Bearer, accessToken);
+    }
+
+    private void AddComplianceSchemeHeader()
+    {
+        var complianceSchemeId = _complianceSchemeSvc.GetComplianceSchemeId();
+        _httpClient.AddHeaderComplianceSchemeIdIfNotNull(complianceSchemeId);
+    }
+
+    public async Task<PrnObligationModel> GetObligations(int year)
+    {
+        AddComplianceSchemeHeader();
+        await PrepareAuthenticatedClientAsync();
+
+        try
+        {
+            var response = await _httpClient.GetAsync($"/api/v1/prn/obligation/{year}");
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadFromJsonAsync<PrnObligationModel>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting recycling obligations for organisation");
+            throw;
+        }
+    }
+
+    public async Task<RegistrationApplicationDetails?> GetRegistrationApplicationDetails(GetRegistrationApplicationDetailsRequest request)
+    {
+        await PrepareAuthenticatedClientAsync();
+
+        try
+        {
+            var endpointUrl = $"/api/v1/submissions/get-registration-application-details?OrganisationNumber={request.OrganisationNumber}&OrganisationId={request.OrganisationId}&SubmissionPeriod={request.SubmissionPeriod}";
+
+            if (request.ComplianceSchemeId is not null && request.ComplianceSchemeId != Guid.Empty)
+            {
+                endpointUrl += $"&ComplianceSchemeId={request.ComplianceSchemeId}";
+            }
+
+            var response = await _httpClient.GetAsync(endpointUrl);
+
+            response.EnsureSuccessStatusCode();
+
+            if (response.StatusCode == HttpStatusCode.NoContent)
+            {
+                return null;
+            }
+
+            return (await response.Content.ReadFromJsonAsync<RegistrationApplicationDetails>())!;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error Getting Registration Application Submission Details for organisation Id : {organisationId}", request.OrganisationId);
+            return null!;
+        }
+    }
+
+    public async Task<ComplianceSchemeDetailsDto> GetComplianceSchemeDetails(string organisationId)
+    {
+        await PrepareAuthenticatedClientAsync();
+
+        try
+        {
+            var response = await _httpClient.GetAsync($"api/v1/compliance-scheme-details/get-compliance-scheme-details/{organisationId}");
+
+            response.EnsureSuccessStatusCode();
+
+            return (await response.Content.ReadFromJsonAsync<ComplianceSchemeDetailsDto>())!;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error Getting Compliance Scheme Details for organisation Id : {organisationId}", organisationId);
+            throw;
+        }
+    }
+
+    public async Task<byte[]> FileDownloadAsync(string queryString)
+    {
+        await PrepareAuthenticatedClientAsync();
+
+        try
+        {
+            var fileResponse = await _httpClient.GetAsync($"api/v1/file-download?{queryString}");
+
+            fileResponse.EnsureSuccessStatusCode();
+
+            var fileData = await fileResponse.Content.ReadAsByteArrayAsync();
+
+            return fileData;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error Downloading File");
+            throw;
+        }
     }
 }

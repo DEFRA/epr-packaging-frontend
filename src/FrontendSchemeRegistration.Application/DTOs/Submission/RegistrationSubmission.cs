@@ -18,9 +18,9 @@ public class RegistrationSubmission : AbstractSubmission
 
     public string CompanyDetailsFileName { get; set; }
 
-    public Guid CompanyDetailsUploadedBy { get; set; }
+    public Guid? CompanyDetailsUploadedBy { get; set; }
 
-    public DateTime CompanyDetailsUploadedDate { get; set; }
+    public DateTime? CompanyDetailsUploadedDate { get; set; }
 
     public bool CompanyDetailsDataComplete { get; set; }
 

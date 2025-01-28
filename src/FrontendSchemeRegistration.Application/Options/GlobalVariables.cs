@@ -13,5 +13,10 @@ public class GlobalVariables
     public List<SubmissionPeriod> SubmissionPeriods { get; set; }
 
     public bool UseLocalSession { get; set; }
+    
     public int SubsidiaryFileUploadLimitInBytes { get; set; }
+
+    public string LogPrefix { get; set; }
+
+    public DateTime ApplicationDeadline { get; set; }
 }

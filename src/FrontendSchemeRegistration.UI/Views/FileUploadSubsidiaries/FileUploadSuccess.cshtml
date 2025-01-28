@@ -9,15 +9,19 @@
         <h1 class="govuk-panel__title">
             @Localizer["File_uploaded_successfully"]
         </h1>
+          <p class="govuk-panel__body">@String.Format(Localizer["subsidiaries_have_been_added"].Value, Model.RecordsAdded).</p>
     </div>
 </div>
-
 <main class="govuk-main-wrapper" id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            <div class="govuk-grid-column-full">
-                <p class="govuk-body govuk-!-margin-top-4 govuk-!-margin-bottom-7">@Localizer["you_added_subsidiaries"].</p>
-            </div>
+            @if (Model.ShowTotalSubsidiariesCount)
+            {
+                <div class="govuk-grid-column-full">
+                    <p class="govuk-body govuk-!-margin-top-4 govuk-!-margin-bottom-7">@Localizer["total_number_of_subsidiaries"] @Model.TotalSubsidiariesCount.</p>
+                </div>
+            }
+          
             <form method="get" action="@Url.Action("SubsidiariesList")">
                 <div class="govuk-grid-column-full">
                     <div class="govuk-button-group">

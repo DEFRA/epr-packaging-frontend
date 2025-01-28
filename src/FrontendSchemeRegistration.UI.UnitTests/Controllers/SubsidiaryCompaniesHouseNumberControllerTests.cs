@@ -12,6 +12,7 @@ using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -37,6 +38,8 @@ public class SubsidiaryCompaniesHouseNumberControllerTests
     private UserData _userData;
     private Guid _organisationId = Guid.NewGuid();
     private Guid _userId = Guid.NewGuid();
+
+    private Mock<ITempDataDictionary> _tempDataDictionaryMock = null!;
 
     [SetUp]
     public void SetUp()
@@ -96,6 +99,8 @@ public class SubsidiaryCompaniesHouseNumberControllerTests
 
         _httpContextMock.Setup(x => x.Session).Returns(Mock.Of<ISession>());
 
+        _tempDataDictionaryMock = new Mock<ITempDataDictionary>();
+
         _subsidiaryCompaniesHouseNumberController = new SubsidiaryCompaniesHouseNumberController(
             _urlOptionsMock.Object,
             _companiesHouseServiceMock.Object,
@@ -112,6 +117,11 @@ public class SubsidiaryCompaniesHouseNumberControllerTests
     [Test]
     public async Task Get_SubsidiaryCompaniesHouseNumberSearch()
     {
+        // Arrange
+        _tempDataDictionaryMock.Setup(dictionary => dictionary["ModelState"]).Returns("{\"Errors\":[\"one\",\"two\"]}");
+        _tempDataDictionaryMock.Setup(dictionary => dictionary["CompaniesHouseNumber"]).Returns(CompaniesHouseNumber);
+        _subsidiaryCompaniesHouseNumberController.TempData = _tempDataDictionaryMock.Object;
+
         // Act
         var result = await _subsidiaryCompaniesHouseNumberController.Get() as ViewResult;
 
@@ -158,22 +168,13 @@ public class SubsidiaryCompaniesHouseNumberControllerTests
         // Arrange
         _companiesHouseServiceMock.Setup(x => x.GetCompanyByCompaniesHouseNumber(It.IsAny<string>()))
             .ReturnsAsync(default(Company));
+        _subsidiaryCompaniesHouseNumberController.TempData = _tempDataDictionaryMock.Object;
 
         // Act
-        var result = await _subsidiaryCompaniesHouseNumberController.Post(new SubsidiaryCompaniesHouseNumberViewModel { CompaniesHouseNumber = CompaniesHouseNumber }) as ViewResult;
+        var result = await _subsidiaryCompaniesHouseNumberController.Post(new SubsidiaryCompaniesHouseNumberViewModel { CompaniesHouseNumber = CompaniesHouseNumber }) as RedirectToActionResult;
 
         // Assert
-        result.ViewName.Should().Be("SubsidiaryCompaniesHouseNumber");
-        result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
-        result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.FileUpload}");
-
-        (result as ViewResult).Model.Should().BeOfType<SubsidiaryCompaniesHouseNumberViewModel>();
-
-        var viewModel = (result as ViewResult).Model as SubsidiaryCompaniesHouseNumberViewModel;
-        viewModel.CompaniesHouseNumber.Should().Be(CompaniesHouseNumber);
-
-        result.ViewData.ModelState["CompaniesHouseNumber"].Should().NotBeNull();
-        result.ViewData.ModelState["CompaniesHouseNumber"].Errors[0].ErrorMessage.Should().Be("CompaniesHouseNumber.NotFoundError");
+        result.ActionName.Should().Be(nameof(SubsidiaryCompaniesHouseNumberController.Get));
     }
 
     [Test]
@@ -182,22 +183,15 @@ public class SubsidiaryCompaniesHouseNumberControllerTests
         // Arrange
         _companiesHouseServiceMock.Setup(x => x.GetCompanyByCompaniesHouseNumber(It.IsAny<string>()))
             .ThrowsAsync(new Exception());
+        _subsidiaryCompaniesHouseNumberController.TempData = _tempDataDictionaryMock.Object;
 
         // Act
-        var result = await _subsidiaryCompaniesHouseNumberController.Post(new SubsidiaryCompaniesHouseNumberViewModel { CompaniesHouseNumber = CompaniesHouseNumber }) as ViewResult;
+        var result = await _subsidiaryCompaniesHouseNumberController.Post(new SubsidiaryCompaniesHouseNumberViewModel { CompaniesHouseNumber = CompaniesHouseNumber }) as RedirectToActionResult;
 
         // Assert
-        result.ViewName.Should().Be("SubsidiaryCompaniesHouseNumber");
-        result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
-        result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.FileUpload}");
-
-        (result as ViewResult).Model.Should().BeOfType<SubsidiaryCompaniesHouseNumberViewModel>();
-
-        var viewModel = (result as ViewResult).Model as SubsidiaryCompaniesHouseNumberViewModel;
-        viewModel.CompaniesHouseNumber.Should().Be(CompaniesHouseNumber);
-
-        result.ViewData.ModelState["CompaniesHouseNumber"].Should().NotBeNull();
-        result.ViewData.ModelState["CompaniesHouseNumber"].Errors[0].ErrorMessage.Should().Be("CompaniesHouseNumber.LookupFailed");
+        result.ActionName.Should().Be(nameof(CannotVerifyOrganisationController.Get));
+        result.ControllerName.Should().Be("CannotVerifyOrganisation");
+        _sessionManagerMock.Verify(x => x.SaveSessionAsync(It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()), Times.Once);
     }
 
     private void SetUpConfigOption()

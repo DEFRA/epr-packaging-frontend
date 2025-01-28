@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
-using Microsoft.IdentityModel.Tokens;
 
 namespace FrontendSchemeRegistration.UI.Extensions;
 
@@ -31,9 +30,29 @@ public static class SubmissionPeriodExtensions
             .Replace("Rhagfyr", "Ragfyr");
     }
 
+    public static string LocalisedShortMonth(this SubmissionPeriod period, Enums.MonthType? monthType)
+    {
+        if (!monthType.HasValue)
+        {
+            return string.Empty;
+        }
+        var month = monthType switch
+        {
+            Enums.MonthType.Start => period.StartMonth,
+            Enums.MonthType.End => period.EndMonth,
+            _ => string.Empty
+        };
+        if (string.IsNullOrWhiteSpace(month))
+        {
+            return string.Empty;
+        }
+        return DateTime.Parse($"1 {month} {period.Year}", new CultureInfo("en-GB"))
+            .ToString("MMM");
+    }
+
     public static string LocalisedMonth(this SubmissionPeriodId period, Enums.MonthType? monthType)
     {
-        if (period is null || string.IsNullOrWhiteSpace(period.SubmissionPeriod))
+        if (string.IsNullOrWhiteSpace(period.SubmissionPeriod))
         {
             return string.Empty;
         }
@@ -45,7 +64,6 @@ public static class SubmissionPeriodExtensions
             EndMonth = dateBreak.End.ToString("MMMM", CultureInfo.InvariantCulture),
             Year = dateBreak.Start.Year.ToString()
         };
-
         return submissionPeriod.LocalisedMonth(monthType);
     }
 }

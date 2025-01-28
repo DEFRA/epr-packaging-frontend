@@ -9,7 +9,9 @@ using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace FrontendSchemeRegistration.UI.Controllers;
 
@@ -51,6 +53,12 @@ public class SubsidiaryCompaniesHouseNumberController : Controller
             CompaniesHouseNumber = session.SubsidiarySession?.Company?.CompaniesHouseNumber,
         };
 
+        if (TempData["ModelState"] is not null)
+        {
+            ModelState.Merge(DeserializeModelState(TempData["ModelState"].ToString()));
+            viewModel.CompaniesHouseNumber = TempData["CompaniesHouseNumber"].ToString();
+        }
+
         return View("SubsidiaryCompaniesHouseNumber", viewModel);
     }
 
@@ -80,11 +88,10 @@ public class SubsidiaryCompaniesHouseNumberController : Controller
         {
             _logger.LogError(exception, "Companies House Lookup failed for {CompaniesHouseNumber}", model.CompaniesHouseNumber);
 
-            ModelState.AddModelError(nameof(SubsidiaryCompaniesHouseNumberViewModel.CompaniesHouseNumber), "CompaniesHouseNumber.LookupFailed");
-            SetBackLink(session, PagePaths.SubsidiaryCompaniesHouseNumberSearch, Url.Content($"~{PagePaths.FileUpload}"));
-            ViewBag.FindAndUpdateCompanyInformationLink = _urlOptions.FindAndUpdateCompanyInformation;
+            session.SubsidiarySession.IsUserChangingDetails = false;
+            await SaveSession(session, PagePaths.SubsidiaryCompaniesHouseNumberSearch, PagePaths.CannotVerifyOrganisation);
 
-            return View("SubsidiaryCompaniesHouseNumber", model);
+            return RedirectToAction("Get", "CannotVerifyOrganisation");
         }
 
         if (company == null)
@@ -93,8 +100,10 @@ public class SubsidiaryCompaniesHouseNumberController : Controller
 
             SetBackLink(session, PagePaths.SubsidiaryCompaniesHouseNumberSearch, Url.Content($"~{PagePaths.FileUpload}"));
             ViewBag.FindAndUpdateCompanyInformationLink = _urlOptions.FindAndUpdateCompanyInformation;
+            TempData["ModelState"] = SerializeModelState(ModelState);
+            TempData["CompaniesHouseNumber"] = model.CompaniesHouseNumber;
 
-            return View("SubsidiaryCompaniesHouseNumber", model);
+            return RedirectToAction(nameof(Get));
         }
 
         session.SubsidiarySession.Company = company;
@@ -137,5 +146,31 @@ public class SubsidiaryCompaniesHouseNumberController : Controller
         await SaveSession(session, currentPagePath, nextPagePath);
 
         return RedirectToAction("Get", "SubsidiaryConfirmCompanyDetails", viewModel);
+    }
+
+    private static string SerializeModelState(ModelStateDictionary modelState)
+    {
+        var errorList = modelState.ToDictionary(
+            kvp => kvp.Key,
+            kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+        );
+
+        return JsonConvert.SerializeObject(errorList);
+    }
+
+    private static ModelStateDictionary DeserializeModelState(string serializedModelState)
+    {
+        var errorList = JsonConvert.DeserializeObject<Dictionary<string, string[]>>(serializedModelState);
+        var modelState = new ModelStateDictionary();
+
+        foreach (var kvp in errorList)
+        {
+            foreach (var error in kvp.Value)
+            {
+                modelState.AddModelError(kvp.Key, error);
+            }
+        }
+
+        return modelState;
     }
 }

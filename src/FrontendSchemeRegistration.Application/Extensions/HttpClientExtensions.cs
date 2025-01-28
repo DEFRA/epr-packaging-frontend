@@ -2,6 +2,7 @@
 
 using System.Net.Mime;
 using Enums;
+using FrontendSchemeRegistration.Application.Constants;
 using Microsoft.Net.Http.Headers;
 
 public static class HttpClientExtensions
@@ -51,7 +52,7 @@ public static class HttpClientExtensions
     {
         if (complianceSchemeId.HasValue)
         {
-            httpClient.AddDefaultRequestHeaderIfDoesNotContain("ComplianceSchemeId", complianceSchemeId.Value.ToString());
+            httpClient.AddDefaultRequestHeaderIfDoesNotContain(ComplianceScheme.ComplianceSchemeId, complianceSchemeId.Value.ToString());
         }
     }
 

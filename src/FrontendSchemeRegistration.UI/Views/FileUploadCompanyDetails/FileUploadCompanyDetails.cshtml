@@ -1,19 +1,45 @@
 @model FileUploadCompanyDetailsViewModel;
-
 @{
-    ViewData["Title"] = Localizer["upload_organisation_details_title"];
+    ViewData["Title"] = Localizer["title_upload_organisation_details_home"];
 }
-
 @await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
 
 <main class="govuk-main-wrapper" id="main-content" role="main">
     <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-grid-column-full">
 
             @if (!ViewData.ModelState.IsValid)
             {
                 @await Html.PartialAsync("Partials/Govuk/_ErrorSummary", ViewData.ModelState)
             }
+            <h1 class="govuk-heading-l govuk-!-margin-bottom-6">@Localizer[Model.IsComplianceScheme ? "report_your_member_organisation_detail" : "report_your_organisation_detail"]</h1>
+
+            <h2 class="govuk-heading-m">@Localizer["before_you_start"]</h2>
+            <p class="govuk-body  no-bottom-margin">
+                @Localizer["read_the_guidance_on"] <a class="govuk-link" rel="noreferrer noopener" target="_blank"
+                                                      href="@GuidanceLinks.Value.HowToReportOrganisationDetails">@Localizer["how_to_report_organisation_details"]</a>.
+            </p>
+            <p class="govuk-body">
+                @Localizer["there_are_template_documents_you_can_use_to_build_your_files"]
+            </p>
+            
+            <h2 class="govuk-heading-m">@Localizer["make_sure_you_have_all_the_files_ready"]</h2>
+            <p class="govuk-body">
+                @Localizer["have_all_the_files_ready"]
+            </p>
+
+            <h2 class="govuk-heading-m">@Localizer["if_youre_reporting_for_subsidiaries"]</h2>
+            <p class="govuk-body">
+                @Localizer["file_rejection_warning_text"]
+                @Html.ActionLink(Localizer["manage_your_subsidiaries"].Value,
+                         "SubsidiariesList",
+                         "FileUploadSubsidiaries",
+                         null,
+                         new
+                         {
+                             @class = "govuk-link govuk-link--no-visited-state"
+                         }).
+            </p>
 
             @using (Html.BeginForm(FormMethod.Post, new
             {
@@ -22,13 +48,19 @@
             }))
             {
                 <div class="govuk-form-group @(ViewData.ModelState.IsValid ? string.Empty : "govuk-form-group--error")">
-                    <h1 class="govuk-heading-l">@Localizer["upload_organisation_details"]</h1>
-                    <p class="govuk-hint">@Localizer["file_must_be_a_CSV"]</p>
+                    <h2 class="govuk-heading-m">@Localizer["upload_organisation_details"]</h2>
+                    <p class="govuk-body">
+                        @Localizer["file_must_be_a_CSV"]
+                    </p>
+                    <p class="govuk-body">
+                        @Localizer["it_may_take_a_few_minutes_for_your_file_upload"]
+                    </p>
+
                     @if (!ViewData.ModelState.IsValid)
                     {
                         @await Html.PartialAsync("Partials/Govuk/_Error", ViewData.ModelState.GetModelStateEntry("file"))
                     }
-                    <input class="govuk-file-upload" id="file" name="file" type="file">
+                    <input class="govuk-file-upload" title="Choose a file" id="file" name="file" type="file">
                 </div>
                 <button class="govuk-button" data-module="govuk-button" type="submit">@Localizer["upload_file"]</button>
             }

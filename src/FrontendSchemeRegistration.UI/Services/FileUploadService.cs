@@ -1,7 +1,6 @@
 ﻿namespace FrontendSchemeRegistration.UI.Services;
 
 using Application.Enums;
-using Application.Options;
 using Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Services.Messages;
 using Helpers;
@@ -9,7 +8,6 @@ using Interfaces;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using Resources.Views.FileUpload;
 

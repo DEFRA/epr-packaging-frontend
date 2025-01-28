@@ -9,17 +9,6 @@
     ViewData["Title"] = Localizer["page_title"];
 }
 
-@{
-    CountBreakdown counts = Model.GetCountBreakdown(Model.Prns);
-
-    string h1HeaderText = (counts.PrnCount > 0 && counts.PernCount > 0)
-        ? string.Format(Localizer["accept_selected_prns_and_perns"].Value
-            , @PrnDataLocalizer[Model.GetPrnWord(counts.PrnCount)]
-            , @PrnDataLocalizer[Model.GetPernWord(counts.PernCount)])
-        : string.Format(Localizer["accept_selected"].Value
-            , @PrnDataLocalizer[counts.PrnCount == 0 ? Model.GetPernWord(counts.PernCount) : Model.GetPrnWord(counts.PrnCount)]);
-}
-
 <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
@@ -28,19 +17,10 @@
                 <fieldset class="govuk-fieldset">
                     <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
                         <h1 class="govuk-label-wrapper">
-                            <label class="govuk-label govuk-label--l" for="with-hint">@h1HeaderText</label>
+                            <label class="govuk-label govuk-label--l" for="with-hint">@Localizer["review_your_selection"].Value</label>
                         </h1>
                     </legend>
                     <br>
-                    <div class="govuk-warning-text">
-                        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-                        <strong class="govuk-warning-text__text">
-                            <span class="govuk-visually-hidden">@SharedLocalizer["warning"]</span>
-                            @Localizer[counts.TotalCount == 1 ? "accepting_it_will_credit_the_tonnage_towards_your_obligation" : "accepting_them_will_credit_the_tonnage_towards_your_obligation"]
-                        </strong>
-                    </div>
-                    <br>
-
                     <form class="form" method="POST">
                         @if (Model.RemovedPrn != null)
                         {
@@ -65,33 +45,19 @@
                         @foreach (var group in Model.Prns.GroupBy(p => p.Material))
                         {
                             var prnsPerMaterial = group.ToList();
-                            string h2HeaderText = string.Empty;
+                            string h2HeaderText = @PrnDataLocalizer[group.Key].Value;
                             CountBreakdown subCounts = Model.GetCountBreakdown(prnsPerMaterial);
-
-                            if (subCounts.PrnCount > 0 && subCounts.PernCount > 0)
-                            {
-                                h2HeaderText = string.Format(Localizer["you_selected_n_material_prn_and_perns"].Value
-                                , subCounts.TotalCount
-                                , @PrnDataLocalizer[group.Key].Value);
-                            }
-                            else
-                            {
-                                h2HeaderText = string.Format(Localizer["you_selected_n_material"].Value
-                                , subCounts.TotalCount
-                                , @PrnDataLocalizer[group.Key].Value
-                                , @PrnDataLocalizer[(subCounts.PrnCount == 0 ? Model.GetPernWord(subCounts.PernCount) : Model.GetPrnWord(subCounts.PrnCount))]);
-                            }
                             <table class="govuk-table">
                                 <caption class="govuk-table__caption govuk-table__caption--m">
                                     <h2 class="govuk-heading-m">@h2HeaderText</h2>
                                 </caption>
                                 <thead class="govuk-table__head">
                                     <tr class="govuk-table__row">
-                                        <th class="govuk-table__header">@Localizer["prn_or_pern_number"]</th>
+                                        <th class="govuk-table__header">@Localizer[subCounts.ColumnHeaderLabel]</th>
                                         <th class="govuk-table__header">@Localizer["date_issued"]</th>
                                         <th class="govuk-table__header">@Localizer["issued_by"]</th>
                                         <th class="govuk-table__header">@Localizer["tonnage"]</th>
-                                        <th class="govuk-table__header"></th>
+                                        <th class="govuk-table__header">@Localizer[subCounts.RemoveLinkText]</th>
                                     </tr>
                                 </thead>
 
@@ -107,7 +73,7 @@
                                             <td class="govuk-table__cell">
                                                 <label class="govuk-label govuk-checkboxes__label">
                                                     <a href="?id=@prnsPerMaterial[i].ExternalId" class="href-text--red">
-                                                        @Localizer["remove"]
+                                                        @Localizer["remove_from_selection"]
                                                     </a>
                                                 </label>
                                             </td>
@@ -125,21 +91,15 @@
                             <br>
                             <br>
                         }
-
-                        <div class="govuk-button-group">
-
+                        <h2 class="govuk-heading-l">@Localizer["now_accept"]</h2>
+                        <p class="govuk-body govuk-\!-margin-bottom-static-4"> @Localizer["accepting_them_will_credit_the_tonnage_towards_your_obligation"]</p>
+                        <br/>
+                        <div class="govuk-button-group govuk-\!-margin-top-8">
                             <button class="govuk-button" type="submit" asp-action=@nameof(PrnsAcceptController.ConfirmAcceptMultiplePrnsPassThrough) asp-controller="PrnsAccept">
-                                @Localizer["yes_accept"]
+                                @Localizer["accept"]
                             </button>
-
-                            @Html.ActionLink(@Localizer["no_go_back"].Value, nameof(PrnsController.SelectMultiplePrns), "Prns", null,
-                                new
-                                {
-                                    @class = "govuk-button govuk-button--secondary"
-                                })
                         </div>
                     </form>
-
                 </fieldset>
             }
             else

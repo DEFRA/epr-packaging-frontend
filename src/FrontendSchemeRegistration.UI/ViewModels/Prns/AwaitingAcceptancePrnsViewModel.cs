@@ -9,7 +9,6 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
     {
         public List<AwaitingAcceptanceResultViewModel> Prns { get; set; }
 
-        public int TotalAwaitingPrns { get; set; }
         public SelectList FilterOptions
         {
             get

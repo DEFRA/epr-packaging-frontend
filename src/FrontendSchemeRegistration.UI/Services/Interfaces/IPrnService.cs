@@ -8,6 +8,8 @@ namespace FrontendSchemeRegistration.UI.Services.Interfaces
 
         Task<PrnViewModel> GetPrnByExternalIdAsync(Guid id);
 
+        Task<PrnViewModel> GetPrnForPdfByExternalIdAsync(Guid id);
+
         Task<PrnListViewModel> GetPrnsAwaitingAcceptanceAsync();
 
         Task AcceptPrnAsync(Guid id);
@@ -21,6 +23,9 @@ namespace FrontendSchemeRegistration.UI.Services.Interfaces
 		Task<PrnSearchResultListViewModel> GetPrnSearchResultsAsync(SearchPrnsViewModel request);
 
         Task<AwaitingAcceptancePrnsViewModel> GetPrnAwaitingAcceptanceSearchResultsAsync(SearchPrnsViewModel request);
-        Task<int> GetAwaitingAcceptancePrnsCount();
+        
+        Task<Stream> GetPrnsCsvStreamAsync();
+
+        Task<PrnObligationViewModel> GetRecyclingObligationsCalculation(int year);
     }
 }

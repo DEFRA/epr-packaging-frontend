@@ -6,26 +6,35 @@
 
 @{
     ViewData["Title"] = Localizer["page_title"];
+    var isPdf = ViewData["IsPdf"] as bool? ?? false;
 }
+
 <main class="govuk-main-wrapper govuk-!-padding-top-4">
-
     <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-grid-column-full">
             @await Html.PartialAsync("../Shared/Partials/Prns/_agenciesLogo.cshtml")
-            <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
-                <div class="govuk-notification-banner__header">
-                    <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
-                        @SharedLocalizer["success"]
-                    </h2>
+            @if(!isPdf)
+            {
+                <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+                    <div class="govuk-notification-banner__header">
+                        <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                            @SharedLocalizer["success"]
+                        </h2>
+                    </div>
+                    <div class="govuk-notification-banner__content">
+                        <h3 class="govuk-notification-banner__heading">
+                            @string.Format(Localizer["prn_accepted"].Value, PrnDataLocalizer[Model.NoteType], @Model.IssueYear)
+                        </h3>
+                        <p class="govuk-body">@Localizer["tonnage_credited_towards_your_obligation", Model.Tonnage, @PrnDataLocalizer[Model.Material].Value]</p>
+                        @if (!isPdf)
+                        {
+                            <button id="downloadPDFButton" class="govuk-body govuk-link">
+                                @string.Format(Localizer["download_this_prn"].Value, PrnDataLocalizer[Model.NoteType])
+                            </button>
+                        }
+                    </div>
                 </div>
-                <div class="govuk-notification-banner__content">
-                    <h3 class="govuk-notification-banner__heading">
-                        @string.Format(Localizer["prn_accepted"].Value, PrnDataLocalizer[Model.NoteType])
-                    </h3>
-                    <p class="govuk-body">@Localizer["tonnage_credited_towards_your_obligation", Model.Tonnage, @PrnDataLocalizer[Model.Material].Value]</p>
-                </div>
-            </div>
-
+            }
             <h1 class="govuk-heading-l">
                 @Localizer[(Model.IsPrn ? "prn_note" : "pern_note")]
             </h1>
@@ -37,35 +46,34 @@
                     @Localizer["year"]: <strong>@Model.IssueYear</strong>
                 </div>
             </div>
-
             @await Html.PartialAsync("../Shared/Partials/Prns/_recyclingNoteStatus.cshtml", Model)
             <br>
             @await Html.PartialAsync("../Shared/Partials/Prns/_recyclingNoteDetails.cshtml", Model)
-
-            <br>
-            <br>
-            <div class="govuk-button-group">
-                @Html.ActionLink(string.Format(Localizer["accept_or_reject_more_prns_and_perns"].Value, PrnDataLocalizer[PrnConstants.PrnsText], PrnDataLocalizer[PrnConstants.PernsText]),
-                         nameof(PrnsController.SelectMultiplePrns), "Prns", null,
-                         new
-                         {
-                             @class = "govuk-button"
-                         })
-                @Html.ActionLink(string.Format(Localizer["download_this_prn"].Value, PrnDataLocalizer[Model.NoteType]), null, null,
-                         null,
-                         new
-                         {
-                             @class = "govuk-button govuk-button--secondary",
-                             @href = "#"
-                         })
-            </div>
-            <p class="govuk-body">
-                @Html.ActionLink(Localizer["manage_obligation_home"].Value, nameof(PrnsController.HomePagePrn), "Prns", null,
-                         new
-                         {
-                             @class = "govuk-link govuk-link--no-visited-state"
-                         })
-            </p>
+            @if (!isPdf)
+            {
+                <br>
+                <br>
+                <div class="govuk-button-group">
+                    <form method="get" asp-action="HomePagePrn" asp-controller="Prns">
+                        @Html.ActionLink(string.Format(Localizer["accept_or_reject_more_prns_and_perns"].Value, PrnDataLocalizer[PrnConstants.PrnsText], PrnDataLocalizer[PrnConstants.PernsText]),
+                                 nameof(PrnsController.SelectMultiplePrns), "Prns", null,
+                                 new
+                                 {
+                                     @class = "govuk-button"
+                                 })
+                        @Html.ActionLink(Localizer["manage_obligation_home"].Value, nameof(PrnsObligationController.ObligationsHome), "PrnsObligation",
+                                 null,
+                                 new
+                                 {
+                                     @class = "govuk-button govuk-button--secondary"
+                                 })
+                    </form>
+                </div>
+            }
         </div>
     </div>
 </main>
+@section Scripts {
+    <script src="~/js/html2pdf-0.9.3.min.js"></script>
+    <script src="~/js/download-pdf.js"></script>
+}

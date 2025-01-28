@@ -2,43 +2,89 @@
 
 @{
     ViewData["Title"] = Localizer[Model.IsComplianceScheme ? "page_title_compliance" : "page_title_producer"];
+    
+    bool IsFileUploadJourneyInvokedViaRegistration = (bool)ViewData["IsFileUploadJourneyInvokedViaRegistration"];
 }
 
 @await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
 
 <main class="govuk-main-wrapper" id="main-content" role="main">
     <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-    
-            <div class="govuk-panel govuk-panel--confirmation">
-                <h1 class="govuk-panel__title">
-                    @Localizer["organisation_details_submitted"]
-                </h1>
+        @if (IsFileUploadJourneyInvokedViaRegistration)
+        {
+            <div class="govuk-grid-column-two-thirds">
+
+                <div class="govuk-panel govuk-panel--confirmation">
+                    <h1 class="govuk-panel__title">
+                        @Localizer["organisation_details_submitted_registration"]
+                    </h1>
+                </div>
+
+                <p class="govuk-body">
+                    @Localizer["submitted_by", Model.SubmittedBy, Model.SubmissionTime, Model.SubmittedDate]
+                    <button id="printButton" class="govuk-link govuk-link--no-visited-state govuk-body-m js-show">@Localizer["print_this_page"]</button>
+                </p>
+
+                <div class="govuk-inset-text">
+                    <p class="govuk-body">@Localizer["it_may_take_an_hour"]</p>
+                </div>
+
+                <noscript>
+                    <p class="govuk-body">@Localizer["you_can_save_this_page"]</p>
+                </noscript>
+
+                <h3 class="govuk-heading-m">@Localizer["what_happens_next"]</h3>
+                <p class="govuk-body">@Localizer["you_still_need_to"]</p>
+                <ul class="govuk-list govuk-list--bullet">
+                    <li>@Localizer["pay_your_registration_fee"]</li>
+                    <li>@Localizer["apply_for_registration"]</li>
+                </ul>
+
+                <p class="govuk-body">
+                    <a asp-controller="FrontendSchemeRegistration" asp-action="RegistrationTaskList" class="govuk-link govuk-link--no-visited-state govuk-body-m">
+                        @Localizer["return_to_registration"]
+                    </a>
+                </p>
+
             </div>
+        }
+        else
+        {
+            <div class="govuk-grid-column-two-thirds">
 
-            <p class="govuk-body">@Localizer["submitted_by", Model.SubmittedBy, Model.SubmissionTime, Model.SubmittedDate]
-                <button id="printButton" class="govuk-link govuk-link--no-visited-state govuk-body-m js-show">@Localizer["print_this_page"]</button>
-            </p>
-            
-            <noscript>
-                <p class="govuk-body">@Localizer["you_can_save_this_page"]</p>
-            </noscript>
-            
-            <h3 class="govuk-heading-m">@Localizer["what_happens_next"]</h3>
-            
-            <p class="govuk-body">@Localizer[Model.IsComplianceScheme ? "the_environmental_regulator_compliance" : "the_environmental_regulator_producer"]</p>
+                <div class="govuk-panel govuk-panel--confirmation">
+                    <h1 class="govuk-panel__title">
+                        @Localizer["organisation_details_submitted"]
+                    </h1>
+                </div>
 
-            <h3 class="govuk-heading-m">@Localizer["what_to_do"]</h3>
-            
-            <p class="govuk-body">@Localizer[Model.IsComplianceScheme ? "if_there_are_changes_compliance": "if_there_are_changes_producer"]</p>
+                <p class="govuk-body">
+                    @Localizer["submitted_by", Model.SubmittedBy, Model.SubmissionTime, Model.SubmittedDate]
+                    <button id="printButton" class="govuk-link govuk-link--no-visited-state govuk-body-m js-show">@Localizer["print_this_page"]</button>
+                </p>                
 
-            <p class="govuk-body">@Html.ActionLink(Localizer["go_to_your_home"].Value, "Get", "Landing", null, 
-                                      new
-                                      {
-                                          @class = "govuk-link govuk-link--no-visited-state"
-                                      })</p>
-            
-        </div>
+                <noscript>
+                    <p class="govuk-body">@Localizer["you_can_save_this_page"]</p>
+                </noscript>                
+
+                <h3 class="govuk-heading-m">@Localizer["what_happens_next"]</h3>
+
+                <p class="govuk-body">@Localizer[Model.IsComplianceScheme ? "the_environmental_regulator_compliance" : "the_environmental_regulator_producer"]</p>
+
+                <h3 class="govuk-heading-m">@Localizer["what_to_do"]</h3>
+
+                <p class="govuk-body">@Localizer[Model.IsComplianceScheme ? "if_there_are_changes_compliance" : "if_there_are_changes_producer"]</p>
+
+                <p class="govuk-body">
+                    @Html.ActionLink(Localizer["go_to_your_home"].Value, "Get", "Landing", null,
+                             new
+                             {
+                                 @class = "govuk-link govuk-link--no-visited-state"
+                             })
+                </p>
+
+            </div>
+        }
     </div>
 </main>
 <script src="~/js/print.js"></script>

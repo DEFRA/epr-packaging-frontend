@@ -7,25 +7,50 @@ using ClassMaps;
 using Constants;
 using CsvHelper;
 using CsvHelper.Configuration;
-using DTOs;
 using DTOs.Subsidiary;
 using DTOs.Subsidiary.OrganisationSubsidiaryList;
+using FrontendSchemeRegistration.Application.DTOs.Subsidiary.FileUploadStatus;
 using FrontendSchemeRegistration.Application.DTOs.Organisation;
 using Interfaces;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Caching.Distributed;
+using FrontendSchemeRegistration.Application.Extensions;
 
 public class SubsidiaryService : ISubsidiaryService
 {
     private readonly ILogger<SubsidiaryService> _logger;
     private readonly IAccountServiceApiClient _accountServiceApiClient;
     private readonly IWebApiGatewayClient _webApiGatewayClient;
-
-    public SubsidiaryService(IAccountServiceApiClient accountServiceApiClient, IWebApiGatewayClient webApiGatewayClient, ILogger<SubsidiaryService> logger)
+    private const string RedisFileUploadStatusViewedKey = "SubsidiaryFileUploadStatusViewed";
+    private readonly IDistributedCache _distributedCache;
+    private readonly DistributedCacheEntryOptions _cacheEntryOptions;
+    
+    public SubsidiaryService(IAccountServiceApiClient accountServiceApiClient, IWebApiGatewayClient webApiGatewayClient,
+        ILogger<SubsidiaryService> logger, IDistributedCache distributedCache)
     {
         _logger = logger;
         _accountServiceApiClient = accountServiceApiClient;
         _webApiGatewayClient = webApiGatewayClient;
+        _distributedCache = distributedCache;
+        _cacheEntryOptions = new DistributedCacheEntryOptions();
+
+    }
+
+    public async Task SetSubsidiaryFileUploadStatusViewedAsync(bool value, Guid userId, Guid organisationId)
+    {
+        var redisKey = $"{RedisFileUploadStatusViewedKey}:{userId}:{organisationId}";
+        await _distributedCache.SetAsync(redisKey, value, _cacheEntryOptions);
+    }
+
+    public async Task<bool> GetSubsidiaryFileUploadStatusViewedAsync(Guid userId, Guid organisationId)
+    {
+        var redisKey = $"{RedisFileUploadStatusViewedKey}:{userId}:{organisationId}";
+        if (_distributedCache.TryGetValue<bool>(redisKey, out var value))
+        {
+            return value;
+        }
+        return false;
     }
 
     public async Task<string> SaveSubsidiary(SubsidiaryDto subsidiary)
@@ -149,9 +174,33 @@ public class SubsidiaryService : ISubsidiaryService
         return stream;
     }
 
-    public async Task<SubsidiaryFileUploadTemplateDto> GetFileUploadTemplateAsync()
+    public async Task<SubsidiaryFileUploadStatus> GetSubsidiaryFileUploadStatusAsync(Guid userId, Guid organisationId)
     {
-        return await _webApiGatewayClient.GetSubsidiaryFileUploadTemplateAsync();
+        var response = await _webApiGatewayClient.GetSubsidiaryFileUploadStatusAsync(userId, organisationId);
+
+        if (string.IsNullOrWhiteSpace(response.Status))
+        {
+            return SubsidiaryFileUploadStatus.NoFileUploadActive;
+        }
+
+        if (response.Status.Equals("finished", StringComparison.OrdinalIgnoreCase))
+        {
+            if (response.RowsAdded > 0 && response.Errors?.Count > 0)
+            {
+                return SubsidiaryFileUploadStatus.PartialUpload;
+            }
+
+            return response.Errors == null
+                ? SubsidiaryFileUploadStatus.FileUploadedSuccessfully
+                : SubsidiaryFileUploadStatus.HasErrors;
+        }
+
+        if (response.Status.Equals("uploading", StringComparison.OrdinalIgnoreCase))
+        {
+            return SubsidiaryFileUploadStatus.FileUploadInProgress;
+        }
+
+        return SubsidiaryFileUploadStatus.NoFileUploadActive;
     }
 
     public async Task TerminateSubsidiary(Guid parentOrganisationExternalId, Guid childOrganisationId, Guid userId)
@@ -172,5 +221,56 @@ public class SubsidiaryService : ISubsidiaryService
             _logger.LogError(ex, "Failed to terminate subsidiary");
             throw;
         }
+    }
+
+    public async Task<SubsidiaryUploadStatusDto> GetUploadStatus(Guid userId, Guid organisationId)
+    {
+        return await _webApiGatewayClient.GetSubsidiaryUploadStatus(userId, organisationId);
+    }
+
+    public async Task<Stream> GetUploadErrorsReport(Guid userId, Guid organisationId)
+    {
+        var uploadStatus = await _webApiGatewayClient.GetSubsidiaryUploadStatus(userId, organisationId);
+
+        var errorRows = new List<SubsidiaryUploadErrorRow>();
+
+        if (uploadStatus.Errors != null)
+        {
+            foreach (var error in uploadStatus.Errors)
+            {
+                var rowContent = error.FileContent.Replace("\r\n", "").Split(',');
+
+                errorRows.Add(new SubsidiaryUploadErrorRow
+                {
+                    OrganisationId = rowContent.ElementAtOrDefault(0),
+                    SubsidiaryId = rowContent.ElementAtOrDefault(1),
+                    OrganisationName = rowContent.ElementAtOrDefault(2),
+                    CompaniesHouseNumber = rowContent.ElementAtOrDefault(3),
+                    ParentChild = rowContent.ElementAtOrDefault(4),
+                    FranchiseeLicenseeTenant = rowContent.ElementAtOrDefault(5),
+                    RowNumber = error.FileLineNumber,
+                    Issue = error.IsError ? "Error" : "Warning",
+                    Message = error.Message
+                });
+            }
+        }
+
+        var stream = new MemoryStream();
+
+        await using (var writer = new StreamWriter(stream, leaveOpen: true))
+        {
+            await using (var csv = new CsvWriter(writer, new CsvConfiguration(CultureInfo.InvariantCulture)))
+            {
+                csv.Context.RegisterClassMap<SubsidiaryUploadErrorRowMap>();
+
+                await csv.WriteRecordsAsync(errorRows);
+            }
+
+            await writer.FlushAsync();
+        }
+
+        stream.Position = 0;
+
+        return stream;
     }
 }

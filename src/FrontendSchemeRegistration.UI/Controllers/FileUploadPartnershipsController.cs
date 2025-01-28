@@ -27,7 +27,7 @@ public class FileUploadPartnershipsController : Controller
     private readonly IFileUploadService _fileUploadService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
     private readonly ISubmissionService _submissionService;
-    private IOptions<GlobalVariables> _globalVariables;
+    private readonly IOptions<GlobalVariables> _globalVariables;
 
 
     public FileUploadPartnershipsController(

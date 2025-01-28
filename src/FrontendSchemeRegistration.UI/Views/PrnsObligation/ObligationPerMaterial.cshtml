@@ -1,0 +1,86 @@
+﻿@using FrontendSchemeRegistration.UI.Controllers.Prns
+@using FrontendSchemeRegistration.UI.ViewModels.Prns
+@model PrnObligationViewModel
+@{
+    var materialResourceName = ViewData.ContainsKey("GlassOrNonGlassResource")? ViewData["GlassOrNonGlassResource"].ToString(): string.Empty;
+    var materialName = Localizer[materialResourceName].Value;
+    var pageTitle = Localizer["page_title", Model.CurrentYear, materialName];
+
+    ViewData["Title"] = pageTitle;
+}
+
+<main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-l govuk-!-margin-bottom-5">
+                @ViewData["Title"]
+            </h1>
+            @await Html.PartialAsync("Partials/Prns/_obligationsHeader", Model)
+        </div>
+    </div>
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            @if (@Model?.MaterialObligationViewModels?.Count > 0)
+            {
+                @await Html.PartialAsync("Partials/Prns/_prnMaterialTable",
+                         new PrnMaterialObligationTableViewModel
+                {
+                    TableCaption = string.Format(Localizer["current_status_of_your_material_recycling_obligation"].Value, materialName),
+                    PrnMaterialObligationViewModels = Model.MaterialObligationViewModels
+                })
+            }
+
+            @if (@Model?.GlassMaterialObligationViewModels?.Count > 0)
+            {
+                <p class="govuk-body">
+                    @Localizer["table_shows_how_obligation_divided_glass_re_melt_and_remaining_glass"]
+                </p>
+                @await Html.PartialAsync("Partials/Prns/_prnMaterialTable",
+                         new PrnMaterialObligationTableViewModel
+                {
+                    TableCaption = string.Format(Localizer["current_status_of_your_material_recycling_obligation"].Value, materialName),
+                    PrnMaterialObligationViewModels = Model.GlassMaterialObligationViewModels
+                })
+            }
+        </div>
+    </div>
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+
+            <p class="govuk-body">
+                @Localizer["producer_responsibility_obligations_href_part1"]
+                <a href="@ViewBag.ProducerResponsibilityObligationsLink" class="govuk-link">@Localizer["producer_responsibility_obligations_href_part2"]</a>
+                @Localizer["producer_responsibility_obligations_href_part3"]
+            </p>
+
+            @if (@Model?.MaterialObligationViewModels?.Count > 0)
+            {
+                @await Html.PartialAsync("Partials/Prns/_calculationsNonGlass", Model)
+            }
+
+            @if (@Model?.GlassMaterialObligationViewModels?.Count > 0)
+            {
+                @await Html.PartialAsync("Partials/Prns/_calculationsGlass", Model)
+            }
+
+            <div class="govuk-warning-text">
+                <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                <strong class="govuk-warning-text__text">
+                    <span class="govuk-visually-hidden">Warning</span>
+                    @Localizer["if_you_believe_your_data_is_incorrect_contact_your_regulator_immediately"]
+                </strong>
+            </div>
+
+            <p>
+                @Html.ActionLink(@Localizer["back_to_your_recycling_obligations"].Value, nameof(PrnsObligationController.ObligationsHome), "PrnsObligation",
+                         null,
+                         new
+                         {
+                             @class = "govuk-link govuk-link--no-visited-state"
+                         })
+            </p>
+        </div>
+    </div>
+</main>

@@ -1,19 +1,34 @@
-﻿namespace FrontendSchemeRegistration.UI.ViewModels;
+﻿using System.Diagnostics.CodeAnalysis;
+using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.UI.Sessions;
 
-using System.Diagnostics.CodeAnalysis;
+namespace FrontendSchemeRegistration.UI.ViewModels;
+
 
 [ExcludeFromCodeCoverage]
 public class HomePageSelfManagedViewModel
 {
-    public string OrganisationName { get; set; }
+    public string OrganisationName { get; set; } = string.Empty;
 
-    public string OrganisationNumber { get; set; }
+    public string OrganisationNumber { get; set; } = string.Empty;
 
     public bool CanSelectComplianceScheme { get; set; }
 
-    public string OrganisationRole { get; set; }
+    public string OrganisationRole { get; set; } = string.Empty;
 
     public string CurrentYear => (DateTime.Now.Year).ToString();
 
     public NotificationViewModel Notification { get; set; } = new NotificationViewModel();
+
+    public RegistrationTaskListStatus FileUploadStatus { get; set; } = RegistrationTaskListStatus.NotStarted;
+
+    public RegistrationTaskListStatus PaymentViewStatus { get; set; } = RegistrationTaskListStatus.CanNotStartYet;
+
+    public RegistrationTaskListStatus AdditionalDetailsStatus { get; set; } = RegistrationTaskListStatus.CanNotStartYet;
+
+    public ApplicationStatusType ApplicationStatus { get; set; }
+
+    public string? ApplicationReferenceNumber { get; set; }
+
+    public string? RegistrationReferenceNumber { get; set; }
 }

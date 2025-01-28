@@ -1,9 +1,8 @@
-ï»¿namespace FrontendSchemeRegistration.Application.UnitTests.Services;
+namespace FrontendSchemeRegistration.Application.UnitTests.Services;
 
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Net.Mime;
 using System.Text.Json;
 using Application.Services;
 using AutoFixture;
@@ -12,12 +11,15 @@ using Enums;
 using FluentAssertions;
 using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.DTOs.Prns;
+using FrontendSchemeRegistration.Application.DTOs.Subsidiary.FileUploadStatus;
+using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
 using Moq;
 using Moq.Protected;
 using Options;
+using FrontendSchemeRegistration.Application.Services.Interfaces;
 
 [TestFixture]
 public class WebApiGatewayClientTests
@@ -28,23 +30,26 @@ public class WebApiGatewayClientTests
     private Mock<ILogger<WebApiGatewayClient>> _loggerMock;
     private WebApiGatewayClient _webApiGatewayClient;
     private HttpClient _httpClient;
+    private Mock<IComplianceSchemeMemberService> _complianceSchemeMemberServiceMock;
     private static readonly IFixture _fixture = new Fixture();
 
     [SetUp]
     public void SetUp()
     {
         _loggerMock = new Mock<ILogger<WebApiGatewayClient>>();
-
         _httpMessageHandlerMock = new Mock<HttpMessageHandler>();
         _httpClient = new HttpClient(_httpMessageHandlerMock.Object);
-
+        _complianceSchemeMemberServiceMock = new Mock<IComplianceSchemeMemberService>();
         _webApiGatewayClient = new WebApiGatewayClient(
             _httpClient,
             _tokenAcquisitionMock.Object,
             Options.Create(new HttpClientOptions { UserAgent = "SchemeRegistration/1.0" }),
             Options.Create(new WebApiOptions { DownstreamScope = "https://api.com", BaseEndpoint = "https://example.com/" }),
-            _loggerMock.Object);
+            _loggerMock.Object,
+            _complianceSchemeMemberServiceMock.Object // Pass the mocked service here
+        );
     }
+
 
     [TearDown]
     public void Teardown()
@@ -393,6 +398,100 @@ public class WebApiGatewayClientTests
 
         // Act / Assert
         await _webApiGatewayClient.Invoking(x => x.SubmitAsync(submissionId, null)).Should().ThrowAsync<HttpRequestException>();
+    }
+
+    [Test]
+    public async Task SubmitRegistrationApplication_DoesNotThrowException_WhenSubmitIsSuccessful()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var payload = new RegistrationApplicationPayload { Comments = "Pay part-payment of £24,500", ApplicationReferenceNumber = "PEPR00002125P1" };
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent });
+
+        // Act & Assert
+        await _webApiGatewayClient.Invoking(x => x.SubmitRegistrationApplication(submissionId, payload)).Should().NotThrowAsync();
+
+        var expectedUri = $"https://example.com/api/v1/submissions/{submissionId}/submit-registration-application";
+        _httpMessageHandlerMock.Protected().Verify(
+            "SendAsync", Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Post && req.RequestUri.ToString() == expectedUri),
+            ItExpr.IsAny<CancellationToken>());
+    }
+
+    [Test]
+    public async Task SubmitRegistrationApplication_DoesNotThrowException_WhenSubmitIsSuccessfulAndPayloadIsNull()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent });
+
+        // Act & Assert
+        await _webApiGatewayClient.Invoking(x => x.SubmitRegistrationApplication(submissionId, null)).Should().NotThrowAsync();
+
+        var expectedUri = $"https://example.com/api/v1/submissions/{submissionId}/submit-registration-application";
+        _httpMessageHandlerMock.Protected().Verify(
+            "SendAsync", Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Post && req.RequestUri.ToString() == expectedUri),
+            ItExpr.IsAny<CancellationToken>());
+    }
+
+    [Test]
+    public async Task SubmitRegistrationApplication_ThrowsException_WhenSubmitIsUnsuccessful()
+    {
+        // Arrange
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.InternalServerError });
+
+        // Act / Assert
+        await _webApiGatewayClient.Invoking(x => x.SubmitRegistrationApplication(Guid.NewGuid(), null)).Should().ThrowAsync<HttpRequestException>();
+    }
+
+    [Test]
+    public async Task WhenSubmitIsSuccessful_CreateRegistrationSubmitAsync_DoesNotThrowException()
+    {
+        // Arrange
+        var submission = new CreateRegistrationSubmission
+        {
+            Id = Guid.NewGuid(),
+            DataSourceType = DataSourceType.File,
+            SubmissionType = SubmissionType.Registration,
+        };
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent });
+
+        // Act & Assert
+        await _webApiGatewayClient.Invoking(x => x.SubmitAsync(submission)).Should().NotThrowAsync();
+
+        var expectedUri = $"https://example.com/api/v1/submissions/create-submission";
+        _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Post && req.RequestUri.ToString() == expectedUri),
+            ItExpr.IsAny<CancellationToken>());
+    }
+
+    [Test]
+    public async Task WhenSubmitIsUnsuccessful_CreateRegistrationSubmitAsync_ThrowsException()
+    {
+        // Arrange
+        var submission = new CreateRegistrationSubmission
+        {
+            Id = Guid.NewGuid(),
+            DataSourceType = DataSourceType.File,
+            SubmissionType = SubmissionType.Registration,
+        };
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.InternalServerError });
+
+        // Act & Assert
+        await _webApiGatewayClient.Invoking(x => x.SubmitAsync(submission)).Should().ThrowAsync<HttpRequestException>();
     }
 
     [Test]
@@ -897,23 +996,114 @@ public class WebApiGatewayClientTests
     }
 
     [Test]
-    public async Task GetSubsidiaryFileUploadTemplateAsync_ReturnsDto_WhenResponseIsSuccessful()
+    public async Task GetObligations_Returns_ListOfPrnMaterialTableModel_OnSuccess()
     {
         // Arrange
-        const string ExpectedName = "test.csv";
-        const string ExpectedContentType = "text/csv";
-        var expectedBytes = new byte[] { 1 };
+        var year = 2023;
+        var expectedNumberOfPrnsAwaitingAcceptance = 10;
+        var prnMaterials = _fixture.CreateMany<PrnMaterialObligationModel>(7).ToList();
+        var prnObligationModel = new PrnObligationModel
+        {
+            NumberOfPrnsAwaitingAcceptance = expectedNumberOfPrnsAwaitingAcceptance,
+            ObligationData = prnMaterials
+        };
+        var httpResponse = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent(JsonSerializer.Serialize(prnObligationModel)),
+        };
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(httpResponse)
+            .Verifiable();
+
+        // Act
+        var result = await _webApiGatewayClient.GetObligations(year);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.NumberOfPrnsAwaitingAcceptance.Should().Be(expectedNumberOfPrnsAwaitingAcceptance);
+        result.ObligationData.Count.Should().Be(prnMaterials.Count);
+
+        // Asserting for first material
+        var firstMaterial = result.ObligationData[0];
+        var expectedFirstMaterial = prnMaterials[0];
+        firstMaterial.MaterialName.Should().Be(expectedFirstMaterial.MaterialName);
+        firstMaterial.ObligationToMeet.Should().Be(expectedFirstMaterial.ObligationToMeet);
+        firstMaterial.TonnageAwaitingAcceptance.Should().Be(expectedFirstMaterial.TonnageAwaitingAcceptance);
+        firstMaterial.TonnageAccepted.Should().Be(expectedFirstMaterial.TonnageAccepted);
+        firstMaterial.TonnageOutstanding.Should().Be(expectedFirstMaterial.TonnageOutstanding);
+        firstMaterial.Status.Should().Be(expectedFirstMaterial.Status);
+
+        // Asserting for second material
+        var secondMaterial = result.ObligationData[1];
+        var expectedSecondMaterial = prnMaterials[1];
+        secondMaterial.MaterialName.Should().Be(expectedSecondMaterial.MaterialName);
+        secondMaterial.ObligationToMeet.Should().Be(expectedSecondMaterial.ObligationToMeet);
+        secondMaterial.TonnageAwaitingAcceptance.Should().Be(expectedSecondMaterial.TonnageAwaitingAcceptance);
+        secondMaterial.TonnageAccepted.Should().Be(expectedSecondMaterial.TonnageAccepted);
+        secondMaterial.TonnageOutstanding.Should().Be(expectedSecondMaterial.TonnageOutstanding);
+        secondMaterial.Status.Should().Be(expectedSecondMaterial.Status);
+
+        _httpMessageHandlerMock.Protected().Verify(
+            "SendAsync",
+            Times.Once(),
+            ItExpr.IsAny<HttpRequestMessage>(),
+            ItExpr.IsAny<CancellationToken>()
+        );
+    }
+
+    [Test]
+    public void GetObligations_ThrowsException_OnFailure()
+    {
+        // Arrange
+        var year = 2023;
+        var httpResponse = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.InternalServerError,
+        };
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(httpResponse)
+            .Verifiable();
+
+        // Act & Assert
+        var exception = Assert.ThrowsAsync<HttpRequestException>(() => _webApiGatewayClient.GetObligations(year));
+
+        Assert.That(exception.Message, Does.Contain("Response status code does not indicate success"));
+
+        _httpMessageHandlerMock.Protected().Verify(
+            "SendAsync",
+            Times.Once(),
+            ItExpr.IsAny<HttpRequestMessage>(),
+            ItExpr.IsAny<CancellationToken>()
+        );
+    }
+
+    [Test]
+    public async Task GetSubsidiaryUploadStatus_ReturnsDto_WhenResponseIsSuccessful()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var organisationId = Guid.NewGuid();
+
+        var expectedDto = new SubsidiaryUploadStatusDto
+        {
+            Status = SubsidiaryUploadStatus.Uploading
+        };
 
         var response = new HttpResponseMessage
         {
             StatusCode = HttpStatusCode.OK,
-            Content = new ByteArrayContent(expectedBytes)
-        };
-
-        response.Content.Headers.ContentType = new MediaTypeHeaderValue(ExpectedContentType);
-        response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue(DispositionTypeNames.Inline)
-        {
-            FileName = ExpectedName
+            Content = JsonContent.Create(expectedDto)
         };
 
         _httpMessageHandlerMock.Protected()
@@ -924,19 +1114,19 @@ public class WebApiGatewayClientTests
             .ReturnsAsync(response);
 
         // Act
-        var result = await _webApiGatewayClient.GetSubsidiaryFileUploadTemplateAsync();
+        var result = await _webApiGatewayClient.GetSubsidiaryUploadStatus(userId, organisationId);
 
         // Assert
-        result.Name.Should().BeEquivalentTo(ExpectedName);
-        result.ContentType.Should().BeEquivalentTo(ExpectedContentType);
-        result.Content.ReadByte().Should().Be(expectedBytes[0]);
-        result.Content.ReadByte().Should().Be(-1);
+        result.Should().BeEquivalentTo(expectedDto);
     }
 
     [Test]
-    public async Task GetSubsidiaryFileUploadTemplateAsync_ThrowsException_WhenResponseIsUnsuccessful()
+    public async Task GetSubsidiaryUploadStatus_ThrowsException_WhenResponseIsUnsuccessful()
     {
         // Arrange
+        var userId = Guid.NewGuid();
+        var organisationId = Guid.NewGuid();
+
         var response = new HttpResponseMessage
         {
             StatusCode = HttpStatusCode.InternalServerError
@@ -950,52 +1140,190 @@ public class WebApiGatewayClientTests
             .ReturnsAsync(response);
 
         // Act
-        Func<Task> act = async () => await _webApiGatewayClient.GetSubsidiaryFileUploadTemplateAsync();
+        Func<Task> act = async () => await _webApiGatewayClient.GetSubsidiaryUploadStatus(userId, organisationId);
 
         // Assert
         await act.Should().ThrowAsync<HttpRequestException>();
     }
 
-    [Test]
-    public async Task GetSubsidiaryFileUploadTemplateAsync_ReturnsNull_WhenFileNameIsNull()
+    [TestCase("C56A4180-65AA-42EC-A945-5FD21DEC0538", "D56A4180-65AA-42EC-A945-5FD21DEC0539")]
+    public async Task GetSubsidiaryFileUploadStatusAsync_ShouldReturnUploadFileErrorResponse_WhenRequestIsSuccessful(string userIdStr, string organisationIdStr)
     {
         // Arrange
-        var response = new HttpResponseMessage
-        {
-            StatusCode = HttpStatusCode.OK,
-            Content = new ByteArrayContent([1])
-        };
+        var userId = Guid.Parse(userIdStr);
+        var organisationId = Guid.Parse(organisationIdStr);
+        var expectedResponse = new UploadFileErrorResponse
+        { };
 
-        response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/csv");
-        response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue(DispositionTypeNames.Inline);
-
-        _httpMessageHandlerMock.Protected()
+        _httpMessageHandlerMock
+            .Protected()
             .Setup<Task<HttpResponseMessage>>(
                 "SendAsync",
                 ItExpr.IsAny<HttpRequestMessage>(),
                 ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(response);
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = JsonContent.Create(expectedResponse)
+            });
 
         // Act
-        var result = await _webApiGatewayClient.GetSubsidiaryFileUploadTemplateAsync();
+        var result = await _webApiGatewayClient.GetSubsidiaryFileUploadStatusAsync(userId, organisationId);
+
+        // Assert
+        result.Should().BeEquivalentTo(expectedResponse);
+        _httpMessageHandlerMock.Protected().Verify(
+            "SendAsync",
+            Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Get),
+            ItExpr.IsAny<CancellationToken>()
+        );
+    }
+
+    [Test]
+    public async Task GetRegistrationApplicationDetails_Should_Return_Details_When_Successful()
+    {
+        // Arrange
+        var request = new GetRegistrationApplicationDetailsRequest
+        {
+            OrganisationId = Guid.NewGuid(),
+            OrganisationNumber = 123,
+            SubmissionPeriod = "2024-12",
+            ComplianceSchemeId = Guid.NewGuid()
+        };
+        var expectedDetails = new RegistrationApplicationDetails
+        {
+            ApplicationReferenceNumber = "testref",
+            ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+            IsSubmitted = true,
+        };
+
+        var responseMessage = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = JsonContent.Create(expectedDetails)
+        };
+
+        _httpMessageHandlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(req =>
+                    req.Method == HttpMethod.Get &&
+                    req.RequestUri.ToString().Contains($"OrganisationNumber={request.OrganisationNumber}") &&
+                    req.RequestUri.ToString().Contains($"OrganisationId={request.OrganisationId}") &&
+                    req.RequestUri.ToString().Contains($"SubmissionPeriod={request.SubmissionPeriod}") &&
+                    req.RequestUri.ToString().Contains($"ComplianceSchemeId={request.ComplianceSchemeId}")),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(responseMessage);
+
+        // Act
+        var result = await _webApiGatewayClient.GetRegistrationApplicationDetails(request);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().BeEquivalentTo(expectedDetails);
+    }
+
+    [Test]
+    public async Task GetRegistrationApplicationDetails_Should_Return_Null_When_NoContent()
+    {
+        // Arrange
+        var request = new GetRegistrationApplicationDetailsRequest
+        {
+            OrganisationId = Guid.NewGuid(),
+            OrganisationNumber = 123,
+            SubmissionPeriod = "2024-12"
+        };
+
+        var responseMessage = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.NoContent
+        };
+
+        _httpMessageHandlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(req =>
+                    req.Method == HttpMethod.Get &&
+                    req.RequestUri.ToString().Contains($"OrganisationNumber={request.OrganisationNumber}") &&
+                    req.RequestUri.ToString().Contains($"OrganisationId={request.OrganisationId}") &&
+                    req.RequestUri.ToString().Contains($"SubmissionPeriod={request.SubmissionPeriod}")),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(responseMessage);
+
+        // Act
+        var result = await _webApiGatewayClient.GetRegistrationApplicationDetails(request);
 
         // Assert
         result.Should().BeNull();
     }
 
     [Test]
-    public async Task GetSubsidiaryFileUploadTemplateAsync_ReturnsNull_WhenContentTypeIsNull()
+    public async Task GetRegistrationApplicationDetails_Should_Log_Error_On_Exception()
     {
         // Arrange
-        var response = new HttpResponseMessage
+        var request = new GetRegistrationApplicationDetailsRequest
         {
-            StatusCode = HttpStatusCode.OK,
-            Content = new ByteArrayContent([1])
+            OrganisationId = Guid.NewGuid(),
+            OrganisationNumber = 123,
+            SubmissionPeriod = "2024-12"
         };
 
-        response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue(DispositionTypeNames.Inline)
+        _httpMessageHandlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(req =>
+                    req.Method == HttpMethod.Get &&
+                    req.RequestUri.ToString().Contains($"OrganisationNumber={request.OrganisationNumber}") &&
+                    req.RequestUri.ToString().Contains($"OrganisationId={request.OrganisationId}") &&
+                    req.RequestUri.ToString().Contains($"SubmissionPeriod={request.SubmissionPeriod}")),
+                ItExpr.IsAny<CancellationToken>())
+            .ThrowsAsync(new HttpRequestException("Request failed"));
+
+        // Act
+        var result = await _webApiGatewayClient.GetRegistrationApplicationDetails(request);
+
+        // Assert
+        result.Should().BeNull();
+        _loggerMock.VerifyLog(
+            x => x.LogError(
+                It.IsAny<Exception>(),
+                It.Is<string>(msg => msg.Contains("Error Getting Registration Application Submission Details")),
+                request.OrganisationId),
+            Times.Once);
+    }
+
+    [Test]
+    public async Task GetComplianceSchemeDetails_ShouldReturnComplianceSchemeDetails_WhenResponseIsSuccessful()
+    {
+        // Arrange
+        var organisationId = "123";
+        var expectedDetails = new ComplianceSchemeDetailsDto
         {
-            FileName = "test.csv"
+            Members = [new ComplianceSchemeDetailsMemberDto {
+             IsLateFeeApplicable = true,
+             IsOnlineMarketplace = false,
+             MemberId = "123",
+             MemberType = "Large",
+             NumberOfSubsidiaries = 2,
+             NumberOfSubsidiariesBeingOnlineMarketPlace = 3
+             },
+            new ComplianceSchemeDetailsMemberDto {
+             IsLateFeeApplicable = true,
+             IsOnlineMarketplace = false,
+             MemberId = "234",
+             MemberType = "Small",
+             NumberOfSubsidiaries = 5,
+             NumberOfSubsidiariesBeingOnlineMarketPlace = 6
+            }]
+        };
+
+        var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent(JsonSerializer.Serialize(expectedDetails))
         };
 
         _httpMessageHandlerMock.Protected()
@@ -1003,12 +1331,91 @@ public class WebApiGatewayClientTests
                 "SendAsync",
                 ItExpr.IsAny<HttpRequestMessage>(),
                 ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(response);
+            .ReturnsAsync(responseMessage);
 
         // Act
-        var result = await _webApiGatewayClient.GetSubsidiaryFileUploadTemplateAsync();
+        var result = await _webApiGatewayClient.GetComplianceSchemeDetails(organisationId);
 
         // Assert
-        result.Should().BeNull();
+        result.Should().BeEquivalentTo(expectedDetails, "the response content should match the expected producer details");
+    }
+
+    [Test]
+    public async Task GetComplianceSchemeDetails_ShouldThrowException_WhenResponseIsServerError()
+    {
+        // Arrange
+        var organisationId = "123";
+
+        var responseMessage = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(responseMessage);
+
+        // Act
+        Func<Task> action = async () => await _webApiGatewayClient.GetComplianceSchemeDetails(organisationId);
+
+        // Assert
+        await action.Should().ThrowAsync<HttpRequestException>("an internal server error occurred");
+
+        _loggerMock.Verify(logger =>
+                logger.Log(
+                    LogLevel.Error,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Error Getting Compliance Scheme Details for organisation Id")),
+                    It.IsAny<Exception>(),
+                    It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
+            Times.Once, "An error should be logged when the call fails.");
+    }
+
+    [Test]
+    public async Task FileDownloadAsync_ShouldReturnFileData_WhenResponseIsSuccessful()
+    {
+        // Arrange
+        Random rnd = new Random();
+        byte[] data = new byte[10];
+        rnd.NextBytes(data);
+        var expectedData = data;
+
+        var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent(JsonSerializer.Serialize(expectedData))
+        };
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(responseMessage);
+
+        // Act
+        var result = await _webApiGatewayClient.FileDownloadAsync(It.IsAny<string>());
+
+        // Assert
+        result.Should().NotBeEmpty();
+    }
+
+    [Test]
+    public async Task FileDownloadAsync_ShouldThrowException_WhenResponseIsServerError()
+    {
+        // Arrange
+        var responseMessage = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(responseMessage);
+
+        // Act
+        Func<Task> action = async () => await _webApiGatewayClient.FileDownloadAsync(It.IsAny<string>());
+
+        // Assert
+        await action.Should().ThrowAsync<HttpRequestException>("an internal server error occurred");
     }
 }

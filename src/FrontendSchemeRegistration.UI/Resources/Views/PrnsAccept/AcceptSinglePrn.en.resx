@@ -120,25 +120,25 @@
   <data name="NoBackButton" xml:space="preserve">
     <value>No, go back</value>
   </data>
-  <data name="pern_heading" xml:space="preserve">
-    <value>Accept this PERN?</value>
-  </data>
+	<data name="pern_heading" xml:space="preserve">
+    <value>Accept this PERN towards your {0} recycling obligations?</value>
+  </data> 
   <data name="pern_page_title" xml:space="preserve">
     <value>Accept this PRN</value>
   </data>
   <data name="prn_heading" xml:space="preserve">
-    <value>Accept this PRN?</value>
+    <value>Accept this PRN towards your {0} recycling obligations?</value>
   </data>
   <data name="prn_page_title" xml:space="preserve">
     <value>Accept this PRN</value>
   </data>
-  <data name="TitleFirstPart" xml:space="preserve">
-    <value>This will credit tonnes</value>
-  </data>
-  <data name="TitleSecondPart" xml:space="preserve">
-    <value>tonnes towards your obligation.</value>
+	<data name="Title" xml:space="preserve">
+    <value>This will credit {0} tonnes towards your {1} recycling obligation.</value>
   </data>
   <data name="YesAcceptButton" xml:space="preserve">
     <value>Yes, accept</value>
+  </data>
+  <data name="tonnage_in_words" xml:space="preserve">
+    <value>Tonnage in words</value>
   </data>
 </root>

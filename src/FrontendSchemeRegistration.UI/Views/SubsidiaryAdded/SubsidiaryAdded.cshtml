@@ -14,28 +14,30 @@
                     @Localizer["subsidiary_added"]
                 </h1>
                 <div class="govuk-panel__body">
-                    @Localizer["organisation_id_for"] @Model.OrganisationName
+                    @Localizer["subsidiary_id_for"] @Model.OrganisationName:
                     <br />
                     <strong>@Model.OrganisationId</strong>
                 </div>
             </div>
             <h2 class="govuk-heading-m">@Localizer["what_happens_next"]</h2>
             <p class="govuk-body">
-                @Localizer["you_will_need_to_use_this_id"]
+                @Localizer["you_have_linked_this_subsidiary"]
             </p>
+            <p class="govuk-body">
+                @Localizer["when_you_report_on_this_subsidiary"]: <strong>@Model.OrganisationId</strong>
+            </p>
+            <br />
             <div class="govuk-button-group">
-                @* TODO: Correct links to subsequent pages once they have been added *@
-                @Html.ActionLink(Localizer["continue_reporting"].Value,
-                         "Get",
-                         "FileUploadSubLanding",
+                @Html.ActionLink(Localizer["view_subsidiaries"].Value,
+                         "SubsidiariesList",
+                         "FileUploadSubsidiaries",
                          new { organisationId = Model.OrganisationId },
                          new { @class = "govuk-button", @datamodule = "govuk-button" })
-
-               @*  @Html.ActionLink(Localizer["manage_subsidiaries"].Value,
+                @Html.ActionLink(Localizer["return_to_account_home"].Value,
                          "Get",
-                         "TODO",
-                         new { organisationId = Model.OrganisationId },
-                         new { @class = "govuk-button govuk-button--secondary" }) *@
+                         "Landing",
+                         null,
+                         new { @class = "govuk-link govuk-link--no-visited-state" })
             </div>
         </div>
     </div>

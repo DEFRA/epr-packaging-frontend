@@ -83,6 +83,8 @@ public class FileUploadCompanyDetailsSubLandingController : Controller
                 DataPeriod = submissionPeriod.DataPeriod,
                 DatePeriodStartMonth = submissionPeriod.LocalisedMonth(MonthType.Start),
                 DatePeriodEndMonth = submissionPeriod.LocalisedMonth(MonthType.End),
+                DatePeriodShortStartMonth = submissionPeriod.LocalisedShortMonth(MonthType.Start),
+                DatePeriodShortEndMonth = submissionPeriod.LocalisedShortMonth(MonthType.End),
                 DatePeriodYear = submissionPeriod.Year,
                 Deadline = submissionPeriod.Deadline,
                 Status = submission.GetSubmissionStatus(submissionPeriod, decision, showRegistrationResubmission)
@@ -135,6 +137,7 @@ public class FileUploadCompanyDetailsSubLandingController : Controller
         session.RegistrationSession.SubmissionPeriod = selectedSubmissionPeriod.DataPeriod;
         session.RegistrationSession.SubmissionDeadline = selectedSubmissionPeriod.Deadline;
         session.RegistrationSession.Journey.Add(PagePaths.FileUploadCompanyDetailsSubLanding);
+        session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration = false;
         await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
 
         var submissions = await _submissionService.GetSubmissionsAsync<RegistrationSubmission>(

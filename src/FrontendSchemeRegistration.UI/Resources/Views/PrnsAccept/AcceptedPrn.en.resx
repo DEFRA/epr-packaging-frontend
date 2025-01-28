@@ -121,25 +121,28 @@
     <value>Accept or reject more {0} and {1}</value>
   </data>
   <data name="download_this_prn" xml:space="preserve">
-    <value>Download this {0}</value>
+    <value>Download this {0} as a PDF</value>
+  </data>
+ <data name="download_this_prn_awaiting_acceptance" xml:space="preserve">
+    <value>Download this awaiting acceptance {0} as a PDF</value>
   </data>
   <data name="manage_obligation_home" xml:space="preserve">
-    <value>Manage obligation home</value>
+	  <value>View recycling obligations progress</value>
   </data>
   <data name="page_title" xml:space="preserve">
     <value>EPR for packaging data: manage your recycling obligation</value>
   </data>
   <data name="prn_accepted" xml:space="preserve">
-    <value>{0} accepted.</value>
+    <value>{0} accepted towards your {1} recycling obligation.</value>
   </data>
   <data name="prn_number" xml:space="preserve">
     <value>{0} number</value>
   </data>
   <data name="tonnage_credited_towards_your_obligation" xml:space="preserve">
-    <value>{0} tonnes credited towards your {1} obligation.</value>
+    <value>{0} tonnes credited towards your {1} recycling obligation.</value>
   </data>
   <data name="year" xml:space="preserve">
-    <value>Year</value>
+    <value>Year of issue</value>
   </data>
   <data name="prn_note" xml:space="preserve">
     <value>Packaging Recycling Note</value>

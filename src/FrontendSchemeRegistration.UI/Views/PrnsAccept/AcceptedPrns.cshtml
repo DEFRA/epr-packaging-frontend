@@ -6,24 +6,23 @@
 @{
     ViewData["Title"] = Localizer["page_title"];
     var summaryText = string.Empty;
-    var bodyText = string.Empty;
+    var pdfButtonText = string.Empty;
 
     if (Model.NoteTypes == PrnConstants.PrnText || Model.NoteTypes == PrnConstants.PernText)
     {
-        bodyText = Localizer["send_email_one_prn_or_pern"].Value;
+        pdfButtonText = string.Format(Localizer["download_this_as_pdf"].Value, PrnDataLocalizer[Model.NoteTypes]);
         summaryText = string.Format(Localizer["you_have_accepted_one_prn_or_pern"].Value, PrnDataLocalizer[Model.NoteTypes]);
     }
     else if (Model.NoteTypes == PrnConstants.PrnsText || Model.NoteTypes == PrnConstants.PernsText)
     {
-        bodyText = string.Format(Localizer["send_email_multiple_prn_or_pern"].Value, PrnDataLocalizer[Model.NoteTypes]);
+        pdfButtonText = string.Format(Localizer["download_these_as_pdf"].Value, PrnDataLocalizer[Model.NoteTypes]);
         summaryText = string.Format(Localizer["you_have_accepted_multipe_prn_or_pern"].Value, Model.Count, PrnDataLocalizer[Model.NoteTypes]);
     }
     else
     {
         var noteTypes = Model.NoteTypes.Split(",");
-        bodyText = string.Format(Localizer["send_email_mix_multiple_prns_perns"].Value, PrnDataLocalizer[noteTypes[0]], PrnDataLocalizer[noteTypes[1]]);
+        pdfButtonText = Localizer["download_these_prns_and_perns_as_pdf"].Value;
         summaryText = string.Format(Localizer["you_have_accepted_mix_prns_and_perns"].Value, Model.Count, PrnDataLocalizer[noteTypes[0]], PrnDataLocalizer[noteTypes[1]]);
-
     }
 }
 
@@ -38,15 +37,15 @@
                             <h1 class="govuk-panel__title">
                                 @summaryText
                             </h1>
-                            <div class="govuk-panel__body">
-                                @Localizer[Model.Count == 1 ? "credited_this_towards_your_obligation" : "credited_these_towards_your_obligation"]
-                            </div>
                         </div>
                     </div>
                 </div>
             </main>
 
-            <h2 class="govuk-heading-m">@Localizer["progress_towards_your_obligation"]</h2>
+            <h2 class="govuk-heading-m">@Localizer["what_happens_next"]</h2>
+            <p class="govuk-body">
+                @Localizer[Model.Count == 1 ? "we_will_credit_this_towards_your_yyyy_recycling obligations" : "we_will_credit_these_towards_your_yyyy_recycling obligations", Model.ObligationYears]
+            </p>
             @for (int i = 0; i < Model.Details.Count; i++)
             {
                 <div class="govuk-grid-row">
@@ -75,22 +74,19 @@
                 </div>
             }
 
-            <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
-
-            <h2 class="govuk-heading-m">@Localizer["what_happens_next"]</h2>
-            <p class="govuk-body">@bodyText</p>
-            <br>
+            <p class="govuk-body">
+                @Localizer["download_prns_and_perns_from_search_page_part_1"]
+                <a href="view-awaiting-acceptance" class="govuk-link">@Localizer["download_prns_and_perns_from_search_page_part_2"]</a>
+                @Localizer["download_prns_and_perns_from_search_page_part_3"]
+            </p>
+            
             <div class="govuk-button-group">
-                @Html.ActionLink(Localizer["manage_obligation_home"].Value, nameof(PrnsController.HomePagePrn), "Prns", null,
-                         new
-                         {
-                             @class = "govuk-button"
-                         })
-                @Html.ActionLink(Localizer["view_all_perns_and_prns"].Value, nameof(PrnsController.SelectMultiplePrns), "Prns",
+
+                @Html.ActionLink(Localizer["view_recycling_obligations_progress"].Value, nameof(PrnsObligationController.ObligationsHome), "PrnsObligation",
                          null,
                          new
                          {
-                             @class = "govuk-button govuk-button--secondary",
+                             @class = "govuk-button govuk-button--primary"
                          })
             </div>
 

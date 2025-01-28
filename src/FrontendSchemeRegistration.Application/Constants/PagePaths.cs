@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace FrontendSchemeRegistration.Application.Constants;
+﻿namespace FrontendSchemeRegistration.Application.Constants;
 
 public static class PagePaths
 {
@@ -20,21 +18,33 @@ public static class PagePaths
     public const string FileUploadErrorReport = "/file-upload-error-report";
     public const string FileUploadCompanyDetailsErrorReport = "/file-upload-company-details-error-report";
     public const string FileUploading = "/file-uploading";
+    public const string RedirectFileUploadCompanyDetails = "/redirect-upload-organisation-details";
     public const string FileUploadCompanyDetails = "/upload-organisation-details";
     public const string FileUploadCompanyDetailsErrors = "/file-upload-company-details-errors";
     public const string FileUploadPartnerships = "/upload-partner-details";
     public const string FileUploadCompanyDetailsSubLanding = "/report-organisation-details";
     public const string FileUploadSubsidiaries = "/subsidiaries-list";
+    public const string FileUploadSubsidiariesCheckStatus = "/subsidiaries-check-upload-status";
     public const string ExportSubsidiaries = "/subsidiaries-export";
-    public const string FileUploadSubsidiariesSuccess = "/subsidiaries-details-success";
-    public const string SubsidiariesCompleteFile = "/subsidiaries-complete-file";
+    public const string SubsidiariesUploadingAndValidatingFile = "/subsidiaries-uploading-and-validating-file";
+    public const string FileUploadSubsidiariesSuccess = "/subsidiaries-file-uploaded-successfully";
     public const string OrganisationDetailsUploaded = "/organisation-details-uploaded";
-    public const string FileUploadingCompanyDetails = "/file-uploading-company-details";
+    public const string UploadingOrganisationDetails = "/uploading-organisation-details";
     public const string FileReUploadCompanyDetailsConfirmation = "/file-upload-company-details/confirm-upload";
     public const string FileUploadCompanyDetailsSubmissionHistory = "/report-organisation-history";
     public const string UploadNewFileToSubmit = "/upload-new-file-to-submit";
     public const string HomePageComplianceScheme = "producer-compliance-scheme";
     public const string HomePageSelfManaged = "home-self-managed";
+    public const string ProducerRegistrationGuidance = "producer-registration-guidance";
+    public const string RegistrationTaskList = "registration-task-list";
+    public const string RegistrationFeeCalculations = "registration-fee-calculations";
+    public const string SelectPaymentOptions = "select-payment-options";
+    public const string PaymentOptionPayByPhone = "pay-by-phone";
+    public const string PaymentOptionPayOnline = "pay-online";
+    public const string PaymentOptionPayByBankTransfer = "pay-by-banktransfer";
+    public const string AdditionalInformation = "additional-information";
+    public const string UnauthorisedUserWarnings = "unauthorised-user-warnings";
+    public const string SubmitRegistrationRequest = "submit-registration-request";
     public const string LandingPage = "landing";
     public const string ComplianceSchemeLanding = "home-compliance-scheme";
     public const string SelectComplianceScheme = "select-compliance-scheme";
@@ -84,21 +94,26 @@ public static class PagePaths
     public const string SubsidiaryLocation = "/subsidiary-location";
     public const string SubsidiaryCheckDetails = "/subsidiary-check-details";
     public const string SubsidiariesDownload = "/subsidiaries-download";
-    public const string SubsidiariesDownloadView = "/subsidiaries-download-view";
-    public const string SubsidiariesDownloadFailed = "/subsidiaries-download-failed";
+    public const string SubsidiariesDownloadView = "/subsidiaries-export-file-downloading";
+    public const string SubsidiariesDownloadFailed = "/subsidiaries-export-problem-downloading-file";
     public const string SubsidiaryTemplateDownload = "/subsidiary-template-download";
     public const string SubsidiaryTemplateDownloadView = "/subsidiary-template-download-view";
     public const string SubsidiaryTemplateDownloadFailed = "/subsidiary-template-download-failed";
-    public const string ConfirmSubsidiaryRemoval = "/confirm-remove-subsidiary";
+    public const string SubsidiariesIncompleteFileUpload = "/subsidiaries-incomplete-file-upload";
+    public const string SubsidiariesFileNotUploaded = "/subsidiaries-file-not-uploaded";
+    public const string SubsidiariesFileUploadWarningsReport = "/subsidiaries-file-upload-warnings-report";
+    public const string ConfirmSubsidiaryRemoval = "/subsidiaries-are-you-sure-you-want-to-remove-this-subsidiary";
+    public const string ConfirmRemoveSubsidiarySuccess = "/subsidiaries-subsidiary-removed";
+    public const string CannotVerifyOrganisation = "cannot-verify-organisation";
 
     public static class Prns
     {
         public const string ObligationsHome = "manage-your-recycling-obligations";
-        public const string Home = "manage-prn-home-complete";
+        public const string ObligationPerMaterial = "manage-your-recycling-obligations";
         public const string Search = "view-awaiting-acceptance";
         public const string ShowAwaitingAcceptance = "view-awaiting-acceptance-alt";
         public const string ShowSelected = "selected-prn";
-        public const string DownloadAllPRNsAndPERNs = "#";
+        public const string DownloadAllPRNsAndPERNs = "download-prns-csv";
 
         // Accept single PRN
         public const string AskToAccept = "accept-prn";
@@ -115,5 +130,10 @@ public static class PagePaths
         public const string AskToReject = "reject-prn";
         public const string ConfirmReject = "confirm-reject-prn";
         public const string Rejected = "rejected-prn";
+
+        // Download PRN PDF
+        public const string DownloadAcceptedPRNPdf = "download-accepted-prn-pdf";
+        public const string DownloadRejectedPRNPdf = "download-rejected-prn-pdf";
+        public const string DownloadSelectedPRNPdf = "download-selected-prn-pdf";
     }
 }

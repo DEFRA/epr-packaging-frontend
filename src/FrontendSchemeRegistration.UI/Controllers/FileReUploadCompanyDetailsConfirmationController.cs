@@ -33,12 +33,17 @@ public class FileReUploadCompanyDetailsConfirmationController : Controller
     [SubmissionIdActionFilter(PagePaths.FileUploadCompanyDetailsSubLanding)]
     public async Task<IActionResult> Get()
     {
-        ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         if (session is null)
         {
             return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
         }
+
+        var isFileUploadJourneyInvokedViaRegistration = session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration;
+
+        ViewBag.BackLinkToDisplay = isFileUploadJourneyInvokedViaRegistration? $"/report-data/{PagePaths.RegistrationTaskList}" : Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
+
+        ViewData["IsFileUploadJourneyInvokedViaRegistration"] = isFileUploadJourneyInvokedViaRegistration;
 
         var organisationRole = session.UserData.Organisations.FirstOrDefault()?.OrganisationRole;
         var submissionId = Guid.Parse(Request.Query["submissionId"]);

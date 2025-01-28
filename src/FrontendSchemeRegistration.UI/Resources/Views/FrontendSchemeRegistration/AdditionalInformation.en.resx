@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="additional_info_title" xml:space="preserve">
+        <value>Additional information</value>
+    </data>
+    <data name="register_company" xml:space="preserve">
+        <value>{0} registration</value>
+    </data>
+    <data name="members_organisation_details" xml:space="preserve">
+        <value>Members' organisation details</value>
+    </data>
+    <data name="organisation_id_x" xml:space="preserve">
+        <value>Organisation ID: {0}</value>
+    </data>
+    <data name="compliance_scheme_x" xml:space="preserve">
+        <value>Compliance scheme: {0}</value>
+    </data>
+    <data name="regulator" xml:space="preserve">
+        <value>Regulator: </value>
+    </data>
+    <data name="england.environmental_regulator" xml:space="preserve">
+        <value>Environment Agency (England)</value>
+    </data>
+    <data name="scotland.environmental_regulator" xml:space="preserve">
+        <value>Scottish Environment Protection Agency (Scotland)</value>
+    </data>
+    <data name="wales.environmental_regulator" xml:space="preserve">
+        <value>Natural Resources Wales (NRW) (Wales)</value>
+    </data>
+    <data name="northernireland.environmental_regulator" xml:space="preserve">
+        <value>Office for Environmental Protection (OEP) (Northern Ireland)</value>
+    </data>
+    <data name="ensure_x_year_reporting_of_packaging_data_before_registering" xml:space="preserve">
+        <value>Ensure your packaging data for {0} has been reported before registering. Failure may result in delays to your registration being assessed.</value>
+    </data>
+    <data name="you_must_be_approved_or_delegated_person_to_submit_data_complete_registration" xml:space="preserve">
+        <value>You must be an approved or delegated person to submit your data and complete the application.</value>
+    </data>
+    <data name="additional_information" xml:space="preserve">
+        <value>Additional information</value>
+    </data>
+    <data name="use_comment_box_for_additional_info_to_assist_regulator" xml:space="preserve">
+        <value>Use the comment box to enter additional information which may assist the regulator. For example, an agreement over a part-payment.</value>
+    </data>
+    <data name="submit_registration_application" xml:space="preserve">
+        <value>Submit registration application</value>
+    </data>
+</root>

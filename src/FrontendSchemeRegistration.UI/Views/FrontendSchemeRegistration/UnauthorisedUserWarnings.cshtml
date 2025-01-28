@@ -1,0 +1,41 @@
+﻿@{
+    ViewData["Title"] = Localizer["unauthorised_user_warning_title"];
+}
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-three-quarters">
+            <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+                @if (ViewBag.IsComplianceScheme)
+                {
+                    @Localizer["members_organisation_details"]
+                }
+                else
+                {
+                    @Localizer["register_company", ViewBag.OrganisationName]
+                }
+            </h1>
+            <div class="govuk-inset-text govuk-!-margin-bottom-4">
+                @if (ViewBag.IsComplianceScheme)
+                {
+                    <p class="govuk-body govuk-!-font-weight-bold">
+                        @Localizer["compliance_scheme_x", ViewBag.ComplianceScheme]
+                        <br />@Localizer["regulator"]@Localizer[$"{ViewBag.NationName}.environmental_regulator"]
+                    </p>
+                }
+                else
+                {
+                    <p class="govuk-body govuk-!-font-weight-bold">@Localizer["organisation_id_x", ViewBag.OrganisationNumber]</p>
+                }
+            </div>
+            <p class="govuk-body"><b>@Localizer["you-cannot-submit-your-date-and-complete-your-application"]</b></p>
+            <p class="govuk-body">@Localizer["your-approved-person-is-the-person-in-charge-of-submitting-information"]</p>
+            <p class="govuk-body">@Localizer["your-delegated-person-is-another-person-who-can-submit-information"]</p>
+            <p class="govuk-body">@Localizer["your-need-to-get-your-approved-or-delegated-person-to-submit-your-data"]</p>
+
+            <a asp-action="RegistrationTaskList" class="govuk-link govuk-link--no-visited-state">
+                @Localizer["return_to_registration_steps"]
+            </a>
+        </div>
+    </div>
+</main>

@@ -117,15 +117,42 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Wood" xml:space="preserve">
-	  <value>Wood</value>
+  <data name="Aluminium" xml:space="preserve">
+	  <value>Aluminium</value>
+  </data>
+  <data name="Glass" xml:space="preserve">
+    <value>Glass</value>
+  </data>
+  <data name="Glass other" xml:space="preserve">
+    <value>Glass other</value>
+  </data>
+  <data name="Glass re-melt" xml:space="preserve">
+    <value>Glass re-melt</value>
+  </data>
+  <data name="Paper, board or fibre-based composite material" xml:space="preserve">
+    <value>Paper, board or fibre-based composite material</value>
+  </data>
+  <data name="Paper and board" xml:space="preserve">
+    <value>Paper, board or fibre-based composite material</value>
+  </data>
+  <data name="Paper/board" xml:space="preserve">
+    <value>Paper, board or fibre-based composite material</value>
+  </data>
+  <data name="Paper" xml:space="preserve">
+    <value>Paper, board or fibre-based composite material</value>
   </data>
   <data name="Plastic" xml:space="preserve">
     <value>Plastic</value>
   </data>
-  <data name="Paper and board" xml:space="preserve">
-    <value>Paper and board</value>
+   <data name="Steel" xml:space="preserve">
+    <value>Steel</value>
   </data>
+  <data name="Wood" xml:space="preserve">
+    <value>Wood</value>
+  </data>
+	<data name="Wood Composting" xml:space="preserve">
+		<value>Wood Composting</value>
+	</data>
   <data name="AWAITING ACCEPTANCE" xml:space="preserve">
     <value>AWAITING ACCEPTANCE</value>
   </data>

@@ -117,9 +117,74 @@ public class CompanyDetailsConfirmationControllerTests
 
         // Assert
         result.ViewName.Should().Be("CompanyDetailsConfirmation");
-        result.ViewData.Keys.Should().HaveCount(1);
+        result.ViewData.Keys.Should().HaveCount(2);
         result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
+        result.ViewData.Keys.Should().Contain("IsFileUploadJourneyInvokedViaRegistration");
         result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
+        result.ViewData["IsFileUploadJourneyInvokedViaRegistration"].Should().Be(false);
+        result.Model.Should().BeEquivalentTo(new CompanyDetailsConfirmationModel
+        {
+            SubmissionTime = submissionTime.ToTimeHoursMinutes(),
+            SubmittedDate = submissionTime.ToReadableDate(),
+            SubmittedBy = fullName,
+            OrganisationRole = OrganisationRoles.ComplianceScheme
+        });
+    }
+
+    [Test]
+    public async Task Get_ReturnsFileUploadSuccessView_WhenCalled_From_RegistrationTaskList()
+    {
+        // Arrange
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                UserData = new UserData { Organisations = { new Organisation { OrganisationRole = OrganisationRoles.ComplianceScheme } } },
+                RegistrationSession = new RegistrationSession
+                {
+                    Journey = new List<string>
+                    {
+                        PagePaths.FileUploadCompanyDetailsSubLanding,
+                        PagePaths.FileUploadCompanyDetails,
+                        PagePaths.FileUploadBrands,
+                        PagePaths.FileUploadPartnerships
+                    },
+                    IsFileUploadJourneyInvokedViaRegistration = true
+                }
+            });
+
+        DateTime submissionTime = DateTime.UtcNow;
+
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(SubmissionId)).ReturnsAsync(new RegistrationSubmission
+        {
+            Id = SubmissionId,
+            IsSubmitted = true,
+            LastSubmittedFiles = new SubmittedRegistrationFilesInformation
+            {
+                SubmittedDateTime = submissionTime,
+                SubmittedBy = Guid.NewGuid()
+            }
+        });
+
+        const string firstName = "first";
+        const string lastName = "last";
+        const string fullName = $"{firstName} {lastName}";
+
+        _userAccountServiceMock.Setup(x => x.GetPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new PersonDto
+        {
+            FirstName = firstName,
+            LastName = lastName
+        });
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("CompanyDetailsConfirmation");
+        result.ViewData.Keys.Should().HaveCount(2);
+        result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
+        result.ViewData.Keys.Should().Contain("IsFileUploadJourneyInvokedViaRegistration");
+        result.ViewData["BackLinkToDisplay"].Should().Be($"/report-data/{PagePaths.RegistrationTaskList}");
+        result.ViewData["IsFileUploadJourneyInvokedViaRegistration"].Should().Be(true);
         result.Model.Should().BeEquivalentTo(new CompanyDetailsConfirmationModel
         {
             SubmissionTime = submissionTime.ToTimeHoursMinutes(),
@@ -194,7 +259,8 @@ public class CompanyDetailsConfirmationControllerTests
                         PagePaths.FileUploadCompanyDetails,
                         PagePaths.FileUploadBrands,
                         PagePaths.FileUploadPartnerships
-                    }
+                    },
+                    IsFileUploadJourneyInvokedViaRegistration = false
                 }
             });
     }

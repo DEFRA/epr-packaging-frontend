@@ -13,7 +13,17 @@ public class GuidanceLinkOptions
 
     public string HowToReportOrganisationDetails { get; set; }
 
+    public string HowToReportPackagingData { get; set; }
+
     public string HowToBuildCsvFileToReportYourOrganisationData { get; set; }
 
     public string ExampleCsvFile { get; set; }
+
+    public string ProducerResponsibilitiesForPackagingWaste { get; set; }
+
+    public string EPR_IllustrativeFeesAndCharges { get; set; }
+
+    public string HowToCompleteSubsidiaryFile { get; set; }
+
+    public string YouCanPaySEPA { get; set; }
 }

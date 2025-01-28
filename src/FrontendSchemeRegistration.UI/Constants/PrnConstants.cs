@@ -15,6 +15,12 @@ namespace FrontendSchemeRegistration.UI.Constants
 
         public static string PrnsAndPernsText => "PRNs,PERNs";
 
+        public static class Material
+        {
+            public const string PaperBoardFibreBased = "Paper, board and fibre-based composite material";
+            public const string PaperBoard = "Paper and board";
+        }
+
         public static class Filters
         {
             public const string AcceptedAll = "accepted-all";

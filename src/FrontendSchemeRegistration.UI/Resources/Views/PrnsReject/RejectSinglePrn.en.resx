@@ -138,4 +138,7 @@
   <data name="page_title_prn" xml:space="preserve">
     <value>Reject this PRN</value>
   </data>
+  <data name="tonnage_in_words" xml:space="preserve">
+    <value>Tonnage in words</value>
+  </data>
 </root>

@@ -132,6 +132,9 @@
   <data name="RoleInOrganisation.NoneOfTheAbove" xml:space="preserve">
     <value>Dim un o'r uchod</value>
   </data>
+  <data name="RoleInOrganisation.Or" xml:space="preserve">
+    <value>Neu</value>
+  </data>
   <data name="RoleInOrganisation.Partner" xml:space="preserve">
     <value>Partner</value>
   </data>

@@ -1,5 +1,6 @@
 ﻿using FrontendSchemeRegistration.Application.DTOs.Organisation;
 using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
+using FrontendSchemeRegistration.Application.DTOs.Subsidiary.FileUploadStatus;
 using FrontendSchemeRegistration.Application.DTOs.Subsidiary.OrganisationSubsidiaryList;
 
 namespace FrontendSchemeRegistration.Application.Services.Interfaces;
@@ -14,9 +15,15 @@ public interface ISubsidiaryService
 
     Task<OrganisationRelationshipModel> GetOrganisationSubsidiaries(Guid organisationId);
 
-    Task<SubsidiaryFileUploadTemplateDto> GetFileUploadTemplateAsync();
+    Task<SubsidiaryFileUploadStatus> GetSubsidiaryFileUploadStatusAsync(Guid userId, Guid organisationId);
+    Task SetSubsidiaryFileUploadStatusViewedAsync(bool value, Guid userId, Guid organisationId);
+    Task<bool> GetSubsidiaryFileUploadStatusViewedAsync(Guid userId, Guid organisationId);
 
     Task<OrganisationDto> GetOrganisationByReferenceNumber(string referenceNumber);
 
     Task TerminateSubsidiary(Guid parentOrganisationExternalId, Guid childOrganisationId, Guid userId);
+
+    Task<SubsidiaryUploadStatusDto> GetUploadStatus(Guid userId, Guid organisationId);
+
+    Task<Stream> GetUploadErrorsReport(Guid userId, Guid organisationId);
 }

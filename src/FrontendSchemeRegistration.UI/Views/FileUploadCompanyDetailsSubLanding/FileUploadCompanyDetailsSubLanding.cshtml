@@ -72,22 +72,29 @@
                                 </div>
                                 <div class="govuk-card-body">
                                     <feature name="ShowRegistrationResubmission">
-                                    @{
-                                        if (submissionPeriodDetail.Status.In(AcceptedByRegulator, RejectedByRegulator, FileUploaded, NotStarted))
-                                        {
-                                            <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer[Model.IsComplianceScheme ? "report_members_details" : "report_organisation_details"]</button>
+                                        @{
+                                            if (submissionPeriodDetail.Status.In(AcceptedByRegulator, RejectedByRegulator, FileUploaded, NotStarted))
+                                            {
+                                                <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">
+                                                @Localizer["inform"]
+                                                @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodShortStartMonth, submissionPeriodDetail.DatePeriodShortEndMonth] @submissionPeriodDetail.DatePeriodYear
+                                                @Localizer[Model.IsComplianceScheme ? "member_organisation_details" : "organisation_details"]
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <br />
+                                            }
                                         }
-                                        else
-                                        {
-                                            <br />
-                                        }
-                                    }
                                     </feature>
                                     <feature name="ShowRegistrationResubmission" negate="true">
                                         @{
                                             if (!submissionPeriodDetail.Status.In(CannotStartYet))
                                             {
-                                                <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer[Model.IsComplianceScheme ? "report_members_details" : "report_organisation_details"]</button>
+                                                <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">
+                                                @Localizer["inform"] 
+                                                @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodShortStartMonth, submissionPeriodDetail.DatePeriodShortEndMonth] @submissionPeriodDetail.DatePeriodYear 
+                                                @Localizer[Model.IsComplianceScheme ? "member_organisation_details" : "organisation_details"]</button>
                                             }
                                             else
                                             {

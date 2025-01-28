@@ -1,0 +1,58 @@
+@model SubsidiariesUnsuccessfulFileUploadViewModel
+
+@{
+    ViewData["Title"] = Model.PartialSuccess ? Localizer["incomplete_file_uploaded"] : Localizer["file_not_uploaded"];
+    var action = Model.PartialSuccess ? "SubsidiariesIncompleteFileUploadDecision" : "SubsidiariesFileNotUploadedDecision";
+}
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @await Html.PartialAsync("Partials/Govuk/_ErrorSummary", ViewData.ModelState)
+            }
+
+            <h1 class="govuk-heading-l">@Localizer["subsidiaries_file_processed"]</h1>
+
+            <p class="govuk-body">@(Model.PartialSuccess ? Localizer["we_have_processed_some_failed"] : Localizer["we_have_processed_all_failed"])</p>
+
+            <h2 class="govuk-heading-m">@Localizer["how_to_check"]</h2>
+
+            <ol class="govuk-list govuk-list--number govuk-list--spaced">
+                <li><a href="@Url.Action("SubsidiariesFileUploadWarningsReport", "FileUploadSubsidiaries")" class="govuk-link--no-visited-state">@Localizer["download_your_warnings", Model.WarningsReportDisplaySize]</a></li>
+                <li>@Localizer["you_may_also"] <a href="@GuidanceLinks.Value.HowToCompleteSubsidiaryFile" rel="noreferrer noopener" target="_blank" class="govuk-link">@Localizer["how_to_complete"]</a> @Localizer["you_may_also_suffix"]</li>
+            </ol>
+
+            <form asp-controller="FileUploadSubsidiaries" asp-action="@action" method="post">
+                <div class="govuk-form-group @(ViewData.ModelState.IsValid ? string.Empty : "govuk-form-group--error")">
+                    <fieldset class="govuk-fieldset">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                            <h2 class="govuk-fieldset__heading govuk-!-margin-top-2">@Localizer["do_you_want"]</h2>
+                        </legend>
+
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            @await Html.PartialAsync("Partials/Govuk/_Error", ViewData.ModelState.GetModelStateEntry(nameof(SubsidiaryUnsuccessfulUploadDecisionViewModel.UploadNewFile)))
+                        }
+
+                        <div class="govuk-radios govuk-!-margin-bottom-2" data-module="govuk-radios">
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="UploadNewFile" name="UploadNewFile" type="radio" value="true">
+                                <label class="govuk-label govuk-radios__label" for="UploadNewFile">@Localizer["do_you_want_yes"]</label>
+                            </div>
+                            <div class="govuk-radios__item">
+                                <input class="govuk-radios__input" id="UploadNewFile-2" name="UploadNewFile" type="radio" value="false">
+                                <label class="govuk-label govuk-radios__label" for="UploadNewFile-2">@Localizer["do_you_want_no"]</label>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <button type="submit" data-prevent-double-click="true" class="govuk-button govuk-!-margin-top-4" data-module="govuk-button">
+                    @SharedLocalizer["continue"]
+                </button>
+            </form>
+        </div>
+    </div>
+</main>

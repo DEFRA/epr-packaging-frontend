@@ -118,15 +118,57 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="upload_organisation_details" xml:space="preserve">
-    <value>Uwchlwythwch eich ffeil manylion sefydliad</value>
+    <value>Uwchlwytho ffeil manylion eich sefydliad</value>
   </data>
   <data name="upload_file" xml:space="preserve">
     <value>Uwchlwytho ffeil</value>
   </data>
   <data name="file_must_be_a_CSV" xml:space="preserve">
-    <value>Rhaid i'r ffeil fod yn ffeil CSV</value>
+    <value>Rhaid i'r ffeil sy'n cael ei huwchlwytho fod ar fformat .csv</value>
   </data>
-  <data name="upload_organisation_details_title" xml:space="preserve">
-    <value>Uwchlwytho manylion sefydliad</value>
+  <data name="report_your_organisation_detail" xml:space="preserve">
+    <value>Rhoi gwybod am fanylion eich sefydliad</value>
+  </data>
+  <data name="report_your_member_organisation_detail" xml:space="preserve">
+    <value>Rhoi gwybod am fanylion eich sefydliad aelodau</value>
+  </data>
+  <data name="before_you_start" xml:space="preserve">
+    <value>Cyn ichi ddechrau - darllenwch y canllawiau</value>
+  </data>
+  <data name="read_the_guidance_on" xml:space="preserve">
+    <value>Darllenwch y canllawiau ynghylch</value>
+  </data>
+  <data name="how_to_report_organisation_details" xml:space="preserve">
+    <value>rhoi gwybod am fanylion sefydliad (yn agor mewn ffenestr newydd)</value>
+  </data>
+  <data name="there_are_template_documents_you_can_use_to_build_your_files" xml:space="preserve">
+    <value>Mae yna ddogfennau templed y gallwch eu defnyddio i adeiladu’ch ffeiliau.</value>
+  </data>
+  <data name="file_rejection_warning_text" xml:space="preserve">
+    <value>Bydd eich ffeil yn cael ei gwrthod os ydych yn rhoi gwybod ar ran is-gwmnïau ac nad ydych wedi defnyddio'r ID is-gwmni a ddarparwyd gennym.</value>
+  </data>
+  <data name="manage_your_subsidiaries" xml:space="preserve">
+    <value>Rheoli’ch is-gwmnïau</value>
+  </data>
+  <data name="it_may_take_a_few_minutes_for_your_file_upload..." xml:space="preserve">
+    <value>Efallai y bydd yn cymryd ychydig funudau i'ch ffeil uwchlwytho. Peidiwch â chau'r ffenestr tra bo’r ffeil wrthi’n uwchlwytho.</value>
+  </data>
+  <data name="the_file_must_be:" xml:space="preserve">
+    <value>Rhaid i'r ffeil fod:</value>
+  </data>
+  <data name="it_may_take_a_few_minutes_for_your_file_upload" xml:space="preserve">
+    <value>Efallai y bydd yn cymryd ychydig funudau i'ch ffeil uwchlwytho. Peidiwch â chau'r ffenestr tra bo’r ffeil wrthi’n uwchlwytho.</value>
+  </data>
+  <data name="make_sure_you_have_all_the_files_ready" xml:space="preserve">
+    <value>Gofalwch fod yr holl ffeiliau gennych yn barod</value>
+  </data>
+  <data name="have_all_the_files_ready" xml:space="preserve">
+    <value>Gofalwch fod yr holl ffeiliau'n barod cyn ichi ddechrau, gan gynnwys yr wybodaeth am frandiau a'r wybodaeth am bartneriaid os oes arnoch ei hangen.</value>
+  </data>
+  <data name="title_upload_organisation_details_home" xml:space="preserve">
+    <value>Llwythwch i fyny fanylion y sefydliad adref</value>
+  </data>
+	<data name="if_youre_reporting_for_subsidiaries" xml:space="preserve">
+    <value>Os ydych chi'n rhoi gwybod ar ran is-gwmnïau</value>
   </data>
 </root>

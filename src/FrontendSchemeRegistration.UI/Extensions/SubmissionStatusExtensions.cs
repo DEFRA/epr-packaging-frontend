@@ -16,9 +16,7 @@ public static class SubmissionStatusExtensions
         return submission.LastUploadedValidFiles != null ? SubmissionPeriodStatus.FileUploaded : SubmissionPeriodStatus.NotStarted;
     }
 
-    public static SubmissionPeriodStatus GetSubmissionStatus(this RegistrationSubmission submission, SubmissionPeriod submissionPeriod,
-    RegistrationDecision decision,
-    bool showRegistrationDecision)
+    public static SubmissionPeriodStatus GetSubmissionStatus(this RegistrationSubmission submission, SubmissionPeriod submissionPeriod, RegistrationDecision decision, bool showRegistrationDecision)
     {
         if (DateTime.Now < submissionPeriod.ActiveFrom)
         {
@@ -45,6 +43,10 @@ public static class SubmissionStatusExtensions
                     return SubmissionPeriodStatus.AcceptedByRegulator;
                 case "Rejected":
                     return SubmissionPeriodStatus.RejectedByRegulator;
+                case "Cancelled":
+                    return SubmissionPeriodStatus.CancelledByRegulator;
+                case "Queried":
+                    return SubmissionPeriodStatus.QueriedByRegulator;
                 default:
                     return submission.LastUploadedValidFiles?.CompanyDetailsUploadDatetime >
                       submission.LastSubmittedFiles?.SubmittedDateTime ? SubmissionPeriodStatus.SubmittedAndHasRecentFileUpload : SubmissionPeriodStatus.SubmittedToRegulator;

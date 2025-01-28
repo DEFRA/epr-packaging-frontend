@@ -9,7 +9,6 @@ using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
 using FrontendSchemeRegistration.Application.Options;
-using FrontendSchemeRegistration.UI.Services.Messages;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -81,7 +80,7 @@ public class FileUploadCompanyDetailsControllerTests
                     Query = new QueryCollection(new Dictionary<string, StringValues>
                     {
                         {
-                            "submissionId", SubmissionId.ToString()
+                            "SubmissionId", SubmissionId.ToString()
                         }
                     }),
                     ContentType = ContentType
@@ -181,7 +180,7 @@ public class FileUploadCompanyDetailsControllerTests
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
             .ReturnsAsync(new RegistrationSubmission
             {
-                Id = Guid.NewGuid()
+                Id = Guid.NewGuid(),
             });
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
@@ -225,6 +224,102 @@ public class FileUploadCompanyDetailsControllerTests
             SubmissionDeadline = submissionDeadline,
             OrganisationRole = OrganisationRoles.ComplianceScheme
         });
+    }
+
+    [Test]
+    public async Task Get_ReturnsFileUploadCompanyDetailsSubLandingView_WhenSessionDoesnotContainFileUploadCompanyDetailsSubLandingJourney()
+    {
+        // Arrange
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(new RegistrationSubmission
+            {
+                Id = Guid.NewGuid()
+            });
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+             .ReturnsAsync(new FrontendSchemeRegistrationSession
+             {
+                 RegistrationSession = new RegistrationSession
+                 {
+                     Journey = new List<string>
+                    {
+                        PagePaths.FileUploadCompanyDetails,
+                        PagePaths.FileUploadBrands,
+                        PagePaths.FileUploadPartnerships
+                    }
+                 }
+             });
+
+        // Act
+        var result = await _systemUnderTest.Get() as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadCompanyDetailsSubLanding");
+
+        _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.Never);
+    }
+
+    [Test]
+    public async Task Get_AddModelStateError_WhenSubmissionContainsErrors()
+    {
+        // Arrange
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(new RegistrationSubmission
+            {
+                Id = Guid.NewGuid(),
+                Errors = new List<string> { "Invalid Submission Id" }
+            });
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("FileUploadCompanyDetails");
+        result.ViewData.ModelState["file"].Errors[0].ErrorMessage.Should().Be("Invalid Submission Id");
+    }
+
+    [Test]
+    public async Task Get_ShouldSetBackLink_To_RegistrationTaskList_WhenisFileUploadJourneyInvokedViaRegistrationisFalse()
+    {
+        // Arrange
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+           .ReturnsAsync(new FrontendSchemeRegistrationSession
+           {
+               UserData = new UserData
+               {
+                   Organisations = new List<Organisation>
+                   {
+                        new()
+                        {
+                            OrganisationRole = OrganisationRoles.Producer
+                        }
+                   }
+               },
+               RegistrationSession = new RegistrationSession
+               {
+                   SubmissionPeriod = SubmissionPeriod,
+                   IsFileUploadJourneyInvokedViaRegistration = true,
+                   Journey = new List<string>
+                   {
+                        PagePaths.FileUploadCompanyDetailsSubLanding,
+                        PagePaths.FileUploadCompanyDetails,
+                        PagePaths.FileUploadBrands,
+                        PagePaths.FileUploadPartnerships
+                   }
+               }
+           });
+
+        var mockUrlHelper = new Mock<IUrlHelper>();
+        mockUrlHelper.Setup(x => x.Content($"~/{PagePaths.RegistrationTaskList}")).Returns($"~/{PagePaths.RegistrationTaskList}");
+        _systemUnderTest.Url = mockUrlHelper.Object;
+
+        // Act
+        var result = _systemUnderTest.Get().Result;
+        var model = (result as ViewResult).Model as FileUploadCompanyDetailsViewModel;
+        var webpageBackLink = _systemUnderTest.ViewBag.BackLinkToDisplay as string;
+
+        // Assert
+        webpageBackLink.Should().Be($"~/{PagePaths.RegistrationTaskList}");
     }
 
     [Test]
@@ -310,7 +405,7 @@ public class FileUploadCompanyDetailsControllerTests
     }
 
     [Test]
-    public async Task Post_RedirectsToFileUploadingCompanyDetails_WhenTheModelStateIsValid()
+    public async Task Post_RedirectsTo_UploadingOrganisationDetails_WhenTheModelStateIsValid()
     {
         // Arrange
         const string contentType = "content-type";
@@ -344,7 +439,7 @@ public class FileUploadCompanyDetailsControllerTests
         var result = await _systemUnderTest.Post() as RedirectToActionResult;
 
         // Assert
-        result.ControllerName.Should().Contain("FileUploadingCompanyDetails");
+        result.ControllerName.Should().Contain("UploadingOrganisationDetails");
         result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(submissionId);
     }
 }

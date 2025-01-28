@@ -30,4 +30,6 @@ public class ExternalUrlOptions
     public string AccessibilityPage { get; set; }
 
     public string FindAndUpdateCompanyInformation { get; set; }
+
+    public string ProducerResponsibilityObligations { get; set; }
 }

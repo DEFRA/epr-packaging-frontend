@@ -238,6 +238,45 @@ public class ConfirmComplianceSchemeTests : FrontendSchemeRegistrationTestBase
     }
 
     [Test]
+    public async Task
+      GivenOnConfirmComplianceSchemePage_WhenConfirmComplianceSchemePageHttpPostCalled_WithCache_And_ComplianceSchemeOperatorHasValue_ShouldClearSummaryCache_ThenVerifyCacheUsageAndRedirect()
+    {
+        // Arrange
+        FrontEndSchemeRegistrationSession.RegistrationSession.CurrentComplianceScheme = null;
+
+        ComplianceSchemeService.Setup(x => x.HasCache()).Returns(true);
+        ComplianceSchemeService.Setup(x => x.GetProducerComplianceScheme(_organisationId))
+            .ReturnsAsync(new ProducerComplianceSchemeDto() { ComplianceSchemeOperatorId = Guid.NewGuid()});
+
+        ComplianceSchemeService.Setup(x => x.ConfirmAddComplianceScheme(
+                SelectedComplianceScheme.Id,
+                _organisationId))
+            .ReturnsAsync(CommittedSelectedScheme);
+
+        // Act
+        var viewModel = new ComplianceSchemeConfirmationViewModel
+        {
+            CurrentComplianceScheme = null,
+            SelectedComplianceScheme = SelectedComplianceScheme,
+        };
+
+        var result = await SystemUnderTest.ConfirmComplianceScheme(viewModel);
+
+        // Assert
+        result.Should().NotBeNull();
+        var checkResult = result as RedirectToActionResult;
+        FrontEndSchemeRegistrationSession.Should().NotBeNull();
+        FrontEndSchemeRegistrationSession.RegistrationSession.CurrentComplianceScheme.Should().NotBeNull();
+        FrontEndSchemeRegistrationSession.RegistrationSession.CurrentComplianceScheme.ComplianceSchemeId.Should().Be(SelectedComplianceScheme.Id);
+        checkResult!.ActionName.Should().Be(nameof(ComplianceSchemeMemberLandingController.Get));
+        SessionManagerMock.Verify(x => x.SaveSessionAsync(It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()), Times.Once);
+
+        ComplianceSchemeService.Verify(x => x.HasCache(), Times.Once);
+        ComplianceSchemeService.Verify(x => x.GetProducerComplianceScheme(_organisationId), Times.Once);
+        ComplianceSchemeService.Verify(x=>x.ClearSummaryCache(It.IsAny<Guid>(), It.IsAny<Guid>()), Times.Once);
+    }
+
+    [Test]
     public async Task GivenInvalidModelState_WhenConfirmComplianceSchemeHttpPostCalled_ThenReturnConfirmationView()
     {
         // Arrange

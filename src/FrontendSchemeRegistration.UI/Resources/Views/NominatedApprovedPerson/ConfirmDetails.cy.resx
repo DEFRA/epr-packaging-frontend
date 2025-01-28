@@ -117,8 +117,23 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ConfirmDetails.CompanySecretary" xml:space="preserve">
+    <value>Ysgrifennydd Cwmni</value>
+  </data>
+  <data name="ConfirmDetails.Director" xml:space="preserve">
+    <value>Cyfarwyddwr</value>
+  </data>
   <data name="ConfirmDetails.Header" xml:space="preserve">
     <value>Gwirio'ch manylion</value>
+  </data>
+  <data name="ConfirmDetails.Member" xml:space="preserve">
+    <value>Aelod</value>
+  </data>
+  <data name="ConfirmDetails.NoneOfTheAbove" xml:space="preserve">
+    <value>Dim un o'r uchod</value>
+  </data>
+  <data name="ConfirmDetails.Partner" xml:space="preserve">
+    <value>Partner</value>
   </data>
   <data name="ConfirmDetails.Role" xml:space="preserve">
     <value>Rôl</value>

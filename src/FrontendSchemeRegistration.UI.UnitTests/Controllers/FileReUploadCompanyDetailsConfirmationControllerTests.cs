@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using Moq;
 using Organisation = EPR.Common.Authorization.Models.Organisation;
+using FrontendSchemeRegistration.Application.Constants;
 
 [TestFixture]
 public class FileReUploadCompanyDetailsConfirmationControllerTests
@@ -26,12 +27,13 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
     private Mock<ISubmissionService> _submissionServiceMock;
     private Mock<IUserAccountService> _userAccountServiceMock;
     private FileReUploadCompanyDetailsConfirmationController _systemUnderTest;
+    private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
 
     [SetUp]
     public void SetUp()
     {
-        var sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
-        sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+        _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
                 RegistrationSession = new RegistrationSession
@@ -57,7 +59,7 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
         _systemUnderTest =
             new FileReUploadCompanyDetailsConfirmationController(
                 _submissionServiceMock.Object,
-                _userAccountServiceMock.Object, sessionManagerMock.Object);
+                _userAccountServiceMock.Object, _sessionManagerMock.Object);
 
         _systemUnderTest.ControllerContext = new ControllerContext
         {
@@ -153,6 +155,109 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
 
         // Assert
         result.ViewName.Should().Be("FileReUploadCompanyDetailsConfirmation");
+        result.Model.Should().BeEquivalentTo(new FileReUploadCompanyDetailsConfirmationViewModel
+        {
+            SubmissionId = SubmissionId,
+            CompanyDetailsFileName = orgDetailsFileName,
+            CompanyDetailsFileUploadDate = orgDetailsUploadDate.ToReadableDate(),
+            CompanyDetailsFileUploadedBy = fullName,
+            BrandsFileName = brandFileName,
+            BrandsFileUploadDate = brandUploadDate.ToReadableDate(),
+            BrandsFileUploadedBy = fullName,
+            PartnersFileName = partnersFileName,
+            PartnersFileUploadDate = partnersUploadDate.ToReadableDate(),
+            PartnersFileUploadedBy = fullName,
+            SubmissionDeadline = SubmissionDeadline.ToReadableDate(),
+            IsSubmitted = false,
+            HasValidfile = true,
+            Status = SubmissionPeriodStatus.FileUploaded,
+            OrganisationRole = "Producer"
+        });
+    }
+
+    [Test]
+    public async Task Get_ReturnsCorrectViewAndModel_WhenCalled_FromRegistrationTaskList()
+    {
+        // Arrange
+        const string orgDetailsFileName = "filename.csv";
+        DateTime orgDetailsUploadDate = DateTime.UtcNow;
+        Guid orgDetailsUploadedBy = Guid.NewGuid();
+
+        const string partnersFileName = "partners.csv";
+        DateTime partnersUploadDate = DateTime.UtcNow;
+        Guid partnersUploadedBy = Guid.NewGuid();
+
+        const string brandFileName = "brand.csv";
+        DateTime brandUploadDate = DateTime.UtcNow;
+        Guid brandUploadedBy = Guid.NewGuid();
+
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(SubmissionId)).ReturnsAsync(new RegistrationSubmission
+        {
+            Id = SubmissionId,
+            CompanyDetailsFileName = orgDetailsFileName,
+            CompanyDetailsUploadedDate = orgDetailsUploadDate,
+            CompanyDetailsUploadedBy = orgDetailsUploadedBy,
+            PartnershipsFileName = partnersFileName,
+            PartnershipsUploadedDate = partnersUploadDate,
+            PartnershipsUploadedBy = partnersUploadedBy,
+            BrandsFileName = brandFileName,
+            BrandsUploadedDate = brandUploadDate,
+            BrandsUploadedBy = brandUploadedBy,
+            HasValidFile = true,
+            IsSubmitted = false,
+            LastUploadedValidFiles = new UploadedRegistrationFilesInformation
+            {
+                CompanyDetailsFileName = orgDetailsFileName,
+                BrandsFileName = brandFileName,
+                PartnershipsFileName = partnersFileName,
+                CompanyDetailsFileId = default(Guid),
+                CompanyDetailsUploadedBy = orgDetailsUploadedBy,
+                CompanyDetailsUploadDatetime = orgDetailsUploadDate,
+                BrandsUploadedBy = brandUploadedBy,
+                BrandsUploadDatetime = brandUploadDate,
+                PartnershipsUploadedBy = partnersUploadedBy,
+                PartnershipsUploadDatetime = partnersUploadDate
+            }
+        });
+        const string firstName = "first";
+        const string lastName = "last";
+        const string fullName = $"{firstName} {lastName}";
+
+        _userAccountServiceMock.Setup(x => x.GetPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new PersonDto
+        {
+            FirstName = firstName,
+            LastName = lastName
+        });
+
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SubmissionDeadline = SubmissionDeadline,
+                    IsFileUploadJourneyInvokedViaRegistration = true
+                },
+                UserData = new UserData
+                {
+                    ServiceRole = "Basic User",
+                    Organisations = new List<Organisation>
+                    {
+                        new Organisation
+                        {
+                            OrganisationRole = "Producer"
+                        }
+                    }
+                }
+            });
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("FileReUploadCompanyDetailsConfirmation");
+        result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
+        result.ViewData.Keys.Should().Contain("IsFileUploadJourneyInvokedViaRegistration");
+        result.ViewData["BackLinkToDisplay"].Should().Be($"/report-data/{PagePaths.RegistrationTaskList}");
         result.Model.Should().BeEquivalentTo(new FileReUploadCompanyDetailsConfirmationViewModel
         {
             SubmissionId = SubmissionId,

@@ -1,6 +1,21 @@
 ﻿@using FrontendSchemeRegistration.UI.ViewModels.Prns
+@using FrontendSchemeRegistration.Application.Constants;
 @inject IStringLocalizer<PrnDataResources> PrnDataLocalizer
 @model PrnViewModel
+
+@{
+    var isPdf = ViewData["IsPdf"] as bool? ?? false;
+    string status = PrnDataLocalizer[Model.ApprovalStatus].Value.ToString();
+    string statusMeaning = Localizer[Model.ApprovalStatusExplanationTranslation].Value.ToString();
+    string meaning = statusMeaning.ToString();
+
+    if (isPdf && Model.ApprovalStatus == PrnStatus.Rejected)
+    {
+        var source = Model.IsPrn ? "prn" : "pern";
+        status = Localizer["cancel_status_for_pdf"].Value.ToString();
+        meaning = Localizer["prn_awaiting_cancellation_explanation"].Value.Replace("{0}", source.ToString());
+    }
+}
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-half">
@@ -8,7 +23,7 @@
     </div>
     <div class="govuk-grid-column-one-half">
         <strong class="govuk-tag govuk-tag--@Model.ApprovalStatusDisplayCssColour" id="status">
-            @PrnDataLocalizer[Model.ApprovalStatus]
+            @status
         </strong>
     </div>
 </div>
@@ -18,7 +33,7 @@
         <label class="govuk-label" for="status-meaning">@Localizer["status_meaning"]</label>
     </div>
     <div class="govuk-grid-column-one-half">
-        <div class="govuk-label" id="status-meaning"><strong>@Localizer[Model.ApprovalStatusExplanationTranslation]</strong></div>
+        <div class="govuk-label" id="status-meaning"><strong>@meaning</strong></div>
     </div>
 </div>
 <hr/>

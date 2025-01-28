@@ -1,0 +1,36 @@
+@model ConfirmRemoveSubsidiarySuccessViewModel
+@{
+    ViewData["Title"] = Localizer["subsidiary_removed"];
+}
+
+<div class="govuk-grid-column-two-thirds">
+    <div class="govuk-panel govuk-panel--confirmation">
+        <h1 class="govuk-panel__title">
+            @Localizer["Subsidiary_removed_successfully"]
+        </h1>
+        <div class="govuk-panel__body">
+            @Model.SubsidiaryName
+        </div>
+    </div>
+</div>
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <div class="govuk-grid-column-full">
+                <p class="govuk-body govuk-!-margin-top-4 govuk-!-margin-bottom-7">@Localizer["you_removed_a_subsidiary"]</p>
+            </div>
+            <form method="get" action="@Url.Action("SubsidiariesList", "FileUploadSubsidiaries")">
+                <input type="hidden" name="page" value="@Model.ReturnToSubsidiaryPage"/>
+                <div class="govuk-grid-column-full">
+                    <div class="govuk-button-group">
+
+                        <button class="govuk-button" data-module="govuk-button" type="submit">@Localizer["View_your_subsidiaries"]</button>
+                        @Html.ActionLink(Localizer["return_to_account_home"].Value, "Get", "Landing",
+                            null, new { @class = "govuk-link govuk-link--no-visited-state" })
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>

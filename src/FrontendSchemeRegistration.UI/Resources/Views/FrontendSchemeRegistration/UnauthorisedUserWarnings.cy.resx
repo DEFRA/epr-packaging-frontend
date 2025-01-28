@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="unauthorised_user_warning_title" xml:space="preserve">
+        <value></value>
+    </data>
+	<data name="register_company" xml:space="preserve">
+        <value>{0} cofrestru</value>
+    </data>
+	<data name="organisation_id_x" xml:space="preserve">
+        <value>ID y sefydliad: {0}</value>
+    </data>
+	<data name="members_organisation_details" xml:space="preserve">
+        <value>Manylion cofrestru'r cynllun</value>
+    </data>
+	<data name="compliance_scheme_x" xml:space="preserve">
+        <value>Cynllun cydymffurfio: {0}</value>
+    </data>
+	<data name="regulator" xml:space="preserve">
+        <value>Rheoleiddiwr: </value>
+    </data>
+	<data name="england.environmental_regulator" xml:space="preserve">
+        <value>Asiantaeth yr Amgylchedd (EA)</value>
+    </data>
+	<data name="scotland.environmental_regulator" xml:space="preserve">
+        <value>Asiantaeth Diogelu Amgylchedd yr Alban (SEPA)</value>
+    </data>
+	<data name="wales.environmental_regulator" xml:space="preserve">
+        <value>Cyfoeth Naturiol Cymru (CNC)</value>
+    </data>
+	<data name="northernireland.environmental_regulator" xml:space="preserve">
+        <value>Asiantaeth Amgylchedd Gogledd Iwerddon (NIEA)</value>
+    </data>
+	<data name="you-cannot-submit-your-date-and-complete-your-application" xml:space="preserve">
+        <value>Chewch chi ddim cyflwyno'ch data a chwblhau eich cais gan nad ydych chi’n berson wedi’i gymeradwyo neu wedi’i ddirprwyo.</value>
+    </data>
+	<data name="your-approved-person-is-the-person-in-charge-of-submitting-information" xml:space="preserve">
+        <value>Eich person wedi’i gymeradwyo yw'r person sy'n gyfrifol am gyflwyno gwybodaeth i'r rheoleiddiwr amgylcheddol. Y person wedi’i gymeradwyo fel arfer yw’r person a greodd gyfrif ar gyfer eich sefydliad.</value>
+    </data>
+	<data name="your-delegated-person-is-another-person-who-can-submit-information" xml:space="preserve">
+        <value>Mae eich person wedi’i ddirprwyo yn berson arall sy'n gallu cyflwyno gwybodaeth i'r rheoleiddiwr amgylcheddol.</value>
+    </data>
+	<data name="your-need-to-get-your-approved-or-delegated-person-to-submit-your-data" xml:space="preserve">
+        <value>Mae angen ichi gael eich person wedi’i gymeradwyo neu’ch person wedi’i ddirprwyo i gyflwyno'ch data a gorffen eich cais.</value>
+    </data>
+	<data name="return_to_registration_steps" xml:space="preserve">
+		<value>Yn ôl i'r camau cofrestru</value>
+	</data>
+</root>

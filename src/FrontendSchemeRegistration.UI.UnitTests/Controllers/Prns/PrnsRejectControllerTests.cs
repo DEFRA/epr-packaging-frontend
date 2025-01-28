@@ -1,23 +1,41 @@
 ﻿namespace FrontendSchemeRegistration.UI.UnitTests.Controllers.Prns;
 
+using AutoFixture;
 using FluentAssertions;
 using FrontendSchemeRegistration.UI.Controllers.Prns;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.ViewModels.Prns;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Routing;
 using Moq;
 
 public class PrnsRejectControllerTests
 {
     private Mock<IPrnService> _mockPrnService;
+    private Mock<IDownloadPrnService> _mockDownloadPrnService;
 
     private PrnsRejectController _sut;
+
+    private static readonly IFixture _fixture = new Fixture();
 
     [SetUp]
     public void SetUp()
     {
         this._mockPrnService = new Mock<IPrnService>();
-        _sut = new PrnsRejectController(_mockPrnService.Object);
+        _mockDownloadPrnService = new Mock<IDownloadPrnService>();
+        _sut = new PrnsRejectController(_mockPrnService.Object, _mockDownloadPrnService.Object);
+
+        _sut.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                Session = new Mock<ISession>().Object
+            },
+            RouteData = new RouteData(),
+            ActionDescriptor = new ControllerActionDescriptor()
+        };
     }
 
     // Reject single Prn. Step 3 of 5
@@ -96,8 +114,8 @@ public class PrnsRejectControllerTests
         // Act
         var result = await _sut.RejectedPrn(model.ExternalId) as RedirectToActionResult;
 
-        result.ActionName.Should().Be(nameof(PrnsController.HomePagePrn));
-        result.ControllerName.Should().Be("Prns");
+        result.ActionName.Should().Be(nameof(PrnsObligationController.ObligationsHome));
+        result.ControllerName.Should().Be("PrnsObligation");
     }
 
     // Reject single PRN. Step 5 of 5 Prn is null
@@ -107,7 +125,28 @@ public class PrnsRejectControllerTests
         // Act
         var result = await _sut.RejectedPrn(Guid.NewGuid()) as RedirectToActionResult;
 
-        result.ActionName.Should().Be(nameof(PrnsController.HomePagePrn));
-        result.ControllerName.Should().Be("Prns");
+        result.ActionName.Should().Be(nameof(PrnsObligationController.ObligationsHome));
+        result.ControllerName.Should().Be("PrnsObligation");
+    }
+
+    [Test]
+    public async Task DownloadPrn_CallsDownloadPrnAsync_AndReturnsOkObjectResult()
+    {
+        // Arrange
+        var prnId = Guid.NewGuid();
+        var expectedResult = new OkObjectResult(new { fileName = "PRN123", htmlContent = "<html><body>Sample Content</body></html>" });
+
+        _mockDownloadPrnService
+            .Setup(x => x.DownloadPrnAsync(prnId, "RejectedPrn", It.IsAny<ActionContext>()))
+            .ReturnsAsync(expectedResult);
+
+        // Act
+        var result = await _sut.DownloadPrn(prnId) as OkObjectResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Value.Should().BeEquivalentTo(new { fileName = "PRN123", htmlContent = "<html><body>Sample Content</body></html>" });
+
+        _mockDownloadPrnService.Verify(x => x.DownloadPrnAsync(prnId, "RejectedPrn", It.IsAny<ActionContext>()), Times.Once);
     }
 }

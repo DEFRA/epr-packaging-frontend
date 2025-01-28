@@ -1,5 +1,4 @@
-﻿@using FrontendSchemeRegistration.Application.Constants
-@using FrontendSchemeRegistration.UI.ViewModels.NominatedApprovedPerson
+﻿@using FrontendSchemeRegistration.UI.ViewModels.NominatedApprovedPerson
        
 
 @model ConfirmDetailsApprovedPersonViewModel
@@ -22,11 +21,18 @@
                                 @Localizer["ConfirmDetails.Role"]
                             </dt>
                             <dd class="govuk-summary-list__value">
-                                @Model.RoleInOrganisation
+                                @if (Model.IsInCompanyHouse)
+                                {
+                                    @Localizer[$"ConfirmDetails.{Model.RoleInOrganisation}"]
+                                }
+                                else
+                                {
+                                    @Model.RoleInOrganisation
+                                }
                             </dd>
                             <dd class="govuk-summary-list__actions">
                                 <a href="@Model.RoleChangeUrl" class="govuk-link govuk-link--no-visited-state">
-                                    @SharedLocalizer["Change"]
+                                    @SharedLocalizer["change"]
                                     <span class="govuk-visually-hidden"></span>
                                 </a>
                             </dd>
@@ -42,7 +48,7 @@
                             </dd>
                             <dd class="govuk-summary-list__actions">
                                 <a href="@Model.TelephoneChangeUrl" class="govuk-link govuk-link--no-visited-state">
-                                    @SharedLocalizer["Change"]
+                                    @SharedLocalizer["change"]
                                     <span class="govuk-visually-hidden"></span>
                                 </a>
                             </dd>

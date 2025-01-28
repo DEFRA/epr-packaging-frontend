@@ -90,7 +90,8 @@ public class FileUploadCompanyDetailsIssueReportControllerTests
     {
         // Arrange
         const string fileName = "example.csv";
-        const string expectedErrorReportFileName = "example error report.csv";
+        var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+        var expectedErrorReportFileName = $"Error-report-{fileNameWithoutExtension}.csv";
         var memoryStream = new MemoryStream();
 
         _registrationErrorReportService.Setup(x => x.GetRegistrationErrorReportStreamAsync(SubmissionId)).ReturnsAsync(memoryStream);

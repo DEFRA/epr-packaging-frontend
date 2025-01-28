@@ -5,11 +5,16 @@ using Application.Services.Interfaces;
 using FluentAssertions;
 using FrontendSchemeRegistration.Application.DTOs.Organisation;
 using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
+using FrontendSchemeRegistration.Application.DTOs.Subsidiary.FileUploadStatus;
 using FrontendSchemeRegistration.Application.DTOs.Subsidiary.OrganisationSubsidiaryList;
+using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.UI.Extensions;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using Newtonsoft.Json;
 using System.Net;
+using System.Text;
 
 [TestFixture]
 public class SubsidiaryServiceTests
@@ -19,13 +24,17 @@ public class SubsidiaryServiceTests
     private Mock<IAccountServiceApiClient> _accountServiceApiClientMock;
     private Mock<IWebApiGatewayClient> _webApiGatewayClientMock;
     private SubsidiaryService _sut;
-
+    private const string RedisFileUploadStatusViewedKey = "SubsidiaryFileUploadStatusViewed";
+    private Mock<IDistributedCache> _mockDistributedCache;
+    
     [SetUp]
     public void Init()
     {
+               
         _accountServiceApiClientMock = new Mock<IAccountServiceApiClient>();
         _webApiGatewayClientMock = new Mock<IWebApiGatewayClient>();
-        _sut = new SubsidiaryService(_accountServiceApiClientMock.Object, _webApiGatewayClientMock.Object, new NullLogger<SubsidiaryService>());
+        _mockDistributedCache = new Mock<IDistributedCache>();
+        _sut = new SubsidiaryService(_accountServiceApiClientMock.Object, _webApiGatewayClientMock.Object, new NullLogger<SubsidiaryService>(), _mockDistributedCache.Object);
     }
 
     [Test]
@@ -295,23 +304,164 @@ public class SubsidiaryServiceTests
     }
 
     [Test]
-    public async Task GetFileUploadTemplateAsync__WhenCallSuccessful_ReturnsResponse()
+    public async Task GetSubsidiaryFileUploadStatusAsync_NoStatus_ReturnsNoFileUploadActive()
     {
         // Arrange
-        var expectedDto = new SubsidiaryFileUploadTemplateDto
-        {
-            Name = "test.csv",
-            ContentType = "text/csv",
-            Content = new MemoryStream([1])
-        };
-
-        _webApiGatewayClientMock.Setup(x => x.GetSubsidiaryFileUploadTemplateAsync()).ReturnsAsync(expectedDto);
+        var userId = Guid.NewGuid();
+        var organisationId = Guid.NewGuid();
+        _webApiGatewayClientMock.Setup(c => c.GetSubsidiaryFileUploadStatusAsync(userId, organisationId))
+            .ReturnsAsync(new UploadFileErrorResponse { Status = string.Empty });
 
         // Act
-        var result = await _sut.GetFileUploadTemplateAsync();
+        var result = await _sut.GetSubsidiaryFileUploadStatusAsync(userId, organisationId);
 
         // Assert
-        result.Should().Be(expectedDto);
+        result.Should().Be(SubsidiaryFileUploadStatus.NoFileUploadActive);
+    }
+
+    [Test]
+    public async Task GetSubsidiaryFileUploadStatusAsync_FinishedWithNoErrors_ReturnsFileUploadedSuccessfully()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var organisationId = Guid.NewGuid();
+        _webApiGatewayClientMock.Setup(c => c.GetSubsidiaryFileUploadStatusAsync(userId, organisationId))
+            .ReturnsAsync(new UploadFileErrorResponse { Status = "finished", Errors = null });
+
+        // Act
+        var result = await _sut.GetSubsidiaryFileUploadStatusAsync(userId, organisationId);
+
+        // Assert
+        result.Should().Be(SubsidiaryFileUploadStatus.FileUploadedSuccessfully);
+    }
+
+    [Test]
+    public async Task GetSubsidiaryFileUploadStatusAsync_FinishedWithErrors_ReturnsHasErrors()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var organisationId = Guid.NewGuid();
+        _webApiGatewayClientMock.Setup(c => c.GetSubsidiaryFileUploadStatusAsync(userId, organisationId))
+            .ReturnsAsync(new UploadFileErrorResponse { Status = "finished", Errors = new List<UploadFileErrorModel>() });
+
+        // Act
+        var result = await _sut.GetSubsidiaryFileUploadStatusAsync(userId, organisationId);
+
+        // Assert
+        result.Should().Be(SubsidiaryFileUploadStatus.HasErrors);
+    }
+    [Test]
+    public async Task GetSubsidiaryFileUploadStatusAsync_FinishedWithPartialErrors_ReturnsPartialSuccess()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var organisationId = Guid.NewGuid();
+        _webApiGatewayClientMock.Setup(c => c.GetSubsidiaryFileUploadStatusAsync(userId, organisationId))
+            .ReturnsAsync(new UploadFileErrorResponse { Status = "finished", Errors = new List<UploadFileErrorModel>() { new UploadFileErrorModel()}, RowsAdded = 2 });
+
+        // Act
+        var result = await _sut.GetSubsidiaryFileUploadStatusAsync(userId, organisationId);
+
+        // Assert
+        result.Should().Be(SubsidiaryFileUploadStatus.PartialUpload);
+    }
+
+    [Test]
+    public async Task GetSubsidiaryFileUploadStatusAsync_Uploading_ReturnsFileUploadInProgress()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var organisationId = Guid.NewGuid();
+        _webApiGatewayClientMock.Setup(c => c.GetSubsidiaryFileUploadStatusAsync(userId, organisationId))
+            .ReturnsAsync(new UploadFileErrorResponse { Status = "uploading" });
+
+        // Act
+        var result = await _sut.GetSubsidiaryFileUploadStatusAsync(userId, organisationId);
+
+        // Assert
+        result.Should().Be(SubsidiaryFileUploadStatus.FileUploadInProgress);
+    }
+
+    [Test]
+    public async Task GetSubsidiaryFileUploadStatusAsync_UnknownStatus_ReturnsNoFileUploadActive()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var organisationId = Guid.NewGuid();
+        _webApiGatewayClientMock.Setup(c => c.GetSubsidiaryFileUploadStatusAsync(userId, organisationId))
+            .ReturnsAsync(new UploadFileErrorResponse { Status = "unknown" });
+
+        // Act
+        var result = await _sut.GetSubsidiaryFileUploadStatusAsync(userId, organisationId);
+
+        // Assert
+        result.Should().Be(SubsidiaryFileUploadStatus.NoFileUploadActive);
+    }
+
+    [Test]
+    public async Task SetSubsidiaryFileUploadStatusViewedAsync_ShouldSetCorrectKeyAndValue()
+    {
+        var userId = Guid.NewGuid();
+        var organisationId = Guid.NewGuid();
+        var redisKey = $"SubsidiaryFileUploadStatusViewed:{userId}:{organisationId}";
+        var valueToCache = true;
+
+        var serializedValue = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(valueToCache));
+
+        _mockDistributedCache
+            .Setup(c => c.SetAsync(redisKey, It.IsAny<byte[]>(), It.IsAny<DistributedCacheEntryOptions>(), default))
+            .Callback<string, byte[], DistributedCacheEntryOptions, System.Threading.CancellationToken>((key, value, options, token) =>
+            {
+                key.Should().Be(redisKey, "because the cache key should match the expected format");
+                value.Should().BeEquivalentTo(serializedValue, "because the serialized value should match the boolean value to cache");
+                
+            })
+            .Returns(Task.CompletedTask); 
+
+        // Act
+        await _sut.SetSubsidiaryFileUploadStatusViewedAsync(valueToCache, userId, organisationId);
+
+        // Assert
+        _mockDistributedCache.Verify(c => c.SetAsync(redisKey, It.IsAny<byte[]>(), It.IsAny<DistributedCacheEntryOptions>(), default), Times.Once);
+    }
+
+    [Test]
+    public async Task GetSubsidiaryFileUploadStatusViewedAsync_ShouldReturnTrue_WhenValueIsTrue()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var organisationId = Guid.NewGuid();
+        var redisKey = $"{RedisFileUploadStatusViewedKey}:{userId}:{organisationId}";
+        var expectedValue = true;
+
+        var serializedValue = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(expectedValue));
+        _mockDistributedCache.Setup(c => c.Get(redisKey))
+                             .Returns(serializedValue);
+
+        // Act
+        var result = await _sut.GetSubsidiaryFileUploadStatusViewedAsync(userId, organisationId);
+
+        // Assert
+        result.Should().BeTrue("because the value was found in the cache and is expected to be true");
+    }
+
+    [Test]
+    public async Task GetSubsidiaryFileUploadStatusViewedAsync_ShouldReturnFalse_WhenCacheMissOccurs()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var organisationId = Guid.NewGuid();
+        var redisKey = $"{RedisFileUploadStatusViewedKey}:{userId}:{organisationId}";
+
+        _mockDistributedCache
+            .Setup(c => c.Get(redisKey))
+            .Returns((byte[])null);
+
+        // Act
+        var result = await _sut.GetSubsidiaryFileUploadStatusViewedAsync(userId, organisationId);
+
+        // Assert
+        result.Should().BeFalse("because a cache miss should lead to a return value of false");
     }
 
     [Test]
@@ -373,7 +523,6 @@ public class SubsidiaryServiceTests
         Assert.ThrowsAsync<Exception>(async () => await _sut.GetOrganisationByReferenceNumber(referenceNumber));
     }
 
-
     [Test]
     public async Task TerminateSubsidiary_WhenApiReturnsSuccessfully_ReturnsResponse()
     {
@@ -406,4 +555,115 @@ public class SubsidiaryServiceTests
         Assert.ThrowsAsync<HttpRequestException>(async () => await _sut.TerminateSubsidiary(parentOrganisationExternalId, childOrganisationId, userId));
     }
 
+    [Test]
+    public async Task GetUploadStatus_WhenCallSuccessful_ReturnsResponse()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var organisationId = Guid.NewGuid();
+
+        var expectedDto = new SubsidiaryUploadStatusDto
+        {
+            Status = SubsidiaryUploadStatus.Uploading
+        };
+
+        _webApiGatewayClientMock.Setup(x => x.GetSubsidiaryUploadStatus(userId, organisationId)).ReturnsAsync(expectedDto);
+
+        // Act
+        var result = await _sut.GetUploadStatus(userId, organisationId);
+
+        // Assert
+        result.Should().Be(expectedDto);
+        _webApiGatewayClientMock.Verify(x => x.GetSubsidiaryUploadStatus(userId, organisationId), Times.Once);
+    }
+
+    [TestCase(true, "Error")]
+    [TestCase(false, "Warning")]
+    public async Task GetUploadErrorsReport_WhenErrorsExist_ReturnsFileWithErrors(bool isError, string expectedIssue)
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var organisationId = Guid.NewGuid();
+
+        var errors = new SubsidiaryUploadErrorDto[]
+        {
+            new SubsidiaryUploadErrorDto
+            {
+                FileLineNumber = 2,
+                FileContent = ",test-2,test-3,test-4,test-5,test-6\r\n",
+                Message = "test-1 issue.",
+                IsError = isError,
+                ErrorNumber = 7,
+            }
+        };
+
+        _webApiGatewayClientMock.Setup(x => x.GetSubsidiaryUploadStatus(userId, organisationId)).ReturnsAsync(new SubsidiaryUploadStatusDto { Errors = errors });
+
+        var expectedString = "organisation_id,subsidiary_id,organisation_name,companies_house_number,parent_child,franchisee_licensee_tenant,Row Number,Issue,Message\r\n"
+            + $"{errors[0].FileContent.Replace("\r\n", "")},{errors[0].FileLineNumber},{expectedIssue},{errors[0].Message}\r\n";
+
+        // Act
+        var result = await _sut.GetUploadErrorsReport(userId, organisationId);
+
+        // Assert
+        var resultAsString = new StreamReader(result).ReadToEnd();
+
+        resultAsString.Should().Be(expectedString);
+        _webApiGatewayClientMock.Verify(x => x.GetSubsidiaryUploadStatus(userId, organisationId), Times.Once);
+    }
+
+    [Test]
+    public async Task GetUploadErrorsReport_WhenFileContentEmpty_ReturnsFileWithEmptyColumnsAndError()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var organisationId = Guid.NewGuid();
+
+        var errors = new SubsidiaryUploadErrorDto[]
+        {
+            new SubsidiaryUploadErrorDto
+            {
+                FileLineNumber = 2,
+                FileContent = "",
+                Message = "No rows",
+                IsError = true,
+                ErrorNumber = 7,
+            }
+        };
+
+        _webApiGatewayClientMock.Setup(x => x.GetSubsidiaryUploadStatus(userId, organisationId)).ReturnsAsync(new SubsidiaryUploadStatusDto { Errors = errors });
+
+        var expectedString = "organisation_id,subsidiary_id,organisation_name,companies_house_number,parent_child,franchisee_licensee_tenant,Row Number,Issue,Message\r\n"
+            + $",,,,,,{errors[0].FileLineNumber},Error,{errors[0].Message}\r\n";
+
+        // Act
+        var result = await _sut.GetUploadErrorsReport(userId, organisationId);
+
+        // Assert
+        var resultAsString = new StreamReader(result).ReadToEnd();
+
+        resultAsString.Should().Be(expectedString);
+        _webApiGatewayClientMock.Verify(x => x.GetSubsidiaryUploadStatus(userId, organisationId), Times.Once);
+    }
+
+    [Test]
+    public async Task GetUploadErrorsReport_WhenNoErrorsExist_ReturnsFileWithoutErrors()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var organisationId = Guid.NewGuid();
+
+        _webApiGatewayClientMock.Setup(x => x.GetSubsidiaryUploadStatus(userId, organisationId)).ReturnsAsync(new SubsidiaryUploadStatusDto());
+
+        var expectedString = "organisation_id,subsidiary_id,organisation_name,companies_house_number,parent_child,franchisee_licensee_tenant,Row Number,Issue,Message\r\n";
+
+        // Act
+        var result = await _sut.GetUploadErrorsReport(userId, organisationId);
+
+        // Assert
+        var resultAsString = new StreamReader(result).ReadToEnd();
+
+        resultAsString.Should().Be(expectedString);
+        _webApiGatewayClientMock.Verify(x => x.GetSubsidiaryUploadStatus(userId, organisationId), Times.Once);
+    }
 }

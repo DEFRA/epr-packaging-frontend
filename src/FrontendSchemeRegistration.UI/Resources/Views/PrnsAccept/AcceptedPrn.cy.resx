@@ -118,33 +118,36 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="accept_or_reject_more_prns_and_perns" xml:space="preserve">
-    <value>Accept or reject more {0} and {1} -cy</value>
+    <value>Derbyn neu wrthod rhagor o {0} a {1}</value>
   </data>
   <data name="download_this_prn" xml:space="preserve">
-    <value>Download this {0} -cy</value>
+    <value>Lawrlwytho'r {0} yma fel PDF</value>
   </data>
   <data name="manage_obligation_home" xml:space="preserve">
-    <value>Manage obligation home - cy</value>
+	  <value>Gweld cynnydd mewn rhwymedigaethau ailgylchu</value>
   </data>
   <data name="page_title" xml:space="preserve">
-    <value>EPR for packaging data: manage your recycling obligation-cy</value>
+    <value>EPR ar gyfer data pecynnu: rheoli eich rhwymedigaeth ailgylchu</value>
   </data>
   <data name="prn_accepted" xml:space="preserve">
-    <value>{0} accepted. -cy</value>
+    <value>{0} yn cael ei dderbyn tuag at eich rhwymedigaeth ailgylchu {1}.</value>
   </data>
   <data name="prn_number" xml:space="preserve">
-    <value>{0} number -cy</value>
+    <value>{0} rhif</value>
   </data>
   <data name="tonnage_credited_towards_your_obligation" xml:space="preserve">
-    <value>{0} tonnes credited towards your {1} obligation-cy.</value>
+    <value>{0} tunnell sy'n cael eu credydu tuag at eich rhwymedigaeth ailgylchu {1}.</value>
   </data>
   <data name="year" xml:space="preserve">
-    <value>Year -cy</value>
+    <value>Blwyddyn Cyhoeddi'r</value>
   </data>
   <data name="prn_note" xml:space="preserve">
-    <value>Packaging Recycling Note-cy</value>
+    <value>Nodyn Ailgylchu Pecynnu</value>
   </data>
   <data name="pern_note" xml:space="preserve">
-    <value>Packaging Export Recycling Note-cy</value>
+    <value>Nodyn Ailgylchu Allforio Pecynnu</value>
+  </data>
+  <data name="download_this_prn_awaiting_acceptance" xml:space="preserve">
+    <value>Lawrlwythwch hwn yn aros am dderbyn {0} fel PDF</value>
   </data>
 </root>

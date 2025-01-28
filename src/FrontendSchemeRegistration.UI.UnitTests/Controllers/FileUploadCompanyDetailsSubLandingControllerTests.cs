@@ -10,6 +10,8 @@ using Constants;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
+using FrontendSchemeRegistration.UI.Enums;
+using FrontendSchemeRegistration.UI.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -31,7 +33,7 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
             ActiveFrom = DateTime.Today,
             Year = "2023",
             StartMonth = "January",
-            EndMonth = "June"
+            EndMonth = "June", 
         },
         new SubmissionPeriod
         {
@@ -149,7 +151,9 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
                     DatePeriodStartMonth = _submissionPeriods.ElementAt(0).StartMonth,
                     DatePeriodEndMonth = _submissionPeriods.ElementAt(0).EndMonth,
                     Status = SubmissionPeriodStatus.NotStarted,
-                    DatePeriodYear = _submissionPeriods[0].Year
+                    DatePeriodYear = _submissionPeriods[0].Year,
+                    DatePeriodShortStartMonth = _submissionPeriods.ElementAt(0).LocalisedShortMonth(MonthType.Start),
+                    DatePeriodShortEndMonth = _submissionPeriods.ElementAt(0).LocalisedShortMonth(MonthType.End),
                 },
                 new()
                 {
@@ -158,7 +162,9 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
                     DatePeriodEndMonth = _submissionPeriods.ElementAt(1).EndMonth,
                     Deadline = _submissionPeriods.ElementAt(1).Deadline,
                     Status = SubmissionPeriodStatus.CannotStartYet,
-                    DatePeriodYear = _submissionPeriods[1].Year
+                    DatePeriodYear = _submissionPeriods[1].Year,
+                    DatePeriodShortStartMonth = _submissionPeriods.ElementAt(1).LocalisedShortMonth(MonthType.Start),
+                    DatePeriodShortEndMonth = _submissionPeriods.ElementAt(1).LocalisedShortMonth(MonthType.End),
                 }
             };
 
@@ -227,7 +233,9 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
                     DatePeriodEndMonth = _submissionPeriods.ElementAt(0).EndMonth,
                     Deadline = _submissionPeriods.ElementAt(0).Deadline,
                     Status = SubmissionPeriodStatus.NotStarted,
-                    DatePeriodYear = _submissionPeriods[0].Year
+                    DatePeriodYear = _submissionPeriods[0].Year,
+                    DatePeriodShortStartMonth = _submissionPeriods.ElementAt(0).LocalisedShortMonth(MonthType.Start),
+                    DatePeriodShortEndMonth = _submissionPeriods.ElementAt(0).LocalisedShortMonth(MonthType.End),
                 },
                 new()
                 {
@@ -236,7 +244,9 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
                     DatePeriodEndMonth = _submissionPeriods.ElementAt(1).EndMonth,
                     Deadline = _submissionPeriods.ElementAt(1).Deadline,
                     Status = SubmissionPeriodStatus.CannotStartYet,
-                    DatePeriodYear = _submissionPeriods[1].Year
+                    DatePeriodYear = _submissionPeriods[1].Year,
+                    DatePeriodShortStartMonth = _submissionPeriods.ElementAt(1).LocalisedShortMonth(MonthType.Start),
+                    DatePeriodShortEndMonth = _submissionPeriods.ElementAt(1).LocalisedShortMonth(MonthType.End),
                 }
             };
 
@@ -339,7 +349,9 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
                     DatePeriodStartMonth = _submissionPeriods.ElementAt(0).StartMonth,
                     DatePeriodEndMonth = _submissionPeriods.ElementAt(0).EndMonth,
                     Status = SubmissionPeriodStatus.SubmittedToRegulator,
-                    DatePeriodYear = _submissionPeriods[0].Year
+                    DatePeriodYear = _submissionPeriods[0].Year,
+                    DatePeriodShortStartMonth = _submissionPeriods.ElementAt(0).LocalisedShortMonth(MonthType.Start),
+                    DatePeriodShortEndMonth = _submissionPeriods.ElementAt(0).LocalisedShortMonth(MonthType.End),
                 },
                 new()
                 {
@@ -348,7 +360,9 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
                     DatePeriodEndMonth = _submissionPeriods.ElementAt(1).EndMonth,
                     Deadline = _submissionPeriods.ElementAt(1).Deadline,
                     Status = SubmissionPeriodStatus.CannotStartYet,
-                    DatePeriodYear = _submissionPeriods[1].Year
+                    DatePeriodYear = _submissionPeriods[1].Year,
+                    DatePeriodShortStartMonth = _submissionPeriods.ElementAt(1).LocalisedShortMonth(MonthType.Start),
+                    DatePeriodShortEndMonth = _submissionPeriods.ElementAt(1).LocalisedShortMonth(MonthType.End),
                 }
             };
 
@@ -430,7 +444,9 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
                     DatePeriodStartMonth = _submissionPeriods.ElementAt(0).StartMonth,
                     DatePeriodEndMonth = _submissionPeriods.ElementAt(0).EndMonth,
                     Status = SubmissionPeriodStatus.AcceptedByRegulator,
-                    DatePeriodYear = _submissionPeriods[0].Year
+                    DatePeriodYear = _submissionPeriods[0].Year,
+                    DatePeriodShortStartMonth = _submissionPeriods.ElementAt(0).LocalisedShortMonth(MonthType.Start),
+                    DatePeriodShortEndMonth = _submissionPeriods.ElementAt(0).LocalisedShortMonth(MonthType.End),
                 },
                 new()
                 {
@@ -439,7 +455,9 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
                     DatePeriodEndMonth = _submissionPeriods.ElementAt(1).EndMonth,
                     Deadline = _submissionPeriods.ElementAt(1).Deadline,
                     Status = SubmissionPeriodStatus.CannotStartYet,
-                    DatePeriodYear = _submissionPeriods[1].Year
+                    DatePeriodYear = _submissionPeriods[1].Year,
+                    DatePeriodShortStartMonth = _submissionPeriods.ElementAt(1).LocalisedShortMonth(MonthType.Start),
+                    DatePeriodShortEndMonth = _submissionPeriods.ElementAt(1).LocalisedShortMonth(MonthType.End),
                 }
             };
 
@@ -521,7 +539,9 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
                     DatePeriodStartMonth = _submissionPeriods.ElementAt(0).StartMonth,
                     DatePeriodEndMonth = _submissionPeriods.ElementAt(0).EndMonth,
                     Status = SubmissionPeriodStatus.RejectedByRegulator,
-                    DatePeriodYear = _submissionPeriods[0].Year
+                    DatePeriodYear = _submissionPeriods[0].Year,
+                    DatePeriodShortStartMonth = _submissionPeriods.ElementAt(0).LocalisedShortMonth(MonthType.Start),
+                    DatePeriodShortEndMonth = _submissionPeriods.ElementAt(0).LocalisedShortMonth(MonthType.End),
                 },
                 new()
                 {
@@ -530,7 +550,9 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
                     DatePeriodEndMonth = _submissionPeriods.ElementAt(1).EndMonth,
                     Deadline = _submissionPeriods.ElementAt(1).Deadline,
                     Status = SubmissionPeriodStatus.CannotStartYet,
-                    DatePeriodYear = _submissionPeriods[1].Year
+                    DatePeriodYear = _submissionPeriods[1].Year,
+                    DatePeriodShortStartMonth = _submissionPeriods.ElementAt(1).LocalisedShortMonth(MonthType.Start),
+                    DatePeriodShortEndMonth = _submissionPeriods.ElementAt(1).LocalisedShortMonth(MonthType.End),
                 }
             };
 
@@ -612,7 +634,9 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
                     DatePeriodStartMonth = _submissionPeriods.ElementAt(0).StartMonth,
                     DatePeriodEndMonth = _submissionPeriods.ElementAt(0).EndMonth,
                     Status = SubmissionPeriodStatus.AcceptedByRegulator,
-                    DatePeriodYear = _submissionPeriods[0].Year
+                    DatePeriodYear = _submissionPeriods[0].Year,
+                    DatePeriodShortStartMonth = _submissionPeriods.ElementAt(0).LocalisedShortMonth(MonthType.Start),
+                    DatePeriodShortEndMonth = _submissionPeriods.ElementAt(0).LocalisedShortMonth(MonthType.End),
                 },
                 new()
                 {
@@ -621,7 +645,9 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
                     DatePeriodEndMonth = _submissionPeriods.ElementAt(1).EndMonth,
                     Deadline = _submissionPeriods.ElementAt(1).Deadline,
                     Status = SubmissionPeriodStatus.CannotStartYet,
-                    DatePeriodYear = _submissionPeriods[1].Year
+                    DatePeriodYear = _submissionPeriods[1].Year,
+                    DatePeriodShortStartMonth = _submissionPeriods.ElementAt(1).LocalisedShortMonth(MonthType.Start),
+                    DatePeriodShortEndMonth = _submissionPeriods.ElementAt(1).LocalisedShortMonth(MonthType.End),
                 }
             };
 

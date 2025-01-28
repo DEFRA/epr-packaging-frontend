@@ -10,6 +10,7 @@
     using EPR.Common.Authorization.Models;
     using EPR.Common.Authorization.Sessions;
     using Extensions;
+    using global::FrontendSchemeRegistration.Application.DTOs.Subsidiary.FileUploadStatus;
     using global::FrontendSchemeRegistration.UI.Attributes.ActionFilters;
     using global::FrontendSchemeRegistration.UI.Services.FileUploadLimits;
     using global::FrontendSchemeRegistration.UI.Services.Messages;
@@ -30,6 +31,8 @@
         private readonly ISubsidiaryService _subsidiaryService;
         private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
         private readonly IComplianceSchemeMemberService _complianceSchemeMemberService;
+        private readonly IComplianceSchemeService _complianceSchemeService;
+        private readonly ISubsidiaryUtilityService _subsidiaryUtilityService;
         private IOptions<GlobalVariables> _globalVariables;
 
         private readonly string _basePath;
@@ -40,8 +43,9 @@
             ISubsidiaryService subsidiaryService,
             IOptions<GlobalVariables> globalVariables,
             ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
-            IComplianceSchemeMemberService complianceSchemeMemberService
-            )
+            IComplianceSchemeMemberService complianceSchemeMemberService, 
+            IComplianceSchemeService complianceSchemeService,
+            ISubsidiaryUtilityService subsidiaryUtilityService)
         {
             _fileUploadService = fileUploadService;
             _submissionService = submissionService;
@@ -49,6 +53,8 @@
             _basePath = globalVariables.Value.BasePath;
             _sessionManager = sessionManager;
             _complianceSchemeMemberService = complianceSchemeMemberService;
+            _complianceSchemeService = complianceSchemeService;
+            _subsidiaryUtilityService = subsidiaryUtilityService;
             _globalVariables = globalVariables;
         }
 
@@ -57,22 +63,70 @@
         [FeatureGate(FeatureFlags.ShowSubsidiaries)]
         public async Task<IActionResult> SubsidiariesList([FromQuery] int? page = 1)
         {
+            
             if (page < 1)
             {
                 return RedirectToAction(nameof(SubsidiariesList), new { page = 1 });
             }
-
+            
             var vm = await GetSubsidiaryListViewModel(page);
             if (page > vm.PagingDetail.TotalItems)
             {
-                return new NotFoundResult();
+                page -= 1;
+                vm = await GetSubsidiaryListViewModel(page);
             }
+            var (userId, organisationId) = GetUserDetails();
             
+            if (!await _subsidiaryService.GetSubsidiaryFileUploadStatusViewedAsync(userId, organisationId))
+            {
+                var fileUploadStatus = await _subsidiaryService.GetSubsidiaryFileUploadStatusAsync(userId, organisationId);
+                switch (fileUploadStatus)
+                {
+                    case SubsidiaryFileUploadStatus.FileUploadedSuccessfully:
+                        return RedirectToAction(nameof(FileUploadSuccess));
+                    case SubsidiaryFileUploadStatus.HasErrors:
+                        return RedirectToAction(nameof(SubsidiariesFileNotUploaded));
+                    case SubsidiaryFileUploadStatus.PartialUpload:
+                        return RedirectToAction(nameof(SubsidiariesIncompleteFileUpload));
+                    case SubsidiaryFileUploadStatus.FileUploadInProgress:
+                        vm.IsFileUploadInProgress = true;
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+                        
             var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-            SetBackLink(session);
-            
+            SetBackLink(session, vm.IsFileUploadInProgress);
+            await SavePageNumberToSession(session, page.Value);
             return View(vm);
         }
+          
+
+
+        [HttpGet]
+        [Route(PagePaths.FileUploadSubsidiariesCheckStatus)]
+        public async Task<JsonResult> CheckFileUploadSatus()
+        {
+            var (userId, organisationId) = GetUserDetails();
+            var fileUploadStatus = await _subsidiaryService.GetSubsidiaryFileUploadStatusAsync(userId,organisationId);
+            return fileUploadStatus switch
+            {
+                SubsidiaryFileUploadStatus.FileUploadedSuccessfully =>
+                    Json(new { redirectUrl = Url.Action(nameof(FileUploadSuccess)) }),
+
+                SubsidiaryFileUploadStatus.HasErrors =>
+                    Json(new { redirectUrl = Url.Action(nameof(SubsidiariesFileNotUploaded)) }),
+
+                SubsidiaryFileUploadStatus.PartialUpload =>
+                    Json(new { redirectUrl = Url.Action(nameof(SubsidiariesIncompleteFileUpload)) }),
+
+                _ =>
+                    Json(new { isFileUploadInProgress = true })
+            };
+        }
+
 
         [HttpPost]
         [Route(PagePaths.FileUploadSubsidiaries)]
@@ -87,8 +141,8 @@
                 Request.Body,
                 ModelState,
                 null,
-                SubmissionType.Subsidiary, 
-                new SubsidiaryFileUploadMessages(), 
+                SubmissionType.Subsidiary,
+                new SubsidiaryFileUploadMessages(),
                 new SubsidiariesFileUploadLimit(_globalVariables),
                 session.RegistrationSession.SelectedComplianceScheme?.Id);
 
@@ -100,7 +154,7 @@
         }
 
         [HttpGet]
-        [Route("FileUploading")]
+        [Route(PagePaths.SubsidiariesUploadingAndValidatingFile)]
         public async Task<IActionResult> FileUploading()
         {
             var submissionId = Guid.Parse(Request.Query["submissionId"]);
@@ -111,29 +165,110 @@
                 return RedirectToAction("Get", "FileUpload");
             }
 
-            var subFileUploadViewModel = new SubFileUploadingViewModel()
+            var (userId, organisationId) = GetUserDetails();
+            await _subsidiaryService.SetSubsidiaryFileUploadStatusViewedAsync(false, userId, organisationId);
+
+            var userData = User.GetUserData();
+
+            var uploadStatus = await _subsidiaryService.GetUploadStatus(userData.Id.Value, userData.Organisations[0].Id.Value);
+
+            if (uploadStatus.Status == SubsidiaryUploadStatus.Uploading)
             {
-                SubmissionId = submissionId.ToString(),
-                IsFileUploadTakingLong = submission.SubsidiaryFileUploadDateTime <= DateTime.UtcNow.AddMinutes(-5),
-            };
-            return submission.SubsidiaryDataComplete || submission.Errors.Count > 0
-                ? RedirectToAction(nameof(FileUploadSuccess), new RouteValueDictionary { { "recordsAdded", submission.RecordsAdded } })
-                : View("FileUploading", subFileUploadViewModel);
+                var subFileUploadViewModel = new SubFileUploadingViewModel()
+                {
+                    SubmissionId = submissionId.ToString(),
+                    IsFileUploadTakingLong = submission.SubsidiaryFileUploadDateTime <= DateTime.UtcNow.AddMinutes(-5),
+                };
+
+                return View("FileUploading", subFileUploadViewModel);
+            }
+
+            if (uploadStatus.Errors != null)
+            {
+                return uploadStatus.RowsAdded == 0
+                    ? RedirectToAction(nameof(SubsidiariesFileNotUploaded))
+                    : RedirectToAction(nameof(SubsidiariesIncompleteFileUpload));
+            }
+
+            return RedirectToAction(nameof(FileUploadSuccess));
         }
 
         [HttpGet]
         [Route(PagePaths.FileUploadSubsidiariesSuccess)]
         public async Task<IActionResult> FileUploadSuccess()
         {
+            var (userId, organisationId) = GetUserDetails();
+            var uploadStatus = await _subsidiaryService.GetUploadStatus(userId,organisationId);
+            var userData = User.GetUserData();
+            var organisation = userData.Organisations[0];
             var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+            var selectedComplienceSchemeId = session.RegistrationSession?.SelectedComplianceScheme?.Id;
+            var totalSubsidiariesCount = await _subsidiaryUtilityService.GetSubsidiariesCount(organisation.OrganisationRole, organisationId, selectedComplienceSchemeId);
+            await _subsidiaryService.SetSubsidiaryFileUploadStatusViewedAsync(true, userId, organisationId);
             await SaveSession(session, PagePaths.FileUploadSubsidiariesSuccess);
             
             var model = new SubsidiaryFileUploadSuccessViewModel
             {
-                RecordsAdded = int.TryParse(Request.Query["recordsAdded"], out var recordsAdded) ? recordsAdded : 0
+                RecordsAdded = uploadStatus?.RowsAdded ?? 0,
+                TotalSubsidiariesCount = totalSubsidiariesCount,
+                ShowTotalSubsidiariesCount = (totalSubsidiariesCount - (uploadStatus?.RowsAdded ?? 0)) > 0,
             };
 
             return View("FileUploadSuccess", model);
+        }
+
+               
+        [HttpGet]
+        [Route(PagePaths.SubsidiariesIncompleteFileUpload)]
+        public async Task<IActionResult> SubsidiariesIncompleteFileUpload()
+        {
+            var (userId, organisationId) = GetUserDetails();
+            await _subsidiaryService.SetSubsidiaryFileUploadStatusViewedAsync(true, userId, organisationId);
+            return await GetViewForUnsuccessfulFileUpload(true);
+        }
+
+        [HttpPost]
+        [Route(PagePaths.SubsidiariesIncompleteFileUpload)]
+        public async Task<IActionResult> SubsidiariesIncompleteFileUploadDecision([FromForm] SubsidiaryUnsuccessfulUploadDecisionViewModel viewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return await GetViewForUnsuccessfulFileUpload(true);
+            }
+
+            return GetRedirectForUnsuccessfulFileUploadDecision(viewModel);
+        }
+
+        [HttpGet]
+        [Route(PagePaths.SubsidiariesFileNotUploaded)]
+        public async Task<IActionResult> SubsidiariesFileNotUploaded()
+        {
+            var (userId, organisationId) = GetUserDetails();
+            await _subsidiaryService.SetSubsidiaryFileUploadStatusViewedAsync(true, userId, organisationId);
+            return await GetViewForUnsuccessfulFileUpload(false);
+        }
+
+        [HttpPost]
+        [Route(PagePaths.SubsidiariesFileNotUploaded)]
+        public async Task<IActionResult> SubsidiariesFileNotUploadedDecision([FromForm] SubsidiaryUnsuccessfulUploadDecisionViewModel viewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return await GetViewForUnsuccessfulFileUpload(false);
+            }
+
+            return GetRedirectForUnsuccessfulFileUploadDecision(viewModel);
+        }
+
+        [HttpGet]
+        [Route(PagePaths.SubsidiariesFileUploadWarningsReport)]
+        public async Task<IActionResult> SubsidiariesFileUploadWarningsReport()
+        {
+            var userData = User.GetUserData();
+
+            var reportStream = await _subsidiaryService.GetUploadErrorsReport(userData.Id.Value, userData.Organisations[0].Id.Value);
+
+            return File(reportStream, "text/csv", "subsidiary_validation_report.csv");
         }
 
         [HttpGet]
@@ -148,12 +283,12 @@
         }
 
         [HttpGet]
-        [Route(PagePaths.SubsidiariesDownloadView)] 
-        public IActionResult SubsidiariesDownloadView() 
-        {          
+        [Route(PagePaths.SubsidiariesDownloadView)]
+        public IActionResult SubsidiariesDownloadView()
+        {
             return View(nameof(SubsidiariesDownload));
         }
-        
+
         [HttpGet]
         [Route(PagePaths.SubsidiariesDownloadFailed)]
         public async Task<IActionResult> SubsidiariesDownloadFailed()
@@ -193,18 +328,23 @@
         }
 
         [HttpPost]
-        [Route(PagePaths.ConfirmSubsidiaryRemoval)]
+        [Route(PagePaths.ConfirmSubsidiaryRemoval + "/{SubsidiaryReference}")]
         public async Task<IActionResult> ConfirmRemoveSubsidiary(SubsidiaryConfirmRemovalViewModel model)
         {
             switch (model.SelectedConfirmRemoval)
             {
                 case YesNoAnswer.Yes:
+                    TempData["SubsidiaryNameToRemove"] = model.SubsidiaryName;
                     var userId = HttpContext.User.GetUserData().Id.Value;
                     await _subsidiaryService.TerminateSubsidiary(model.ParentOrganisationExternalId, model.SubsidiaryExternalId, userId);
-                    return RedirectToAction(nameof(SubsidiariesList));
+                    return RedirectToAction(nameof(ConfirmRemoveSubsidiarySuccess));
                 case YesNoAnswer.No:
-                    return RedirectToAction(nameof(SubsidiariesList));
+                    var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+                    var pageToReturnTo = session.SubsidiarySession.ReturnToSubsidiaryPage;
+                    return RedirectToAction(nameof(SubsidiariesList), new { page = pageToReturnTo });
             }
+
+            ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadSubsidiaries}");
 
             return View(model);
         }
@@ -214,17 +354,11 @@
         [Route(PagePaths.ConfirmSubsidiaryRemoval + "/{subsidiaryReference}")]
         public async Task<IActionResult> ConfirmRemoveSubsidiary(string subsidiaryReference, Guid parentOrganisationExternalId)
         {
-            var userData = User.GetUserData();
-
-            if (!userData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved))
-            {
-                return new UnauthorizedResult();
-            }
-
             var subsidiaryDetails = await _subsidiaryService.GetOrganisationByReferenceNumber(subsidiaryReference);
 
             var model = new SubsidiaryConfirmRemovalViewModel
             {
+                SubsidiaryReference = subsidiaryReference,
                 SubsidiaryName = subsidiaryDetails.Name,
                 SubsidiaryExternalId = subsidiaryDetails.ExternalId,
                 ParentOrganisationExternalId = parentOrganisationExternalId,
@@ -237,6 +371,26 @@
             return View(model);
         }
 
+        [HttpGet]
+        [Route(PagePaths.ConfirmRemoveSubsidiarySuccess)]
+        public async Task<IActionResult> ConfirmRemoveSubsidiarySuccess()
+        {
+            var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+            await SaveSession(session, PagePaths.ConfirmRemoveSubsidiarySuccess);
+            var model = new ConfirmRemoveSubsidiarySuccessViewModel
+            {
+                SubsidiaryName = TempData["SubsidiaryNameToRemove"]?.ToString(),
+                ReturnToSubsidiaryPage = session.SubsidiarySession.ReturnToSubsidiaryPage
+            };
+            return View(model);
+        }
+
+        private (Guid userId, Guid organisationId) GetUserDetails()
+        {
+            var user = User.GetUserData();
+            return (user.Id.Value, user.Organisations[0].Id.Value);
+        }
+        
         private async Task<SubsidiaryListViewModel> GetSubsidiaryListViewModel(int? page)
         {
             const int showPerPage = 1;
@@ -251,7 +405,7 @@
             if (isDirectProducer)
             {
                 var response = await _subsidiaryService.GetOrganisationSubsidiaries(organisation.Id.Value);
-                if (response is null)
+                if (response == null || response.Relationships.Count == 0)
                 {
                     result = GetEmptySubsidiaryListViewModel(organisation);
                 }
@@ -276,17 +430,16 @@
             else
             {
                 var complianceSchemeId = session.RegistrationSession.SelectedComplianceScheme.Id;
-                var complianceSchemeMembershipResponse = await _complianceSchemeMemberService.GetComplianceSchemeMembers(organisation.Id.Value, complianceSchemeId, showPerPage, string.Empty, page.Value);
-                if (complianceSchemeMembershipResponse.PagedResult is null || complianceSchemeMembershipResponse.PagedResult.Items is null)
+                var complianceSchemeMembershipResponse = await _complianceSchemeMemberService.GetComplianceSchemeMembers(organisation.Id.Value, complianceSchemeId, showPerPage, string.Empty, page.Value, true);
+                if (complianceSchemeMembershipResponse.PagedResult == null || complianceSchemeMembershipResponse.PagedResult.Items.Count == 0)
                 {
-                    result = GetEmptySubsidiaryListViewModel(organisation);
+                    result = GetEmptySubsidiaryListViewModel(new Organisation() { });
                 }
                 else
                 {
                     pageCount = complianceSchemeMembershipResponse.PagedResult.TotalItems;
                     result = new SubsidiaryListViewModel
                     {
-                        
                         Organisations = complianceSchemeMembershipResponse.PagedResult.Items.Select(c =>
                             new SubsidiaryOrganisationViewModel
                             {
@@ -298,6 +451,9 @@
                             }).ToList()
                     };
                 }
+
+                var currentSummary = await _complianceSchemeService.GetComplianceSchemeSummary(organisation.Id.Value, complianceSchemeId);
+                result.MemberCount = currentSummary.MemberCount;
             }
             
             var pageUrl = Url.Action(nameof(SubsidiariesList));
@@ -330,6 +486,33 @@
             };
         }
 
+        private RedirectToActionResult GetRedirectForUnsuccessfulFileUploadDecision(SubsidiaryUnsuccessfulUploadDecisionViewModel viewModel)
+        {
+            return viewModel.UploadNewFile == true
+                ? RedirectToAction("SubsidiariesList", new { page = 1 })
+                : RedirectToAction("Get", "Landing");
+        }
+
+        private async Task<ViewResult> GetViewForUnsuccessfulFileUpload(bool partialSucess)
+        {
+            var userData = User.GetUserData();
+
+            var reportStream = await _subsidiaryService.GetUploadErrorsReport(userData.Id.Value, userData.Organisations[0].Id.Value);
+
+            var viewModel = new SubsidiariesUnsuccessfulFileUploadViewModel
+            {
+                PartialSuccess = partialSucess,
+                WarningsReportDisplaySize = reportStream.Length switch
+                {
+                    >= 1048576 => $"{reportStream.Length / 1048576}MB",
+                    >= 1024 => $"{reportStream.Length / 1024}KB",
+                    _ => $"{reportStream.Length}B"
+                }
+            };
+
+            return View("SubsidiariesUnsuccessfulFileUpload", viewModel);
+        }
+
         private async Task SaveSession(FrontendSchemeRegistrationSession session, string currentPagePath)
         {
             session.SubsidiarySession.Journey.Clear();
@@ -337,8 +520,15 @@
 
             await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
         }
+        
+        private async Task SavePageNumberToSession(FrontendSchemeRegistrationSession session, int currentPage)
+        {
+            session.SubsidiarySession.ReturnToSubsidiaryPage = currentPage;
+            
+            await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
+        }
 
-        private void SetBackLink(FrontendSchemeRegistrationSession session)
+        private void SetBackLink(FrontendSchemeRegistrationSession session,bool fileUploadInProgress = false)
         {
             var pageFrom = session.SubsidiarySession.Journey.LastOrDefault();
             if (ShouldShowAccountHomeLink(pageFrom))
@@ -351,6 +541,13 @@
                 ViewBag.BackLinkToDisplay = _basePath;
                 ViewBag.ShouldShowAccountHomeLink = false;
             }
+
+            if (fileUploadInProgress)
+            {
+                ViewBag.BackLinkToDisplay = string.Empty;
+                ViewBag.ShouldShowAccountHomeLink = false;
+            }
+        
         }
         
         private static bool ShouldShowAccountHomeLink(string previousPage)
@@ -358,7 +555,8 @@
             return previousPage is PagePaths.FileUploadSubsidiariesSuccess 
                 or PagePaths.SubsidiariesDownload 
                 or PagePaths.SubsidiariesDownloadFailed
-                or PagePaths.ConfirmSubsidiaryRemoval;
+                or PagePaths.ConfirmSubsidiaryRemoval
+                or PagePaths.ConfirmRemoveSubsidiarySuccess;
         }
     }
 }

@@ -116,9 +116,71 @@ public class ReviewCompanyDetailsControllerTests
 
         // Assert
         result.ViewName.Should().Be("ReviewCompanyDetails");
-        result.ViewData.Keys.Should().HaveCount(1);
+        result.ViewData.Keys.Should().HaveCount(2);
         result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
+        result.ViewData.Keys.Should().Contain("IsFileUploadJourneyInvokedViaRegistration");
         result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
+        result.ViewData["IsFileUploadJourneyInvokedViaRegistration"].Should().Be(false);
+        var model = result.Model.As<ReviewCompanyDetailsViewModel>();
+        model.OrganisationDetailsUploadedBy.Should().BeEquivalentTo($"{firstName} {lastName}");
+        model.RegistrationSubmissionDeadline.Should().BeEquivalentTo(SubmissionDeadline.ToReadableDate());
+        model.IsApprovedUser.Should().Be(expectedIsApprovedUser);
+    }
+
+    [TestCase(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, true)]
+    [TestCase(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Invited, false)]
+    [TestCase(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Pending, false)]
+    [TestCase(ServiceRoles.ApprovedPerson, EnrolmentStatuses.NotSet, false)]
+    [TestCase(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Rejected, false)]
+    [TestCase(ServiceRoles.DelegatedPerson, EnrolmentStatuses.Approved, true)]
+    [TestCase(ServiceRoles.DelegatedPerson, EnrolmentStatuses.Invited, false)]
+    [TestCase(ServiceRoles.DelegatedPerson, EnrolmentStatuses.Pending, false)]
+    [TestCase(ServiceRoles.DelegatedPerson, EnrolmentStatuses.NotSet, false)]
+    [TestCase(ServiceRoles.DelegatedPerson, EnrolmentStatuses.Rejected, false)]
+    [TestCase(ServiceRoles.BasicUser, EnrolmentStatuses.Approved, false)]
+    [TestCase(ServiceRoles.BasicUser, EnrolmentStatuses.Invited, false)]
+    [TestCase(ServiceRoles.BasicUser, EnrolmentStatuses.Pending, false)]
+    [TestCase(ServiceRoles.BasicUser, EnrolmentStatuses.NotSet, false)]
+    [TestCase(ServiceRoles.BasicUser, EnrolmentStatuses.Rejected, false)]
+    public async Task Get_ReturnsCorrectView_WhenCalled_FromRegistrationTaskList(string serviceRole, string enrolmentStatus, bool expectedIsApprovedUser)
+    {
+        // Arrange
+        const string firstName = "First Name";
+        const string lastName = "Last Name";
+        _submissionService
+            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(GenerateRegistrationSubmission());
+        _userAccountServiceMock.Setup(x => x.GetPersonByUserId(It.IsAny<Guid>()))
+            .ReturnsAsync(new PersonDto
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                ContactEmail = "email@email.com"
+            });
+        var claims = CreateUserDataClaim(serviceRole, enrolmentStatus, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+           .ReturnsAsync(new FrontendSchemeRegistrationSession
+           {
+               RegistrationSession = new RegistrationSession
+               {
+                   SubmissionDeadline = SubmissionDeadline,
+                   IsFileUploadJourneyInvokedViaRegistration = true
+               },
+               UserData = new UserData { Organisations = { new() { OrganisationRole = OrganisationRoles.ComplianceScheme } }, ServiceRole = ServiceRoles.ApprovedPerson }
+           });
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("ReviewCompanyDetails");
+        result.ViewData.Keys.Should().HaveCount(2);
+        result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
+        result.ViewData.Keys.Should().Contain("IsFileUploadJourneyInvokedViaRegistration");
+        result.ViewData["BackLinkToDisplay"].Should().Be(PagePaths.RegistrationTaskList);
+        result.ViewData["IsFileUploadJourneyInvokedViaRegistration"].Should().Be(true);
         var model = result.Model.As<ReviewCompanyDetailsViewModel>();
         model.OrganisationDetailsUploadedBy.Should().BeEquivalentTo($"{firstName} {lastName}");
         model.RegistrationSubmissionDeadline.Should().BeEquivalentTo(SubmissionDeadline.ToReadableDate());
@@ -324,7 +386,7 @@ public class ReviewCompanyDetailsControllerTests
         return new RegistrationSubmission
         {
             Id = Guid.NewGuid(),
-            SubmissionPeriod = "SubmissionPeriod",
+            SubmissionPeriod = "PaymentMethod",
             ValidationPass = true,
             HasValidFile = true,
             Errors = new List<string>(),

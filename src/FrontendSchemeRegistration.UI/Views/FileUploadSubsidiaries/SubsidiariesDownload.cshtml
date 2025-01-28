@@ -10,11 +10,9 @@
                 <partial name="Partials/_FileIsDownloadingStatus" />
                 <div class="govuk-grid-row">
                     <div class="govuk-grid-column-full">
-                        @Html.ActionLink(@SharedLocalizer["link-go-back-to-subsidiaries-list"],
-                                 "Get",
-                                 "subsidiaries-list",
-                                 null,
-                                 new { @class = "govuk-body govuk-link govuk-link--no-visited-state" })
+                        <a asp-action="subsidiarieslist" class="govuk-link govuk-link--no-visited-state govuk-body-m">
+                            @SharedLocalizer["link-go-back-to-subsidiaries-list"]
+                        </a>
                     </div>
                 </div>
                 @if (!downloadCompleted)

@@ -447,7 +447,7 @@ public class FileUploadSubmissionDeclarationControllerTests
             .Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>()))
             .ReturnsAsync(submission);
         _submissionServiceMock
-            .Setup(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>()))
+            .Setup(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), null))
             .ThrowsAsync(new Exception());
 
         _sessionManagerMock

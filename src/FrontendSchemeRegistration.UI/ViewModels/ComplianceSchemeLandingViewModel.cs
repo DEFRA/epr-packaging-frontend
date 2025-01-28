@@ -2,8 +2,8 @@
 
 using System.Diagnostics.CodeAnalysis;
 using Application.DTOs.ComplianceScheme;
-using Application.DTOs.Submission;
-using Application.Enums;
+using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.UI.Sessions;
 
 [ExcludeFromCodeCoverage]
 public class ComplianceSchemeLandingViewModel
@@ -20,5 +20,16 @@ public class ComplianceSchemeLandingViewModel
 
     public List<DatePeriod> SubmissionPeriods { get; set; } = new();
 
+    public string CurrentYear => (DateTime.Now.Year).ToString();
+
     public bool IsApprovedUser { get; set; }
+
+    public ApplicationStatusType? ApplicationStatus { get; set; }
+    public RegistrationTaskListStatus? FileUploadStatus { get; set; } = RegistrationTaskListStatus.NotStarted;
+
+    public RegistrationTaskListStatus? PaymentViewStatus { get; set; } = RegistrationTaskListStatus.CanNotStartYet;
+
+    public RegistrationTaskListStatus? AdditionalDetailsStatus { get; set; } = RegistrationTaskListStatus.CanNotStartYet;
+
+    public string? ApplicationReferenceNumber { get; set; }
 }

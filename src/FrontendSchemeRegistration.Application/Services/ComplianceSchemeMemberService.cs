@@ -5,10 +5,9 @@ using Constants;
 using DTOs.ComplianceScheme;
 using DTOs.ComplianceSchemeMember;
 using Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Options;
 using RequestModels;
 
 public class ComplianceSchemeMemberService : IComplianceSchemeMemberService
@@ -19,25 +18,28 @@ public class ComplianceSchemeMemberService : IComplianceSchemeMemberService
     private readonly IAccountServiceApiClient _accountServiceApiClient;
     private readonly IComplianceSchemeService _complianceSchemeService;
     private readonly ICorrelationIdProvider _correlationIdProvider;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public ComplianceSchemeMemberService(
         IComplianceSchemeService complianceSchemeService,
         IAccountServiceApiClient accountServiceApiClient,
         ICorrelationIdProvider correlationIdProvider,
-        ILogger<ComplianceSchemeMemberService> logger)
+        ILogger<ComplianceSchemeMemberService> logger, 
+        IHttpContextAccessor httpContextAccessor)
     {
         _complianceSchemeService = complianceSchemeService;
         _accountServiceApiClient = accountServiceApiClient;
         _correlationIdProvider = correlationIdProvider;
+        _httpContextAccessor = httpContextAccessor;
         _logger = logger;
     }
 
     public async Task<ComplianceSchemeMembershipResponse> GetComplianceSchemeMembers(
-        Guid organisationId, Guid complianceSchemeId, int pageSize, string searchQuery, int page)
+        Guid organisationId, Guid complianceSchemeId, int pageSize, string searchQuery, int page, bool hideNoSubsidiaries)
     {
         try
         {
-            var requestPath = string.Format(ComplianceSchemePaths.Members, organisationId, complianceSchemeId, pageSize, searchQuery, page);
+            var requestPath = string.Format(ComplianceSchemePaths.Members, organisationId, complianceSchemeId, pageSize, searchQuery, page, hideNoSubsidiaries);
             var result = await _accountServiceApiClient.SendGetRequest(requestPath);
 
             result.EnsureSuccessStatusCode();
@@ -98,5 +100,18 @@ public class ComplianceSchemeMemberService : IComplianceSchemeMemberService
         result.EnsureSuccessStatusCode();
 
         return await result.Content.ReadFromJsonAsync<RemovedComplianceSchemeMember>();
+    }
+    
+    public Guid? GetComplianceSchemeId()
+    {
+        var context = _httpContextAccessor.HttpContext;
+        if (context != null && context.Items.TryGetValue(ComplianceScheme.ComplianceSchemeId, out var value))
+        {
+            if (value is Guid complianceSchemeId)
+            {
+                return complianceSchemeId;
+            }
+        }
+        return null;
     }
 }

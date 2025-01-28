@@ -159,4 +159,49 @@
   <data name="based_on_whats_in_the_organisation" xml:space="preserve">
     <value />
   </data>
+  <data name="report_your_organisation_detail" xml:space="preserve">
+    <value />
+  </data>
+  <data name="report_your_member_organisation_detail" xml:space="preserve">
+    <value />
+  </data>
+  <data name="before_you_start" xml:space="preserve">
+    <value />
+  </data>
+  <data name="read_the_guidance_on" xml:space="preserve">
+    <value />
+  </data>
+  <data name="how_to_report_organisation_details" xml:space="preserve">
+    <value />
+  </data>
+  <data name="there_are_template_documents_you_can_use_to_build_your_files" xml:space="preserve">
+    <value />
+  </data>
+  <data name="file_rejection_warning_text" xml:space="preserve">
+    <value />
+  </data>
+  <data name="manage_your_subsidiaries" xml:space="preserve">
+    <value />
+  </data>
+  <data name="it_may_take_a_few_minutes_for_your_file_upload" xml:space="preserve">
+    <value />
+  </data>
+  <data name="the_file_must_be:" xml:space="preserve">
+    <value />
+  </data>
+  <data name="make_sure_you_have_all_the_files_ready" xml:space="preserve">
+    <value />
+  </data>
+  <data name="have_all_the_files_ready" xml:space="preserve">
+    <value />
+  </data>
+  <data name="if_youre_reporting_for_subsidiaries" xml:space="preserve">
+    <value />
+  </data>
+  <data name="file_must_be_a_CSV" xml:space="preserve">
+    <value />
+  </data>
+  <data name="title_upload_organisation_details_home" xml:space="preserve">
+    <value />
+  </data>
 </root>

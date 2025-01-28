@@ -11,5 +11,7 @@
         public string? RoleChangeUrl { get; set; }
 
         public string? TelephoneChangeUrl { get; set; }
+
+        public bool IsInCompanyHouse { get; set; }
     }
 }

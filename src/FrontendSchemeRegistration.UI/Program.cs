@@ -52,7 +52,8 @@ services.Configure<ForwardedHeadersOptions>(options =>
 
 services.AddHealthChecks();
 
-services.AddApplicationInsightsTelemetry();
+services.AddApplicationInsightsTelemetry()
+        .AddLogging();
 
 services.AddHsts(options =>
 {

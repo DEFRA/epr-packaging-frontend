@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="item" xml:space="preserve">
+    <value>Eitem</value>
+  </data>
+  <data name="description" xml:space="preserve">
+    <value>Disgrifiad</value>
+  </data>
+  <data name="amount" xml:space="preserve">
+    <value>Swm</value>
+  </data>
+  <data name="application_fee" xml:space="preserve">
+    <value>Ffi prosesu’r cais</value>
+  </data>
+  <data name="fee_for_producer_size" xml:space="preserve">
+    <value>Ffi ar gyfer cynhyrchydd {0}</value>
+  </data>
+  <data name="late_fee" xml:space="preserve">
+    <value>WLate fee</value>
+  </data>
+  <data name="online_marketplace_fee" xml:space="preserve">
+    <value>Ffi marchnad ar-lein</value>
+  </data>
+  <data name="subsidiary_fee" xml:space="preserve">
+    <value>Ffi is-gwmni</value>
+  </data>
+  <data name="x_subsidiaries" xml:space="preserve">
+    <value>{0} o is-gwmnïau</value>
+  </data>
+  <data name="y_online_marketplace" xml:space="preserve">
+    <value>Mae {0} yn farchnadoedd ar-lein</value>
+  </data>
+  <data name="subsidiaries_with_online_marketplace_fee" xml:space="preserve">
+    <value>Ffi is-gwmnïau gyda marchnad ar-lein</value>
+  </data>
+  <data name="fee_for_subsidiaries_being_online_marketlace" xml:space="preserve">
+    <value>{0} is-gwmnïau sy’n farchnad ar-lein am £2,579 yr un</value>
+  </data>
+  <data name="sub_total_amount" xml:space="preserve">
+    <value>Is-gyfanswm</value>
+  </data>
+  <data name="previous_payments" xml:space="preserve">
+    <value>Taliadau blaenorol</value>
+  </data>
+  <data name="total_previous_payments_received" xml:space="preserve">
+    <value>Cyfanswm y taliadau blaenorol sydd wedi dod i law’r rheoleiddiwr</value>
+  </data>
+  <data name="x_subsidiaries_singular" xml:space="preserve">
+    <value>{0} is-gwmni</value>
+  </data>
+  <data name="y_online_marketplace_singular" xml:space="preserve">
+    <value>{0} is on online marketplace
+Mae {0} ar y farchnad ar-lein</value>
+  </data>
+</root>

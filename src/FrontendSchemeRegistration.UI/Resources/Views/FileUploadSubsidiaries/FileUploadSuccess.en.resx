@@ -123,6 +123,12 @@
   <data name="return_to_account_home" xml:space="preserve">
     <value>Return to account home</value>
   </data>
+  <data name="subsidiaries_have_been_added" xml:space="preserve">
+    <value>{0} subsidiaries have been added to your account</value>
+  </data>
+  <data name="total_number_of_subsidiaries" xml:space="preserve">
+    <value>The total number of subsidiaries in your account is now</value>
+  </data>
   <data name="View_your_subsidiaries" xml:space="preserve">
     <value>View subsidiaries</value>
   </data>

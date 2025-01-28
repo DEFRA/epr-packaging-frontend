@@ -118,27 +118,28 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="NoBackButton" xml:space="preserve">
-    <value>[Welsh] No, go back</value>
+    <value>Nage, mynd yn ôl</value>
   </data>
   <data name="pern_heading" xml:space="preserve">
-    <value>[Welsh] Accept this PERN?</value>
+    <value>Derbyn y PERN yma tuag at eich rhwymedigaethau ailgylchu ar gyfer {0}?
+</value>
   </data>
   <data name="pern_page_title" xml:space="preserve">
-    <value>[Welsh] Accept this PERN</value>
+    <value>Derbyn y PERN yma</value>
   </data>
   <data name="prn_heading" xml:space="preserve">
-    <value>[Welsh] Accept this PRN?</value>
+    <value>Derbyn y PRN yma tuag at eich rhwymedigaethau ailgylchu ar gyfer {0}?</value>
   </data>
   <data name="prn_page_title" xml:space="preserve">
-    <value>[Welsh] Accept this PRN</value>
+    <value>Derbyn y PRN yma</value>
   </data>
-  <data name="TitleFirstPart" xml:space="preserve">
-    <value>[Welsh] This will credit tonnes</value>
+  <data name="Title" xml:space="preserve">
+    <value>Bydd hyn yn credydu {0} tunnell tuag at eich rhwymedigaeth ailgylchu {1}.</value>
   </data>
-  <data name="TitleSecondPart" xml:space="preserve">
-    <value>tonnes towards your obligation.</value>
+  <data name="tonnage_in_words" xml:space="preserve">
+	  <value>Tunelli mewn geiriau</value>
   </data>
   <data name="YesAcceptButton" xml:space="preserve">
-    <value>[Welsh] Yes, accept</value>
+    <value>Ie, derbyn</value>
   </data>
 </root>

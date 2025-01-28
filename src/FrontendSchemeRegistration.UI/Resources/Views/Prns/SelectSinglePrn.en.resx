@@ -139,7 +139,7 @@
     <value>Date issued</value>
   </data>
   <data name="relates_to_waste_received_in_december" xml:space="preserve">
-    <value>Relates to waste received in December?</value>
+	  <value>December Waste?</value>
   </data>
   <data name="material" xml:space="preserve">
     <value>Material</value>
@@ -154,7 +154,7 @@
     <value>Note</value>
   </data>
   <data name="year" xml:space="preserve">
-    <value>Year</value>
+    <value>Year of issue</value>
   </data>
   <data name="packaging_recycling_note" xml:space="preserve">
     <value>Packaging Recycling Note</value>
@@ -187,19 +187,22 @@
     <value>Reject this PERN</value>
   </data>
   <data name="download_this_prn" xml:space="preserve">
-    <value>Download this PRN</value>
+    <value>Download this PRN as a PDF</value>
+  </data>
+ <data name="download_this_prn_awaiting_acceptance" xml:space="preserve">
+    <value>Download this awaiting acceptance PRN as a PDF</value>
   </data>
   <data name="download_this_pern" xml:space="preserve">
-    <value>Download this PERN</value>
+    <value>Download this PERN as a PDF</value>
+  </data>
+	<data name="download_this_pern_awaiting_acceptance" xml:space="preserve">
+    <value>Download this awaiting acceptance PERN as a PDF</value>
   </data>
   <data name="this_prn_relates_to_waste_received_for_reprocessing_in_December" xml:space="preserve">
     <value>This PRN relates to waste received for reprocessing in December {0}.</value>
   </data>
   <data name="this_pern_relates_to_waste_exported_for_reprocessing_in_December" xml:space="preserve">
     <value>This PERN relates to waste exported for reprocessing in December {0}.</value>
-  </data>
-  <data name="it_can_count_towards_your_obligation" xml:space="preserve">
-    <value>It can count towards your {0} or {1} obligation.</value>
   </data>
   <data name="page_title_pern" xml:space="preserve">
     <value>Accept this PERN</value>
