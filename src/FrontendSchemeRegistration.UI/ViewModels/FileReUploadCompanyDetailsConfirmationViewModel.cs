@@ -14,17 +14,23 @@ public class FileReUploadCompanyDetailsConfirmationViewModel : ViewModelWithOrga
 
     public string CompanyDetailsFileUploadedBy { get; set; }
 
+    public bool IsCompanyDetailsFileUploadedByDeleted { get; set; }
+
     public string? PartnersFileName { get; set; }
 
     public string? PartnersFileUploadDate { get; set; }
 
     public string? PartnersFileUploadedBy { get; set; }
 
+    public bool IsPartnersFileUploadedByDeleted { get; set; }
+
     public string? BrandsFileName { get; set; }
 
     public string? BrandsFileUploadDate { get; set; }
 
     public string? BrandsFileUploadedBy { get; set; }
+
+    public bool IsBrandsFileUploadedByDeleted { get; set; }
 
     public string SubmissionDeadline { get; set; }
 

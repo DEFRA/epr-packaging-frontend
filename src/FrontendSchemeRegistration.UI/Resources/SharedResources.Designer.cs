@@ -279,6 +279,14 @@ namespace FrontendSchemeRegistration.UI.Resources {
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
+        internal static string no_longer_in_this_organisation
+        {
+            get
+            {
+                return ResourceManager.GetString("no_longer_in_this_organisation", resourceCulture);
+            }
+        }
+
         internal static string or {
             get {
                 return ResourceManager.GetString("or", resourceCulture);
@@ -354,6 +362,15 @@ namespace FrontendSchemeRegistration.UI.Resources {
         internal static string there_is_a_problem {
             get {
                 return ResourceManager.GetString("there_is_a_problem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string total {
+            get {
+                return ResourceManager.GetString("total", resourceCulture);
             }
         }
         

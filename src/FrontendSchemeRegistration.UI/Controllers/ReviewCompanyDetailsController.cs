@@ -177,7 +177,7 @@ public class ReviewCompanyDetailsController : Controller
 
     private async Task<string> GetUsersName(Guid userId)
     {
-        var person = await _accountService.GetPersonByUserId(userId);
+        var person = await _accountService.GetAllPersonByUserId(userId);
         return $"{person.FirstName} {person.LastName}";
     }
 }

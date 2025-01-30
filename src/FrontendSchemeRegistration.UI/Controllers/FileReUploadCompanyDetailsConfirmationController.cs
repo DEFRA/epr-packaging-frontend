@@ -41,7 +41,7 @@ public class FileReUploadCompanyDetailsConfirmationController : Controller
 
         var isFileUploadJourneyInvokedViaRegistration = session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration;
 
-        ViewBag.BackLinkToDisplay = isFileUploadJourneyInvokedViaRegistration? $"/report-data/{PagePaths.RegistrationTaskList}" : Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
+        ViewBag.BackLinkToDisplay = isFileUploadJourneyInvokedViaRegistration ? $"/report-data/{PagePaths.RegistrationTaskList}" : Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
 
         ViewData["IsFileUploadJourneyInvokedViaRegistration"] = isFileUploadJourneyInvokedViaRegistration;
 
@@ -77,19 +77,27 @@ public class FileReUploadCompanyDetailsConfirmationController : Controller
             OrganisationRole = session.UserData.Organisations.FirstOrDefault()?.OrganisationRole,
             HasValidfile = submission.HasValidFile
         };
+
         if (model.Status.Equals(SubmissionPeriodStatus.FileUploaded) ||
             model.Status.Equals(SubmissionPeriodStatus.SubmittedAndHasRecentFileUpload))
         {
+            var companyDetailsUploadedBy = await GetUsersName(submission.LastUploadedValidFiles.CompanyDetailsUploadedBy);
+            var brandsFileUploadedBy = await GetUsersName(submission.LastUploadedValidFiles.BrandsUploadedBy);
+            var partnersFileUploadedBy = await GetUsersName(submission.LastUploadedValidFiles.PartnershipsUploadedBy);
+
             model.CompanyDetailsFileName = submission.LastUploadedValidFiles.CompanyDetailsFileName;
             model.CompanyDetailsFileUploadDate = submission.LastUploadedValidFiles.CompanyDetailsUploadDatetime.ToReadableDate();
-            model.CompanyDetailsFileUploadedBy = await GetUsersName(submission.LastUploadedValidFiles.CompanyDetailsUploadedBy);
+            model.CompanyDetailsFileUploadedBy = companyDetailsUploadedBy.UserName;
+            model.IsCompanyDetailsFileUploadedByDeleted = companyDetailsUploadedBy.IsDeleted;
             model.BrandsFileName = submission.LastUploadedValidFiles.BrandsFileName;
             model.BrandsFileUploadDate = submission.LastUploadedValidFiles.BrandsUploadDatetime.GetValueOrDefault().ToReadableDate();
-            model.BrandsFileUploadedBy = await GetUsersName(submission.LastUploadedValidFiles.BrandsUploadedBy);
+            model.BrandsFileUploadedBy = brandsFileUploadedBy.UserName;
+            model.IsBrandsFileUploadedByDeleted = brandsFileUploadedBy.IsDeleted;
             model.PartnersFileName = submission.LastUploadedValidFiles.PartnershipsFileName;
             model.PartnersFileUploadDate =
                 submission.LastUploadedValidFiles.PartnershipsUploadDatetime.GetValueOrDefault().ToReadableDate();
-            model.PartnersFileUploadedBy = await GetUsersName(submission.LastUploadedValidFiles.PartnershipsUploadedBy);
+            model.PartnersFileUploadedBy = partnersFileUploadedBy.UserName;
+            model.IsPartnersFileUploadedByDeleted = partnersFileUploadedBy.IsDeleted;
         }
         else if (model.Status.Equals(SubmissionPeriodStatus.SubmittedToRegulator))
         {
@@ -97,28 +105,31 @@ public class FileReUploadCompanyDetailsConfirmationController : Controller
             model.CompanyDetailsFileName = submission.LastSubmittedFiles.CompanyDetailsFileName;
             model.CompanyDetailsFileUploadDate = submission.LastSubmittedFiles.SubmittedDateTime
                 .GetValueOrDefault().ToReadableDate();
-            model.CompanyDetailsFileUploadedBy = submittedByUser;
+            model.CompanyDetailsFileUploadedBy = submittedByUser.UserName;
+            model.IsCompanyDetailsFileUploadedByDeleted = submittedByUser.IsDeleted;
             model.BrandsFileName = submission.LastSubmittedFiles.BrandsFileName;
             model.BrandsFileUploadDate = submission.LastSubmittedFiles.SubmittedDateTime.GetValueOrDefault()
                 .ToReadableDate();
-            model.BrandsFileUploadedBy = submittedByUser;
+            model.BrandsFileUploadedBy = submittedByUser.UserName;
+            model.IsBrandsFileUploadedByDeleted = submittedByUser.IsDeleted;
             model.PartnersFileName = submission.LastSubmittedFiles.PartnersFileName;
             model.PartnersFileUploadDate = submission.LastSubmittedFiles.SubmittedDateTime.GetValueOrDefault()
                 .ToReadableDate();
-            model.PartnersFileUploadedBy = submittedByUser;
+            model.PartnersFileUploadedBy = submittedByUser.UserName;
+            model.IsPartnersFileUploadedByDeleted = submittedByUser.IsDeleted;
         }
 
         return model;
     }
 
-    private async Task<string> GetUsersName(Guid? userId)
+    private async Task<(string UserName, bool IsDeleted)> GetUsersName(Guid? userId)
     {
         if (userId == null)
         {
-            return null;
+            return (null, false);
         }
 
-        var person = await _accountService.GetPersonByUserId(userId.Value);
-        return person != null ? $"{person.FirstName} {person.LastName}" : null;
+        var person = await _accountService.GetAllPersonByUserId(userId.Value);
+        return (person != null ? $"{person.FirstName} {person.LastName}" : null, person is not null && person.IsDeleted);
     }
 }

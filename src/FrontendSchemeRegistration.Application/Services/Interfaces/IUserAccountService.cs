@@ -7,4 +7,6 @@ public interface IUserAccountService
     public Task<UserAccountDto?> GetUserAccount();
 
     public Task<PersonDto?> GetPersonByUserId(Guid userId);
+
+    public Task<PersonDto?> GetAllPersonByUserId(Guid userId);
 }

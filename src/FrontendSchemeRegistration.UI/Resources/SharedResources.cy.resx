@@ -228,11 +228,14 @@
   <data name="try-again" xml:space="preserve">
     <value>Trio eto</value>
   </data>
+  <data name="link-go-back-to-subsidiaries-list" xml:space="preserve">
+    <value>Yn ôl i’r rhestr is-gwmnïau</value>
+  </data>
   <data name="total" xml:space="preserve">
     <value>Cyfanswm</value>
   </data>
-  <data name="link-go-back-to-subsidiaries-list" xml:space="preserve">
-    <value>Yn ôl i’r rhestr is-gwmnïau</value>
+  <data name="no_longer_in_this_organisation" xml:space="preserve">
+    <value>Heb fod yn y sefydliad yma mwyach</value>
   </data>
   <data name="AapprovedPerconInvitationSubmittedNotification" xml:space="preserve">
     <value>Rydych chi wedi creu cyfrif. Byddwn yn anfon neges ebost atoch pan fydd y rheoleiddiwr amgylcheddol wedi rhoi caniatâd ichi gyflwyno data. Gall hyn gymryd hyd at 28 diwrnod.</value>

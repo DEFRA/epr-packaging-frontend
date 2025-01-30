@@ -20,6 +20,10 @@ public class UploadNewFileToSubmitViewModel : ViewModelWithOrganisationRole
 
     public string? SubmittedBy { get; set; }
 
+    public bool IsUploadByPersonDeleted { get; set; }
+
+    public bool IsSubmittedByPersonDeleted { get; set; }
+
     public DateTime? SubmittedAt { get; set; }
 
     public string? SubmittedFileName { get; set; }

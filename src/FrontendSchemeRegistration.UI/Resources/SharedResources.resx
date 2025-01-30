@@ -234,4 +234,10 @@
   <data name="created_new_approved_person" xml:space="preserve">
     <value />
   </data>
+  <data name="total" xml:space="preserve">
+    <value />
+  </data>
+  <data name="no_longer_in_this_organisation" xml:space="preserve">
+    <value />
+  </data>
 </root>

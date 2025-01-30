@@ -49,6 +49,15 @@ public class UploadNewFileToSubmitControllerTests
                 LastName = "Name",
                 ContactEmail = "test@email.com"
             });
+
+        _userAccountServiceMock.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>()))
+            .ReturnsAsync(new PersonDto
+            {
+                FirstName = "Test",
+                LastName = "Name",
+                ContactEmail = "test@email.com"
+            });
+
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession

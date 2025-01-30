@@ -49,15 +49,38 @@ public class UserAccountService : IUserAccountService
     {
         try
         {
-            var result = await _accountServiceApiClient.SendGetRequest(string.Format(UserAccountPaths.GetPersonByUserId, userId));
-            result.EnsureSuccessStatusCode();
-            var content = await result.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<PersonDto>(content);
+            return await GetPersonByUserIdByUrl(userId, UserAccountPaths.GetPersonByUserId);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, GetUserAccountErrorMessage);
             throw;
         }
+    }
+
+    /// <summary>
+    /// Gets a person by the UserId. Includes soft-deleted person records too.
+    /// </summary>
+    /// <param name="userId">UserId of the person to get.</param>
+    /// <returns></returns>
+    public async Task<PersonDto> GetAllPersonByUserId(Guid userId)
+    {
+        try
+        {
+            return await GetPersonByUserIdByUrl(userId, UserAccountPaths.GetAllPersonByUserId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, GetUserAccountErrorMessage);
+            throw;
+        }
+    }
+
+    private async Task<PersonDto> GetPersonByUserIdByUrl(Guid userId, string userAccountPath)
+    {
+        var result = await _accountServiceApiClient.SendGetRequest(string.Format(userAccountPath, userId));
+        result.EnsureSuccessStatusCode();
+        var content = await result.Content.ReadAsStringAsync();
+        return JsonConvert.DeserializeObject<PersonDto>(content);
     }
 }

@@ -79,9 +79,15 @@ public class UploadNewFileToSubmitController : Controller
         var submittedByGuid = submission.LastSubmittedFile?.SubmittedBy;
 
         string uploadedBy = null;
+        bool isUploadedByPersonDeleted = false;
+        bool isSubmittedByPersonDeleted = false;
+
         if (uploadedByGuid.HasValue)
         {
-            uploadedBy = (await _userAccountService.GetPersonByUserId(uploadedByGuid.Value)).GetUserName();
+            // uploadedBy may have been deleted if this is a resubmit, so use the GetAllPersonByUserId which includes soft delete person records
+            var person = (await _userAccountService.GetAllPersonByUserId(uploadedByGuid.Value));
+            uploadedBy = person.GetUserName();
+            isUploadedByPersonDeleted = person.IsDeleted;
         }
 
         string submittedBy = null;
@@ -89,11 +95,13 @@ public class UploadNewFileToSubmitController : Controller
         if (uploadedByGuid.Equals(submittedByGuid))
         {
             submittedBy = uploadedBy;
+            isSubmittedByPersonDeleted = isUploadedByPersonDeleted;
         }
         else if (submittedByGuid != null)
         {
-            submittedBy = (await _userAccountService.GetPersonByUserId(submittedByGuid.Value))
-                .GetUserName();
+            var submittedByPerson = (await _userAccountService.GetAllPersonByUserId(submittedByGuid.Value));
+            submittedBy = submittedByPerson.GetUserName();
+            isSubmittedByPersonDeleted = submittedByPerson.IsDeleted;
         }
 
         var vm = new UploadNewFileToSubmitViewModel
@@ -112,7 +120,9 @@ public class UploadNewFileToSubmitController : Controller
                                     submission.LastSubmittedFile?.SubmittedDateTime,
             RegulatorComment = decision.Comments,
             RegulatorDecision = decision.Decision,
-            IsResubmissionNeeded = decision.IsResubmissionRequired
+            IsResubmissionNeeded = decision.IsResubmissionRequired,
+            IsSubmittedByPersonDeleted = isSubmittedByPersonDeleted,
+            IsUploadByPersonDeleted = isSubmittedByPersonDeleted
         };
 
         if (!session.RegistrationSession.Journey.Contains(PagePaths.FileUploadSubLanding))

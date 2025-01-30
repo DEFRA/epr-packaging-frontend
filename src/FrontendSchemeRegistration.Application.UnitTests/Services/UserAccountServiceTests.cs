@@ -122,4 +122,43 @@ public class UserAccountServiceTests
         Func<Task> act = async () => await _sut.GetPersonByUserId(Guid.NewGuid());
         await act.Should().ThrowAsync<Exception>();
     }
+
+    [Test]
+    public async Task GetAllPersonByUserId_ReturnsAccount()
+    {
+        // Arrange
+        var person = new PersonDto
+        {
+            FirstName = "Test"
+        };
+        var response = new HttpResponseMessage(HttpStatusCode.OK);
+        response.Content = person.ToJsonContent();
+        _userAccountServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .ReturnsAsync(response);
+
+        // Act
+        var res = await _sut.GetAllPersonByUserId(Guid.NewGuid());
+
+        // Assert
+        res.Should().BeOfType<PersonDto>();
+        res.FirstName.Should().Be("Test");
+    }
+
+    [Test]
+    public async Task GetAllPersonByUserId_WhenClientThrowsException_ThrowsException()
+    {
+        // Arrange
+        var person = new PersonDto
+        {
+            FirstName = "Test"
+        };
+        var response = new HttpResponseMessage(HttpStatusCode.OK);
+        response.Content = person.ToJsonContent();
+
+        // Act &  Assert
+        _userAccountServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .ThrowsAsync(new Exception());
+        Func<Task> act = async () => await _sut.GetAllPersonByUserId(Guid.NewGuid());
+        await act.Should().ThrowAsync<Exception>();
+    }
 }

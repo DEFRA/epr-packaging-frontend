@@ -101,7 +101,7 @@ public class ReviewCompanyDetailsControllerTests
         _submissionService
             .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
             .ReturnsAsync(GenerateRegistrationSubmission());
-        _userAccountServiceMock.Setup(x => x.GetPersonByUserId(It.IsAny<Guid>()))
+        _userAccountServiceMock.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>()))
             .ReturnsAsync(new PersonDto
             {
                 FirstName = firstName,
@@ -150,7 +150,7 @@ public class ReviewCompanyDetailsControllerTests
         _submissionService
             .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
             .ReturnsAsync(GenerateRegistrationSubmission());
-        _userAccountServiceMock.Setup(x => x.GetPersonByUserId(It.IsAny<Guid>()))
+        _userAccountServiceMock.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>()))
             .ReturnsAsync(new PersonDto
             {
                 FirstName = firstName,

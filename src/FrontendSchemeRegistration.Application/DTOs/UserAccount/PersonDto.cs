@@ -10,4 +10,6 @@ public class PersonDto
     public string LastName { get; set; }
 
     public string ContactEmail { get; set; }
+
+    public bool IsDeleted { get; set; }
 }

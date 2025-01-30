@@ -144,7 +144,7 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
         const string lastName = "last";
         const string fullName = $"{firstName} {lastName}";
 
-        _userAccountServiceMock.Setup(x => x.GetPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new PersonDto
+        _userAccountServiceMock.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new PersonDto
         {
             FirstName = firstName,
             LastName = lastName
@@ -173,6 +173,9 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
             Status = SubmissionPeriodStatus.FileUploaded,
             OrganisationRole = "Producer"
         });
+
+        _userAccountServiceMock.Verify(x => x.GetAllPersonByUserId(It.IsAny<Guid>()), Times.Exactly(3));
+        _userAccountServiceMock.Verify(x => x.GetPersonByUserId(It.IsAny<Guid>()), Times.Never);
     }
 
     [Test]
@@ -223,7 +226,7 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
         const string lastName = "last";
         const string fullName = $"{firstName} {lastName}";
 
-        _userAccountServiceMock.Setup(x => x.GetPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new PersonDto
+        _userAccountServiceMock.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new PersonDto
         {
             FirstName = firstName,
             LastName = lastName
@@ -336,7 +339,7 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
         const string lastName = "last";
         const string fullName = $"{firstName} {lastName}";
 
-        _userAccountServiceMock.Setup(x => x.GetPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new PersonDto
+        _userAccountServiceMock.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new PersonDto
         {
             FirstName = firstName,
             LastName = lastName
@@ -365,5 +368,8 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
             Status = SubmissionPeriodStatus.SubmittedToRegulator,
             OrganisationRole = "Producer"
         });
+
+        _userAccountServiceMock.Verify(x => x.GetAllPersonByUserId(It.IsAny<Guid>()), Times.Once);
+        _userAccountServiceMock.Verify(x => x.GetPersonByUserId(It.IsAny<Guid>()), Times.Never);
     }
 }
