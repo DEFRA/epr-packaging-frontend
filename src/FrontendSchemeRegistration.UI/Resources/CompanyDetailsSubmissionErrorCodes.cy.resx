@@ -294,4 +294,16 @@
   <data name="886" xml:space="preserve">
     <value>[Welsh]This companies house number does not match the subsidiary ID.</value>
   </data>
+  <data name="910" xml:space="preserve">
+    <value>Leaver code must be present.</value>
+  </data>
+  <data name="911" xml:space="preserve">
+    <value>Leaver date not entered or not in the format DD/MM/YYYY.</value>
+  </data>
+  <data name="912" xml:space="preserve">
+    <value>Leaver date and reason must be present when leaver code is available.</value>
+  </data>
+  <data name="913" xml:space="preserve">
+    <value>Leaver reason exceeds 200 character limit.</value>
+  </data>
 </root>

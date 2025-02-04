@@ -573,5 +573,38 @@ namespace FrontendSchemeRegistration.UI.Resources {
                 return ResourceManager.GetString("897", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to To leaver code must be present..
+        /// </summary>
+        internal static string _910
+        {
+            get
+            {
+                return ResourceManager.GetString("910", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to To leaver date not entered or not in the format DD/MM/YYYY..
+        /// </summary>
+        internal static string _911
+        {
+            get
+            {
+                return ResourceManager.GetString("911", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to To leaver reason exceeds..
+        /// </summary>
+        internal static string _912
+        {
+            get
+            {
+                return ResourceManager.GetString("912", resourceCulture);
+            }
+        }
     }
 }
