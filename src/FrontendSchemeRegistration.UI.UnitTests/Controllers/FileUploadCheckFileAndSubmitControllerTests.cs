@@ -58,6 +58,10 @@ public class FileUploadCheckFileAndSubmitControllerTests
             .Setup(x => x.GetPersonByUserId(_lastValidFileUploadedByUserId))
             .ReturnsAsync(personThatLastUploadedValidFile);
 
+        _userAccountServiceMock
+            .Setup(x => x.GetAllPersonByUserId(_lastValidFileUploadedByUserId))
+            .ReturnsAsync(personThatLastUploadedValidFile);
+
         _featureManagerMock
             .Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ShowPoMResubmission)))
             .ReturnsAsync(true);
@@ -160,7 +164,7 @@ public class FileUploadCheckFileAndSubmitControllerTests
         });
 
         _submissionServiceMock.Verify(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>()), Times.Once);
-        _userAccountServiceMock.Verify(x => x.GetPersonByUserId(_lastValidFileUploadedByUserId), Times.Once);
+        _userAccountServiceMock.Verify(x => x.GetAllPersonByUserId(_lastValidFileUploadedByUserId), Times.Once);
     }
 
     [TestCase(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, true)]
@@ -205,7 +209,7 @@ public class FileUploadCheckFileAndSubmitControllerTests
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
 
         var personThatLastSubmitted = new PersonDto { FirstName = "Brian", LastName = "Adams" };
-        _userAccountServiceMock.Setup(x => x.GetPersonByUserId(_lastSubmittedByUserId)).ReturnsAsync(personThatLastSubmitted);
+        _userAccountServiceMock.Setup(x => x.GetAllPersonByUserId(_lastSubmittedByUserId)).ReturnsAsync(personThatLastSubmitted);
 
         var claims = CreateUserDataClaim(serviceRole, enrolmentStatus, OrganisationRoles.Producer);
         _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
@@ -229,12 +233,186 @@ public class FileUploadCheckFileAndSubmitControllerTests
             OrganisationRole = OrganisationRoles.Producer,
             SubmittedBy = "Brian Adams",
             SubmittedDateTime = submission.LastSubmittedFile.SubmittedDateTime,
-            SubmittedFileName = submission.LastSubmittedFile!.FileName
+            SubmittedFileName = submission.LastSubmittedFile!.FileName,
+            IsSubmittedByUserDeleted = false
         });
 
         _submissionServiceMock.Verify(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>()), Times.Once);
-        _userAccountServiceMock.Verify(x => x.GetPersonByUserId(_lastValidFileUploadedByUserId), Times.Once);
-        _userAccountServiceMock.Verify(x => x.GetPersonByUserId(_lastSubmittedByUserId), Times.Once);
+        _userAccountServiceMock.Verify(x => x.GetAllPersonByUserId(_lastValidFileUploadedByUserId), Times.Once);
+        _userAccountServiceMock.Verify(x => x.GetAllPersonByUserId(_lastSubmittedByUserId), Times.Once);
+    }
+
+    [Test]
+    public async Task Get_ReturnsDeletedUsers()
+    {
+        // Arrange
+        var submission = new PomSubmission
+        {
+            Id = _submissionId,
+            IsSubmitted = true,
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileName = "last-valid-file.csv",
+                UploadedBy = _lastValidFileUploadedByUserId,
+                FileUploadDateTime = DateTime.Now,
+                FileId = Guid.NewGuid()
+            },
+            LastSubmittedFile = new SubmittedFileInformation
+            {
+                FileName = "submitted-file.csv",
+                SubmittedDateTime = DateTime.Now.AddMinutes(5),
+                SubmittedBy = _lastSubmittedByUserId
+            },
+        };
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+
+        var personThatLastSubmitted = new PersonDto { FirstName = "Brian", LastName = "Adams", IsDeleted = true };
+        _userAccountServiceMock.Setup(x => x.GetAllPersonByUserId(_lastSubmittedByUserId)).ReturnsAsync(personThatLastSubmitted);
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be(ViewName);
+        result.ViewData.Keys.Should().HaveCount(1);
+        result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
+        result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.FileUploadSubLanding}");
+        result.Model.Should().BeEquivalentTo(new FileUploadCheckFileAndSubmitViewModel
+        {
+            SubmissionId = submission.Id,
+            UserCanSubmit = true,
+            LastValidFileId = submission.LastUploadedValidFile!.FileId,
+            LastValidFileName = submission.LastUploadedValidFile!.FileName,
+            LastValidFileUploadedBy = "John Doe",
+            LastValidFileUploadDateTime = submission.LastUploadedValidFile!.FileUploadDateTime,
+            OrganisationRole = OrganisationRoles.Producer,
+            SubmittedBy = "Brian Adams",
+            SubmittedDateTime = submission.LastSubmittedFile.SubmittedDateTime,
+            SubmittedFileName = submission.LastSubmittedFile!.FileName,
+            IsSubmittedByUserDeleted = true
+        });
+
+        _submissionServiceMock.Verify(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>()), Times.Once);
+        _userAccountServiceMock.Verify(x => x.GetAllPersonByUserId(_lastValidFileUploadedByUserId), Times.Once);
+        _userAccountServiceMock.Verify(x => x.GetAllPersonByUserId(_lastSubmittedByUserId), Times.Once);
+    }
+
+    
+    [Test]
+    public async Task Get_PopulatesCorrectSubmittedByUser_WhenSubmittedByAndUploadedByMatch()
+    {
+        // Arrange
+        var submission = new PomSubmission
+        {
+            Id = _submissionId,
+            IsSubmitted = true,
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileName = "last-valid-file.csv",
+                UploadedBy = _lastValidFileUploadedByUserId,
+                FileUploadDateTime = DateTime.Now,
+                FileId = Guid.NewGuid()
+            },
+            LastSubmittedFile = new SubmittedFileInformation
+            {
+                FileName = "submitted-file.csv",
+                SubmittedDateTime = DateTime.Now.AddMinutes(5),
+                SubmittedBy = _lastValidFileUploadedByUserId
+            },
+        };
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+
+        var personThatLastSubmitted = new PersonDto { FirstName = "Brian", LastName = "Adams", IsDeleted = false };
+        _userAccountServiceMock.Setup(x => x.GetAllPersonByUserId(_lastSubmittedByUserId)).ReturnsAsync(personThatLastSubmitted);
+        _userAccountServiceMock.Setup(x=>x.GetAllPersonByUserId(_lastValidFileUploadedByUserId)).ReturnsAsync(personThatLastSubmitted);
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        (result.Model as FileUploadCheckFileAndSubmitViewModel).SubmittedBy.Should().Be("Brian Adams");
+        (result.Model as FileUploadCheckFileAndSubmitViewModel).IsSubmittedByUserDeleted.Should().BeFalse();
+    }
+
+    [Test]
+    public async Task Get_PopulatesCorrectSubmittedByUser_WhenSubmittedByAndUploadedByDoNotMatch()
+    {
+        // Arrange
+        var submission = new PomSubmission
+        {
+            Id = _submissionId,
+            IsSubmitted = true,
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileName = "last-valid-file.csv",
+                UploadedBy = _lastValidFileUploadedByUserId,
+                FileUploadDateTime = DateTime.Now,
+                FileId = Guid.NewGuid()
+            },
+            LastSubmittedFile = new SubmittedFileInformation
+            {
+                FileName = "submitted-file.csv",
+                SubmittedDateTime = DateTime.Now.AddMinutes(5),
+                SubmittedBy = _lastSubmittedByUserId
+            },
+        };
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+
+        var personThatLastSubmitted = new PersonDto { FirstName = "Brian", LastName = "Adams", IsDeleted = false };
+        _userAccountServiceMock.Setup(x => x.GetAllPersonByUserId(_lastSubmittedByUserId)).ReturnsAsync(personThatLastSubmitted);
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        (result.Model as FileUploadCheckFileAndSubmitViewModel).SubmittedBy.Should().Be("Brian Adams");
+        (result.Model as FileUploadCheckFileAndSubmitViewModel).IsSubmittedByUserDeleted.Should().BeFalse();
+    }
+
+    [Test]
+    public async Task Get_PopulatesIsSubmittedByUserDeletedCorrectly()
+    {
+        // Arrange
+        var submission = new PomSubmission
+        {
+            Id = _submissionId,
+            IsSubmitted = true,
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileName = "last-valid-file.csv",
+                UploadedBy = _lastValidFileUploadedByUserId,
+                FileUploadDateTime = DateTime.Now,
+                FileId = Guid.NewGuid()
+            },
+            LastSubmittedFile = new SubmittedFileInformation
+            {
+                FileName = "submitted-file.csv",
+                SubmittedDateTime = DateTime.Now.AddMinutes(5),
+                SubmittedBy = _lastSubmittedByUserId
+            },
+        };
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+
+        var personThatLastSubmitted = new PersonDto { FirstName = "Brian", LastName = "Adams", IsDeleted = true };
+        _userAccountServiceMock.Setup(x => x.GetAllPersonByUserId(_lastSubmittedByUserId)).ReturnsAsync(personThatLastSubmitted);
+        _userAccountServiceMock.Setup(x => x.GetAllPersonByUserId(_lastValidFileUploadedByUserId)).ReturnsAsync(personThatLastSubmitted);
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        (result.Model as FileUploadCheckFileAndSubmitViewModel).IsSubmittedByUserDeleted.Should().BeTrue();
     }
 
     [Test]

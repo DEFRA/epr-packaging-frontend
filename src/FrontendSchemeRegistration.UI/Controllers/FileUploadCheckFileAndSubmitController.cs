@@ -132,7 +132,7 @@ public class FileUploadCheckFileAndSubmitController : Controller
     {
         var organisation = userData.Organisations[0];
         var uploadedByUserId = submission.LastUploadedValidFile.UploadedBy;
-        var uploadedByUserName = await GetUserNameFromId(uploadedByUserId);
+        var uploadedByUser = await GetUserNameFromId(uploadedByUserId);
         var model = new FileUploadCheckFileAndSubmitViewModel
         {
             OrganisationRole = organisation.OrganisationRole,
@@ -140,7 +140,7 @@ public class FileUploadCheckFileAndSubmitController : Controller
             UserCanSubmit = userData.CanSubmit(),
             LastValidFileId = submission.LastUploadedValidFile.FileId,
             LastValidFileName = submission.LastUploadedValidFile.FileName,
-            LastValidFileUploadedBy = uploadedByUserName,
+            LastValidFileUploadedBy = uploadedByUser.UserName,
             LastValidFileUploadDateTime = submission.LastUploadedValidFile.FileUploadDateTime,
             SubmittedFileName = submission.LastSubmittedFile?.FileName,
             SubmittedDateTime = submission.LastSubmittedFile?.SubmittedDateTime
@@ -149,17 +149,21 @@ public class FileUploadCheckFileAndSubmitController : Controller
         var submittedByUserId = submission.LastSubmittedFile?.SubmittedBy;
         if (submission.IsSubmitted && submittedByUserId is not null)
         {
+            var submittedByUser = await GetUserNameFromId(submittedByUserId.Value);
+
             model.SubmittedBy = uploadedByUserId == submittedByUserId
-                ? uploadedByUserName
-                : await GetUserNameFromId(submittedByUserId.Value);
+                ? uploadedByUser.UserName
+                : submittedByUser.UserName;
+
+            model.IsSubmittedByUserDeleted = submittedByUser.IsDeleted;
         }
 
         return model;
     }
 
-    private async Task<string> GetUserNameFromId(Guid userId)
+    private async Task<(string UserName, bool IsDeleted)> GetUserNameFromId(Guid userId)
     {
-        var user = await _userAccountService.GetPersonByUserId(userId);
-        return $"{user.FirstName} {user.LastName}";
+        var person = await _userAccountService.GetAllPersonByUserId(userId);
+        return ($"{person.FirstName} {person.LastName}", person.IsDeleted);
     }
 }
