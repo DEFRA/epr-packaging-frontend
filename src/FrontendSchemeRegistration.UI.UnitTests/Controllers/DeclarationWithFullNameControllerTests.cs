@@ -7,7 +7,10 @@ using Application.Services.Interfaces;
 using Constants;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Models;
+using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
+using FrontendSchemeRegistration.Application.Constants;
+using FrontendSchemeRegistration.UI.Sessions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -22,18 +25,44 @@ public class DeclarationWithFullNameControllerTests
     private const string ViewName = "DeclarationWithFullName";
     private const string OrganisationName = "Org Name Ltd";
     private const string DeclarationName = "Test Name";
+    private const string RegistrationReferenceNumber = "TESTREGREFNO123";
     private static readonly Guid _submissionId = Guid.NewGuid();
     private static readonly Guid _userId = Guid.NewGuid();
     private Mock<ISubmissionService> _submissionServiceMock;
     private Mock<ClaimsPrincipal> _claimsPrincipalMock;
     private DeclarationWithFullNameController _systemUnderTest;
+    private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
 
     [SetUp]
     public void SetUp()
     {
         _submissionServiceMock = new Mock<ISubmissionService>();
         _claimsPrincipalMock = new Mock<ClaimsPrincipal>();
-        _systemUnderTest = new DeclarationWithFullNameController(_submissionServiceMock.Object, new NullLogger<DeclarationWithFullNameController>());
+        _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation>
+                    {
+                        new()
+                        {
+                            OrganisationRole = OrganisationRoles.Producer
+                        }
+                    }
+                },
+                RegistrationSession = new RegistrationSession
+                {
+                    Journey = new List<string>
+                    {
+                        PagePaths.DeclarationWithFullName
+                    }
+                },
+                RegistrationApplicationSession = new RegistrationApplicationSession { RegistrationReferenceNumber = RegistrationReferenceNumber }
+            });
+
+        _systemUnderTest = new DeclarationWithFullNameController(_submissionServiceMock.Object, _sessionManagerMock.Object, new NullLogger<DeclarationWithFullNameController>());
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
@@ -45,6 +74,7 @@ public class DeclarationWithFullNameControllerTests
                         { "submissionId", _submissionId.ToString() },
                     }),
                 },
+                Session = new Mock<ISession>().Object,
                 User = _claimsPrincipalMock.Object
             },
         };

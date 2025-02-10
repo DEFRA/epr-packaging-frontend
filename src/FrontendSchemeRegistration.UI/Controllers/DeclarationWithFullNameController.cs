@@ -3,7 +3,9 @@
 using Application.Constants;
 using Application.DTOs.Submission;
 using Application.Services.Interfaces;
+using EPR.Common.Authorization.Sessions;
 using Extensions;
+using global::FrontendSchemeRegistration.UI.Sessions;
 using Microsoft.AspNetCore.Mvc;
 using UI.Attributes.ActionFilters;
 using ViewModels;
@@ -14,13 +16,15 @@ public class DeclarationWithFullNameController : Controller
     private const string ViewName = "DeclarationWithFullName";
     private const string ConfirmationViewName = "CompanyDetailsConfirmation";
     private const string SubmissionErrorViewName = "OrganisationDetailsSubmissionFailed";
+    private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
     private readonly ILogger<DeclarationWithFullNameController> _logger;
 
     private readonly ISubmissionService _submissionService;
 
-    public DeclarationWithFullNameController(ISubmissionService submissionService, ILogger<DeclarationWithFullNameController> logger)
+    public DeclarationWithFullNameController(ISubmissionService submissionService, ISessionManager<FrontendSchemeRegistrationSession> sessionManager, ILogger<DeclarationWithFullNameController> logger)
     {
         _submissionService = submissionService;
+        _sessionManager = sessionManager;
         _logger = logger;
     }
 
@@ -29,6 +33,10 @@ public class DeclarationWithFullNameController : Controller
     public async Task<IActionResult> Get()
     {
         var submissionId = Guid.Parse(Request.Query["submissionId"]);
+        var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+
+        ViewBag.IsResubmission = !String.IsNullOrEmpty(session.RegistrationApplicationSession.RegistrationReferenceNumber);
+
         var userData = User.GetUserData();
 
         if (!userData.CanSubmit())
@@ -68,6 +76,10 @@ public class DeclarationWithFullNameController : Controller
     public async Task<IActionResult> Post(DeclarationWithFullNameViewModel model)
     {
         var submissionId = Guid.Parse(Request.Query["submissionId"]);
+        var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+
+        ViewBag.IsResubmission = !String.IsNullOrEmpty(session.RegistrationApplicationSession.RegistrationReferenceNumber);
+
         var userData = User.GetUserData();
 
         if (!userData.CanSubmit())

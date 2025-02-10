@@ -23,7 +23,14 @@
                 
                 <h1 class="govuk-heading-l">@Localizer["declaration"]</h1>
                 
-                <p class="govuk-body">@Localizer["by_entering_your_name"]</p>
+                @if (ViewBag.IsResubmission)
+                {
+                    <p class="govuk-body">@Localizer["by_entering_your_name_resubmission"]</p>
+                }
+                else
+                {
+                    <p class="govuk-body">@Localizer["by_entering_your_name"]</p>
+                }
                 
                 <ul class="govuk-list govuk-list--bullet">
                     <li>@String.Format(Localizer["you_can_act_on_behalf"].Value, Model.OrganisationName)</li>
