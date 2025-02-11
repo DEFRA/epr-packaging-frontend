@@ -263,27 +263,6 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         }
     }
 
-    public async Task<List<SubsidiaryExportDto>> GetSubsidiariesAsync(int subsidiaryParentId)
-    {
-        await PrepareAuthenticatedClientAsync();
-
-        try
-        {
-            var response = await _httpClient.GetAsync($"/api/v1/subsidiary/{subsidiaryParentId}");
-
-            response.EnsureSuccessStatusCode();
-
-            var subsidiaries = await response.Content.ReadFromJsonAsync<List<SubsidiaryExportDto>>();
-
-            return subsidiaries;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error getting subsidiaries");
-            throw;
-        }
-    }
-
     // Gets all PRNs assigned to an organisation
     public async Task<List<PrnModel>> GetPrnsForLoggedOnUserAsync()
     {

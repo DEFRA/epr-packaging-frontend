@@ -688,59 +688,6 @@ public class WebApiGatewayClientTests
     }
 
     [Test]
-    public async Task GetSubsidiariesAsync_ReturnsSubsidiaries_WhenResponseIsSuccessful()
-    {
-        // Arrange
-        var expectedSubsidiaries = new List<SubsidiaryExportDto>
-        {
-            new SubsidiaryExportDto { Subsidiary_Id = 1, Organisation_Name = "Subsidiary 1" },
-            new SubsidiaryExportDto { Subsidiary_Id = 2, Organisation_Name = "Subsidiary 2" }
-        };
-
-        var response = new HttpResponseMessage
-        {
-            StatusCode = HttpStatusCode.OK,
-            Content = JsonContent.Create(expectedSubsidiaries)
-        };
-
-        _httpMessageHandlerMock.Protected()
-            .Setup<Task<HttpResponseMessage>>(
-                "SendAsync",
-                ItExpr.IsAny<HttpRequestMessage>(),
-                ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(response);
-
-        // Act
-        var result = await _webApiGatewayClient.GetSubsidiariesAsync(123);
-
-        // Assert
-        result.Should().BeEquivalentTo(expectedSubsidiaries);
-    }
-
-    [Test]
-    public async Task GetSubsidiariesAsync_ThrowsException_WhenResponseIsUnsuccessful()
-    {
-        // Arrange
-        var response = new HttpResponseMessage
-        {
-            StatusCode = HttpStatusCode.InternalServerError
-        };
-
-        _httpMessageHandlerMock.Protected()
-            .Setup<Task<HttpResponseMessage>>(
-                "SendAsync",
-                ItExpr.IsAny<HttpRequestMessage>(),
-                ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(response);
-
-        // Act
-        Func<Task> act = async () => await _webApiGatewayClient.GetSubsidiariesAsync(123);
-
-        // Assert
-        await act.Should().ThrowAsync<HttpRequestException>();
-    }
-
-    [Test]
     public async Task GetPrnsForLoggedOnUserAsync_ReturnsPrns_WhenSuccessful()
     {
         // Arrange

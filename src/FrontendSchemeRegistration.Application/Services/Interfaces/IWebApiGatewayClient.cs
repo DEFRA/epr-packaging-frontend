@@ -49,8 +49,6 @@ public interface IWebApiGatewayClient
 
     Task<List<SubmissionHistory>> GetSubmissionHistoryAsync(Guid submissionId, string queryString);
 
-    Task<List<SubsidiaryExportDto>> GetSubsidiariesAsync(int subsidiaryParentId);
-
     Task<List<PrnModel>> GetPrnsForLoggedOnUserAsync();
 
     Task<PrnModel> GetPrnByExternalIdAsync(Guid id);

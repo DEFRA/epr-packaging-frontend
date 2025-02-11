@@ -18,6 +18,7 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Options;
+    using Microsoft.FeatureManagement;
     using Microsoft.FeatureManagement.Mvc;
     using Services.Interfaces;
     using ViewModels;
@@ -33,6 +34,7 @@
         private readonly IComplianceSchemeMemberService _complianceSchemeMemberService;
         private readonly IComplianceSchemeService _complianceSchemeService;
         private readonly ISubsidiaryUtilityService _subsidiaryUtilityService;
+        private readonly IFeatureManager _featureManager;
         private IOptions<GlobalVariables> _globalVariables;
 
         private readonly string _basePath;
@@ -43,9 +45,10 @@
             ISubsidiaryService subsidiaryService,
             IOptions<GlobalVariables> globalVariables,
             ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
-            IComplianceSchemeMemberService complianceSchemeMemberService, 
+            IComplianceSchemeMemberService complianceSchemeMemberService,
             IComplianceSchemeService complianceSchemeService,
-            ISubsidiaryUtilityService subsidiaryUtilityService)
+            ISubsidiaryUtilityService subsidiaryUtilityService,
+            IFeatureManager featureManager)
         {
             _fileUploadService = fileUploadService;
             _submissionService = submissionService;
@@ -56,6 +59,7 @@
             _complianceSchemeService = complianceSchemeService;
             _subsidiaryUtilityService = subsidiaryUtilityService;
             _globalVariables = globalVariables;
+            _featureManager = featureManager;
         }
 
         [HttpGet]
@@ -310,7 +314,9 @@
                 var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
                 var complianceSchemeId = session.RegistrationSession?.SelectedComplianceScheme?.Id;
                 var isComplianceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
-                var stream = await _subsidiaryService.GetSubsidiariesStreamAsync(organisation.Id.Value, complianceSchemeId, isComplianceScheme);
+                var includeSubsidiaryJoinerAndLeaverColumns = await _featureManager.IsEnabledAsync(FeatureFlags.EnableSubsidiaryJoinerAndLeaverColumns);
+
+                var stream = await _subsidiaryService.GetSubsidiariesStreamAsync(organisation.Id.Value, complianceSchemeId, isComplianceScheme, includeSubsidiaryJoinerAndLeaverColumns);
 
                 if (stream == null)
                 {

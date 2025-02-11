@@ -1,5 +1,4 @@
-﻿using Azure;
-using FrontendSchemeRegistration.Application.Services.Interfaces;
+﻿using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 
@@ -15,6 +14,7 @@ namespace FrontendSchemeRegistration.UI.Services
             _subsidiaryService = subsidiaryService;
             _complianceSchemeMemberService = complianceSchemeMemberService;
         }
+
         public async Task<int> GetSubsidiariesCount(string organisationRole, Guid organisationId, Guid? selectedSchemeId)
         {
             if (organisationRole == OrganisationRoles.Producer)

@@ -30,6 +30,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
     using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
     using Microsoft.AspNetCore.Mvc.ViewFeatures;
     using Microsoft.AspNetCore.Routing;
+    using Microsoft.FeatureManagement;
     using UI.Sessions;
 
     [TestFixture]
@@ -47,10 +48,12 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
         private FileUploadSubsidiariesController _controller;
         private Mock<IOptions<GlobalVariables>> _globalVariablesMock;
         private Mock<ClaimsPrincipal> _claimsPrincipalMock;
+        private Mock<IFeatureManager> _mockFeatureManager;
         private Mock<IUrlHelper> _mockUrlHelper;
         private Mock<ISubsidiaryUtilityService> _mockSubsidiaryUtilityService;
         private readonly Guid UserId = Guid.NewGuid();
         private readonly Guid OrganisationId = Guid.NewGuid();
+
 
         [SetUp]
         public void SetUp()
@@ -119,6 +122,9 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                     It.IsAny<bool>()))
                 .ReturnsAsync(complianceApiResponse);
             _mockSubsidiaryUtilityService = new Mock<ISubsidiaryUtilityService>();
+
+            _mockFeatureManager = new Mock<IFeatureManager>();            
+
             _controller = new FileUploadSubsidiariesController(
                 _mockFileUploadService.Object,
                 _mockSubmissionService.Object,
@@ -127,7 +133,8 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                 _mockSessionManager.Object,
                 _mockComplianceSchemeMemberService.Object,
                 _mockComplianceSchemeService.Object,
-                _mockSubsidiaryUtilityService.Object);
+                _mockSubsidiaryUtilityService.Object,
+                _mockFeatureManager.Object);
 
             var tempDataMock = new Mock<ITempDataDictionary>();
             tempDataMock.Setup(dictionary => dictionary["SubsidiaryNameToRemove"]).Returns(DummySubsidiaryName);
@@ -273,7 +280,8 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                 mockSessionManager.Object,
                 _mockComplianceSchemeMemberService.Object,
                 _mockComplianceSchemeService.Object,
-                _mockSubsidiaryUtilityService.Object);
+                _mockSubsidiaryUtilityService.Object,
+                _mockFeatureManager.Object);
 
             controller.ControllerContext = new ControllerContext
             {
@@ -341,7 +349,8 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                 _mockSessionManager.Object,
                 mockComplianceSchemeMemberService.Object,
                 _mockComplianceSchemeService.Object,
-                _mockSubsidiaryUtilityService.Object);
+                _mockSubsidiaryUtilityService.Object,
+                _mockFeatureManager.Object);
 
             controller.ControllerContext = new ControllerContext
             {
@@ -933,14 +942,14 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
         {
             // Arrange
             var mockStream = new MemoryStream();
-            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true)).ReturnsAsync(mockStream);
+            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true, It.IsAny<bool>())).ReturnsAsync(mockStream);
 
             // Act
             var result = await _controller.SubsidiariesDownload() as RedirectToActionResult;
 
             // Assert
             result.ActionName.Should().Be("SubsidiariesDownloadView");
-            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true), Times.Never);
+            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true, It.IsAny<bool>()), Times.Never);
         }
 
         [Test]
@@ -948,22 +957,24 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
         {
             // Arrange
             var mockStream = new MemoryStream();
-            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true)).ReturnsAsync(mockStream);
+            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true, It.IsAny<bool>())).ReturnsAsync(mockStream);
 
             // Act
             var result = _controller.SubsidiariesDownloadView();
 
             // Assert
             ((Microsoft.AspNetCore.Mvc.ViewResult)result).ViewName.Should().Be("SubsidiariesDownload");
-            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true), Times.Never);
+            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true, It.IsAny<bool>()), Times.Never);
         }
-
+                
         [Test]
-        public async Task ExportSubsidiaries_ReturnsFileResultWithCorrectContentTypeAndFileName()
+        public async Task ExportSubsidiaries_ReturnsFileResultWithCorrectContentTypeAndFileName_When_EnableSubsidiaryJoinerAndLeaverColumns_Is_True()
         {
             // Arrange
             var mockStream = new MemoryStream();
-            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true)).ReturnsAsync(mockStream);
+
+            _mockFeatureManager.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.EnableSubsidiaryJoinerAndLeaverColumns))).ReturnsAsync(true);
+            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(mockStream);
 
             // Act
             var result = await _controller.ExportSubsidiaries();
@@ -975,7 +986,29 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             fileResult.FileDownloadName.Should().Be("subsidiary.csv");
             fileResult.FileStream.Should().BeSameAs(mockStream);
 
-            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true), Times.Once);
+            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), true), Times.Once);
+        }
+
+        [Test]
+        public async Task ExportSubsidiaries_ReturnsFileResultWithCorrectContentTypeAndFileName_When_EnableSubsidiaryJoinerAndLeaverColumns_Is_False()
+        {
+            // Arrange
+            var mockStream = new MemoryStream();
+
+            _mockFeatureManager.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.EnableSubsidiaryJoinerAndLeaverColumns))).ReturnsAsync(false);
+            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(mockStream);
+
+            // Act
+            var result = await _controller.ExportSubsidiaries();
+
+            // Assert
+            result.Should().BeOfType<FileStreamResult>();
+            var fileResult = result as FileStreamResult;
+            fileResult.ContentType.Should().Be("text/csv");
+            fileResult.FileDownloadName.Should().Be("subsidiary.csv");
+            fileResult.FileStream.Should().BeSameAs(mockStream);
+
+            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), false), Times.Once);
         }
 
         [Test]
@@ -1136,14 +1169,14 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
         {
             // Arrange
             var mockStream = new MemoryStream();
-            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true)).ThrowsAsync(new Exception("Some message"));
+            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true, It.IsAny<bool>())).ThrowsAsync(new Exception("Some message"));
 
             // Act
             var result = await _controller.ExportSubsidiaries() as RedirectToActionResult;
 
             // Assert
             result.ActionName.Should().Be("SubsidiariesDownloadFailed");
-            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true), Times.Once);
+            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true, It.IsAny<bool>()), Times.Once);
         }
 
         [Test]
@@ -1151,14 +1184,14 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
         {
             // Arrange
             var mockStream = new MemoryStream();
-            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true)).ReturnsAsync((MemoryStream)null);
+            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true, It.IsAny<bool>())).ReturnsAsync((MemoryStream)null);
 
             // Act
             var result = await _controller.ExportSubsidiaries() as RedirectToActionResult;
 
             // Assert
             result.ActionName.Should().Be("SubsidiariesDownloadFailed");
-            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true), Times.Once);
+            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true, It.IsAny<bool>()), Times.Once);
         }
 
         [Test]

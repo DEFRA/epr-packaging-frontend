@@ -26,14 +26,14 @@ public class SubsidiaryServiceTests
     private SubsidiaryService _sut;
     private const string RedisFileUploadStatusViewedKey = "SubsidiaryFileUploadStatusViewed";
     private Mock<IDistributedCache> _mockDistributedCache;
-    
+
     [SetUp]
     public void Init()
     {
-               
         _accountServiceApiClientMock = new Mock<IAccountServiceApiClient>();
         _webApiGatewayClientMock = new Mock<IWebApiGatewayClient>();
         _mockDistributedCache = new Mock<IDistributedCache>();
+
         _sut = new SubsidiaryService(_accountServiceApiClientMock.Object, _webApiGatewayClientMock.Object, new NullLogger<SubsidiaryService>(), _mockDistributedCache.Object);
     }
 
@@ -167,7 +167,47 @@ public class SubsidiaryServiceTests
     }
 
     [Test]
-    public async Task GetSubsidiariesStreamAsync_WithComplianceScheme_ReturnsExpectedStream()
+    public async Task GetSubsidiariesStreamAsync_WithComplianceScheme_ReturnsExpectedStream_With_Joiner_And_Leaver_Columns()
+    {
+        // Arrange
+        const bool isComplianceScheme = true;
+        const string companiesHouseNumber = "CHN001";
+        const string organisationName = "CS Subsidiary 1";
+        const string organisationId = "100";
+        const string subsidiaryId = "123";
+        const string reportingType = "Group";
+        var joinerDate = DateTime.Parse("2025-02-01");
+
+        var expectedModel = new List<ExportOrganisationSubsidiariesResponseModel>
+        {
+            new()
+            {
+                CompaniesHouseNumber = companiesHouseNumber, OrganisationName = organisationName, OrganisationId = organisationId, SubsidiaryId = subsidiaryId, JoinerDate = joinerDate, ReportingType = reportingType
+            }
+        };
+
+        var response = new HttpResponseMessage(HttpStatusCode.OK);
+        response.Content = expectedModel.ToJsonContent();
+
+        _accountServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _sut.GetSubsidiariesStreamAsync(Guid.NewGuid(), Guid.NewGuid(), isComplianceScheme, true);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Position.Should().Be(0);
+        _accountServiceApiClientMock.Verify(client => client.SendGetRequest(It.Is<string>(s => s.Contains("compliance-schemes"))), Times.Once);
+
+        using var reader = new StreamReader(result);
+        var content = await reader.ReadToEndAsync();
+        content.Should().Contain("organisation_id,subsidiary_id,organisation_name,companies_house_number,joiner_date,reporting_type");
+        content.Should().Contain($"{organisationId},{subsidiaryId},{organisationName},{companiesHouseNumber},{joinerDate:dd/MM/yyyy},{reportingType}");
+    }
+
+    [Test]
+    public async Task GetSubsidiariesStreamAsync_WithComplianceScheme_ReturnsExpectedStream_Without_Joiner_And_Leaver_Columns()
     {
         // Arrange
         const bool isComplianceScheme = true;
@@ -191,7 +231,7 @@ public class SubsidiaryServiceTests
             .ReturnsAsync(response);
 
         // Act
-        var result = await _sut.GetSubsidiariesStreamAsync(Guid.NewGuid(), Guid.NewGuid(), isComplianceScheme);
+        var result = await _sut.GetSubsidiariesStreamAsync(Guid.NewGuid(), Guid.NewGuid(), isComplianceScheme, false);
 
         // Assert
         result.Should().NotBeNull();
@@ -205,7 +245,47 @@ public class SubsidiaryServiceTests
     }
 
     [Test]
-    public async Task GetSubsidiariesStreamAsync_WithDirectProducer_ReturnsExpectedStream()
+    public async Task GetSubsidiariesStreamAsync_WithDirectProducer_ReturnsExpectedStream_With_Joiner_And_Leaver_Columns()
+    {
+        // Arrange
+        const bool isComplianceScheme = false;
+        const string companiesHouseNumber = "CHN001";
+        const string organisationName = "DP Subsidiary 1";
+        const string organisationId = "500";
+        const string subsidiaryId = "523";
+        const string reportingType = "Individual";
+        var joinerDate = DateTime.Parse("2025-02-01");
+
+        var expectedModel = new List<ExportOrganisationSubsidiariesResponseModel>
+        {
+            new()
+            {
+                CompaniesHouseNumber = companiesHouseNumber, OrganisationName = organisationName, OrganisationId = organisationId, SubsidiaryId = subsidiaryId, JoinerDate = joinerDate, ReportingType = reportingType
+            }
+        };
+
+        var response = new HttpResponseMessage(HttpStatusCode.OK);
+        response.Content = expectedModel.ToJsonContent();
+
+        _accountServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _sut.GetSubsidiariesStreamAsync(Guid.NewGuid(), Guid.NewGuid(), isComplianceScheme, true);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Position.Should().Be(0);
+        _accountServiceApiClientMock.Verify(client => client.SendGetRequest(It.Is<string>(s => s.Contains("organisations"))), Times.Once);
+
+        using var reader = new StreamReader(result);
+        var content = await reader.ReadToEndAsync();
+        content.Should().Contain("organisation_id,subsidiary_id,organisation_name,companies_house_number,joiner_date,reporting_type");
+        content.Should().Contain($"{organisationId},{subsidiaryId},{organisationName},{companiesHouseNumber},{joinerDate:dd/MM/yyyy},{reportingType}");
+    }
+
+    [Test]
+    public async Task GetSubsidiariesStreamAsync_WithDirectProducer_ReturnsExpectedStream_Without_Joiner_And_Leaver_Columns()
     {
         // Arrange
         const bool isComplianceScheme = false;
@@ -229,7 +309,7 @@ public class SubsidiaryServiceTests
             .ReturnsAsync(response);
 
         // Act
-        var result = await _sut.GetSubsidiariesStreamAsync(Guid.NewGuid(), Guid.NewGuid(), isComplianceScheme);
+        var result = await _sut.GetSubsidiariesStreamAsync(Guid.NewGuid(), Guid.NewGuid(), isComplianceScheme, false);
 
         // Assert
         result.Should().NotBeNull();
@@ -357,7 +437,7 @@ public class SubsidiaryServiceTests
         var userId = Guid.NewGuid();
         var organisationId = Guid.NewGuid();
         _webApiGatewayClientMock.Setup(c => c.GetSubsidiaryFileUploadStatusAsync(userId, organisationId))
-            .ReturnsAsync(new UploadFileErrorResponse { Status = "finished", Errors = new List<UploadFileErrorModel>() { new UploadFileErrorModel()}, RowsAdded = 2 });
+            .ReturnsAsync(new UploadFileErrorResponse { Status = "finished", Errors = new List<UploadFileErrorModel>() { new UploadFileErrorModel() }, RowsAdded = 2 });
 
         // Act
         var result = await _sut.GetSubsidiaryFileUploadStatusAsync(userId, organisationId);
@@ -414,9 +494,9 @@ public class SubsidiaryServiceTests
             {
                 key.Should().Be(redisKey, "because the cache key should match the expected format");
                 value.Should().BeEquivalentTo(serializedValue, "because the serialized value should match the boolean value to cache");
-                
+
             })
-            .Returns(Task.CompletedTask); 
+            .Returns(Task.CompletedTask);
 
         // Act
         await _sut.SetSubsidiaryFileUploadStatusViewedAsync(valueToCache, userId, organisationId);
