@@ -381,6 +381,9 @@ public class SchemeMembershipController : Controller
         {
             OrganisationName = complianceSchemeMember.OrganisationName
         };
+
+        ViewBag.CurrentPagePath = currentPagePath;
+
         return View(nameof(ConfirmRemoval), model);
     }
 

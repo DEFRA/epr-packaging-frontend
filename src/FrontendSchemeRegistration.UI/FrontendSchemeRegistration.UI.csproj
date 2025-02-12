@@ -1215,7 +1215,7 @@
     </ItemGroup>
 	<ItemGroup>
 		<SonarQubeSetting Include="sonar.coverage.exclusions">
-			<Value>ViewModels/ComplianceSchemeLandingViewModel*.cs,Views/**/*.cshtml,Program.cs,gulpfile.js,**/print.js,**/refresh.js,**/sub-status-refresh.js,**/download-pdf.js</Value>
+			<Value>ViewModels/ComplianceSchemeLandingViewModel*.cs,Views/**/*.cshtml,Program.cs,gulpfile.js,**/print.js,**/refresh.js,**/sub-status-refresh.js,**/download-pdf.js,**/loadingspinner.js</Value>
 		</SonarQubeSetting>
         <SonarQubeSetting Include="sonar.cpd.exclusions">
             <Value>Views/**/*.cshtml</Value>
