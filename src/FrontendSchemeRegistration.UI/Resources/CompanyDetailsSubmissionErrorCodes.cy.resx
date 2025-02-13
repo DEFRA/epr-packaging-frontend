@@ -294,4 +294,34 @@
   <data name="886" xml:space="preserve">
     <value>[Welsh]This companies house number does not match the subsidiary ID.</value>
   </data>
+  <data name="898" xml:space="preserve">
+    <value>[Welsh]Joiner date is required</value>
+  </data>
+  <data name="899" xml:space="preserve">
+    <value>[Welsh]Invalid joiner date format</value>
+  </data>
+  <data name="900" xml:space="preserve">
+    <value>[Welsh]Reporting type is required</value>
+  </data>
+  <data name="901" xml:space="preserve">
+    <value>[Welsh]Invalid reporting type</value>
+  </data>
+  <data name="902" xml:space="preserve">
+    <value>[Welsh] Leaver code must be present when leaver date is available.</value>
+  </data>
+  <data name="903" xml:space="preserve">
+    <value>[Welsh] Leaver date not entered.</value>
+  </data>
+  <data name="904" xml:space="preserve">
+    <value>[Welsh] Leaver date not in the format DD/MM/YYYY.</value>
+  </data>
+  <data name="905" xml:space="preserve">
+    <value>[Welsh] Leaver date must be after joiner date.</value>
+  </data>
+  <data name="906" xml:space="preserve">
+    <value>[Welsh] Leaver reason must be present when leaver code is available.</value>
+  </data>
+  <data name="907" xml:space="preserve">
+    <value>[Welsh] Leaver reason exceeds 200 character limit.</value>
+  </data>
 </root>

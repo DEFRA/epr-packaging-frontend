@@ -328,34 +328,34 @@ Read the guidance about how to create your organisation details file. Once youâ€
   <data name="90" xml:space="preserve">
     <value>Transitional Packaging Units Invalid</value>
   </data>
-	<data name="894" xml:space="preserve">
-        <value>Organisation size must be S (Small) or L (Large). Check file and try again.</value>
-    </data>
-	<data name="895" xml:space="preserve">
-        <value>Organisation size must be S (Small) or L (Large). Check file and try again.</value>
-    </data>
-	<data name="901" xml:space="preserve">
-	    <value>Organisation size must be S.</value>
-    </data>
-    <data name="902" xml:space="preserve">
-	    <value>Packaging type must be SP or HDC.</value>
-    </data>
-    <data name="903" xml:space="preserve">
-	    <value>Packaging class must be P1, P2, P3, P4 or P6.</value>
-    </data>
-    <data name="904" xml:space="preserve">
-	    <value>From country must be blank.</value>
-    </data>
-    <data name="905" xml:space="preserve">
-	    <value>To country must be blank.</value>
-    </data>
-    <data name="906" xml:space="preserve">
-	    <value>Packaging material weight must have a value greater than 0.</value>
-    </data>
-    <data name="907" xml:space="preserve">
-	    <value>Packaging material quantity must have a value greater than 0.</value>
-    </data>
-	<data name="908" xml:space="preserve">
-	    <value>Packaging class must be empty.</value>
-    </data>
+  <data name="894" xml:space="preserve">
+    <value>Organisation size must be S (Small) or L (Large). Check file and try again.</value>
+  </data>
+  <data name="895" xml:space="preserve">
+    <value>Organisation size must be S (Small) or L (Large). Check file and try again.</value>
+  </data>
+  <data name="901" xml:space="preserve">
+    <value>Organisation size must be S.</value>
+  </data>
+  <data name="902" xml:space="preserve">
+    <value>Packaging type must be SP or HDC.</value>
+  </data>
+  <data name="903" xml:space="preserve">
+    <value>Packaging class must be P1, P2, P3, P4 or P6.</value>
+  </data>
+  <data name="904" xml:space="preserve">
+    <value>From country must be blank.</value>
+  </data>
+  <data name="905" xml:space="preserve">
+    <value>To country must be blank.</value>
+  </data>
+  <data name="906" xml:space="preserve">
+    <value>Packaging material weight must have a value greater than 0.</value>
+  </data>
+  <data name="907" xml:space="preserve">
+    <value>Packaging material quantity must have a value greater than 0.</value>
+  </data>
+  <data name="908" xml:space="preserve">
+    <value>Packaging class must be empty.</value>
+  </data>
 </root>
