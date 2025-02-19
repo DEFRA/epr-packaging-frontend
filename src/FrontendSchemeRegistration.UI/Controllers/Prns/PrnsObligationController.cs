@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using EPR.Common.Authorization.Sessions;
+﻿using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Options;
@@ -17,6 +16,7 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns;
 
 [FeatureGate(FeatureFlags.ShowPrn)]
 [ServiceFilter(typeof(ComplianceSchemeIdHttpContextFilterAttribute))]
+[PrnsObligationActionFilterAttribute]
 public class PrnsObligationController : Controller
 {
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
@@ -43,11 +43,11 @@ public class PrnsObligationController : Controller
     public async Task<IActionResult> ObligationsHome()
     {
         var year = DateTime.Now.Year;
-        
+
         _logger.LogInformation("{Logprefix}: PrnsObligationController - ObligationsHome: Get Recycling Obligations Calculation request for year {Year}", logPrefix, year);
-        
+
         var viewModel = await _prnService.GetRecyclingObligationsCalculation(year);
-        
+
         _logger.LogInformation("{Logprefix}: PrnsObligationController - ObligationsHome: Recycling Obligations returned for year {Year} : {Results}", logPrefix, year, JsonConvert.SerializeObject(viewModel));
 
         await FillViewModelFromSessionAsync(viewModel, year);
@@ -101,15 +101,17 @@ public class PrnsObligationController : Controller
     public async Task FillViewModelFromSessionAsync(PrnObligationViewModel viewModel, int year)
     {
         _logger.LogInformation("{Logprefix}: PrnsObligationController - FillViewModelFromSessionAsync: Get oblication calculation from Session year: {Year}, obligation model: {ViewModel}", logPrefix, year, JsonConvert.SerializeObject(viewModel));
-        var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+        var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         _logger.LogInformation("{Logprefix}: PrnsObligationController - FillViewModelFromSessionAsync: Session results : {Results}", logPrefix, JsonConvert.SerializeObject(session));
 
         var organisation = session.UserData.Organisations?.FirstOrDefault();
+
         if (organisation != null)
         {
+            var isDirectProducer = organisation.OrganisationRole == OrganisationRoles.Producer;
             viewModel.OrganisationRole = organisation.OrganisationRole;
-            viewModel.OrganisationName = organisation.Name;
-            viewModel.NationId = organisation.NationId;
+            viewModel.OrganisationName = isDirectProducer ? organisation.Name : session.RegistrationSession.SelectedComplianceScheme?.Name;
+            viewModel.NationId = isDirectProducer ? organisation.NationId : (session.RegistrationSession.SelectedComplianceScheme?.NationId ?? 0);
             viewModel.CurrentYear = year;
             viewModel.DeadlineYear = year + 1;
         }
