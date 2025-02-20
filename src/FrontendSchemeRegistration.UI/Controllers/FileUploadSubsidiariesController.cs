@@ -427,7 +427,7 @@
                                 Name = response.Organisation.Name,
                                 Id = response.Organisation.OrganisationNumber,
                                 CompaniesHouseNumber = response.Organisation.CompaniesHouseNumber,
-                                Subsidiaries = response.Relationships.Select(r => new SubsidiaryViewModel(r.OrganisationNumber, r.OrganisationName, r.CompaniesHouseNumber)).ToList()
+                                Subsidiaries = response.Relationships.Select(r => new SubsidiaryViewModel(r.OrganisationNumber, r.OrganisationName, r.CompaniesHouseNumber, r.JoinerDate, r.ReportingType)).ToList()
                             }
                         ]
                     };
@@ -453,7 +453,7 @@
                                 Name = c.OrganisationName,
                                 Id = c.OrganisationNumber,
                                 CompaniesHouseNumber = c.CompaniesHouseNumber,
-                                Subsidiaries = c.Relationships.Select(s => new SubsidiaryViewModel(s.OrganisationNumber, s.OrganisationName, s.CompaniesHouseNumber)).ToList()
+                                Subsidiaries = c.Relationships.Select(s => new SubsidiaryViewModel(s.OrganisationNumber, s.OrganisationName, s.CompaniesHouseNumber, s.JoinerDate, s.ReportingType)).ToList()
                             }).ToList()
                     };
                 }

@@ -1,11 +1,15 @@
 ﻿@using FrontendSchemeRegistration.Application.Constants
+@using FrontendSchemeRegistration.UI.Constants
 @model SubsidiaryListViewModel
+
 @{
     ViewData["Title"] = Localizer["subsidiaries_list"];
 
     var subsidiaryNameHeader = Localizer["subsidiary_name"];
     var subsidiaryIdHeader = Localizer["subsidiary_id"];
     var companiesHouseNumberHeader = Localizer["companies_house_number"];
+    var joinedHeader = Localizer["joined"];
+    var reportingHeader = Localizer["reporting"];
     var removeSubsidiaryLinkText = Localizer["remove_subsidiary"];
 }
 @inject Microsoft.FeatureManagement.IFeatureManager FeatureManager
@@ -71,6 +75,10 @@
                                                 <th scope="col" class="govuk-table__header">@subsidiaryNameHeader</th>
                                                 <th scope="col" class="govuk-table__header no-wrap-text">@subsidiaryIdHeader</th>
                                                 <th scope="col" class="govuk-table__header no-wrap-text">@companiesHouseNumberHeader</th>
+                                                <feature name="@FeatureFlags.EnableSubsidiaryJoinerAndLeaverColumns">
+                                                    <th scope="col" class="govuk-table__header no-wrap-text govuk-!-padding-right-5">@joinedHeader</th>
+                                                    <th scope="col" class="govuk-table__header no-wrap-text">@reportingHeader</th>
+                                                </feature>
                                                 <td class="govuk-table__header no-wrap-text" />
                                             </tr>
                                         </thead>
@@ -80,7 +88,18 @@
                                                 <tr class="govuk-table__row">
                                                     <td class="govuk-table__cell break-word" data-heading="@subsidiaryNameHeader">@subsidiaryViewModel.Name</td>
                                                     <td class="govuk-table__cell break-word" data-heading="@subsidiaryIdHeader">@subsidiaryViewModel.Id</td>
-                                                    <td class="govuk-table__cell break-word" data-heading="@companiesHouseNumberHeader">@(!string.IsNullOrWhiteSpace(subsidiaryViewModel.CompaniesHouseNumber) ? subsidiaryViewModel.CompaniesHouseNumber : Localizer["no_ch_number"])</td>
+                                                    <td class="govuk-table__cell break-word" data-heading="@companiesHouseNumberHeader">
+                                                        @(!string.IsNullOrWhiteSpace(subsidiaryViewModel.CompaniesHouseNumber) ? subsidiaryViewModel.CompaniesHouseNumber : Localizer["no_ch_number"])
+                                                    </td>
+                                                    <feature name="@FeatureFlags.EnableSubsidiaryJoinerAndLeaverColumns">
+                                                        <td class="govuk-table__cell no-wrap-text" data-heading="@joinedHeader">
+                                                            @(subsidiaryViewModel.JoinerDate?.ToString("dd MMM yyyy"))
+                                                        </td>
+                                                        <td class="govuk-table__cell break-word" data-heading="@reportingHeader">
+                                                            @(subsidiaryViewModel.ReportingType)
+                                                        </td>
+                                                    </feature>
+
                                                     <td class="govuk-table__cell" data-heading="@removeSubsidiaryLinkText">
                                                         <a href="@($"/report-data{PagePaths.ConfirmSubsidiaryRemoval}/{@subsidiaryViewModel.Id}?parentOrganisationExternalId={organisationModel.ExternalId}")" aria-label="@Localizer["aria-confirm-subsidiary-removal-description"]" class="govuk-link--no-visited-state">
                                                             @removeSubsidiaryLinkText

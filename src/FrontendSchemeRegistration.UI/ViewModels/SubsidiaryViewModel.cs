@@ -5,11 +5,13 @@ namespace FrontendSchemeRegistration.UI.ViewModels;
 [ExcludeFromCodeCoverage]
 public class SubsidiaryViewModel
 {
-    public SubsidiaryViewModel(string id, string name, string companiesHouseNumber)
+    public SubsidiaryViewModel(string id, string name, string companiesHouseNumber, DateTime? joinerDate, string reportingType)
     {
         Id = id;
         Name = name;
         CompaniesHouseNumber = companiesHouseNumber;
+        JoinerDate = joinerDate;
+        ReportingType = reportingType;
     }
 
     public string Id { get; set; }
@@ -17,4 +19,8 @@ public class SubsidiaryViewModel
     public string Name { get; set; }
 
     public string CompaniesHouseNumber { get; set; }
+
+    public DateTime? JoinerDate { get; set; }
+
+    public string ReportingType { get; set; }
 }

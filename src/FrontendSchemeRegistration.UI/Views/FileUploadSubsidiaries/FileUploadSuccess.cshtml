@@ -4,33 +4,40 @@
     ViewData["Title"] = Localizer["File_uploaded_successfully"];
 }
 
-<div class="govuk-grid-column-two-thirds">
-    <div class="govuk-panel govuk-panel--confirmation">
-        <h1 class="govuk-panel__title">
-            @Localizer["File_uploaded_successfully"]
-        </h1>
-          <p class="govuk-panel__body">@String.Format(Localizer["subsidiaries_have_been_added"].Value, Model.RecordsAdded).</p>
-    </div>
-</div>
 <main class="govuk-main-wrapper" id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            @if (Model.ShowTotalSubsidiariesCount)
-            {
-                <div class="govuk-grid-column-full">
-                    <p class="govuk-body govuk-!-margin-top-4 govuk-!-margin-bottom-7">@Localizer["total_number_of_subsidiaries"] @Model.TotalSubsidiariesCount.</p>
-                </div>
-            }
-          
+            <div class="govuk-panel govuk-panel--confirmation">
+                <h1 class="govuk-panel__title">
+                    @Localizer["File_uploaded_successfully"]
+                </h1>
+            </div>
+            <p class="govuk-body">
+                @string.Format(Localizer["you_added_x_subsidiaries"].Value, Model.RecordsAdded).
+            </p>
+            <h3 class="govuk-heading-m">@Localizer["what_happens_next"]</h3>
+            <p class="govuk-body">
+                @Localizer["check_that_all_the_information"]
+            </p>
+            <p class="govuk-body">
+                @Localizer["if_any_of_your_subsidiaries"]
+                @Html.ActionLink(Localizer["updating_and_resubmitting"].Value, "ProducerRegistrationGuidance", "FrontendSchemeRegistration",
+                         null, new { @class = "govuk-link govuk-link--no-visited-state" }).
+            </p>
+            <p class="govuk-body">
+                @Localizer["use_the_subsidiary_ids"]
+            </p>
+            <p class="govuk-body">
+                <a class="govuk-button govuk-button--secondary" href="@Url.Action("SubsidiariesDownload", "FileUploadSubsidiaries")" role="button" data-module="govuk-button">
+                    @Localizer["download_subsidiaries_list"]
+                </a>
+            </p>
             <form method="get" action="@Url.Action("SubsidiariesList")">
-                <div class="govuk-grid-column-full">
                     <div class="govuk-button-group">
-
                         <button class="govuk-button" data-module="govuk-button" type="submit">@Localizer["View_your_subsidiaries"]</button>
                         @Html.ActionLink(Localizer["return_to_account_home"].Value, "Get", "Landing",
                                  null, new { @class = "govuk-link govuk-link--no-visited-state" })
                     </div>
-                </div>
             </form>
         </div>
     </div>

@@ -37,6 +37,8 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
     public class FileUploadSubsidiariesControllerTests
     {
         private const string DummySubsidiaryName = "DummySubsidiaryName";
+        private const string SelfReportingType = "Self";
+        private const string GroupReportingType = "Group";
 
         private readonly Mock<ClaimsPrincipal> _userMock = new();
         private Mock<IFileUploadService> _mockFileUploadService;
@@ -53,6 +55,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
         private Mock<ISubsidiaryUtilityService> _mockSubsidiaryUtilityService;
         private readonly Guid UserId = Guid.NewGuid();
         private readonly Guid OrganisationId = Guid.NewGuid();
+        private readonly DateTime JoinerDate = new DateTime(2024, 12, 17);
 
 
         [SetUp]
@@ -101,11 +104,12 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                         {
                             OrganisationName = "Test Organisation Name",
                             OrganisationNumber = "0123456789",
+
                             Relationships = new List<RelationshipResponseModel>
                             {
-                                new() { OrganisationNumber = "987654321", OrganisationName = "Subsidiary1" },
-                                new() { OrganisationNumber = "852147930", OrganisationName = "Subsidiary2" },
-                                new() { OrganisationNumber = "741229428", OrganisationName = "Subsidiary3" },
+                                new() { OrganisationNumber = "987654321", OrganisationName = "Subsidiary1" , JoinerDate = JoinerDate, ReportingType = SelfReportingType},
+                                new() { OrganisationNumber = "852147930", OrganisationName = "Subsidiary2" , JoinerDate = JoinerDate, ReportingType = GroupReportingType},
+                                new() { OrganisationNumber = "741229428", OrganisationName = "Subsidiary3" , JoinerDate = JoinerDate, ReportingType = GroupReportingType},
                             }
                         }
                     },
@@ -183,9 +187,9 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                 },
                 Relationships = new List<RelationshipResponseModel>
                 {
-                    new() { OrganisationNumber = "987654321", OrganisationName = "Subsidiary1" },
-                    new() { OrganisationNumber = "852147930", OrganisationName = "Subsidiary2" },
-                    new() { OrganisationNumber = "741229428", OrganisationName = "Subsidiary3" },
+                    new() { OrganisationNumber = "987654321", OrganisationName = "Subsidiary1" , JoinerDate = JoinerDate, ReportingType = SelfReportingType},
+                    new() { OrganisationNumber = "852147930", OrganisationName = "Subsidiary2" , JoinerDate = JoinerDate, ReportingType = GroupReportingType},
+                    new() { OrganisationNumber = "741229428", OrganisationName = "Subsidiary3" , JoinerDate = JoinerDate, ReportingType = GroupReportingType},
                 }
             };
 
@@ -203,6 +207,11 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             viewResult.Should().NotBeNull();
             viewResult.Organisations.Should().HaveCount(1);
             viewResult.Organisations[0].Subsidiaries.Should().HaveCount(3);
+
+            var subsidiary = viewResult.Organisations[0].Subsidiaries.First();
+            subsidiary.JoinerDate.Should().Be(JoinerDate); 
+            subsidiary.ReportingType.Should().Be(SelfReportingType); 
+
             _mockSubsidiaryService.Verify(service => service.GetOrganisationSubsidiaries(It.IsAny<Guid>()), Times.Once);
         }
 
@@ -254,6 +263,26 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                     It.IsAny<string>(),
                     It.IsAny<int>(),
                     It.IsAny<bool>()), Times.Once);
+        }
+
+        [Test]
+        public async Task SubsidiariesList_WhenComplianceScheme_ShouldCallComplianceServiceAndReturnViewResultWith_JoinerDate_ReportingType()
+        {
+            // Arrange
+            _mockSubsidiaryService.Setup(x => x.GetSubsidiaryFileUploadStatusAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                .ReturnsAsync(SubsidiaryFileUploadStatus.NoFileUploadActive);
+
+            // Act
+            var result = await _controller.SubsidiariesList();
+
+            // Assert
+            var viewResult = result.Should().BeOfType<ViewResult>().Subject;
+            var viewModel = viewResult.Model.Should().BeOfType<SubsidiaryListViewModel>().Subject;
+
+            // Validate first subsidiary
+            var firstSubsidiary = viewModel.Organisations[0].Subsidiaries.First();
+            firstSubsidiary.JoinerDate.Should().Be(JoinerDate);
+            firstSubsidiary.ReportingType.Should().Be(SelfReportingType);
         }
 
         [Theory]
@@ -1319,6 +1348,27 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             result.Should().BeOfType<ViewResult>()
                 .Which.Model.Should().BeOfType<ConfirmRemoveSubsidiarySuccessViewModel>()
                 .Which.Should().BeEquivalentTo(expectedModel);
+        }
+
+        [Test]
+        public async Task SubsidiariesList_ShouldIncludeJoinerDateAndReportingType()
+        {
+            // Arrange
+            _mockSubsidiaryService.Setup(x => x.GetSubsidiaryFileUploadStatusAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                .ReturnsAsync(SubsidiaryFileUploadStatus.NoFileUploadActive);
+
+            // Act
+            var result = await _controller.SubsidiariesList();
+
+            // Assert
+            var viewResult = result.Should().BeOfType<ViewResult>().Subject;
+            var viewModel = viewResult.Model.Should().BeOfType<SubsidiaryListViewModel>().Subject;
+
+            viewModel.Organisations.Should().HaveCount(1);
+            var subsidiary = viewModel.Organisations[0].Subsidiaries.First();
+
+            subsidiary.JoinerDate.Should().Be(JoinerDate);  
+            subsidiary.ReportingType.Should().Be(SelfReportingType);  
         }
 
         public static object[] SubsidiariesUnsuccessfulFileUploadDecisionCases() => [

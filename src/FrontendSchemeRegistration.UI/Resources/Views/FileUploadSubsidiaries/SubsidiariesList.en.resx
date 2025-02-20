@@ -192,4 +192,10 @@
   <data name="subsidiaries_will_appear" xml:space="preserve">
     <value>Subsidiaries will appear here after they have been processed.</value>
   </data>
+  <data name="joined" xml:space="preserve">
+    <value>Joined</value>
+  </data>
+  <data name="reporting" xml:space="preserve">
+    <value>Reporting</value>
+  </data>
 </root>

@@ -195,4 +195,10 @@
   <data name="subsidiaries_will_appear" xml:space="preserve">
     <value>Bydd is-gwmnïau yn ymddangos yma ar ôl cael eu prosesu.</value>
   </data>
+  <data name="joined" xml:space="preserve">
+    <value>W joined</value>
+  </data>
+  <data name="reporting" xml:space="preserve">
+    <value>W reporting</value>
+  </data>
 </root>

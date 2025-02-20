@@ -117,43 +117,88 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="check_that_all_the_information" xml:space="preserve">
+  <data name="companies_house_number" xml:space="preserve">
     <value />
   </data>
-  <data name="File_uploaded_successfully" xml:space="preserve">
+  <data name="companies_house_number_heading" xml:space="preserve">
     <value />
   </data>
-  <data name="if_any_of_your_subsidiaries" xml:space="preserve">
+  <data name="remove_subsidiary" xml:space="preserve">
     <value />
   </data>
-  <data name="updating_and_resubmitting" xml:space="preserve">
+  <data name="few_minutes_to_upload_file" xml:space="preserve">
+    <value />
+  </data>
+  <data name="file_specification" xml:space="preserve">
+    <value />
+  </data>
+  <data name="normal_header" xml:space="preserve">
+    <value />
+  </data>
+  <data name="no_ch_number" xml:space="preserve">
+    <value />
+  </data>
+  <data name="no_subsidiaries_added" xml:space="preserve">
+    <value />
+  </data>
+  <data name="organisation_id_heading" xml:space="preserve">
+    <value />
+  </data>
+  <data name="subsidiaries_file_must_be" xml:space="preserve">
+    <value />
+  </data>
+  <data name="subsidiaries_in_csv_format" xml:space="preserve">
+    <value />
+  </data>
+  <data name="subsidiaries_list" xml:space="preserve">
+    <value />
+  </data>
+  <data name="subsidiaries_need_to_upload_csv" xml:space="preserve">
+    <value />
+  </data>
+  <data name="subsidiaries_smaller_than_60kb" xml:space="preserve">
+    <value />
+  </data>
+  <data name="subsidiaries_upload_your_file" xml:space="preserve">
+    <value />
+  </data>
+  <data name="subsidiary_accuracy_warning_text" xml:space="preserve">
+    <value />
+  </data>
+  <data name="subsidiary_id" xml:space="preserve">
+    <value />
+  </data>
+  <data name="subsidiary_name" xml:space="preserve">
+    <value />
+  </data>
+  <data name="subsidiary_remove" xml:space="preserve">
+    <value />
+  </data>
+  <data name="how_to_complete_file" xml:space="preserve">
+    <value />
+  </data>
+  <data name="upload_a_file" xml:space="preserve">
+    <value />
+  </data>
+  <data name="no_subsidiaries_msg" xml:space="preserve">
     <value />
   </data>
   <data name="return_to_account_home" xml:space="preserve">
     <value />
   </data>
-  <data name="subsidiaries_have_been_added" xml:space="preserve">
+  <data name="you_have_not_added_any_subsidiaries" xml:space="preserve">
     <value />
   </data>
-  <data name="total_number_of_subsidiaries" xml:space="preserve">
+  <data name="you_have_not_added_any_subsidiaries_for_your_members" xml:space="preserve">
     <value />
   </data>
-  <data name="use_the_subsidiary_ids" xml:space="preserve">
+  <data name="subsidiaries_will_appear" xml:space="preserve">
     <value />
   </data>
-  <data name="View_your_subsidiaries" xml:space="preserve">
+  <data name="joined" xml:space="preserve">
     <value />
   </data>
-  <data name="what_happens_next" xml:space="preserve">
-    <value />
-  </data>
-  <data name="you_added_subsidiaries" xml:space="preserve">
-    <value />
-  </data>
-  <data name="you_added_x_subsidiaries" xml:space="preserve">
-    <value />
-  </data>
-  <data name="download_subsidiaries_list" xml:space="preserve">
+  <data name="reporting" xml:space="preserve">
     <value />
   </data>
 </root>

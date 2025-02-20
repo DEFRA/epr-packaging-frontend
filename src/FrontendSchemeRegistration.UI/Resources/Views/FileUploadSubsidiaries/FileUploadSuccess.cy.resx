@@ -117,8 +117,17 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="check_that_all_the_information" xml:space="preserve">
+    <value>WCheck that all the information you have provided is accurate.</value>
+  </data>
   <data name="File_uploaded_successfully" xml:space="preserve">
     <value>Ffeil wedi’i huwchlwytho’n llwyddiannus</value>
+  </data>
+  <data name="if_any_of_your_subsidiaries" xml:space="preserve">
+    <value>WIf any of your subsidiaries' organisation details change, you must notify the regulator within 28 days by</value>
+  </data>
+  <data name="updating_and_resubmitting" xml:space="preserve">
+    <value>Wupdating and resubmitting your registration file</value>
   </data>
   <data name="return_to_account_home" xml:space="preserve">
     <value>Dychwelyd i hafan y cyfrif</value>
@@ -129,6 +138,9 @@
   <data name="total_number_of_subsidiaries" xml:space="preserve">
     <value>Cyfanswm yr is-gwmnïau yn eich cyfrif erbyn hyn yw</value>
   </data>
+  <data name="use_the_subsidiary_ids" xml:space="preserve">
+    <value>WUse the subsidiary IDs for all future organisation details and packaging data submissions.</value>
+  </data>
   <data name="View_your_subsidiaries" xml:space="preserve">
     <value>Gweld is-gwmnïau</value>
   </data>
@@ -137,5 +149,11 @@
   </data>
   <data name="you_added_subsidiaries" xml:space="preserve">
     <value>Rydych chi wedi ychwanegu is-gwmnïau.</value>
+  </data>
+  <data name="you_added_x_subsidiaries" xml:space="preserve">
+    <value>WYou added {0} subsidiaries</value>
+  </data>
+  <data name="download_subsidiaries_list" xml:space="preserve">
+    <value>WDownload subsidiaries list</value>
   </data>
 </root>
