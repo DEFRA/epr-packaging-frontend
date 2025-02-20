@@ -11,6 +11,10 @@ parameters:
   displayName: Run tests
   type: boolean
   default: true
+- name: runOWASPScan
+  displayName: Run OWASP Scan
+  type: boolean
+  default: true
 - name: sonarqubeInstance
   displayName: 'Select SonarQube for v9.9 or SonarQubeLatest for 10.4'
   type: string
@@ -43,7 +47,7 @@ resources:
     - repository: CommonTemplates
       name: RWD-CPR-EPR4P-ADO/epr-webapps-code-deploy-templates
       type: git
-      ref: main
+      ref: owasp-testing
 
 extends:
   template: epr-build-pipeline.yaml@CommonTemplates
@@ -54,6 +58,7 @@ extends:
     sonarQubeProjectKey: ${{ variables.sonarQubeProjectKey }}
     sonarQubeProjectName: ${{ variables.sonarQubeProjectName }}
     runTests: ${{ parameters.runTests }}
+    runOWASPScan: ${{ parameters.runOWASPScan }}
     azureSubscription: $(azureSubscription)
     acrAzureContainerRegistryName: $(acr.azureContainerRegistryName)
     acrRepositoryName: $(acr.repositoryName)
