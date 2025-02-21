@@ -4,7 +4,7 @@
 @{
     ViewData["Title"] = Localizer["pay_by_phone_title"];
     var totalAmount = (Model.TotalAmountOutstanding / 100).ToString("#,##0.00");
-    var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
+    var scriptNonce = (string?) Context.Items[ContextKeys.ScriptNonceKey];
 }
 
 <div class="govuk-width-container">
@@ -26,11 +26,12 @@
                 <h3 class="govuk-heading-m">@Localizer["payment_details_section"]</h3>
 
                 <div class="govuk-inset-text">
-                   
+
                     <p class="govuk-body">@Localizer["enquires_subsection"]</p>
                     <fieldset class="govuk-fieldset govuk-!-margin-bottom-4">
                         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                            <label class="govuk-label">@Localizer["use_application_payment_ref"]<b>@Model.ApplicationReferenceNumber</b></label>
+                            <label
+                                class="govuk-label">@Localizer["use_application_payment_ref"]<b>@Model.ApplicationReferenceNumber</b></label>
                             <label class="govuk-label">@Localizer["environment_agency"]</label>
                             <label class="govuk-label">@Localizer["telephone_within_UK"]</label>
                             <label class="govuk-label">@Localizer["telephone_from_abroad"]</label>
@@ -54,13 +55,16 @@
                         @Localizer["print_or_save_as_PDF"]
                     </a>
                 </p>
-                <form asp-controller="FrontendSchemeRegistration" asp-action="PayByPhoneSaveSession" method="post">
-                    <p class="govuk-body govuk-!-margin-top-4">
-                        <button class="govuk-link govuk-link--no-visited-state govuk-body-m" type="submit">
-                            @Localizer["return_to_dashboard"]
-                        </button>
-                    </p>
-                </form>
+                <p class="govuk-body govuk-!-margin-top-4">
+                    @if (Model.IsComplianceScheme)
+                    {
+                        <a asp-controller="ComplianceSchemeLanding" asp-action="Get" class="govuk-link">@Localizer["return_to_dashboard"]</a>
+                    }
+                    else
+                    {
+                        <a asp-controller="FrontendSchemeRegistration" asp-action="HomePageSelfManaged" class="govuk-link">@Localizer["return_to_dashboard"]</a>
+                    }
+                </p>
             </div>
         </div>
     </main>

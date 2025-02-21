@@ -17,6 +17,6 @@ public class GlobalVariables
     public int SubsidiaryFileUploadLimitInBytes { get; set; }
 
     public string LogPrefix { get; set; }
-
-    public DateTime ApplicationDeadline { get; set; }
+    
+    public DateTime LateFeeDeadline { get; set; }
 }

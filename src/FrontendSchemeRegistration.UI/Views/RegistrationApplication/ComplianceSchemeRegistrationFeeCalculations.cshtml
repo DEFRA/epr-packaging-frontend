@@ -23,22 +23,24 @@
                 </p>
             }
 
-            <partial name="_ComplianceSchemeFeeCalculationBreakdown" model="@Model" />
+            <partial name="_ComplianceSchemeFeeCalculationBreakdown" model="@Model"/>
 
-            <br /><br />
-
-            @if (!Model.RegistrationApplicationSubmitted)
-            {
-                <a asp-action="SelectPaymentOptions" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
-                    @SharedLocalizer["continue"]
-                </a>
-            }
-            else
-            {
-                <a asp-action="RegistrationTaskList" class="govuk-link govuk-link--no-visited-state">
-                    @Localizer["return_to_registration_steps"]
-                </a>
-            }
+            <br/><br/>
+            
+            <p class="govuk-body govuk-!-margin-top-4">
+                @if (!Model.RegistrationApplicationSubmitted)
+                {
+                    <a asp-action="SelectPaymentOptions" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+                        @SharedLocalizer["continue"]
+                    </a>
+                }
+                else
+                {
+                    <a asp-action="RegistrationTaskList" class="govuk-link govuk-link--no-visited-state">
+                        @Localizer["return_to_registration_steps"]
+                    </a>
+                }
+            </p>
         </div>
     </div>
 </main>

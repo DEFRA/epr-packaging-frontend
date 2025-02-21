@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:element name="root" msdata:IsDataSet="true">
@@ -46,22 +46,16 @@
 	<data name="online_marketplaces_sentence_text" xml:space="preserve">
     <value>are online marketplaces</value>
   </data>
-  <data name="online_marketplaces_sentence_text_singular" xml:space="preserve">
+	<data name="online_marketplaces_sentence_text_singular" xml:space="preserve">
     <value>is an online marketplace</value>
   </data>
-  <data name="subsidiary_companies_sentence_text" xml:space="preserve">
+	<data name="subsidiary_companies_sentence_text" xml:space="preserve">
     <value>subsidiary companies</value>
   </data>
-  <data name="subsidiary_companies_sentence_text_singular" xml:space="preserve">
+	<data name="subsidiary_companies_sentence_text_singular" xml:space="preserve">
     <value>subsidiary company</value>
   </data>
-  <data name="late_producer_fees_text" xml:space="preserve">
-    <value>late producer fees</value>
-  </data>
-  <data name="late_producer_fees_text_singular" xml:space="preserve">
-    <value>late producer fee</value>
-  </data>
-  <data name="scheme_members" xml:space="preserve">
+	<data name="scheme_members" xml:space="preserve">
     <value>Scheme Members</value>
   </data>
 	<data name="sub_total_amount" xml:space="preserve">
@@ -73,7 +67,7 @@
   <data name="total_previous_payments_received" xml:space="preserve">
     <value>Total payments received</value>
   </data>
-  <data name="total_outstanding" xml:space="preserve">
+	<data name="total_outstanding" xml:space="preserve">
     <value>Total Outstanding</value>
   </data>
 </root>

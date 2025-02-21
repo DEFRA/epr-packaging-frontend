@@ -1,9 +1,9 @@
-﻿namespace FrontendSchemeRegistration.UI.ViewModels
+namespace FrontendSchemeRegistration.UI.ViewModels
 {
     public class ComplianceSchemeFeeCalculationBreakdownViewModel
     {
-        public int TotalAmountOutstanding => TotalFeeAmount - TotalPreviousPayments;
-        public bool RegistrationFeePaid { get; set; }
+        public int TotalAmountOutstanding { get; set; }
+        public bool IsRegistrationFeePaid { get; set; }
         public int TotalPreviousPayments { get; set; }
         public int TotalFeeAmount { get; set; }
         public int RegistrationFee { get; set; }

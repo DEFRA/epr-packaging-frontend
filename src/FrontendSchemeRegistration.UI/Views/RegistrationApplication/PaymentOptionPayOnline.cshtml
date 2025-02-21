@@ -20,15 +20,19 @@
                 <p class="govuk-body">
                     @Localizer["your_application_payment_ref"]<b>@Model.ApplicationReferenceNumber</b>
                 </p>
-                <form asp-controller="FrontendSchemeRegistration" asp-action="PayOnlineSaveSession" method="post">
+                <p class="govuk-body">
                     <a class="govuk-button govuk-body" href="@Model.PaymentLink">@Localizer["pay_online_now"]</a>
-
-                    <p class="govuk-body govuk-!-margin-top-4">
-                        <button class="govuk-link govuk-link--no-visited-state govuk-body-m" data-module="govuk-button" type="submit">
-                            @Localizer["return_to_dashboard"]
-                        </button>
-                    </p>
-                </form>
+                </p>
+                <p class="govuk-body govuk-!-margin-top-4">
+                    @if (Model.IsComplianceScheme)
+                    {
+                        <a asp-controller="ComplianceSchemeLanding" asp-action="Get" class="govuk-link">@Localizer["return_to_dashboard"]</a>
+                    }
+                    else
+                    {
+                        <a asp-controller="FrontendSchemeRegistration" asp-action="HomePageSelfManaged" class="govuk-link">@Localizer["return_to_dashboard"]</a>
+                    }
+                </p>
             </div>
         </div>
     </main>

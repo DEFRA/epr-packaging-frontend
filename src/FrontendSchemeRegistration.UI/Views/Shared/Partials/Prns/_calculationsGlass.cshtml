@@ -1,4 +1,4 @@
-﻿@using FrontendSchemeRegistration.Application.Enums
+@using FrontendSchemeRegistration.Application.Enums
 @using FrontendSchemeRegistration.UI.ViewModels.Prns
 
 @model PrnObligationViewModel
@@ -73,6 +73,7 @@
 
 	<h3 class="govuk-heading-s">@Localizer["remaining_glass_obligation"]</h3>
 	<p class="govuk-body">@Localizer["to_determine_your_remaining_glass_obligation"]</p>
+	
 	<p class="govuk-body">
 		@Localizer["your_remaining_glass_obligation_is"]:<br>
 		<strong>@totalRecyclingTargetTonnage @Localizer["tonnes"] - @remeltRecyclingTargetTonnage @Localizer["tonnes"] = @remainingRecyclingTargetTonnage @Localizer["tonnes"]</strong>.

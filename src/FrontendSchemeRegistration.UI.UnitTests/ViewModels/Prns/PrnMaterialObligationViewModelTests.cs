@@ -2,7 +2,6 @@
 using FrontendSchemeRegistration.Application.DTOs.Prns;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.UI.ViewModels.Prns;
-using NUnit.Framework.Constraints;
 
 namespace FrontendSchemeRegistration.UI.UnitTests.ViewModels.Prns
 {

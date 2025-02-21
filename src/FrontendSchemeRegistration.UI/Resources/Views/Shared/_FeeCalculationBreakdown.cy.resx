@@ -65,7 +65,9 @@
     <value>{0} is-gwmni</value>
   </data>
   <data name="y_online_marketplace_singular" xml:space="preserve">
-    <value>{0} is on online marketplace
-Mae {0} ar y farchnad ar-lein</value>
+    <value>{0} is on online marketplace Mae {0} ar y farchnad ar-lein</value>
+  </data>
+  <data name="total_outstanding" xml:space="preserve">
+    <value>Y cyfanswm sydd heb ei dalu</value>
   </data>
 </root>

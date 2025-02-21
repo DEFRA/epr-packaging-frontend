@@ -9,10 +9,10 @@ using AutoFixture;
 using DTOs.Submission;
 using Enums;
 using FluentAssertions;
-using FrontendSchemeRegistration.Application.DTOs;
-using FrontendSchemeRegistration.Application.DTOs.Prns;
-using FrontendSchemeRegistration.Application.DTOs.Subsidiary.FileUploadStatus;
-using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
+using DTOs;
+using DTOs.Prns;
+using DTOs.Subsidiary.FileUploadStatus;
+using DTOs.Subsidiary;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
@@ -102,7 +102,7 @@ public class WebApiGatewayClientTests
 
         // Act
         await _webApiGatewayClient.UploadFileAsync(
-            Array.Empty<byte>(), fileName, SubmissionPeriod, submissionId, submissionType, submissionSubType, registrationSetId);
+            [], fileName, SubmissionPeriod, submissionId, submissionType, submissionSubType, registrationSetId);
 
         // Assert
         headers.GetValues("FileName").Single().Should().Be(fileName);
@@ -178,7 +178,7 @@ public class WebApiGatewayClientTests
 
         // Act
         await _webApiGatewayClient.UploadSubsidiaryFileAsync(
-            Array.Empty<byte>(), fileName, submissionId, submissionType);
+            [], fileName, submissionId, submissionType);
 
         // Assert
         headers.GetValues("FileName").Single().Should().Be(fileName);
@@ -405,7 +405,7 @@ public class WebApiGatewayClientTests
     {
         // Arrange
         var submissionId = Guid.NewGuid();
-        var payload = new RegistrationApplicationPayload { Comments = "Pay part-payment of £24,500", ApplicationReferenceNumber = "PEPR00002125P1" };
+        var payload = new RegistrationApplicationPayload { Comments = "Pay part-payment of ï¿½24,500", ApplicationReferenceNumber = "PEPR00002125P1" };
 
         _httpMessageHandlerMock.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
@@ -753,7 +753,6 @@ public class WebApiGatewayClientTests
     {
         // Arrange
         var request = _fixture.Create<PaginatedRequest>();
-        var data = _fixture.Create<PaginatedResponse<PrnModel>>();
         _httpMessageHandlerMock.Protected()
             .Setup<Task<HttpResponseMessage>>(
                 "SendAsync",
@@ -837,7 +836,7 @@ public class WebApiGatewayClientTests
                 "SendAsync",
                 ItExpr.IsAny<HttpRequestMessage>(),
                 ItExpr.IsAny<CancellationToken>())
-            .Callback<HttpRequestMessage, CancellationToken>((request, ct) => expectedRequest = request)
+            .Callback<HttpRequestMessage, CancellationToken>((request, _) => expectedRequest = request)
             .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.OK });
 
         // Act / Assert
@@ -857,7 +856,7 @@ public class WebApiGatewayClientTests
     public async Task SetPrnApprovalStatusToAcceptedAsyncForMultiple_CallsFacadeWithCorrectPayload()
     {
         // Arrange
-        var prnsToUpdate = new Guid[] { Guid.NewGuid(), Guid.NewGuid() };
+        var prnsToUpdate = new[] { Guid.NewGuid(), Guid.NewGuid() };
 
         HttpRequestMessage expectedRequest = null;
         _httpMessageHandlerMock.Protected()
@@ -865,7 +864,7 @@ public class WebApiGatewayClientTests
                 "SendAsync",
                 ItExpr.IsAny<HttpRequestMessage>(),
                 ItExpr.IsAny<CancellationToken>())
-            .Callback<HttpRequestMessage, CancellationToken>((request, ct) => expectedRequest = request)
+            .Callback<HttpRequestMessage, CancellationToken>((request, _) => expectedRequest = request)
             .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.OK });
 
         // Act / Assert
@@ -875,7 +874,7 @@ public class WebApiGatewayClientTests
 
         var body = await expectedRequest.Content.ReadFromJsonAsync<List<UpdatePrnStatus>>();
 
-        body.Should().BeEquivalentTo(prnsToUpdate.Select(x => new UpdatePrnStatus() { PrnId = x, Status = "ACCEPTED" }));
+        body.Should().BeEquivalentTo(prnsToUpdate.Select(x => new UpdatePrnStatus { PrnId = x, Status = "ACCEPTED" }));
     }
 
     [Test]
@@ -926,7 +925,7 @@ public class WebApiGatewayClientTests
                 "SendAsync",
                 ItExpr.IsAny<HttpRequestMessage>(),
                 ItExpr.IsAny<CancellationToken>())
-            .Callback<HttpRequestMessage, CancellationToken>((request, ct) => expectedRequest = request)
+            .Callback<HttpRequestMessage, CancellationToken>((request, _) => expectedRequest = request)
             .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.OK });
 
         // Act / Assert
@@ -1099,8 +1098,7 @@ public class WebApiGatewayClientTests
         // Arrange
         var userId = Guid.Parse(userIdStr);
         var organisationId = Guid.Parse(organisationIdStr);
-        var expectedResponse = new UploadFileErrorResponse
-        { };
+        var expectedResponse = new UploadFileErrorResponse();
 
         _httpMessageHandlerMock
             .Protected()
@@ -1140,7 +1138,7 @@ public class WebApiGatewayClientTests
         };
         var expectedDetails = new RegistrationApplicationDetails
         {
-            ApplicationReferenceNumber = "testref",
+            ApplicationReferenceNumber = "testRef",
             ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
             IsSubmitted = true,
         };
@@ -1241,81 +1239,6 @@ public class WebApiGatewayClientTests
                 It.Is<string>(msg => msg.Contains("Error Getting Registration Application Submission Details")),
                 request.OrganisationId),
             Times.Once);
-    }
-
-    [Test]
-    public async Task GetComplianceSchemeDetails_ShouldReturnComplianceSchemeDetails_WhenResponseIsSuccessful()
-    {
-        // Arrange
-        var organisationId = "123";
-        var expectedDetails = new ComplianceSchemeDetailsDto
-        {
-            Members = [new ComplianceSchemeDetailsMemberDto {
-             IsLateFeeApplicable = true,
-             IsOnlineMarketplace = false,
-             MemberId = "123",
-             MemberType = "Large",
-             NumberOfSubsidiaries = 2,
-             NumberOfSubsidiariesBeingOnlineMarketPlace = 3
-             },
-            new ComplianceSchemeDetailsMemberDto {
-             IsLateFeeApplicable = true,
-             IsOnlineMarketplace = false,
-             MemberId = "234",
-             MemberType = "Small",
-             NumberOfSubsidiaries = 5,
-             NumberOfSubsidiariesBeingOnlineMarketPlace = 6
-            }]
-        };
-
-        var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
-        {
-            Content = new StringContent(JsonSerializer.Serialize(expectedDetails))
-        };
-
-        _httpMessageHandlerMock.Protected()
-            .Setup<Task<HttpResponseMessage>>(
-                "SendAsync",
-                ItExpr.IsAny<HttpRequestMessage>(),
-                ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(responseMessage);
-
-        // Act
-        var result = await _webApiGatewayClient.GetComplianceSchemeDetails(organisationId);
-
-        // Assert
-        result.Should().BeEquivalentTo(expectedDetails, "the response content should match the expected producer details");
-    }
-
-    [Test]
-    public async Task GetComplianceSchemeDetails_ShouldThrowException_WhenResponseIsServerError()
-    {
-        // Arrange
-        var organisationId = "123";
-
-        var responseMessage = new HttpResponseMessage(HttpStatusCode.InternalServerError);
-
-        _httpMessageHandlerMock.Protected()
-            .Setup<Task<HttpResponseMessage>>(
-                "SendAsync",
-                ItExpr.IsAny<HttpRequestMessage>(),
-                ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(responseMessage);
-
-        // Act
-        Func<Task> action = async () => await _webApiGatewayClient.GetComplianceSchemeDetails(organisationId);
-
-        // Assert
-        await action.Should().ThrowAsync<HttpRequestException>("an internal server error occurred");
-
-        _loggerMock.Verify(logger =>
-                logger.Log(
-                    LogLevel.Error,
-                    It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Error Getting Compliance Scheme Details for organisation Id")),
-                    It.IsAny<Exception>(),
-                    It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
-            Times.Once, "An error should be logged when the call fails.");
     }
 
     [Test]

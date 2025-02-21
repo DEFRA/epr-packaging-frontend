@@ -98,22 +98,20 @@
 
             <div class="govuk-grid-row box-container">
                 <div class="govuk-grid-column-one-half box">
-                    <feature name="@FeatureFlags.ShowRegistration">
-                        <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
-                            <div class="govuk-card-body">
-                                <h2 class="govuk-heading-m">
-                                    <a asp-controller="FrontendSchemeRegistration" asp-action="ProducerRegistrationGuidance" class="govuk-link govuk-link--no-visited-state">
-                                        @Localizer["registration"]
-                                    </a>
-                                </h2>
-                                <p class="govuk-body">
-                                    @{
-                                        ShowProgressStatus(Model);
-                                    }
-                                </p>
-                            </div>
+                    <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
+                        <div class="govuk-card-body">
+                            <h2 class="govuk-heading-m">
+                                <a asp-controller="RegistrationApplication" asp-action="@Model.RegistrationApplicationLink" class="govuk-link govuk-link--no-visited-state">
+                                    @Localizer["registration"]
+                                </a>
+                            </h2>
+                            <p class="govuk-body">
+                                @{
+                                    ShowProgressStatus(Model);
+                                }
+                            </p>
                         </div>
-                    </feature>
+                    </div>
                 </div>
 
                 <div class="govuk-grid-column-one-half box">
@@ -219,8 +217,8 @@
         {
             <div>
                 <p class="govuk-body">@Localizer["Your_registration_for_x_has_been_granted", model.CurrentYear]</p>
-                <p class="govuk-body">@Localizer["Your_registration_reference_number_is_x", model.ApplicationReferenceNumber]</p>
-                <p class="govuk-body">@Localizer["If_anything_changes_you_should_resubmit"]</p>
+                <p class="govuk-body">@Localizer["Your_registration_reference_number_is_x", model.RegistrationReferenceNumber]</p>
+                <p class="govuk-body"><strong>@Localizer["If_anything_changes_you_should_resubmit"]</strong></p>
             </div>
         }
         else if (model.ApplicationStatus == ApplicationStatusType.QueriedByRegulator)
@@ -237,41 +235,43 @@
                 <p class="govuk-body">@Localizer["Contact_the_regulator_for_further_advice"]</p>
             </div>
         }
+        else if (model.ApplicationStatus == ApplicationStatusType.CancelledByRegulator)
+        {
+            <div>
+                <p class="govuk-body">@Localizer["Your_registration_for_X_has_been_cancelled", model.CurrentYear]</p>
+                <p class="govuk-body">@Localizer["Contact_your_regulator_if_you_need_advice"]</p>
+            </div>
+        }
         else if (model.AdditionalDetailsStatus == RegistrationTaskListStatus.Completed)
         {
             <div>
                 <p class="govuk-body">@Localizer["Your_registration_application_for_x_has_been_submitted", model.CurrentYear]</p>
             </div>
         }
-        else if (model is { FileUploadStatus: RegistrationTaskListStatus.Completed, PaymentViewStatus: RegistrationTaskListStatus.Completed, AdditionalDetailsStatus: RegistrationTaskListStatus.Pending or RegistrationTaskListStatus.NotStarted })
+        else if (model is { PaymentViewStatus: RegistrationTaskListStatus.Completed, AdditionalDetailsStatus: RegistrationTaskListStatus.Pending or RegistrationTaskListStatus.NotStarted })
         {
             <div>
                 <p class="govuk-body">@Localizer["You_have_viewed_your_registration_fees"]</p>
                 <p class="govuk-body">@Localizer["Payment_must_be_made_before_submitting_your_x", model.CurrentYear]</p>
             </div>
         }
-        else if (model.FileUploadStatus is RegistrationTaskListStatus.Completed && model.PaymentViewStatus is RegistrationTaskListStatus.Pending or RegistrationTaskListStatus.NotStarted)
+        else if (model is { FileUploadStatus: RegistrationTaskListStatus.Completed, PaymentViewStatus: RegistrationTaskListStatus.Pending or RegistrationTaskListStatus.NotStarted })
         {
             <div>
                 <p class="govuk-body">@Localizer["You_have_submitted_your_registration_data_for_x", Model.CurrentYear]</p>
                 <p class="govuk-body">@Localizer["View_your_registration_fees_and_payment_methods"]</p>
             </div>
         }
-        else if (model.FileUploadStatus is RegistrationTaskListStatus.Pending && model.ApplicationStatus != ApplicationStatusType.FileUploaded)
+        else if (model.ApplicationStatus == ApplicationStatusType.SubmittedToRegulator)
         {
             <div>
                 <p class="govuk-body">@Localizer["You_have_submitted_your_registration_data"]</p>
                 <p class="govuk-body">@Localizer["You_will_then_need_to_pay_your_registration_fee"]</p>
             </div>
         }
-        else if (model.FileUploadStatus is RegistrationTaskListStatus.NotStarted 
-            || (model.FileUploadStatus is RegistrationTaskListStatus.Pending && model.ApplicationStatus is ApplicationStatusType.FileUploaded))
-        {
-            <p class="govuk-body govuk-!-margin-bottom-0">@Localizer["you_need_to_register_by_1_April", Model.CurrentYear] @Localizer["Apply_by_1st_April_x", Model.CurrentYear]</p>
-        }
         else
         {
-            <p class="govuk-body">@Localizer["you_need_to_register_by_31_April"]</p>
-        }             
+            <p class="govuk-body govuk-!-margin-bottom-0">@Localizer["you_need_to_register_by_1_April", Model.CurrentYear] @Localizer["Apply_by_1st_April_x", Model.CurrentYear]</p>
+        }            
     }
 }
