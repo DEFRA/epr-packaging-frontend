@@ -55,6 +55,12 @@
 	<data name="subsidiary_companies_sentence_text_singular" xml:space="preserve">
     <value>subsidiary company</value>
   </data>
+  <data name="late_producer_fees_text" xml:space="preserve">
+    <value>late producer fees</value>
+  </data>
+  <data name="late_producer_fees_text_singular" xml:space="preserve">
+    <value>late producer fee</value>
+  </data>
 	<data name="scheme_members" xml:space="preserve">
     <value>Scheme Members</value>
   </data>

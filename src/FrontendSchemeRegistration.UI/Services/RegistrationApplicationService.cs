@@ -39,7 +39,7 @@ public class RegistrationApplicationService(
             OrganisationId = organisation.Id.Value,
             ComplianceSchemeId = frontEndSession.RegistrationSession.SelectedComplianceScheme?.Id,
             SubmissionPeriod = session.Period.DataPeriod,
-            LateFeeDeadline = globalVariables.Value.LateFeeDeadline
+            LateFeeDeadline = EnsureDateNotLaterThanDefaultDeadline(globalVariables.Value.LateFeeDeadline)
         }) ?? new RegistrationApplicationDetails();
 
         session.SelectedComplianceScheme = frontEndSession.RegistrationSession.SelectedComplianceScheme;
@@ -185,6 +185,7 @@ public class RegistrationApplicationService(
         var largeProducersCount = individualProducerData.largeProducers.Count;
 
         var onlineMarketplaces = response.ComplianceSchemeMembersWithFees.GetOnlineMarketPlaces();
+        var lateProducersFees = response.ComplianceSchemeMembersWithFees.GetLateProducers();
 
         var subsidiaryCompaniesFees = response.ComplianceSchemeMembersWithFees.GetSubsidiariesCompanies();
         var subsidiaryCompaniesCount = feeCalculationDetails.Sum(dto => dto.NumberOfSubsidiaries);
@@ -200,6 +201,8 @@ public class RegistrationApplicationService(
             OnlineMarketplaceCount = onlineMarketplaces.Count,
             SubsidiaryCompanyFee = subsidiaryCompaniesFees.Sum(),
             SubsidiaryCompanyCount = subsidiaryCompaniesCount,
+            LateProducerFee = lateProducersFees.Sum(),
+            LateProducersCount = lateProducersFees.Count,
             TotalPreviousPayments = response.PreviousPayment,
             TotalFeeAmount = response.TotalFee,
             TotalAmountOutstanding = session.TotalAmountOutstanding,
@@ -286,6 +289,17 @@ public class RegistrationApplicationService(
         frontEndSession.RegistrationSession.SubmissionPeriod = period.DataPeriod;
 
         await frontEndSessionManager.SaveSessionAsync(httpSession, frontEndSession);
+    }
+
+    private static DateTime EnsureDateNotLaterThanDefaultDeadline(DateTime? configurableDeadline)
+    {
+        DateTime ApplicationDeadline = new(DateTime.Today.Year, 4, 1);
+
+        if (configurableDeadline != null && configurableDeadline <= ApplicationDeadline)
+        {
+            return configurableDeadline.Value;
+        }
+        return ApplicationDeadline;
     }
 }
 

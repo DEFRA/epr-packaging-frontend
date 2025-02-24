@@ -55,6 +55,12 @@
 	<data name="subsidiary_companies_sentence_text_singular" xml:space="preserve">
     <value>Mae yn is-gwmni</value>
   </data>
+  <data name="late_producer_fees_text" xml:space="preserve">
+    <value>Wlate producer fees</value>
+  </data>
+  <data name="late_producer_fees_text_singular" xml:space="preserve">
+    <value>Wlate producer fee</value>
+  </data>
 	<data name="scheme_members" xml:space="preserve">
     <value>Aelodau'r cynllun</value>
   </data>

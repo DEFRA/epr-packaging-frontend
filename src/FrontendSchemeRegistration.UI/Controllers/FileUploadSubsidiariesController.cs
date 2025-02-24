@@ -159,6 +159,7 @@
 
         [HttpGet]
         [Route(PagePaths.SubsidiariesUploadingAndValidatingFile)]
+        [SubmissionIdActionFilter(PagePaths.FileUploadSubsidiaries)]
         public async Task<IActionResult> FileUploading()
         {
             var submissionId = Guid.Parse(Request.Query["submissionId"]);
@@ -166,7 +167,7 @@
 
             if (submission is null)
             {
-                return RedirectToAction("Get", "FileUpload");
+                return RedirectToAction(nameof(SubsidiariesList));
             }
 
             var (userId, organisationId) = GetUserDetails();
