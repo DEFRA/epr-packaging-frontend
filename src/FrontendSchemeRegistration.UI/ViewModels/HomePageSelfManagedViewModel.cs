@@ -31,4 +31,17 @@ public class HomePageSelfManagedViewModel
     public string? ApplicationReferenceNumber { get; set; }
 
     public string? RegistrationReferenceNumber { get; set; }
+
+    public string RegistrationApplicationLink 
+        => ApplicationStatus is
+               ApplicationStatusType.FileUploaded
+               or ApplicationStatusType.SubmittedAndHasRecentFileUpload
+               or ApplicationStatusType.CancelledByRegulator
+               or ApplicationStatusType.QueriedByRegulator
+               or ApplicationStatusType.RejectedByRegulator
+           || FileUploadStatus is
+               RegistrationTaskListStatus.Pending
+               or RegistrationTaskListStatus.Completed
+            ? "RegistrationTaskList" 
+            : "ProducerRegistrationGuidance";
 }

@@ -10,4 +10,6 @@ public class PaymentOptionPayOnlineViewModel
     public string ApplicationReferenceNumber { get; set; }
 
     public string PaymentLink { get; set; }
+    
+    public bool IsComplianceScheme { get; set; }
 }

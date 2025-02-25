@@ -1,11 +1,12 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
+using FrontendSchemeRegistration.Application.DTOs.Submission;
 
 namespace FrontendSchemeRegistration.UI.ViewModels;
 
 [ExcludeFromCodeCoverage]
 public class FeeCalculationBreakdownViewModel
 {
-    public string ProducerSize { get; set; } = "large";
+    public string OrganisationSize { get; set; } = "large";
 
     public bool IsOnlineMarketplace { get; set; }
 
@@ -26,11 +27,13 @@ public class FeeCalculationBreakdownViewModel
 
     public int TotalFeeAmount { get; set; }
 
-    public int TotalAmountOutstanding => TotalFeeAmount - TotalPreviousPayments;
+    public int TotalAmountOutstanding { get; set; }
 
-    public bool RegistrationFeePaid { get; set; }
+    public bool IsRegistrationFeePaid { get; set; }
 
     public bool IsLateFeeApplicable { get; set; }
+    
+    public ApplicationStatusType ApplicationStatus { get; set; }
 
     public bool RegistrationApplicationSubmitted { get; set; }
 }

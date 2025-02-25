@@ -1,22 +1,15 @@
-using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.DTOs.PaymentCalculations;
-using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using Microsoft.Extensions.Logging;
-using System.Globalization;
 using System.Net;
-using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.RegularExpressions;
+using Microsoft.Extensions.Options;
+using FrontendSchemeRegistration.Application.Options;
 
 namespace FrontendSchemeRegistration.Application.Services;
 
-using FrontendSchemeRegistration.Application.Options;
-using Microsoft.Extensions.Options;
-using System.Text.Json;
-using System.Text.RegularExpressions;
-
 public class PaymentCalculationService(
-    IAccountServiceApiClient accountServiceApiClient,
-    IWebApiGatewayClient webApiGatewayClient,
     IPaymentCalculationServiceApiClient paymentCalculationServiceApiClient,
     ILogger<PaymentCalculationService> logger,
     IOptions<PaymentFacadeApiOptions> options)
@@ -24,73 +17,42 @@ public class PaymentCalculationService(
 {
     private readonly JsonSerializerOptions _options = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
-    public async Task<PaymentCalculationResponse> GetProducerRegistrationFees(
-                 ProducerDetailsDto producerDetails, string applicationReferenceNumber, bool isLateFeeApplicable, Guid? organisationId, DateTime registrationSubmissionDate)
+    public async Task<PaymentCalculationResponse?> GetProducerRegistrationFees(PaymentCalculationRequest request)
     {
         try
         {
-            var regulatorNation = await GetRegulatorNation(organisationId);
-
-            var request = new PaymentCalculationRequest
-            {
-                Regulator = regulatorNation,
-                ApplicationReferenceNumber = applicationReferenceNumber,
-                IsLateFeeApplicable = isLateFeeApplicable,
-                IsProducerOnlineMarketplace = producerDetails.IsOnlineMarketplace,
-                NoOfSubsidiariesOnlineMarketplace = producerDetails.NumberOfSubsidiariesBeingOnlineMarketPlace,
-                NumberOfSubsidiaries = producerDetails.NumberOfSubsidiaries,
-                ProducerType = producerDetails.ProducerSize,
-                SubmissionDate = registrationSubmissionDate
-            };
-
             var result = await paymentCalculationServiceApiClient.SendPostRequest(options.Value.Endpoints.ProducerRegistrationFeesEndpoint, request);
             
             if (result.StatusCode == HttpStatusCode.NotFound)
             {
-                return null!;
+                logger.LogError("registration fees details Not Found fees for producer reference {ReferenceNumber}", request.ApplicationReferenceNumber);
+                return null;
             }
 
             result.EnsureSuccessStatusCode();
             var jsonContent = RemoveDecimalValues(await result.Content.ReadAsStringAsync());
             var feeResponse =  JsonSerializer.Deserialize<PaymentCalculationResponse>(jsonContent, _options);
 
-			return feeResponse!;
+			return feeResponse;
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to retrieve registration fees for producer reference {ReferenceNumber}", applicationReferenceNumber);
+            logger.LogError(ex, "Failed to retrieve registration fees for producer reference {ReferenceNumber}", request.ApplicationReferenceNumber);
         }
 
-		return null!;
+		return null;
     }
 
-    public async Task<ComplianceSchemePaymentCalculationResponse> GetComplianceSchemeRegistrationFees(ComplianceSchemeDetailsDto complianceSchemeDetails, string applicationReferenceNumber, Guid? organisationId)
+    public async Task<ComplianceSchemePaymentCalculationResponse?> GetComplianceSchemeRegistrationFees(ComplianceSchemePaymentCalculationRequest request)
     {
         try
         {
-            var regulatorNation = await GetRegulatorNation(organisationId);
-
-            var request = new ComplianceSchemePaymentCalculationRequest
-            {
-                Regulator = regulatorNation,
-                ApplicationReferenceNumber = applicationReferenceNumber,
-                SubmissionDate = DateTime.UtcNow,
-                ComplianceSchemeMembers = complianceSchemeDetails.Members.Select(_ => new ComplianceSchemePaymentCalculationRequestMember
-                {
-                    IsLateFeeApplicable = _.IsLateFeeApplicable,
-                    IsOnlineMarketplace = _.IsOnlineMarketplace,
-                    MemberId = _.MemberId,
-                    MemberType = _.MemberType,
-                    NoOfSubsidiariesOnlineMarketplace = _.NumberOfSubsidiariesBeingOnlineMarketPlace,
-                    NumberOfSubsidiaries = _.NumberOfSubsidiaries
-                }).ToList()
-            };
-
             var result = await paymentCalculationServiceApiClient.SendPostRequest(options.Value.Endpoints.ComplianceSchemeRegistrationFeesEndpoint, request);
 
             if (result.StatusCode == HttpStatusCode.NotFound)
             {
-                return null!;
+                logger.LogError("registration fees details Not Found for compliance scheme reference {ReferenceNumber}", request.ApplicationReferenceNumber);
+                return null;
             }
 
             result.EnsureSuccessStatusCode();
@@ -98,39 +60,14 @@ public class PaymentCalculationService(
             var jsonContent = RemoveDecimalValues(await result.Content.ReadAsStringAsync());
             var feeResponse = JsonSerializer.Deserialize<ComplianceSchemePaymentCalculationResponse>(jsonContent, _options);
 
-            return feeResponse!;
+            return feeResponse;
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to retrieve registration fees for compliance scheme reference {ReferenceNumber}", applicationReferenceNumber);
+            logger.LogError(ex, "Failed to retrieve registration fees for compliance scheme reference {ReferenceNumber}", request.ApplicationReferenceNumber);
         }
 
-        return null!;
-    }
-
-    public async Task<ComplianceSchemeDetailsDto> GetComplianceSchemeDetails(string organisationId)
-    {
-        return await webApiGatewayClient.GetComplianceSchemeDetails(organisationId);
-    }
-
-    public async Task<string> GetRegulatorNation(Guid? organisationId)
-    {
-        try
-        {
-            var result = await accountServiceApiClient.SendGetRequest($"organisations/regulator-nation?organisationId={organisationId}");
-            if (result.StatusCode == HttpStatusCode.NotFound)
-            {
-                return string.Empty;
-            }
-            result.EnsureSuccessStatusCode();
-
-            return await result.Content.ReadFromJsonAsync<string>();
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Failed to retrieve regulator's nation for {OrganisationId}", organisationId);
-            return string.Empty;
-        }
+        return null;
     }
 
     public async Task<string> InitiatePayment(PaymentInitiationRequest request)
@@ -140,6 +77,7 @@ public class PaymentCalculationService(
             var result = await paymentCalculationServiceApiClient.SendPostRequest(options.Value.Endpoints.OnlinePaymentsEndpoint, request);
             if (result.StatusCode == HttpStatusCode.NotFound)
             {
+                logger.LogWarning("Redirect URL not found in the initialise Payment response.");
                 return string.Empty;
             }
             
@@ -152,30 +90,14 @@ public class PaymentCalculationService(
             {
                 return match.Groups["url"].Value;
             }
-            else
-            {
-                logger.LogWarning("Redirect URL not found in the initialise Payment response.");
-            }
+
+            logger.LogWarning("Redirect URL not found in the initialise Payment response.");
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to initiate payment for {OrganisationId}", request.OrganisationId);
         }
         return string.Empty;
-    }
-
-    public string CreateApplicationReferenceNumber(bool isComplianceScheme, int csRowNumber, string organisationNumber, SubmissionPeriod period)
-    {
-        var referenceNumber = organisationNumber;
-        var periodEnd = DateTime.Parse($"30 {period.EndMonth} {period.Year}", new CultureInfo("en-GB"));
-        var periodNumber = DateTime.Today <= periodEnd ? 1 : 2;
-
-        if (isComplianceScheme)
-        {
-            referenceNumber += csRowNumber.ToString("D3");
-        }
-
-        return $"PEPR{referenceNumber}{(periodEnd.Year - 2000)}P{periodNumber}";
     }
 
     private static string RemoveDecimalValues(string jsonString)

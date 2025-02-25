@@ -107,13 +107,6 @@ public class SubmissionService(IWebApiGatewayClient webApiGatewayClient) : ISubm
         return await webApiGatewayClient.GetSubmissionHistoryAsync(submissionId, $"lastSyncTime={lastSyncTime:s}");
     }
 
-    public async Task<bool> HasSubmissionsAsync(Guid organiationExternalId, SubmissionType type, Guid? complianceSchemeId)
-    {
-        var result = await GetSubmissionIdsAsync(organiationExternalId, type, complianceSchemeId, null);
-
-        return (result is not null && result.Count > 0);
-    }
-
     public async Task<RegistrationApplicationDetails?> GetRegistrationApplicationDetails(GetRegistrationApplicationDetailsRequest request)
     {
         return await webApiGatewayClient.GetRegistrationApplicationDetails(request);

@@ -126,10 +126,10 @@
 	<data name="Your_registration_for_x_has_been_granted" xml:space="preserve">
     <value>Mae eich cofrestriad ar gyfer {0} wedi'i ganiatáu gan y rheoleiddiwr.</value>
   </data>
-	<data name="Your_registration_reference_number_is_x" xml:space="preserve">
-    <value>Eich rhif cyfeirnod cofrestru yw  {0}.</value>
+  <data name="Your_registration_reference_number_is_x" xml:space="preserve">
+    <value>Eich rhif cyfeirnod cofrestru yw &lt;strong&gt;{0}&lt;/strong&gt;.</value>
   </data>
-	<data name="If_anything_changes_you_should_resubmit" xml:space="preserve">
+  <data name="If_anything_changes_you_should_resubmit" xml:space="preserve">
     <value>Os bydd unrhyw beth yn newid, dylech ailgyflwyno’ch data</value>
   </data>
 	<data name="The_regulator_has_identified_a_potential_issue" xml:space="preserve">

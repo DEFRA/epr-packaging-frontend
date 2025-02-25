@@ -3,15 +3,17 @@
 namespace FrontendSchemeRegistration.Application.DTOs;
 
 [ExcludeFromCodeCoverage]
-public class ProducerDetailsDto
+public class RegistrationFeeCalculationDetails
 {
-    public int OrganisationId { get; set; }
+    public string OrganisationId { get; set; }
 
     public int NumberOfSubsidiaries { get; set; }
 
     public int NumberOfSubsidiariesBeingOnlineMarketPlace { get; set; }
 
-    public string ProducerSize { get; set; } = string.Empty;
+    public string OrganisationSize { get; set; } = string.Empty;
 
     public bool IsOnlineMarketplace { get; set; }
+    
+    public int NationId { get; set; }
 }

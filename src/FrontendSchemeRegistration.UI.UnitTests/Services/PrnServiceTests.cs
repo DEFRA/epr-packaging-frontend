@@ -415,7 +415,7 @@ public class PrnServiceTests
     public async Task GetRecyclingObligationsCalculation_Returns_NoDataYet_WhenCallWithNoTotals()
     {
         // Arrange
-        var year = 2024;
+        var year = 2025;
         var materialTypes = new List<MaterialType>
         {
             MaterialType.Aluminium,

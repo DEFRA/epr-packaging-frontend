@@ -15,6 +15,8 @@ var builderConfig = builder.Configuration;
 var globalVariables = builderConfig.Get<GlobalVariables>();
 string basePath = globalVariables.BasePath;
 
+ThreadPool.SetMinThreads(30, 30);
+
 services.AddFeatureManagement();
 
 services.AddAntiforgery(opts =>

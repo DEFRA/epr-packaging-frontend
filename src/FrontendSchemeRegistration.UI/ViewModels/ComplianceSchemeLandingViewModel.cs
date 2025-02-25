@@ -1,4 +1,4 @@
-﻿namespace FrontendSchemeRegistration.UI.ViewModels;
+namespace FrontendSchemeRegistration.UI.ViewModels;
 
 using System.Diagnostics.CodeAnalysis;
 using Application.DTOs.ComplianceScheme;
@@ -32,4 +32,19 @@ public class ComplianceSchemeLandingViewModel
     public RegistrationTaskListStatus? AdditionalDetailsStatus { get; set; } = RegistrationTaskListStatus.CanNotStartYet;
 
     public string? ApplicationReferenceNumber { get; set; }
+
+    public string? RegistrationReferenceNumber { get; set; }
+    
+    public string RegistrationApplicationLink 
+        => ApplicationStatus is
+               ApplicationStatusType.FileUploaded
+               or ApplicationStatusType.SubmittedAndHasRecentFileUpload
+               or ApplicationStatusType.CancelledByRegulator
+               or ApplicationStatusType.QueriedByRegulator
+               or ApplicationStatusType.RejectedByRegulator
+           || FileUploadStatus is
+               RegistrationTaskListStatus.Pending
+               or RegistrationTaskListStatus.Completed
+            ? "RegistrationTaskList" 
+            : "ProducerRegistrationGuidance";
 }

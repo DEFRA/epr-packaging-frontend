@@ -67,4 +67,7 @@
   <data name="y_online_marketplace_singular" xml:space="preserve">
     <value>{0} is on online marketplace</value>
   </data>
+  <data name="total_outstanding" xml:space="preserve">
+    <value>Total outstanding</value>
+  </data>
 </root>

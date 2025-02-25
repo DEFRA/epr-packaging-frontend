@@ -36,4 +36,7 @@
 	<data name="return_to_registration_steps" xml:space="preserve">
 		<value>Return to the registration steps</value>
 	</data>
+	<data name="registration_fee_due_x_to_process_application" xml:space="preserve">
+		<value>A registration fee of &lt;strong&gt;£{0}&lt;/strong&gt; is due.</value>
+	</data>
 </root>

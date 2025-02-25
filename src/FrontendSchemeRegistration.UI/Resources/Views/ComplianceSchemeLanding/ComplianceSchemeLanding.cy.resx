@@ -12,7 +12,7 @@
     <resheader name="writer">
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
-    <data name="title" xml:space="preserve">
+  <data name="title" xml:space="preserve">
     <value>Hafan</value>
   </data>
     <data name="account_home" xml:space="preserve">
@@ -167,7 +167,7 @@ Rydych chi hefyd yn gallu:</value>
     <value>Mae eich cofrestriad ar gyfer {0} wedi'i ganiatáu gan y rheoleiddiwr.</value>
   </data>
   <data name="Your_registration_reference_number_is_x" xml:space="preserve">
-    <value>WYour producer registration number is {0}.</value>
+    <value>WYour producer registration number is &lt;strong&gt;{0}&lt;/strong&gt;.</value>
   </data>
   <data name="If_anything_changes_you_should_resubmit" xml:space="preserve">
     <value>Os bydd unrhyw beth yn newid, dylech ailgyflwyno’ch data</value>

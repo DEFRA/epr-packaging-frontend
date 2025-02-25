@@ -43,7 +43,7 @@
             <h2 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["additional_information"]</h2>
             <p class="govuk-body govuk-!-margin-bottom-2">@Localizer["use_comment_box_for_additional_info_to_assist_regulator"]</p>
 
-            <form asp-controller="FrontendSchemeRegistration" asp-action="AdditionalInformation" method="post">
+            <form asp-controller="RegistrationApplication" asp-action="AdditionalInformation" method="post">
                 @Html.TextAreaFor(model => model.AdditionalInformationText, new { @class = "govuk-textarea", @rows = "5" })
                 <button class="govuk-button govuk-body" data-module="govuk-button" type="submit">
                     @Localizer["submit_registration_application"]

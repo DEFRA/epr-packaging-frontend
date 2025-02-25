@@ -175,7 +175,7 @@
     <value>W Remove</value>
   </data>
   <data name="how_to_complete_file" xml:space="preserve">
-    <value>Sut i gwblhau ffeil (yn agor mewn tab newydd)</value>
+    <value>W How to create your subsidiaries file (opens in a new tab)</value>
   </data>
   <data name="upload_a_file" xml:space="preserve">
     <value>Uwchlwytho ffeil</value>
@@ -196,9 +196,12 @@
     <value>Bydd is-gwmnïau yn ymddangos yma ar ôl cael eu prosesu.</value>
   </data>
   <data name="joined" xml:space="preserve">
-    <value>W joined</value>
+    <value>W_Joined</value>
   </data>
   <data name="reporting" xml:space="preserve">
-    <value>W reporting</value>
+    <value>W_Reporting</value>
+  </data>
+  <data name="upload_a_csv_file" xml:space="preserve">
+    <value>w_Upload a CSV file</value>
   </data>
 </root>

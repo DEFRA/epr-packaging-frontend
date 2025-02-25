@@ -1,7 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using FrontendSchemeRegistration.Application.DTOs.ComplianceScheme;
 using FrontendSchemeRegistration.UI.Enums;
-using static FrontendSchemeRegistration.Application.DTOs.Submission.RegistrationApplicationDetails;
 
 namespace FrontendSchemeRegistration.UI.Sessions;
 

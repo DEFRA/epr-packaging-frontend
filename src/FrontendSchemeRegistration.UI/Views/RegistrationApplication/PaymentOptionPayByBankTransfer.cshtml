@@ -99,13 +99,16 @@
                 </p>
             </div>
 
-            <form asp-controller="FrontendSchemeRegistration" asp-action="PayByBankTransferSaveSession" method="post">
-                <p class="govuk-body govuk-!-margin-top-4">
-                    <button class="govuk-link govuk-link--no-visited-state govuk-body-m" type="submit">
-                        @Localizer["return_to_dashboard"]
-                    </button>
-                </p>
-            </form>
+            <p class="govuk-body govuk-!-margin-top-4">
+                @if (Model.IsComplianceScheme)
+                {
+                    <a asp-controller="ComplianceSchemeLanding" asp-action="Get" class="govuk-link">@Localizer["return_to_dashboard"]</a>
+                }
+                else
+                {
+                    <a asp-controller="FrontendSchemeRegistration" asp-action="HomePageSelfManaged" class="govuk-link">@Localizer["return_to_dashboard"]</a>
+                }
+            </p>
         </div>
     </div>
 </main>

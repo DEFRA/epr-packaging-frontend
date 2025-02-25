@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FrontendSchemeRegistration.Application.Constants;
@@ -458,7 +458,11 @@ public class WebApiGatewayClient : IWebApiGatewayClient
 
         try
         {
-            var endpointUrl = $"/api/v1/submissions/get-registration-application-details?OrganisationNumber={request.OrganisationNumber}&OrganisationId={request.OrganisationId}&SubmissionPeriod={request.SubmissionPeriod}";
+            var endpointUrl = $"/api/v1/registration/get-registration-application-details" +
+                              $"?OrganisationNumber={request.OrganisationNumber}" +
+                              $"&OrganisationId={request.OrganisationId}" +
+                              $"&SubmissionPeriod={request.SubmissionPeriod}" +
+                              $"&LateFeeDeadline={request.LateFeeDeadline:yyyy/MM/dd}";
 
             if (request.ComplianceSchemeId is not null && request.ComplianceSchemeId != Guid.Empty)
             {
@@ -480,25 +484,6 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         {
             _logger.LogError(ex, "Error Getting Registration Application Submission Details for organisation Id : {organisationId}", request.OrganisationId);
             return null!;
-        }
-    }
-
-    public async Task<ComplianceSchemeDetailsDto> GetComplianceSchemeDetails(string organisationId)
-    {
-        await PrepareAuthenticatedClientAsync();
-
-        try
-        {
-            var response = await _httpClient.GetAsync($"api/v1/compliance-scheme-details/get-compliance-scheme-details/{organisationId}");
-
-            response.EnsureSuccessStatusCode();
-
-            return (await response.Content.ReadFromJsonAsync<ComplianceSchemeDetailsDto>())!;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error Getting Compliance Scheme Details for organisation Id : {organisationId}", organisationId);
-            throw;
         }
     }
 

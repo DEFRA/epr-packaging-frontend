@@ -1,26 +1,26 @@
-﻿namespace FrontendSchemeRegistration.UI.Extensions;
-
-using System.Diagnostics.CodeAnalysis;
-using Application.Options;
-using Application.Services;
-using Application.Services.Interfaces;
-using Constants;
+﻿using System.Diagnostics.CodeAnalysis;
 using EPR.Common.Authorization.Extensions;
-using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
+using EPR.Common.Authorization.Sessions;
+using FrontendSchemeRegistration.Application.Options;
+using FrontendSchemeRegistration.Application.Services;
+using FrontendSchemeRegistration.Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Constants;
+using FrontendSchemeRegistration.UI.Helpers;
+using FrontendSchemeRegistration.UI.Middleware;
+using FrontendSchemeRegistration.UI.Services;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
-using Helpers;
+using FrontendSchemeRegistration.UI.Sessions;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Localization;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Time.Testing;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.TokenCacheProviders.Distributed;
-using Middleware;
-using Services;
-using Sessions;
 using StackExchange.Redis;
+using CookieOptions = FrontendSchemeRegistration.Application.Options.CookieOptions;
+using SessionOptions = FrontendSchemeRegistration.Application.Options.SessionOptions;
+
+namespace FrontendSchemeRegistration.UI.Extensions;
 
 [ExcludeFromCodeCoverage]
 public static class ServiceProviderExtension
@@ -82,6 +82,7 @@ public static class ServiceProviderExtension
         });
 
         services.RegisterPolicy<FrontendSchemeRegistrationSession>(configuration);
+        services.AddScoped<ISessionManager<RegistrationApplicationSession>, SessionManager<RegistrationApplicationSession>>();
     }
 
     private static void ConfigureOptions(IServiceCollection services, IConfiguration configuration)
@@ -128,6 +129,7 @@ public static class ServiceProviderExtension
         services.AddScoped<ISubsidiaryService, SubsidiaryService>();
         services.AddScoped<IPaymentCalculationService, PaymentCalculationService>();
         services.AddScoped<ISubsidiaryUtilityService,SubsidiaryUtilityService>();
+        services.AddScoped<IRegistrationApplicationService,RegistrationApplicationService>();
         services.AddTransient<IDateTimeProvider, SystemDateTimeProvider>();
         services.AddSingleton<IPatchService, PatchService>();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -137,19 +139,18 @@ public static class ServiceProviderExtension
         services.AddScoped<IViewRenderService, ViewRenderService>();
         services.AddScoped<IDownloadPrnService, DownloadPrnService>();
         services.AddScoped<IFileDownloadService, FileDownloadService>();
-        services.AddScoped<ComplianceSchemeIdHttpContextFilterAttribute>();
     }
 
     // When testing PRNs use a configurable date in place of the current date
     private static void RegisterPrnTimeProviderServices(IServiceCollection services, IConfiguration configuration)
     {
-        // Check feature flags, [FeatureGate] wont work here
+        // Check feature flags, [FeatureGate] won't work here
         if (configuration.IsFeatureEnabled(FeatureFlags.ShowPrn) && configuration.IsFeatureEnabled(FeatureFlags.OverridePrnCurrentDateForTestingPurposes))
         {
             var prnOptions = configuration.GetSection("Prn").Get<PrnOptions>();
             var fake = new FakeTimeProvider();
             fake.SetUtcNow(new DateTimeOffset(new DateTime(prnOptions.Year, prnOptions.Month, prnOptions.Day, 0, 0, 0, DateTimeKind.Utc)));
-            services.AddSingleton(typeof(TimeProvider), fake as TimeProvider);
+            services.AddSingleton(typeof(TimeProvider), fake);
         }
     }
 
@@ -200,10 +201,7 @@ public static class ServiceProviderExtension
                 options.SetDefaultCulture(Language.English);
                 options.AddSupportedCultures(cultureList);
                 options.AddSupportedUICultures(cultureList);
-                options.RequestCultureProviders = new IRequestCultureProvider[]
-                {
-                    new SessionRequestCultureProvider(),
-                };
+                options.RequestCultureProviders = [new SessionRequestCultureProvider()];
             });
     }
 
@@ -269,7 +267,7 @@ public static class ServiceProviderExtension
                     options.SlidingExpiration = true;
                     options.Cookie.Path = "/";
                 })
-            .EnableTokenAcquisitionToCallDownstreamApi(new[] { facadeApiOptions.DownstreamScope })
+            .EnableTokenAcquisitionToCallDownstreamApi([facadeApiOptions.DownstreamScope])
             .AddDistributedTokenCaches();
     }
 }

@@ -583,8 +583,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             var result = await _controller.FileUploading();
 
             // Assert
-            result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Get");
-            result.As<RedirectToActionResult>().ControllerName.Should().Be("FileUpload");
+            result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be(nameof(_controller.SubsidiariesList));
         }
 
         [Test]

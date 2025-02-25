@@ -1,26 +1,24 @@
-﻿namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
-
-using Application.Constants;
-using Application.DTOs.ComplianceScheme;
-using Application.DTOs.Notification;
-using Application.DTOs.Submission;
-using Application.Options;
-using Application.Services.Interfaces;
+using System.Security.Claims;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
+using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs;
-using FrontendSchemeRegistration.Application.Services;
+using FrontendSchemeRegistration.Application.DTOs.ComplianceScheme;
+using FrontendSchemeRegistration.Application.DTOs.Notification;
+using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Controllers;
+using FrontendSchemeRegistration.UI.Services;
+using FrontendSchemeRegistration.UI.Sessions;
+using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using Moq;
 using Newtonsoft.Json;
-using System.Security.Claims;
-using UI.Controllers;
-using UI.Sessions;
-using UI.ViewModels;
+
+namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
 
 [TestFixture]
 public class ComplianceSchemeLandingControllerTests
@@ -35,45 +33,41 @@ public class ComplianceSchemeLandingControllerTests
     private readonly NullLogger<ComplianceSchemeLandingController> _nullLogger = new();
     private readonly Mock<INotificationService> _notificationServiceMock = new();
     private readonly Mock<IComplianceSchemeService> _complianceSchemeServiceMock = new();
-    private readonly Mock<ISubmissionService> _submissionService = new();
-
-    private readonly List<SubmissionPeriod> _submissionPeriods = new()
-    {
-        new SubmissionPeriod
-        {
-            DataPeriod = "Data period 1",
-            Deadline = DateTime.Today,
-            StartMonth = "January",
-            EndMonth = "June"
-        },
-        new SubmissionPeriod
-        {
-            DataPeriod = "Data period 2",
-            Deadline = DateTime.Today.AddDays(5),
-            StartMonth = "July",
-            EndMonth = "December"
-        }
-    };
+    private readonly Mock<IRegistrationApplicationService> _registrationApplicationService = new();
 
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock = new();
     private ComplianceSchemeLandingController _systemUnderTest;
 
+    private readonly RegistrationApplicationSession _registrationApplicationSession = new RegistrationApplicationSession
+    {
+        LastSubmittedFile = new LastSubmittedFileDetails { FileId = Guid.NewGuid() },
+        RegistrationFeeCalculationDetails = null,
+        ApplicationReferenceNumber = "",
+        RegistrationReferenceNumber = "",
+        SubmissionId = Guid.NewGuid(),
+        RegistrationFeePaymentMethod = null,
+        IsSubmitted = true,
+        ApplicationStatus = ApplicationStatusType.NotStarted,
+        RegistrationApplicationSubmittedComment = null,
+        RegistrationApplicationSubmittedDate = null
+    };
+    
     [SetUp]
     public void SetUp()
     {
         var userData = new UserData
         {
             Id = Guid.NewGuid(),
-            Organisations = new()
-            {
-                new()
+            Organisations =
+            [
+                new Organisation
                 {
                     Id = _organisationId,
                     Name = OrganisationName,
                     OrganisationRole = "ComplianceScheme",
                     OrganisationNumber = "552555"
                 }
-            },
+            ],
             ServiceRole = "Approved Person"
         };
 
@@ -92,9 +86,8 @@ public class ComplianceSchemeLandingControllerTests
             _sessionManagerMock.Object,
             _complianceSchemeServiceMock.Object,
             _notificationServiceMock.Object,
-            _submissionService.Object,
-            _nullLogger,
-            Options.Create(new GlobalVariables { SubmissionPeriods = _submissionPeriods }))
+            _registrationApplicationService.Object,
+            _nullLogger)
         {
             ControllerContext = { HttpContext = _httpContextMock.Object }
         };
@@ -116,9 +109,9 @@ public class ComplianceSchemeLandingControllerTests
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(GetSessionWithoutSelectedScheme());
 
-        var registrationApplicationDetails = (RegistrationApplicationDetails)null;
-        _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
-        
+        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+            .ReturnsAsync(_registrationApplicationSession);
+
         // Act
         var response = await _systemUnderTest.Get() as ViewResult;
 
@@ -135,12 +128,13 @@ public class ComplianceSchemeLandingControllerTests
                 ComplianceSchemes = complianceSchemes,
                 IsApprovedUser = true,
                 ApplicationStatus = ApplicationStatusType.NotStarted,
-                ApplicationReferenceNumber = string.Empty
+                ApplicationReferenceNumber = string.Empty,
+                RegistrationReferenceNumber = string.Empty
             });
 
         _sessionManagerMock.Verify(
             x => x.SaveSessionAsync(
-            It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()), Times.Exactly(2));
+                It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()), Times.Exactly(1));
     }
 
     [Test]
@@ -158,8 +152,8 @@ public class ComplianceSchemeLandingControllerTests
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(GetSessionWithSelectedScheme());
 
-        var registrationApplicationDetails = (RegistrationApplicationDetails)null;
-        _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
+        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+            .ReturnsAsync(_registrationApplicationSession);
 
         // Act
         var response = await _systemUnderTest.Get() as ViewResult;
@@ -177,12 +171,13 @@ public class ComplianceSchemeLandingControllerTests
                 ComplianceSchemes = complianceSchemes,
                 IsApprovedUser = true,
                 ApplicationStatus = ApplicationStatusType.NotStarted,
-                ApplicationReferenceNumber = string.Empty
+                ApplicationReferenceNumber = string.Empty,
+                RegistrationReferenceNumber = string.Empty
             });
 
         _sessionManagerMock.Verify(
             x => x.SaveSessionAsync(
-                It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()), Times.Exactly(2));
+                It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()), Times.Exactly(1));
     }
 
     [Test]
@@ -192,22 +187,25 @@ public class ComplianceSchemeLandingControllerTests
         const string reference = "PEPR00002125P1";
         var submissionId = Guid.NewGuid();
         var complianceSchemes = GetComplianceSchemes();
+        var session = GetSessionWithSelectedScheme();
+
         _complianceSchemeServiceMock
             .Setup(service => service.GetOperatorComplianceSchemes(It.IsAny<Guid>()))
             .ReturnsAsync(complianceSchemes);
+
         _complianceSchemeServiceMock
             .Setup(service => service.GetComplianceSchemeSummary(It.IsAny<Guid>(), It.IsAny<Guid>()))
             .ReturnsAsync(new ComplianceSchemeSummary());
 
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
-            .ReturnsAsync(GetSessionWithSelectedScheme());
+            .ReturnsAsync(session);
 
-        var registrationApplicationDetails = new RegistrationApplicationDetails
+        var registrationApplicationSession = new RegistrationApplicationSession
         {
             LastSubmittedFile = new LastSubmittedFileDetails { FileId = Guid.NewGuid() },
-            ProducerDetails = null,
-            CsoMemberDetails = null,
+            RegistrationFeeCalculationDetails = null,
             ApplicationReferenceNumber = reference,
+            RegistrationReferenceNumber = null,
             SubmissionId = submissionId,
             RegistrationFeePaymentMethod = null,
             IsSubmitted = true,
@@ -216,7 +214,8 @@ public class ComplianceSchemeLandingControllerTests
             RegistrationApplicationSubmittedDate = null
         };
 
-        _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
+        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+            .ReturnsAsync(registrationApplicationSession);
 
         // Act
         var response = await _systemUnderTest.Get() as ViewResult;
@@ -242,7 +241,7 @@ public class ComplianceSchemeLandingControllerTests
 
         _sessionManagerMock.Verify(
             x => x.SaveSessionAsync(
-                It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()), Times.Exactly(2));
+                It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()), Times.Exactly(1));
     }
 
     [Test]
@@ -252,22 +251,25 @@ public class ComplianceSchemeLandingControllerTests
         const string reference = "PEPR00002125P1";
         var submissionId = Guid.NewGuid();
         var complianceSchemes = GetComplianceSchemes();
+        var session = new FrontendSchemeRegistrationSession();
+
         _complianceSchemeServiceMock
             .Setup(service => service.GetOperatorComplianceSchemes(It.IsAny<Guid>()))
             .ReturnsAsync(complianceSchemes);
+
         _complianceSchemeServiceMock
             .Setup(service => service.GetComplianceSchemeSummary(It.IsAny<Guid>(), It.IsAny<Guid>()))
             .ReturnsAsync(new ComplianceSchemeSummary());
 
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
-            .ReturnsAsync(GetSessionWithSelectedScheme());
+            .ReturnsAsync(session);
 
-        var registrationApplicationDetails = new RegistrationApplicationDetails
+        var registrationApplicationSession = new RegistrationApplicationSession
         {
             LastSubmittedFile = new LastSubmittedFileDetails { FileId = Guid.NewGuid() },
-            ProducerDetails = new ProducerDetailsDto { NumberOfSubsidiariesBeingOnlineMarketPlace = 1, IsOnlineMarketplace = true, ProducerSize = "Large", NumberOfSubsidiaries = 1, OrganisationId = 1234 },
-            CsoMemberDetails = null,
+            RegistrationFeeCalculationDetails = [new RegistrationFeeCalculationDetails { NumberOfSubsidiariesBeingOnlineMarketPlace = 1, IsOnlineMarketplace = true, OrganisationSize = "Large", NumberOfSubsidiaries = 1, OrganisationId = "1234" }],
             ApplicationReferenceNumber = reference,
+            RegistrationReferenceNumber = null,
             SubmissionId = submissionId,
             RegistrationFeePaymentMethod = "PayOnline",
             IsSubmitted = true,
@@ -276,7 +278,8 @@ public class ComplianceSchemeLandingControllerTests
             RegistrationApplicationSubmittedDate = null
         };
 
-        _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
+        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+            .ReturnsAsync(registrationApplicationSession);
 
         // Act
         var response = await _systemUnderTest.Get() as ViewResult;
@@ -288,7 +291,7 @@ public class ComplianceSchemeLandingControllerTests
             .And
             .BeEquivalentTo(new ComplianceSchemeLandingViewModel
             {
-                CurrentComplianceSchemeId = _complianceSchemeTwoId,
+                CurrentComplianceSchemeId = _complianceSchemeOneId,
                 OrganisationName = OrganisationName,
                 CurrentTabSummary = new ComplianceSchemeSummary(),
                 ComplianceSchemes = complianceSchemes,
@@ -302,7 +305,7 @@ public class ComplianceSchemeLandingControllerTests
 
         _sessionManagerMock.Verify(
             x => x.SaveSessionAsync(
-                It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()), Times.Exactly(2));
+                It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()), Times.Exactly(1));
     }
 
     [Test]
@@ -312,22 +315,25 @@ public class ComplianceSchemeLandingControllerTests
         const string reference = "PEPR00002125P1";
         var submissionId = Guid.NewGuid();
         var complianceSchemes = GetComplianceSchemes();
+        var session = GetSessionWithSelectedScheme();
+
         _complianceSchemeServiceMock
             .Setup(service => service.GetOperatorComplianceSchemes(It.IsAny<Guid>()))
             .ReturnsAsync(complianceSchemes);
+
         _complianceSchemeServiceMock
             .Setup(service => service.GetComplianceSchemeSummary(It.IsAny<Guid>(), It.IsAny<Guid>()))
             .ReturnsAsync(new ComplianceSchemeSummary());
 
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
-            .ReturnsAsync(GetSessionWithSelectedScheme());
+            .ReturnsAsync(session);
 
-        var registrationApplicationDetails = new RegistrationApplicationDetails
+        var registrationApplicationSession = new RegistrationApplicationSession
         {
             LastSubmittedFile = new LastSubmittedFileDetails { FileId = Guid.NewGuid() },
-            ProducerDetails = new ProducerDetailsDto { NumberOfSubsidiariesBeingOnlineMarketPlace = 1, IsOnlineMarketplace = true, ProducerSize = "Large", NumberOfSubsidiaries = 1, OrganisationId = 1234 },
-            CsoMemberDetails = null,
+            RegistrationFeeCalculationDetails = [new RegistrationFeeCalculationDetails { NumberOfSubsidiariesBeingOnlineMarketPlace = 1, IsOnlineMarketplace = true, OrganisationSize = "Large", NumberOfSubsidiaries = 1, OrganisationId = "1234" }],
             ApplicationReferenceNumber = reference,
+            RegistrationReferenceNumber = null,
             SubmissionId = submissionId,
             RegistrationFeePaymentMethod = "PayOnline",
             IsSubmitted = true,
@@ -336,7 +342,8 @@ public class ComplianceSchemeLandingControllerTests
             RegistrationApplicationSubmittedDate = DateTime.Now.AddMinutes(-5)
         };
 
-        _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
+        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+            .ReturnsAsync(registrationApplicationSession);
 
         // Act
         var response = await _systemUnderTest.Get() as ViewResult;
@@ -362,7 +369,7 @@ public class ComplianceSchemeLandingControllerTests
 
         _sessionManagerMock.Verify(
             x => x.SaveSessionAsync(
-                It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()), Times.Exactly(2));
+                It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()), Times.Exactly(1));
     }
 
     [Test]
@@ -395,9 +402,9 @@ public class ComplianceSchemeLandingControllerTests
                 It.IsAny<Guid>()))
             .ReturnsAsync(notificationDtoList);
 
-        var registrationApplicationDetails = (RegistrationApplicationDetails)null;
-        _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
-        
+        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+            .ReturnsAsync(_registrationApplicationSession);
+
         // Act
         var response = await _systemUnderTest.Get() as ViewResult;
 
@@ -421,12 +428,14 @@ public class ComplianceSchemeLandingControllerTests
                     NominatedApprovedPersonEnrolmentId = string.Empty
                 },
                 ApplicationStatus = ApplicationStatusType.NotStarted,
-                ApplicationReferenceNumber = string.Empty
+                AdditionalDetailsStatus = RegistrationTaskListStatus.CanNotStartYet,
+                ApplicationReferenceNumber = string.Empty,
+                RegistrationReferenceNumber = string.Empty
             });
 
         _sessionManagerMock.Verify(
             x => x.SaveSessionAsync(
-            It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()), Times.Exactly(2));
+                It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()), Times.Exactly(1));
     }
 
     [Test]
@@ -446,22 +455,26 @@ public class ComplianceSchemeLandingControllerTests
 
         // Arrange
         var complianceSchemes = GetComplianceSchemes();
+        var session = GetSessionWithSelectedScheme();
+
         _complianceSchemeServiceMock
             .Setup(service => service.GetOperatorComplianceSchemes(It.IsAny<Guid>()))
             .ReturnsAsync(complianceSchemes);
+
         _complianceSchemeServiceMock
             .Setup(service => service.GetComplianceSchemeSummary(It.IsAny<Guid>(), It.IsAny<Guid>()))
             .ReturnsAsync(new ComplianceSchemeSummary());
 
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
-            .ReturnsAsync(GetSessionWithSelectedScheme());
+            .ReturnsAsync(session);
+
         _notificationServiceMock.Setup(x => x.GetCurrentUserNotifications(
                 It.IsAny<Guid>(),
                 It.IsAny<Guid>()))
             .ReturnsAsync(notificationDtoList);
 
-        var registrationApplicationDetails = (RegistrationApplicationDetails)null;
-        _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
+        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+            .ReturnsAsync(_registrationApplicationSession);
 
         // Act
         var response = await _systemUnderTest.Get() as ViewResult;
@@ -486,12 +499,14 @@ public class ComplianceSchemeLandingControllerTests
                     NominatedApprovedPersonEnrolmentId = string.Empty
                 },
                 ApplicationStatus = ApplicationStatusType.NotStarted,
-                ApplicationReferenceNumber = string.Empty
+                AdditionalDetailsStatus = RegistrationTaskListStatus.CanNotStartYet,
+                ApplicationReferenceNumber = string.Empty,
+                RegistrationReferenceNumber = string.Empty
             });
 
         _sessionManagerMock.Verify(
             x => x.SaveSessionAsync(
-            It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()), Times.Exactly(2));
+                It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()), Times.Exactly(1));
     }
 
     [Test]
@@ -539,40 +554,41 @@ public class ComplianceSchemeLandingControllerTests
                 It.IsAny<ISession>(), It.IsAny<Action<FrontendSchemeRegistrationSession>>()), Times.Never);
     }
 
-    private List<ComplianceSchemeDto> GetComplianceSchemes() => new()
-    {
+    private List<ComplianceSchemeDto> GetComplianceSchemes() =>
+    [
         new ComplianceSchemeDto
         {
             Id = _complianceSchemeOneId,
             CreatedOn = DateTimeOffset.Now
         },
+
         new ComplianceSchemeDto
         {
             Id = _complianceSchemeTwoId,
             CreatedOn = DateTimeOffset.Now.AddDays(1)
         }
-    };
+    ];
 
     private FrontendSchemeRegistrationSession GetSessionWithSelectedScheme() =>
         new()
         {
-            RegistrationSession = new()
+            RegistrationSession = new RegistrationSession
             {
                 SelectedComplianceScheme = new ComplianceSchemeDto
                 {
                     Id = _complianceSchemeTwoId
-                },
+                }
             },
             UserData = new UserData
             {
-                Organisations = new List<Organisation>
-                {
-                    new()
+                Organisations =
+                [
+                    new Organisation
                     {
                         Name = OrganisationName,
                         Id = _organisationId
                     }
-                }
+                ]
             }
         };
 
@@ -581,14 +597,14 @@ public class ComplianceSchemeLandingControllerTests
         {
             UserData = new UserData
             {
-                Organisations = new List<Organisation>
-                {
-                    new()
+                Organisations =
+                [
+                    new Organisation
                     {
                         Name = OrganisationName,
                         Id = _organisationId
                     }
-                }
+                ]
             }
         };
 }

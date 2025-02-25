@@ -1,13 +1,12 @@
-@using FrontendSchemeRegistration.UI.Constants
 @using FrontendSchemeRegistration.Application.DTOs.Submission
-
+@using FrontendSchemeRegistration.UI.Constants
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model ApplicationSubmissionConfirmationViewModel
 
 @{
     ViewData["Title"] = Localizer["application_submission_confirm_title"];
-    var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
-    var nationName  = Model.NationName.ToLower();
-    var applicationSubmittedDate = Model.RegistrationApplicationSubmittedDate ?? DateTime.Today;
+    var scriptNonce = (string?) Context.Items[ContextKeys.ScriptNonceKey];
+    var nationName = Model.NationName.ToLower();
 }
 
 <div class="govuk-width-container">
@@ -22,7 +21,7 @@
                         </h1>
                         <div class="govuk-panel__body">
                             @Localizer["registration_reference_number"]
-                            <br />@Html.DisplayFor(model => model.RegistrationReferenceNumber)
+                            <br/>@Html.DisplayFor(model => model.RegistrationReferenceNumber)
                         </div>
                     }
                     else
@@ -32,12 +31,12 @@
                         </h1>
                         <div class="govuk-panel__body">
                             @Localizer["application_reference_number"]
-                            <br />@Html.DisplayFor(model => model.ApplicationReferenceNumber)
+                            <br/>@Html.DisplayFor(model => model.ApplicationReferenceNumber)
                         </div>
                     }
                 </div>
                 <p class="govuk-body">
-                    @Localizer["submitted_date_x", applicationSubmittedDate.ToString("dd MMMM, yyyy")]
+                    @Localizer["submitted_date_x", Model.RegistrationApplicationSubmittedDate.Value.ToString("dd MMMM, yyyy")]
                 </p>
                 @if (Model.ApplicationStatus == ApplicationStatusType.AcceptedByRegulator)
                 {
@@ -64,17 +63,23 @@
                     </p>
                     <p class="govuk-body">
                         @Localizer["visit_your"]
-                        <a asp-action="VisitHomePageSelfManaged" class="govuk-link govuk-link--no-visited-state">
-                            @Localizer["account_home_page"]
-                        </a>
+                        @if (Model.IsComplianceScheme)
+                        {
+                            <a asp-controller="ComplianceSchemeLanding" asp-action="Get" class="govuk-link">@Localizer["account_home_page"]</a>
+                        }
+                        else
+                        {
+                            <a asp-controller="FrontendSchemeRegistration" asp-action="HomePageSelfManaged" class="govuk-link">@Localizer["account_home_page"]</a>
+                        }
                         @Localizer["check_status_of_your_application"]
                     </p>
                 }
                 <p class="govuk-body">
                     @Localizer["you_can"]
                     <a href="#" id="print-record" target="_blank" class="govuk-link govuk-link--no-visited-state">
-                    @Localizer["print_record"]</a>
-                    @SharedLocalizer["or"] 
+                        @Localizer["print_record"]
+                    </a>
+                    @SharedLocalizer["or"]
                     <a href="#" id="print-or-save" target="_blank" class="govuk-link govuk-link--no-visited-state">
                         @Localizer["download_record_of_submission_as_PDF"]
                     </a>
@@ -87,11 +92,11 @@
 
 @section Scripts {
     <script type="text/javascript" nonce="@scriptNonce">
-        (function() {
-            document.getElementById("print-or-save").onclick = function() {
+        (function () {
+            document.getElementById("print-or-save").onclick = function () {
                 window.print();
             }
-            document.getElementById("print-record").onclick = function() {
+            document.getElementById("print-record").onclick = function () {
                 window.print();
             }
         })();
