@@ -175,7 +175,7 @@
     <value>Remove</value>
   </data>
   <data name="how_to_complete_file" xml:space="preserve">
-    <value>How to complete a file (opens in new tab)</value>
+    <value>How to create your subsidiaries file (opens in a new tab)</value>
   </data>
   <data name="no_subsidiaries_msg" xml:space="preserve">
     <value>No subsidiaries added for this organisation. To add subsidiaries, upload a CSV file</value>
@@ -197,5 +197,8 @@
   </data>
   <data name="reporting" xml:space="preserve">
     <value>Reporting</value>
+  </data>
+  <data name="upload_a_csv_file" xml:space="preserve">
+    <value>Upload a CSV file</value>
   </data>
 </root>
