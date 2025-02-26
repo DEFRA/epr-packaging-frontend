@@ -324,4 +324,10 @@
   <data name="907" xml:space="preserve">
     <value>[Welsh] Leaver reason exceeds 200 character limit.</value>
   </data>
+  <data name="908" xml:space="preserve">
+    <value>[Welsh] Joiner date does not match joiner date in database.</value>
+  </data>
+  <data name="909" xml:space="preserve">
+    <value>[Welsh] Reporting type does not match reporting type in database.</value>
+  </data>
 </root>

@@ -328,7 +328,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
 
             // Assert
             result.Should().BeOfType<ViewResult>().Which.ViewData.Should().Contain(pair =>
-                pair.Key == "ShouldShowAccountHomeLink" && (bool)pair.Value == true);
+                pair.Key == "HomeLinkToDisplay" && pair.Value == "/");
         }
 
         [Test]

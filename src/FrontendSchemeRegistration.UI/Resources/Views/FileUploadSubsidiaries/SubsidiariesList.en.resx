@@ -163,7 +163,7 @@
     <value>Upload a file</value>
   </data>
   <data name="subsidiary_accuracy_warning_text" xml:space="preserve">
-    <value>Check all the information you have provided is accurate. If it is not correct or if there is any missing information you will need to provide the correct data. Use the subsidiary IDs for all future organisation details and packaging data submissions.</value>
+    <value>Check all the information you have provided is accurate. If any of it is incorrect or incomplete, you will need to provide the correct information. Use the subsidiary IDs for all future organisation details and packaging data submissions.</value>
   </data>
   <data name="subsidiary_id" xml:space="preserve">
     <value>Subsidiary ID</value>
@@ -176,6 +176,10 @@
   </data>
   <data name="how_to_complete_file" xml:space="preserve">
     <value>How to create your subsidiaries file (opens in a new tab)</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="upload_a_file" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
   </data>
   <data name="no_subsidiaries_msg" xml:space="preserve">
     <value>No subsidiaries added for this organisation. To add subsidiaries, upload a CSV file</value>
@@ -192,8 +196,41 @@
   <data name="subsidiaries_will_appear" xml:space="preserve">
     <value>Subsidiaries will appear here after they have been processed.</value>
   </data>
+  <data name="adding_subsidiaries" xml:space="preserve">
+    <value>Adding subsidiaries</value>
+  </data>
+  <data name="upload_a_csv_file" xml:space="preserve">
+    <value>Upload a CSV file</value>
+  </data>
+  <data name="download_subsidiaries_list" xml:space="preserve">
+    <value>Download subsidiaries list</value>
+  </data>
+  <data name="how_to_create_your_subsidiary" xml:space="preserve">
+    <value>How to create your subsidiary file (opens in a new tab)</value>
+  </data>
+  <data name="informing_us_of_a_change" xml:space="preserve">
+    <value>Informing us of a change</value>
+  </data>
+  <data name="if_any_of_your_subsidiaries" xml:space="preserve">
+    <value>If any of your subsidiaries' organisation details change, you must notify the regulator within 28 days by</value>
+  </data>
+  <data name="updating_and_resubmitting" xml:space="preserve">
+    <value>updating and resubmitting your registration file</value>
+  </data>
+  <data name="removing_subsidiaries" xml:space="preserve">
+    <value>Removing subsidiaries</value>
+  </data>
+  <data name="update_and_resubmit" xml:space="preserve">
+    <value>update and resubmit your registration file</value>
+  </data>
+  <data name="to_permanently_remove_subsidiaries" xml:space="preserve">
+    <value>To permanently remove subsidiaries, you must</value>
+  </data>
   <data name="joined" xml:space="preserve">
     <value>Joined</value>
+  </data>
+  <data name="within_28_days_of_the_change" xml:space="preserve">
+    <value>within 28 days of the change</value>
   </data>
   <data name="reporting" xml:space="preserve">
     <value>Reporting</value>

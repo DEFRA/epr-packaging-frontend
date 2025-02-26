@@ -102,7 +102,7 @@
             }
                         
             var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-            SetBackLink(session, vm.IsFileUploadInProgress);
+            ViewBag.HomeLinkToDisplay = _basePath;
             await SavePageNumberToSession(session, page.Value);
             return View(vm);
         }
@@ -559,8 +559,8 @@
         
         private static bool ShouldShowAccountHomeLink(string previousPage)
         {
-            return previousPage is PagePaths.FileUploadSubsidiariesSuccess 
-                or PagePaths.SubsidiariesDownload 
+            return previousPage is PagePaths.FileUploadSubsidiariesSuccess
+                or PagePaths.SubsidiariesDownload
                 or PagePaths.SubsidiariesDownloadFailed
                 or PagePaths.ConfirmSubsidiaryRemoval
                 or PagePaths.ConfirmRemoveSubsidiarySuccess;

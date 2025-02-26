@@ -195,8 +195,41 @@
   <data name="subsidiaries_will_appear" xml:space="preserve">
     <value />
   </data>
+  <data name="adding_subsidiaries" xml:space="preserve">
+    <value />
+  </data>
+  <data name="upload_a_csv_file" xml:space="preserve">
+    <value />
+  </data>
+  <data name="download_subsidiaries_list" xml:space="preserve">
+    <value />
+  </data>
+  <data name="how_to_create_your_subsidiary" xml:space="preserve">
+    <value />
+  </data>
+  <data name="informing_us_of_a_change" xml:space="preserve">
+    <value />
+  </data>
+  <data name="if_any_of_your_subsidiaries" xml:space="preserve">
+    <value />
+  </data>
+  <data name="updating_and_resubmitting" xml:space="preserve">
+    <value />
+  </data>
+  <data name="removing_subsidiaries" xml:space="preserve">
+    <value />
+  </data>
+  <data name="update_and_resubmit" xml:space="preserve">
+    <value />
+  </data>
+  <data name="to_permanently_remove_subsidiaries" xml:space="preserve">
+	<value />
+  </data>
   <data name="joined" xml:space="preserve">
     <value />
+  </data>
+  <data name="within_28_days_of_the_change" xml:space="preserve">
+	<value />
   </data>
   <data name="reporting" xml:space="preserve">
     <value />

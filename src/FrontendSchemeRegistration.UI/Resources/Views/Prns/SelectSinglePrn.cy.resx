@@ -157,10 +157,10 @@
     <value>Blwyddyn Cyhoeddi'r</value>
   </data>
   <data name="packaging_recycling_note" xml:space="preserve">
-    <value>Nodyn Ailgylchu Pecynnu</value>
+    <value>Nodyn Ailgylchu Gwastraff Pecynwaith</value>
   </data>
   <data name="packaging_export_recycling_note" xml:space="preserve">
-    <value>Nodyn Ailgylchu Allforio Pecynnu</value>
+    <value>Nodyn Ailgylchu Allforio Gwastraff Pecynwaith</value>
   </data>
   <data name="prn_number" xml:space="preserve">
     <value>Rhif PRN</value>

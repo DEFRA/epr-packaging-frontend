@@ -66,6 +66,7 @@
                                 </div>
                             </div>
 
+                            <h2 class="govuk-heading-m">@Localizer["normal_header"]</h2>
                             <div class="govuk-grid-row">
                                 <div class="govuk-grid-column-full overflow-x-auto">
                                     <table class="govuk-table responsive-table">
@@ -79,7 +80,9 @@
                                                     <th scope="col" class="govuk-table__header no-wrap-text govuk-!-padding-right-5">@joinedHeader</th>
                                                     <th scope="col" class="govuk-table__header no-wrap-text">@reportingHeader</th>
                                                 </feature>
-                                                <td class="govuk-table__header no-wrap-text" />
+                                                <feature name="ShowSubsidiariesRemoveLink">
+                                                    <td class="govuk-table__header no-wrap-text" />
+                                                </feature>
                                             </tr>
                                         </thead>
                                         <tbody class="govuk-table__body">
@@ -99,16 +102,22 @@
                                                             @(subsidiaryViewModel.ReportingType)
                                                         </td>
                                                     </feature>
-
-                                                    <td class="govuk-table__cell" data-heading="@removeSubsidiaryLinkText">
-                                                        <a href="@($"/report-data{PagePaths.ConfirmSubsidiaryRemoval}/{@subsidiaryViewModel.Id}?parentOrganisationExternalId={organisationModel.ExternalId}")" aria-label="@Localizer["aria-confirm-subsidiary-removal-description"]" class="govuk-link--no-visited-state">
-                                                            @removeSubsidiaryLinkText
-                                                        </a>
-                                                    </td>
+                                                    <feature name="ShowSubsidiariesRemoveLink">
+                                                        <td class="govuk-table__cell" data-heading="@removeSubsidiaryLinkText">
+                                                            <a href="@($"/report-data{PagePaths.ConfirmSubsidiaryRemoval}/{@subsidiaryViewModel.Id}?parentOrganisationExternalId={organisationModel.ExternalId}")" aria-label="@Localizer["aria-confirm-subsidiary-removal-description"]" class="govuk-link--no-visited-state">
+                                                                @removeSubsidiaryLinkText
+                                                            </a>
+                                                        </td>
+                                                    </feature>
                                                 </tr>
                                             }
                                         </tbody>
                                     </table>
+                                    @if (Model.PagingDetail.PageCount > 1)
+                                    {
+                                        @await Html.PartialAsync("Partials/RecordNavigation/_RecordPaging", Model.PagingDetail)
+                                        @await Html.PartialAsync("Partials/RecordNavigation/_RecordCount", Model.PagingDetail)
+                                    }
                                 </div>
                             </div>
                         }
@@ -148,24 +157,14 @@
                             <p class="govuk-body">@Localizer["subsidiaries_need_to_upload_csv"]</p>
 
                             <p class="govuk-body">
-                                <a href="@GuidanceLinks.Value.HowToCompleteSubsidiaryFile" class="govuk-link" rel="noreferrer noopener" target="_blank">@Localizer["how_to_complete_file"]</a>
+                                <a href="@GuidanceLinks.Value.HowToCompleteSubsidiaryFile" class="govuk-link" rel="noreferrer noopener" target="_blank">@Localizer["how_to_create_your_subsidiary"].</a>
                             </p>
                         }
 
                         @if (!Model.IsFileUploadInProgress)
                         {
-                            <h2 class="govuk-heading-m">@Localizer["subsidiaries_upload_your_file"]</h2>
-                            <p class="govuk-body">@Localizer["subsidiaries_file_must_be"]</p>
-                            <ul>
-                                <li>
-                                    <p class="govuk-body">@Localizer["subsidiaries_smaller_than_60kb"]</p>
-                                </li>
-                                <li>
-                                    <p class="govuk-body">@Localizer["subsidiaries_in_csv_format"]</p>
-                                </li>
-                            </ul>
-                            <p class="govuk-body" id="file-upload-instructions">@Localizer["few_minutes_to_upload_file"]</p>
-
+                            <h2 class="govuk-heading-m">@Localizer["adding_subsidiaries"]</h2>
+                            <p class="govuk-body" id="file-upload-instructions">@Localizer["upload_a_csv_file"]</p>
 
                             @using (Html.BeginForm(FormMethod.Post, new
                             {
@@ -185,25 +184,37 @@
                                 @if (organisationModel.Subsidiaries.Count > 0)
                                 {
                                     <a class="govuk-button govuk-button--secondary" href="@Url.Action("SubsidiariesDownload", "FileUploadSubsidiaries")" role="button" data-module="govuk-button">
-                                        @SharedLocalizer["export"]
+                                        @Localizer["download_subsidiaries_list"]
                                     </a>
-                                }
-
-                                if (ViewBag.ShouldShowAccountHomeLink)
-                                {
+                                    <p class="govuk-body">
+                                        <a href="@GuidanceLinks.Value.HowToCompleteSubsidiaryFile" class="govuk-link" rel="noreferrer noopener" target="_blank">@Localizer["how_to_create_your_subsidiary"].</a>
+                                    </p>
                                     <div class="govuk-grid-row">
-                                        <div class="govuk-grid-column-full">
-                                            @Html.ActionLink(Localizer["return_to_account_home"].Value, "Get", "Landing",
-                                                     null, new { @class = "govuk-body govuk-link govuk-link--no-visited-state" })
+                                        <div class="govuk-grid-column-two-thirds">
+                                            @if (Model.IsDirectProducer)
+                                            {
+                                        
+                                                <h2 class="govuk-heading-m">@Localizer["removing_subsidiaries"]</h2>
+                                                <p class="govuk-body">
+                                                    @Localizer["to_permanently_remove_subsidiaries"]
+                                                    @Html.ActionLink(Localizer["update_and_resubmit"].Value, "ProducerRegistrationGuidance", "RegistrationApplication",
+                                                                null, new { @class = "govuk-link govuk-link--no-visited-state" })
+                                                    @Localizer["within_28_days_of_the_change"].
+                                                </p>
+                                            
+                                            }
+                                            else
+                                            {
+                                                <h2 class="govuk-heading-m">@Localizer["informing_us_of_a_change"]</h2>
+                                                <p class="govuk-body">
+                                                    @Localizer["if_any_of_your_subsidiaries"]
+                                                    @Html.ActionLink(Localizer["updating_and_resubmitting"].Value, "ProducerRegistrationGuidance", "RegistrationApplication",
+                                                                null, new { @class = "govuk-link govuk-link--no-visited-state" }).
+                                                </p>
+                                            }
                                         </div>
                                     </div>
                                 }
-
-                                @if (organisationModel.Subsidiaries.Count > 0)
-                                {
-                                    <div class="govuk-body govuk-!-margin-top-4 govuk-!-margin-bottom-4"><a href="@GuidanceLinks.Value.HowToCompleteSubsidiaryFile" class="govuk-link" rel="noreferrer noopener" target="_blank">@Localizer["how_to_complete_file"]</a></div>
-                                }
-
                             }
                         }
                         @if (Model.IsFileUploadInProgress)
@@ -216,12 +227,6 @@
                             </div>
                         }
 
-                    }
-
-                    @if (Model.PagingDetail.PageCount > 1)
-                    {
-                        @await Html.PartialAsync("Partials/RecordNavigation/_RecordPaging", Model.PagingDetail)
-                        @await Html.PartialAsync("Partials/RecordNavigation/_RecordCount", Model.PagingDetail)
                     }
                 }
             }

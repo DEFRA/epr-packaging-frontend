@@ -195,6 +195,39 @@
   <data name="subsidiaries_will_appear" xml:space="preserve">
     <value>Bydd is-gwmnïau yn ymddangos yma ar ôl cael eu prosesu.</value>
   </data>
+  <data name="adding_subsidiaries" xml:space="preserve">
+    <value>WAdding subsidiaries</value>
+  </data>
+  <data name="upload_a_csv_file" xml:space="preserve">
+    <value>WUpload a CSV file</value>
+  </data>
+  <data name="download_subsidiaries_list" xml:space="preserve">
+    <value>WDownload subsidiaries list</value>
+  </data>
+  <data name="how_to_create_your_subsidiary" xml:space="preserve">
+    <value>WHow to create your subsidiary file (opens in a new tab)</value>
+  </data>
+  <data name="informing_us_of_a_change" xml:space="preserve">
+    <value>WInforming us of a change</value>
+  </data>
+  <data name="if_any_of_your_subsidiaries" xml:space="preserve">
+    <value>WIf any of your subsidiaries' organisation details change, you must notify the regulator within 28 days by</value>
+  </data>
+  <data name="updating_and_resubmitting" xml:space="preserve">
+    <value>Wupdating and resubmitting your registration file</value>
+  </data>
+  <data name="removing_subsidiaries" xml:space="preserve">
+    <value>WRemoving subsidiaries</value>
+  </data>
+  <data name="update_and_resubmit" xml:space="preserve">
+    <value>Wupdate and resubmit your registration file</value>
+  </data>
+  <data name="to_permanently_remove_subsidiaries" xml:space="preserve">
+    <value>WTo permanently remove subsidiaries, you must</value>
+  </data>
+  <data name="within_28_days_of_the_change" xml:space="preserve">
+    <value>Wwithin 28 days of the change</value>
+  </data>
   <data name="joined" xml:space="preserve">
     <value>W_Joined</value>
   </data>

@@ -8,6 +8,7 @@ public static class FeatureFlags
     public const string ShowRegistrationResubmission = "ShowRegistrationResubmission";
     public const string ShowSubsidiariesSingleUploadJourney = "ShowSubsidiariesSingleUploadJourney";
     public const string ShowSubsidiaries = "ShowSubsidiaries";
+    public const string ShowSubsidiariesRemoveLink = "ShowSubsidiariesRemoveLink";
     public const string ShowSubsidiariesFileUploadExportRemoveFeature = "ShowSubsidiariesFileUploadExportRemoveFeature";
     public const string ShowPrn = "ShowPrn";
     public const string OverridePrnCurrentDateForTestingPurposes = "OverridePrnCurrentDateForTestingPurposes";
