@@ -1,4 +1,4 @@
-﻿using FrontendSchemeRegistration.Application.DTOs;
+using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.DTOs.Prns;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
@@ -49,8 +49,6 @@ public interface IWebApiGatewayClient
 
     Task<List<SubmissionHistory>> GetSubmissionHistoryAsync(Guid submissionId, string queryString);
 
-    Task<List<SubsidiaryExportDto>> GetSubsidiariesAsync(int subsidiaryParentId);
-
     Task<List<PrnModel>> GetPrnsForLoggedOnUserAsync();
 
     Task<PrnModel> GetPrnByExternalIdAsync(Guid id);
@@ -70,8 +68,6 @@ public interface IWebApiGatewayClient
     Task<PrnObligationModel> GetObligations(int year);
 
     Task<RegistrationApplicationDetails?> GetRegistrationApplicationDetails(GetRegistrationApplicationDetailsRequest request);
-
-    Task<ComplianceSchemeDetailsDto> GetComplianceSchemeDetails(string organisationId);
 
     Task<byte[]?> FileDownloadAsync(string queryString);
 }

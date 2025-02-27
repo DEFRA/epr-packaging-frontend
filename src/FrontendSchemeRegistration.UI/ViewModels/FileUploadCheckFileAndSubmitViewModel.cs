@@ -24,4 +24,6 @@ public class FileUploadCheckFileAndSubmitViewModel : ViewModelWithOrganisationRo
     public string? SubmittedFileName { get; set; }
 
     public bool HasSubmittedPreviously => SubmittedFileName is not null;
+
+    public bool IsSubmittedByUserDeleted { get; set; }
 }

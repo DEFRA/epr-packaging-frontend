@@ -1,6 +1,10 @@
-﻿@model ConfirmRemovalViewModel
+﻿@using FrontendSchemeRegistration.UI.Constants
+@model ConfirmRemovalViewModel
 @{
     var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer, nameof(Model.SelectedConfirmRemoval));
+    var currentPagePath = ViewBag.CurrentPagePath;
+    var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
+
 }
 @{
     ViewData["Title"] = Localizer["ConfirmRemoval.PageTitle"];
@@ -8,13 +12,13 @@
 <div class="govuk-width-container">
     <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
         <div class="govuk-grid-row">
-            <div class="govuk-grid-column-two-thirds">
+            <div class="govuk-grid-column-two-thirds" id="confirmremove-wrapper">
             @if (!ViewData.ModelState.IsValid)
             {
                 @await Html.PartialAsync("Partials/Govuk/_ErrorsViewModelSummary", errorsViewModel)
             }
-             @using (Html.BeginForm(FormMethod.Post))
-             {
+                @using (Html.BeginForm(FormMethod.Post, new { id = "confirmremoveform" }))
+                {
                  <div class="govuk-form-group@(!ViewData.ModelState.IsValid ? " govuk-form-group--error" : "")">
                      <fieldset class="govuk-fieldset">
                          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
@@ -62,5 +66,15 @@
              }
             </div>
     </div>
+
+        @await Html.PartialAsync("Partials/_Spinner", $"{currentPagePath}")
 </main>
 </div>
+
+@section Scripts
+{
+    <script src="~/js/loadingspinner.js"></script>
+    <script nonce="@scriptNonce">
+        document.addEventListener("DOMContentLoaded", InitSpinner("confirmremove-wrapper", "confirmremoveform"));
+    </script>
+}

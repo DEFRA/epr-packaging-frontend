@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
+using FrontendSchemeRegistration.Application.DTOs.ComplianceScheme;
 
 namespace FrontendSchemeRegistration.UI.Sessions;
 
@@ -8,20 +9,42 @@ using Application.DTOs.Submission;
 [ExcludeFromCodeCoverage]
 public class RegistrationApplicationSession
 {
+    public string? SubmissionPeriod { get; set; }
+
+    public SubmissionPeriod Period { get; set; }
+
+    public List<string> Journey { get; set; } = [];
+
+    public Guid? SubmissionId { get; set; }
+
+    public bool IsSubmitted { get; set; }
+
+    public ApplicationStatusType ApplicationStatus { get; set; }
+
     public RegistrationTaskListStatus FileUploadStatus
     {
         get
         {
             if (ApplicationStatus is
-                    ApplicationStatusType.SubmittedToRegulator
-                    or ApplicationStatusType.AcceptedByRegulator 
-                    or ApplicationStatusType.ApprovedByRegulator
-                    or ApplicationStatusType.CancelledByRegulator
-                    or ApplicationStatusType.QueriedByRegulator
-                    or ApplicationStatusType.RejectedByRegulator
-                    )
+                ApplicationStatusType.CancelledByRegulator
+                or ApplicationStatusType.QueriedByRegulator
+                or ApplicationStatusType.RejectedByRegulator
+               )
+            {
+                return RegistrationTaskListStatus.NotStarted;
+            }
+
+            if (ApplicationStatus is ApplicationStatusType.SubmittedToRegulator)
             {
                 return FileReachedSynapse ? RegistrationTaskListStatus.Completed : RegistrationTaskListStatus.Pending;
+            }
+
+            if (ApplicationStatus is
+                ApplicationStatusType.AcceptedByRegulator
+                or ApplicationStatusType.ApprovedByRegulator
+               )
+            {
+                return RegistrationTaskListStatus.Completed;
             }
 
             if (!FileReachedSynapse && ApplicationStatus is
@@ -39,17 +62,17 @@ public class RegistrationApplicationSession
     {
         get
         {
-            if (FileUploadStatus == RegistrationTaskListStatus.NotStarted || FileUploadStatus == RegistrationTaskListStatus.Pending)
+            if (FileUploadStatus is RegistrationTaskListStatus.NotStarted or RegistrationTaskListStatus.Pending)
             {
                 return RegistrationTaskListStatus.CanNotStartYet;
             }
 
-            if (FileUploadStatus is RegistrationTaskListStatus.Completed && !RegistrationFeePaid)
+            if (FileUploadStatus is RegistrationTaskListStatus.Completed && !IsRegistrationFeePaid)
             {
                 return RegistrationTaskListStatus.NotStarted;
             }
 
-            if (FileUploadStatus == RegistrationTaskListStatus.Completed && RegistrationFeePaid)
+            if (FileUploadStatus == RegistrationTaskListStatus.Completed && IsRegistrationFeePaid)
             {
                 return RegistrationTaskListStatus.Completed;
             }
@@ -62,12 +85,7 @@ public class RegistrationApplicationSession
     {
         get
         {
-            if (ApplicationStatus is ApplicationStatusType.AcceptedByRegulator || (PaymentViewStatus is RegistrationTaskListStatus.Completed && RegistrationApplicationSubmitted))
-            {
-                return RegistrationTaskListStatus.Completed;
-            }
-
-            if (PaymentViewStatus is RegistrationTaskListStatus.NotStarted or RegistrationTaskListStatus.CanNotStartYet)
+            if (PaymentViewStatus is RegistrationTaskListStatus.NotStarted or RegistrationTaskListStatus.Pending)
             {
                 return RegistrationTaskListStatus.CanNotStartYet;
             }
@@ -77,41 +95,42 @@ public class RegistrationApplicationSession
                 return RegistrationTaskListStatus.NotStarted;
             }
 
-            return RegistrationTaskListStatus.NotStarted;
+            if (PaymentViewStatus == RegistrationTaskListStatus.Completed && RegistrationApplicationSubmitted)
+            {
+                return RegistrationTaskListStatus.Completed;
+            }
+
+            return RegistrationTaskListStatus.CanNotStartYet;
         }
     }
 
-    public Guid? SubmissionId { get; set; }
+    public bool IsRegistrationFeePaid => RegistrationFeePaymentMethod is "PayByPhone" or "PayOnline" or "PayByBankTransfer" or "No-Outstanding-Payment";
 
-    public bool IsSubmitted { get; set; }
+    public bool RegistrationApplicationSubmitted => RegistrationApplicationSubmittedDate is not null;
 
-    public string? ApplicationReferenceNumber { get; set; } = string.Empty;
-
-    public string? RegistrationReferenceNumber { get; set; } = string.Empty;
-
-    public LastSubmittedFileDetails LastSubmittedFile { get; set; } = new LastSubmittedFileDetails();
-
-    public string? RegistrationFeePaymentMethod { get; set; }
-
-    public bool RegistrationFeePaid => RegistrationFeePaymentMethod is "PayByPhone" or "PayOnline" or "PayByBankTransfer";
+    public bool FileReachedSynapse => RegistrationFeeCalculationDetails is { Length: > 0 };
 
     public DateTime? RegistrationApplicationSubmittedDate { get; set; }
 
     public string? RegistrationApplicationSubmittedComment { get; set; }
 
-    public bool RegistrationApplicationSubmitted => RegistrationApplicationSubmittedDate is not null;
+    public string? RegistrationFeePaymentMethod { get; set; }
 
-    public ApplicationStatusType ApplicationStatus { get; set; }
-
-    public bool FileReachedSynapse { get; set; }
-
-    public ProducerDetailsDto? ProducerDetails { get; set; }
-
-    public ComplianceSchemeDetailsDto? CsoMemberDetails { get; set; }
+    public bool IsLateFeeApplicable { get; set; }
 
     public int TotalAmountOutstanding { get; set; }
 
+    public string? ApplicationReferenceNumber { get; set; }
+
+    public string? RegistrationReferenceNumber { get; set; }
+
     public string RegulatorNation { get; set; } = string.Empty;
 
-    public bool IsLateFeeApplicable { get; set; }
+    public bool IsComplianceScheme { get; set; }
+
+    public RegistrationFeeCalculationDetails[]? RegistrationFeeCalculationDetails { get; set; }
+
+    public LastSubmittedFileDetails LastSubmittedFile { get; set; } = new LastSubmittedFileDetails();
+
+    public ComplianceSchemeDto? SelectedComplianceScheme { get; set; }
 }

@@ -18,6 +18,7 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Options;
+    using Microsoft.FeatureManagement;
     using Microsoft.FeatureManagement.Mvc;
     using Services.Interfaces;
     using ViewModels;
@@ -33,6 +34,7 @@
         private readonly IComplianceSchemeMemberService _complianceSchemeMemberService;
         private readonly IComplianceSchemeService _complianceSchemeService;
         private readonly ISubsidiaryUtilityService _subsidiaryUtilityService;
+        private readonly IFeatureManager _featureManager;
         private IOptions<GlobalVariables> _globalVariables;
 
         private readonly string _basePath;
@@ -43,9 +45,10 @@
             ISubsidiaryService subsidiaryService,
             IOptions<GlobalVariables> globalVariables,
             ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
-            IComplianceSchemeMemberService complianceSchemeMemberService, 
+            IComplianceSchemeMemberService complianceSchemeMemberService,
             IComplianceSchemeService complianceSchemeService,
-            ISubsidiaryUtilityService subsidiaryUtilityService)
+            ISubsidiaryUtilityService subsidiaryUtilityService,
+            IFeatureManager featureManager)
         {
             _fileUploadService = fileUploadService;
             _submissionService = submissionService;
@@ -56,6 +59,7 @@
             _complianceSchemeService = complianceSchemeService;
             _subsidiaryUtilityService = subsidiaryUtilityService;
             _globalVariables = globalVariables;
+            _featureManager = featureManager;
         }
 
         [HttpGet]
@@ -98,7 +102,7 @@
             }
                         
             var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-            SetBackLink(session, vm.IsFileUploadInProgress);
+            ViewBag.HomeLinkToDisplay = _basePath;
             await SavePageNumberToSession(session, page.Value);
             return View(vm);
         }
@@ -155,6 +159,7 @@
 
         [HttpGet]
         [Route(PagePaths.SubsidiariesUploadingAndValidatingFile)]
+        [SubmissionIdActionFilter(PagePaths.FileUploadSubsidiaries)]
         public async Task<IActionResult> FileUploading()
         {
             var submissionId = Guid.Parse(Request.Query["submissionId"]);
@@ -162,7 +167,7 @@
 
             if (submission is null)
             {
-                return RedirectToAction("Get", "FileUpload");
+                return RedirectToAction(nameof(SubsidiariesList));
             }
 
             var (userId, organisationId) = GetUserDetails();
@@ -310,7 +315,9 @@
                 var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
                 var complianceSchemeId = session.RegistrationSession?.SelectedComplianceScheme?.Id;
                 var isComplianceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
-                var stream = await _subsidiaryService.GetSubsidiariesStreamAsync(organisation.Id.Value, complianceSchemeId, isComplianceScheme);
+                var includeSubsidiaryJoinerAndLeaverColumns = await _featureManager.IsEnabledAsync(FeatureFlags.EnableSubsidiaryJoinerAndLeaverColumns);
+
+                var stream = await _subsidiaryService.GetSubsidiariesStreamAsync(organisation.Id.Value, complianceSchemeId, isComplianceScheme, includeSubsidiaryJoinerAndLeaverColumns);
 
                 if (stream == null)
                 {
@@ -421,7 +428,7 @@
                                 Name = response.Organisation.Name,
                                 Id = response.Organisation.OrganisationNumber,
                                 CompaniesHouseNumber = response.Organisation.CompaniesHouseNumber,
-                                Subsidiaries = response.Relationships.Select(r => new SubsidiaryViewModel(r.OrganisationNumber, r.OrganisationName, r.CompaniesHouseNumber)).ToList()
+                                Subsidiaries = response.Relationships.Select(r => new SubsidiaryViewModel(r.OrganisationNumber, r.OrganisationName, r.CompaniesHouseNumber, r.JoinerDate, r.ReportingType)).ToList()
                             }
                         ]
                     };
@@ -447,7 +454,7 @@
                                 Name = c.OrganisationName,
                                 Id = c.OrganisationNumber,
                                 CompaniesHouseNumber = c.CompaniesHouseNumber,
-                                Subsidiaries = c.Relationships.Select(s => new SubsidiaryViewModel(s.OrganisationNumber, s.OrganisationName, s.CompaniesHouseNumber)).ToList()
+                                Subsidiaries = c.Relationships.Select(s => new SubsidiaryViewModel(s.OrganisationNumber, s.OrganisationName, s.CompaniesHouseNumber, s.JoinerDate, s.ReportingType)).ToList()
                             }).ToList()
                     };
                 }
@@ -552,8 +559,8 @@
         
         private static bool ShouldShowAccountHomeLink(string previousPage)
         {
-            return previousPage is PagePaths.FileUploadSubsidiariesSuccess 
-                or PagePaths.SubsidiariesDownload 
+            return previousPage is PagePaths.FileUploadSubsidiariesSuccess
+                or PagePaths.SubsidiariesDownload
                 or PagePaths.SubsidiariesDownloadFailed
                 or PagePaths.ConfirmSubsidiaryRemoval
                 or PagePaths.ConfirmRemoveSubsidiarySuccess;

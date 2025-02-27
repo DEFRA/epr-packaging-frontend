@@ -127,7 +127,7 @@
     <value>Your registration for {0} has been granted by the regulator.</value>
   </data>
   <data name="Your_registration_reference_number_is_x" xml:space="preserve">
-    <value>Your producer registration number is {0}.</value>
+    <value>Your producer registration number is &lt;strong&gt;{0}&lt;/strong&gt;.</value>
   </data>
   <data name="If_anything_changes_you_should_resubmit" xml:space="preserve">
     <value>If anything changes you should resubmit your registration data to update it within 28 days.</value>

@@ -136,10 +136,10 @@
     <value>{0} number</value>
   </data>
   <data name="prn_note" xml:space="preserve">
-    <value>Packaging Recycling Note</value>
+    <value>Packaging Waste Recycling Note</value>
   </data>
   <data name="pern_note" xml:space="preserve">
-    <value>Packaging Export Recycling Note</value>
+    <value>Packaging Waste Export Recycling Note</value>
   </data>
   <data name="year" xml:space="preserve">
     <value>Year of issue</value>

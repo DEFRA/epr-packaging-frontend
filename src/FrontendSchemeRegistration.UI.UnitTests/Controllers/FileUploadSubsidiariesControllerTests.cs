@@ -30,12 +30,15 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
     using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
     using Microsoft.AspNetCore.Mvc.ViewFeatures;
     using Microsoft.AspNetCore.Routing;
+    using Microsoft.FeatureManagement;
     using UI.Sessions;
 
     [TestFixture]
     public class FileUploadSubsidiariesControllerTests
     {
         private const string DummySubsidiaryName = "DummySubsidiaryName";
+        private const string SelfReportingType = "Self";
+        private const string GroupReportingType = "Group";
 
         private readonly Mock<ClaimsPrincipal> _userMock = new();
         private Mock<IFileUploadService> _mockFileUploadService;
@@ -47,10 +50,13 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
         private FileUploadSubsidiariesController _controller;
         private Mock<IOptions<GlobalVariables>> _globalVariablesMock;
         private Mock<ClaimsPrincipal> _claimsPrincipalMock;
+        private Mock<IFeatureManager> _mockFeatureManager;
         private Mock<IUrlHelper> _mockUrlHelper;
         private Mock<ISubsidiaryUtilityService> _mockSubsidiaryUtilityService;
         private readonly Guid UserId = Guid.NewGuid();
         private readonly Guid OrganisationId = Guid.NewGuid();
+        private readonly DateTime JoinerDate = new DateTime(2024, 12, 17);
+
 
         [SetUp]
         public void SetUp()
@@ -98,11 +104,12 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                         {
                             OrganisationName = "Test Organisation Name",
                             OrganisationNumber = "0123456789",
+
                             Relationships = new List<RelationshipResponseModel>
                             {
-                                new() { OrganisationNumber = "987654321", OrganisationName = "Subsidiary1" },
-                                new() { OrganisationNumber = "852147930", OrganisationName = "Subsidiary2" },
-                                new() { OrganisationNumber = "741229428", OrganisationName = "Subsidiary3" },
+                                new() { OrganisationNumber = "987654321", OrganisationName = "Subsidiary1" , JoinerDate = JoinerDate, ReportingType = SelfReportingType},
+                                new() { OrganisationNumber = "852147930", OrganisationName = "Subsidiary2" , JoinerDate = JoinerDate, ReportingType = GroupReportingType},
+                                new() { OrganisationNumber = "741229428", OrganisationName = "Subsidiary3" , JoinerDate = JoinerDate, ReportingType = GroupReportingType},
                             }
                         }
                     },
@@ -119,6 +126,9 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                     It.IsAny<bool>()))
                 .ReturnsAsync(complianceApiResponse);
             _mockSubsidiaryUtilityService = new Mock<ISubsidiaryUtilityService>();
+
+            _mockFeatureManager = new Mock<IFeatureManager>();            
+
             _controller = new FileUploadSubsidiariesController(
                 _mockFileUploadService.Object,
                 _mockSubmissionService.Object,
@@ -127,7 +137,8 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                 _mockSessionManager.Object,
                 _mockComplianceSchemeMemberService.Object,
                 _mockComplianceSchemeService.Object,
-                _mockSubsidiaryUtilityService.Object);
+                _mockSubsidiaryUtilityService.Object,
+                _mockFeatureManager.Object);
 
             var tempDataMock = new Mock<ITempDataDictionary>();
             tempDataMock.Setup(dictionary => dictionary["SubsidiaryNameToRemove"]).Returns(DummySubsidiaryName);
@@ -176,9 +187,9 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                 },
                 Relationships = new List<RelationshipResponseModel>
                 {
-                    new() { OrganisationNumber = "987654321", OrganisationName = "Subsidiary1" },
-                    new() { OrganisationNumber = "852147930", OrganisationName = "Subsidiary2" },
-                    new() { OrganisationNumber = "741229428", OrganisationName = "Subsidiary3" },
+                    new() { OrganisationNumber = "987654321", OrganisationName = "Subsidiary1" , JoinerDate = JoinerDate, ReportingType = SelfReportingType},
+                    new() { OrganisationNumber = "852147930", OrganisationName = "Subsidiary2" , JoinerDate = JoinerDate, ReportingType = GroupReportingType},
+                    new() { OrganisationNumber = "741229428", OrganisationName = "Subsidiary3" , JoinerDate = JoinerDate, ReportingType = GroupReportingType},
                 }
             };
 
@@ -196,6 +207,11 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             viewResult.Should().NotBeNull();
             viewResult.Organisations.Should().HaveCount(1);
             viewResult.Organisations[0].Subsidiaries.Should().HaveCount(3);
+
+            var subsidiary = viewResult.Organisations[0].Subsidiaries.First();
+            subsidiary.JoinerDate.Should().Be(JoinerDate); 
+            subsidiary.ReportingType.Should().Be(SelfReportingType); 
+
             _mockSubsidiaryService.Verify(service => service.GetOrganisationSubsidiaries(It.IsAny<Guid>()), Times.Once);
         }
 
@@ -249,6 +265,26 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                     It.IsAny<bool>()), Times.Once);
         }
 
+        [Test]
+        public async Task SubsidiariesList_WhenComplianceScheme_ShouldCallComplianceServiceAndReturnViewResultWith_JoinerDate_ReportingType()
+        {
+            // Arrange
+            _mockSubsidiaryService.Setup(x => x.GetSubsidiaryFileUploadStatusAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                .ReturnsAsync(SubsidiaryFileUploadStatus.NoFileUploadActive);
+
+            // Act
+            var result = await _controller.SubsidiariesList();
+
+            // Assert
+            var viewResult = result.Should().BeOfType<ViewResult>().Subject;
+            var viewModel = viewResult.Model.Should().BeOfType<SubsidiaryListViewModel>().Subject;
+
+            // Validate first subsidiary
+            var firstSubsidiary = viewModel.Organisations[0].Subsidiaries.First();
+            firstSubsidiary.JoinerDate.Should().Be(JoinerDate);
+            firstSubsidiary.ReportingType.Should().Be(SelfReportingType);
+        }
+
         [Theory]
         [TestCase(PagePaths.FileUploadSubsidiariesSuccess)]
         [TestCase(PagePaths.SubsidiariesDownload)]
@@ -273,7 +309,8 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                 mockSessionManager.Object,
                 _mockComplianceSchemeMemberService.Object,
                 _mockComplianceSchemeService.Object,
-                _mockSubsidiaryUtilityService.Object);
+                _mockSubsidiaryUtilityService.Object,
+                _mockFeatureManager.Object);
 
             controller.ControllerContext = new ControllerContext
             {
@@ -291,7 +328,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
 
             // Assert
             result.Should().BeOfType<ViewResult>().Which.ViewData.Should().Contain(pair =>
-                pair.Key == "ShouldShowAccountHomeLink" && (bool)pair.Value == true);
+                pair.Key == "HomeLinkToDisplay" && pair.Value == "/");
         }
 
         [Test]
@@ -341,7 +378,8 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                 _mockSessionManager.Object,
                 mockComplianceSchemeMemberService.Object,
                 _mockComplianceSchemeService.Object,
-                _mockSubsidiaryUtilityService.Object);
+                _mockSubsidiaryUtilityService.Object,
+                _mockFeatureManager.Object);
 
             controller.ControllerContext = new ControllerContext
             {
@@ -545,8 +583,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             var result = await _controller.FileUploading();
 
             // Assert
-            result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be("Get");
-            result.As<RedirectToActionResult>().ControllerName.Should().Be("FileUpload");
+            result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be(nameof(_controller.SubsidiariesList));
         }
 
         [Test]
@@ -933,14 +970,14 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
         {
             // Arrange
             var mockStream = new MemoryStream();
-            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true)).ReturnsAsync(mockStream);
+            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true, It.IsAny<bool>())).ReturnsAsync(mockStream);
 
             // Act
             var result = await _controller.SubsidiariesDownload() as RedirectToActionResult;
 
             // Assert
             result.ActionName.Should().Be("SubsidiariesDownloadView");
-            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true), Times.Never);
+            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true, It.IsAny<bool>()), Times.Never);
         }
 
         [Test]
@@ -948,22 +985,24 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
         {
             // Arrange
             var mockStream = new MemoryStream();
-            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true)).ReturnsAsync(mockStream);
+            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true, It.IsAny<bool>())).ReturnsAsync(mockStream);
 
             // Act
             var result = _controller.SubsidiariesDownloadView();
 
             // Assert
             ((Microsoft.AspNetCore.Mvc.ViewResult)result).ViewName.Should().Be("SubsidiariesDownload");
-            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true), Times.Never);
+            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true, It.IsAny<bool>()), Times.Never);
         }
-
+                
         [Test]
-        public async Task ExportSubsidiaries_ReturnsFileResultWithCorrectContentTypeAndFileName()
+        public async Task ExportSubsidiaries_ReturnsFileResultWithCorrectContentTypeAndFileName_When_EnableSubsidiaryJoinerAndLeaverColumns_Is_True()
         {
             // Arrange
             var mockStream = new MemoryStream();
-            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true)).ReturnsAsync(mockStream);
+
+            _mockFeatureManager.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.EnableSubsidiaryJoinerAndLeaverColumns))).ReturnsAsync(true);
+            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(mockStream);
 
             // Act
             var result = await _controller.ExportSubsidiaries();
@@ -975,7 +1014,29 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             fileResult.FileDownloadName.Should().Be("subsidiary.csv");
             fileResult.FileStream.Should().BeSameAs(mockStream);
 
-            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true), Times.Once);
+            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), true), Times.Once);
+        }
+
+        [Test]
+        public async Task ExportSubsidiaries_ReturnsFileResultWithCorrectContentTypeAndFileName_When_EnableSubsidiaryJoinerAndLeaverColumns_Is_False()
+        {
+            // Arrange
+            var mockStream = new MemoryStream();
+
+            _mockFeatureManager.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.EnableSubsidiaryJoinerAndLeaverColumns))).ReturnsAsync(false);
+            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(mockStream);
+
+            // Act
+            var result = await _controller.ExportSubsidiaries();
+
+            // Assert
+            result.Should().BeOfType<FileStreamResult>();
+            var fileResult = result as FileStreamResult;
+            fileResult.ContentType.Should().Be("text/csv");
+            fileResult.FileDownloadName.Should().Be("subsidiary.csv");
+            fileResult.FileStream.Should().BeSameAs(mockStream);
+
+            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), false), Times.Once);
         }
 
         [Test]
@@ -1136,14 +1197,14 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
         {
             // Arrange
             var mockStream = new MemoryStream();
-            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true)).ThrowsAsync(new Exception("Some message"));
+            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true, It.IsAny<bool>())).ThrowsAsync(new Exception("Some message"));
 
             // Act
             var result = await _controller.ExportSubsidiaries() as RedirectToActionResult;
 
             // Assert
             result.ActionName.Should().Be("SubsidiariesDownloadFailed");
-            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true), Times.Once);
+            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true, It.IsAny<bool>()), Times.Once);
         }
 
         [Test]
@@ -1151,14 +1212,14 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
         {
             // Arrange
             var mockStream = new MemoryStream();
-            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true)).ReturnsAsync((MemoryStream)null);
+            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true, It.IsAny<bool>())).ReturnsAsync((MemoryStream)null);
 
             // Act
             var result = await _controller.ExportSubsidiaries() as RedirectToActionResult;
 
             // Assert
             result.ActionName.Should().Be("SubsidiariesDownloadFailed");
-            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true), Times.Once);
+            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), true, It.IsAny<bool>()), Times.Once);
         }
 
         [Test]
@@ -1286,6 +1347,27 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             result.Should().BeOfType<ViewResult>()
                 .Which.Model.Should().BeOfType<ConfirmRemoveSubsidiarySuccessViewModel>()
                 .Which.Should().BeEquivalentTo(expectedModel);
+        }
+
+        [Test]
+        public async Task SubsidiariesList_ShouldIncludeJoinerDateAndReportingType()
+        {
+            // Arrange
+            _mockSubsidiaryService.Setup(x => x.GetSubsidiaryFileUploadStatusAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                .ReturnsAsync(SubsidiaryFileUploadStatus.NoFileUploadActive);
+
+            // Act
+            var result = await _controller.SubsidiariesList();
+
+            // Assert
+            var viewResult = result.Should().BeOfType<ViewResult>().Subject;
+            var viewModel = viewResult.Model.Should().BeOfType<SubsidiaryListViewModel>().Subject;
+
+            viewModel.Organisations.Should().HaveCount(1);
+            var subsidiary = viewModel.Organisations[0].Subsidiaries.First();
+
+            subsidiary.JoinerDate.Should().Be(JoinerDate);  
+            subsidiary.ReportingType.Should().Be(SelfReportingType);  
         }
 
         public static object[] SubsidiariesUnsuccessfulFileUploadDecisionCases() => [

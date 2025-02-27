@@ -4,6 +4,7 @@ using AutoFixture;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
+using FrontendSchemeRegistration.Application.DTOs.ComplianceScheme;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.UI.Constants;
@@ -17,7 +18,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
-using System.Threading.Tasks;
 
 [TestFixture]
 public class PrnsObligationControllerTests
@@ -66,6 +66,22 @@ public class PrnsObligationControllerTests
     public async Task ObligationsHome_Returns_View()
     {
         // Arrange
+        var session = new FrontendSchemeRegistrationSession
+        {
+            UserData = new UserData
+            {
+                Organisations = new List<Organisation>
+                {
+                    new() {
+                        OrganisationRole = OrganisationRoles.Producer,
+                        Name = "Test Organisation",
+                        NationId = 1
+                    }
+                }
+            }
+        };
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(session);
         var viewModel = _fixture.Create<PrnObligationViewModel>();
         _prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(It.IsAny<int>())).ReturnsAsync(viewModel);
 
@@ -86,6 +102,22 @@ public class PrnsObligationControllerTests
     public async Task ObligationPerMaterial_WhenGivenGlass_ReturnsView()
     {
         // Arrange
+        var session = new FrontendSchemeRegistrationSession
+        {
+            UserData = new UserData
+            {
+                Organisations = new List<Organisation>
+                {
+                    new() {
+                        OrganisationRole = OrganisationRoles.Producer,
+                        Name = "Test Organisation",
+                        NationId = 1
+                    }
+                }
+            }
+        };
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(session);
         string material = "Glass";
         int year = DateTime.Now.Year;
         PrnObligationViewModel viewModel = _fixture.Create<PrnObligationViewModel>();
@@ -111,6 +143,22 @@ public class PrnsObligationControllerTests
     public async Task ObligationPerMaterial_WhenGivenNonGlass_ReturnsView(string material, string resource)
     {
         // Arrange
+        var session = new FrontendSchemeRegistrationSession
+        {
+            UserData = new UserData
+            {
+                Organisations = new List<Organisation>
+                {
+                    new() {
+                        OrganisationRole = OrganisationRoles.Producer,
+                        Name = "Test Organisation",
+                        NationId = 1
+                    }
+                }
+            }
+        };
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(session);
         int year = DateTime.Now.Year;
         PrnObligationViewModel viewModel = _fixture.Create<PrnObligationViewModel>();
         foreach (var item in viewModel.MaterialObligationViewModels)
@@ -137,6 +185,22 @@ public class PrnsObligationControllerTests
     public async Task ObligationPerMaterial_WhenGivenUnrecognisedMaterial_ReturnsView()
     {
         // Arrange
+        var session = new FrontendSchemeRegistrationSession
+        {
+            UserData = new UserData
+            {
+                Organisations = new List<Organisation>
+                {
+                    new() {
+                        OrganisationRole = OrganisationRoles.Producer,
+                        Name = "Test Organisation",
+                        NationId = 1
+                    }
+                }
+            }
+        };
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(session);
         string material = "Unknown";
         int year = DateTime.Now.Year;
         PrnObligationViewModel viewModel = _fixture.Create<PrnObligationViewModel>();
@@ -153,46 +217,6 @@ public class PrnsObligationControllerTests
         _controller.ViewData.Should().ContainKey("ProducerResponsibilityObligationsLink");
     }
 
-    [Theory]
-    [TestCase(OrganisationRoles.Producer, 1)]
-    [TestCase(OrganisationRoles.ComplianceScheme, 2)]
-    [TestCase(OrganisationRoles.Producer, 3)]
-    [TestCase(OrganisationRoles.ComplianceScheme, 4)]
-    public async Task FillViewModelFromSessionAsync_Returns_Valid_ViewModel(string organisationRole, int nationId)
-    {
-        // Arrange
-        var currentYear = DateTime.Now.Year;
-        var deadlineYear = currentYear + 1;
-        var session = new FrontendSchemeRegistrationSession
-        {
-            UserData = new UserData
-            {
-                Organisations = new List<Organisation>
-                {
-                    new() {
-                        OrganisationRole = organisationRole,
-                        Name = "Test Organisation",
-                        NationId = nationId
-                    }
-                }
-            }
-        };
-        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>()))
-            .ReturnsAsync(session);
-
-        var viewModel = _fixture.Create<PrnObligationViewModel>();
-
-        // Act
-        await _controller.FillViewModelFromSessionAsync(viewModel, currentYear);
-
-        // Assert
-        viewModel.OrganisationRole.Should().BeEquivalentTo(organisationRole);
-        viewModel.OrganisationName.Should().BeEquivalentTo("Test Organisation");
-        viewModel.NationId.Should().NotBeNull();
-        viewModel.NationId.Value.Should().Be(nationId);
-        viewModel.CurrentYear.Should().Be(currentYear);
-        viewModel.DeadlineYear.Should().Be(deadlineYear);
-    }
 
     [Test]
     public async Task FillViewModelFromSessionAsync_WhenOrganisationIsNull_ViewModelDoesNotHaveOrganisationDetails()
@@ -220,24 +244,127 @@ public class PrnsObligationControllerTests
         viewModel.NationId.Should().BeNull();
     }
 
-    [Test]
-    public async Task FillViewModelFromSessionAsync_Returns_ViewModel_With_DefaultSession_When_No_Session_Exists()
+    [Theory]
+    [TestCase(1)]
+    [TestCase(3)]
+    public async Task FillViewModelFromSessionAsync_Returns_Valid_ViewModelForDirectRegistrant(int nationId)
     {
         // Arrange
+        var currentYear = DateTime.Now.Year;
+        var deadlineYear = currentYear + 1;
+        var session = new FrontendSchemeRegistrationSession
+        {
+            UserData = new UserData
+            {
+                Organisations = new List<Organisation>
+                {
+                    new() {
+                        OrganisationRole = OrganisationRoles.Producer,
+                        Name = "Test Organisation",
+                        NationId = nationId
+                    }
+                }
+            }
+        };
         _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>()))
-            .ReturnsAsync((FrontendSchemeRegistrationSession)null);
+            .ReturnsAsync(session);
 
-        PrnObligationViewModel viewModel = new();
+        var viewModel = _fixture.Create<PrnObligationViewModel>();
 
         // Act
-        await _controller.FillViewModelFromSessionAsync(viewModel, 2024);
+        await _controller.FillViewModelFromSessionAsync(viewModel, currentYear);
 
         // Assert
-        viewModel.OrganisationRole.Should().BeEquivalentTo(null);
-        viewModel.OrganisationName.Should().BeEquivalentTo(null);
-        viewModel.NationId.Should().BeNull(null);
-        viewModel.CurrentYear.Should().Be(0);
-        viewModel.DeadlineYear.Should().Be(0);
+        viewModel.OrganisationRole.Should().BeEquivalentTo(OrganisationRoles.Producer);
+        viewModel.OrganisationName.Should().BeEquivalentTo("Test Organisation");
+        viewModel.NationId.Should().NotBeNull();
+        viewModel.NationId.Value.Should().Be(nationId);
+        viewModel.CurrentYear.Should().Be(currentYear);
+        viewModel.DeadlineYear.Should().Be(deadlineYear);
     }
 
+    [Theory]
+    [TestCase(2)]
+    [TestCase(4)]
+    public async Task FillViewModelFromSessionAsync_Returns_Valid_ViewModelForComplianceSchemeMember(int nationId)
+    {
+        // Arrange
+        var currentYear = DateTime.Now.Year;
+        var deadlineYear = currentYear + 1;
+        var session = new FrontendSchemeRegistrationSession
+        {
+            UserData = new UserData
+            {
+                Organisations = new List<Organisation>
+                {
+                    new() {
+                        OrganisationRole = OrganisationRoles.ComplianceScheme,
+                        Name = "Test Organisation",
+                        NationId = nationId
+                    }
+                }
+            },
+            RegistrationSession = new RegistrationSession
+            {
+                SelectedComplianceScheme = new ComplianceSchemeDto
+                {
+                    Name = "Test Organisation",
+                    NationId = nationId
+                }
+            }
+        };
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(session);
+
+        var viewModel = _fixture.Create<PrnObligationViewModel>();
+
+        // Act
+        await _controller.FillViewModelFromSessionAsync(viewModel, currentYear);
+
+        // Assert
+        viewModel.OrganisationRole.Should().BeEquivalentTo(OrganisationRoles.ComplianceScheme);
+        viewModel.OrganisationName.Should().BeEquivalentTo("Test Organisation");
+        viewModel.NationId.Should().NotBeNull();
+        viewModel.NationId.Value.Should().Be(nationId);
+        viewModel.CurrentYear.Should().Be(currentYear);
+        viewModel.DeadlineYear.Should().Be(deadlineYear);
+    }
+
+    [Test]
+    public async Task FillViewModelFromSessionAsync_Returns_ViewModelForComplianceSchemeMember_WhenSelectedCSIsNull()
+    {
+        // Arrange
+        var currentYear = DateTime.Now.Year;
+        var deadlineYear = currentYear + 1;
+        var session = new FrontendSchemeRegistrationSession
+        {
+            UserData = new UserData
+            {
+                Organisations = new List<Organisation>
+                {
+                    new() {
+                        OrganisationRole = OrganisationRoles.ComplianceScheme,
+                        Name = "Test Organisation"
+                    }
+                }
+            },
+            RegistrationSession = new RegistrationSession
+            {
+                SelectedComplianceScheme = null
+            }
+        };
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(session);
+
+        var viewModel = _fixture.Create<PrnObligationViewModel>();
+
+        // Act
+        await _controller.FillViewModelFromSessionAsync(viewModel, currentYear);
+
+        // Assert
+        viewModel.OrganisationName.Should().BeNull();
+        viewModel.NationId.Should().Be(0);
+        viewModel.CurrentYear.Should().Be(currentYear);
+        viewModel.DeadlineYear.Should().Be(deadlineYear);
+    }
 }

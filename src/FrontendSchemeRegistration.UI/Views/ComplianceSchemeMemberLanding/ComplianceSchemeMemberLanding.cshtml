@@ -59,9 +59,7 @@
 
                     <p class="govuk-body">
                         @Localizer["you_can"]
-                        <a class="govuk-link govuk-link--no-visited-state"
-                           asp-action="ManageComplianceScheme"
-                           asp-controller="FrontendSchemeRegistration">
+                        <a asp-controller="FrontendSchemeRegistration" asp-action="ManageComplianceScheme" class="govuk-link govuk-link--no-visited-state" >
                             @Localizer["change_or_remove_compliance_scheme_link", Model.OrganisationName]</a>.
                     </p>
                 }

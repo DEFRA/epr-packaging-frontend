@@ -1,4 +1,4 @@
-﻿using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.DTOs.Submission;
 using System.Diagnostics.CodeAnalysis;
 
 namespace FrontendSchemeRegistration.UI.ViewModels;
@@ -13,4 +13,6 @@ public class ApplicationSubmissionConfirmationViewModel : OrganisationNationView
     public ApplicationStatusType ApplicationStatus { get; set; }
 
     public DateTime? RegistrationApplicationSubmittedDate { get; set; }
+    
+    public bool IsComplianceScheme { get; set; }
 }

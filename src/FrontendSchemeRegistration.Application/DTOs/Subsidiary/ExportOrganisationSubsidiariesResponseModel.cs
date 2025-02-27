@@ -9,4 +9,8 @@ public class ExportOrganisationSubsidiariesResponseModel
     public string OrganisationName { get; set; }
 
     public string CompaniesHouseNumber { get; set; }
+
+    public DateTime? JoinerDate { get; set; }
+    
+    public string ReportingType { get; set; }
 }

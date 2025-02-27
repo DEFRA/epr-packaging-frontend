@@ -7,6 +7,7 @@ using ClassMaps;
 using Constants;
 using CsvHelper;
 using CsvHelper.Configuration;
+using CsvHelper.TypeConversion;
 using DTOs.Subsidiary;
 using DTOs.Subsidiary.OrganisationSubsidiaryList;
 using FrontendSchemeRegistration.Application.DTOs.Subsidiary.FileUploadStatus;
@@ -16,6 +17,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Caching.Distributed;
 using FrontendSchemeRegistration.Application.Extensions;
+using FrontendSchemeRegistration.Application.Helpers;
 
 public class SubsidiaryService : ISubsidiaryService
 {
@@ -25,16 +27,18 @@ public class SubsidiaryService : ISubsidiaryService
     private const string RedisFileUploadStatusViewedKey = "SubsidiaryFileUploadStatusViewed";
     private readonly IDistributedCache _distributedCache;
     private readonly DistributedCacheEntryOptions _cacheEntryOptions;
-    
-    public SubsidiaryService(IAccountServiceApiClient accountServiceApiClient, IWebApiGatewayClient webApiGatewayClient,
-        ILogger<SubsidiaryService> logger, IDistributedCache distributedCache)
+
+    public SubsidiaryService(
+        IAccountServiceApiClient accountServiceApiClient,
+        IWebApiGatewayClient webApiGatewayClient,
+        ILogger<SubsidiaryService> logger,
+        IDistributedCache distributedCache)
     {
         _logger = logger;
         _accountServiceApiClient = accountServiceApiClient;
         _webApiGatewayClient = webApiGatewayClient;
         _distributedCache = distributedCache;
         _cacheEntryOptions = new DistributedCacheEntryOptions();
-
     }
 
     public async Task SetSubsidiaryFileUploadStatusViewedAsync(bool value, Guid userId, Guid organisationId)
@@ -139,7 +143,7 @@ public class SubsidiaryService : ISubsidiaryService
         }
     }
 
-    public async Task<Stream> GetSubsidiariesStreamAsync(Guid organisationId, Guid? complianceSchemeId, bool isComplianceScheme)
+    public async Task<Stream> GetSubsidiariesStreamAsync(Guid organisationId, Guid? complianceSchemeId, bool isComplianceScheme, bool includeSubsidiaryJoinerAndLeaverColumns)
     {
         HttpResponseMessage result;
         if (isComplianceScheme)
@@ -162,12 +166,16 @@ public class SubsidiaryService : ISubsidiaryService
         {
             await using (var csv = new CsvWriter(writer, new CsvConfiguration(CultureInfo.InvariantCulture)))
             {
-                csv.Context.RegisterClassMap<ExportOrganisationSubsidiariesRowMap>();
-                csv.Context.RegisterClassMap<ErrorReportRowMap>();
+                var options = new TypeConverterOptions { Formats = ["dd/MM/yyyy"] };
+                csv.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
+                csv.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(options);
+
+                csv.Context.RegisterClassMap(new ExportOrganisationSubsidiariesRowMap(includeSubsidiaryJoinerAndLeaverColumns));
                 await csv.WriteRecordsAsync(subsidiaries);
             }
 
             await writer.FlushAsync();
+
         }
 
         stream.Position = 0;
@@ -256,6 +264,7 @@ public class SubsidiaryService : ISubsidiaryService
         }
 
         var stream = new MemoryStream();
+        BomHelper.PrependBOMBytes(stream);
 
         await using (var writer = new StreamWriter(stream, leaveOpen: true))
         {

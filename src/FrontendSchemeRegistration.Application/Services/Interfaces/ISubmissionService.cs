@@ -21,7 +21,5 @@ public interface ISubmissionService
 
     Task<List<SubmissionHistory>> GetSubmissionHistoryAsync(Guid submissionId, DateTime lastSyncTime);
 
-    Task<bool> HasSubmissionsAsync(Guid organiationExternalId, SubmissionType type, Guid? complianceSchemeId);
-
     Task<RegistrationApplicationDetails?> GetRegistrationApplicationDetails(GetRegistrationApplicationDetailsRequest request);
 }

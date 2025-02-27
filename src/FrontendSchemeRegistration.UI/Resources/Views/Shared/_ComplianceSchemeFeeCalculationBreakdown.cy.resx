@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:element name="root" msdata:IsDataSet="true">
@@ -56,10 +56,10 @@
     <value>Mae yn is-gwmni</value>
   </data>
   <data name="late_producer_fees_text" xml:space="preserve">
-    <value>ffioedd cynhyrchydd hwyr</value>
+    <value>Wlate producer fees</value>
   </data>
   <data name="late_producer_fees_text_singular" xml:space="preserve">
-    <value>ffi cynhyrchydd hwyr</value>
+    <value>Wlate producer fee</value>
   </data>
 	<data name="scheme_members" xml:space="preserve">
     <value>Aelodau'r cynllun</value>

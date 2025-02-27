@@ -1,4 +1,3 @@
-using FluentAssertions;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Services;
@@ -182,7 +181,6 @@ public class SubmissionServiceTests
         var submissionId = Guid.NewGuid();
         var submissionType = SubmissionType.RegistrationFeePayment;
         var paymentMethod = "test";
-        var paidAmount = "test";
         var comment = "test";
 
         // Act
@@ -202,12 +200,11 @@ public class SubmissionServiceTests
     {
         // Arrange
         var submissionId = Guid.NewGuid();
-        var submissionPeriod = "April to September 2025";
-        const string Comments = "Pay part-payment of £24,500 now";
+        const string comments = "Pay part-payment of £24,500 now";
         const string applicationReference = "PEPR00002125P1";
 
         // Act
-        await _submissionService.SubmitRegistrationApplicationAsync(submissionId, null, Comments, null, applicationReference, SubmissionType.RegistrationApplicationSubmitted);
+        await _submissionService.SubmitRegistrationApplicationAsync(submissionId, null, comments, null, applicationReference, SubmissionType.RegistrationApplicationSubmitted);
 
         // Assert
         _webApiGatewayClientMock.Verify(x => x.SubmitRegistrationApplication(submissionId, It.IsAny<RegistrationApplicationPayload>()), Times.Once);
@@ -306,74 +303,6 @@ public class SubmissionServiceTests
         // Assert
         var expectedQueryString = $"lastSyncTime={lastSyncTime:s}";
         _webApiGatewayClientMock.Verify(x => x.GetSubmissionHistoryAsync(submissionId, expectedQueryString), Times.Once);
-    }
-
-    [Test]
-    public async Task HasSubmissionsAsync_CallsClient_WhenCalled_Returns_True()
-    {
-        // Arrange
-        var organisationId = Guid.NewGuid();
-        _webApiGatewayClientMock.Setup(x => x.GetSubmissionIdsAsync(It.IsAny<Guid>(), It.IsAny<string>())).ReturnsAsync(new List<SubmissionPeriodId>()
-        {
-            new ()
-            {
-                 SubmissionId = Guid.NewGuid(),
-            }
-        });
-
-        // Act
-        var result = await _submissionService.HasSubmissionsAsync(organisationId, SubmissionType.RegistrationFeePayment, null);
-
-        // Assert
-        _webApiGatewayClientMock.Verify(x => x.GetSubmissionIdsAsync(It.IsAny<Guid>(), It.IsAny<string>()), Times.Once);
-        result.Should().BeTrue();
-    }
-
-    [Test]
-    public async Task HasSubmissionsAsync_CallsClient_WhenCalled_Returns_False()
-    {
-        // Arrange
-        var organisationId = Guid.NewGuid();
-        _webApiGatewayClientMock.Setup(x => x.GetSubmissionIdsAsync(It.IsAny<Guid>(), It.IsAny<string>())).ReturnsAsync(new List<SubmissionPeriodId>());
-
-        // Act
-        var result = await _submissionService.HasSubmissionsAsync(organisationId, SubmissionType.RegistrationFeePayment, null);
-
-        // Assert
-        _webApiGatewayClientMock.Verify(x => x.GetSubmissionIdsAsync(It.IsAny<Guid>(), It.IsAny<string>()), Times.Once);
-        result.Should().BeFalse();
-    }
-
-    [Test]
-    public async Task HasSubmissionsAsync_CallsClient_WhenCalled_And_SubmissionsIsNull_Returns_False()
-    {
-        // Arrange
-        var organisationId = Guid.NewGuid();
-        _webApiGatewayClientMock.Setup(x => x.GetSubmissionIdsAsync(It.IsAny<Guid>(), It.IsAny<string>())).ReturnsAsync((List<SubmissionPeriodId>)null);
-
-        // Act
-        var result = await _submissionService.HasSubmissionsAsync(organisationId, SubmissionType.RegistrationFeePayment, null);
-
-        // Assert
-        _webApiGatewayClientMock.Verify(x => x.GetSubmissionIdsAsync(It.IsAny<Guid>(), It.IsAny<string>()), Times.Once);
-        result.Should().BeFalse();
-    }
-
-    [Test]
-    public async Task HasSubmissionsAsync_CallsClient_WithCorrectQueryString_WhenCalledWithComplianceSchemeId()
-    {
-        // Arrange
-        var organisationId = Guid.NewGuid();
-        var type = SubmissionType.RegistrationFeePayment;
-        var complianceSchemeId = Guid.NewGuid();
-
-        // Act
-        await _submissionService.HasSubmissionsAsync(organisationId, type, complianceSchemeId);
-
-        // Assert
-        var expectedQueryString = $"type={type}&complianceSchemeId={complianceSchemeId}";
-
-        _webApiGatewayClientMock.Verify(x => x.GetSubmissionIdsAsync(organisationId, expectedQueryString), Times.Once);
     }
 
     [Test]

@@ -137,11 +137,22 @@
                      new { submissionId = Model.SubmissionId },
                      new { @class = "govuk-button govuk-!-margin-top-5" })
             <p class="govuk-body">
-                @Html.ActionLink(Localizer["cancel"].Value, "Get", "FileUploadCompanyDetailsSubLanding", null,
-                         new
-                         {
-                             @class = "govuk-link govuk-link--no-visited-state"
-                         })
+                @if (isFileUploadJourneyInvokedViaRegistration)
+                {
+                    @Html.ActionLink(Localizer["cancel"].Value, "RegistrationTaskList", "RegistrationApplication", null,
+                        new
+                        {
+                            @class = "govuk-link govuk-link--no-visited-state"
+                        })
+                }
+                else
+                {
+                    @Html.ActionLink(Localizer["cancel"].Value, "Get", "FileUploadCompanyDetailsSubLanding", null,
+                        new
+                        {
+                            @class = "govuk-link govuk-link--no-visited-state"
+                        })
+                }
             </p>
         </div>
 

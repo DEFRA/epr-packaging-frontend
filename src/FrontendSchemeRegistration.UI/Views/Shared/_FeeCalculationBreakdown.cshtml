@@ -17,7 +17,7 @@
             @Localizer["application_fee"]
         </dt>
         <dt class="govuk-summary-list__value">
-            @Localizer["fee_for_producer_size", Model.ProducerSize]
+            @Localizer["fee_for_producer_size", Model.OrganisationSize]
         </dt>
         <dd class="govuk-summary-list__actions">
             &pound;@ConvertToThousandSeparatedDecimal(Model.BaseFee)
@@ -112,6 +112,17 @@
             </dd>
         </div>
     }
+    
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            @Localizer["total_outstanding"]
+        </dt>
+        <dt class="govuk-summary-list__value">
+        </dt>
+        <dd class="govuk-summary-list__actions">
+            <b>&pound;@ConvertToThousandSeparatedDecimal(Model.TotalAmountOutstanding)</b>
+        </dd>
+    </div>
 </dl>
 
 @functions

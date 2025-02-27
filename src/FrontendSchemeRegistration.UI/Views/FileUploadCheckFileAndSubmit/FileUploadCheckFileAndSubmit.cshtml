@@ -123,7 +123,13 @@
                             <tr class="govuk-table__row">
                                 <td data-heading="@fileName" class="govuk-table__cell break-word">@Model.SubmittedFileName</td>
                                 <td data-heading="@dateAndTimeSubmittedSubmitted" class="govuk-table__cell break-word">@Model.SubmittedDateTime.Value.ToReadableDateTime()</td>
-                                <td data-heading="@submittedBy" class="govuk-table__cell break-word">@Model.SubmittedBy</td>
+                                <td data-heading="@submittedBy" class="govuk-table__cell break-word">
+                                    @Model.SubmittedBy
+                                    @if (Model.IsSubmittedByUserDeleted)
+                                    {
+                                        <span>(@SharedLocalizer["no_longer_in_this_organisation"])</span>
+                                    }
+                                </td>
                                 <feature name="@FeatureFlags.EnableCsvDownload">
                                         <td data-heading="@download" class="govuk-table__cell no-wrap-text">
                                         @Html.ActionLink(

@@ -25,16 +25,16 @@
     </div>
 
     @{
-    bool showTitle = true;
+        bool showTitle = true;
 
-    var schemeMemberTypes = new[]
-    {
-    new { Name = @Localizer[$"small_producers_sentence_text{(Model.SmallProducersCount == 1 ? "_singular" : "")}"], Count = Model.SmallProducersCount, Fee = Model.SmallProducersFee },
-    new { Name = @Localizer[$"large_producers_sentence_text{(Model.LargeProducersCount == 1 ? "_singular" : "")}"], Count = Model.LargeProducersCount, Fee = Model.LargeProducersFee },
-    new { Name = @Localizer[$"online_marketplaces_sentence_text{(Model.OnlineMarketplaceCount == 1 ? "_singular" : "")}"], Count = Model.OnlineMarketplaceCount, Fee = Model.OnlineMarketplaceFee },
-    new { Name = @Localizer[$"subsidiary_companies_sentence_text{(Model.SubsidiaryCompanyCount == 1 ? "_singular" : "")}"], Count = Model.SubsidiaryCompanyCount, Fee = Model.SubsidiaryCompanyFee },
-    new { Name = @Localizer[$"late_producer_fees_text{(Model.LateProducersCount == 1 ? "_singular" : "")}"], Count = Model.LateProducersCount, Fee = Model.LateProducerFee }
-    };
+        var schemeMemberTypes = new[]
+        {
+            new { Name = Localizer[$"small_producers_sentence_text{(Model.SmallProducersCount == 1 ? "_singular" : "")}"], Count = Model.SmallProducersCount, Fee = Model.SmallProducersFee },
+            new { Name = Localizer[$"large_producers_sentence_text{(Model.LargeProducersCount == 1 ? "_singular" : "")}"], Count = Model.LargeProducersCount, Fee = Model.LargeProducersFee },
+            new { Name = Localizer[$"online_marketplaces_sentence_text{(Model.OnlineMarketplaceCount == 1 ? "_singular" : "")}"], Count = Model.OnlineMarketplaceCount, Fee = Model.OnlineMarketplaceFee },
+            new { Name = Localizer[$"subsidiary_companies_sentence_text{(Model.SubsidiaryCompanyCount == 1 ? "_singular" : "")}"], Count = Model.SubsidiaryCompanyCount, Fee = Model.SubsidiaryCompanyFee },
+            new { Name = Localizer[$"late_producer_fees_text{(Model.LateProducersCount == 1 ? "_singular" : "")}"], Count = Model.LateProducersCount, Fee = Model.LateProducerFee }
+        };
 
         foreach (var memberType in schemeMemberTypes.Where(mt => mt.Count > 0))
         {
@@ -102,6 +102,5 @@
     @functions
     {
         private static string ConvertToThousandSeparatedDecimal(int number) => (number / 100).ToString("#,##0.00");
-        private static string ConvertToThousandSeparatedDecimal(decimal number) => number.ToString("#,##0.00");
     }
 </dl>

@@ -4,6 +4,7 @@ using ControllerExtensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
 using System.Diagnostics.CodeAnalysis;
@@ -21,6 +22,7 @@ public class AccountController : Controller
     /// <param name="redirectUri">Redirect URI.</param>
     /// <returns>Challenge generating a redirect to Azure AD to sign in the user.</returns>
     [HttpGet("{scheme?}")]
+    [AllowAnonymous]
     public IActionResult SignIn(
         [FromRoute] string? scheme,
         [FromQuery] string redirectUri)

@@ -11,7 +11,7 @@ public interface ISubsidiaryService
 
     Task<string> AddSubsidiary(SubsidiaryAddDto subsidiary);
 
-    Task<Stream> GetSubsidiariesStreamAsync(Guid organisationId, Guid? complianceSchemeId, bool isComplianceScheme);
+    Task<Stream> GetSubsidiariesStreamAsync(Guid organisationId, Guid? complianceSchemeId, bool isComplianceScheme, bool includeSubsidiaryJoinerAndLeaverColumns);
 
     Task<OrganisationRelationshipModel> GetOrganisationSubsidiaries(Guid organisationId);
 

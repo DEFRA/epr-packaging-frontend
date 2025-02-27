@@ -4,8 +4,6 @@ using EPR.Common.Authorization.Models;
 
 namespace FrontendSchemeRegistration.UI.Sessions;
 
-using Application.DTOs.Submission;
-
 [ExcludeFromCodeCoverage]
 public class FrontendSchemeRegistrationSession : IHasUserData
 {
@@ -22,6 +20,4 @@ public class FrontendSchemeRegistrationSession : IHasUserData
     public SubsidiarySession SubsidiarySession { get; set; } = new();
 
     public PrnSession PrnSession { get; set; } = new();
-
-    public RegistrationApplicationSession RegistrationApplicationSession { get; set; } = new ();
 }

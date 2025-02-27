@@ -353,26 +353,6 @@
             <Generator>ResXFileCodeGenerator</Generator>
             <LastGenOutput>InviteChangePermissions.cy.Designer.cs</LastGenOutput>
         </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FrontendSchemeRegistration\LandingPage.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>LandingPage.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FrontendSchemeRegistration\UsingComplianceScheme.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>UsingComplianceScheme.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FrontendSchemeRegistration\HomePageComplianceScheme.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>HomePageComplianceScheme.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FrontendSchemeRegistration\ChangeComplianceSchemeOptions.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>ChangeComplianceSchemeOptions.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FrontendSchemeRegistration\Stop.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>Stop.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
         <EmbeddedResource Update="Resources\Views\Shared\Components\PhaseBanner\Default.resx">
             <Generator>ResXFileCodeGenerator</Generator>
             <LastGenOutput>Default.Designer.cs</LastGenOutput>
@@ -412,10 +392,6 @@
         <EmbeddedResource Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.en.resx">
             <Generator>ResXFileCodeGenerator</Generator>
             <LastGenOutput>ComplianceSchemeLandingPage.en.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\ComplianceSchemeLanding\ComplianceSchemeLanding.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>ComplianceSchemeLanding.Designer.cs</LastGenOutput>
         </EmbeddedResource>
         <EmbeddedResource Update="Resources\Views\ReviewCompanyDetails\ReviewCompanyDetails.resx">
             <Generator>ResXFileCodeGenerator</Generator>
@@ -706,26 +682,6 @@
         <Compile Remove="Controllers\SelectComplianceSchemeController.cs" />
         <Compile Remove="Controllers\HomePageSelfManagedController.cs" />
         <None Remove="assets\js\print.js" />
-        <Compile Update="Resources\Views\FrontendSchemeRegistration\LandingPage.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>LandingPage.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FrontendSchemeRegistration\UsingComplianceScheme.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>UsingComplianceScheme.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FrontendSchemeRegistration\HomePageComplianceScheme.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>HomePageComplianceScheme.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FrontendSchemeRegistration\ChangeComplianceSchemeOptions.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>ChangeComplianceSchemeOptions.resx</DependentUpon>
-        </Compile>
         <Compile Update="Resources\Views\Shared\Components\PhaseBanner\Default.Designer.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
@@ -760,11 +716,6 @@
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
             <DependentUpon>FileUploadCompanyDetailsSuccess.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\ComplianceSchemeLanding\ComplianceSchemeLanding.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>ComplianceSchemeLanding.resx</DependentUpon>
         </Compile>
         <Compile Update="Resources\Views\FileUploadBrandsSuccess\FileUploadBrandsSuccess.Designer.cs">
             <DesignTime>True</DesignTime>
@@ -1215,7 +1166,7 @@
     </ItemGroup>
 	<ItemGroup>
 		<SonarQubeSetting Include="sonar.coverage.exclusions">
-			<Value>ViewModels/ComplianceSchemeLandingViewModel*.cs,Views/**/*.cshtml,Program.cs,gulpfile.js,**/print.js,**/refresh.js,**/sub-status-refresh.js,**/download-pdf.js</Value>
+			<Value>ViewModels/ComplianceSchemeLandingViewModel*.cs,Views/**/*.cshtml,Program.cs,gulpfile.js,**/print.js,**/refresh.js,**/sub-status-refresh.js,**/download-pdf.js,**/loadingspinner.js</Value>
 		</SonarQubeSetting>
         <SonarQubeSetting Include="sonar.cpd.exclusions">
             <Value>Views/**/*.cshtml</Value>

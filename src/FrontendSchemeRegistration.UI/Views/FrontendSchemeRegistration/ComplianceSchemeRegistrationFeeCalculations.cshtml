@@ -8,9 +8,9 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
-                @Localizer[!Model.RegistrationFeePaid ? "registration_fee_due" : "registration_fee"]
+                @Localizer[!Model.IsRegistrationFeePaid ? "registration_fee_due" : "registration_fee"]
             </h1>
-            @if (!Model.RegistrationFeePaid)
+            @if (!Model.IsRegistrationFeePaid)
             {
                 <p class="govuk-body">
                     @Localizer["registration_fee_due_x_to_process_application", ConvertToThousandSeparatedDecimal(Model.TotalAmountOutstanding)]

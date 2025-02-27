@@ -157,10 +157,10 @@
     <value>Year of issue</value>
   </data>
   <data name="packaging_recycling_note" xml:space="preserve">
-    <value>Packaging Recycling Note</value>
+    <value>Packaging Waste Recycling Note</value>
   </data>
   <data name="packaging_export_recycling_note" xml:space="preserve">
-    <value>Packaging Export Recycling Note</value>
+    <value>Packaging Waste Export Recycling Note</value>
   </data>
   <data name="prn_number" xml:space="preserve">
     <value>PRN number</value>

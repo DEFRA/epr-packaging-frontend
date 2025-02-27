@@ -1,17 +1,13 @@
 @using FrontendSchemeRegistration.Application.DTOs.Submission
-@using FrontendSchemeRegistration.Application.Enums
 @using FrontendSchemeRegistration.UI.Sessions
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model RegistrationTaskListViewModel
 
 @{
     ViewData["Title"] = Localizer["registration_task_title"];
-    var isFileStatusInvalid = Model.ApplicationStatus is
-                               ApplicationStatusType.NotStarted or
-                               ApplicationStatusType.FileUploaded or
-                               ApplicationStatusType.SubmittedAndHasRecentFileUpload;
-    var canStartViewPayRegistrationFeeStep = (Model.PaymentViewStatus is RegistrationTaskListStatus.NotStarted && Model.FileUploadStatus is RegistrationTaskListStatus.Completed && !isFileStatusInvalid) || Model.PaymentViewStatus is RegistrationTaskListStatus.Completed;
-    var canStartSubmitRegistrationApplicationStep = (Model.AdditionalDetailsStatus is RegistrationTaskListStatus.NotStarted && Model.PaymentViewStatus is RegistrationTaskListStatus.Completed && !isFileStatusInvalid) || Model.AdditionalDetailsStatus is RegistrationTaskListStatus.Completed;
+
+    var canStartViewPayRegistrationFeeStep = Model.PaymentViewStatus is RegistrationTaskListStatus.NotStarted or RegistrationTaskListStatus.Completed;
+    var canStartSubmitRegistrationApplicationStep = Model.AdditionalDetailsStatus is RegistrationTaskListStatus.NotStarted or RegistrationTaskListStatus.Completed;
 }
 
 <main class="govuk-main-wrapper" id="main-content" role="main">
@@ -25,9 +21,11 @@
                 </div>
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__value">
-                        @if (isFileStatusInvalid)
+                        @if (Model.FileUploadStatus is RegistrationTaskListStatus.NotStarted or RegistrationTaskListStatus.CanNotStartYet ||
+                             Model.ApplicationStatus is ApplicationStatusType.FileUploaded or ApplicationStatusType.SubmittedAndHasRecentFileUpload)
                         {
-                            <a asp-controller="FrontendSchemeRegistration" asp-action="RedirectToFileUpload" class="govuk-link govuk-link--no-visited-state">
+                            <a asp-controller="RegistrationApplication" asp-action="RedirectToFileUpload"
+                               class="govuk-link govuk-link--no-visited-state">
                                 @Localizer["submit_registration_data"]
                             </a>
                         }
@@ -42,14 +40,15 @@
                         }
                     </dt>
                     <dd class="govuk-summary-list__actions">
-                        @{ ShowProgressStatus(Model.FileUploadStatus, isFileStatusInvalid); }
+                        @{ ShowProgressStatus(Model.FileUploadStatus); }
                     </dd>
                 </div>
                 <div class="govuk-summary-list__row">
                     <dt class="govuk-summary-list__value">
                         @if (canStartViewPayRegistrationFeeStep)
                         {
-                            <a asp-controller="FrontendSchemeRegistration" asp-action="RegistrationFeeCalculations" class="govuk-link govuk-link--no-visited-state">
+                            <a asp-controller="RegistrationApplication" asp-action="RegistrationFeeCalculations"
+                               class="govuk-link govuk-link--no-visited-state">
                                 @Localizer["view_pay_registration_fee"]
                             </a>
                         }
@@ -59,7 +58,8 @@
                         }
                         @if (Model.PaymentViewStatus == RegistrationTaskListStatus.Completed)
                         {
-                            <br />@Localizer["you_have_paid_registration_fee"]
+                            <br/>
+                            @Localizer["you_have_paid_registration_fee"]
                         }
                     </dt>
                     <dd class="govuk-summary-list__actions">
@@ -70,7 +70,8 @@
                     <dt class="govuk-summary-list__value">
                         @if (canStartSubmitRegistrationApplicationStep)
                         {
-                            <a asp-controller="FrontendSchemeRegistration" asp-action="AdditionalInformation" class="govuk-link govuk-link--no-visited-state">
+                            <a asp-controller="RegistrationApplication" asp-action="AdditionalInformation"
+                               class="govuk-link govuk-link--no-visited-state">
                                 @Localizer["submit_registration_application"]
                             </a>
                         }
@@ -80,7 +81,8 @@
                         }
                         @if (Model.AdditionalDetailsStatus is RegistrationTaskListStatus.Completed)
                         {
-                            <br />@Localizer["registration_application_has_been_submitted"]
+                            <br/>
+                            @Localizer["registration_application_has_been_submitted"]
                         }
                     </dt>
                     <dd class="govuk-summary-list__actions">
@@ -88,40 +90,40 @@
                     </dd>
                 </div>
             </dl>
-            <p class="govuk-body govuk-!-margin-top-4">
-                <a asp-controller="FrontendSchemeRegistration" asp-action="HomePageSelfManaged" class="govuk-link">@Localizer["return_to_dashboard"]</a>
-            </p>
+            @if(Model.IsComplianceScheme)
+            {
+                <p class="govuk-body govuk-!-margin-top-4">
+                    <a asp-controller="ComplianceSchemeLanding" asp-action="Get" class="govuk-link">@Localizer["return_to_dashboard"]</a>
+                </p>
+            }
+            else
+            {
+                <p class="govuk-body govuk-!-margin-top-4">
+                    <a asp-controller="FrontendSchemeRegistration" asp-action="HomePageSelfManaged" class="govuk-link">@Localizer["return_to_dashboard"]</a>
+                </p>
+            }
         </div>
     </div>
 </main>
 
 @{
-    void ShowProgressStatus(RegistrationTaskListStatus status, bool fileStatusInvalid = false)
+    void ShowProgressStatus(RegistrationTaskListStatus status)
     {
-        if (status == RegistrationTaskListStatus.Completed && fileStatusInvalid)
-        {
-            <strong class="govuk-tag govuk-tag--yellow">@Localizer["pending_status"]</strong>
-            return;
-        }
         if (status == RegistrationTaskListStatus.CanNotStartYet)
         {
             <strong class="govuk-tag govuk-tag--grey">@Localizer["can_not_start_yet_status"]</strong>
-            return;
         }
-        if (status == RegistrationTaskListStatus.NotStarted)
+        else if (status == RegistrationTaskListStatus.NotStarted)
         {
             <strong class="govuk-tag govuk-tag--grey">@Localizer["not_started_status"]</strong>
-            return;
         }
-        if (status == RegistrationTaskListStatus.Pending)
+        else if (status == RegistrationTaskListStatus.Pending)
         {
             <strong class="govuk-tag govuk-tag--yellow">@Localizer["pending_status"]</strong>
-            return;
         }
-        if (status == RegistrationTaskListStatus.Completed)
+        else if (status == RegistrationTaskListStatus.Completed)
         {
             <strong class="govuk-tag govuk-tag--blue">@Localizer["completed_status"]</strong>
-            return;
         }
     }
 }

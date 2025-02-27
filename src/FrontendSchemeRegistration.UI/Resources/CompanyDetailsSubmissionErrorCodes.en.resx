@@ -294,4 +294,40 @@
   <data name="897" xml:space="preserve">
     <value>To qualify as a large producer, your most recent annual turnover must be more than £2 million, and your annual total tonnage must be more than 50 tonnes.</value>
   </data>
+  <data name="898" xml:space="preserve">
+    <value>Joiner date is required</value>
+  </data>
+  <data name="899" xml:space="preserve">
+    <value>Invalid joiner date format</value>
+  </data>
+  <data name="900" xml:space="preserve">
+    <value>Reporting type is required</value>
+  </data>
+  <data name="901" xml:space="preserve">
+    <value>Invalid reporting type</value>
+  </data>
+  <data name="902" xml:space="preserve">
+    <value>Leaver code must be present when leaver date is available.</value>
+  </data>
+  <data name="903" xml:space="preserve">
+    <value>Leaver date not entered.</value>
+  </data>
+  <data name="904" xml:space="preserve">
+    <value>Leaver date not in the format DD/MM/YYYY.</value>
+  </data>
+  <data name="905" xml:space="preserve">
+    <value>Leaver date must be after joiner date.</value>
+  </data>
+  <data name="906" xml:space="preserve">
+    <value>Leaver reason must be present when leaver code is available.</value>
+  </data>
+  <data name="907" xml:space="preserve">
+    <value>Leaver reason exceeds 200 character limit.</value>
+  </data>
+  <data name="908" xml:space="preserve">
+    <value>Joiner date does not match joiner date in database.</value>
+  </data>
+  <data name="909" xml:space="preserve">
+    <value>Reporting type does not match reporting type in database.</value>
+  </data>
 </root>
