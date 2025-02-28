@@ -4,6 +4,7 @@ using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Helpers;
 using FrontendSchemeRegistration.UI.Middleware;
@@ -139,6 +140,7 @@ public static class ServiceProviderExtension
         services.AddScoped<IViewRenderService, ViewRenderService>();
         services.AddScoped<IDownloadPrnService, DownloadPrnService>();
         services.AddScoped<IFileDownloadService, FileDownloadService>();
+        services.AddScoped<ComplianceSchemeIdHttpContextFilterAttribute>();
     }
 
     // When testing PRNs use a configurable date in place of the current date
