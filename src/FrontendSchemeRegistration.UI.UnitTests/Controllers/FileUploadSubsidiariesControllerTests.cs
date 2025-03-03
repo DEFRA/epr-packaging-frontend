@@ -996,12 +996,12 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
         }
                 
         [Test]
-        public async Task ExportSubsidiaries_ReturnsFileResultWithCorrectContentTypeAndFileName_When_EnableSubsidiaryJoinerAndLeaverColumns_Is_True()
+        public async Task ExportSubsidiaries_ReturnsFileResultWithCorrectContentTypeAndFileName_When_ShowSubsidiaryJoinerAndLeaverColumns_Is_True()
         {
             // Arrange
             var mockStream = new MemoryStream();
 
-            _mockFeatureManager.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.EnableSubsidiaryJoinerAndLeaverColumns))).ReturnsAsync(true);
+            _mockFeatureManager.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ShowSubsidiaryJoinerAndLeaverColumns))).ReturnsAsync(true);
             _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(mockStream);
 
             // Act
@@ -1018,12 +1018,12 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
         }
 
         [Test]
-        public async Task ExportSubsidiaries_ReturnsFileResultWithCorrectContentTypeAndFileName_When_EnableSubsidiaryJoinerAndLeaverColumns_Is_False()
+        public async Task ExportSubsidiaries_ReturnsFileResultWithCorrectContentTypeAndFileName_When_ShowSubsidiaryJoinerAndLeaverColumns_Is_False()
         {
             // Arrange
             var mockStream = new MemoryStream();
 
-            _mockFeatureManager.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.EnableSubsidiaryJoinerAndLeaverColumns))).ReturnsAsync(false);
+            _mockFeatureManager.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ShowSubsidiaryJoinerAndLeaverColumns))).ReturnsAsync(false);
             _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(mockStream);
 
             // Act

@@ -76,7 +76,7 @@
                                                 <th scope="col" class="govuk-table__header">@subsidiaryNameHeader</th>
                                                 <th scope="col" class="govuk-table__header no-wrap-text">@subsidiaryIdHeader</th>
                                                 <th scope="col" class="govuk-table__header no-wrap-text">@companiesHouseNumberHeader</th>
-                                                <feature name="@FeatureFlags.EnableSubsidiaryJoinerAndLeaverColumns">
+                                                <feature name="@FeatureFlags.ShowSubsidiaryJoinerAndLeaverColumns">
                                                     <th scope="col" class="govuk-table__header no-wrap-text govuk-!-padding-right-5">@joinedHeader</th>
                                                     <th scope="col" class="govuk-table__header no-wrap-text">@reportingHeader</th>
                                                 </feature>
@@ -94,7 +94,7 @@
                                                     <td class="govuk-table__cell break-word" data-heading="@companiesHouseNumberHeader">
                                                         @(!string.IsNullOrWhiteSpace(subsidiaryViewModel.CompaniesHouseNumber) ? subsidiaryViewModel.CompaniesHouseNumber : Localizer["no_ch_number"])
                                                     </td>
-                                                    <feature name="@FeatureFlags.EnableSubsidiaryJoinerAndLeaverColumns">
+                                                    <feature name="@FeatureFlags.ShowSubsidiaryJoinerAndLeaverColumns">
                                                         <td class="govuk-table__cell no-wrap-text" data-heading="@joinedHeader">
                                                             @(subsidiaryViewModel.JoinerDate?.ToString("dd MMM yyyy"))
                                                         </td>
@@ -164,7 +164,6 @@
                         @if (!Model.IsFileUploadInProgress)
                         {
                             <h2 class="govuk-heading-m">@Localizer["adding_subsidiaries"]</h2>
-                            <p class="govuk-body" id="file-upload-instructions">@Localizer["upload_a_csv_file"]</p>
 
                             @using (Html.BeginForm(FormMethod.Post, new
                             {

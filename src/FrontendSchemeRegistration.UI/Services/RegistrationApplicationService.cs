@@ -39,7 +39,7 @@ public class RegistrationApplicationService(
             OrganisationId = organisation.Id.Value,
             ComplianceSchemeId = frontEndSession.RegistrationSession.SelectedComplianceScheme?.Id,
             SubmissionPeriod = session.Period.DataPeriod,
-            LateFeeDeadline = EnsureDateNotLaterThanDefaultDeadline(globalVariables.Value.LateFeeDeadline)
+            LateFeeDeadline = globalVariables.Value.LateFeeDeadline
         }) ?? new RegistrationApplicationDetails();
 
         session.SelectedComplianceScheme = frontEndSession.RegistrationSession.SelectedComplianceScheme;
@@ -289,17 +289,6 @@ public class RegistrationApplicationService(
         frontEndSession.RegistrationSession.SubmissionPeriod = period.DataPeriod;
 
         await frontEndSessionManager.SaveSessionAsync(httpSession, frontEndSession);
-    }
-
-    private static DateTime EnsureDateNotLaterThanDefaultDeadline(DateTime? configurableDeadline)
-    {
-        DateTime ApplicationDeadline = new(DateTime.Today.Year, 4, 1);
-
-        if (configurableDeadline != null && configurableDeadline <= ApplicationDeadline)
-        {
-            return configurableDeadline.Value;
-        }
-        return ApplicationDeadline;
     }
 }
 

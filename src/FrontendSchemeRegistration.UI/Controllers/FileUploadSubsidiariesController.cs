@@ -315,9 +315,9 @@
                 var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
                 var complianceSchemeId = session.RegistrationSession?.SelectedComplianceScheme?.Id;
                 var isComplianceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
-                var includeSubsidiaryJoinerAndLeaverColumns = await _featureManager.IsEnabledAsync(FeatureFlags.EnableSubsidiaryJoinerAndLeaverColumns);
+                var showSubsidiaryJoinerAndLeaverColumns = await _featureManager.IsEnabledAsync(FeatureFlags.ShowSubsidiaryJoinerAndLeaverColumns);
 
-                var stream = await _subsidiaryService.GetSubsidiariesStreamAsync(organisation.Id.Value, complianceSchemeId, isComplianceScheme, includeSubsidiaryJoinerAndLeaverColumns);
+                var stream = await _subsidiaryService.GetSubsidiariesStreamAsync(organisation.Id.Value, complianceSchemeId, isComplianceScheme, showSubsidiaryJoinerAndLeaverColumns);
 
                 if (stream == null)
                 {
