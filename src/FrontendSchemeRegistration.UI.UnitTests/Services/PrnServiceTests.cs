@@ -12,7 +12,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
+using Newtonsoft.Json;
 using System.Globalization;
+using System.Net;
 using System.Text;
 
 namespace FrontendSchemeRegistration.UI.UnitTests.Services;
@@ -20,10 +22,12 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Services;
 [TestFixture]
 public class PrnServiceTests
 {
-    private Mock<IWebApiGatewayClient> _webApiGatewayClientMock;
+	private Mock<IAccountServiceApiClient> _accountServiceApiClientMock;
+	private Mock<IWebApiGatewayClient> _webApiGatewayClientMock;
     private PrnService _systemUnderTest;
     private static readonly IFixture Fixture = new Fixture();
     private Mock<ILogger<PrnService>> _loggerMock;
+    private List<Guid> externalIds = new();
 
     [SetUp]
     public void SetUp()
@@ -35,12 +39,15 @@ public class PrnServiceTests
         var localizerCsv = new StringLocalizer<PrnCsvResources>(factory);
         var localizerData = new StringLocalizer<PrnDataResources>(factory);
 
-        _webApiGatewayClientMock = new Mock<IWebApiGatewayClient>();
+		externalIds = Fixture.CreateMany<Guid>().ToList();
+
+		_accountServiceApiClientMock = new Mock<IAccountServiceApiClient>();
+		_webApiGatewayClientMock = new Mock<IWebApiGatewayClient>();
         _loggerMock = new Mock<ILogger<PrnService>>();
 
         var globalVariables = Options.Create(new GlobalVariables { LogPrefix = "[FrontendSchemaRegistration]" });
 
-        _systemUnderTest = new PrnService(_webApiGatewayClientMock.Object, localizerCsv, localizerData, globalVariables, _loggerMock.Object);
+        _systemUnderTest = new PrnService(_accountServiceApiClientMock.Object, _webApiGatewayClientMock.Object, localizerCsv, localizerData, globalVariables, _loggerMock.Object);
     }
 
     [Test]
@@ -315,11 +322,11 @@ public class PrnServiceTests
             NumberOfPrnsAwaitingAcceptance = expectedNumberOfPrnsAwaitingAcceptance,
             ObligationData = prnMaterials
         };
-        _webApiGatewayClientMock.Setup(x => x.GetObligations(year))
+        _webApiGatewayClientMock.Setup(x => x.GetRecyclingObligationsCalculation(externalIds, year))
             .ReturnsAsync(prnObligationModel);
 
         // Act
-        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year);
+        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(externalIds, year);
 
         // Assert
         result.Should().NotBeNull();
@@ -402,10 +409,10 @@ public class PrnServiceTests
         {
             ObligationData = prnMaterials
         };
-        _webApiGatewayClientMock.Setup(x => x.GetObligations(year)).ReturnsAsync(prnObligationModel);
+        _webApiGatewayClientMock.Setup(x => x.GetRecyclingObligationsCalculation(externalIds, year)).ReturnsAsync(prnObligationModel);
 
         // Act
-        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year);
+        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(externalIds, year);
 
         // Assert
         result.OverallStatus.Should().Be(status);
@@ -442,10 +449,10 @@ public class PrnServiceTests
             NumberOfPrnsAwaitingAcceptance = 0,
             ObligationData = prnMaterials
         };
-        _webApiGatewayClientMock.Setup(x => x.GetObligations(year)).ReturnsAsync(prnObligationModel);
+        _webApiGatewayClientMock.Setup(x => x.GetRecyclingObligationsCalculation(externalIds, year)).ReturnsAsync(prnObligationModel);
 
         // Act
-        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year);
+        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(externalIds, year);
 
         // Assert
         result.OverallStatus.Should().Be(ObligationStatus.NoDataYet);
@@ -491,11 +498,11 @@ public class PrnServiceTests
             NumberOfPrnsAwaitingAcceptance = 2,
             ObligationData = prnMaterials
         };
-        _webApiGatewayClientMock.Setup(x => x.GetObligations(year))
+        _webApiGatewayClientMock.Setup(x => x.GetRecyclingObligationsCalculation(externalIds, year))
             .ReturnsAsync(prnObligationModel);
 
         // Act
-        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year);
+        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(externalIds, year);
 
         // Assert
         result.Should().NotBeNull();
@@ -520,11 +527,11 @@ public class PrnServiceTests
     {
         // Arrange
         var year = 2024;
-        _webApiGatewayClientMock.Setup(x => x.GetObligations(year))
+        _webApiGatewayClientMock.Setup(x => x.GetRecyclingObligationsCalculation(externalIds, year))
             .ReturnsAsync(new PrnObligationModel());
 
         // Act
-        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year);
+        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(externalIds, year);
 
         // Assert
         result.Should().NotBeNull();
@@ -537,11 +544,11 @@ public class PrnServiceTests
     {
         // Arrange
         var year = 2024;
-        _webApiGatewayClientMock.Setup(x => x.GetObligations(year))
+        _webApiGatewayClientMock.Setup(x => x.GetRecyclingObligationsCalculation(externalIds, year))
             .ReturnsAsync((PrnObligationModel)null);
 
         // Act
-        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year);
+        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(externalIds, year);
 
         // Assert
         result.Should().NotBeNull();
@@ -555,11 +562,153 @@ public class PrnServiceTests
         // Arrange
         var year = 2023;
 
-        _webApiGatewayClientMock.Setup(x => x.GetObligations(year))
+        _webApiGatewayClientMock.Setup(x => x.GetRecyclingObligationsCalculation(externalIds, year))
             .ThrowsAsync(new Exception("API Error"));
 
         // Act & Assert
         Assert.ThrowsAsync<Exception>(async () =>
-            await _systemUnderTest.GetRecyclingObligationsCalculation(year));
+            await _systemUnderTest.GetRecyclingObligationsCalculation(externalIds, year));
     }
+
+	[Test]
+	public async Task GetChildOrganisationExternalIdsAsync_ShouldReturnExternalIds_WhenApiReturnsValidData()
+	{
+		// Arrange
+		var organisationId = Guid.NewGuid();
+		var complianceSchemeId = Guid.NewGuid();
+		var expectedExternalIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() };
+		var jsonResponse = JsonConvert.SerializeObject(expectedExternalIds);
+
+		var httpResponse = new HttpResponseMessage
+		{
+			StatusCode = HttpStatusCode.OK,
+			Content = new StringContent(jsonResponse)
+		};
+
+		_accountServiceApiClientMock.Setup(client => client.SendGetRequest(It.IsAny<string>()))
+		.ReturnsAsync(httpResponse);
+
+		// Act
+		var result = await _systemUnderTest.GetChildOrganisationExternalIdsAsync(organisationId, complianceSchemeId);
+
+		// Assert
+		result.Should().NotBeNull();
+		result.Should().BeEquivalentTo(expectedExternalIds);
+		_accountServiceApiClientMock.Verify(client => client.SendGetRequest(It.IsAny<string>()), Times.Once);
+	}
+
+	[Test]
+	public async Task GetChildOrganisationExternalIdsAsync_ShouldReturnEmptyList_WhenApiReturnsEmptyResponse()
+	{
+		// Arrange
+		var organisationId = Guid.NewGuid();
+		var complianceSchemeId = Guid.NewGuid();
+		var jsonResponse = "[]";
+
+		var httpResponse = new HttpResponseMessage
+		{
+			StatusCode = HttpStatusCode.OK,
+			Content = new StringContent(jsonResponse)
+		};
+
+		_accountServiceApiClientMock.Setup(client => client.SendGetRequest(It.IsAny<string>()))
+		.ReturnsAsync(httpResponse);
+
+		// Act
+		var result = await _systemUnderTest.GetChildOrganisationExternalIdsAsync(organisationId, complianceSchemeId);
+
+		// Assert
+		result.Should().NotBeNull();
+		result.Should().BeEmpty();
+		_accountServiceApiClientMock.Verify(client => client.SendGetRequest(It.IsAny<string>()), Times.Once);
+	}
+
+	[Test]
+	public async Task GetChildOrganisationExternalIdsAsync_ShouldCallApiWithoutComplianceSchemeId_WhenComplianceSchemeIdIsNull()
+	{
+		// Arrange
+		var organisationId = Guid.NewGuid();
+		Guid? complianceSchemeId = null; // ComplianceSchemeId is null
+		var expectedExternalIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() };
+		var jsonResponse = JsonConvert.SerializeObject(expectedExternalIds);
+
+		var httpResponse = new HttpResponseMessage
+		{
+			StatusCode = HttpStatusCode.OK,
+			Content = new StringContent(jsonResponse)
+		};
+
+		_accountServiceApiClientMock.Setup(client => client.SendGetRequest(It.IsAny<string>()))
+					  .ReturnsAsync(httpResponse);
+
+		// Act
+		var result = await _systemUnderTest.GetChildOrganisationExternalIdsAsync(organisationId, complianceSchemeId);
+
+		// Assert
+		result.Should().NotBeNull();
+		result.Should().BeEquivalentTo(expectedExternalIds);
+
+		_accountServiceApiClientMock.Verify(client => client.SendGetRequest(
+			It.Is<string>(url => url.Contains($"organisationId={organisationId}") && !url.Contains("complianceSchemeId="))
+		), Times.Once);
+	}
+
+	[Test]
+	public async Task GetChildOrganisationExternalIdsAsync_ShouldCallApiWithoutComplianceSchemeId_WhenComplianceSchemeIdIsEmptyGuid()
+	{
+		// Arrange
+		var organisationId = Guid.NewGuid();
+		var complianceSchemeId = Guid.Empty; // ComplianceSchemeId is Empty
+		var expectedExternalIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() };
+		var jsonResponse = JsonConvert.SerializeObject(expectedExternalIds);
+
+		var httpResponse = new HttpResponseMessage
+		{
+			StatusCode = HttpStatusCode.OK,
+			Content = new StringContent(jsonResponse)
+		};
+
+		_accountServiceApiClientMock.Setup(client => client.SendGetRequest(It.IsAny<string>()))
+					  .ReturnsAsync(httpResponse);
+
+		// Act
+		var result = await _systemUnderTest.GetChildOrganisationExternalIdsAsync(organisationId, complianceSchemeId);
+
+		// Assert
+		result.Should().NotBeNull();
+		result.Should().BeEquivalentTo(expectedExternalIds);
+
+		_accountServiceApiClientMock.Verify(client => client.SendGetRequest(
+			It.Is<string>(url => url.Contains($"organisationId={organisationId}") && !url.Contains("complianceSchemeId="))
+		), Times.Once);
+	}
+
+	[Test]
+	public async Task GetChildOrganisationExternalIdsAsync_ShouldLogErrorAndThrow_WhenExceptionOccurs()
+	{
+		// Arrange
+		var organisationId = Guid.NewGuid();
+		var complianceSchemeId = (Guid?)null;
+		var exception = new HttpRequestException("API request failed");
+
+		_accountServiceApiClientMock
+			.Setup(client => client.SendGetRequest(It.IsAny<string>()))
+			.ThrowsAsync(exception);
+
+		// Act & Assert
+		var act = async () => await _systemUnderTest.GetChildOrganisationExternalIdsAsync(organisationId, complianceSchemeId);
+
+		await act.Should()
+			.ThrowAsync<HttpRequestException>()
+			.WithMessage("API request failed");
+
+		_loggerMock.Verify(
+			x => x.Log(
+				LogLevel.Error,
+				It.IsAny<EventId>(),
+				It.Is<It.IsAnyType>((o, t) => o.ToString().Contains("Error while retrieving child organisation external ids")),
+				exception,
+				It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+			Times.Once);
+	}
 }

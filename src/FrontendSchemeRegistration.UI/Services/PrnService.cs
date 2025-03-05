@@ -18,15 +18,17 @@ namespace FrontendSchemeRegistration.UI.Services;
 
 public class PrnService : IPrnService
 {
-    private readonly IWebApiGatewayClient _webApiGatewayClient;
-    private readonly IStringLocalizer<PrnCsvResources> _csvLocalizer;
+    private readonly IAccountServiceApiClient _accountServiceApiClient;
+	private readonly IWebApiGatewayClient _webApiGatewayClient;
+	private readonly IStringLocalizer<PrnCsvResources> _csvLocalizer;
     private readonly IStringLocalizer<PrnDataResources> _dataLocalizer;
     private IOptions<GlobalVariables> _globalVariables;
     private readonly ILogger<PrnService> _logger;
     private readonly string logPrefix;
 
-    public PrnService(IWebApiGatewayClient webApiGatewayClient, IStringLocalizer<PrnCsvResources> csvLocalizer, IStringLocalizer<PrnDataResources> dataLocalizer, IOptions<GlobalVariables> globalVariables, ILogger<PrnService> logger)
+    public PrnService(IAccountServiceApiClient accountServiceApiClient, IWebApiGatewayClient webApiGatewayClient, IStringLocalizer<PrnCsvResources> csvLocalizer, IStringLocalizer<PrnDataResources> dataLocalizer, IOptions<GlobalVariables> globalVariables, ILogger<PrnService> logger)
     {
+        _accountServiceApiClient = accountServiceApiClient;
         _webApiGatewayClient = webApiGatewayClient;
         _csvLocalizer = csvLocalizer;
         _dataLocalizer = dataLocalizer;
@@ -228,12 +230,12 @@ public class PrnService : IPrnService
         return stream;
     }
 
-    public async Task<PrnObligationViewModel> GetRecyclingObligationsCalculation(int year)
+    public async Task<PrnObligationViewModel> GetRecyclingObligationsCalculation(List<Guid> externalIds, int year)
     {
-        _logger.LogInformation("{Logprefix}: PrnService - GetRecyclingObligationsCalculation: Get Recycling Obligations Calculation for given year {Year}", logPrefix, year);
+        _logger.LogInformation("{Logprefix}: PrnService - GetRecyclingObligationsCalculation: Get Recycling Obligations Calculation for given year {Year} and {ExternalIds}", logPrefix, year, externalIds);
 
         var prnObligationViewModel = new PrnObligationViewModel();
-        var prnObligationModel = await _webApiGatewayClient.GetObligations(year);
+        var prnObligationModel = await _webApiGatewayClient.GetRecyclingObligationsCalculation(externalIds, year);
         _logger.LogInformation("{Logprefix}: PrnService - GetRecyclingObligationsCalculation: Get obligations for given year {Year} server response {PrnObligationModel}", logPrefix, year, JsonConvert.SerializeObject(prnObligationModel));
 
         if (prnObligationModel != null)
@@ -288,8 +290,8 @@ public class PrnService : IPrnService
         return new PrnMaterialObligationViewModel
         {
             MaterialName = materialName,
-            OrganisationId = obligations.First().OrganisationId,
-            ObligationToMeet = obligations.Any(r => r.ObligationToMeet != null) ? obligations.Sum(r => r.ObligationToMeet) : null,
+			OrganisationId = obligations.First().OrganisationId,
+			ObligationToMeet = obligations.Any(r => r.ObligationToMeet != null) ? obligations.Sum(r => r.ObligationToMeet) : null,
             TonnageAwaitingAcceptance = obligations.Sum(r => r.TonnageAwaitingAcceptance),
             TonnageAccepted = obligations.Sum(r => r.TonnageAccepted),
             TonnageOutstanding = obligations.Any(r => r.TonnageOutstanding != null) ? obligations.Sum(r => r.TonnageOutstanding) : null,
@@ -326,11 +328,32 @@ public class PrnService : IPrnService
 
     private static ObligationStatus GetFinalStatus(IEnumerable<PrnMaterialObligationViewModel> materialObligationViewModels)
     {
-        if (materialObligationViewModels == null)
-        {
-            return ObligationStatus.NoDataYet;
-        }
         var totals = materialObligationViewModels.FirstOrDefault(m => m.MaterialName == MaterialType.Totals);
         return totals?.Status ?? ObligationStatus.NoDataYet;
     }
+
+    public async Task<List<Guid>> GetChildOrganisationExternalIdsAsync(Guid organisationId, Guid? complianceSchemeId)
+    {
+        try
+        {
+            var accountApiGetChildOrgExternalIdsUrl = $"organisations/v1/child-organisation-external-ids?organisationId={organisationId}";
+            if (complianceSchemeId is not null && complianceSchemeId != Guid.Empty)
+            {
+                accountApiGetChildOrgExternalIdsUrl += $"&complianceSchemeId={complianceSchemeId}";
+            }
+
+            _logger.LogInformation("{LogPrefix}: PrnService - GetChildOrganisationExternalIdsAsync: Get child organisation external ids via {Url}", logPrefix, accountApiGetChildOrgExternalIdsUrl);
+            var response = await _accountServiceApiClient.SendGetRequest(accountApiGetChildOrgExternalIdsUrl);
+            var content = await response.Content.ReadAsStringAsync();
+            var externalIds = JsonConvert.DeserializeObject<List<Guid>>(content);
+            _logger.LogInformation("{LogPrefix}: PrnService - GetChildOrganisationExternalIdsAsync: Get child organisation external ids are {ExternalIds}", logPrefix, externalIds);
+
+            return externalIds;
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "{LogPrefix}: PrnService - GetChildOrganisationExternalIdsAsync: Error while retrieving child organisation external ids for {OrganisationId}", logPrefix, organisationId);
+            throw;
+        }
+	}
 }

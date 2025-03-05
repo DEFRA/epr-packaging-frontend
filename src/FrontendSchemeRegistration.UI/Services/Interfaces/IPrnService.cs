@@ -26,6 +26,8 @@ namespace FrontendSchemeRegistration.UI.Services.Interfaces
         
         Task<Stream> GetPrnsCsvStreamAsync();
 
-        Task<PrnObligationViewModel> GetRecyclingObligationsCalculation(int year);
-    }
+        Task<PrnObligationViewModel> GetRecyclingObligationsCalculation(List<Guid> externalIds, int year);
+
+        Task<List<Guid>> GetChildOrganisationExternalIdsAsync(Guid organisationId, Guid? complianceSchemeId);
+	}
 }

@@ -942,11 +942,12 @@ public class WebApiGatewayClientTests
     }
 
     [Test]
-    public async Task GetObligations_Returns_ListOfPrnMaterialTableModel_OnSuccess()
+    public async Task GetRecyclingObligationsCalculation_Returns_ListOfPrnMaterialTableModel_OnSuccess()
     {
         // Arrange
         var year = 2023;
         var expectedNumberOfPrnsAwaitingAcceptance = 10;
+        var externalIds = _fixture.CreateMany<Guid>().ToList();
         var prnMaterials = _fixture.CreateMany<PrnMaterialObligationModel>(7).ToList();
         var prnObligationModel = new PrnObligationModel
         {
@@ -968,7 +969,7 @@ public class WebApiGatewayClientTests
             .Verifiable();
 
         // Act
-        var result = await _webApiGatewayClient.GetObligations(year);
+        var result = await _webApiGatewayClient.GetRecyclingObligationsCalculation(externalIds, year);
 
         // Assert
         result.Should().NotBeNull();
@@ -1004,11 +1005,12 @@ public class WebApiGatewayClientTests
     }
 
     [Test]
-    public void GetObligations_ThrowsException_OnFailure()
+    public void GetRecyclingObligationsCalculation_ThrowsException_OnFailure()
     {
         // Arrange
         var year = 2023;
-        var httpResponse = new HttpResponseMessage
+		var externalIds = _fixture.CreateMany<Guid>().ToList();
+		var httpResponse = new HttpResponseMessage
         {
             StatusCode = HttpStatusCode.InternalServerError,
         };
@@ -1022,7 +1024,7 @@ public class WebApiGatewayClientTests
             .Verifiable();
 
         // Act & Assert
-        var exception = Assert.ThrowsAsync<HttpRequestException>(() => _webApiGatewayClient.GetObligations(year));
+        var exception = Assert.ThrowsAsync<HttpRequestException>(() => _webApiGatewayClient.GetRecyclingObligationsCalculation(externalIds, year));
 
         Assert.That(exception.Message, Does.Contain("Response status code does not indicate success"));
 

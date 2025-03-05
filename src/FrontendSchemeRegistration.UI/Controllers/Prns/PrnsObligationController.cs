@@ -41,14 +41,14 @@ public class PrnsObligationController : Controller
     [HttpGet]
     [Route(PagePaths.Prns.ObligationsHome)]
     public async Task<IActionResult> ObligationsHome()
-    {
-        var year = DateTime.Now.Year;
+	{
+		var year = DateTime.Now.Year;
 
-        _logger.LogInformation("{Logprefix}: PrnsObligationController - ObligationsHome: Get Recycling Obligations Calculation request for year {Year}", logPrefix, year);
+        var externalIds = await GetChildOrganisationExternalIdsAsync();
+		_logger.LogInformation("{LogPrefix}: PrnsObligationController - ObligationPerMaterial: Child organisation GUIDs retrived from accounts database: {ExternalIds}", logPrefix, externalIds);
 
-        var viewModel = await _prnService.GetRecyclingObligationsCalculation(year);
-
-        _logger.LogInformation("{Logprefix}: PrnsObligationController - ObligationsHome: Recycling Obligations returned for year {Year} : {Results}", logPrefix, year, JsonConvert.SerializeObject(viewModel));
+		var viewModel = await _prnService.GetRecyclingObligationsCalculation(externalIds, year);
+        _logger.LogInformation("{LogPrefix}: PrnsObligationController - ObligationsHome: Recycling Obligations returned for year {Year} : {Results}", logPrefix, year, JsonConvert.SerializeObject(viewModel));
 
         await FillViewModelFromSessionAsync(viewModel, year);
 
@@ -63,12 +63,15 @@ public class PrnsObligationController : Controller
         int year = DateTime.Now.Year;
         PrnObligationViewModel viewModel = new();
 
-        _logger.LogInformation("{Logprefix}: PrnsObligationController - ObligationPerMaterial: Get Recycling Obligations Calculation request for year {Year}, material {Material}", logPrefix, year, material);
+        _logger.LogInformation("{LogPrefix}: PrnsObligationController - ObligationPerMaterial: Get Recycling Obligations Calculation request for year {Year}, material {Material}", logPrefix, year, material);
 
         if (Enum.TryParse(material, true, out MaterialType materialType))
-        {
-            viewModel = await _prnService.GetRecyclingObligationsCalculation(year);
-            _logger.LogInformation("{Logprefix}: PrnsObligationController - ObligationsHome: Recycling Obligations returned for year {Year} : {Results}", logPrefix, year, JsonConvert.SerializeObject(viewModel));
+		{
+			var externalIds = await GetChildOrganisationExternalIdsAsync();
+			_logger.LogInformation("{LogPrefix}: PrnsObligationController - ObligationPerMaterial: Child organisation GUIDs retrived from accounts database: {ExternalIds}", logPrefix, externalIds);
+
+			viewModel = await _prnService.GetRecyclingObligationsCalculation(externalIds, year);
+            _logger.LogInformation("{LogPrefix}: PrnsObligationController - ObligationsHome: Recycling Obligations returned for year {Year} : {Results}", logPrefix, year, JsonConvert.SerializeObject(viewModel));
 
             if (materialType == MaterialType.Glass || materialType == MaterialType.GlassRemelt || materialType == MaterialType.RemainingGlass)
             {
@@ -89,33 +92,59 @@ public class PrnsObligationController : Controller
         {
             ViewBag.ProducerResponsibilityObligationsLink = _urlOptions.ProducerResponsibilityObligations;
         }
-
-        _logger.LogInformation("{Logprefix}: PrnsObligationController - ObligationsHome: populated view model : {Results}", logPrefix, JsonConvert.SerializeObject(viewModel));
+        _logger.LogInformation("{LogPrefix}: PrnsObligationController - ObligationsHome: populated view model : {Results}", logPrefix, JsonConvert.SerializeObject(viewModel));
 
         ViewBag.BackLinkToDisplay = Url.Content($"~/{PagePaths.Prns.ObligationsHome}");
 
         return View(viewModel);
     }
 
-    [NonAction]
+	[NonAction]
+	public async Task<List<Guid>> GetChildOrganisationExternalIdsAsync()
+	{
+		var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+		var organisation = session.UserData.Organisations?.FirstOrDefault();
+
+		if (organisation == null)
+		{
+			_logger.LogInformation("{LogPrefix}: PrnsObligationController - GetChildOrganisationExternalIds: No organisation found in session", logPrefix);
+			return new List<Guid>();
+		}
+
+		if (organisation.OrganisationRole == OrganisationRoles.Producer)
+		{
+			var externalIds = await _prnService.GetChildOrganisationExternalIdsAsync(organisation.Id.Value, null);
+            externalIds.Insert(0, organisation.Id.Value); // Add DR (Producer) guid along with child ids
+			return externalIds;
+		}
+
+		var complianceSchemeId = session.RegistrationSession.SelectedComplianceScheme.Id;
+		return await _prnService.GetChildOrganisationExternalIdsAsync(organisation.Id.Value, complianceSchemeId);
+	}
+
+	[NonAction]
     public async Task FillViewModelFromSessionAsync(PrnObligationViewModel viewModel, int year)
-    {
-        _logger.LogInformation("{Logprefix}: PrnsObligationController - FillViewModelFromSessionAsync: Get oblication calculation from Session year: {Year}, obligation model: {ViewModel}", logPrefix, year, JsonConvert.SerializeObject(viewModel));
+	{
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-        _logger.LogInformation("{Logprefix}: PrnsObligationController - FillViewModelFromSessionAsync: Session results : {Results}", logPrefix, JsonConvert.SerializeObject(session));
+		_logger.LogInformation("{LogPrefix}: PrnsObligationController - FillViewModelFromSessionAsync: Session results : {Results}", logPrefix, JsonConvert.SerializeObject(session));
 
-        var organisation = session.UserData.Organisations?.FirstOrDefault();
 
-        if (organisation != null)
-        {
-            var isDirectProducer = organisation.OrganisationRole == OrganisationRoles.Producer;
-            viewModel.OrganisationRole = organisation.OrganisationRole;
-            viewModel.OrganisationName = isDirectProducer ? organisation.Name : session.RegistrationSession.SelectedComplianceScheme?.Name;
-            viewModel.NationId = isDirectProducer ? organisation.NationId : (session.RegistrationSession.SelectedComplianceScheme?.NationId ?? 0);
-            viewModel.CurrentYear = year;
-            viewModel.DeadlineYear = year + 1;
-        }
+		var organisation = session.UserData.Organisations?.FirstOrDefault();
 
-        _logger.LogInformation("{Logprefix}: PrnsObligationController - FillViewModelFromSessionAsync: updated Organisation details : {Organisation}", logPrefix, JsonConvert.SerializeObject(organisation));
+		if (organisation == null)
+		{
+			_logger.LogWarning("{LogPrefix}: PrnsObligationController - FillViewModelFromSessionAsync - No organisation found in session.", logPrefix);
+			return;
+		}
+
+		var isDirectProducer = organisation.OrganisationRole == OrganisationRoles.Producer;
+
+		viewModel.OrganisationRole = organisation.OrganisationRole;
+		viewModel.OrganisationName = isDirectProducer ? organisation.Name : session.RegistrationSession.SelectedComplianceScheme?.Name;
+		viewModel.NationId = isDirectProducer ? organisation.NationId : session.RegistrationSession.SelectedComplianceScheme?.NationId ?? 0;
+		viewModel.CurrentYear = year;
+		viewModel.DeadlineYear = year + 1;
+
+		_logger.LogInformation("{LogPrefix}: PrnsObligationController - FillViewModelFromSessionAsync: View model filled with organisation details from Session: {Year}, obligation model: {ViewModel}", logPrefix, year, JsonConvert.SerializeObject(viewModel));
     }
 }
