@@ -60,8 +60,10 @@ public class SecurityHeaderMiddleware
         const string fontSrc = "font-src 'self' https://fonts.gstatic.com data:";
         const string connectSrc = "connect-src 'self' https://*.google-analytics.com " +
                                   "https://*.analytics.google.com https://*.googletagmanager.com";
+        const string baseUri = "base-uri 'none'";
+        const string requireTrustedTypesFor = "require-trusted-types-for 'script'";
         return string.Join(";", defaultSrc, objectSrc, frameAncestors, upgradeInsecureRequests, blockAllMixedContent,
-            scriptSrc, imgSrc, formAction, styleSrc, fontSrc, connectSrc);
+            scriptSrc, imgSrc, formAction, styleSrc, fontSrc, connectSrc, baseUri, requireTrustedTypesFor);
     }
 
     private string GenerateNonce()

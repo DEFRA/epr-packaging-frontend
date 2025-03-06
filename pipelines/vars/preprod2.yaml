@@ -1,0 +1,6 @@
+variables:
+  azureSubscription: 'AZR-RWD-PRE2'
+  docker.imageName: 'eprpackagingfrontend'
+  acr.azureContainerRegistryName: 'prerwdinfac2401'
+  acr.repositoryName: 'eprpackagingfrontendrepository'
+  serviceName: 'PRERWDWEBWA2410'
