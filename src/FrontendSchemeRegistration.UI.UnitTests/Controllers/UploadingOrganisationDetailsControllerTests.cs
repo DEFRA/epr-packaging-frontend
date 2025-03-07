@@ -176,4 +176,30 @@ public class UploadingOrganisationDetailsControllerTests
         result.ControllerName.Should().Be("FileUploadCompanyDetailsErrors");
         result.RouteValues.Should().HaveCount(1).And.ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId.ToString());
     }
+
+    [Test]
+    public async Task Get_RedirectsToUploadingOrganisationDetails_WhenSessionIsNull()
+    {
+        // Arrange
+        var submission = new RegistrationSubmission
+        {
+            Id = SubmissionId,
+            BrandsDataComplete = false
+        };
+
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(submission);
+
+        _sessionManagerMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync((FrontendSchemeRegistrationSession)null);
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("UploadingOrganisationDetails");
+        result.Model.As<FileUploadingViewModel>().SubmissionId.Should().Be(SubmissionId.ToString());
+    }
 }

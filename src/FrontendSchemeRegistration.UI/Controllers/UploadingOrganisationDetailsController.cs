@@ -39,14 +39,14 @@ public class UploadingOrganisationDetailsController : Controller
             return RedirectToAction("Get", "FileUploadCompanyDetails");
         }
 
+        if (!ValidationHasCompleted(submission) || session is null)
+        {
+            return GetUploadingOrganisationDetailsViewResult(submissionId);
+        }
+
         if (!session.RegistrationSession.Journey.Contains<string>(PagePaths.FileUploadCompanyDetails))
         {
             return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
-        }
-
-        if (!ValidationHasCompleted(submission))
-        {
-            return View("UploadingOrganisationDetails", new FileUploadingViewModel { SubmissionId = submissionId.ToString() });
         }
 
         if (HasFileErrors(submission))
@@ -75,5 +75,10 @@ public class UploadingOrganisationDetailsController : Controller
     private static bool HasRowValidationErrors(RegistrationSubmission submission)
     {
         return submission.RowErrorCount.HasValue && submission.RowErrorCount > 0;
+    }
+
+    private ViewResult GetUploadingOrganisationDetailsViewResult(Guid submissionId)
+    {
+        return View("UploadingOrganisationDetails", new FileUploadingViewModel { SubmissionId = submissionId.ToString() });
     }
 }

@@ -196,4 +196,31 @@ public class FileUploadingControllerTests
         result?.ControllerName.Should().Be(nameof(FileUploadSubLandingController).RemoveControllerFromName());
         result?.ActionName.Should().Be(nameof(FileUploadSubLandingController.Get));
     }
+
+    [Test]
+    public async Task Get_RedirectsToFileUploading_WhenSessionIsNull()
+    {
+        // Arrange
+        var submission = new PomSubmission
+        {
+            Id = SubmissionId,
+            PomDataComplete = true,
+            ValidationPass = true
+        };
+
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(submission);
+
+        _sessionManagerMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync((FrontendSchemeRegistrationSession)null);
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("FileUploading");
+        result.Model.As<FileUploadingViewModel>().SubmissionId.Should().Be(SubmissionId.ToString());
+    }
 }

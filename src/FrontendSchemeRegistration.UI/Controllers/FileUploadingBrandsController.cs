@@ -39,6 +39,11 @@ public class FileUploadingBrandsController : Controller
             return RedirectToAction("Get", "FileUploadCompanyDetails");
         }
 
+        if (session is null)
+        {
+            return GetFileUploadingBrandsViewResult(submissionId);
+        }
+
         if (!session.RegistrationSession.Journey.Contains<string>(PagePaths.FileUploadBrands))
         {
             return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
@@ -46,7 +51,7 @@ public class FileUploadingBrandsController : Controller
 
         return submission.BrandsDataComplete || submission.Errors.Count > 0
             ? GetNextPage(submission.Id, submission.Errors.Count > 0)
-            : View("FileUploadingBrands", new FileUploadingViewModel { SubmissionId = submissionId.ToString() });
+            : GetFileUploadingBrandsViewResult(submissionId);
     }
 
     private RedirectToActionResult GetNextPage(Guid submissionId, bool exceptionErrorOccurred)
@@ -57,4 +62,10 @@ public class FileUploadingBrandsController : Controller
             ? RedirectToAction("Get", "FileUploadBrands", routeValues)
             : RedirectToAction("Get", "FileUploadBrandsSuccess", routeValues);
     }
+
+    private ViewResult GetFileUploadingBrandsViewResult(Guid submissionId)
+    {
+        return View("FileUploadingBrands", new FileUploadingViewModel { SubmissionId = submissionId.ToString() });
+    }
+
 }

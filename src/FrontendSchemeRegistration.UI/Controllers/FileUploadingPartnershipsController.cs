@@ -39,6 +39,11 @@ public class FileUploadingPartnershipsController : Controller
             return RedirectToAction("Get", "FileUploadCompanyDetails");
         }
 
+        if (session is null)
+        {
+            return GetFileUploadingPartnershipsViewResult(submissionId);
+        }
+
         if (!session.RegistrationSession.Journey.Contains<string>(PagePaths.FileUploadPartnerships))
         {
             return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
@@ -46,7 +51,7 @@ public class FileUploadingPartnershipsController : Controller
 
         return submission.PartnershipsDataComplete || submission.Errors.Count > 0
             ? GetNextPage(submission.Id, submission.Errors.Count > 0)
-            : View("FileUploadingPartnerships", new FileUploadingViewModel { SubmissionId = submissionId.ToString() });
+            : GetFileUploadingPartnershipsViewResult(submissionId);
     }
 
     private RedirectToActionResult GetNextPage(Guid submissionId, bool exceptionErrorOccurred)
@@ -57,4 +62,10 @@ public class FileUploadingPartnershipsController : Controller
             ? RedirectToAction("Get", "FileUploadPartnerships", routeValues)
             : RedirectToAction("Get", "FileUploadPartnershipsSuccess", routeValues);
     }
+
+    private IActionResult GetFileUploadingPartnershipsViewResult(Guid submissionId)
+    {
+        return View("FileUploadingPartnerships", new FileUploadingViewModel { SubmissionId = submissionId.ToString() });
+    }
+
 }

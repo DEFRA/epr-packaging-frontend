@@ -604,7 +604,7 @@ public class SubsidiaryServiceTests
     }
 
     [Test]
-    public async Task TerminateSubsidiary_WhenApiReturnsSuccessfully_ReturnsResponse()
+    public async Task TerminateSubsidiary_WhenApiReturns_SuccessResult_ReturnOkStatus()
     {
         var parentOrganisationExternalId = Guid.NewGuid();
         var childOrganisationId = Guid.NewGuid();
@@ -615,9 +615,10 @@ public class SubsidiaryServiceTests
         _accountServiceApiClientMock.Setup(x => x.SendPostRequest(It.IsAny<string>(), It.IsAny<object>()))
             .ReturnsAsync(response);
 
-        // Act/Assert
+        // Act/ Assert
         Assert.DoesNotThrowAsync(async () => await _sut.TerminateSubsidiary(parentOrganisationExternalId, childOrganisationId, userId));
     }
+
 
     [Test]
     public async Task TerminateSubsidiary_WhenApiReturnsError_ThrowsException()
@@ -633,6 +634,19 @@ public class SubsidiaryServiceTests
 
         // Act/Assert
         Assert.ThrowsAsync<HttpRequestException>(async () => await _sut.TerminateSubsidiary(parentOrganisationExternalId, childOrganisationId, userId));
+    }
+
+    [Test]
+    public async Task TerminateSubsidiary_WhenApiReturnsNotFound_NoError()
+    {
+        var parentOrganisationExternalId = Guid.NewGuid();
+        var childOrganisationId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        _accountServiceApiClientMock.Setup(x => x.SendPostRequest(It.IsAny<string>(), It.IsAny<object>()))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK));
+
+        // Assert
+        Assert.DoesNotThrowAsync(async () => await _sut.TerminateSubsidiary(parentOrganisationExternalId, childOrganisationId, userId));
     }
 
     [Test]

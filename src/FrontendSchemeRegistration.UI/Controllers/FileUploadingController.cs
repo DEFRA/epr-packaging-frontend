@@ -40,6 +40,11 @@ public class FileUploadingController : Controller
             return RedirectToAction("Get", "FileUpload");
         }
 
+        if (session is null)
+        {
+            return GetFileUploadingViewResult(submissionId);
+        }
+
         if (!session.RegistrationSession.Journey.Contains<string>(PagePaths.FileUpload))
         {
             return RedirectToAction("Get", "FileUploadSubLanding");
@@ -47,7 +52,7 @@ public class FileUploadingController : Controller
 
         return submission.PomDataComplete || submission.Errors.Count > 0
             ? GetNextPageAsync(submission.Id, submission.ValidationPass, submission.HasWarnings, submission.Errors.Count > 0).Result
-            : View("FileUploading", new FileUploadingViewModel { SubmissionId = submissionId.ToString() });
+            : GetFileUploadingViewResult(submissionId);
     }
 
     private async Task<RedirectToActionResult> GetNextPageAsync(Guid submissionId, bool validationPass, bool hasWarnings, bool exceptionErrorOccurred)
@@ -74,5 +79,10 @@ public class FileUploadingController : Controller
         }
 
         return RedirectToAction("Get", hasWarnings ? "FileUploadWarning" : "FileUploadCheckFileAndSubmit", routeValues);
+    }
+
+    private ViewResult GetFileUploadingViewResult(Guid submissionId)
+    {
+        return View("FileUploading", new FileUploadingViewModel { SubmissionId = submissionId.ToString() });
     }
 }
