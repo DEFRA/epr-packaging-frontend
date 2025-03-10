@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using EPR.Common.Authorization.Extensions;
+﻿using EPR.Common.Authorization.Extensions;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services;
@@ -12,12 +11,14 @@ using FrontendSchemeRegistration.UI.Services;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Sessions;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Time.Testing;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.TokenCacheProviders.Distributed;
 using StackExchange.Redis;
+using System.Diagnostics.CodeAnalysis;
 using CookieOptions = FrontendSchemeRegistration.Application.Options.CookieOptions;
 using SessionOptions = FrontendSchemeRegistration.Application.Options.SessionOptions;
 
@@ -28,6 +29,7 @@ public static class ServiceProviderExtension
 {
     public static IServiceCollection RegisterWebComponents(this IServiceCollection services, IConfiguration configuration)
     {
+        ConfigureCookiePolicy(services);
         ConfigureOptions(services, configuration);
         ConfigureLocalization(services);
         ConfigureAuthentication(services, configuration);
@@ -80,6 +82,13 @@ public static class ServiceProviderExtension
             options.AccessDeniedPath = azureB2COptions.SignedOutCallbackPath;
 
             options.SlidingExpiration = true;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        });
+
+        services.AddAntiforgery(options =>
+        {
+            options.Cookie.HttpOnly = true;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         });
 
         services.RegisterPolicy<FrontendSchemeRegistrationSession>(configuration);
@@ -129,8 +138,8 @@ public static class ServiceProviderExtension
         services.AddScoped<ISubmissionService, SubmissionService>();
         services.AddScoped<ISubsidiaryService, SubsidiaryService>();
         services.AddScoped<IPaymentCalculationService, PaymentCalculationService>();
-        services.AddScoped<ISubsidiaryUtilityService,SubsidiaryUtilityService>();
-        services.AddScoped<IRegistrationApplicationService,RegistrationApplicationService>();
+        services.AddScoped<ISubsidiaryUtilityService, SubsidiaryUtilityService>();
+        services.AddScoped<IRegistrationApplicationService, RegistrationApplicationService>();
         services.AddTransient<IDateTimeProvider, SystemDateTimeProvider>();
         services.AddSingleton<IPatchService, PatchService>();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -166,7 +175,7 @@ public static class ServiceProviderExtension
             client.BaseAddress = new Uri(facadeApiOptions.BaseEndpoint);
             client.Timeout = TimeSpan.FromSeconds(httpClientOptions.TimeoutSeconds);
         });
-        
+
         services.AddHttpClient<IPaymentCalculationServiceApiClient, PaymentCalculationServiceApiClient>((sp, client) =>
         {
             var facadeApiOptions = sp.GetRequiredService<IOptions<PaymentFacadeApiOptions>>().Value;
@@ -242,6 +251,7 @@ public static class ServiceProviderExtension
             options.Cookie.IsEssential = true;
             options.Cookie.HttpOnly = true;
             options.Cookie.Path = "/";
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         });
     }
 
@@ -258,6 +268,10 @@ public static class ServiceProviderExtension
                     configuration.GetSection(AzureAdB2COptions.ConfigSection).Bind(options);
 
                     options.CorrelationCookie.Name = cookieOptions.CorrelationCookieName;
+
+                    options.CorrelationCookie.HttpOnly = true;
+                    options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
+
                     options.NonceCookie.Name = cookieOptions.OpenIdCookieName;
                     options.ErrorPath = "/error";
                     options.ClaimActions.Add(new CorrelationClaimAction());
@@ -268,8 +282,20 @@ public static class ServiceProviderExtension
                     options.ExpireTimeSpan = TimeSpan.FromMinutes(cookieOptions.AuthenticationExpiryInMinutes);
                     options.SlidingExpiration = true;
                     options.Cookie.Path = "/";
+
+                    options.Cookie.HttpOnly = true;
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                 })
             .EnableTokenAcquisitionToCallDownstreamApi([facadeApiOptions.DownstreamScope])
             .AddDistributedTokenCaches();
+    }
+
+    private static void ConfigureCookiePolicy(IServiceCollection services)
+    {
+        services.Configure<CookiePolicyOptions>(options =>
+        {
+            options.HttpOnly = HttpOnlyPolicy.Always;
+            options.Secure = CookieSecurePolicy.Always;
+        });
     }
 }

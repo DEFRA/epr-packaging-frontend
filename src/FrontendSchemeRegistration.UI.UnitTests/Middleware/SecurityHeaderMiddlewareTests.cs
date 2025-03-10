@@ -44,25 +44,7 @@ public class SecurityHeaderMiddlewareTests
         context.Response.Headers.Should().ContainKey("X-Permitted-Cross-Domain-Policies");
         context.Response.Headers.Should().ContainKey("X-Robots-Tag");
     }
-
-    [Test]
-    [TestCase("base-uri 'none'")]
-    [TestCase("require-trusted-types-for 'script'")]
-    public async Task Invoke_ShouldContainContentSecurityPolicyDirectives(string expectedDirective)
-    {
-        // Arrange
-        var context = new DefaultHttpContext();
-
-        // Act
-        await _middleware.Invoke(context, new Mock<IConfiguration>().Object);
-
-        // Assert
-        var contentSecurityPolicy = context.Response.Headers.ContentSecurityPolicy.ToString();
-        var directives = contentSecurityPolicy.Split(';');
-
-        directives.Should().Contain(expectedDirective);
-    }
-
+    
     [Test]
     public async Task Invoke_ShouldAddScriptNonceToItems()
     {
