@@ -117,11 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ErrorIssue" xml:space="preserve">
-    <value>Gwall</value>
-  </data>
   <data name="WarningIssue" xml:space="preserve">
     <value>Rhybudd</value>
+  </data>
+  <data name="ErrorIssue" xml:space="preserve">
+    <value>Gwall</value>
   </data>
   <data name="01" xml:space="preserve">
     <value>Rhaid i ID y sefydliad fod yn rhif 6 digid - er enghraifft, 100123</value>
@@ -152,9 +152,6 @@
   </data>
   <data name="13" xml:space="preserve">
     <value>Ni all fod yn mynd o'r un wlad ac i'r un wlad yn y Deyrnas Unedig</value>
-  </data>
-  <data name="14" xml:space="preserve">
-    <value>Does dim angen y wlad mae'n cael ei anfon iddi ar gyfer y math yma o becynwaith</value>
   </data>
   <data name="15" xml:space="preserve">
     <value>Does dim angen y wlad mae'n dod ohoni ar gyfer y math yma o becynwaith</value>
@@ -213,6 +210,21 @@
   <data name="41" xml:space="preserve">
     <value>Rhaid i faint y sefydliad fod yn L. Ar hyn o bryd, dim ond sefydliadau mawr sy'n cael rhoi gwybod am ddata pecynwaith.</value>
   </data>
+  <data name="14" xml:space="preserve">
+    <value>Does dim angen y wlad mae'n cael ei anfon iddi ar gyfer y math yma o becynwaith</value>
+  </data>
+  <data name="99" xml:space="preserve">
+    <value>Mae’n ddrwg gennym, cododd problem annisgwyl (cod 99).  Rhowch gynnig ar yr uwchlwytho eto yn nes ymlaen.</value>
+  </data>
+  <data name="80" xml:space="preserve">
+    <value>Gallai enwau’r colofnau yn y ffeil a ddewiswyd fod ar goll, yn anghywir neu yn y drefn anghywir. Dilynwch y canllawiau ar sut i strwythuro’ch cyflwyniad data.</value>
+  </data>
+  <data name="89" xml:space="preserve">
+    <value>Mae’n ddrwg gennym, cododd problem annisgwyl (cod 89).  Rhowch gynnig ar yr uwchlwytho eto yn nes ymlaen.</value>
+  </data>
+  <data name="81" xml:space="preserve">
+    <value>Mae’r ffeil a ddewiswyd yn cynnwys feirws</value>
+  </data>
   <data name="45" xml:space="preserve">
     <value>Pan fo'r deunydd pecynwaith yn arall (OT), rhaid ichi nodi enw'r deunydd mewn is-deip deunydd pecynwaith. Ni chaniateir rhifau na choma.</value>
   </data>
@@ -234,18 +246,6 @@
   <data name="82" xml:space="preserve">
     <value>Mae’r ffeil a ddewiswyd yn wag</value>
   </data>
-  <data name="80" xml:space="preserve">
-    <value>Gallai enwau’r colofnau yn y ffeil a ddewiswyd fod ar goll, yn anghywir neu yn y drefn anghywir. Dilynwch y canllawiau ar sut i strwythuro’ch cyflwyniad data.</value>
-  </data>
-  <data name="81" xml:space="preserve">
-    <value>Mae’r ffeil a ddewiswyd yn cynnwys feirws</value>
-  </data>
-  <data name="89" xml:space="preserve">
-    <value>Mae’n ddrwg gennym, cododd problem annisgwyl (cod 89).  Rhowch gynnig ar yr uwchlwytho eto yn nes ymlaen.</value>
-  </data>
-  <data name="99" xml:space="preserve">
-    <value>Mae’n ddrwg gennym, cododd problem annisgwyl (cod 99).  Rhowch gynnig ar yr uwchlwytho eto yn nes ymlaen.</value>
-  </data>
   <data name="54" xml:space="preserve">
     <value>Rydych chi'n rhoi gwybod am ddata pecynwaith ar gyfer Ionawr i Fehefin 2023. Rhaid i'r cyfnod cyflwyno fod yn 2023-P1 neu 2023-P2.</value>
   </data>
@@ -255,6 +255,9 @@
   <data name="83" xml:space="preserve">
     <value>Chafodd eich ffeil mo’i huwchlwytho, a hynny am nad yw penawdau’r colofnau yn y lle cywir.&lt;br&gt;&lt;br&gt;
 Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi ddatrys y broblem, uwchlwythwch y ffeil eto.</value>
+  </data>
+  <data name="48" xml:space="preserve">
+    <value>Ni chaiff cyfanswm pwysau unrhyw un deunydd pecynwaith sy'n cael ei drosglwyddo i unrhyw wlad fod yn fwy na'r cyfanswm a gasglwyd. Er enghraifft, allwch chi ddim trosglwyddo mwy o blastig nag rydych chi'n ei gasglu. Gwiriwch bwysau'r deunydd pecynwaith yma sy'n cael ei drosglwyddo i wlad arall ym mhob rhes ar gyfer y sefydliad yma.</value>
   </data>
   <data name="49" xml:space="preserve">
     <value>Pan fo'r math pecynwaith yn wastraff hunan-reoledig (CW ac OW), rhaid ichi roi'r wlad mae'n tarddu ohoni</value>
@@ -267,9 +270,6 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
   </data>
   <data name="53" xml:space="preserve">
     <value>Pan fo maint y sefydliad yn fawr (L), ni chaniateir i'r math pecynwaith fod yn becynwaith sefydliad bach – y cyfan (SP)</value>
-  </data>
-  <data name="48" xml:space="preserve">
-    <value>Ni chaiff cyfanswm pwysau unrhyw un deunydd pecynwaith sy'n cael ei drosglwyddo i unrhyw wlad fod yn fwy na'r cyfanswm a gasglwyd. Er enghraifft, allwch chi ddim trosglwyddo mwy o blastig nag rydych chi'n ei gasglu. Gwiriwch bwysau'r deunydd pecynwaith yma sy'n cael ei drosglwyddo i wlad arall ym mhob rhes ar gyfer y sefydliad yma.</value>
   </data>
   <data name="56" xml:space="preserve">
     <value>Rhaid i ID y sefydliad fod yr un fath â’r rhif adnabod a gafodd ei roi i’ch sefydliad pan gafodd eich cyfrif ei greu</value>
@@ -288,9 +288,6 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
   </data>
   <data name="62" xml:space="preserve">
     <value>Rydych chi wedi rhoi gwybod am un deunydd pecynwaith yn unig ar gyfer y sefydliad yma. Gwiriwch eich bod wedi rhoi pob deunydd pecynwaith. Rhaid ichi roi gwybod am bob un ar wahân.</value>
-  </data>
-  <data name="60" xml:space="preserve">
-    <value>Gwiriwch bwysau'r deunydd pecynwaith ar gyfer pob rhes i'r sefydliad yma. Os yw cyfanswm y flwyddyn adrodd rhwng 25,000kg a 50,000kg, efallai mai dim ond fel sefydliad bach y bydd angen i'r sefydliad yma gofrestru yn y flwyddyn ganlynol.</value>
   </data>
   <data name="63" xml:space="preserve">
     <value>Yn achos gwastraff defnyddwyr hunan-reoledig (CW), mae'n bosibl na fyddwch chi'n gallu gwrthbwyso'ch pecynwaith eich hunan yn erbyn alwminiwm (AL), gwydr (GL), papur neu gerdyn (PC), neu ddur (ST). I wirio pa ddeunyddiau pecynwaith y gallwch eu gwrthbwyso, bydd angen ichi gysylltu â rheoleiddiwr amgylcheddol eich gwlad.</value>
@@ -325,13 +322,19 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
   <data name="72" xml:space="preserve">
     <value>Nid yw ID Atodol yn perthyn i unrhyw sefydliad.</value>
   </data>
+  <data name="60" xml:space="preserve">
+    <value>Gwiriwch bwysau'r deunydd pecynwaith ar gyfer pob rhes i'r sefydliad yma. Os yw cyfanswm y flwyddyn adrodd rhwng 25,000kg a 50,000kg, efallai mai dim ond fel sefydliad bach y bydd angen i'r sefydliad yma gofrestru yn y flwyddyn ganlynol.</value>
+  </data>
   <data name="90" xml:space="preserve">
     <value>[Welsh]Transitional Packaging Units Invalid</value>
   </data>
-	<data name="894" xml:space="preserve">
-        <value>Dim ond bach neu fawr y gall maint y sefydliad fod.</value>
-    </data>
-	<data name="895" xml:space="preserve">
-        <value>Dim ond bach neu fawr y gall maint y sefydliad fod.</value>
-    </data>
+  <data name="894" xml:space="preserve">
+    <value>Dim ond bach neu fawr y gall maint y sefydliad fod.</value>
+  </data>
+  <data name="895" xml:space="preserve">
+    <value>Dim ond bach neu fawr y gall maint y sefydliad fod.</value>
+  </data>
+  <data name="61" xml:space="preserve">
+    <value>Mae pwysau’r pecynwaith ar gyfer y sefydliad yma wedi'i roi fel sero - gwiriwch fod hyn yn gywir cyn ichi gyflwyno ffurflen sero</value>
+  </data>
 </root>

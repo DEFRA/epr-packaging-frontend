@@ -295,39 +295,57 @@
     <value>To qualify as a large producer, your most recent annual turnover must be more than £2 million, and your annual total tonnage must be more than 50 tonnes.</value>
   </data>
   <data name="898" xml:space="preserve">
-    <value>Joiner date is required</value>
+    <value>Joiner date must be in DD/MM/YYYY format.</value>
   </data>
   <data name="899" xml:space="preserve">
-    <value>Invalid joiner date format</value>
+    <value>You must enter a leaver code for this subsidiary.</value>
   </data>
   <data name="900" xml:space="preserve">
-    <value>Reporting type is required</value>
+    <value>You must enter a leaver date for this subsidiary.</value>
   </data>
   <data name="901" xml:space="preserve">
-    <value>Invalid reporting type</value>
+    <value>Leaver date must be in DD/MM/YYYY format.</value>
   </data>
   <data name="902" xml:space="preserve">
-    <value>Leaver code must be present when leaver date is available.</value>
+    <value>The subsidiary leaver date must be later than the subsidiary joiner date.</value>
   </data>
   <data name="903" xml:space="preserve">
-    <value>Leaver date not entered.</value>
-  </data>
-  <data name="904" xml:space="preserve">
-    <value>Leaver date not in the format DD/MM/YYYY.</value>
-  </data>
-  <data name="905" xml:space="preserve">
-    <value>Leaver date must be after joiner date.</value>
-  </data>
-  <data name="906" xml:space="preserve">
     <value>Leaver reason must be present when leaver code is available.</value>
   </data>
-  <data name="907" xml:space="preserve">
-    <value>Leaver reason exceeds 200 character limit.</value>
+  <data name="904" xml:space="preserve">
+    <value>Organisation change reason cannot contain more than 200 characters.</value>
   </data>
-  <data name="908" xml:space="preserve">
+  <data name="905" xml:space="preserve">
     <value>Joiner date does not match joiner date in database.</value>
   </data>
+  <data name="906" xml:space="preserve">
+    <value>Organisation change reason must only include numbers and letters.</value>
+  </data>
+  <data name="907" xml:space="preserve">
+    <value>Leaver code must be a single capital letter between A and L.</value>
+  </data>
+  <data name="908" xml:space="preserve">
+    <value>Leaver date cannot be in the future.</value>
+  </data>
   <data name="909" xml:space="preserve">
-    <value>Reporting type does not match reporting type in database.</value>
+    <value>Joiner date cannot be in the future.</value>
+  </data>
+  <data name="910" xml:space="preserve">
+    <value>You must enter a registration type code for this subsidiary.</value>
+  </data>
+  <data name="911" xml:space="preserve">
+    <value>Registration type code must be either GR (for group registration) or IN (for individual registration).</value>
+  </data>
+  <data name="912" xml:space="preserve">
+    <value>Enter a registration type code for this organisation.</value>
+  </data>
+  <data name="913" xml:space="preserve">
+    <value>Enter a leaver code for this organisation.</value>
+  </data>
+  <data name="914" xml:space="preserve">
+    <value>Enter a leaver date for this organisation.</value>
+  </data>
+  <data name="915" xml:space="preserve">
+    <value>The organisation's leaver date must be later than its joiner date.</value>
   </data>
 </root>
