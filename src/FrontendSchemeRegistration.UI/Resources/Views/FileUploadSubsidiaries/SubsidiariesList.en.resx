@@ -177,10 +177,6 @@
   <data name="how_to_complete_file" xml:space="preserve">
     <value>How to create your subsidiaries file (opens in a new tab)</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="upload_a_file" type="System.Resources.ResXNullRef, System.Windows.Forms">
-    <value />
-  </data>
   <data name="no_subsidiaries_msg" xml:space="preserve">
     <value>No subsidiaries added for this organisation. To add subsidiaries, upload a CSV file</value>
   </data>
@@ -230,12 +226,30 @@
     <value>Joined</value>
   </data>
   <data name="within_28_days_of_the_change" xml:space="preserve">
-    <value>within 28 days of the change</value>
+    <value>within 28 days of the change. You will need to enter the subsidiary IDs to do this.</value>
   </data>
   <data name="reporting" xml:space="preserve">
     <value>Reporting</value>
   </data>
-  <data name="upload_a_csv_file" xml:space="preserve">
-    <value>Upload a CSV file</value>
+  <data name="create_subsidiary_ids" xml:space="preserve">
+    <value>Create subsidiary IDs</value>
+  </data>
+  <data name="upload_subsidiary_file" xml:space="preserve">
+    <value>Upload subsidiary file</value>
+  </data>
+  <data name="before_you_upload" xml:space="preserve">
+    <value>Before you upload your file, make sure you're using the latest version of the</value>
+  </data>
+  <data name="subsidiary_file_template" xml:space="preserve">
+    <value>subsidiary file template (opens in a new tab)</value>
+  </data>
+  <data name="adding_and_removing_subsidiaries" xml:space="preserve">
+    <value>Adding and removing subsidiaries</value>
+  </data>
+  <data name="to_add_or_remove" xml:space="preserve">
+    <value>To add or remove subsidiaries, you must</value>
+  </data>
+  <data name="use_the_file_upload" xml:space="preserve">
+    <value>Use the file upload to create subsidiary IDs – you will need these subsidiary IDs to add subsidiaries to your organisation.</value>
   </data>
 </root>

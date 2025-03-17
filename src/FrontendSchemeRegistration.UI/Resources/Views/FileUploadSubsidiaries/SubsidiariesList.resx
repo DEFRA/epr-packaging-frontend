@@ -223,18 +223,36 @@
     <value />
   </data>
   <data name="to_permanently_remove_subsidiaries" xml:space="preserve">
-	<value />
+    <value />
   </data>
   <data name="joined" xml:space="preserve">
     <value />
   </data>
   <data name="within_28_days_of_the_change" xml:space="preserve">
-	<value />
+    <value />
   </data>
   <data name="reporting" xml:space="preserve">
     <value />
   </data>
-  <data name="upload_a_csv_file" xml:space="preserve">
+  <data name="create_subsidiary_ids" xml:space="preserve">
+    <value />
+  </data>
+  <data name="upload_subsidiary_file" xml:space="preserve">
+    <value />
+  </data>
+  <data name="before_you_upload" xml:space="preserve">
+    <value />
+  </data>
+  <data name="subsidiary_file_template" xml:space="preserve">
+    <value />
+  </data>
+  <data name="adding_and_removing_subsidiaries" xml:space="preserve">
+    <value />
+  </data>
+  <data name="to_add_or_remove" xml:space="preserve">
+    <value />
+  </data>
+  <data name="use_the_file_upload" xml:space="preserve">
     <value />
   </data>
 </root>

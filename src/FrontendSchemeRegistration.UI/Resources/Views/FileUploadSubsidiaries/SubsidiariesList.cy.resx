@@ -199,7 +199,7 @@
     <value>WAdding subsidiaries</value>
   </data>
   <data name="upload_a_csv_file" xml:space="preserve">
-    <value>WUpload a CSV file</value>
+    <value>w_Upload a CSV file</value>
   </data>
   <data name="download_subsidiaries_list" xml:space="preserve">
     <value>WDownload subsidiaries list</value>
@@ -225,16 +225,34 @@
   <data name="to_permanently_remove_subsidiaries" xml:space="preserve">
     <value>WTo permanently remove subsidiaries, you must</value>
   </data>
-  <data name="within_28_days_of_the_change" xml:space="preserve">
-    <value>Wwithin 28 days of the change</value>
-  </data>
   <data name="joined" xml:space="preserve">
     <value>W_Joined</value>
+  </data>
+  <data name="within_28_days_of_the_change" xml:space="preserve">
+    <value>Wwithin 28 days of the change</value>
   </data>
   <data name="reporting" xml:space="preserve">
     <value>W_Reporting</value>
   </data>
-  <data name="upload_a_csv_file" xml:space="preserve">
-    <value>w_Upload a CSV file</value>
+  <data name="create_subsidiary_ids" xml:space="preserve">
+    <value>WCreate subsidiary IDs</value>
+  </data>
+  <data name="upload_subsidiary_file" xml:space="preserve">
+    <value>WUpload subsidiary file</value>
+  </data>
+  <data name="before_you_upload" xml:space="preserve">
+    <value>WBefore you upload your file, make sure you're using the latest version of the</value>
+  </data>
+  <data name="subsidiary_file_template" xml:space="preserve">
+    <value>Wsubsidiary file template (opens in a new tab)</value>
+  </data>
+  <data name="adding_and_removing_subsidiaries" xml:space="preserve">
+    <value>WAdding and removing subsidiaries</value>
+  </data>
+  <data name="to_add_or_remove" xml:space="preserve">
+    <value>WTo add or remove subsidiaries, you must</value>
+  </data>
+  <data name="use_the_file_upload" xml:space="preserve">
+    <value>WUse the file upload to create subsidiary IDs - you will need these subsidiary IDs to add subsidiaries to your organisation.</value>
   </data>
 </root>
