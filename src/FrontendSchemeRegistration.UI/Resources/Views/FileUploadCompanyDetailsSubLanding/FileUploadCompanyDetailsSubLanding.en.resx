@@ -1,119 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
 <root>
-    <resheader name="resmimetype">
-        <value>text/microsoft-resx</value>
-    </resheader>
-    <resheader name="version">
-        <value>1.3</value>
-    </resheader>
-    <resheader name="reader">
-        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
-    <resheader name="writer">
-        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
-    <data name="report_organisation_details_for" xml:space="preserve">
-        <value>Report organisation details for</value>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
     </data>
-    <data name="before_you_start" xml:space="preserve">
-        <value>Before you start</value>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
     </data>
-    <data name="read_the_guidance_on" xml:space="preserve">
-        <value>Read the guidance on</value>
-    </data>
-    <data name="how_to_report_organisation_details" xml:space="preserve">
-        <value>how to report organisation details (opens in a new window)</value>
-    </data>
-    <data name="how_to_report" xml:space="preserve">
-        <value>How to report</value>
-    </data>
-    <data name="keep_the_information_up_to_date" xml:space="preserve">
-        <value>If you’ve missed a deadline, you may still be able to report without facing enforcement action.</value>
-    </data>
-    <data name="upload_organisation_details" xml:space="preserve">
-        <value>Upload organisation details</value>
-    </data>
-    <data name="large_organisations" xml:space="preserve">
-        <value>Large organisations</value>
-    </data>
-	<data name="small_producers" xml:space="preserve">
-        <value>small producers</value>
-    </data>
-    <data name="deadline" xml:space="preserve">
-        <value>Deadline: 11:59pm on</value>
-    </data>
-    <data name="upload_file_to_your_account" xml:space="preserve">
-        <value>Upload file to account</value>
-    </data>
-    <data name="not_started" xml:space="preserve">
-        <value>Not Started</value>
-    </data>
-    <data name="uploaded" xml:space="preserve">
-        <value>Uploaded</value>
-    </data>
-    <data name="report_your_member_organisation_detail" xml:space="preserve">
-        <value>Report your members’ organisation details</value>
-    </data>
-    <data name="report_member_organisation_details_for" xml:space="preserve">
-        <value>Report members’ organisation details for</value>
-    </data>
-    <data name="start_now" xml:space="preserve">
-        <value>Start now</value>
-    </data>
-    <data name="report_your_organisation_detail" xml:space="preserve">
-        <value>Report your organisation details</value>
-    </data>
-    <data name="report_members_details" xml:space="preserve">
-        <value>Report members’ details</value>
-    </data>
-    <data name="report_organisation_details" xml:space="preserve">
-        <value>Report organisation details</value>
-    </data>
-    <data name="cannot_start_yet" xml:space="preserve">
-        <value>Cannot Start Yet</value>
-    </data>
-    <data name="file_uploaded" xml:space="preserve">
-        <value>File Uploaded</value>
-    </data>
-    <data name="submitted_to_regulator" xml:space="preserve">
-        <value>Submitted To Regulator</value>
-    </data>
-    <data name="tab_title" xml:space="preserve">
-        <value>Report your organisation details - what to do</value>
-    </data>
-    <data name="check_the_govuk_guidance" xml:space="preserve">
-        <value>Check the GOV.UK guidance (opens in a new window)</value>
-    </data>
-    <data name="if_youve_missed_a_deadline" xml:space="preserve">
-        <value>If you’ve missed a deadline, you may still be able to report without facing enforcement action.</value>
-    </data>
-    <data name="if_youve_missed_a_deadline_to_submit" xml:space="preserve">
-        <value>If you’ve missed a deadline to submit</value>
-    </data>
-	<data name="your_history" xml:space="preserve">
-        <value>Your history</value>
-    </data>
-	<data name="view_your_organisation_data_files" xml:space="preserve">
-        <value>View your organisation data files</value>
-    </data>
-	<data name="view_submission_history" xml:space="preserve">
-        <value>View submission history</value>
-    </data>
-	<data name="accepted_by_regulator" xml:space="preserve">
-        <value>Accepted by Regulator</value>
-    </data>
-	<data name="approved_by_regulator" xml:space="preserve">
-        <value>Approved By Regulator</value>
-     </data>
-	<data name="rejected_by_regulator" xml:space="preserve">
-        <value>Rejected by Regulator</value>
-     </data>
-	<data name="inform" xml:space="preserve">
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="report_organisation_details_for" xml:space="preserve">
+    <value>Report organisation details for</value>
+  </data>
+  <data name="report_member_organisation_details_for" xml:space="preserve">
+    <value>Report members’ organisation details for</value>
+  </data>
+  <data name="before_you_start" xml:space="preserve">
+    <value>Before you start</value>
+  </data>
+  <data name="read_the_guidance_on" xml:space="preserve">
+    <value>Read the guidance on</value>
+  </data>
+  <data name="how_to_report_organisation_details" xml:space="preserve">
+    <value>how to report organisation details (opens in a new window)</value>
+  </data>
+  <data name="how_to_report" xml:space="preserve">
+    <value>How to report</value>
+  </data>
+  <data name="keep_the_information_up_to_date" xml:space="preserve">
+    <value>If you’ve missed a deadline, you may still be able to report without facing enforcement action.</value>
+  </data>
+  <data name="upload_organisation_details" xml:space="preserve">
+    <value>Upload organisation details</value>
+  </data>
+  <data name="large_organisations" xml:space="preserve">
+    <value>Large organisations</value>
+  </data>
+  <data name="deadline" xml:space="preserve">
+    <value>Deadline: 11:59pm on</value>
+  </data>
+  <data name="upload_file_to_your_account" xml:space="preserve">
+    <value>Upload file to account</value>
+  </data>
+  <data name="not_started" xml:space="preserve">
+    <value>Not Started</value>
+  </data>
+  <data name="uploaded" xml:space="preserve">
+    <value>Uploaded</value>
+  </data>
+  <data name="report_your_member_organisation_detail" xml:space="preserve">
+    <value>Report your members’ organisation details</value>
+  </data>
+  <data name="start_now" xml:space="preserve">
+    <value>Start now</value>
+  </data>
+  <data name="report_your_organisation_detail" xml:space="preserve">
+    <value>Report your organisation details</value>
+  </data>
+  <data name="report_members_details" xml:space="preserve">
+    <value>Report members’ details</value>
+  </data>
+  <data name="report_organisation_details" xml:space="preserve">
+    <value>Report organisation details</value>
+  </data>
+  <data name="cannot_start_yet" xml:space="preserve">
+    <value>Cannot Start Yet</value>
+  </data>
+  <data name="file_uploaded" xml:space="preserve">
+    <value>File Uploaded</value>
+  </data>
+  <data name="submitted_to_regulator" xml:space="preserve">
+    <value>Submitted To Regulator</value>
+  </data>
+  <data name="tab_title" xml:space="preserve">
+    <value>Report your organisation details - what to do</value>
+  </data>
+  <data name="if_youve_missed_a_deadline" xml:space="preserve">
+    <value>If you’ve missed a deadline, you may still be able to report without facing enforcement action.</value>
+  </data>
+  <data name="check_the_govuk_guidance" xml:space="preserve">
+    <value>Check the GOV.UK guidance (opens in a new window)</value>
+  </data>
+  <data name="if_youve_missed_a_deadline_to_submit" xml:space="preserve">
+    <value>If you’ve missed a deadline to submit</value>
+  </data>
+  <data name="your_history" xml:space="preserve">
+    <value>Your history</value>
+  </data>
+  <data name="view_your_organisation_data_files" xml:space="preserve">
+    <value>View your organisation data files</value>
+  </data>
+  <data name="view_submission_history" xml:space="preserve">
+    <value>View submission history</value>
+  </data>
+  <data name="accepted_by_regulator" xml:space="preserve">
+    <value>Accepted by Regulator</value>
+  </data>
+  <data name="approved_by_regulator" xml:space="preserve">
+    <value>Approved By Regulator</value>
+  </data>
+  <data name="rejected_by_regulator" xml:space="preserve">
+    <value>Rejected by Regulator</value>
+  </data>
+  <data name="inform" xml:space="preserve">
     <value>Report</value>
   </data>
-	<data name="member_organisation_details" xml:space="preserve">
+  <data name="member_organisation_details" xml:space="preserve">
     <value>your members’ organisation details</value>
   </data>
-	<data name="organisation_details" xml:space="preserve">
+  <data name="organisation_details" xml:space="preserve">
     <value>organisation details</value>
+  </data>
+  <data name="making_changes_after_april" xml:space="preserve">
+    <value>Making changes to members registered after 5 April 2025</value>
+  </data>
+  <data name="you_must_report_changes" xml:space="preserve">
+    <value>You must report any changes to us within 28 days</value>
+  </data>
+  <data name="if_you_need_changes_after_april" xml:space="preserve">
+    <value>If you need to make changes to members registered on or after 5 April 2025</value>
+  </data>
+  <data name="registration_file_link" xml:space="preserve">
+    <value>update and resubmit your registration file</value>
+  </data>
+  <data name="how_to_report_organisation_details_new_tab" xml:space="preserve">
+    <value>how to report organisation details (opens in a new tab)</value>
+  </data>
+  <data name="check_the_govuk_guidance_new_tab" xml:space="preserve">
+    <value>Check GOV.UK guidance (opens in a new tab)</value>
+  </data>
+  <data name="if_youve_missed_a_deadline_without_action" xml:space="preserve">
+    <value>If you’ve missed a deadline, you may still be able to report without facing enforcement.</value>
+  </data>
+  <data name="small_producers" xml:space="preserve">
+    <value>small producers</value>
   </data>
 </root>

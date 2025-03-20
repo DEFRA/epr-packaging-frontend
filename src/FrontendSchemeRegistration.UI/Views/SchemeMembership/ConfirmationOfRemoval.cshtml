@@ -1,4 +1,5 @@
-﻿@model ConfirmationOfRemovalViewModel
+﻿@using FrontendSchemeRegistration.UI.Constants
+@model ConfirmationOfRemovalViewModel
 @{
     ViewData["Title"] = Localizer["ConfirmationOfRemoval.PageTitle"];
 }
@@ -11,31 +12,64 @@
                         @Localizer["ConfirmationOfRemoval.YouHaveRemoved"] @Model.OrganisationName @Localizer["ConfirmationOfRemoval.FromAccount"]
                     </h1>
                 </div>
-                <p class="govuk-body">
-                    @Localizer["ConfirmationOfRemoval.IfRemoved"] @Model.OrganisationName @Localizer["ConfirmationOfRemoval.FromAccountByMistake"]
-                </p>
-                <h2 class="govuk-heading-m">@Localizer["ConfirmationOfRemoval.WhatHappensNext"]</h2>
-                <p class="govuk-body">
+                <feature name="@FeatureFlags.ShowSubsidiaryJoinerAndLeaverColumns">
+                    <p class="govuk-body">
+                         @Localizer["ConfirmationOfRemoval.IfRemovedReg"]
+                    </p>
+                    <h2 class="govuk-heading-m">@Localizer["ConfirmationOfRemoval.WhatHappensNext"]</h2>
+                    <p class="govuk-body">
+                        @Localizer["ConfirmationOfRemoval.RemoveOrgFromFile", @Model.OrganisationName]
+                    </p>
+                    
+                    <ul class="govuk-list govuk-list govuk-list--spaced">
+                        <h2 class="govuk-heading-s">@Localizer["ConfirmationOfRemoval.OrgLinkDesc"]</h2>
+                        <li class="govuk-!-margin-bottom-4">
+                            @Localizer["ConfirmationOfRemoval.YouWillNeedTo"]
+                            <a class="govuk-link" asp-controller="FileUploadCompanyDetailsSubLanding" asp-action="Get">
+                                @Localizer["ConfirmationOfRemoval.OrgLinkText"]
+                            </a>
+                        </li>
+                        <h2 class="govuk-heading-s">@Localizer["ConfirmationOfRemoval.RegLinkDesc"]</h2>
+                        <li class ="govuk-!-margin-bottom-4">
+                            @Localizer["ConfirmationOfRemoval.YouWillNeedTo"]
+                            <a class="govuk-link" asp-controller="RegistrationApplication" asp-action="ProducerRegistrationGuidance">
+                                @Localizer["ConfirmationOfRemoval.RegLinkText"]
+                            </a>
+                        </li>
+                        <li>
+                            <a class="govuk-link" href="@Url.Action("SchemeMembers", "SchemeMembership", new { complianceSchemeId = Model.CurrentComplianceSchemeId })">
+                                @Localizer["ConfirmationOfRemoval.ReturnSchemeMembersReg"]
+                            </a>
+                        </li>
+                    </ul>
+                </feature>
+                <feature name="@FeatureFlags.ShowSubsidiaryJoinerAndLeaverColumns" negate="true">
+                    <p class="govuk-body">
+                        @Localizer["ConfirmationOfRemoval.IfRemoved"] @Model.OrganisationName @Localizer["ConfirmationOfRemoval.FromAccountByMistake"]
+                    </p>
+                    <h2 class="govuk-heading-m">@Localizer["ConfirmationOfRemoval.WhatHappensNext"]</h2>
+                    <p class="govuk-body">
                     @Localizer["ConfirmationOfRemoval.YouMustRemoved"] @Model.OrganisationName @Localizer["ConfirmationOfRemoval.FromMember"]
-                </p>
-                <p class="govuk-body">
-                    @Localizer["ConfirmationOfRemoval.IfYouUploadFile"]
-                </p>
+                    </p>
+                    <p class="govuk-body">
+                        @Localizer["ConfirmationOfRemoval.IfYouUploadFile"]
+                    </p>
                 <p class="govuk-body">
                     @Localizer["ConfirmationOfRemoval.NextStep"]:
                 </p>
                  <ul class="govuk-list govuk-list--bullet">
                      <li>
-                         <a class="govuk-link" asp-controller="FileUploadCompanyDetailsSubLanding" asp-action="Get">
-                             @Localizer["ConfirmationOfRemoval.ReUpload"]
-                         </a>
-                     </li>
+                            <a class="govuk-link" asp-controller="FileUploadCompanyDetailsSubLanding" asp-action="Get">
+                                @Localizer["ConfirmationOfRemoval.ReUpload"]
+                            </a>
+                        </li>
                      <li>
                          <a class="govuk-link" href="@Url.Action("SchemeMembers", "SchemeMembership", new { complianceSchemeId = Model.CurrentComplianceSchemeId })">
                              @Localizer["ConfirmationOfRemoval.ReturnSchemeMembers"]
                          </a>
                      </li>
                 </ul>
+                </feature>
             </div>
         </div>
     </main>

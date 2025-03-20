@@ -1,6 +1,7 @@
 @using static FrontendSchemeRegistration.Application.Enums.SubmissionPeriodStatus
 @using FrontendSchemeRegistration.Application.DTOs.Submission
 @using FrontendSchemeRegistration.Application.Enums
+@using FrontendSchemeRegistration.UI.Constants
 
 @model FileUploadCompanyDetailsSubLandingViewModel
 
@@ -39,18 +40,46 @@
             <h1 class="govuk-heading-xl govuk-!-margin-bottom-6">@Localizer[Model.IsComplianceScheme ? "report_your_member_organisation_detail" : "report_your_organisation_detail"]</h1>
 
             <h2 class="govuk-heading-m">@Localizer["before_you_start"]</h2>
-            <p class="govuk-body">
-                @Localizer["read_the_guidance_on"] <a class="govuk-link" rel="noreferrer noopener" target="_blank"
-                                                      href="@GuidanceLinks.Value.HowToReportOrganisationDetails">@Localizer["how_to_report_organisation_details"]</a>
-            </p>
-
-            <h2 class="govuk-heading-m">@Localizer["if_youve_missed_a_deadline_to_submit"]</h2>
-            <p class="govuk-body">
-                @Localizer["if_youve_missed_a_deadline"] <a href="@GuidanceLinks.Value.HowToBuildCsvFileToReportYourOrganisationData"
-                                                            target="_blank"
-                                                            class="govuk-link"
-                                                            rel="noreferrer noopener">@Localizer["check_the_govuk_guidance"]</a>
-            </p>
+            
+            <feature name="@FeatureFlags.ShowSubsidiaryJoinerAndLeaverColumns">
+                <p class="govuk-body">
+                    @Localizer["read_the_guidance_on"] <a class="govuk-link" rel="noreferrer noopener" target="_blank"
+                                                          href="@GuidanceLinks.Value.HowToReportOrganisationDetails">@Localizer["how_to_report_organisation_details_new_tab"]</a>
+                </p>
+                <h2 class="govuk-heading-m">@Localizer["if_youve_missed_a_deadline_to_submit"]</h2>
+                <p class="govuk-body">
+                    @Localizer["if_youve_missed_a_deadline_without_action"] <a href="@GuidanceLinks.Value.HowToBuildCsvFileToReportYourOrganisationData"
+                                                                target="_blank"
+                                                                class="govuk-link"
+                                                                rel="noreferrer noopener">@Localizer["check_the_govuk_guidance_new_tab"]</a>
+                </p>
+            </feature>
+            <feature name="@FeatureFlags.ShowSubsidiaryJoinerAndLeaverColumns" negate="true">
+                <p class="govuk-body">
+                    @Localizer["read_the_guidance_on"] <a class="govuk-link" rel="noreferrer noopener" target="_blank"
+                                                          href="@GuidanceLinks.Value.HowToReportOrganisationDetails">@Localizer["how_to_report_organisation_details"]</a>
+                </p>
+            
+                <h2 class="govuk-heading-m">@Localizer["if_youve_missed_a_deadline_to_submit"]</h2>
+                 <p class="govuk-body">
+                    @Localizer["if_youve_missed_a_deadline"] <a href="@GuidanceLinks.Value.HowToBuildCsvFileToReportYourOrganisationData"
+                    target="_blank"
+                    class="govuk-link"
+                    rel="noreferrer noopener">@Localizer["check_the_govuk_guidance"]</a>
+                 </p>
+            </feature>
+            @if (Model.IsComplianceScheme)
+            {
+                <feature name="@FeatureFlags.ShowSubsidiaryJoinerAndLeaverColumns">
+                    <h2 class="govuk-heading-m">@Localizer["making_changes_after_april"]</h2>
+                    <p class="govuk-body">
+                        @Localizer["if_you_need_changes_after_april"],
+                        <a class="govuk-link" asp-controller="RegistrationApplication" asp-action="ProducerRegistrationGuidance">
+                            @Localizer["registration_file_link"]
+                        </a>.@Localizer["you_must_report_changes"].
+                    </p>
+                </feature>
+            }
         </div>
     </div>
 

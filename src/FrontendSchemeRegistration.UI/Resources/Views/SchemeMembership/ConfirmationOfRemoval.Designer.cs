@@ -91,9 +91,27 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.SchemeMembership {
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
+        internal static string ConfirmationOfRemoval_FromMemberReg {
+            get {
+                return ResourceManager.GetString("ConfirmationOfRemoval.FromMemberReg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
         internal static string ConfirmationOfRemoval_IfRemoved {
             get {
                 return ResourceManager.GetString("ConfirmationOfRemoval.IfRemoved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string ConfirmationOfRemoval_IfRemovedReg {
+            get {
+                return ResourceManager.GetString("ConfirmationOfRemoval.IfRemovedReg", resourceCulture);
             }
         }
         
@@ -109,9 +127,63 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.SchemeMembership {
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
+        internal static string ConfirmationOfRemoval_IfYouUploadFileReg {
+            get {
+                return ResourceManager.GetString("ConfirmationOfRemoval.IfYouUploadFileReg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
         internal static string ConfirmationOfRemoval_NextStep {
             get {
                 return ResourceManager.GetString("ConfirmationOfRemoval.NextStep", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string ConfirmationOfRemoval_OrgLinkDesc {
+            get {
+                return ResourceManager.GetString("ConfirmationOfRemoval.OrgLinkDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string ConfirmationOfRemoval_OrgLinkText {
+            get {
+                return ResourceManager.GetString("ConfirmationOfRemoval.OrgLinkText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string ConfirmationOfRemoval_RegLinkDesc {
+            get {
+                return ResourceManager.GetString("ConfirmationOfRemoval.RegLinkDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string ConfirmationOfRemoval_RegLinkText {
+            get {
+                return ResourceManager.GetString("ConfirmationOfRemoval.RegLinkText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string ConfirmationOfRemoval_RemoveOrgFromFile {
+            get {
+                return ResourceManager.GetString("ConfirmationOfRemoval.RemoveOrgFromFile", resourceCulture);
             }
         }
         
@@ -127,9 +199,36 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.SchemeMembership {
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
+        internal static string ConfirmationOfRemoval_ReturnSchemeMembersReg {
+            get {
+                return ResourceManager.GetString("ConfirmationOfRemoval.ReturnSchemeMembersReg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
         internal static string ConfirmationOfRemoval_ReUpload {
             get {
                 return ResourceManager.GetString("ConfirmationOfRemoval.ReUpload", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string ConfirmationOfRemoval_ReUploadOrg {
+            get {
+                return ResourceManager.GetString("ConfirmationOfRemoval.ReUploadOrg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string ConfirmationOfRemoval_ReUploadReg {
+            get {
+                return ResourceManager.GetString("ConfirmationOfRemoval.ReUploadReg", resourceCulture);
             }
         }
         
@@ -157,6 +256,15 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.SchemeMembership {
         internal static string ConfirmationOfRemoval_YouMustRemoved {
             get {
                 return ResourceManager.GetString("ConfirmationOfRemoval.YouMustRemoved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string ConfirmationOfRemoval_YouWillNeedTo {
+            get {
+                return ResourceManager.GetString("ConfirmationOfRemoval.YouWillNeedTo", resourceCulture);
             }
         }
     }
