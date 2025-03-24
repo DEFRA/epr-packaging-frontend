@@ -41,8 +41,7 @@ public class FileReUploadCompanyDetailsConfirmationController : Controller
 
         var isFileUploadJourneyInvokedViaRegistration = session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration;
 
-        ViewBag.BackLinkToDisplay = isFileUploadJourneyInvokedViaRegistration ? $"/report-data/{PagePaths.RegistrationTaskList}" : Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
-
+        SetBackLink(isFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission);
         ViewData["IsFileUploadJourneyInvokedViaRegistration"] = isFileUploadJourneyInvokedViaRegistration;
 
         var organisationRole = session.UserData.Organisations.FirstOrDefault()?.OrganisationRole;
@@ -131,5 +130,11 @@ public class FileReUploadCompanyDetailsConfirmationController : Controller
 
         var person = await _accountService.GetAllPersonByUserId(userId.Value);
         return (person != null ? $"{person.FirstName} {person.LastName}" : null, person is not null && person.IsDeleted);
+    }
+
+    private void SetBackLink(bool isFileUploadJourneyInvokedViaRegistration, bool isResubmission)
+    {
+        var backLink = isFileUploadJourneyInvokedViaRegistration ? $"/report-data/{PagePaths.RegistrationTaskList}" : Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
+        ViewBag.BackLinkToDisplay = backLink.AppendResubmissionFlagToQueryString(isResubmission);
     }
 }

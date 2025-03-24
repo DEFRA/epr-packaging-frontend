@@ -15,7 +15,15 @@
                 </div>
                 <div class="govuk-notification-banner__content">
                     <h3 class="govuk-notification-banner__heading">
-                        @Localizer["file_uploaded"]
+                        @if (Model.IsResubmission)
+                        {
+                            @Localizer["partner_details_uploaded"]
+                        }
+                        else
+                        {
+                            @Localizer["file_uploaded"]
+                        }
+
                     </h3>
                     <p class="govuk-body break-word">
                         @Model.FileName
@@ -23,20 +31,53 @@
                 </div>
             </div>
 
-            <h3 class="govuk-heading-m">@Localizer["what_happens_next"]</h3>
+            @if (!Model.IsResubmission)
+            {
+                <h3 class="govuk-heading-m">@Localizer["what_happens_next"]</h3>
 
-            <p class="govuk-body">@Localizer["youve_uploaded_all"]</p>
-            <p class="govuk-body">@Localizer["you_can_now"]</p>
+                <p class="govuk-body">@Localizer["youve_uploaded_all"]</p>
+                <p class="govuk-body">@Localizer["you_can_now"]</p>
+            }
+            else
+            {
+                <p class="govuk-body">
+                    @Localizer["if_you_think_this_is_incorrect"]
+                    @(Html.ActionLink(Localizer["re_upload_your_organisation_details"].Value,
+                        "Get",
+                        "FileReUploadCompanyDetailsConfirmation",
+                        new
+                        {
+                            submissionId = Model.SubmissionId
+                        },
+                        new
+                        {
+                            @class = "govuk-link"
+                        }))
+                </p>
+
+                <p class="govuk-body">@Localizer["view_or_correct_uploaded_file_select_continue"]</p>
+            }
 
             @Html.ActionLink(
-                Localizer["go_to_review"].Value,
-                "Get",
-                "ReviewCompanyDetails",
-                new { submissionId = Model.SubmissionId },
-                new
+                     Localizer["go_to_review"].Value,
+                     "Get",
+                     "ReviewCompanyDetails",
+                     new { submissionId = Model.SubmissionId },
+                     new
+                     {
+                         @class = "govuk-button"
+                     })
+
+            <p class="govuk-body govuk-!-margin-top-4">
+                @if (Model.IsComplianceScheme)
                 {
-                    @class = "govuk-button"
-                })
+                    <a asp-controller="ComplianceSchemeLanding" asp-action="Get" class="govuk-link">@Localizer["return_to_dashboard"]</a>
+                }
+                else
+                {
+                    <a asp-controller="FrontendSchemeRegistration" asp-action="HomePageSelfManaged" class="govuk-link">@Localizer["return_to_dashboard"]</a>
+                }
+            </p>
         </div>
     </div>
 </main>

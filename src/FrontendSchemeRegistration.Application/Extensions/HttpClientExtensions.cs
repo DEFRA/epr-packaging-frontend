@@ -1,9 +1,9 @@
-﻿namespace FrontendSchemeRegistration.Application.Extensions;
-
-using System.Net.Mime;
-using Enums;
+﻿using System.Net.Mime;
 using FrontendSchemeRegistration.Application.Constants;
+using FrontendSchemeRegistration.Application.Enums;
 using Microsoft.Net.Http.Headers;
+
+namespace FrontendSchemeRegistration.Application.Extensions;
 
 public static class HttpClientExtensions
 {
@@ -53,6 +53,14 @@ public static class HttpClientExtensions
         if (complianceSchemeId.HasValue)
         {
             httpClient.AddDefaultRequestHeaderIfDoesNotContain(ComplianceScheme.ComplianceSchemeId, complianceSchemeId.Value.ToString());
+        }
+    }
+
+    public static void AddHeaderIsResubmissionIfNotNull(this HttpClient httpClient, bool? isResubmission)
+    {
+        if (isResubmission.HasValue)
+        {
+            httpClient.AddDefaultRequestHeaderIfDoesNotContain("IsResubmission", isResubmission.Value.ToString());
         }
     }
 

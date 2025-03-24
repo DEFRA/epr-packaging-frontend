@@ -213,12 +213,26 @@
 @{
     void ShowProgressStatus(ComplianceSchemeLandingViewModel model)
     {
-        if (model.ApplicationStatus == ApplicationStatusType.AcceptedByRegulator)
+        if (!model.IsResubmission && (model.ApplicationStatus
+                is ApplicationStatusType.AcceptedByRegulator
+                or ApplicationStatusType.ApprovedByRegulator)
+            || model.IsResubmission && (model.ApplicationStatus
+                is ApplicationStatusType.NotStarted
+                or ApplicationStatusType.FileUploaded
+                or ApplicationStatusType.SubmittedAndHasRecentFileUpload
+        ))
         {
             <div>
-                <p class="govuk-body">@Localizer["Your_registration_for_x_has_been_granted", model.CurrentYear]</p>
-                <p class="govuk-body">@Localizer["Your_registration_reference_number_is_x", model.RegistrationReferenceNumber]</p>
+                <p class="govuk-body">
+                    @Localizer["Your_registration_for_x_has_been_granted", model.CurrentYear] @Localizer["Your_registration_reference_number_is_x", model.RegistrationReferenceNumber]
+                </p>
                 <p class="govuk-body"><strong>@Localizer["If_anything_changes_you_should_resubmit"]</strong></p>
+                <p class="govuk-body">
+                    <a href="@FrontendSchemeRegistration.Application.Constants.PagePaths.UpdateRegistrationGuidance"
+                       class="govuk-link govuk-link--no-visited-state">
+                        <strong>@Localizer["Resubmit_your_data_files"]</strong>
+                    </a>
+                </p>
             </div>
         }
         else if (model.ApplicationStatus == ApplicationStatusType.QueriedByRegulator)
@@ -244,22 +258,45 @@
         }
         else if (model.AdditionalDetailsStatus == RegistrationTaskListStatus.Completed)
         {
-            <div>
-                <p class="govuk-body">@Localizer["Your_registration_application_for_x_has_been_submitted", model.CurrentYear]</p>
-            </div>
+            if (model.IsResubmission)
+            {
+                <div>
+                    <p class="govuk-body">@Localizer["Your_registration_for_x_has_been_granted", model.CurrentYear] @Localizer["Your_registration_reference_number_is_x", model.RegistrationReferenceNumber]</p>
+                </div>
+            }
+            else
+            {
+                <div>
+                    <p class="govuk-body">@Localizer["Your_registration_application_for_x_has_been_submitted", model.CurrentYear]</p>
+                </div>
+            }
         }
-        else if (model is { PaymentViewStatus: RegistrationTaskListStatus.Completed, AdditionalDetailsStatus: RegistrationTaskListStatus.Pending or RegistrationTaskListStatus.NotStarted })
+        else if (!model.IsResubmission && model is { PaymentViewStatus: RegistrationTaskListStatus.Completed, AdditionalDetailsStatus: RegistrationTaskListStatus.NotStarted })
         {
             <div>
                 <p class="govuk-body">@Localizer["You_have_viewed_your_registration_fees"]</p>
                 <p class="govuk-body">@Localizer["Payment_must_be_made_before_submitting_your_x", model.CurrentYear]</p>
             </div>
         }
-        else if (model is { FileUploadStatus: RegistrationTaskListStatus.Completed, PaymentViewStatus: RegistrationTaskListStatus.Pending or RegistrationTaskListStatus.NotStarted })
+        else if (!model.IsResubmission && model.FileUploadStatus is RegistrationTaskListStatus.Completed && model.PaymentViewStatus is RegistrationTaskListStatus.NotStarted)
         {
             <div>
                 <p class="govuk-body">@Localizer["You_have_submitted_your_registration_data_for_x", Model.CurrentYear]</p>
                 <p class="govuk-body">@Localizer["View_your_registration_fees_and_payment_methods"]</p>
+            </div>
+        }
+        else if (model.IsResubmission && ((model.FileUploadStatus is RegistrationTaskListStatus.Pending && model.PaymentViewStatus is RegistrationTaskListStatus.CanNotStartYet) || (model.FileUploadStatus is RegistrationTaskListStatus.Completed && model.PaymentViewStatus is RegistrationTaskListStatus.NotStarted)))
+        {
+            <div>
+                <p class="govuk-body">@Localizer["You_have_resubmitted_your_registration_data_for_x", Model.CurrentYear]</p>
+                <p class="govuk-body">@Localizer["View_your_registration_fees_and_payment_methods"]</p>
+            </div>
+        }
+        else if (model.IsResubmission && (model is { PaymentViewStatus: RegistrationTaskListStatus.Completed, AdditionalDetailsStatus: RegistrationTaskListStatus.NotStarted }))
+        {
+            <div>
+                <p class="govuk-body">@Localizer["You_have_updated_your_data_and_viewed_your_fees"]</p>
+                <p class="govuk-body">@Localizer["You_now_need_to_submit_to_the_regulator"]</p>
             </div>
         }
         else if (model.ApplicationStatus == ApplicationStatusType.SubmittedToRegulator)
@@ -272,6 +309,6 @@
         else
         {
             <p class="govuk-body govuk-!-margin-bottom-0">@Localizer["you_need_to_register_by_1_April", Model.CurrentYear] @Localizer["Apply_by_1st_April_x", Model.CurrentYear]</p>
-        }            
+        }
     }
 }

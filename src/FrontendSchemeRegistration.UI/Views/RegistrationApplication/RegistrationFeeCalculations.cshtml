@@ -1,4 +1,4 @@
-@model FeeCalculationBreakdownViewModel
+@model FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication.FeeCalculationBreakdownViewModel
 
 @{
     ViewData["Title"] = Localizer["registration_fee_calculations"];
@@ -30,7 +30,7 @@
             <partial name="_FeeCalculationBreakdown" model="@Model"/>
 
             <p class="govuk-body govuk-!-margin-top-4">
-                @if (!Model.RegistrationApplicationSubmitted)
+                @if (!Model.RegistrationApplicationSubmitted || !Model.IsRegistrationFeePaid)
                 {
                     <a asp-action="SelectPaymentOptions" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
                         @SharedLocalizer["continue"]

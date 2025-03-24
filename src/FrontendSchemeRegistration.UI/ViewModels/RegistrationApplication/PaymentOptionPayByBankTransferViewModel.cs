@@ -1,7 +1,7 @@
-﻿using FrontendSchemeRegistration.Application.Enums;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
+using FrontendSchemeRegistration.Application.Enums;
 
-namespace FrontendSchemeRegistration.UI.ViewModels
+namespace FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication
 {
     [ExcludeFromCodeCoverage]
     public class PaymentOptionPayByBankTransferViewModel : OrganisationNationViewModel

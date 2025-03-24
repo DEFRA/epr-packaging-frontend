@@ -20,17 +20,26 @@
     <data name="the_data_you_are_submitting" xml:space="preserve">
         <value>the data you are submitting is accurate</value>
     </data>
+	<data name="this_data_is_accurate" xml:space="preserve">
+        <value>this data is accurate</value>
+    </data>
     <data name="enter_your_full_name" xml:space="preserve">
         <value>Enter your full name</value>
     </data>
     <data name="submit_file" xml:space="preserve">
         <value>Submit file</value>
     </data>
+	<data name="update_files" xml:space="preserve">
+        <value>Update files</value>
+    </data>
     <data name="by_entering_your_name" xml:space="preserve">
         <value>By entering your name and submitting your file to the environmental regulator, you are confirming that:</value>
     </data>
+	<data name="by_entering_your_name_resubmission" xml:space="preserve">
+        <value>By entering your name, you are confirming that:</value>
+    </data>
     <data name="may_face_enforcement" xml:space="preserve">
-        <value>{0} may face enforcement action if the data you submit is inaccurate.</value>
+        <value>{0} may face enforcement action if the data is inaccurate.</value>
     </data>
     <data name="full_name_error_message.enter_your_full_name" xml:space="preserve">
         <value>Enter your full name</value>

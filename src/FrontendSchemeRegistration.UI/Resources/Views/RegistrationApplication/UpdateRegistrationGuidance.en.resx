@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="update-registration-data" xml:space="preserve">
+    <value>Resubmit registration data</value>
+  </data>
+	<data name="your-organisation-reference-number-wont-change" xml:space="preserve">
+    <value>Your current registration status will not change while you update your registration data. Your producer registration number will remain the same.</value>
+  </data>
+	<data name="to-resubmit-your-data" xml:space="preserve">
+    <value>To resubmit your data you must:</value>
+  </data>
+	<data name="prepare-and-upload" xml:space="preserve">
+    <value>update your full amended organisation, brand and partner details in CSV format</value>
+  </data>
+	<data name="view-and-pay" xml:space="preserve">
+    <value>view and pay any additional fees if required</value>
+  </data>
+	<data name="submit-the-updated-data" xml:space="preserve">
+    <value>resubmit to the environmental regulator</value>
+  </data>
+	<data name="you-are-strongly-advised" xml:space="preserve">
+    <value>We advise reading the guidance on </value>
+  </data>
+  <data name="reporting-organisation-details" xml:space="preserve">
+    <value>reporting organisation details (Opens in a new tab)</value>
+  </data>
+  <data name="reporting-organisation-details-before-you-start" xml:space="preserve">
+    <value>before you start.</value>
+  </data>	
+</root>

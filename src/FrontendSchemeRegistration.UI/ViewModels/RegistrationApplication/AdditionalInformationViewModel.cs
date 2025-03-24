@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace FrontendSchemeRegistration.UI.ViewModels;
+namespace FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
 
 [ExcludeFromCodeCoverage]
 public class AdditionalInformationViewModel : OrganisationNationViewModel
@@ -14,5 +14,5 @@ public class AdditionalInformationViewModel : OrganisationNationViewModel
     public string OrganisationNumber { get; set; }
 
     public string AdditionalInformationText { get; set; }
-
+    public bool IsResubmission { get;  set; }
 }

@@ -1,0 +1,30 @@
+﻿@{
+    ViewData["Title"] = Localizer["update-registration-data"];
+}
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-three-quarters">
+            <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+                @Localizer["update-registration-data"]
+            </h1>
+            <div class="govuk-inset-text">
+                <p class="govuk-body">@Localizer["your-organisation-reference-number-wont-change"]</p>
+            </div>
+            <p class="govuk-body">@Localizer["to-resubmit-your-data"]</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>@Localizer["prepare-and-upload"]</li>
+                <li>@Localizer["view-and-pay"]</li>
+                <li>@Localizer["submit-the-updated-data"]</li>
+            </ul>
+            <p class="govuk-body">
+                @Localizer["you-are-strongly-advised"]
+                <a href="@GuidanceLinks.Value.HowToReportOrganisationDetails" target="_blank" class="govuk-link govuk-link--no-visited-state">
+                    @Localizer["reporting-organisation-details"]
+                </a> @Localizer["reporting-organisation-details-before-you-start"]
+            </p>
+            <a href="@FrontendSchemeRegistration.Application.Constants.PagePaths.RegistrationTaskList?IsResubmission=true" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+                @SharedLocalizer["continue"]
+            </a>
+        </div>
+    </div>
+</main>

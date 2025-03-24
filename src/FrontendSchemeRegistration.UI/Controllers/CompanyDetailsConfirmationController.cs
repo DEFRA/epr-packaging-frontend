@@ -48,8 +48,7 @@ public class CompanyDetailsConfirmationController : Controller
                 if (submission is not null && submission.IsSubmitted)
                 {
                     var isFileUploadJourneyInvokedViaRegistration = session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration;
-
-                    ViewBag.BackLinkToDisplay = isFileUploadJourneyInvokedViaRegistration ? $"/report-data/{PagePaths.RegistrationTaskList}" : Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
+                    SetBackLink(isFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission);
 
                     ViewData["IsFileUploadJourneyInvokedViaRegistration"] = isFileUploadJourneyInvokedViaRegistration;
 
@@ -61,7 +60,9 @@ public class CompanyDetailsConfirmationController : Controller
                             SubmittedDate = submittedDateTime.ToReadableDate(),
                             SubmissionTime = submittedDateTime.ToTimeHoursMinutes(),
                             SubmittedBy = await GetUsersName(submission.LastSubmittedFiles.SubmittedBy.Value),
-                            OrganisationRole = organisationRole
+                            OrganisationRole = organisationRole,
+                            IsResubmission = session.RegistrationSession.IsResubmission,
+                            ReturnToRegistrationLink = Url.Action("RegistrationTaskList", "RegistrationApplication", session.RegistrationSession.IsResubmission ? new { IsResubmission = true } : null)
                         });
                 }
             }
@@ -74,5 +75,11 @@ public class CompanyDetailsConfirmationController : Controller
     {
         var person = await _accountService.GetPersonByUserId(userId);
         return person.GetUserName();
+    }
+
+    private void SetBackLink(bool isFileUploadJourneyInvokedViaRegistration, bool isResubmission)
+    {
+        var backLink = isFileUploadJourneyInvokedViaRegistration ? $"/report-data/{PagePaths.RegistrationTaskList}" : Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
+        ViewBag.BackLinkToDisplay = backLink.AppendResubmissionFlagToQueryString(isResubmission);
     }
 }

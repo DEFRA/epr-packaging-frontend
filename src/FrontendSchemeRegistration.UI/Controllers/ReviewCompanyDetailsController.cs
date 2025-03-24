@@ -56,9 +56,9 @@ public class ReviewCompanyDetailsController : Controller
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
 
         var isFileUploadJourneyInvokedViaRegistration = session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration;
+        var isResubmission = session.RegistrationSession.IsResubmission;
 
-        ViewBag.BackLinkToDisplay = isFileUploadJourneyInvokedViaRegistration ? PagePaths.RegistrationTaskList : Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
-
+        SetBackLink(isFileUploadJourneyInvokedViaRegistration, isResubmission);
         ViewData["IsFileUploadJourneyInvokedViaRegistration"] = isFileUploadJourneyInvokedViaRegistration;
 
         return View(
@@ -99,7 +99,8 @@ public class ReviewCompanyDetailsController : Controller
                 SubmittedBy = submission.LastSubmittedFiles?.SubmittedBy != null
                     ? await GetUsersName(submission.LastSubmittedFiles.SubmittedBy.Value)
                     : string.Empty,
-                SubmissionStatus = submission.GetSubmissionStatus()
+                SubmissionStatus = submission.GetSubmissionStatus(),
+                IsResubmission = isResubmission
             });
 
         return RedirectToAction("HandleThrownExceptions", "Error");
@@ -155,19 +156,18 @@ public class ReviewCompanyDetailsController : Controller
         {
             if (model.IsComplianceScheme)
             {
-                await _submissionService.SubmitAsync(model.SubmissionId, new Guid(model.OrganisationDetailsFileId));
+                await _submissionService.SubmitAsync(submissionId, new Guid(model.OrganisationDetailsFileId), null, session.RegistrationSession.ApplicationReferenceNumber, session.RegistrationSession.IsResubmission);
+
                 return RedirectToAction("Get", "CompanyDetailsConfirmation", new
                 {
                     model.SubmissionId
                 });
             }
-            else
+
+            return RedirectToAction("Get", "DeclarationWithFullName", new
             {
-                return RedirectToAction("Get", "DeclarationWithFullName", new
-                {
-                    model.SubmissionId
-                });
-            }
+                model.SubmissionId
+            });
         }
         catch (Exception)
         {
@@ -179,5 +179,11 @@ public class ReviewCompanyDetailsController : Controller
     {
         var person = await _accountService.GetAllPersonByUserId(userId);
         return $"{person.FirstName} {person.LastName}";
+    }
+
+    private void SetBackLink(bool isFileUploadJourneyInvokedViaRegistration, bool isResubmission)
+    {
+        var backLink = isFileUploadJourneyInvokedViaRegistration ? PagePaths.RegistrationTaskList : Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
+        ViewBag.BackLinkToDisplay = backLink.AppendResubmissionFlagToQueryString(isResubmission);
     }
 }

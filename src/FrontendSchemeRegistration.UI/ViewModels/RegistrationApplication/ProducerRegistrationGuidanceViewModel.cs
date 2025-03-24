@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace FrontendSchemeRegistration.UI.ViewModels;
+namespace FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
 
 [ExcludeFromCodeCoverage]
 public class ProducerRegistrationGuidanceViewModel : OrganisationNationViewModel

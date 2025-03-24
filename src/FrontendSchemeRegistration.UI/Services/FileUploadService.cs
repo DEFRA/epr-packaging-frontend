@@ -2,7 +2,7 @@
 
 using Application.Enums;
 using Application.Services.Interfaces;
-using FrontendSchemeRegistration.UI.Services.Messages;
+using Messages;
 using Helpers;
 using Interfaces;
 using Microsoft.AspNetCore.Http.Features;
@@ -11,16 +11,10 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
 using Resources.Views.FileUpload;
 
-public class FileUploadService : IFileUploadService
+public class FileUploadService(IWebApiGatewayClient webApiGatewayClient) : IFileUploadService
 {
     private const string UploadFieldName = "file";
     private static readonly FormOptions FormOptions = new ();
-    private readonly IWebApiGatewayClient _webApiGatewayClient;
-
-    public FileUploadService(IWebApiGatewayClient webApiGatewayClient)
-    {
-        _webApiGatewayClient = webApiGatewayClient;
-    }
 
     public async Task<Guid> ProcessUploadAsync(
         string? contentType,
@@ -33,7 +27,8 @@ public class FileUploadService : IFileUploadService
         IFileUploadSize fileUploadSize,
         SubmissionSubType? submissionSubType = null,
         Guid? registrationSetId = null,
-        Guid? complianceSchemeId = null)
+        Guid? complianceSchemeId = null,
+        bool? isResubmission = null)
     {
         var fileValidationResult = await ValidateUploadAsync(contentType, fileStream, modelState);
         if (!modelState.IsValid)
@@ -47,7 +42,7 @@ public class FileUploadService : IFileUploadService
 
         if (modelState.IsValid)
         {
-            return await _webApiGatewayClient.UploadFileAsync(
+            return await webApiGatewayClient.UploadFileAsync(
                 fileContent,
                 fileName,
                 submissionPeriod,
@@ -55,7 +50,8 @@ public class FileUploadService : IFileUploadService
                 submissionType,
                 submissionSubType,
                 registrationSetId,
-                complianceSchemeId);
+                complianceSchemeId,
+                isResubmission);
         }
 
         return Guid.Empty;
@@ -83,7 +79,7 @@ public class FileUploadService : IFileUploadService
 
         if (modelState.IsValid)
         {
-            return await _webApiGatewayClient.UploadSubsidiaryFileAsync(
+            return await webApiGatewayClient.UploadSubsidiaryFileAsync(
                 fileContent,
                 fileName,
                 submissionId,

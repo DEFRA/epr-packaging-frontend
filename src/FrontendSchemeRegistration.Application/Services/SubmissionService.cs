@@ -7,14 +7,12 @@ namespace FrontendSchemeRegistration.Application.Services;
 
 public class SubmissionService(IWebApiGatewayClient webApiGatewayClient) : ISubmissionService
 {
-    public async Task<T> GetSubmissionAsync<T>(Guid submissionId)
-        where T : AbstractSubmission
+    public async Task<T> GetSubmissionAsync<T>(Guid submissionId) where T : AbstractSubmission
     {
         return await webApiGatewayClient.GetSubmissionAsync<T>(submissionId);
     }
 
-    public async Task<List<T>> GetSubmissionsAsync<T>(List<string> periods, int? limit, Guid? complianceSchemeId)
-        where T : AbstractSubmission
+    public async Task<List<T>> GetSubmissionsAsync<T>(List<string> periods, int? limit, Guid? complianceSchemeId) where T : AbstractSubmission
     {
         var type = Activator.CreateInstance<T>().Type;
         var queryString = $"type={type}";
@@ -39,22 +37,23 @@ public class SubmissionService(IWebApiGatewayClient webApiGatewayClient) : ISubm
 
     public async Task SubmitAsync(Guid submissionId, Guid fileId)
     {
-        await SubmitAsync(submissionId, fileId, null);
+        await SubmitAsync(submissionId, fileId, null, null, false);
     }
 
-    public async Task SubmitAsync(Guid submissionId, Guid fileId, string? submittedBy, string? appReferenceNumber = null)
+    public async Task SubmitAsync(Guid submissionId, Guid fileId, string? submittedBy, string? appReferenceNumber, bool isResubmission)
     {
         var payload = new SubmissionPayload
         {
             FileId = fileId,
             SubmittedBy = submittedBy,
-            AppReferenceNumber = appReferenceNumber
+            AppReferenceNumber = appReferenceNumber,
+            IsResubmission = isResubmission
         };
 
         await webApiGatewayClient.SubmitAsync(submissionId, payload);
     }
 
-    public async Task SubmitRegistrationApplicationAsync(Guid submissionId, Guid? complianceSchemeId, string? comments, string? paymentMethod, string applicationReferenceNumber, SubmissionType submissionType)
+    public async Task CreateRegistrationApplicationEvent(Guid submissionId, Guid? complianceSchemeId, string? comments, string? paymentMethod, string applicationReferenceNumber, bool isResubmission, SubmissionType submissionType)
     {
         var applicationPayload = new RegistrationApplicationPayload
         {
@@ -64,13 +63,13 @@ public class SubmissionService(IWebApiGatewayClient webApiGatewayClient) : ISubm
             PaymentStatus = "Not-Applicable",
             PaidAmount = "0",
             Comments = comments,
-            SubmissionType = submissionType
+            SubmissionType = submissionType,
+            IsResubmission = isResubmission
         };
-        await webApiGatewayClient.SubmitRegistrationApplication(submissionId, applicationPayload);
+        await webApiGatewayClient.CreateRegistrationApplicationEvent(submissionId, applicationPayload);
     }
 
-    public async Task<T> GetDecisionAsync<T>(int? limit, Guid submissionId, SubmissionType type)
-        where T : AbstractDecision
+    public async Task<T> GetDecisionAsync<T>(int? limit, Guid submissionId, SubmissionType type) where T : AbstractDecision
     {
         var queryString = $"";
 

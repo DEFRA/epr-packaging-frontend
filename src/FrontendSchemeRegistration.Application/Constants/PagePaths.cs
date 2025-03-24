@@ -45,6 +45,7 @@ public static class PagePaths
     public const string AdditionalInformation = "additional-information";
     public const string UnauthorisedUserWarnings = "unauthorised-user-warnings";
     public const string SubmitRegistrationRequest = "submit-registration-request";
+    public const string UpdateRegistrationGuidance = "update-registration-guidance";
     public const string LandingPage = "landing";
     public const string ComplianceSchemeLanding = "home-compliance-scheme";
     public const string SelectComplianceScheme = "select-compliance-scheme";

@@ -1,10 +1,10 @@
 @using FrontendSchemeRegistration.Application.DTOs.Submission
 @using FrontendSchemeRegistration.UI.Sessions
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model RegistrationTaskListViewModel
+@model FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication.RegistrationTaskListViewModel
 
 @{
-    ViewData["Title"] = Localizer["registration_task_title"];
+    ViewData["Title"] = Localizer[Model.PageTitle];
 
     var canStartViewPayRegistrationFeeStep = Model.PaymentViewStatus is RegistrationTaskListStatus.NotStarted or RegistrationTaskListStatus.Completed;
     var canStartSubmitRegistrationApplicationStep = Model.AdditionalDetailsStatus is RegistrationTaskListStatus.NotStarted or RegistrationTaskListStatus.Completed;
@@ -14,7 +14,7 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-three-quarters">
             <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
-                @Localizer["register_company", Model.OrganisationName]
+                @Localizer[Model.PageHeading, Model.OrganisationName]
             </h1>
             <dl class="govuk-summary-list">
                 <div class="govuk-summary-list__row">
@@ -26,17 +26,17 @@
                         {
                             <a asp-controller="RegistrationApplication" asp-action="RedirectToFileUpload"
                                class="govuk-link govuk-link--no-visited-state">
-                                @Localizer["submit_registration_data"]
+                                @Localizer[Model.FileUploadTask]
                             </a>
                         }
                         else
                         {
-                            @Localizer["submit_registration_data"]
+                            @Localizer[Model.FileUploadTask]
                         }
                         @if (Model.FileUploadStatus == RegistrationTaskListStatus.Completed)
                         {
                             <br/>
-                            @Localizer["you_have_submitted_organisation_brand_partner_details"]
+                            @Localizer[Model.CompletedFileUploadTask]
                         }
                     </dt>
                     <dd class="govuk-summary-list__actions">
@@ -49,17 +49,17 @@
                         {
                             <a asp-controller="RegistrationApplication" asp-action="RegistrationFeeCalculations"
                                class="govuk-link govuk-link--no-visited-state">
-                                @Localizer["view_pay_registration_fee"]
+                                @Localizer[Model.ViewPaymentTask]
                             </a>
                         }
                         else
                         {
-                            @Localizer["view_pay_registration_fee"]
+                            @Localizer[Model.ViewPaymentTask]
                         }
                         @if (Model.PaymentViewStatus == RegistrationTaskListStatus.Completed)
                         {
                             <br/>
-                            @Localizer["you_have_paid_registration_fee"]
+                            @Localizer[Model.CompletedViewPaymentTask]
                         }
                     </dt>
                     <dd class="govuk-summary-list__actions">
@@ -72,17 +72,17 @@
                         {
                             <a asp-controller="RegistrationApplication" asp-action="AdditionalInformation"
                                class="govuk-link govuk-link--no-visited-state">
-                                @Localizer["submit_registration_application"]
+                                @Localizer[Model.SubmitRegistrationApplicationTask]
                             </a>
                         }
                         else
                         {
-                            @Localizer["submit_registration_application"]
+                            @Localizer[Model.SubmitRegistrationApplicationTask]
                         }
                         @if (Model.AdditionalDetailsStatus is RegistrationTaskListStatus.Completed)
                         {
                             <br/>
-                            @Localizer["registration_application_has_been_submitted"]
+                            @Localizer[Model.CompletedSubmitRegistrationApplicationTask]
                         }
                     </dt>
                     <dd class="govuk-summary-list__actions">

@@ -107,7 +107,8 @@ public class FileUploadPartnershipsController : Controller
             new DefaultFileUploadLimit(_globalVariables),
             SubmissionSubType.Partnerships,
             session.RegistrationSession.LatestRegistrationSet[session.RegistrationSession.SubmissionPeriod],
-            null);
+            null,
+            session.RegistrationSession.IsResubmission);
 
         session.RegistrationSession.Journey.AddIfNotExists(PagePaths.FileUploadPartnerships);
         await _sessionManager.SaveSessionAsync(HttpContext.Session, session);

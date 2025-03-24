@@ -15,14 +15,26 @@
     <data name="registration_task_title" xml:space="preserve">
         <value>Continue your registration</value>
     </data>
+    <data name="registration_resubmission_task_title" xml:space="preserve">
+        <value>Continue your resubmission</value>
+    </data>
     <data name="register_company" xml:space="preserve">
         <value>{0} registration</value>
+    </data>
+    <data name="register_resubmission_company" xml:space="preserve">
+        <value>{0} data resubmission</value>
     </data>
     <data name="submit_registration_data" xml:space="preserve">
         <value>Submit registration data</value>
     </data>
+    <data name="update_registration_details" xml:space="preserve">
+        <value>Update registration details</value>
+    </data>
     <data name="you_have_submitted_organisation_brand_partner_details" xml:space="preserve">
         <value>You have submitted organisation, brand and partner details</value>
+    </data>
+    <data name="you_have_resubmitted_organisation_brand_partner_details" xml:space="preserve">
+        <value>You have resubmitted organisation, brand and partner details</value>
     </data>
     <data name="view_pay_registration_fee" xml:space="preserve">
         <value>View registration fee</value>
@@ -30,8 +42,17 @@
     <data name="you_have_paid_registration_fee" xml:space="preserve">
         <value>You have viewed the registration fee and selected a payment method</value>
     </data>
+    <data name="view_pay_fee_if_required" xml:space="preserve">
+        <value>View and pay fees if required</value>
+    </data>
+    <data name="you_have_paid_resubmission_fee" xml:space="preserve">
+        <value>You have viewed the registration fee and selected a payment method</value>
+    </data>
     <data name="submit_registration_application" xml:space="preserve">
         <value>Submit registration application</value>
+    </data>
+    <data name="submit_amended_data" xml:space="preserve">
+        <value>Submit amended data</value>
     </data>
     <data name="can_not_start_yet_status" xml:space="preserve">
         <value>CANNOT START YET</value>
@@ -49,6 +70,9 @@
         <value>Return to the dashboard</value>
     </data>
 	<data name="registration_application_has_been_submitted" xml:space="preserve">
+        <value>Your application has been submitted</value>
+    </data>
+	<data name="registration_resubmission_application_has_been_submitted" xml:space="preserve">
         <value>Your application has been submitted</value>
     </data>
 </root>

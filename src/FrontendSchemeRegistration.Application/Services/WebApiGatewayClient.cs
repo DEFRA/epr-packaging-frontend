@@ -52,7 +52,8 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         SubmissionType submissionType,
         SubmissionSubType? submissionSubType = null,
         Guid? registrationSetId = null,
-        Guid? complianceSchemeId = null)
+        Guid? complianceSchemeId = null,
+        bool? isResubmission = null)
     {
         await PrepareAuthenticatedClientAsync();
 
@@ -63,6 +64,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         _httpClient.AddHeaderSubmissionPeriod(submissionPeriod);
         _httpClient.AddHeaderRegistrationSetIdIfNotNull(registrationSetId);
         _httpClient.AddHeaderComplianceSchemeIdIfNotNull(complianceSchemeId);
+        _httpClient.AddHeaderIsResubmissionIfNotNull(isResubmission);
 
         var response = await _httpClient.PostAsync("api/v1/file-upload", new ByteArrayContent(byteArray));
 
@@ -188,25 +190,15 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         response.EnsureSuccessStatusCode();
     }
 
-    public async Task SubmitRegistrationApplication(Guid submissionId, RegistrationApplicationPayload applicationPayload)
+    public async Task CreateRegistrationApplicationEvent(Guid submissionId, RegistrationApplicationPayload applicationPayload)
     {
         await PrepareAuthenticatedClientAsync();
         var requestPath = $"/api/v1/submissions/{submissionId}/submit-registration-application";
         var response = await _httpClient.PostAsJsonAsync(requestPath, applicationPayload);
         response.EnsureSuccessStatusCode();
     }
-
-    public async Task SubmitAsync(CreateRegistrationSubmission submission)
-    {
-        await PrepareAuthenticatedClientAsync();
-        var requestPath = $"/api/v1/submissions/create-submission";
-
-        var response = await _httpClient.PostAsJsonAsync(requestPath, submission);
-        response.EnsureSuccessStatusCode();
-    }
-
-    public async Task<T> GetDecisionsAsync<T>(string queryString)
-        where T : AbstractDecision
+    
+    public async Task<T> GetDecisionsAsync<T>(string queryString) where T : AbstractDecision
     {
         await PrepareAuthenticatedClientAsync();
 

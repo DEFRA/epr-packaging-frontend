@@ -1,4 +1,4 @@
-@model PaymentOptionPayOnlineViewModel
+@model FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication.PaymentOptionPayOnlineViewModel
 
 @{
     ViewData["Title"] = Localizer["pay_online_title"];
@@ -30,7 +30,7 @@
                     }
                     else
                     {
-                        <a asp-controller="FrontendSchemeRegistration" asp-action="HomePageSelfManaged" class="govuk-link">@Localizer["return_to_dashboard"]</a>
+                        <a asp-controller="FrontendSchemeRegistration" asp-action="VisitHomePageSelfManaged" class="govuk-link">@Localizer["return_to_dashboard"]</a>
                     }
                 </p>
             </div>

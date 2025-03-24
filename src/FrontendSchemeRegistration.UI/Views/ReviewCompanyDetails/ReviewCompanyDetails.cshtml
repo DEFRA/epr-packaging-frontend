@@ -226,18 +226,18 @@
                         <fieldset class="govuk-fieldset" aria-describedby="changed-name-hint">
                             <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
                                 <h3 class="govuk-fieldset__heading govuk-label--m">
-                                    @if (!Model.IsComplianceScheme)
+                                    @if (Model is { IsComplianceScheme: true, IsResubmission: false })
                                     {
-                                        @Localizer["submit_your_organisation_details"]
+                                        @Localizer[Model.HasPreviousSubmission ? "resubmit_your_members_organisation_details" : "submit_your_members_organisation_details"]
                                     }
                                     else
                                     {
-                                        @Localizer[Model.HasPreviousSubmission ? "resubmit_your_members_organisation_details" : "submit_your_members_organisation_details"]
+                                        @Localizer["submit_your_organisation_details"]
                                     }
                                 </h3>
                             </legend>
 
-                            @if (!isFileUploadJourneyInvokedViaRegistration)
+                            @if (!isFileUploadJourneyInvokedViaRegistration && !Model.IsResubmission)
                             {
                                 <div id="changed-name-hint" class="govuk-hint">
                                     @Localizer["information_will_be_sent_to_the_environmental_regulator"]
@@ -272,7 +272,7 @@
                                                  id = "SubmitOrganisationDetailsResponse-1"
                                              })
 
-                                    <label for="SubmitOrganisationDetailsResponse-1" class="govuk-label govuk-radios__label">@Localizer["no_not_right_now"]</label>
+                                    <label for="SubmitOrganisationDetailsResponse-1" class="govuk-label govuk-radios__label">@Localizer[Model.IsResubmission ? "no_ill_do_it_later" : "no_not_right_now"]</label>
                                 </div>
                             </div>
                         </fieldset>
@@ -280,7 +280,7 @@
 
                     <br/>
 
-                    @if (Model.IsComplianceScheme)
+                    @if (Model is { IsComplianceScheme: true, IsResubmission: false })
                     {
                         <div class="govuk-warning-text">
                             <span class="govuk-warning-text__icon" aria-hidden="true">!</span>

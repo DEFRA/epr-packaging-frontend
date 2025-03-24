@@ -80,7 +80,8 @@ public class FileUploadBrandsController : Controller
                         "FileUploadBrands",
                         new FileUploadSuccessViewModel
                         {
-                            OrganisationRole = organisationRole
+                            OrganisationRole = organisationRole,
+                            IsResubmission = session.RegistrationSession.IsResubmission
                         });
                 }
             }
@@ -110,7 +111,8 @@ public class FileUploadBrandsController : Controller
             new DefaultFileUploadLimit(_globalVariables),
             SubmissionSubType.Brands,
             session.RegistrationSession.LatestRegistrationSet[session.RegistrationSession.SubmissionPeriod],
-            null);
+            null,
+            session.RegistrationSession.IsResubmission);
 
         session.RegistrationSession.Journey.AddIfNotExists(PagePaths.FileUploadBrands);
         await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
@@ -118,7 +120,8 @@ public class FileUploadBrandsController : Controller
         return !ModelState.IsValid
             ? View("FileUploadBrands", new FileUploadSuccessViewModel
             {
-                OrganisationRole = organisationRole
+                OrganisationRole = organisationRole,
+                IsResubmission = session.RegistrationSession.IsResubmission
             })
             : RedirectToAction(
                 "Get",

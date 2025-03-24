@@ -63,7 +63,8 @@ public class FileUploadServiceTests
             new DefaultFileUploadLimit(_globalVariables),
             submissionSubType,
             registrationSetId,
-            complianceSchemeId);
+            complianceSchemeId,
+            true);
 
         // Assert
         GetModelStateErrors().Should().HaveCount(1).And.Contain("Select a CSV file");
@@ -76,7 +77,8 @@ public class FileUploadServiceTests
                 submissionType,
                 submissionSubType,
                 registrationSetId,
-                complianceSchemeId),
+                complianceSchemeId,
+                true),
             Times.Never);
     }
 
@@ -120,7 +122,8 @@ public class FileUploadServiceTests
                 submissionType,
                 submissionSubType,
                 registrationSetId,
-                complianceSchemeId),
+                complianceSchemeId,
+                null),
             Times.Never);
     }
 
@@ -151,7 +154,8 @@ public class FileUploadServiceTests
             new DefaultFileUploadLimit(_globalVariables),
             submissionSubType,
             registrationSetId,
-            complianceSchemeId);
+            complianceSchemeId,
+            false);
 
         // Assert
         GetModelStateErrors().Should().HaveCount(1).And.Contain("Select a CSV file");
@@ -164,7 +168,8 @@ public class FileUploadServiceTests
                 submissionType,
                 submissionSubType,
                 registrationSetId,
-                complianceSchemeId),
+                complianceSchemeId,
+                false),
             Times.Never);
     }
 
@@ -208,7 +213,8 @@ public class FileUploadServiceTests
                 submissionType,
                 submissionSubType,
                 registrationSetId,
-                complianceSchemeId),
+                complianceSchemeId,
+                It.IsAny<bool?>()),
             Times.Never);
     }
 
@@ -246,7 +252,8 @@ public class FileUploadServiceTests
                 submissionType,
                 submissionSubType,
                 registrationSetId,
-                complianceSchemeId),
+                complianceSchemeId,
+                It.IsAny<bool?>()),
             Times.Once);
     }
 

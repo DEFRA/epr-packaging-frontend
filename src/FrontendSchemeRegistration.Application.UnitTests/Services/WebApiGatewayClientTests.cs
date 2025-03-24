@@ -412,7 +412,7 @@ public class WebApiGatewayClientTests
             .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent });
 
         // Act & Assert
-        await _webApiGatewayClient.Invoking(x => x.SubmitRegistrationApplication(submissionId, payload)).Should().NotThrowAsync();
+        await _webApiGatewayClient.Invoking(x => x.CreateRegistrationApplicationEvent(submissionId, payload)).Should().NotThrowAsync();
 
         var expectedUri = $"https://example.com/api/v1/submissions/{submissionId}/submit-registration-application";
         _httpMessageHandlerMock.Protected().Verify(
@@ -432,7 +432,7 @@ public class WebApiGatewayClientTests
             .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent });
 
         // Act & Assert
-        await _webApiGatewayClient.Invoking(x => x.SubmitRegistrationApplication(submissionId, null)).Should().NotThrowAsync();
+        await _webApiGatewayClient.Invoking(x => x.CreateRegistrationApplicationEvent(submissionId, null)).Should().NotThrowAsync();
 
         var expectedUri = $"https://example.com/api/v1/submissions/{submissionId}/submit-registration-application";
         _httpMessageHandlerMock.Protected().Verify(
@@ -450,50 +450,9 @@ public class WebApiGatewayClientTests
             .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.InternalServerError });
 
         // Act / Assert
-        await _webApiGatewayClient.Invoking(x => x.SubmitRegistrationApplication(Guid.NewGuid(), null)).Should().ThrowAsync<HttpRequestException>();
+        await _webApiGatewayClient.Invoking(x => x.CreateRegistrationApplicationEvent(Guid.NewGuid(), null)).Should().ThrowAsync<HttpRequestException>();
     }
-
-    [Test]
-    public async Task WhenSubmitIsSuccessful_CreateRegistrationSubmitAsync_DoesNotThrowException()
-    {
-        // Arrange
-        var submission = new CreateRegistrationSubmission
-        {
-            Id = Guid.NewGuid(),
-            DataSourceType = DataSourceType.File,
-            SubmissionType = SubmissionType.Registration,
-        };
-        _httpMessageHandlerMock.Protected()
-            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent });
-
-        // Act & Assert
-        await _webApiGatewayClient.Invoking(x => x.SubmitAsync(submission)).Should().NotThrowAsync();
-
-        var expectedUri = $"https://example.com/api/v1/submissions/create-submission";
-        _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
-            ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Post && req.RequestUri.ToString() == expectedUri),
-            ItExpr.IsAny<CancellationToken>());
-    }
-
-    [Test]
-    public async Task WhenSubmitIsUnsuccessful_CreateRegistrationSubmitAsync_ThrowsException()
-    {
-        // Arrange
-        var submission = new CreateRegistrationSubmission
-        {
-            Id = Guid.NewGuid(),
-            DataSourceType = DataSourceType.File,
-            SubmissionType = SubmissionType.Registration,
-        };
-        _httpMessageHandlerMock.Protected()
-            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.InternalServerError });
-
-        // Act & Assert
-        await _webApiGatewayClient.Invoking(x => x.SubmitAsync(submission)).Should().ThrowAsync<HttpRequestException>();
-    }
-
+    
     [Test]
     public async Task GetDecisionsAsync_ReturnsDecisions_WhenCalled()
     {

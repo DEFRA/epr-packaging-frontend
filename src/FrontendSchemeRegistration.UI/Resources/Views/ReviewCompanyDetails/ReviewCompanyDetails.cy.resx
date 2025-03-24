@@ -219,4 +219,7 @@
   <data name="download" xml:space="preserve">
     <value>lawrlwytho</value>
   </data>
+  <data name="no_ill_do_it_later" xml:space="preserve">
+    <value>Na, fe'i gwnaf yn nes ymlaen</value>
+  </data>
 </root>

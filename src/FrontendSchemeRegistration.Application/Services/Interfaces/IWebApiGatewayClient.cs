@@ -17,7 +17,8 @@ public interface IWebApiGatewayClient
         SubmissionType submissionType,
         SubmissionSubType? submissionSubType = null,
         Guid? registrationSetId = null,
-        Guid? complianceSchemeId = null);
+        Guid? complianceSchemeId = null, 
+        bool? isResubmission = null);
 
     Task<Guid> UploadSubsidiaryFileAsync(
         byte[] byteArray,
@@ -38,12 +39,9 @@ public interface IWebApiGatewayClient
 
     Task SubmitAsync(Guid submissionId, SubmissionPayload payload);
 
-    Task SubmitAsync(CreateRegistrationSubmission submission);
+    Task CreateRegistrationApplicationEvent(Guid submissionId, RegistrationApplicationPayload applicationPayload);
 
-    Task SubmitRegistrationApplication(Guid submissionId, RegistrationApplicationPayload applicationPayload);
-
-    Task<T> GetDecisionsAsync<T>(string queryString)
-        where T : AbstractDecision;
+    Task<T> GetDecisionsAsync<T>(string queryString) where T : AbstractDecision;
 
     Task<List<SubmissionPeriodId>> GetSubmissionIdsAsync(Guid organisationId, string queryString);
 

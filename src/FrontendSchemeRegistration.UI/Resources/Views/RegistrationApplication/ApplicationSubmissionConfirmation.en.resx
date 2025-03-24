@@ -81,4 +81,19 @@
     <data name="check_status_of_your_application" xml:space="preserve">
         <value> to check the status of your application.</value>
     </data>
+	<data name="your_organisation_data_has_been_resubmitted" xml:space="preserve">
+        <value>Your organisation data has been resubmitted</value>
+    </data>
+	<data name="you_will_receive_an_email_after_the_environmental_regulator_reviews_your_submission" xml:space="preserve">
+        <value>You will receive an email after the environmental regulator reviews your submission.</value>
+    </data>
+	<data name="you_can_only_make_changes_to_your_organisation_data_files_after_they_been_reviewed" xml:space="preserve">
+        <value>You can only make changes to your organisation data files after they've been reviewed.</value>
+    </data>
+	<data name="check_the_status_of_your_application_on" xml:space="preserve">
+        <value>Check the status of your application on</value>
+    </data>
+	<data name="you_resubmitted_your_organisation_data_to" xml:space="preserve">
+        <value>You've resubmitted your organisation data to </value>
+    </data>
 </root>

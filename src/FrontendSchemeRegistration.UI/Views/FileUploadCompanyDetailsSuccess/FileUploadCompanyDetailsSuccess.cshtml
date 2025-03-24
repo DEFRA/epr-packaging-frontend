@@ -31,118 +31,159 @@
             {
                 <p class="govuk-body">@Localizer["the_file_has"] @Model.OrganisationMemberCount @Localizer["of_your_members"]</p>
             }
-        @if (Model is { RequiresBrandsFile: true,RequiresPartnershipsFile: true })
-        {
-            <h2 class="govuk-heading-m">@Localizer["what_happens_next"]</h2>
-            <p class="govuk-body">@Localizer["based_on_what"]@Localizer["you_also_need_to_report_about"]</p>
 
-            <ul class="govuk-list govuk-list--bullet">
-                <li>@Localizer["brand_information"]</li>
-                <li>@Localizer["partners"]</li>
-            </ul>
+            @if (Model.IsResubmission)
+            {
+                <p class="govuk-body">
+                    @Localizer["if_you_think_this_is_incorrect"]
+                    @(Html.ActionLink(Localizer["you_can_upload_again"].Value,
+                        "Get",
+                        "FileReUploadCompanyDetailsConfirmation",
+                        new
+                        {
+                            submissionId = Model.SubmissionId
+                        },
+                        new
+                        {
+                            @class = "govuk-link"
+                        })).
+                </p>
+            }
 
-            <p class="govuk-body">
-                @Localizer["if_you_think_this_is_incorrect_you_can"]
-                @(Html.ActionLink(Localizer["re_upload_your_organisation_details"].Value,
-                    "Get",
-                    "FileReUploadCompanyDetailsConfirmation",
-                    new
-                    {
-                        submissionId = Model.SubmissionId
-                    },
-                    new
-                    {
-                        @class = "govuk-link"
-                    })).
+            @if (Model is { RequiresBrandsFile: true, RequiresPartnershipsFile: true })
+            {
+                <h2 class="govuk-heading-m">@Localizer["what_happens_next"]</h2>
+                <p class="govuk-body">@Localizer["based_on_what"]@Localizer["you_also_need_to_report_about"]</p>
+
+                <ul class="govuk-list govuk-list--bullet">
+                    <li>@Localizer[Model.IsResubmission ? "brand_details" : "brand_information"]</li>
+                    <li>@Localizer[Model.IsResubmission ? "partner_details" : "partners"]</li>
+                </ul>
+
+                @if (!Model.IsResubmission)
+                {
+                    <p class="govuk-body">
+                        @Localizer["if_you_think_this_is_incorrect_you_can"]
+                        @(Html.ActionLink(Localizer["you_can_upload_again"].Value,
+                            "Get",
+                            "FileReUploadCompanyDetailsConfirmation",
+                            new
+                            {
+                                submissionId = Model.SubmissionId
+                            },
+                            new
+                            {
+                                @class = "govuk-link"
+                            })).
+                    </p>
+                }
+
+                @Html.ActionLink(Model.IsResubmission ? Localizer["upload_brand_details"].Value : Localizer["upload_brand_information"].Value,
+                         "Get",
+                         "FileUploadBrands",
+                         new
+                         {
+                             submissionId = Model.SubmissionId
+                         },
+                         new
+                         {
+                             @class = "govuk-button"
+                         })
+            }
+            else if (Model.RequiresBrandsFile)
+            {
+                <h2 class="govuk-heading-m">@Localizer["what_happens_next"]</h2>
+                <p class="govuk-body">@Localizer["based_on_what_is_in_the_file_you_also_need_to_report_brand_information"]</p>
+                <p class="govuk-body">@Localizer["you_do_not_need_to_report_partner_information"]</p>
+
+                @if (!Model.IsResubmission)
+                {
+                    <p class="govuk-body">
+                        @Localizer["if_you_think_this_is_incorrect_you_can"]
+                        @(Html.ActionLink(Localizer["re_upload_your_organisation_details"].Value,
+                            "Get",
+                            "FileReUploadCompanyDetailsConfirmation",
+                            new
+                            {
+                                submissionId = Model.SubmissionId
+                            },
+                            new
+                            {
+                                @class = "govuk-link"
+                            })).
+                    </p>
+
+                }
+                @Html.ActionLink(Model.IsResubmission ? Localizer["upload_brand_details"].Value : Localizer["upload_brand_information"].Value,
+                         "Get",
+                         "FileUploadBrands",
+                         new
+                         {
+                             submissionId = Model.SubmissionId
+                         },
+                         new
+                         {
+                             @class = "govuk-button"
+                         })
+
+            }
+            else if (Model.RequiresPartnershipsFile)
+            {
+                <h2 class="govuk-heading-m">@Localizer["what_happens_next"]</h2>
+                <p class="govuk-body">@Localizer["based_on_what_is_in_the_file_you_also_need_to_report_partner_information"]</p>
+                <p class="govuk-body">@Localizer["you_do_not_need_to_report_brand_information"]</p>
+
+                @if (!Model.IsResubmission)
+                {
+                    <p class="govuk-body">
+                        @Localizer["if_you_think_this_is_incorrect_you_can"]
+                        @(Html.ActionLink(Localizer["re_upload_your_organisation_details"].Value,
+                            "Get",
+                            "FileReUploadCompanyDetailsConfirmation",
+                            new
+                            {
+                                submissionId = Model.SubmissionId
+                            },
+                            new
+                            {
+                                @class = "govuk-link"
+                            })).
+                    </p>
+                }
+
+                @Html.ActionLink(Localizer["upload_partner_information"].Value,
+                         "Get",
+                         "FileUploadPartnerships",
+                         new
+                         {
+                             submissionId = Model.SubmissionId
+                         },
+                         new
+                         {
+                             @class = "govuk-button"
+                         })
+            }
+            else
+            {
+                <h2 class="govuk-heading-m">@Localizer["what_happens_next"]</h2>
+                <p class="govuk-body">@Localizer["based_on_what"]@Localizer["you_do_not_need_to_report_information"]</p>
+                <p class="govuk-body">@Localizer["you_can_now_see"]</p>
+                @Html.ActionLink(SharedLocalizer["continue"].Value,
+                         "Get",
+                         "ReviewCompanyDetails",
+                         new { submissionId = Model.SubmissionId },
+                         new { @class = "govuk-button" })
+            }
+            <p class="govuk-body govuk-!-margin-top-4">
+                @if (Model.IsComplianceScheme)
+                {
+                    <a asp-controller="ComplianceSchemeLanding" asp-action="Get" class="govuk-link">@Localizer["return_to_dashboard"]</a>
+                }
+                else
+                {
+                    <a asp-controller="FrontendSchemeRegistration" asp-action="HomePageSelfManaged" class="govuk-link">@Localizer["return_to_dashboard"]</a>
+                }
             </p>
-
-            @Html.ActionLink(Localizer["upload_brand_information"].Value,
-                "Get",
-                "FileUploadBrands",
-                new
-                {
-                    submissionId = Model.SubmissionId
-                },
-                new
-                {
-                    @class = "govuk-button"
-                })
-        }
-        else if (Model.RequiresBrandsFile)
-        {
-            <h2 class="govuk-heading-m">@Localizer["what_happens_next"]</h2>
-            <p class="govuk-body">@Localizer["based_on_what_is_in_the_file_you_also_need_to_report_brand_information"]</p>
-            <p class="govuk-body">@Localizer["you_do_not_need_to_report_partner_information"]</p>
-            <p class="govuk-body">
-                @Localizer["if_you_think_this_is_incorrect_you_can"]
-                @(Html.ActionLink(Localizer["re_upload_your_organisation_details"].Value,
-                    "Get",
-                    "FileReUploadCompanyDetailsConfirmation",
-                    new
-                    {
-                        submissionId = Model.SubmissionId
-                    },
-                    new
-                    {
-                        @class = "govuk-link"
-                    })).
-            </p>
-
-            @Html.ActionLink(Localizer["upload_brand_information"].Value,
-                "Get",
-                "FileUploadBrands",
-                new
-                {
-                    submissionId = Model.SubmissionId
-                },
-                new
-                {
-                    @class = "govuk-button"
-                })
-        }
-        else if (Model.RequiresPartnershipsFile)
-        {
-            <h2 class="govuk-heading-m">@Localizer["what_happens_next"]</h2>
-            <p class="govuk-body">@Localizer["based_on_what_is_in_the_file_you_also_need_to_report_partner_information"]</p>
-            <p class="govuk-body">@Localizer["you_do_not_need_to_report_brand_information"]</p>
-            <p class="govuk-body">
-                @Localizer["if_you_think_this_is_incorrect_you_can"]
-                @(Html.ActionLink(Localizer["re_upload_your_organisation_details"].Value,
-                    "Get",
-                    "FileReUploadCompanyDetailsConfirmation",
-                    new
-                    {
-                        submissionId = Model.SubmissionId
-                    },
-                    new
-                    {
-                        @class = "govuk-link"
-                    })).
-            </p>
-
-            @Html.ActionLink(Localizer["upload_partner_information"].Value,
-                "Get",
-                "FileUploadPartnerships",
-                new
-                {
-                    submissionId = Model.SubmissionId
-                },
-                new
-                {
-                    @class = "govuk-button"
-                })
-        }
-        else
-        {
-            <h2 class="govuk-heading-m">@Localizer["what_happens_next"]</h2>
-            <p class="govuk-body">@Localizer["based_on_what"]@Localizer["you_do_not_need_to_report_information"]</p>
-            <p class="govuk-body">@Localizer["you_can_now_see"]</p>
-            @Html.ActionLink(SharedLocalizer["continue"].Value,
-                    "Get",
-                    "ReviewCompanyDetails",
-                    new { submissionId = Model.SubmissionId },
-                    new { @class = "govuk-button" })
-        }
         </div>
     </div>
 </main>

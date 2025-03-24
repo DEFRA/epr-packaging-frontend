@@ -39,4 +39,19 @@
     <data name="page_title" xml:space="preserve">
         <value />
     </data>
+    <data name="if_you_think_this_is_incorrect" xml:space="preserve">
+        <value />
+    </data>
+    <data name="re_upload_your_organisation_details" xml:space="preserve">
+        <value />
+    </data>
+    <data name="return_to_dashboard" xml:space="preserve">
+        <value />
+    </data>
+    <data name="partner_details_uploaded" xml:space="preserve">
+        <value />
+    </data>
+    <data name="view_or_correct_uploaded_file_select_continue" xml:space="preserve">
+        <value />
+    </data>
 </root>

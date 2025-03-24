@@ -235,6 +235,15 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.ReviewCompanyDetails {
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
+        internal static string no_ill_do_it_later {
+            get {
+                return ResourceManager.GetString("no_ill_do_it_later", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
         internal static string no_not_right_now {
             get {
                 return ResourceManager.GetString("no_not_right_now", resourceCulture);

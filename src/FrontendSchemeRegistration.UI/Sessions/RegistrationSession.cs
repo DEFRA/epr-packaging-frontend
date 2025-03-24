@@ -30,4 +30,8 @@ public class RegistrationSession
     public string? NotificationMessage { get; set; }
 
     public bool IsFileUploadJourneyInvokedViaRegistration { get; set; }
+
+    public bool IsResubmission { get; set; }
+    
+    public string ApplicationReferenceNumber { get; set; }
 }

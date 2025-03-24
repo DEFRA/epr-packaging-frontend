@@ -109,7 +109,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
 		RegistrationApplicationService
 			.Setup(s => s.GetRegistrationApplicationSession(
 				It.IsAny<ISession>(),
-				It.IsAny<Organisation>()))
+				It.IsAny<Organisation>(), It.IsAny<bool?>()))
 			.ReturnsAsync(_registrationApplicationSession);
 
 		// Act
@@ -150,7 +150,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
 		RegistrationApplicationService
 			.Setup(s => s.GetRegistrationApplicationSession(
 				It.IsAny<ISession>(),
-				It.IsAny<Organisation>()))
+				It.IsAny<Organisation>(), It.IsAny<bool?>()))
 			.ReturnsAsync(_registrationApplicationSession);
 
 		var result = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
@@ -180,7 +180,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
 		RegistrationApplicationService
 			.Setup(s => s.GetRegistrationApplicationSession(
 				It.IsAny<ISession>(),
-				It.IsAny<Organisation>()))
+				It.IsAny<Organisation>(), It.IsAny<bool?>()))
 			.ReturnsAsync(_registrationApplicationSession);
 
 		var result = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
@@ -235,7 +235,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
             RegistrationApplicationSubmittedDate = null
         };
 
-        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<bool?>()))
             .ReturnsAsync(registrationApplicationSession);
 
         // Act
@@ -282,7 +282,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
             RegistrationApplicationSubmittedDate = null
         };
 
-        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<bool?>()))
             .ReturnsAsync(registrationApplicationSession);
 
         // Act
@@ -330,7 +330,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
             RegistrationApplicationSubmittedDate = DateTime.Now.AddMinutes(-5)
         };
 
-        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<bool?>()))
             .ReturnsAsync(registrationApplicationSession);
 
         // Act

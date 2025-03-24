@@ -16,7 +16,8 @@ public interface IFileUploadService
         IFileUploadSize fileUploadSize,
         SubmissionSubType? submissionSubType = null,
         Guid? registrationSetId = null,
-        Guid? complianceSchemeId = null);
+        Guid? complianceSchemeId = null,
+        bool? isResubmission = null);
 
     Task<Guid> ProcessUploadAsync(
         string? contentType,

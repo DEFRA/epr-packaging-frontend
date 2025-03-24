@@ -5,6 +5,7 @@ using Application.DTOs.Submission;
 using Application.Services.Interfaces;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
+using global::FrontendSchemeRegistration.UI.Extensions;
 using Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -41,11 +42,6 @@ public class FileUploadCompanyDetailsErrorsController : Controller
             return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
         }
 
-        if (session.RegistrationSession.Journey.Count == 0 || !session.RegistrationSession.Journey.Contains<string>(PagePaths.FileUploadCompanyDetailsSubLanding))
-        {
-            return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
-        }
-
         var organisation = session.UserData.Organisations.FirstOrDefault();
         if (organisation?.OrganisationRole is null)
         {
@@ -71,7 +67,7 @@ public class FileUploadCompanyDetailsErrorsController : Controller
                 ModelState);
         }
 
-        ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
+        SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission);
 
         return View(
             "FileUploadCompanyDetailsErrors",
@@ -82,5 +78,11 @@ public class FileUploadCompanyDetailsErrorsController : Controller
                 ErrorCount = submission.RowErrorCount.GetValueOrDefault(0),
                 SubmissionId = submissionId
             });
+    }
+
+    private void SetBackLink(bool isFileUploadJourneyInvokedViaRegistration, bool isResubmission)
+    {
+        var backLink = isFileUploadJourneyInvokedViaRegistration ? $"/report-data/{PagePaths.RegistrationTaskList}" : Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
+        ViewBag.BackLinkToDisplay = backLink.AppendResubmissionFlagToQueryString(isResubmission);
     }
 }

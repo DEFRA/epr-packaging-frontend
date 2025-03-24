@@ -32,4 +32,19 @@
     <data name="you_can_now" xml:space="preserve">
         <value>Nawr gallwch weld rhestr o’r ffeiliau rydych chi wedi’u huwchlwytho, a’u newid os oes angen ichi wneud hynny.</value>
     </data>
+    <data name="if_you_think_this_is_incorrect" xml:space="preserve">
+        <value>Os ydych chi'n meddwl bod hyn yn anghywir</value>
+    </data>
+    <data name="re_upload_your_organisation_details" xml:space="preserve">
+        <value>gallwch chi uwchlwytho eto.</value>
+    </data>
+    <data name="return_to_dashboard" xml:space="preserve">
+        <value>Yn ôl i’r dangosfwrdd</value>
+    </data>
+    <data name="partner_details_uploaded" xml:space="preserve">
+        <value>Manylion partner wedi'u llwytho i fyny</value>
+    </data>
+    <data name="view_or_correct_uploaded_file_select_continue" xml:space="preserve">
+        <value>I weld neu gywiro'ch ffeiliau a uwchlwythwyd, dewiswch 'parhau'.</value>
+    </data>
 </root>

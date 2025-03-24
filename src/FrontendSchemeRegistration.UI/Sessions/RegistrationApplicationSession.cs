@@ -19,6 +19,8 @@ public class RegistrationApplicationSession
 
     public bool IsSubmitted { get; set; }
 
+    public bool IsResubmission { get; set; }
+
     public ApplicationStatusType ApplicationStatus { get; set; }
 
     public RegistrationTaskListStatus FileUploadStatus
@@ -126,7 +128,7 @@ public class RegistrationApplicationSession
 
     public string RegulatorNation { get; set; } = string.Empty;
 
-    public bool IsComplianceScheme { get; set; }
+    public bool IsComplianceScheme => SelectedComplianceScheme is not null;
 
     public RegistrationFeeCalculationDetails[]? RegistrationFeeCalculationDetails { get; set; }
 

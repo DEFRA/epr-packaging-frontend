@@ -58,7 +58,8 @@ public class ComplianceSchemeLandingController(
             RegistrationReferenceNumber = registrationApplicationSession.RegistrationReferenceNumber,
             FileUploadStatus = registrationApplicationSession.FileUploadStatus,
             PaymentViewStatus = registrationApplicationSession.PaymentViewStatus,
-            AdditionalDetailsStatus = registrationApplicationSession.AdditionalDetailsStatus
+            AdditionalDetailsStatus = registrationApplicationSession.AdditionalDetailsStatus,
+            IsResubmission = registrationApplicationSession.IsResubmission
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id.Value);

@@ -1,7 +1,7 @@
-using FrontendSchemeRegistration.Application.DTOs.Submission;
 using System.Diagnostics.CodeAnalysis;
+using FrontendSchemeRegistration.Application.DTOs.Submission;
 
-namespace FrontendSchemeRegistration.UI.ViewModels;
+namespace FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
 
 [ExcludeFromCodeCoverage]
 public class ApplicationSubmissionConfirmationViewModel : OrganisationNationViewModel
@@ -15,4 +15,5 @@ public class ApplicationSubmissionConfirmationViewModel : OrganisationNationView
     public DateTime? RegistrationApplicationSubmittedDate { get; set; }
     
     public bool IsComplianceScheme { get; set; }
+    public bool isResubmission { get; set; }
 }

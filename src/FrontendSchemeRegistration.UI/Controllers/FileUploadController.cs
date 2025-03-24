@@ -108,7 +108,8 @@ public class FileUploadController : Controller
             new DefaultFileUploadLimit(_globalVariables),
             null,
             null,
-            session.RegistrationSession.SelectedComplianceScheme?.Id);
+            session.RegistrationSession.SelectedComplianceScheme?.Id,
+            session.RegistrationSession.IsResubmission);
 
         var routeValues = new RouteValueDictionary { { "submissionId", submissionId } };
 

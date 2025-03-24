@@ -68,4 +68,10 @@
     <data name="you_can_save_this_page" xml:space="preserve">
         <value>Gallwch gadw’r tudalen yma drwy ddefnyddio’r opsiwn ’print’ yn eich porwr.</value>
     </data>
+    <data name="you_can" xml:space="preserve">
+        <value>Gallwch chi </value>
+    </data>
+    <data name="print_or_save_as_PDF" xml:space="preserve">
+        <value>argraffu’r tudalen yma neu ei gadw fel PDF</value>
+    </data>
 </root>

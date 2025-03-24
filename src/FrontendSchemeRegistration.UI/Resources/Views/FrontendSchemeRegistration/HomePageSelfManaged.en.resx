@@ -130,7 +130,10 @@
     <value>Your producer registration number is &lt;strong&gt;{0}&lt;/strong&gt;.</value>
   </data>
   <data name="If_anything_changes_you_should_resubmit" xml:space="preserve">
-    <value>If anything changes you should resubmit your registration data to update it within 28 days.</value>
+    <value>Changes to your organisation's data must be reported within 28 days.</value>
+  </data>
+  <data name="Resubmit_your_data_files" xml:space="preserve">
+    <value>Resubmit your data files</value>
   </data>
   <data name="The_regulator_has_identified_a_potential_issue" xml:space="preserve">
     <value>The regulator has identified a potential issue with your application and will contact you.</value>
@@ -149,5 +152,14 @@
   </data>
   <data name="Contact_your_regulator_if_you_need_advice" xml:space="preserve">
     <value>Contact your regulator if you need advice.</value>
+  </data>
+  <data name="You_have_resubmitted_your_registration_data_for_x" xml:space="preserve">
+    <value>You have resubmitted your registration data for {0}.</value>
+  </data>
+  <data name="You_have_updated_your_data_and_viewed_your_fees" xml:space="preserve">
+    <value>You've updated your data and viewed your fees.</value>
+  </data>
+  <data name="You_now_need_to_submit_to_the_regulator" xml:space="preserve">
+    <value>You now need to submit to the regulator.</value>
   </data>
 </root>

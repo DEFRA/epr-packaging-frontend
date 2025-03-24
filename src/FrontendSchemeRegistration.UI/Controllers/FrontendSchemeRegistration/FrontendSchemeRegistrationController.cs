@@ -423,7 +423,8 @@ public class FrontendSchemeRegistrationController(
             PaymentViewStatus = registrationApplicationSession.PaymentViewStatus,
             AdditionalDetailsStatus = registrationApplicationSession.AdditionalDetailsStatus,
             ApplicationReferenceNumber = registrationApplicationSession.ApplicationReferenceNumber,
-            RegistrationReferenceNumber = registrationApplicationSession.RegistrationReferenceNumber
+            RegistrationReferenceNumber = registrationApplicationSession.RegistrationReferenceNumber,
+            IsResubmission = registrationApplicationSession.IsResubmission
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id!.Value);
@@ -451,7 +452,7 @@ public class FrontendSchemeRegistrationController(
         session.RegistrationSession.Journey = new List<string> { PagePaths.HomePageSelfManaged };
         return await SaveSessionAndRedirect(session, nameof(UsingAComplianceScheme), PagePaths.HomePageSelfManaged, PagePaths.UsingAComplianceScheme);
     }
-    
+
     private static void ClearRestOfJourney(FrontendSchemeRegistrationSession session, string currentPagePath)
     {
         var index = session.RegistrationSession.Journey.IndexOf(currentPagePath);

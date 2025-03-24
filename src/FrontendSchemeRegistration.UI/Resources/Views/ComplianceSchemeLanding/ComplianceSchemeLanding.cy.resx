@@ -1,145 +1,145 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-    <resheader name="resmimetype">
-        <value>text/microsoft-resx</value>
-    </resheader>
-    <resheader name="version">
-        <value>2.0</value>
-    </resheader>
-    <resheader name="reader">
-        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
-    <resheader name="writer">
-        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
   <data name="title" xml:space="preserve">
     <value>Hafan</value>
   </data>
-    <data name="account_home" xml:space="preserve">
+  <data name="account_home" xml:space="preserve">
     <value>Hafan y cyfrif - {0}</value>
   </data>
-    <data name="report_packaging_data" xml:space="preserve">
+  <data name="report_packaging_data" xml:space="preserve">
     <value>Rhoi gwybod am ddata pecynwaith eich aelodau</value>
   </data>
-    <data name="report_organisation_details" xml:space="preserve">
+  <data name="report_organisation_details" xml:space="preserve">
     <value>Rhoi gwybod am fanylion eich sefydliad aelodau</value>
   </data>
-    <data name="members_organisation_details" xml:space="preserve">
+  <data name="members_organisation_details" xml:space="preserve">
     <value>Manylion y sefydliad aelodau</value>
   </data>
-    <data name="you_must_report_org_data" xml:space="preserve">
+  <data name="you_must_report_org_data" xml:space="preserve">
     <value>Rhaid ichi roi gwybod am fanylion eich sefydliad ar gyfer Ionawr i Fehefin a Gorffennaf i Ragfyr:</value>
   </data>
-    <data name="you_can_also" xml:space="preserve">
+  <data name="you_can_also" xml:space="preserve">
     <value>Rydych chi hefyd yn cael:</value>
   </data>
-    <data name="report_changes_to_your_organisation_details" xml:space="preserve">
+  <data name="report_changes_to_your_organisation_details" xml:space="preserve">
     <value>rhoi gwybod am newidiadau ym manylion eich sefydliad aelodau</value>
   </data>
-    <data name="resubmit_your_organisation_details" xml:space="preserve">
+  <data name="resubmit_your_organisation_details" xml:space="preserve">
     <value>ailgyflwyno manylion eich sefydliad aelodau</value>
   </data>
-    <data name="view_your_history" xml:space="preserve">
+  <data name="view_your_history" xml:space="preserve">
     <value>gweld eich hanes</value>
   </data>
-    <data name="members_packaging_data" xml:space="preserve">
+  <data name="members_packaging_data" xml:space="preserve">
     <value>Data pecynwaith yr aelodau</value>
   </data>
-    <data name="you_must_report_packaging_data" xml:space="preserve">
+  <data name="you_must_report_packaging_data" xml:space="preserve">
     <value>Rhaid ichi roi gwybod am ddata pecynwaith ar gyfer Ionawr i Fehefin a Gorffennaf i Ragfyr.</value>
   </data>
-    <data name="resubmit_your_packaging_data" xml:space="preserve">
+  <data name="resubmit_your_packaging_data" xml:space="preserve">
     <value>ailgyflwyno data pecynwaith eich aelodau</value>
   </data>
-    <data name="packaging_recovery_notes" xml:space="preserve">
+  <data name="packaging_recovery_notes" xml:space="preserve">
     <value>Nodyn ailgylchu gwastraff pecynwaith (PRN) a nodyn ailgylchu allforio pecynwaith gwastraff (PERN)</value>
   </data>
-    <data name="no_action_needed" xml:space="preserve">
+  <data name="no_action_needed" xml:space="preserve">
     <value>Dim angen gweithredu ar hyn o bryd</value>
   </data>
-    <data name="important" xml:space="preserve">
+  <data name="important" xml:space="preserve">
     <value>Pwysig</value>
   </data>
-    <data name="view-invitation" xml:space="preserve">
+  <data name="view-invitation" xml:space="preserve">
     <value>Gweld y gwahoddiad</value>
   </data>
-    <data name="youve-been-invited" xml:space="preserve">
+  <data name="youve-been-invited" xml:space="preserve">
     <value>Rydych chi wedi cael gwahoddiad i newid caniatâd eich cyfrif, er mwyn ichi gyflwyno data i’r rheoleiddiwr amgylcheddol.</value>
   </data>
-    <data name="waiting-for-approval" xml:space="preserve">
+  <data name="waiting-for-approval" xml:space="preserve">
     <value>Wrthi’n aros am gymeradwyaeth i gyflwyno data</value>
   </data>
-    <data name="well-email-you" xml:space="preserve">
+  <data name="well-email-you" xml:space="preserve">
     <value>Byddwn yn anfon neges ebost atoch pan fydd y rheoleiddiwr amgylcheddol wedi rhoi caniatâd ichi gyflwyno data.</value>
   </data>
-    <data name="summary-data-for" xml:space="preserve">
+  <data name="summary-data-for" xml:space="preserve">
     <value>Data ar gyfer</value>
   </data>
-    <data name="summary-your-account-is-linked-to" xml:space="preserve">
+  <data name="summary-your-account-is-linked-to" xml:space="preserve">
     <value>Mae eich cyfrif yn gysylltiedig â</value>
   </data>
-    <data name="summary-members" xml:space="preserve">
+  <data name="summary-members" xml:space="preserve">
     <value>o aelodau</value>
   </data>
-    <data name="summary-view-members" xml:space="preserve">
+  <data name="summary-view-members" xml:space="preserve">
     <value>Gweld aelodau</value>
   </data>
-    <data name="summary-view-and-remove-members" xml:space="preserve">
+  <data name="summary-view-and-remove-members" xml:space="preserve">
     <value>Gweld a thynnu aelodau</value>
   </data>
-    <data name="summary-members-info" xml:space="preserve">
+  <data name="summary-members-info" xml:space="preserve">
     <value>Pan fydd aelod yn dewis eich cynllun cydymffurfio yn ei gyfrif ‘rhoi gwybod am ddata pecynwaith’, byddwn yn eu cysylltu â’ch cyfrif.</value>
   </data>
-    <data name="summary-last-updated" xml:space="preserve">
+  <data name="summary-last-updated" xml:space="preserve">
     <value>Y diweddariad diwethaf</value>
   </data>
-    <data name="summary-regulator-england" xml:space="preserve">
+  <data name="summary-regulator-england" xml:space="preserve">
     <value>Asiantaeth yr Amgylchedd</value>
   </data>
-    <data name="summary-regulator-northern-ireland" xml:space="preserve">
+  <data name="summary-regulator-northern-ireland" xml:space="preserve">
     <value>Asiantaeth Amgylchedd Gogledd Iwerddon</value>
   </data>
-    <data name="summary-regulator-scotland" xml:space="preserve">
+  <data name="summary-regulator-scotland" xml:space="preserve">
     <value>Asiantaeth Diogelu Amgylchedd yr Alban</value>
   </data>
-    <data name="summary-regulator-wales" xml:space="preserve">
+  <data name="summary-regulator-wales" xml:space="preserve">
     <value>Cyfoeth Naturiol Cymru</value>
   </data>
-    <data name="summary-regulator" xml:space="preserve">
+  <data name="summary-regulator" xml:space="preserve">
     <value>y rheoleiddiwr</value>
   </data>
-    <data name="date1_to_date2" xml:space="preserve">
+  <data name="date1_to_date2" xml:space="preserve">
     <value>{0} i {1}</value>
   </data>
-    <data name="summary-member" xml:space="preserve">
+  <data name="summary-member" xml:space="preserve">
     <value>o aelodau</value>
   </data>
-    <data name="home" xml:space="preserve">
+  <data name="home" xml:space="preserve">
     <value>Hafan</value>
   </data>
-    <data name="subsidiaries" xml:space="preserve">
+  <data name="subsidiaries" xml:space="preserve">
     <value>is-gwmnïau</value>
   </data>
-    <data name="add-manage-subsidiaries" xml:space="preserve">
+  <data name="add-manage-subsidiaries" xml:space="preserve">
     <value>Ychwanegu a rheoli’ch is-gwmnïau.</value>
   </data>
-    <data name="prn_heading_text" xml:space="preserve">
+  <data name="prn_heading_text" xml:space="preserve">
     <value>Rheoli'ch rhwymedigaethau ailgylchu ar gyfer {0}</value>
   </data>
-    <data name="prn_paragraph_1" xml:space="preserve">
+  <data name="prn_paragraph_1" xml:space="preserve">
     <value>Adolygu'ch cyfrifiadau ar gyfer eich rhwymedigaethau ailgylchu a derbyn PRNs neu PERNs i fodloni'r rhain.
 Rydych chi hefyd yn gallu:</value>
   </data>
-    <data name="prn_unordered_list_point_1" xml:space="preserve">
+  <data name="prn_unordered_list_point_1" xml:space="preserve">
     <value>gweld rhwymedigaethau ailgylchu fesul deunydd</value>
   </data>
-    <data name="prn_unordered_list_point_2" xml:space="preserve">
+  <data name="prn_unordered_list_point_2" xml:space="preserve">
     <value>gwirio cynnydd eich rhwymedigaethau ailgylchu</value>
   </data>
-    <data name="registration" xml:space="preserve">
+  <data name="registration" xml:space="preserve">
     <value>Cofrestriad</value>
   </data>
-    <data name="you_need_to_register_by_31_April" xml:space="preserve">
+  <data name="you_need_to_register_by_31_April" xml:space="preserve">
     <value>Mae angen i chi gofrestru erbyn 31 Ebrill ar gyfer y flwyddyn gyfredol</value>
   </data>
   <data name="You_have_submitted_your_registration_data" xml:space="preserve">
@@ -170,7 +170,7 @@ Rydych chi hefyd yn gallu:</value>
     <value>WYour producer registration number is &lt;strong&gt;{0}&lt;/strong&gt;.</value>
   </data>
   <data name="If_anything_changes_you_should_resubmit" xml:space="preserve">
-    <value>Os bydd unrhyw beth yn newid, dylech ailgyflwyno’ch data</value>
+    <value>[Welsh]Changes to your organisation's data must be reported within 28 days.</value>
   </data>
   <data name="The_regulator_has_identified_a_potential_issue" xml:space="preserve">
     <value>Mae'r rheoleiddiwr wedi nodi problem bosibl gyda'ch cais a bydd yn cysylltu â chi.</value>
@@ -195,5 +195,17 @@ Rydych chi hefyd yn gallu:</value>
   </data>
   <data name="Apply_by_1st_April_x" xml:space="preserve">
     <value>Gwnewch gais erbyn 1 Ebrill, {0}</value>
+  </data>
+  <data name="Resubmit_your_data_files" xml:space="preserve">
+    <value>[Welsh]Resubmit your data files</value>
+  </data>
+  <data name="You_have_resubmitted_your_registration_data_for_x" xml:space="preserve">
+    <value>You have resubmitted your registration data for {0}.</value>
+  </data>
+  <data name="You_have_updated_your_data_and_viewed_your_fees" xml:space="preserve">
+    <value>WYou've updated your data and viewed your fees.</value>
+  </data>
+  <data name="You_now_need_to_submit_to_the_regulator" xml:space="preserve">
+    <value>WYou now need to submit to the regulator.</value>
   </data>
 </root>

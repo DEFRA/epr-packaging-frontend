@@ -47,7 +47,8 @@ public class FileUploadPartnershipsSuccessController : Controller
         return View("FileUploadPartnershipsSuccess", new FileUploadSuccessViewModel
         {
             FileName = submission.PartnershipsFileName,
-            SubmissionId = submissionId
+            SubmissionId = submissionId,
+            IsResubmission = session.RegistrationSession.IsResubmission
         });
     }
 }

@@ -399,7 +399,8 @@ public class FileUploadCompanyDetailsControllerTests
                 It.IsAny<IFileUploadSize>(),
                 SubmissionSubType.CompanyDetails,
                 It.IsAny<Guid?>(),
-                It.IsAny<Guid?>()),
+                It.IsAny<Guid?>(),
+                It.IsAny<bool?>()),
             Times.Once);
         result.ViewName.Should().Be("FileUploadCompanyDetails");
     }
@@ -432,7 +433,8 @@ public class FileUploadCompanyDetailsControllerTests
                 It.IsAny<IFileUploadSize>(),
                 SubmissionSubType.CompanyDetails,
                 It.IsAny<Guid?>(),
-                It.IsAny<Guid?>()))
+                It.IsAny<Guid?>(),
+                It.IsAny<bool?>()))
             .ReturnsAsync(submissionId);
 
         // Act

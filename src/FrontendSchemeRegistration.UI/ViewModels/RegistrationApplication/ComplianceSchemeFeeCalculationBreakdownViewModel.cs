@@ -1,4 +1,4 @@
-namespace FrontendSchemeRegistration.UI.ViewModels
+namespace FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication
 {
     public class ComplianceSchemeFeeCalculationBreakdownViewModel
     {

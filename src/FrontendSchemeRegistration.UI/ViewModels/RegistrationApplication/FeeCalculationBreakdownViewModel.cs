@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 
-namespace FrontendSchemeRegistration.UI.ViewModels;
+namespace FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
 
 [ExcludeFromCodeCoverage]
 public class FeeCalculationBreakdownViewModel

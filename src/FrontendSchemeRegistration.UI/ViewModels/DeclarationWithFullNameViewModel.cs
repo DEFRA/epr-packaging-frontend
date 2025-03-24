@@ -10,6 +10,8 @@ public class DeclarationWithFullNameViewModel : IValidatableObject
 
     public Guid SubmissionId { get; set; }
 
+    public bool IsResubmission { get; set; }
+
     public string OrganisationDetailsFileId { get; set; } = string.Empty;
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

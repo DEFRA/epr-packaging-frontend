@@ -68,4 +68,23 @@
     <data name="you_can_save_this_page" xml:space="preserve">
         <value>You can save this page using the ‘print’ option in your browser.</value>
     </data>
+	<data name="registration_details_updated" xml:space="preserve">
+        <value>Registration details updated</value>
+    </data>
+	<data name="updated_by" xml:space="preserve">
+        <value>Updated by {0} at {1} on {2}.</value>
+    </data>
+	<data name="view_your_registration_fee" xml:space="preserve">
+        <value>view your registration fee</value>
+    </data>
+	<data name="submit_to_environmental_regulator" xml:space="preserve">
+        <value>submit to the environmental regulator</value>
+    </data>
+
+    <data name="you_can" xml:space="preserve">
+        <value>You can </value>
+    </data>
+    <data name="print_or_save_as_PDF" xml:space="preserve">
+        <value>print or save this page as a PDF</value>
+    </data>
 </root>

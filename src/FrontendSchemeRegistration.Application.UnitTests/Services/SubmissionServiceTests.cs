@@ -158,6 +158,20 @@ public class SubmissionServiceTests
     }
 
     [Test]
+    public async Task CreateApplicationReferenceNumber_CallsClient_WhenCalled()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var fileId = Guid.NewGuid();
+
+        // Act
+        await _submissionService.SubmitAsync(submissionId, fileId, "TestSubmittedBy", "TestReference", true);
+
+        // Assert
+        _webApiGatewayClientMock.Verify(x => x.SubmitAsync(submissionId, It.Is<SubmissionPayload>(p => p.IsResubmission == true && p.SubmittedBy == "TestSubmittedBy" && p.AppReferenceNumber == "TestReference")), Times.Once);
+    }
+
+    [Test]
     public async Task SubmitAsyncIncludingSubmittedBy_CallsClient_WhenCalled()
     {
         // Arrange
@@ -166,7 +180,7 @@ public class SubmissionServiceTests
         const string submittedBy = "TestName";
 
         // Act
-        await _submissionService.SubmitAsync(submissionId, fileId, submittedBy);
+        await _submissionService.SubmitAsync(submissionId, fileId, submittedBy, null, false);
 
         // Assert
         _webApiGatewayClientMock.Verify(x => x.SubmitAsync(submissionId, It.IsAny<SubmissionPayload>()), Times.Once);
@@ -184,10 +198,10 @@ public class SubmissionServiceTests
         var comment = "test";
 
         // Act
-        await _submissionService.SubmitRegistrationApplicationAsync(submissionId, complianceSchemeId, comment, paymentMethod, reference, submissionType);
+        await _submissionService.CreateRegistrationApplicationEvent(submissionId, complianceSchemeId, comment, paymentMethod, reference, false, submissionType);
 
         // Assert
-        _webApiGatewayClientMock.Verify(x => x.SubmitRegistrationApplication(submissionId, It.Is<RegistrationApplicationPayload>(p => 
+        _webApiGatewayClientMock.Verify(x => x.CreateRegistrationApplicationEvent(submissionId, It.Is<RegistrationApplicationPayload>(p =>
             p.ApplicationReferenceNumber == reference &&
             p.SubmissionType == submissionType &&
             p.ComplianceSchemeId == complianceSchemeId &&
@@ -204,10 +218,10 @@ public class SubmissionServiceTests
         const string applicationReference = "PEPR00002125P1";
 
         // Act
-        await _submissionService.SubmitRegistrationApplicationAsync(submissionId, null, comments, null, applicationReference, SubmissionType.RegistrationApplicationSubmitted);
+        await _submissionService.CreateRegistrationApplicationEvent(submissionId, null, comments, null, applicationReference, false, SubmissionType.RegistrationApplicationSubmitted);
 
         // Assert
-        _webApiGatewayClientMock.Verify(x => x.SubmitRegistrationApplication(submissionId, It.IsAny<RegistrationApplicationPayload>()), Times.Once);
+        _webApiGatewayClientMock.Verify(x => x.CreateRegistrationApplicationEvent(submissionId, It.IsAny<RegistrationApplicationPayload>()), Times.Once);
     }
 
     [Test]

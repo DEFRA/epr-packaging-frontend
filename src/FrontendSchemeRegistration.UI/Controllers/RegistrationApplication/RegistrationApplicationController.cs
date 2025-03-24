@@ -10,7 +10,7 @@ using FrontendSchemeRegistration.UI.Controllers.Error;
 using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Services;
 using FrontendSchemeRegistration.UI.Sessions;
-using FrontendSchemeRegistration.UI.ViewModels;
+using FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,11 +30,11 @@ public class RegistrationApplicationController(
     {
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
-
-        var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation);
+        var isResubmission = !string.IsNullOrWhiteSpace(HttpContext.Request.Query["IsResubmission"]);
+        
+        var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, isResubmission);
         session.Journey = [PagePaths.HomePageSelfManaged, PagePaths.ProducerRegistrationGuidance];
-
-
+        
         if (session.ApplicationStatus is
                 ApplicationStatusType.FileUploaded
                 or ApplicationStatusType.SubmittedAndHasRecentFileUpload
@@ -65,21 +65,16 @@ public class RegistrationApplicationController(
     {
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
-
-        var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation);
+        var isResubmission = !string.IsNullOrWhiteSpace(HttpContext.Request.Query["IsResubmission"]);
+        
+        var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, isResubmission);
         session.Journey = [session.IsComplianceScheme ? PagePaths.ComplianceSchemeLanding : PagePaths.HomePageSelfManaged, PagePaths.RegistrationTaskList];
 
         SetBackLink(session, PagePaths.RegistrationTaskList);
 
-        if (session.IsSubmitted &&
-            string.IsNullOrWhiteSpace(session.ApplicationReferenceNumber) &&
-            session.LastSubmittedFile.FileId is not null)
-        {
-            await registrationApplicationService.CreateApplicationReferenceNumber(HttpContext.Session, organisation.OrganisationNumber!);
-        }
-
         return View(new RegistrationTaskListViewModel
         {
+            IsResubmission = session.IsResubmission,
             OrganisationName = organisation.Name!,
             IsComplianceScheme = session.IsComplianceScheme,
             OrganisationNumber = organisation.OrganisationNumber.ToReferenceNumberFormat(),
@@ -89,7 +84,7 @@ public class RegistrationApplicationController(
             AdditionalDetailsStatus = session.AdditionalDetailsStatus
         });
     }
-
+    
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
     [Route(PagePaths.RegistrationFeeCalculations)]
@@ -203,7 +198,7 @@ public class RegistrationApplicationController(
 
         if (session.PaymentViewStatus != RegistrationTaskListStatus.Completed)
         {
-            await registrationApplicationService.SubmitRegistrationApplication(HttpContext.Session, null, "PayByPhone", SubmissionType.RegistrationFeePayment);
+            await registrationApplicationService.CreateRegistrationApplicationEvent(HttpContext.Session, null, "PayByPhone", SubmissionType.RegistrationFeePayment);
         }
 
         return View("PaymentOptionPayByPhone",
@@ -240,7 +235,7 @@ public class RegistrationApplicationController(
         
         if (session.PaymentViewStatus != RegistrationTaskListStatus.Completed)
         {
-            await registrationApplicationService.SubmitRegistrationApplication(HttpContext.Session, null, "PayOnline", SubmissionType.RegistrationFeePayment);
+            await registrationApplicationService.CreateRegistrationApplicationEvent(HttpContext.Session, null, "PayOnline", SubmissionType.RegistrationFeePayment);
         }
 
         return View("PaymentOptionPayOnline",
@@ -288,7 +283,7 @@ public class RegistrationApplicationController(
 
         if (session.PaymentViewStatus != RegistrationTaskListStatus.Completed)
         {
-            await registrationApplicationService.SubmitRegistrationApplication(HttpContext.Session, null, "PayByBankTransfer", SubmissionType.RegistrationFeePayment);
+            await registrationApplicationService.CreateRegistrationApplicationEvent(HttpContext.Session, null, "PayByBankTransfer", SubmissionType.RegistrationFeePayment);
         }
 
         return View("PaymentOptionPayByBankTransfer", model);
@@ -330,7 +325,8 @@ public class RegistrationApplicationController(
             OrganisationName = organisation.Name!,
             OrganisationNumber = organisation.OrganisationNumber.ToReferenceNumberFormat(),
             IsComplianceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme,
-            ComplianceScheme = session.SelectedComplianceScheme?.Name!
+            ComplianceScheme = session.SelectedComplianceScheme?.Name!,
+            IsResubmission = session.IsResubmission
         });
     }
 
@@ -349,10 +345,24 @@ public class RegistrationApplicationController(
 
         if (session is { RegistrationApplicationSubmitted: false, FileUploadStatus: RegistrationTaskListStatus.Completed, PaymentViewStatus: RegistrationTaskListStatus.Completed })
         {
-            await registrationApplicationService.SubmitRegistrationApplication(HttpContext.Session, model.AdditionalInformationText, null, SubmissionType.RegistrationApplicationSubmitted);
+            await registrationApplicationService.CreateRegistrationApplicationEvent(HttpContext.Session, model.AdditionalInformationText, null, SubmissionType.RegistrationApplicationSubmitted);
         }
 
         return RedirectToAction(nameof(SubmitRegistrationRequest));
+    }
+
+    [HttpGet]
+    [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
+    [Route(PagePaths.UpdateRegistrationGuidance)]
+    public async Task<IActionResult> UpdateRegistrationGuidance()
+    {
+        var session = await sessionManager.GetSessionAsync(HttpContext.Session);
+        session.Journey = [ PagePaths.HomePageSelfManaged, PagePaths.UpdateRegistrationGuidance ];
+
+        await SaveSession(session, PagePaths.UpdateRegistrationGuidance, null);
+        SetBackLink(session, PagePaths.UpdateRegistrationGuidance);
+
+        return View();
     }
 
     [HttpGet]
@@ -404,7 +414,8 @@ public class RegistrationApplicationController(
                 ApplicationReferenceNumber = session.ApplicationReferenceNumber!,
                 RegistrationApplicationSubmittedDate = session.RegistrationApplicationSubmittedDate.Value,
                 RegistrationReferenceNumber = session.RegistrationReferenceNumber!,
-                ApplicationStatus = session.ApplicationStatus
+                ApplicationStatus = session.ApplicationStatus,
+                isResubmission = session.IsResubmission
             }
         );
     }
@@ -414,13 +425,14 @@ public class RegistrationApplicationController(
     [Route(PagePaths.RedirectFileUploadCompanyDetails)]
     public async Task<IActionResult> RedirectToFileUpload()
     {
+        var userData = User.GetUserData();
+        var organisation = userData.Organisations[0];
+
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
         session.Journey = [PagePaths.FileUploadCompanyDetailsSubLanding];
         await sessionManager.SaveSessionAsync(HttpContext.Session, session);
-        await registrationApplicationService.SetRegistrationFileUploadSession(HttpContext.Session);
-
-        var userData = User.GetUserData();
-
+        await registrationApplicationService.SetRegistrationFileUploadSession(HttpContext.Session, organisation.OrganisationNumber, session.IsResubmission);
+        
         if (session.SubmissionId != null)
         {
             switch (session.ApplicationStatus)
@@ -446,16 +458,19 @@ public class RegistrationApplicationController(
                         nameof(ReviewCompanyDetailsController).RemoveControllerFromName(),
                         new RouteValueDictionary { { "submissionId", session.SubmissionId } });
                 case ApplicationStatusType.NotStarted:
+                case ApplicationStatusType.QueriedByRegulator:
+                case ApplicationStatusType.CancelledByRegulator:
+                case ApplicationStatusType.RejectedByRegulator:
                     return RedirectToAction(
                         nameof(FileUploadCompanyDetailsController.Get),
                         nameof(FileUploadCompanyDetailsController).RemoveControllerFromName(),
-                        new RouteValueDictionary { { "dataPeriod", session.Period.DataPeriod } });
+                        new RouteValueDictionary { { "submissionId", session.SubmissionId }, { "dataPeriod", session.Period.DataPeriod } });
             }
         }
 
-        return RedirectToAction("Get", "FileUploadCompanyDetails", new RouteValueDictionary { { "dataPeriod", session.Period.DataPeriod } });
+        return RedirectToAction(nameof(FileUploadCompanyDetailsController.Get), nameof(FileUploadCompanyDetailsController).RemoveControllerFromName(), new RouteValueDictionary { { "dataPeriod", session.Period.DataPeriod } });
     }
-    
+        
     private static void ClearRestOfJourney(RegistrationApplicationSession session, string currentPagePath)
     {
         var index = session.Journey.IndexOf(currentPagePath);

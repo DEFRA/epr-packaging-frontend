@@ -8,9 +8,8 @@ using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Sessions;
 using EPR.Common.Authorization.Models;
 using FrontendSchemeRegistration.Application.Options;
-using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Extensions;
-using FrontendSchemeRegistration.UI.ViewModels;
+using FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
 using Microsoft.Extensions.Options;
 
 namespace FrontendSchemeRegistration.UI.Services;
@@ -20,18 +19,22 @@ public class RegistrationApplicationService(
     IPaymentCalculationService paymentCalculationService,
     ISessionManager<RegistrationApplicationSession> sessionManager,
     ISessionManager<FrontendSchemeRegistrationSession> frontEndSessionManager,
-    IOptions<GlobalVariables> globalVariables
-) : IRegistrationApplicationService
+    ILogger<RegistrationApplicationService> logger,
+    IOptions<GlobalVariables> globalVariables) : IRegistrationApplicationService
 {
-    public async Task<RegistrationApplicationSession> GetRegistrationApplicationSession(ISession httpSession, Organisation organisation)
+    public async Task<RegistrationApplicationSession> GetRegistrationApplicationSession(ISession httpSession, Organisation organisation, bool? isResubmission = null)
     {
         var session = await sessionManager.GetSessionAsync(httpSession) ?? new RegistrationApplicationSession();
         var frontEndSession = await frontEndSessionManager.GetSessionAsync(httpSession) ?? new FrontendSchemeRegistrationSession();
 
         //this is wrong needs fixing 
-        var submissionYear = DateTime.Now.Year.ToString();
+        var submissionYear = DateTime.Now.Year;
         session.Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" };
         session.SubmissionPeriod = session.Period.DataPeriod;
+
+        var lateFeeDeadline = globalVariables.Value.LateFeeDeadline != DateTime.MinValue
+            ? new DateTime(submissionYear, globalVariables.Value.LateFeeDeadline.Month, globalVariables.Value.LateFeeDeadline.Day, 1, 1, 1, DateTimeKind.Utc)
+            : new DateTime(submissionYear, 4, 1, 1, 1, 1, DateTimeKind.Utc);
 
         var registrationApplicationDetails = await submissionService.GetRegistrationApplicationDetails(new GetRegistrationApplicationDetailsRequest
         {
@@ -39,12 +42,12 @@ public class RegistrationApplicationService(
             OrganisationId = organisation.Id.Value,
             ComplianceSchemeId = frontEndSession.RegistrationSession.SelectedComplianceScheme?.Id,
             SubmissionPeriod = session.Period.DataPeriod,
-            LateFeeDeadline = globalVariables.Value.LateFeeDeadline
+            LateFeeDeadline = lateFeeDeadline
         }) ?? new RegistrationApplicationDetails();
 
         session.SelectedComplianceScheme = frontEndSession.RegistrationSession.SelectedComplianceScheme;
-        session.IsComplianceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
 
+        session.ApplicationStatus = registrationApplicationDetails.ApplicationStatus;
         session.SubmissionId = registrationApplicationDetails.SubmissionId;
         session.IsSubmitted = registrationApplicationDetails.IsSubmitted;
         session.ApplicationReferenceNumber = registrationApplicationDetails.ApplicationReferenceNumber;
@@ -53,9 +56,9 @@ public class RegistrationApplicationService(
         session.RegistrationFeePaymentMethod = registrationApplicationDetails.RegistrationFeePaymentMethod;
         session.RegistrationApplicationSubmittedDate = registrationApplicationDetails.RegistrationApplicationSubmittedDate;
         session.RegistrationApplicationSubmittedComment = registrationApplicationDetails.RegistrationApplicationSubmittedComment;
-        session.ApplicationStatus = registrationApplicationDetails.ApplicationStatus;
         session.RegistrationFeeCalculationDetails = registrationApplicationDetails.RegistrationFeeCalculationDetails;
         session.IsLateFeeApplicable = registrationApplicationDetails.IsLateFeeApplicable;
+        session.IsResubmission = (registrationApplicationDetails.IsResubmission ?? isResubmission) ?? false;
 
         int? nationId;
         if (session.IsComplianceScheme)
@@ -73,6 +76,15 @@ public class RegistrationApplicationService(
             (int) Nation.NorthernIreland => "GB-NIR",
             _ => "regulator"
         };
+
+        if (session.ApplicationStatus
+                is ApplicationStatusType.AcceptedByRegulator
+                or ApplicationStatusType.ApprovedByRegulator
+            && isResubmission is true)
+        {
+            session.IsResubmission = true;
+            session.ApplicationStatus = ApplicationStatusType.NotStarted;
+        }
 
         await sessionManager.SaveSessionAsync(httpSession, session);
 
@@ -94,7 +106,7 @@ public class RegistrationApplicationService(
 
         if (isOutstandingPaymentAmountZero)
         {
-            SubmitRegistrationApplication(httpSession, null, "No-Outstanding-Payment", SubmissionType.RegistrationFeePayment);
+            await CreateRegistrationApplicationEvent(httpSession, null, "No-Outstanding-Payment", SubmissionType.RegistrationFeePayment);
         }
 
         return session;
@@ -104,7 +116,11 @@ public class RegistrationApplicationService(
     {
         var session = await sessionManager.GetSessionAsync(httpSession);
 
-        if (!session.FileReachedSynapse) return null;
+        if (!session.FileReachedSynapse)
+        {
+            logger.LogWarning("Unable to GetProducerRegistrationFees Details, session.FileReachedSynapse is null");
+            return null;
+        }
 
         var feeCalculationDetails = session.RegistrationFeeCalculationDetails[0];
 
@@ -120,10 +136,14 @@ public class RegistrationApplicationService(
             SubmissionDate = session.LastSubmittedFile.SubmittedDateTime.Value
         });
 
-        if (response is null) return null;
+        if (response is null)
+        {
+            logger.LogWarning("Unable to GetProducerRegistrationFees Details, paymentCalculationService.GetProducerRegistrationFees is null");
+            return null;
+        }
 
         session.TotalAmountOutstanding = response.OutstandingPayment < 0 ? 0 : response.OutstandingPayment;
-        sessionManager.SaveSessionAsync(httpSession, session);
+        await sessionManager.SaveSessionAsync(httpSession, session);
 
         return new FeeCalculationBreakdownViewModel
         {
@@ -150,7 +170,11 @@ public class RegistrationApplicationService(
     {
         var session = await sessionManager.GetSessionAsync(httpSession);
 
-        if (!session.FileReachedSynapse) return null;
+        if (!session.FileReachedSynapse)
+        {
+            logger.LogWarning("Unable to GetComplianceSchemeRegistrationFees Details, session.FileReachedSynapse is null");
+            return null;
+        }
 
         var feeCalculationDetails = session.RegistrationFeeCalculationDetails;
 
@@ -171,10 +195,14 @@ public class RegistrationApplicationService(
                 }).ToList()
             });
 
-        if (response is null) return null;
+        if (response is null)
+        {
+            logger.LogWarning("Unable to GetComplianceSchemeRegistrationFees Details, paymentCalculationService.GetComplianceSchemeRegistrationFees is null");
+            return null;
+        }
 
         session.TotalAmountOutstanding = response.OutstandingPayment < 0 ? 0 : response.OutstandingPayment;
-        sessionManager.SaveSessionAsync(httpSession, session);
+        await sessionManager.SaveSessionAsync(httpSession, session);
 
         var individualProducerData = response.ComplianceSchemeMembersWithFees.GetIndividualProducers(feeCalculationDetails);
 
@@ -230,7 +258,7 @@ public class RegistrationApplicationService(
         return await paymentCalculationService.InitiatePayment(request);
     }
 
-    public async Task CreateApplicationReferenceNumber(ISession httpSession, string organisationNumber)
+    private async Task<string> CreateApplicationReferenceNumber(ISession httpSession, string organisationNumber)
     {
         var session = await sessionManager.GetSessionAsync(httpSession);
         var referenceNumber = organisationNumber;
@@ -242,27 +270,20 @@ public class RegistrationApplicationService(
             referenceNumber += session.SelectedComplianceScheme.RowNumber.ToString("D3");
         }
 
-        session.ApplicationReferenceNumber = $"PEPR{referenceNumber}{(periodEnd.Year - 2000)}P{periodNumber}";
-
-        await submissionService.SubmitAsync(
-            session.SubmissionId.Value,
-            session.LastSubmittedFile.FileId.Value,
-            session.LastSubmittedFile.SubmittedByName!,
-            session.ApplicationReferenceNumber);
-
-        sessionManager.SaveSessionAsync(httpSession, session);
+        return $"PEPR{referenceNumber}{periodEnd.Year - 2000}P{periodNumber}";
     }
 
-    public async Task SubmitRegistrationApplication(ISession httpSession, string? comments, string? paymentMethod, SubmissionType submissionType)
+    public async Task CreateRegistrationApplicationEvent(ISession httpSession, string? comments, string? paymentMethod, SubmissionType submissionType)
     {
         var session = await sessionManager.GetSessionAsync(httpSession);
 
-        await submissionService.SubmitRegistrationApplicationAsync(
+        await submissionService.CreateRegistrationApplicationEvent(
             session.SubmissionId.Value,
             session.SelectedComplianceScheme?.Id,
             comments,
             paymentMethod,
             session.ApplicationReferenceNumber,
+            session.IsResubmission,
             submissionType
         );
 
@@ -278,15 +299,18 @@ public class RegistrationApplicationService(
         await sessionManager.SaveSessionAsync(httpSession, session);
     }
 
-    public async Task SetRegistrationFileUploadSession(ISession httpSession)
+    public async Task SetRegistrationFileUploadSession(ISession httpSession, string organisationNumber, bool? isResubmission)
     {
-        var frontEndSession = await frontEndSessionManager.GetSessionAsync(httpSession);
+        var frontEndSession = await frontEndSessionManager.GetSessionAsync(httpSession) ?? new FrontendSchemeRegistrationSession();
 
-        frontEndSession.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration = true;
         //this is wrong needs fixing 
         var submissionYear = DateTime.Now.Year.ToString();
         var period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" };
+
         frontEndSession.RegistrationSession.SubmissionPeriod = period.DataPeriod;
+        frontEndSession.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration = true;
+        frontEndSession.RegistrationSession.IsResubmission = isResubmission ?? false;
+        frontEndSession.RegistrationSession.ApplicationReferenceNumber = await CreateApplicationReferenceNumber(httpSession, organisationNumber);
 
         await frontEndSessionManager.SaveSessionAsync(httpSession, frontEndSession);
     }
@@ -294,7 +318,7 @@ public class RegistrationApplicationService(
 
 public interface IRegistrationApplicationService
 {
-    Task<RegistrationApplicationSession> GetRegistrationApplicationSession(ISession httpSession, Organisation organisation);
+    Task<RegistrationApplicationSession> GetRegistrationApplicationSession(ISession httpSession, Organisation organisation, bool? isResubmission = null);
 
     Task<FeeCalculationBreakdownViewModel?> GetProducerRegistrationFees(ISession httpSession);
 
@@ -302,9 +326,7 @@ public interface IRegistrationApplicationService
 
     Task<string> InitiatePayment(ClaimsPrincipal user, ISession httpSession);
 
-    Task CreateApplicationReferenceNumber(ISession httpSession, string organisationNumber);
+    Task CreateRegistrationApplicationEvent(ISession httpSession, string? comments, string? paymentMethod, SubmissionType submissionType);
 
-    Task SubmitRegistrationApplication(ISession httpSession, string? comments, string? paymentMethod, SubmissionType submissionType);
-
-    Task SetRegistrationFileUploadSession(ISession httpSession);
+    Task SetRegistrationFileUploadSession(ISession httpSession, string organisationNumber, bool? isResubmission);
 }

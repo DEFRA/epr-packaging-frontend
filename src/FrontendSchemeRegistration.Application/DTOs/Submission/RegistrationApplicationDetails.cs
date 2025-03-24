@@ -12,8 +12,8 @@ public class RegistrationApplicationDetails
 
     public bool IsSubmitted { get; set; }
     
-    public RegistrationFeeCalculationDetails[]? RegistrationFeeCalculationDetails { get; set; }
-    
+	public bool? IsResubmission { get; set; }
+	
     public string? RegistrationFeePaymentMethod { get; set; }
 
     public bool IsLateFeeApplicable { get; set; }
@@ -26,6 +26,8 @@ public class RegistrationApplicationDetails
 
     public string? RegistrationReferenceNumber { get; set; }
 
+    public RegistrationFeeCalculationDetails[]? RegistrationFeeCalculationDetails { get; set; }
+    
     public ComplianceSchemeDto? SelectedComplianceScheme { get; set; }
     
     public LastSubmittedFileDetails LastSubmittedFile { get; set; } = new LastSubmittedFileDetails();

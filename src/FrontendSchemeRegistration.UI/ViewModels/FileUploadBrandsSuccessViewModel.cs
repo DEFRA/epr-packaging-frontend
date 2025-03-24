@@ -12,4 +12,6 @@ public class FileUploadBrandsSuccessViewModel : ViewModelWithOrganisationRole
     public bool RequiresPartnershipsFile { get; set; }
 
     public bool IsApprovedUser { get; set; }
+    
+    public bool IsResubmission { get; set; }
 }

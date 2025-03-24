@@ -177,4 +177,22 @@
   <data name="of_your_members" xml:space="preserve">
     <value />
   </data>
+  <data name="return_to_dashboard" xml:space="preserve">
+    <value />
+  </data>
+  <data name="you_can_upload_again" xml:space="preserve">
+    <value />
+  </data>
+  <data name="upload_brand_details" xml:space="preserve">
+    <value />
+  </data>
+  <data name="if_you_think_this_is_incorrect" xml:space="preserve">
+    <value />
+  </data>
+  <data name="brand_details" xml:space="preserve">
+    <value />
+  </data>
+  <data name="partner_details" xml:space="preserve">
+    <value />
+  </data>
 </root>

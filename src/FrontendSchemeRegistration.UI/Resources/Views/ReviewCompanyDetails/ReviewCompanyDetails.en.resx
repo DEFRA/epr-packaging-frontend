@@ -219,4 +219,7 @@
   <data name="download" xml:space="preserve">
     <value>Download</value>
   </data>
+  <data name="no_ill_do_it_later" xml:space="preserve">
+    <value>No, I'll do it later</value>
+  </data>
 </root>

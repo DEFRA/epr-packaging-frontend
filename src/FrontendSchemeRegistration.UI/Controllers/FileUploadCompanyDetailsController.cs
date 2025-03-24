@@ -49,11 +49,6 @@ public class FileUploadCompanyDetailsController : Controller
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         if (session is not null)
         {
-            if (session.RegistrationSession.Journey.Count > 0 && !session.RegistrationSession.Journey.Contains<string>(PagePaths.FileUploadCompanyDetailsSubLanding))
-            {
-                return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
-            }
-
             var organisationRole = session.UserData.Organisations.FirstOrDefault()?.OrganisationRole;
 
             if (organisationRole is not null)
@@ -67,14 +62,15 @@ public class FileUploadCompanyDetailsController : Controller
                     }
                 }
 
-                SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration);
+                SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission);
 
                 return View(
                     "FileUploadCompanyDetails",
                     new FileUploadCompanyDetailsViewModel
                     {
                         SubmissionDeadline = session.RegistrationSession.SubmissionDeadline,
-                        OrganisationRole = organisationRole
+                        OrganisationRole = organisationRole,
+                        IsResubmission = session.RegistrationSession.IsResubmission
                     });
             }
         }
@@ -104,13 +100,14 @@ public class FileUploadCompanyDetailsController : Controller
             new DefaultFileUploadLimit(_globalVariables),
             SubmissionSubType.CompanyDetails,
             session.RegistrationSession.LatestRegistrationSet[session.RegistrationSession.SubmissionPeriod],
-            session.RegistrationSession.SelectedComplianceScheme?.Id);
+            session.RegistrationSession.SelectedComplianceScheme?.Id,
+            session.RegistrationSession.IsResubmission);
 
         session.RegistrationSession.Journey.AddIfNotExists(PagePaths.FileUploadCompanyDetails);
         var organisationRole = session.UserData.Organisations.FirstOrDefault()?.OrganisationRole;
 
         await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
-        ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
+        SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission);
 
         return !ModelState.IsValid
             ? View(
@@ -118,7 +115,8 @@ public class FileUploadCompanyDetailsController : Controller
                 new FileUploadCompanyDetailsViewModel
                 {
                     SubmissionDeadline = session.RegistrationSession.SubmissionDeadline,
-                    OrganisationRole = organisationRole
+                    OrganisationRole = organisationRole,
+                    IsResubmission = session.RegistrationSession.IsResubmission
                 })
             : RedirectToAction(
                 "Get",
@@ -131,8 +129,9 @@ public class FileUploadCompanyDetailsController : Controller
                 });
     }
 
-    private void SetBackLink(bool isFileUploadJourneyInvokedViaRegistration)
+    private void SetBackLink(bool isFileUploadJourneyInvokedViaRegistration, bool isResubmission)
     {
-        ViewBag.BackLinkToDisplay = isFileUploadJourneyInvokedViaRegistration ? Url.Content($"~/{PagePaths.RegistrationTaskList}") : Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
+        var backLink = isFileUploadJourneyInvokedViaRegistration ? Url.Content($"~/{PagePaths.RegistrationTaskList}") : Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
+        ViewBag.BackLinkToDisplay = backLink.AppendResubmissionFlagToQueryString(isResubmission);
     }
 }

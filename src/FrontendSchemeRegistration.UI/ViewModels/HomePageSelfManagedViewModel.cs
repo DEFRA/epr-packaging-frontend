@@ -32,6 +32,8 @@ public class HomePageSelfManagedViewModel
 
     public string? RegistrationReferenceNumber { get; set; }
 
+    public bool IsResubmission { get; set; }
+
     public string RegistrationApplicationLink 
         => ApplicationStatus is
                ApplicationStatusType.FileUploaded

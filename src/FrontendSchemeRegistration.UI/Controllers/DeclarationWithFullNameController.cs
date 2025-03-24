@@ -1,28 +1,24 @@
-﻿namespace FrontendSchemeRegistration.UI.Controllers;
-
-using Application.Constants;
-using Application.DTOs.Submission;
-using Application.Services.Interfaces;
-using Extensions;
+﻿using EPR.Common.Authorization.Sessions;
+using FrontendSchemeRegistration.Application.Constants;
+using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
+using FrontendSchemeRegistration.UI.Extensions;
+using FrontendSchemeRegistration.UI.Sessions;
+using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-using UI.Attributes.ActionFilters;
-using ViewModels;
+
+namespace FrontendSchemeRegistration.UI.Controllers;
 
 [Route(PagePaths.DeclarationWithFullName)]
-public class DeclarationWithFullNameController : Controller
+public class DeclarationWithFullNameController(
+    ISubmissionService submissionService,
+    ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
+    ILogger<DeclarationWithFullNameController> logger) : Controller
 {
     private const string ViewName = "DeclarationWithFullName";
     private const string ConfirmationViewName = "CompanyDetailsConfirmation";
     private const string SubmissionErrorViewName = "OrganisationDetailsSubmissionFailed";
-    private readonly ILogger<DeclarationWithFullNameController> _logger;
-
-    private readonly ISubmissionService _submissionService;
-
-    public DeclarationWithFullNameController(ISubmissionService submissionService, ILogger<DeclarationWithFullNameController> logger)
-    {
-        _submissionService = submissionService;
-        _logger = logger;
-    }
 
     [HttpGet]
     [SubmissionIdActionFilter(PagePaths.FileUploadCompanyDetailsSubLanding)]
@@ -31,13 +27,15 @@ public class DeclarationWithFullNameController : Controller
         var submissionId = Guid.Parse(Request.Query["submissionId"]);
         var userData = User.GetUserData();
 
+        var session = await sessionManager.GetSessionAsync(HttpContext.Session);
+
         if (!userData.CanSubmit())
         {
             var routeValues = new RouteValueDictionary { { "submissionId", submissionId.ToString() } };
             return RedirectToAction("Get", "ReviewCompanyDetails", routeValues);
         }
 
-        var submission = await _submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
+        var submission = await submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
 
         if (submission is null)
         {
@@ -46,7 +44,7 @@ public class DeclarationWithFullNameController : Controller
 
         if (!submission.HasValidFile)
         {
-            _logger.LogError("User {UserId} loaded a page with no valid submission files for submission ID {SubmissionId}", userData.Id, submissionId);
+            logger.LogError("User {UserId} loaded a page with no valid submission files for submission ID {SubmissionId}", userData.Id, submissionId);
             return RedirectToAction("Get", "FileUploadSubLanding");
         }
 
@@ -60,7 +58,8 @@ public class DeclarationWithFullNameController : Controller
         {
             OrganisationName = User.GetUserData().Organisations[0].Name,
             OrganisationDetailsFileId = submission.LastUploadedValidFiles.CompanyDetailsFileId.ToString(),
-            SubmissionId = submissionId
+            SubmissionId = submissionId,
+            IsResubmission = session.RegistrationSession.IsResubmission
         });
     }
 
@@ -76,7 +75,7 @@ public class DeclarationWithFullNameController : Controller
             return RedirectToAction("Get", "ReviewCompanyDetails", routeValues);
         }
 
-        var submission = await _submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
+        var submission = await submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
 
         if (submission is null)
         {
@@ -85,7 +84,7 @@ public class DeclarationWithFullNameController : Controller
 
         if (!submission.HasValidFile)
         {
-            _logger.LogError("Blocked User {UserId} attempted post of full name for a submission {SubmissionId} with no valid files", userData.Id, submissionId);
+            logger.LogError("Blocked User {UserId} attempted post of full name for a submission {SubmissionId} with no valid files", userData.Id, submissionId);
             return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
         }
 
@@ -98,7 +97,10 @@ public class DeclarationWithFullNameController : Controller
 
         try
         {
-            await _submissionService.SubmitAsync(submissionId, new Guid(model.OrganisationDetailsFileId), model.FullName);
+            var session = await sessionManager.GetSessionAsync(HttpContext.Session);
+
+            await submissionService.SubmitAsync(submissionId, new Guid(model.OrganisationDetailsFileId), model.FullName, session.RegistrationSession.ApplicationReferenceNumber, session.RegistrationSession.IsResubmission);
+
             return RedirectToAction("Get", ConfirmationViewName, new { submissionId });
         }
         catch (Exception)

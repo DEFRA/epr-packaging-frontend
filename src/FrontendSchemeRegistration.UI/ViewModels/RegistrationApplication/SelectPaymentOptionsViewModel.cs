@@ -1,10 +1,10 @@
-﻿using FrontendSchemeRegistration.Application.Enums;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
+using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Extensions;
 using FrontendSchemeRegistration.UI.Resources;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
 
-namespace FrontendSchemeRegistration.UI.ViewModels
+namespace FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication
 {
     [ExcludeFromCodeCoverage]
     public class SelectPaymentOptionsViewModel

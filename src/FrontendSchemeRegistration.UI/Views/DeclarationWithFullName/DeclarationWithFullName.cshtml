@@ -22,12 +22,27 @@
                 }
                 
                 <h1 class="govuk-heading-l">@Localizer["declaration"]</h1>
-                
-                <p class="govuk-body">@Localizer["by_entering_your_name"]</p>
+
+                @if (Model.IsResubmission)
+                {
+                    <p class="govuk-body">@Localizer["by_entering_your_name_resubmission"]</p>
+                }
+                else
+                {
+                    <p class="govuk-body">@Localizer["by_entering_your_name"]</p>
+                }
                 
                 <ul class="govuk-list govuk-list--bullet">
                     <li>@String.Format(Localizer["you_can_act_on_behalf"].Value, Model.OrganisationName)</li>
-                    <li>@Localizer["the_data_you_are_submitting"]</li>
+                    @if (Model.IsResubmission)
+                    {
+                        <li>@Localizer["this_data_is_accurate"]</li>
+                    }
+                    else
+                    {
+                        <li>@Localizer["the_data_you_are_submitting"]</li>
+                    }
+
                 </ul>
                 
                 <div class="govuk-form-group @(ViewData.ModelState.IsValid ? string.Empty : "govuk-form-group--error")" data-testid="declaration-full-name-form">
@@ -56,8 +71,8 @@
                         @String.Format(Localizer["may_face_enforcement"].Value, Model.OrganisationName)
                     </strong>
                 </div>
-                
-                <button class="govuk-button" data-module="govuk-button" type="submit">@Localizer["submit_file"]</button>
+
+                <button class="govuk-button" data-module="govuk-button" type="submit">@(Model.IsResubmission ? Localizer["update_files"] : Localizer["submit_file"])</button>
             }
         </div>
     </div>

@@ -20,4 +20,6 @@ public class FileUploadCompanyDetailsSuccessViewModel : ViewModelWithOrganisatio
     public bool IsApprovedUser { get; set; }
 
     public int? OrganisationMemberCount { get; set; }
+    
+    public bool IsResubmission { get; set; }
 }

@@ -52,7 +52,8 @@ public class FileUploadBrandsSuccessController : Controller
                         FileName = submission.BrandsFileName,
                         RequiresPartnershipsFile = submission.RequiresPartnershipsFile,
                         OrganisationRole = organisationRole,
-                        IsApprovedUser = session.UserData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved)
+                        IsApprovedUser = session.UserData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved),
+                        IsResubmission = session.RegistrationSession.IsResubmission
                     });
                 }
             }

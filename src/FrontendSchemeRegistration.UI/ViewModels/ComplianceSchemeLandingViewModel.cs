@@ -34,8 +34,8 @@ public class ComplianceSchemeLandingViewModel
     public string? ApplicationReferenceNumber { get; set; }
 
     public string? RegistrationReferenceNumber { get; set; }
-    
-    public string RegistrationApplicationLink 
+
+    public string RegistrationApplicationLink
         => ApplicationStatus is
                ApplicationStatusType.FileUploaded
                or ApplicationStatusType.SubmittedAndHasRecentFileUpload
@@ -45,6 +45,8 @@ public class ComplianceSchemeLandingViewModel
            || FileUploadStatus is
                RegistrationTaskListStatus.Pending
                or RegistrationTaskListStatus.Completed
-            ? "RegistrationTaskList" 
+            ? "RegistrationTaskList"
             : "ProducerRegistrationGuidance";
+
+    public bool IsResubmission { get; set; }
 }

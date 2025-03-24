@@ -1,8 +1,8 @@
-﻿namespace FrontendSchemeRegistration.Application.UnitTests.Extensions;
-
-using Application.Extensions;
-using FluentAssertions;
+﻿using FluentAssertions;
 using FrontendSchemeRegistration.Application.Constants;
+using FrontendSchemeRegistration.Application.Extensions;
+
+namespace FrontendSchemeRegistration.Application.UnitTests.Extensions;
 
 [TestFixture]
 public class HttpClientExtensionsTests
@@ -70,5 +70,22 @@ public class HttpClientExtensionsTests
             .WhoseValue
             .Should()
             .BeEquivalentTo(complianceSchemeId.ToString());
+    }
+    
+    [Test]
+    public void AddHeaderIsResubmissionIfNotNull_AddsComplianceSchemeIdHeader()
+    {
+        // Arrange
+        // Act
+        _httpClient.AddHeaderIsResubmissionIfNotNull(true);
+
+        // Assert
+        _httpClient.DefaultRequestHeaders.Should()
+            .HaveCount(1)
+            .And
+            .ContainKey("IsResubmission")
+            .WhoseValue
+            .Should()
+            .BeEquivalentTo(true.ToString());
     }
 }

@@ -1,10 +1,10 @@
-﻿namespace FrontendSchemeRegistration.UI.UnitTests.Extensions;
-
-using UI.Enums;
-using FluentAssertions;
+﻿using FluentAssertions;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
-using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Constants;
+using FrontendSchemeRegistration.UI.Enums;
+using FrontendSchemeRegistration.UI.Extensions;
+
+namespace FrontendSchemeRegistration.UI.UnitTests.Extensions;
 
 [TestFixture]
 public class SubmissionPeriodExtensionsTests
@@ -152,7 +152,7 @@ public class SubmissionPeriodExtensionsTests
     [TestCase("January to June 2024", null, "")]
     [TestCase("", MonthType.Start, "")]
     [TestCase("", MonthType.End, "")]
-    public void SubmissionPeriodId_ToReferenceNumberFormat_ShouldFormatCorrectly_For_Welsh(string submissionPeriod, MonthType? monthType, string expectedResult)
+    public void SubmissionPeriodId_ToLocalisedMonth_ShouldFormatCorrectly_For_English(string submissionPeriod, MonthType? monthType, string expectedResult)
     {
         var input = new SubmissionPeriodId { SubmissionPeriod = submissionPeriod };
         var result = input.LocalisedMonth(monthType);

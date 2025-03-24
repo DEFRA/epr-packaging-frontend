@@ -62,6 +62,8 @@ public class ReviewCompanyDetailsViewModel : ViewModelWithOrganisationRole, IVal
     public bool? SubmitOrganisationDetailsResponse { get; set; }
 
     public SubmissionPeriodStatus SubmissionStatus { get; set; }
+    
+    public bool IsResubmission { get; set; }
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {

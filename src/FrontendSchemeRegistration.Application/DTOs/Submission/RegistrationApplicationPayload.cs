@@ -19,4 +19,6 @@ public class RegistrationApplicationPayload
 
     public SubmissionType SubmissionType { get; set; }
     public string? Comments { get; set; }
+    
+    public bool IsResubmission { get; set; }
 }
