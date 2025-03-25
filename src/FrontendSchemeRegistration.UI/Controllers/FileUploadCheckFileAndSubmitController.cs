@@ -62,6 +62,13 @@ public class FileUploadCheckFileAndSubmitController : Controller
 
         ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadSubLanding}");
 
+        var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+
+        if (await _featureManager.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)))
+        {
+            ViewBag.BackLinkToDisplay = session.PomResubmissionSession.IsPomResubmissionJourney ? Url.Content($"/report-data/{PagePaths.ResubmissionTaskList}") : Url.Content($"~{PagePaths.FileUploadSubLanding}");
+        }
+
         var userData = User.GetUserData();
         var viewModel = await BuildModel(submission, userData);
 

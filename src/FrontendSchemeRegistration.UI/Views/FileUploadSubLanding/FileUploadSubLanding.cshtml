@@ -1,10 +1,14 @@
 @using static FrontendSchemeRegistration.Application.Enums.SubmissionPeriodStatus
 @using FrontendSchemeRegistration.Application.Enums
+@using FrontendSchemeRegistration.UI.Constants
+@using Microsoft.FeatureManagement
+@inject IFeatureManager _featureManager
 
 @model FileUploadSubLandingViewModel
 @{
     ViewData["Title"] = Localizer["report_packaging_data"];
     var notStartedSubmissionExist = Model.SubmissionPeriodDetailGroups.Exists(x => x.SubmissionPeriodDetails.Exists(s => (s.Status is NotStarted or CannotStartYet)));
+    var implementPackagingDataResubmissionJourney = _featureManager.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)).Result;
 }
 
 @await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
@@ -106,20 +110,48 @@
                                             }
                                             else if (submissionPeriodDetail.DatePeriodYear.Contains("2023"))
                                             {
-                                                <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear </h3>
+                                                if (implementPackagingDataResubmissionJourney)
+                                                {
+                                                    <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_members_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) </h3>
+                                                }
+                                                else
+                                                {
+                                                    <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear </h3>
+                                                }
                                             }
                                             else
                                             {
-                                                <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) @Localizer["or"] @Localizer["January_to_December"] @submissionPeriodDetail.DatePeriodYear (@Localizer["small_producers_sentence_text"]) </h3>
+                                                if (implementPackagingDataResubmissionJourney)
+                                                {
+                                                    <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_members_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) @Localizer["or"] @Localizer["January_to_December"] @submissionPeriodDetail.DatePeriodYear (@Localizer["small_producers_sentence_text"]) </h3>
+                                                }
+                                                else
+                                                {
+                                                    <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) @Localizer["or"] @Localizer["January_to_December"] @submissionPeriodDetail.DatePeriodYear (@Localizer["small_producers_sentence_text"]) </h3>
+                                                }
                                             }
                                         }
                                         else if (submissionPeriodDetail.DataPeriod.Contains("January to June 2024"))
                                         {
-                                            <h3 class="govuk-heading-m govuk-!-margin-bottom-0">@Localizer["report_members_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) </h3>                                           
+                                            if (implementPackagingDataResubmissionJourney)
+                                            {
+                                                <h3 class="govuk-heading-m govuk-!-margin-bottom-0">@Localizer["report_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) </h3>
+                                            }
+                                            else
+                                            {
+                                                <h3 class="govuk-heading-m govuk-!-margin-bottom-0">@Localizer["report_members_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) </h3>
+                                            }
                                         }
                                         else if (submissionPeriodDetail.DatePeriodYear.Contains("2023"))
                                         {
-                                            <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear </h3>
+                                            if (implementPackagingDataResubmissionJourney)
+                                            {
+                                                <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) </h3>
+                                            }
+                                            else
+                                            {
+                                                <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear </h3>
+                                            }
                                         }
                                         else
                                         {
@@ -167,7 +199,13 @@
                                                     @if (Model.ServiceRole is "Basic User")
                                                     {
                                                         <div class="govuk-card-footer">
-                                                            <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["check_if_you_need_to_update_packaging_data"]</button>
+                                                            if(implementPackagingDataResubmissionJourney)
+                                                            {
+                                                                <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["check_if_you_need_to_resubmit_packaging_data"]</button>
+                                                            }
+                                                            else{
+                                                                <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["check_if_you_need_to_update_packaging_data"]</button>
+                                                            }
                                                         </div>
                                                     }
                                                     else
@@ -180,7 +218,26 @@
                                                 else if (submissionPeriodDetail.Decision is "Accepted" || submissionPeriodDetail.Decision is "Approved")
                                                 {
                                                     <div class="govuk-card-footer">
-                                                        <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["check_if_you_need_to_update_packaging_data"]</button>
+                                                        @if (implementPackagingDataResubmissionJourney)
+                                                        {
+                                                            <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["check_if_you_need_to_resubmit_packaging_data"]</button>
+                                                        }
+                                                        else
+                                                        {
+                                                            <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["check_if_you_need_to_update_member's_packaging_data"]</button>
+                                                        }
+                                                    </div>
+                                                }
+                                                else if (implementPackagingDataResubmissionJourney && submissionPeriodDetail.Status is SubmissionPeriodStatus.InProgress)
+                                                {
+                                                    <div class="govuk-card-footer">
+                                                        <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@SharedLocalizer["continue"]</button>
+                                                    </div>
+                                                }
+                                                else if (implementPackagingDataResubmissionJourney && submissionPeriodDetail.Status is SubmissionPeriodStatus.SubmittedToRegulator && submissionPeriodDetail.IsResubmissionComplete is not null && submissionPeriodDetail.IsResubmissionComplete is true)
+                                                {
+                                                    <div class="govuk-card-footer">
+                                                        <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["check_if_you_need_to_resubmit_packaging_data"]</button>
                                                     </div>
                                                 }
                                             }
@@ -222,12 +279,24 @@
                                                         <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["check_if_you_need_to_update_member's_packaging_data"]</button>
                                                     </div>
                                                 }
+                                                else if (implementPackagingDataResubmissionJourney && submissionPeriodDetail.Status is SubmissionPeriodStatus.InProgress)
+                                                {
+                                                    <div class="govuk-card-footer">
+                                                        <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@SharedLocalizer["continue"]</button>
+                                                    </div>
+                                                }
+                                                else if (implementPackagingDataResubmissionJourney && submissionPeriodDetail.Status is SubmissionPeriodStatus.SubmittedToRegulator && submissionPeriodDetail.IsResubmissionComplete is not null && submissionPeriodDetail.IsResubmissionComplete is true)
+                                                {
+                                                    <div class="govuk-card-footer">
+                                                        <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["check_if_you_need_to_resubmit_packaging_data"]</button>
+                                                    </div>
+                                                }
                                             }
                                         }
                                         else if (submissionPeriodDetail.Status is FileUploaded)
                                         {
                                             <div class="govuk-card-footer">
-                                                <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["start_now"]</button>
+                                                <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@(!submissionPeriodDetail.IsSubmitted ? Localizer["start_now"] : SharedLocalizer["continue"])</button>
                                             </div>
                                         }
                                         else if (submissionPeriodDetail.Status is NotStarted)

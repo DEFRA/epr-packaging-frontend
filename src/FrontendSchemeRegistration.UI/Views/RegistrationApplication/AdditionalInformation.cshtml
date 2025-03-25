@@ -9,13 +9,16 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-three-quarters">
             <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
-                @if (Model.IsComplianceScheme && !Model.IsResubmission)
+                @if (Model.IsComplianceScheme)
                 {
-                    @Localizer["members_organisation_details"]
-                }
-                else @if (Model.IsComplianceScheme && Model.IsResubmission)
-                {
-                    @Localizer["registration_data_resubmission", Model.ComplianceScheme]
+                    if (Model.IsResubmission)
+                    {
+                        @Localizer["registration_data_resubmission", Model.ComplianceScheme]
+                    }
+                    else
+                    {
+                        @Localizer["members_organisation_details"]
+                    }
                 }
                 else
                 {
@@ -41,7 +44,7 @@
                     <span class="govuk-visually-hidden">Warning</span>
                     @if (Model.IsResubmission)
                     {
-                        @Localizer["you_will_have_to_start_again_if_there_are_errors_in_your_files", DateTime.Today.Year]
+                        @Localizer["you_will_have_to_start_again_if_there_are_errors_in_your_files"]
                     }
                     else{
                         @Localizer["ensure_x_year_reporting_of_packaging_data_before_registering", DateTime.Today.Year]
@@ -67,9 +70,12 @@
             <form asp-controller="RegistrationApplication" asp-action="AdditionalInformation" method="post">
                 @Html.TextAreaFor(model => model.AdditionalInformationText, new { @class = "govuk-textarea", @rows = "5" })
                 <button class="govuk-button govuk-body" data-module="govuk-button" type="submit">
-                     @if (Model.IsResubmission){
+                     @if (Model.IsResubmission)
+                     {
                         @Localizer["submit_registration_update"]
-                     }else{
+                     }
+                     else
+                     {
                         @Localizer["submit_registration_application"]
                      }
                 </button>

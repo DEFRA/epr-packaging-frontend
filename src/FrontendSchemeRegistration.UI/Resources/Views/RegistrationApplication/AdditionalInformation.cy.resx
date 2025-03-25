@@ -57,4 +57,19 @@
     <data name="submit_registration_application" xml:space="preserve">
         <value>Cyflwyno cais am gofrestru</value>
     </data>
+    <data name="you_will_have_to_start_again_if_there_are_errors_in_your_files" xml:space="preserve">
+        <value>[Welsh] You will have to start again if there are errors in your files.</value>
+    </data>
+    <data name="you_must_be_an_approved_or_delegated_person_to_resubmit_your_data" xml:space="preserve">
+        <value>[Welsh] You must be an approved or delegated person to resubmit your data.</value>
+    </data>
+    <data name="you_can_use_the_comment_box_to_enter_additional_information_which_may_assist_the_regulator" xml:space="preserve">
+        <value>[Welsh] You can use the comment box to enter additional information which may assist the regulator. For example, an agreement over a part payment.</value>
+    </data>
+    <data name="submit_registration_update" xml:space="preserve">
+        <value>[Welsh] Submit registration update</value>
+    </data>
+    <data name="registration_data_resubmission" xml:space="preserve">
+        <value>[Welsh] {0} registration data resubmission</value>
+    </data>
 </root>

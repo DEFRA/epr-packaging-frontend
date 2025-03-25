@@ -1,4 +1,6 @@
 using System.Web;
+using EPR.SubmissionMicroservice.API.Contracts.Submissions.Get;
+using EPR.SubmissionMicroservice.Data.Entities.SubmissionEvent;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
@@ -40,14 +42,14 @@ public class SubmissionService(IWebApiGatewayClient webApiGatewayClient) : ISubm
         await SubmitAsync(submissionId, fileId, null, null, false);
     }
 
-    public async Task SubmitAsync(Guid submissionId, Guid fileId, string? submittedBy, string? appReferenceNumber, bool isResubmission)
+    public async Task SubmitAsync(Guid submissionId, Guid fileId, string? submittedBy, string? appReferenceNumber = null, bool? isResubmitted = null)
     {
         var payload = new SubmissionPayload
         {
             FileId = fileId,
             SubmittedBy = submittedBy,
             AppReferenceNumber = appReferenceNumber,
-            IsResubmission = isResubmission
+            IsResubmission = isResubmitted
         };
 
         await webApiGatewayClient.SubmitAsync(submissionId, payload);
@@ -109,5 +111,35 @@ public class SubmissionService(IWebApiGatewayClient webApiGatewayClient) : ISubm
     public async Task<RegistrationApplicationDetails?> GetRegistrationApplicationDetails(GetRegistrationApplicationDetailsRequest request)
     {
         return await webApiGatewayClient.GetRegistrationApplicationDetails(request);
+    }
+
+    public async Task<PackagingResubmissionApplicationDetails?> GetPackagingDataResubmissionApplicationDetails(GetPackagingResubmissionApplicationDetailsRequest request)
+    {
+        return await webApiGatewayClient.GetPackagingDataResubmissionApplicationDetails(request);
+    }
+
+    public async Task<PackagingResubmissionMemberDetails?> GetPackagingResubmissionMemberDetails(PackagingResubmissionMemberRequest request)
+    {
+        return await webApiGatewayClient.GetPackagingResubmissionMemberDetails(request);
+    }
+
+	public async Task CreatePackagingResubmissionReferenceNumberEvent(Guid submissionId, PackagingResubmissionReferenceNumberCreatedEvent @event)
+	{
+		await webApiGatewayClient.CreatePackagingResubmissionReferenceNumberEvent(submissionId, @event);
+	}
+
+    public async Task CreatePackagingResubmissionFeeViewEvent(Guid? submissionId)
+    {
+        await webApiGatewayClient.CreatePackagingResubmissionFeeViewEvent(submissionId);
+    }
+
+    public async Task CreatePackagingDataResubmissionFeePaymentEvent(Guid? submissionId, Guid? filedId,string paymentMethod)
+    {
+        await webApiGatewayClient.CreatePackagingDataResubmissionFeePaymentEvent(submissionId, filedId, paymentMethod);
+    }
+
+    public async Task CreatePackagingResubmissionApplicationSubmittedCreatedEvent(Guid? submissionId, Guid? filedId, string submittedBy, DateTime submissionDate, string comment)
+    {
+        await webApiGatewayClient.CreatePackagingResubmissionApplicationSubmittedCreatedEvent(submissionId, filedId, submittedBy, submissionDate, comment);
     }
 }

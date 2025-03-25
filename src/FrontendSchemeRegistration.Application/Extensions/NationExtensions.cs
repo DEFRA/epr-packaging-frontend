@@ -14,5 +14,14 @@ namespace FrontendSchemeRegistration.Application.Extensions
             "GB-WLS" => Nation.Wales.ToString(),
             _ => ""
         };
-    }
+
+		public static string GetNationNameFromId(int nationId) => nationId switch
+		{
+			(int)Nation.England => "GB-ENG",
+			(int)Nation.Scotland => "GB-SCT",
+			(int)Nation.Wales => "GB-WLS",
+			(int)Nation.NorthernIreland => "GB-NIR",
+			_ => ""
+		};
+	}
 }

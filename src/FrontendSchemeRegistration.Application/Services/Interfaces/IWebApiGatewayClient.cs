@@ -1,9 +1,12 @@
+using EPR.SubmissionMicroservice.API.Contracts.Submissions.Get;
+using EPR.SubmissionMicroservice.Data.Entities.SubmissionEvent;
 using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.DTOs.Prns;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
 using FrontendSchemeRegistration.Application.DTOs.Subsidiary.FileUploadStatus;
 using FrontendSchemeRegistration.Application.Enums;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FrontendSchemeRegistration.Application.Services.Interfaces;
 
@@ -68,4 +71,16 @@ public interface IWebApiGatewayClient
     Task<RegistrationApplicationDetails?> GetRegistrationApplicationDetails(GetRegistrationApplicationDetailsRequest request);
 
     Task<byte[]?> FileDownloadAsync(string queryString);
+
+    Task<PackagingResubmissionApplicationDetails?> GetPackagingDataResubmissionApplicationDetails(GetPackagingResubmissionApplicationDetailsRequest request);
+
+    Task<PackagingResubmissionMemberDetails?> GetPackagingResubmissionMemberDetails(PackagingResubmissionMemberRequest request);
+
+	Task CreatePackagingResubmissionReferenceNumberEvent(Guid submissionId, PackagingResubmissionReferenceNumberCreatedEvent @event);
+
+    Task CreatePackagingResubmissionFeeViewEvent(Guid? submissionId);
+
+    Task CreatePackagingDataResubmissionFeePaymentEvent(Guid? submissionId, Guid? filedId,string paymentMethod);
+
+    Task CreatePackagingResubmissionApplicationSubmittedCreatedEvent(Guid? submissionId, Guid? filedId, string submittedBy, DateTime submissionDate, string comment);
 }

@@ -1,0 +1,76 @@
+﻿@using FrontendSchemeRegistration.UI.Constants
+@using FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication
+@model PaymentOptionPayByPhoneViewModel
+
+@{
+    ViewData["Title"] = Localizer["pay_by_phone_title"];
+    var totalAmount = (Model.TotalAmountOutstanding / 100).ToString("#,##0.00");
+    var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
+}
+
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+                    @Localizer["pay_by_phone_heading"]
+                </h1>
+
+                <p class="govuk-body">
+                    @Localizer["pay_resubmission_fee_of"]<b>£@totalAmount</b>
+                    @Localizer["by_phone"]
+                </p>
+                <p class="govuk-body">
+                    @Localizer["have_bank_details_ready"]
+                </p>
+
+                <h3 class="govuk-heading-m">@Localizer["payment_details_section"]</h3>
+
+                <div class="govuk-inset-text">
+                   
+                    <p class="govuk-body">@Localizer["enquires_subsection"]</p>
+                    <fieldset class="govuk-fieldset govuk-!-margin-bottom-4">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                            <label class="govuk-label">@Localizer["use_application_payment_ref"]<b>@Model.ApplicationReferenceNumber</b></label>
+                            <label class="govuk-label">@Localizer["environment_agency"]</label>
+                            <label class="govuk-label">@Localizer["telephone_within_UK"]</label>
+                            <label class="govuk-label">@Localizer["telephone_from_abroad"]</label>
+                            <label class="govuk-label">@Localizer["working_hours"]</label>
+                        </legend>
+                    </fieldset>
+
+
+                    <p class="govuk-body">
+                        <a href="https://www.gov.uk/call-charges" class="govuk-link govuk-link--no-visited-state">
+                            @Localizer["more_about_call_charges"]
+                        </a>
+                    </p>
+                </div>
+                <p class="govuk-body">
+                    @Localizer["submit_application_from_dashboard_once_payment_been_made"]
+                </p>
+                <p class="govuk-body">
+                    @Localizer["you_can"]
+                    <a href="#" id="print-or-save" target="_blank" class="govuk-link govuk-link--no-visited-state">
+                        @Localizer["print_or_save_as_PDF"]
+                    </a>
+                </p>
+                <p class="govuk-body">
+                    <a href="/report-data/home-self-managed" class="govuk-link govuk-link--no-visited-state">
+                        @Localizer["return_to_dashboard"]
+                    </a>
+                </p>               
+            </div>
+        </div>
+    </main>
+</div>
+
+@section Scripts {
+    <script type="text/javascript" nonce="@scriptNonce">
+        (function () {
+            document.getElementById("print-or-save").onclick = function () {
+                window.print();
+            }
+        })();
+    </script>
+}

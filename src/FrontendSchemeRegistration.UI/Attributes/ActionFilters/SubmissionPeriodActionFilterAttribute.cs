@@ -20,7 +20,8 @@ public class SubmissionPeriodActionFilterAttribute : Attribute, IAsyncActionFilt
         var sessionManager = context.HttpContext.RequestServices.GetService<ISessionManager<FrontendSchemeRegistrationSession>>();
         var session = await sessionManager.GetSessionAsync(context.HttpContext.Session);
 
-        if (session?.RegistrationSession.SubmissionPeriod is null)
+        if ((session.PomResubmissionSession.IsPomResubmissionJourney && string.IsNullOrEmpty(session.PomResubmissionSession.SubmissionPeriod))
+            || (session.RegistrationSession is not null && string.IsNullOrEmpty(session.RegistrationSession.SubmissionPeriod)))
         {
             context.Result = new RedirectResult($"~{_pagePath}");
             return;

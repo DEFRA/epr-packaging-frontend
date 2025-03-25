@@ -1,0 +1,31 @@
+﻿@using FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication
+@model AdditionalInformationViewModel
+
+@{
+    ViewData["Title"] = Localizer["additional_info_title"];
+}
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-three-quarters">
+            <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+                @Localizer["packaging_data_resubmission_company", Model.OrganisationName]
+            </h1>
+            <p class="govuk-body">@Localizer["you_must_be_approved_or_delegated_person_to_submit_your_data"]</p>
+
+            @if (Model.IsApprovedOrDelegatedUser)
+            {
+                <h2 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["additional_information"]</h2>
+                <p class="govuk-body govuk-!-margin-bottom-2">@Localizer["use_comment_box_for_additional_info_to_assist_regulator"]</p>
+
+                <form asp-controller="ResubmissionApplication" asp-action="AdditionalInformation" method="post">
+                    @Html.TextAreaFor(model => model.AdditionalInformationText, new { @class = "govuk-textarea", @rows = "5" })
+                    <button class="govuk-button govuk-body" data-module="govuk-button" type="submit">
+                        @Localizer["submit_to_the_environmental_regulator"]
+                    </button>
+                </form>
+            }
+
+        </div>
+    </div>
+</main>

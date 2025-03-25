@@ -1,0 +1,126 @@
+﻿@using FrontendSchemeRegistration.Application.Enums
+@using FrontendSchemeRegistration.UI.Constants
+@using FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication
+@model PaymentOptionPayByBankTransferViewModel
+
+@{
+    ViewData["Title"] = Localizer["pay_by_bank_transfer_title"];
+    var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
+    var nationNameToLowercase = Model.NationName.ToLower();
+}
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-three-quarters">
+            <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+                @Localizer["pay_by_bank_transfer_heading"]
+            </h1>
+            <p class="govuk-body">
+                @Localizer["pay_resubmission_fee_of"] <strong>£@ConvertToThousandSeparatedDecimal(Model.TotalAmountOutstanding)</strong> @Localizer["by_bank_transfer"]
+            </p>
+            <h2 class="govuk-heading-m">
+                @Localizer["payment_details_section"]
+            </h2>
+            <div class="govuk-inset-text">
+                <fieldset class="govuk-fieldset">
+                    <legend class="govuk-fieldset__legend">
+                        <label class="govuk-label">@Localizer["use_application_payment_ref"] <strong>@Model.ApplicationReferenceNumber</strong></label>
+                        <label class="govuk-label">@Localizer[$"{nationNameToLowercase}.account_name"]</label>
+                        <label class="govuk-label">@Localizer[$"{nationNameToLowercase}.account_number"]</label>
+                        <label class="govuk-label">@Localizer[$"{nationNameToLowercase}.sort_code"]</label>
+                        <label class="govuk-label">@Localizer[$"{nationNameToLowercase}.bank_name"]</label>
+                    </legend>
+                </fieldset>
+            </div>
+            <div>
+                @if (Model.NationName == Nation.Scotland.ToString())
+                {
+                    <p class="govuk-body govuk-!-margin-bottom-4">
+                        @Localizer["you_can_also"]
+                        <a target="_blank" href="@GuidanceLinks.Value.YouCanPaySEPA" class="govuk-link govuk-link--no-visited-state">
+                            @Localizer["pay_sepa_direct"]
+                        </a>
+                    </p>
+                }
+                @if (Model.IsNorthernIreland)
+                {
+                    <p class="govuk-body govuk-!-margin-bottom-2">@Localizer["northernireland.cheques_payable_to_DAERA_General_Account"]</p>
+                }
+
+                @if (Model.IsEngland || Model.IsNorthernIreland)
+                {
+                    @if (Model.IsEngland)
+                    {
+                        <h2 class="govuk-heading-m">@Localizer["after_payment_is_made"]</h2>
+                        <p class="govuk-body govuk-!-margin-bottom-1">@Localizer["submit_application_from_resubmission_dashboard"]</p>
+                        <p class="govuk-body govuk-!-margin-bottom-1">@Localizer["england.for_BACS_remittance_send_details"]<a href="mailto:@Localizer["england.packaging_producers_EA"]" class="govuk-link">@Localizer["england.packaging_producers_EA"]</a></p>
+                    }
+                    else
+                    {
+                        <div class="govuk-inset-text">
+                            <fieldset class="govuk-fieldset">
+                                <legend class="govuk-fieldset__legend">
+                                    <label class="govuk-label">@Localizer["northernireland.environment_agency"]</label>
+                                    <label class="govuk-label">@Localizer["northernireland.extended_producer_responsibility"]</label>
+                                    <label class="govuk-label">@Localizer["northernireland.NIEA_Lisburn"]</label>
+                                    <label class="govuk-label">@Localizer["northernireland.17Antrim_Road"]</label>
+                                    <label class="govuk-label">@Localizer["northernireland.Tonagh_LISBURN"]</label>
+                                </legend>
+                            </fieldset>
+                        </div>
+                        <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-bottom-2">
+                            @Localizer["northernireland.application_reference_on_back_of_cheque", Model.ApplicationReferenceNumber]
+                        </p>
+                        <h2 class="govuk-heading-m">@Localizer["after_payment_is_made"]</h2>
+                        <fieldset class="govuk-fieldset">
+                            <legend class="govuk-fieldset__legend">
+                                <label class="govuk-label">@Localizer["submit_application_from_resubmission_dashboard"]</label>
+                                <label class="govuk-label">
+                                    @Localizer["northernireland.send_remittance_advice_to"]
+                                    <a href="mailto:@Localizer["northernireland.bill_to_cash_team_account"]" class="govuk-link">@Localizer["northernireland.bill_to_cash_team_account"]</a>
+                                    @Localizer["and_space"]
+                                    <a href="mailto:@Localizer["northernireland.packaging_daera"]" class="govuk-link">@Localizer["northernireland.packaging_daera"]</a>
+                                </label>
+                            </legend>
+                        </fieldset>
+                    }
+                }
+                else
+                {
+                    <h2 class="govuk-heading-m">@Localizer["after_payment_is_made"]</h2>
+                    <p class="govuk-body govuk-!-margin-bottom-4">
+                        @Localizer["submit_your_application_from_registration_dashboard"]
+                    </p>
+                }
+                <p class="govuk-body govuk-!-margin-bottom-4">
+                    @Localizer["you_can"]
+                    <a href="#" id="print-or-save" target="_blank" class="govuk-link govuk-link--no-visited-state">
+                        @Localizer["print_or_save_as_PDF"]
+                    </a>
+                </p>
+            </div>
+            <p class="govuk-body">
+                <a href="/report-data/home-self-managed" class="govuk-link govuk-link--no-visited-state">
+                    @Localizer["return_to_dashboard"]
+                </a>
+            </p>
+            
+        </div>
+    </div>
+</main>
+
+
+@functions
+{
+    private static string ConvertToThousandSeparatedDecimal(int number) => (number / 100).ToString("#,##0.00");
+}
+
+@section Scripts {
+    <script type="text/javascript" nonce="@scriptNonce">
+        (function () {
+            document.getElementById("print-or-save").onclick = function () {
+                window.print();
+            }
+        })();
+    </script>
+}

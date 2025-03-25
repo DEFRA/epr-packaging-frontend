@@ -82,6 +82,7 @@ public class SubmissionPeriodActionFilterAttributeTests
     public async Task OnActionExecutionAsync_RedirectsToPagePath_WhenSessionIsNull()
     {
         // Arrange
+        _sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession());
 
         // Act
         await _systemUnderTest.OnActionExecutionAsync(_actionExecutingContext, _delegateMock.Object);

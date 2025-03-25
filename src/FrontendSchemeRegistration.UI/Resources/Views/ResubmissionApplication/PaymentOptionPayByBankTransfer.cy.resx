@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="pay_by_bank_transfer_title" xml:space="preserve">
+        <value>Talu drwy drosglwyddiad banc</value>
+    </data>
+    <data name="pay_by_bank_transfer_heading" xml:space="preserve">
+        <value>Talu drwy drosglwyddiad banc</value>
+    </data>
+    <data name="pay_registration_fee_of" xml:space="preserve">
+        <value>Talu’r ffi gofrestru o</value>
+    </data>
+    <data name="by_bank_transfer" xml:space="preserve">
+        <value> drwy drosglwyddiad banc.</value>
+    </data>
+    <data name="payment_details_section" xml:space="preserve">
+        <value>Manylion y Taliad</value>
+    </data>
+    <data name="england" xml:space="preserve">
+        <value>EA (Lloegr)</value>
+    </data>
+    <data name="wales" xml:space="preserve">
+        <value>NRW (Cymru)</value>
+    </data>
+    <data name="northernireland" xml:space="preserve">
+        <value>NIEA (Gogledd Iwerddon)</value>
+    </data>
+    <data name="scotland" xml:space="preserve">
+        <value>SEPA (Yr Alban)</value>
+    </data>
+    <data name="use_application_payment_ref" xml:space="preserve">
+        <value>Defnyddiwch y cyfeirnod taliad am gais:</value>
+    </data>
+    <data name="england.account_name" xml:space="preserve">
+        <value>Enw'r cyfrif: EA Receipts</value>
+    </data>
+    <data name="england.account_number" xml:space="preserve">
+        <value>Rhif y cyfrif: 10014411</value>
+    </data>
+    <data name="england.sort_code" xml:space="preserve">
+        <value>Cod didoli: 60-70-80</value>
+    </data>
+    <data name="england.bank_name" xml:space="preserve">
+        <value>Enw'r banc: Royal Bank of Scotland, London Corporate Service Centre, CPB Services, 2nd floor, 280 Bishopsgate, London EC2M 4RB</value>
+    </data>
+    <data name="wales.account_name" xml:space="preserve">
+        <value>Enw'r cyfrif: Cyfoeth Naturiol Cymru</value>
+    </data>
+    <data name="wales.account_number" xml:space="preserve">
+        <value>Rhif y cyfrif: 10014438</value>
+    </data>
+    <data name="wales.sort_code" xml:space="preserve">
+        <value>Cod didoli: 60-70-80</value>
+    </data>
+    <data name="wales.bank_name" xml:space="preserve">
+        <value>Enw'r banc: National Westminster Bank PLC, 2 ½ Devonshire Square, London EC2M 4BA</value>
+    </data>
+    <data name="northernireland.account_name" xml:space="preserve">
+        <value>Enw'r cyfrif: DAERA General Account</value>
+    </data>
+    <data name="northernireland.account_number" xml:space="preserve">
+        <value>Rhif y cyfrif: 61253506</value>
+    </data>
+    <data name="northernireland.sort_code" xml:space="preserve">
+        <value>Cod didoli: 95-01-21</value>
+    </data>
+    <data name="northernireland.bank_name" xml:space="preserve">
+        <value>Enw'r banc: Danske Bank, PO BOX 183, Donegall Square West, Belfast, BT1 6JS</value>
+    </data>
+    <data name="scotland.account_name" xml:space="preserve">
+        <value>Enw'r cyfrif: Scottish Environment Protection Agency</value>
+    </data>
+    <data name="scotland.account_number" xml:space="preserve">
+        <value>Rhif y cyfrif: 00137187</value>
+    </data>
+    <data name="scotland.sort_code" xml:space="preserve">
+        <value>Cod didoli: 83-34-00</value>
+    </data>
+    <data name="scotland.bank_name" xml:space="preserve">
+        <value>Enw'r banc: Royal Bank of Scotland, 30 Nicholson Street, Edinburgh, EH8 9DL</value>
+    </data>
+    <data name="scotland_online_payment_link" xml:space="preserve">
+        <value>Taliadau ar-lein | Beta | SEPA | Asiantaeth Diogelu Amgylchedd yr Alban</value>
+    </data>
+    <data name="northernireland.cheques_payable_to_DAERA_General_Account" xml:space="preserve">
+        <value>Mae NIEA yn derbyn sieciau hefyd. Dylai sieciau fod yn daladwy i Gyfrif Cyffredinol DAERA, a chael eu hanfon i:</value>
+    </data>
+	<data name="you_can_also" xml:space="preserve">
+        <value>Rydych chi hefyd yn gallu</value>
+    </data>
+		<data name="pay_sepa_direct" xml:space="preserve">
+        <value>talu SEPA yn uniongyrchol</value>
+    </data>
+    <data name="northernireland.environment_agency" xml:space="preserve">
+        <value>Asiantaeth Amgylchedd Gogledd Iwerddon</value>
+    </data>
+    <data name="northernireland.extended_producer_responsibility" xml:space="preserve">
+        <value>Extended Producer Responsibility Unit</value>
+    </data>
+    <data name="northernireland.NIEA_Lisburn" xml:space="preserve">
+        <value>1st Floor Bradan, NIEA Lisburn</value>
+    </data>
+    <data name="northernireland.17Antrim_Road" xml:space="preserve">
+        <value>17 Antrim Road</value>
+    </data>
+    <data name="northernireland.Tonagh_LISBURN" xml:space="preserve">
+        <value>Tonagh, LISBURN BT28 3AL</value>
+    </data>
+    <data name="northernireland.application_reference_on_back_of_cheque" xml:space="preserve">
+        <value>Ysgrifennwch gyfeirnod eich cais ({0}) ar gefn y siec.</value>
+    </data>
+    <data name="after_payment_is_made" xml:space="preserve">
+        <value>Ar ôl i’r taliad gael ei wneud</value>
+    </data>
+    <data name="submit_application_from_resubmission_dashboard" xml:space="preserve">
+        <value>1. Cyflwynwch eich cais o'r dangosfwrdd cofrestru pan fydd y taliad wedi'i wneud.</value>
+    </data>
+    <data name="northernireland.send_remittance_advice_to" xml:space="preserve">
+        <value>2. Os ydych wedi talu drwy drosglwyddiad banc, anfonwch hysbysiad talu at</value>
+    </data>
+    <data name="northernireland.bill_to_cash_team_account" xml:space="preserve">
+        <value>billtocashteam@accountni.gov.uk</value>
+    </data>
+    <data name="northernireland.packaging_daera" xml:space="preserve">
+        <value>packaging@daera-ni.gov.uk</value>
+    </data>
+    <data name="england.for_BACS_remittance_send_details" xml:space="preserve">
+        <value>2. Anfonwch hysbysiad y taliad BACS i </value>
+    </data>
+    <data name="england.packaging_producers_EA" xml:space="preserve">
+        <value>packagingproducers@environment-agency.gov.uk</value>
+    </data>
+    <data name="you_can" xml:space="preserve">
+        <value>Gallwch chi </value>
+    </data>
+    <data name="and_space" xml:space="preserve">
+        <value> a </value>
+    </data>
+    <data name="print_or_save_as_PDF" xml:space="preserve">
+        <value>argraffu’r tudalen yma neu ei gadw fel PDF</value>
+    </data>
+    <data name="return_to_dashboard" xml:space="preserve">
+        <value>Yn ôl i’r dangosfwrdd</value>
+    </data>
+    <data name="submit_your_application_from_registration_dashboard" xml:space="preserve">
+        <value>Cyflwynwch eich cais o'r dangosfwrdd cofrestru.</value>
+    </data>
+</root>

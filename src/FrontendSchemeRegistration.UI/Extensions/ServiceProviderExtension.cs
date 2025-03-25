@@ -150,6 +150,7 @@ public static class ServiceProviderExtension
         services.AddScoped<IDownloadPrnService, DownloadPrnService>();
         services.AddScoped<IFileDownloadService, FileDownloadService>();
         services.AddScoped<ComplianceSchemeIdHttpContextFilterAttribute>();
+        services.AddScoped<IResubmissionApplicationService, ResubmissionApplicationServices>();
     }
 
     // When testing PRNs use a configurable date in place of the current date

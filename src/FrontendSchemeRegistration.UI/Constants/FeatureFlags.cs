@@ -14,4 +14,5 @@ public static class FeatureFlags
     public const string ShowPrn = "ShowPrn";
     public const string OverridePrnCurrentDateForTestingPurposes = "OverridePrnCurrentDateForTestingPurposes";
     public const string EnableCsvDownload = "EnableCsvDownload";
+    public const string ImplementPackagingDataResubmissionJourney = "ImplementPackagingDataResubmissionJourney";
 }

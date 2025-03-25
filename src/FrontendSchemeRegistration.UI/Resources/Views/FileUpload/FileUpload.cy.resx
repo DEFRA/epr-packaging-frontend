@@ -148,7 +148,7 @@
     <value>Uwchlwytho data pecynwaith eich sefydliad mewn ffeil CSV. Rhaid i’r ffeil fod yn llai na 256MB.</value>
   </data>
   <data name="upload_packaging_data_to_your_account" xml:space="preserve">
-    <value>Uwchlwytho data pecynwaith i’ch cyfrif</value>
+    <value>Uwchlwythwch eich ffeil data pecynwaith</value>
   </data>
   <data name="errors_youll_need_to_fix" xml:space="preserve">
     <value>gwallau – bydd angen ichi drwsio’r holl wallau ac uwchlwytho’ch ffeil eto</value>
@@ -160,7 +160,7 @@
     <value>rhybuddion – mae’r rhain yn gofnodion anarferol y bydd angen ichi eu gwirio, fel pwysau pecynwaith isel iawn, ond fyddan nhw ddim yn atal eich ffeil rhag cael ei chyflwyno i’r rheoleiddiwr amgylcheddol</value>
   </data>
   <data name="upload_file" xml:space="preserve">
-    <value>Uwchlwytho ffeil</value>
+    <value>Uwchlwythwch ffeiliau</value>
   </data>
   <data name="view_and_manage_your" xml:space="preserve">
     <value>Wview and manage your</value>
@@ -229,7 +229,7 @@
     <value>Rheoli’ch is-gwmnïau</value>
   </data>
   <data name="it_may_take_a_few_minutes_for_your_file_upload..." xml:space="preserve">
-      <value>Efallai y bydd yn cymryd ychydig funudau i'ch ffeil uwchlwytho. Peidiwch â chau'r ffenestr tra bo’r ffeil wrthi’n uwchlwytho.</value>
+      <value>Gall eich ffeil gymryd sawl munud i uwchlwytho. Peidiwch â chau'r ffenestr tra bo'r ffeil wrthi'n uwchlwytho.</value>
   </data>
   <data name="the_file_must_be:" xml:space="preserve">
       <value>Rhaid i'r ffeil fod:</value>

@@ -25,6 +25,7 @@ public class ComplianceSchemeLandingViewModel
     public bool IsApprovedUser { get; set; }
 
     public ApplicationStatusType? ApplicationStatus { get; set; }
+
     public RegistrationTaskListStatus? FileUploadStatus { get; set; } = RegistrationTaskListStatus.NotStarted;
 
     public RegistrationTaskListStatus? PaymentViewStatus { get; set; } = RegistrationTaskListStatus.CanNotStartYet;
@@ -49,4 +50,6 @@ public class ComplianceSchemeLandingViewModel
             : "ProducerRegistrationGuidance";
 
     public bool IsResubmission { get; set; }
+
+    public ResubmissionTaskListViewModel ResubmissionTaskListViewModel { get; set; }
 }

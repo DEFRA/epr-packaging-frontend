@@ -1,0 +1,56 @@
+﻿@model ResubmissionFeeViewModel
+
+@{
+    ViewData["Title"] = Localizer["resubmission-fee-title"];
+    var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer);
+}
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @if (!ViewData.ModelState.IsValid)  // (errorsViewModel != null && errorsViewModel.Errors.Count > 0)
+            {
+                @await Html.PartialAsync("../Shared/Partials/Govuk/_ErrorsViewModelSummary", errorsViewModel)
+            }
+            <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+                @if(Model.TotalOutstanding == 0)
+                {
+                    @Localizer["resubmission-fee-page-header"]
+                }
+                else
+                {
+                    @Localizer["resubmission-fee-due-page-header"]
+                }
+            </h1>
+
+            <!-- Page header where resubmission fee is still due -->
+            <p class="govuk-body">
+                    @Localizer["resubmission-fee-due", ConvertToThousandSeparatedDecimal(Model.TotalOutstanding)]
+                </p>
+            <p class="govuk-body govuk-!-margin-bottom-4">
+                    @Localizer["resubmission-fee-calculated-from-your-information"]
+                </p>
+            <p class="govuk-body govuk-!-margin-bottom-4">
+                    <a href="@GuidanceLinks.Value.EPR_IllustrativeFeesAndCharges"
+                       class="govuk-link govuk-link--no-visited-state"
+                       rel="noreferrer noopener"
+                       target="_blank">
+                    @Localizer["resubmission-more_about_EPR_fees_and_charges"]
+                    </a>
+                </p>
+
+            <!-- Table containing results -->
+            <partial name="_PackagingResubmissionFeeBreakdown" model="@Model" />
+
+            <!-- Continue button -->
+            <a asp-action="SelectPaymentOptions" asp-controller="ResubmissionApplication" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+                @SharedLocalizer["continue"]
+            </a>
+        </div>
+    </div>
+</main>
+
+@functions
+{
+    private static string ConvertToThousandSeparatedDecimal(decimal number) => (number / 100).ToString("#,##0.00");
+}

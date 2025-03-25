@@ -132,7 +132,10 @@
   <data name="not_started" xml:space="preserve">
     <value>Heb ddechrau</value>
   </data>
-  <data name="read_the_guidance_on" xml:space="preserve">
+  <data name="in_progress" xml:space="preserve">
+    <value></value>
+  </data>
+	<data name="read_the_guidance_on" xml:space="preserve">
     <value>Darllenwch y canllawiau ar y canlynol:</value>
   </data>
   <data name="report_packaging_data" xml:space="preserve">
@@ -148,7 +151,7 @@
     <value>pa ddata pecynwaith y mae angen ichi ei gasglu (yn agor mewn ffenestr newydd)</value>
   </data>
   <data name="submitted_to_regulator" xml:space="preserve">
-    <value>Wedi’u cyflwyno i’r rheoleiddiwr</value>
+    <value>Wedi'i gyflwyno i'r rheoleiddiwr</value>
   </data>
   <data name="cannot_start_yet" xml:space="preserve">
     <value>Methu dechrau eto</value>
@@ -178,7 +181,7 @@
     <value>Os ydych chi wedi colli dyddiad cau, mae’n dal yn bosibl y gallwch chi gyflwyno adroddiad heb wynebu camau gorfodi.</value>
   </data>
   <data name="if_youve_missed_a_deadline_to_submit" xml:space="preserve">
-    <value>Os ydych chi wedi colli dyddiad cau cyflwyno</value>
+    <value>Os ydych chi wedi methu dyddiad cau ar gyfer cyflwyno</value>
   </data>
   <data name="an_example_csv_file" xml:space="preserve">
     <value>enghraifft o ffeil CSV (yn agor mewn ffenestr newydd)</value>

@@ -57,7 +57,10 @@
 	<data name="Apply_by_1st_April_x" xml:space="preserve">
     <value>Gwnewch gais erbyn 1 Ebrill, {0}</value>
   </data>
-  <data name="you_must_report_packaging_data" xml:space="preserve">
+	<data name="you_must_report_packaging_data" xml:space="preserve">
+    <value>Angen ichi roi gwybod am ddata pecynwaith ar gyfer {0}. Roi gwybod am ddata hwn erbyn 1 Ebrill {1}.</value>
+  </data>
+  <data name="you_must_report_packaging_data_non_resubmission" xml:space="preserve">
     <value>Angen ichi roi gwybod am ddata pecynwaith ar gyfer 2024. Roi gwybod am ddata hwn erbyn 1 Ebrill 2025.</value>
   </data>
   <data name="resubmit_your_packaging_data" xml:space="preserve">

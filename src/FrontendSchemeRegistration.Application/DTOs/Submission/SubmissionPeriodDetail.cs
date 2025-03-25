@@ -26,4 +26,8 @@ public class SubmissionPeriodDetail
     public string? Decision { get; set; }
 
     public string? Comments { get; set; } = string.Empty;
+
+    public bool IsSubmitted { get; set; }
+
+    public bool? IsResubmissionComplete { get; set; }
 }

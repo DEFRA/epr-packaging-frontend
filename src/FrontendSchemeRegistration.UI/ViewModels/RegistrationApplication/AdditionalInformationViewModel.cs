@@ -14,5 +14,8 @@ public class AdditionalInformationViewModel : OrganisationNationViewModel
     public string OrganisationNumber { get; set; }
 
     public string AdditionalInformationText { get; set; }
+
     public bool IsResubmission { get;  set; }
+
+    public bool IsApprovedOrDelegatedUser { get; set; }
 }

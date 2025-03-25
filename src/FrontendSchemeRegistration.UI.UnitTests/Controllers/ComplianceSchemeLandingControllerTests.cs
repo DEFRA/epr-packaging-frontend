@@ -34,6 +34,7 @@ public class ComplianceSchemeLandingControllerTests
     private readonly Mock<INotificationService> _notificationServiceMock = new();
     private readonly Mock<IComplianceSchemeService> _complianceSchemeServiceMock = new();
     private readonly Mock<IRegistrationApplicationService> _registrationApplicationService = new();
+    private readonly Mock<ISubmissionService> _submissionService = new();
 
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock = new();
     private ComplianceSchemeLandingController _systemUnderTest;
@@ -87,6 +88,7 @@ public class ComplianceSchemeLandingControllerTests
             _complianceSchemeServiceMock.Object,
             _notificationServiceMock.Object,
             _registrationApplicationService.Object,
+            _submissionService.Object,
             _nullLogger)
         {
             ControllerContext = { HttpContext = _httpContextMock.Object }
@@ -112,6 +114,9 @@ public class ComplianceSchemeLandingControllerTests
         _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<bool?>()))
             .ReturnsAsync(_registrationApplicationSession);
 
+        var registrationApplicationDetails = (RegistrationApplicationDetails)null;
+        _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
+
         // Act
         var response = await _systemUnderTest.Get() as ViewResult;
 
@@ -129,7 +134,20 @@ public class ComplianceSchemeLandingControllerTests
                 IsApprovedUser = true,
                 ApplicationStatus = ApplicationStatusType.NotStarted,
                 ApplicationReferenceNumber = string.Empty,
-                RegistrationReferenceNumber = string.Empty
+                RegistrationReferenceNumber = string.Empty,
+                ResubmissionTaskListViewModel = new ResubmissionTaskListViewModel
+                {
+                    AdditionalDetailsStatus = ResubmissionTaskListStatus.CanNotStartYet,
+                    ApplicationStatus = ApplicationStatusType.NotStarted,
+                    FileReachedSynapse = false,
+                    FileUploadStatus = ResubmissionTaskListStatus.CanNotStartYet,
+                    IsComplianceScheme = false,
+                    IsSubmitted = false,
+                    OrganisationName = string.Empty,
+                    OrganisationNumber = string.Empty,
+                    PaymentViewStatus = ResubmissionTaskListStatus.CanNotStartYet,
+                    ResubmissionApplicationSubmitted = false
+                }
             });
 
         _sessionManagerMock.Verify(
@@ -155,6 +173,9 @@ public class ComplianceSchemeLandingControllerTests
         _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<bool?>()))
             .ReturnsAsync(_registrationApplicationSession);
 
+        var registrationApplicationDetails = (RegistrationApplicationDetails)null;
+        _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
+
         // Act
         var response = await _systemUnderTest.Get() as ViewResult;
 
@@ -172,7 +193,20 @@ public class ComplianceSchemeLandingControllerTests
                 IsApprovedUser = true,
                 ApplicationStatus = ApplicationStatusType.NotStarted,
                 ApplicationReferenceNumber = string.Empty,
-                RegistrationReferenceNumber = string.Empty
+                RegistrationReferenceNumber = string.Empty,
+                ResubmissionTaskListViewModel = new ResubmissionTaskListViewModel
+                {
+                    AdditionalDetailsStatus = ResubmissionTaskListStatus.CanNotStartYet,
+                    ApplicationStatus = ApplicationStatusType.NotStarted,
+                    FileReachedSynapse = false,
+                    FileUploadStatus = ResubmissionTaskListStatus.CanNotStartYet,
+                    IsComplianceScheme = false,
+                    IsSubmitted = false,
+                    OrganisationName = string.Empty,
+                    OrganisationNumber = string.Empty,
+                    PaymentViewStatus = ResubmissionTaskListStatus.CanNotStartYet,
+                    ResubmissionApplicationSubmitted = false
+                }
             });
 
         _sessionManagerMock.Verify(
@@ -214,8 +248,22 @@ public class ComplianceSchemeLandingControllerTests
             RegistrationApplicationSubmittedDate = null
         };
 
+        var registrationApplicationDetails = new RegistrationApplicationDetails
+        {
+            LastSubmittedFile = new LastSubmittedFileDetails { FileId = Guid.NewGuid() },
+            ApplicationReferenceNumber = reference,
+            SubmissionId = submissionId,
+            RegistrationFeePaymentMethod = null,
+            IsSubmitted = true,
+            ApplicationStatus = ApplicationStatusType.FileUploaded,
+            RegistrationApplicationSubmittedComment = null,
+            RegistrationApplicationSubmittedDate = null
+        };
+
         _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<bool?>()))
             .ReturnsAsync(registrationApplicationSession);
+
+        _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
 
         // Act
         var response = await _systemUnderTest.Get() as ViewResult;
@@ -236,7 +284,20 @@ public class ComplianceSchemeLandingControllerTests
                 FileUploadStatus = RegistrationTaskListStatus.Pending,
                 PaymentViewStatus = RegistrationTaskListStatus.CanNotStartYet,
                 AdditionalDetailsStatus = RegistrationTaskListStatus.CanNotStartYet,
-                ApplicationStatus = ApplicationStatusType.FileUploaded
+                ApplicationStatus = ApplicationStatusType.FileUploaded,
+                ResubmissionTaskListViewModel = new ResubmissionTaskListViewModel
+                {
+                    AdditionalDetailsStatus = ResubmissionTaskListStatus.CanNotStartYet,
+                    ApplicationStatus = ApplicationStatusType.NotStarted,
+                    FileReachedSynapse = false,
+                    FileUploadStatus = ResubmissionTaskListStatus.CanNotStartYet,
+                    IsComplianceScheme = false,
+                    IsSubmitted = false,
+                    OrganisationName = string.Empty,
+                    OrganisationNumber = string.Empty,
+                    PaymentViewStatus = ResubmissionTaskListStatus.CanNotStartYet,
+                    ResubmissionApplicationSubmitted = false
+                }
             });
 
         _sessionManagerMock.Verify(
@@ -278,8 +339,22 @@ public class ComplianceSchemeLandingControllerTests
             RegistrationApplicationSubmittedDate = null
         };
 
+        var registrationApplicationDetails = new RegistrationApplicationDetails
+        {
+            LastSubmittedFile = new LastSubmittedFileDetails { FileId = Guid.NewGuid() },
+            ApplicationReferenceNumber = reference,
+            SubmissionId = submissionId,
+            RegistrationFeePaymentMethod = "PayOnline",
+            IsSubmitted = true,
+            ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+            RegistrationApplicationSubmittedComment = null,
+            RegistrationApplicationSubmittedDate = null
+        };
+
         _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<bool?>()))
             .ReturnsAsync(registrationApplicationSession);
+
+        _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
 
         // Act
         var response = await _systemUnderTest.Get() as ViewResult;
@@ -300,7 +375,20 @@ public class ComplianceSchemeLandingControllerTests
                 FileUploadStatus = RegistrationTaskListStatus.Completed,
                 PaymentViewStatus = RegistrationTaskListStatus.Completed,
                 AdditionalDetailsStatus = RegistrationTaskListStatus.NotStarted,
-                ApplicationStatus = ApplicationStatusType.SubmittedToRegulator
+                ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+                ResubmissionTaskListViewModel = new ResubmissionTaskListViewModel
+                {
+                    AdditionalDetailsStatus = ResubmissionTaskListStatus.CanNotStartYet,
+                    ApplicationStatus = ApplicationStatusType.NotStarted,
+                    FileReachedSynapse = false,
+                    FileUploadStatus = ResubmissionTaskListStatus.CanNotStartYet,
+                    IsComplianceScheme = false,
+                    IsSubmitted = false,
+                    OrganisationName = string.Empty,
+                    OrganisationNumber = string.Empty,
+                    PaymentViewStatus = ResubmissionTaskListStatus.CanNotStartYet,
+                    ResubmissionApplicationSubmitted = false
+                }
             });
 
         _sessionManagerMock.Verify(
@@ -342,8 +430,22 @@ public class ComplianceSchemeLandingControllerTests
             RegistrationApplicationSubmittedDate = DateTime.Now.AddMinutes(-5)
         };
 
+        var registrationApplicationDetails = new RegistrationApplicationDetails
+        {
+            LastSubmittedFile = new LastSubmittedFileDetails { FileId = Guid.NewGuid() },
+            ApplicationReferenceNumber = reference,
+            SubmissionId = submissionId,
+            RegistrationFeePaymentMethod = "PayOnline",
+            IsSubmitted = true,
+            ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+            RegistrationApplicationSubmittedComment = "Test",
+            RegistrationApplicationSubmittedDate = DateTime.Now.AddMinutes(-5)
+        };
+
         _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<bool?>()))
             .ReturnsAsync(registrationApplicationSession);
+
+        _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
 
         // Act
         var response = await _systemUnderTest.Get() as ViewResult;
@@ -364,7 +466,20 @@ public class ComplianceSchemeLandingControllerTests
                 FileUploadStatus = RegistrationTaskListStatus.Completed,
                 PaymentViewStatus = RegistrationTaskListStatus.Completed,
                 AdditionalDetailsStatus = RegistrationTaskListStatus.Completed,
-                ApplicationStatus = ApplicationStatusType.SubmittedToRegulator
+                ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+                ResubmissionTaskListViewModel = new ResubmissionTaskListViewModel
+                {
+                    AdditionalDetailsStatus = ResubmissionTaskListStatus.CanNotStartYet,
+                    ApplicationStatus = ApplicationStatusType.NotStarted,
+                    FileReachedSynapse = false,
+                    FileUploadStatus = ResubmissionTaskListStatus.CanNotStartYet,
+                    IsComplianceScheme = false,
+                    IsSubmitted = false,
+                    OrganisationName = string.Empty,
+                    OrganisationNumber = string.Empty,
+                    PaymentViewStatus = ResubmissionTaskListStatus.CanNotStartYet,
+                    ResubmissionApplicationSubmitted = false
+                }
             });
 
         _sessionManagerMock.Verify(
@@ -405,6 +520,9 @@ public class ComplianceSchemeLandingControllerTests
         _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<bool?>()))
             .ReturnsAsync(_registrationApplicationSession);
 
+        var registrationApplicationDetails = (RegistrationApplicationDetails)null;
+        _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
+
         // Act
         var response = await _systemUnderTest.Get() as ViewResult;
 
@@ -430,7 +548,20 @@ public class ComplianceSchemeLandingControllerTests
                 ApplicationStatus = ApplicationStatusType.NotStarted,
                 AdditionalDetailsStatus = RegistrationTaskListStatus.CanNotStartYet,
                 ApplicationReferenceNumber = string.Empty,
-                RegistrationReferenceNumber = string.Empty
+                RegistrationReferenceNumber = string.Empty,
+                ResubmissionTaskListViewModel=new ResubmissionTaskListViewModel
+                {
+                    AdditionalDetailsStatus = ResubmissionTaskListStatus.CanNotStartYet,
+                    ApplicationStatus = ApplicationStatusType.NotStarted,
+                    FileReachedSynapse = false,
+                    FileUploadStatus = ResubmissionTaskListStatus.CanNotStartYet,
+                    IsComplianceScheme = false,
+                    IsSubmitted = false,
+                    OrganisationName = string.Empty,
+                    OrganisationNumber = string.Empty,
+                    PaymentViewStatus = ResubmissionTaskListStatus.CanNotStartYet,
+                    ResubmissionApplicationSubmitted = false
+                }
             });
 
         _sessionManagerMock.Verify(
@@ -476,6 +607,9 @@ public class ComplianceSchemeLandingControllerTests
         _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<bool?>()))
             .ReturnsAsync(_registrationApplicationSession);
 
+        var registrationApplicationDetails = (RegistrationApplicationDetails)null;
+        _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
+
         // Act
         var response = await _systemUnderTest.Get() as ViewResult;
 
@@ -499,9 +633,22 @@ public class ComplianceSchemeLandingControllerTests
                     NominatedApprovedPersonEnrolmentId = string.Empty
                 },
                 ApplicationStatus = ApplicationStatusType.NotStarted,
-                AdditionalDetailsStatus = RegistrationTaskListStatus.CanNotStartYet,
                 ApplicationReferenceNumber = string.Empty,
-                RegistrationReferenceNumber = string.Empty
+                AdditionalDetailsStatus = RegistrationTaskListStatus.CanNotStartYet,                
+                RegistrationReferenceNumber = string.Empty,
+                ResubmissionTaskListViewModel = new ResubmissionTaskListViewModel
+                {
+                    AdditionalDetailsStatus = ResubmissionTaskListStatus.CanNotStartYet,
+                    ApplicationStatus = ApplicationStatusType.NotStarted,
+                    FileReachedSynapse = false,
+                    FileUploadStatus = ResubmissionTaskListStatus.CanNotStartYet,
+                    IsComplianceScheme = false,
+                    IsSubmitted = false,
+                    OrganisationName = string.Empty,
+                    OrganisationNumber = string.Empty,
+                    PaymentViewStatus = ResubmissionTaskListStatus.CanNotStartYet,
+                    ResubmissionApplicationSubmitted = false
+                }
             });
 
         _sessionManagerMock.Verify(
@@ -554,8 +701,40 @@ public class ComplianceSchemeLandingControllerTests
                 It.IsAny<ISession>(), It.IsAny<Action<FrontendSchemeRegistrationSession>>()), Times.Never);
     }
 
-    private List<ComplianceSchemeDto> GetComplianceSchemes() =>
-    [
+    [Test]
+    public async Task GivenOnComplianceSchemeLanding_WhenPOMSubmissionsListContainsItems_ThenFirstPOMSubmissionIsReturned()
+    {
+        var submissions = new List<PomSubmission>()
+        {
+            new PomSubmission()
+            {
+                AppReferenceNumber = "test1",
+                IsResubmissionComplete = true,
+            },
+            new PomSubmission()
+            {
+                AppReferenceNumber = "test2",
+                IsResubmissionComplete = true,
+            }
+        };
+
+        var result = _systemUnderTest.GetResubmissionTaskListViewModel(submissions) as ResubmissionTaskListViewModel;
+
+        result.Should().NotBeNull();
+    }
+
+    [Test]
+    public async Task GivenOnComplianceSchemeLanding_WhenPOMSubmissionsListContainsNoItems_ThenNullIsReturned()
+    {
+        var submissions = new List<PomSubmission>();
+
+        var result = _systemUnderTest.GetResubmissionTaskListViewModel(submissions) as ResubmissionTaskListViewModel;
+
+        result.Should().NotBeNull();
+    }
+
+    private List<ComplianceSchemeDto> GetComplianceSchemes() => new()
+    {
         new ComplianceSchemeDto
         {
             Id = _complianceSchemeOneId,
@@ -567,7 +746,7 @@ public class ComplianceSchemeLandingControllerTests
             Id = _complianceSchemeTwoId,
             CreatedOn = DateTimeOffset.Now.AddDays(1)
         }
-    ];
+    };
 
     private FrontendSchemeRegistrationSession GetSessionWithSelectedScheme() =>
         new()

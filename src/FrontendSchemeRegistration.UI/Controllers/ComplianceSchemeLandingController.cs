@@ -2,6 +2,7 @@
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
+using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Extensions;
@@ -20,9 +21,12 @@ public class ComplianceSchemeLandingController(
     IComplianceSchemeService complianceSchemeService,
     INotificationService notificationService,
     IRegistrationApplicationService registrationApplicationService,
+    ISubmissionService submissionService,
     ILogger<ComplianceSchemeLandingController> logger)
     : Controller
 {
+    private readonly string _packagingResubmissionPeriod = "July to December 2024";
+
     [HttpGet]
     [ExcludeFromCodeCoverage]
     public async Task<IActionResult> Get()
@@ -46,6 +50,9 @@ public class ComplianceSchemeLandingController(
 
         var registrationApplicationSession = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation);
 
+        var latestSubmissionDetails = await submissionService.GetSubmissionsAsync<PomSubmission>(
+            new List<string>() { _packagingResubmissionPeriod }, 1, session.RegistrationSession.SelectedComplianceScheme?.Id);
+
         var model = new ComplianceSchemeLandingViewModel
         {
             CurrentComplianceSchemeId = currentComplianceSchemeId,
@@ -59,7 +66,8 @@ public class ComplianceSchemeLandingController(
             FileUploadStatus = registrationApplicationSession.FileUploadStatus,
             PaymentViewStatus = registrationApplicationSession.PaymentViewStatus,
             AdditionalDetailsStatus = registrationApplicationSession.AdditionalDetailsStatus,
-            IsResubmission = registrationApplicationSession.IsResubmission
+            IsResubmission = registrationApplicationSession.IsResubmission,
+            ResubmissionTaskListViewModel = GetResubmissionTaskListViewModel(latestSubmissionDetails)
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id.Value);
@@ -96,6 +104,26 @@ public class ComplianceSchemeLandingController(
         }
 
         return RedirectToAction(nameof(Get));
+    }
+
+    public ResubmissionTaskListViewModel GetResubmissionTaskListViewModel(List<PomSubmission?> submissions)
+    {
+        var viewModel = new ResubmissionTaskListViewModel();
+
+        if (submissions != null && submissions.Count > 0)
+        {
+            var submission = submissions.FirstOrDefault();
+
+            if (submission != null)
+            {
+                viewModel.IsSubmitted = submission.IsSubmitted;
+                viewModel.IsResubmissionInProgress = submission.IsResubmissionInProgress;
+                viewModel.IsResubmissionComplete = submission.IsResubmissionComplete;
+                viewModel.AppReferenceNumber = submission.AppReferenceNumber;
+            }
+        }
+
+        return viewModel;
     }
 
     private async Task SaveNewJourney(FrontendSchemeRegistrationSession session)

@@ -1,0 +1,33 @@
+@using FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication
+@model PaymentOptionPayOnlineViewModel
+
+@{
+    ViewData["Title"] = Localizer["pay_online_title"];
+    var totalAmount = (Model.TotalAmountOutstanding / 100).ToString("#,##0.00");
+}
+
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+                    @Localizer["pay_online_through_GovUK"]
+                </h1>
+
+                <p class="govuk-body">
+                    @Localizer["pay_resubmission_fee_of"]<b>&pound;@totalAmount</b>
+                    @Localizer["using_GovUk_secure_payments_service"]
+                </p>
+               
+                <form asp-controller="FrontendSchemeRegistration" asp-action="PayOnlineSaveSession" method="post">
+                    <a class="govuk-button govuk-body" href="@Model.PaymentLink">@Localizer["pay_online_now"]</a>                    
+                </form>
+                <p class="govuk-body">
+                    <a href="/report-data/home-self-managed" class="govuk-link govuk-link--no-visited-state">
+                        @Localizer["return_to_dashboard"]
+                    </a>
+                </p>
+            </div>
+        </div>
+    </main>
+</div>

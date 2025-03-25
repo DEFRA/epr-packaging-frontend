@@ -15,13 +15,13 @@
         <value>Ffeil wrthi’n uwchlwytho</value>
     </data>
     <data name="header" xml:space="preserve">
-        <value>Wrthi’n uwchlwytho ffeil ac yn dilysu’r data</value>
+        <value>Wrthi'n uwchlwytho'r ffeil ac yn dilysu'r data</value>
     </data>
     <data name="paragraph_1" xml:space="preserve">
-        <value>Gallai hyn gymryd ychydig funudau. Byddwn ni’n adnewyddu’r tudalen yn awtomatig nes ei fod wedi gorffen.</value>
+        <value>Gall hyn gymryd rhai munudau - byddwn ni'n adnewyddu'r tudalen yn awtomatig nes bod hyn wedi'i wneud.</value>
     </data>
     <data name="paragraph_2" xml:space="preserve">
-        <value>Peidiwch â chau’r tudalen a pheidiwch â’i adnewyddu eich hunan.</value>
+        <value>Peidiwch â chau'r tudalen a pheidiwch â'i adnewyddu eich hunan.</value>
     </data>
     <data name="noscript_paragraph_1" xml:space="preserve">
         <value>Gallai hyn gymryd ychydig funudau.</value>

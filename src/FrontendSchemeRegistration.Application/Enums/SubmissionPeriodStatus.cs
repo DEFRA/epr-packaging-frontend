@@ -23,5 +23,7 @@ public enum SubmissionPeriodStatus
     [LocalizedName("Cancelled_by_regulator")]
     CancelledByRegulator,
     [LocalizedName("queried_by_regulator")]
-    QueriedByRegulator
+    QueriedByRegulator,
+	[LocalizedName("in_progress")]
+	InProgress
 }

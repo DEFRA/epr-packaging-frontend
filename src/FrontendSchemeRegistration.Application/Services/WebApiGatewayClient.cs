@@ -1,6 +1,8 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using EPR.SubmissionMicroservice.API.Contracts.Submissions.Get;
+using EPR.SubmissionMicroservice.Data.Entities.SubmissionEvent;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.DTOs.Prns;
@@ -10,6 +12,7 @@ using FrontendSchemeRegistration.Application.DTOs.Subsidiary.FileUploadStatus;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Extensions;
 using FrontendSchemeRegistration.Application.Options;
+using FrontendSchemeRegistration.Application.RequestModels;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -24,14 +27,15 @@ public class WebApiGatewayClient : IWebApiGatewayClient
     private readonly ILogger<WebApiGatewayClient> _logger;
     private readonly ITokenAcquisition _tokenAcquisition;
     private readonly IComplianceSchemeMemberService _complianceSchemeSvc;
+    private readonly List<HttpStatusCode> PassThroughExceptions;
 
     public WebApiGatewayClient(
         HttpClient httpClient,
         ITokenAcquisition tokenAcquisition,
-        
+
         IOptions<HttpClientOptions> httpClientOptions,
         IOptions<WebApiOptions> webApiOptions,
-        ILogger<WebApiGatewayClient> logger, 
+        ILogger<WebApiGatewayClient> logger,
         IComplianceSchemeMemberService complianceSchemeSvc)
     {
         _httpClient = httpClient;
@@ -42,6 +46,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         _httpClient.BaseAddress = new Uri(webApiOptions.Value.BaseEndpoint);
         _httpClient.AddHeaderUserAgent(httpClientOptions.Value.UserAgent);
         _httpClient.AddHeaderAcceptJson();
+        PassThroughExceptions ??= new List<HttpStatusCode> { HttpStatusCode.PreconditionRequired };
     }
 
     public async Task<Guid> UploadFileAsync(
@@ -276,29 +281,29 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         }
     }
 
-	public async Task<PaginatedResponse<PrnModel>> GetSearchPrnsAsync(PaginatedRequest request)
-	{
+    public async Task<PaginatedResponse<PrnModel>> GetSearchPrnsAsync(PaginatedRequest request)
+    {
         AddComplianceSchemeHeader();
         await PrepareAuthenticatedClientAsync();
 
-		try
-		{
-			var response = await _httpClient.GetAsync($"/api/v1/prn/search{ServiceClientBase.BuildUrlWithQueryString(request)}");
+        try
+        {
+            var response = await _httpClient.GetAsync($"/api/v1/prn/search{ServiceClientBase.BuildUrlWithQueryString(request)}");
 
-			response.EnsureSuccessStatusCode();
+            response.EnsureSuccessStatusCode();
 
-			return await response.Content.ReadFromJsonAsync<PaginatedResponse<PrnModel>>();
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(ex, "Error getting recycling notes for organisation");
-			throw;
-		}
+            return await response.Content.ReadFromJsonAsync<PaginatedResponse<PrnModel>>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting recycling notes for organisation");
+            throw;
+        }
 
-	}
+    }
 
-	// Get single PRN
-	public async Task<PrnModel> GetPrnByExternalIdAsync(Guid id)
+    // Get single PRN
+    public async Task<PrnModel> GetPrnByExternalIdAsync(Guid id)
     {
         AddComplianceSchemeHeader();
         await PrepareAuthenticatedClientAsync();
@@ -411,19 +416,6 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         }
     }
 
-    private async Task PrepareAuthenticatedClientAsync()
-    {
-        var accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(_scopes);
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
-           Microsoft.Identity.Web.Constants.Bearer, accessToken);
-    }
-
-    private void AddComplianceSchemeHeader()
-    {
-        var complianceSchemeId = _complianceSchemeSvc.GetComplianceSchemeId();
-        _httpClient.AddHeaderComplianceSchemeIdIfNotNull(complianceSchemeId);
-    }
-
     public async Task<PrnObligationModel> GetRecyclingObligationsCalculation(List<Guid> externalIds, int year)
     {
         AddComplianceSchemeHeader();
@@ -479,6 +471,72 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         }
     }
 
+    public async Task<PackagingResubmissionApplicationDetails?> GetPackagingDataResubmissionApplicationDetails(GetPackagingResubmissionApplicationDetailsRequest request)
+    {
+        await PrepareAuthenticatedClientAsync();
+
+        try
+        {
+            var endpointUrl = $"/api/v1/packaging-resubmission/get-application-details?OrganisationNumber={request.OrganisationNumber}&OrganisationId={request.OrganisationId}&SubmissionPeriod={request.SubmissionPeriod}";
+
+            if (request.ComplianceSchemeId is not null && request.ComplianceSchemeId != Guid.Empty)
+            {
+                endpointUrl += $"&ComplianceSchemeId={request.ComplianceSchemeId}";
+            }
+
+            var response = await _httpClient.GetAsync(endpointUrl);
+
+            response.EnsureSuccessStatusCode();
+
+            if (response.StatusCode == HttpStatusCode.NoContent)
+            {
+                return null;
+            }
+
+            return (await response.Content.ReadFromJsonAsync<PackagingResubmissionApplicationDetails>())!;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error Getting Pom Resubmission ApplicationDetails for organisation Id : {organisationId}", request.OrganisationId);
+            return null!;
+        }
+    }
+
+    public async Task<PackagingResubmissionMemberDetails?> GetPackagingResubmissionMemberDetails(PackagingResubmissionMemberRequest request)
+    {
+        await PrepareAuthenticatedClientAsync();
+
+        try
+        {
+            var endpointUrl = $"/api/v1/packaging-resubmission/get-resubmission-member-details/{request.SubmissionId}?ComplianceSchemeId={request.ComplianceSchemeId}";
+
+            var response = await _httpClient.GetAsync(endpointUrl);
+
+            response.EnsureSuccessStatusCodeDoNotConsumeExceptions();
+
+            if (response.StatusCode == HttpStatusCode.NoContent)
+            {
+                return null;
+            }
+
+            return (await response.Content.ReadFromJsonAsync<PackagingResubmissionMemberDetails>())!;
+        }
+        catch (Exception ex)
+        {
+            if(ex.GetType() == typeof(HttpRequestException))
+            {
+                var requestException = ex as HttpRequestException;
+                if (requestException.StatusCode.HasValue && PassThroughExceptions.Contains(requestException.StatusCode.Value))
+                {
+                    throw;
+                }
+            }    
+
+            _logger.LogError(ex, "Error Getting Pom Resubmission MemberDetails");
+            return null!;
+        }
+    }
+
     public async Task<byte[]> FileDownloadAsync(string queryString)
     {
         await PrepareAuthenticatedClientAsync();
@@ -498,5 +556,54 @@ public class WebApiGatewayClient : IWebApiGatewayClient
             _logger.LogError(ex, "Error Downloading File");
             throw;
         }
+    }
+
+	public async Task CreatePackagingResubmissionReferenceNumberEvent(Guid submissionId, PackagingResubmissionReferenceNumberCreatedEvent @event)
+	{
+		await PrepareAuthenticatedClientAsync();
+		var requestPath = $"/api/v1/packaging-resubmission/{submissionId}/create-packaging-resubmission-reference-number-event";
+		var response = await _httpClient.PostAsJsonAsync(requestPath, @event);
+		response.EnsureSuccessStatusCode();
+	}
+
+    public async Task CreatePackagingResubmissionFeeViewEvent(Guid? submissionId)
+    {
+        var eventPayload = new PackagingResubmissionFeeViewCreatedEvent() { IsPackagingResubmissionFeeViewed = true };
+        await PrepareAuthenticatedClientAsync();
+        var requestPath = $"/api/v1/packaging-resubmission/{submissionId}/create-packaging-resubmission-fee-view-event";
+        var response = await _httpClient.PostAsJsonAsync(requestPath, eventPayload);
+        response.EnsureSuccessStatusCode();
+
+    }
+
+    public async Task CreatePackagingDataResubmissionFeePaymentEvent(Guid? submissionId, Guid? filedId, string paymentMethod)
+    {
+        var eventPayload = new PackagingDataResubmissionFeePaymentEvent() { FileId = filedId, PaidAmount ="0", PaymentMethod = paymentMethod, PaymentStatus = "null" };
+        await PrepareAuthenticatedClientAsync();
+        var requestPath = $"/api/v1/packaging-resubmission/{submissionId}/create-packaging-resubmission-fee-payment-event";
+        var response = await _httpClient.PostAsJsonAsync(requestPath, eventPayload);
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task CreatePackagingResubmissionApplicationSubmittedCreatedEvent(Guid? submissionId, Guid? filedId, string submittedBy, DateTime submissionDate, string comment)
+    {
+        var eventPayload = new PackagingResubmissionApplicationSubmittedCreatedEvent() { Comments = comment,FileId = filedId, IsResubmitted = true, SubmissionDate = submissionDate, SubmittedBy = submittedBy };
+        await PrepareAuthenticatedClientAsync();
+        var requestPath = $"/api/v1/packaging-resubmission/{submissionId}/create-packaging-resubmission-application-submitted-event";
+        var response = await _httpClient.PostAsJsonAsync(requestPath, eventPayload);
+        response.EnsureSuccessStatusCode();
+    }
+
+    private async Task PrepareAuthenticatedClientAsync()
+    {
+        var accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(_scopes);
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+           Microsoft.Identity.Web.Constants.Bearer, accessToken);
+    }
+
+    private void AddComplianceSchemeHeader()
+    {
+        var complianceSchemeId = _complianceSchemeSvc.GetComplianceSchemeId();
+        _httpClient.AddHeaderComplianceSchemeIdIfNotNull(complianceSchemeId);
     }
 }

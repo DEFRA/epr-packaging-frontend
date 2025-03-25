@@ -20,6 +20,9 @@ using Moq;
 using Moq.Protected;
 using Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
+using EPR.SubmissionMicroservice.API.Contracts.Submissions.Get;
+using EPR.SubmissionMicroservice.Data.Entities.SubmissionEvent;
+using NUnit.Framework.Interfaces;
 
 [TestFixture]
 public class WebApiGatewayClientTests
@@ -1248,5 +1251,373 @@ public class WebApiGatewayClientTests
 
         // Assert
         await action.Should().ThrowAsync<HttpRequestException>("an internal server error occurred");
+    }
+
+    [Test]
+    public async Task GetPackagingDataResubmissionApplicationDetails_Should_Return_Details_When_Successful()
+    {
+        // Arrange
+        var request = new GetPackagingResubmissionApplicationDetailsRequest
+        {
+            OrganisationId = Guid.NewGuid(),
+            OrganisationNumber = 123,
+            SubmissionPeriod = "2024-12",
+            ComplianceSchemeId = Guid.NewGuid()
+        };
+        var expectedDetails = new PackagingResubmissionApplicationDetails
+        {
+            ApplicationReferenceNumber = "testref",
+            ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+            IsSubmitted = true,
+        };
+
+        var responseMessage = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = JsonContent.Create(expectedDetails)
+        };
+
+        _httpMessageHandlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(req =>
+                    req.Method == HttpMethod.Get &&
+                    req.RequestUri.ToString().Contains($"OrganisationNumber={request.OrganisationNumber}") &&
+                    req.RequestUri.ToString().Contains($"OrganisationId={request.OrganisationId}") &&
+                    req.RequestUri.ToString().Contains($"SubmissionPeriod={request.SubmissionPeriod}") &&
+                    req.RequestUri.ToString().Contains($"ComplianceSchemeId={request.ComplianceSchemeId}")),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(responseMessage);
+
+        // Act
+        var result = await _webApiGatewayClient.GetPackagingDataResubmissionApplicationDetails(request);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().BeEquivalentTo(expectedDetails);
+    }
+
+    [Test]
+    public async Task GetPackagingDataResubmissionApplicationDetails_Should_Return_Null_When_NoContent()
+    {
+        // Arrange
+        var request = new GetPackagingResubmissionApplicationDetailsRequest
+        {
+            OrganisationId = Guid.NewGuid(),
+            OrganisationNumber = 123,
+            SubmissionPeriod = "2024-12"
+        };
+
+        var responseMessage = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.NoContent
+        };
+
+        _httpMessageHandlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(req =>
+                    req.Method == HttpMethod.Get &&
+                    req.RequestUri.ToString().Contains($"OrganisationNumber={request.OrganisationNumber}") &&
+                    req.RequestUri.ToString().Contains($"OrganisationId={request.OrganisationId}") &&
+                    req.RequestUri.ToString().Contains($"SubmissionPeriod={request.SubmissionPeriod}")),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(responseMessage);
+
+        // Act
+        var result = await _webApiGatewayClient.GetPackagingDataResubmissionApplicationDetails(request);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetPackagingDataResubmissionApplicationDetails_Should_Log_Error_On_Exception()
+    {
+        // Arrange
+        var request = new GetPackagingResubmissionApplicationDetailsRequest
+        {
+            OrganisationId = Guid.NewGuid(),
+            OrganisationNumber = 123,
+            SubmissionPeriod = "2024-12"
+        };
+
+        _httpMessageHandlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(req =>
+                    req.Method == HttpMethod.Get &&
+                    req.RequestUri.ToString().Contains($"OrganisationNumber={request.OrganisationNumber}") &&
+                    req.RequestUri.ToString().Contains($"OrganisationId={request.OrganisationId}") &&
+                    req.RequestUri.ToString().Contains($"SubmissionPeriod={request.SubmissionPeriod}")),
+                ItExpr.IsAny<CancellationToken>())
+            .ThrowsAsync(new HttpRequestException("Request failed"));
+
+        // Act
+        var result = await _webApiGatewayClient.GetPackagingDataResubmissionApplicationDetails(request);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetPackagingResubmissionApplicationDetails_SuccessfulResponse_ReturnsMemberDetails()
+    {
+        // Arrange
+        var request = new PackagingResubmissionMemberRequest();
+        var expectedResponse = new PackagingResubmissionMemberDetails { MemberCount = 0 };
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = JsonContent.Create(expectedResponse)
+            });
+
+        // Act
+        var result = await _webApiGatewayClient.GetPackagingResubmissionMemberDetails(request);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().BeEquivalentTo(expectedResponse);
+    }
+
+    [Test]
+    public async Task GetPackagingResubmissionApplicationDetails_NoContent_ReturnsNull()
+    {
+        // Arrange
+        var request = new PackagingResubmissionMemberRequest();
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.NoContent
+            });
+
+        // Act
+        var result = await _webApiGatewayClient.GetPackagingResubmissionMemberDetails(request);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetPackagingResubmissionApplicationDetails_HttpRequestException_ReturnsNull()
+    {
+        // Arrange
+        var request = new PackagingResubmissionMemberRequest();
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.InternalServerError });
+
+        // Act
+        var result = await _webApiGatewayClient.GetPackagingResubmissionMemberDetails(request);
+
+        // Assert
+        result.Should().BeNull();
+        _loggerMock.Verify(
+            x => x.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.IsAny<It.IsAnyType>(),
+                It.IsAny<Exception>(),
+                (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
+            Times.Once);
+    }
+
+    [Test]
+    public async Task GetPackagingResubmissionApplicationDetails_HttpRequestException_PreConditionRequired_ThrowsException()
+    {
+        // Arrange
+        var request = new PackagingResubmissionMemberRequest();
+        var testMessage = "This is a test message";
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.PreconditionRequired, ReasonPhrase = testMessage });
+
+        // Act
+        var ex = Assert.ThrowsAsync<HttpRequestException>(() => _webApiGatewayClient.GetPackagingResubmissionMemberDetails(request));
+
+        // Assert
+        Assert.That(ex != null);
+        Assert.That(ex.GetType() == typeof(HttpRequestException));
+        Assert.That(ex.Message.Contains(testMessage));
+    }
+
+    [Test]
+	public async Task CreatePackagingResubmissionReferenceNumberEvent_DoesNotThrowException_WhenSubmitIsSuccessful()
+	{
+		// Arrange
+		var submissionId = Guid.NewGuid();
+		var @event = new PackagingResubmissionReferenceNumberCreatedEvent { PackagingResubmissionReferenceNumber = "test-reference" };
+
+		_httpMessageHandlerMock.Protected()
+			.Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+			.ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent });
+
+		// Act & Assert
+		await _webApiGatewayClient.Invoking(x => x.CreatePackagingResubmissionReferenceNumberEvent(submissionId, @event)).Should().NotThrowAsync();
+
+		var expectedUri = $"https://example.com/api/v1/packaging-resubmission/{submissionId}/create-packaging-resubmission-reference-number-event";
+		_httpMessageHandlerMock.Protected().Verify(
+			"SendAsync", Times.Once(),
+			ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Post && req.RequestUri.ToString() == expectedUri),
+			ItExpr.IsAny<CancellationToken>());
+	}
+
+	[Test]
+	public async Task WhenSubmitIsSuccessful_CreatePackagingResubmissionReferenceNumberEvent_DoesNotThrowException()
+	{
+		// Arrange
+		var submissionId = Guid.NewGuid();
+		var @event = new PackagingResubmissionReferenceNumberCreatedEvent { PackagingResubmissionReferenceNumber = "test-reference" };
+
+		_httpMessageHandlerMock.Protected()
+			.Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+			.ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent });
+
+		// Act & Assert
+		await _webApiGatewayClient.Invoking(x => x.CreatePackagingResubmissionReferenceNumberEvent(submissionId, @event)).Should().NotThrowAsync();
+
+		var expectedUri = $"https://example.com/api/v1/packaging-resubmission/{submissionId}/create-packaging-resubmission-reference-number-event";
+		_httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
+			ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Post && req.RequestUri.ToString() == expectedUri),
+			ItExpr.IsAny<CancellationToken>());
+	}
+
+    [Test]
+    public async Task CreatePackagingResubmissionFeeViewEvent_DoesNotThrowException_WhenSubmitIsSuccessful()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();       
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent });
+
+        // Act & Assert
+        await _webApiGatewayClient.Invoking(x => x.CreatePackagingResubmissionFeeViewEvent(submissionId)).Should().NotThrowAsync();
+
+        var expectedUri = $"https://example.com/api/v1/packaging-resubmission/{submissionId}/create-packaging-resubmission-fee-view-event";
+        _httpMessageHandlerMock.Protected().Verify(
+            "SendAsync", Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Post && req.RequestUri.ToString() == expectedUri),
+            ItExpr.IsAny<CancellationToken>());
+    }
+
+    [Test]
+    public async Task WhenSubmitIsSuccessful_CreatePackagingResubmissionFeeViewEvent_DoesNotThrowException()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();      
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent });
+
+        // Act & Assert
+        await _webApiGatewayClient.Invoking(x => x.CreatePackagingResubmissionFeeViewEvent(submissionId)).Should().NotThrowAsync();
+
+        var expectedUri = $"https://example.com/api/v1/packaging-resubmission/{submissionId}/create-packaging-resubmission-fee-view-event";
+        _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Post && req.RequestUri.ToString() == expectedUri),
+            ItExpr.IsAny<CancellationToken>());
+    }
+
+    [Test]
+    public async Task CreatePackagingDataResubmissionFeePaymentEvent_DoesNotThrowException_WhenSubmitIsSuccessful()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var filedId = Guid.NewGuid();
+        
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent });
+
+        // Act & Assert
+        await _webApiGatewayClient.Invoking(x => x.CreatePackagingDataResubmissionFeePaymentEvent(submissionId, filedId,"payment")).Should().NotThrowAsync();
+
+        var expectedUri = $"https://example.com/api/v1/packaging-resubmission/{submissionId}/create-packaging-resubmission-fee-payment-event";
+        _httpMessageHandlerMock.Protected().Verify(
+            "SendAsync", Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Post && req.RequestUri.ToString() == expectedUri),
+            ItExpr.IsAny<CancellationToken>());
+    }
+
+    [Test]
+    public async Task WhenSubmitIsSuccessful_CreatePackagingDataResubmissionFeePaymentEvent_DoesNotThrowException()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var filedId = Guid.NewGuid();
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent });
+
+        // Act & Assert
+        await _webApiGatewayClient.Invoking(x => x.CreatePackagingDataResubmissionFeePaymentEvent(submissionId, filedId,"payment")).Should().NotThrowAsync();
+
+        var expectedUri = $"https://example.com/api/v1/packaging-resubmission/{submissionId}/create-packaging-resubmission-fee-payment-event";
+        _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Post && req.RequestUri.ToString() == expectedUri),
+            ItExpr.IsAny<CancellationToken>());
+    }
+
+    [Test]
+    public async Task CreatePackagingResubmissionApplicationSubmittedCreatedEvent_DoesNotThrowException_WhenSubmitIsSuccessful()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var filedId = Guid.NewGuid();
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent });
+
+        // Act & Assert
+        await _webApiGatewayClient.Invoking(x => x.CreatePackagingResubmissionApplicationSubmittedCreatedEvent(submissionId, filedId,"submittedBy",DateTime.Today,"Comment")).Should().NotThrowAsync();
+
+        var expectedUri = $"https://example.com/api/v1/packaging-resubmission/{submissionId}/create-packaging-resubmission-application-submitted-event";
+        _httpMessageHandlerMock.Protected().Verify(
+            "SendAsync", Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Post && req.RequestUri.ToString() == expectedUri),
+            ItExpr.IsAny<CancellationToken>());
+    }
+
+    [Test]
+    public async Task WhenSubmitIsSuccessful_CreatePackagingResubmissionApplicationSubmittedCreatedEvent_DoesNotThrowException()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var filedId = Guid.NewGuid();
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent });
+
+        // Act & Assert
+        await _webApiGatewayClient.Invoking(x => x.CreatePackagingResubmissionApplicationSubmittedCreatedEvent(submissionId, filedId, "submittedBy", DateTime.Today, "Comment")).Should().NotThrowAsync();
+
+        var expectedUri = $"https://example.com/api/v1/packaging-resubmission/{submissionId}/create-packaging-resubmission-application-submitted-event";
+        _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),
+            ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Post && req.RequestUri.ToString() == expectedUri),
+            ItExpr.IsAny<CancellationToken>());
     }
 }

@@ -142,22 +142,22 @@
     <value>Bydd angen i rywun yn eich tîm sydd â’r caniatâd cywir yn y cyfrif gyflwyno’r wybodaeth yma i’r rheoleiddiwr amgylcheddol</value>
   </data>
   <data name="file_already_submitted" xml:space="preserve">
-    <value>Ffeil wedi’i chyflwyno eisoes</value>
+    <value>Y ffeil wedi'i chyflwyno'n barod</value>
   </data>
   <data name="file_already_uploaded" xml:space="preserve">
     <value>Ffeil wedi’i huwchlwytho eisoes</value>
   </data>
   <data name="file_name" xml:space="preserve">
-    <value>Enw’r ffeil</value>
+    <value>Enw'r ffeil</value>
   </data>
   <data name="date_submitted" xml:space="preserve">
-    <value>Dyddiad ac amser cyflwyno</value>
+    <value>Y dyddiad y cafodd ei chyflwyno</value>
   </data>
   <data name="date_uploaded" xml:space="preserve">
     <value>Dyddiad uwchlwytho </value>
   </data>
   <data name="submitted_by" xml:space="preserve">
-    <value>Cyflwynwyd gan</value>
+    <value>Cafodd ei chyflwyno gan</value>
   </data>
   <data name="uploaded_by" xml:space="preserve">
     <value>Uwchlwythwyd gan</value>
@@ -181,10 +181,10 @@
     <value>Gallwch uwchlwytho ffeil newydd a'i chyflwyno i reoleiddiwr amgylcheddol. Bydd hyn yn disodli'r ffeil ddata pecynwaith ddiwethaf a gyflwynwyd gennych.</value>
   </data>
   <data name="need_upload_a_new_file_text_approved_user" xml:space="preserve">
-    <value>Uwchlwythwch ffeil newydd a'i chyflwyno i reoleiddiwr amgylcheddol. Bydd hyn yn disodli'r ffeil ddata pecynwaith ddiwethaf a gyflwynwyd gennych.</value>
+    <value>Uwchlwythwch a chyflwynwch ffeil data pecynwaith newydd i'r rheoleiddiwr amgylcheddol. Bydd hon yn disodli'r ffeil ddiwethaf ichi ei chyflwyno.</value>
   </data>
   <data name="need_upload_a_new_file_text_basic_user" xml:space="preserve">
-    <value>Uwchlwythwch ffeil newydd a'i chyflwyno i reoleiddiwr amgylcheddol. Bydd hyn yn disodli'r ffeil ddata pecynwaith ddiwethaf a gyflwynwyd gennych.</value>
+    <value>Uwchlwythwch a chyflwynwch ffeil data pecynwaith newydd i'r rheoleiddiwr amgylcheddol. Bydd hon yn disodli'r ffeil ddiwethaf ichi ei chyflwyno.</value>
   </data>
   <data name="upload_a_new_file_text_basic_user" xml:space="preserve">
     <value>Cewch uwchlwytho ffeil newydd i'r rheoleiddiwr amgylcheddol, ond does dim caniatâd gennych i gyflwyno ffeiliau.</value>
@@ -196,7 +196,7 @@
     <value>Ailgyflwyno data pecynwaith</value>
   </data>
   <data name="you-need-to-resubmit-packaging-data-approved-user" xml:space="preserve">
-    <value>Mae angen ichi ailgyflwyno data pecynwaith</value>
+    <value>Mae angen ichi ailgyflwyno data pecynwaith.</value>
   </data>
   <data name="you-need-to-resubmit-packaging-data-basic-user" xml:space="preserve">
     <value>Mae angen ichi ddiweddaru data pecynwaith</value>

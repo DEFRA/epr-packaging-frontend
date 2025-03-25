@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
+using Microsoft.FeatureManagement;
 using Moq;
 using UI.Controllers;
 using UI.Controllers.ControllerExtensions;
@@ -31,6 +32,7 @@ public class FileUploadControllerTests
     private Mock<ISubmissionService> _submissionServiceMock;
     private Mock<IFileUploadService> _fileUploadServiceMock;
     private FileUploadController _fileUploadController;
+    private Mock<IFeatureManager> _featureManagerMock;
 
     [SetUp]
     public void SetUp()
@@ -57,8 +59,17 @@ public class FileUploadControllerTests
             });
         _submissionServiceMock = new Mock<ISubmissionService>();
         _fileUploadServiceMock = new Mock<IFileUploadService>();
+        _featureManagerMock = new Mock<IFeatureManager>();
 
-        _fileUploadController = new FileUploadController(_submissionServiceMock.Object, _fileUploadServiceMock.Object, _sessionManagerMock.Object, Options.Create(new GlobalVariables { FileUploadLimitInBytes = 268435456, SubsidiaryFileUploadLimitInBytes =  61440}));
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney))).ReturnsAsync(true);
+
+        _fileUploadController = new FileUploadController(
+            _submissionServiceMock.Object, 
+            _fileUploadServiceMock.Object, 
+            _sessionManagerMock.Object, 
+            Options.Create(new GlobalVariables { FileUploadLimitInBytes = 268435456, SubsidiaryFileUploadLimitInBytes =  61440}),
+            _featureManagerMock.Object);
+
         _fileUploadController.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
@@ -200,6 +211,38 @@ public class FileUploadControllerTests
             {
                 RegistrationSession = new()
                 {
+                    Journey = new List<string> { }
+                }
+            });
+
+        // Act
+        var result = await _fileUploadController.Get() as RedirectToActionResult;
+
+        // Assert
+        result?.ControllerName.Should().Be(nameof(FileUploadSubLandingController).RemoveControllerFromName());
+        result?.ActionName.Should().Be(nameof(FileUploadSubLandingController.Get));
+    }
+
+    [Test]
+    public async Task Get_ReturnsFileUploadSubLandingView_WhenJourneyDoesNotContainSubLandingPageJourneyAndIsPomResubmissionJourneyIsTrue()
+    {
+        // Arrange
+        _fileUploadController.ControllerContext.HttpContext.Request.Query = new QueryCollection(new Dictionary<string, StringValues>
+        {
+            { "submissionId", SubmissionId.ToString() }
+        });
+
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionAsync<PomSubmission>(SubmissionId))
+            .ReturnsAsync(new PomSubmission());
+
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+               
+                PomResubmissionSession = new()
+                {
+                    IsPomResubmissionJourney = true,
                     Journey = new List<string> { }
                 }
             });

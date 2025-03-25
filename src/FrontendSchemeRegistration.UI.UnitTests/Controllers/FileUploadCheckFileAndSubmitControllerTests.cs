@@ -66,6 +66,10 @@ public class FileUploadCheckFileAndSubmitControllerTests
             .Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ShowPoMResubmission)))
             .ReturnsAsync(true);
 
+        _featureManagerMock
+            .Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)))
+            .ReturnsAsync(true);
+
         _systemUnderTest = new FileUploadCheckFileAndSubmitController(
             _submissionServiceMock.Object,
             _userAccountServiceMock.Object,
@@ -222,6 +226,91 @@ public class FileUploadCheckFileAndSubmitControllerTests
         result.ViewData.Keys.Should().HaveCount(1);
         result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
         result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.FileUploadSubLanding}");
+        result.Model.Should().BeEquivalentTo(new FileUploadCheckFileAndSubmitViewModel
+        {
+            SubmissionId = submission.Id,
+            UserCanSubmit = expectedUserCanSubmit,
+            LastValidFileId = submission.LastUploadedValidFile!.FileId,
+            LastValidFileName = submission.LastUploadedValidFile!.FileName,
+            LastValidFileUploadedBy = "John Doe",
+            LastValidFileUploadDateTime = submission.LastUploadedValidFile!.FileUploadDateTime,
+            OrganisationRole = OrganisationRoles.Producer,
+            SubmittedBy = "Brian Adams",
+            SubmittedDateTime = submission.LastSubmittedFile.SubmittedDateTime,
+            SubmittedFileName = submission.LastSubmittedFile!.FileName,
+            IsSubmittedByUserDeleted = false
+        });
+
+        _submissionServiceMock.Verify(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>()), Times.Once);
+        _userAccountServiceMock.Verify(x => x.GetAllPersonByUserId(_lastValidFileUploadedByUserId), Times.Once);
+        _userAccountServiceMock.Verify(x => x.GetAllPersonByUserId(_lastSubmittedByUserId), Times.Once);
+    }
+
+    [TestCase(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, true)]
+    [TestCase(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Enrolled, false)]
+    [TestCase(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Invited, false)]
+    [TestCase(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Pending, false)]
+    [TestCase(ServiceRoles.ApprovedPerson, EnrolmentStatuses.NotSet, false)]
+    [TestCase(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Rejected, false)]
+    [TestCase(ServiceRoles.DelegatedPerson, EnrolmentStatuses.Approved, true)]
+    [TestCase(ServiceRoles.DelegatedPerson, EnrolmentStatuses.Enrolled, false)]
+    [TestCase(ServiceRoles.DelegatedPerson, EnrolmentStatuses.Invited, false)]
+    [TestCase(ServiceRoles.DelegatedPerson, EnrolmentStatuses.Pending, false)]
+    [TestCase(ServiceRoles.DelegatedPerson, EnrolmentStatuses.NotSet, false)]
+    [TestCase(ServiceRoles.DelegatedPerson, EnrolmentStatuses.Rejected, false)]
+    [TestCase(ServiceRoles.BasicUser, EnrolmentStatuses.Approved, false)]
+    [TestCase(ServiceRoles.BasicUser, EnrolmentStatuses.Enrolled, false)]
+    [TestCase(ServiceRoles.BasicUser, EnrolmentStatuses.Invited, false)]
+    [TestCase(ServiceRoles.BasicUser, EnrolmentStatuses.Pending, false)]
+    [TestCase(ServiceRoles.BasicUser, EnrolmentStatuses.NotSet, false)]
+    [TestCase(ServiceRoles.BasicUser, EnrolmentStatuses.Rejected, false)]
+    public async Task Get_ReturnsCorrectViewAndModel_WhenSubmissionIsSubmitted_Resbumitted_Journey(string serviceRole, string enrolmentStatus, bool expectedUserCanSubmit)
+    {
+        // Arrange
+        var submission = new PomSubmission
+        {
+            Id = _submissionId,
+            IsSubmitted = true,
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileName = "last-valid-file.csv",
+                UploadedBy = _lastValidFileUploadedByUserId,
+                FileUploadDateTime = DateTime.Now,
+                FileId = Guid.NewGuid()
+            },
+            LastSubmittedFile = new SubmittedFileInformation
+            {
+                FileName = "submitted-file.csv",
+                SubmittedDateTime = DateTime.Now.AddMinutes(5),
+                SubmittedBy = _lastSubmittedByUserId
+            },
+        };
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+
+        _sessionManagerMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                PomResubmissionSession = new PackagingReSubmissionSession
+                {
+                    IsPomResubmissionJourney = true
+                }
+            });
+
+        var personThatLastSubmitted = new PersonDto { FirstName = "Brian", LastName = "Adams" };
+        _userAccountServiceMock.Setup(x => x.GetAllPersonByUserId(_lastSubmittedByUserId)).ReturnsAsync(personThatLastSubmitted);
+
+        var claims = CreateUserDataClaim(serviceRole, enrolmentStatus, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be(ViewName);
+        result.ViewData.Keys.Should().HaveCount(1);
+        result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
+        result.ViewData["BackLinkToDisplay"].Should().Be($"/report-data/{PagePaths.ResubmissionTaskList}");
         result.Model.Should().BeEquivalentTo(new FileUploadCheckFileAndSubmitViewModel
         {
             SubmissionId = submission.Id,

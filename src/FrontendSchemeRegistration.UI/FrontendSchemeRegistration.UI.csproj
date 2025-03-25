@@ -574,6 +574,11 @@
         <Compile Update="Resources\Views\FileUploadSubmissionConfirmation\FileUploadSubmissionConfirmation.Designer.cs">
             <DependentUpon>FileUploadSubmissionConfirmation.resx</DependentUpon>
         </Compile>
+        <Compile Update="Resources\Views\FrontendSchemeRegistration\Stop.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>Stop.resx</DependentUpon>
+        </Compile>
         <Compile Update="Resources\Views\SchemeMembership\MemberDetails.Designer.cs">
           <DesignTime>True</DesignTime>
           <AutoGen>True</AutoGen>
@@ -1093,6 +1098,18 @@
             <Generator>ResXFileCodeGenerator</Generator>
             <LastGenOutput>ConfirmationOfRemoval.en.Designer.cs</LastGenOutput>
         </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Views\UploadNewFileToSubmit\_ContinueButtonActionLink.cy.resx">
+          <SubType>Designer</SubType>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Views\UploadNewFileToSubmit\_ContinueButtonActionLink.en.resx">
+          <SubType>Designer</SubType>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Views\UploadNewFileToSubmit\_DecideContinueOrUploadButtonActionLink.cy.resx">
+          <SubType>Designer</SubType>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Views\UploadNewFileToSubmit\_DecideContinueOrUploadButtonActionLink.en.resx">
+          <SubType>Designer</SubType>
+        </EmbeddedResource>
     </ItemGroup>
     <ItemGroup>
         <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
@@ -1171,6 +1188,9 @@
         <SonarQubeSetting Include="sonar.cpd.exclusions">
             <Value>Views/**/*.cshtml</Value>
         </SonarQubeSetting>
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Controllers\Common\" />
 	</ItemGroup>
 
   <PropertyGroup>

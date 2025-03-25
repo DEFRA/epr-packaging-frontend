@@ -30,10 +30,10 @@
         <value>Mae’r adroddiad gwallau yn dangos y {0} cyntaf o wallau yn unig yn y ffeil a uwchlwythwyd gennych. Os oes mwy o wallau, efallai y cewch chi adroddiad gwallau arall wrth uwchlwytho’ch ffeil eto.</value>
     </data>
     <data name="you_should_correct_these_errors" xml:space="preserve">
-        <value>Dylech gywiro’r gwallau hyn ac ail-uwchlwytho’r ffeil. Os bydd rhagor o wallau, efallai y cewch adroddiad gwallau arall pan fyddwch yn ail-uwchlwytho’r ffeil.</value>
+        <value>Dylech chi drwsio'r gwallau hyn ac ailuwchlwytho'r ffeil. Os oes mwy o wallau, efallai y cewch chi adroddiad gwallau arall wrth ailuwchlwytho’r ffeil.</value>
     </data>
     <data name="how_the_error_report_works" xml:space="preserve">
-        <value>Sut mae’r adroddiad gwallau yn gweithio</value>
+        <value>Sut mae'r adroddiad gwallau'n gweithio</value>
     </data>
     <data name="next_steps" xml:space="preserve">
         <value>Camau nesaf</value>
@@ -54,7 +54,7 @@
         <value>Sut i drwsio gwallau a gwirio rhybuddion</value>
     </data>
     <data name="how_to_fix_errors" xml:space="preserve">
-        <value>Sut i drwsio gwallau</value>
+        <value>Sut i gywiro gwallau</value>
     </data>
     <data name="this_tells_you_where_the_errors_and_warnings_are" xml:space="preserve">
         <value>Mae hyn yn dweud wrthoch chi ble mae’r gwallau a’r rhybuddion yn eich ffeil.</value>

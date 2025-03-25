@@ -1,3 +1,5 @@
+using EPR.SubmissionMicroservice.API.Contracts.Submissions.Get;
+using EPR.SubmissionMicroservice.Data.Entities.SubmissionEvent;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Services;
@@ -332,4 +334,95 @@ public class SubmissionServiceTests
 
         _webApiGatewayClientMock.Verify(x => x.GetRegistrationApplicationDetails(request), Times.Once);
     }
+
+
+    [Test]
+    public async Task GetPackagingDataResubmissionApplicationDetails_CallsClient_WithCorrectQueryString()
+    {
+        // Arrange
+        var request = new GetPackagingResubmissionApplicationDetailsRequest();
+
+        // Act
+        await _submissionService.GetPackagingDataResubmissionApplicationDetails(request);
+
+        // Assert
+
+        _webApiGatewayClientMock.Verify(x => x.GetPackagingDataResubmissionApplicationDetails(request), Times.Once);
+    }
+
+    [Test]
+    public async Task GetPackagingResubmissionApplicationDetails_CallsClient_WithCorrectQueryString()
+    {
+        // Arrange
+        var request = new PackagingResubmissionMemberRequest();
+
+        // Act
+        await _submissionService.GetPackagingResubmissionMemberDetails(request);
+
+        // Assert
+
+        _webApiGatewayClientMock.Verify(x => x.GetPackagingResubmissionMemberDetails(request), Times.Once);
+    }
+
+    [Test]
+    public async Task CreatePackagingResubmissionReferenceNumberEvent_CallsClient_WithCorrectQueryString()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var request = new PackagingResubmissionReferenceNumberCreatedEvent();
+
+        // Act
+        await _submissionService.CreatePackagingResubmissionReferenceNumberEvent(submissionId, request);
+
+        // Assert
+
+        _webApiGatewayClientMock.Verify(x => x.CreatePackagingResubmissionReferenceNumberEvent(submissionId,request), Times.Once);
+    }
+
+    [Test]
+    public async Task CreatePackagingResubmissionFeeViewEvent_CallsClient_WithCorrectQueryString()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        
+        // Act
+        await _submissionService.CreatePackagingResubmissionFeeViewEvent(submissionId);
+
+        // Assert
+
+        _webApiGatewayClientMock.Verify(x => x.CreatePackagingResubmissionFeeViewEvent(submissionId), Times.Once);
+    }
+
+    [Test]
+    public async Task CreatePackagingDataResubmissionFeePaymentEvent_CallsClient_WithCorrectQueryString()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var filedId = Guid.NewGuid();
+       
+
+        // Act
+        await _submissionService.CreatePackagingDataResubmissionFeePaymentEvent(submissionId, filedId,"paymentMethod");
+
+        // Assert
+
+        _webApiGatewayClientMock.Verify(x => x.CreatePackagingDataResubmissionFeePaymentEvent(submissionId, filedId,"paymentMethod"), Times.Once);
+    }
+
+    [Test]
+    public async Task CreatePackagingResubmissionApplicationSubmittedCreatedEvent_CallsClient_WithCorrectQueryString()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var filedId = Guid.NewGuid();
+
+
+        // Act
+        await _submissionService.CreatePackagingResubmissionApplicationSubmittedCreatedEvent(submissionId, filedId,"submittedBy",DateTime.Today,"Comment");
+
+        // Assert
+
+        _webApiGatewayClientMock.Verify(x => x.CreatePackagingResubmissionApplicationSubmittedCreatedEvent(submissionId, filedId, "submittedBy", DateTime.Today, "Comment"), Times.Once);
+    }
+
 }

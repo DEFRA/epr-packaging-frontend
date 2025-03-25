@@ -1,0 +1,67 @@
+﻿@using FrontendSchemeRegistration.Application.Enums
+@using FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication
+@model SelectPaymentOptionsViewModel
+
+@{
+    ViewData["Title"] = Localizer["select_payment_option"];
+    var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer);
+}
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+                @Localizer["pay_your_resubmission_fee_heading"]
+            </h1>
+            <p class="govuk-body">
+                @Localizer["pay_your_resubmission_fee_text"] <strong>&pound;@ConvertToThousandSeparatedDecimal(Model.TotalAmountOutstanding)</strong> @Localizer["one_in_three_ways"]
+            </p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>@Localizer["payment_option_paybybanktransfer_alternate_text"]</li>
+                <li>@Localizer["payment_option_paybyphone_alternate_text"]</li>
+                <li>@Localizer["payment_option_payonline_alternate_text"]</li>
+            </ul>
+
+            <form asp-controller="ResubmissionApplication" asp-action="SelectPaymentOptions" method="post">
+                <div class="govuk-form-group">
+                    <fieldset class="govuk-fieldset js-cookies-page-form-fieldset" id="analytics">
+                        <legend></legend>
+                        <p class="govuk-body">
+                            @Localizer["select_payment_method"]
+                        </p>
+                        <div class="govuk-form-group@(!ViewData.ModelState.IsValid ? " govuk-form-group--error" : "")">
+                            @if (!ViewData.ModelState.IsValid)
+                            {
+                                @await Html.PartialAsync("Partials/Govuk/_ErrorsViewModelError", errorsViewModel[nameof(Model.PaymentOption)])
+                            }
+                            <div class="govuk-form-group" data-module="govuk-radios">
+                                <div class="govuk-radios" data-module="govuk-radios">
+                                    <div class="govuk-radios__item">
+                                        @Html.RadioButtonFor(m => m.PaymentOption, @Convert.ToInt32(PaymentOptions.PayByBankTransfer), new { Id = "PayByBankTransfer", @class = "govuk-radios__input" })
+                                        <label class="govuk-label govuk-radios__label" for="PayByBankTransfer">@Localizer["payment_option_paybybanktransfer"]</label>
+                                    </div>
+                                    <div class="govuk-radios__item">
+                                        @Html.RadioButtonFor(m => m.PaymentOption, @Convert.ToInt32(PaymentOptions.PayOnline), new { Id = "PayOnline", @class = "govuk-radios__input" })
+                                        <label class="govuk-label govuk-radios__label" for="PayOnline"> @Localizer["payment_option_payonline"]</label>
+                                    </div>
+                                    <div class="govuk-radios__item">
+                                        @Html.RadioButtonFor(m => m.PaymentOption, @Convert.ToInt32(PaymentOptions.PayByPhone), new { Id = "PayByPhone", @class = "govuk-radios__input" })
+                                        <label class="govuk-label govuk-radios__label" for="PayByPhone"> @Localizer["payment_option_paybyphone"]</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <button class="govuk-button govuk-body" data-module="govuk-button" type="submit">
+                    @SharedLocalizer["continue"]
+                </button>
+            </form>
+        </div>
+    </div>
+</main>
+
+@functions
+{
+    private static string ConvertToThousandSeparatedDecimal(int number) => (number / 100).ToString("#,##0.00");
+}

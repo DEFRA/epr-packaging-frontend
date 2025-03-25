@@ -15,6 +15,7 @@
                 @Html.HiddenFor(model => model.SubmissionId)
                 @Html.HiddenFor(model => model.OrganisationDetailsFileId)
                 @Html.HiddenFor(model => model.OrganisationName)
+                @Html.HiddenFor(model => model.IsResubmission)
                 
                 @if (!ViewData.ModelState.IsValid)
                 {

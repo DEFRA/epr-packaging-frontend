@@ -1,0 +1,86 @@
+@model ResubmissionFeeViewModel
+
+<dl class="govuk-summary-list">
+
+    <!-- table header -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            @Localizer["table-header-items"]
+        </dt>
+        <dt class="govuk-summary-list__key">
+            @Localizer["table-header-description"]
+        </dt>
+        <dt class="govuk-summary-list__actions">
+            <b>@Localizer["table-header-amount"]</b>
+        </dt>
+    </div>
+
+    <!-- Chargeable items -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            @Localizer["table-content-item-chargeable-items"]
+        </dt>
+    </div>
+
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__value">
+            @Localizer["table-content-item-packaging-data-resubmission-fee"]
+        </dt>
+        <dt class="govuk-summary-list__value">
+            @if (@Model.IsComplianceScheme)
+            {
+                @Localizer["table-content-packaging-data-resubmission-fee-cs", Model.MemberCount]
+            }
+            else
+            {
+                @Localizer["table-content-packaging-data-resubmission"]
+            } 
+        </dt>
+        <dd class="govuk-summary-list__actions">
+            &pound;@ConvertToThousandSeparatedDecimal(Model.ResubmissionFee)
+        </dd>
+    </div>
+
+    <!-- Total chargeable items -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            @Localizer["table-content-item-total-chargeable-tiems"]
+        </dt>
+        <dt class="govuk-summary-list__value">           
+        </dt>
+        <dd class="govuk-summary-list__actions">
+            <b>&pound;@ConvertToThousandSeparatedDecimal(Model.TotalChargeableItems)</b>
+        </dd>
+    </div>
+
+    <!-- Previous payments received -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            @Localizer["table-content-item-previous-payments-received"]
+        </dt>
+        <dt class="govuk-summary-list__value">
+            @Localizer["table-content-previous-payments-received"]
+        </dt>
+        <dd class="govuk-summary-list__actions">
+            <b>&pound;@ConvertToThousandSeparatedDecimal(Model.PreviousPaymentsReceived)</b>
+        </dd>
+    </div>
+
+    <!-- Total outstanding -->
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+            @Localizer["table-content-item-total-outstanding"]
+        </dt>
+        <dt class="govuk-summary-list__value">
+            &nbsp;
+        </dt>
+        <dd class="govuk-summary-list__actions">
+            <b>&pound;@ConvertToThousandSeparatedDecimal(Model.TotalOutstanding)</b>
+        </dd>
+    </div>
+</dl>
+
+@functions
+{
+    private static string ConvertToThousandSeparatedDecimal(decimal number) => (number / 100).ToString("#,##0.00");
+}

@@ -135,6 +135,9 @@
   <data name="not_started" xml:space="preserve">
     <value>Not Started</value>
   </data>
+  <data name="in_progress" xml:space="preserve">
+    <value>In Progress</value>
+  </data>	
   <data name="file_uploaded" xml:space="preserve">
     <value>File uploaded</value>
   </data>
@@ -154,16 +157,16 @@
     <value>Cannot start yet</value>
   </data>
   <data name="report_members_packaging_data_for" xml:space="preserve">
-    <value>Report members’ packaging data for</value>
+      <value>Report members' packaging data for</value>
   </data>
   <data name="large_organisations" xml:space="preserve">
     <value>Large organisations</value>
   </data>
   <data name="large_producers_sentence_text" xml:space="preserve">
-    <value>Large producers</value>
+    <value>large producers</value>
   </data>
   <data name="small_producers_sentence_text" xml:space="preserve">
-    <value>Small producers</value>
+    <value>small producers</value>
   </data>
   <data name="or" xml:space="preserve">
 	<value>or</value>
@@ -190,19 +193,19 @@
     <value>Approved By Regulator</value>
   </data>
   <data name="check_if_you_need_to_resubmit_members_packaging_data" xml:space="preserve">
-    <value>Check if you need to resubmit member's packaging data</value>
+    <value>Check if you need to resubmit members' packaging data</value>
   </data>
   <data name="check_if_you_need_to_resubmit_packaging_data" xml:space="preserve">
     <value>Check if you need to resubmit packaging data</value>
   </data>
   <data name="check_if_you_need_to_update_member's_packaging_data" xml:space="preserve">
-    <value>Check if you need to update member's packaging data</value>
+    <value>Check if you need to update members' packaging data</value>
   </data>
   <data name="rejected_by_regulator" xml:space="preserve">
     <value>Rejected by Regulator</value>
   </data>
   <data name="resubmit_members_packaging_data" xml:space="preserve">
-    <value>Resubmit member's packaging data</value>
+    <value>Resubmit members' packaging data</value>
   </data>
   <data name="resubmit_packaging_data" xml:space="preserve">
     <value>Resubmit packaging data</value>
@@ -211,7 +214,7 @@
     <value>Submission status is unknown</value>
   </data>
   <data name="update_members_packaging_data_basic" xml:space="preserve">
-    <value>Update member's packaging data</value>
+    <value>Update members' packaging data</value>
   </data>
   <data name="update_packaging_data_basic" xml:space="preserve">
     <value>Update packaging data</value>
@@ -227,6 +230,9 @@
   </data>
   <data name="check_if_you_need_to_update_packaging_data" xml:space="preserve">
     <value>Check if you need to update packaging data</value>
+  </data>
+	<data name="check_if_you_need_to_resubmit_packaging_data" xml:space="preserve">
+    <value>Check if you need to resubmit packaging data</value>
   </data>
   <data name="start_now_compliance_scheme" xml:space="preserve">
     <value>Report members' packaging data</value>

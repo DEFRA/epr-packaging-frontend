@@ -8,6 +8,7 @@ using Application.Services.Interfaces;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
+using FrontendSchemeRegistration.UI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -54,6 +55,8 @@ public abstract class FrontendSchemeRegistrationTestBase
 
     protected Mock<INotificationService> NotificationService { get; private set; }
 
+    protected Mock<ISubmissionService> SubmissionService { get; private set; }
+
     protected Mock<IRegistrationApplicationService> RegistrationApplicationService { get; private set; }
 
     protected Mock<IComplianceSchemeService> ComplianceSchemeService { get; private set; }
@@ -67,6 +70,8 @@ public abstract class FrontendSchemeRegistrationTestBase
 	protected Mock<ILogger<FrontendSchemeRegistrationController>> LoggerMock { get; set; }
 
     protected FrontendSchemeRegistrationSession FrontEndSchemeRegistrationSession { get; set; }
+    
+    protected Mock<IResubmissionApplicationService> ResubmissionApplicationService { get; set; }
 
     protected static void AssertBackLink(ViewResult viewResult, string expectedBackLink)
     {
@@ -97,14 +102,18 @@ public abstract class FrontendSchemeRegistrationTestBase
         UserAccountService = new Mock<IUserAccountService>();
         AuthorizationService = new Mock<IAuthorizationService>();
         NotificationService = new Mock<INotificationService>();
-        RegistrationApplicationService   = new Mock<IRegistrationApplicationService>();
+        SubmissionService = new Mock<ISubmissionService>();
+        RegistrationApplicationService = new Mock<IRegistrationApplicationService>();
         PaymentCalculationService = new Mock<IPaymentCalculationService>();
+        ResubmissionApplicationService = new Mock<IResubmissionApplicationService>();
 
-		SystemUnderTest = new FrontendSchemeRegistrationController(
+
+        SystemUnderTest = new FrontendSchemeRegistrationController(
             SessionManagerMock.Object,
             LoggerMock.Object,
             ComplianceSchemeService.Object,
             RegistrationApplicationService.Object,
+            SubmissionService.Object,
             AuthorizationService.Object,
             NotificationService.Object);
         SystemUnderTest.ControllerContext.HttpContext = _httpContextMock.Object;

@@ -18,6 +18,8 @@ public class HomePageSelfManagedViewModel
 
     public string CurrentYear => (DateTime.Now.Year).ToString();
 
+    public string LastYear => (DateTime.Now.Year - 1).ToString();
+
     public NotificationViewModel Notification { get; set; } = new NotificationViewModel();
 
     public RegistrationTaskListStatus FileUploadStatus { get; set; } = RegistrationTaskListStatus.NotStarted;
@@ -46,4 +48,6 @@ public class HomePageSelfManagedViewModel
                or RegistrationTaskListStatus.Completed
             ? "RegistrationTaskList" 
             : "ProducerRegistrationGuidance";
+
+    public ResubmissionTaskListViewModel ResubmissionTaskListViewModel { get; set; }
 }

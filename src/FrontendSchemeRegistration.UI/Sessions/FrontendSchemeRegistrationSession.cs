@@ -20,4 +20,6 @@ public class FrontendSchemeRegistrationSession : IHasUserData
     public SubsidiarySession SubsidiarySession { get; set; } = new();
 
     public PrnSession PrnSession { get; set; } = new();
+
+    public PackagingReSubmissionSession PomResubmissionSession { get; set; } = new();
 }

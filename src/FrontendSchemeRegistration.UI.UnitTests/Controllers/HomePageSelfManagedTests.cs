@@ -131,8 +131,14 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
 				HasNominatedNotification = false,
 				NominatedEnrolmentId = string.Empty,
 				NominatedApprovedPersonEnrolmentId = string.Empty
-			}
-		});
+			},
+            ResubmissionTaskListViewModel = new ResubmissionTaskListViewModel
+            {
+                AppReferenceNumber = null,
+                IsResubmissionInProgress = null,
+                IsResubmissionComplete = null,
+            },
+        });
 	}
 
 	[Test]
@@ -255,7 +261,8 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
                 FileUploadStatus = RegistrationTaskListStatus.Pending,
                 PaymentViewStatus = RegistrationTaskListStatus.CanNotStartYet,
                 AdditionalDetailsStatus = RegistrationTaskListStatus.CanNotStartYet,
-                ApplicationStatus = ApplicationStatusType.FileUploaded
+                ApplicationStatus = ApplicationStatusType.FileUploaded,
+                ResubmissionTaskListViewModel = new()
             });
     }
 
@@ -303,7 +310,8 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
                 FileUploadStatus = RegistrationTaskListStatus.Completed,
                 PaymentViewStatus = RegistrationTaskListStatus.Completed,
                 AdditionalDetailsStatus = RegistrationTaskListStatus.NotStarted,
-                ApplicationStatus = ApplicationStatusType.SubmittedToRegulator
+                ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+                ResubmissionTaskListViewModel = new()
             });
     }
 
@@ -351,7 +359,8 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
                 FileUploadStatus = RegistrationTaskListStatus.Completed,
                 PaymentViewStatus = RegistrationTaskListStatus.Completed,
                 AdditionalDetailsStatus = RegistrationTaskListStatus.Completed,
-                ApplicationStatus = ApplicationStatusType.SubmittedToRegulator
+                ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+                ResubmissionTaskListViewModel = new()
             });
     }
 }

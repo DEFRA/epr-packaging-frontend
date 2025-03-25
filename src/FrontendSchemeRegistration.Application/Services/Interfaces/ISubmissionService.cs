@@ -1,3 +1,5 @@
+using EPR.SubmissionMicroservice.API.Contracts.Submissions.Get;
+using EPR.SubmissionMicroservice.Data.Entities.SubmissionEvent;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
 
@@ -11,10 +13,10 @@ public interface ISubmissionService
 
     Task SubmitAsync(Guid submissionId, Guid fileId);
 
-    Task SubmitAsync(Guid submissionId, Guid fileId, string submittedBy, string? appReferenceNumber, bool isResubmission);
-    
-    Task CreateRegistrationApplicationEvent(Guid submissionId, Guid? complianceSchemeId, string? comments, string? paymentMethod, string applicationReferenceNumber, bool isResubmission, SubmissionType submissionType);
+    Task SubmitAsync(Guid submissionId, Guid fileId, string submittedBy, string? appReferenceNumber = null, bool? isResubmitted = null);
 
+    Task CreateRegistrationApplicationEvent(Guid submissionId, Guid? complianceSchemeId, string? comments, string? paymentMethod, string applicationReferenceNumber, bool isResubmission, SubmissionType submissionType);
+    
     Task<T> GetDecisionAsync<T>(int? limit, Guid submissionId, SubmissionType type) where T : AbstractDecision;
 
     Task<List<SubmissionPeriodId>> GetSubmissionIdsAsync(Guid organisationId, SubmissionType type, Guid? complianceSchemeId, int? year);
@@ -22,4 +24,16 @@ public interface ISubmissionService
     Task<List<SubmissionHistory>> GetSubmissionHistoryAsync(Guid submissionId, DateTime lastSyncTime);
 
     Task<RegistrationApplicationDetails?> GetRegistrationApplicationDetails(GetRegistrationApplicationDetailsRequest request);
+
+    Task<PackagingResubmissionApplicationDetails?> GetPackagingDataResubmissionApplicationDetails(GetPackagingResubmissionApplicationDetailsRequest request);
+
+    Task<PackagingResubmissionMemberDetails?> GetPackagingResubmissionMemberDetails(PackagingResubmissionMemberRequest request);
+
+	Task CreatePackagingResubmissionReferenceNumberEvent(Guid submissionId, PackagingResubmissionReferenceNumberCreatedEvent @event);
+
+    Task CreatePackagingResubmissionFeeViewEvent(Guid? submissionId);
+
+    Task CreatePackagingDataResubmissionFeePaymentEvent(Guid? submissionId, Guid? filedId, string paymentMethod);
+
+    Task CreatePackagingResubmissionApplicationSubmittedCreatedEvent(Guid? submissionId, Guid? filedId,string submittedBy, DateTime submissionDate, string comment);
 }

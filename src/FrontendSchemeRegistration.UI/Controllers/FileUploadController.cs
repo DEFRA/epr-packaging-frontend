@@ -13,6 +13,7 @@ using Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Microsoft.FeatureManagement;
 using Services.FileUploadLimits;
 using Services.Interfaces;
 using Services.Messages;
@@ -30,17 +31,20 @@ public class FileUploadController : Controller
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
     private readonly ISubmissionService _submissionService;
     private readonly IOptions<GlobalVariables> _globalVariables;
+    private readonly IFeatureManager _featureManager;
 
     public FileUploadController(
         ISubmissionService submissionService,
         IFileUploadService fileUploadService,
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
-        IOptions<GlobalVariables> globalVariables)
+        IOptions<GlobalVariables> globalVariables,
+        IFeatureManager featureManager)
     {
         _submissionService = submissionService;
         _fileUploadService = fileUploadService;
         _sessionManager = sessionManager;
         _globalVariables = globalVariables;
+        _featureManager = featureManager;
     }
 
     [HttpGet]
@@ -62,7 +66,12 @@ public class FileUploadController : Controller
 
         if (session is not null)
         {
-            if (!session.RegistrationSession.Journey.Contains<string>(PagePaths.FileUploadSubLanding))
+            if (await _featureManager.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)))
+            {
+                ViewBag.BackLinkToDisplay = session.PomResubmissionSession.IsPomResubmissionJourney ? Url.Content($"/report-data/{PagePaths.ResubmissionTaskList}") : Url.Content($"~{PagePaths.FileUploadSubLanding}");
+            }
+
+            if (IsJourneyValid(session))
             {
                 return RedirectToAction("Get", "FileUploadSubLanding");
             }
@@ -95,6 +104,7 @@ public class FileUploadController : Controller
         ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadSubLanding}");
 
         session.RegistrationSession.Journey.AddIfNotExists(PagePaths.FileUpload);
+        session.PomResubmissionSession.Journey.AddIfNotExists(PagePaths.FileUpload);
         await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
 
         submissionId = await _fileUploadService.ProcessUploadAsync(
@@ -103,8 +113,8 @@ public class FileUploadController : Controller
             session.RegistrationSession.SubmissionPeriod,
             ModelState,
             submissionId,
-            SubmissionType.Producer, 
-            new DefaultFileUploadMessages(), 
+            SubmissionType.Producer,
+            new DefaultFileUploadMessages(),
             new DefaultFileUploadLimit(_globalVariables),
             null,
             null,
@@ -119,5 +129,11 @@ public class FileUploadController : Controller
                 OrganisationRole = session.UserData.Organisations[0].OrganisationRole
             })
             : RedirectToAction("Get", "FileUploading", routeValues);
+    }
+
+    private static bool IsJourneyValid(FrontendSchemeRegistrationSession session)
+    {
+        return (session.PomResubmissionSession.IsPomResubmissionJourney && !session.PomResubmissionSession.Journey.Contains<string>(PagePaths.FileUploadSubLanding)) ||
+                        (session.RegistrationSession is not null && !session.RegistrationSession.Journey.Contains<string>(PagePaths.FileUploadSubLanding));
     }
 }

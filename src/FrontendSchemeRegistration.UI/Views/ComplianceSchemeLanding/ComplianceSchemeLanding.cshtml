@@ -2,12 +2,20 @@
 @using FrontendSchemeRegistration.Application.Enums
 @using FrontendSchemeRegistration.UI.Constants
 @using FrontendSchemeRegistration.UI.Sessions
+@using Microsoft.FeatureManagement
+@inject IFeatureManager _featureManager
 @inject IOptions<SiteDateOptions> DateOptions
 
 @model ComplianceSchemeLandingViewModel
 
 @{
     ViewData["Title"] = Localizer["home"];
+
+    // this is part of the new packaging data resubmission journey
+    var isSubmitted = Model.ResubmissionTaskListViewModel?.IsSubmitted;
+    var isResubmissionComplete = Model.ResubmissionTaskListViewModel?.IsResubmissionComplete;
+    var isPackagingResubmissionApplicationStarted = !string.IsNullOrEmpty(Model.ResubmissionTaskListViewModel.AppReferenceNumber);
+    var isResubmissionInProgress = isSubmitted == true && isPackagingResubmissionApplicationStarted && Model.ResubmissionTaskListViewModel?.IsResubmissionInProgress == true;
 }
 
 
@@ -154,12 +162,49 @@
                                              @class = "govuk-link--no-visited-state"
                                          })
                             </h2>
-                            <p class="govuk-body">@Localizer["you_must_report_packaging_data"]</p>
-                            <p class="govuk-body">@Localizer["you_can_also"]</p>
-                            <ul class="govuk-list govuk-list--bullet">
-                                <li>@Localizer["resubmit_your_packaging_data"]</li>
-                                <li>@Localizer["view_your_history"]</li>
-                            </ul>
+
+                            @if (_featureManager.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)).Result)
+                            {
+                                <!-- this is part of the new packaging data resubmission journey -->
+                                @if (!isSubmitted.HasValue || isSubmitted == false)
+                                {
+                                    <p class="govuk-body">@Localizer["you_must_report_packaging_data"]</p>
+                                }
+                                else if (isSubmitted == true && !isPackagingResubmissionApplicationStarted)
+                                {
+                                    <p class="govuk-body">@Localizer["you_must_report_packaging_data"]</p>
+                                    <p class="govuk-body">@Localizer["you_can_also"]</p>
+                                    <ul class="govuk-list govuk-list--bullet">
+                                        <li>@Localizer["resubmit_your_packaging_data"]</li>
+                                        <li>@Localizer["view_your_history"]</li>
+                                    </ul>
+                                }
+                                else if (isResubmissionInProgress)
+                                {
+                                    <p class="govuk-body">@Localizer["you_must_report_packaging_data"]</p>
+                                    <p class="govuk-body">@Localizer["you_are_currenlty_resubmitting_data"]</p>
+                                }
+                                else if (isResubmissionComplete.HasValue && isResubmissionComplete == true)
+                                {
+                                    <p class="govuk-body">@Localizer["you_are_currenlty_resubmitting_data_period"]</p>
+                                    <p class="govuk-body">@Localizer["you_can_also"]</p>
+                                    <ul class="govuk-list govuk-list--bullet">
+                                        <li>@Localizer["resubmit_your_packaging_data"]</li>
+                                        <li>@Localizer["view_your_history"]</li>
+                                    </ul>
+                                }
+                            }
+                            else
+                            {
+                                <!--this is part of the old registration submission journey  -->
+                                <p class="govuk-body">@Localizer["you_must_report_packaging_data"]</p>
+                                <p class="govuk-body">@Localizer["you_can_also"]</p>
+                                <ul class="govuk-list govuk-list--bullet">
+                                    <li>@Localizer["resubmit_your_packaging_data"]</li>
+                                    <li>@Localizer["view_your_history"]</li>
+                                </ul>
+                            }
+
                         </div>
                     </div>
                 </div>

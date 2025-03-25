@@ -1,0 +1,69 @@
+﻿@using FrontendSchemeRegistration.UI.Constants
+@using FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication
+
+@model ApplicationSubmissionConfirmationViewModel
+
+@{
+    ViewData["Title"] = Localizer["resubmission_confirm_title"];
+    var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
+    var applicationSubmittedDate = Model.RegistrationApplicationSubmittedDate ?? DateTime.Today;
+}
+
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <div class="govuk-panel govuk-panel--confirmation">
+                    <h1 class="govuk-panel__title">
+                        @Localizer["your_packaging_data_has_been_resubmitted_to_the_environmental_regulator"]
+                    </h1>
+                </div>
+                <p class="govuk-body">
+                    @Localizer["submitted_date_x", applicationSubmittedDate.ToString("dd MMMM, yyyy")]
+                </p>
+                <p class="govuk-body">
+                    @Localizer["you_submitted_your_packaging_data_to_the_environment_agency_the_environment_regulator_for_england"]
+                </p>
+                <p class="govuk-body">
+                    @Localizer["you_can"]
+                    <a href="#" id="print-record" target="_blank" class="govuk-link govuk-link--no-visited-state">
+                        @Localizer["print_record"]
+                    </a>
+                    @SharedLocalizer["or"]
+                    <a href="#" id="print-or-save" target="_blank" class="govuk-link govuk-link--no-visited-state">
+                        @Localizer["download_confirmation_as_PDF"]
+                    </a>
+                    @Localizer["it_will_open_in_a_new_window_or_tab"]
+                </p>
+                <h3 class="govuk-heading-s">@Localizer["what_happens_next"]</h3>
+                <p class="govuk-body">
+                    @Localizer["you_will_receive_an_email_after_the_environment_regulator_reviews_your_submission"]
+                </p>
+                <p class="govuk-body">
+                    @Localizer["you_can_only_make_changes_to_your_packaging_data_files_after_theyve_been_reviewed"]
+                </p>
+               
+                <p class="govuk-body">
+                    @Localizer["visit_your"]
+                    <a href="/report-data/home-self-managed" class="govuk-link govuk-link--no-visited-state">                       
+                        @Localizer["account_home_page"]
+                    </a>
+                    @Localizer["check_status_of_your_application"]
+                </p>
+            </div>
+        </div>
+    </main>
+</div>
+
+@section Scripts {
+    <script type="text/javascript" nonce="@scriptNonce">
+        (function () {
+            document.getElementById("print-or-save").onclick = function () {
+                window.print();
+            }
+            document.getElementById("print-record").onclick = function () {
+                window.print();
+            }
+        })();
+    </script>
+}

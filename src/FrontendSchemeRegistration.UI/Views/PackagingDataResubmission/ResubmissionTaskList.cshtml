@@ -1,0 +1,152 @@
+@using FrontendSchemeRegistration.Application.DTOs.Submission
+@using FrontendSchemeRegistration.UI.Sessions
+@model ResubmissionTaskListViewModel
+
+@{
+	ViewData["Title"] = Localizer["resubmission_task_title"];
+
+	var canStartViewPayResubmissionFeeStep = Model.FileUploadStatus is ResubmissionTaskListStatus.Completed;
+	var canStartSubmitResubmissionApplicationStep = Model.PaymentViewStatus is ResubmissionTaskListStatus.Completed;
+	var isResubmissionInProgress = Model.IsResubmissionInProgress ?? false;
+	var isResubmissionApplicationSubmitted = Model.ResubmissionApplicationSubmitted;
+}
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+	<div class="govuk-grid-row">
+		<div class="govuk-grid-column-three-quarters">
+			<h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+				@if (isResubmissionInProgress)
+				{
+					@Localizer["continue_your_packaging_data_resubmission"]
+				}
+				else
+				{
+					@Localizer["packaging_data_resubmission_company", Model.OrganisationName]
+				}
+			</h1>
+			<dl class="govuk-summary-list">
+				<div class="govuk-summary-list__row">
+				</div>
+				<div class="govuk-summary-list__row">
+					<dt class="govuk-summary-list__value">
+						@if (Model.ApplicationStatus is ApplicationStatusType.FileUploaded or ApplicationStatusType.SubmittedAndHasRecentFileUpload or ApplicationStatusType.NotStarted)
+						{
+							<a asp-controller="PackagingDataResubmission" asp-action="RedirectToFileUpload"
+							   class="govuk-link govuk-link--no-visited-state">
+								@Localizer["submit_resubmission_data"]
+							</a>							
+						}
+						else
+						{
+							@Localizer["submit_resubmission_data"]
+						}
+						@if (Model.FileUploadStatus == ResubmissionTaskListStatus.Completed)
+						{
+							<br />
+							@Localizer["you_have_resubmitted_your_packaging_data"]
+						}
+					</dt>
+					<dd class="govuk-summary-list__actions">
+						@{
+							ShowProgressStatus(Model.FileUploadStatus);
+						}
+					</dd>
+				</div>
+				<div class="govuk-summary-list__row">
+					<dt class="govuk-summary-list__value">
+						@if (canStartViewPayResubmissionFeeStep)
+						{
+							<a asp-controller="PackagingDataResubmission" asp-action="ResubmissionFeeCalculations"
+							   class="govuk-link govuk-link--no-visited-state">
+								@Localizer["view_pay_resubmission_fee"]
+							</a>
+						}
+						else
+						{
+							@Localizer["view_pay_resubmission_fee"]
+						}
+						@if (Model.PaymentViewStatus == ResubmissionTaskListStatus.Completed)
+						{
+							<br />
+							@Localizer["you_have_paid_resubmission_fee"]
+						}
+					</dt>
+					<dd class="govuk-summary-list__actions">
+						@{
+							ShowProgressStatus(Model.PaymentViewStatus);
+						}
+					</dd>
+				</div>
+				<div class="govuk-summary-list__row">
+					<dt class="govuk-summary-list__value">
+						@if (canStartSubmitResubmissionApplicationStep)
+						{
+							if (!isResubmissionApplicationSubmitted)
+							{
+								<a asp-controller="ResubmissionApplication" asp-action="AdditionalInformation"
+								   class="govuk-link govuk-link--no-visited-state">
+									@Localizer["submit_resubmission_application"]
+								</a>
+							}
+							else
+							{
+								<a asp-controller="ResubmissionApplication" asp-action="SubmitToEnvironmentRegulator"
+								   class="govuk-link govuk-link--no-visited-state">
+									@Localizer["submit_resubmission_application"]
+								</a>
+							}
+						}
+						else
+						{
+							@Localizer["submit_resubmission_application"]
+						}
+						@if (Model.AdditionalDetailsStatus is ResubmissionTaskListStatus.Completed)
+						{
+							<br />
+							@Localizer["resubmission_application_has_been_submitted"]
+						}
+					</dt>
+					<dd class="govuk-summary-list__actions">
+						@{
+							ShowProgressStatus(Model.AdditionalDetailsStatus);
+						}
+					</dd>
+				</div>
+			</dl>
+				@if (Model.IsComplianceScheme)
+				{
+					<p class="govuk-body govuk-!-margin-top-4">
+						<a asp-controller="ComplianceSchemeLanding" asp-action="Get" class="govuk-link">@Localizer["return_to_dashboard"]</a>
+					</p>
+				}
+				else
+				{
+					<p class="govuk-body govuk-!-margin-top-4">
+						<a asp-controller="FrontendSchemeRegistration" asp-action="HomePageSelfManaged" class="govuk-link">@Localizer["return_to_dashboard"]</a>
+					</p>
+				}
+		</div>
+	</div>
+</main>
+
+@{
+	void ShowProgressStatus(ResubmissionTaskListStatus status)
+	{
+		if (status == ResubmissionTaskListStatus.CanNotStartYet)
+		{
+			<strong class="govuk-tag govuk-tag--grey">@Localizer["can_not_start_yet_status"]</strong>
+		}
+		else if (status == ResubmissionTaskListStatus.NotStarted)
+		{
+			<strong class="govuk-tag govuk-tag--grey">@Localizer["not_started_status"]</strong>
+		}
+		else if (status == ResubmissionTaskListStatus.Pending)
+		{
+			<strong class="govuk-tag govuk-tag--yellow">@Localizer["pending_status"]</strong>
+		}
+		else if (status == ResubmissionTaskListStatus.Completed)
+		{
+			<strong class="govuk-tag govuk-tag--blue">@Localizer["completed_status"]</strong>
+		}
+	}
+}

@@ -15,8 +15,10 @@ namespace FrontendSchemeRegistration.Application.UnitTests.Services;
 [TestFixture]
 public class PaymentCalculationServiceTests
 {
-    private Mock<IPaymentCalculationServiceApiClient> _paymentServiceApiClientMock;
-    private PaymentCalculationService _systemUnderTest;
+	private Mock<IAccountServiceApiClient> _accountServiceApiClientMock;
+	private Mock<IPaymentCalculationServiceApiClient> _paymentServiceApiClientMock;
+	private PaymentCalculationService _systemUnderTest;
+	private Mock<IWebApiGatewayClient> _webApiGatewayClientMock;
 
     private static readonly PaymentCalculationResponse CalculationResponse = new PaymentCalculationResponse
     {
@@ -81,20 +83,22 @@ public class PaymentCalculationServiceTests
 
     private readonly JsonSerializerOptions _jsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
-    [SetUp]
-    public void Init()
-    {
-        _paymentServiceApiClientMock = new Mock<IPaymentCalculationServiceApiClient>();
-        var facadeOptions = Microsoft.Extensions.Options.Options.Create(new PaymentFacadeApiOptions { DownstreamScope = "https://mock/test", Endpoints = new PaymentFacadeApiEndpoints { OnlinePaymentsEndpoint = "online-payments" } });
-        _systemUnderTest = new PaymentCalculationService(_paymentServiceApiClientMock.Object, new NullLogger<PaymentCalculationService>(), facadeOptions);
-    }
+	[SetUp]
+	public void Init()
+	{
+		_accountServiceApiClientMock = new Mock<IAccountServiceApiClient>();
+		_paymentServiceApiClientMock = new Mock<IPaymentCalculationServiceApiClient>();
+		_webApiGatewayClientMock = new Mock<IWebApiGatewayClient>();
+		var facadeOptions = Microsoft.Extensions.Options.Options.Create(new PaymentFacadeApiOptions { DownstreamScope = "https://mock/test", Endpoints = new PaymentFacadeApiEndpoints { OnlinePaymentsEndpoint = "online-payments" } });
+		_systemUnderTest = new PaymentCalculationService(_accountServiceApiClientMock.Object, _paymentServiceApiClientMock.Object, new NullLogger<PaymentCalculationService>(), facadeOptions);
+	}
 
-    [Test]
-    public async Task ProducerExists_GetProducerRegistrationFees_Returns_CalculationResponse()
-    {
-        // Arrange
-        var nationResponse = new HttpResponseMessage(HttpStatusCode.OK);
-        nationResponse.Content = "GB-ENG".ToJsonContent();
+	[Test]
+	public async Task ProducerExists_GetProducerRegistrationFees_Returns_CalculationResponse()
+	{
+		// Arrange
+		var nationResponse = new HttpResponseMessage(HttpStatusCode.OK);
+		nationResponse.Content = "GB-ENG".ToJsonContent();
 
         var response = new HttpResponseMessage(HttpStatusCode.OK);
         response.Content = CalculationResponse.ToJsonContent(_jsonOptions);
@@ -137,7 +141,55 @@ public class PaymentCalculationServiceTests
         result.Should().BeNull();
     }
 
-    [Test]
+	[Test]
+	public async Task OrganisationExists_GetRegulatorNation_Returns_ValidNation()
+	{
+		// Arrange
+		const string nation = "GB-SCT";
+		var response = new HttpResponseMessage(HttpStatusCode.OK);
+		response.Content = nation.ToJsonContent();
+
+		_accountServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>())).ReturnsAsync(response);
+
+		// Act
+		var result = await _systemUnderTest.GetRegulatorNation(Guid.NewGuid());
+
+		// Assert
+		result.Should().BeOfType(typeof(string));
+		result.Should().BeEquivalentTo(nation);
+	}
+
+	[Test]
+	public async Task OrganisationNotFound_GetRegulatorNation_Returns_Blank()
+	{
+		// Arrange
+		var response = new HttpResponseMessage(HttpStatusCode.NotFound);
+
+		_accountServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>())).ReturnsAsync(response);
+
+		// Act
+		var result = await _systemUnderTest.GetRegulatorNation(Guid.NewGuid());
+
+		// Assert
+		result.Should().BeOfType(typeof(string));
+		result.Should().BeEmpty();
+	}
+
+	[Test]
+	public async Task WhenClientThrowsException_GetRegulatorNation_Returns_Blank()
+	{
+		// Arrange
+		_accountServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>())).ThrowsAsync(new Exception());
+
+		// Act
+		var result = await _systemUnderTest.GetRegulatorNation(Guid.NewGuid());
+
+		// Assert
+		result.Should().BeOfType(typeof(string));
+		result.Should().BeEmpty();
+	}
+
+	[Test]
     public async Task ProducerExists_InitiatePayment_Returns_Success()
     {
         // Arrange
@@ -254,4 +306,102 @@ public class PaymentCalculationServiceTests
         // Assert
         result.Should().BeNull();
     }
+
+	[Test]
+	public async Task ComplianceSchemeExists_GetResubmissionFees_Returns_CalculationResponse()
+	{
+		// Arrange
+		var response = new HttpResponseMessage(HttpStatusCode.OK);
+		response.Content = CalculationResponse.ToJsonContent(_jsonOptions);
+
+		_paymentServiceApiClientMock.Setup(x =>
+				x.SendPostRequest(It.IsAny<string>(), It.IsAny<PackagingPaymentRequest>())).ReturnsAsync(response);
+
+		// Act
+		var result = await _systemUnderTest.GetResubmissionFees("test ref", "GB-ENG", 1, true, null);
+
+		// Assert
+		result.Should().BeOfType(typeof(PackagingPaymentResponse));
+		result.Should().BeEquivalentTo(new PackagingPaymentResponse());
+	}
+
+	[Test]
+	public async Task ComplianceSchemeExists_PaymentServiceNotFound_GetResubmissionFees_Returns_Null()
+	{
+		// Arrange
+
+		var response = new HttpResponseMessage(HttpStatusCode.NotFound);
+
+		_paymentServiceApiClientMock.Setup(x =>
+				x.SendPostRequest(It.IsAny<string>(), It.IsAny<PackagingPaymentRequest>())).ReturnsAsync(response);
+
+		// Act
+		var result = await _systemUnderTest.GetResubmissionFees("test ref", "GB-ENG", 1, true, null);
+
+		// Assert
+		result.Should().BeNull();
+	}
+
+	[Test]
+	public async Task ComplianceSchemeExists_WhenClientThrowsException_GetResubmissionFees_Returns_Null()
+	{
+		// Arrange
+		_paymentServiceApiClientMock.Setup(x =>
+				x.SendPostRequest(It.IsAny<string>(), It.IsAny<PackagingPaymentRequest>())).ThrowsAsync(new Exception());
+
+		// Act
+		var result = await _systemUnderTest.GetResubmissionFees("test ref", "GB-ENG", 1, true, null);
+
+		// Assert
+		result.Should().BeNull();
+	}
+
+	[Test]
+	public async Task ProducerExists_GetResubmissionFees_Returns_CalculationResponse()
+	{
+		// Arrange
+		var response = new HttpResponseMessage(HttpStatusCode.OK);
+		response.Content = CalculationResponse.ToJsonContent(_jsonOptions);
+
+		_paymentServiceApiClientMock.Setup(x =>
+				x.SendPostRequest(It.IsAny<string>(), It.IsAny<PackagingPaymentRequest>())).ReturnsAsync(response);
+
+		// Act
+		var result = await _systemUnderTest.GetResubmissionFees("test ref", "GB-ENG", 0, false, null);
+
+		// Assert
+		result.Should().BeOfType(typeof(PackagingPaymentResponse));
+		result.Should().BeEquivalentTo(new PackagingPaymentResponse());
+	}
+
+	[Test]
+	public async Task ProducerExists_PaymentServiceNotFound_GetResubmissionFees_Returns_Null()
+	{
+		// Arrange
+
+		var response = new HttpResponseMessage(HttpStatusCode.NotFound);
+
+		_paymentServiceApiClientMock.Setup(x =>
+				x.SendPostRequest(It.IsAny<string>(), It.IsAny<PackagingPaymentRequest>())).ReturnsAsync(response);
+
+		// Act
+		var result = await _systemUnderTest.GetResubmissionFees("test ref", "GB-ENG", 0, false, null);
+
+		// Assert
+		result.Should().BeNull();
+	}
+
+	[Test]
+	public async Task ProducerExists_WhenClientThrowsException_GetResubmissionFees_Returns_Null()
+	{
+		// Arrange
+		_paymentServiceApiClientMock.Setup(x =>
+				x.SendPostRequest(It.IsAny<string>(), It.IsAny<PackagingPaymentRequest>())).ThrowsAsync(new Exception());
+
+		// Act
+		var result = await _systemUnderTest.GetResubmissionFees("test ref", "GB-ENG", 0, false, null);
+
+		// Assert
+		result.Should().BeNull();
+	}
 }
