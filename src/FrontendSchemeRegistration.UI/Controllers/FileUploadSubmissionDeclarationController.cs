@@ -121,7 +121,7 @@ public class FileUploadSubmissionDeclarationController : Controller
                 _regulatorService.SendRegulatorResubmissionEmail(input);
             }
 
-            await _submissionService.SubmitAsync(submission.Id, fileId.Value, request.DeclarationName, null, false);
+            await _submissionService.SubmitAsync(submission.Id, fileId.Value, request.DeclarationName, submission.AppReferenceNumber, false);
             return RedirectToAction("Get", "FileUploadSubmissionConfirmation", routeValues);
         }
         catch (Exception exception)

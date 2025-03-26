@@ -26,12 +26,9 @@
                             @string.Format(Localizer["prn_accepted"].Value, PrnDataLocalizer[Model.NoteType], @Model.IssueYear)
                         </h3>
                         <p class="govuk-body">@Localizer["tonnage_credited_towards_your_obligation", Model.Tonnage, @PrnDataLocalizer[Model.Material].Value]</p>
-                        @if (!isPdf)
-                        {
-                            <button id="downloadPDFButton" class="govuk-body govuk-link">
-                                @string.Format(Localizer["download_this_prn"].Value, PrnDataLocalizer[Model.NoteType])
-                            </button>
-                        }
+                        <button id="downloadPDFButton" class="govuk-body govuk-link">
+                            @string.Format(Localizer["download_this_prn"].Value, PrnDataLocalizer[Model.NoteType])
+                        </button>
                     </div>
                 </div>
             }

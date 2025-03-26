@@ -144,8 +144,8 @@ public class PrnsObligationControllerTests
 
         var view = response.Should().BeOfType<ViewResult>().Which;
         view.ViewName.Should().BeNull();
-        viewModel.GlassMaterialObligationViewModels.Count().Should().BeGreaterThan(0);
-        viewModel.MaterialObligationViewModels.Count().Should().Be(0);
+        viewModel.GlassMaterialObligationViewModels.Count.Should().BeGreaterThan(0);
+        viewModel.MaterialObligationViewModels.Count.Should().Be(0);
         _controller.ViewData["GlassOrNonGlassResource"].Should().Be("glass");
         _controller.ViewData.Should().ContainKey("BackLinkToDisplay");
     }
@@ -178,8 +178,7 @@ public class PrnsObligationControllerTests
                 }
             }
         };
-        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>()))
-            .ReturnsAsync(session);
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
 
 		_prnServiceMock.Setup(p => p.GetChildOrganisationExternalIdsAsync(organisationId, null)).ReturnsAsync([childOrganisationId]);
 
@@ -197,12 +196,11 @@ public class PrnsObligationControllerTests
 
         var view = response.Should().BeOfType<ViewResult>().Which;
         view.ViewName.Should().BeNull();
-        viewModel.GlassMaterialObligationViewModels.Count().Should().Be(0);
-        viewModel.MaterialObligationViewModels.Count().Should().BeGreaterThan(0);
+        viewModel.GlassMaterialObligationViewModels.Count.Should().Be(0);
+        viewModel.MaterialObligationViewModels.Count.Should().BeGreaterThan(0);
         _controller.ViewData["GlassOrNonGlassResource"].Should().Be(resource);
         _controller.ViewData.Should().ContainKey("BackLinkToDisplay");
         _prnServiceMock.Verify(x => x.GetRecyclingObligationsCalculation(It.IsAny<List<Guid>>(), year), Times.Once);
-
     }
 
     [Test]
@@ -224,8 +222,7 @@ public class PrnsObligationControllerTests
                 }
             }
         };
-        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>()))
-            .ReturnsAsync(session);
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
         string material = "Unknown";
         int year = DateTime.Now.Year;
         PrnObligationViewModel viewModel = _fixture.Create<PrnObligationViewModel>();
@@ -255,8 +252,7 @@ public class PrnsObligationControllerTests
             }
         };
 
-        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
-            .ReturnsAsync(session);
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
 
         var viewModel = new PrnObligationViewModel();
 
@@ -291,8 +287,7 @@ public class PrnsObligationControllerTests
                 }
             }
         };
-        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>()))
-            .ReturnsAsync(session);
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
 
         var viewModel = _fixture.Create<PrnObligationViewModel>();
 
@@ -338,8 +333,7 @@ public class PrnsObligationControllerTests
                 }
             }
         };
-        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>()))
-            .ReturnsAsync(session);
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
 
         var viewModel = _fixture.Create<PrnObligationViewModel>();
 
@@ -378,8 +372,7 @@ public class PrnsObligationControllerTests
                 SelectedComplianceScheme = null
             }
         };
-        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>()))
-            .ReturnsAsync(session);
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
 
         var viewModel = _fixture.Create<PrnObligationViewModel>();
 
@@ -405,8 +398,7 @@ public class PrnsObligationControllerTests
 			}
 		};
 
-		_sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
-			.ReturnsAsync(session);
+		_sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
 
 		// Act
 		var result = await _controller.GetChildOrganisationExternalIdsAsync();
@@ -438,8 +430,7 @@ public class PrnsObligationControllerTests
 				}
 			}
 		};
-		_sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>()))
-			.ReturnsAsync(session);
+		_sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
 
         _prnServiceMock.Setup(p => p.GetChildOrganisationExternalIdsAsync(organisationId, null)).ReturnsAsync([childOrganisationId]);
 
@@ -483,8 +474,7 @@ public class PrnsObligationControllerTests
 				}
 			}
 		};
-		_sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>()))
-			.ReturnsAsync(session);
+		_sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
 
 		_prnServiceMock.Setup(p => p.GetChildOrganisationExternalIdsAsync(organisationId, complianceSchemeId)).ReturnsAsync(expectedExternalIds);
 

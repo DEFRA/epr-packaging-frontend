@@ -22,7 +22,6 @@ public class PrnService : IPrnService
 	private readonly IWebApiGatewayClient _webApiGatewayClient;
 	private readonly IStringLocalizer<PrnCsvResources> _csvLocalizer;
     private readonly IStringLocalizer<PrnDataResources> _dataLocalizer;
-    private IOptions<GlobalVariables> _globalVariables;
     private readonly ILogger<PrnService> _logger;
     private readonly string logPrefix;
 
@@ -32,9 +31,8 @@ public class PrnService : IPrnService
         _webApiGatewayClient = webApiGatewayClient;
         _csvLocalizer = csvLocalizer;
         _dataLocalizer = dataLocalizer;
-        _globalVariables = globalVariables;
         _logger = logger;
-        logPrefix = _globalVariables.Value.LogPrefix;
+        logPrefix = globalVariables.Value.LogPrefix;
     }
 
     // Used by "View all PRNs and PERNs" page

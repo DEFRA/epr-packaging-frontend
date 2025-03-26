@@ -186,6 +186,9 @@
         <EmbeddedResource Update="Resources\Views\FileUploadCompanyDetailsSubmissionHistory\FileUploadCompanyDetailsSubmissionHistory.en.resx">
           <SubType>Designer</SubType>
         </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Views\FileUploadSubsidiaries\AllSubsidiariesList.cy.resx">
+          <SubType>Designer</SubType>
+        </EmbeddedResource>
         <EmbeddedResource Update="Resources\Views\FileUploadSubsidiaries\ConfirmRemoveSubsidiary.cy.resx">
           <SubType>Designer</SubType>
         </EmbeddedResource>
@@ -193,6 +196,9 @@
           <SubType>Designer</SubType>
         </EmbeddedResource>
         <EmbeddedResource Update="Resources\Views\FileUploadSubsidiaries\ConfirmRemoveSubsidiarySuccess.cy.resx">
+          <SubType>Designer</SubType>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Views\FileUploadSubsidiaries\AllSubsidiariesList.en.resx">
           <SubType>Designer</SubType>
         </EmbeddedResource>
         <EmbeddedResource Update="Resources\Views\FileUploadSubsidiaries\SubsidiariesList.cy.resx">

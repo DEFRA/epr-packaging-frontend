@@ -6,13 +6,13 @@
     var materialResourceName = ViewData["GlassOrNonGlassResource"].ToString();
     var materialName = Localizer[materialResourceName].Value;
 
-    var materialTarget = (Model.MaterialObligationViewModels.First().MaterialTarget * 100).ToString("F0");
-    var tonnage = Model.MaterialObligationViewModels.First().Tonnage.ToString("N0", Thread.CurrentThread.CurrentCulture);
-    var total = Convert.ToDouble(Model.MaterialObligationViewModels.First().ObligationToMeet).ToString("N0", Thread.CurrentThread.CurrentCulture);
+    var materialTarget = (Model.MaterialObligationViewModels[0].MaterialTarget * 100).ToString("F0");
+    var tonnage = Model.MaterialObligationViewModels[0].Tonnage.ToString("N0", Thread.CurrentThread.CurrentCulture);
+    var total = Convert.ToDouble(Model.MaterialObligationViewModels[0].ObligationToMeet).ToString("N0", Thread.CurrentThread.CurrentCulture);
 }
 
 @{
-    @if (Model.MaterialObligationViewModels.First().Tonnage > 0)
+    @if (Model.MaterialObligationViewModels[0].Tonnage > 0)
     {
         <h2 class="govuk-heading-m">@Localizer["how_we_calculated_your_recycling_obligation"]</h2>
         <p class="govuk-body">@Localizer["page_header", Model.CurrentYear, materialName]</p>

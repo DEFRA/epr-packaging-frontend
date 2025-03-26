@@ -32,7 +32,6 @@ public class WebApiGatewayClient : IWebApiGatewayClient
     public WebApiGatewayClient(
         HttpClient httpClient,
         ITokenAcquisition tokenAcquisition,
-
         IOptions<HttpClientOptions> httpClientOptions,
         IOptions<WebApiOptions> webApiOptions,
         ILogger<WebApiGatewayClient> logger,
@@ -173,7 +172,6 @@ public class WebApiGatewayClient : IWebApiGatewayClient
             await PrepareAuthenticatedClientAsync();
 
             var requestPath = $"/api/v1/submissions/{submissionId}/organisation-details-errors";
-
             var response = await _httpClient.GetAsync(requestPath);
 
             response.EnsureSuccessStatusCode();
@@ -198,12 +196,22 @@ public class WebApiGatewayClient : IWebApiGatewayClient
     public async Task CreateRegistrationApplicationEvent(Guid submissionId, RegistrationApplicationPayload applicationPayload)
     {
         await PrepareAuthenticatedClientAsync();
+        var requestPath = $"/api/v1/submissions/create-submission";
+
+        var response = await _httpClient.PostAsJsonAsync(requestPath, submissionId);
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task SubmitRegistrationApplication(Guid submissionId, RegistrationApplicationPayload applicationPayload)
+    {
+        await PrepareAuthenticatedClientAsync();
         var requestPath = $"/api/v1/submissions/{submissionId}/submit-registration-application";
         var response = await _httpClient.PostAsJsonAsync(requestPath, applicationPayload);
         response.EnsureSuccessStatusCode();
     }
-    
-    public async Task<T> GetDecisionsAsync<T>(string queryString) where T : AbstractDecision
+
+    public async Task<T> GetDecisionsAsync<T>(string queryString)
+        where T : AbstractDecision
     {
         await PrepareAuthenticatedClientAsync();
 
@@ -260,7 +268,10 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         }
     }
 
-    // Gets all PRNs assigned to an organisation
+    /// <summary>
+    /// Gets all PRNs assigned to an organisation
+    /// </summary>
+    /// <returns></returns>
     public async Task<List<PrnModel>> GetPrnsForLoggedOnUserAsync()
     {
         AddComplianceSchemeHeader();
@@ -302,8 +313,12 @@ public class WebApiGatewayClient : IWebApiGatewayClient
 
     }
 
-    // Get single PRN
-    public async Task<PrnModel> GetPrnByExternalIdAsync(Guid id)
+    /// <summary>
+    /// Get single PRN
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+	public async Task<PrnModel> GetPrnByExternalIdAsync(Guid id)
     {
         AddComplianceSchemeHeader();
         await PrepareAuthenticatedClientAsync();
@@ -318,7 +333,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting recycling note {id}", id);
+            _logger.LogError(ex, "Error getting recycling note {Id}", id);
             throw;
         }
     }
@@ -338,7 +353,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error accepting recycling note {id}", id);
+            _logger.LogError(ex, "Error accepting recycling note {Id}", id);
             throw;
         }
     }
@@ -356,7 +371,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error accepting recycling note {ids}", ids);
+            _logger.LogError(ex, "Error accepting recycling note {Ids}", ids);
             throw;
         }
     }
@@ -376,7 +391,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error rejecting recycling note {id}", id);
+            _logger.LogError(ex, "Error rejecting recycling note {Id}", id);
             throw;
         }
     }
@@ -397,6 +412,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
             throw;
         }
     }
+
     public async Task<SubsidiaryUploadStatusDto> GetSubsidiaryUploadStatus(Guid userId, Guid organisationId)
     {
         await PrepareAuthenticatedClientAsync();
@@ -466,7 +482,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error Getting Registration Application Submission Details for organisation Id : {organisationId}", request.OrganisationId);
+            _logger.LogError(ex, "Error Getting Registration Application Submission Details for organisation Id : {OrganisationId}", request.OrganisationId);
             return null!;
         }
     }
@@ -497,7 +513,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error Getting Pom Resubmission ApplicationDetails for organisation Id : {organisationId}", request.OrganisationId);
+            _logger.LogError(ex, "Error Getting Pom Resubmission ApplicationDetails for organisation Id : {OrganisationId}", request.OrganisationId);
             return null!;
         }
     }

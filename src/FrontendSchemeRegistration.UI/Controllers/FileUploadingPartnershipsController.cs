@@ -13,26 +13,15 @@ using ViewModels;
 
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
 [Route(PagePaths.FileUploadingPartnerships)]
-public class FileUploadingPartnershipsController : Controller
+public class FileUploadingPartnershipsController(ISubmissionService submissionService, ISessionManager<FrontendSchemeRegistrationSession> sessionManager) : Controller
 {
-    private readonly ISubmissionService _submissionService;
-    private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
-
-    public FileUploadingPartnershipsController(
-        ISubmissionService submissionService,
-        ISessionManager<FrontendSchemeRegistrationSession> sessionManager)
-    {
-        _submissionService = submissionService;
-        _sessionManager = sessionManager;
-    }
-
     [HttpGet]
     [SubmissionIdActionFilter(PagePaths.FileUploadCompanyDetailsSubLanding)]
     public async Task<IActionResult> Get()
     {
         var submissionId = Guid.Parse(Request.Query["submissionId"]);
-        var submission = await _submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
-        var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+        var submission = await submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
+        var session = await sessionManager.GetSessionAsync(HttpContext.Session);
 
         if (submission is null)
         {
@@ -63,9 +52,8 @@ public class FileUploadingPartnershipsController : Controller
             : RedirectToAction("Get", "FileUploadPartnershipsSuccess", routeValues);
     }
 
-    private IActionResult GetFileUploadingPartnershipsViewResult(Guid submissionId)
+    private ViewResult GetFileUploadingPartnershipsViewResult(Guid submissionId)
     {
         return View("FileUploadingPartnerships", new FileUploadingViewModel { SubmissionId = submissionId.ToString() });
     }
-
 }

@@ -16,7 +16,6 @@ namespace FrontendSchemeRegistration.Application.Helpers
                 return;
             }
 
-            var memoryStreamPosition = memoryStream.Position;
             memoryStream.Position = 0;
             memoryStream.Write(Encoding.UTF8.GetPreamble());
         }

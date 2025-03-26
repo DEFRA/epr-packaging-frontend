@@ -4,7 +4,6 @@
 @model PrnObligationViewModel
 
 @{
-
 	string totalRecyclingTargetTonnage = string.Empty;
 	double totalRecyclingTargetPercentage = 0;
 	double remeltRecyclingTargetPercentage = 0;
@@ -12,9 +11,9 @@
 	string remainingRecyclingTargetTonnage = string.Empty;
 	double remainingGlassTonnage = 0;
 
-	PrnMaterialObligationViewModel? total = Model.GlassMaterialObligationViewModels.FirstOrDefault(x => x.MaterialName == MaterialType.Totals);
-	PrnMaterialObligationViewModel? remelt = Model.GlassMaterialObligationViewModels.FirstOrDefault(x => x.MaterialName == MaterialType.GlassRemelt);
-	PrnMaterialObligationViewModel? remaining = Model.GlassMaterialObligationViewModels.FirstOrDefault(x => x.MaterialName == MaterialType.RemainingGlass);
+	PrnMaterialObligationViewModel? total = Model.GlassMaterialObligationViewModels.Find(x => x.MaterialName == MaterialType.Totals);
+	PrnMaterialObligationViewModel? remelt = Model.GlassMaterialObligationViewModels.Find(x => x.MaterialName == MaterialType.GlassRemelt);
+	PrnMaterialObligationViewModel? remaining = Model.GlassMaterialObligationViewModels.Find(x => x.MaterialName == MaterialType.RemainingGlass);
 
 	if (total != null)
 	{

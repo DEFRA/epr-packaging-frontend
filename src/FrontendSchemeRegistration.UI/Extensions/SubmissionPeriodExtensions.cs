@@ -30,6 +30,23 @@ public static class SubmissionPeriodExtensions
             .Replace("Rhagfyr", "Ragfyr");
     }
 
+    public static string LocalisedMonth(this SubmissionPeriodId period, Enums.MonthType? monthType)
+    {
+        if (string.IsNullOrWhiteSpace(period.SubmissionPeriod))
+        {
+            return string.Empty;
+        }
+
+        var dateBreak = period.SubmissionPeriod.ToStartEndDate();
+        var submissionPeriod = new SubmissionPeriod
+        {
+            StartMonth = dateBreak.Start.ToString("MMMM", CultureInfo.InvariantCulture),
+            EndMonth = dateBreak.End.ToString("MMMM", CultureInfo.InvariantCulture),
+            Year = dateBreak.Start.Year.ToString()
+        };
+        return submissionPeriod.LocalisedMonth(monthType);
+    }
+
     public static string LocalisedShortMonth(this SubmissionPeriod period, Enums.MonthType? monthType)
     {
         if (!monthType.HasValue)
@@ -48,22 +65,5 @@ public static class SubmissionPeriodExtensions
         }
         return DateTime.Parse($"1 {month} {period.Year}", new CultureInfo("en-GB"))
             .ToString("MMM");
-    }
-
-    public static string LocalisedMonth(this SubmissionPeriodId period, Enums.MonthType? monthType)
-    {
-        if (string.IsNullOrWhiteSpace(period.SubmissionPeriod))
-        {
-            return string.Empty;
-        }
-
-        var dateBreak = period.SubmissionPeriod.ToStartEndDate();
-        var submissionPeriod = new SubmissionPeriod
-        {
-            StartMonth = dateBreak.Start.ToString("MMMM", CultureInfo.InvariantCulture),
-            EndMonth = dateBreak.End.ToString("MMMM", CultureInfo.InvariantCulture),
-            Year = dateBreak.Start.Year.ToString()
-        };
-        return submissionPeriod.LocalisedMonth(monthType);
     }
 }

@@ -416,10 +416,9 @@ public class WebApiGatewayClientTests
 
         // Act & Assert
         await _webApiGatewayClient.Invoking(x => x.CreateRegistrationApplicationEvent(submissionId, payload)).Should().NotThrowAsync();
-
         var expectedUri = $"https://example.com/api/v1/submissions/{submissionId}/submit-registration-application";
         _httpMessageHandlerMock.Protected().Verify(
-            "SendAsync", Times.Once(),
+            "SendAsync", Times.Never(),
             ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Post && req.RequestUri.ToString() == expectedUri),
             ItExpr.IsAny<CancellationToken>());
     }
@@ -439,7 +438,7 @@ public class WebApiGatewayClientTests
 
         var expectedUri = $"https://example.com/api/v1/submissions/{submissionId}/submit-registration-application";
         _httpMessageHandlerMock.Protected().Verify(
-            "SendAsync", Times.Once(),
+            "SendAsync", Times.Never(),
             ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Post && req.RequestUri.ToString() == expectedUri),
             ItExpr.IsAny<CancellationToken>());
     }
@@ -542,8 +541,7 @@ public class WebApiGatewayClientTests
         string queryString = $"type={SubmissionType.Producer}";
         var submissionIds = new List<SubmissionPeriodId>
         {
-            new SubmissionPeriodId
-            {
+            new() {
                  SubmissionId = Guid.NewGuid(),
                  SubmissionPeriod = "July to January 2020",
                  Year = 2020
@@ -595,17 +593,16 @@ public class WebApiGatewayClientTests
     {
         // Arrange
         var submissionId = Guid.NewGuid();
-        string queryString = $"lastTimeSync={new DateTime(2020, 1, 1)}";
+        string queryString = $"lastTimeSync={new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc)}";
         var submissionHistory = new List<SubmissionHistory>
         {
-            new SubmissionHistory
-            {
+            new() {
                 SubmissionId = submissionId,
                 FileName = "test.csv",
                 UserName = "John Doe",
-                SubmissionDate = new DateTime(2020, 8, 20),
+                SubmissionDate = new DateTime(2020, 8, 20, 0, 0, 0, DateTimeKind.Utc),
                 Status = "Accepted",
-                DateofLatestStatusChange = new DateTime(2020, 9, 1)
+                DateofLatestStatusChange = new DateTime(2020, 9, 1, 0, 0, 0, DateTimeKind.Utc)
             }
         };
 
@@ -643,7 +640,7 @@ public class WebApiGatewayClientTests
 
         // Act / Assert
         await _webApiGatewayClient
-            .Invoking(x => x.GetSubmissionHistoryAsync(Guid.NewGuid(), $"lastTimeSync={new DateTime(2020, 1, 1)}"))
+            .Invoking(x => x.GetSubmissionHistoryAsync(Guid.NewGuid(), $"lastTimeSync={new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc)}"))
             .Should()
             .ThrowAsync<HttpRequestException>();
         _loggerMock.VerifyLog(x => x.LogError("Error getting submission history"));
@@ -1209,7 +1206,7 @@ public class WebApiGatewayClientTests
     public async Task FileDownloadAsync_ShouldReturnFileData_WhenResponseIsSuccessful()
     {
         // Arrange
-        Random rnd = new Random();
+        Random rnd = new();
         byte[] data = new byte[10];
         rnd.NextBytes(data);
         var expectedData = data;

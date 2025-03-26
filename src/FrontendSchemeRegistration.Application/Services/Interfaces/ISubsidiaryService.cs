@@ -1,4 +1,5 @@
-﻿using FrontendSchemeRegistration.Application.DTOs.Organisation;
+﻿using FrontendSchemeRegistration.Application.DTOs;
+using FrontendSchemeRegistration.Application.DTOs.Organisation;
 using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
 using FrontendSchemeRegistration.Application.DTOs.Subsidiary.FileUploadStatus;
 using FrontendSchemeRegistration.Application.DTOs.Subsidiary.OrganisationSubsidiaryList;
@@ -13,6 +14,8 @@ public interface ISubsidiaryService
 
     Task<Stream> GetSubsidiariesStreamAsync(Guid organisationId, Guid? complianceSchemeId, bool isComplianceScheme, bool includeSubsidiaryJoinerAndLeaverColumns);
 
+    Task<PaginatedResponse<RelationshipResponseModel>> GetPagedOrganisationSubsidiaries(int page, int showPerPage);
+
     Task<OrganisationRelationshipModel> GetOrganisationSubsidiaries(Guid organisationId);
 
     Task<SubsidiaryFileUploadStatus> GetSubsidiaryFileUploadStatusAsync(Guid userId, Guid organisationId);
@@ -26,4 +29,6 @@ public interface ISubsidiaryService
     Task<SubsidiaryUploadStatusDto> GetUploadStatus(Guid userId, Guid organisationId);
 
     Task<Stream> GetUploadErrorsReport(Guid userId, Guid organisationId);
+
+    Task<Stream?> GetAllSubsidiariesStream();
 }

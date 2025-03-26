@@ -179,32 +179,31 @@ details file.</comment>
   <data name="ConfirmationOfRemoval.ReUploadReg" xml:space="preserve">
     <value>WResubmit the registration file-Current period</value>
   </data>
-  <data name="ConfirmationOfRemoval.PageTitle" xml:space="preserve">
-    <value>Cadarnhad bod yr aelod wedi’i dynnu</value>
-  </data>
   <data name="ConfirmationOfRemoval.IfRemovedReg" xml:space="preserve">
-    <value>WIf you want to add them to your account again, they will need to name you as
-their compliance scheme in their 'Report packaging data' account.</value>
+    <value>Os hoffech chi eu hychwanegu nhw at eich cyfrif eto, bydd angen iddyn nhw eich enwi chi fel eu cynllun cydymffurfio yn eu cyfrif 'Rhoi gwybod am ddata pecynwaith'.</value>
   </data>
   <data name="ConfirmationOfRemoval.RemoveOrgFromFile" xml:space="preserve">
-    <value>WYou'll still need to remove {0} from either your organisation details file or your registration file, depending on the date you first registered them as a member and inform us of the change within 28 days.</value>
+    <value>Bydd angen o hyd ichi dynnu {0} o naill ai eich ffeil manylion sefydliadau neu'ch ffeil gofrestru, gan ddibynnu ar y dyddiad y gwnaethoch chi eu cofrestru fel aelod am y tro cyntaf a rhoi gwybod i ni am y newid o fewn 28 diwrnod.</value>
   </data>
   <data name="ConfirmationOfRemoval.ReturnSchemeMembersReg" xml:space="preserve">
-    <value>yn ôl i weld holl aelodau’r cynllun</value>
+    <value>Yn ôl i weld holl aelodau’r cynllun</value>
   </data>
   <data name="ConfirmationOfRemoval.YouWillNeedTo" xml:space="preserve">
-    <value>WYou'll need to</value>
+    <value>Bydd angen ichi</value>
   </data>
   <data name="ConfirmationOfRemoval.OrgLinkText" xml:space="preserve">
-    <value>Wremove them from your report members' organisation details file and re-upload it.</value>
+    <value>eu tynnu oddi ar eich ffeil manylion sefydliadau aelodau ac ailuwchlwytho'r ffeil.</value>
   </data>
   <data name="ConfirmationOfRemoval.RegLinkText" xml:space="preserve">
-    <value>Wremove them from your organisation's registration file and re-upload it.</value>
+    <value>eu tynnu oddi ar ffeil gofrestru'ch sefydliad ac ailuwchlwytho'r ffeil.</value>
   </data>
   <data name="ConfirmationOfRemoval.RegLinkDesc" xml:space="preserve">
-    <value>WIf you registered this organisation as a member on or after 5 April 2025</value>
+    <value>Os cafodd y sefydliad yma ei gofrestru gennych fel aelod ar neu ar ôl 5 Ebrill 2025</value>
   </data>
   <data name="ConfirmationOfRemoval.OrgLinkDesc" xml:space="preserve">
-    <value>WIf you registered this organisation as a member before 5 April 2025</value>
+    <value>Os cafodd y sefydliad yma ei gofrestru gennych fel aelod cyn 5 Ebrill 2025</value>
+  </data>
+  <data name="ConfirmationOfRemoval.PageTitle" xml:space="preserve">
+    <value>Cadarnhad bod yr aelod wedi’i dynnu</value>
   </data>
 </root>

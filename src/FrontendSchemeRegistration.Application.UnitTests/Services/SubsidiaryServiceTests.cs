@@ -3,6 +3,7 @@
 using Application.Services;
 using Application.Services.Interfaces;
 using FluentAssertions;
+using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.DTOs.Organisation;
 using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
 using FrontendSchemeRegistration.Application.DTOs.Subsidiary.FileUploadStatus;
@@ -320,6 +321,52 @@ public class SubsidiaryServiceTests
         var content = await reader.ReadToEndAsync();
         content.Should().Contain("organisation_id,subsidiary_id,organisation_name,companies_house_number");
         content.Should().Contain($"{organisationId},{subsidiaryId},{organisationName},{companiesHouseNumber}");
+    }
+
+    [Test]
+    public async Task GetPagedOrganisationSubsidiaries_WhenApiThrowsException_ReturnsException()
+    {
+        _accountServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .ThrowsAsync(new Exception());
+
+        // Act and Assert
+        Func<Task> act = async () => await _sut.GetPagedOrganisationSubsidiaries(1, 20);
+
+        await act.Should().ThrowAsync<Exception>();
+    }
+
+    [Test]
+    public async Task GetPagedOrganisationSubsidiaries_WhenApiReturnsSuccessfully_ReturnsResponse()
+    {
+        var expectedModel = new PaginatedResponse<RelationshipResponseModel>
+        {
+            CurrentPage = 1,
+            TotalItems = 1,
+            PageSize = 20,
+            Items = new List<RelationshipResponseModel>
+            {
+                new RelationshipResponseModel
+                {
+                    OrganisationName = "Test1",
+                    OrganisationNumber = "2345",
+                    RelationshipType = "Parent",
+                    CompaniesHouseNumber = "CH123455"
+                }
+            }
+        };
+
+        var response = new HttpResponseMessage(HttpStatusCode.OK);
+        response.Content = expectedModel.ToJsonContent();
+
+        _accountServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _sut.GetPagedOrganisationSubsidiaries(1, 20);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().BeEquivalentTo(expectedModel);
     }
 
     [Test]
@@ -759,5 +806,88 @@ public class SubsidiaryServiceTests
 
         resultAsString.Should().Be(expectedString);
         _webApiGatewayClientMock.Verify(x => x.GetSubsidiaryUploadStatus(userId, organisationId), Times.Once);
+    }
+
+    [Test]
+    public async Task GetAllSubsidiariesStream_WhenApiReturnsSuccess_ReturnsValidStream()
+    {
+        // Arrange
+        var responseData = new List<RelationshipResponseModel>
+            {
+                new RelationshipResponseModel { OrganisationName = "Test Org" }
+            };
+
+        _accountServiceApiClientMock.Setup(api => api.SendGetRequest(It.IsAny<string>()))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(JsonConvert.SerializeObject(responseData))
+            });
+
+        // Act
+        var result = await _sut.GetAllSubsidiariesStream();
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Position.Should().Be(0);
+    }
+
+    [Test]
+    public async Task GetAllSubsidiariesStream_WhenMultiplePages_ReturnsCompleteData()
+    {
+        // Arrange
+        var listOfSubsidiaries = new List<RelationshipResponseModel>
+            {
+                new RelationshipResponseModel { OrganisationName = "First Page Org" },
+                new RelationshipResponseModel { OrganisationName = "Second Page Org" }
+            };
+
+        var requestIndex = 0;
+        _accountServiceApiClientMock.Setup(api => api.SendGetRequest(It.IsAny<string>()))
+            .ReturnsAsync(() =>
+            {
+                requestIndex++;
+                return new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(JsonConvert.SerializeObject(listOfSubsidiaries))
+                };
+            });
+
+        // Act
+        var result = await _sut.GetAllSubsidiariesStream();
+
+        // Assert
+        result.Should().NotBeNull();
+        using var reader = new StreamReader(result);
+        var content = await reader.ReadToEndAsync();
+        content.Should().Contain("First Page Org");
+        content.Should().Contain("Second Page Org");
+    }
+
+    [Test]
+    public async Task GetAllSubsidiariesStream_WhenApiReturnsFailure_ThrowsException()
+    {
+        // Arrange
+        _accountServiceApiClientMock.Setup(api => api.SendGetRequest(It.IsAny<string>()))
+            .ThrowsAsync(new Exception("Internal Server Error"));
+
+        // Act
+        Func<Task> act = async () => await _sut.GetAllSubsidiariesStream();
+
+        // Assert
+        await act.Should().ThrowAsync<Exception>();
+    }
+
+    [Test]
+    public async Task GetAllSubsidiariesStream_WhenApiThrowsException_ThrowsException()
+    {
+        // Arrange
+        _accountServiceApiClientMock.Setup(api => api.SendGetRequest(It.IsAny<string>()))
+            .ThrowsAsync(new Exception());
+
+        // Act
+        Func<Task> act = async () => await _sut.GetAllSubsidiariesStream();
+
+        // Assert
+        await act.Should().ThrowAsync<Exception>();
     }
 }

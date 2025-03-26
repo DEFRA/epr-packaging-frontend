@@ -6,22 +6,18 @@
 @{
     ViewData["Title"] = Localizer["page_title"];
     var summaryText = string.Empty;
-    var pdfButtonText = string.Empty;
 
     if (Model.NoteTypes == PrnConstants.PrnText || Model.NoteTypes == PrnConstants.PernText)
     {
-        pdfButtonText = string.Format(Localizer["download_this_as_pdf"].Value, PrnDataLocalizer[Model.NoteTypes]);
         summaryText = string.Format(Localizer["you_have_accepted_one_prn_or_pern"].Value, PrnDataLocalizer[Model.NoteTypes]);
     }
     else if (Model.NoteTypes == PrnConstants.PrnsText || Model.NoteTypes == PrnConstants.PernsText)
     {
-        pdfButtonText = string.Format(Localizer["download_these_as_pdf"].Value, PrnDataLocalizer[Model.NoteTypes]);
         summaryText = string.Format(Localizer["you_have_accepted_multipe_prn_or_pern"].Value, Model.Count, PrnDataLocalizer[Model.NoteTypes]);
     }
     else
     {
         var noteTypes = Model.NoteTypes.Split(",");
-        pdfButtonText = Localizer["download_these_prns_and_perns_as_pdf"].Value;
         summaryText = string.Format(Localizer["you_have_accepted_mix_prns_and_perns"].Value, Model.Count, PrnDataLocalizer[noteTypes[0]], PrnDataLocalizer[noteTypes[1]]);
     }
 }

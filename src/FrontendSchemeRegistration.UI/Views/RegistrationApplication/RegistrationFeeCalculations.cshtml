@@ -30,7 +30,7 @@
             <partial name="_FeeCalculationBreakdown" model="@Model"/>
 
             <p class="govuk-body govuk-!-margin-top-4">
-                @if (!Model.RegistrationApplicationSubmitted || !Model.IsRegistrationFeePaid)
+                @if (Model is { RegistrationApplicationSubmitted: false, TotalAmountOutstanding: > 0 })
                 {
                     <a asp-action="SelectPaymentOptions" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
                         @SharedLocalizer["continue"]

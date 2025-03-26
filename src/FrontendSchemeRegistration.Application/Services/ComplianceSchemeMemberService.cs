@@ -48,8 +48,7 @@ public class ComplianceSchemeMemberService : IComplianceSchemeMemberService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to get Scheme Members for scheme {schemeId} in organisation {organisationId}",
-                complianceSchemeId, organisationId);
+            _logger.LogError(ex, "Failed to get Scheme Members for scheme {SchemeId} in organisation {OrganisationId}", complianceSchemeId, organisationId);
             throw;
         }
     }
@@ -101,7 +100,7 @@ public class ComplianceSchemeMemberService : IComplianceSchemeMemberService
 
         return await result.Content.ReadFromJsonAsync<RemovedComplianceSchemeMember>();
     }
-    
+
     public Guid? GetComplianceSchemeId()
     {
         var context = _httpContextAccessor.HttpContext;

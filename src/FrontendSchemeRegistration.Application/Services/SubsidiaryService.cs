@@ -18,6 +18,8 @@ using Newtonsoft.Json;
 using Microsoft.Extensions.Caching.Distributed;
 using FrontendSchemeRegistration.Application.Extensions;
 using FrontendSchemeRegistration.Application.Helpers;
+using FrontendSchemeRegistration.Application.DTOs;
+using System.Linq;
 
 public class SubsidiaryService : ISubsidiaryService
 {
@@ -120,6 +122,83 @@ public class SubsidiaryService : ISubsidiaryService
             throw;
         }
     }
+
+    public async Task<Stream?> GetAllSubsidiariesStream()
+    {
+        try
+        {
+            var listOfAllSubsidiaries = await GetUnpagedOrganisationSubsidiaries();
+
+            var stream = new MemoryStream();
+
+            await using (var writer = new StreamWriter(stream, leaveOpen: true))
+            {
+                await using (var csv = new CsvWriter(writer, new CsvConfiguration(CultureInfo.InvariantCulture)))
+                {
+                    var options = new TypeConverterOptions { Formats = ["dd/MM/yyyy"] };
+                    csv.Context.TypeConverterOptionsCache.AddOptions<DateTime>(options);
+                    csv.Context.TypeConverterOptionsCache.AddOptions<DateTime?>(options);
+
+                    csv.Context.RegisterClassMap(new ExportOrganisationAllSubsidiariesRowMap());
+                    await csv.WriteRecordsAsync(listOfAllSubsidiaries);
+                }
+
+                await writer.FlushAsync();
+            }
+
+            stream.Position = 0;
+            return stream;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+
+    public async Task<PaginatedResponse<RelationshipResponseModel>> GetPagedOrganisationSubsidiaries(int page, int showPerPage)
+    {
+        try
+        {
+            var result = await _accountServiceApiClient.SendGetRequest($"organisations/organisationRelationships?page={page}&showPerPage={showPerPage}");
+            if (!result.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            result.EnsureSuccessStatusCode();
+
+            var content = await result.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<PaginatedResponse<RelationshipResponseModel>>(content);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to retrieve all subsidiary data");
+            throw;
+        }
+    }
+
+    public async Task<List<RelationshipResponseModel>> GetUnpagedOrganisationSubsidiaries()
+    {
+        try
+        {
+            var result = await _accountServiceApiClient.SendGetRequest($"organisations/organisationRelationshipsWithoutPaging");
+            if (!result.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            result.EnsureSuccessStatusCode();
+
+            var content = await result.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<List<RelationshipResponseModel>>(content);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to retrieve unpaged subsidiary data");
+            throw;
+        }
+    }
+
 
     public async Task<OrganisationRelationshipModel> GetOrganisationSubsidiaries(Guid organisationId)
     {

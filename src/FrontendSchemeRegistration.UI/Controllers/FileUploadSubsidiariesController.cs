@@ -35,7 +35,7 @@
         private readonly IComplianceSchemeService _complianceSchemeService;
         private readonly ISubsidiaryUtilityService _subsidiaryUtilityService;
         private readonly IFeatureManager _featureManager;
-        private IOptions<GlobalVariables> _globalVariables;
+        private readonly IOptions<GlobalVariables> _globalVariables;
 
         private readonly string _basePath;
 
@@ -67,20 +67,14 @@
         [FeatureGate(FeatureFlags.ShowSubsidiaries)]
         public async Task<IActionResult> SubsidiariesList([FromQuery] int? page = 1)
         {
-            
             if (page < 1)
             {
                 return RedirectToAction(nameof(SubsidiariesList), new { page = 1 });
             }
-            
-            var vm = await GetSubsidiaryListViewModel(page);
-            if (page > vm.PagingDetail.TotalItems)
-            {
-                page -= 1;
-                vm = await GetSubsidiaryListViewModel(page);
-            }
+
             var (userId, organisationId) = GetUserDetails();
-            
+            bool isFileUploadInProgress = false;
+
             if (!await _subsidiaryService.GetSubsidiaryFileUploadStatusViewedAsync(userId, organisationId))
             {
                 var fileUploadStatus = await _subsidiaryService.GetSubsidiaryFileUploadStatusAsync(userId, organisationId);
@@ -93,17 +87,37 @@
                     case SubsidiaryFileUploadStatus.PartialUpload:
                         return RedirectToAction(nameof(SubsidiariesIncompleteFileUpload));
                     case SubsidiaryFileUploadStatus.FileUploadInProgress:
-                        vm.IsFileUploadInProgress = true;
+                        isFileUploadInProgress = true;
                         break;
 
                     default:
                         break;
                 }
             }
-                        
+
             var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
             ViewBag.HomeLinkToDisplay = _basePath;
             await SavePageNumberToSession(session, page.Value);
+
+            if (await _featureManager.IsEnabledAsync(FeatureFlags.ShowAllSubsidiaries))
+            {
+                var avm = await GetAllSubsidiaryListViewModel(page.Value, 20);
+
+                avm.IsFileUploadInProgress = isFileUploadInProgress;
+
+                return View("AllSubsidiariesList", avm);
+            }
+
+            var vm = await GetSubsidiaryListViewModel(page);
+
+            if (page > vm.PagingDetail.TotalItems)
+            {
+                page -= 1;
+                vm = await GetSubsidiaryListViewModel(page);
+            }
+
+            vm.IsFileUploadInProgress = isFileUploadInProgress;
+
             return View(vm);
         }
           
@@ -308,16 +322,24 @@
         [Route(PagePaths.ExportSubsidiaries)]
         public async Task<IActionResult> ExportSubsidiaries()
         {
+            Stream? stream = null;
             try
             {
-                var userData = User.GetUserData();
-                var organisation = userData.Organisations[0];
-                var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-                var complianceSchemeId = session.RegistrationSession?.SelectedComplianceScheme?.Id;
-                var isComplianceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
-                var showSubsidiaryJoinerAndLeaverColumns = await _featureManager.IsEnabledAsync(FeatureFlags.ShowSubsidiaryJoinerAndLeaverColumns);
+                if (await _featureManager.IsEnabledAsync(FeatureFlags.ShowAllSubsidiaries))
+                {
+                    stream = await _subsidiaryService.GetAllSubsidiariesStream();
+                }
+                else
+                {
+                    var userData = User.GetUserData();
+                    var organisation = userData.Organisations[0];
+                    var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+                    var complianceSchemeId = session.RegistrationSession?.SelectedComplianceScheme?.Id;
+                    var isComplianceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
+                    var showSubsidiaryJoinerAndLeaverColumns = await _featureManager.IsEnabledAsync(FeatureFlags.ShowSubsidiaryJoinerAndLeaverColumns);
+                    stream = await _subsidiaryService.GetSubsidiariesStreamAsync(organisation.Id.Value, complianceSchemeId, isComplianceScheme, showSubsidiaryJoinerAndLeaverColumns);
+                }
 
-                var stream = await _subsidiaryService.GetSubsidiariesStreamAsync(organisation.Id.Value, complianceSchemeId, isComplianceScheme, showSubsidiaryJoinerAndLeaverColumns);
 
                 if (stream == null)
                 {
@@ -397,7 +419,7 @@
             var user = User.GetUserData();
             return (user.Id.Value, user.Organisations[0].Id.Value);
         }
-        
+
         private async Task<SubsidiaryListViewModel> GetSubsidiaryListViewModel(int? page)
         {
             const int showPerPage = 1;
@@ -428,7 +450,7 @@
                                 Name = response.Organisation.Name,
                                 Id = response.Organisation.OrganisationNumber,
                                 CompaniesHouseNumber = response.Organisation.CompaniesHouseNumber,
-                                Subsidiaries = response.Relationships.Select(r => new SubsidiaryViewModel(r.OrganisationNumber, r.OrganisationName, r.CompaniesHouseNumber, r.JoinerDate, r.ReportingType)).ToList()
+                                Subsidiaries = response.Relationships.Select(r => new SubsidiaryViewModel(r.OrganisationNumber, r.OrganisationName, r.CompaniesHouseNumber, r.JoinerDate)).ToList()
                             }
                         ]
                     };
@@ -454,7 +476,7 @@
                                 Name = c.OrganisationName,
                                 Id = c.OrganisationNumber,
                                 CompaniesHouseNumber = c.CompaniesHouseNumber,
-                                Subsidiaries = c.Relationships.Select(s => new SubsidiaryViewModel(s.OrganisationNumber, s.OrganisationName, s.CompaniesHouseNumber, s.JoinerDate, s.ReportingType)).ToList()
+                                Subsidiaries = c.Relationships.Select(s => new SubsidiaryViewModel(s.OrganisationNumber, s.OrganisationName, s.CompaniesHouseNumber, s.JoinerDate)).ToList()
                             }).ToList()
                     };
                 }
@@ -473,6 +495,30 @@
                 PagingLink = $"{pageUrl}?page="
             };
             result.IsDirectProducer = isDirectProducer;
+            return result;
+        }
+        
+        private async Task<AllSubsidiaryListViewModel> GetAllSubsidiaryListViewModel(int page, int showPerPage)
+        {
+            var userData = User.GetUserData();
+            var response = await _subsidiaryService.GetPagedOrganisationSubsidiaries(page, showPerPage);
+
+            var result = new AllSubsidiaryListViewModel()
+            {
+                Subsidiaries = response.Items,
+                IsDirectProducer = userData.Organisations[0].OrganisationRole == OrganisationRoles.Producer
+            };
+
+            var pageUrl = Url.Action(nameof(SubsidiariesList));
+
+            result.PagingDetail = new PagingDetail
+            {
+                CurrentPage = response.CurrentPage,
+                PageSize = response.PageSize,
+                TotalItems = response.TotalItems,
+                PagingLink = $"{pageUrl}?page="
+            };
+
             return result;
         }
 

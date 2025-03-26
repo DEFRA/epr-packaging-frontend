@@ -25,7 +25,7 @@
                 return;
             }
             var userData = context.HttpContext.User.GetUserData();
-            var organisation = userData.Organisations.FirstOrDefault(o => o.OrganisationRole == OrganisationRoles.ComplianceScheme);
+            var organisation = userData.Organisations.Find(o => o.OrganisationRole == OrganisationRoles.ComplianceScheme);
             if (organisation != null)
             {
                 var session = await _sessionManager.GetSessionAsync(context.HttpContext.Session);

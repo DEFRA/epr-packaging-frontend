@@ -25,7 +25,7 @@ public class PrnServiceTests
 	private Mock<IAccountServiceApiClient> _accountServiceApiClientMock;
 	private Mock<IWebApiGatewayClient> _webApiGatewayClientMock;
     private PrnService _systemUnderTest;
-    private static readonly IFixture Fixture = new Fixture();
+    private static readonly Fixture Fixture = new();
     private Mock<ILogger<PrnService>> _loggerMock;
     private List<Guid> externalIds = new();
 

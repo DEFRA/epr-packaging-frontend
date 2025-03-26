@@ -107,9 +107,9 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
 
                             Relationships = new List<RelationshipResponseModel>
                             {
-                                new() { OrganisationNumber = "987654321", OrganisationName = "Subsidiary1" , JoinerDate = JoinerDate, ReportingType = SelfReportingType},
-                                new() { OrganisationNumber = "852147930", OrganisationName = "Subsidiary2" , JoinerDate = JoinerDate, ReportingType = GroupReportingType},
-                                new() { OrganisationNumber = "741229428", OrganisationName = "Subsidiary3" , JoinerDate = JoinerDate, ReportingType = GroupReportingType},
+                                new() { OrganisationNumber = "987654321", OrganisationName = "Subsidiary1" , JoinerDate = JoinerDate},
+                                new() { OrganisationNumber = "852147930", OrganisationName = "Subsidiary2" , JoinerDate = JoinerDate},
+                                new() { OrganisationNumber = "741229428", OrganisationName = "Subsidiary3" , JoinerDate = JoinerDate},
                             }
                         }
                     },
@@ -170,6 +170,59 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
         }
 
         [Test]
+        public async Task SubsidiariesList_WhenDirectProducer_WithShowAllSubsidiaresFeatureFlagSetToTrue_ShouldCallSubsidiaryServiceAndReturnViewResult()
+        {
+            // Arrange
+            var page = 1;
+            var showPerPage = 20;
+
+            var model = new PaginatedResponse<RelationshipResponseModel>
+            {
+                CurrentPage = 1,
+                TotalItems = 1,
+                PageSize = 20,
+                Items = new List<RelationshipResponseModel>
+                {
+                    new RelationshipResponseModel
+                    {
+                        OrganisationName = "Test1",
+                        OrganisationNumber = "2345",
+                        RelationshipType = "Parent",
+                        CompaniesHouseNumber = "CH123455",
+                        JoinerDate = JoinerDate
+                    }
+                }
+            };
+
+            var claims = CreateUserDataClaim(OrganisationRoles.Producer);
+            _userMock.Setup(x => x.Claims).Returns(claims);
+            _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+            _mockSubsidiaryService.Setup(s => s.GetPagedOrganisationSubsidiaries(page, showPerPage)).ReturnsAsync(model);
+            _mockFeatureManager.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ShowAllSubsidiaries))).ReturnsAsync(true);
+            _mockSubsidiaryService.Setup(x => x.GetSubsidiaryFileUploadStatusAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                .ReturnsAsync(SubsidiaryFileUploadStatus.NoFileUploadActive);
+
+            // Act
+            var result = await _controller.SubsidiariesList(page);
+
+            // Assert
+            result.Should().BeOfType<ViewResult>();
+            var viewResult = (result as ViewResult).Model as AllSubsidiaryListViewModel;
+            viewResult.Should().NotBeNull();
+            viewResult.Subsidiaries.Should().HaveCount(1);
+
+            viewResult.Subsidiaries[0].OrganisationName.Should().Be(model.Items[0].OrganisationName);
+            viewResult.Subsidiaries[0].OrganisationNumber.Should().Be(model.Items[0].OrganisationNumber);
+            viewResult.Subsidiaries[0].RelationshipType.Should().Be(model.Items[0].RelationshipType);
+            viewResult.Subsidiaries[0].CompaniesHouseNumber.Should().Be(model.Items[0].CompaniesHouseNumber);
+            viewResult.Subsidiaries[0].JoinerDate.Should().Be(JoinerDate);
+            viewResult.IsFileUploadInProgress.Should().Be(false);
+            viewResult.IsDirectProducer.Should().Be(true);
+
+            _mockSubsidiaryService.Verify(service => service.GetPagedOrganisationSubsidiaries(page, showPerPage), Times.Once);
+        }
+
+        [Test]
         public async Task SubsidiariesList_WhenDirectProducer_ShouldCallSubsidiaryServiceAndReturnViewResult()
         {
             // Arrange
@@ -187,9 +240,9 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                 },
                 Relationships = new List<RelationshipResponseModel>
                 {
-                    new() { OrganisationNumber = "987654321", OrganisationName = "Subsidiary1" , JoinerDate = JoinerDate, ReportingType = SelfReportingType},
-                    new() { OrganisationNumber = "852147930", OrganisationName = "Subsidiary2" , JoinerDate = JoinerDate, ReportingType = GroupReportingType},
-                    new() { OrganisationNumber = "741229428", OrganisationName = "Subsidiary3" , JoinerDate = JoinerDate, ReportingType = GroupReportingType},
+                    new() { OrganisationNumber = "987654321", OrganisationName = "Subsidiary1" , JoinerDate = JoinerDate},
+                    new() { OrganisationNumber = "852147930", OrganisationName = "Subsidiary2" , JoinerDate = JoinerDate},
+                    new() { OrganisationNumber = "741229428", OrganisationName = "Subsidiary3" , JoinerDate = JoinerDate},
                 }
             };
 
@@ -209,8 +262,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             viewResult.Organisations[0].Subsidiaries.Should().HaveCount(3);
 
             var subsidiary = viewResult.Organisations[0].Subsidiaries.First();
-            subsidiary.JoinerDate.Should().Be(JoinerDate); 
-            subsidiary.ReportingType.Should().Be(SelfReportingType); 
+            subsidiary.JoinerDate.Should().Be(JoinerDate);
 
             _mockSubsidiaryService.Verify(service => service.GetOrganisationSubsidiaries(It.IsAny<Guid>()), Times.Once);
         }
@@ -282,7 +334,6 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             // Validate first subsidiary
             var firstSubsidiary = viewModel.Organisations[0].Subsidiaries.First();
             firstSubsidiary.JoinerDate.Should().Be(JoinerDate);
-            firstSubsidiary.ReportingType.Should().Be(SelfReportingType);
         }
 
         [Theory]
@@ -1367,13 +1418,59 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             var subsidiary = viewModel.Organisations[0].Subsidiaries.First();
 
             subsidiary.JoinerDate.Should().Be(JoinerDate);  
-            subsidiary.ReportingType.Should().Be(SelfReportingType);  
         }
 
         public static object[] SubsidiariesUnsuccessfulFileUploadDecisionCases() => [
             new object[] { true, "SubsidiariesList", null, new RouteValueDictionary { { "page", 1 } } },
             new object[] { false, "Get", "Landing", null }
         ];
+
+        [Test]
+        public async Task ExportSubsidiaries_WhenShowAllSubsidiariesFeatureEnabled_CallsGetAllSubsidiariesStream()
+        {
+            // Arrange
+            var mockStream = new MemoryStream();
+            _mockFeatureManager.Setup(fm => fm.IsEnabledAsync("ShowAllSubsidiaries")).ReturnsAsync(true);
+            _mockSubsidiaryService.Setup(s => s.GetAllSubsidiariesStream()).ReturnsAsync(mockStream);
+
+            // Act
+            var result = await _controller.ExportSubsidiaries();
+
+            // Assert
+            result.Should().BeOfType<FileStreamResult>();
+            _mockSubsidiaryService.Verify(s => s.GetAllSubsidiariesStream(), Times.Once);
+        }
+
+        [Test]
+        public async Task ExportSubsidiaries_WhenShowAllSubsidiariesFeatureDisabled_CallsGetSubsidiariesStreamAsync()
+        {
+            // Arrange
+            var mockStream = new MemoryStream();
+            _mockFeatureManager.Setup(fm => fm.IsEnabledAsync("ShowAllSubsidiaries")).ReturnsAsync(false);
+            _mockSubsidiaryService.Setup(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid?>(), It.IsAny<bool>(), It.IsAny<bool>())).ReturnsAsync(mockStream);
+
+            // Act
+            var result = await _controller.ExportSubsidiaries();
+
+            // Assert
+            result.Should().BeOfType<FileStreamResult>();
+            _mockSubsidiaryService.Verify(s => s.GetSubsidiariesStreamAsync(It.IsAny<Guid>(), It.IsAny<Guid?>(), It.IsAny<bool>(), It.IsAny<bool>()), Times.Once);
+        }
+
+        [Test]
+        public async Task ExportSubsidiaries_WhenFeatureEnabledAndStreamIsNull_RedirectsToDownloadFailed()
+        {
+            // Arrange
+            _mockFeatureManager.Setup(fm => fm.IsEnabledAsync("ShowAllSubsidiaries")).ReturnsAsync(true);
+            _mockSubsidiaryService.Setup(s => s.GetAllSubsidiariesStream()).ReturnsAsync((Stream?)null);
+
+            // Act
+            var result = await _controller.ExportSubsidiaries();
+
+            // Assert
+            result.Should().BeOfType<RedirectToActionResult>();
+            ((RedirectToActionResult)result).ActionName.Should().Be("SubsidiariesDownloadFailed");
+        }
 
         private List<Claim> CreateUserDataClaim(string organisationRole, string serviceRole = null)
         {

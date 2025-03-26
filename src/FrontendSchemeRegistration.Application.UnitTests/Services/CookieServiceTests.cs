@@ -37,7 +37,7 @@ public class CookieServiceTests
         // Arrange
         const string expectedLog = "Error setting cookie acceptance to 'True'";
         var requestCookieCollection = MockRequestCookieCollection("test", "test");
-        HttpContext context = new DefaultHttpContext();
+        Microsoft.AspNetCore.Http.DefaultHttpContext context = new();
         MockService();
 
         // Act

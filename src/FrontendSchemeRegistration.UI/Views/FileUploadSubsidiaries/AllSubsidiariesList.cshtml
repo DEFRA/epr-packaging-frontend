@@ -1,0 +1,210 @@
+﻿@using FrontendSchemeRegistration.Application.Constants
+@using FrontendSchemeRegistration.UI.Constants
+
+@model AllSubsidiaryListViewModel
+
+@{
+    ViewData["Title"] = Localizer["subsidiaries"];
+
+    var subsidiaryNameHeader = Localizer["subsidiary_name"];
+    var subsidiaryIdHeader = Localizer["subsidiary_id"];
+    var companiesHouseNumberHeader = Localizer["companies_house_number"];
+    var joinedHeader = Localizer["joined"];
+    var reportingHeader = Localizer["reporting"];
+    var removeSubsidiaryLinkText = Localizer["remove_subsidiary"];
+}
+
+@inject Microsoft.FeatureManagement.IFeatureManager FeatureManager
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            @if (Model.IsFileUploadInProgress)
+            {
+                var url = Url.Action();
+                @await Html.PartialAsync("Partials/FileUploadSubsidiaries/_FileUploadNotification", url)
+            }
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @await Html.PartialAsync("Partials/Govuk/_ErrorSummary", ViewData.ModelState)
+            }
+
+            @if (Model.IsFileUploadInProgress && Model.Subsidiaries.Count == 0)
+            {
+                <p class="govuk-body govuk-!-margin-bottom-6">@Localizer["subsidiaries_will_appear"]</p>
+                <div class="govuk-grid-row">
+                    <div class="govuk-grid-column-full">
+
+                        <a class="govuk-button" href="@Url.Action("Get", "Landing")" role="button" data-module="govuk-button">
+                            @Localizer["return_to_account_home"]
+                        </a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <h1 class="govuk-heading-xl">@Localizer["subsidiaries"]</h1>
+                @if (Model.Subsidiaries.Count > 0)
+                {
+                    <div class="govuk-warning-text govuk-!-padding-bottom-7 govuk-phase-banner">
+                        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                        <strong class="govuk-warning-text__text">
+                            <span class="govuk-warning-text__assistive">@Localizer["text_assistive.warning"]</span>
+                            @Localizer["subsidiary_accuracy_warning_text"]
+                        </strong>
+                    </div>
+
+                    <div class="govuk-grid-row">
+                        <div class="govuk-grid-column-full">
+                            <div class="govuk-button-group">
+                                <a class="govuk-button govuk-button--secondary" href="@Url.Action("SubsidiariesDownload", "FileUploadSubsidiaries")" role="button" data-module="govuk-button">@Localizer["download_subsidiaries_list"]</a>
+                                <a class="govuk-link" href="#create-subsidiary">@Localizer["create_subsidiary_ids"]</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2 class="govuk-heading-m">@Localizer["subsidiaries_list"]</h2>
+                    <div class="govuk-grid-row">
+                        <div class="govuk-grid-column-full overflow-x-auto">
+                            <table class="govuk-table responsive-table">
+                                <caption class="govuk-visually-hidden">@Localizer["subsidiaries_list"]</caption>
+                                <thead class="govuk-table__head">
+                                    <tr class="govuk-table__row">
+                                        <th scope="col" class="govuk-table__header">@subsidiaryNameHeader</th>
+                                        <th scope="col" class="govuk-table__header no-wrap-text">@subsidiaryIdHeader</th>
+                                        <th scope="col" class="govuk-table__header no-wrap-text">@companiesHouseNumberHeader</th>
+                                        <feature name="@FeatureFlags.ShowSubsidiaryJoinerAndLeaverColumns">
+                                            <th scope="col" class="govuk-table__header no-wrap-text govuk-!-padding-right-5">@joinedHeader</th>
+                                            <th scope="col" class="govuk-table__header no-wrap-text">@reportingHeader</th>
+                                        </feature>
+                                        <feature name="ShowSubsidiariesRemoveLink">
+                                            <td class="govuk-table__header no-wrap-text" />
+                                        </feature>
+                                    </tr>
+                                </thead>
+                                <tbody class="govuk-table__body">
+                                    @foreach (var subsidiaryViewModel in Model.Subsidiaries)
+                                    {
+                                        <tr class="govuk-table__row">
+                                            <td class="govuk-table__cell break-word" data-heading="@subsidiaryNameHeader">@subsidiaryViewModel.OrganisationName</td>
+                                            <td class="govuk-table__cell break-word" data-heading="@subsidiaryIdHeader">@subsidiaryViewModel.OrganisationNumber</td>
+                                            <td class="govuk-table__cell break-word" data-heading="@companiesHouseNumberHeader">
+                                                @(!string.IsNullOrWhiteSpace(subsidiaryViewModel.CompaniesHouseNumber) ? subsidiaryViewModel.CompaniesHouseNumber : Localizer["no_ch_number"])
+                                            </td>
+                                            <feature name="@FeatureFlags.ShowSubsidiaryJoinerAndLeaverColumns">
+                                                <td class="govuk-table__cell no-wrap-text" data-heading="@joinedHeader">
+                                                    @(subsidiaryViewModel.JoinerDate?.ToString("dd MMM yyyy"))
+                                                </td>
+                                            </feature>
+                                            <feature name="ShowSubsidiariesRemoveLink">
+                                                <td class="govuk-table__cell" data-heading="@removeSubsidiaryLinkText">
+                                                    <a href="@($"/report-data{PagePaths.ConfirmSubsidiaryRemoval}/{@subsidiaryViewModel.OrganisationNumber}?parentOrganisationExternalId={@subsidiaryViewModel.ParentOrganisationExternalId}")" aria-label="@Localizer["aria-confirm-subsidiary-removal-description"]" class="govuk-link--no-visited-state">
+                                                        @removeSubsidiaryLinkText
+                                                    </a>
+                                                </td>
+                                            </feature>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                            @if (Model.PagingDetail.PageCount > 1)
+                            {
+                                @await Html.PartialAsync("Partials/RecordNavigation/_RecordPaging", Model.PagingDetail)
+
+                                <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+                            }
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <p class="govuk-body blank-line-before">@Localizer["subsidiaries_not_found"]</p>
+                }
+
+                
+
+                @if (!Model.IsFileUploadInProgress)
+                {
+                    <div class="govuk-grid-row">
+                        <div class="govuk-grid-column-two-thirds">
+
+                            @if (Model.Subsidiaries.Count > 0)
+                            {
+                                <h2 class="govuk-heading-m">@Localizer["create_subsidiary_ids"]</h2>
+                                <p class="govuk-body">
+                                    @Localizer["use_the_file_upload"]
+                                </p>
+                                <p class="govuk-body">
+                                    @Localizer["before_you_upload"]
+                                    <a href="@GuidanceLinks.Value.HowToCompleteSubsidiaryFile" class="govuk-link" rel="noreferrer noopener" target="_blank">@Localizer["subsidiary_file_template"]</a>.
+                                </p>
+                            }
+
+                            @using (Html.BeginForm(FormMethod.Post, new
+                            {
+                                enctype = "multipart/form-data"
+                            }))
+                            {
+                                <div id="create-subsidiary" class="govuk-form-group @(ViewData.ModelState.IsValid ? string.Empty : "govuk-form-group--error")" data-testid="subsidiary-data-upload-form">
+                                    @if (!ViewData.ModelState.IsValid)
+                                    {
+                                        @await Html.PartialAsync("Partials/Govuk/_Error", ViewData.ModelState.GetModelStateEntry("file"))
+                                    }
+
+                                    <label for="file" class="govuk-label" id="file-upload-label">@Localizer["upload_subsidiary_file"]</label>
+                                    
+                                    <input class="govuk-file-upload" title="Choose a file" name="file" type="file" id="file" data-testid="subsidiary-upload-choose-file-button">
+                                </div>
+
+                                <div class="govuk-button-group">
+                                    <button class="govuk-button govuk-!-margin-right-4" data-module="govuk-button" type="submit" data-testid="subsidiary-data-upload-button">@SharedLocalizer["upload_file"]</button>
+                                    <a class="govuk-button govuk-button--secondary" href="@Url.Action("SubsidiariesDownload", "FileUploadSubsidiaries")" role="button" data-module="govuk-button">@Localizer["download_subsidiaries_list"]</a>
+                                </div>
+
+                                @if (Model.Subsidiaries.Count > 0)
+                                {
+                                    <h2 class="govuk-heading-m">@Localizer["adding_and_removing_subsidiaries"]</h2>
+                                    
+                                    <p class="govuk-body">
+                                        @Localizer["to_add_or_remove"]
+
+                                        @Html.ActionLink(
+                                            Localizer["update_and_resubmit"].Value,
+                                            "ProducerRegistrationGuidance",
+                                            "RegistrationApplication", null,
+                                            new { @class = "govuk-link govuk-link--no-visited-state" }
+                                        )
+
+                                        @Localizer["within_28_days_of_the_change"]
+                                    </p>
+                                }
+                            }
+                        </div>
+                    </div>
+                }
+
+                @if (Model.IsFileUploadInProgress)
+                {
+                    <div class="govuk-grid-row govuk-!-padding-bottom-6">
+                        <div class="govuk-grid-column-full">
+                            @Html.ActionLink(Localizer["return_to_account_home"].Value, "Get", "Landing",
+                                     null, new { @class = "govuk-body govuk-link govuk-link--no-visited-state" })
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</main>
+
+
+@if (Model.IsFileUploadInProgress)
+{
+    <script src="~/js/jquery-3.7.1.min.js"></script>
+    <script src="~/js/sub-status-refresh.js"></script>
+}
+
+
+
+
