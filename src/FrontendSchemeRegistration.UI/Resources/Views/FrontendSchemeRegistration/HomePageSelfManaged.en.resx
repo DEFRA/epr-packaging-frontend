@@ -64,6 +64,9 @@
   <data name="resubmit_your_packaging_data" xml:space="preserve">
     <value>resubmit your packaging data</value>
   </data>
+	<data name="you_must_report_packaging_data_non_resubmission" xml:space="preserve">
+    <value>You must report packaging data non resubmission</value>
+  </data>
 	<data name="you_are_currenlty_resubmitting_data" xml:space="preserve">
     <value>You are currently resubmitting data.</value>
   </data>
