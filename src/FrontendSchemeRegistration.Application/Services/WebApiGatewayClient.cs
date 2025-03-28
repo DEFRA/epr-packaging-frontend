@@ -196,15 +196,6 @@ public class WebApiGatewayClient : IWebApiGatewayClient
     public async Task CreateRegistrationApplicationEvent(Guid submissionId, RegistrationApplicationPayload applicationPayload)
     {
         await PrepareAuthenticatedClientAsync();
-        var requestPath = $"/api/v1/submissions/create-submission";
-
-        var response = await _httpClient.PostAsJsonAsync(requestPath, submissionId);
-        response.EnsureSuccessStatusCode();
-    }
-
-    public async Task SubmitRegistrationApplication(Guid submissionId, RegistrationApplicationPayload applicationPayload)
-    {
-        await PrepareAuthenticatedClientAsync();
         var requestPath = $"/api/v1/submissions/{submissionId}/submit-registration-application";
         var response = await _httpClient.PostAsJsonAsync(requestPath, applicationPayload);
         response.EnsureSuccessStatusCode();

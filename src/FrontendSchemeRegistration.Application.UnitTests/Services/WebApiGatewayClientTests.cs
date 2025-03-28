@@ -418,7 +418,7 @@ public class WebApiGatewayClientTests
         await _webApiGatewayClient.Invoking(x => x.CreateRegistrationApplicationEvent(submissionId, payload)).Should().NotThrowAsync();
         var expectedUri = $"https://example.com/api/v1/submissions/{submissionId}/submit-registration-application";
         _httpMessageHandlerMock.Protected().Verify(
-            "SendAsync", Times.Never(),
+            "SendAsync", Times.Once(),
             ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Post && req.RequestUri.ToString() == expectedUri),
             ItExpr.IsAny<CancellationToken>());
     }
@@ -438,7 +438,7 @@ public class WebApiGatewayClientTests
 
         var expectedUri = $"https://example.com/api/v1/submissions/{submissionId}/submit-registration-application";
         _httpMessageHandlerMock.Protected().Verify(
-            "SendAsync", Times.Never(),
+            "SendAsync", Times.Once(),
             ItExpr.Is<HttpRequestMessage>(req => req.Method == HttpMethod.Post && req.RequestUri.ToString() == expectedUri),
             ItExpr.IsAny<CancellationToken>());
     }
