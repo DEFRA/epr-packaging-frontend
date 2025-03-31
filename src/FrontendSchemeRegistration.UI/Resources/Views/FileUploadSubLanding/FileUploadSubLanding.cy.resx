@@ -133,7 +133,7 @@
     <value>Heb ddechrau</value>
   </data>
   <data name="in_progress" xml:space="preserve">
-    <value></value>
+    <value>Ar y gweill</value>
   </data>
 	<data name="read_the_guidance_on" xml:space="preserve">
     <value>Darllenwch y canllawiau ar y canlynol:</value>
@@ -236,5 +236,11 @@
   </data>
   <data name="your_file_has_been_accepted_this_does_not_mean_the_data_is_correct_or_accurate_it_is_your_responsibility_to_make_sure_you_submit_correct_accurate_data_an_approved_person_or_their_delegate_must_verify_an_organisations_data" xml:space="preserve">
     <value>Mae eich ffeiliau wedi'u derbyn. Nid yw hyn yn golygu bod y data a dderbynnir yn cael ei gymeradwyo. Eich cyfrifoldeb chi yw sicrhau eich bod yn cyflwyno data cywir. Rhaid i ddata sefydliad gael ei wirio gan berson a gymeradwywyd neu ei ddirprwy.</value>
+  </data>
+	<data name="inprogress_resubmission_fileinsynapse_feesnotviewed_notsubmitted" xml:space="preserve">
+    <value>Mae angen ichi edrych ar eich ffi ddiwygiedig a dewis dull talu.</value>
+  </data>
+	<data name="inprogress_resubmission_feesviewed_notsubmitted" xml:space="preserve">
+    <value>Rydych chi wedi edrych ar eich ffi. Nawr mae angen ichi gyflwyno i'r rheoleiddiwr.</value>
   </data>
 </root>

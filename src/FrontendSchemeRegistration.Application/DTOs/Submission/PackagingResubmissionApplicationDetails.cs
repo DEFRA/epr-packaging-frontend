@@ -25,7 +25,7 @@ public class PackagingResubmissionApplicationDetails
     public bool ResubmissionApplicationSubmitted => ResubmissionApplicationSubmittedDate is not null;
 
     public ApplicationStatusType ApplicationStatus { get; set; }
-
+    
     public string? ResubmissionReferenceNumber { get; set; }
 
     public SynapseResponse SynapseResponse { get; set; } = new();

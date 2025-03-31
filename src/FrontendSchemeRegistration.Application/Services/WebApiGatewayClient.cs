@@ -478,13 +478,15 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         }
     }
 
-    public async Task<PackagingResubmissionApplicationDetails?> GetPackagingDataResubmissionApplicationDetails(GetPackagingResubmissionApplicationDetailsRequest request)
+    public async Task<List<PackagingResubmissionApplicationDetails>?> GetPackagingDataResubmissionApplicationDetails(GetPackagingResubmissionApplicationDetailsRequest request)
     {
         await PrepareAuthenticatedClientAsync();
 
+        var submissionPeriods = request.SubmissionPeriods.Any() ? $"&SubmissionPeriods={string.Join("&SubmissionPeriods=", request.SubmissionPeriods)}" : string.Empty;
+
         try
         {
-            var endpointUrl = $"/api/v1/packaging-resubmission/get-application-details?OrganisationNumber={request.OrganisationNumber}&OrganisationId={request.OrganisationId}&SubmissionPeriod={request.SubmissionPeriod}";
+            var endpointUrl = $"/api/v1/packaging-resubmission/get-application-details?OrganisationId={request.OrganisationId}{submissionPeriods}";
 
             if (request.ComplianceSchemeId is not null && request.ComplianceSchemeId != Guid.Empty)
             {
@@ -500,11 +502,11 @@ public class WebApiGatewayClient : IWebApiGatewayClient
                 return null;
             }
 
-            return (await response.Content.ReadFromJsonAsync<PackagingResubmissionApplicationDetails>())!;
+            return (await response.Content.ReadFromJsonAsync<List<PackagingResubmissionApplicationDetails>>())!;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error Getting Pom Resubmission ApplicationDetails for organisation Id : {OrganisationId}", request.OrganisationId);
+            _logger.LogError(ex, $"Error Getting Pom Resubmission ApplicationDetails for organisation Id : {request.OrganisationId} and submission period(s): {submissionPeriods}");
             return null!;
         }
     }

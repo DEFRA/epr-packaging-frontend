@@ -11,6 +11,7 @@ using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers;
 using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
 using FrontendSchemeRegistration.UI.Controllers.FrontendSchemeRegistration;
+using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Http;
@@ -48,6 +49,7 @@ public class FileUploadSubLandingControllerTests
     private Mock<IFeatureManager> _featureManagerMock;
     private Mock<ISession> _httpContextSessionMock;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionMock;
+    private Mock<IResubmissionApplicationService> _resubmissionApplicationServicMock;
 
     [SetUp]
     public void SetUp()
@@ -56,11 +58,17 @@ public class FileUploadSubLandingControllerTests
         _submissionServiceMock = new Mock<ISubmissionService>();
         _featureManagerMock = new Mock<IFeatureManager>();
         _sessionMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
+        _resubmissionApplicationServicMock = new Mock<IResubmissionApplicationService>();
+
+        _resubmissionApplicationServicMock.Setup(x => x.GetPackagingResubmissionApplicationSession(It.IsAny<Organisation>(),It.IsAny<List<string>>(), It.IsAny<Guid>()))
+            .ReturnsAsync(new List<PackagingResubmissionApplicationSession> { new PackagingResubmissionApplicationSession { IsResubmissionFeeViewed = false, FileReachedSynapse = false, IsSubmitted = false } });
+
         _systemUnderTest = new FileUploadSubLandingController(
             _submissionServiceMock.Object,
             _sessionMock.Object,
             _featureManagerMock.Object,
-            Options.Create(new GlobalVariables { SubmissionPeriods = _submissionPeriods }));
+            Options.Create(new GlobalVariables { SubmissionPeriods = _submissionPeriods }), 
+            _resubmissionApplicationServicMock.Object);
 
         _systemUnderTest.ControllerContext = new ControllerContext
         {
@@ -119,7 +127,7 @@ public class FileUploadSubLandingControllerTests
                     DatePeriodYear = _submissionPeriods[0].Year,
                     Comments = string.Empty,
                     Decision = string.Empty,
-                    IsResubmissionRequired = false
+                    IsResubmissionRequired = false,
                 },
                 new()
                 {
@@ -131,7 +139,8 @@ public class FileUploadSubLandingControllerTests
                     DatePeriodEndMonth = _submissionPeriods.ElementAt(1).EndMonth,
                     Comments = string.Empty,
                     Decision = string.Empty,
-                    IsResubmissionRequired = false
+                    IsResubmissionRequired = false,
+                    IsResubmissionComplete = false,
                 }
                 }
             }
@@ -179,7 +188,9 @@ public class FileUploadSubLandingControllerTests
             _submissionServiceMock.Object,
             _sessionMock.Object,
             _featureManagerMock.Object,
-            Options.Create(new GlobalVariables { SubmissionPeriods = submissionPeriods }));
+            Options.Create(new GlobalVariables { SubmissionPeriods = submissionPeriods }),
+            _resubmissionApplicationServicMock.Object);
+
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext { Session = _httpContextSessionMock.Object }
@@ -348,11 +359,19 @@ public class FileUploadSubLandingControllerTests
 			PomFileUploadDateTime = DateTime.Now.AddDays(-14),
 			SubmissionPeriod = _submissionPeriods[0].DataPeriod,
 			LastSubmittedFile = null,
-            IsResubmissionInProgress = true,
 		};
-		_submissionServiceMock.Setup(x => x.GetSubmissionsAsync<PomSubmission>(
+        var pomSubmission2 = new PomSubmission
+        {
+            Id = submissionId,
+            HasValidFile = true,
+            PomFileUploadDateTime = DateTime.Now.AddDays(-14),
+            SubmissionPeriod = _submissionPeriods[1].DataPeriod,
+            LastSubmittedFile = null,
+        };
+
+        _submissionServiceMock.Setup(x => x.GetSubmissionsAsync<PomSubmission>(
 				It.IsAny<List<string>>(), 2, selectedComplianceScheme.Id))
-			.ReturnsAsync(new List<PomSubmission> { pomSubmission });
+			.ReturnsAsync(new List<PomSubmission> { pomSubmission, pomSubmission2 });
 		_submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(submissionId))
 			.ReturnsAsync(pomSubmission);
 
@@ -367,6 +386,9 @@ public class FileUploadSubLandingControllerTests
 			});
 
         _featureManagerMock.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney))).ReturnsAsync(true);
+
+        _resubmissionApplicationServicMock.Setup(x => x.GetPackagingResubmissionApplicationSession(It.IsAny<Organisation>(), It.IsAny<List<string>>(), It.IsAny<Guid>()))
+            .ReturnsAsync(new List<PackagingResubmissionApplicationSession> { new PackagingResubmissionApplicationSession { SubmissionId = submissionId,ApplicationStatus = ApplicationStatusType.FileUploaded, IsResubmissionFeeViewed = false, FileReachedSynapse = false, IsSubmitted = false } });
 
         // Act
         var result = await _systemUnderTest.Get() as ViewResult;
@@ -392,7 +414,6 @@ public class FileUploadSubLandingControllerTests
             PomFileUploadDateTime = DateTime.Now.AddDays(-14),
             SubmissionPeriod = _submissionPeriods[0].DataPeriod,
             LastSubmittedFile = null,
-            IsResubmissionInProgress = true,
         };
         _submissionServiceMock.Setup(x => x.GetSubmissionsAsync<PomSubmission>(
                 It.IsAny<List<string>>(), 2, selectedComplianceScheme.Id))
@@ -441,7 +462,6 @@ public class FileUploadSubLandingControllerTests
             PomFileUploadDateTime = DateTime.Now.AddDays(-14),
             SubmissionPeriod = _submissionPeriods[0].DataPeriod,
             LastSubmittedFile = null,
-            IsResubmissionInProgress = isResubmissionInProgress,
         };
         _submissionServiceMock.Setup(x => x.GetSubmissionsAsync<PomSubmission>(
                 It.IsAny<List<string>>(), 2, selectedComplianceScheme.Id))
@@ -487,8 +507,6 @@ public class FileUploadSubLandingControllerTests
 			PomFileUploadDateTime = DateTime.Now.AddDays(-14),
 			SubmissionPeriod = _submissionPeriods[0].DataPeriod,
 			LastSubmittedFile = new SubmittedFileInformation() { FileId = new Guid() },
-			IsResubmissionInProgress = false,
-            IsResubmissionComplete = true
 		};
 		_submissionServiceMock.Setup(x => x.GetSubmissionsAsync<PomSubmission>(
 				It.IsAny<List<string>>(), 2, selectedComplianceScheme.Id))
@@ -719,6 +737,9 @@ public class FileUploadSubLandingControllerTests
                         }
                     });
 
+        _resubmissionApplicationServicMock.Setup(x => x.GetPackagingResubmissionApplicationSession(It.IsAny<Organisation>(), It.IsAny<List<string>>(), It.IsAny<Guid>()))
+                  .ReturnsAsync(new List<PackagingResubmissionApplicationSession> { new PackagingResubmissionApplicationSession { SubmissionId = submissionId } });
+
         // Act
         var result = await _systemUnderTest.Get() as ViewResult;
 
@@ -740,7 +761,8 @@ public class FileUploadSubLandingControllerTests
                     Status = submissionStatus,
                     Comments = comment,
                     Decision = decisionValue,
-                    IsResubmissionRequired = resubmit
+                    IsResubmissionRequired = resubmit,
+                    IsResubmissionComplete = false
                 },
                 new()
                 {
@@ -808,7 +830,9 @@ public class FileUploadSubLandingControllerTests
         _submissionServiceMock.Object,
         _sessionMock.Object,
         _featureManagerMock.Object,
-        Options.Create(new GlobalVariables { SubmissionPeriods = submissionPeriodsForMultipleYears }));
+        Options.Create(new GlobalVariables { SubmissionPeriods = submissionPeriodsForMultipleYears }),
+        _resubmissionApplicationServicMock.Object);
+
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext { Session = _httpContextSessionMock.Object }
@@ -880,7 +904,9 @@ public class FileUploadSubLandingControllerTests
         _submissionServiceMock.Object,
         _sessionMock.Object,
         _featureManagerMock.Object,
-        Options.Create(new GlobalVariables { SubmissionPeriods = submissionPeriodsForMultipleYears }));
+        Options.Create(new GlobalVariables { SubmissionPeriods = submissionPeriodsForMultipleYears }),
+        _resubmissionApplicationServicMock.Object);
+
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext { Session = _httpContextSessionMock.Object }
@@ -903,7 +929,7 @@ public class FileUploadSubLandingControllerTests
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
                 RegistrationSession = new RegistrationSession { SelectedComplianceScheme = selectedComplianceScheme },
-                UserData = new UserData()
+                UserData = new UserData { Organisations = new List<Organisation> { new Organisation { Id = Guid.NewGuid() } } }
             });
 
         // Act

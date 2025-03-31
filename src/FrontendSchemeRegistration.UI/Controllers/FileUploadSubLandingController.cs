@@ -9,6 +9,7 @@ using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
 using FrontendSchemeRegistration.UI.Enums;
 using FrontendSchemeRegistration.UI.Extensions;
+using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -24,6 +25,7 @@ public class FileUploadSubLandingController : Controller
 {
     private const int _submissionsLimit = 1;
     private readonly ISubmissionService _submissionService;
+    private readonly IResubmissionApplicationService _resubmissionApplicationService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
     private readonly IFeatureManager _featureManager;
     private readonly List<SubmissionPeriod> _submissionPeriods;
@@ -33,13 +35,15 @@ public class FileUploadSubLandingController : Controller
         ISubmissionService submissionService,
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
         IFeatureManager featureManager,
-        IOptions<GlobalVariables> globalVariables)
+        IOptions<GlobalVariables> globalVariables,
+        IResubmissionApplicationService resubmissionApplicationService)
     {
         _submissionService = submissionService;
         _sessionManager = sessionManager;
         _featureManager = featureManager;
         _submissionPeriods = globalVariables.Value.SubmissionPeriods;
         _basePath = globalVariables.Value.BasePath;
+        _resubmissionApplicationService = resubmissionApplicationService;
     }
 
     [HttpGet]
@@ -54,9 +58,16 @@ public class FileUploadSubLandingController : Controller
             session.RegistrationSession.SelectedComplianceScheme?.Id);
         var submissionPeriodDetails = new List<SubmissionPeriodDetail>();
 
+        var packagingResubmissionApplicationSessionForAllSubmissionPeriods = await _resubmissionApplicationService.GetPackagingResubmissionApplicationSession(
+            session.UserData.Organisations[0],
+            periods,
+            session.RegistrationSession.SelectedComplianceScheme?.Id);
+
         foreach (var submissionPeriod in _submissionPeriods)
         {
             var submission = submissions.Find(x => x.SubmissionPeriod == submissionPeriod.DataPeriod);
+
+            var packagingResubmissionApplicationSession = packagingResubmissionApplicationSessionForAllSubmissionPeriods.Find(x => x.SubmissionId == submission?.Id);
 
             var decision = new PomDecision();
 
@@ -70,20 +81,23 @@ public class FileUploadSubLandingController : Controller
                 decision ??= new PomDecision();
             }
 
-            submissionPeriodDetails.Add(new SubmissionPeriodDetail
+            var submissionPeriodDetail = new SubmissionPeriodDetail
             {
                 DataPeriod = submissionPeriod.DataPeriod,
                 DatePeriodStartMonth = submissionPeriod.LocalisedMonth(MonthType.Start),
                 DatePeriodEndMonth = submissionPeriod.LocalisedMonth(MonthType.End),
                 DatePeriodYear = submissionPeriod.Year,
                 Deadline = submissionPeriod.Deadline,
-                Status = GetSubmissionStatus(submission, submissionPeriod, decision, showPomDecision),
+                Status = GetSubmissionStatus(submission, submissionPeriod, decision, showPomDecision, packagingResubmissionApplicationSession),
                 IsResubmissionRequired = decision.IsResubmissionRequired,
                 Decision = decision.Decision,
                 Comments = decision.Comments,
                 IsSubmitted = submission?.IsSubmitted ?? false,
-                IsResubmissionComplete = submission != null ? submission.IsResubmissionComplete : null,
-            });
+                IsResubmissionComplete = packagingResubmissionApplicationSession != null ? packagingResubmissionApplicationSession.IsResubmissionComplete : null,
+            };
+
+            UpdateInProgressSubmissionPeriodStatus(submissionPeriodDetail, packagingResubmissionApplicationSession);
+            submissionPeriodDetails.Add(submissionPeriodDetail);
         }
 
         var submissionPeriodDetailGroups = submissionPeriodDetails
@@ -138,11 +152,24 @@ public class FileUploadSubLandingController : Controller
         return await HandleSubmissionBasedOnStatus(submission, submissions, selectedSubmissionPeriod.DataPeriod);
     }
 
+    private void UpdateInProgressSubmissionPeriodStatus(
+        SubmissionPeriodDetail submissionPeriodDetail, 
+        PackagingResubmissionApplicationSession packagingResubmissionApplicationSession)
+    {
+        if (submissionPeriodDetail.Status == SubmissionPeriodStatus.InProgress)
+        {
+            submissionPeriodDetail.InProgressSubmissionPeriodStatus = packagingResubmissionApplicationSession == null 
+                ? null 
+                : packagingResubmissionApplicationSession.ApplicationInProgressSubmissionPeriodStatus;
+        }
+    }
+
     private SubmissionPeriodStatus GetSubmissionStatus(
         PomSubmission? submission,
         SubmissionPeriod submissionPeriod,
         PomDecision decision,
-        bool showPomDecision)
+        bool showPomDecision,
+        PackagingResubmissionApplicationSession session)
     {
         if (DateTime.Now < submissionPeriod.ActiveFrom)
         {
@@ -154,8 +181,7 @@ public class FileUploadSubLandingController : Controller
             return SubmissionPeriodStatus.NotStarted;
         }
 
-        if (_featureManager.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)).Result && 
-            submission.IsResubmissionInProgress.HasValue && submission.IsResubmissionInProgress == true)
+        if (_featureManager.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)).Result && session?.IsResubmissionInProgress == true)
         {
             return SubmissionPeriodStatus.InProgress;
         }

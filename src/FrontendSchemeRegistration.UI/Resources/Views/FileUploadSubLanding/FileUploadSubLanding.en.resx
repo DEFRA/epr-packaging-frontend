@@ -231,13 +231,16 @@
   <data name="check_if_you_need_to_update_packaging_data" xml:space="preserve">
     <value>Check if you need to update packaging data</value>
   </data>
-	<data name="check_if_you_need_to_resubmit_packaging_data" xml:space="preserve">
-    <value>Check if you need to resubmit packaging data</value>
-  </data>
   <data name="start_now_compliance_scheme" xml:space="preserve">
     <value>Report members' packaging data</value>
   </data>
   <data name="your_file_has_been_accepted_this_does_not_mean_the_data_is_correct_or_accurate_it_is_your_responsibility_to_make_sure_you_submit_correct_accurate_data_an_approved_person_or_their_delegate_must_verify_an_organisations_data" xml:space="preserve">
     <value>You have accepted files. This does not mean the accepted data is correct or accurate. It is your responsibility to make sure you submit correct, accurate data. An approved person or their delegate must verify an organisation’s data.</value>
+  </data>
+	<data name="inprogress_resubmission_fileinsynapse_feesnotviewed_notsubmitted" xml:space="preserve">
+    <value>You need to view your updated fee and select a payment method.</value>
+  </data>
+	<data name="inprogress_resubmission_feesviewed_notsubmitted" xml:space="preserve">
+    <value>You've viewed your fee. You now need to submit to the regulator</value>
   </data>
 </root>

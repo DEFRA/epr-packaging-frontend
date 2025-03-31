@@ -1,6 +1,7 @@
 ﻿using AutoFixture;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
+using EPR.SubmissionMicroservice.API.Contracts.Submissions.Get;
 using FluentAssertions;
 using FrontendSchemeRegistration.Application.DTOs.PaymentCalculations;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
@@ -420,5 +421,188 @@ public class ResubmissionApplicationServiceTests
 
         // Assert
         act.Should().ThrowAsync<InvalidOperationException>().WithMessage("Application reference number is required.");
+    }
+
+    [Test]
+    public async Task GetPackagingDataResubmissionApplicationDetails_Return_List_Of_GetPackagingDataResubmissionApplicationDetailsObjects_WithMatchingParameters()
+    {
+        // Arrange
+        var organisation = new Organisation { Id = Guid.NewGuid(), OrganisationNumber = "12345" };
+        var submissionPeriods = new List<string> { "January to June 2024", "January to June 2025" };
+        var complianceSchemeId = Guid.NewGuid();
+
+        var getPackagingResubmissionApplicationDetailsRequest = new GetPackagingResubmissionApplicationDetailsRequest
+        {
+            OrganisationId = organisation.Id.Value,
+            ComplianceSchemeId = complianceSchemeId,
+            SubmissionPeriods = submissionPeriods
+        };
+
+        var expectedResult = new List<PackagingResubmissionApplicationDetails>()
+        {
+            new PackagingResubmissionApplicationDetails { IsResubmitted = true, ApplicationReferenceNumber = "abc" }
+        };
+
+        _mockSubmissionService
+            .Setup(x => x.GetPackagingDataResubmissionApplicationDetails(It.IsAny<GetPackagingResubmissionApplicationDetailsRequest>()))
+            .ReturnsAsync(expectedResult);
+
+        // Act
+        var result = await _service.GetPackagingDataResubmissionApplicationDetails(organisation, submissionPeriods, complianceSchemeId);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Count.Should().Be(1);
+        result.First().ApplicationReferenceNumber.Should().Be("abc");
+    }
+
+    [Test]
+    public async Task GetPackagingDataResubmissionApplicationDetails_Return_EmptyList_WithNonMatchingParameters()
+    {
+        // Arrange
+        var organisation = new Organisation { Id = Guid.NewGuid(), OrganisationNumber = "12345" };
+        var submissionPeriods = new List<string> { "January to June 2024", "January to June 2025" };
+        var complianceSchemeId = Guid.NewGuid();
+
+        var getPackagingResubmissionApplicationDetailsRequest = new GetPackagingResubmissionApplicationDetailsRequest
+        {
+            OrganisationId = organisation.Id.Value,
+            ComplianceSchemeId = complianceSchemeId,
+            SubmissionPeriods = submissionPeriods
+        };
+
+        List<PackagingResubmissionApplicationDetails> expected = new List<PackagingResubmissionApplicationDetails>();
+
+        _mockSubmissionService
+            .Setup(x => x.GetPackagingDataResubmissionApplicationDetails(It.IsAny<GetPackagingResubmissionApplicationDetailsRequest>()))
+            .ReturnsAsync(expected);
+
+        // Act
+        var result = await _service.GetPackagingDataResubmissionApplicationDetails(organisation, submissionPeriods, complianceSchemeId);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Count.Should().Be(0);
+    }
+
+    [Test]
+    public async Task GetPackagingDataResubmissionApplicationDetails_Return_Null_WithInvalidParameters()
+    {
+        // Arrange
+        var organisation = new Organisation { Id = Guid.NewGuid(), OrganisationNumber = "12345" };
+        var submissionPeriods = new List<string> { "January to June 2024", "January to June 2025" };
+        var complianceSchemeId = Guid.NewGuid();
+
+        var getPackagingResubmissionApplicationDetailsRequest = new GetPackagingResubmissionApplicationDetailsRequest
+        {
+            OrganisationId = organisation.Id.Value,
+            ComplianceSchemeId = complianceSchemeId,
+            SubmissionPeriods = submissionPeriods
+        };
+
+        List<PackagingResubmissionApplicationDetails> expected = null;
+
+        _mockSubmissionService
+            .Setup(x => x.GetPackagingDataResubmissionApplicationDetails(It.IsAny<GetPackagingResubmissionApplicationDetailsRequest>()))
+            .ReturnsAsync(expected);
+
+        // Act
+        var result = await _service.GetPackagingDataResubmissionApplicationDetails(organisation, submissionPeriods, complianceSchemeId);
+
+        // Assert
+        result.Should().NotBeNull();
+    }
+
+    [Test]
+    public async Task GetPackagingDataResubmissionApplicationDetails_Return_GetPackagingDataResubmissionApplicationDetailsObject_WithMatchingParameters()
+    {
+        // Arrange
+        var organisation = new Organisation { Id = Guid.NewGuid(), OrganisationNumber = "12345" };
+        var submissionPeriod = new List<string> { "January to June 2025" };
+        var complianceSchemeId = Guid.NewGuid();
+
+        var expectedResult = new List<PackagingResubmissionApplicationDetails>()
+        {
+            new PackagingResubmissionApplicationDetails { IsResubmitted = true, ApplicationReferenceNumber = "abc" }
+        };
+
+        _mockSubmissionService
+            .Setup(x => x.GetPackagingDataResubmissionApplicationDetails(It.IsAny<GetPackagingResubmissionApplicationDetailsRequest>()))
+            .ReturnsAsync(expectedResult);
+
+        // Act
+        var result = await _service.GetPackagingDataResubmissionApplicationDetails(organisation, submissionPeriod, complianceSchemeId);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.First().ApplicationReferenceNumber.Should().Be("abc");
+    }
+
+    [Test]
+    public async Task GetPackagingDataResubmissionApplicationDetails_Return_EmptyObject_WithInvalidParameters()
+    {
+        // Arrange
+        var organisation = new Organisation { Id = Guid.NewGuid(), OrganisationNumber = "12345" };
+        var submissionPeriod = new List<string> { "January to June 2025" };
+        var complianceSchemeId = Guid.NewGuid();
+
+        List<PackagingResubmissionApplicationDetails> expected = null;
+
+        _mockSubmissionService
+            .Setup(x => x.GetPackagingDataResubmissionApplicationDetails(It.IsAny<GetPackagingResubmissionApplicationDetailsRequest>()))
+            .ReturnsAsync(expected);
+
+        // Act
+        var result = await _service.GetPackagingDataResubmissionApplicationDetails(organisation, submissionPeriod, complianceSchemeId);
+
+        // Assert
+        result.Should().NotBeNull();
+    }
+
+    [Test]
+    public async Task GetPackagingResubmissionApplicationSession_Return_ListOf_PackagingResubmissionApplicationSession_WithMatchingParameters()
+    {
+        // Arrange
+        var organisation = new Organisation { Id = Guid.NewGuid(), OrganisationNumber = "12345" };
+        var submissionPeriods = new List<string> { "January to June 2025" };
+        var complianceSchemeId = Guid.NewGuid();
+
+        var expectedResult = new List<PackagingResubmissionApplicationDetails>()
+        {
+            new PackagingResubmissionApplicationDetails { IsResubmitted = true, ApplicationReferenceNumber = "abc" }
+        };
+
+        _mockSubmissionService
+            .Setup(x => x.GetPackagingDataResubmissionApplicationDetails(It.IsAny<GetPackagingResubmissionApplicationDetailsRequest>()))
+            .ReturnsAsync(expectedResult);
+
+        // Act
+        var result = await _service.GetPackagingResubmissionApplicationSession(organisation, submissionPeriods, complianceSchemeId);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.First().ApplicationReferenceNumber.Should().Be("abc");
+    }
+
+    [Test]
+    public async Task GetPackagingResubmissionApplicationSession_Return_EmptyObject_WithInvalidParameters()
+    {
+        // Arrange
+        var organisation = new Organisation { Id = Guid.NewGuid(), OrganisationNumber = "12345" };
+        var submissionPeriods = new List<string> { "January to June 2025" };
+        var complianceSchemeId = Guid.NewGuid();
+
+        List<PackagingResubmissionApplicationDetails> expected = null;
+
+        _mockSubmissionService
+            .Setup(x => x.GetPackagingDataResubmissionApplicationDetails(It.IsAny<GetPackagingResubmissionApplicationDetailsRequest>()))
+            .ReturnsAsync(expected);
+
+        // Act
+        var result = await _service.GetPackagingResubmissionApplicationSession(organisation, submissionPeriods, complianceSchemeId);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Any().Should().BeFalse();
     }
 }

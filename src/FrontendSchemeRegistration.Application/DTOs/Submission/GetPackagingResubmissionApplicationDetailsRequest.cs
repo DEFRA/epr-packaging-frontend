@@ -11,5 +11,5 @@ public class GetPackagingResubmissionApplicationDetailsRequest
 
     public Guid? ComplianceSchemeId { get; set; }
 
-    public string SubmissionPeriod { get; set; } = null!;
+    public List<string> SubmissionPeriods { get; set; } = new List<string>();
 }

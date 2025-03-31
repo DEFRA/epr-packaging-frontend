@@ -14,12 +14,6 @@ public class PomSubmission : AbstractSubmission
 
     public bool PomDataComplete { get; set; }
 
-	public string? AppReferenceNumber { get; set; }
-
-	public bool? IsResubmissionInProgress { get; set; }
-
-    public bool? IsResubmissionComplete { get; set; }
-
     public UploadedFileInformation? LastUploadedValidFile { get; set; }
 
     public SubmittedFileInformation? LastSubmittedFile { get; set; }

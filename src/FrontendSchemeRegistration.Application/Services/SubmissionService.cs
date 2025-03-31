@@ -113,7 +113,7 @@ public class SubmissionService(IWebApiGatewayClient webApiGatewayClient) : ISubm
         return await webApiGatewayClient.GetRegistrationApplicationDetails(request);
     }
 
-    public async Task<PackagingResubmissionApplicationDetails?> GetPackagingDataResubmissionApplicationDetails(GetPackagingResubmissionApplicationDetailsRequest request)
+    public async Task<List<PackagingResubmissionApplicationDetails>?> GetPackagingDataResubmissionApplicationDetails(GetPackagingResubmissionApplicationDetailsRequest request)
     {
         return await webApiGatewayClient.GetPackagingDataResubmissionApplicationDetails(request);
     }

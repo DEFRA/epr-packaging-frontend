@@ -106,13 +106,39 @@
                                             if (submissionPeriodDetail.DataPeriod.Contains("January to June 2024"))
                                             {
                                                 <h3 class="govuk-heading-m govuk-!-margin-bottom-0">@Localizer["report_members_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) </h3>
+                                                if (implementPackagingDataResubmissionJourney)
+                                                {
+                                                    if (submissionPeriodDetail.InProgressSubmissionPeriodStatus == InProgressSubmissionPeriodStatus.InProgress_Resubmission_FileInSynapse_FeesNotViewed_NotSubmitted)
+                                                    {
+                                                        <br />
 
+                                                        <p class="govuk-body">@Localizer["inprogress_resubmission_fileinsynapse_feesnotviewed_notsubmitted"]</p>
+                                                    }
+                                                    else if (submissionPeriodDetail.InProgressSubmissionPeriodStatus == InProgressSubmissionPeriodStatus.InProgress_Resubmission_FeesViewed_NotSubmitted)
+                                                    {
+                                                        <br />
+
+                                                        <p class="govuk-body">@Localizer["inprogress_resubmission_feesviewed_notsubmitted"]</p>
+                                                    }
+                                                }
                                             }
                                             else if (submissionPeriodDetail.DatePeriodYear.Contains("2023"))
                                             {
                                                 if (implementPackagingDataResubmissionJourney)
                                                 {
                                                     <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_members_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) </h3>
+                                                    if (submissionPeriodDetail.InProgressSubmissionPeriodStatus == InProgressSubmissionPeriodStatus.InProgress_Resubmission_FileInSynapse_FeesNotViewed_NotSubmitted)
+                                                    {
+                                                        <br />
+
+                                                        <p class="govuk-body">@Localizer["inprogress_resubmission_fileinsynapse_feesnotviewed_notsubmitted"]</p>
+                                                    }
+                                                    else if (submissionPeriodDetail.InProgressSubmissionPeriodStatus == InProgressSubmissionPeriodStatus.InProgress_Resubmission_FeesViewed_NotSubmitted)
+                                                    {
+                                                        <br />
+
+                                                        <p class="govuk-body">@Localizer["inprogress_resubmission_feesviewed_notsubmitted"]</p>
+                                                    }
                                                 }
                                                 else
                                                 {
@@ -124,6 +150,18 @@
                                                 if (implementPackagingDataResubmissionJourney)
                                                 {
                                                     <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_members_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) @Localizer["or"] @Localizer["January_to_December"] @submissionPeriodDetail.DatePeriodYear (@Localizer["small_producers_sentence_text"]) </h3>
+                                                    if (submissionPeriodDetail.InProgressSubmissionPeriodStatus == InProgressSubmissionPeriodStatus.InProgress_Resubmission_FileInSynapse_FeesNotViewed_NotSubmitted)
+                                                    {
+                                                        <br />
+
+                                                        <p class="govuk-body">@Localizer["inprogress_resubmission_fileinsynapse_feesnotviewed_notsubmitted"]</p>
+                                                    }
+                                                    else if (submissionPeriodDetail.InProgressSubmissionPeriodStatus == InProgressSubmissionPeriodStatus.InProgress_Resubmission_FeesViewed_NotSubmitted)
+                                                    {
+                                                        <br />
+
+                                                        <p class="govuk-body">@Localizer["inprogress_resubmission_feesviewed_notsubmitted"]</p>
+                                                    }
                                                 }
                                                 else
                                                 {
@@ -136,6 +174,14 @@
                                             if (implementPackagingDataResubmissionJourney)
                                             {
                                                 <h3 class="govuk-heading-m govuk-!-margin-bottom-0">@Localizer["report_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) </h3>
+                                                if(submissionPeriodDetail.InProgressSubmissionPeriodStatus == InProgressSubmissionPeriodStatus.InProgress_Resubmission_FileInSynapse_FeesNotViewed_NotSubmitted)
+                                                {
+                                                    <br /><p class="govuk-body">@Localizer["inprogress_resubmission_fileinsynapse_feesnotviewed_notsubmitted"]</p>
+                                                }
+                                                else if (submissionPeriodDetail.InProgressSubmissionPeriodStatus == InProgressSubmissionPeriodStatus.InProgress_Resubmission_FeesViewed_NotSubmitted)
+                                                {
+                                                    <br /><p class="govuk-body">@Localizer["inprogress_resubmission_feesviewed_notsubmitted"]</p>
+                                                }
                                             }
                                             else
                                             {
@@ -147,6 +193,18 @@
                                             if (implementPackagingDataResubmissionJourney)
                                             {
                                                 <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) </h3>
+                                                if (submissionPeriodDetail.InProgressSubmissionPeriodStatus == InProgressSubmissionPeriodStatus.InProgress_Resubmission_FileInSynapse_FeesNotViewed_NotSubmitted)
+                                                {
+                                                    <br />
+
+                                                    <p class="govuk-body">@Localizer["inprogress_resubmission_fileinsynapse_feesnotviewed_notsubmitted"]</p>
+                                                }
+                                                else if (submissionPeriodDetail.InProgressSubmissionPeriodStatus == InProgressSubmissionPeriodStatus.InProgress_Resubmission_FeesViewed_NotSubmitted)
+                                                {
+                                                    <br />
+
+                                                    <p class="govuk-body">@Localizer["inprogress_resubmission_feesviewed_notsubmitted"]</p>
+                                                }
                                             }
                                             else
                                             {
@@ -156,8 +214,21 @@
                                         else
                                         {
                                             <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) @Localizer["or"] @Localizer["January_to_December"] @submissionPeriodDetail.DatePeriodYear (@Localizer["small_producers_sentence_text"]) </h3>
+                                            if (submissionPeriodDetail.InProgressSubmissionPeriodStatus == InProgressSubmissionPeriodStatus.InProgress_Resubmission_FileInSynapse_FeesNotViewed_NotSubmitted)
+                                            {
+                                                <br />
+
+                                                <p class="govuk-body">@Localizer["inprogress_resubmission_fileinsynapse_feesnotviewed_notsubmitted"]</p>
+                                            }
+                                            else if (submissionPeriodDetail.InProgressSubmissionPeriodStatus == InProgressSubmissionPeriodStatus.InProgress_Resubmission_FeesViewed_NotSubmitted)
+                                            {
+                                                <br />
+
+                                                <p class="govuk-body">@Localizer["inprogress_resubmission_feesviewed_notsubmitted"]</p>
+                                            }
                                         }
                                     </div>
+
                                     <feature name="ShowPoMResubmission">
                                         @if (submissionPeriodDetail.Status is NotStarted || submissionPeriodDetail.Status is CannotStartYet)
                                         {
@@ -169,6 +240,7 @@
                                         }
                                         <strong class="@(("govuk-tag " + GetClassFeature(submissionPeriodDetail.Status) + " status-style"))">@Localizer[submissionPeriodDetail.Status.GetLocalizedName()]</strong>
                                     </feature>
+
                                     <feature name="ShowPoMResubmission" negate="true">
                                         <p class="govuk-body">@Localizer["deadline"] @submissionPeriodDetail.Deadline.ToReadableLongMonthDeadlineDate()</p>
                                         <strong class="@(("govuk-tag " + GetClass(submissionPeriodDetail.Status)).Trim())">@Localizer[submissionPeriodDetail.Status.GetLocalizedName()]</strong>
@@ -218,7 +290,7 @@
                                                 else if (submissionPeriodDetail.Decision is "Accepted" || submissionPeriodDetail.Decision is "Approved")
                                                 {
                                                     <div class="govuk-card-footer">
-                                                        @if (implementPackagingDataResubmissionJourney)
+                                                        @if (implementPackagingDataResubmissionJourney && submissionPeriodDetail.Status is not SubmissionPeriodStatus.InProgress)
                                                         {
                                                             <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["check_if_you_need_to_resubmit_packaging_data"]</button>
                                                         }
@@ -258,7 +330,7 @@
                                                         </div>
                                                     }
                                                 }
-                                                else if (submissionPeriodDetail.Decision is "Rejected")
+                                                else if (submissionPeriodDetail.Decision is "Rejected" && submissionPeriodDetail.Status is not SubmissionPeriodStatus.InProgress)
                                                 {
                                                     @if (Model.ServiceRole is "Basic User")
                                                     {
@@ -273,7 +345,7 @@
                                                         </div>
                                                     }
                                                 }
-                                                else if (submissionPeriodDetail.Decision is "Accepted" || submissionPeriodDetail.Decision is "Approved")
+                                                else if ((submissionPeriodDetail.Decision is "Accepted" || submissionPeriodDetail.Decision is "Approved") && (submissionPeriodDetail.Status is not SubmissionPeriodStatus.InProgress))
                                                 {
                                                     <div class="govuk-card-footer">
                                                         <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["check_if_you_need_to_update_member's_packaging_data"]</button>
@@ -312,6 +384,7 @@
                                             </div>
                                         }
                                     </feature>
+
                                     <feature name="ShowPoMResubmission" negate="true">
                                         @if (submissionPeriodDetail.Status is not CannotStartYet)
                                         {

@@ -67,8 +67,11 @@ public class PackagingDataResubmissionController : Controller
 		var submissionPeriod = FindSubmissionPeriod(session.PomResubmissionSession.SubmissionPeriod);
 		var submission = session.PomResubmissionSession.PomSubmission;
 
-		var resubmissionApplicationDetails = await _resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(organisation, session.PomResubmissionSession.SubmissionPeriod, complianceSchemeId);
-		await UpdateSession(session, resubmissionApplicationDetails, organisation, isComplianceScheme, complianceSchemeSummary, submissionPeriod);
+		var resubmissionApplicationDetails = await _resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(
+			organisation, new List<string> { session.PomResubmissionSession.SubmissionPeriod }, 
+			complianceSchemeId);
+		
+		await UpdateSession(session, resubmissionApplicationDetails.First(), organisation, isComplianceScheme, complianceSchemeSummary, submissionPeriod);
 
 		if (submission != null)
 		{
@@ -80,8 +83,7 @@ public class PackagingDataResubmissionController : Controller
 				(session.PomResubmissionSession.PomResubmissionReferences.Count == 0 || session.PomResubmissionSession.PomResubmissionReferences.Exists(kvp => kvp.Key != submissionPeriod.DataPeriod))))
 			{
 				var submittedByName = await GetUserNameFromId(submission.LastSubmittedFile.SubmittedBy!);
-				var pomResubmissionReferenceNumber = await _resubmissionApplicationService.CreatePomResubmissionReferenceNumber(session, submittedByName, submission.Id);
-				await _resubmissionApplicationService.SubmitAsync(submission.Id, submission.LastSubmittedFile.FileId, submittedByName, pomResubmissionReferenceNumber, true);
+				await _resubmissionApplicationService.CreatePomResubmissionReferenceNumber(session, submittedByName, submission.Id);
 			}
 		}
 
@@ -174,22 +176,9 @@ public class PackagingDataResubmissionController : Controller
 
 	private async Task UpdateSession(FrontendSchemeRegistrationSession session, PackagingResubmissionApplicationDetails resubmissionApplicationDetails, EPR.Common.Authorization.Models.Organisation organisation, bool isComplianceScheme, ComplianceSchemeSummary complianceSchemeSummary, SubmissionPeriod submissionPeriod)
 	{
-		var packagingResubmissionApplicationSession = new PackagingResubmissionApplicationSession
-		{
-			SubmissionId = resubmissionApplicationDetails.SubmissionId,
-			IsSubmitted = resubmissionApplicationDetails.IsSubmitted,
-			ApplicationReferenceNumber = resubmissionApplicationDetails.ApplicationReferenceNumber,
-			ResubmissionReferenceNumber = resubmissionApplicationDetails.ResubmissionReferenceNumber,
-			LastSubmittedFile = resubmissionApplicationDetails.LastSubmittedFile,
-			ResubmissionFeePaymentMethod = resubmissionApplicationDetails.ResubmissionFeePaymentMethod,
-			ResubmissionApplicationSubmittedDate = resubmissionApplicationDetails.ResubmissionApplicationSubmittedDate,
-			ResubmissionApplicationSubmittedComment = resubmissionApplicationDetails.ResubmissionApplicationSubmittedComment,
-			ApplicationStatus = resubmissionApplicationDetails.ApplicationStatus,
-			FileReachedSynapse = resubmissionApplicationDetails.SynapseResponse.IsFileSynced,
-			Organisation = organisation
-		};
+		var packagingResubmissionApplicationSession = resubmissionApplicationDetails.ToPackagingResubmissionApplicationSession(organisation);
 
-		session.PomResubmissionSession.PackagingResubmissionApplicationSession = packagingResubmissionApplicationSession;
+        session.PomResubmissionSession.PackagingResubmissionApplicationSession = packagingResubmissionApplicationSession;
 		session.PomResubmissionSession.IsPomResubmissionJourney = true;
 		session.PomResubmissionSession.Period = submissionPeriod;
 

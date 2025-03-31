@@ -23,6 +23,7 @@ using FrontendSchemeRegistration.Application.Services.Interfaces;
 using EPR.SubmissionMicroservice.API.Contracts.Submissions.Get;
 using EPR.SubmissionMicroservice.Data.Entities.SubmissionEvent;
 using NUnit.Framework.Interfaces;
+using Microsoft.Extensions.Azure;
 
 [TestFixture]
 public class WebApiGatewayClientTests
@@ -1258,14 +1259,16 @@ public class WebApiGatewayClientTests
         {
             OrganisationId = Guid.NewGuid(),
             OrganisationNumber = 123,
-            SubmissionPeriod = "2024-12",
+            SubmissionPeriods = new List<string> { "2024-12" },
             ComplianceSchemeId = Guid.NewGuid()
         };
-        var expectedDetails = new PackagingResubmissionApplicationDetails
-        {
-            ApplicationReferenceNumber = "testref",
-            ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
-            IsSubmitted = true,
+        var expectedDetails = new List<PackagingResubmissionApplicationDetails> {
+            new PackagingResubmissionApplicationDetails
+            {
+                ApplicationReferenceNumber = "testref",
+                ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+                IsSubmitted = true,
+            }
         };
 
         var responseMessage = new HttpResponseMessage
@@ -1280,9 +1283,8 @@ public class WebApiGatewayClientTests
                 "SendAsync",
                 ItExpr.Is<HttpRequestMessage>(req =>
                     req.Method == HttpMethod.Get &&
-                    req.RequestUri.ToString().Contains($"OrganisationNumber={request.OrganisationNumber}") &&
                     req.RequestUri.ToString().Contains($"OrganisationId={request.OrganisationId}") &&
-                    req.RequestUri.ToString().Contains($"SubmissionPeriod={request.SubmissionPeriod}") &&
+                    req.RequestUri.ToString().Contains($"SubmissionPeriods={request.SubmissionPeriods.First()}") &&
                     req.RequestUri.ToString().Contains($"ComplianceSchemeId={request.ComplianceSchemeId}")),
                 ItExpr.IsAny<CancellationToken>())
             .ReturnsAsync(responseMessage);
@@ -1292,8 +1294,65 @@ public class WebApiGatewayClientTests
 
         // Assert
         result.Should().NotBeNull();
-        result.Should().BeEquivalentTo(expectedDetails);
+        result.Count.Should().Be(1);
+        result.First().Should().BeEquivalentTo(expectedDetails.First());
+        result.Select(x => x.ApplicationReferenceNumber).First().Should().BeEquivalentTo(expectedDetails.First().ApplicationReferenceNumber);
     }
+
+    [Test]
+    public async Task GetPackagingDataResubmissionApplicationDetails_With_MultipleSubmissionPeriods_Should_Return_Details_When_Successful()
+    {
+        // Arrange
+        var request = new GetPackagingResubmissionApplicationDetailsRequest
+        {
+            OrganisationId = Guid.NewGuid(),
+            OrganisationNumber = 123,
+            SubmissionPeriods = new List<string> { "2024-12", "Jan 2025" },
+            ComplianceSchemeId = Guid.NewGuid()
+        };
+        var expectedDetails = new List<PackagingResubmissionApplicationDetails> {
+            new PackagingResubmissionApplicationDetails
+            {
+                ApplicationReferenceNumber = "testref",
+                ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+                IsSubmitted = true,
+            },
+            new PackagingResubmissionApplicationDetails
+            {
+                ApplicationReferenceNumber = "abcdef",
+                ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+                IsSubmitted = true,
+            }
+        };
+
+        var responseMessage = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = JsonContent.Create(expectedDetails)
+        };
+
+        _httpMessageHandlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(req =>
+                    req.Method == HttpMethod.Get &&
+                    req.RequestUri.ToString().Contains($"OrganisationId={request.OrganisationId}") &&
+                    req.RequestUri.ToString().Contains($"SubmissionPeriods={request.SubmissionPeriods.First()}") &&
+                    req.RequestUri.ToString().Contains($"ComplianceSchemeId={request.ComplianceSchemeId}")),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(responseMessage);
+
+        // Act
+        var result = await _webApiGatewayClient.GetPackagingDataResubmissionApplicationDetails(request);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Count.Should().Be(2);
+        result.First().Should().BeEquivalentTo(expectedDetails.First());
+        result.Select(x => x.ApplicationReferenceNumber).First().Should().BeEquivalentTo(expectedDetails.First().ApplicationReferenceNumber);
+    }
+
 
     [Test]
     public async Task GetPackagingDataResubmissionApplicationDetails_Should_Return_Null_When_NoContent()
@@ -1303,7 +1362,7 @@ public class WebApiGatewayClientTests
         {
             OrganisationId = Guid.NewGuid(),
             OrganisationNumber = 123,
-            SubmissionPeriod = "2024-12"
+            SubmissionPeriods = new List<string> { "2024-12" }
         };
 
         var responseMessage = new HttpResponseMessage
@@ -1319,7 +1378,7 @@ public class WebApiGatewayClientTests
                     req.Method == HttpMethod.Get &&
                     req.RequestUri.ToString().Contains($"OrganisationNumber={request.OrganisationNumber}") &&
                     req.RequestUri.ToString().Contains($"OrganisationId={request.OrganisationId}") &&
-                    req.RequestUri.ToString().Contains($"SubmissionPeriod={request.SubmissionPeriod}")),
+                    req.RequestUri.ToString().Contains($"SubmissionPeriod={request.SubmissionPeriods}")),
                 ItExpr.IsAny<CancellationToken>())
             .ReturnsAsync(responseMessage);
 
@@ -1338,7 +1397,7 @@ public class WebApiGatewayClientTests
         {
             OrganisationId = Guid.NewGuid(),
             OrganisationNumber = 123,
-            SubmissionPeriod = "2024-12"
+            SubmissionPeriods = new List<string> { "2024-12" }
         };
 
         _httpMessageHandlerMock
@@ -1349,7 +1408,7 @@ public class WebApiGatewayClientTests
                     req.Method == HttpMethod.Get &&
                     req.RequestUri.ToString().Contains($"OrganisationNumber={request.OrganisationNumber}") &&
                     req.RequestUri.ToString().Contains($"OrganisationId={request.OrganisationId}") &&
-                    req.RequestUri.ToString().Contains($"SubmissionPeriod={request.SubmissionPeriod}")),
+                    req.RequestUri.ToString().Contains($"SubmissionPeriod={request.SubmissionPeriods}")),
                 ItExpr.IsAny<CancellationToken>())
             .ThrowsAsync(new HttpRequestException("Request failed"));
 

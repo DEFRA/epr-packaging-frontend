@@ -49,17 +49,21 @@ public class ResubmissionApplicationServices(
             : await CreatePomResubmissionReferenceNumberForProducer(session, submissionPeriod, organisation.OrganisationNumber, submittedByName, submissionId);
     }
 
-    public async Task<PackagingResubmissionApplicationDetails> GetPackagingDataResubmissionApplicationDetails(Organisation organisation, string submissionPeriod, Guid? complianceSchemeId)
+    public async Task<List<PackagingResubmissionApplicationDetails>> GetPackagingDataResubmissionApplicationDetails(
+        Organisation organisation, 
+        List<string> submissionPeriods, 
+        Guid? complianceSchemeId)
     {
-        var packagingResubmissionApplicationDetails = await submissionService.GetPackagingDataResubmissionApplicationDetails(new GetPackagingResubmissionApplicationDetailsRequest
-        {
-            OrganisationNumber = int.Parse(organisation.OrganisationNumber),
-            OrganisationId = organisation.Id.Value,
-            ComplianceSchemeId = complianceSchemeId,
-            SubmissionPeriod = submissionPeriod,
-        }) ?? new PackagingResubmissionApplicationDetails();
-
-        return packagingResubmissionApplicationDetails;
+        var packagingResubmissionApplicationDetails = await submissionService.GetPackagingDataResubmissionApplicationDetails(
+            new GetPackagingResubmissionApplicationDetailsRequest
+            {
+                OrganisationNumber = int.Parse(organisation.OrganisationNumber),
+                OrganisationId = organisation.Id.Value,
+                ComplianceSchemeId = complianceSchemeId,
+                SubmissionPeriods = submissionPeriods,
+            });
+        
+        return packagingResubmissionApplicationDetails ?? new List<PackagingResubmissionApplicationDetails>();
     }
 
     public async Task<string> InitiatePayment(ClaimsPrincipal user, ISession httpSession)
@@ -98,11 +102,6 @@ public class ResubmissionApplicationServices(
         return await paymentCalculationService.GetRegulatorNation(organisationId);
     }
 
-    public async Task SubmitAsync(Guid submissionId, Guid fileId, string submittedBy, string? appReferenceNumber = null, bool? isResubmitted = null)
-    {
-        await submissionService.SubmitAsync(submissionId, fileId, submittedBy, appReferenceNumber, isResubmitted);
-    }
-
     public async Task CreatePackagingResubmissionFeeViewEvent(Guid? submissionId)
     {
         await submissionService.CreatePackagingResubmissionFeeViewEvent(submissionId);
@@ -116,6 +115,14 @@ public class ResubmissionApplicationServices(
     public async Task CreatePackagingResubmissionApplicationSubmittedCreatedEvent(Guid? submissionId, Guid? filedId, string submittedBy, DateTime submissionDate, string comment)
     {
         await submissionService.CreatePackagingResubmissionApplicationSubmittedCreatedEvent(submissionId, filedId, submittedBy, submissionDate, comment);
+    }
+
+    public async Task<List<PackagingResubmissionApplicationSession>> GetPackagingResubmissionApplicationSession(Organisation organisation, List<string> submissionPeriods, Guid? complianceSchemeId)
+    {
+        var detailsForAllSubmissionPeriods = await GetPackagingDataResubmissionApplicationDetails(organisation, submissionPeriods, complianceSchemeId);
+        var sessionForAllPeriods = FrontendSchemeRegistration.UI.Extensions.PackagingResubmissionApplicationDetailsExtension.ToPackagingResubmissionApplicationSessionList(detailsForAllSubmissionPeriods, organisation);
+        
+        return sessionForAllPeriods;
     }
 
     private async Task<string> CreateSubmissionEvent(FrontendSchemeRegistrationSession session, KeyValuePair<string, string> pomResubmissionReferenceNumber, Guid submissionId)

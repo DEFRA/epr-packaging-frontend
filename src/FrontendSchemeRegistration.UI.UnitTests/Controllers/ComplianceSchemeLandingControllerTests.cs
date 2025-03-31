@@ -10,6 +10,7 @@ using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Controllers;
 using FrontendSchemeRegistration.UI.Services;
+using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Http;
@@ -35,6 +36,7 @@ public class ComplianceSchemeLandingControllerTests
     private readonly Mock<IComplianceSchemeService> _complianceSchemeServiceMock = new();
     private readonly Mock<IRegistrationApplicationService> _registrationApplicationService = new();
     private readonly Mock<ISubmissionService> _submissionService = new();
+    private readonly Mock<IResubmissionApplicationService> _resubmissionApplicationService = new();
 
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock = new();
     private ComplianceSchemeLandingController _systemUnderTest;
@@ -88,7 +90,7 @@ public class ComplianceSchemeLandingControllerTests
             _complianceSchemeServiceMock.Object,
             _notificationServiceMock.Object,
             _registrationApplicationService.Object,
-            _submissionService.Object,
+            _resubmissionApplicationService.Object,
             _nullLogger)
         {
             ControllerContext = { HttpContext = _httpContextMock.Object }
@@ -699,38 +701,6 @@ public class ComplianceSchemeLandingControllerTests
         _sessionManagerMock.Verify(
             x => x.UpdateSessionAsync(
                 It.IsAny<ISession>(), It.IsAny<Action<FrontendSchemeRegistrationSession>>()), Times.Never);
-    }
-
-    [Test]
-    public async Task GivenOnComplianceSchemeLanding_WhenPOMSubmissionsListContainsItems_ThenFirstPOMSubmissionIsReturned()
-    {
-        var submissions = new List<PomSubmission>()
-        {
-            new PomSubmission()
-            {
-                AppReferenceNumber = "test1",
-                IsResubmissionComplete = true,
-            },
-            new PomSubmission()
-            {
-                AppReferenceNumber = "test2",
-                IsResubmissionComplete = true,
-            }
-        };
-
-        var result = _systemUnderTest.GetResubmissionTaskListViewModel(submissions) as ResubmissionTaskListViewModel;
-
-        result.Should().NotBeNull();
-    }
-
-    [Test]
-    public async Task GivenOnComplianceSchemeLanding_WhenPOMSubmissionsListContainsNoItems_ThenNullIsReturned()
-    {
-        var submissions = new List<PomSubmission>();
-
-        var result = _systemUnderTest.GetResubmissionTaskListViewModel(submissions) as ResubmissionTaskListViewModel;
-
-        result.Should().NotBeNull();
     }
 
     private List<ComplianceSchemeDto> GetComplianceSchemes() => new()

@@ -113,7 +113,7 @@ public abstract class FrontendSchemeRegistrationTestBase
             LoggerMock.Object,
             ComplianceSchemeService.Object,
             RegistrationApplicationService.Object,
-            SubmissionService.Object,
+            ResubmissionApplicationService.Object,
             AuthorizationService.Object,
             NotificationService.Object);
         SystemUnderTest.ControllerContext.HttpContext = _httpContextMock.Object;

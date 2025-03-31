@@ -16,20 +16,20 @@ namespace FrontendSchemeRegistration.UI.Services.Interfaces
 
 		Task<string> CreatePomResubmissionReferenceNumber(FrontendSchemeRegistrationSession session, string submittedByName, Guid submissionId);
 
-        Task<PackagingResubmissionApplicationDetails> GetPackagingDataResubmissionApplicationDetails(Organisation organisation, string submissionPeriod, Guid? complianceSchemeId);
+        Task<List<PackagingResubmissionApplicationDetails>> GetPackagingDataResubmissionApplicationDetails(Organisation organisation, List<string> submissionPeriods, Guid? complianceSchemeId);
 
-		Task<string> InitiatePayment(ClaimsPrincipal user, ISession httpSession);
+        Task<string> InitiatePayment(ClaimsPrincipal user, ISession httpSession);
 
 		Task<PackagingResubmissionMemberDetails?> GetPackagingResubmissionMemberDetails(PackagingResubmissionMemberRequest request);
 
 		Task<PackagingPaymentResponse> GetResubmissionFees(string applicationReferenceNumber, string regulatorNation, int memberCount, bool isComplianceScheme, DateTime? resubmissionDate);
-
-		Task SubmitAsync(Guid submissionId, Guid fileId, string submittedBy, string? appReferenceNumber = null, bool? isResubmitted = null);
 
         Task CreatePackagingResubmissionFeeViewEvent(Guid? submissionId);
 
         Task CreatePackagingDataResubmissionFeePaymentEvent(Guid? submissionId, Guid? filedId, string paymentMethod);
 
 		Task CreatePackagingResubmissionApplicationSubmittedCreatedEvent(Guid? submissionId, Guid? filedId, string submittedBy, DateTime submissionDate, string comment);
+
+		Task<List<PackagingResubmissionApplicationSession>> GetPackagingResubmissionApplicationSession(Organisation organisation, List<string> submissionPeriods, Guid? complianceSchemeId);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using EPR.Common.Authorization.Models;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.Enums;
 
 namespace FrontendSchemeRegistration.UI.Sessions;
 
@@ -77,6 +78,25 @@ public class PackagingResubmissionApplicationSession
             }
 
             return ResubmissionTaskListStatus.NotStarted;
+        }
+    }
+
+    public InProgressSubmissionPeriodStatus? ApplicationInProgressSubmissionPeriodStatus
+    {
+        get
+        {
+            if ((!IsResubmissionFeeViewed.HasValue || IsResubmissionFeeViewed.Value == false)
+                && (FileReachedSynapse)
+                && (!ResubmissionApplicationSubmitted))
+            {
+                return InProgressSubmissionPeriodStatus.InProgress_Resubmission_FileInSynapse_FeesNotViewed_NotSubmitted;
+            }
+            if ((IsResubmissionFeeViewed.HasValue && IsResubmissionFeeViewed.Value == true)
+                && (!ResubmissionApplicationSubmitted) && FileReachedSynapse)
+            {
+                return InProgressSubmissionPeriodStatus.InProgress_Resubmission_FeesViewed_NotSubmitted;
+            }
+            return null;
         }
     }
 

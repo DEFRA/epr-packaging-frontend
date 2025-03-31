@@ -15,6 +15,8 @@ using Microsoft.Identity.Web;
 using System.Diagnostics.CodeAnalysis;
 using FrontendSchemeRegistration.UI.Services;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.UI.Services.Interfaces;
+using EPR.Common.Authorization.Models;
 
 namespace FrontendSchemeRegistration.UI.Controllers.FrontendSchemeRegistration;
 
@@ -23,7 +25,7 @@ public class FrontendSchemeRegistrationController(
     ILogger<FrontendSchemeRegistrationController> logger,
     IComplianceSchemeService complianceSchemeService,
     IRegistrationApplicationService registrationApplicationService,
-    ISubmissionService submissionService,
+    IResubmissionApplicationService resubmissionApplicationService,
     IAuthorizationService authorizationService,
     INotificationService notificationService)
     : Controller
@@ -416,8 +418,8 @@ public class FrontendSchemeRegistrationController(
 
         var registrationApplicationSession = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation );
 
-        var latestSubmissionDetails = await submissionService.GetSubmissionsAsync<PomSubmission>(
-            new List<string>() { _packagingResubmissionPeriod }, 1, session.RegistrationSession.SelectedComplianceScheme?.Id);
+        var resubmissionApplicationDetails = await resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(
+            organisation, new List<string> { _packagingResubmissionPeriod }, session.RegistrationSession.SelectedComplianceScheme?.Id);
 
         var viewModel = new HomePageSelfManagedViewModel
         {
@@ -432,7 +434,7 @@ public class FrontendSchemeRegistrationController(
             ApplicationReferenceNumber = registrationApplicationSession.ApplicationReferenceNumber,
             RegistrationReferenceNumber = registrationApplicationSession.RegistrationReferenceNumber,
             IsResubmission = registrationApplicationSession.IsResubmission,
-            ResubmissionTaskListViewModel = GetResubmissionTaskListViewModel(latestSubmissionDetails)
+            ResubmissionTaskListViewModel = resubmissionApplicationDetails.ToResubmissionTaskListViewModel(organisation)
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id!.Value);
@@ -459,26 +461,6 @@ public class FrontendSchemeRegistrationController(
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
         session.RegistrationSession.Journey = new List<string> { PagePaths.HomePageSelfManaged };
         return await SaveSessionAndRedirect(session, nameof(UsingAComplianceScheme), PagePaths.HomePageSelfManaged, PagePaths.UsingAComplianceScheme);
-    }
-
-    public ResubmissionTaskListViewModel GetResubmissionTaskListViewModel(List<PomSubmission?> submissions)
-    {
-        var viewModel = new ResubmissionTaskListViewModel();
-
-        if (submissions != null && submissions.Count > 0)
-        {
-            var submission = submissions.FirstOrDefault();
-
-            if (submission != null)
-            {
-                viewModel.IsSubmitted = submission.IsSubmitted;
-                viewModel.IsResubmissionInProgress = submission.IsResubmissionInProgress;
-                viewModel.IsResubmissionComplete = submission.IsResubmissionComplete;
-                viewModel.AppReferenceNumber = submission.AppReferenceNumber;
-            }
-        }
-
-        return viewModel;
     }
 
     private static void ClearRestOfJourney(FrontendSchemeRegistrationSession session, string currentPagePath)
