@@ -3,6 +3,7 @@
 using Application.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics.CodeAnalysis;
 
 [AllowAnonymous]
 public class HomeController : Controller
@@ -12,5 +13,17 @@ public class HomeController : Controller
     {
         HttpContext.Session.Clear();
         return View();
+    }
+
+    [Route(PagePaths.TimeoutSignedOut)]
+    public IActionResult TimeoutSignedOut()
+    {
+        HttpContext.Session.Clear();
+        return View();
+    }
+
+    public IActionResult SessionTimeoutModal()
+    {
+        return PartialView("_TimeoutSessionWarning");
     }
 }

@@ -106,6 +106,7 @@ public static class PagePaths
     public const string ConfirmSubsidiaryRemoval = "/subsidiaries-are-you-sure-you-want-to-remove-this-subsidiary";
     public const string ConfirmRemoveSubsidiarySuccess = "/subsidiaries-subsidiary-removed";
     public const string CannotVerifyOrganisation = "cannot-verify-organisation";
+    public const string TimeoutSignedOut = "timeout-signed-out";
 
     public const string ResubmissionTaskList = "resubmission-task-list";
     public const string ResubmissionFeeCalculations = "resubmission-fee-calculations";

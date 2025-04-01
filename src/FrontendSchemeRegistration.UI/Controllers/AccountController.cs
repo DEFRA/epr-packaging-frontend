@@ -74,4 +74,35 @@ public class AccountController : Controller
             CookieAuthenticationDefaults.AuthenticationScheme,
             scheme);
     }
+
+    /// <summary>
+    /// Handles the session timeout sign-out.
+    /// </summary>
+    /// <param name="scheme">Authentication scheme.</param>
+    /// <returns>Session Timeout Sign out result.</returns>
+    [ExcludeFromCodeCoverage(Justification = "Unable to mock authentication")]
+    [HttpGet("{scheme?}")]
+    public IActionResult SessionSignOut([FromRoute] string? scheme)
+    {
+        if (AppServicesAuthenticationInformation.IsAppServicesAadAuthenticationEnabled)
+        {
+            if (AppServicesAuthenticationInformation.LogoutUrl != null)
+            {
+                return LocalRedirect(AppServicesAuthenticationInformation.LogoutUrl);
+            }
+
+            return Ok();
+        }
+
+        scheme ??= OpenIdConnectDefaults.AuthenticationScheme;
+        var callbackUrl = Url.Action(action: "TimeoutSignedOut", controller: nameof(HomeController).RemoveControllerFromName(), values: null, protocol: Request.Scheme);
+
+        return SignOut(
+            new AuthenticationProperties
+            {
+                RedirectUri = callbackUrl,
+            },
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            scheme);
+    }
 }

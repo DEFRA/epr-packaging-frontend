@@ -33,8 +33,9 @@ public class RegistrationApplicationController(
         var isResubmission = !string.IsNullOrWhiteSpace(HttpContext.Request.Query["IsResubmission"]);
         
         var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, isResubmission);
-        session.Journey = [PagePaths.HomePageSelfManaged, PagePaths.ProducerRegistrationGuidance];
-        
+        session.Journey = [session.IsComplianceScheme ? PagePaths.ComplianceSchemeLanding : PagePaths.HomePageSelfManaged, PagePaths.ProducerRegistrationGuidance];
+
+
         if (session.ApplicationStatus is
                 ApplicationStatusType.FileUploaded
                 or ApplicationStatusType.SubmittedAndHasRecentFileUpload
@@ -357,7 +358,7 @@ public class RegistrationApplicationController(
     public async Task<IActionResult> UpdateRegistrationGuidance()
     {
         var session = await sessionManager.GetSessionAsync(HttpContext.Session);
-        session.Journey = [ PagePaths.HomePageSelfManaged, PagePaths.UpdateRegistrationGuidance ];
+        session.Journey = [session.IsComplianceScheme ? PagePaths.ComplianceSchemeLanding : PagePaths.HomePageSelfManaged, PagePaths.UpdateRegistrationGuidance];
 
         await SaveSession(session, PagePaths.UpdateRegistrationGuidance, null);
         SetBackLink(session, PagePaths.UpdateRegistrationGuidance);

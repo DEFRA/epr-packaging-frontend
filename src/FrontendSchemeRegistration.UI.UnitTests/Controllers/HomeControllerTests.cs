@@ -27,4 +27,36 @@ public class HomeControllerTests
         context.Session.Keys.Should().BeEmpty();
         result.Should().BeOfType<ViewResult>();
     }
+
+    [Test]
+    public void TimeoutSignedOut_Should_Clear_Session_And_Return_ViewResult()
+    {
+        // Arrange
+        var controller = new HomeController();
+        var context = new DefaultHttpContext
+        {
+            Session = new Mock<ISession>().Object
+        };
+        controller.ControllerContext.HttpContext = context;
+
+        // Act
+        var result = controller.TimeoutSignedOut();
+
+        // Assert
+        context.Session.Keys.Should().BeEmpty();
+        result.Should().BeOfType<ViewResult>();
+    }
+
+    [Test]
+    public void SessionTimeoutModal_Should_Return_PartialViewResult()
+    {
+        // Arrange
+        var controller = new HomeController();
+
+        // Act
+        var result = controller.SessionTimeoutModal();
+
+        // Assert
+        result.Should().BeOfType<PartialViewResult>();
+    }
 }

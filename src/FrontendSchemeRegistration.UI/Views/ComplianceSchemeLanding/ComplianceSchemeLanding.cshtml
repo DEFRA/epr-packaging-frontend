@@ -258,14 +258,14 @@
 @{
     void ShowProgressStatus(ComplianceSchemeLandingViewModel model)
     {
-        if (!model.IsResubmission && (model.ApplicationStatus
+        if ((model.ApplicationStatus
                 is ApplicationStatusType.AcceptedByRegulator
                 or ApplicationStatusType.ApprovedByRegulator)
-            || model.IsResubmission && (model.ApplicationStatus
+            || (model.IsResubmission && (model.ApplicationStatus
                 is ApplicationStatusType.NotStarted
                 or ApplicationStatusType.FileUploaded
                 or ApplicationStatusType.SubmittedAndHasRecentFileUpload
-        ))
+        )))
         {
             <div>
                 <p class="govuk-body">
@@ -306,7 +306,7 @@
             if (model.IsResubmission)
             {
                 <div>
-                    <p class="govuk-body">@Localizer["Your_registration_for_x_has_been_granted", model.CurrentYear] @Localizer["Your_registration_reference_number_is_x", model.RegistrationReferenceNumber]</p>
+                    <p class="govuk-body">@Localizer["Your_registration_for_x_has_been_granted", model.CurrentYear] @Localizer["Your_registration_reference_number_is_x", model.RegistrationReferenceNumber]</p>                    
                 </div>
             }
             else

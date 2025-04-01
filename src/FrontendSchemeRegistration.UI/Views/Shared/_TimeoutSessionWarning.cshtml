@@ -1,0 +1,33 @@
+<body>
+    <!-- Timeout Modal -->
+    <div id="session-timeout-container-id" class="timeout-modal" role="dialog" aria-labelledby="timeout-title" aria-modal="true">
+        <div class="modal-content">
+            <h1 id="timeout-title" class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">
+                @Localizer["You_will_be_signed_out_soon"]
+            </h1>
+            <br>
+            <p class="govuk-body govuk-!-margin-bottom-1">
+                @Localizer["Continue_to_extend_your_session"]
+            </p>
+            <br>
+            <p class="govuk-body govuk-!-margin-bottom-1">
+                @Localizer["Session_unsaved_data_delete_warning"] <b><span id="counterTimeout" aria-live="polite"></span> <span id="counterTimeout-minutes" aria-live="polite">@Localizer["minutes"]</span> <span id="counterTimeout-seconds" aria-live="polite">@Localizer["seconds"]</span></b> @Localizer["nesaf"]
+            </p>
+            <br>
+            <!-- Button Container -->
+            <div class="govuk-grid-row box-container">
+                <div class="govuk-grid-column-one-half">
+                    <button id="continueButton" class="govuk-button" data-module="govuk-button">
+                        @Localizer["Continue"]
+                    </button>
+                </div>
+
+                <div class="govuk-grid-column-one-half">
+                    <nav class="epr-auth-nav" aria-label="Account Options">
+                        <a class="govuk-link epr-auth-nav__link" asp-controller="Account" asp-action="SignIn">@Localizer["Sign_out"]</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
