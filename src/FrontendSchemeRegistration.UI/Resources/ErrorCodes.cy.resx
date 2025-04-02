@@ -337,4 +337,7 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
   <data name="61" xml:space="preserve">
     <value>Mae pwysau’r pecynwaith ar gyfer y sefydliad yma wedi'i roi fel sero - gwiriwch fod hyn yn gywir cyn ichi gyflwyno ffurflen sero</value>
   </data>
+  <data name="73" xml:space="preserve">
+    <value>Mae trosiant y sefydliad yma wedi'i gofnodi fel sero. Gwiriwch fod hyn yn gywir cyn ichi gyflwyno ffurflen sy'n dweud sero</value>
+  </data>
 </root>

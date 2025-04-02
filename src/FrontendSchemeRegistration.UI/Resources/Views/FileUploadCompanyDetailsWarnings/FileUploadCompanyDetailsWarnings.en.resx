@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -117,214 +117,46 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="WarningIssue" xml:space="preserve">
-    <value />
+  <data name="check_the_warnings" xml:space="preserve">
+    <value>Organisation details uploaded – check the warnings</value>
   </data>
-  <data name="ErrorIssue" xml:space="preserve">
-    <value />
+  <data name="your_data_file_has_been_uploaded" xml:space="preserve">
+    <value>Your data file has been uploaded to your organisation’s account. There are 0 errors.</value>
   </data>
-  <data name="01" xml:space="preserve">
-    <value />
+  <data name="there_are_some_warnings" xml:space="preserve">
+    <value>There are some warnings. Warnings are unusual entries in your file you need to check, but they will not prevent your file from being submitted to the environmental regulator.</value>
   </data>
-  <data name="02" xml:space="preserve">
-    <value />
+  <data name="download_warning_report" xml:space="preserve">
+    <value>Download your warning report (CSV, maximum {0})</value>
   </data>
-  <data name="03" xml:space="preserve">
-    <value />
+  <data name="tells_you_where_warnings_are" xml:space="preserve">
+    <value>This tells you where the warnings are in your file.</value>
   </data>
-  <data name="04" xml:space="preserve">
-    <value />
+  <data name="we_can_only_show_x_warnings" xml:space="preserve">
+    <value>We can only show you the first {0} warnings in the report.</value>
   </data>
-  <data name="05" xml:space="preserve">
-    <value />
+  <data name="how_to_check_warnings" xml:space="preserve">
+    <value>How to check warnings</value>
   </data>
-  <data name="07" xml:space="preserve">
-    <value />
+  <data name="use_the_report_to_check_warnings" xml:space="preserve">
+    <value>Use the report to check the warnings. You may also need the </value>
   </data>
-  <data name="08" xml:space="preserve">
-    <value />
+  <data name="file_specification_guidance" xml:space="preserve">
+    <value>file specification guidance (opens in a new window)</value>
   </data>
-  <data name="09" xml:space="preserve">
-    <value />
+  <data name="decide_if_you_want_to_update" xml:space="preserve">
+    <value>Decide if you want to update any data.</value>
   </data>
-  <data name="10" xml:space="preserve">
-    <value />
+  <data name="upload_new_file_or_keep" xml:space="preserve">
+    <value>Upload a new file or keep your existing file.</value>
   </data>
-  <data name="13" xml:space="preserve">
-    <value />
+  <data name="do_you_want_to_upload_a_new_file" xml:space="preserve">
+    <value>Do you want to upload a new file?</value>
   </data>
-  <data name="15" xml:space="preserve">
-    <value />
+  <data name="yes" xml:space="preserve">
+    <value>Yes</value>
   </data>
-  <data name="22" xml:space="preserve">
-    <value />
-  </data>
-  <data name="23" xml:space="preserve">
-    <value />
-  </data>
-  <data name="25" xml:space="preserve">
-    <value />
-  </data>
-  <data name="26" xml:space="preserve">
-    <value />
-  </data>
-  <data name="27" xml:space="preserve">
-    <value />
-  </data>
-  <data name="28" xml:space="preserve">
-    <value />
-  </data>
-  <data name="29" xml:space="preserve">
-    <value />
-  </data>
-  <data name="30" xml:space="preserve">
-    <value />
-  </data>
-  <data name="31" xml:space="preserve">
-    <value />
-  </data>
-  <data name="33" xml:space="preserve">
-    <value />
-  </data>
-  <data name="34" xml:space="preserve">
-    <value />
-  </data>
-  <data name="35" xml:space="preserve">
-    <value />
-  </data>
-  <data name="36" xml:space="preserve">
-    <value />
-  </data>
-  <data name="37" xml:space="preserve">
-    <value />
-  </data>
-  <data name="38" xml:space="preserve">
-    <value />
-  </data>
-  <data name="39" xml:space="preserve">
-    <value />
-  </data>
-  <data name="40" xml:space="preserve">
-    <value />
-  </data>
-  <data name="41" xml:space="preserve">
-    <value />
-  </data>
-  <data name="14" xml:space="preserve">
-    <value />
-  </data>
-  <data name="99" xml:space="preserve">
-    <value />
-  </data>
-  <data name="80" xml:space="preserve">
-    <value />
-  </data>
-  <data name="89" xml:space="preserve">
-    <value />
-  </data>
-  <data name="81" xml:space="preserve">
-    <value />
-  </data>
-  <data name="45" xml:space="preserve">
-    <value />
-  </data>
-  <data name="47" xml:space="preserve">
-    <value />
-  </data>
-  <data name="42" xml:space="preserve">
-    <value />
-  </data>
-  <data name="43" xml:space="preserve">
-    <value />
-  </data>
-  <data name="44" xml:space="preserve">
-    <value />
-  </data>
-  <data name="46" xml:space="preserve">
-    <value />
-  </data>
-  <data name="82" xml:space="preserve">
-    <value />
-  </data>
-  <data name="54" xml:space="preserve">
-    <value />
-  </data>
-  <data name="55" xml:space="preserve">
-    <value />
-  </data>
-  <data name="83" xml:space="preserve">
-    <value />
-  </data>
-  <data name="48" xml:space="preserve">
-    <value />
-  </data>
-  <data name="49" xml:space="preserve">
-    <value />
-  </data>
-  <data name="50" xml:space="preserve">
-    <value />
-  </data>
-  <data name="51" xml:space="preserve">
-    <value />
-  </data>
-  <data name="53" xml:space="preserve">
-    <value />
-  </data>
-  <data name="56" xml:space="preserve">
-    <value />
-  </data>
-  <data name="59" xml:space="preserve">
-    <value />
-  </data>
-  <data name="64" xml:space="preserve">
-    <value />
-  </data>
-  <data name="57" xml:space="preserve">
-    <value />
-  </data>
-  <data name="58" xml:space="preserve">
-    <value />
-  </data>
-  <data name="62" xml:space="preserve">
-    <value />
-  </data>
-  <data name="63" xml:space="preserve">
-    <value />
-  </data>
-  <data name="813" xml:space="preserve">
-    <value />
-  </data>
-  <data name="890" xml:space="preserve">
-    <value />
-  </data>
-  <data name="891" xml:space="preserve">
-    <value />
-  </data>
-  <data name="892" xml:space="preserve">
-    <value />
-  </data>
-  <data name="893" xml:space="preserve">
-    <value />
-  </data>
-  <data name="65" xml:space="preserve">
-    <value />
-  </data>
-  <data name="66" xml:space="preserve">
-    <value />
-  </data>
-  <data name="70" xml:space="preserve">
-    <value />
-  </data>
-  <data name="71" xml:space="preserve">
-    <value />
-  </data>
-  <data name="72" xml:space="preserve">
-    <value />
-  </data>
-  <data name="73" xml:space="preserve">
-    <value />
-  </data>
-  <data name="61" xml:space="preserve">
-    <value />
+  <data name="no_keep_this_file_uploaded" xml:space="preserve">
+    <value>No, keep this file uploaded to my organisation’s account</value>
   </data>
 </root>

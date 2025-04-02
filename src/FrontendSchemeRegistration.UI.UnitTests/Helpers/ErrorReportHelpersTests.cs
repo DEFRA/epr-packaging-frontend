@@ -56,13 +56,13 @@ public class ErrorReportHelpersTests
     [TestCase("en-GB", "59", "Packaging material weight is less than 100. Check all packaging weights are in kg and not tonnes.")]
     [TestCase("en-GB", "60", "Check the packaging material weight for all rows for this organisation. If the total for the reporting year is between 25,000kg and 50,000kg, this organisation may only need to register as a small organisation in the following year.")]
     [TestCase("en-GB", "62", "Only one packaging material reported for this organisation. Check you have entered all packaging materials. All must be reported separately.")]
-    [TestCase("en-GB", "63", "For self-managed consumer waste (CW), you may not be able to offset your own packaging against aluminium (AL), glass (GL), paper or card (PC), or steel (ST). To check what packaging materials you can offset, you'll need to contact your nation's environmental regulator.")]
+    [TestCase("en-GB", "63", "For self-managed consumer waste (CW), you may not be able to offset your own packaging against aluminium (AL), glass (GL), paper or card (PC), or steel (ST). To check what packaging materials you can offset, you'll need to contact your nation's environmental regulator.")]    
     [TestCase("en-GB", "ErrorIssue", "Error")]
     [TestCase("en-GB", "WarningIssue", "Warning")]
 
     // Welsh
     [TestCase("cy-GB", "60", "Gwiriwch bwysau'r deunydd pecynwaith ar gyfer pob rhes i'r sefydliad yma. Os yw cyfanswm y flwyddyn adrodd rhwng 25,000kg a 50,000kg, efallai mai dim ond fel sefydliad bach y bydd angen i'r sefydliad yma gofrestru yn y flwyddyn ganlynol.")]
-    [TestCase("cy-GB", "63", "Yn achos gwastraff defnyddwyr hunan-reoledig (CW), mae'n bosibl na fyddwch chi'n gallu gwrthbwyso'ch pecynwaith eich hunan yn erbyn alwminiwm (AL), gwydr (GL), papur neu gerdyn (PC), neu ddur (ST). I wirio pa ddeunyddiau pecynwaith y gallwch eu gwrthbwyso, bydd angen ichi gysylltu â rheoleiddiwr amgylcheddol eich gwlad.")]
+    [TestCase("cy-GB", "63", "Yn achos gwastraff defnyddwyr hunan-reoledig (CW), mae'n bosibl na fyddwch chi'n gallu gwrthbwyso'ch pecynwaith eich hunan yn erbyn alwminiwm (AL), gwydr (GL), papur neu gerdyn (PC), neu ddur (ST). I wirio pa ddeunyddiau pecynwaith y gallwch eu gwrthbwyso, bydd angen ichi gysylltu â rheoleiddiwr amgylcheddol eich gwlad.")]    
 
     public void ToErrorReportRows_ConvertsValidationErrorsToErrorRowsWithMessage_WhenCalled(
         string culture, string errorCode, string expectedMessage)
@@ -140,7 +140,7 @@ public class ErrorReportHelpersTests
 
         result.Should().BeEquivalentTo(expected);
     }
-
+   
     [Test]
     public void ToRegistrationErrorReportRows_ConvertsRegistrationValidationErrorsToRegistrationErrorRowsWithMessageAndIndex_WhenCalled()
     {
@@ -149,13 +149,14 @@ public class ErrorReportHelpersTests
 
         const string organisationId = "123456";
         const string subsidiaryId = "123456";
-        var validationErrors = new List<RegistrationValidationError>
+        var validationIssues = new List<RegistrationValidationError>
         {
             new ()
             {
                 OrganisationId = organisationId,
                 SubsidiaryId = subsidiaryId,
                 RowNumber = 1,
+                IssueType = "Error",
                 ColumnErrors = new List<ColumnValidationError>
                 {
                     new()
@@ -171,6 +172,7 @@ public class ErrorReportHelpersTests
                 OrganisationId = organisationId,
                 SubsidiaryId = subsidiaryId,
                 RowNumber = 1,
+                IssueType = "Error",
                 ColumnErrors = new List<ColumnValidationError>
                 {
                     new()
@@ -186,6 +188,7 @@ public class ErrorReportHelpersTests
                 OrganisationId = organisationId,
                 SubsidiaryId = subsidiaryId,
                 RowNumber = 1,
+                IssueType = "Error",
                 ColumnErrors = new List<ColumnValidationError>
                 {
                     new()
@@ -201,6 +204,7 @@ public class ErrorReportHelpersTests
                 OrganisationId = organisationId,
                 SubsidiaryId = subsidiaryId,
                 RowNumber = 1,
+                IssueType = "Error",
                 ColumnErrors = new List<ColumnValidationError>
                 {
                     new()
@@ -211,10 +215,26 @@ public class ErrorReportHelpersTests
                     }
                 },
             },
+            new ()
+            {
+                OrganisationId = organisationId,
+                SubsidiaryId = subsidiaryId,
+                RowNumber = 1,
+                IssueType = "Warning",
+                ColumnErrors = new List<ColumnValidationError>
+                {
+                    new()
+                    {
+                        ErrorCode = "73",
+                        ColumnIndex = 17,
+                        ColumnName = "testColumnName5"
+                    }
+                },
+            },
         };
 
         // Act
-        var result = validationErrors.ToRegistrationErrorReportRows();
+        var result = validationIssues.ToRegistrationErrorReportRows();
 
         // Assert
         var expected = new List<RegistrationErrorReportRow>
@@ -226,7 +246,8 @@ public class ErrorReportHelpersTests
                 SubsidiaryId = subsidiaryId,
                 Column = "A",
                 ColumnName = "testColumnName",
-                Error = "Enter the organisation ID"
+                IssueType = "Error",
+                Message = "Enter the organisation ID"
             },
             new ()
             {
@@ -235,7 +256,8 @@ public class ErrorReportHelpersTests
                 SubsidiaryId = subsidiaryId,
                 Column = "K",
                 ColumnName = "testColumnName2",
-                Error = "Enter the organisation name"
+                IssueType = "Error",
+                Message = "Enter the organisation name"
             },
             new ()
             {
@@ -244,7 +266,8 @@ public class ErrorReportHelpersTests
                 SubsidiaryId = subsidiaryId,
                 Column = "AE",
                 ColumnName = "testColumnName3",
-                Error = "Enter the home nation code"
+                IssueType = "Error",
+                Message = "Enter the home nation code"
             },
             new ()
             {
@@ -253,8 +276,19 @@ public class ErrorReportHelpersTests
                 SubsidiaryId = subsidiaryId,
                 Column = "BD",
                 ColumnName = "testColumnName4",
-                Error = "Home nation code must be one of EN NI SC or WS"
-            }
+                IssueType = "Error",
+                Message = "Home nation code must be one of EN NI SC or WS"
+            },
+            new ()
+            {
+                Row = "1",
+                OrganisationId = organisationId,
+                SubsidiaryId = subsidiaryId,
+                Column = "R",
+                ColumnName = "testColumnName5",
+                IssueType = "Warning",
+                Message = "Turnover for this organization is recorded as zero. Please verify this is correct before submitting a zero return"
+            },
         };
 
         result.Should().BeEquivalentTo(expected);

@@ -12,4 +12,6 @@ public class RegistrationValidationError
     public string SubsidiaryId { get; set; }
 
     public int RowNumber { get; set; }
+
+    public string IssueType { get; set; }
 }

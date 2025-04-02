@@ -59,6 +59,11 @@ public class UploadingOrganisationDetailsController : Controller
             return RedirectToAction("Get", "FileUploadCompanyDetailsErrors", new { submissionId = submissionId.ToString() });
         }
 
+        if (HasRowValidationWarnings(submission)) // Add warnings
+        {
+            return RedirectToAction("Get", "FileUploadCompanyDetailsWarnings", new { submissionId = submissionId.ToString() });
+        }
+
         return RedirectToAction("Get", "FileUploadCompanyDetailsSuccess", new { submissionId = submissionId.ToString() });
     }
 
@@ -75,6 +80,11 @@ public class UploadingOrganisationDetailsController : Controller
     private static bool HasRowValidationErrors(RegistrationSubmission submission)
     {
         return submission.RowErrorCount.HasValue && submission.RowErrorCount > 0;
+    }
+
+    private static bool HasRowValidationWarnings(RegistrationSubmission submission)
+    {
+        return submission.HasWarnings && submission.Errors.Count == 0;
     }
 
     private ViewResult GetUploadingOrganisationDetailsViewResult(Guid submissionId)

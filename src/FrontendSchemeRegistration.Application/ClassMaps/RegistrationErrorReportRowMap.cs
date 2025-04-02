@@ -14,6 +14,7 @@ public class RegistrationErrorReportRowMap : ClassMap<RegistrationErrorReportRow
         Map(m => m.SubsidiaryId).Name("Subsidiary ID");
         Map(m => m.Column).Name("Column");
         Map(m => m.ColumnName).Name("Column name");
-        Map(m => m.Error).Name("Error");
+        Map(m => m.IssueType).Name("Issue");
+        Map(m => m.Message).Name("Message");
     }
 }

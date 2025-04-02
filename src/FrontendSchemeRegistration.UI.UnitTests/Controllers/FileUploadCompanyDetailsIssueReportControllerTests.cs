@@ -50,6 +50,7 @@ public class FileUploadCompanyDetailsIssueReportControllerTests
             CompanyDetailsDataComplete = true,
             ValidationPass = true,
             HasValidFile = false,
+            HasWarnings = false
         });
 
         // Act
@@ -71,7 +72,8 @@ public class FileUploadCompanyDetailsIssueReportControllerTests
         {
             CompanyDetailsDataComplete = false,
             ValidationPass = true,
-            HasValidFile = true
+            HasValidFile = true,
+            HasWarnings = false
         });
 
         // Act
@@ -107,6 +109,36 @@ public class FileUploadCompanyDetailsIssueReportControllerTests
 
         // Assert
         result.FileDownloadName.Should().Be(expectedErrorReportFileName);
+        result.FileStream.Should().BeSameAs(memoryStream);
+        result.ContentType.Should().Be("text/csv");
+
+        _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(SubmissionId), Times.Once);
+        _registrationErrorReportService.Verify(x => x.GetRegistrationErrorReportStreamAsync(SubmissionId), Times.Once);
+    }
+
+    [Test]
+    public async Task Get_ReturnsFileStreamResult_WhenValidationPasses_ButHasWarnings()
+    {
+        // Arrange
+        const string fileName = "example.csv";
+        var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+        var expectedWarningReportFileName = $"Warning-report-{fileNameWithoutExtension}.csv";
+        var memoryStream = new MemoryStream();
+
+        _registrationErrorReportService.Setup(x => x.GetRegistrationErrorReportStreamAsync(SubmissionId)).ReturnsAsync(memoryStream);
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(SubmissionId)).ReturnsAsync(new RegistrationSubmission
+        {
+            CompanyDetailsDataComplete = true,
+            ValidationPass = true,
+            CompanyDetailsFileName = fileName,
+            HasWarnings = true
+        });
+
+        // Act
+        var result = await _systemUnderTest.Get(SubmissionId) as FileStreamResult;
+
+        // Assert
+        result.FileDownloadName.Should().Be(expectedWarningReportFileName);
         result.FileStream.Should().BeSameAs(memoryStream);
         result.ContentType.Should().Be("text/csv");
 

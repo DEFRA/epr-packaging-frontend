@@ -37,6 +37,23 @@ public class RegistrationErrorReportServiceTests
                         ColumnName = "organisation_id"
                     }
                 },
+                IssueType = "Error"
+            },
+            new ()
+            {
+                OrganisationId = "test456",
+                SubsidiaryId = "test123",
+                RowNumber = 1,
+                ColumnErrors = new List<ColumnValidationError>
+                {
+                    new()
+                    {
+                        ErrorCode = "61",
+                        ColumnIndex = 0,
+                        ColumnName = "organisation_id"
+                    }
+                },
+                IssueType = "Warning"
             }
         });
     }
@@ -54,7 +71,8 @@ public class RegistrationErrorReportServiceTests
             "Subsidiary ID",
             "Column",
             "Column name",
-            "Error",
+            "Issue",
+            "Message",
         };
         var expectedFirstRow = new[]
         {
@@ -63,6 +81,7 @@ public class RegistrationErrorReportServiceTests
             "abc123",
             "A",
             "organisation_id",
+            "Error",
             "Enter the organisation ID"
         };
 

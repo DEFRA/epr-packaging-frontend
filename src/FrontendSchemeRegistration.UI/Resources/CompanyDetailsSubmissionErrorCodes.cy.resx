@@ -348,4 +348,7 @@
   <data name="915" xml:space="preserve">
     <value>[Welsh] The organisation's leaver date must be later than its joiner date.</value>
   </data>
+  <data name="73" xml:space="preserve">
+    <value>Mae trosiant y sefydliad yma wedi'i gofnodi fel sero. Gwiriwch fod hyn yn gywir cyn ichi gyflwyno ffurflen sy'n dweud sero</value>
+  </data>
 </root>

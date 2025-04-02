@@ -486,6 +486,15 @@ namespace FrontendSchemeRegistration.UI.Resources {
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
+        internal static string _61 {
+            get {
+                return ResourceManager.GetString("61", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
         internal static string _62 {
             get {
                 return ResourceManager.GetString("62", resourceCulture);
@@ -552,6 +561,15 @@ namespace FrontendSchemeRegistration.UI.Resources {
         internal static string _72 {
             get {
                 return ResourceManager.GetString("72", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string _73 {
+            get {
+                return ResourceManager.GetString("73", resourceCulture);
             }
         }
         

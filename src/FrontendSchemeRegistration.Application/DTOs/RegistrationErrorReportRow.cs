@@ -15,5 +15,12 @@ public class RegistrationErrorReportRow
 
     public string ColumnName { get; set; }
 
-    public string Error { get; set; }
+    /// <summary>
+    /// Gets or sets the IssueType.
+    /// </summary>
+    /// <value>can be Error or Warning.</value>
+    public string IssueType { get; set; }   
+
+    public string Message { get; set; }
+
 }

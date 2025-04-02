@@ -35,7 +35,8 @@ public static class ErrorReportHelpers
             SubsidiaryId = validationError.SubsidiaryId,
             Column = ToExcelColumn(columnValidationError.ColumnIndex),
             ColumnName = columnValidationError.ColumnName,
-            Error = GetRegistrationErrorMessage(columnValidationError.ErrorCode)
+            IssueType = validationError.IssueType,
+            Message = GetRegistrationErrorMessage(columnValidationError.ErrorCode)
         };
     }
 

@@ -26,7 +26,7 @@ public class FileUploadCompanyDetailsIssueReportController : Controller
     {
         var submission = await _submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
 
-        if (submission is null || !submission.CompanyDetailsDataComplete || submission.ValidationPass)
+        if (submission is null || ((!submission.CompanyDetailsDataComplete || submission.ValidationPass) && !submission.HasWarnings))
         {
             return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
         }
@@ -39,6 +39,11 @@ public class FileUploadCompanyDetailsIssueReportController : Controller
         }
 
         var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(submission.CompanyDetailsFileName);
+        if (submission.HasWarnings && submission.ValidationPass)
+        {
+            return File(stream, "text/csv", $"Warning-report-{fileNameWithoutExtension}.csv");
+        }
+        
         return File(stream, "text/csv", $"Error-report-{fileNameWithoutExtension}.csv");
     }
 }

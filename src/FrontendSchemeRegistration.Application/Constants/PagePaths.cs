@@ -20,6 +20,7 @@ public static class PagePaths
     public const string FileUploading = "/file-uploading";
     public const string RedirectFileUploadCompanyDetails = "/redirect-upload-organisation-details";
     public const string FileUploadCompanyDetails = "/upload-organisation-details";
+    public const string FileUploadCompanyDetailsWarnings = "/file-upload-company-details-warnings";
     public const string FileUploadCompanyDetailsErrors = "/file-upload-company-details-errors";
     public const string FileUploadPartnerships = "/upload-partner-details";
     public const string FileUploadCompanyDetailsSubLanding = "/report-organisation-details";

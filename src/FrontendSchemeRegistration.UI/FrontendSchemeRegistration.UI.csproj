@@ -181,6 +181,10 @@
             <Generator>ResXFileCodeGenerator</Generator>
             <LastGenOutput>ComplianceSchemeMemberLanding.Designer.cs</LastGenOutput>
         </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Views\FileUploadCompanyDetailsWarnings\FileUploadCompanyDetailsWarnings.resx">
+          <LastGenOutput>FileUploadCompanyDetailsWarnings.Designer.cs</LastGenOutput>
+          <Generator>ResXFileCodeGenerator</Generator>
+        </EmbeddedResource>
         <EmbeddedResource Update="Resources\Views\FileUploadSubmissionConfirmation\FileUploadSubmissionConfirmation.en.resx">
             <SubType>Designer</SubType>
         </EmbeddedResource>
@@ -585,6 +589,11 @@
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
             <DependentUpon>ComplianceSchemeMemberLanding.resx</DependentUpon>
+        </Compile>
+        <Compile Update="Resources\Views\FileUploadCompanyDetailsWarnings\FileUploadCompanyDetailsWarnings.Designer.cs">
+          <DependentUpon>FileUploadCompanyDetailsWarnings.resx</DependentUpon>
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
         </Compile>
         <Compile Update="Resources\Views\FileUploadSubmissionConfirmation\FileUploadSubmissionConfirmation.Designer.cs">
             <DependentUpon>FileUploadSubmissionConfirmation.resx</DependentUpon>

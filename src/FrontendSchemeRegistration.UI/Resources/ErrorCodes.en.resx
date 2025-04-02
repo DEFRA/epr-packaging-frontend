@@ -290,7 +290,7 @@ Read the guidance about how to create your organisation details file. Once youâ€
     <value>Check the packaging material weight for all rows for this organisation. If the total for the reporting year is between 25,000kg and 50,000kg, this organisation may only need to register as a small organisation in the following year.</value>
   </data>
   <data name="61" xml:space="preserve">
-	<value>Packaging weight for this organisation has been entered as zero - please check this is correct before submitting a zero return</value>
+    <value>Packaging weight for this organisation has been entered as zero - please check this is correct before submitting a zero return</value>
   </data>
   <data name="62" xml:space="preserve">
     <value>Only one packaging material reported for this organisation. Check you have entered all packaging materials. All must be reported separately.</value>
@@ -360,5 +360,8 @@ Read the guidance about how to create your organisation details file. Once youâ€
   </data>
   <data name="908" xml:space="preserve">
     <value>Packaging class must be empty.</value>
+  </data>
+  <data name="73" xml:space="preserve">
+    <value>Turnover for this organization is recorded as zero. Please verify this is correct before submitting a zero return</value>
   </data>
 </root>

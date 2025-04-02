@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -117,214 +117,46 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="WarningIssue" xml:space="preserve">
-    <value />
+  <data name="check_the_warnings" xml:space="preserve">
+    <value>Manylion y sefydliad wedi'u llwytho i fyny – gwiriwch y rhybuddion</value>
   </data>
-  <data name="ErrorIssue" xml:space="preserve">
-    <value />
+  <data name="decide_if_you_want_to_update" xml:space="preserve">
+    <value>Penderfynwch a ydych chi am ddiweddaru unrhyw ddata.</value>
   </data>
-  <data name="01" xml:space="preserve">
-    <value />
+  <data name="download_warning_report" xml:space="preserve">
+    <value>Lawrlwythwch eich adroddiad gwallau (CSV, {0} ar y mwyaf)</value>
   </data>
-  <data name="02" xml:space="preserve">
-    <value />
+  <data name="how_to_check_warnings" xml:space="preserve">
+    <value>Sut i wirio rhybuddion</value>
   </data>
-  <data name="03" xml:space="preserve">
-    <value />
+  <data name="tells_you_where_warnings_are" xml:space="preserve">
+    <value>Mae hyn yn dweud wrthoch chi ble mae’r rhybuddion yn eich ffeil.</value>
   </data>
-  <data name="04" xml:space="preserve">
-    <value />
+  <data name="there_are_some_warnings" xml:space="preserve">
+    <value>Mae rhywfaint o rybuddion. Mae rhybuddion yn gofnodion anarferol yn eich ffeil y bydd angen ichi eu gwirio, ond fyddan nhw ddim yn atal eich ffeil rhag cael ei chyflwyno i’r rheoleiddiwr amgylcheddol. </value>
   </data>
-  <data name="05" xml:space="preserve">
-    <value />
+  <data name="upload_new_file_or_keep" xml:space="preserve">
+    <value>Uwchlwythwch ffeil newydd neu cadwch eich ffeil bresennol.</value>
   </data>
-  <data name="07" xml:space="preserve">
-    <value />
+  <data name="use_the_report_to_check_warnings" xml:space="preserve">
+    <value>Defnyddiwch yr adroddiad i wirio’r rhybuddion. Efallai y bydd arnoch chi angen y</value>
   </data>
-  <data name="08" xml:space="preserve">
-    <value />
+  <data name="we_can_only_show_x_warnings" xml:space="preserve">
+    <value>Dim ond y {0} cyntaf o rybuddion yn yr adroddiad y gallwn eu dangos ichi. </value>
   </data>
-  <data name="09" xml:space="preserve">
-    <value />
+  <data name="your_data_file_has_been_uploaded" xml:space="preserve">
+    <value>Mae eich ffeil ddata wedi’i huwchlwytho i gyfrif eich sefydliad. Does dim gwallau.</value>
   </data>
-  <data name="10" xml:space="preserve">
-    <value />
+  <data name="file_specification_guidance" xml:space="preserve">
+    <value>canllawiau ar fanyleb y ffeil hefyd (yn agor mewn ffenestr newydd)</value>
   </data>
-  <data name="13" xml:space="preserve">
-    <value />
+  <data name="do_you_want_to_upload_a_new_file" xml:space="preserve">
+    <value>Hoffech chi uwchlwytho ffeil newydd?</value>
   </data>
-  <data name="15" xml:space="preserve">
-    <value />
+  <data name="yes" xml:space="preserve">
+    <value>Hoffwn</value>
   </data>
-  <data name="22" xml:space="preserve">
-    <value />
-  </data>
-  <data name="23" xml:space="preserve">
-    <value />
-  </data>
-  <data name="25" xml:space="preserve">
-    <value />
-  </data>
-  <data name="26" xml:space="preserve">
-    <value />
-  </data>
-  <data name="27" xml:space="preserve">
-    <value />
-  </data>
-  <data name="28" xml:space="preserve">
-    <value />
-  </data>
-  <data name="29" xml:space="preserve">
-    <value />
-  </data>
-  <data name="30" xml:space="preserve">
-    <value />
-  </data>
-  <data name="31" xml:space="preserve">
-    <value />
-  </data>
-  <data name="33" xml:space="preserve">
-    <value />
-  </data>
-  <data name="34" xml:space="preserve">
-    <value />
-  </data>
-  <data name="35" xml:space="preserve">
-    <value />
-  </data>
-  <data name="36" xml:space="preserve">
-    <value />
-  </data>
-  <data name="37" xml:space="preserve">
-    <value />
-  </data>
-  <data name="38" xml:space="preserve">
-    <value />
-  </data>
-  <data name="39" xml:space="preserve">
-    <value />
-  </data>
-  <data name="40" xml:space="preserve">
-    <value />
-  </data>
-  <data name="41" xml:space="preserve">
-    <value />
-  </data>
-  <data name="14" xml:space="preserve">
-    <value />
-  </data>
-  <data name="99" xml:space="preserve">
-    <value />
-  </data>
-  <data name="80" xml:space="preserve">
-    <value />
-  </data>
-  <data name="89" xml:space="preserve">
-    <value />
-  </data>
-  <data name="81" xml:space="preserve">
-    <value />
-  </data>
-  <data name="45" xml:space="preserve">
-    <value />
-  </data>
-  <data name="47" xml:space="preserve">
-    <value />
-  </data>
-  <data name="42" xml:space="preserve">
-    <value />
-  </data>
-  <data name="43" xml:space="preserve">
-    <value />
-  </data>
-  <data name="44" xml:space="preserve">
-    <value />
-  </data>
-  <data name="46" xml:space="preserve">
-    <value />
-  </data>
-  <data name="82" xml:space="preserve">
-    <value />
-  </data>
-  <data name="54" xml:space="preserve">
-    <value />
-  </data>
-  <data name="55" xml:space="preserve">
-    <value />
-  </data>
-  <data name="83" xml:space="preserve">
-    <value />
-  </data>
-  <data name="48" xml:space="preserve">
-    <value />
-  </data>
-  <data name="49" xml:space="preserve">
-    <value />
-  </data>
-  <data name="50" xml:space="preserve">
-    <value />
-  </data>
-  <data name="51" xml:space="preserve">
-    <value />
-  </data>
-  <data name="53" xml:space="preserve">
-    <value />
-  </data>
-  <data name="56" xml:space="preserve">
-    <value />
-  </data>
-  <data name="59" xml:space="preserve">
-    <value />
-  </data>
-  <data name="64" xml:space="preserve">
-    <value />
-  </data>
-  <data name="57" xml:space="preserve">
-    <value />
-  </data>
-  <data name="58" xml:space="preserve">
-    <value />
-  </data>
-  <data name="62" xml:space="preserve">
-    <value />
-  </data>
-  <data name="63" xml:space="preserve">
-    <value />
-  </data>
-  <data name="813" xml:space="preserve">
-    <value />
-  </data>
-  <data name="890" xml:space="preserve">
-    <value />
-  </data>
-  <data name="891" xml:space="preserve">
-    <value />
-  </data>
-  <data name="892" xml:space="preserve">
-    <value />
-  </data>
-  <data name="893" xml:space="preserve">
-    <value />
-  </data>
-  <data name="65" xml:space="preserve">
-    <value />
-  </data>
-  <data name="66" xml:space="preserve">
-    <value />
-  </data>
-  <data name="70" xml:space="preserve">
-    <value />
-  </data>
-  <data name="71" xml:space="preserve">
-    <value />
-  </data>
-  <data name="72" xml:space="preserve">
-    <value />
-  </data>
-  <data name="73" xml:space="preserve">
-    <value />
-  </data>
-  <data name="61" xml:space="preserve">
-    <value />
+  <data name="no_keep_this_file_uploaded" xml:space="preserve">
+    <value>Na hoffwn. Cadwch y ffeil yma wedi’i huwchlwytho i gyfrif fy sefydliad i.</value>
   </data>
 </root>

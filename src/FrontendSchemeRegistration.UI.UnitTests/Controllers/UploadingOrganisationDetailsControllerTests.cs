@@ -9,6 +9,7 @@ using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Primitives;
 using Moq;
 using UI.Controllers;
@@ -127,7 +128,7 @@ public class UploadingOrganisationDetailsControllerTests
         var submission = new RegistrationSubmission
         {
             Id = SubmissionId,
-            CompanyDetailsDataComplete = false
+            CompanyDetailsDataComplete = false,
         };
 
         _submissionServiceMock
@@ -174,6 +175,31 @@ public class UploadingOrganisationDetailsControllerTests
         // Assert
         result.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("FileUploadCompanyDetailsErrors");
+        result.RouteValues.Should().HaveCount(1).And.ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId.ToString());
+    }
+
+    [Test]
+    public async Task Get_RedirectsToFileUploadCompanyDetailsWarningsGet_WhenUploadHasCompletedAndContains_RowWarnings()
+    {
+        // Arrange
+        var submission = new RegistrationSubmission
+        {
+            Id = SubmissionId,
+            CompanyDetailsDataComplete = true,
+            RowErrorCount = 0,
+            HasWarnings = true
+        };
+
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(submission);
+
+        // Act
+        var result = await _systemUnderTest.Get() as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadCompanyDetailsWarnings");
         result.RouteValues.Should().HaveCount(1).And.ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId.ToString());
     }
 

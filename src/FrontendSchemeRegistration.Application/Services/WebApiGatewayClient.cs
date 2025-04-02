@@ -14,6 +14,7 @@ using FrontendSchemeRegistration.Application.Extensions;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.RequestModels;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
@@ -71,7 +72,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         _httpClient.AddHeaderIsResubmissionIfNotNull(isResubmission);
 
         var response = await _httpClient.PostAsync("api/v1/file-upload", new ByteArrayContent(byteArray));
-
+        
         response.EnsureSuccessStatusCode();
         var responseLocation = response.Headers.Location.ToString();
         var parts = responseLocation.Split('/');
@@ -127,7 +128,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
             await PrepareAuthenticatedClientAsync();
 
             var response = await _httpClient.GetAsync($"/api/v1/submissions/{id}");
-
+            
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
                 return default;
@@ -144,6 +145,11 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         }
     }
 
+    /// <summary>
+    /// Gets Producer validation issues i.e. errors & warnings.
+    /// </summary>
+    /// <param name="submissionId">submissionId to query the data</param>
+    /// <returns>List of errors & warnings</returns>
     public async Task<List<ProducerValidationError>> GetProducerValidationErrorsAsync(Guid submissionId)
     {
         try
@@ -151,7 +157,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
             await PrepareAuthenticatedClientAsync();
 
             var requestPath = $"/api/v1/submissions/{submissionId}/producer-validations";
-
+            
             var response = await _httpClient.GetAsync(requestPath);
 
             response.EnsureSuccessStatusCode();
@@ -165,6 +171,11 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         }
     }
 
+    /// <summary>
+    /// Gets Registration validation issues i.e. errors & warnings.
+    /// </summary>
+    /// <param name="submissionId">submissionId to query the data</param>
+    /// <returns>List of errors & warnings</returns>
     public async Task<List<RegistrationValidationError>> GetRegistrationValidationErrorsAsync(Guid submissionId)
     {
         try
@@ -173,6 +184,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
 
             var requestPath = $"/api/v1/submissions/{submissionId}/organisation-details-errors";
             var response = await _httpClient.GetAsync(requestPath);
+
 
             response.EnsureSuccessStatusCode();
 
@@ -303,7 +315,6 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         }
 
     }
-
     /// <summary>
     /// Get single PRN
     /// </summary>
@@ -432,7 +443,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         {
             var response = await _httpClient.PostAsJsonAsync($"/api/v1/prn/obligationcalculation/{year}", externalIds);
 
-			response.EnsureSuccessStatusCode();
+            response.EnsureSuccessStatusCode();
 
             return await response.Content.ReadFromJsonAsync<PrnObligationModel>();
         }
