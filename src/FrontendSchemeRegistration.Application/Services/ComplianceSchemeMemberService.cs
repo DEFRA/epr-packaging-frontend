@@ -104,13 +104,11 @@ public class ComplianceSchemeMemberService : IComplianceSchemeMemberService
     public Guid? GetComplianceSchemeId()
     {
         var context = _httpContextAccessor.HttpContext;
-        if (context != null && context.Items.TryGetValue(ComplianceScheme.ComplianceSchemeId, out var value))
+        if (context?.Items.TryGetValue(ComplianceScheme.ComplianceSchemeId, out var value) == true && value is Guid complianceSchemeId)
         {
-            if (value is Guid complianceSchemeId)
-            {
-                return complianceSchemeId;
-            }
+            return complianceSchemeId;
         }
+
         return null;
     }
 }

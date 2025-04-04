@@ -603,6 +603,6 @@ public class ResubmissionApplicationServiceTests
 
         // Assert
         result.Should().NotBeNull();
-        result.Any().Should().BeFalse();
+        result.Count.Should().Be(0);
     }
 }

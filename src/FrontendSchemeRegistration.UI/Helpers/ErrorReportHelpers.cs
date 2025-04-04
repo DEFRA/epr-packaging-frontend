@@ -35,12 +35,17 @@ public static class ErrorReportHelpers
             SubsidiaryId = validationError.SubsidiaryId,
             Column = ToExcelColumn(columnValidationError.ColumnIndex),
             ColumnName = columnValidationError.ColumnName,
-            IssueType = validationError.IssueType,
-            Message = GetRegistrationErrorMessage(columnValidationError.ErrorCode)
+            IssueType = GetRegistrationIssueType(validationError.IssueType),
+            Message = GetRegistrationMessage(columnValidationError.ErrorCode)
         };
     }
 
-    private static string GetRegistrationErrorMessage(string errorCode)
+    private static string GetRegistrationIssueType(string issueType)
+    {
+        return CompanyDetailsSubmissionErrorCodes.ResourceManager.GetString(issueType) ?? issueType;
+    }
+
+    private static string GetRegistrationMessage(string errorCode)
     {
         return CompanyDetailsSubmissionErrorCodes.ResourceManager.GetString(errorCode) ?? errorCode;
     }

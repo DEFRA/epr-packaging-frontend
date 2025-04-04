@@ -152,7 +152,7 @@ public class FileUploadSubLandingController : Controller
         return await HandleSubmissionBasedOnStatus(submission, submissions, selectedSubmissionPeriod.DataPeriod);
     }
 
-    private void UpdateInProgressSubmissionPeriodStatus(
+    private static void UpdateInProgressSubmissionPeriodStatus(
         SubmissionPeriodDetail submissionPeriodDetail, 
         PackagingResubmissionApplicationSession packagingResubmissionApplicationSession)
     {

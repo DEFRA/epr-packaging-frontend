@@ -9,7 +9,22 @@ public class FileUploadCompanyDetailsViewModel : ViewModelWithOrganisationRole
     
     public bool IsResubmission { get; set; }
 
-    public string PageHeading =>
-        IsResubmission ? "upload_organisation_details" :
-        IsComplianceScheme ? "report_your_member_organisation_detail" : "report_your_organisation_detail";
+    public string PageHeading
+    {
+        get
+        {
+            if (IsResubmission)
+            {
+                return "upload_organisation_details";
+            }
+            else if (IsComplianceScheme)
+            {
+                return "report_your_member_organisation_detail";
+            }
+            else
+            {
+                return "report_your_organisation_detail";
+            }
+        }
+    }
 }

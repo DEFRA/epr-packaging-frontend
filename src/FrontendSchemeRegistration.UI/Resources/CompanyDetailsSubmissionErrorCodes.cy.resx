@@ -351,4 +351,10 @@
   <data name="73" xml:space="preserve">
     <value>Mae trosiant y sefydliad yma wedi'i gofnodi fel sero. Gwiriwch fod hyn yn gywir cyn ichi gyflwyno ffurflen sy'n dweud sero</value>
   </data>
+  <data name="Error" xml:space="preserve">
+    <value>Gwall</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Rhybudd</value>
+  </data>
 </root>

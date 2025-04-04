@@ -72,7 +72,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         _httpClient.AddHeaderIsResubmissionIfNotNull(isResubmission);
 
         var response = await _httpClient.PostAsync("api/v1/file-upload", new ByteArrayContent(byteArray));
-        
+
         response.EnsureSuccessStatusCode();
         var responseLocation = response.Headers.Location.ToString();
         var parts = responseLocation.Split('/');
@@ -128,7 +128,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
             await PrepareAuthenticatedClientAsync();
 
             var response = await _httpClient.GetAsync($"/api/v1/submissions/{id}");
-            
+
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
                 return default;
@@ -157,7 +157,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
             await PrepareAuthenticatedClientAsync();
 
             var requestPath = $"/api/v1/submissions/{submissionId}/producer-validations";
-            
+
             var response = await _httpClient.GetAsync(requestPath);
 
             response.EnsureSuccessStatusCode();
@@ -543,14 +543,14 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         }
         catch (Exception ex)
         {
-            if(ex.GetType() == typeof(HttpRequestException))
+            if (ex.GetType() == typeof(HttpRequestException))
             {
                 var requestException = ex as HttpRequestException;
                 if (requestException.StatusCode.HasValue && PassThroughExceptions.Contains(requestException.StatusCode.Value))
                 {
                     throw;
                 }
-            }    
+            }
 
             _logger.LogError(ex, "Error Getting Pom Resubmission MemberDetails");
             return null!;
@@ -578,13 +578,13 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         }
     }
 
-	public async Task CreatePackagingResubmissionReferenceNumberEvent(Guid submissionId, PackagingResubmissionReferenceNumberCreatedEvent @event)
-	{
-		await PrepareAuthenticatedClientAsync();
-		var requestPath = $"/api/v1/packaging-resubmission/{submissionId}/create-packaging-resubmission-reference-number-event";
-		var response = await _httpClient.PostAsJsonAsync(requestPath, @event);
-		response.EnsureSuccessStatusCode();
-	}
+    public async Task CreatePackagingResubmissionReferenceNumberEvent(Guid submissionId, PackagingResubmissionReferenceNumberCreatedEvent @event)
+    {
+        await PrepareAuthenticatedClientAsync();
+        var requestPath = $"/api/v1/packaging-resubmission/{submissionId}/create-packaging-resubmission-reference-number-event";
+        var response = await _httpClient.PostAsJsonAsync(requestPath, @event);
+        response.EnsureSuccessStatusCode();
+    }
 
     public async Task CreatePackagingResubmissionFeeViewEvent(Guid? submissionId)
     {
@@ -598,7 +598,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
 
     public async Task CreatePackagingDataResubmissionFeePaymentEvent(Guid? submissionId, Guid? filedId, string paymentMethod)
     {
-        var eventPayload = new PackagingDataResubmissionFeePaymentEvent() { FileId = filedId, PaidAmount ="0", PaymentMethod = paymentMethod, PaymentStatus = "null" };
+        var eventPayload = new PackagingDataResubmissionFeePaymentEvent() { FileId = filedId, PaidAmount = "0", PaymentMethod = paymentMethod, PaymentStatus = "null" };
         await PrepareAuthenticatedClientAsync();
         var requestPath = $"/api/v1/packaging-resubmission/{submissionId}/create-packaging-resubmission-fee-payment-event";
         var response = await _httpClient.PostAsJsonAsync(requestPath, eventPayload);
@@ -607,7 +607,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
 
     public async Task CreatePackagingResubmissionApplicationSubmittedCreatedEvent(Guid? submissionId, Guid? filedId, string submittedBy, DateTime submissionDate, string comment)
     {
-        var eventPayload = new PackagingResubmissionApplicationSubmittedCreatedEvent() { Comments = comment,FileId = filedId, IsResubmitted = true, SubmissionDate = submissionDate, SubmittedBy = submittedBy };
+        var eventPayload = new PackagingResubmissionApplicationSubmittedCreatedEvent() { Comments = comment, FileId = filedId, IsResubmitted = true, SubmissionDate = submissionDate, SubmittedBy = submittedBy };
         await PrepareAuthenticatedClientAsync();
         var requestPath = $"/api/v1/packaging-resubmission/{submissionId}/create-packaging-resubmission-application-submitted-event";
         var response = await _httpClient.PostAsJsonAsync(requestPath, eventPayload);

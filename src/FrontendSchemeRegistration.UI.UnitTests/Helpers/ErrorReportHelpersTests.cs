@@ -293,4 +293,105 @@ public class ErrorReportHelpersTests
 
         result.Should().BeEquivalentTo(expected);
     }
+
+    [Test]
+    public void ToRegistrationErrorReportRows_ConvertsRegistrationValidation_ErrorsAndWarnings_RowsWith_CorrectMessage_WhenCalledFor_WelshLanguage()
+    {
+        // Arrange
+        CultureHelpers.SetCulture("cy-GB");
+
+        const string organisationId = "123456";
+        const string subsidiaryId = "123456";
+        var validationIssues = new List<RegistrationValidationError>
+        {
+            new ()
+            {
+                OrganisationId = organisationId,
+                SubsidiaryId = subsidiaryId,
+                RowNumber = 1,
+                IssueType = "Error",
+                ColumnErrors = new List<ColumnValidationError>
+                {
+                    new()
+                    {
+                        ErrorCode = "894",
+                        ColumnIndex = 0,
+                        ColumnName = "testColumnName"
+                    }
+                },
+            },
+            new ()
+            {
+                OrganisationId = organisationId,
+                SubsidiaryId = subsidiaryId,
+                RowNumber = 1,
+                IssueType = "Error",
+                ColumnErrors = new List<ColumnValidationError>
+                {
+                    new()
+                    {
+                        ErrorCode = "896",
+                        ColumnIndex = 10,
+                        ColumnName = "testColumnName2"
+                    }
+                },
+            },
+            new ()
+            {
+                OrganisationId = organisationId,
+                SubsidiaryId = subsidiaryId,
+                RowNumber = 1,
+                IssueType = "Warning",
+                ColumnErrors = new List<ColumnValidationError>
+                {
+                    new()
+                    {
+                        ErrorCode = "73",
+                        ColumnIndex = 30,
+                        ColumnName = "testColumnName3"
+                    }
+                },
+            },
+        };
+
+        // Act
+        var result = validationIssues.ToRegistrationErrorReportRows();
+
+        // Assert
+        var expected = new List<RegistrationErrorReportRow>
+        {
+            new ()
+            {
+                Row = "1",
+                OrganisationId = organisationId,
+                SubsidiaryId = subsidiaryId,
+                Column = "A",
+                ColumnName = "testColumnName",
+                IssueType = "Gwall",
+                Message = "Dim ond bach neu fawr y gall maint y sefydliad fod."
+            },
+            new ()
+            {
+                Row = "1",
+                OrganisationId = organisationId,
+                SubsidiaryId = subsidiaryId,
+                Column = "K",
+                ColumnName = "testColumnName2",
+                IssueType = "Gwall",
+                Message = "I fod yn gymwys fel cynhyrchwr bach, rhaid i'ch trosiant blynyddol diweddaraf fod yn £2 filiwn neu lai, neu rhaid i gyfanswm eich tunelli blynyddol fod yn 50 tunnell neu lai."
+            },
+            new ()
+            {
+                Row = "1",
+                OrganisationId = organisationId,
+                SubsidiaryId = subsidiaryId,
+                Column = "AE",
+                ColumnName = "testColumnName3",
+                IssueType = "Rhybudd",
+                Message = "Mae trosiant y sefydliad yma wedi'i gofnodi fel sero. Gwiriwch fod hyn yn gywir cyn ichi gyflwyno ffurflen sy'n dweud sero"
+            }
+        };
+
+        result.Should().BeEquivalentTo(expected);
+    }
 }
