@@ -13,30 +13,30 @@
 		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
 	</resheader>
 	<data name="update-registration-data" xml:space="preserve">
-    <value>[Welsh]Resubmit registration data</value>
+    <value>Ailgyflwyno data cofrestru</value>
   </data>
 	<data name="your-organisation-reference-number-wont-change" xml:space="preserve">
-    <value>[Welsh]Your current registration status will not change while you update your registration data. Your producer registration number will remain the same.</value>
+    <value>Fydd statws eich cofrestriad presennol ddim yn newid wrth ichi ddiweddaru'ch data cofrestru. Bydd eich rhif cofrestru cynhyrchydd yn aros yr un fath.</value>
   </data>
 	<data name="to-resubmit-your-data" xml:space="preserve">
-    <value>[Welsh]To resubmit your data you must:</value>
+    <value>I ailgyflwyno'ch data mae'n rhaid ichi:</value>
   </data>
 	<data name="prepare-and-upload" xml:space="preserve">
-    <value>[Welsh]update your full amended organisation, brand and partner details in CSV format</value>
+    <value>diweddaru manylion diwygiedig llawn eich sefydliad, eich brand a'ch partneriaid ar fformat CSV</value>
   </data>
 	<data name="view-and-pay" xml:space="preserve">
-    <value>Wview and pay any additional fees if required</value>
+    <value>gweld a thalu unrhyw ffioedd ychwanegol os oes angen</value>
   </data>
 	<data name="submit-the-updated-data" xml:space="preserve">
-    <value>[Welsh]resubmit to the environmental regulator</value>
+    <value>ailgyflwyno i'r rheoleiddiwr amgylcheddol</value>
   </data>
 	<data name="you-are-strongly-advised" xml:space="preserve">
-    <value>[Welsh]We advise reading the guidance on </value>
+    <value>Rydyn ni'n cynghori y dylech chi ddarllen y canllawiau ar</value>
   </data>
 	<data name="reporting-organisation-details" xml:space="preserve">
-    <value>[Welsh]reporting organisation details (Opens in a new tab)</value>
+    <value>roi gwybod am fanylion sefydliad (Yn agor mewn tab newydd)</value>
   </data>
   <data name="reporting-organisation-details-before-you-start" xml:space="preserve">
-    <value>[Welsh]before you start.</value>
+    <value>cyn ichi ddechrau.</value> 
   </data>	
 </root>

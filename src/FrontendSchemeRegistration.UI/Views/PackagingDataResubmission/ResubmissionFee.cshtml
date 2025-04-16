@@ -8,44 +8,72 @@
 <main class="govuk-main-wrapper" id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            @if (!ViewData.ModelState.IsValid)  // (errorsViewModel != null && errorsViewModel.Errors.Count > 0)
+            @if (!ViewData.ModelState.IsValid)
             {
                 @await Html.PartialAsync("../Shared/Partials/Govuk/_ErrorsViewModelSummary", errorsViewModel)
             }
-            <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
-                @if(Model.TotalOutstanding == 0)
-                {
-                    @Localizer["resubmission-fee-page-header"]
-                }
-                else
-                {
-                    @Localizer["resubmission-fee-due-page-header"]
-                }
-            </h1>
+            
+            @if(Model.IsComplianceScheme && Model.MemberCount ==0)
+            {
+                <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+                    @Localizer["resubmission-you-have-no-additional-fee-to-pay"]
+                </h1>
 
-            <!-- Page header where resubmission fee is still due -->
-            <p class="govuk-body">
-                    @Localizer["resubmission-fee-due", ConvertToThousandSeparatedDecimal(Model.TotalOutstanding)]
+                <p class="govuk-body">
+                    @Localizer["resubmission-fee-are-calculated-from-information"]
                 </p>
-            <p class="govuk-body govuk-!-margin-bottom-4">
-                    @Localizer["resubmission-fee-calculated-from-your-information"]
-                </p>
-            <p class="govuk-body govuk-!-margin-bottom-4">
+
+                <p class="govuk-body govuk-!-margin-bottom-4">
                     <a href="@GuidanceLinks.Value.EPR_IllustrativeFeesAndCharges"
                        class="govuk-link govuk-link--no-visited-state"
                        rel="noreferrer noopener"
                        target="_blank">
-                    @Localizer["resubmission-more_about_EPR_fees_and_charges"]
+                        @Localizer["resubmission-more_about_EPR_fees_and_charges"]
                     </a>
                 </p>
 
-            <!-- Table containing results -->
-            <partial name="_PackagingResubmissionFeeBreakdown" model="@Model" />
+                <!-- Continue button -->
+                <a asp-action="RedirectToComplianceSchemeDashboard" asp-controller="ResubmissionApplication" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+                    @SharedLocalizer["continue"]
+                </a>
+            }
+            else
+            {
+                <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+                    @if(Model.TotalOutstanding == 0)
+                    {
+                        @Localizer["resubmission-fee-page-header"]
+                    }
+                    else
+                    {
+                        @Localizer["resubmission-fee-due-page-header"]
+                    }
+                </h1>
 
-            <!-- Continue button -->
-            <a asp-action="SelectPaymentOptions" asp-controller="ResubmissionApplication" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
-                @SharedLocalizer["continue"]
-            </a>
+                <!-- Page header where resubmission fee is still due -->
+                <p class="govuk-body">
+                    @Localizer["resubmission-fee-due", ConvertToThousandSeparatedDecimal(Model.TotalOutstanding)]
+                </p>
+                <p class="govuk-body govuk-!-margin-bottom-4">
+                        @Localizer["resubmission-fee-calculated-from-your-information"]
+                    </p>
+                <p class="govuk-body govuk-!-margin-bottom-4">
+                    <a href="@GuidanceLinks.Value.EPR_IllustrativeFeesAndCharges"
+                           class="govuk-link govuk-link--no-visited-state"
+                           rel="noreferrer noopener"
+                           target="_blank">
+                        @Localizer["resubmission-more_about_EPR_fees_and_charges"]
+                        </a>
+                </p>
+
+                <!-- Table containing results -->
+                <partial name="_PackagingResubmissionFeeBreakdown" model="@Model" />
+
+                <!-- Continue button -->
+                <a asp-action="SelectPaymentOptions" asp-controller="ResubmissionApplication" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+                    @SharedLocalizer["continue"]
+                </a>
+            }
         </div>
     </div>
 </main>

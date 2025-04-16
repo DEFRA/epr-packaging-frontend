@@ -1,6 +1,7 @@
-﻿const IDLE_TIMEOUT_MS = 20 * 60 * 1000; // 20 minutes before showing modal
+﻿const IDLE_TIMEOUT_MS = 17 * 60 * 1000; // 17 minutes before showing modal
 const LOGOUT_COUNTDOWN_DURATION = 120; // Logout countdown starts from 120 seconds
 const LOGOUT_REDIRECT_URL = "/report-data/Account/SessionSignOut";
+const PING_URL = "/report-data/Account/KeepSessionAlive"; // Endpoint to keep session alive
 
 let idleTimeout, logoutCountdown;
 
@@ -10,10 +11,9 @@ const SessionTimeoutManager = {
     uiElements: {},
 
     initialize() {
-        // URLs where the modal should not be shown
         const excludedPaths = ["/report-data/timeout-signed-out", "/report-data/signed-out"];
         if (excludedPaths.includes(window.location.pathname)) {
-            return; // Stop execution if on an excluded page
+            return;
         }
 
         this.cacheDOMElements();
@@ -93,7 +93,6 @@ const SessionTimeoutManager = {
             if (!document.hidden) this.resetIdleTimer();
         });
 
-        // Optimize event handling to prevent excessive function calls
         const debounce = (callback, delay) => {
             let timeout;
             return () => {
@@ -113,8 +112,16 @@ const SessionTimeoutManager = {
         this.toggleModalVisibility(false);
         clearInterval(logoutCountdown);
         this.resetIdleTimer();
+        this.keepSessionAlive();
+    },
+
+    async keepSessionAlive() {
+        try {
+            await fetch(PING_URL, { method: "GET" });
+        } catch (error) {
+            console.error("Failed to ping server:", error);
+        }
     }
 };
 
-// Initialize once DOM is fully loaded
 document.addEventListener("DOMContentLoaded", () => SessionTimeoutManager.initialize());

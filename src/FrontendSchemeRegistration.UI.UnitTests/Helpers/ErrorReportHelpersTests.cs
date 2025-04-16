@@ -43,7 +43,7 @@ public class ErrorReportHelpersTests
     [TestCase("en-GB", "44", "Enter the time period for submission")]
     [TestCase("en-GB", "45", "When packaging material is other (OT), you must enter the name of the material in packaging material subtype. It must not include numbers or commas.")]
     [TestCase("en-GB", "46", "Subsidiary ID must only include letters a to z, and numbers. It must be 32 characters or less.")]
-    [TestCase("en-GB", "47", "Packaging material subtype not needed for this packaging material")]
+    [TestCase("en-GB", "47", "Packaging material subtype not needed for this packaging material.")]
     [TestCase("en-GB", "48", "Total weight of a single packaging material transferred to any country must not be more than the total collected. For example, you cannot transfer more plastic than you collect. Check the weight of this packaging material transferred to another country for all rows for this organisation.")]
     [TestCase("en-GB", "49", "When packaging type is self-managed waste (CW and OW), you must enter the from country")]
     [TestCase("en-GB", "50", "Submission period must be the same for all of this organisation's packaging data")]
@@ -102,6 +102,8 @@ public class ErrorReportHelpersTests
                 ToHomeNation = "THN",
                 QuantityKg = "1",
                 QuantityUnits = "1",
+                TransitionalPackagingUnits = "1",
+                RecyclabilityRating = "A",
                 RowNumber = 1,
                 Issue = issueType,
                 ErrorCodes = new List<string>
@@ -132,6 +134,8 @@ public class ErrorReportHelpersTests
                 ToHomeNation = "THN",
                 QuantityKg = "1",
                 QuantityUnits = "1",
+                TransitionalPackagingUnits = "1",
+                RecyclabilityRating = "A",
                 RowNumber = 1,
                 Issue = issueType,
                 Message = expectedMessage,
@@ -389,6 +393,133 @@ public class ErrorReportHelpersTests
                 ColumnName = "testColumnName3",
                 IssueType = "Rhybudd",
                 Message = "Mae trosiant y sefydliad yma wedi'i gofnodi fel sero. Gwiriwch fod hyn yn gywir cyn ichi gyflwyno ffurflen sy'n dweud sero"
+            }
+        };
+
+        result.Should().BeEquivalentTo(expected);
+    }
+
+    [Test]
+    public void ToRegistrationErrorReportRows_ConvertsRegistrationValidation_Errors_Rows_TranslatesMessage_With_Correct_WelshLanguage()
+    {
+        // Arrange
+        CultureHelpers.SetCulture("cy-GB");
+
+        const string organisationId = "123456";
+        const string subsidiaryId = "123456";
+        var validationIssues = new List<RegistrationValidationError>
+        {
+            new ()
+            {
+                OrganisationId = organisationId,
+                SubsidiaryId = subsidiaryId,
+                RowNumber = 1,
+                IssueType = "Error",
+                ColumnErrors = new List<ColumnValidationError>
+                {
+                    new()
+                    {
+                        ErrorCode = "80",
+                        ColumnIndex = 0,
+                        ColumnName = "testColumnName"
+                    }
+                },
+            },
+            new ()
+            {
+                OrganisationId = organisationId,
+                SubsidiaryId = subsidiaryId,
+                RowNumber = 1,
+                IssueType = "Error",
+                ColumnErrors = new List<ColumnValidationError>
+                {
+                    new()
+                    {
+                        ErrorCode = "807",
+                        ColumnIndex = 10,
+                        ColumnName = "testColumnName2"
+                    }
+                },
+            },
+            new ()
+            {
+                OrganisationId = organisationId,
+                SubsidiaryId = subsidiaryId,
+                RowNumber = 1,
+                IssueType = "Error",
+                ColumnErrors = new List<ColumnValidationError>
+                {
+                    new()
+                    {
+                        ErrorCode = "826",
+                        ColumnIndex = 30,
+                        ColumnName = "testColumnName3"
+                    }
+                },
+            },
+            new ()
+            {
+                OrganisationId = organisationId,
+                SubsidiaryId = subsidiaryId,
+                RowNumber = 1,
+                IssueType = "Error",
+                ColumnErrors = new List<ColumnValidationError>
+                {
+                    new()
+                    {
+                        ErrorCode = "848",
+                        ColumnIndex = 31,
+                        ColumnName = "testColumnName4"
+                    }
+                },
+            },
+        };
+
+        // Act
+        var result = validationIssues.ToRegistrationErrorReportRows();
+
+        // Assert
+        var expected = new List<RegistrationErrorReportRow>
+        {
+            new ()
+            {
+                Row = "1",
+                OrganisationId = organisationId,
+                SubsidiaryId = subsidiaryId,
+                Column = "A",
+                ColumnName = "testColumnName",
+                IssueType = "Gwall",
+                Message = "Fformat Ffeil Annilys"
+            },
+            new ()
+            {
+                Row = "1",
+                OrganisationId = organisationId,
+                SubsidiaryId = subsidiaryId,
+                Column = "K",
+                ColumnName = "testColumnName2",
+                IssueType = "Gwall",
+                Message = "Rhowch ebost y prif gyswllt"
+            },
+            new ()
+            {
+                Row = "1",
+                OrganisationId = organisationId,
+                SubsidiaryId = subsidiaryId,
+                Column = "AE",
+                ColumnName = "testColumnName3",
+                IssueType = "Gwall",
+                Message = "Rhowch y gweithgaredd pecynwaith - wedi mewnforio"
+            },
+            new ()
+            {
+                Row = "1",
+                OrganisationId = organisationId,
+                SubsidiaryId = subsidiaryId,
+                Column = "AF",
+                ColumnName = "testColumnName4",
+                IssueType = "Gwall",
+                Message = "Is-fath y sefydliad yw LIC POB FRA - mae hynny'n golygu bod rhaid ichi roi manylion sefydliad arall sydd ag is-fath LFR TEN neu OTH"
             }
         };
 

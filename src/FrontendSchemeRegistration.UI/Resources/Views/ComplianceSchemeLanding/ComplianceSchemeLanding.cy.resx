@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <resheader name="resmimetype">
+   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
   </resheader>
   <resheader name="version">
@@ -167,10 +167,10 @@ Rydych chi hefyd yn gallu:</value>
     <value>Mae eich cofrestriad ar gyfer {0} wedi'i ganiatáu gan y rheoleiddiwr.</value>
   </data>
   <data name="Your_registration_reference_number_is_x" xml:space="preserve">
-    <value>WYour producer registration number is &lt;strong&gt;{0}&lt;/strong&gt;.</value>
+    <value>Eich rhif cofrestru cynhyrchydd yw &lt;strong&gt;{0}&lt;/strong&gt;.</value>
   </data>
   <data name="If_anything_changes_you_should_resubmit" xml:space="preserve">
-    <value>[Welsh]Changes to your organisation's data must be reported within 28 days.</value>
+    <value>Os bydd unrhyw beth yn newid, dylech ailgyflwyno’ch data.</value>
   </data>
   <data name="The_regulator_has_identified_a_potential_issue" xml:space="preserve">
     <value>Mae'r rheoleiddiwr wedi nodi problem bosibl gyda'ch cais a bydd yn cysylltu â chi.</value>
@@ -197,15 +197,15 @@ Rydych chi hefyd yn gallu:</value>
     <value>Gwnewch gais erbyn 1 Ebrill, {0}</value>
   </data>
   <data name="Resubmit_your_data_files" xml:space="preserve">
-    <value>[Welsh]Resubmit your data files</value>
+    <value>Ailgyflwyno'ch ffeiliau data</value>
   </data>
   <data name="You_have_resubmitted_your_registration_data_for_x" xml:space="preserve">
-    <value>You have resubmitted your registration data for {0}.</value>
+    <value>Rydych chi wedi ailgyflwyno'ch data cofrestru ar gyfer {0}.</value>
   </data>
   <data name="You_have_updated_your_data_and_viewed_your_fees" xml:space="preserve">
-    <value>WYou've updated your data and viewed your fees.</value>
+    <value>Rydych chi wedi diweddaru'ch data ac wedi gweld eich ffioedd.</value>
   </data>
   <data name="You_now_need_to_submit_to_the_regulator" xml:space="preserve">
-    <value>WYou now need to submit to the regulator.</value>
+    <value>Nawr mae angen ichi gyflwyno i'r rheoleiddiwr.</value>
   </data>
 </root>

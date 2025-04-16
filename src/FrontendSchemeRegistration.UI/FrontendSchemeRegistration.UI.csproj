@@ -177,10 +177,6 @@
             <Generator>ResXFileCodeGenerator</Generator>
             <LastGenOutput>ComplianceSchemeMemberLandingPage.Designer.cs</LastGenOutput>
         </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\ComplianceSchemeMemberLanding\ComplianceSchemeMemberLanding.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>ComplianceSchemeMemberLanding.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
         <EmbeddedResource Update="Resources\Views\FileUploadCompanyDetailsWarnings\FileUploadCompanyDetailsWarnings.resx">
           <LastGenOutput>FileUploadCompanyDetailsWarnings.Designer.cs</LastGenOutput>
           <Generator>ResXFileCodeGenerator</Generator>
@@ -584,11 +580,6 @@
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
             <DependentUpon>ComplianceSchemeMemberLandingPage.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\ComplianceSchemeMemberLanding\ComplianceSchemeMemberLanding.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>ComplianceSchemeMemberLanding.resx</DependentUpon>
         </Compile>
         <Compile Update="Resources\Views\FileUploadCompanyDetailsWarnings\FileUploadCompanyDetailsWarnings.Designer.cs">
           <DependentUpon>FileUploadCompanyDetailsWarnings.resx</DependentUpon>

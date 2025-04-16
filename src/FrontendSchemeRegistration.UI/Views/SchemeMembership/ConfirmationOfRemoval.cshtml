@@ -12,7 +12,7 @@
                         @Localizer["ConfirmationOfRemoval.YouHaveRemoved"] @Model.OrganisationName @Localizer["ConfirmationOfRemoval.FromAccount"]
                     </h1>
                 </div>
-                <feature name="@FeatureFlags.ShowSubsidiaryJoinerAndLeaverColumns">
+                <feature name="@FeatureFlags.EnableSubsidiaryJoinerAndLeaverColumns">
                     <p class="govuk-body">
                          @Localizer["ConfirmationOfRemoval.IfRemovedReg"]
                     </p>
@@ -43,7 +43,7 @@
                         </li>
                     </ul>
                 </feature>
-                <feature name="@FeatureFlags.ShowSubsidiaryJoinerAndLeaverColumns" negate="true">
+                <feature name="@FeatureFlags.EnableSubsidiaryJoinerAndLeaverColumns" negate="true">
                     <p class="govuk-body">
                         @Localizer["ConfirmationOfRemoval.IfRemoved"] @Model.OrganisationName @Localizer["ConfirmationOfRemoval.FromAccountByMistake"]
                     </p>

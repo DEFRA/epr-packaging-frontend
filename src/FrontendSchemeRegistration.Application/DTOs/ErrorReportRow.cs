@@ -24,6 +24,8 @@ public class ErrorReportRow
         ToHomeNation = producerValidationError.ToHomeNation;
         QuantityKg = producerValidationError.QuantityKg;
         QuantityUnits = producerValidationError.QuantityUnits;
+        TransitionalPackagingUnits = producerValidationError.TransitionalPackagingUnits;
+        RecyclabilityRating = producerValidationError.RecyclabilityRating;
         RowNumber = producerValidationError.RowNumber;
         Issue = issue;
         Message = message;
@@ -54,6 +56,10 @@ public class ErrorReportRow
     public string? QuantityKg { get; set; }
 
     public string? QuantityUnits { get; set; }
+
+    public string? TransitionalPackagingUnits { get; set; }
+
+    public string? RecyclabilityRating { get; set; }
 
     public int RowNumber { get; set; }
 

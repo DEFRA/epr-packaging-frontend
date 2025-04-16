@@ -31,7 +31,7 @@
         {
             new { Name = Localizer[$"small_producers_sentence_text{(Model.SmallProducersCount == 1 ? "_singular" : "")}"], Count = Model.SmallProducersCount, Fee = Model.SmallProducersFee },
             new { Name = Localizer[$"large_producers_sentence_text{(Model.LargeProducersCount == 1 ? "_singular" : "")}"], Count = Model.LargeProducersCount, Fee = Model.LargeProducersFee },
-            new { Name = Localizer[$"online_marketplaces_sentence_text{(Model.OnlineMarketplaceCount == 1 ? "_singular" : "")}"], Count = Model.OnlineMarketplaceCount, Fee = Model.OnlineMarketplaceFee },
+            new { Name = Localizer[$"x_online_marketplaces_sentence_text{(Model.OnlineMarketplaceCount == 1 ? "_singular" : "")}", Model.OnlineMarketplaceCount], Count = Model.OnlineMarketplaceCount, Fee = Model.OnlineMarketplaceFee },
             new { Name = Localizer[$"subsidiary_companies_sentence_text{(Model.SubsidiaryCompanyCount == 1 ? "_singular" : "")}"], Count = Model.SubsidiaryCompanyCount, Fee = Model.SubsidiaryCompanyFee },
             new { Name = Localizer[$"late_producer_fees_text{(Model.LateProducersCount == 1 ? "_singular" : "")}"], Count = Model.LateProducersCount, Fee = Model.LateProducerFee }
         };
@@ -51,7 +51,7 @@
                     }
                 </dt>
                 <dt class="govuk-summary-list__value">
-                    <text>@(memberType.Count) @(memberType.Name)</text>
+                    <text>@(memberType.Name)</text>
                 </dt>
                 <dd class="govuk-summary-list__actions">
                     <text>&pound;@ConvertToThousandSeparatedDecimal(memberType.Fee)</text>

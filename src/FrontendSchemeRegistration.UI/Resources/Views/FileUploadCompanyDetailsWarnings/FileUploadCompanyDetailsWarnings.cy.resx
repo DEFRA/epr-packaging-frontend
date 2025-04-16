@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="check_the_warnings" xml:space="preserve">
-    <value>Manylion y sefydliad wedi'u llwytho i fyny – gwiriwch y rhybuddion</value>
+    <value>Manylion sefydliad wedi’u huwchlwytho – gwiriwch y rhybuddion</value>
   </data>
   <data name="decide_if_you_want_to_update" xml:space="preserve">
     <value>Penderfynwch a ydych chi am ddiweddaru unrhyw ddata.</value>

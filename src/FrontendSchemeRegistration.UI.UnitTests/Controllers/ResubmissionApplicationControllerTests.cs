@@ -6,18 +6,15 @@ using FluentAssertions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
-using FrontendSchemeRegistration.Application.Services;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Controllers;
 using FrontendSchemeRegistration.UI.Controllers.ResubmissionApplication;
 using FrontendSchemeRegistration.UI.Services;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Sessions;
-using FrontendSchemeRegistration.UI.ViewModels;
 using FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.Extensions.Options;
 using Moq;
 using Newtonsoft.Json;
 
@@ -437,6 +434,87 @@ public class ResubmissionApplicationControllerTests
         model.RegistrationApplicationSubmittedDate.Should().Be(expectedDate);
         model.RegistrationReferenceNumber.Should().Be(expectedReference);
         model.ApplicationStatus.Should().Be(ApplicationStatusType.SubmittedToRegulator);
+    }
+
+    [Test]
+    public async Task RedirectToComplianceSchemeDashboard_Redirects_ComplianceSchemeLanding()
+    {
+        var frontendSchemeRegistrationSession = new FrontendSchemeRegistrationSession
+        {
+            PomResubmissionSession = new PackagingReSubmissionSession
+            {
+                PackagingResubmissionApplicationSession = new PackagingResubmissionApplicationSession()
+                {
+                    SubmissionId = Guid.NewGuid(),
+                    LastSubmittedFile = new LastSubmittedFileDetails() { FileId = Guid.NewGuid() }
+                }
+            }
+        };
+
+        var session = new FrontendSchemeRegistrationSession();
+        _mockSessionManager.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
+            .Returns(Task.FromResult(frontendSchemeRegistrationSession));
+
+        // Act
+        var result = await _controller.RedirectToComplianceSchemeDashboard() as RedirectToActionResult;
+
+        // Assert
+        result.ControllerName.Should().Be("ComplianceSchemeLanding");
+        result.ActionName.Should().Be(nameof(ComplianceSchemeLandingController.Get));
+    }
+
+    [Test]
+    public async Task RedirectToComplianceSchemeDashboard_Calls_FeePaymentEvent_Once_IfPaymentMethodIsNullOrEmpty()
+    {
+        var frontendSchemeRegistrationSession = new FrontendSchemeRegistrationSession
+        {
+            PomResubmissionSession = new PackagingReSubmissionSession
+            {
+                PackagingResubmissionApplicationSession = new PackagingResubmissionApplicationSession()
+                {
+                    SubmissionId = Guid.NewGuid(),
+                    LastSubmittedFile = new LastSubmittedFileDetails() { FileId = Guid.NewGuid() },
+                    ResubmissionFeePaymentMethod = string.Empty
+                },
+            }
+        };
+
+        var session = new FrontendSchemeRegistrationSession();
+        _mockSessionManager.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
+            .Returns(Task.FromResult(frontendSchemeRegistrationSession));
+
+        // Act
+        var result = await _controller.RedirectToComplianceSchemeDashboard() as RedirectToActionResult;
+
+        // Assert
+        _mockResubmissionApplicationServices.Verify(x => x.CreatePackagingDataResubmissionFeePaymentEvent(It.IsAny<Guid?>(), It.IsAny<Guid?>(), It.IsAny<string>()), Times.Once);
+    }
+
+    [Test]
+    public async Task RedirectToComplianceSchemeDashboard_NeverCalls_FeePaymentEvent_IfPaymentMethodHasValue()
+    {
+        var frontendSchemeRegistrationSession = new FrontendSchemeRegistrationSession
+        {
+            PomResubmissionSession = new PackagingReSubmissionSession
+            {
+                PackagingResubmissionApplicationSession = new PackagingResubmissionApplicationSession()
+                {
+                    SubmissionId = Guid.NewGuid(),
+                    LastSubmittedFile = new LastSubmittedFileDetails() { FileId = Guid.NewGuid() },
+                    ResubmissionFeePaymentMethod = "PayByBankTransfer"
+                },
+            }
+        };
+
+        var session = new FrontendSchemeRegistrationSession();
+        _mockSessionManager.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
+            .Returns(Task.FromResult(frontendSchemeRegistrationSession));
+
+        // Act
+        var result = await _controller.RedirectToComplianceSchemeDashboard() as RedirectToActionResult;
+
+        // Assert
+        _mockResubmissionApplicationServices.Verify(x => x.CreatePackagingDataResubmissionFeePaymentEvent(It.IsAny<Guid?>(), It.IsAny<Guid?>(), It.IsAny<string>()), Times.Never);
     }
 
     private void ValidateViewModel(object model)

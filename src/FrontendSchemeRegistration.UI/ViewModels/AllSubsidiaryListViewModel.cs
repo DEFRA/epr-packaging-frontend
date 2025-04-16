@@ -13,4 +13,8 @@ public class AllSubsidiaryListViewModel
     public bool IsDirectProducer { get; set; }
 
     public bool IsFileUploadInProgress { get; set; }
+
+    public string? SearchTerm { get; set; }
+
+    public List<string> TypeAhead { get; set; } = [];
 }

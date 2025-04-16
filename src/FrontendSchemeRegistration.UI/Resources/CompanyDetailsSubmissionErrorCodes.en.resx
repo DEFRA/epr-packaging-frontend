@@ -357,4 +357,10 @@
   <data name="Warning" xml:space="preserve">
     <value>Warning</value>
   </data>
+  <data name="869" xml:space="preserve">
+    <value>Total tonnage must be provided</value>
+  </data>
+  <data name="854" xml:space="preserve">
+    <value>Turnover must be provided</value>
+  </data>
 </root>

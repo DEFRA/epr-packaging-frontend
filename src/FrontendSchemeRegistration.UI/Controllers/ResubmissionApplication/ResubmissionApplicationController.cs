@@ -5,12 +5,14 @@ using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Extensions;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Constants;
+using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
 using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.FeatureManagement.Mvc;
 
 namespace FrontendSchemeRegistration.UI.Controllers.ResubmissionApplication;
@@ -229,6 +231,26 @@ public class ResubmissionApplicationController : Controller
                 ApplicationStatus = session.PomResubmissionSession.PackagingResubmissionApplicationSession.ApplicationStatus
             }
         );
+    }
+
+    [HttpGet]
+    [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
+    [Route(PagePaths.RedirectToComplianceSchemeDashboard)]
+    public async Task<IActionResult> RedirectToComplianceSchemeDashboard()
+    {
+        var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+
+        if (string.IsNullOrEmpty(session.PomResubmissionSession.PackagingResubmissionApplicationSession.ResubmissionFeePaymentMethod))
+        {
+            await _resubmissionApplicationService.CreatePackagingDataResubmissionFeePaymentEvent(
+                    session.PomResubmissionSession.PackagingResubmissionApplicationSession.SubmissionId,
+                    session.PomResubmissionSession.PackagingResubmissionApplicationSession.LastSubmittedFile.FileId,
+                    Enum.GetName(typeof(PaymentOptions), PaymentOptions.PayByPhone));
+        }
+
+        return RedirectToAction(
+                nameof(ComplianceSchemeLandingController.Get),
+                nameof(ComplianceSchemeLandingController).RemoveControllerFromName());
     }
 
     private void SetBackLink(FrontendSchemeRegistrationSession session, string currentPagePath)

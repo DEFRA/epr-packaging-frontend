@@ -19,7 +19,7 @@ public class HomeController : Controller
     public IActionResult TimeoutSignedOut()
     {
         HttpContext.Session.Clear();
-        return View();
+        return View("TimeoutSignedOut");
     }
 
     public IActionResult SessionTimeoutModal()

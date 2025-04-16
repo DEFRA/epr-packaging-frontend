@@ -103,7 +103,7 @@
                                     <div class="govuk-card-headers">
                                         @if (Model.IsComplianceScheme)
                                         {
-                                            if (submissionPeriodDetail.DataPeriod.Contains("January to June 2024"))
+                                            if (submissionPeriodDetail.IsJanuaryToJunePeriodFromYearOrLater(2024))
                                             {
                                                 <h3 class="govuk-heading-m govuk-!-margin-bottom-0">@Localizer["report_members_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) </h3>
                                                 if (implementPackagingDataResubmissionJourney)
@@ -169,7 +169,7 @@
                                                 }
                                             }
                                         }
-                                        else if (submissionPeriodDetail.DataPeriod.Contains("January to June 2024"))
+                                        else if (submissionPeriodDetail.IsJanuaryToJunePeriodFromYearOrLater(2024))
                                         {
                                             if (implementPackagingDataResubmissionJourney)
                                             {

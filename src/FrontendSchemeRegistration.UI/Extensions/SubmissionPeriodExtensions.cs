@@ -66,4 +66,27 @@ public static class SubmissionPeriodExtensions
         return DateTime.Parse($"1 {month} {period.Year}", new CultureInfo("en-GB"))
             .ToString("MMM");
     }
+
+    public static DateOnly GetEndDate(this SubmissionPeriod submissionPeriod)
+    {
+        return submissionPeriod is not null &&
+            DateTime.TryParse($"1 {submissionPeriod.EndMonth} {submissionPeriod.Year}", new CultureInfo("en-GB"), out var date)
+           ? new DateOnly(date.Year, date.Month, DateTime.DaysInMonth(date.Year, date.Month))
+           : DateOnly.MaxValue;
+    }
+
+    public static IEnumerable<SubmissionPeriod> FilterToLatestAllowedPeriodEndDate(this List<SubmissionPeriod> submissionPeriods, DateOnly latestPeriodEndDate)
+    {
+        return submissionPeriods
+            .Where(p => p.GetEndDate() <= latestPeriodEndDate);
+    }
+
+    public static bool IsJanuaryToJunePeriodFromYearOrLater(this SubmissionPeriodDetail submissionPeriodDetail, int startYear)
+    {
+        return submissionPeriodDetail is not null &&
+               submissionPeriodDetail.DatePeriodStartMonth.Equals("January", StringComparison.InvariantCultureIgnoreCase) &&
+               submissionPeriodDetail.DatePeriodEndMonth.Equals("June", StringComparison.InvariantCultureIgnoreCase) &&
+               int.TryParse(submissionPeriodDetail.DatePeriodYear, out var year) &&
+               year >= startYear;
+    }
 }

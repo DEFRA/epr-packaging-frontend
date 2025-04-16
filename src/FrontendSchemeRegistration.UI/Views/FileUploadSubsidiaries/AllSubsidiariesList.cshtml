@@ -45,16 +45,58 @@
             else
             {
                 <h1 class="govuk-heading-xl">@Localizer["subsidiaries"]</h1>
+                <div class="govuk-warning-text govuk-!-padding-bottom-7 govuk-phase-banner">
+                    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                    <strong class="govuk-warning-text__text">
+                        <span class="govuk-warning-text__assistive">@Localizer["text_assistive.warning"]</span>
+                        @Localizer["subsidiary_accuracy_warning_text"]
+                    </strong>
+
+                    <div class="govuk-card govuk-card--grey govuk-card--no-border govuk-!-margin-bottom-7">
+                        <div class="govuk-card-body  govuk-!-margin-top-6">
+                            <form asp-controller="FileUploadSubsidiaries" asp-action="Post" method="get">
+                                <div class="govuk-form-group">
+                                    <label id="search-hint" for="search" class="govuk-body govuk-!-margin-bottom-2">
+                                        @Localizer["search_for_a_subsidiary_by"]
+                                    </label>
+
+                                    <input type="text" class="govuk-input" id="search" name="SearchTerm"
+                                           aria-describedby="search-hint"
+                                           value="@(string.IsNullOrEmpty(Model.SearchTerm) ? "" : Model.SearchTerm)"
+                                           list="search_values" autocomplete="off">
+
+
+                                    <datalist id="search_values">
+                                        @foreach (var searchOption in Model.TypeAhead)
+                                        {
+                                            <option value="@searchOption"></option>
+                                        }
+                                    </datalist>
+                                    <input type="hidden" id="source" name="source" value="subsidiarySearch">
+                                </div>
+                                <div class="govuk-button-group govuk-!-display-flex govuk-!-align-items-center">
+                                    <button type="submit" class="govuk-button">
+                                        @Localizer["search"]
+                                    </button>
+
+                                    @Html.ActionLink(
+                                             Localizer["clear_and_reset"].Value,
+                                             "SubsidiariesList",
+                                             "FileUploadSubsidiaries",
+                                             null,
+                                             new
+                                             {
+                                                 @class = "govuk-link govuk-link--no-visited-state govuk-!-margin-left-3 govuk-!-align-middle"
+                                             })
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
                 @if (Model.Subsidiaries.Count > 0)
                 {
-                    <div class="govuk-warning-text govuk-!-padding-bottom-7 govuk-phase-banner">
-                        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-                        <strong class="govuk-warning-text__text">
-                            <span class="govuk-warning-text__assistive">@Localizer["text_assistive.warning"]</span>
-                            @Localizer["subsidiary_accuracy_warning_text"]
-                        </strong>
-                    </div>
-
                     <div class="govuk-grid-row">
                         <div class="govuk-grid-column-full">
                             <div class="govuk-button-group">
@@ -63,7 +105,6 @@
                             </div>
                         </div>
                     </div>
-
                     <h2 class="govuk-heading-m">@Localizer["subsidiaries_list"]</h2>
                     <div class="govuk-grid-row">
                         <div class="govuk-grid-column-full overflow-x-auto">
@@ -119,27 +160,26 @@
                 }
                 else
                 {
-                    <p class="govuk-body blank-line-before">@Localizer["subsidiaries_not_found"]</p>
+                    <h2 class="govuk-heading-m">@Localizer["subsidiaries_not_found"]</h2>
+                    <p class="govuk-body">@Localizer["subsidiary_not_found_message"]</p>
+                    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
                 }
 
-                
 
                 @if (!Model.IsFileUploadInProgress)
                 {
                     <div class="govuk-grid-row">
                         <div class="govuk-grid-column-two-thirds">
 
-                            @if (Model.Subsidiaries.Count > 0)
-                            {
-                                <h2 class="govuk-heading-m">@Localizer["create_subsidiary_ids"]</h2>
-                                <p class="govuk-body">
-                                    @Localizer["use_the_file_upload"]
-                                </p>
-                                <p class="govuk-body">
-                                    @Localizer["before_you_upload"]
-                                    <a href="@GuidanceLinks.Value.HowToCompleteSubsidiaryFile" class="govuk-link" rel="noreferrer noopener" target="_blank">@Localizer["subsidiary_file_template"]</a>.
-                                </p>
-                            }
+                            <h2 class="govuk-heading-m">@Localizer["create_subsidiary_ids"]</h2>
+                            <p class="govuk-body">
+                                @Localizer["use_the_file_upload"]
+                            </p>
+                            <p class="govuk-body">
+                                @Localizer["before_you_upload"]
+                                <a href="@GuidanceLinks.Value.HowToCompleteSubsidiaryFile" class="govuk-link" rel="noreferrer noopener" target="_blank">@Localizer["subsidiary_file_template"]</a>.
+                            </p>
 
                             @using (Html.BeginForm(FormMethod.Post, new
                             {
@@ -153,7 +193,7 @@
                                     }
 
                                     <label for="file" class="govuk-label" id="file-upload-label">@Localizer["upload_subsidiary_file"]</label>
-                                    
+
                                     <input class="govuk-file-upload" title="Choose a file" name="file" type="file" id="file" data-testid="subsidiary-upload-choose-file-button">
                                 </div>
 
@@ -165,16 +205,16 @@
                                 @if (Model.Subsidiaries.Count > 0)
                                 {
                                     <h2 class="govuk-heading-m">@Localizer["adding_and_removing_subsidiaries"]</h2>
-                                    
+
                                     <p class="govuk-body">
                                         @Localizer["to_add_or_remove"]
 
                                         @Html.ActionLink(
-                                            Localizer["update_and_resubmit"].Value,
-                                            "ProducerRegistrationGuidance",
-                                            "RegistrationApplication", null,
-                                            new { @class = "govuk-link govuk-link--no-visited-state" }
-                                        )
+                                                 Localizer["update_and_resubmit"].Value,
+                                                 "ProducerRegistrationGuidance",
+                                                 "RegistrationApplication", null,
+                                                 new { @class = "govuk-link govuk-link--no-visited-state" }
+                                                 )
 
                                         @Localizer["within_28_days_of_the_change"]
                                     </p>

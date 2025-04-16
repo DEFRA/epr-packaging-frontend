@@ -21,7 +21,7 @@
         <value>bod y data rydych chi’n ei gyflwyno yn gywir</value>
     </data>
 	<data name="this_data_is_accurate" xml:space="preserve">
-        <value>Wthis data is accurate</value>
+        <value>bod y data hwn yn gywir</value>
     </data>
     <data name="enter_your_full_name" xml:space="preserve">
         <value>Rhowch eich enw llawn</value>
@@ -36,7 +36,7 @@
         <value>Trwy roi eich enw a chyflwyno’ch ffeil i’r rheoleiddiwr amgylcheddol, rydych chi’n cadarnhau:</value>
     </data>
 	<data name="by_entering_your_name_resubmission" xml:space="preserve">
-        <value>WBy entering your name, you are confirming that:</value>
+        <value>Drwy roi'ch enw, rydych chi'n cadarnhau:</value>
     </data>
     <data name="may_face_enforcement" xml:space="preserve">
         <value>Gall {0} wynebu camau gorfodi os yw'r data'n anghywir.</value>

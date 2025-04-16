@@ -14,7 +14,7 @@ public interface ISubsidiaryService
 
     Task<Stream> GetSubsidiariesStreamAsync(Guid organisationId, Guid? complianceSchemeId, bool isComplianceScheme, bool includeSubsidiaryJoinerAndLeaverColumns);
 
-    Task<PaginatedResponse<RelationshipResponseModel>> GetPagedOrganisationSubsidiaries(int page, int showPerPage);
+    Task<PaginatedResponse<RelationshipResponseModel>> GetPagedOrganisationSubsidiaries(int page, int showPerPage, string searchTerm);
 
     Task<OrganisationRelationshipModel> GetOrganisationSubsidiaries(Guid organisationId);
 

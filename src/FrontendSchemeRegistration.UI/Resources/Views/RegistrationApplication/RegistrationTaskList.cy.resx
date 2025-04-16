@@ -22,7 +22,7 @@
         <value>{0} cofrestru</value>
     </data>
     <data name="register_resubmission_company" xml:space="preserve">
-        <value>{0} cofrestru</value>
+        <value>Cyflwyniad data {0}</value>
     </data>
     <data name="submit_registration_data" xml:space="preserve">
         <value>Cyflwyno data cofrestru</value>
@@ -43,7 +43,7 @@
         <value>Rydych chi wedi gweld y ffi gofrestru ac wedi dewis dull talu</value>
     </data>
     <data name="view_pay_fee_if_required" xml:space="preserve">
-        <value>Gweld y ffi gofrestru</value>
+        <value>Gweld a thalu ffioedd os oes angen</value>
     </data>
     <data name="you_have_paid_resubmission_fee" xml:space="preserve">
         <value>Rydych chi wedi gweld y ffi gofrestru ac wedi dewis dull talu</value>
@@ -52,22 +52,22 @@
         <value>Cyflwyno cais am gofrestru</value>
     </data>
     <data name="submit_amended_data" xml:space="preserve">
-        <value>Submit amended data</value>
+        <value>Cyflwyno data diwygiedig</value>
     </data>
     <data name="can_not_start_yet_status" xml:space="preserve">
-        <value>CANNOT START YET</value>
+        <value>METHU DECHRAU ETO</value>
     </data>
     <data name="not_started_status" xml:space="preserve">
         <value>HEB DDECHRAU</value>
     </data>
     <data name="pending_status" xml:space="preserve">
-        <value>PENDING</value>
+        <value>YN YR ARFAETH</value>
     </data>
     <data name="completed_status" xml:space="preserve">
         <value>WEDI’I GWBLHAU</value>
     </data>
     <data name="return_to_dashboard" xml:space="preserve">
-        <value>Yn ôl i’r dangosfwrdd</value>
+        <value>Dychwelyd i'r dangosfwrdd</value>
     </data>
 	<data name="registration_application_has_been_submitted" xml:space="preserve">
         <value>Mae eich cais am gofrestru wedi'i gyflwyno</value>

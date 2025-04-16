@@ -7,7 +7,7 @@ using DTOs;
 [ExcludeFromCodeCoverage]
 public class ErrorReportRowMap : ClassMap<ErrorReportRow>
 {
-    public ErrorReportRowMap()
+    public ErrorReportRowMap(List<string> optionalHeaders)
     {
         Map(m => m.ProducerId).Name("organisation_id");
         Map(m => m.SubsidiaryId).Name("subsidiary_id");
@@ -22,6 +22,14 @@ public class ErrorReportRowMap : ClassMap<ErrorReportRow>
         Map(m => m.ToHomeNation).Name("to_country");
         Map(m => m.QuantityKg).Name("packaging_material_weight");
         Map(m => m.QuantityUnits).Name("packaging_material_units");
+        if (optionalHeaders.Contains("transitional_packaging_units"))
+        {
+            Map(m => m.TransitionalPackagingUnits).Name("transitional_packaging_units");
+        }
+        if (optionalHeaders.Contains("ram_rag_rating"))
+        {
+            Map(m => m.RecyclabilityRating).Name("ram_rag_rating");
+        }
         Map(m => m.RowNumber).Name("Row Number");
         Map(m => m.Issue).Name("Issue");
         Map(m => m.Message).Name("Message");

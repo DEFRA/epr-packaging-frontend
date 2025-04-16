@@ -157,7 +157,7 @@
     <value>W To add subsidiaries you will need to upload a CSV file.</value>
   </data>
   <data name="subsidiaries_not_found" xml:space="preserve">
-    <value>W Subsidiaries not found</value>
+    <value>W Subsidiary not found</value>
   </data>
   <data name="subsidiaries_will_appear" xml:space="preserve">
     <value>W Subsidiaries will appear here after they have been processed.</value>
@@ -191,5 +191,20 @@
   </data>
   <data name="within_28_days_of_the_change" xml:space="preserve">
     <value>W within 28 days of the change. You will need to enter the subsidiary IDs to do this.</value>
+  </data>
+  <data name="search_for_a_subsidiary_by" xml:space="preserve">
+    <value>W Search for a Subsidiary by name, ID or Companies House number</value>
+  </data>
+  <data name="clear_and_reset" xml:space="preserve">
+    <value>W Clear and reset</value>
+  </data>
+  <data name="search" xml:space="preserve">
+    <value>Chwilio</value>
+  </data>
+  <data name="subsidiaries_not_found" xml:space="preserve">
+    <value>W Subsidiary not found</value>
+  </data>
+  <data name="subsidiary_not_found_message" xml:space="preserve">
+    <value>W Make sure you entered the correct subsidiary name, ID or Companies House number. If you need to add a subsidiary to&lt;br /&gt;this parent company, use the file upload to create a subsidiary ID and then update and resubmit your registration file.</value>
   </data>
 </root>

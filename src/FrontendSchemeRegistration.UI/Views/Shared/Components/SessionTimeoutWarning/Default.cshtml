@@ -1,0 +1,10 @@
+﻿@using FrontendSchemeRegistration.UI.ViewModels.Shared
+@model SessionTimeoutWarningModel
+
+@if (Model.ShowSessionTimeoutWarning)
+{
+    <div id="overlay"></div>
+    <div class="session-timeout-container" id="session-timeout-container-id">
+        @await Html.PartialAsync("_TimeoutSessionWarning")
+    </div>
+}

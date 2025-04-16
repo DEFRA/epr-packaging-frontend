@@ -31,6 +31,12 @@ public class ProducerValidationError
 
     public string? QuantityUnits { get; set; }
 
+    public string? QuantityType { get; set; }
+
+    public string? TransitionalPackagingUnits { get; set; }
+
+    public string? RecyclabilityRating { get; set; }
+
     public int RowNumber { get; set; }
 
     public string Issue { get; set; }

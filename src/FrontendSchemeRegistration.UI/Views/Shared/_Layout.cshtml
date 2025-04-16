@@ -89,11 +89,7 @@
         <div class="govuk-width-container">
             @RenderBody()
         </div>
-
-        <div id="overlay"></div>
-        <div class="session-timeout-container" id="session-timeout-container-id">
-            @await Html.PartialAsync("_TimeoutSessionWarning")
-        </div>
+        @await Component.InvokeAsync("SessionTimeoutWarning")
 
         @await Html.PartialAsync("Partials/Govuk/_Footer")
 

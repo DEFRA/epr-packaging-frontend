@@ -65,7 +65,7 @@
         [HttpGet]
         [Route(PagePaths.FileUploadSubsidiaries)]
         [FeatureGate(FeatureFlags.ShowSubsidiaries)]
-        public async Task<IActionResult> SubsidiariesList([FromQuery] int? page = 1)
+        public async Task<IActionResult> SubsidiariesList([FromQuery] string searchTerm = "", int? page = 1)
         {
             if (page < 1)
             {
@@ -101,9 +101,10 @@
 
             if (await _featureManager.IsEnabledAsync(FeatureFlags.ShowAllSubsidiaries))
             {
-                var avm = await GetAllSubsidiaryListViewModel(page.Value, 20);
+                var avm = await GetAllSubsidiaryListViewModel(page.Value, 20, searchTerm);
 
                 avm.IsFileUploadInProgress = isFileUploadInProgress;
+                avm.SearchTerm = searchTerm;
 
                 return View("AllSubsidiariesList", avm);
             }
@@ -498,15 +499,16 @@
             return result;
         }
         
-        private async Task<AllSubsidiaryListViewModel> GetAllSubsidiaryListViewModel(int page, int showPerPage)
+        private async Task<AllSubsidiaryListViewModel> GetAllSubsidiaryListViewModel(int page, int showPerPage, string searchTerm)
         {
             var userData = User.GetUserData();
-            var response = await _subsidiaryService.GetPagedOrganisationSubsidiaries(page, showPerPage);
+            var response = await _subsidiaryService.GetPagedOrganisationSubsidiaries(page, showPerPage, searchTerm);
 
             var result = new AllSubsidiaryListViewModel()
             {
                 Subsidiaries = response.Items,
-                IsDirectProducer = userData.Organisations[0].OrganisationRole == OrganisationRoles.Producer
+                IsDirectProducer = userData.Organisations[0].OrganisationRole == OrganisationRoles.Producer,
+                TypeAhead = response.SearchTerms
             };
 
             var pageUrl = Url.Action(nameof(SubsidiariesList));
@@ -516,7 +518,7 @@
                 CurrentPage = response.CurrentPage,
                 PageSize = response.PageSize,
                 TotalItems = response.TotalItems,
-                PagingLink = $"{pageUrl}?page="
+                PagingLink = string.IsNullOrEmpty(searchTerm) ? $"{pageUrl}?page=" :  $"{pageUrl}?searchterm={searchTerm}&page="
             };
 
             return result;

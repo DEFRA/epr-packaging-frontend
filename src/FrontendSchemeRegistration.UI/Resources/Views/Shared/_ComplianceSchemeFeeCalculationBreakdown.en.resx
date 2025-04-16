@@ -43,11 +43,11 @@
 	<data name="large_producers_sentence_text_singular" xml:space="preserve">
     <value>Large producer</value>
   </data>
-	<data name="online_marketplaces_sentence_text" xml:space="preserve">
-    <value>are online marketplaces</value>
+	<data name="x_online_marketplaces_sentence_text" xml:space="preserve">
+    <value>{0} are online marketplaces</value>
   </data>
-	<data name="online_marketplaces_sentence_text_singular" xml:space="preserve">
-    <value>is an online marketplace</value>
+	<data name="x_online_marketplaces_sentence_text_singular" xml:space="preserve">
+    <value>{0} is an online marketplace</value>
   </data>
 	<data name="subsidiary_companies_sentence_text" xml:space="preserve">
     <value>subsidiary companies</value>

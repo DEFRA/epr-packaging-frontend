@@ -109,6 +109,12 @@ public class PaymentCalculationService(
 
 		try
 		{
+            if (isComplianceScheme && memberCount == 0)
+            {
+                logger.LogInformation("Member count is 0 for this compliance scheme");
+                return new PackagingPaymentResponse();
+            }
+
 			var request = new PackagingPaymentRequest
 			{
 				ReferenceNumber = applicationReferenceNumber,

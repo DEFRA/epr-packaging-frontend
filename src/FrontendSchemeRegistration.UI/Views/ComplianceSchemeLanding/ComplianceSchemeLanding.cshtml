@@ -14,7 +14,7 @@
     // this is part of the new packaging data resubmission journey
     var isSubmitted = Model.ResubmissionTaskListViewModel?.IsSubmitted;
     var isResubmissionComplete = Model.ResubmissionTaskListViewModel?.IsResubmissionComplete;
-    var isPackagingResubmissionApplicationStarted = !string.IsNullOrEmpty(Model.ResubmissionTaskListViewModel.AppReferenceNumber);
+    var isPackagingResubmissionApplicationStarted = Model.ResubmissionTaskListViewModel?.ApplicationStatus != ApplicationStatusType.NotStarted;
     var isResubmissionInProgress = isSubmitted == true && isPackagingResubmissionApplicationStarted && Model.ResubmissionTaskListViewModel?.IsResubmissionInProgress == true;
 }
 
@@ -39,6 +39,10 @@
             <h1 class="govuk-heading-xl break-word">@Localizer["account_home", Model.OrganisationName]</h1>
         </div>
     </div>
+
+    <feature name="@FeatureFlags.ShowRegistrationWarning">
+        @await Html.PartialAsync("Partials/Notifications/_ApplyForRegistration", true)
+    </feature>
 
     @if (Model.Notification.HasPendingNotification)
     {

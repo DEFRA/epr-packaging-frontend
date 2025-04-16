@@ -14,11 +14,13 @@
                 }
                 else
                 {
-                    <a asp-controller="Culture" asp-action="UpdateCulture" 
-                                                asp-route-culture="@culture.Name" 
-                                                asp-route-returnUrl="@Model.ReturnUrl"
-                                                aria-labelledby="@SharedLocalizer[culture.NativeName].Value"
-                                                class="govuk-link govuk-link--no-visited-state">@SharedLocalizer[culture.NativeName].Value</a>
+                    <span aria-labelledby="@SharedLocalizer[culture.NativeName].Value">
+                        <a asp-controller="Culture" asp-action="UpdateCulture"
+                           asp-route-culture="@culture.Name"
+                           asp-route-returnUrl="@Model.ReturnUrl"
+                           id="@SharedLocalizer[culture.NativeName].Value"
+                           class="govuk-link govuk-link--no-visited-state">@SharedLocalizer[culture.NativeName].Value</a>
+                    </span>
                 }
             </li>
         }

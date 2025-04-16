@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.FeatureManagement;
 using Sessions;
+using System.Globalization;
 using ViewModels;
 
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
@@ -28,6 +29,8 @@ public class FileUploadCompanyDetailsSubLandingController : Controller
     private readonly List<SubmissionPeriod> _submissionPeriods;
     private readonly string _basePath;
     private readonly IFeatureManager _featureManager;
+
+    private readonly DateOnly _latestAllowedSubmissionPeriodEndDate = DateOnly.Parse("2024-06-30", new CultureInfo("en-GB"));
 
     public FileUploadCompanyDetailsSubLandingController(
         ISubmissionService submissionService,
@@ -46,7 +49,12 @@ public class FileUploadCompanyDetailsSubLandingController : Controller
     public async Task<IActionResult> Get()
     {
         ViewBag.HomeLinkToDisplay = _basePath;
-        var periods = _submissionPeriods.Select(x => x.DataPeriod).ToList();
+
+        var submissionPeriods = _submissionPeriods
+            .FilterToLatestAllowedPeriodEndDate(_latestAllowedSubmissionPeriodEndDate)
+            .ToList();
+
+        var periods = submissionPeriods.Select(x => x.DataPeriod).ToList();
         var submissions = new List<RegistrationSubmission>();
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         var showRegistrationResubmission = await _featureManager.IsEnabledAsync(nameof(FeatureFlags.ShowRegistrationResubmission));
@@ -62,7 +70,7 @@ public class FileUploadCompanyDetailsSubLandingController : Controller
 
         var submissionPeriodDetails = new List<SubmissionPeriodDetail>();
 
-        foreach (var submissionPeriod in _submissionPeriods)
+        foreach (var submissionPeriod in submissionPeriods)
         {
             var submission = submissions.Find(x => x.SubmissionPeriod == submissionPeriod.DataPeriod);
 

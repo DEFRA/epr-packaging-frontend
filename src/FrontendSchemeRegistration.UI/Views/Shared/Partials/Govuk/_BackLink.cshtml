@@ -1,3 +1,5 @@
 ﻿@model string
 
-<a href="@Model" class="govuk-back-link" aria-labelledby=@SharedLocalizer["back"]>@SharedLocalizer["back"]</a>
+<span aria-labelledby=@SharedLocalizer["back"]>
+    <a href="@Model" class="govuk-back-link" id="@SharedLocalizer["back"]">@SharedLocalizer["back"]</a>
+</span>

@@ -112,6 +112,7 @@ public static class PagePaths
     public const string ResubmissionTaskList = "resubmission-task-list";
     public const string ResubmissionFeeCalculations = "resubmission-fee-calculations";
     public const string RedirectPackagingUploadDetails = "/redirect-packaging-upload-details";
+    public const string RedirectToComplianceSchemeDashboard = "/redirect-to-compliancescheme-dashboard";
     public const string SubmitToEnvironmentRegulator = "submit-to-environment-regulator";
 
     public static class Prns

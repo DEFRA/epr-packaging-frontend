@@ -1,5 +1,4 @@
 @using static FrontendSchemeRegistration.Application.Enums.SubmissionPeriodStatus
-@using FrontendSchemeRegistration.Application.DTOs.Submission
 @using FrontendSchemeRegistration.Application.Enums
 @using FrontendSchemeRegistration.UI.Constants
 
@@ -23,11 +22,6 @@
         RejectedByRegulator => "govuk-tag--red",
         _ => string.Empty
     };
-
-    private static List<SubmissionPeriodDetail> FilterSubmissionPeriods(List<SubmissionPeriodDetail> submissionPeriodDetails) =>
-        submissionPeriodDetails
-            .Where(p => p.DataPeriod != "July to December 2024")
-            .ToList();
 }
 
 <main class="govuk-main-wrapper" id="main-content" role="main">
@@ -41,7 +35,7 @@
 
             <h2 class="govuk-heading-m">@Localizer["before_you_start"]</h2>
             
-            <feature name="@FeatureFlags.ShowSubsidiaryJoinerAndLeaverColumns">
+            <feature name="@FeatureFlags.EnableSubsidiaryJoinerAndLeaverColumns">
                 <p class="govuk-body">
                     @Localizer["read_the_guidance_on"] <a class="govuk-link" rel="noreferrer noopener" target="_blank"
                                                           href="@GuidanceLinks.Value.HowToReportOrganisationDetails">@Localizer["how_to_report_organisation_details_new_tab"]</a>
@@ -54,7 +48,7 @@
                                                                 rel="noreferrer noopener">@Localizer["check_the_govuk_guidance_new_tab"]</a>
                 </p>
             </feature>
-            <feature name="@FeatureFlags.ShowSubsidiaryJoinerAndLeaverColumns" negate="true">
+            <feature name="@FeatureFlags.EnableSubsidiaryJoinerAndLeaverColumns" negate="true">
                 <p class="govuk-body">
                     @Localizer["read_the_guidance_on"] <a class="govuk-link" rel="noreferrer noopener" target="_blank"
                                                           href="@GuidanceLinks.Value.HowToReportOrganisationDetails">@Localizer["how_to_report_organisation_details"]</a>
@@ -70,7 +64,7 @@
             </feature>
             @if (Model.IsComplianceScheme)
             {
-                <feature name="@FeatureFlags.ShowSubsidiaryJoinerAndLeaverColumns">
+                <feature name="@FeatureFlags.EnableSubsidiaryJoinerAndLeaverColumns">
                     <h2 class="govuk-heading-m">@Localizer["making_changes_after_april"]</h2>
                     <p class="govuk-body">
                         @Localizer["if_you_need_changes_after_april"],
@@ -91,7 +85,7 @@
                 <div class="govuk-!-margin-top-2 govuk-!-margin-bottom-5 govuk-list">
                     <h2 class="govuk-heading-m">@submissionPeriodGroup.DatePeriodYear</h2>
                     <div class="card-row govuk-!-margin-bottom-2">
-                        @foreach (var submissionPeriodDetail in FilterSubmissionPeriods(submissionPeriodGroup.SubmissionPeriodDetails))
+                        @foreach (var submissionPeriodDetail in submissionPeriodGroup.SubmissionPeriodDetails)
                         {
                             <div class="govuk-card govuk-!-margin-top-2">
                                 <div class="govuk-card-body">

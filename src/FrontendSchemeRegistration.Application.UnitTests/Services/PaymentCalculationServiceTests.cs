@@ -404,4 +404,18 @@ public class PaymentCalculationServiceTests
 		// Assert
 		result.Should().BeNull();
 	}
+
+    [Test]
+    public async Task ComplianceSchemeExists_Returns_Emptyobject_When_MemberCount_Is_Zero()
+    {
+        // Arrange
+
+        var response = new PackagingPaymentResponse();
+
+        // Act
+        var result = await _systemUnderTest.GetResubmissionFees("test ref", "GB-ENG", 0, true, null);
+
+        // Assert
+        result.Should().BeEquivalentTo(response);
+    }
 }

@@ -20,6 +20,7 @@ using FrontendSchemeRegistration.Application.Extensions;
 using FrontendSchemeRegistration.Application.Helpers;
 using FrontendSchemeRegistration.Application.DTOs;
 using System.Linq;
+using System.Web;
 
 public class SubsidiaryService : ISubsidiaryService
 {
@@ -155,11 +156,18 @@ public class SubsidiaryService : ISubsidiaryService
         }
     }
 
-    public async Task<PaginatedResponse<RelationshipResponseModel>> GetPagedOrganisationSubsidiaries(int page, int showPerPage)
+    public async Task<PaginatedResponse<RelationshipResponseModel>> GetPagedOrganisationSubsidiaries(int page, int showPerPage, string searchTerm = null)
     {
         try
         {
-            var result = await _accountServiceApiClient.SendGetRequest($"organisations/organisationRelationships?page={page}&showPerPage={showPerPage}");
+            var url = $"organisations/organisationRelationships?page={page}&showPerPage={showPerPage}";
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                url += $"&search={HttpUtility.UrlEncode(searchTerm)}";
+            }
+
+            var result = await _accountServiceApiClient.SendGetRequest(url);
+
             if (!result.IsSuccessStatusCode)
             {
                 return null;

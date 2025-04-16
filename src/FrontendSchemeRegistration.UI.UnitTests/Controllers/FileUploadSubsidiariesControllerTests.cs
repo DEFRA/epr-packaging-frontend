@@ -175,6 +175,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             // Arrange
             var page = 1;
             var showPerPage = 20;
+            var searchTerm = string.Empty;
 
             var model = new PaginatedResponse<RelationshipResponseModel>
             {
@@ -197,13 +198,13 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             var claims = CreateUserDataClaim(OrganisationRoles.Producer);
             _userMock.Setup(x => x.Claims).Returns(claims);
             _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
-            _mockSubsidiaryService.Setup(s => s.GetPagedOrganisationSubsidiaries(page, showPerPage)).ReturnsAsync(model);
+            _mockSubsidiaryService.Setup(s => s.GetPagedOrganisationSubsidiaries(page, showPerPage, searchTerm)).ReturnsAsync(model);
             _mockFeatureManager.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ShowAllSubsidiaries))).ReturnsAsync(true);
             _mockSubsidiaryService.Setup(x => x.GetSubsidiaryFileUploadStatusAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
                 .ReturnsAsync(SubsidiaryFileUploadStatus.NoFileUploadActive);
 
             // Act
-            var result = await _controller.SubsidiariesList(page);
+            var result = await _controller.SubsidiariesList(searchTerm, page);
 
             // Assert
             result.Should().BeOfType<ViewResult>();
@@ -219,8 +220,192 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             viewResult.IsFileUploadInProgress.Should().Be(false);
             viewResult.IsDirectProducer.Should().Be(true);
 
-            _mockSubsidiaryService.Verify(service => service.GetPagedOrganisationSubsidiaries(page, showPerPage), Times.Once);
+            _mockSubsidiaryService.Verify(service => service.GetPagedOrganisationSubsidiaries(page, showPerPage, searchTerm), Times.Once);
         }
+
+        [Test]
+        public async Task SubsidiariesList_WhenDirectProducer_WithShowAllSubsidiaresFeatureFlagSetToTrue_ShouldCorrectlyReturnRightCollectionForSearching()
+        {
+            // Arrange
+            var page = 1;
+            var showPerPage = 20;
+            var searchTerm = "";
+
+            var model = new PaginatedResponse<RelationshipResponseModel>
+            {
+                CurrentPage = 1,
+                TotalItems = 1,
+                PageSize = 20,
+                Items = new List<RelationshipResponseModel>
+                {
+                    new RelationshipResponseModel
+                    {
+                        OrganisationName = "Test1",
+                        OrganisationNumber = "2345",
+                        RelationshipType = "Parent",
+                        CompaniesHouseNumber = "CH123455",
+                        JoinerDate = JoinerDate
+                    },
+
+                    new RelationshipResponseModel
+                    {
+                        OrganisationName = "Org1758584",
+                        OrganisationNumber = "2346",
+                        RelationshipType = "Parent",
+                        CompaniesHouseNumber = "CH123456",
+                        JoinerDate = JoinerDate
+                    }
+                },
+                SearchTerms = new List<string>
+                {
+                    "Company Name1",
+                    "123",
+                    "CH12",
+                    "Company Name2",
+                    "456",
+                    "CH34",
+                    "Company Name3",
+                    "789",
+                    "CH56",
+                    "Company Name4",
+                    "012",
+                    "CH78"
+                }
+            };
+
+            var claims = CreateUserDataClaim(OrganisationRoles.Producer);
+            _userMock.Setup(x => x.Claims).Returns(claims);
+            _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+            _mockSubsidiaryService.Setup(s => s.GetPagedOrganisationSubsidiaries(page, showPerPage, searchTerm)).ReturnsAsync(model);
+            _mockFeatureManager.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ShowAllSubsidiaries))).ReturnsAsync(true);
+            _mockSubsidiaryService.Setup(x => x.GetSubsidiaryFileUploadStatusAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                .ReturnsAsync(SubsidiaryFileUploadStatus.NoFileUploadActive);
+
+            // Act
+            var result = await _controller.SubsidiariesList(searchTerm, page);
+
+            // Assert
+            var viewResult = (result as ViewResult).Model as AllSubsidiaryListViewModel;
+
+            viewResult.TypeAhead.Should().HaveCount(12);
+            viewResult.TypeAhead[0].Should().Be("Company Name1");
+            viewResult.TypeAhead[1].Should().Be("123");
+            viewResult.TypeAhead[2].Should().Be("CH12");
+            viewResult.TypeAhead[3].Should().Be("Company Name2");
+            viewResult.TypeAhead[4].Should().Be("456");
+            viewResult.TypeAhead[5].Should().Be("CH34");
+            viewResult.TypeAhead[6].Should().Be("Company Name3");
+            viewResult.TypeAhead[7].Should().Be("789");
+            viewResult.TypeAhead[8].Should().Be("CH56");
+            viewResult.TypeAhead[9].Should().Be("Company Name4");
+            viewResult.TypeAhead[10].Should().Be("012");
+            viewResult.TypeAhead[11].Should().Be("CH78");
+        }
+
+        [Test]
+        public async Task SubsidiariesList_WhenSearchTermIsEmpty_WithShowAllSubsidiaresFeatureFlagSetToTrue_ShouldCorrectlyReturnRightPageLink()
+        {
+            // Arrange
+            var page = 1;
+            var showPerPage = 20;
+            var searchTerm = "";
+
+            var model = new PaginatedResponse<RelationshipResponseModel>
+            {
+                CurrentPage = 1,
+                TotalItems = 1,
+                PageSize = 20,
+                Items = new List<RelationshipResponseModel>
+                {
+                    new RelationshipResponseModel
+                    {
+                        OrganisationName = "Test1",
+                        OrganisationNumber = "2345",
+                        RelationshipType = "Parent",
+                        CompaniesHouseNumber = "CH123455",
+                        JoinerDate = JoinerDate
+                    },
+
+                    new RelationshipResponseModel
+                    {
+                        OrganisationName = "Org1758584",
+                        OrganisationNumber = "2346",
+                        RelationshipType = "Parent",
+                        CompaniesHouseNumber = "CH123456",
+                        JoinerDate = JoinerDate
+                    }
+                }
+            };
+
+            var claims = CreateUserDataClaim(OrganisationRoles.Producer);
+            _userMock.Setup(x => x.Claims).Returns(claims);
+            _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+            _mockSubsidiaryService.Setup(s => s.GetPagedOrganisationSubsidiaries(page, showPerPage, searchTerm)).ReturnsAsync(model);
+            _mockFeatureManager.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ShowAllSubsidiaries))).ReturnsAsync(true);
+            _mockSubsidiaryService.Setup(x => x.GetSubsidiaryFileUploadStatusAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                .ReturnsAsync(SubsidiaryFileUploadStatus.NoFileUploadActive);
+
+            // Act
+            var result = await _controller.SubsidiariesList(searchTerm, page);
+
+            // Assert
+            var viewResult = (result as ViewResult).Model as AllSubsidiaryListViewModel;
+
+            viewResult.PagingDetail.PagingLink.Should().Be("?page=");
+        }
+
+        [Test]
+        public async Task SubsidiariesList_WhenSearchTermIsNotEmpty_WithShowAllSubsidiaresFeatureFlagSetToTrue_ShouldCorrectlyReturnRightPageLink()
+        {
+            // Arrange
+            var page = 1;
+            var showPerPage = 20;
+            var searchTerm = "AnyOldLink";
+
+            var model = new PaginatedResponse<RelationshipResponseModel>
+            {
+                CurrentPage = 1,
+                TotalItems = 1,
+                PageSize = 20,
+                Items = new List<RelationshipResponseModel>
+                {
+                    new RelationshipResponseModel
+                    {
+                        OrganisationName = "Test1",
+                        OrganisationNumber = "2345",
+                        RelationshipType = "Parent",
+                        CompaniesHouseNumber = "CH123455",
+                        JoinerDate = JoinerDate
+                    },
+
+                    new RelationshipResponseModel
+                    {
+                        OrganisationName = "Org1758584",
+                        OrganisationNumber = "2346",
+                        RelationshipType = "Parent",
+                        CompaniesHouseNumber = "CH123456",
+                        JoinerDate = JoinerDate
+                    }
+                }
+            };
+
+            var claims = CreateUserDataClaim(OrganisationRoles.Producer);
+            _userMock.Setup(x => x.Claims).Returns(claims);
+            _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+            _mockSubsidiaryService.Setup(s => s.GetPagedOrganisationSubsidiaries(page, showPerPage, searchTerm)).ReturnsAsync(model);
+            _mockFeatureManager.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ShowAllSubsidiaries))).ReturnsAsync(true);
+            _mockSubsidiaryService.Setup(x => x.GetSubsidiaryFileUploadStatusAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                .ReturnsAsync(SubsidiaryFileUploadStatus.NoFileUploadActive);
+
+            // Act
+            var result = await _controller.SubsidiariesList(searchTerm, page);
+
+            // Assert
+            var viewResult = (result as ViewResult).Model as AllSubsidiaryListViewModel;
+
+            viewResult.PagingDetail.PagingLink.Should().Be("?searchterm=AnyOldLink&page=");
+        }
+
 
         [Test]
         public async Task SubsidiariesList_WhenDirectProducer_ShouldCallSubsidiaryServiceAndReturnViewResult()
@@ -386,7 +571,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
         public async Task SubsidiariesList_WhenPageLessThanOne_RedirectsToPageOne()
         {
             // Act
-            var result = await _controller.SubsidiariesList(0);
+            var result = await _controller.SubsidiariesList(string.Empty, 0);
 
             // Assert
             result.Should().BeOfType<RedirectToActionResult>();
@@ -461,7 +646,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             .ReturnsAsync(true);
 
             // Act
-            var result = await _controller.SubsidiariesList(2);
+            var result = await _controller.SubsidiariesList(string.Empty, 2);
             
             // Assert
             result.Should().BeOfType<ViewResult>().Which.ViewName.Should().BeNull();
@@ -1099,7 +1284,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                 .ReturnsAsync(SubsidiaryFileUploadStatus.FileUploadedSuccessfully);
 
             // Act
-            var result = await _controller.SubsidiariesList(1);
+            var result = await _controller.SubsidiariesList(string.Empty, 1);
 
             // Assert
             result.Should().BeOfType<RedirectToActionResult>()
@@ -1115,7 +1300,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                 .ReturnsAsync(SubsidiaryFileUploadStatus.HasErrors);
 
             // Act
-            var result = await _controller.SubsidiariesList(1);
+            var result = await _controller.SubsidiariesList(string.Empty, 1);
 
             // Assert
             result.Should().BeOfType<RedirectToActionResult>()
@@ -1131,7 +1316,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                 .ReturnsAsync(SubsidiaryFileUploadStatus.PartialUpload);
 
             // Act
-            var result = await _controller.SubsidiariesList(1);
+            var result = await _controller.SubsidiariesList(string.Empty, 1);
 
             // Assert
             result.Should().BeOfType<RedirectToActionResult>()
@@ -1147,7 +1332,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
                 .ReturnsAsync(SubsidiaryFileUploadStatus.FileUploadInProgress);
 
             // Act
-            var result = await _controller.SubsidiariesList(1);
+            var result = await _controller.SubsidiariesList(string.Empty, 1);
 
             // Assert
             var viewResult = result as ViewResult;

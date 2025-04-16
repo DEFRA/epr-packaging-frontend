@@ -334,6 +334,39 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
   <data name="895" xml:space="preserve">
     <value>Dim ond bach neu fawr y gall maint y sefydliad fod.</value>
   </data>
+  <data name="100" xml:space="preserve">
+    <value>Rhaid i sefydliadau mawr (L) sy'n cyflwyno math pecynwaith cartrefi (HH) roi cod ailgylchadwyedd yn y golofn yma ar gyfer cyfnodau cyflwyno 2025ymlaen – rhowch un o'r canlynol: R ar gyfer Coch, A ar gyfer Melyn, G ar gyfer Gwyrdd, R-M ar gyfer Coch-Meddygol, A-M ar gyfer Melyn-Meddygol neu G-M ar gyfer Gwyrdd-Meddygol</value>
+  </data>
+  <data name="101" xml:space="preserve">
+    <value>Rhaid i sefydliadau mawr (L) sy'n cyflwyno math pecynwaith cartrefi (HH) ar gyfer deunydd pacio plastig (PL) roi dadansoddiad o isdeipiau'r deunyddiau fel hyblyg neu anhyblyg ar gyfer cyfnodau cyflwyno 2025 ymlaen</value>
+  </data>
+  <data name="102" xml:space="preserve">
+    <value>Does dim angen codau ailgylchadwyedd ar gyfer cyfnodau cyflwyno cyn 2025 yn achos sefydliadau mawr (L)</value>
+  </data>
+  <data name="103" xml:space="preserve">
+    <value>Rhaid i sefydliadau mawr (L) sy'n cyflwyno math pecynwaith cartrefi (HH) ar gyfer deunydd pacio plastig (PL) ac sy'n rhoi dadansoddiad o isdeipiau'r deunyddiau roi hyblyg neu anhyblyg yn unig ar gyfer cyfnodau cyflwyno 2025 ymlaen</value>
+  </data>
+  <data name="104" xml:space="preserve">
+    <value>Rhaid i sefydliadau mawr (L) roi cod ailgylchadwyedd ar gyfer cyfnodau cyflwyno 2025 ymlaen o blith yr opsiynau canlynol: R (ar gyfer Coch), A (ar gyfer Melyn), G (ar gyfer Gwyrdd), R-M (ar gyfer Coch-Meddygol), A-M (ar gyfer Melyn-Meddygol) neu G-M (ar gyfer Gwyrdd-Meddygol</value>
+  </data>
+  <data name="105" xml:space="preserve">
+    <value>Does dim angen i sefydliadau bach (S) roi dadansoddiad o isdeipiau'r deunyddiau ar gyfer cyfnodau cyflwyno 2025</value>
+  </data>
+  <data name="106" xml:space="preserve">
+    <value>Does dim angen codau ailgylchadwyedd ar gyfer sefydliadau bach (S)</value>
+  </data>
+  <data name="107" xml:space="preserve">
+    <value>Rhaid i sefydliadau bach (S) sy'n cyflwyno pecynwaith sefydliad bach (SP) neu gynwysyddion diodydd cartrefi (HDC) roi'r deunydd pecynwaith fel plastig (PL) yn unig ar gyfer cyfnodau cyflwyno 2025</value>
+  </data>
+  <data name="67" xml:space="preserve">
+    <value>Y cyfnod cyflwyno ar gyfer Ionawr i Fehefin 2025 fydd 2025-H1</value>
+  </data>
+  <data name="68" xml:space="preserve">
+    <value>Y cyfnod cyflwyno ar gyfer Gorffennaf i Ragfyr 2025 fydd 2025-H2</value>
+  </data>
+  <data name="69" xml:space="preserve">
+    <value>Y cyfnod cyflwyno ar gyfer Ionawr i Ragfyr 2025 fydd 2025-P0</value>
+  </data>
   <data name="61" xml:space="preserve">
     <value>Mae pwysau’r pecynwaith ar gyfer y sefydliad yma wedi'i roi fel sero - gwiriwch fod hyn yn gywir cyn ichi gyflwyno ffurflen sero</value>
   </data>

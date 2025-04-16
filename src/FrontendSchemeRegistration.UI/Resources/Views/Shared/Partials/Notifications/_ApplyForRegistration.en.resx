@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -117,31 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="continue" xml:space="preserve">
-    <value>Parhau</value>
+  <data name="apply_for_registration" xml:space="preserve">
+    <value>Large Producers need to apply for registration for 2026 before 1 October 2025</value>
   </data>
-  <data name="resubmission-fee-calculated-from-your-information" xml:space="preserve">
-    <value>Mae ffioedd ailgyflwyno'n cael eu cyfrif ar sail yr wybodaeth rydych chi wedi'i rhoi.</value>
+  <data name="apply_for_registration_compliance" xml:space="preserve">
+    <value>You must apply for registration for 2026 on behalf of large producers before 1 October 2025</value>
   </data>
-  <data name="resubmission-fee-due" xml:space="preserve">
-    <value>Mae ffi ailgyflwyno data pecynwaith o &lt;strong&gt;£{0}&lt;/strong&gt; yn ddyledus.</value>
+  <data name="apply_for_registration_late_fee" xml:space="preserve">
+    <value> You can apply after 1 October 2025, but may incur a late fee</value>
   </data>
-  <data name="resubmission-fee-due-page-header" xml:space="preserve">
-    <value>Ffi ailgyflwyno data pecynwaith yn ddyledus</value>
-  </data>
-  <data name="resubmission-fee-page-header" xml:space="preserve">
-    <value>Ffi ailgyflwyno data pecynwaith</value>
-  </data>
-  <data name="resubmission-fee-are-calculated-from-information" xml:space="preserve">
-    <value>Mae ffioedd ailgyflwyno'n cael eu cyfrifo ar sail yr wybodaeth rydych chi wedi'i rhoi.</value>
-  </data>
-	<data name="resubmission-you-have-no-additional-fee-to-pay" xml:space="preserve">
-    <value>Does dim ffi ychwanegol gennych i’w thalu</value>
-  </data>
-	<data name="return_to_resubmission_tasklist" xml:space="preserve">
-    <value>Rhestr Tasgau</value>
-  </data>
-  <data name="resubmission-more_about_EPR_fees_and_charges" xml:space="preserve">
-    <value>Rhagor am ffioedd a thaliadau cyfrifoldeb estynedig cynhyrchwyr (EPR).</value>
+  <data name="apply_for_registration_late_fee_compliance" xml:space="preserve">
+    <value>You may still apply for registration after this date, but may incur a late fee</value>
   </data>
 </root>

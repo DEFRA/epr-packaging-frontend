@@ -3,6 +3,7 @@
 using Application.Services;
 using Application.Services.Interfaces;
 using FluentAssertions;
+using FluentAssertions.Common;
 using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.DTOs.Organisation;
 using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
@@ -330,7 +331,7 @@ public class SubsidiaryServiceTests
             .ThrowsAsync(new Exception());
 
         // Act and Assert
-        Func<Task> act = async () => await _sut.GetPagedOrganisationSubsidiaries(1, 20);
+        Func<Task> act = async () => await _sut.GetPagedOrganisationSubsidiaries(1, 20, string.Empty);
 
         await act.Should().ThrowAsync<Exception>();
     }
@@ -362,7 +363,7 @@ public class SubsidiaryServiceTests
             .ReturnsAsync(response);
 
         // Act
-        var result = await _sut.GetPagedOrganisationSubsidiaries(1, 20);
+        var result = await _sut.GetPagedOrganisationSubsidiaries(1, 20, string.Empty);
 
         // Assert
         result.Should().NotBeNull();
@@ -889,5 +890,45 @@ public class SubsidiaryServiceTests
 
         // Assert
         await act.Should().ThrowAsync<Exception>();
+    }
+
+    [Test]
+    public async Task GetSubsidiaries_ReturnsNull_WhenApiResponseIsNotSuccessful()
+    {
+        // Arrange
+        var page = 1;
+        var showPerPage = 10;
+        var searchTerm = "test";
+        var url = $"organisations/organisationRelationships?page={page}&showPerPage={showPerPage}&search={searchTerm}";
+
+        _accountServiceApiClientMock
+            .Setup(client => client.SendGetRequest(url))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.BadRequest));
+
+        // Act
+        var result = await _sut.GetPagedOrganisationSubsidiaries(page, showPerPage, searchTerm);
+
+        // Assert
+        result.Should().Be(null);
+    }
+
+    [Test]
+    public async Task GetSubsidiaries_ConstructsCorrectUrl()
+    {
+        // Arrange
+        var page = 2;
+        var showPerPage = 5;
+        var searchTerm = "example";
+        var expectedUrl = $"organisations/organisationRelationships?page={page}&showPerPage={showPerPage}&search={searchTerm}";
+
+        _accountServiceApiClientMock
+            .Setup(client => client.SendGetRequest(It.IsAny<string>()))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("{}") });
+
+        // Act
+        await _sut.GetPagedOrganisationSubsidiaries(page, showPerPage, searchTerm);
+
+        // Assert
+        _accountServiceApiClientMock.Verify(client => client.SendGetRequest(expectedUrl), Times.Once);
     }
 }

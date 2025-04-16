@@ -29,17 +29,27 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
         new SubmissionPeriod
         {
             DataPeriod = "Data period 1",
-            Deadline = DateTime.Today,
             ActiveFrom = DateTime.Today,
+            Deadline = DateTime.Parse("2023-12-31"),
             Year = "2023",
-            StartMonth = "January",
-            EndMonth = "June", 
+            StartMonth = "September",
+            EndMonth = "December", 
         },
         new SubmissionPeriod
         {
             DataPeriod = "Data period 2",
-            Deadline = DateTime.Today.AddDays(5),
+            Deadline = DateTime.Parse("2024-03-31"),
             ActiveFrom = DateTime.Today.AddDays(5),
+            Year = "2024",
+            StartMonth = "January",
+            EndMonth = "March"
+        },
+        new SubmissionPeriod
+        {
+            DataPeriod = "Data period 3",
+            /* This will be excluded because it is after the latest allowed period ending June 2024 */
+            Deadline = DateTime.Parse("2024-12-31"),
+            ActiveFrom = DateTime.Today.AddDays(10),
             Year = "2024",
             StartMonth = "July",
             EndMonth = "December"
@@ -168,7 +178,7 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
                 }
             };
 
-        var submissionPeriodDetailGroups = submissionPeriodDetails
+        var expectedSubmissionPeriodDetailGroups = submissionPeriodDetails
                         .OrderByDescending(c => c.DatePeriodYear)
                         .GroupBy(c => new { c.DatePeriodYear })
                         .Select(c => new SubmissionPeriodDetailGroup
@@ -181,7 +191,7 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
         result.Model.Should().BeEquivalentTo(new FileUploadCompanyDetailsSubLandingViewModel
         {
             ComplianceSchemeName = selectedComplianceScheme.Name,
-            SubmissionPeriodDetailGroups = submissionPeriodDetailGroups,
+            SubmissionPeriodDetailGroups = expectedSubmissionPeriodDetailGroups,
             OrganisationRole = OrganisationRoles.ComplianceScheme
         });
     }

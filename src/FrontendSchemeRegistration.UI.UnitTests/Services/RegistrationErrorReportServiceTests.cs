@@ -4,6 +4,7 @@ using System.Text;
 using Application.DTOs;
 using Application.Services.Interfaces;
 using FluentAssertions;
+using Microsoft.FeatureManagement;
 using Moq;
 using TestHelpers;
 using UI.Services;
@@ -14,13 +15,14 @@ public class RegistrationErrorReportServiceTests
     private static readonly Guid SubmissionId = Guid.NewGuid();
     private Mock<IWebApiGatewayClient> _webApiGatewayClientMock;
     private ErrorReportService _systemUnderTest;
-
+    private Mock<IFeatureManager> _featureManagerMock;
     [SetUp]
     public void SetUp()
     {
         _webApiGatewayClientMock = new Mock<IWebApiGatewayClient>();
-        _systemUnderTest = new ErrorReportService(_webApiGatewayClientMock.Object);
-
+        _featureManagerMock = new Mock<IFeatureManager>();
+        _systemUnderTest = new ErrorReportService(_webApiGatewayClientMock.Object, _featureManagerMock.Object);
+        
         _webApiGatewayClientMock.Setup(x => x.GetRegistrationValidationErrorsAsync(SubmissionId)).ReturnsAsync(new List<RegistrationValidationError>
         {
             new ()

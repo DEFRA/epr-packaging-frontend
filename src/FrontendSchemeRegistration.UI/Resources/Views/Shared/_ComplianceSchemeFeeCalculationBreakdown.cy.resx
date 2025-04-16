@@ -43,11 +43,11 @@
 	<data name="large_producers_sentence_text_singular" xml:space="preserve">
     <value>Cynhyrchydd mawr</value>
   </data>
-	<data name="online_marketplaces_sentence_text" xml:space="preserve">
-    <value>Mae yn farchnadoedd ar-lein</value>
+	<data name="x_online_marketplaces_sentence_text" xml:space="preserve">
+    <value>Mae {0} yn farchnadoedd ar-lein</value>
   </data>
-	<data name="online_marketplaces_sentence_text_singular" xml:space="preserve">
-    <value>Mae yn farchnad ar-lein</value>
+	<data name="x_online_marketplaces_sentence_text_singular" xml:space="preserve">
+    <value>Mae {0} yn farchnad ar-lein</value>
   </data>
 	<data name="subsidiary_companies_sentence_text" xml:space="preserve">
     <value>o is-gwmnïau</value>

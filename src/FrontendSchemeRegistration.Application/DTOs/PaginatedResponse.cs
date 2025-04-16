@@ -12,6 +12,8 @@
 
         public int PageSize { get; set; }
 
+        public List<string> SearchTerms { get; set; }
+
         public List<string> TypeAhead { get; set; } = [];
 
         public int PageCount
