@@ -361,6 +361,9 @@ Read the guidance about how to create your organisation details file. Once youâ€
   <data name="908" xml:space="preserve">
     <value>Packaging class must be empty.</value>
   </data>
+  <data name="909" xml:space="preserve">
+    <value>Large producers must upload packaging data for 1 January to 30 June 2024 and 1 July to 31 December 2024.</value>
+  </data>
   <data name="73" xml:space="preserve">
     <value>Turnover for this organization is recorded as zero. Please verify this is correct before submitting a zero return</value>
   </data>

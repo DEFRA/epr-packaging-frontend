@@ -21,4 +21,5 @@ public static class FeatureFlags
     public const string ImplementPackagingDataResubmissionJourney = "ImplementPackagingDataResubmissionJourney";
     public const string ShowSessionTimeoutWarning = "ShowSessionTimeoutWarning";
     public const string ShowRegistrationWarning = "ShowRegistrationWarning";
+    public const string ShowPoMSubmission2025 = "ShowPoMSubmission2025";
 }

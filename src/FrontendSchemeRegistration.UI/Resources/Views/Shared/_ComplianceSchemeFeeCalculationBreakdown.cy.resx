@@ -56,10 +56,10 @@
     <value>Mae yn is-gwmni</value>
   </data>
   <data name="late_producer_fees_text" xml:space="preserve">
-    <value>Wlate producer fees</value>
+    <value>ffioedd cynhyrchydd hwyr</value>
   </data>
   <data name="late_producer_fees_text_singular" xml:space="preserve">
-    <value>Wlate producer fee</value>
+    <value>ffi cynhyrchydd hwyr</value>
   </data>
 	<data name="scheme_members" xml:space="preserve">
     <value>Aelodau'r cynllun</value>

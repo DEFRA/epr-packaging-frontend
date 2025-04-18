@@ -21,44 +21,35 @@ namespace FrontendSchemeRegistration.UI.Controllers;
 
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
 [Route(PagePaths.FileUploadSubLanding)]
-public class FileUploadSubLandingController : Controller
+public class FileUploadSubLandingController(
+    ISubmissionService submissionService,
+    ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
+    IFeatureManager featureManager,
+    IOptions<GlobalVariables> globalVariables,
+    IResubmissionApplicationService resubmissionApplicationService)
+    : Controller
 {
-    private const int _submissionsLimit = 1;
-    private readonly ISubmissionService _submissionService;
-    private readonly IResubmissionApplicationService _resubmissionApplicationService;
-    private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
-    private readonly IFeatureManager _featureManager;
-    private readonly List<SubmissionPeriod> _submissionPeriods;
-    private readonly string _basePath;
-
-    public FileUploadSubLandingController(
-        ISubmissionService submissionService,
-        ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
-        IFeatureManager featureManager,
-        IOptions<GlobalVariables> globalVariables,
-        IResubmissionApplicationService resubmissionApplicationService)
-    {
-        _submissionService = submissionService;
-        _sessionManager = sessionManager;
-        _featureManager = featureManager;
-        _submissionPeriods = globalVariables.Value.SubmissionPeriods;
-        _basePath = globalVariables.Value.BasePath;
-        _resubmissionApplicationService = resubmissionApplicationService;
-    }
+    private const int SubmissionsLimit = 1;
+    private List<SubmissionPeriod> _submissionPeriods = globalVariables.Value.SubmissionPeriods;
+    private readonly string _basePath = globalVariables.Value.BasePath;
 
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var showPomDecision = await _featureManager.IsEnabledAsync(nameof(FeatureFlags.ShowPoMResubmission));
-        var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+        var showPomDecision = await featureManager.IsEnabledAsync(nameof(FeatureFlags.ShowPoMResubmission));
+
+        var showPomSubmissions2025 = await featureManager.IsEnabledAsync(nameof(FeatureFlags.ShowPoMSubmission2025));
+        _submissionPeriods = _submissionPeriods.Where(p => showPomSubmissions2025 || p.Year != "2025").ToList();
         var periods = _submissionPeriods.Select(x => x.DataPeriod).ToList();
-        var submissions = await _submissionService.GetSubmissionsAsync<PomSubmission>(
+
+        var session = await sessionManager.GetSessionAsync(HttpContext.Session);
+        var submissions = await submissionService.GetSubmissionsAsync<PomSubmission>(
             periods,
             periods.Count,
             session.RegistrationSession.SelectedComplianceScheme?.Id);
         var submissionPeriodDetails = new List<SubmissionPeriodDetail>();
 
-        var packagingResubmissionApplicationSessionForAllSubmissionPeriods = await _resubmissionApplicationService.GetPackagingResubmissionApplicationSession(
+        var packagingResubmissionApplicationSessionForAllSubmissionPeriods = await resubmissionApplicationService.GetPackagingResubmissionApplicationSession(
             session.UserData.Organisations[0],
             periods,
             session.RegistrationSession.SelectedComplianceScheme?.Id);
@@ -73,8 +64,8 @@ public class FileUploadSubLandingController : Controller
 
             if (showPomDecision && submission != null)
             {
-                decision = await _submissionService.GetDecisionAsync<PomDecision>(
-                _submissionsLimit,
+                decision = await submissionService.GetDecisionAsync<PomDecision>(
+                SubmissionsLimit,
                 submission.Id,
                 SubmissionType.Producer);
 
@@ -114,7 +105,7 @@ public class FileUploadSubLandingController : Controller
         if (organisationRole is not null)
         {
             session.RegistrationSession.Journey.ClearReportPackagingDataJourney();
-            await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
+            await sessionManager.SaveSessionAsync(HttpContext.Session, session);
             ViewBag.HomeLinkToDisplay = _basePath;
 
             return View(
@@ -181,7 +172,7 @@ public class FileUploadSubLandingController : Controller
             return SubmissionPeriodStatus.NotStarted;
         }
 
-        if (_featureManager.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)).Result && session?.IsResubmissionInProgress == true)
+        if (featureManager.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)).Result && session?.IsResubmissionInProgress == true)
         {
             return SubmissionPeriodStatus.InProgress;
         }
@@ -220,30 +211,30 @@ public class FileUploadSubLandingController : Controller
 
     private async Task UpdateSessionForSelectedPeriodAsync(SubmissionPeriod selectedSubmissionPeriod)
     {
-        var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+        var session = await sessionManager.GetSessionAsync(HttpContext.Session);
         session.PomResubmissionSession.IsPomResubmissionJourney = false;
         session.RegistrationSession.SubmissionPeriod = selectedSubmissionPeriod.DataPeriod;
         session.RegistrationSession.SubmissionDeadline = selectedSubmissionPeriod.Deadline;
         session.RegistrationSession.Journey.AddIfNotExists(PagePaths.FileUploadSubLanding);
-        await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
+        await sessionManager.SaveSessionAsync(HttpContext.Session, session);
     }
 
     private async Task UpdateSessionForResubmissionJourney(List<PomSubmission> pomSubmissions, string submissionPeriod)
     {
         if (pomSubmissions != null && pomSubmissions.Count > 0)
         {
-            var session = await _sessionManager.GetSessionAsync(HttpContext.Session);            
+            var session = await sessionManager.GetSessionAsync(HttpContext.Session);
             session.PomResubmissionSession.PomSubmissions = pomSubmissions;
             session.PomResubmissionSession.SubmissionPeriod = submissionPeriod;
             session.PomResubmissionSession.PomSubmission = pomSubmissions.Find(x => x.SubmissionPeriod == submissionPeriod);
-            await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
+            await sessionManager.SaveSessionAsync(HttpContext.Session, session);
         }
     }
 
     private async Task<(List<PomSubmission>, PomSubmission)> FindSubmissionForPeriodAsync(string dataPeriod)
     {
-        var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-        var submissions = await _submissionService.GetSubmissionsAsync<PomSubmission>(
+        var session = await sessionManager.GetSessionAsync(HttpContext.Session);
+        var submissions = await submissionService.GetSubmissionsAsync<PomSubmission>(
             new List<string> { dataPeriod },
             _submissionPeriods.Count,
             session.RegistrationSession.SelectedComplianceScheme?.Id);
@@ -269,7 +260,7 @@ public class FileUploadSubLandingController : Controller
             return HandleUnsubmittedSubmission(submission);
         }
 
-        if (!await _featureManager.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)))
+        if (!await featureManager.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)))
         {
             return HandleSubmittedSubmission(submission);
         }       

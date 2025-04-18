@@ -1,4 +1,4 @@
-﻿using EPR.Common.Authorization.Models;
+using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
 using FrontendSchemeRegistration.Application.Constants;
@@ -61,7 +61,9 @@ public class FileUploadSubLandingControllerTests
         _resubmissionApplicationServicMock = new Mock<IResubmissionApplicationService>();
 
         _resubmissionApplicationServicMock.Setup(x => x.GetPackagingResubmissionApplicationSession(It.IsAny<Organisation>(),It.IsAny<List<string>>(), It.IsAny<Guid>()))
-            .ReturnsAsync(new List<PackagingResubmissionApplicationSession> { new PackagingResubmissionApplicationSession { IsResubmissionFeeViewed = false, FileReachedSynapse = false, IsSubmitted = false } });
+            .ReturnsAsync([new PackagingResubmissionApplicationSession { IsResubmissionFeeViewed = false, FileReachedSynapse = false, IsSubmitted = false }]);
+
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ShowPoMSubmission2025))).ReturnsAsync(true);
 
         _systemUnderTest = new FileUploadSubLandingController(
             _submissionServiceMock.Object,
@@ -154,6 +156,49 @@ public class FileUploadSubLandingControllerTests
             SubmissionPeriodDetailGroups = submissionPeriodDetailGroups,
             OrganisationRole = organisationRole
         });
+    }
+
+   [Test]
+    [TestCase(OrganisationRoles.Producer)]
+    [TestCase(OrganisationRoles.ComplianceScheme)]
+    public async Task Get_ReturnsCorrectViewModel_WhenShowPoMSubmission2025_Is_False(string organisationRole)
+    {
+        // Arrange
+        //_featureManagerMock.Reset();
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ShowPoMSubmission2025))).ReturnsAsync(false);
+
+        var selectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), Name = "Acme Org Ltd" };
+        var submissionId = Guid.NewGuid();
+        var pomSubmission = new PomSubmission
+        {
+            Id = submissionId,
+            HasValidFile = true,
+            SubmissionPeriod = _submissionPeriods[0].DataPeriod
+        };
+        _submissionServiceMock.Setup(x => x.GetSubmissionsAsync<PomSubmission>(
+                It.IsAny<List<string>>(), 2, selectedComplianceScheme.Id))
+            .ReturnsAsync(new List<PomSubmission> { pomSubmission });
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(submissionId))
+            .ReturnsAsync(pomSubmission);
+
+        _sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession { SelectedComplianceScheme = selectedComplianceScheme },
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation> { new() { OrganisationRole = organisationRole } }
+                }
+            });
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("FileUploadSubLanding");
+        var model = result.Model as FileUploadSubLandingViewModel;
+        model.Should().NotBeNull();
+        model.SubmissionPeriodDetailGroups.SelectMany(s => s.SubmissionPeriodDetails).Count(s => s.DatePeriodYear == "2025").Should().Be(0);
     }
 
     [Test]
