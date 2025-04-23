@@ -26,4 +26,10 @@
     <data name="remove_compliance_scheme" xml:space="preserve">
         <value>Remove compliance scheme</value>
     </data>
+    <data name="join_or_leave_affects_packaging_obligations" xml:space="preserve">
+        <value>Joining or leaving a compliance scheme might affect your organisation's packaging obligations - make sure you have read the </value>
+    </data>
+    <data name="guideline_for_extended_producer_responsibility_link" xml:space="preserve">
+        <value>guidelines for extended producer responsibility for packaging (opens in a new tab).</value>
+    </data>
 </root>

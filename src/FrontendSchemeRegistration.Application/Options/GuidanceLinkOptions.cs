@@ -26,4 +26,6 @@ public class GuidanceLinkOptions
     public string HowToCompleteSubsidiaryFile { get; set; }
 
     public string YouCanPaySEPA { get; set; }
+
+    public string PrnObligation { get; set; }
 }

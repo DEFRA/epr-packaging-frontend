@@ -1,72 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-    <resheader name="resmimetype">
-        <value>text/microsoft-resx</value>
-    </resheader>
-    <resheader name="version">
-        <value>1.3</value>
-    </resheader>
-    <resheader name="reader">
-        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
-    <resheader name="writer">
-        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
-    <data name="registration_task_title" xml:space="preserve">
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="registration_task_title" xml:space="preserve">
         <value>Parhau â'ch cofrestriad</value>
     </data>
-    <data name="registration_resubmission_task_title" xml:space="preserve">
+	<data name="registration_resubmission_task_title" xml:space="preserve">
         <value>Parhau â'ch cofrestriad</value>
     </data>
-    <data name="register_company" xml:space="preserve">
+	<data name="register_company" xml:space="preserve">
         <value>{0} cofrestru</value>
     </data>
-    <data name="register_resubmission_company" xml:space="preserve">
+	<data name="register_resubmission_company" xml:space="preserve">
         <value>Cyflwyniad data {0}</value>
     </data>
-    <data name="submit_registration_data" xml:space="preserve">
+	<data name="submit_registration_data" xml:space="preserve">
         <value>Cyflwyno data cofrestru</value>
     </data>
-    <data name="update_registration_details" xml:space="preserve">
-        <value>Cyflwyno data cofrestru</value>
+	<data name="update_registration_details" xml:space="preserve">
+        <value>Diweddaru manylion cofrestru</value>
     </data>
-    <data name="you_have_submitted_organisation_brand_partner_details" xml:space="preserve">
+	<data name="you_have_submitted_organisation_brand_partner_details" xml:space="preserve">
         <value>Rydych chi wedi cyflwyno manylion sefydliad, brand a phartneriaid</value>
     </data>
-    <data name="you_have_resubmitted_organisation_brand_partner_details" xml:space="preserve">
+	<data name="you_have_resubmitted_organisation_brand_partner_details" xml:space="preserve">
         <value>Rydych chi wedi cyflwyno manylion sefydliad, brand a phartneriaid</value>
     </data>
-    <data name="view_pay_registration_fee" xml:space="preserve">
+	<data name="view_pay_registration_fee" xml:space="preserve">
         <value>Gweld y ffi gofrestru</value>
     </data>
-    <data name="you_have_paid_registration_fee" xml:space="preserve">
+	<data name="you_have_paid_registration_fee" xml:space="preserve">
         <value>Rydych chi wedi gweld y ffi gofrestru ac wedi dewis dull talu</value>
     </data>
-    <data name="view_pay_fee_if_required" xml:space="preserve">
-        <value>Gweld a thalu ffioedd os oes angen</value>
+	<data name="view_pay_fee_if_required" xml:space="preserve">
+        <value>Gweld y ffi gofrestru</value>
     </data>
-    <data name="you_have_paid_resubmission_fee" xml:space="preserve">
+	<data name="you_have_paid_resubmission_fee" xml:space="preserve">
         <value>Rydych chi wedi gweld y ffi gofrestru ac wedi dewis dull talu</value>
     </data>
-    <data name="submit_registration_application" xml:space="preserve">
+	<data name="submit_registration_application" xml:space="preserve">
         <value>Cyflwyno cais am gofrestru</value>
     </data>
-    <data name="submit_amended_data" xml:space="preserve">
+	<data name="submit_amended_data" xml:space="preserve">
         <value>Cyflwyno data diwygiedig</value>
     </data>
-    <data name="can_not_start_yet_status" xml:space="preserve">
+	<data name="can_not_start_yet_status" xml:space="preserve">
         <value>METHU DECHRAU ETO</value>
     </data>
-    <data name="not_started_status" xml:space="preserve">
+	<data name="not_started_status" xml:space="preserve">
         <value>HEB DDECHRAU</value>
     </data>
-    <data name="pending_status" xml:space="preserve">
+	<data name="pending_status" xml:space="preserve">
         <value>YN YR ARFAETH</value>
     </data>
-    <data name="completed_status" xml:space="preserve">
+	<data name="completed_status" xml:space="preserve">
         <value>WEDI’I GWBLHAU</value>
     </data>
-    <data name="return_to_dashboard" xml:space="preserve">
+	<data name="return_to_dashboard" xml:space="preserve">
         <value>Dychwelyd i'r dangosfwrdd</value>
     </data>
 	<data name="registration_application_has_been_submitted" xml:space="preserve">

@@ -5,6 +5,7 @@ using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
 using FrontendSchemeRegistration.Application.DTOs.ComplianceScheme;
+using FrontendSchemeRegistration.UI.Constants;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -48,28 +49,22 @@ public class PrnsObligationActionFilterAttributeTests
     }
 
     [Test]
-    public async Task OnActionExecutionAsync_CallsNext_WhenSessionIsPresent()
+    public async Task OnActionExecutionAsync_CallsNext_WhenSessionIsPresent_ForDirectRegistrant()
     {
         // Arrange
         _sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
         {
-            RegistrationSession = new()
-            {
-                SelectedComplianceScheme = new ComplianceSchemeDto()
-                {
-                    Name = "Test",
-                    NationId = 1
-                }
-            },
             UserData = new UserData
             {
                 Organisations = new List<Organisation>
-{
-new() {
-Name = "Test Organisation",
-                        NationId = 1
-}
-}
+                {
+                    new()
+                    {
+                        Name = "Test Organisation",
+						OrganisationRole = OrganisationRoles.Producer,
+						NationId = 1
+                    }
+                }
             }
         });
 
@@ -80,9 +75,46 @@ Name = "Test Organisation",
         _delegateMock.Verify(next => next(), Times.Once);
     }
 
-    [Test]
-    public async Task OnActionExecutionAsync_RedirectsToPagePath_WhenSessionIsNotPresent()
-    {
+
+	[Test]
+	public async Task OnActionExecutionAsync_CallsNext_WhenSessionIsPresent_ForComplianceSchemeOperator()
+	{
+		// Arrange
+		_sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+		{
+			RegistrationSession = new()
+			{
+				SelectedComplianceScheme = new ComplianceSchemeDto()
+				{
+					Id = Guid.NewGuid(),
+					Name = "Test",
+					NationId = 1
+				}
+			},
+			UserData = new UserData
+			{
+				Organisations = new List<Organisation>
+				{
+					new()
+					{
+						Name = "Test Organisation",
+						OrganisationRole = OrganisationRoles.ComplianceScheme,
+						NationId = 1
+					}
+				}
+			}
+		});
+
+		// Act
+		await _systemUnderTest.OnActionExecutionAsync(_actionExecutingContext, _delegateMock.Object);
+
+		// Assert
+		_delegateMock.Verify(next => next(), Times.Once);
+	}
+
+	[Test]
+    public async Task OnActionExecutionAsync_RedirectsToRoot_WhenSessionIsNotPresent_ForAnyUser()
+	{
         // Arrange
         _sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync((FrontendSchemeRegistrationSession)null);
 
@@ -93,4 +125,122 @@ Name = "Test Organisation",
         _actionExecutingContext.Result.Should().BeOfType<RedirectResult>().Subject.Url.Should().Be($"~{PagePaths.Root}");
         _delegateMock.Verify(next => next(), Times.Never);
     }
+
+	[Test]
+	public async Task OnActionExecutionAsync_RedirectsToRoot_WhenUserDataIsNullInSession_ForAnyUser()
+	{
+		// Arrange
+		_sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+		{
+			UserData = null
+		});
+
+		// Act
+		await _systemUnderTest.OnActionExecutionAsync(_actionExecutingContext, _delegateMock.Object);
+
+		// Assert
+		_actionExecutingContext.Result.Should().BeOfType<RedirectResult>().Subject.Url.Should().Be($"~{PagePaths.Root}");
+		_delegateMock.Verify(next => next(), Times.Never);
+	}
+
+	[Test]
+	public async Task OnActionExecutionAsync_RedirectsToRoot_WhenOrganisationIsNullInSession_ForAnyUser()
+	{
+		// Arrange
+		_sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+		{
+			UserData = new UserData
+			{
+				Organisations = null
+			}
+		});
+
+		// Act
+		await _systemUnderTest.OnActionExecutionAsync(_actionExecutingContext, _delegateMock.Object);
+
+		// Assert
+		_actionExecutingContext.Result.Should().BeOfType<RedirectResult>().Subject.Url.Should().Be($"~{PagePaths.Root}");
+		_delegateMock.Verify(next => next(), Times.Never);
+	}
+
+	[Test]
+	public async Task OnActionExecutionAsync_RedirectsToRoot_WhenOrganisationCountIsZeroInSession_ForAnyUser()
+	{
+		// Arrange
+		_sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+		{
+
+			UserData = new UserData
+			{
+				Organisations = new List<Organisation>()
+			}
+		});
+
+		// Act
+		await _systemUnderTest.OnActionExecutionAsync(_actionExecutingContext, _delegateMock.Object);
+
+		// Assert
+		_actionExecutingContext.Result.Should().BeOfType<RedirectResult>().Subject.Url.Should().Be($"~{PagePaths.Root}");
+		_delegateMock.Verify(next => next(), Times.Never);
+	}
+
+	[Test]
+	public async Task OnActionExecutionAsync_RedirectsToRoot_WhenRegistrationSessionIsNull_ForComplianceSchemeOperator()
+	{
+		// Arrange
+		_sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+		{
+			UserData = new UserData
+			{
+				Organisations = new List<Organisation>
+				{
+					new()
+					{
+						Name = "Test Organisation",
+						OrganisationRole = OrganisationRoles.ComplianceScheme,
+						NationId = 1
+					}
+				}
+			}
+		});
+
+		// Act
+		await _systemUnderTest.OnActionExecutionAsync(_actionExecutingContext, _delegateMock.Object);
+
+		// Assert
+		_actionExecutingContext.Result.Should().BeOfType<RedirectResult>().Subject.Url.Should().Be($"~{PagePaths.Root}");
+		_delegateMock.Verify(next => next(), Times.Never);
+	}
+
+	[Test]
+	public async Task OnActionExecutionAsync_RedirectsToRoot_WhenSelectedComplianceSchmemeIsNullInSession_ForComplianceSchemeOperator()
+	{
+		// Arrange
+		_sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+		{
+			RegistrationSession = new()
+			{
+				SelectedComplianceScheme = null
+			},
+			UserData = new UserData
+			{
+				Organisations = new List<Organisation>
+				{
+					new()
+					{
+						Name = "Test Organisation",
+						OrganisationRole = OrganisationRoles.ComplianceScheme,
+						NationId = 1
+					}
+				}
+			}
+		});
+
+		// Act
+		await _systemUnderTest.OnActionExecutionAsync(_actionExecutingContext, _delegateMock.Object);
+
+		// Assert
+		_actionExecutingContext.Result.Should().BeOfType<RedirectResult>().Subject.Url.Should().Be($"~{PagePaths.Root}");
+		_delegateMock.Verify(next => next(), Times.Never);
+	}
 }

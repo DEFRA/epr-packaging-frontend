@@ -201,10 +201,34 @@
   <data name="search" xml:space="preserve">
     <value>Search</value>
   </data>
-  <data name="subsidiaries_not_found" xml:space="preserve">
-    <value>Subsidiary not found</value>
-  </data>
   <data name="subsidiary_not_found_message" xml:space="preserve">
     <value>Make sure you entered the correct subsidiary name, ID or Companies House number. If you need to add a subsidiary to&lt;br /&gt;this parent company, use the file upload to create a subsidiary ID and then update and resubmit your registration file.</value>
+  </data>
+  <data name="subsidiary_not_found_resubmit_warning_text" xml:space="preserve">
+    <value>If you need to add a subsidiary to this parent company, use the file upload to create a subsidiary ID and then update and resubmit your registration file.</value>
+  </data>
+  <data name="before_you_start" xml:space="preserve">
+    <value>Before you start</value>
+  </data>
+  <data name="adding_removing_members_affect_packaging_obligations" xml:space="preserve">
+    <value>Adding or removing members might affect your organisation's packaging obligations – make sure you have read the</value>
+  </data>
+  <data name="extended_producer_guidelines" xml:space="preserve">
+    <value>guidelines for extended producer responsibility for packaging (opens in a new tab).</value>
+  </data>
+  <data name="upload_a_file" xml:space="preserve">
+    <value>Upload a file</value>
+  </data>
+  <data name="subsidiaries_file_must_be" xml:space="preserve">
+    <value>The file must be:</value>
+  </data>
+  <data name="subsidiaries_smaller_than_60kb" xml:space="preserve">
+    <value>smaller than 60KB</value>
+  </data>
+  <data name="subsidiaries_in_csv_format" xml:space="preserve">
+    <value>in CSV format</value>
+  </data>
+  <data name="few_minutes_to_upload_file" xml:space="preserve">
+    <value>It may take a few minutes for your file to upload - do not close the window while the file is uploading.</value>
   </data>
 </root>

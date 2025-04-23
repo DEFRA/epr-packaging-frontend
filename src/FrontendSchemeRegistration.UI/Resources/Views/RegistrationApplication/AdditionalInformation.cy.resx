@@ -58,7 +58,7 @@
         <value>Cyflwyno cais am gofrestru</value>
     </data>
     <data name="you_will_have_to_start_again_if_there_are_errors_in_your_files" xml:space="preserve">
-        <value>! Bydd rhaid ichi ddechrau eto os oes gwallau yn eich ffeiliau.</value>
+        <value>Bydd angen ichi ddechrau eto os oes gwallau yn eich ffeiliau.</value>
     </data>
     <data name="you_must_be_an_approved_or_delegated_person_to_resubmit_your_data" xml:space="preserve">
         <value>Rhaid i chi fod yn berson wedi’i gymeradwyo neu wedi’i ddirprwyo er mwyn ailgyflwyno'ch data.</value>

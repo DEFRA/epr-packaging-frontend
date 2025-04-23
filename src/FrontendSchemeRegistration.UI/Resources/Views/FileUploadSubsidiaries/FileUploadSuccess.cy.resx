@@ -118,16 +118,16 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="check_that_all_the_information" xml:space="preserve">
-    <value>WCheck that all the information you have provided is accurate.</value>
+    <value>Gwiriwch fod yr holl wybodaeth rydych chi wedi'i darparu yn gywir.</value>
   </data>
   <data name="File_uploaded_successfully" xml:space="preserve">
     <value>Ffeil wedi’i huwchlwytho’n llwyddiannus</value>
   </data>
   <data name="if_any_of_your_subsidiaries" xml:space="preserve">
-    <value>WIf any of your subsidiaries' organisation details change, you must notify the regulator within 28 days by</value>
+    <value>Os bydd manylion sefydliad unrhyw is-gwmnïau yn newid, rhaid ichi roi gwybod i'r rheoleiddiwr o fewn 28 diwrnod drwy</value>
   </data>
   <data name="updating_and_resubmitting" xml:space="preserve">
-    <value>Wupdating and resubmitting your registration file</value>
+    <value>ddiweddaru ac ailgyflwyno'ch ffeil gofrestru</value>
   </data>
   <data name="return_to_account_home" xml:space="preserve">
     <value>Dychwelyd i hafan y cyfrif</value>
@@ -139,7 +139,7 @@
     <value>Cyfanswm yr is-gwmnïau yn eich cyfrif erbyn hyn yw</value>
   </data>
   <data name="use_the_subsidiary_ids" xml:space="preserve">
-    <value>WUse the subsidiary IDs for all future organisation details and packaging data submissions.</value>
+    <value>Defnyddiwch IDs yr is-gwmnïau ar gyfer holl fanylion y sefydliad a phob cyflwyniad data pecynwaith yn y dyfodol.</value>
   </data>
   <data name="View_your_subsidiaries" xml:space="preserve">
     <value>Gweld is-gwmnïau</value>
@@ -151,9 +151,15 @@
     <value>Rydych chi wedi ychwanegu is-gwmnïau.</value>
   </data>
   <data name="you_added_x_subsidiaries" xml:space="preserve">
-    <value>WYou added {0} subsidiaries</value>
+    <value>Rydych chi wedi ychwanegu {0} o is-gwmnïau</value>
   </data>
   <data name="download_subsidiaries_list" xml:space="preserve">
-    <value>WDownload subsidiaries list</value>
+    <value>Lawrlwytho rhestr is-gwmnïau</value>
+  </data>
+  <data name="adding_or_removing_members_might_affect_your_organisation" xml:space="preserve">
+    <value>Gallai ychwanegu neu dynnu aelodau effeithio ar rwymedigaethau pecynwaith eich sefydliad – gofalwch eich bod wedi darllen y</value>
+  </data>
+  <data name="guidelines_for_extended_producer_responsibility" xml:space="preserve">
+    <value>canllawiau ynghylch cyfrifoldeb estynedig cynhyrchwyr dros becynwaith (yn agor mewn tab newydd).</value>
   </data>
 </root>

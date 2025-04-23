@@ -130,13 +130,13 @@
     <value>Read the guidance on</value>
   </data>
   <data name="how_to_report_organisation_details" xml:space="preserve">
-    <value>how to report organisation details (opens in a new window)</value>
+    <value>how to report organisation details (opens in a new tab)</value>
   </data>
   <data name="how_to_report" xml:space="preserve">
     <value>How to report</value>
   </data>
   <data name="keep_the_information_up_to_date" xml:space="preserve">
-    <value>If you’ve missed a deadline, you may still be able to report without facing enforcement action.</value>
+    <value>If you’ve missed a deadline, you may still be able to report without facing enforcement.</value>
   </data>
   <data name="upload_organisation_details" xml:space="preserve">
     <value>Upload organisation details</value>
@@ -187,7 +187,7 @@
     <value>If you’ve missed a deadline, you may still be able to report without facing enforcement action.</value>
   </data>
   <data name="check_the_govuk_guidance" xml:space="preserve">
-    <value>Check the GOV.UK guidance (opens in a new window)</value>
+    <value>Check GOV.UK guidance (opens in a new tab)</value>
   </data>
   <data name="if_youve_missed_a_deadline_to_submit" xml:space="preserve">
     <value>If you’ve missed a deadline to submit</value>
@@ -220,13 +220,13 @@
     <value>organisation details</value>
   </data>
   <data name="making_changes_after_april" xml:space="preserve">
-    <value>Making changes to members registered after 5 April 2025</value>
+    <value>Making changes to members registered after 1 April 2025</value>
   </data>
   <data name="you_must_report_changes" xml:space="preserve">
     <value>You must report any changes to us within 28 days</value>
   </data>
   <data name="if_you_need_changes_after_april" xml:space="preserve">
-    <value>If you need to make changes to members registered on or after 5 April 2025</value>
+    <value>If you need to make changes to members registered on or after 1 April 2025</value>
   </data>
   <data name="registration_file_link" xml:space="preserve">
     <value>update and resubmit your registration file</value>
@@ -242,5 +242,29 @@
   </data>
   <data name="small_producers" xml:space="preserve">
     <value>small producers</value>
+  </data>
+  <data name="making_changes_after_april_2025" xml:space="preserve">
+    <value>Making changes after 1 April 2025</value>
+  </data>
+  <data name="if_you_need_to_make_changes_after_april_2025" xml:space="preserve">
+    <value>If you need to make changes registered on or after 1 April 2025, </value>
+  </data>
+  <data name="update_and_resubmit_registration_file" xml:space="preserve">
+    <value>update and resubmit your registration file. </value>
+  </data>
+  <data name="you_must_report_changes_within_28_days" xml:space="preserve">
+    <value>You must report any changes to us within 28 days.</value>
+  </data>
+  <data name="adding_or_removing_members_affect_packaging_obligations" xml:space="preserve">
+    <value>Adding or removing members might affect your organisation's packaging obligations - make sure you have read the </value>
+  </data>
+  <data name="guideline_for_extended_producer_responsibility_link" xml:space="preserve">
+    <value>guidelines for extended producer responsibility for packaging (opens in a new tab).</value>
+  </data>
+  <data name="ConfirmationOfRemoval.AddingOrRemovingMembers" xml:space="preserve">
+    <value>Adding or removing members might affect your organisation's packaging&lt;br /&gt;obligations - make sure you have read the </value>
+  </data>
+  <data name="ConfirmationOfRemoval.GuidelinesForExtendedProducer" xml:space="preserve">
+    <value>guidelines for extended producer&lt;br /&gt;responsibility for packaging (opens in a new tab).</value>
   </data>
 </root>

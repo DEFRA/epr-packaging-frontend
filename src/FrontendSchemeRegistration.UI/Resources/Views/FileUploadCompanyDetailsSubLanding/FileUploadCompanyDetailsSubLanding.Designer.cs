@@ -73,6 +73,15 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.FileUploadCompanyDetails
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
+        internal static string adding_or_removing_members_affect_packaging_obligations {
+            get {
+                return ResourceManager.GetString("adding_or_removing_members_affect_packaging_obligations", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
         internal static string approved_by_regulator {
             get {
                 return ResourceManager.GetString("approved_by_regulator", resourceCulture);
@@ -136,6 +145,15 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.FileUploadCompanyDetails
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
+        internal static string guideline_for_extended_producer_responsibility_link {
+            get {
+                return ResourceManager.GetString("guideline_for_extended_producer_responsibility_link", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
         internal static string how_to_report {
             get {
                 return ResourceManager.GetString("how_to_report", resourceCulture);
@@ -166,6 +184,15 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.FileUploadCompanyDetails
         internal static string if_you_need_changes_after_april {
             get {
                 return ResourceManager.GetString("if_you_need_changes_after_april", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string if_you_need_to_make_changes_after_april_2025 {
+            get {
+                return ResourceManager.GetString("if_you_need_to_make_changes_after_april_2025", resourceCulture);
             }
         }
         
@@ -229,6 +256,15 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.FileUploadCompanyDetails
         internal static string making_changes_after_april {
             get {
                 return ResourceManager.GetString("making_changes_after_april", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string making_changes_after_april_2025 {
+            get {
+                return ResourceManager.GetString("making_changes_after_april_2025", resourceCulture);
             }
         }
         
@@ -370,6 +406,15 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.FileUploadCompanyDetails
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
+        internal static string update_and_resubmit_registration_file {
+            get {
+                return ResourceManager.GetString("update_and_resubmit_registration_file", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
         internal static string upload_file_to_your_account {
             get {
                 return ResourceManager.GetString("upload_file_to_your_account", resourceCulture);
@@ -418,6 +463,15 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.FileUploadCompanyDetails
         internal static string you_must_report_changes {
             get {
                 return ResourceManager.GetString("you_must_report_changes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string you_must_report_changes_within_28_days {
+            get {
+                return ResourceManager.GetString("you_must_report_changes_within_28_days", resourceCulture);
             }
         }
         

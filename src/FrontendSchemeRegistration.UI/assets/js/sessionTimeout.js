@@ -1,7 +1,6 @@
 ﻿const IDLE_TIMEOUT_MS = 17 * 60 * 1000; // 17 minutes before showing modal
 const LOGOUT_COUNTDOWN_DURATION = 120; // Logout countdown starts from 120 seconds
 const LOGOUT_REDIRECT_URL = "/report-data/Account/SessionSignOut";
-const PING_URL = "/report-data/Account/KeepSessionAlive"; // Endpoint to keep session alive
 
 let idleTimeout, logoutCountdown;
 
@@ -112,15 +111,7 @@ const SessionTimeoutManager = {
         this.toggleModalVisibility(false);
         clearInterval(logoutCountdown);
         this.resetIdleTimer();
-        this.keepSessionAlive();
-    },
-
-    async keepSessionAlive() {
-        try {
-            await fetch(PING_URL, { method: "GET" });
-        } catch (error) {
-            console.error("Failed to ping server:", error);
-        }
+        window.location.reload();
     }
 };
 

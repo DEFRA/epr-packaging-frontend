@@ -156,4 +156,10 @@
   <data name="download_subsidiaries_list" xml:space="preserve">
     <value>Download subsidiaries list</value>
   </data>
+  <data name="adding_or_removing_members_might_affect_your_organisation" xml:space="preserve">
+    <value>Adding or removing members might affect your organisation's packaging obligations – make sure you have read the</value>
+  </data>
+  <data name="guidelines_for_extended_producer_responsibility" xml:space="preserve">
+    <value>guidelines for extended producer responsibility for packaging (opens in a new tab).</value>
+  </data>
 </root>

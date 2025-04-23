@@ -29,11 +29,11 @@
 
         var schemeMemberTypes = new[]
         {
-            new { Name = Localizer[$"small_producers_sentence_text{(Model.SmallProducersCount == 1 ? "_singular" : "")}"], Count = Model.SmallProducersCount, Fee = Model.SmallProducersFee },
-            new { Name = Localizer[$"large_producers_sentence_text{(Model.LargeProducersCount == 1 ? "_singular" : "")}"], Count = Model.LargeProducersCount, Fee = Model.LargeProducersFee },
+            new { Name = Localizer[$"x_small_producers_sentence_text{(Model.SmallProducersCount == 1 ? "_singular" : "")}", Model.SmallProducersCount], Count = Model.SmallProducersCount, Fee = Model.SmallProducersFee },
+            new { Name = Localizer[$"x_large_producers_sentence_text{(Model.LargeProducersCount == 1 ? "_singular" : "")}", Model.LargeProducersCount], Count = Model.LargeProducersCount, Fee = Model.LargeProducersFee },
             new { Name = Localizer[$"x_online_marketplaces_sentence_text{(Model.OnlineMarketplaceCount == 1 ? "_singular" : "")}", Model.OnlineMarketplaceCount], Count = Model.OnlineMarketplaceCount, Fee = Model.OnlineMarketplaceFee },
-            new { Name = Localizer[$"subsidiary_companies_sentence_text{(Model.SubsidiaryCompanyCount == 1 ? "_singular" : "")}"], Count = Model.SubsidiaryCompanyCount, Fee = Model.SubsidiaryCompanyFee },
-            new { Name = Localizer[$"late_producer_fees_text{(Model.LateProducersCount == 1 ? "_singular" : "")}"], Count = Model.LateProducersCount, Fee = Model.LateProducerFee }
+            new { Name = Localizer[$"x_subsidiary_companies_sentence_text{(Model.SubsidiaryCompanyCount == 1 ? "_singular" : "")}", Model.SubsidiaryCompanyCount], Count = Model.SubsidiaryCompanyCount, Fee = Model.SubsidiaryCompanyFee },
+            new { Name = Localizer[$"x_late_producer_fees_text{(Model.LateProducersCount == 1 ? "_singular" : "")}", Model.LateProducersCount], Count = Model.LateProducersCount, Fee = Model.LateProducerFee }
         };
 
         foreach (var memberType in schemeMemberTypes.Where(mt => mt.Count > 0))

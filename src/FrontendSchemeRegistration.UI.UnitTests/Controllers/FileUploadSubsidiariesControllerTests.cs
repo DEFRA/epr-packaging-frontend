@@ -406,6 +406,74 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             viewResult.PagingDetail.PagingLink.Should().Be("?searchterm=AnyOldLink&page=");
         }
 
+        [TestCase("AnyOldLink\t")]
+        [TestCase("AnyOldLink\\t")]
+        [TestCase("some text")]
+        [TestCase(null)]
+        [TestCase("\tTabbedText")]
+        [TestCase("\\tEscapedTab")]
+        [TestCase("  \t\\t messy text  ")]
+        public async Task SubsidiariesList_WhenSearchTermContainsTabCharacter_WithShowAllSubsidiaresFeatureFlagSetToTrue_ShouldCorrectlyReturnRightPageLink(string testSearchTerm)
+        {
+            // Arrange
+            var page = 1;
+            var showPerPage = 20;
+            var searchTerm = testSearchTerm;
+            var model = new PaginatedResponse<RelationshipResponseModel>
+            {
+                CurrentPage = 1,
+                TotalItems = 1,
+                PageSize = 20,
+                Items = new List<RelationshipResponseModel>
+                {
+                    new RelationshipResponseModel
+                    {
+                        OrganisationName = "Test1",
+                        OrganisationNumber = "2345",
+                        RelationshipType = "Parent",
+                        CompaniesHouseNumber = "CH123455",
+                        JoinerDate = JoinerDate
+                    },
+                    new RelationshipResponseModel
+                    {
+                        OrganisationName = "Org1758584",
+                        OrganisationNumber = "2346",
+                        RelationshipType = "Parent",
+                        CompaniesHouseNumber = "CH123456",
+                        JoinerDate = JoinerDate
+                    }
+                }
+            };
+            var claims = CreateUserDataClaim(OrganisationRoles.Producer);
+            _userMock.Setup(x => x.Claims).Returns(claims);
+            _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+            var sanitizedSearchTerm = (searchTerm ?? string.Empty).Replace("\t", "").Replace("\\t", "").Trim();
+
+            _mockSubsidiaryService
+                .Setup(s => s.GetPagedOrganisationSubsidiaries(
+                    page,
+                    showPerPage,
+                    sanitizedSearchTerm
+                ))
+                .ReturnsAsync(model);
+
+            _mockFeatureManager.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ShowAllSubsidiaries))).ReturnsAsync(true);
+            _mockSubsidiaryService.Setup(x => x.GetSubsidiaryFileUploadStatusAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
+                .ReturnsAsync(SubsidiaryFileUploadStatus.NoFileUploadActive);
+            // Act
+            var result = await _controller.SubsidiariesList(searchTerm, page);
+            // Assert
+            var viewResult = (result as ViewResult).Model as AllSubsidiaryListViewModel;
+            var expectedSearchTerm = (searchTerm ?? string.Empty)
+                .Replace("\t", "")
+                .Replace("\\t", "")
+                .Trim();
+            var expectedPagingLink = string.IsNullOrEmpty(expectedSearchTerm)
+                ? "?page="
+                : $"?searchterm={expectedSearchTerm}&page=";
+            viewResult.PagingDetail.PagingLink.Should().Be(expectedPagingLink);
+        }
+
 
         [Test]
         public async Task SubsidiariesList_WhenDirectProducer_ShouldCallSubsidiaryServiceAndReturnViewResult()
@@ -1655,6 +1723,161 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             // Assert
             result.Should().BeOfType<RedirectToActionResult>();
             ((RedirectToActionResult)result).ActionName.Should().Be("SubsidiariesDownloadFailed");
+        }
+
+        [Test]
+        public async Task Post_Should_Set_ViewBag_To_Show_Account_Home_Link_When_From_Success_Page()
+        {
+            // Arrange
+            var session = new FrontendSchemeRegistrationSession
+            {
+                SubsidiarySession = new SubsidiarySession
+                {
+                    Journey = new List<string> { PagePaths.FileUploadSubsidiariesSuccess },
+                    ReturnToSubsidiaryPage = 1
+                },
+                RegistrationSession = new RegistrationSession()
+            };
+
+            _mockSessionManager.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+                .ReturnsAsync(session);
+
+            // Create a mock session and set it in the HttpContext
+            var mockSession = new Mock<ISession>();
+            _mockSessionManager.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+
+            var context = new DefaultHttpContext
+            {
+                // Mock the Session to avoid the error
+                Session = mockSession.Object
+            };
+
+            context.Request.ContentType = "multipart/form-data";
+            context.Request.Body = new MemoryStream();
+
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = context
+            };
+
+            _mockFileUploadService.Setup(x => x.ProcessUploadAsync(
+                It.IsAny<string>(),
+                It.IsAny<Stream>(),
+                It.IsAny<ModelStateDictionary>(),
+                It.IsAny<Guid?>(),
+                It.IsAny<SubmissionType>(),
+                It.IsAny<IFileUploadMessages>(),
+                It.IsAny<IFileUploadSize>(),
+                It.IsAny<Guid?>()))
+                .ReturnsAsync(Guid.NewGuid());
+
+            // Act
+            await _controller.Post();
+
+            // Assert
+            ((bool)_controller.ViewBag.ShouldShowAccountHomeLink).Should().Be(true);
+            ((string)_controller.ViewBag.BackLinkToDisplay).Should().BeEmpty();
+        }
+
+        [Test]
+        public async Task Post_Should_Set_ViewBag_BackLink_When_Not_From_Account_Home_And_Not_FileUpload()
+        {
+            // Arrange
+            var session = new FrontendSchemeRegistrationSession
+            {
+                SubsidiarySession = new SubsidiarySession
+                {
+                    Journey = new List<string> { "/some-other-page" },
+                    ReturnToSubsidiaryPage = 1
+                },
+                RegistrationSession = new RegistrationSession()
+            };
+
+            _mockSessionManager.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+                .ReturnsAsync(session);
+
+            // Create a mock session and set it in the HttpContext
+            var mockSession = new Mock<ISession>();
+            _mockSessionManager.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+
+            var context = new DefaultHttpContext
+            {
+                // Mock the Session to avoid the error
+                Session = mockSession.Object
+            };
+
+            context.Request.ContentType = "multipart/form-data";
+            context.Request.Body = new MemoryStream();
+
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = context
+            };
+
+            _mockFileUploadService.Setup(x => x.ProcessUploadAsync(
+                It.IsAny<string>(),
+                It.IsAny<Stream>(),
+                It.IsAny<ModelStateDictionary>(),
+                It.IsAny<Guid?>(),
+                It.IsAny<SubmissionType>(),
+                It.IsAny<IFileUploadMessages>(),
+                It.IsAny<IFileUploadSize>(),
+                It.IsAny<Guid?>()))
+                .ReturnsAsync(Guid.NewGuid());
+
+            // Act
+            await _controller.Post();
+
+            // Assert
+            ((bool)_controller.ViewBag.ShouldShowAccountHomeLink).Should().Be(false);
+            ((string)_controller.ViewBag.BackLinkToDisplay).Should().Be("/");
+        }
+
+        [Test]
+        public async Task Post_Should_Clear_BackLink_When_FileUploadInProgress_True()
+        {
+            // Arrange
+            var session = new FrontendSchemeRegistrationSession
+            {
+                SubsidiarySession = new SubsidiarySession
+                {
+                    Journey = new List<string> { PagePaths.SubsidiariesFileUploadWarningsReport },
+                    ReturnToSubsidiaryPage = 1
+                },
+                RegistrationSession = new RegistrationSession()
+            };
+
+            _mockSessionManager.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+                .ReturnsAsync(session);
+
+            var context = new DefaultHttpContext();
+            context.Request.ContentType = "multipart/form-data";
+            context.Request.Body = new MemoryStream();
+
+            _controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = context
+            };
+
+            _mockFileUploadService.Setup(x => x.ProcessUploadAsync(
+                It.IsAny<string>(),
+                It.IsAny<Stream>(),
+                It.IsAny<ModelStateDictionary>(),
+                It.IsAny<Guid?>(),
+                It.IsAny<SubmissionType>(),
+                It.IsAny<IFileUploadMessages>(),
+                It.IsAny<IFileUploadSize>(),
+                It.IsAny<Guid?>()))
+                .ReturnsAsync(Guid.NewGuid());
+
+            // Simulate file upload in progress manually
+            typeof(FileUploadSubsidiariesController)
+                .GetMethod("SetBackLink", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                ?.Invoke(_controller, new object[] { session, true });
+
+            // Assert
+            ((bool)_controller.ViewBag.ShouldShowAccountHomeLink).Should().Be(false);
+            ((string)_controller.ViewBag.BackLinkToDisplay).Should().BeEmpty();
         }
 
         private List<Claim> CreateUserDataClaim(string organisationRole, string serviceRole = null)

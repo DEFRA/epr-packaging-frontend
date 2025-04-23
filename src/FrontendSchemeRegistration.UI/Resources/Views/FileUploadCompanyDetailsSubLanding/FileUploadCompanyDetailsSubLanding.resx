@@ -240,4 +240,22 @@
   <data name="if_youve_missed_a_deadline_without_action" xml:space="preserve">
     <value />
   </data>
+  <data name="making_changes_after_april_2025" xml:space="preserve">
+    <value />
+  </data>
+  <data name="if_you_need_to_make_changes_after_april_2025" xml:space="preserve">
+    <value />
+  </data>
+  <data name="update_and_resubmit_registration_file" xml:space="preserve">
+    <value />
+  </data>
+  <data name="you_must_report_changes_within_28_days" xml:space="preserve">
+    <value />
+  </data>
+  <data name="adding_or_removing_members_affect_packaging_obligations" xml:space="preserve">
+    <value />
+  </data>
+  <data name="guideline_for_extended_producer_responsibility_link" xml:space="preserve">
+    <value />
+  </data>
 </root>

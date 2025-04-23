@@ -206,4 +206,10 @@ details file.</comment>
   <data name="ConfirmationOfRemoval.PageTitle" xml:space="preserve">
     <value>Cadarnhad bod yr aelod wedi’i dynnu</value>
   </data>
+  <data name="ConfirmationOfRemoval.AddingOrRemovingMembers" xml:space="preserve">
+    <value>W Adding or removing members might affect your organisation's packaging&lt;br /&gt;obligations - make sure you have read the </value>
+  </data>
+  <data name="ConfirmationOfRemoval.GuidelinesForExtendedProducer" xml:space="preserve">
+    <value>W guidelines for extended producer&lt;br /&gt;responsibility for packaging (opens in a new tab).</value>
+  </data>
 </root>

@@ -10,7 +10,7 @@
             {
                 @await Html.PartialAsync("Partials/Govuk/_ErrorSummary", ViewData.ModelState)
             }
-            
+
             <h1 class="govuk-heading-l">@Localizer["stop_using_a_compliance_scheme"]</h1>
 
             <p class="govuk-body">
@@ -20,14 +20,25 @@
                 @Localizer["this_means_your_compliance_scheme_will_no_longer_act_on_your_behalf"]
             <p>
             <p class="govuk-body">
-                @Localizer["youll_need_to_register_and_upload_data_yourself"]
+                        @Localizer["youll_need_to_register_and_upload_data_yourself"]
             <p>
+
+            <feature name="@FeatureFlags.ShowAllSubsidiaries">
+                <p class="govuk-body">
+                    @Localizer["join_or_leave_affects_packaging_obligations"]
+                    <a href="@GuidanceLinks.Value.PrnObligation"
+                       class="govuk-link"
+                       target="_blank"
+                           rel="noreferrer noopener">@Localizer["guideline_for_extended_producer_responsibility_link"]</a>
+
+                </p>
+            </feature>
 
             @using (Html.BeginForm(FormMethod.Post))
             {
                 <button class="govuk-button" data-module="govuk-button">@Localizer["remove_compliance_scheme"]</button>
             }
-            
+
         </div>
     </div>
 </main>

@@ -1,84 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-    <resheader name="resmimetype">
-        <value>text/microsoft-resx</value>
-    </resheader>
-    <resheader name="version">
-        <value>1.3</value>
-    </resheader>
-    <resheader name="reader">
-        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
-    <resheader name="writer">
-        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
-    <data name="application_submission_confirm_title" xml:space="preserve">
-        <value>Cadarnhad bod cais wedi’i gyflwyno</value>
-    </data>
-    <data name="registration_application_submitted_for_approval" xml:space="preserve">
-        <value>Mae eich cais am gofrestru for 2025 wedi'i gyflwyno i'w gymeradwyo</value>
-    </data>
-    <data name="registration_for_2025_has_been_granted" xml:space="preserve">
-        <value>Mae eich cofrestriad ar gyfer 2025 wedi'i ganiatáu</value>
-    </data>
-    <data name="application_reference_number" xml:space="preserve">
-        <value>Cyfeirnod y cais:</value>
-    </data>
-    <data name="registration_reference_number" xml:space="preserve">
-        <value>WProducer registration number:</value>
-    </data>
-    <data name="submitted_date_x" xml:space="preserve">
-        <value>Wedi’i gyflwyno {0}</value>
-    </data>
-    <data name="your_application_submitted_to" xml:space="preserve">
-        <value>Rydych chi wedi cyflwyno’ch cais i </value>
-    </data>
-    <data name="your_application_granted_by" xml:space="preserve">
-        <value>Mae eich cofrestriad wedi'i ganiatáu gan</value>
-    </data>
-    <data name="england.environmental_regulator" xml:space="preserve">
-        <value>Asiantaeth yr Amgylchedd, rheoleiddiwr amgylcheddol Lloegr.</value>
-    </data>
-    <data name="scotland.environmental_regulator" xml:space="preserve">
-        <value>Asiantaeth Diogelu Amgylchedd yr Alban (SEPA), rheoleiddiwr amgylcheddol yr Alban.</value>
-    </data>
-    <data name="wales.environmental_regulator" xml:space="preserve">
-        <value>Cyfoeth Naturiol Cymru (CNC), rheoleiddiwr amgylcheddol Cymru.</value>
-    </data>
-    <data name="northernireland.environmental_regulator" xml:space="preserve">
-        <value>Asiantaeth Amgylchedd Gogledd Iwerddon (NIEA), rheoleiddiwr amgylcheddol  Gogledd Iwerddon.</value>
-    </data>
-    <data name="use_application_reference_in_communication_with_regulator" xml:space="preserve">
-        <value>Defnyddiwch gyfeirnod eich cais mewn unrhyw gyfathrebiadau â'r rheoleiddiwr amgylcheddol.</value>
-    </data>
-    <data name="use_registration_reference_number_in_communication_with_regulator" xml:space="preserve">
-        <value>WUse your producer registration number in any communication with the environmental regulator.</value>
-    </data>
-    <data name="you_can" xml:space="preserve">
-        <value>Gallwch chi </value>
-    </data>
-    <data name="print_record" xml:space="preserve">
-        <value>argraffu </value>
-    </data>
-    <data name="download_record_of_submission_as_PDF" xml:space="preserve">
-        <value>lawrlwytho cofnod eich bod chi wedi cyflwyno’r cais fel PDF</value>
-    </data>
-    <data name="depending_on_your_browser_it_will_open_in_new_window_or_save_to_folder" xml:space="preserve">
-        <value>(gan ddibynnu ar eich porwr, bydd yn agor mewn ffenestr neu dab newydd, neu'n cael ei gadw yn eich ffolder lawrlwytho).</value>
-    </data>
-    <data name="what_happens_next" xml:space="preserve">
-        <value>Beth sy’n digwydd nesaf</value>
-    </data>
-    <data name="you_will_be_contacted_about_your_application_within_12_weeks" xml:space="preserve">
-        <value>Fe'ch hysbysir am ganlyniad eich cais o fewn 12 wythnos ar ôl ei gyflwyno.</value>
-    </data>
-    <data name="visit_your" xml:space="preserve">
-        <value>Ewch i </value>
-    </data>
-    <data name="account_home_page" xml:space="preserve">
-        <value>dudalen hafan eich cyfrif</value>
-    </data>
-    <data name="check_status_of_your_application" xml:space="preserve">
-        <value> i wirio statws eich cais.</value>
-    </data>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+	  <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+	  <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="application_submission_confirm_title" xml:space="preserve">
+    <value>Cadarnhad bod cais wedi’i gyflwyno</value>
+  </data>
+  <data name="registration_application_submitted_for_approval" xml:space="preserve">
+    <value>Mae eich cais am gofrestru for 2025 wedi'i gyflwyno i'w gymeradwyo</value>
+  </data>
+  <data name="registration_for_2025_has_been_granted" xml:space="preserve">
+    <value>Mae eich cofrestriad ar gyfer 2025 wedi'i ganiatáu</value>
+  </data>
+  <data name="application_reference_number" xml:space="preserve">
+    <value>Cyfeirnod y cais:</value>
+  </data>
+  <data name="registration_reference_number" xml:space="preserve">
+    <value>WProducer registration number:</value>
+  </data>
+  <data name="submitted_date_x" xml:space="preserve">
+    <value>Wedi’i gyflwyno {0}</value>
+  </data>
+  <data name="your_application_submitted_to" xml:space="preserve">
+    <value>Rydych chi wedi cyflwyno’ch cais i </value>
+  </data>
+  <data name="your_application_granted_by" xml:space="preserve">
+    <value>Mae eich cofrestriad wedi'i ganiatáu gan</value>
+  </data>
+  <data name="england.environmental_regulator" xml:space="preserve">
+    <value>Asiantaeth yr Amgylchedd, rheoleiddiwr amgylcheddol Lloegr.</value>
+  </data>
+  <data name="scotland.environmental_regulator" xml:space="preserve">
+    <value>Asiantaeth Diogelu Amgylchedd yr Alban (SEPA), rheoleiddiwr amgylcheddol yr Alban.</value>
+  </data>
+  <data name="wales.environmental_regulator" xml:space="preserve">
+    <value>Cyfoeth Naturiol Cymru (CNC), rheoleiddiwr amgylcheddol Cymru.</value>
+  </data>
+  <data name="northernireland.environmental_regulator" xml:space="preserve">
+    <value>Asiantaeth Amgylchedd Gogledd Iwerddon (NIEA), rheoleiddiwr amgylcheddol  Gogledd Iwerddon.</value>
+  </data>
+  <data name="use_application_reference_in_communication_with_regulator" xml:space="preserve">
+    <value>Defnyddiwch gyfeirnod eich cais mewn unrhyw gyfathrebiadau â'r rheoleiddiwr amgylcheddol.</value>
+  </data>
+  <data name="use_registration_reference_number_in_communication_with_regulator" xml:space="preserve">
+    <value>WUse your producer registration number in any communication with the environmental regulator.</value>
+  </data>
+  <data name="you_can" xml:space="preserve">
+    <value>Gallwch chi </value>
+  </data>
+  <data name="print_record" xml:space="preserve">
+    <value>argraffu </value>
+  </data>
+  <data name="download_record_of_submission_as_PDF" xml:space="preserve">
+    <value>lawrlwytho cofnod eich bod chi wedi cyflwyno’r cais fel PDF</value>
+  </data>
+  <data name="depending_on_your_browser_it_will_open_in_new_window_or_save_to_folder" xml:space="preserve">
+    <value>(gan ddibynnu ar eich porwr, bydd yn agor mewn ffenestr neu dab newydd, neu'n cael ei gadw yn eich ffolder lawrlwytho).</value>
+  </data>
+  <data name="what_happens_next" xml:space="preserve">
+    <value>Beth sy’n digwydd nesaf</value>
+  </data>
+  <data name="you_will_be_contacted_about_your_application_within_12_weeks" xml:space="preserve">
+    <value>Fe'ch hysbysir am ganlyniad eich cais o fewn 12 wythnos ar ôl ei gyflwyno.</value>
+  </data>
+  <data name="visit_your" xml:space="preserve">
+    <value>Ewch i </value>
+  </data>
+  <data name="account_home_page" xml:space="preserve">
+    <value>dudalen hafan eich cyfrif</value>
+  </data>
+  <data name="check_status_of_your_application" xml:space="preserve">
+    <value> i wirio statws eich cais.</value>
+  </data>
+  <data name="your_organisation_data_has_been_resubmitted" xml:space="preserve">
+    <value>Mae data'ch sefydliad wedi'i ailgyflwyno</value>
+  </data>
+  <data name="you_will_receive_an_email_after_the_environmental_regulator_reviews_your_submission" xml:space="preserve">
+    <value>Fe gewch chi neges ebost ar ôl i'r rheoleiddiwr amgylcheddol adolygu'ch cyflwyniad.</value>
+  </data>
+  <data name="you_can_only_make_changes_to_your_organisation_data_files_after_they_been_reviewed" xml:space="preserve">
+    <value>Dim ond ar ôl iddyn nhw gael eu hadolygu y cewch chi wneud newidiadau yn eich ffeiliau data pecynwaith.</value>
+  </data>
+  <data name="check_the_status_of_your_application_on" xml:space="preserve">
+    <value>Gwiriwch statws eich cais ar</value>
+  </data>
+  <data name="you_resubmitted_your_organisation_data_to" xml:space="preserve">
+    <value>Rydych chi wedi ailgyflwyno data'ch sefydliad i</value>
+  </data>
 </root>

@@ -20,7 +20,12 @@
                     <p class="govuk-body">
                         @Localizer["ConfirmationOfRemoval.RemoveOrgFromFile", @Model.OrganisationName]
                     </p>
-                    
+
+                    <p class="govuk-body">
+                        @Localizer["ConfirmationOfRemoval.AddingOrRemovingMembers"]<a class="govuk-link" rel="noreferrer noopener" target="_blank"
+                                                                                      href="@GuidanceLinks.Value.PrnObligation">@Localizer["ConfirmationOfRemoval.GuidelinesForExtendedProducer"]</a>
+                    </p>
+
                     <ul class="govuk-list govuk-list govuk-list--spaced">
                         <h2 class="govuk-heading-s">@Localizer["ConfirmationOfRemoval.OrgLinkDesc"]</h2>
                         <li class="govuk-!-margin-bottom-4">

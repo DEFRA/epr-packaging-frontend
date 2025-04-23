@@ -37,11 +37,11 @@
 	<data name="small_producers_sentence_text_singular" xml:space="preserve">
     <value>Small producer</value>
   </data>
-  <data name="large_producers_sentence_text" xml:space="preserve">
-    <value>Large producers</value>
+  <data name="x_large_producers_sentence_text" xml:space="preserve">
+    <value>{0} Large producers</value>
   </data>
-	<data name="large_producers_sentence_text_singular" xml:space="preserve">
-    <value>Large producer</value>
+	<data name="x_large_producers_sentence_text_singular" xml:space="preserve">
+    <value>{0} Large producer</value>
   </data>
 	<data name="x_online_marketplaces_sentence_text" xml:space="preserve">
     <value>{0} are online marketplaces</value>
@@ -49,17 +49,17 @@
 	<data name="x_online_marketplaces_sentence_text_singular" xml:space="preserve">
     <value>{0} is an online marketplace</value>
   </data>
-	<data name="subsidiary_companies_sentence_text" xml:space="preserve">
-    <value>subsidiary companies</value>
+	<data name="x_subsidiary_companies_sentence_text" xml:space="preserve">
+    <value>{0} subsidiary companies</value>
   </data>
-	<data name="subsidiary_companies_sentence_text_singular" xml:space="preserve">
-    <value>subsidiary company</value>
+	<data name="x_subsidiary_companies_sentence_text_singular" xml:space="preserve">
+    <value>{0} subsidiary company</value>
   </data>
-  <data name="late_producer_fees_text" xml:space="preserve">
-    <value>late producer fees</value>
+  <data name="x_late_producer_fees_text" xml:space="preserve">
+    <value>{0} late producer fees</value>
   </data>
-  <data name="late_producer_fees_text_singular" xml:space="preserve">
-    <value>late producer fee</value>
+  <data name="x_late_producer_fees_text_singular" xml:space="preserve">
+    <value>{0} late producer fee</value>
   </data>
 	<data name="scheme_members" xml:space="preserve">
     <value>Scheme Members</value>

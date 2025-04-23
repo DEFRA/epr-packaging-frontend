@@ -118,19 +118,19 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="adding_and_removing_subsidiaries" xml:space="preserve">
-    <value>W Adding and removing subsidiaries</value>
+    <value>Ychwanegu a thynnu is-gwmnïau</value>
   </data>
   <data name="before_you_upload" xml:space="preserve">
-    <value>W Before you upload your file, make sure you're using the latest version of the</value>
+    <value>Cyn ichi uwchlwytho'ch ffeil, gofalwch eich bod yn defnyddio fersiwn diweddaraf</value>
   </data>
   <data name="companies_house_number" xml:space="preserve">
-    <value>W Companies House number</value>
+    <value>Rhif Tŷ'r Cwmnïau</value>
   </data>
   <data name="create_subsidiary_ids" xml:space="preserve">
-    <value>W Create subsidiary IDs</value>
+    <value>Creu IDs is-gwmnïau</value>
   </data>
   <data name="download_subsidiaries_list" xml:space="preserve">
-    <value>W Download subsidiaries list</value>
+    <value>Lawrlwytho rhestr is-gwmnïau</value>
   </data>
   <data name="joined" xml:space="preserve">
     <value>W Joined</value>
@@ -148,10 +148,10 @@
     <value>W Account home</value>
   </data>
   <data name="subsidiaries" xml:space="preserve">
-    <value>W Subsidiaries</value>
+    <value>Is-gwmnïau</value>
   </data>
   <data name="subsidiaries_list" xml:space="preserve">
-    <value>W Subsidiaries list</value>
+    <value>Rhestr is-gwmnïau</value>
   </data>
   <data name="subsidiaries_need_to_upload_csv" xml:space="preserve">
     <value>W To add subsidiaries you will need to upload a CSV file.</value>
@@ -163,48 +163,72 @@
     <value>W Subsidiaries will appear here after they have been processed.</value>
   </data>
   <data name="subsidiary_accuracy_warning_text" xml:space="preserve">
-    <value>W Check all the information you have provided is accurate. If any of it is incorrect or incomplete, you will need to provide the correct information. Use the subsidiary IDs for all future organisation details and packaging data submissions.</value>
+    <value>Gwiriwch fod yr holl wybodaeth rydych chi wedi'i darparu yn gywir. Os nad yw'n gywir neu os oes unrhyw wybodaeth ar goll, bydd angen ichi ddarparu'r data cywir. Defnyddiwch IDs yr is-gwmnïau ar gyfer holl fanylion y sefydliad a phob cyflwyniad data pecynwaith yn y dyfodol.</value>
   </data>
   <data name="subsidiary_file_template" xml:space="preserve">
-    <value>W subsidiary file template (opens in a new tab)</value>
+    <value>templed y ffeil is-gwmnïau (yn agor mewn tab newydd)</value>
   </data>
   <data name="subsidiary_id" xml:space="preserve">
-    <value>W Subsidiary ID</value>
+    <value>ID yr is-gwmni</value>
   </data>
   <data name="subsidiary_name" xml:space="preserve">
-    <value>W Subsidiary name</value>
+    <value>Enw'r is-gwmni</value>
   </data>
   <data name="text_assistive.warning" xml:space="preserve">
-    <value>W Warning</value>
+    <value>Rhybudd</value>
   </data>
   <data name="to_add_or_remove" xml:space="preserve">
-    <value>W To add or remove subsidiaries, you must</value>
+    <value>I ychwanegu neu dynnu is-gwmnïau, rhaid ichi</value>
   </data>
   <data name="update_and_resubmit" xml:space="preserve">
-    <value>W update and resubmit your registration file</value>
+    <value>ddiweddaru ac ailgyflwyno'ch ffeil gofrestru</value>
   </data>
   <data name="upload_subsidiary_file" xml:space="preserve">
-    <value>W Upload subsidiary file</value>
+    <value>Uwchlwytho ffeil is-gwmnïau</value>
   </data>
   <data name="use_the_file_upload" xml:space="preserve">
-    <value>W  Use the file upload to create subsidiary IDs – you will need these subsidiary IDs to add subsidiaries to your organisation.</value>
+    <value>Defnyddiwch uwchlwytho ffeil i greu IDs is-gwmnïau – bydd arnoch chi angen yr IDs is-gwmnïau yma er mwyn ychwanegu is-gwmnïau at eich sefydliad.</value>
   </data>
   <data name="within_28_days_of_the_change" xml:space="preserve">
-    <value>W within 28 days of the change. You will need to enter the subsidiary IDs to do this.</value>
+    <value>o fewn 28 diwrnod ar ôl y newid. Bydd angen ichi roi IDs yr is-gwmnïau er mwyn gwneud hyn.</value>
   </data>
   <data name="search_for_a_subsidiary_by" xml:space="preserve">
-    <value>W Search for a Subsidiary by name, ID or Companies House number</value>
+    <value>Chwilio am is-gwmni yn ôl enw, ID neu rif Tŷ'r Cwmnïau</value>
   </data>
   <data name="clear_and_reset" xml:space="preserve">
-    <value>W Clear and reset</value>
+    <value>Clirio ac ailosod</value>
   </data>
   <data name="search" xml:space="preserve">
     <value>Chwilio</value>
   </data>
-  <data name="subsidiaries_not_found" xml:space="preserve">
-    <value>W Subsidiary not found</value>
-  </data>
   <data name="subsidiary_not_found_message" xml:space="preserve">
     <value>W Make sure you entered the correct subsidiary name, ID or Companies House number. If you need to add a subsidiary to&lt;br /&gt;this parent company, use the file upload to create a subsidiary ID and then update and resubmit your registration file.</value>
+  </data>
+  <data name="subsidiary_not_found_resubmit_warning_text" xml:space="preserve">
+    <value>W If you need to add a subsidiary to this parent company, use the file upload to create a subsidiary ID and then update and resubmit your registration file.</value>
+  </data>
+  <data name="before_you_start" xml:space="preserve">
+    <value>W Before you start</value>
+  </data>
+  <data name="adding_removing_members_affect_packaging_obligations" xml:space="preserve">
+    <value>Gallai ychwanegu neu dynnu aelodau effeithio ar rwymedigaethau pecynwaith eich sefydliad – gofalwch eich bod wedi darllen y</value>
+  </data>
+  <data name="extended_producer_guidelines" xml:space="preserve">
+    <value>canllawiau ynghylch cyfrifoldeb estynedig cynhyrchwyr dros becynwaith (yn agor mewn tab newydd).</value>
+  </data>
+  <data name="upload_a_file" xml:space="preserve">
+    <value>Uwchlwytho ffeil</value>
+  </data>
+  <data name="subsidiaries_file_must_be" xml:space="preserve">
+    <value>W The file must be:</value>
+  </data>
+  <data name="subsidiaries_smaller_than_60kb" xml:space="preserve">
+    <value>W smaller than 60KB</value>
+  </data>
+  <data name="subsidiaries_in_csv_format" xml:space="preserve">
+    <value>W in CSV format</value>
+  </data>
+  <data name="few_minutes_to_upload_file" xml:space="preserve">
+    <value>W It may take a few minutes for your file to upload - do not close the window while the file is uploading.</value>
   </data>
 </root>

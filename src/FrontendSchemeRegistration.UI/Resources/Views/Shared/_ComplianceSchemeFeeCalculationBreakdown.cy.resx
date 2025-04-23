@@ -31,17 +31,17 @@
   <data name="compliance_scheme" xml:space="preserve">
     <value>Cynllun cydymffurfio</value>
   </data>
-	<data name="small_producers_sentence_text" xml:space="preserve">
-    <value>o gynhyrchwyr bach</value>
+	<data name="x_small_producers_sentence_text" xml:space="preserve">
+    <value>{0} o gynhyrchwyr bach</value>
   </data>
-	<data name="small_producers_sentence_text_singular" xml:space="preserve">
-    <value>Cynhyrchydd bach</value>
+	<data name="x_small_producers_sentence_text_singular" xml:space="preserve">
+    <value>{0} Cynhyrchydd bach</value>
   </data>
-	<data name="large_producers_sentence_text" xml:space="preserve">
-    <value>o gynhyrchwyr mawr</value>
+	<data name="x_large_producers_sentence_text" xml:space="preserve">
+    <value>{0} o gynhyrchwyr mawr</value>
   </data>
-	<data name="large_producers_sentence_text_singular" xml:space="preserve">
-    <value>Cynhyrchydd mawr</value>
+	<data name="x_large_producers_sentence_text_singular" xml:space="preserve">
+    <value>{0} Cynhyrchydd mawr</value>
   </data>
 	<data name="x_online_marketplaces_sentence_text" xml:space="preserve">
     <value>Mae {0} yn farchnadoedd ar-lein</value>
@@ -49,17 +49,17 @@
 	<data name="x_online_marketplaces_sentence_text_singular" xml:space="preserve">
     <value>Mae {0} yn farchnad ar-lein</value>
   </data>
-	<data name="subsidiary_companies_sentence_text" xml:space="preserve">
-    <value>o is-gwmnïau</value>
+	<data name="x_subsidiary_companies_sentence_text" xml:space="preserve">
+    <value>{0} o is-gwmnïau</value>
   </data>
-	<data name="subsidiary_companies_sentence_text_singular" xml:space="preserve">
-    <value>Mae yn is-gwmni</value>
+	<data name="x_subsidiary_companies_sentence_text_singular" xml:space="preserve">
+    <value>{0} Mae yn is-gwmni</value>
   </data>
-  <data name="late_producer_fees_text" xml:space="preserve">
-    <value>ffioedd cynhyrchydd hwyr</value>
+  <data name="x_late_producer_fees_text" xml:space="preserve">
+    <value>{0} ffioedd cynhyrchydd hwyr</value>
   </data>
-  <data name="late_producer_fees_text_singular" xml:space="preserve">
-    <value>ffi cynhyrchydd hwyr</value>
+  <data name="x_late_producer_fees_text_singular" xml:space="preserve">
+    <value>{0} ffi cynhyrchydd hwyr</value>
   </data>
 	<data name="scheme_members" xml:space="preserve">
     <value>Aelodau'r cynllun</value>

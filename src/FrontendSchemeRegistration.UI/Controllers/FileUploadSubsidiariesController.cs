@@ -67,6 +67,11 @@
         [FeatureGate(FeatureFlags.ShowSubsidiaries)]
         public async Task<IActionResult> SubsidiariesList([FromQuery] string searchTerm = "", int? page = 1)
         {
+            searchTerm = (searchTerm ?? string.Empty)
+                            .Replace("\t", "")
+                            .Replace("\\t", "")
+                            .Trim();
+
             if (page < 1)
             {
                 return RedirectToAction(nameof(SubsidiariesList), new { page = 1 });
