@@ -49,7 +49,7 @@
         <value>Rydych chi wedi gweld y ffi gofrestru ac wedi dewis dull talu</value>
     </data>
 	<data name="submit_registration_application" xml:space="preserve">
-        <value>Cyflwyno cais am gofrestru</value>
+        <value>cyflwyno’ch cais</value>    
     </data>
 	<data name="submit_amended_data" xml:space="preserve">
         <value>Cyflwyno data diwygiedig</value>

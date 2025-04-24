@@ -45,6 +45,7 @@ namespace FrontendSchemeRegistration.UI.Extensions
                 {
                     var resubmissionSession = resubmission.ToPackagingResubmissionApplicationSession(organisation);
 
+                    resubmissionTaskListModel.ApplicationStatus = resubmission.ApplicationStatus;
                     resubmissionTaskListModel.IsSubmitted = resubmissionSession.IsSubmitted;
                     resubmissionTaskListModel.IsResubmissionInProgress = resubmissionSession.IsResubmissionInProgress;
                     resubmissionTaskListModel.IsResubmissionComplete = resubmissionSession.IsResubmissionComplete;

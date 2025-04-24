@@ -15,7 +15,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Extensions
             // Arrange
             var organisation = new Organisation { Id = Guid.NewGuid() };
 
-            var packagingResubmissionApplicationDetails = new List<PackagingResubmissionApplicationDetails> 
+            var packagingResubmissionApplicationDetails = new List<PackagingResubmissionApplicationDetails>
             {
                 new PackagingResubmissionApplicationDetails
                 {
@@ -57,17 +57,17 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Extensions
         public void ToPackagingResubmissionApplicationSession_ShouldReturn_PackagingResubmissionApplicationSession_WhenValidInput()
         {
             // Arrange
-            var packagingResubmissionApplicationDetails = new PackagingResubmissionApplicationDetails 
-            { 
-                ApplicationReferenceNumber = "abc", 
+            var packagingResubmissionApplicationDetails = new PackagingResubmissionApplicationDetails
+            {
+                ApplicationReferenceNumber = "abc",
                 SubmissionId = Guid.NewGuid(),
             };
 
             var organisation = new Organisation { Id = Guid.NewGuid() };
 
-            var expected = new PackagingResubmissionApplicationSession 
-            { 
-                ApplicationReferenceNumber = "abc", 
+            var expected = new PackagingResubmissionApplicationSession
+            {
+                ApplicationReferenceNumber = "abc",
                 SubmissionId = packagingResubmissionApplicationDetails.SubmissionId
             };
 
@@ -90,7 +90,8 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Extensions
                 {
                     ApplicationReferenceNumber = "abc",
                     SubmissionId = Guid.NewGuid(),
-                }                
+                    ApplicationStatus = ApplicationStatusType.FileUploaded
+                }
             };
 
             var organisation = new Organisation { Id = Guid.NewGuid() };
@@ -102,6 +103,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Extensions
             result.Should().NotBeNull();
             result.Should().BeOfType<ResubmissionTaskListViewModel>();
             result.AppReferenceNumber.Should().Be(packagingResubmissionApplicationDetails.FirstOrDefault().ApplicationReferenceNumber);
+            result.ApplicationStatus.Should().Be(packagingResubmissionApplicationDetails.FirstOrDefault().ApplicationStatus);
         }
     }
 }

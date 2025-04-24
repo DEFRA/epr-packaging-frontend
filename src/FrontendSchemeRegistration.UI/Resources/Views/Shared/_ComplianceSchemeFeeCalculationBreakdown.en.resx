@@ -31,11 +31,11 @@
   <data name="compliance_scheme" xml:space="preserve">
     <value>Compliance scheme</value>
   </data>
-	<data name="small_producers_sentence_text" xml:space="preserve">
-    <value>Small producers</value>
+	<data name="x_small_producers_sentence_text" xml:space="preserve">
+    <value>{0} Small producers</value>
   </data>
-	<data name="small_producers_sentence_text_singular" xml:space="preserve">
-    <value>Small producer</value>
+	<data name="x_small_producers_sentence_text_singular" xml:space="preserve">
+    <value>{0} Small producer</value>
   </data>
   <data name="x_large_producers_sentence_text" xml:space="preserve">
     <value>{0} Large producers</value>
