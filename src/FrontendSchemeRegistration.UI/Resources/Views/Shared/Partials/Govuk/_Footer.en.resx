@@ -153,4 +153,10 @@
   <data name="Footer.Telephone" xml:space="preserve">
     <value>Telephone</value>
   </data>
+  <data name="Footer.GiveFeedback" xml:space="preserve">
+    <value>Give feedback on this service</value>
+  </data>
+  <data name="Footer.ReportAProblem" xml:space="preserve">
+    <value>Report a problem with this page</value>
+  </data>
 </root>
