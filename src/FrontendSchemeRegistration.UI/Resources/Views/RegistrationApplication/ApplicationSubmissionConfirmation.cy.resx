@@ -96,4 +96,16 @@
   <data name="you_resubmitted_your_organisation_data_to" xml:space="preserve">
     <value>Rydych chi wedi ailgyflwyno data'ch sefydliad i</value>
   </data>
+  <data name="you_can_resubmission" xml:space="preserve">
+    <value>Gallwch </value>
+  </data>
+	<data name="print_record_resubmission" xml:space="preserve">
+    <value>argraffu </value>
+  </data>
+	<data name="download_record_of_submission_as_PDF_resubmission" xml:space="preserve">
+    <value>cyflwyniad lawrlwytho fel PDF</value>
+  </data>
+	<data name="depending_on_your_browser_it_will_open_in_new_window_or_save_to_folder_resubmission" xml:space="preserve">
+    <value>(Gan ddibynnu ar eich porwr, bydd yn agor mewn ffesnestr neu dab newydd, neu'n cael ei gadw yn eich ffolder lawrlwythiadau.).</value>
+  </data>
 </root>

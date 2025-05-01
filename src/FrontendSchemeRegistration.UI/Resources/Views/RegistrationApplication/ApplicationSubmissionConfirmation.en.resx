@@ -96,4 +96,16 @@
 	<data name="you_resubmitted_your_organisation_data_to" xml:space="preserve">
         <value>You've resubmitted your organisation data to </value>
     </data>
+	<data name="you_can_resubmission" xml:space="preserve">
+        <value>You can </value>
+    </data>
+	<data name="print_record_resubmission" xml:space="preserve">
+        <value>print </value>
+    </data>
+	<data name="download_record_of_submission_as_PDF_resubmission" xml:space="preserve">
+        <value>download a record of submission as a PDF</value>
+    </data>
+	<data name="depending_on_your_browser_it_will_open_in_new_window_or_save_to_folder_resubmission" xml:space="preserve">
+        <value>(depending on your browser it will open in a new window or tab, or save to your download folder).</value>
+    </data>
 </root>
