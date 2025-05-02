@@ -33,15 +33,7 @@ namespace FrontendSchemeRegistration.UI.Controllers
                 OrganisationName = session.SubsidiarySession.Company?.Name
             };
 
-            await _sessionManager.UpdateSessionAsync(HttpContext.Session, x => x.SubsidiarySession = null);
-
-            return View(
-                "SubsidiaryAdded",
-                new SubsidiaryAddedViewModel
-                {
-                    OrganisationId = subsidiary.OrganisationId,
-                    OrganisationName = subsidiary.OrganisationName
-                });
+            return View("SubsidiaryAdded", subsidiary);
         }
     }
 }

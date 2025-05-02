@@ -79,24 +79,4 @@ public class SubsidiaryAddedControllerTests
         result?.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("SubsidiaryCompaniesHouseNumber");
     }
-
-    [Test]
-    public async Task Get_SubsidiaryAdded_Calls_UpdateSession()
-    {
-        // Act
-        await _systemUnderTest.Get();
-
-        // Assert
-        _sessionManagerMock.Verify(s => s.UpdateSessionAsync(It.IsAny<ISession>(), It.IsAny<Action<FrontendSchemeRegistrationSession>>()), Times.Once);
-    }
-
-    [Test]
-    public async Task Get_SubsidiaryAdded_Clears_SubsidiarySession()
-    {
-        // Act
-        await _systemUnderTest.Get();
-
-        // Assert
-        _session.SubsidiarySession.Should().BeNull();
-    }
 }

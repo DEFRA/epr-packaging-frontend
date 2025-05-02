@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Eventing.Reader;
 using FrontendSchemeRegistration.Application.DTOs.Addresses;
 
 namespace FrontendSchemeRegistration.UI.ViewModels;
@@ -13,4 +14,8 @@ public class SubsidiaryConfirmCompanyDetailsViewModel
     public Address? BusinessAddress { get; set; }
 
     public string? OrganisationId { get; set; }
+
+    public bool? IsCompanyAlreadyLinkedToTheParent { get; set; }
+
+    public string? ParentCompanyName { get; set; }
 }

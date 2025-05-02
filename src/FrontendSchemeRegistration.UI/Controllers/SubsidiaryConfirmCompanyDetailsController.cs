@@ -27,13 +27,16 @@ public class SubsidiaryConfirmCompanyDetailsController : Controller
             return RedirectToAction("Get", "SubsidiaryCompaniesHouseNumber");
         }
 
+        
         ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.SubsidiaryCompaniesHouseNumberSearch}");
 
         var viewModel = new SubsidiaryConfirmCompanyDetailsViewModel
         {
             CompanyName = session.SubsidiarySession.Company?.Name,
             CompaniesHouseNumber = session.SubsidiarySession.Company?.CompaniesHouseNumber,
-            BusinessAddress = session.SubsidiarySession.Company?.BusinessAddress
+            BusinessAddress = session.SubsidiarySession.Company?.BusinessAddress,
+            IsCompanyAlreadyLinkedToTheParent = session.SubsidiarySession.Company?.IsCompanyAlreadyLinkedToTheParent,
+            ParentCompanyName = session.UserData.Organisations?.FirstOrDefault()?.Name,
         };
 
         return View("SubsidiaryConfirmCompanyDetails", viewModel);
@@ -46,6 +49,11 @@ public class SubsidiaryConfirmCompanyDetailsController : Controller
         {
             ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.SubsidiaryCompaniesHouseNumberSearch}");
             return View("SubsidiaryConfirmCompanyDetails", model);
+        }
+
+        if (model.IsCompanyAlreadyLinkedToTheParent != null && model.IsCompanyAlreadyLinkedToTheParent.Value)
+        {
+            return RedirectToAction("Get", "SubsidiaryCompaniesHouseNumber");
         }
 
         return RedirectToAction("Get", "SubsidiaryLocation");

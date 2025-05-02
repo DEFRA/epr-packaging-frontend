@@ -231,4 +231,13 @@
   <data name="few_minutes_to_upload_file" xml:space="preserve">
     <value>It may take a few minutes for your file to upload - do not close the window while the file is uploading.</value>
   </data>
+  <data name="add_a_single_subsidiary" xml:space="preserve">
+    <value>Add a single subsidiary</value>
+  </data>
+  <data name="add_a_single_subsidiary_to_this_producer" xml:space="preserve">
+    <value>Add a single subsidiary to this producer</value>
+  </data>
+  <data name="subsidiary_not_found_resubmit_with_add_single_subsidiary" xml:space="preserve">
+    <value>If you need to add a subsidiary to this parent company, click on add a single subsidiary button below or use the file upload to create a subsidiary ID and then update and resubmit your registration file.</value>
+  </data>
 </root>

@@ -27,5 +27,7 @@ public class GuidanceLinkOptions
 
     public string YouCanPaySEPA { get; set; }
 
+    public string MakeChangesToYourLimitedCompany { get; set; }
+
     public string PrnObligation { get; set; }
 }

@@ -118,10 +118,10 @@
     <value>Hafan</value>
   </data>
   <data name="subsidiaries" xml:space="preserve">
-    <value>is-gwmnïau</value>
+    <value>Is-gwmni</value>
   </data>
   <data name="add-manage-subsidiaries" xml:space="preserve">
-    <value>Ychwanegu a rheoli’ch is-gwmnïau.</value>
+    <value>Ychwanegu un is-gwmni</value>
   </data>
   <data name="prn_heading_text" xml:space="preserve">
     <value>Rheoli'ch rhwymedigaethau ailgylchu ar gyfer {0}</value>

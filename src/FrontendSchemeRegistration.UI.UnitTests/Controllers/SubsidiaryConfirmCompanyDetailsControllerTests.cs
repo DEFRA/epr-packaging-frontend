@@ -19,8 +19,8 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
 
 public class SubsidiaryConfirmCompanyDetailsControllerTests
 {
-    private const string CompaniesHouseNumber = "OE029546";
-    private const string CompanyName = "EVIDEN UK INTERNATIONAL LIMITED";
+    private const string CompaniesHouseNumber = "07073807";
+    private const string CompanyName = "MICROTEC INFORMATION SYSTEMS LTD";
     private const string NewSubsidiaryId = "123456";
 
     private Mock<HttpContext> _httpContextMock;
@@ -155,7 +155,7 @@ public class SubsidiaryConfirmCompanyDetailsControllerTests
     public async Task Post_SubsidiaryConfirmCompanyDetails()
     {
         // Act
-        var result = await _subsidiaryConfirmCompanyDetailsController.Post(new SubsidiaryConfirmCompanyDetailsViewModel { CompaniesHouseNumber = CompaniesHouseNumber }) as RedirectToActionResult;
+        var result = await _subsidiaryConfirmCompanyDetailsController.Post(new SubsidiaryConfirmCompanyDetailsViewModel { CompaniesHouseNumber = CompaniesHouseNumber, IsCompanyAlreadyLinkedToTheParent = false }) as RedirectToActionResult;
 
         // Assert
         result?.ActionName.Should().Be("Get");
@@ -170,7 +170,7 @@ public class SubsidiaryConfirmCompanyDetailsControllerTests
             .ModelState
             .AddModelError(nameof(SubsidiaryConfirmCompanyDetailsViewModel.CompaniesHouseNumber), "CompaniesHouseNumber.Error");
 
-        var result = await _subsidiaryConfirmCompanyDetailsController.Post(new SubsidiaryConfirmCompanyDetailsViewModel { CompaniesHouseNumber = CompaniesHouseNumber }) as ViewResult;
+        var result = await _subsidiaryConfirmCompanyDetailsController.Post(new SubsidiaryConfirmCompanyDetailsViewModel { CompaniesHouseNumber = CompaniesHouseNumber, IsCompanyAlreadyLinkedToTheParent = true }) as ViewResult;
 
         // Assert
         result.ViewName.Should().Be("SubsidiaryConfirmCompanyDetails");
@@ -181,6 +181,15 @@ public class SubsidiaryConfirmCompanyDetailsControllerTests
 
         var viewModel = (result as ViewResult).Model as SubsidiaryConfirmCompanyDetailsViewModel;
         viewModel.CompaniesHouseNumber.Should().Be(CompaniesHouseNumber);
+    }
+
+    [Test]
+    public async Task Post_SubsidiaryConfirmCompanyDetails_With_IsCompnayAlreadyLinkedToTheParent()
+    {
+        var result = await _subsidiaryConfirmCompanyDetailsController.Post(new SubsidiaryConfirmCompanyDetailsViewModel { CompaniesHouseNumber = CompaniesHouseNumber, IsCompanyAlreadyLinkedToTheParent = true }) as RedirectToActionResult;
+
+        result?.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("SubsidiaryCompaniesHouseNumber");
     }
 
     private void SetUpConfigOption()

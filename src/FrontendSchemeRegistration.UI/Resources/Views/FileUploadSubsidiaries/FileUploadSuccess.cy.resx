@@ -156,10 +156,10 @@
   <data name="download_subsidiaries_list" xml:space="preserve">
     <value>Lawrlwytho rhestr is-gwmnïau</value>
   </data>
-  <data name="adding_or_removing_members_might_affect_your_organisation" xml:space="preserve">
+	<data name="adding_or_removing_members_might_affect_your_organisation" xml:space="preserve">
     <value>Gallai ychwanegu neu dynnu aelodau effeithio ar rwymedigaethau pecynwaith eich sefydliad – gofalwch eich bod wedi darllen y</value>
   </data>
-  <data name="guidelines_for_extended_producer_responsibility" xml:space="preserve">
+	<data name="guidelines_for_extended_producer_responsibility" xml:space="preserve">
     <value>canllawiau ynghylch cyfrifoldeb estynedig cynhyrchwyr dros becynwaith (yn agor mewn tab newydd).</value>
   </data>
 </root>

@@ -252,4 +252,19 @@
   <data name="use_the_file_upload" xml:space="preserve">
     <value>Use the file upload to create subsidiary IDs – you will need these subsidiary IDs to add subsidiaries to your organisation.</value>
   </data>
+  <data name="manage_subsidiaries" xml:space="preserve">
+    <value>Manage subsidiaries</value>
+  </data>
+  <data name="producer_label" xml:space="preserve">
+    <value>Producer</value>
+  </data>
+  <data name="regulator_label" xml:space="preserve">
+    <value>Regulator</value>
+  </data>
+  <data name="subsidiaries_label" xml:space="preserve">
+    <value>Subsidiaries</value>
+  </data>
+  <data name="add_a_single_subsidiary" xml:space="preserve">
+    <value>Add a single subsidiary</value>
+  </data>
 </root>

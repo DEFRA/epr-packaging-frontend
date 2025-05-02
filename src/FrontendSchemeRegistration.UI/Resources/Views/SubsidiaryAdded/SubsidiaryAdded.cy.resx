@@ -118,30 +118,30 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="manage_subsidiaries" xml:space="preserve">
-    <value>WManage subsidiaries</value>
+    <value>Rheoli is-gwmnïau</value>
   </data>
   <data name="page_title_subsidiary_added" xml:space="preserve">
-    <value>WSubsidiary added</value>
+    <value>Is-gwmni wedi’i ychwanegu</value>
   </data>
   <data name="subsidiary_added" xml:space="preserve">
-    <value>WSubsidiary added</value>
+    <value>Is-gwmni wedi’i ychwanegu</value>
   </data>
   <data name="what_happens_next" xml:space="preserve">
-    <value>WWhat happens next</value>
+    <value>Beth sy’n digwydd nesaf</value>
   </data>
   <data name="when_you_report_on_this_subsidiary" xml:space="preserve">
-    <value>WWhen you report on this subsidiary use the following ID</value>
+    <value>Pan fyddwch chi’n rhoi gwybodaeth am yr is-gwmni yma, defnyddiwch yr ID canlynol</value>
   </data>
   <data name="subsidiary_id_for" xml:space="preserve">
-    <value>WSubsidiary ID for</value>
+    <value>ID is-gwmni ar gyfer </value>
   </data>
   <data name="you_have_linked_this_subsidiary" xml:space="preserve">
-    <value>WYou have linked this subsidiary to your report packaging data account.</value>
+    <value>Rydych chi wedi cysylltu'r is-gwmni yma â'ch cyfrif rhoi gwybod am ddata pecynwaith.</value>
   </data>
   <data name="view_subsidiaries" xml:space="preserve">
-    <value>WView subsidiaries</value>
+    <value>Gweld is-gwmnïau </value>
   </data>
   <data name="return_to_account_home" xml:space="preserve">
-    <value>WReturn to account home</value>
+    <value>Dychwelyd i hafan y cyfrif</value>
   </data>
 </root>

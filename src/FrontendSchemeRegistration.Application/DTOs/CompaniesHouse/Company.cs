@@ -34,4 +34,8 @@ public class Company
     public bool AccountExists => AccountCreatedOn is not null;
 
     public DateTimeOffset? AccountCreatedOn { get; set; }
+
+    public bool? IsCompanyAlreadyLinkedToTheParent { get; set; }
+
+    public string? ParentCompanyName { get; set; }
 }

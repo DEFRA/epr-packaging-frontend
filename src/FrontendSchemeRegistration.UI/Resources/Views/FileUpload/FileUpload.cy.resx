@@ -232,7 +232,7 @@
       <value>Gall eich ffeil gymryd sawl munud i uwchlwytho. Peidiwch â chau'r ffenestr tra bo'r ffeil wrthi'n uwchlwytho.</value>
   </data>
   <data name="the_file_must_be:" xml:space="preserve">
-      <value>Rhaid i'r ffeil fod:</value>
+      <value> Rhaid i’r ffeil fod:</value>
   </data>
   <data name="file_must_be_a_csv" xml:space="preserve">
     <value>yn ffeil CSV</value>

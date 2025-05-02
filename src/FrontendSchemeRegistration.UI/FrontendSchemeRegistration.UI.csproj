@@ -105,6 +105,7 @@
             <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
             <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
         </Content>
+        <Content Remove="libman.json" />
         <Content Remove="Views\ComplianceSchemeConfirmation\Confirm.cshtml" />
         <Content Remove="Views\HomePageComplianceScheme\HomePageComplianceScheme.cshtml" />
         <Content Remove="Views\ChangeComplianceSchemeOptions\ChangeComplianceSchemeOptions.cshtml" />

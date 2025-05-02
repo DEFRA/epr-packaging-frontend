@@ -19,22 +19,22 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="CompaniesHouseNumber.ErrorMessage" xml:space="preserve">
-        <value>Rhowch eich rhif Tŷ’r Cwmnïau</value>
+        <value>Rhowch Rif Tŷ'r Cwmnïau</value>
     </data>
   <data name="CompaniesHouseNumber.Hint" xml:space="preserve">
     <value>Mae hwn hefyd yn cael ei alw’n rhif cofrestru cwmni. Dylai fod yn 8 cymeriad, er enghraifft: 01234567 neu AC012345.</value>
   </data>
   <data name="CompaniesHouseNumber.LinkDescription" xml:space="preserve">
-    <value>Dod o hyd i’ch rhif ar Dŷ’r Cwmnïau (yn agor mewn tab newydd)</value>
+    <value>Dod o hyd i rif Tŷ'r Cwmnïau (yn agor mewn tab newydd)</value>
   </data>
   <data name="CompaniesHouseNumber.LookupFailed" xml:space="preserve">
     <value>WCompanies House lookup failed. Please try again</value>
   </data>
   <data name="CompaniesHouseNumber.NotFoundError" xml:space="preserve">
-    <value>Dyw’r rhif rydych chi wedi’i roi ddim ar gofrestr Tŷ’r Cwmnïau &lt;br /&gt; Rhowch rif Tŷ’r Cwmnïau dilys</value>
+    <value>Rhif Tŷ'r Cwmnïau heb ei ganfod</value>
   </data>
   <data name="CompaniesHouseNumber.Question" xml:space="preserve">
-    <value>Beth yw eich rhif Tŷ’r Cwmnïau?</value>
+    <value>Beth yw rhif Tŷ'r Cwmnïau yr is-gwmni?</value>
   </data>
   <data name="CompaniesHouseNumber.Title" xml:space="preserve">
     <value>Rhif Tŷ’r Cwmnïau</value>

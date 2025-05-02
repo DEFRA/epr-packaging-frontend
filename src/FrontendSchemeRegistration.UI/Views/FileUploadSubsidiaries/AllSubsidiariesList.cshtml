@@ -13,6 +13,15 @@
     var reportingHeader = Localizer["reporting"];
     var removeSubsidiaryLinkText = Localizer["remove_subsidiary"];
     var hasSubsidiaries = Model.Subsidiaries.Count > 0;
+    var isDirectProducer = Model.IsDirectProducer;
+    var isSingleUploadJourneyEnabled = await FeatureManager.IsEnabledAsync(FeatureFlags.ShowSubsidiariesSingleUploadJourney);
+
+    var subsidiaryNotFoundWarningText = isSingleUploadJourneyEnabled
+      ? Localizer["subsidiary_not_found_resubmit_with_add_single_subsidiary"]
+      : Localizer["subsidiary_not_found_resubmit_warning_text"];
+
+    var createSubsidiaryIdLink = isDirectProducer && isSingleUploadJourneyEnabled ? "#add_single_subsidiary_button" : "#create-subsidiary";
+
 }
 
 @inject Microsoft.FeatureManagement.IFeatureManager FeatureManager
@@ -103,7 +112,7 @@
                         <div class="govuk-grid-column-full">
                             <div class="govuk-button-group">
                                 <a class="govuk-button govuk-button--secondary" href="@Url.Action("SubsidiariesDownload", "FileUploadSubsidiaries")" role="button" data-module="govuk-button">@Localizer["download_subsidiaries_list"]</a>
-                                <a class="govuk-link" href="#create-subsidiary">@Localizer["create_subsidiary_ids"]</a>
+                                <a class="govuk-link" href="@createSubsidiaryIdLink">@Localizer["create_subsidiary_ids"]</a>
                             </div>
                         </div>
                     </div>
@@ -166,9 +175,17 @@
                     <div class="govuk-grid-row">
                         <div class="govuk-grid-column-two-thirds">
                             <div class="govuk-inset-text">
-                                <p>@Localizer["subsidiary_not_found_resubmit_warning_text"]</p>
+                                <p>@subsidiaryNotFoundWarningText</p>
 
                             </div>
+
+                            @if (isDirectProducer && isSingleUploadJourneyEnabled)
+                            {
+                                <a id="add_single_subsidiary_button" class="govuk-button" href="@Url.Action("Get", "SubsidiaryCompaniesHouseNumber")">
+                                    @Localizer["add_a_single_subsidiary"]
+                                </a>
+                            }
+
                             <h2 class="govuk-heading-m">@Localizer["before_you_start"]</h2>
                             <p class="govuk-body">
                                 @Localizer["before_you_upload"]
@@ -201,6 +218,17 @@
                 {
                     <div class="govuk-grid-row">
                         <div class="govuk-grid-column-two-thirds">
+
+                            @if (isDirectProducer && isSingleUploadJourneyEnabled)
+                            {
+                                <div class="govuk-inset-text">
+                                    <p>@subsidiaryNotFoundWarningText</p>
+                                </div>
+
+                                <a id="add_single_subsidiary_button" class="govuk-button" href="@Url.Action("Get", "SubsidiaryCompaniesHouseNumber")">
+                                    @Localizer["add_a_single_subsidiary"]
+                                </a>
+                            }
 
                             <h2 class="govuk-heading-m">@Localizer["create_subsidiary_ids"]</h2>
                             <p class="govuk-body">

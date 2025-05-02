@@ -117,37 +117,37 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="adding_and_removing_subsidiaries" xml:space="preserve">
+    <value />
+  </data>
+  <data name="before_you_upload" xml:space="preserve">
+    <value />
+  </data>
   <data name="companies_house_number" xml:space="preserve">
     <value />
   </data>
-  <data name="companies_house_number_heading" xml:space="preserve">
+  <data name="create_subsidiary_ids" xml:space="preserve">
     <value />
   </data>
-  <data name="remove_subsidiary" xml:space="preserve">
+  <data name="download_subsidiaries_list" xml:space="preserve">
     <value />
   </data>
-  <data name="few_minutes_to_upload_file" xml:space="preserve">
-    <value />
-  </data>
-  <data name="file_specification" xml:space="preserve">
-    <value />
-  </data>
-  <data name="normal_header" xml:space="preserve">
+  <data name="joined" xml:space="preserve">
     <value />
   </data>
   <data name="no_ch_number" xml:space="preserve">
     <value />
   </data>
-  <data name="no_subsidiaries_added" xml:space="preserve">
+  <data name="remove_subsidiary" xml:space="preserve">
     <value />
   </data>
-  <data name="organisation_id_heading" xml:space="preserve">
+  <data name="reporting" xml:space="preserve">
     <value />
   </data>
-  <data name="subsidiaries_file_must_be" xml:space="preserve">
+  <data name="return_to_account_home" xml:space="preserve">
     <value />
   </data>
-  <data name="subsidiaries_in_csv_format" xml:space="preserve">
+  <data name="subsidiaries" xml:space="preserve">
     <value />
   </data>
   <data name="subsidiaries_list" xml:space="preserve">
@@ -156,13 +156,16 @@
   <data name="subsidiaries_need_to_upload_csv" xml:space="preserve">
     <value />
   </data>
-  <data name="subsidiaries_smaller_than_60kb" xml:space="preserve">
+  <data name="subsidiaries_not_found" xml:space="preserve">
     <value />
   </data>
-  <data name="subsidiaries_upload_your_file" xml:space="preserve">
+  <data name="subsidiaries_will_appear" xml:space="preserve">
     <value />
   </data>
   <data name="subsidiary_accuracy_warning_text" xml:space="preserve">
+    <value />
+  </data>
+  <data name="subsidiary_file_template" xml:space="preserve">
     <value />
   </data>
   <data name="subsidiary_id" xml:space="preserve">
@@ -171,103 +174,70 @@
   <data name="subsidiary_name" xml:space="preserve">
     <value />
   </data>
-  <data name="subsidiary_remove" xml:space="preserve">
-    <value />
-  </data>
-  <data name="how_to_complete_file" xml:space="preserve">
-    <value />
-  </data>
-  <data name="upload_a_file" xml:space="preserve">
-    <value />
-  </data>
-  <data name="no_subsidiaries_msg" xml:space="preserve">
-    <value />
-  </data>
-  <data name="return_to_account_home" xml:space="preserve">
-    <value />
-  </data>
-  <data name="you_have_not_added_any_subsidiaries" xml:space="preserve">
-    <value />
-  </data>
-  <data name="you_have_not_added_any_subsidiaries_for_your_members" xml:space="preserve">
-    <value />
-  </data>
-  <data name="subsidiaries_will_appear" xml:space="preserve">
-    <value />
-  </data>
-  <data name="adding_subsidiaries" xml:space="preserve">
-    <value />
-  </data>
-  <data name="upload_a_csv_file" xml:space="preserve">
-    <value />
-  </data>
-  <data name="download_subsidiaries_list" xml:space="preserve">
-    <value />
-  </data>
-  <data name="how_to_create_your_subsidiary" xml:space="preserve">
-    <value />
-  </data>
-  <data name="informing_us_of_a_change" xml:space="preserve">
-    <value />
-  </data>
-  <data name="if_any_of_your_subsidiaries" xml:space="preserve">
-    <value />
-  </data>
-  <data name="updating_and_resubmitting" xml:space="preserve">
-    <value />
-  </data>
-  <data name="removing_subsidiaries" xml:space="preserve">
-    <value />
-  </data>
-  <data name="update_and_resubmit" xml:space="preserve">
-    <value />
-  </data>
-  <data name="to_permanently_remove_subsidiaries" xml:space="preserve">
-    <value />
-  </data>
-  <data name="joined" xml:space="preserve">
-    <value />
-  </data>
-  <data name="within_28_days_of_the_change" xml:space="preserve">
-    <value />
-  </data>
-  <data name="reporting" xml:space="preserve">
-    <value />
-  </data>
-  <data name="create_subsidiary_ids" xml:space="preserve">
-    <value />
-  </data>
-  <data name="upload_subsidiary_file" xml:space="preserve">
-    <value />
-  </data>
-  <data name="before_you_upload" xml:space="preserve">
-    <value />
-  </data>
-  <data name="subsidiary_file_template" xml:space="preserve">
-    <value />
-  </data>
-  <data name="adding_and_removing_subsidiaries" xml:space="preserve">
+  <data name="text_assistive.warning" xml:space="preserve">
     <value />
   </data>
   <data name="to_add_or_remove" xml:space="preserve">
     <value />
   </data>
+  <data name="update_and_resubmit" xml:space="preserve">
+    <value />
+  </data>
+  <data name="upload_subsidiary_file" xml:space="preserve">
+    <value />
+  </data>
   <data name="use_the_file_upload" xml:space="preserve">
     <value />
   </data>
-  <data name="manage_subsidiaries" xml:space="preserve">
+  <data name="within_28_days_of_the_change" xml:space="preserve">
     <value />
   </data>
-  <data name="producer_label" xml:space="preserve">
+  <data name="search_for_a_subsidiary_by" xml:space="preserve">
     <value />
   </data>
-  <data name="regulator_label" xml:space="preserve">
+  <data name="clear_and_reset" xml:space="preserve">
     <value />
   </data>
-  <data name="subsidiaries_label" xml:space="preserve">
+  <data name="search" xml:space="preserve">
+    <value />
+  </data>
+  <data name="subsidiary_not_found_message" xml:space="preserve">
+    <value />
+  </data>
+  <data name="subsidiary_not_found_resubmit_warning_text" xml:space="preserve">
+    <value />
+  </data>
+  <data name="before_you_start" xml:space="preserve">
+    <value />
+  </data>
+  <data name="adding_removing_members_affect_packaging_obligations" xml:space="preserve">
+    <value />
+  </data>
+  <data name="extended_producer_guidelines" xml:space="preserve">
+    <value />
+  </data>
+  <data name="upload_a_file" xml:space="preserve">
+    <value />
+  </data>
+  <data name="subsidiaries_file_must_be" xml:space="preserve">
+    <value />
+  </data>
+  <data name="subsidiaries_smaller_than_60kb" xml:space="preserve">
+    <value />
+  </data>
+  <data name="subsidiaries_in_csv_format" xml:space="preserve">
+    <value />
+  </data>
+  <data name="few_minutes_to_upload_file" xml:space="preserve">
     <value />
   </data>
   <data name="add_a_single_subsidiary" xml:space="preserve">
+    <value />
+  </data>
+  <data name="add_a_single_subsidiary_to_this_producer" xml:space="preserve">
+    <value />
+  </data>
+  <data name="subsidiary_not_found_resubmit_with_add_single_subsidiary" xml:space="preserve">
     <value />
   </data>
 </root>

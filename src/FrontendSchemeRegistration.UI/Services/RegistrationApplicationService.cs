@@ -186,7 +186,7 @@ public class RegistrationApplicationService(
                 SubmissionDate = session.LastSubmittedFile.SubmittedDateTime.Value,
                 ComplianceSchemeMembers = feeCalculationDetails.Select(c => new ComplianceSchemePaymentCalculationRequestMember
                 {
-                    IsLateFeeApplicable = session.IsLateFeeApplicable,
+                    IsLateFeeApplicable = session.IsLateFeeApplicable && c.IsNewJoiner,
                     IsOnlineMarketplace = c.IsOnlineMarketplace,
                     MemberId = c.OrganisationId,
                     MemberType = c.OrganisationSize,

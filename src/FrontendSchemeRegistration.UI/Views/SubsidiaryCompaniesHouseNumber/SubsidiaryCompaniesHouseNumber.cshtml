@@ -28,8 +28,16 @@
                             @Localizer["CompaniesHouseNumber.Hint"]
                         </div>
                      
+                        @if (ViewData.ModelState.TryGetValue(nameof(Model.CompaniesHouseNumber), out var entry) && entry.Errors.Any())
+                        {
+                            <p class="govuk-error-message">
+                                <span class="govuk-visually-hidden">@SharedLocalizer["hidden_error"]</span>
+                                @Localizer[entry.Errors[0].ErrorMessage]
+                            </p>
+                        }
                         <div class="govuk-form-group">
-                            <input class="govuk-input govuk-input--width-10 @Html.Raw(ViewData.ModelState.Count>0?"govuk-input--error":"")" type="text"
+                            <input class="govuk-input govuk-input--width-10" type="text"
+                                   type="text"
                                    gov-for="CompaniesHouseNumber"
                                    gov-value="@Model.CompaniesHouseNumber"
                                    aria-describedby="CompaniesHouseNumber-hint">
@@ -37,11 +45,11 @@
                     </div>
                     
                     <div class="govuk-body">
-                        <a href="@ViewBag.FindAndUpdateCompanyInformationLink" class="govuk-link" target="_blank">@Localizer["CompaniesHouseNumber.LinkDescription"]</a>
+                        <a href="@ViewBag.FindAndUpdateCompanyInformationLink" class="govuk-link" target="_blank" rel="noopener noreferrer">@Localizer["CompaniesHouseNumber.LinkDescription"]</a>
                     </div>
 
                     <button class="govuk-button" data-module="govuk-button">
-                        @SharedLocalizer["Continue"]
+                        @SharedLocalizer["continue"]
                     </button>
                 </form>
             </div>

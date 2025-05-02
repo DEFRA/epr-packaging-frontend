@@ -1,4 +1,5 @@
-﻿using EPR.Common.Authorization.Constants;
+﻿using Azure;
+using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.CompaniesHouse;
@@ -23,17 +24,20 @@ public class SubsidiaryCompaniesHouseNumberController : Controller
     private readonly ICompaniesHouseService _companiesHouseService;
     private readonly ILogger<SubsidiaryCompaniesHouseNumberController> _logger;
     private readonly ExternalUrlOptions _urlOptions;
+    private readonly ISubsidiaryService _subsidiaryService;
 
     public SubsidiaryCompaniesHouseNumberController(
         IOptions<ExternalUrlOptions> urlOptions,
         ICompaniesHouseService companiesHouseService,
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
+        ISubsidiaryService subsidiaryService,
         ILogger<SubsidiaryCompaniesHouseNumberController> logger)
     {
         _sessionManager = sessionManager;
         _urlOptions = urlOptions.Value;
         _companiesHouseService = companiesHouseService;
         _logger = logger;
+        _subsidiaryService = subsidiaryService;
     }
 
     [HttpGet]
@@ -41,7 +45,7 @@ public class SubsidiaryCompaniesHouseNumberController : Controller
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
 
-        SetBackLink(session, PagePaths.SubsidiaryCompaniesHouseNumberSearch, Url.Content($"~{PagePaths.FileUpload}"));
+        SetBackLink(session, PagePaths.SubsidiaryCompaniesHouseNumberSearch);
 
         if (_urlOptions.FindAndUpdateCompanyInformation is not null)
         {
@@ -69,7 +73,7 @@ public class SubsidiaryCompaniesHouseNumberController : Controller
 
         if (!ModelState.IsValid)
         {
-            SetBackLink(session, PagePaths.SubsidiaryCompaniesHouseNumberSearch, Url.Content($"~{PagePaths.FileUpload}"));
+            SetBackLink(session, PagePaths.SubsidiaryCompaniesHouseNumberSearch);
 
             ViewBag.FindAndUpdateCompanyInformationLink = _urlOptions.FindAndUpdateCompanyInformation;
 
@@ -82,7 +86,25 @@ public class SubsidiaryCompaniesHouseNumberController : Controller
         model.CompaniesHouseNumber = model.CompaniesHouseNumber?.Trim();
         try
         {
+            //child to add
             company = await _companiesHouseService.GetCompanyByCompaniesHouseNumber(model.CompaniesHouseNumber);
+            if (company != null)
+            {
+                var currentOrgRefNumber = session.UserData?.Organisations?.FirstOrDefault()?.OrganisationNumber;
+                var parentCompanyDetails = await _subsidiaryService.GetOrganisationByReferenceNumber(currentOrgRefNumber);
+                var parentOrgWithChildren = await _subsidiaryService.GetOrganisationSubsidiaries(parentCompanyDetails.ExternalId);
+
+                var currentCompanySubList = parentOrgWithChildren?.Relationships.Where(s => s.CompaniesHouseNumber.Equals(company.CompaniesHouseNumber, StringComparison.OrdinalIgnoreCase)).ToList();
+                if (company != null && currentCompanySubList != null && currentCompanySubList.Count > 0)
+                {
+                    company.IsCompanyAlreadyLinkedToTheParent = true;
+                    company.ParentCompanyName = parentCompanyDetails.Name;
+                }
+                else if (company != null)
+                {
+                    company.IsCompanyAlreadyLinkedToTheParent = false;
+                }
+            }
         }
         catch (Exception exception)
         {
@@ -97,12 +119,10 @@ public class SubsidiaryCompaniesHouseNumberController : Controller
         if (company == null)
         {
             ModelState.AddModelError(nameof(SubsidiaryCompaniesHouseNumberViewModel.CompaniesHouseNumber), "CompaniesHouseNumber.NotFoundError");
-
-            SetBackLink(session, PagePaths.SubsidiaryCompaniesHouseNumberSearch, Url.Content($"~{PagePaths.FileUpload}"));
+            SetBackLink(session, PagePaths.SubsidiaryCompaniesHouseNumberSearch);
             ViewBag.FindAndUpdateCompanyInformationLink = _urlOptions.FindAndUpdateCompanyInformation;
             TempData["ModelState"] = SerializeModelState(ModelState);
             TempData["CompaniesHouseNumber"] = model.CompaniesHouseNumber;
-
             return RedirectToAction(nameof(Get));
         }
 
@@ -128,7 +148,7 @@ public class SubsidiaryCompaniesHouseNumberController : Controller
         await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
     }
 
-    private void SetBackLink(FrontendSchemeRegistrationSession session, string currentPagePath, string defaultPath = "")
+    private void SetBackLink(FrontendSchemeRegistrationSession session, string currentPagePath)
     {
         if (session.SubsidiarySession?.IsUserChangingDetails == true && currentPagePath != PagePaths.SubsidiaryCheckYourDetails)
         {
@@ -136,7 +156,12 @@ public class SubsidiaryCompaniesHouseNumberController : Controller
         }
         else
         {
-            ViewBag.BackLinkToDisplay = session.SubsidiarySession?.Journey?.PreviousOrDefault(currentPagePath) ?? defaultPath;
+            var journey = session.SubsidiarySession?.Journey;
+            var backLink = journey?.Contains(currentPagePath) == true
+                ? journey.PreviousOrDefault(currentPagePath)
+                : null;
+
+            ViewBag.BackLinkToDisplay = backLink ?? Url.Content($"~{PagePaths.FileUploadSubsidiaries}");
         }
     }
 

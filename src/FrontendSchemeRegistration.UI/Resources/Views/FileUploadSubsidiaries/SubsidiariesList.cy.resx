@@ -172,7 +172,7 @@
     <value>Enw’r is-gwmni</value>
   </data>
   <data name="subsidiary_remove" xml:space="preserve">
-    <value>W Remove</value>
+    <value>Tynnu</value>
   </data>
   <data name="how_to_complete_file" xml:space="preserve">
     <value>W How to create your subsidiaries file (opens in a new tab)</value>
@@ -202,7 +202,7 @@
     <value>w_Upload a CSV file</value>
   </data>
   <data name="download_subsidiaries_list" xml:space="preserve">
-    <value>WDownload subsidiaries list</value>
+    <value>Lawrlwytho rhestr is-gwmnïau</value>
   </data>
   <data name="how_to_create_your_subsidiary" xml:space="preserve">
     <value>WHow to create your subsidiary file (opens in a new tab)</value>
@@ -254,5 +254,20 @@
   </data>
   <data name="use_the_file_upload" xml:space="preserve">
     <value>WUse the file upload to create subsidiary IDs - you will need these subsidiary IDs to add subsidiaries to your organisation.</value>
+  </data>
+  <data name="manage_subsidiaries" xml:space="preserve">
+    <value>Rheoli is-gwmnïau</value>
+  </data>
+  <data name="producer_label" xml:space="preserve">
+    <value>W_producer</value>
+  </data>
+  <data name="regulator_label" xml:space="preserve">
+    <value>W_regulator</value>
+  </data>
+  <data name="subsidiaries_label" xml:space="preserve">
+    <value>Is-gwmnïau</value>
+  </data>
+  <data name="add_a_single_subsidiary" xml:space="preserve">
+    <value>Ychwanegu un is-gwmni</value>
   </data>
 </root>

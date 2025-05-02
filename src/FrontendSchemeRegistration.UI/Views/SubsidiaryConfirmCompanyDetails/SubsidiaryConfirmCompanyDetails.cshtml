@@ -14,19 +14,23 @@
                     @Html.HiddenFor(m => m.CompaniesHouseNumber)
                     @Html.HiddenFor(m => m.CompanyName)
                     @Html.HiddenFor(m => m.OrganisationId)
+                    @Html.HiddenFor(m => m.IsCompanyAlreadyLinkedToTheParent)
 
                     <div class="govuk-form-group">
-                        <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
-                            @Localizer["ConfirmCompanyDetails.Header"]
-                        </h1>
+                        @if (@Model.IsCompanyAlreadyLinkedToTheParent.Value)
+                        {
+                            <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+                                @Localizer["ConfirmCompanyDetails.IsAlreadyLinkedTo", @Model.CompanyName]: @Model.ParentCompanyName
+                            </h1>
+                        }
+                        else
+                        {
+                            <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+                                @Localizer["ConfirmCompanyDetails.Header"]
+                            </h1>
+                        }
 
                         <div class="govuk-inset-text">
-                            <div class="govuk-body">
-                                <div class="govuk-!-margin-bottom-1 govuk-!-font-weight-bold">
-                                    @Localizer["ConfirmCompanyDetails.CompaniesHouseNumber"]: @Model.CompaniesHouseNumber
-                                </div>
-                            </div>
-
                             @if (@Model.OrganisationId is not null)
                             {
                                 <div class="govuk-body">
@@ -37,25 +41,71 @@
                             }
 
                             <div class="govuk-body">
-                                <div class="govuk-!-margin-bottom-1">
+                                <div class="govuk-!-margin-bottom-1 govuk-!-font-weight-bold">
                                     @Model.CompanyName
                                 </div>
                             </div>
-
+                            <div class="govuk-body">
+                                <div class="govuk-!-margin-bottom-1 ">
+                                    @Localizer["ConfirmCompanyDetails.CompanyNumber"]: 
+                                    <br />
+                                    @Model.CompaniesHouseNumber
+                                </div>
+                            </div>
                             <div class="govuk-body">
                                 <div class="govuk-!-margin-bottom-1">
                                     @Localizer["ConfirmCompanyDetails.Address"]:
                                 </div>
                                 <div>
-                                    @{ RenderAddressParts(Model.BusinessAddress?.AddressFields); }
+                                    @{
+                                        RenderAddressParts(Model.BusinessAddress?.AddressFields);
+                                    }
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <button class="govuk-button" data-module="govuk-button">
-                        @SharedLocalizer["Continue"]
-                    </button>
+                    <details class="govuk-details" data-module="govuk-details">
+                        <summary class="govuk-details__summary">
+                            <span class="govuk-details__summary-text">
+                                @Localizer["ConfirmCompanyDetails.TheseDetailsAreWrong"]
+                            </span>
+                        </summary>
+                        <div class="govuk-details__text">
+                            <p class="govuk-body">
+                                @Localizer["ConfirmCompanyDetails.IfTheseDetails"]:
+                            </p>
+                            <ul>
+                                <li>
+                                    @Localizer["ConfirmCompanyDetails.CheckTheCompaniesHouseNumber"]
+                                    <a asp-controller="SubsidiaryCompaniesHouseNumber" asp-action="Get" class="govuk-link">
+                                        @Localizer["ConfirmCompanyDetails.ChangeYourNumber"]
+                                    </a>
+                                <li>
+                                    @Localizer["ConfirmCompanyDetails.CheckCompaniesHouse"]
+                                    <a href="@GuidanceLinks.Value.MakeChangesToYourLimitedCompany" class="govuk-link" target="_blank" rel="noopener noreferrer">
+                                            @Localizer["ConfirmCompanyDetails.YouCanChangeThem"]
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </details>
+
+                    @if (@Model.IsCompanyAlreadyLinkedToTheParent.Value)
+                    {
+                        <p class="govuk-body govuk-!-margin-top-4">
+                            <button class="govuk-button" data-module="govuk-button">
+                                @Localizer["ConfirmCompanyDetails.SearchAgain"]
+                            </button>
+                            <a class="govuk-link govuk-link--no-visited-state govuk-!-margin-top-10 govuk-!-display-inline-block govuk-!-padding-1" asp-controller="SubsidiaryCompaniesHouseNumber" asp-action="Get">@Localizer["ConfirmCompanyDetails.Cancel"]</a>
+                        </p>
+                    }
+                    else
+                    {
+                        <button class="govuk-button" data-module="govuk-button">
+                            @SharedLocalizer["continue"]
+                        </button>
+                    }
                 </form>
             </div>
         </div>
@@ -65,7 +115,7 @@
 @{
     void RenderAddressParts(string?[] addressParts)
     {
-        if(addressParts is not null)
+        if (addressParts is not null)
         {
             foreach (string part in addressParts.Where(p => !string.IsNullOrWhiteSpace(p)))
             {
