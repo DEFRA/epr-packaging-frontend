@@ -56,7 +56,7 @@ public class ResubmissionApplicationControllerTests
 
         _mockSessionManager = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _mockResubmissionApplicationServices = new Mock<IResubmissionApplicationService>();
-        _urlHelperMock = new Mock<IUrlHelper>();       
+        _urlHelperMock = new Mock<IUrlHelper>();
         _urlHelperMock.Setup(x => x.Content(It.IsAny<string>())).Returns((string contentPath) => contentPath);
 
         _userAccountService = new Mock<IUserAccountService>();
@@ -123,10 +123,10 @@ public class ResubmissionApplicationControllerTests
         {
             PomResubmissionSession = new PackagingReSubmissionSession
             {
-               FeeBreakdownDetails = new FeeBreakdownDetails
-               {
-                   TotalAmountOutstanding = 100
-               }
+                FeeBreakdownDetails = new FeeBreakdownDetails
+                {
+                    TotalAmountOutstanding = 100
+                }
             }
         };
         _mockSessionManager.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
@@ -177,7 +177,7 @@ public class ResubmissionApplicationControllerTests
     public void SelectPaymentOptions_OnSubmit_RedirectsToView(int paymentOption, string actionName)
     {
         // Arrange
-       var session = new FrontendSchemeRegistrationSession
+        var session = new FrontendSchemeRegistrationSession
         {
             RegistrationSession = new RegistrationSession
             {
@@ -229,13 +229,13 @@ public class ResubmissionApplicationControllerTests
             {
                 PomSubmissions = new List<PomSubmission> { new PomSubmission { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), IsSubmitted = true, LastSubmittedFile = new SubmittedFileInformation { FileId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b") } } },
                 SubmissionPeriod = "January to December 2024",
-                RegulatorNation = "GB-CLS",                
+                RegulatorNation = "GB-CLS",
                 FeeBreakdownDetails = new FeeBreakdownDetails
                 {
                     TotalAmountOutstanding = 100
                 }
             }
-        };        
+        };
 
         _mockSessionManager.Setup(x =>
             x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
@@ -289,7 +289,7 @@ public class ResubmissionApplicationControllerTests
             PomResubmissionSession = new PackagingReSubmissionSession()
             {
                 RegulatorNation = "GB-ENG"
-            } 
+            }
         };
         _mockSessionManager.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
         // Arrange
@@ -318,12 +318,12 @@ public class ResubmissionApplicationControllerTests
         };
         _mockSessionManager.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
         // Arrange
-        const string viewName = "PaymentOptionPayByBankTransfer";      
+        const string viewName = "PaymentOptionPayByBankTransfer";
 
         // Act
         var result = await _controller.PayByBankTransfer() as ViewResult;
 
-       // Assert
+        // Assert
         if (nationCode == "GB-ENG")
         {
             result.ViewData["BackLinkToDisplay"].Should().Be(PagePaths.SelectPaymentOptions);
@@ -335,8 +335,8 @@ public class ResubmissionApplicationControllerTests
 
         result.ViewName.Should().Be(viewName);
         result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
-        
-        
+
+
     }
 
     [Test]
@@ -399,21 +399,15 @@ public class ResubmissionApplicationControllerTests
             {
                 PackagingResubmissionApplicationSession = new PackagingResubmissionApplicationSession
                 {
-                    ApplicationStatus = ApplicationStatusType.SubmittedToRegulator
+                    ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+                    ApplicationReferenceNumber = expectedReference
                 },
-                PomSubmissions = new List<PomSubmission>
+                PomSubmission = new PomSubmission()
                 {
-                    new PomSubmission
+                    LastSubmittedFile = new SubmittedFileInformation
                     {
-                        LastSubmittedFile = new SubmittedFileInformation
-                        {
-                            SubmittedDateTime = expectedDate
-                        }
+                        SubmittedDateTime = expectedDate
                     }
-                },
-                PomResubmissionReferences = new List<KeyValuePair<string, string>>
-                {
-                    new KeyValuePair<string, string>("2024-Q1", expectedReference)
                 }
             }
         };
@@ -432,7 +426,7 @@ public class ResubmissionApplicationControllerTests
 
         model.Should().NotBeNull();
         model.RegistrationApplicationSubmittedDate.Should().Be(expectedDate);
-        model.RegistrationReferenceNumber.Should().Be(expectedReference);
+        model.ApplicationReferenceNumber.Should().Be(expectedReference);
         model.ApplicationStatus.Should().Be(ApplicationStatusType.SubmittedToRegulator);
     }
 

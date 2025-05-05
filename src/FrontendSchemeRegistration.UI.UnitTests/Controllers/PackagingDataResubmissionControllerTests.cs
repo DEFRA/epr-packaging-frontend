@@ -65,6 +65,14 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
                 IsFileSynced = true
             }
         };
+        var submissionPeriodId = new SubmissionPeriodId
+        {
+            SubmissionId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"),
+            Year = DateTime.Now.Year,
+        };
+        var submissionPeriodIds = new List<SubmissionPeriodId> { submissionPeriodId };
+        var submissionHistories = new List<SubmissionHistory>();
+
         var resubmissionApplicationDetailsCollection = new List<PackagingResubmissionApplicationDetails> { resubmissionApplicationDetails };
 
         var session = new FrontendSchemeRegistrationSession
@@ -88,26 +96,30 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
                 {
                     ApplicationReferenceNumber = "Test-Ref"
                 }
-            },  
+            },
         };
 
         SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
             .Returns(Task.FromResult(session));
         UserAccountService.Setup(x => x.GetPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
         ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(
-            It.IsAny<Organisation>(), 
-            It.IsAny<List<string>>(), 
+            It.IsAny<Organisation>(),
+            It.IsAny<List<string>>(),
             It.IsAny<Guid?>()))
             .ReturnsAsync(resubmissionApplicationDetailsCollection);
 
         PaymentCalculationService.Setup(x => x.GetRegulatorNation(It.IsAny<Guid>())).ReturnsAsync("England");
+
+        ResubmissionApplicationService.Setup(x => x.GetSubmissionIdsAsync(It.IsAny<Guid>(), SubmissionType.Producer, It.IsAny<Guid?>(), It.IsAny<int?>())).ReturnsAsync(submissionPeriodIds);
+
+        ResubmissionApplicationService.Setup(x => x.GetSubmissionHistoryAsync(It.IsAny<Guid>(), It.IsAny<DateTime>())).ReturnsAsync(submissionHistories);
 
         // Act
         var result = await SystemUnderTest.ResubmissionTaskList() as ViewResult;
         var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
 
         // Assert
-        ResubmissionApplicationService.Verify(x => x.CreatePomResubmissionReferenceNumberForProducer(It.IsAny<FrontendSchemeRegistrationSession?>(), It.IsAny<SubmissionPeriod>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<Guid>()), Times.Never);
+        ResubmissionApplicationService.Verify(x => x.CreatePomResubmissionReferenceNumberForProducer(It.IsAny<FrontendSchemeRegistrationSession?>(), It.IsAny<SubmissionPeriod>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<Guid>(), It.IsAny<int>()), Times.Never);
         pageBackLink.Should().Be($"/report-data{PagePaths.UploadNewFileToSubmit}?submissionId=147f59f0-3d4e-4557-91d2-db033dffa60b");
     }
 
@@ -148,7 +160,6 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
             PomResubmissionSession = new PackagingReSubmissionSession
             {
                 SubmissionPeriod = "January to December 2024",
-                PomResubmissionReferences = new List<KeyValuePair<string, string>>(),
                 PomSubmissions = new List<PomSubmission>
                         { new PomSubmission
                             { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b") }
@@ -177,20 +188,31 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
             Nation = Nation.England
         };
 
+        var submissionPeriodId = new SubmissionPeriodId
+        {
+            SubmissionId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"),
+            Year = DateTime.Now.Year,
+        };
+        var submissionPeriodIds = new List<SubmissionPeriodId> { submissionPeriodId };
+        var submissionHistories = new List<SubmissionHistory>();
+
         SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
             .Returns(Task.FromResult(session));
         UserAccountService.Setup(x => x.GetPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
         ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(It.IsAny<Organisation>(), It.IsAny<List<string>>(), It.IsAny<Guid?>())).ReturnsAsync(resubmissionApplicationDetailsCollection);
 
         PaymentCalculationService.Setup(x => x.GetRegulatorNation(It.IsAny<Guid>())).ReturnsAsync("England");
-        ComplianceService.Setup(x => x.GetComplianceSchemeSummary(It.IsAny<Guid>(),It.IsAny<Guid>())).Returns(Task.FromResult(complianceSchemeSummary));
+        ComplianceService.Setup(x => x.GetComplianceSchemeSummary(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(complianceSchemeSummary));
+
+        ResubmissionApplicationService.Setup(x => x.GetSubmissionIdsAsync(It.IsAny<Guid>(), SubmissionType.Producer, It.IsAny<Guid?>(), It.IsAny<int?>())).ReturnsAsync(submissionPeriodIds);
+        ResubmissionApplicationService.Setup(x => x.GetSubmissionHistoryAsync(It.IsAny<Guid>(), It.IsAny<DateTime>())).ReturnsAsync(submissionHistories);
 
         // Act
         var result = await SystemUnderTest.ResubmissionTaskList() as ViewResult;
         var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
 
         // Assert
-        ResubmissionApplicationService.Verify(x => x.CreatePomResubmissionReferenceNumber(It.IsAny<FrontendSchemeRegistrationSession?>(), It.IsAny<string?>(), It.IsAny<Guid>()), Times.Once);
+        ResubmissionApplicationService.Verify(x => x.CreatePomResubmissionReferenceNumber(It.IsAny<FrontendSchemeRegistrationSession?>(), It.IsAny<string?>(), It.IsAny<Guid>(), It.IsAny<int>()), Times.Once);
         pageBackLink.Should().Be($"/report-data{PagePaths.UploadNewFileToSubmit}?submissionId=147f59f0-3d4e-4557-91d2-db033dffa60b");
     }
 
@@ -209,12 +231,22 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
         };
         var resubmissionApplicationDetailsCollection = new List<PackagingResubmissionApplicationDetails> { resubmissionApplicationDetails };
 
+        var submissionPeriodId = new SubmissionPeriodId
+        {
+            SubmissionId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"),
+            Year = DateTime.Now.Year,
+        };
+        var submissionPeriodIds = new List<SubmissionPeriodId> { submissionPeriodId };
+        var submissionHistories = new List<SubmissionHistory>();
+
         SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
             .Returns(Task.FromResult(new FrontendSchemeRegistrationSession { PomResubmissionSession = new PackagingReSubmissionSession { PomSubmissions = new List<PomSubmission> { new PomSubmission { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b") } }, PomSubmission = new PomSubmission() { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), LastSubmittedFile = new SubmittedFileInformation { FileId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), SubmittedDateTime = DateTime.Now.AddDays(-2) } } } }));
         UserAccountService.Setup(x => x.GetPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
         ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(It.IsAny<Organisation>(), It.IsAny<List<string>>(), It.IsAny<Guid?>())).ReturnsAsync(resubmissionApplicationDetailsCollection);
         ResubmissionApplicationService.Setup(x => x.GetRegulatorNation(It.IsAny<Guid>())).ReturnsAsync("England");
         PaymentCalculationService.Setup(x => x.GetRegulatorNation(It.IsAny<Guid>())).ReturnsAsync("England");
+        ResubmissionApplicationService.Setup(x => x.GetSubmissionIdsAsync(It.IsAny<Guid>(), SubmissionType.Producer, It.IsAny<Guid?>(), It.IsAny<int?>())).ReturnsAsync(submissionPeriodIds);
+        ResubmissionApplicationService.Setup(x => x.GetSubmissionHistoryAsync(It.IsAny<Guid>(), It.IsAny<DateTime>())).ReturnsAsync(submissionHistories);
 
         // Act
         var result = await SystemUnderTest.ResubmissionTaskList() as ViewResult;
@@ -255,6 +287,19 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
             }
         };
 
+        var submissionPeriodId = new SubmissionPeriodId
+        {
+            SubmissionId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"),
+            Year = DateTime.Now.Year,
+        };
+        var submissionPeriodIds = new List<SubmissionPeriodId> { submissionPeriodId };
+        var submissionHistories = new List<SubmissionHistory>();
+
+
+        ResubmissionApplicationService.Setup(x => x.GetSubmissionIdsAsync(It.IsAny<Guid>(), SubmissionType.Producer, It.IsAny<Guid?>(), It.IsAny<int?>())).ReturnsAsync(submissionPeriodIds);
+
+        ResubmissionApplicationService.Setup(x => x.GetSubmissionHistoryAsync(It.IsAny<Guid>(), It.IsAny<DateTime>())).ReturnsAsync(submissionHistories);
+
         SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(FrontendSchemeRegistrationSession);
 
         UserAccountService.Setup(x => x.GetPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
@@ -272,8 +317,8 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
 
 
         ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(
-            It.IsAny<Organisation>(), 
-            It.IsAny<List<string>>(), 
+            It.IsAny<Organisation>(),
+            It.IsAny<List<string>>(),
             It.IsAny<Guid?>()))
             .ReturnsAsync(detailsCollection);
 
@@ -317,9 +362,21 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
             }
         };
 
+        var submissionPeriodId = new SubmissionPeriodId
+        {
+            SubmissionId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"),
+            Year = DateTime.Now.Year,
+        };
+        var submissionPeriodIds = new List<SubmissionPeriodId> { submissionPeriodId };
+        var submissionHistories = new List<SubmissionHistory>();
+
         SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(FrontendSchemeRegistrationSession);
 
         UserAccountService.Setup(x => x.GetPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
+
+        ResubmissionApplicationService.Setup(x => x.GetSubmissionIdsAsync(It.IsAny<Guid>(), SubmissionType.Producer, It.IsAny<Guid?>(), It.IsAny<int?>())).ReturnsAsync(submissionPeriodIds);
+
+        ResubmissionApplicationService.Setup(x => x.GetSubmissionHistoryAsync(It.IsAny<Guid>(), It.IsAny<DateTime>())).ReturnsAsync(submissionHistories);
 
         var details = new PackagingResubmissionApplicationDetails
         {
@@ -333,8 +390,8 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
         var detailsCollection = new List<PackagingResubmissionApplicationDetails> { details };
 
         ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(
-            It.IsAny<Organisation>(), 
-            It.IsAny<List<string>>(), 
+            It.IsAny<Organisation>(),
+            It.IsAny<List<string>>(),
             It.IsAny<Guid?>()))
             .ReturnsAsync(detailsCollection);
 
@@ -374,14 +431,27 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
                 PomSubmissions = new List<PomSubmission> { new PomSubmission { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), IsSubmitted = true, LastSubmittedFile = new SubmittedFileInformation { FileId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), SubmittedDateTime = DateTime.Now.AddDays(-2) } } },
                 PomSubmission = new PomSubmission() { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), LastSubmittedFile = new SubmittedFileInformation { FileId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b") } },
                 SubmissionPeriod = "January to December 2024",
-                PomResubmissionReferences = new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("January to December 2024", "") },
                 PackagingResubmissionApplicationSession = new PackagingResubmissionApplicationSession()
+                {
+                    ApplicationReferenceNumber = ""
+                }
             }
         };
+        var submissionPeriodId = new SubmissionPeriodId
+        {
+            SubmissionId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"),
+            Year = DateTime.Now.Year,
+        };
+        var submissionPeriodIds = new List<SubmissionPeriodId> { submissionPeriodId };
+        var submissionHistories = new List<SubmissionHistory>();
 
         SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(FrontendSchemeRegistrationSession);
 
         UserAccountService.Setup(x => x.GetPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
+
+        ResubmissionApplicationService.Setup(x => x.GetSubmissionIdsAsync(It.IsAny<Guid>(), SubmissionType.Producer, It.IsAny<Guid?>(), It.IsAny<int?>())).ReturnsAsync(submissionPeriodIds);
+
+        ResubmissionApplicationService.Setup(x => x.GetSubmissionHistoryAsync(It.IsAny<Guid>(), It.IsAny<DateTime>())).ReturnsAsync(submissionHistories);
 
         var details = new PackagingResubmissionApplicationDetails
         {
@@ -395,8 +465,8 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
         var detailsCollection = new List<PackagingResubmissionApplicationDetails> { details };
 
         ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(
-            It.IsAny<Organisation>(), 
-            It.IsAny<List<string>>(), 
+            It.IsAny<Organisation>(),
+            It.IsAny<List<string>>(),
             It.IsAny<Guid?>()))
             .ReturnsAsync(detailsCollection);
 
@@ -439,7 +509,7 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
             }
         };
 
-        session.PomResubmissionSession.PomSubmissions.Add(new PomSubmission
+        session.PomResubmissionSession.PomSubmission = new PomSubmission
         {
             Id = Guid.NewGuid(),
             LastSubmittedFile = new SubmittedFileInformation() { FileId = Guid.NewGuid(), SubmittedDateTime = DateTime.Now.AddDays(-2) },
@@ -447,7 +517,7 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
             HasWarnings = false,
             ValidationPass = true,
 
-        });
+        };
 
 
         SessionManagerMock.Setup(x =>
@@ -479,15 +549,14 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
             }
         };
 
-        session.PomResubmissionSession.PomSubmissions.Add(new PomSubmission
+        session.PomResubmissionSession.PomSubmission = new PomSubmission
         {
             Id = Guid.NewGuid(),
             LastSubmittedFile = new SubmittedFileInformation() { FileId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b") },
             LastUploadedValidFile = new UploadedFileInformation() { FileId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b") },
             HasWarnings = false,
             ValidationPass = true,
-
-        });
+        };
 
 
         SessionManagerMock.Setup(x =>
@@ -519,15 +588,14 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
             }
         };
 
-        session.PomResubmissionSession.PomSubmissions.Add(new PomSubmission
+        session.PomResubmissionSession.PomSubmission = new PomSubmission
         {
             Id = Guid.NewGuid(),
             LastSubmittedFile = new SubmittedFileInformation() { FileId = Guid.NewGuid() },
             LastUploadedValidFile = new UploadedFileInformation() { FileId = Guid.NewGuid() },
             HasWarnings = true,
             ValidationPass = true,
-
-        });
+        };
 
 
         SessionManagerMock.Setup(x =>
@@ -550,7 +618,10 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
             {
                 PomResubmissionSession = new PackagingReSubmissionSession
                 {
-                    PomResubmissionReferences = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("1", "abc") },
+                    PackagingResubmissionApplicationSession = new PackagingResubmissionApplicationSession()
+                    {
+                        ApplicationReferenceNumber = "abc"
+                    },
                     PomSubmission = new PomSubmission() { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), LastSubmittedFile = new SubmittedFileInformation { FileId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), SubmittedDateTime = DateTime.Now.AddDays(-2) } },
                     PomSubmissions = new List<PomSubmission> { new PomSubmission { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b") } }
                 }
@@ -589,7 +660,10 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
             {
                 PomResubmissionSession = new PackagingReSubmissionSession
                 {
-                    PomResubmissionReferences = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("1", "abc") },
+                    PackagingResubmissionApplicationSession = new PackagingResubmissionApplicationSession()
+                    {
+                        ApplicationReferenceNumber = "abc"
+                    },
                     PomSubmission = new PomSubmission() { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), LastSubmittedFile = new SubmittedFileInformation { FileId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), SubmittedDateTime = DateTime.Now.AddDays(-2) } },
                     PomSubmissions = new List<PomSubmission> { new PomSubmission { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b") } }
                 }
@@ -624,7 +698,10 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
             {
                 PomResubmissionSession = new PackagingReSubmissionSession
                 {
-                    PomResubmissionReferences = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("1", "abc") },
+                    PackagingResubmissionApplicationSession = new PackagingResubmissionApplicationSession()
+                    {
+                        ApplicationReferenceNumber = "abc"
+                    },
                     PomSubmission = new PomSubmission() { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), LastSubmittedFile = new SubmittedFileInformation { FileId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), SubmittedDateTime = DateTime.Now.AddDays(-2) } },
                     PomSubmissions = new List<PomSubmission> { new PomSubmission { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b") } }
                 }
@@ -656,7 +733,10 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
             {
                 PomResubmissionSession = new PackagingReSubmissionSession
                 {
-                    PomResubmissionReferences = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("1", "abc") },
+                    PackagingResubmissionApplicationSession = new PackagingResubmissionApplicationSession()
+                    {
+                        ApplicationReferenceNumber = "abc"
+                    },
                     PomSubmission = new PomSubmission() { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), LastSubmittedFile = new SubmittedFileInformation { FileId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), SubmittedDateTime = DateTime.Now.AddDays(-2) } },
                     PomSubmissions = new List<PomSubmission> { new PomSubmission { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b") } }
                 }
@@ -734,4 +814,61 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
         Assert.ThrowsAsync<HttpRequestException>(async () =>
             await SystemUnderTest.GetMemberCount(submissionId, iscomplianceScheme, It.IsAny<Guid?>()));
     }
+
+
+    [Test]
+    public async Task GetSubmissionHistory_ReturnsValidHistoryCount_WhenAValidSubmissionIsPassed()
+    {
+        // Arrange
+        var submission = new PomSubmission() { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b") };
+        var organisationId = Guid.NewGuid();
+        var submissionPeriodId = new SubmissionPeriodId
+        {
+            SubmissionId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"),
+            Year = DateTime.Now.Year,
+        };
+        var history1 = new SubmissionHistory()
+        {
+            FileName = "history1"
+        };
+        var submissionPeriodIds = new List<SubmissionPeriodId> { submissionPeriodId };
+        var submissionHistories = new List<SubmissionHistory> { history1 };
+
+        ResubmissionApplicationService.Setup(x => x.GetSubmissionIdsAsync(It.IsAny<Guid>(), SubmissionType.Producer, It.IsAny<Guid?>(), It.IsAny<int?>())).ReturnsAsync(submissionPeriodIds);
+        ResubmissionApplicationService.Setup(x => x.GetSubmissionHistoryAsync(It.IsAny<Guid>(), It.IsAny<DateTime>())).ReturnsAsync(submissionHistories);
+
+        // Act
+        var result = await SystemUnderTest.GetSubmissionHistory(submission, organisationId, It.IsAny<Guid?>());
+
+        // Assert
+        result.Should().Be(submissionHistories.Count);
+    }
+
+    [Test]
+    public async Task GetSubmissionHistory_ReturnsDefaultHistoryCount_WhenAInValidSubmissionIsPassed()
+    {
+        // Arrange
+        var submission = new PomSubmission() { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b") };
+        var organisationId = Guid.NewGuid();
+        var submissionPeriodId = new SubmissionPeriodId
+        {
+            Year = DateTime.Now.Year,
+        };
+        var history1 = new SubmissionHistory()
+        {
+            FileName = "history1"
+        };
+        var submissionPeriodIds = new List<SubmissionPeriodId> { submissionPeriodId };
+        var submissionHistories = new List<SubmissionHistory>();
+
+        ResubmissionApplicationService.Setup(x => x.GetSubmissionIdsAsync(It.IsAny<Guid>(), SubmissionType.Producer, It.IsAny<Guid?>(), It.IsAny<int?>())).ReturnsAsync(submissionPeriodIds);
+        ResubmissionApplicationService.Setup(x => x.GetSubmissionHistoryAsync(It.IsAny<Guid>(), It.IsAny<DateTime>())).ReturnsAsync(submissionHistories);
+
+        // Act
+        var result = await SystemUnderTest.GetSubmissionHistory(submission, organisationId, It.IsAny<Guid?>());
+
+        // Assert
+        result.Should().BeNull();
+    }
+
 }

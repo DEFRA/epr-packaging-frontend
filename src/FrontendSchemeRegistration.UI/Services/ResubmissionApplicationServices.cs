@@ -5,6 +5,7 @@ using EPR.Common.Authorization.Sessions;
 using EPR.SubmissionMicroservice.API.Contracts.Submissions.Get;
 using FrontendSchemeRegistration.Application.DTOs.PaymentCalculations;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
@@ -17,27 +18,28 @@ public class ResubmissionApplicationServices(
     IPaymentCalculationService paymentCalculationService,
     ISubmissionService submissionService) : IResubmissionApplicationService
 {
-    public async Task<string> CreatePomResubmissionReferenceNumberForProducer(FrontendSchemeRegistrationSession session, SubmissionPeriod submissionPeriod, string organisationNumber, string submittedByName, Guid submissionId)
+    public async Task<string> CreatePomResubmissionReferenceNumberForProducer(FrontendSchemeRegistrationSession session, SubmissionPeriod submissionPeriod, string organisationNumber, string submittedByName, Guid submissionId, int? historyCount)
     {
-        var submissions = session.PomResubmissionSession.PomSubmissions;
-        var resubmissionCount = submissions.Count(x => x.IsSubmitted) + 1;
+        var resubmissionCount = historyCount == null ? 0 : historyCount.Value + 1;
+        var period = (submissionPeriod.StartMonth == "January" && submissionPeriod.EndMonth == "June") ? 1 : 2;
 
-        var pomResubmissionReferenceNumber = new KeyValuePair<string, string>(submissionPeriod.DataPeriod, $"PEPR{organisationNumber}{(submissionPeriod.Year[^2..])}S{resubmissionCount.ToString("D2")}");
+        var pomResubmissionReferenceNumber = $"PEPR{organisationNumber}{(submissionPeriod.Year[^2..])}{period.ToString("D2")}S{resubmissionCount.ToString("D2")}";
 
-        return await CreateSubmissionEvent(session, pomResubmissionReferenceNumber, submissionId);
+        return await CreateSubmissionEvent(pomResubmissionReferenceNumber, submissionId);
     }
 
-    public async Task<string> CreatePomResubmissionReferenceNumberForCSO(FrontendSchemeRegistrationSession session, SubmissionPeriod submissionPeriod, string organisationNumber, string submittedByName, Guid submissionId)
+    public async Task<string> CreatePomResubmissionReferenceNumberForCSO(FrontendSchemeRegistrationSession session, SubmissionPeriod submissionPeriod, string organisationNumber, string submittedByName, Guid submissionId, int? historyCount)
     {
         var period = (submissionPeriod.StartMonth == "January" && submissionPeriod.EndMonth == "June") ? 1 : 2;
-        var csRowNumber = session.RegistrationSession.SelectedComplianceScheme.RowNumber;
+        var nation = session.PomResubmissionSession.RegulatorNation.Split('-')[1][0];
+        var resubmissionCount = historyCount == null ? 0 : historyCount.Value + 1;
 
-        var pomResubmissionReferenceNumber = new KeyValuePair<string, string>(submissionPeriod.DataPeriod, $"PEPR{organisationNumber!}{csRowNumber}{(submissionPeriod.Year[^2..])}S{period.ToString("D2")}");
+        var pomResubmissionReferenceNumber = $"PEPR{organisationNumber}{nation}{(submissionPeriod.Year[^2..])}{period.ToString("D2")}{resubmissionCount.ToString("D2")}";
 
-        return await CreateSubmissionEvent(session, pomResubmissionReferenceNumber, submissionId);
+        return await CreateSubmissionEvent(pomResubmissionReferenceNumber, submissionId);
     }
 
-    public async Task<string> CreatePomResubmissionReferenceNumber(FrontendSchemeRegistrationSession session, string submittedByName, Guid submissionId)
+    public async Task<string> CreatePomResubmissionReferenceNumber(FrontendSchemeRegistrationSession session, string submittedByName, Guid submissionId, int? historyCount)
     {
         var resbumissonSession = session.PomResubmissionSession;
         var organisation = resbumissonSession.PackagingResubmissionApplicationSession.Organisation;
@@ -45,13 +47,13 @@ public class ResubmissionApplicationServices(
         var isComplianceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
 
         return isComplianceScheme ?
-            await CreatePomResubmissionReferenceNumberForCSO(session, submissionPeriod, organisation.OrganisationNumber, submittedByName, submissionId)
-            : await CreatePomResubmissionReferenceNumberForProducer(session, submissionPeriod, organisation.OrganisationNumber, submittedByName, submissionId);
+            await CreatePomResubmissionReferenceNumberForCSO(session, submissionPeriod, organisation.OrganisationNumber, submittedByName, submissionId, historyCount)
+            : await CreatePomResubmissionReferenceNumberForProducer(session, submissionPeriod, organisation.OrganisationNumber, submittedByName, submissionId, historyCount);
     }
 
     public async Task<List<PackagingResubmissionApplicationDetails>> GetPackagingDataResubmissionApplicationDetails(
-        Organisation organisation, 
-        List<string> submissionPeriods, 
+        Organisation organisation,
+        List<string> submissionPeriods,
         Guid? complianceSchemeId)
     {
         var packagingResubmissionApplicationDetails = await submissionService.GetPackagingDataResubmissionApplicationDetails(
@@ -62,7 +64,7 @@ public class ResubmissionApplicationServices(
                 ComplianceSchemeId = complianceSchemeId,
                 SubmissionPeriods = submissionPeriods,
             });
-        
+
         return packagingResubmissionApplicationDetails ?? new List<PackagingResubmissionApplicationDetails>();
     }
 
@@ -121,21 +123,29 @@ public class ResubmissionApplicationServices(
     {
         var detailsForAllSubmissionPeriods = await GetPackagingDataResubmissionApplicationDetails(organisation, submissionPeriods, complianceSchemeId);
         var sessionForAllPeriods = FrontendSchemeRegistration.UI.Extensions.PackagingResubmissionApplicationDetailsExtension.ToPackagingResubmissionApplicationSessionList(detailsForAllSubmissionPeriods, organisation);
-        
+
         return sessionForAllPeriods;
     }
 
-    private async Task<string> CreateSubmissionEvent(FrontendSchemeRegistrationSession session, KeyValuePair<string, string> pomResubmissionReferenceNumber, Guid submissionId)
+    public async Task<List<SubmissionHistory>> GetSubmissionHistoryAsync(Guid submissionId, DateTime lastSyncTime)
     {
-        session.PomResubmissionSession.PomResubmissionReferences.Add(pomResubmissionReferenceNumber);
+        return await submissionService.GetSubmissionHistoryAsync(submissionId, lastSyncTime);
+    }
 
+    public async Task<List<SubmissionPeriodId>> GetSubmissionIdsAsync(Guid organisationId, SubmissionType type, Guid? complianceSchemeId, int? year)
+    {
+        return await submissionService.GetSubmissionIdsAsync(organisationId, type, complianceSchemeId, year);
+    }
+
+    private async Task<string> CreateSubmissionEvent(string pomResubmissionReferenceNumber, Guid submissionId)
+    {
         var packagingResubmissionReferenceNumberCreatedEvent = new EPR.SubmissionMicroservice.Data.Entities.SubmissionEvent.PackagingResubmissionReferenceNumberCreatedEvent()
         {
-            PackagingResubmissionReferenceNumber = pomResubmissionReferenceNumber.Value
+            PackagingResubmissionReferenceNumber = pomResubmissionReferenceNumber
         };
 
         await submissionService.CreatePackagingResubmissionReferenceNumberEvent(submissionId, packagingResubmissionReferenceNumberCreatedEvent);
 
-        return pomResubmissionReferenceNumber.Value;
+        return pomResubmissionReferenceNumber;
     }
 }

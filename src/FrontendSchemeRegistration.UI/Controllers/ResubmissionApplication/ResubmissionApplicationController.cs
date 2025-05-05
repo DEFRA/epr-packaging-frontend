@@ -44,9 +44,6 @@ public class ResubmissionApplicationController : Controller
         session.PomResubmissionSession.Journey = [$"/report-data/{PagePaths.ResubmissionFeeCalculations}", PagePaths.SelectPaymentOptions];
         SetBackLink(session, PagePaths.SelectPaymentOptions);
 
-        var submissions = session.PomResubmissionSession.PomSubmissions;
-        var submission = submissions.FirstOrDefault();
-
         var model = new SelectPaymentOptionsViewModel
         {
             RegulatorNation = session.PomResubmissionSession.RegulatorNation,
@@ -57,7 +54,7 @@ public class ResubmissionApplicationController : Controller
         {
             await _resubmissionApplicationService.CreatePackagingDataResubmissionFeePaymentEvent(
             session.PomResubmissionSession.PackagingResubmissionApplicationSession.SubmissionId,
-            submission?.LastSubmittedFile.FileId,
+            session.PomResubmissionSession.PomSubmission?.LastSubmittedFile.FileId,
             Enum.GetName(typeof(PaymentOptions), 2));
 
             return RedirectToAction(nameof(PayByBankTransfer));
@@ -74,9 +71,6 @@ public class ResubmissionApplicationController : Controller
         session.PomResubmissionSession.Journey = [$"/report-data/{PagePaths.ResubmissionFeeCalculations}", PagePaths.SelectPaymentOptions];
         SetBackLink(session, PagePaths.SelectPaymentOptions);
 
-        var submissions = session.PomResubmissionSession.PomSubmissions;
-        var submission = submissions.FirstOrDefault();
-
         model.RegulatorNation = session.PomResubmissionSession.RegulatorNation;
         model.TotalAmountOutstanding = Convert.ToInt32(session.PomResubmissionSession.FeeBreakdownDetails.TotalAmountOutstanding);
 
@@ -87,7 +81,7 @@ public class ResubmissionApplicationController : Controller
 
         await _resubmissionApplicationService.CreatePackagingDataResubmissionFeePaymentEvent(
             session.PomResubmissionSession.PackagingResubmissionApplicationSession.SubmissionId,
-            submission?.LastSubmittedFile.FileId,
+            session.PomResubmissionSession.PomSubmission?.LastSubmittedFile.FileId,
            Enum.GetName(typeof(PaymentOptions), model.PaymentOption));
 
         switch (model.PaymentOption)
@@ -148,16 +142,16 @@ public class ResubmissionApplicationController : Controller
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
         session.PomResubmissionSession.Journey = [PagePaths.SelectPaymentOptions, PagePaths.PaymentOptionPayByBankTransfer];
-        
-        if(NationExtensions.GetNationName(session.PomResubmissionSession.RegulatorNation) != Nation.England.ToString())
+
+        if (NationExtensions.GetNationName(session.PomResubmissionSession.RegulatorNation) != Nation.England.ToString())
         {
-            ViewBag.BackLinkToDisplay = Url.Content($"/report-data/{PagePaths.ResubmissionFeeCalculations}");            
+            ViewBag.BackLinkToDisplay = Url.Content($"/report-data/{PagePaths.ResubmissionFeeCalculations}");
         }
         else
-        {            
+        {
             SetBackLink(session, PagePaths.PaymentOptionPayByBankTransfer);
         }
-       
+
 
         var model = new PaymentOptionPayByBankTransferViewModel()
         {
@@ -200,8 +194,7 @@ public class ResubmissionApplicationController : Controller
         session.PomResubmissionSession.Journey = [$"/report-data/{PagePaths.ResubmissionTaskList}", $"packaging-resubmission/{PagePaths.AdditionalInformation}"];
         SetBackLink(session, $"packaging-resubmission/{PagePaths.AdditionalInformation}");
 
-        var submissions = session.PomResubmissionSession.PomSubmissions;
-        var submission = submissions.FirstOrDefault();
+        var submission = session.PomResubmissionSession.PomSubmission;
         var submittedByName = "";
         if (submission != null)
         {
@@ -226,8 +219,8 @@ public class ResubmissionApplicationController : Controller
         return View("ResubmissionConfirmation",
             new ApplicationSubmissionConfirmationViewModel
             {
-                RegistrationApplicationSubmittedDate = session.PomResubmissionSession.PomSubmissions.FirstOrDefault()?.LastSubmittedFile.SubmittedDateTime,
-                RegistrationReferenceNumber = session.PomResubmissionSession.PomResubmissionReferences.FirstOrDefault().Value,
+                RegistrationApplicationSubmittedDate = session.PomResubmissionSession.PomSubmission?.LastSubmittedFile.SubmittedDateTime,
+                ApplicationReferenceNumber = session.PomResubmissionSession.PackagingResubmissionApplicationSession.ApplicationReferenceNumber,
                 ApplicationStatus = session.PomResubmissionSession.PackagingResubmissionApplicationSession.ApplicationStatus
             }
         );

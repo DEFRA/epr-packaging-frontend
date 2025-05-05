@@ -5,6 +5,7 @@ using EPR.SubmissionMicroservice.API.Contracts.Submissions.Get;
 using FluentAssertions;
 using FrontendSchemeRegistration.Application.DTOs.PaymentCalculations;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Services;
@@ -21,7 +22,7 @@ public class ResubmissionApplicationServiceTests
 {
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _mockSessionManager;
     private Mock<ISubmissionService> _mockSubmissionService;
-	private Mock<IPaymentCalculationService> _mockPaymentCalculationService;
+    private Mock<IPaymentCalculationService> _mockPaymentCalculationService;
     private ResubmissionApplicationServices _service;
     private Fixture _fixture;
 
@@ -92,14 +93,14 @@ public class ResubmissionApplicationServiceTests
             .Returns(Task.CompletedTask);
 
         // Act
-        await _service.CreatePomResubmissionReferenceNumberForProducer(session, submissionPeriod, organisationNumber, submittedByName, submissionId);
+        var response = await _service.CreatePomResubmissionReferenceNumberForProducer(session, submissionPeriod, organisationNumber, submittedByName, submissionId, 1);
 
         // Assert
         var periodEnd = DateTime.Parse("30 March 2025", new CultureInfo("en-GB"));
         var expectedReferenceNumbers = new List<KeyValuePair<string, string>>();
-        var expectedReferenceNumber = new KeyValuePair<string, string>("January to June 2025", $"PEPR1234525S02");
+        var expectedReferenceNumber = new KeyValuePair<string, string>("January to June 2025", $"PEPR123452502S02");
         expectedReferenceNumbers.Add(expectedReferenceNumber);
-        session.PomResubmissionSession.PomResubmissionReferences.FirstOrDefault(kvp => kvp.Key == submissionPeriod.DataPeriod).Value.Should().Be(expectedReferenceNumber.Value);
+        response.Should().Be(expectedReferenceNumber.Value);
     }
 
     [Test]
@@ -110,9 +111,9 @@ public class ResubmissionApplicationServiceTests
         var submissionPeriod = new SubmissionPeriod { EndMonth = "April", Year = "2025", DataPeriod = "January to June 2025" };
         var organisationNumber = "67890";
         var submittedByName = "Test User1";
-		var submissionId = Guid.NewGuid();
+        var submissionId = Guid.NewGuid();
 
-		var mockPomSubmissions = new List<PomSubmission>
+        var mockPomSubmissions = new List<PomSubmission>
         {
             new PomSubmission { Id = Guid.NewGuid(), LastSubmittedFile = new SubmittedFileInformation { FileId = Guid.NewGuid() }, IsSubmitted = true },
             new PomSubmission { Id = Guid.NewGuid(), LastSubmittedFile = new SubmittedFileInformation { FileId = Guid.NewGuid() } }
@@ -139,14 +140,14 @@ public class ResubmissionApplicationServiceTests
             .Returns(Task.CompletedTask);
 
         // Act
-        await _service.CreatePomResubmissionReferenceNumberForProducer(session, submissionPeriod, organisationNumber, submittedByName, submissionId);
+        var response = await _service.CreatePomResubmissionReferenceNumberForProducer(session, submissionPeriod, organisationNumber, submittedByName, submissionId, 1);
 
         // Assert
         var periodEnd = DateTime.Parse("30 April 2025", new CultureInfo("en-GB"));
         var expectedReferenceNumbers = new List<KeyValuePair<string, string>>();
-        var expectedReferenceNumber = new KeyValuePair<string, string>("January to June 2025", $"PEPR6789025S02");
+        var expectedReferenceNumber = new KeyValuePair<string, string>("January to June 2025", "PEPR678902502S02");
         expectedReferenceNumbers.Add(expectedReferenceNumber);
-        session.PomResubmissionSession.PomResubmissionReferences.FirstOrDefault(kvp => kvp.Key == submissionPeriod.DataPeriod).Value.Should().Be(expectedReferenceNumber.Value);
+        response.Should().Be(expectedReferenceNumber.Value);
     }
 
     [Test]
@@ -154,7 +155,7 @@ public class ResubmissionApplicationServiceTests
     {
         // Arrange
         var httpSession = Mock.Of<ISession>();
-        var submissionPeriod = new SubmissionPeriod { StartMonth = "January" , EndMonth = "June", Year = "2025", DataPeriod = "January to June 2025" };
+        var submissionPeriod = new SubmissionPeriod { StartMonth = "January", EndMonth = "June", Year = "2025", DataPeriod = "January to June 2025" };
         var organisationNumber = "12345";
         var submittedByName = "Test User";
         var submissionId = Guid.NewGuid();
@@ -174,9 +175,10 @@ public class ResubmissionApplicationServiceTests
                 PackagingResubmissionApplicationSession = new PackagingResubmissionApplicationSession()
                 {
                     SubmissionId = Guid.NewGuid(),
-                }
+                },
+                RegulatorNation = "GB-ENG"
             },
-            RegistrationSession=new RegistrationSession { SelectedComplianceScheme = new Application.DTOs.ComplianceScheme.ComplianceSchemeDto { RowNumber = 6 } }
+            RegistrationSession = new RegistrationSession { SelectedComplianceScheme = new Application.DTOs.ComplianceScheme.ComplianceSchemeDto { RowNumber = 6 } }
         };
 
         _mockSubmissionService
@@ -188,13 +190,13 @@ public class ResubmissionApplicationServiceTests
             .Returns(Task.CompletedTask);
 
         // Act
-        await _service.CreatePomResubmissionReferenceNumberForCSO(session, submissionPeriod, organisationNumber, submittedByName, submissionId);
+        var response = await _service.CreatePomResubmissionReferenceNumberForCSO(session, submissionPeriod, organisationNumber, submittedByName, submissionId, 1);
 
         // Assert
         var expectedReferenceNumbers = new List<KeyValuePair<string, string>>();
-        var expectedReferenceNumber = new KeyValuePair<string, string>("January to June 2025", $"PEPR12345625S01");
+        var expectedReferenceNumber = new KeyValuePair<string, string>("January to June 2025", $"PEPR12345E250102");
         expectedReferenceNumbers.Add(expectedReferenceNumber);
-        session.PomResubmissionSession.PomResubmissionReferences.FirstOrDefault(kvp => kvp.Key == submissionPeriod.DataPeriod).Value.Should().Be(expectedReferenceNumber.Value);
+        response.Should().Be(expectedReferenceNumber.Value);
     }
 
     [Test]
@@ -222,7 +224,8 @@ public class ResubmissionApplicationServiceTests
                 PackagingResubmissionApplicationSession = new PackagingResubmissionApplicationSession()
                 {
                     SubmissionId = Guid.NewGuid(),
-                }
+                },
+                RegulatorNation = "GB-ENG"
             },
             RegistrationSession = new RegistrationSession { SelectedComplianceScheme = new Application.DTOs.ComplianceScheme.ComplianceSchemeDto { RowNumber = 6 } }
         };
@@ -236,13 +239,13 @@ public class ResubmissionApplicationServiceTests
             .Returns(Task.CompletedTask);
 
         // Act
-        await _service.CreatePomResubmissionReferenceNumberForCSO(session, submissionPeriod, organisationNumber, submittedByName, submissionId);
+        var response = await _service.CreatePomResubmissionReferenceNumberForCSO(session, submissionPeriod, organisationNumber, submittedByName, submissionId, 1);
 
         // Assert
         var expectedReferenceNumbers = new List<KeyValuePair<string, string>>();
-        var expectedReferenceNumber = new KeyValuePair<string, string>("July to December 2025", $"PEPR12345625S02");
+        var expectedReferenceNumber = new KeyValuePair<string, string>("July to December 2025", $"PEPR12345E250202");
         expectedReferenceNumbers.Add(expectedReferenceNumber);
-        session.PomResubmissionSession.PomResubmissionReferences.FirstOrDefault(kvp => kvp.Key == submissionPeriod.DataPeriod).Value.Should().Be(expectedReferenceNumber.Value);
+        response.Should().Be(expectedReferenceNumber.Value);
     }
 
     [Test]
@@ -272,7 +275,8 @@ public class ResubmissionApplicationServiceTests
                     SubmissionId = Guid.NewGuid(),
                     Organisation = new Organisation { OrganisationRole = OrganisationRoles.ComplianceScheme, OrganisationNumber = "CSO123" }
                 },
-                Period = submissionPeriod
+                Period = submissionPeriod,
+                RegulatorNation = "GB-ENG"
             },
             RegistrationSession = new RegistrationSession { SelectedComplianceScheme = new Application.DTOs.ComplianceScheme.ComplianceSchemeDto { RowNumber = 6 } }
         };
@@ -286,11 +290,11 @@ public class ResubmissionApplicationServiceTests
             .Returns(Task.CompletedTask);
 
         // Act
-        var result = await _service.CreatePomResubmissionReferenceNumber(session, submittedByName, submissionId);
+        var result = await _service.CreatePomResubmissionReferenceNumber(session, submittedByName, submissionId, 1);
 
         // Assert
         result.Should().NotBeNull();
-        result.Should().Be("PEPRCSO123625S02");
+        result.Should().Be("PEPRCSO123E250202");
     }
 
     [Test]
@@ -320,7 +324,8 @@ public class ResubmissionApplicationServiceTests
                     SubmissionId = Guid.NewGuid(),
                     Organisation = new Organisation { OrganisationRole = OrganisationRoles.Producer, OrganisationNumber = "PRD123" }
                 },
-                Period = submissionPeriod
+                Period = submissionPeriod,
+                RegulatorNation = "GB-ENG"
             }
         };
 
@@ -333,11 +338,11 @@ public class ResubmissionApplicationServiceTests
             .Returns(Task.CompletedTask);
 
         // Act
-        var result = await _service.CreatePomResubmissionReferenceNumber(session, submittedByName, submissionId);
+        var result = await _service.CreatePomResubmissionReferenceNumber(session, submittedByName, submissionId, 1);
 
         // Assert
         result.Should().NotBeNull();
-        result.Should().Be("PEPRPRD12325S02");
+        result.Should().Be("PEPRPRD1232502S02");
     }
 
     [Test]
@@ -604,5 +609,102 @@ public class ResubmissionApplicationServiceTests
         // Assert
         result.Should().NotBeNull();
         result.Count.Should().Be(0);
+    }
+
+    [Test]
+    public async Task GetSubmissionIds_Return_ListOf_SubmissionIds()
+    {
+        // Arrange
+        var organisation = new Organisation { Id = Guid.NewGuid(), OrganisationNumber = "12345" };
+        var submissionPeriods = new List<string> { "January to June 2025" };
+        var complianceSchemeId = Guid.NewGuid();
+
+        var expectedResult = new List<SubmissionPeriodId>()
+        {
+            new SubmissionPeriodId()
+        };
+
+        _mockSubmissionService
+            .Setup(x => x.GetSubmissionIdsAsync(organisation.Id.Value, SubmissionType.Producer, null, null))
+            .ReturnsAsync(expectedResult);
+
+        // Act
+        var result = await _service.GetSubmissionIdsAsync(organisation.Id.Value, SubmissionType.Producer, null, null);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Count.Should().Be(expectedResult.Count);
+    }
+
+    [Test]
+    public async Task GetSubmissionHistoryAsync_Return_ListOf_PreviousSubmissions()
+    {
+        // Arrange
+        var organisation = new Organisation { Id = Guid.NewGuid(), OrganisationNumber = "12345" };
+        var submissionPeriods = new List<string> { "January to June 2025" };
+        var submssionId = Guid.NewGuid();
+
+        var expectedResult = new List<SubmissionHistory>()
+        {
+            new SubmissionHistory()
+        };
+
+        _mockSubmissionService
+            .Setup(x => x.GetSubmissionHistoryAsync(submssionId, new DateTime()))
+            .ReturnsAsync(expectedResult);
+
+        // Act
+        var result = await _service.GetSubmissionHistoryAsync(submssionId, new DateTime());
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Count.Should().Be(expectedResult.Count);
+    }
+
+    [Test]
+    public async Task GetPackagingResubmissionMemberDetails_Return_MemberDetails()
+    {
+        // Arrange
+        var organisation = new Organisation { Id = Guid.NewGuid(), OrganisationNumber = "12345" };
+        var submissionPeriods = new List<string> { "January to June 2025" };
+        var submssionId = Guid.NewGuid();
+
+        var request = new PackagingResubmissionMemberRequest
+        {
+            SubmissionId = submssionId
+        };
+        var expectedResult = new PackagingResubmissionMemberDetails()
+        {
+            MemberCount = 1,
+        };
+
+        _mockSubmissionService
+            .Setup(x => x.GetPackagingResubmissionMemberDetails(request))
+            .ReturnsAsync(expectedResult);
+
+        // Act
+        var result = await _service.GetPackagingResubmissionMemberDetails(request);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.MemberCount.Should().Be(expectedResult.MemberCount);
+    }
+
+    [Test]
+    public async Task GetResubmissionFees_Return_PackagingPaymentResponse()
+    {
+        // Arrange
+        var expectedResult = new PackagingPaymentResponse();
+
+        _mockPaymentCalculationService
+            .Setup(x => x.GetResubmissionFees(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<DateTime?>()))
+            .ReturnsAsync(expectedResult);
+
+        // Act
+        var result = await _service.GetResubmissionFees(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<DateTime?>());
+
+        // Assert
+        result.Should().NotBeNull();
+        result.MemberCount.Should().Be(expectedResult.MemberCount);
     }
 }

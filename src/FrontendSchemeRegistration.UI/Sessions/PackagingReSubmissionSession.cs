@@ -21,8 +21,6 @@ public class PackagingReSubmissionSession
 
     public SubmissionPeriod Period { get; set; }
 
-    public List<KeyValuePair<string, string>> PomResubmissionReferences { get; set; } = new();
-
     public string RegulatorNation { get; set; } = string.Empty;
 
     public bool IsPomResubmissionJourney { get; set; }

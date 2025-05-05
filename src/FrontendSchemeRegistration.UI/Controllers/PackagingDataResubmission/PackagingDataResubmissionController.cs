@@ -4,6 +4,7 @@ using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.ComplianceScheme;
 using FrontendSchemeRegistration.Application.DTOs.PaymentCalculations;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Extensions;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
@@ -23,71 +24,70 @@ namespace FrontendSchemeRegistration.UI.Controllers.FrontendSchemeRegistration;
 [FeatureGate(FeatureFlags.ImplementPackagingDataResubmissionJourney)]
 public class PackagingDataResubmissionController : Controller
 {
-	private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
-	private readonly ILogger<PackagingDataResubmissionController> _logger;
-	private readonly IUserAccountService _userAccountService;
-	private readonly List<SubmissionPeriod> _submissionPeriods;
-	private readonly IResubmissionApplicationService _resubmissionApplicationService;
-	private readonly IComplianceSchemeService _complianceSchemeService;
+    private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
+    private readonly ILogger<PackagingDataResubmissionController> _logger;
+    private readonly IUserAccountService _userAccountService;
+    private readonly List<SubmissionPeriod> _submissionPeriods;
+    private readonly IResubmissionApplicationService _resubmissionApplicationService;
+    private readonly IComplianceSchemeService _complianceSchemeService;
 
-	public PackagingDataResubmissionController(
-		ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
-		ILogger<PackagingDataResubmissionController> logger,
-		IUserAccountService userAccountService,
-		IOptions<GlobalVariables> globalVariables,
-		IResubmissionApplicationService resubmissionApplicationService,
-		IComplianceSchemeService complianceSchemeService)
-	{
-		_sessionManager = sessionManager;
-		_userAccountService = userAccountService;
-		_resubmissionApplicationService = resubmissionApplicationService;
-		_submissionPeriods = globalVariables.Value.SubmissionPeriods;
-		_complianceSchemeService = complianceSchemeService;
-		_logger = logger;
-	}
+    public PackagingDataResubmissionController(
+        ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
+        ILogger<PackagingDataResubmissionController> logger,
+        IUserAccountService userAccountService,
+        IOptions<GlobalVariables> globalVariables,
+        IResubmissionApplicationService resubmissionApplicationService,
+        IComplianceSchemeService complianceSchemeService)
+    {
+        _sessionManager = sessionManager;
+        _userAccountService = userAccountService;
+        _resubmissionApplicationService = resubmissionApplicationService;
+        _submissionPeriods = globalVariables.Value.SubmissionPeriods;
+        _complianceSchemeService = complianceSchemeService;
+        _logger = logger;
+    }
 
-	[HttpGet]
-	[Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
-	[Route(PagePaths.ResubmissionTaskList)]
-	public async Task<IActionResult> ResubmissionTaskList()
-	{
-		var userData = User.GetUserData();
-		var organisation = userData.Organisations[0];
+    [HttpGet]
+    [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
+    [Route(PagePaths.ResubmissionTaskList)]
+    public async Task<IActionResult> ResubmissionTaskList()
+    {
+        var userData = User.GetUserData();
+        var organisation = userData.Organisations[0];
 
-		var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
-		var isComplianceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
-		var complianceSchemeId = session.RegistrationSession?.SelectedComplianceScheme?.Id;
-		var complianceSchemeSummary = new ComplianceSchemeSummary();
+        var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+        var isComplianceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
+        var complianceSchemeId = session.RegistrationSession?.SelectedComplianceScheme?.Id;
+        var complianceSchemeSummary = new ComplianceSchemeSummary();
 
-		if (complianceSchemeId != null)
-		{
-			complianceSchemeSummary = await _complianceSchemeService.GetComplianceSchemeSummary(organisation.Id.Value, complianceSchemeId.Value);
-		}
+        if (complianceSchemeId != null)
+        {
+            complianceSchemeSummary = await _complianceSchemeService.GetComplianceSchemeSummary(organisation.Id.Value, complianceSchemeId.Value);
+        }
 
-		var submissionPeriod = FindSubmissionPeriod(session.PomResubmissionSession.SubmissionPeriod);
-		var submission = session.PomResubmissionSession.PomSubmission;
+        var submissionPeriod = FindSubmissionPeriod(session.PomResubmissionSession.SubmissionPeriod);
+        var submission = session.PomResubmissionSession.PomSubmission;
 
-		var resubmissionApplicationDetails = await _resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(
-			organisation, new List<string> { session.PomResubmissionSession.SubmissionPeriod }, 
-			complianceSchemeId);
-		
-		await UpdateSession(session, resubmissionApplicationDetails.First(), organisation, isComplianceScheme, complianceSchemeSummary, submissionPeriod);
+        var resubmissionApplicationDetails = await _resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(
+            organisation, new List<string> { session.PomResubmissionSession.SubmissionPeriod },
+            complianceSchemeId);
 
-		if (submission != null)
-		{
-			session.PomResubmissionSession.Journey = new List<string> { PagePaths.FileUploadSubLanding, $"/report-data{PagePaths.UploadNewFileToSubmit}?submissionId={submission.Id}", PagePaths.ResubmissionTaskList };
-			SetBackLink(session, PagePaths.ResubmissionTaskList);
+        await UpdateSession(session, resubmissionApplicationDetails.First(), organisation, isComplianceScheme, complianceSchemeSummary, submissionPeriod);
 
-			if ((string.IsNullOrEmpty(session.PomResubmissionSession.PackagingResubmissionApplicationSession.ApplicationReferenceNumber)) &&
-				(submission.IsSubmitted && submission.LastSubmittedFile.FileId != Guid.Empty &&
-				(session.PomResubmissionSession.PomResubmissionReferences.Count == 0 || session.PomResubmissionSession.PomResubmissionReferences.Exists(kvp => kvp.Key != submissionPeriod.DataPeriod))))
-			{
-				var submittedByName = await GetUserNameFromId(submission.LastSubmittedFile.SubmittedBy!);
-				await _resubmissionApplicationService.CreatePomResubmissionReferenceNumber(session, submittedByName, submission.Id);
-			}
-		}
+        if (submission != null)
+        {
+            session.PomResubmissionSession.Journey = new List<string> { PagePaths.FileUploadSubLanding, $"/report-data{PagePaths.UploadNewFileToSubmit}?submissionId={submission.Id}", PagePaths.ResubmissionTaskList };
+            SetBackLink(session, PagePaths.ResubmissionTaskList);
 
-		await SaveSession(session, PagePaths.ResubmissionTaskList, PagePaths.ResubmissionFeeCalculations);
+            if (string.IsNullOrEmpty(session.PomResubmissionSession.PackagingResubmissionApplicationSession.ApplicationReferenceNumber))
+            {
+                var submittedByName = await GetUserNameFromId(submission.LastSubmittedFile.SubmittedBy!);
+                var historyCount = await GetSubmissionHistory(submission, organisation.Id.Value, complianceSchemeId);
+                await _resubmissionApplicationService.CreatePomResubmissionReferenceNumber(session, submittedByName, submission.Id, historyCount);
+            }
+        }
+
+        await SaveSession(session, PagePaths.ResubmissionTaskList, PagePaths.ResubmissionFeeCalculations);
 
         return View(new ResubmissionTaskListViewModel
         {
@@ -100,203 +100,211 @@ public class PackagingDataResubmissionController : Controller
             PaymentViewStatus = session.PomResubmissionSession.PackagingResubmissionApplicationSession.PaymentViewStatus,
             AdditionalDetailsStatus = session.PomResubmissionSession.PackagingResubmissionApplicationSession.AdditionalDetailsStatus,
             IsResubmissionInProgress = session.PomResubmissionSession.PackagingResubmissionApplicationSession.IsResubmissionInProgress,
-			ResubmissionApplicationSubmitted = session.PomResubmissionSession.PackagingResubmissionApplicationSession.ResubmissionApplicationSubmitted
+            ResubmissionApplicationSubmitted = session.PomResubmissionSession.PackagingResubmissionApplicationSession.ResubmissionApplicationSubmitted
         });
     }
 
-	[HttpGet]
-	[Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
-	[Route(PagePaths.ResubmissionFeeCalculations)]
-	public async Task<IActionResult> ResubmissionFeeCalculations()
-	{
-		int memberCount = 0;
-		var userData = User.GetUserData();
-		var organisation = userData.Organisations[0];
-		var isComplianceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
+    [HttpGet]
+    [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
+    [Route(PagePaths.ResubmissionFeeCalculations)]
+    public async Task<IActionResult> ResubmissionFeeCalculations()
+    {
+        int memberCount = 0;
+        var userData = User.GetUserData();
+        var organisation = userData.Organisations[0];
+        var isComplianceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
 
-		var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-		var complianceSchemeId = session.RegistrationSession?.SelectedComplianceScheme?.Id;
-		session.PomResubmissionSession.Journey = new List<string> { $"/report-data/{PagePaths.ResubmissionTaskList}", PagePaths.ResubmissionFeeCalculations };
-		SetBackLink(session, PagePaths.ResubmissionFeeCalculations);
+        var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+        var complianceSchemeId = session.RegistrationSession?.SelectedComplianceScheme?.Id;
+        session.PomResubmissionSession.Journey = new List<string> { $"/report-data/{PagePaths.ResubmissionTaskList}", PagePaths.ResubmissionFeeCalculations };
+        SetBackLink(session, PagePaths.ResubmissionFeeCalculations);
 
-		var applicationReferenceNumber = session.PomResubmissionSession.PackagingResubmissionApplicationSession.ApplicationReferenceNumber;
-		var regulatorNation = session.PomResubmissionSession.RegulatorNation;
-		var resubmissionDate = session.PomResubmissionSession.PomSubmission.LastSubmittedFile?.SubmittedDateTime;
+        var applicationReferenceNumber = session.PomResubmissionSession.PackagingResubmissionApplicationSession.ApplicationReferenceNumber;
+        var regulatorNation = session.PomResubmissionSession.RegulatorNation;
+        var resubmissionDate = session.PomResubmissionSession.PomSubmission.LastSubmittedFile?.SubmittedDateTime;
 
-		try
-		{
-			memberCount = await GetMemberCount(session.PomResubmissionSession.PackagingResubmissionApplicationSession.SubmissionId, isComplianceScheme, complianceSchemeId);
-		}
-		catch (HttpRequestException ex)
-		{
-			if (ex.StatusCode == System.Net.HttpStatusCode.PreconditionRequired)
-			{
-				ViewData.ModelState.AddModelError("resubmission-fee-calculations", ex.Message);
-				return View("ResubmissionFee", new ResubmissionFeeViewModel());
-			}
-			else
-			{
-				_logger.LogError("{message} for user '{userID}' in organisation '{organisationId}'", ex.Message, userData.Id.Value, organisation.Id.Value);
-			}
-		}
+        try
+        {
+            memberCount = await GetMemberCount(session.PomResubmissionSession.PackagingResubmissionApplicationSession.SubmissionId, isComplianceScheme, complianceSchemeId);
+        }
+        catch (HttpRequestException ex)
+        {
+            if (ex.StatusCode == System.Net.HttpStatusCode.PreconditionRequired)
+            {
+                ViewData.ModelState.AddModelError("resubmission-fee-calculations", ex.Message);
+                return View("ResubmissionFee", new ResubmissionFeeViewModel());
+            }
+            else
+            {
+                _logger.LogError("{message} for user '{userID}' in organisation '{organisationId}'", ex.Message, userData.Id.Value, organisation.Id.Value);
+            }
+        }
 
-		var paymentResponse = await _resubmissionApplicationService.GetResubmissionFees(applicationReferenceNumber, regulatorNation, memberCount, isComplianceScheme, resubmissionDate);
+        var paymentResponse = await _resubmissionApplicationService.GetResubmissionFees(applicationReferenceNumber, regulatorNation, memberCount, isComplianceScheme, resubmissionDate);
 
-		if (paymentResponse != null)
-		{
-			await _resubmissionApplicationService.CreatePackagingResubmissionFeeViewEvent(session.PomResubmissionSession.PackagingResubmissionApplicationSession.SubmissionId);
+        if (paymentResponse != null)
+        {
+            await _resubmissionApplicationService.CreatePackagingResubmissionFeeViewEvent(session.PomResubmissionSession.PackagingResubmissionApplicationSession.SubmissionId);
 
-			UpdateResubmissionApplicationPaymentSession(session, paymentResponse);
+            UpdateResubmissionApplicationPaymentSession(session, paymentResponse);
 
-			return View("ResubmissionFee", new ResubmissionFeeViewModel
-			{
-				IsComplianceScheme = isComplianceScheme,
-				MemberCount = paymentResponse.MemberCount,
-				PreviousPaymentsReceived = paymentResponse.PreviousPaymentsReceived,
-				ResubmissionFee = paymentResponse.ResubmissionFee,
-				TotalChargeableItems = paymentResponse.ResubmissionFee,
-				TotalOutstanding = paymentResponse.TotalOutstanding
-			});
-		}
+            return View("ResubmissionFee", new ResubmissionFeeViewModel
+            {
+                IsComplianceScheme = isComplianceScheme,
+                MemberCount = paymentResponse.MemberCount,
+                PreviousPaymentsReceived = paymentResponse.PreviousPaymentsReceived,
+                ResubmissionFee = paymentResponse.ResubmissionFee,
+                TotalChargeableItems = paymentResponse.ResubmissionFee,
+                TotalOutstanding = paymentResponse.TotalOutstanding
+            });
+        }
 
-		return RedirectToAction(nameof(ResubmissionTaskList));
-	}
+        return RedirectToAction(nameof(ResubmissionTaskList));
+    }
 
-	[HttpGet]
-	[Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
-	[Route(PagePaths.RedirectPackagingUploadDetails)]
-	public async Task<IActionResult> RedirectToFileUpload()
-	{
-		var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
-		session.PomResubmissionSession.Journey = new List<string> { PagePaths.FileUploadSubLanding };
-		await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
+    [HttpGet]
+    [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
+    [Route(PagePaths.RedirectPackagingUploadDetails)]
+    public async Task<IActionResult> RedirectToFileUpload()
+    {
+        var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+        session.PomResubmissionSession.Journey = new List<string> { PagePaths.FileUploadSubLanding };
+        await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
 
-		return await RedirectToRightAction(session);
-	}
+        return await RedirectToRightAction(session);
+    }
 
-	private async Task UpdateSession(FrontendSchemeRegistrationSession session, PackagingResubmissionApplicationDetails resubmissionApplicationDetails, EPR.Common.Authorization.Models.Organisation organisation, bool isComplianceScheme, ComplianceSchemeSummary complianceSchemeSummary, SubmissionPeriod submissionPeriod)
-	{
-		var packagingResubmissionApplicationSession = resubmissionApplicationDetails.ToPackagingResubmissionApplicationSession(organisation);
+    private async Task UpdateSession(FrontendSchemeRegistrationSession session, PackagingResubmissionApplicationDetails resubmissionApplicationDetails, EPR.Common.Authorization.Models.Organisation organisation, bool isComplianceScheme, ComplianceSchemeSummary complianceSchemeSummary, SubmissionPeriod submissionPeriod)
+    {
+        var packagingResubmissionApplicationSession = resubmissionApplicationDetails.ToPackagingResubmissionApplicationSession(organisation);
 
         session.PomResubmissionSession.PackagingResubmissionApplicationSession = packagingResubmissionApplicationSession;
-		session.PomResubmissionSession.IsPomResubmissionJourney = true;
-		session.PomResubmissionSession.Period = submissionPeriod;
+        session.PomResubmissionSession.IsPomResubmissionJourney = true;
+        session.PomResubmissionSession.Period = submissionPeriod;
 
-		if (isComplianceScheme)
-		{
-			session.PomResubmissionSession.RegulatorNation = NationExtensions.GetNationNameFromId((int)complianceSchemeSummary.Nation);
-		}
-		else if (string.IsNullOrEmpty(session.PomResubmissionSession.RegulatorNation))
-		{
-			session.PomResubmissionSession.RegulatorNation = await _resubmissionApplicationService.GetRegulatorNation(organisation.Id);
-		}
+        if (isComplianceScheme)
+        {
+            session.PomResubmissionSession.RegulatorNation = NationExtensions.GetNationNameFromId((int)complianceSchemeSummary.Nation);
+        }
+        else if (string.IsNullOrEmpty(session.PomResubmissionSession.RegulatorNation))
+        {
+            session.PomResubmissionSession.RegulatorNation = await _resubmissionApplicationService.GetRegulatorNation(organisation.Id);
+        }
 
-		await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
-	}
+        await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
+    }
 
-	public async Task<int> GetMemberCount(Guid? submissionId, bool isComplianceScheme, Guid? complianceSchemeId)
-	{
-		if (!isComplianceScheme)
-		{
-			return 0;
-		}
+    public async Task<int> GetMemberCount(Guid? submissionId, bool isComplianceScheme, Guid? complianceSchemeId)
+    {
+        if (!isComplianceScheme)
+        {
+            return 0;
+        }
 
-		var response = await _resubmissionApplicationService.GetPackagingResubmissionMemberDetails(new PackagingResubmissionMemberRequest()
-		{
-			SubmissionId = submissionId,
-			ComplianceSchemeId = complianceSchemeId?.ToString()
-		});
+        var response = await _resubmissionApplicationService.GetPackagingResubmissionMemberDetails(new PackagingResubmissionMemberRequest()
+        {
+            SubmissionId = submissionId,
+            ComplianceSchemeId = complianceSchemeId?.ToString()
+        });
 
-		if (response != null)
-		{
-			return response.MemberCount;
-		}
+        if (response != null)
+        {
+            return response.MemberCount;
+        }
 
-		return 0;
-	}
+        return 0;
+    }
 
-	private async Task<RedirectToActionResult> RedirectToRightAction(FrontendSchemeRegistrationSession session)
-	{
-		var submission = session.PomResubmissionSession.PomSubmissions?.FirstOrDefault();
+    public async Task<int?> GetSubmissionHistory(PomSubmission submission, Guid organisationId, Guid? complianceSchemeId)
+    {
+        var submissionPeriodIds = await _resubmissionApplicationService.GetSubmissionIdsAsync(organisationId, SubmissionType.Producer, complianceSchemeId, null);
+        var submissionPeriod = submissionPeriodIds.Find(x => x.SubmissionId == submission.Id);
+        var histories = submissionPeriod != null ? await _resubmissionApplicationService.GetSubmissionHistoryAsync(submission.Id, new DateTime(submissionPeriod.Year, 1, 1, 0, 0, 0, DateTimeKind.Utc)) : null;
+        return histories?.Count;
+    }
 
-		var routeValueDictionary = new RouteValueDictionary { { "submissionId", submission?.Id } };
+    private async Task<RedirectToActionResult> RedirectToRightAction(FrontendSchemeRegistrationSession session)
+    {
+        var submission = session.PomResubmissionSession.PomSubmission;
 
-		if (SubmissionFileIdsDiffer(submission))
-		{
-			return RedirectToWarningController(routeValueDictionary);
-		}
+        var routeValueDictionary = new RouteValueDictionary { { "submissionId", submission?.Id } };
 
-		return RedirectToAppropriateFileController(submission, routeValueDictionary);
-	}
+        if (SubmissionFileIdsDiffer(submission))
+        {
+            return RedirectToWarningController(routeValueDictionary);
+        }
 
-	private RedirectToActionResult RedirectToAppropriateFileController(PomSubmission submission, RouteValueDictionary routeValueDictionary)
-	{
-		return submission.LastSubmittedFile.FileId == submission.LastUploadedValidFile.FileId
-			? RedirectToAction(
-				nameof(FileUploadController.Get),
-				nameof(FileUploadController).RemoveControllerFromName(),
-				routeValueDictionary)
-			: RedirectToAction(
-				nameof(FileUploadCheckFileAndSubmitController.Get),
-				nameof(FileUploadCheckFileAndSubmitController).RemoveControllerFromName(),
-				routeValueDictionary);
-	}
+        return RedirectToAppropriateFileController(submission, routeValueDictionary);
+    }
 
-	private RedirectToActionResult RedirectToWarningController(RouteValueDictionary routeValueDictionary)
-	{
-		return RedirectToAction(
-			nameof(FileUploadWarningController.Get),
-			nameof(FileUploadWarningController).RemoveControllerFromName(),
-			routeValueDictionary);
-	}
+    private RedirectToActionResult RedirectToAppropriateFileController(PomSubmission submission, RouteValueDictionary routeValueDictionary)
+    {
+        return submission.LastSubmittedFile.FileId == submission.LastUploadedValidFile.FileId
+            ? RedirectToAction(
+                nameof(FileUploadController.Get),
+                nameof(FileUploadController).RemoveControllerFromName(),
+                routeValueDictionary)
+            : RedirectToAction(
+                nameof(FileUploadCheckFileAndSubmitController.Get),
+                nameof(FileUploadCheckFileAndSubmitController).RemoveControllerFromName(),
+                routeValueDictionary);
+    }
 
-	private static bool SubmissionFileIdsDiffer(PomSubmission submission)
-	{
-		return submission.LastSubmittedFile.FileId != submission.LastUploadedValidFile.FileId &&
-			   submission.HasWarnings && submission.ValidationPass;
-	}
+    private RedirectToActionResult RedirectToWarningController(RouteValueDictionary routeValueDictionary)
+    {
+        return RedirectToAction(
+            nameof(FileUploadWarningController.Get),
+            nameof(FileUploadWarningController).RemoveControllerFromName(),
+            routeValueDictionary);
+    }
 
-	private async Task SaveSession(FrontendSchemeRegistrationSession session, string currentPagePath, string? nextPagePath)
-	{
-		ClearRestOfJourney(session, currentPagePath);
+    private static bool SubmissionFileIdsDiffer(PomSubmission submission)
+    {
+        return submission.LastSubmittedFile.FileId != submission.LastUploadedValidFile.FileId &&
+               submission.HasWarnings && submission.ValidationPass;
+    }
 
-		session.PomResubmissionSession.Journey.AddIfNotExists(nextPagePath);
+    private async Task SaveSession(FrontendSchemeRegistrationSession session, string currentPagePath, string? nextPagePath)
+    {
+        ClearRestOfJourney(session, currentPagePath);
 
-		await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
-	}
+        session.PomResubmissionSession.Journey.AddIfNotExists(nextPagePath);
 
-	private static void ClearRestOfJourney(FrontendSchemeRegistrationSession session, string currentPagePath)
-	{
-		var index = session.PomResubmissionSession.Journey.IndexOf(currentPagePath);
+        await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
+    }
 
-		session.PomResubmissionSession.Journey = session.PomResubmissionSession.Journey.Take(index + 1).ToList();
-	}
+    private static void ClearRestOfJourney(FrontendSchemeRegistrationSession session, string currentPagePath)
+    {
+        var index = session.PomResubmissionSession.Journey.IndexOf(currentPagePath);
 
-	private void SetBackLink(FrontendSchemeRegistrationSession session, string currentPagePath)
-	{
-		_logger.LogTrace("CurrentPagePath : {currentPagePath}", currentPagePath);
+        session.PomResubmissionSession.Journey = session.PomResubmissionSession.Journey.Take(index + 1).ToList();
+    }
 
-		ViewBag.BackLinkToDisplay = session.PomResubmissionSession.Journey.PreviousOrDefault(currentPagePath);
-	}
+    private void SetBackLink(FrontendSchemeRegistrationSession session, string currentPagePath)
+    {
+        _logger.LogTrace("CurrentPagePath : {currentPagePath}", currentPagePath);
 
-	private SubmissionPeriod FindSubmissionPeriod(string dataPeriod)
-	{
-		return _submissionPeriods.Find(period => period.DataPeriod == dataPeriod);
-	}
+        ViewBag.BackLinkToDisplay = session.PomResubmissionSession.Journey.PreviousOrDefault(currentPagePath);
+    }
 
-	private async Task<string> GetUserNameFromId(Guid userId)
-	{
-		var user = await _userAccountService.GetPersonByUserId(userId);
-		return $"{user.FirstName} {user.LastName}";
-	}
+    private SubmissionPeriod FindSubmissionPeriod(string dataPeriod)
+    {
+        return _submissionPeriods.Find(period => period.DataPeriod == dataPeriod);
+    }
 
-	private async Task UpdateResubmissionApplicationPaymentSession(FrontendSchemeRegistrationSession session, PackagingPaymentResponse packagingPaymentResponse)
-	{
-		session.PomResubmissionSession.FeeBreakdownDetails.TotalAmountOutstanding = packagingPaymentResponse.TotalOutstanding;
-		session.PomResubmissionSession.FeeBreakdownDetails.MemberCount = packagingPaymentResponse.MemberCount;
-		session.PomResubmissionSession.FeeBreakdownDetails.PreviousPaymentsReceived = packagingPaymentResponse.PreviousPaymentsReceived;
-		session.PomResubmissionSession.FeeBreakdownDetails.ResubmissionFee = packagingPaymentResponse.ResubmissionFee;
+    private async Task<string> GetUserNameFromId(Guid userId)
+    {
+        var user = await _userAccountService.GetPersonByUserId(userId);
+        return $"{user.FirstName} {user.LastName}";
+    }
 
-		await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
-	}
+    private async Task UpdateResubmissionApplicationPaymentSession(FrontendSchemeRegistrationSession session, PackagingPaymentResponse packagingPaymentResponse)
+    {
+        session.PomResubmissionSession.FeeBreakdownDetails.TotalAmountOutstanding = packagingPaymentResponse.TotalOutstanding;
+        session.PomResubmissionSession.FeeBreakdownDetails.MemberCount = packagingPaymentResponse.MemberCount;
+        session.PomResubmissionSession.FeeBreakdownDetails.PreviousPaymentsReceived = packagingPaymentResponse.PreviousPaymentsReceived;
+        session.PomResubmissionSession.FeeBreakdownDetails.ResubmissionFee = packagingPaymentResponse.ResubmissionFee;
+
+        await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
+    }
 }
