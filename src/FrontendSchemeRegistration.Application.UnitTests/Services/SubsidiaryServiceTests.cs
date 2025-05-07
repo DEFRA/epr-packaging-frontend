@@ -622,6 +622,35 @@ public class SubsidiaryServiceTests
     }
 
     [Test]
+    public async Task GetOrganisationParent_WhenApiReturnsSuccessfully_ReturnsResponse()
+    {
+        var referenceNumber = "abcd";
+
+        var expectedOrganisationDto = new OrganisationDto
+        {
+            CompaniesHouseNumber = "abcd",
+            Id = 12345,
+            ExternalId = Guid.NewGuid(),
+            Name = "Test123",
+            RegistrationNumber = "ABCD",
+            TradingName = "DEFG"
+        };
+
+        var response = new HttpResponseMessage(HttpStatusCode.OK);
+        response.Content = expectedOrganisationDto.ToJsonContent();
+
+        _accountServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _sut.GetOrganisationParent(referenceNumber);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().BeEquivalentTo(expectedOrganisationDto);
+    }
+
+    [Test]
     public async Task GetOrganisationByReferenceNumber_WhenApiReturnsError_ReturnsResponse()
     {
         var referenceNumber = "abc";
@@ -637,6 +666,76 @@ public class SubsidiaryServiceTests
 
         // Assert
         result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetOrganisationParent_WhenApiThrowsException_ThrowsException()
+    {
+        var referenceNumber = "abc";
+
+        _accountServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .Throws<Exception>();
+
+        // Act & Assert
+        Assert.ThrowsAsync<Exception>(async () => await _sut.GetOrganisationParent(referenceNumber));
+    }
+
+
+    [Test]
+    public async Task GetOrganisationsByCompaniesHouseNumber_WhenApiReturnsError_ReturnsResponse()
+    {
+        var companyHouseNumber = "0123456X";
+
+        var response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+        response.Content = null;
+
+        _accountServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _sut.GetOrganisationsByCompaniesHouseNumber(companyHouseNumber);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetOrganisationsByCompaniesHouseNumber_WhenApiReturnsResponse()
+    {
+        var companyHouseNumber = "0123456X";
+        var expectedOrganisationDto = new OrganisationDto
+        {
+            CompaniesHouseNumber = "0123456X",
+            Id = 12345,
+            ExternalId = Guid.NewGuid(),
+            Name = "Test123",
+            RegistrationNumber = "ABCD",
+            TradingName = "DEFG"
+        };
+
+        var response = new HttpResponseMessage(HttpStatusCode.OK);
+        response.Content = expectedOrganisationDto.ToJsonContent();
+
+        _accountServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _sut.GetOrganisationsByCompaniesHouseNumber(companyHouseNumber);
+
+        // Assert
+        result.Should().NotBeNull();
+    }
+
+    [Test]
+    public async Task GetOrganisationsByCompaniesHouseNumber_WhenApiThrowsException_ThrowsException()
+    {
+        var companyHouseNumber = "0123456X";
+
+        _accountServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .Throws<Exception>();
+
+        // Act & Assert
+        Assert.ThrowsAsync<Exception>(async () => await _sut.GetOrganisationsByCompaniesHouseNumber(companyHouseNumber));
     }
 
     [Test]

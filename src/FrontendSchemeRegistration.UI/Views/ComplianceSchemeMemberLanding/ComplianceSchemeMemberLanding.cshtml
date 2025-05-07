@@ -20,7 +20,7 @@
         @await Component.InvokeAsync("ApprovedPerconInvitationSubmittedNotification")
 
         <div class="govuk-grid-row">
-            <div class="govuk-grid-column-full govuk-!-margin-top-4">
+            <div class="govuk-grid-column-two-thirds govuk-!-margin-top-4">
                 <h1 class="govuk-heading-xl break-word">
                     @Localizer["account_name_manager", Model.OrganisationName]
                 </h1>
@@ -33,13 +33,20 @@
         }
 
         <div class="govuk-grid-row">
-            <div class="govuk-grid-column-two-thirds govuk-!-margin-top-4">
+            <div class="govuk-grid-column-full">
                 <div class="govuk-inset-text">
-                    <p><b>@Localizer["organisation_id", Model.OrganisationNumber]</b></p>
-                    <p>@Localizer["compliance_scheme_name", Model.ComplianceSchemeName]</p>
+                    <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">@Localizer["organisation_id", Model.OrganisationNumber]</p>
+                    <p class="govuk-body govuk-!-margin-bottom-1">@Localizer["compliance_scheme_name", Model.ComplianceSchemeName]</p>
+                    <feature name="ShowWasteTileForIndirectProducer">
+                        <p class="govuk-body govuk-!-margin-bottom-1">
+                            <a asp-controller="FrontendSchemeRegistration" asp-action="ManageComplianceScheme" class="govuk-link govuk-link--no-visited-state">
+                                @Localizer["change_or_remove_compliance_scheme", Model.OrganisationName]
+                            </a>
+                        </p>
+                    </feature>
                 </div>
 
-                <h2 class="govuk-heading-s govuk-!-margin-bottom-3">@Localizer["responsible_for", Model.ComplianceSchemeName]</h2>
+                <h2 class="govuk-heading-m govuk-!-margin-bottom-3">@Localizer["responsible_for", Model.ComplianceSchemeName]</h2>
 
                 <p class="govuk-body">@Localizer["behalf_of_responsible_for", Model.OrganisationName, Model.ComplianceSchemeName]</p>
                 <ul class="govuk-list govuk-list--bullet">
@@ -49,19 +56,37 @@
                     <li>@Localizer["paying_fees_and_charges_to_the_environmental_regulator"]</li>
                 </ul>
 
-                <h2 class="govuk-heading-s govuk-!-margin-bottom-3">@Localizer["what_they_are_responsible_for", Model.OrganisationName]</h2>
+                <h2 class="govuk-heading-m govuk-!-margin-bottom-3">@Localizer["what_they_are_responsible_for", Model.OrganisationName]</h2>
 
                 <p class="govuk-body">@Localizer["paying_fees_and_charges_to_the_scheme_administrator"]</p>
 
                 @if (Model.CanManageComplianceScheme)
                 {
-                    <h2 class="govuk-heading-s govuk-!-margin-bottom-3">@Localizer["change_or_remove_compliance_scheme"]</h2>
+                    <feature negate="true" name="ShowWasteTileForIndirectProducer">
+                    <h2 class="govuk-heading-m govuk-!-margin-bottom-3">@Localizer["change_or_remove_compliance_scheme"]</h2>
 
                     <p class="govuk-body">
                         @Localizer["you_can"]
                         <a asp-controller="FrontendSchemeRegistration" asp-action="ManageComplianceScheme" class="govuk-link govuk-link--no-visited-state" >
                             @Localizer["change_or_remove_compliance_scheme_link", Model.OrganisationName]</a>.
                     </p>
+                    </feature>
+
+                    <feature name="ShowWasteTileForIndirectProducer">
+                        <div class="govuk-grid-row box-container">
+                            <div class="govuk-grid-column-one-half box">
+                                <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
+                                    <div class="govuk-card-body">
+                                        <h2 class="govuk-heading-m">
+                                            <a class="govuk-link govuk-link--no-visited-state" rel="noreferrer noopener" target="_blank"
+                                               href="">@Localizer["waste_management_and_admin_fees"]</a>
+                                        </h2>
+                                        <p class="govuk-body govuk-!-margin-bottom-0">@Localizer["sign_into_the_financial_services_system"]</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </feature>
                 }
             </div>
         </div>

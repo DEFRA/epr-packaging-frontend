@@ -31,4 +31,8 @@ public interface ISubsidiaryService
     Task<Stream> GetUploadErrorsReport(Guid userId, Guid organisationId);
 
     Task<Stream?> GetAllSubsidiariesStream();
+
+    Task<OrganisationDto> GetOrganisationParent(string referenceNumber);
+
+    Task<OrganisationDto> GetOrganisationsByCompaniesHouseNumber(string companyHouseNumber);
 }

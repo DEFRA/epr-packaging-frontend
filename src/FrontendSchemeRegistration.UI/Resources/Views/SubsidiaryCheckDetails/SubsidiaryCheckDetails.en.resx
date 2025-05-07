@@ -1,23 +1,47 @@
 ﻿<root>
-	<data name="detail_name_header" xml:space="preserve">
-        <value>Section</value>
+    <data name="detail_name_header" xml:space="preserve">
+    <value>Section</value>
     </data>
-	<data name="detail_value_header" xml:space="preserve">
-        <value>Value</value>
+    <data name="detail_value_header" xml:space="preserve">
+    <value>Value</value>
     </data>
-	<data name="detail_action_header" xml:space="preserve">
-        <value>Action</value>
+    <data name="detail_action_header" xml:space="preserve">
+    <value>Action</value>
     </data>
-	<data name="check-details" xml:space="preserve">
-        <value>Check details</value>
+    <data name="check-details" xml:space="preserve">
+    <value>Check your answers</value>
     </data>
-	<data name="companies-house-number" xml:space="preserve">
-        <value>Companies House number</value>
+    <data name="producer-details-heading" xml:space="preserve">
+    <value>Producer details</value>
     </data>
-	<data name="organisation-details" xml:space="preserve">
-        <value>Organisation details</value>
+    <data name="producer-name" xml:space="preserve">
+    <value>Producer name</value>
     </data>
-	<data name="uk-nation" xml:space="preserve">
-        <value>UK nation</value>
+    <data name="companies-house-number" xml:space="preserve">
+    <value>Companies House number</value>
+    </data>
+    <data name="subsidiary-details-heading" xml:space="preserve">
+    <value>Subsidiary details</value>
+    </data>
+    <data name="subsidiary-companies-house-number" xml:space="preserve">
+    <value>Companies House number</value>
+    </data>
+    <data name="organisation-details" xml:space="preserve">
+    <value>Subsidiary details</value>
+    </data>
+    <data name="uk-nation" xml:space="preserve">
+    <value>UK nation</value>
+    </data>
+    <data name="declaration_warning" xml:space="preserve">
+    <value>You can be fined or prosecuted if you give the wrong information.</value>
+    </data>
+    <data name="declaration_statement" xml:space="preserve">
+    <value>By confirming your details, you agree that the information you’ve given is complete and correct.</value>
+    </data>
+    <data name="declaration" xml:space="preserve">
+    <value>Declaration</value>
+    </data>
+    <data name="text_assistive.warning" xml:space="preserve">
+    <value>Warning</value>
     </data>
 </root>

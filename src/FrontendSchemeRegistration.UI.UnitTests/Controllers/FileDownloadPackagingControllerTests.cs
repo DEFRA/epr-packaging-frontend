@@ -68,7 +68,7 @@ public class FileDownloadPackagingControllerTests
     }
 
     [Test]
-    public async Task Get_Returns_ValidFile()
+    public async Task Get_Returns_ValidUploadedFile()
     {
         // Arrange
         var fileName = "testFile01.csv";
@@ -98,6 +98,48 @@ public class FileDownloadPackagingControllerTests
         var viewModel = new FileDownloadViewModel
         {
             SubmissionId = _submissionId,
+        };
+
+        // Act
+        var result = await _systemUnderTest.Get(viewModel) as FileContentResult;
+
+        // Assert
+        result.Should().BeOfType<FileContentResult>();
+        result.FileDownloadName.Should().Be(fileName);
+    }
+
+    [Test]
+    public async Task Get_Returns_ValidSubmittedFile()
+    {
+        // Arrange
+        var fileName = "testFile01.csv";
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(new PomSubmission
+        {
+            Id = _submissionId,
+            PomFileName = fileName,
+            LastSubmittedFile = new SubmittedFileInformation
+            {
+                FileId = Guid.NewGuid(),
+                FileName = fileName
+            },
+            ValidationPass = true
+        });
+
+        var mockHttpContext = new Mock<HttpContext>();
+        var claims = CreateUserDataClaim(OrganisationRoles.Producer);
+        var identity = new ClaimsIdentity(claims, "TestAuthType");
+        var claimsPrincipal = new ClaimsPrincipal(identity);
+        mockHttpContext.Setup(c => c.User).Returns(claimsPrincipal);
+
+        _systemUnderTest.ControllerContext = new ControllerContext
+        {
+            HttpContext = mockHttpContext.Object
+        };
+
+        var viewModel = new FileDownloadViewModel
+        {
+            SubmissionId = _submissionId,
+            Type = FileDownloadType.Submission
         };
 
         // Act

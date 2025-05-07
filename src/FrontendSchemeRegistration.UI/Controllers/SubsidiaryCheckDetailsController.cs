@@ -49,7 +49,13 @@ public class SubsidiaryCheckDetailsController : Controller
                 County = session.SubsidiarySession.Company.BusinessAddress?.County,
                 Country = session.SubsidiarySession.UkNation?.ToString(),
                 Postcode = session.SubsidiarySession.Company.BusinessAddress?.Postcode
-            }
+            },
+
+            IsCompanyAlreadyLinkedToTheParent = session.SubsidiarySession.Company?.IsCompanyAlreadyLinkedToTheParent,
+            IsCompanyAlreadyLinkedToOtherParent = session.SubsidiarySession.Company?.IsCompanyAlreadyLinkedToOtherParent,
+            ParentCompanyName = session.UserData.Organisations?.FirstOrDefault()?.Name,
+            ParentCompanyCompaniesHouseNumber = session.UserData.Organisations?.FirstOrDefault()?.CompaniesHouseNumber,
+            OtherParentCompanyName = session.SubsidiarySession.Company?.OtherParentCompanyName,
         };
 
         ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.SubsidiaryLocation}");

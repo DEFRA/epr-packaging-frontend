@@ -30,6 +30,7 @@ public class SubsidiaryService : ISubsidiaryService
     private const string RedisFileUploadStatusViewedKey = "SubsidiaryFileUploadStatusViewed";
     private readonly IDistributedCache _distributedCache;
     private readonly DistributedCacheEntryOptions _cacheEntryOptions;
+    private const string OrganisationByCompanyHouseNumberUrl = "organisations/organisation-by-company-house-number";
 
     public SubsidiaryService(
         IAccountServiceApiClient accountServiceApiClient,
@@ -124,6 +125,46 @@ public class SubsidiaryService : ISubsidiaryService
         }
     }
 
+    public async Task<OrganisationDto> GetOrganisationParent(string referenceNumber)
+    {
+        try
+        {
+            var result = await _accountServiceApiClient.SendGetRequest($"organisations/organisation-parent-details/{WebUtility.UrlEncode(referenceNumber)}");
+            if (!result.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            var content = await result.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<OrganisationDto>(content);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to retrieve subsidiary data");
+            throw;
+        }
+    }
+
+    public async Task<OrganisationDto> GetOrganisationsByCompaniesHouseNumber(string companyHouseNumber)
+    {
+        try
+        {
+            var result = await _accountServiceApiClient.SendGetRequest($"{OrganisationByCompanyHouseNumberUrl}/{WebUtility.UrlEncode(companyHouseNumber)}");
+            if (!result.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            var content = await result.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<OrganisationDto>(content);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to retrieve subsidiary data");
+            throw;
+        }
+    }
+    
     public async Task<Stream?> GetAllSubsidiariesStream()
     {
         try
@@ -206,7 +247,6 @@ public class SubsidiaryService : ISubsidiaryService
             throw;
         }
     }
-
 
     public async Task<OrganisationRelationshipModel> GetOrganisationSubsidiaries(Guid organisationId)
     {

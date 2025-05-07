@@ -207,9 +207,9 @@ details file.</comment>
     <value>Cadarnhad bod yr aelod wedi’i dynnu</value>
   </data>
   <data name="ConfirmationOfRemoval.AddingOrRemovingMembers" xml:space="preserve">
-    <value>W Adding or removing members might affect your organisation's packaging&lt;br /&gt;obligations - make sure you have read the </value>
+    <value>Gallai ychwanegu neu dynnu aelodau effeithio ar rwymedigaethau pecynwaith eich sefydliad – gofalwch eich bod wedi darllen y</value>
   </data>
   <data name="ConfirmationOfRemoval.GuidelinesForExtendedProducer" xml:space="preserve">
-    <value>W guidelines for extended producer&lt;br /&gt;responsibility for packaging (opens in a new tab).</value>
+    <value>canllawiau ynghylch cyfrifoldeb estynedig cynhyrchwyr dros becynwaith (yn agor mewn tab newydd).</value>
   </data>
 </root>

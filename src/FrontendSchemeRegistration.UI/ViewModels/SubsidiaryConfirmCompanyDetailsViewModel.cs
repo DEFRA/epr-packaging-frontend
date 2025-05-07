@@ -18,4 +18,10 @@ public class SubsidiaryConfirmCompanyDetailsViewModel
     public bool? IsCompanyAlreadyLinkedToTheParent { get; set; }
 
     public string? ParentCompanyName { get; set; }
+
+    public string? ParentCompanyCompaniesHouseNumber { get; set; }
+
+    public bool? IsCompanyAlreadyLinkedToOtherParent { get; set; }
+
+    public string? OtherParentCompanyName { get; set; }
 }

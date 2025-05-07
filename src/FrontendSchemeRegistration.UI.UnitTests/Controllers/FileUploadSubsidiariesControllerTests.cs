@@ -1880,6 +1880,22 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
             ((string)_controller.ViewBag.BackLinkToDisplay).Should().BeEmpty();
         }
 
+        [TestCase("  \t Hello World \t  ", "Hello World")]
+        [TestCase(null, null)]
+        [TestCase("\t \n   \t", "")]
+        [TestCase("AlreadyClean", "AlreadyClean")]
+        [TestCase("Some\tText  With   Spaces\tAnd\tTabs", "Some\tText  With   Spaces\tAnd\tTabs")]
+        public void PostSearch_ShouldTrimStartAndEnd_ButPreserveInnerWhitespace(string input, string expected)
+        {
+            // Act
+            var result = _controller.PostSearch(input) as RedirectToActionResult;
+
+            // Assert
+            result.Should().NotBeNull();
+            result!.ActionName.Should().Be("SubsidiariesList");
+            result.RouteValues.Should().ContainKey("searchTerm").WhoseValue.Should().Be(expected);
+        }
+
         private List<Claim> CreateUserDataClaim(string organisationRole, string serviceRole = null)
         {
             var userData = new UserData

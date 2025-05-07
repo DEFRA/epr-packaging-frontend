@@ -9,15 +9,36 @@
         <value>WAction</value>
     </data>
 	<data name="check-details" xml:space="preserve">
-        <value>WCheck details</value>
+        <value>Gwiriwch eich atebion</value>
     </data>
 	<data name="companies-house-number" xml:space="preserve">
-        <value>WCompanies House number</value>
+        <value>Rhif Tŷ'r Cwmnïau</value>
     </data>
 	<data name="organisation-details" xml:space="preserve">
-        <value>WOrganisation details</value>
+        <value>Manylion yr is-gwmni</value>
     </data>
 	<data name="uk-nation" xml:space="preserve">
-        <value>UK nation</value>
+        <value>Y wlad yn y Deyrnas Unedig</value>
     </data>
+	<data name="producer-details-heading" xml:space="preserve">
+        <value>Manylion y cynhyrchydd</value>
+    </data>
+	<data name="producer-name" xml:space="preserve">
+        <value>Enw'r cynhyrchydd</value>
+    </data>
+	<data name="subsidiary-details-heading" xml:space="preserve">
+        <value>Manylion yr is-gwmni</value>
+    </data>
+	<data name="declaration_warning" xml:space="preserve">
+        <value>Gallwch gael eich dirwyo neu eich erlyn os byddwch chi’n rhoi'r wybodaeth anghywir.</value>
+    </data>
+	<data name="declaration_statement" xml:space="preserve">
+        <value>Drwy gadarnhau’ch manylion, rydych chi’n cytuno bod yr wybodaeth rydych chi wedi'i rhoi yn gyflawn ac yn gywir.</value>
+    </data>
+	<data name="declaration" xml:space="preserve">
+        <value>Datganiad</value>
+    </data>
+	<data name="text_assistive.warning" xml:space="preserve">
+        <value>WWarning</value>
+	</data>
 </root>

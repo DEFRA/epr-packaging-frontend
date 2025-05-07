@@ -155,11 +155,53 @@ public class SubsidiaryConfirmCompanyDetailsControllerTests
     public async Task Post_SubsidiaryConfirmCompanyDetails()
     {
         // Act
-        var result = await _subsidiaryConfirmCompanyDetailsController.Post(new SubsidiaryConfirmCompanyDetailsViewModel { CompaniesHouseNumber = CompaniesHouseNumber, IsCompanyAlreadyLinkedToTheParent = false }) as RedirectToActionResult;
+        var result = await _subsidiaryConfirmCompanyDetailsController.
+            Post(new SubsidiaryConfirmCompanyDetailsViewModel 
+            { CompaniesHouseNumber = CompaniesHouseNumber, IsCompanyAlreadyLinkedToTheParent = false }) as RedirectToActionResult;
 
         // Assert
         result?.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("SubsidiaryLocation");
+    }
+
+    [Test]
+    public async Task Post_SubsidiaryConfirmCompanyDetailsWithLinkedParent()
+    {
+        // Act
+        var result = await _subsidiaryConfirmCompanyDetailsController.
+            Post(new SubsidiaryConfirmCompanyDetailsViewModel
+            { CompaniesHouseNumber = CompaniesHouseNumber, IsCompanyAlreadyLinkedToTheParent = true }) as RedirectToActionResult;
+
+        // Assert
+        result?.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("SubsidiaryCompaniesHouseNumber");
+    }
+
+
+    [Test]
+    public async Task Post_SubsidiaryConfirmCompanyDetails_OtherParentCheck()
+    {
+        // Act
+        var result = await _subsidiaryConfirmCompanyDetailsController.
+            Post(new SubsidiaryConfirmCompanyDetailsViewModel 
+            { CompaniesHouseNumber = CompaniesHouseNumber, IsCompanyAlreadyLinkedToOtherParent = false }) as RedirectToActionResult;
+
+        // Assert
+        result?.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("SubsidiaryLocation");
+    }
+
+    [Test]
+    public async Task Post_SubsidiaryConfirmCompanyDetails_WithOtherParent()
+    {
+        // Act
+        var result = await _subsidiaryConfirmCompanyDetailsController.
+            Post(new SubsidiaryConfirmCompanyDetailsViewModel
+            { CompaniesHouseNumber = CompaniesHouseNumber, IsCompanyAlreadyLinkedToOtherParent = true }) as RedirectToActionResult;
+
+        // Assert
+        result?.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("SubsidiaryCompaniesHouseNumber");
     }
 
     [Test]

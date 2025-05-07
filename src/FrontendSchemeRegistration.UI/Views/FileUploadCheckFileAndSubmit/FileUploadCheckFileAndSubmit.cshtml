@@ -86,7 +86,7 @@
                                         download.Value,
                                         "Get",
                                         "FileDownloadPackaging",
-                                        new { SubmissionId = Model.SubmissionId },
+                                        new { SubmissionId = Model.SubmissionId, Type = FileDownloadType.Upload },
                                         new
                                         {
                                             @class = "govuk-link--no-visited-state download-button"
@@ -136,7 +136,7 @@
                                             download.Value,
                                             "Get",
                                             "FileDownloadPackaging",
-                                            new { SubmissionId = Model.SubmissionId },
+                                            new { SubmissionId = Model.SubmissionId, Type = FileDownloadType.Submission },
                                             new
                                             {
                                                 @class = "govuk-link--no-visited-state download-button"

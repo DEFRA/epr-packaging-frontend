@@ -1,6 +1,5 @@
 ﻿namespace FrontendSchemeRegistration.UI.Controllers;
 
-using EPR.Common.Authorization.Extensions;
 using global::FrontendSchemeRegistration.Application.DTOs.Submission;
 using global::FrontendSchemeRegistration.Application.Enums;
 using global::FrontendSchemeRegistration.Application.Services.Interfaces;
@@ -34,9 +33,22 @@ public class FileDownloadPackagingController : Controller
 
         var submission = await _submissionService.GetSubmissionAsync<PomSubmission>(model.SubmissionId);
 
-        var fileId = submission.LastUploadedValidFile.FileId;
-        var fileData = await _fileDownloadService.GetFileAsync(fileId, submission.LastUploadedValidFile.FileName, SubmissionType.Producer, model.SubmissionId);
+        Guid fileId;
+        string fileName;
 
-        return File(fileData, "text/csv", submission.LastUploadedValidFile.FileName);
+        if (model.Type == FileDownloadType.Upload)
+        {
+            fileId = submission.LastUploadedValidFile.FileId;
+            fileName = submission.LastUploadedValidFile.FileName;
+        }
+        else
+        {
+            fileId = submission.LastSubmittedFile.FileId;
+            fileName = submission.LastSubmittedFile.FileName;
+        }
+
+        var fileData = await _fileDownloadService.GetFileAsync(fileId, fileName, SubmissionType.Producer, model.SubmissionId);
+
+        return File(fileData, "text/csv", fileName);
     }
 }

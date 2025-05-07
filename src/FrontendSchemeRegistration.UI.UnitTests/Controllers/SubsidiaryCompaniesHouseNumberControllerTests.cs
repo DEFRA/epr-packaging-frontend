@@ -592,6 +592,84 @@ public class SubsidiaryCompaniesHouseNumberControllerTests
     }
 
     [Test]
+    public async Task Post_Should_Set_IsCompanyAlreadyLinkedToOtherParent_false_When_Match_Found()
+    {
+        // Arrange
+        var model = new SubsidiaryCompaniesHouseNumberViewModel { CompaniesHouseNumber = "123456" };
+
+        var company = new Company { CompaniesHouseNumber = "123456" };
+        var parent = new OrganisationDto { ExternalId = Guid.NewGuid(), Name = "Parent Ltd" };
+        var relationships = new List<RelationshipResponseModel> {
+            new RelationshipResponseModel { CompaniesHouseNumber = "123456" }
+        };
+
+        var parentExpectedOrganisationDto = new OrganisationDto
+        {
+            CompaniesHouseNumber = CompaniesHouseNumber,
+            Id = 28687,
+            ExternalId = new Guid("E219D934-F0AC-4DBE-AB4F-BF9E5BC56E21"),
+            Name = CompanyName,
+            RegistrationNumber = "127516",
+            TradingName = "DEF"
+        };
+
+        _companiesHouseServiceMock.Setup(x => x.GetCompanyByCompaniesHouseNumber("123456"))
+            .ReturnsAsync(company);
+        _subsidirayServiceMock.Setup(x => x.GetOrganisationByReferenceNumber(It.IsAny<string>()))
+            .ReturnsAsync(parent);
+        _subsidirayServiceMock.Setup(x => x.GetOrganisationSubsidiaries(It.IsAny<Guid>()))
+            .ReturnsAsync(new OrganisationRelationshipModel { Relationships = relationships });
+        _subsidirayServiceMock.Setup(x => x.GetOrganisationsByCompaniesHouseNumber(It.IsAny<string>()))
+            .ReturnsAsync(parentExpectedOrganisationDto);
+
+        // Act
+        await _subsidiaryCompaniesHouseNumberController.Post(model);
+
+        // Assert
+        _session.SubsidiarySession.Company.IsCompanyAlreadyLinkedToTheParent.Should().BeTrue();
+        _session.SubsidiarySession.Company.IsCompanyAlreadyLinkedToOtherParent.Should().BeFalse();
+        _session.SubsidiarySession.Company.ParentCompanyName.Should().Be("Parent Ltd");
+    }
+
+    [Test]
+    public async Task Post_Should_Set_IsCompanyAlreadyLinkedToOtherParent_True_When_Match_Found()
+    {
+        // Arrange
+        var model = new SubsidiaryCompaniesHouseNumberViewModel { CompaniesHouseNumber = "123456" };
+        var company = new Company { CompaniesHouseNumber = "12345678", Name = "newCompany" };
+        var thisParent = new OrganisationDto { CompaniesHouseNumber = "T1234567", ExternalId = Guid.NewGuid(), Name = "this Parent Ltd" };
+        var otherParent = new OrganisationDto { CompaniesHouseNumber="O1234567", ExternalId = Guid.NewGuid(), Name = "Other Parent Ltd" };
+        var relationships = new List<RelationshipResponseModel>();
+        var childExpectedOrganisationDto = new OrganisationDto
+        {
+            CompaniesHouseNumber = company.CompaniesHouseNumber,
+            Id = 28687,
+            ExternalId = new Guid("E219D934-F0AC-4DBE-AB4F-BF9E5BC56E21"),
+            Name = company.Name,
+            RegistrationNumber = "123456",
+            TradingName = "DEF",
+            ParentCompanyName = "Other Parent Ltd"
+        };
+
+        _companiesHouseServiceMock.Setup(x => x.GetCompanyByCompaniesHouseNumber("123456"))
+            .ReturnsAsync(company);
+        _subsidirayServiceMock.Setup(x => x.GetOrganisationByReferenceNumber(It.IsAny<string>()))
+            .ReturnsAsync(thisParent);
+        _subsidirayServiceMock.Setup(x => x.GetOrganisationSubsidiaries(It.IsAny<Guid>()))
+            .ReturnsAsync(new OrganisationRelationshipModel { Relationships = relationships });
+        _subsidirayServiceMock.Setup(x => x.GetOrganisationsByCompaniesHouseNumber(It.IsAny<string>()))
+            .ReturnsAsync(childExpectedOrganisationDto);
+
+        // Act
+        await _subsidiaryCompaniesHouseNumberController.Post(model);
+
+        // Assert
+        _session.SubsidiarySession.Company.IsCompanyAlreadyLinkedToTheParent.Should().BeFalse();
+        _session.SubsidiarySession.Company.IsCompanyAlreadyLinkedToOtherParent.Should().BeTrue();
+        _session.SubsidiarySession.Company.OtherParentCompanyName.Should().Be("Other Parent Ltd");
+    }
+
+    [Test]
     public void SerializeModelState_Should_Return_Serialized_String()
     {
         var modelState = new Microsoft.AspNetCore.Mvc.ModelBinding.ModelStateDictionary();

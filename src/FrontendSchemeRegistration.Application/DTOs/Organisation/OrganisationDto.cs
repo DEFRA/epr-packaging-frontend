@@ -16,4 +16,6 @@ public class OrganisationDto
     public string? RegistrationNumber { get; set; }
 
     public string? CompaniesHouseNumber { get; set; }
+
+    public string? ParentCompanyName { get; set; }
 }

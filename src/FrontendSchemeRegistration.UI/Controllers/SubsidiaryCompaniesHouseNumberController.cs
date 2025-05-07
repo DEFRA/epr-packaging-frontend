@@ -93,7 +93,6 @@ public class SubsidiaryCompaniesHouseNumberController : Controller
                 var currentOrgRefNumber = session.UserData?.Organisations?.FirstOrDefault()?.OrganisationNumber;
                 var parentCompanyDetails = await _subsidiaryService.GetOrganisationByReferenceNumber(currentOrgRefNumber);
                 var parentOrgWithChildren = await _subsidiaryService.GetOrganisationSubsidiaries(parentCompanyDetails.ExternalId);
-
                 var currentCompanySubList = parentOrgWithChildren?.Relationships.Where(s => s.CompaniesHouseNumber.Equals(company.CompaniesHouseNumber, StringComparison.OrdinalIgnoreCase)).ToList();
                 if (company != null && currentCompanySubList != null && currentCompanySubList.Count > 0)
                 {
@@ -103,6 +102,17 @@ public class SubsidiaryCompaniesHouseNumberController : Controller
                 else if (company != null)
                 {
                     company.IsCompanyAlreadyLinkedToTheParent = false;
+                }
+
+                var internalRecordofCompany = await _subsidiaryService.GetOrganisationsByCompaniesHouseNumber(company.CompaniesHouseNumber);
+                if (internalRecordofCompany != null && internalRecordofCompany.ParentCompanyName != null && internalRecordofCompany.ParentCompanyName != parentCompanyDetails.Name)
+                {
+                    company.IsCompanyAlreadyLinkedToOtherParent = true;
+                    company.OtherParentCompanyName = internalRecordofCompany.ParentCompanyName;
+                }
+                else
+                {
+                    company.IsCompanyAlreadyLinkedToOtherParent = false;
                 }
             }
         }

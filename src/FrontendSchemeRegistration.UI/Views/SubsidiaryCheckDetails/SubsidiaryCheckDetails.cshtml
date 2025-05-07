@@ -18,8 +18,32 @@
             @using (Html.BeginForm("Post", "SubsidiaryCheckDetails", Model))
             {
                 <dl class="govuk-summary-list">
+                    <h2 class="govuk-heading-m">@Localizer["producer-details-heading"]</h2>
+
+                    <div class="govuk-summary-list__row govuk-!-font-weight-bold">
+                        <dt class="govuk-summary-list__key">
+                            @Localizer["producer-name"]
+                        </dt>
+                        <dd class="govuk-summary-list__value govuk-!-font-weight-bold">
+                            @Model.ParentCompanyName
+                        </dd>
+                    </div>
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">
+                            @Localizer["companies-house-number"]
+                        </dt>
+                        <dd class="govuk-summary-list__value">
+                            @Model.ParentCompanyCompaniesHouseNumber
+                        </dd>
+                        <dd class="govuk-summary-list__actions">
+                            <a class="govuk-link govuk-link--no-visited-state" asp-controller="SubsidiaryCompaniesHouseNumber" asp-action="Get"
+                               asp-route-submissionId="">@SharedLocalizer["change"]</a><span class="govuk-visually-hidden"> @Localizer["companies-house-number"]</span>
+                        </dd>
+                    </div>
+                    <h2 class="govuk-heading-m govuk-!-margin-top-9">@Localizer["subsidiary-details-heading"]</h2>
+
+                    <div class="govuk-summary-list__row">
+                        <dt class="govuk-summary-list__key govuk-!-font-weight-bold">
                             @Localizer["companies-house-number"]
                         </dt>
                         <dd class="govuk-summary-list__value">
@@ -35,18 +59,14 @@
                             @Localizer["organisation-details"]
                         </dt>
                         <dd class="govuk-summary-list__value">
-                            @Model.CompanyName<br /><br />
-                            @Model.BusinessAddress.AddressSingleLine<br />
-                            @Model.BusinessAddress.Street<br />
-                            @Model.BusinessAddress.Town<br />
-                            @Model.BusinessAddress.County<br />
-                            @Model.BusinessAddress.Country<br />
-                            @Model.BusinessAddress.Postcode
+                            <div>
+                                @{
+                                    RenderCompanyParts(new[] { Model.CompanyName });
+                                    RenderAddressParts(Model.BusinessAddress?.AddressFields);
+                                }
+                            </div>
                         </dd>
-                        <dd class="govuk-summary-list__actions">
-                            <a class="govuk-link govuk-link--no-visited-state" asp-controller="SubsidiaryConfirmCompanyDetails" asp-action="Get">@SharedLocalizer["change"]</a><span class="govuk-visually-hidden"> @Localizer["organisation-details"]</span>
-                        </dd>
-                    </div>
+                    </div>                   
                     <div class="govuk-summary-list__row">
                         <dt class="govuk-summary-list__key">
                             @Localizer["uk-nation"]
@@ -56,14 +76,50 @@
                         </dd>
                         <dd class="govuk-summary-list__actions">
                             <ul class="govuk-summary-list__actions-list">
-                                <a class="govuk-link govuk-link--no-visited-state" asp-controller="SubsidiaryLocation" asp-action="Get">@SharedLocalizer["change"]</a><span class="govuk-visually-hidden"> @Localizer["uk-nation"]</span>
+                                <a class="govuk-link govuk-link--no-visited-state" asp-controller="SubsidiaryLocation" asp-action="Get">@SharedLocalizer["change"]</a>
+                                <span class="govuk-visually-hidden"> @Localizer["uk-nation"]</span>
                             </ul>
                         </dd>
                     </div>
                 </dl>
 
+                <h1 class="govuk-heading-l">@Localizer["declaration"]</h1>
+                <p class="govuk-body">@Localizer["declaration_statement"]</p>
+
+                <div class="govuk-warning-text">
+                    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                    <strong class="govuk-warning-text__text">
+                        <span class="govuk-warning-text__assistive">@Localizer["text_assistive.warning"]</span>
+                        @Localizer["declaration_warning"]
+                    </strong>
+                </div>
                 <button class="govuk-button" data-module="govuk-button">@SharedLocalizer["confirm_and_continue"]</button>
             }
         </div>
     </div>
 </main>
+
+@{
+
+    void RenderCompanyParts(string?[] addressParts)
+    {
+        if (addressParts is not null)
+        {
+            foreach (string part in addressParts.Where(p => !string.IsNullOrWhiteSpace(p)))
+            {
+                <div><b>@part</b></div>
+            }
+        }
+    }
+
+    void RenderAddressParts(string?[] addressParts)
+    {
+        if (addressParts is not null)
+        {
+            foreach (string part in addressParts.Where(p => !string.IsNullOrWhiteSpace(p)))
+            {
+                <div>@part</div>
+            }
+        }
+    }
+}

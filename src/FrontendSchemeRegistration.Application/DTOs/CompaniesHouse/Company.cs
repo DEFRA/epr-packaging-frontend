@@ -38,4 +38,8 @@ public class Company
     public bool? IsCompanyAlreadyLinkedToTheParent { get; set; }
 
     public string? ParentCompanyName { get; set; }
+
+    public bool? IsCompanyAlreadyLinkedToOtherParent { get; set; }
+
+    public string? OtherParentCompanyName { get; set; }
 }

@@ -126,8 +126,13 @@
 
             return View(vm);
         }
-          
 
+        [HttpPost]
+        public IActionResult PostSearch(string searchTerm)
+        {
+            var cleanTerm = searchTerm?.Trim();
+            return RedirectToAction(nameof(SubsidiariesList), new { searchTerm = cleanTerm });
+        }
 
         [HttpGet]
         [Route(PagePaths.FileUploadSubsidiariesCheckStatus)]

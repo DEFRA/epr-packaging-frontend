@@ -68,7 +68,7 @@ public class FileDownloadCompanyDetailsControllerTests
     }
 
     [Test]
-    public async Task Get_Returns_ValidFile()
+    public async Task Get_Returns_ValidUploadedFile()
     {
         // Arrange
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(new RegistrationSubmission
@@ -77,7 +77,8 @@ public class FileDownloadCompanyDetailsControllerTests
             CompanyDetailsFileName = "testFile01.csv",
             LastUploadedValidFiles = new UploadedRegistrationFilesInformation
             {
-                CompanyDetailsFileId = Guid.NewGuid()
+                CompanyDetailsFileId = Guid.NewGuid(),
+                CompanyDetailsFileName = "testFile01.csv"
             },
             ValidationPass = true
         });
@@ -107,6 +108,47 @@ public class FileDownloadCompanyDetailsControllerTests
     }
 
     [Test]
+    public async Task Get_Returns_ValidSubmittedFile()
+    {
+        // Arrange
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(new RegistrationSubmission
+        {
+            Id = _submissionId,
+            CompanyDetailsFileName = "testFile01.csv",
+            LastSubmittedFiles = new SubmittedRegistrationFilesInformation
+            {
+                CompanyDetailsFileId = Guid.NewGuid(),
+                CompanyDetailsFileName = "testFile01.csv"
+            },
+            ValidationPass = true
+        });
+
+        var mockHttpContext = new Mock<HttpContext>();
+        var claims = CreateUserDataClaim(OrganisationRoles.Producer);
+        var identity = new ClaimsIdentity(claims, "TestAuthType");
+        var claimsPrincipal = new ClaimsPrincipal(identity);
+        mockHttpContext.Setup(c => c.User).Returns(claimsPrincipal);
+
+        _systemUnderTest.ControllerContext = new ControllerContext
+        {
+            HttpContext = mockHttpContext.Object
+        };
+
+        var viewModel = new FileDownloadViewModel
+        {
+            SubmissionId = _submissionId,
+            Type = FileDownloadType.Submission
+        };
+
+        // Act
+        var result = await _systemUnderTest.Get(viewModel) as FileContentResult;
+
+        // Assert
+        result.Should().BeOfType<FileContentResult>();
+        result.FileDownloadName.Should().Be("testFile01.csv");
+    }
+
+    [Test]
     public async Task Get_ReturnsFileUploadingView_WhenUploadHasNotCompleted()
     {
         // Arrange
@@ -116,7 +158,8 @@ public class FileDownloadCompanyDetailsControllerTests
             CompanyDetailsFileName = "testFile01.csv",
             LastUploadedValidFiles = new UploadedRegistrationFilesInformation
             {
-                CompanyDetailsFileId = Guid.NewGuid()
+                CompanyDetailsFileId = Guid.NewGuid(),
+                CompanyDetailsFileName = "testFile01.csv"
             },
             ValidationPass = true
         });

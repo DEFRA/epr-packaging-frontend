@@ -15,6 +15,7 @@
                     @Html.HiddenFor(m => m.CompanyName)
                     @Html.HiddenFor(m => m.OrganisationId)
                     @Html.HiddenFor(m => m.IsCompanyAlreadyLinkedToTheParent)
+                    @Html.HiddenFor(m => m.IsCompanyAlreadyLinkedToOtherParent)
 
                     <div class="govuk-form-group">
                         @if (@Model.IsCompanyAlreadyLinkedToTheParent.Value)
@@ -23,6 +24,12 @@
                                 @Localizer["ConfirmCompanyDetails.IsAlreadyLinkedTo", @Model.CompanyName]: @Model.ParentCompanyName
                             </h1>
                         }
+                        else if (@Model.IsCompanyAlreadyLinkedToOtherParent.Value)
+                        {
+                            <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+                                @Localizer["ConfirmCompanyDetails.IsAlreadyLinkedToOtherParent", @Model.CompanyName]: @Model.OtherParentCompanyName
+                            </h1>
+                        }                  
                         else
                         {
                             <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
@@ -91,14 +98,17 @@
                         </div>
                     </details>
 
-                    @if (@Model.IsCompanyAlreadyLinkedToTheParent.Value)
+                    @if (@Model.IsCompanyAlreadyLinkedToTheParent.Value || @Model.IsCompanyAlreadyLinkedToOtherParent.Value)
                     {
                         <p class="govuk-body govuk-!-margin-top-4">
                             <button class="govuk-button" data-module="govuk-button">
                                 @Localizer["ConfirmCompanyDetails.SearchAgain"]
                             </button>
+@*                             <a class="govuk-button govuk-button--secondary" href="@Url.Action("SubsidiariesDownload", "FileUploadSubsidiaries")" role="button" data-module="govuk-button">
+                                @Localizer["producer_link"]
+                            </a> *@
                             <a class="govuk-link govuk-link--no-visited-state govuk-!-margin-top-10 govuk-!-display-inline-block govuk-!-padding-1" asp-controller="SubsidiaryCompaniesHouseNumber" asp-action="Get">@Localizer["ConfirmCompanyDetails.Cancel"]</a>
-                        </p>
+                        </p>                   
                     }
                     else
                     {

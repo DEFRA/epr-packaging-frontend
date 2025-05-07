@@ -12,7 +12,7 @@
     var joinedHeader = Localizer["joined"];
     var reportingHeader = Localizer["reporting"];
     var removeSubsidiaryLinkText = Localizer["remove_subsidiary"];
-    var hasSubsidiaries = Model.Subsidiaries.Count > 0;
+    var hasSubsidiaries = Model.Subsidiaries.Count > 0 || !string.IsNullOrEmpty(Model.SearchTerm);
     var isDirectProducer = Model.IsDirectProducer;
     var isSingleUploadJourneyEnabled = await FeatureManager.IsEnabledAsync(FeatureFlags.ShowSubsidiariesSingleUploadJourney);
 
@@ -66,7 +66,7 @@
 
                         <div class="govuk-card govuk-card--grey govuk-card--no-border govuk-!-margin-bottom-7">
                             <div class="govuk-card-body  govuk-!-margin-top-6">
-                                <form asp-controller="FileUploadSubsidiaries" asp-action="Post" method="get">
+                                <form asp-controller="FileUploadSubsidiaries" asp-action="PostSearch" method="post">
                                     <div class="govuk-form-group">
                                         <label id="search-hint" for="search" class="govuk-body govuk-!-margin-bottom-2">
                                             @Localizer["search_for_a_subsidiary_by"]
@@ -107,7 +107,8 @@
                         </div>
                     </div>
 
-
+                    @if (Model.Subsidiaries.Count > 0)
+                    {
                     <div class="govuk-grid-row">
                         <div class="govuk-grid-column-full">
                             <div class="govuk-button-group">
@@ -168,6 +169,13 @@
                             }
                         </div>
                     </div>
+                    }
+                    else
+                    {
+                        <h2 class="govuk-heading-m">@Localizer["subsidiaries_not_found"]</h2>
+                        <p class="govuk-body">@Localizer["subsidiary_not_found_message"]</p>
+                        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+                    }
                 }
                 else
                 {

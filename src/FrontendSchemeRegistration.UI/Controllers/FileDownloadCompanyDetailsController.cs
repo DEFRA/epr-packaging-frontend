@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement.Mvc;
 
 [FeatureGate(FeatureFlags.EnableCsvDownload)]
-public class FileDownloadCompanyDetailsController(ISubmissionService submissionService, IFileDownloadService fileDownloadService ) : Controller
+public class FileDownloadCompanyDetailsController(ISubmissionService submissionService, IFileDownloadService fileDownloadService) : Controller
 {
     public async Task<IActionResult> Get(FileDownloadViewModel model)
     {
@@ -21,9 +21,22 @@ public class FileDownloadCompanyDetailsController(ISubmissionService submissionS
 
         var submission = await submissionService.GetSubmissionAsync<RegistrationSubmission>(model.SubmissionId);
 
-        var fileId = submission.LastUploadedValidFiles?.CompanyDetailsFileId ?? Guid.Empty;
-        var fileData = await fileDownloadService.GetFileAsync(fileId, submission.CompanyDetailsFileName, SubmissionType.Registration, model.SubmissionId);
+        Guid fileId;
+        string fileName;
 
-        return File(fileData, "text/csv", submission.CompanyDetailsFileName);
+        if (model.Type == FileDownloadType.Upload)
+        {
+            fileId = submission.LastUploadedValidFiles.CompanyDetailsFileId;
+            fileName = submission.LastUploadedValidFiles.CompanyDetailsFileName;
+        }
+        else
+        {
+            fileId = submission.LastSubmittedFiles.CompanyDetailsFileId;
+            fileName = submission.LastSubmittedFiles.CompanyDetailsFileName;
+        }
+
+        var fileData = await fileDownloadService.GetFileAsync(fileId, fileName, SubmissionType.Registration, model.SubmissionId);
+
+        return File(fileData, "text/csv", fileName);
     }
 }

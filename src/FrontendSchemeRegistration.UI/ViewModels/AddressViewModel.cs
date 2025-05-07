@@ -16,4 +16,6 @@ public class AddressViewModel
     public string? Country { get; set; }
 
     public string? Postcode { get; set; }
+
+    public string?[] AddressFields => new[] { AddressSingleLine, Street, Town, County, Country, Postcode };
 }
