@@ -1,0 +1,60 @@
+﻿@using FrontendSchemeRegistration.UI.Constants
+@model FileUploadResubmissionConfirmationViewModel
+
+@{
+    ViewData["Title"] = Localizer[Model.IsComplianceScheme ? "page_title_compliance" : "page_title_producer"];
+    var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
+}
+
+@await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+
+            <div class="govuk-panel govuk-panel--confirmation">
+                <h1 class="govuk-panel__title">
+                    @Localizer["packaging_data_updated"]
+                </h1>
+            </div>
+            <p class="govuk-body">
+                @Localizer["submitted_on_z", Model.SubmittedAt]
+            </p>
+
+            <div class="govuk-inset-text">
+                <p class="govuk-body">@Localizer["it_may_take_an_hour"]</p>
+            </div>
+
+            <h3 class="govuk-heading-m">@Localizer["what_happens_next"]</h3>
+            <p class="govuk-body">@Localizer["you_still_need_to"]</p>
+
+            <ul class="govuk-list govuk-list--bullet">
+                <li>@Localizer["view_your_updated_fee"]</li>
+                <li>@Localizer["submit_to_the_environmental_regulator"]</li>
+            </ul>
+
+            <p class="govuk-body">
+                <a href="@Url.Action("ResubmissionTaskList", "PackagingDataResubmission")" class="govuk-link govuk-link--no-visited-state govuk-body-m">
+                    @Localizer["continue_resubmitting"]
+                </a>
+            </p>
+
+            <p class="govuk-body govuk-!-margin-bottom-4">
+                @Localizer["you_can"]
+                <a href="#" id="print-or-save" target="_blank" class="govuk-link govuk-link--no-visited-state">
+                    @Localizer["print_or_save_as_PDF"]
+                </a>
+            </p>
+        </div>
+    </div>
+</main>
+
+@section Scripts {
+    <script type="text/javascript" nonce="@scriptNonce">
+        (function () {
+            document.getElementById("print-or-save").onclick = function () {
+                window.print();
+            }
+        })();
+    </script>
+}

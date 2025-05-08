@@ -36,4 +36,6 @@ public interface ISubmissionService
     Task CreatePackagingDataResubmissionFeePaymentEvent(Guid? submissionId, Guid? filedId, string paymentMethod);
 
     Task CreatePackagingResubmissionApplicationSubmittedCreatedEvent(Guid? submissionId, Guid? filedId,string submittedBy, DateTime submissionDate, string comment);
+
+    Task<bool> IsAnySubmissionAcceptedForDataPeriod(PomSubmission submission, Guid organisationId, Guid? complienceSchemaId);
 }

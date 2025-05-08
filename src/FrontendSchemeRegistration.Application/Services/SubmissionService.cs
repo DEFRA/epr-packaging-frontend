@@ -2,8 +2,10 @@ using System.Web;
 using EPR.SubmissionMicroservice.API.Contracts.Submissions.Get;
 using EPR.SubmissionMicroservice.Data.Entities.SubmissionEvent;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.DTOs.UserAccount;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 
 namespace FrontendSchemeRegistration.Application.Services;
 
@@ -133,7 +135,7 @@ public class SubmissionService(IWebApiGatewayClient webApiGatewayClient) : ISubm
         await webApiGatewayClient.CreatePackagingResubmissionFeeViewEvent(submissionId);
     }
 
-    public async Task CreatePackagingDataResubmissionFeePaymentEvent(Guid? submissionId, Guid? filedId,string paymentMethod)
+    public async Task CreatePackagingDataResubmissionFeePaymentEvent(Guid? submissionId, Guid? filedId, string paymentMethod)
     {
         await webApiGatewayClient.CreatePackagingDataResubmissionFeePaymentEvent(submissionId, filedId, paymentMethod);
     }
@@ -141,5 +143,26 @@ public class SubmissionService(IWebApiGatewayClient webApiGatewayClient) : ISubm
     public async Task CreatePackagingResubmissionApplicationSubmittedCreatedEvent(Guid? submissionId, Guid? filedId, string submittedBy, DateTime submissionDate, string comment)
     {
         await webApiGatewayClient.CreatePackagingResubmissionApplicationSubmittedCreatedEvent(submissionId, filedId, submittedBy, submissionDate, comment);
+    }
+
+    public async Task<bool> IsAnySubmissionAcceptedForDataPeriod(PomSubmission submission, Guid organisationId, Guid? complienceSchemaId)
+    {
+        var submissionIds = await GetSubmissionIdsAsync(
+            organisationId,
+            SubmissionType.Producer,
+            complienceSchemaId,
+            null);
+        if (submissionIds != null && submissionIds.Count > 0)
+        {
+            var submissionId = submissionIds.Find(x => x.SubmissionId == submission.Id);
+            var submissionHistory = await GetSubmissionHistoryAsync(
+                                           submission.Id,
+                                           new DateTime(submissionId.Year, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+            if (submissionHistory != null && submissionHistory.Exists(s => s.Status == "Accepted"))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

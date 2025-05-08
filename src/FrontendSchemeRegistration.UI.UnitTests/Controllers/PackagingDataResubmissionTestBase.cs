@@ -4,11 +4,15 @@ using System.Security.Claims;
 using Application.Services.Interfaces;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
+using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Options;
+using FrontendSchemeRegistration.UI.Controllers;
 using FrontendSchemeRegistration.UI.Services;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -37,8 +41,9 @@ public abstract class PackagingDataResubmissionTestBase
     
     protected Mock<IComplianceSchemeService> ComplianceService { get; set; }
 
+    private Mock<IUrlHelper> _urlHelperMock;
 
-	protected void SetupBase(UserData userData)
+    protected void SetupBase(UserData userData)
     {
         var claims = new List<Claim>();
         if (userData != null)
@@ -59,7 +64,12 @@ public abstract class PackagingDataResubmissionTestBase
         ResubmissionApplicationService = new Mock<IResubmissionApplicationService>();
         ComplianceService = new Mock<IComplianceSchemeService>();
 
-		SystemUnderTest = new PackagingDataResubmissionController(
+        _urlHelperMock = new Mock<IUrlHelper>();
+        _urlHelperMock.Setup(url => url.Action(It.Is<UrlActionContext>(uac => uac.Action == "FileUploadSubmissionDeclaration")))
+            .Returns(PagePaths.FileUploadSubmissionDeclaration);
+        _urlHelperMock.Setup(x => x.Content(It.IsAny<string>())).Returns((string contentPath) => contentPath);
+
+        SystemUnderTest = new PackagingDataResubmissionController(
             SessionManagerMock.Object,
             LoggerMock.Object,
             UserAccountService.Object,
@@ -74,5 +84,6 @@ public abstract class PackagingDataResubmissionTestBase
 			ComplianceService.Object);
         SystemUnderTest.ControllerContext.HttpContext = _httpContextMock.Object;
         SystemUnderTest.ControllerContext.HttpContext.Session = new Mock<ISession>().Object;
+        SystemUnderTest.Url = _urlHelperMock.Object;
     }
 }

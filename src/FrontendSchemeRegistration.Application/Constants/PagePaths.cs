@@ -110,6 +110,7 @@ public static class PagePaths
     public const string TimeoutSignedOut = "timeout-signed-out";
 
     public const string ResubmissionTaskList = "resubmission-task-list";
+    public const string FileUploadResubmissionConfirmation = "file-upload-resubmission-confirmation";
     public const string ResubmissionFeeCalculations = "resubmission-fee-calculations";
     public const string RedirectPackagingUploadDetails = "/redirect-packaging-upload-details";
     public const string RedirectToComplianceSchemeDashboard = "/redirect-to-compliancescheme-dashboard";

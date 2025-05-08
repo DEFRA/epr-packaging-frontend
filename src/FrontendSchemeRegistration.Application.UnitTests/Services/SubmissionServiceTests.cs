@@ -1,9 +1,14 @@
+using EPR.Common.Authorization.Constants;
+using EPR.Common.Authorization.Models;
 using EPR.SubmissionMicroservice.API.Contracts.Submissions.Get;
 using EPR.SubmissionMicroservice.Data.Entities.SubmissionEvent;
+using FluentAssertions;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Services;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Constants;
+using FrontendSchemeRegistration.UI.Sessions;
 using Moq;
 
 namespace FrontendSchemeRegistration.Application.UnitTests.Services;
@@ -376,7 +381,7 @@ public class SubmissionServiceTests
 
         // Assert
 
-        _webApiGatewayClientMock.Verify(x => x.CreatePackagingResubmissionReferenceNumberEvent(submissionId,request), Times.Once);
+        _webApiGatewayClientMock.Verify(x => x.CreatePackagingResubmissionReferenceNumberEvent(submissionId, request), Times.Once);
     }
 
     [Test]
@@ -399,14 +404,14 @@ public class SubmissionServiceTests
         // Arrange
         var submissionId = Guid.NewGuid();
         var filedId = Guid.NewGuid();
-       
+
 
         // Act
-        await _submissionService.CreatePackagingDataResubmissionFeePaymentEvent(submissionId, filedId,"paymentMethod");
+        await _submissionService.CreatePackagingDataResubmissionFeePaymentEvent(submissionId, filedId, "paymentMethod");
 
         // Assert
 
-        _webApiGatewayClientMock.Verify(x => x.CreatePackagingDataResubmissionFeePaymentEvent(submissionId, filedId,"paymentMethod"), Times.Once);
+        _webApiGatewayClientMock.Verify(x => x.CreatePackagingDataResubmissionFeePaymentEvent(submissionId, filedId, "paymentMethod"), Times.Once);
     }
 
     [Test]
@@ -418,11 +423,199 @@ public class SubmissionServiceTests
 
 
         // Act
-        await _submissionService.CreatePackagingResubmissionApplicationSubmittedCreatedEvent(submissionId, filedId,"submittedBy",DateTime.Today,"Comment");
+        await _submissionService.CreatePackagingResubmissionApplicationSubmittedCreatedEvent(submissionId, filedId, "submittedBy", DateTime.Today, "Comment");
 
         // Assert
 
         _webApiGatewayClientMock.Verify(x => x.CreatePackagingResubmissionApplicationSubmittedCreatedEvent(submissionId, filedId, "submittedBy", DateTime.Today, "Comment"), Times.Once);
     }
 
+    [Test]
+    public async Task IsAnySubmissionAcceptedForDataPeriod_ReturnsFalse_WhenNoneOfPreviousSubmissionsAreAccepted()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var currentYear = DateTime.Now.Year;
+        var submissionIds = new List<SubmissionPeriodId>
+            {
+                new SubmissionPeriodId
+                {
+                    SubmissionId = Guid.NewGuid(),
+                    SubmissionPeriod = "July to December 2024",
+                    DatePeriodStartMonth = "July",
+                    DatePeriodEndMonth = "December",
+                    Year = currentYear
+                },
+            };
+        var submissionDate = new DateTime(submissionIds[0].Year, 2, 20, 8, 0, 0, DateTimeKind.Utc);
+        var dateofLatestStatusChange = new DateTime(submissionIds[0].Year, 3, 1, 5, 0, 0, DateTimeKind.Utc);
+
+        var submissionHistory = new List<SubmissionHistory>
+                    {
+                        new SubmissionHistory
+                        {
+                            SubmissionId = submissionIds[0].SubmissionId,
+                            FileName = "test1.csv",
+                            UserName = "John Doe",
+                            SubmissionDate = submissionDate,
+                            Status = "Rejected",
+                            DateofLatestStatusChange = dateofLatestStatusChange
+                        },
+                         new SubmissionHistory
+                        {
+                            SubmissionId = submissionIds[0].SubmissionId,
+                            FileName = "test2.csv",
+                            UserName = "John Doe",
+                            SubmissionDate = submissionDate,
+                            Status = "Rejected",
+                            DateofLatestStatusChange = dateofLatestStatusChange
+                        }
+                    };
+
+        _webApiGatewayClientMock.Setup(x => x.GetSubmissionIdsAsync(organisationId, It.IsAny<string>()))
+            .ReturnsAsync(submissionIds);
+
+        _webApiGatewayClientMock.Setup(x => x.GetSubmissionHistoryAsync(submissionIds[0].SubmissionId, It.IsAny<string>()))
+            .ReturnsAsync(submissionHistory);
+
+        // Act
+        var result = await _submissionService.IsAnySubmissionAcceptedForDataPeriod(new PomSubmission() { Id = submissionIds[0].SubmissionId }, organisationId, null);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Test]
+    public async Task IsAnySubmissionAcceptedForDataPeriod_ReturnsFalse_WhenSubmissionHistoryIsNull()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var currentYear = DateTime.Now.Year;
+        var submissionId = Guid.NewGuid();
+
+        var submissionIds = new List<SubmissionPeriodId>
+            {
+                new SubmissionPeriodId
+                {
+                    SubmissionId = submissionId,
+                    SubmissionPeriod = "July to December 2024",
+                    DatePeriodStartMonth = "July",
+                    DatePeriodEndMonth = "December",
+                    Year = currentYear
+                }
+            };
+
+        _webApiGatewayClientMock.Setup(x => x.GetSubmissionIdsAsync(organisationId, It.IsAny<string>()))
+                   .ReturnsAsync(submissionIds);
+
+        _webApiGatewayClientMock.Setup(x => x.GetSubmissionHistoryAsync(submissionId, It.IsAny<string>()))
+                   .ReturnsAsync((List<SubmissionHistory>)null);
+
+        // Act
+        var result = await _submissionService.IsAnySubmissionAcceptedForDataPeriod(new PomSubmission() { Id = submissionId }, organisationId, null);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Test]
+    public async Task IsAnySubmissionAcceptedForDataPeriod_ReturnsTrue_WhenAnyOfThePreviousSubmissionsAreAccepted()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var currentYear = DateTime.Now.Year;
+        var submissionIds = new List<SubmissionPeriodId>
+            {
+                new SubmissionPeriodId
+                {
+                    SubmissionId = Guid.NewGuid(),
+                    SubmissionPeriod = "July to December 2024",
+                    DatePeriodStartMonth = "July",
+                    DatePeriodEndMonth = "December",
+                    Year = currentYear
+                },
+            };
+        var submissionDate = new DateTime(submissionIds[0].Year, 2, 20, 8, 0, 0, DateTimeKind.Utc);
+        var dateofLatestStatusChange = new DateTime(submissionIds[0].Year, 3, 1, 5, 0, 0, DateTimeKind.Utc);
+
+        var submissionHistory = new List<SubmissionHistory>
+                    {
+                        new SubmissionHistory
+                        {
+                            SubmissionId = submissionIds[0].SubmissionId,
+                            FileName = "test.csv",
+                            UserName = "John Doe",
+                            SubmissionDate = submissionDate,
+                            Status = "Rejected",
+                            DateofLatestStatusChange = dateofLatestStatusChange
+                        },
+                         new SubmissionHistory
+                        {
+                            SubmissionId = submissionIds[0].SubmissionId,
+                            FileName = "test.csv",
+                            UserName = "John Doe",
+                            SubmissionDate = submissionDate,
+                            Status = "Accepted",
+                            DateofLatestStatusChange = dateofLatestStatusChange
+                        }
+                    };
+
+        _webApiGatewayClientMock.Setup(x => x.GetSubmissionIdsAsync(organisationId, It.IsAny<string>()))
+            .ReturnsAsync(submissionIds);
+
+        _webApiGatewayClientMock.Setup(x => x.GetSubmissionHistoryAsync(submissionIds[0].SubmissionId, It.IsAny<string>()))
+            .ReturnsAsync(submissionHistory);
+
+        // Act
+        var result = await _submissionService.IsAnySubmissionAcceptedForDataPeriod(new PomSubmission() { Id = submissionIds[0].SubmissionId }, organisationId, null);
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [Test]
+    public async Task IsAnySubmissionAcceptedForDataPeriod_ReturnsFalse_WhenSubmissionIdsIsNull()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var currentYear = DateTime.Now.Year;
+
+        _webApiGatewayClientMock.Setup(x => x.GetSubmissionIdsAsync(organisationId, It.IsAny<string>()))
+            .ReturnsAsync((List<SubmissionPeriodId>)null);
+
+        _webApiGatewayClientMock.Setup(x => x.GetSubmissionHistoryAsync(It.IsAny<Guid>(), It.IsAny<string>()))
+                   .ReturnsAsync((Guid submissionId, DateTime lastSyncTime) =>
+                   {
+                       return new List<SubmissionHistory>();
+                   });
+
+        // Act
+        var result = await _submissionService.IsAnySubmissionAcceptedForDataPeriod(new PomSubmission(), organisationId, null);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Test]
+    public async Task IsAnySubmissionAcceptedForDataPeriod_ReturnsFalse_WhenSubmissionIdsCountIsZero()
+    {
+        // Arrange
+        var organisationId = Guid.NewGuid();
+        var currentYear = DateTime.Now.Year;
+
+        _webApiGatewayClientMock.Setup(x => x.GetSubmissionIdsAsync(organisationId, It.IsAny<string>()))
+            .ReturnsAsync(new List<SubmissionPeriodId>());
+
+        _webApiGatewayClientMock.Setup(x => x.GetSubmissionHistoryAsync(It.IsAny<Guid>(), It.IsAny<string>()))
+                   .ReturnsAsync((Guid submissionId, DateTime lastSyncTime) =>
+                   {
+                       return new List<SubmissionHistory>();
+                   });
+
+        // Act
+        var result = await _submissionService.IsAnySubmissionAcceptedForDataPeriod(new PomSubmission(), organisationId, null);
+
+        // Assert
+        result.Should().BeFalse();
+    }
 }

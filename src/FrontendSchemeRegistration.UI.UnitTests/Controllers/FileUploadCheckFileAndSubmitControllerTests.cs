@@ -12,6 +12,7 @@ using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.RequestModels;
+using FrontendSchemeRegistration.Application.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
@@ -574,10 +575,21 @@ public class FileUploadCheckFileAndSubmitControllerTests
                         Name = "Compliance Scheme Name",
                         NationId = 2,
                     }
+                },
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation>
+                    {
+                        new Organisation()
+                        {
+                            Id = Guid.NewGuid(),
+                        }
+                    }
                 }
             });
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
         _regulatorServiceMock.Setup(x => x.SendRegulatorResubmissionEmail(It.IsAny<ResubmissionEmailRequestModel>())).ReturnsAsync("notificationId");
+        _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(true);
 
         var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.ComplianceScheme);
         _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
@@ -642,9 +654,20 @@ public class FileUploadCheckFileAndSubmitControllerTests
                 RegistrationSession = new RegistrationSession
                 {
                     SelectedComplianceScheme = null
+                },
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation>
+                    {
+                        new Organisation()
+                        {
+                            Id = Guid.NewGuid(),
+                        }
+                    }
                 }
             });
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(true);
         _regulatorServiceMock.Setup(x => x.SendRegulatorResubmissionEmail(It.IsAny<ResubmissionEmailRequestModel>())).ReturnsAsync("notificationId");
 
         var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.ComplianceScheme);
@@ -776,7 +799,32 @@ public class FileUploadCheckFileAndSubmitControllerTests
                 FileId = fileId
             }
         };
+        _sessionManagerMock
+           .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+           .ReturnsAsync(new FrontendSchemeRegistrationSession
+           {
+               RegistrationSession = new RegistrationSession
+               {
+                   SelectedComplianceScheme = new Application.DTOs.ComplianceScheme.ComplianceSchemeDto
+                   {
+                       Name = "Compliance Scheme Name",
+                       NationId = 2,
+                   }
+               },
+               UserData = new UserData
+               {
+                   Organisations = new List<Organisation>
+                   {
+                        new Organisation()
+                        {
+                            Id = Guid.NewGuid(),
+                        }
+                   }
+               }
+           });
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(true);
+        _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(true);
 
         var claims = CreateUserDataClaim(serviceRole, enrolmentStatus, OrganisationRoles.ComplianceScheme);
         _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
@@ -883,6 +931,334 @@ public class FileUploadCheckFileAndSubmitControllerTests
         // Assert
         result.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("FileUploadSubLanding");
+    }
+
+    [Test]
+    public async Task Post_RedirectsToFileUploadSubLanding_WhenOrganisationIdIsNull()
+    {
+        // Arrange
+        var fileId = Guid.NewGuid();
+        var model = new FileUploadCheckFileAndSubmitViewModel { LastValidFileId = fileId };
+        var submission = new PomSubmission
+        {
+            Id = _submissionId,
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileName = "last-valid-file.csv",
+                UploadedBy = _lastValidFileUploadedByUserId,
+                FileUploadDateTime = DateTime.Now,
+                FileId = fileId
+            },
+            LastSubmittedFile = new SubmittedFileInformation
+            {
+                FileName = "last-valid-file.csv",
+                FileId = Guid.NewGuid()
+            },
+            SubmissionPeriod = "Jan to Jun 2023"
+        };
+
+        var input = new ResubmissionEmailRequestModel
+        {
+            OrganisationNumber = "123456",
+            ProducerOrganisationName = null,
+            SubmissionPeriod = "Jan to Jun 2023",
+            NationId = 0,
+            IsComplianceScheme = true,
+            ComplianceSchemeName = "Organisation Name",
+            ComplianceSchemePersonName = "First Last"
+        };
+
+        _sessionManagerMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SelectedComplianceScheme = null
+                }
+            });
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(true);
+        _regulatorServiceMock.Setup(x => x.SendRegulatorResubmissionEmail(It.IsAny<ResubmissionEmailRequestModel>())).ReturnsAsync("notificationId");
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.ComplianceScheme);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Post(model) as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadSubLanding");
+    }
+
+    [Test]
+    public async Task Post_RedirectsToFileUploadSubLanding_When_OrganisationIdIsNull()
+    {
+        // Arrange
+        var fileId = Guid.NewGuid();
+        var model = new FileUploadCheckFileAndSubmitViewModel { LastValidFileId = fileId };
+        var submission = new PomSubmission
+        {
+            Id = _submissionId,
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileName = "last-valid-file.csv",
+                UploadedBy = _lastValidFileUploadedByUserId,
+                FileUploadDateTime = DateTime.Now,
+                FileId = fileId
+            },
+            LastSubmittedFile = new SubmittedFileInformation
+            {
+                FileName = "last-valid-file.csv",
+                FileId = Guid.NewGuid()
+            },
+            SubmissionPeriod = "Jan to Jun 2023"
+        };
+
+        var input = new ResubmissionEmailRequestModel
+        {
+            OrganisationNumber = "123456",
+            ProducerOrganisationName = null,
+            SubmissionPeriod = "Jan to Jun 2023",
+            NationId = 0,
+            IsComplianceScheme = true,
+            ComplianceSchemeName = "Organisation Name",
+            ComplianceSchemePersonName = "First Last"
+        };
+
+        _sessionManagerMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SelectedComplianceScheme = null
+                }
+            });
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(true);
+        _regulatorServiceMock.Setup(x => x.SendRegulatorResubmissionEmail(It.IsAny<ResubmissionEmailRequestModel>())).ReturnsAsync("notificationId");
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.ComplianceScheme);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Post(model) as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadSubLanding");
+    }
+
+    [Test]
+    public async Task Post_RedirectsToFileUploadSubmissionConfirmation_When_SubmissionIsFalse()
+    {
+        // Arrange
+        var fileId = Guid.NewGuid();
+        var model = new FileUploadCheckFileAndSubmitViewModel { LastValidFileId = fileId };
+        var submission = new PomSubmission
+        {
+            Id = _submissionId,
+            IsSubmitted = false,
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileName = "last-valid-file.csv",
+                UploadedBy = _lastValidFileUploadedByUserId,
+                FileUploadDateTime = DateTime.Now,
+                FileId = fileId
+            },
+            LastSubmittedFile = new SubmittedFileInformation
+            {
+                FileName = "last-valid-file.csv",
+                FileId = Guid.NewGuid()
+            },
+            SubmissionPeriod = "Jan to Jun 2023"
+        };
+
+        var input = new ResubmissionEmailRequestModel
+        {
+            OrganisationNumber = "123456",
+            ProducerOrganisationName = null,
+            SubmissionPeriod = "Jan to Jun 2023",
+            NationId = 0,
+            IsComplianceScheme = true,
+            ComplianceSchemeName = "Organisation Name",
+            ComplianceSchemePersonName = "First Last"
+        };
+
+        _sessionManagerMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SelectedComplianceScheme = null
+                },
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation>
+                    {
+                        new Organisation()
+                        {
+                            Id = Guid.NewGuid(),
+                        }
+                    }
+                }
+            });
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(true);
+        _regulatorServiceMock.Setup(x => x.SendRegulatorResubmissionEmail(It.IsAny<ResubmissionEmailRequestModel>())).ReturnsAsync("notificationId");
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.ComplianceScheme);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Post(model) as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadSubmissionConfirmation");
+    }
+
+    [Test]
+    public async Task Post_RedirectsToFileUploadSubmissionConfirmation_When_IsAnySubmissionAcceptedForDataPeriodIsFalse()
+    {
+        // Arrange
+        var fileId = Guid.NewGuid();
+        var model = new FileUploadCheckFileAndSubmitViewModel { LastValidFileId = fileId };
+        var submission = new PomSubmission
+        {
+            Id = _submissionId,
+            IsSubmitted = true,
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileName = "last-valid-file.csv",
+                UploadedBy = _lastValidFileUploadedByUserId,
+                FileUploadDateTime = DateTime.Now,
+                FileId = fileId
+            },
+            LastSubmittedFile = new SubmittedFileInformation
+            {
+                FileName = "last-valid-file.csv",
+                FileId = Guid.NewGuid()
+            },
+            SubmissionPeriod = "Jan to Jun 2023"
+        };
+
+        var input = new ResubmissionEmailRequestModel
+        {
+            OrganisationNumber = "123456",
+            ProducerOrganisationName = null,
+            SubmissionPeriod = "Jan to Jun 2023",
+            NationId = 0,
+            IsComplianceScheme = true,
+            ComplianceSchemeName = "Organisation Name",
+            ComplianceSchemePersonName = "First Last"
+        };
+
+        _sessionManagerMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SelectedComplianceScheme = null
+                },
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation>
+                    {
+                        new Organisation()
+                        {
+                            Id = Guid.NewGuid(),
+                        }
+                    }
+                }
+            });
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(false);
+        _regulatorServiceMock.Setup(x => x.SendRegulatorResubmissionEmail(It.IsAny<ResubmissionEmailRequestModel>())).ReturnsAsync("notificationId");
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.ComplianceScheme);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Post(model) as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadSubmissionConfirmation");
+    }
+
+    [Test]
+    public async Task Post_RedirectsToFileUploadResubmissionConfirmation_When_IsAnySubmissionAcceptedForDataPeriodIsTrue()
+    {
+        // Arrange
+        var fileId = Guid.NewGuid();
+        var model = new FileUploadCheckFileAndSubmitViewModel { LastValidFileId = fileId };
+        var submission = new PomSubmission
+        {
+            Id = _submissionId,
+            IsSubmitted = true,
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileName = "last-valid-file.csv",
+                UploadedBy = _lastValidFileUploadedByUserId,
+                FileUploadDateTime = DateTime.Now,
+                FileId = fileId
+            },
+            LastSubmittedFile = new SubmittedFileInformation
+            {
+                FileName = "last-valid-file.csv",
+                FileId = Guid.NewGuid()
+            },
+            SubmissionPeriod = "Jan to Jun 2023"
+        };
+
+        var input = new ResubmissionEmailRequestModel
+        {
+            OrganisationNumber = "123456",
+            ProducerOrganisationName = null,
+            SubmissionPeriod = "Jan to Jun 2023",
+            NationId = 0,
+            IsComplianceScheme = true,
+            ComplianceSchemeName = "Organisation Name",
+            ComplianceSchemePersonName = "First Last"
+        };
+
+        _sessionManagerMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SelectedComplianceScheme = null
+                },
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation>
+                    {
+                        new Organisation()
+                        {
+                            Id = Guid.NewGuid(),
+                        }
+                    }
+                }
+            });
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(true);
+        _regulatorServiceMock.Setup(x => x.SendRegulatorResubmissionEmail(It.IsAny<ResubmissionEmailRequestModel>())).ReturnsAsync("notificationId");
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.ComplianceScheme);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Post(model) as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("FileUploadResubmissionConfirmation");
+        result.ControllerName.Should().Be("PackagingDataResubmission");
     }
 
     private static List<Claim> CreateUserDataClaim(string serviceRole, string enrolmentStatus, string organisationRole)

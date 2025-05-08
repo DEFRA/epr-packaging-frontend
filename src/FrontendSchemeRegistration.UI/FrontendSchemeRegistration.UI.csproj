@@ -210,6 +210,12 @@
         <EmbeddedResource Update="Resources\Views\FileUploadSubsidiaries\SubsidiariesList.cy.resx">
           <SubType>Designer</SubType>
         </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Views\PackagingDataResubmission\FileUploadResubmissionConfirmation.en.resx">
+          <SubType>Designer</SubType>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Resources\Views\PackagingDataResubmission\FileUploadResubmissionConfirmation.cy.resx">
+          <SubType>Designer</SubType>
+        </EmbeddedResource>
         <EmbeddedResource Update="Resources\Views\Prns\RejectedPrn.cy.resx">
           <SubType>Designer</SubType>
         </EmbeddedResource>

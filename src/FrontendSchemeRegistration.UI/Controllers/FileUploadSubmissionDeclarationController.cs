@@ -121,8 +121,21 @@ public class FileUploadSubmissionDeclarationController : Controller
                 _regulatorService.SendRegulatorResubmissionEmail(input);
             }
 
-            await _submissionService.SubmitAsync(submission.Id, fileId.Value, request.DeclarationName, session.PomResubmissionSession?.PackagingResubmissionApplicationSession?.ApplicationReferenceNumber, false);
-            return RedirectToAction("Get", "FileUploadSubmissionConfirmation", routeValues);
+            var organisationId = session.UserData.Organisations?.FirstOrDefault()?.Id;
+            if (organisationId is null)
+            {
+                return RedirectToAction("Get", "FileUploadSubLanding");
+            }
+
+            var isAnySubmissionAcceptedForDataPeriod = await _submissionService.IsAnySubmissionAcceptedForDataPeriod(submission, organisationId.Value, session.RegistrationSession.SelectedComplianceScheme?.Id);
+
+            if (!submission.IsSubmitted || !isAnySubmissionAcceptedForDataPeriod)
+            {
+                await _submissionService.SubmitAsync(submission.Id, fileId.Value, request.DeclarationName, session.PomResubmissionSession?.PackagingResubmissionApplicationSession?.ApplicationReferenceNumber, false);
+                return RedirectToAction("Get", "FileUploadSubmissionConfirmation", routeValues);
+            }
+
+            return RedirectToAction("FileUploadResubmissionConfirmation", "PackagingDataResubmission", routeValues);
         }
         catch (Exception exception)
         {

@@ -9,6 +9,7 @@ using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
+using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.RequestModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -201,6 +202,63 @@ public class FileUploadSubmissionDeclarationControllerTests
     }
 
     [Test]
+    [TestCase(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved)]
+    [TestCase(ServiceRoles.DelegatedPerson, EnrolmentStatuses.Approved)]
+    public async Task Post_RedirectsToFileUploadResubmissionConfirmationPage_WhenResubmittingFile(string serviceRole, string enrolmentStatus)
+    {
+        // Arrange
+        var submission = new PomSubmission
+        {
+            Id = Guid.NewGuid(),
+            IsSubmitted = true,
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileName = "FileName",
+                FileUploadDateTime = DateTime.Now,
+                UploadedBy = Guid.NewGuid(),
+                FileId = Guid.NewGuid()
+            },
+        };
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(true);
+
+        _sessionManagerMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    FileId = _fileId
+                },
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation>
+                    {
+                        new Organisation()
+                        {
+                            Id = Guid.NewGuid(),
+                        }
+                    }
+                }
+            });
+
+        var submissionDeclarationRequest = new SubmissionDeclarationRequest
+        {
+            DeclarationName = DeclarationName
+        };
+
+        var claims = CreateUserDataClaim(serviceRole, enrolmentStatus, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Post(submissionDeclarationRequest) as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("FileUploadResubmissionConfirmation");
+        result.ControllerName.Should().Be("PackagingDataResubmission");
+    }
+
+    [Test]
     public async Task Post_ShowsError_WhenErrorPresent()
     {
         // Arrange
@@ -263,6 +321,7 @@ public class FileUploadSubmissionDeclarationControllerTests
             },
         };
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(true);
 
         _sessionManagerMock
             .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
@@ -271,6 +330,16 @@ public class FileUploadSubmissionDeclarationControllerTests
                 RegistrationSession = new RegistrationSession
                 {
                     FileId = _fileId
+                },
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation>
+                    {
+                        new Organisation()
+                        {
+                            Id = Guid.NewGuid(),
+                        }
+                    }
                 }
             });
 
@@ -449,6 +518,126 @@ public class FileUploadSubmissionDeclarationControllerTests
         _submissionServiceMock
             .Setup(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), string.Empty, false))
             .ThrowsAsync(new Exception());
+        _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(true);
+
+        _sessionManagerMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    FileId = _fileId
+                },
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation>
+                    {
+                        new Organisation()
+                        {
+                            Id = Guid.NewGuid(),
+                        }
+                    }
+                }
+            });
+
+        var submissionDeclarationRequest = new SubmissionDeclarationRequest
+        {
+            DeclarationName = DeclarationName
+        };
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Post(submissionDeclarationRequest) as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadSubmissionError");
+    }
+
+    [Test]
+    public async Task Post_RedirectsToFileUploadSubmissionConfirmation_WhenSubmissionIsFalse()
+    {
+        // Arrange
+        var submission = new PomSubmission
+        {
+            Id = Guid.NewGuid(),
+            IsSubmitted = false,
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileName = "FileName",
+                FileUploadDateTime = DateTime.Now,
+                UploadedBy = Guid.NewGuid(),
+                FileId = Guid.NewGuid()
+            },
+        };
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(submission);
+        _submissionServiceMock
+            .Setup(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), string.Empty, false));
+        _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(true);
+
+        _sessionManagerMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    FileId = _fileId
+                },
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation>
+                    {
+                        new Organisation()
+                        {
+                            Id = Guid.NewGuid(),
+                        }
+                    }
+                }
+
+            });
+
+        var submissionDeclarationRequest = new SubmissionDeclarationRequest
+        {
+            DeclarationName = DeclarationName
+        };
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Post(submissionDeclarationRequest) as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadSubmissionConfirmation");
+    }
+
+    [Test]
+    public async Task Post_RedirectsToFileUploadSubLanding_WhenOrganisationIdIsNull()
+    {
+        // Arrange
+        var submission = new PomSubmission
+        {
+            Id = Guid.NewGuid(),
+            IsSubmitted = true,
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileName = "FileName",
+                FileUploadDateTime = DateTime.Now,
+                UploadedBy = Guid.NewGuid(),
+                FileId = Guid.NewGuid()
+            },
+        };
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(submission);
+        _submissionServiceMock
+            .Setup(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), string.Empty, false));
+        _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(false);
 
         _sessionManagerMock
             .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
@@ -473,7 +662,67 @@ public class FileUploadSubmissionDeclarationControllerTests
 
         // Assert
         result.ActionName.Should().Be("Get");
-        result.ControllerName.Should().Be("FileUploadSubmissionError");
+        result.ControllerName.Should().Be("FileUploadSubLanding");
+    }
+
+    [Test]
+    public async Task Post_RedirectsToFileUploadSubmissionConfirmation_WhenIsAnySubmissionAcceptedForDataPeriodIsFalse()
+    {
+        // Arrange
+        var submission = new PomSubmission
+        {
+            Id = Guid.NewGuid(),
+            IsSubmitted = true,
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileName = "FileName",
+                FileUploadDateTime = DateTime.Now,
+                UploadedBy = Guid.NewGuid(),
+                FileId = Guid.NewGuid()
+            },
+        };
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(submission);
+        _submissionServiceMock
+            .Setup(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), string.Empty, false));
+        _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(false);
+
+        _sessionManagerMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    FileId = _fileId
+                },
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation>
+                    {
+                        new Organisation()
+                        {
+                            Id = Guid.NewGuid(),
+                        }
+                    }
+                }
+
+            });
+
+        var submissionDeclarationRequest = new SubmissionDeclarationRequest
+        {
+            DeclarationName = DeclarationName
+        };
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Post(submissionDeclarationRequest) as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadSubmissionConfirmation");
     }
 
     private static List<Claim> CreateUserDataClaim(string serviceRole, string enrolmentStatus, string organisationRole)

@@ -871,4 +871,58 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
         result.Should().BeNull();
     }
 
+    [Test]
+    public async Task FileUploadResubmissionConfirmation_ReturnsCorrectViewAndModel()
+    {
+        // Arrange
+        var submittedAt = DateTime.UtcNow.AddDays(-2);
+        SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
+            .Returns(Task.FromResult(new FrontendSchemeRegistrationSession
+            {
+                PomResubmissionSession = new PackagingReSubmissionSession { PomSubmission = new PomSubmission() { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), LastSubmittedFile = new SubmittedFileInformation { FileId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), SubmittedDateTime = submittedAt } } },
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation>
+                {
+                    new()
+                    {
+                        Name = "Test Organisation",
+                        OrganisationRole = OrganisationRoles.Producer,
+                        NationId = 1
+                    }
+                }
+                }
+            }));
+
+        // Act
+        var result = await SystemUnderTest.FileUploadResubmissionConfirmation() as ViewResult;
+        var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
+
+        // Assert
+        pageBackLink.Should().Be($"/report-data{PagePaths.FileUploadSubmissionDeclaration}");
+        result.Model.Should().BeOfType<FileUploadResubmissionConfirmationViewModel>();
+
+        result.Model.As<FileUploadResubmissionConfirmationViewModel>().Should().BeEquivalentTo(new FileUploadResubmissionConfirmationViewModel
+        {
+            OrganisationRole = _userData.Organisations[0].OrganisationRole,
+            SubmittedAt = submittedAt.ToReadableDate()
+        });
+    }
+
+    [Test]
+    public async Task FileUploadResubmissionConfirmation_RedirectsToSublandingPage_WhenSubmissionIsNotFound()
+    {
+        // Arrange
+        var submittedAt = DateTime.UtcNow.AddDays(-2);
+        SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
+            .Returns(Task.FromResult(new FrontendSchemeRegistrationSession()));
+
+        // Act
+        var result = await SystemUnderTest.FileUploadResubmissionConfirmation() as RedirectToActionResult;
+        var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUpload");
+    }
 }

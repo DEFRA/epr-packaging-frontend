@@ -174,6 +174,30 @@ public class PackagingDataResubmissionController : Controller
         return await RedirectToRightAction(session);
     }
 
+    [HttpGet]
+    [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
+    [Route(PagePaths.FileUploadResubmissionConfirmation)]
+    public async Task<IActionResult> FileUploadResubmissionConfirmation()
+    {
+        var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+        var submission = session.PomResubmissionSession.PomSubmission;
+
+        if (submission is null)
+        {
+            return RedirectToAction("Get", "FileUpload");
+        }
+
+        ViewBag.BackLinkToDisplay = Url.Content($"/report-data{PagePaths.FileUploadSubmissionDeclaration}");
+
+        var model = new FileUploadResubmissionConfirmationViewModel
+        {
+            OrganisationRole = session.UserData.Organisations?.FirstOrDefault()?.OrganisationRole,
+            SubmittedAt = submission.LastSubmittedFile.SubmittedDateTime.ToReadableDate(),
+        };
+
+        return View("FileUploadResubmissionConfirmation", model);
+    }
+
     private async Task UpdateSession(FrontendSchemeRegistrationSession session, PackagingResubmissionApplicationDetails resubmissionApplicationDetails, EPR.Common.Authorization.Models.Organisation organisation, bool isComplianceScheme, ComplianceSchemeSummary complianceSchemeSummary, SubmissionPeriod submissionPeriod)
     {
         var packagingResubmissionApplicationSession = resubmissionApplicationDetails.ToPackagingResubmissionApplicationSession(organisation);

@@ -455,8 +455,7 @@ public class UploadNewFileToSubmitControllerTests
     }
 
     [Test]
-    public async Task
-        Get_RedirectsToFileUploadSubLanding_WithFeatureFlagFalse_WhenFileUploadSubLandingIsNotInSessionHistory()
+    public async Task Get_RedirectsToFileUploadSubLanding_WithFeatureFlagFalse_WhenFileUploadSubLandingIsNotInSessionHistory()
     {
         // Arrange
         var submission = new PomSubmission
@@ -515,8 +514,7 @@ public class UploadNewFileToSubmitControllerTests
     }
 
     [Test]
-    public async Task
-        Get_RedirectsToFileUploadSubLanding_WithFeatureFlagTrue_WhenFileUploadSubLandingIsNotInSessionHistory()
+    public async Task Get_RedirectsToFileUploadSubLanding_WithFeatureFlagTrue_WhenFileUploadSubLandingIsNotInSessionHistory()
     {
         // Arrange
         var submission = new PomSubmission
@@ -571,6 +569,41 @@ public class UploadNewFileToSubmitControllerTests
         checkResult.Should().NotBeNull();
         checkResult.ActionName.Should().Be("Get");
         checkResult.ControllerName.Should().Be("FileUploadSubLanding");
+    }
+
+    [Test]
+    public async Task Get_RedirectsToFileUploadSubLanding_When_OrganisationIdIs_Null()
+    {
+        // Arrange
+
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SubmissionPeriod = SubmissionPeriod,
+                    Journey = new List<string>(),
+                    FileId = Guid.NewGuid()
+                },
+                UserData = new UserData
+                {
+                    Id = Guid.NewGuid(),
+                    Organisations = new List<Organisation>()
+                    {
+                        new Organisation()
+                        {
+                            OrganisationRole = "test"
+                        }
+                    }
+                }
+            });
+
+        // Act
+        var result = await _systemUnderTest.Get() as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadSubLanding");
     }
 
     private static List<Claim> CreateUserDataClaim(string serviceRole, string organisationRole)
