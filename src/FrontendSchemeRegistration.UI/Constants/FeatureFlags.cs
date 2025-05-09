@@ -9,7 +9,6 @@ public static class FeatureFlags
     public const string ShowSubsidiariesSingleUploadJourney = "ShowSubsidiariesSingleUploadJourney";
     public const string ShowSubsidiaries = "ShowSubsidiaries";
     public const string ShowSubsidiariesRemoveLink = "ShowSubsidiariesRemoveLink";
-    public const string ShowSubsidiariesFileUploadExportRemoveFeature = "ShowSubsidiariesFileUploadExportRemoveFeature";
     public const string ShowSubsidiaryJoinerAndLeaverColumns = "ShowSubsidiaryJoinerAndLeaverColumns";
     public const string EnableSubsidiaryJoinerAndLeaverColumns = "EnableSubsidiaryJoinerAndLeaverColumns";
     public const string ShowPrn = "ShowPrn";

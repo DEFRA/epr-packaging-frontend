@@ -224,13 +224,14 @@ public class RegistrationApplicationServiceTests
     }
 
     [Test]
-    public async Task GetComplianceSchemeRegistrationFees_ShouldUserIsNewJoiner_For_LateFee_WhenPaymentCalculationServiceReturnsResponse()
+    public async Task GetComplianceSchemeRegistrationFees_ShouldUserIsNewJoiner_For_LateFee_When_IsResubmission_True_PaymentCalculationServiceReturnsResponse()
     {
         // Arrange
         var session = _fixture.Build<RegistrationApplicationSession>()
             .Create();
 
         session.IsLateFeeApplicable = true;
+        session.IsResubmission = true;
 
         session.RegistrationFeeCalculationDetails = _fixture.CreateMany<RegistrationFeeCalculationDetails>(2).ToArray();
         session.RegistrationFeeCalculationDetails[0].IsNewJoiner = true;
@@ -249,6 +250,35 @@ public class RegistrationApplicationServiceTests
         result.Should().NotBeNull();
         _paymentCalculationServiceMock.Verify(x => x.GetComplianceSchemeRegistrationFees(It.Is<ComplianceSchemePaymentCalculationRequest>(r => r.ComplianceSchemeMembers[0].IsLateFeeApplicable == true &&
                                                                                                                                                r.ComplianceSchemeMembers[1].IsLateFeeApplicable == false)));
+    }
+
+    [Test]
+    public async Task GetComplianceSchemeRegistrationFees_ShouldUserIsLateFeeApplicable_For_LateFee_When_IsResubmission_False_PaymentCalculationServiceReturnsResponse()
+    {
+        // Arrange
+        var session = _fixture.Build<RegistrationApplicationSession>()
+            .Create();
+
+        session.IsLateFeeApplicable = true;
+        session.IsResubmission = false;
+
+        session.RegistrationFeeCalculationDetails = _fixture.CreateMany<RegistrationFeeCalculationDetails>(2).ToArray();
+        session.RegistrationFeeCalculationDetails[0].IsNewJoiner = true;
+        session.RegistrationFeeCalculationDetails[1].IsNewJoiner = false;
+
+        var response = _fixture.Create<ComplianceSchemePaymentCalculationResponse>();
+        response.OutstandingPayment = -100;
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(session);
+        _paymentCalculationServiceMock.Setup(pcs => pcs.GetComplianceSchemeRegistrationFees(It.IsAny<ComplianceSchemePaymentCalculationRequest>()))
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _service.GetComplianceSchemeRegistrationFees(_httpSession);
+
+        // Assert
+        result.Should().NotBeNull();
+        _paymentCalculationServiceMock.Verify(x => x.GetComplianceSchemeRegistrationFees(It.Is<ComplianceSchemePaymentCalculationRequest>(r => r.ComplianceSchemeMembers[0].IsLateFeeApplicable == true &&
+                                                                                                                                               r.ComplianceSchemeMembers[1].IsLateFeeApplicable == true)));
     }
 
     [Test]

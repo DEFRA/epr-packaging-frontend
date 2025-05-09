@@ -12,14 +12,14 @@ using UI.Extensions;
 [TestFixture]
 public class CompaniesHouseServiceTests
 {
-    private Mock<IIntegrationServiceApiClient> _integrationServiceApiClientMock;
+    private Mock<IAccountServiceApiClient> _accountServiceApiClientMock;
     private CompaniesHouseService _sut;
 
     [SetUp]
     public void Init()
     {
-        _integrationServiceApiClientMock = new Mock<IIntegrationServiceApiClient>();
-        _sut = new CompaniesHouseService(_integrationServiceApiClientMock.Object, new NullLogger<CompaniesHouseService>());
+        _accountServiceApiClientMock = new Mock<IAccountServiceApiClient>();
+        _sut = new CompaniesHouseService(_accountServiceApiClientMock.Object, new NullLogger<CompaniesHouseService>());
     }
 
     [Test]
@@ -57,7 +57,7 @@ public class CompaniesHouseServiceTests
 
         var response = new HttpResponseMessage(HttpStatusCode.OK);
         response.Content = company.ToJsonContent();
-        _integrationServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>()))
+        _accountServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>()))
         .ReturnsAsync(response);
 
         // Act
@@ -79,7 +79,7 @@ public class CompaniesHouseServiceTests
         // Arrange
         var companiesHouseNumber = "0123456X";
 
-        _integrationServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>()))
+        _accountServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>()))
             .ThrowsAsync(new Exception());
 
         // Act &  Assert
@@ -94,7 +94,7 @@ public class CompaniesHouseServiceTests
         var companiesHouseNumber = "0123456X";
 
         var response = new HttpResponseMessage(HttpStatusCode.NoContent);
-        _integrationServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>()))
+        _accountServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>()))
             .ReturnsAsync(response);
 
         // Act
@@ -111,7 +111,7 @@ public class CompaniesHouseServiceTests
         var companiesHouseNumber = "0123456X";
 
         var response = new HttpResponseMessage(HttpStatusCode.NotFound);
-        _integrationServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>()))
+        _accountServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>()))
             .ReturnsAsync(response);
 
         // Act &  Assert

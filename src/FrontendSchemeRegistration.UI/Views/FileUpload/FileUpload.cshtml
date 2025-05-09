@@ -1,5 +1,3 @@
-@using FrontendSchemeRegistration.UI.Constants
-
 @model FileUploadViewModel
 
 @{
@@ -46,21 +44,6 @@
     
 
 
-            <feature name="@FeatureFlags.ShowSubsidiariesSingleUploadJourney">
-            @if (!Model.IsComplianceScheme)
-            {
-                <h2 class="govuk-heading-m">@Localizer["before_you_upload_your_file"]</h2>
-                <p class="govuk-body">@Localizer["you_can"]</p>
-                <ul class="govuk-list govuk-list--bullet">
-                        <li>@Localizer["add_a"] <a class="govuk-link govuk-link--no-visited-state" asp-controller="SubsidiaryCompaniesHouseNumber" asp-action="Get">@Localizer["companies_house_number_search"]</a></li>
-                    @* <li>@Localizer["view_and_manage_your"] <a class="govuk-link govuk-link--no-visited-state" asp-controller="SubsidiaryCompaniesHouseNumberSearch" asp-action="Get">@Localizer["subsidiaries"]</a></li> *@
-                    @* <li>@Localizer["tell_us_who_submitting_on_your_behalf_if_you_are_part_of_a"] <a class="govuk-link govuk-link--no-visited-state" asp-controller="SubsidiaryCompaniesHouseNumberSearch" asp-action="Get">@Localizer["group"]</a></li>--> *@
-                       <li>@Localizer["view_and_manage_your"] @Localizer["subsidiaries"]</li>
-                        <li>@Localizer["tell_us_who_is_submitting_on_your_behalf_if_you_are_part_of_a"] @Localizer["group"]</li>
-                </ul>
-                <p class="govuk-body">@Localizer["if_you_are_part_of_a_group_contact_parent_organisation_to_add_you_to_the_group"]</p>
-            }
-            </feature>
             <h2 class="govuk-heading-m">@Localizer["upload_your_file"]</h2>
             <ul class="govuk-list govuk-list--bullet">
                 <li>@Localizer["file_must_be_a_csv"]</li>

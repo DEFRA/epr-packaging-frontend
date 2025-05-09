@@ -162,36 +162,6 @@
   <data name="upload_file" xml:space="preserve">
     <value>Uwchlwythwch ffeiliau</value>
   </data>
-  <data name="view_and_manage_your" xml:space="preserve">
-    <value>Wview and manage your</value>
-  </data>
-  <data name="before_you_upload_your_file" xml:space="preserve">
-    <value>WBefore you upload your file</value>
-  </data>
-  <data name="is_submitting_on_your_behalf" xml:space="preserve">
-    <value>Wis submitting on your behalf</value>
-  </data>
-  <data name="subsidiaries" xml:space="preserve">
-    <value>Wsubsidiaries</value>
-  </data>
-  <data name="companies_house_number_search" xml:space="preserve">
-    <value>Wsubsidiary</value>
-  </data>
-  <data name="you_can" xml:space="preserve">
-    <value>WYou can</value>
-  </data>
-  <data name="add_a" xml:space="preserve">
-    <value>Wadd a</value>
-  </data>
-  <data name="group" xml:space="preserve">
-    <value>Wgroup</value>
-  </data>
-  <data name="if_you_are_part_of_a_group_contact_parent_organisation_to_add_you_to_the_group" xml:space="preserve">
-    <value>Wif you are part of a group but reporting your own data, contact the parent organisation to add you to the group.</value>
-  </data>
-  <data name="tell_us_who_is_submitting_on_your_behalf_if_you_are_part_of_a" xml:space="preserve">
-    <value>Wtell us who's submitting on your behalf if you're part of a</value>
-  </data>
   <data name="no_file_uploaded" xml:space="preserve">
     <value>Dim ffeil wedi’i huwchlwytho</value>
   </data>

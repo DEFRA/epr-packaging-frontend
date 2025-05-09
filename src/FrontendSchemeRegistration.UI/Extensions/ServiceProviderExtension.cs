@@ -113,7 +113,6 @@ public static class ServiceProviderExtension
         services.Configure<HttpClientOptions>(configuration.GetSection(HttpClientOptions.ConfigSection));
         services.Configure<AccountsFacadeApiOptions>(configuration.GetSection(AccountsFacadeApiOptions.ConfigSection));
         services.Configure<PaymentFacadeApiOptions>(configuration.GetSection(PaymentFacadeApiOptions.ConfigSection));
-        services.Configure<IntegrationFacadeApiOptions>(configuration.GetSection(IntegrationFacadeApiOptions.ConfigSection));
         services.Configure<WebApiOptions>(configuration.GetSection(WebApiOptions.ConfigSection));
         services.Configure<ValidationOptions>(configuration.GetSection(ValidationOptions.ConfigSection));
         services.Configure<RedisOptions>(configuration.GetSection(RedisOptions.ConfigSection));
@@ -185,23 +184,6 @@ public static class ServiceProviderExtension
             client.BaseAddress = new Uri(facadeApiOptions.BaseUrl);
             client.Timeout = TimeSpan.FromSeconds(httpClientOptions.TimeoutSeconds);
         });
-
-        var useMockData = configuration.GetValue<bool>("IntegrationFacadeAPI:UseMockData");
-        if (useMockData)
-        {
-            services.AddSingleton<IIntegrationServiceApiClient, MockIntegrationServiceApiClient>();
-        }
-        else
-        {
-            services.AddHttpClient<IIntegrationServiceApiClient, IntegrationServiceApiClient>((sp, client) =>
-            {
-                var facadeApiOptions = sp.GetRequiredService<IOptions<IntegrationFacadeApiOptions>>().Value;
-                var httpClientOptions = sp.GetRequiredService<IOptions<HttpClientOptions>>().Value;
-
-                client.BaseAddress = new Uri(facadeApiOptions.BaseEndpoint);
-                client.Timeout = TimeSpan.FromSeconds(httpClientOptions.TimeoutSeconds);
-            });
-        }
     }
 
     private static void ConfigureLocalization(IServiceCollection services)

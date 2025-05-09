@@ -10,12 +10,12 @@ public class CompaniesHouseService : ICompaniesHouseService
 {
     private const string GetCompaniesHouseErrorMessage = "Attempting to get companies house information failed";
     private readonly ILogger<CompaniesHouseService> _logger;
-    private readonly IIntegrationServiceApiClient _integrationServiceApiClient;
+    private readonly IAccountServiceApiClient _accountServiceApiClient;
 
-    public CompaniesHouseService(IIntegrationServiceApiClient integrationServiceApiClient, ILogger<CompaniesHouseService> logger)
+    public CompaniesHouseService(IAccountServiceApiClient accountServiceApiClient, ILogger<CompaniesHouseService> logger)
     {
         _logger = logger;
-        _integrationServiceApiClient = integrationServiceApiClient;
+        _accountServiceApiClient = accountServiceApiClient;
     }
 
     public async Task<Company?> GetCompanyByCompaniesHouseNumber(string companiesHouseNumber)
@@ -24,7 +24,7 @@ public class CompaniesHouseService : ICompaniesHouseService
         {
             var path = $"companies-house?id={companiesHouseNumber}";
 
-            var response = await _integrationServiceApiClient.SendGetRequest(path);
+            var response = await _accountServiceApiClient.SendGetRequest(path);
 
             if (response.StatusCode == HttpStatusCode.NoContent)
             {
