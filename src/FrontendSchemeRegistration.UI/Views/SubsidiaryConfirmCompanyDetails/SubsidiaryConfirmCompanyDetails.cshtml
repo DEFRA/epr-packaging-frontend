@@ -29,7 +29,7 @@
                             <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
                                 @Localizer["ConfirmCompanyDetails.IsAlreadyLinkedToOtherParent", @Model.CompanyName]: @Model.OtherParentCompanyName
                             </h1>
-                        }                  
+                        }
                         else
                         {
                             <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
@@ -54,7 +54,7 @@
                             </div>
                             <div class="govuk-body">
                                 <div class="govuk-!-margin-bottom-1 ">
-                                    @Localizer["ConfirmCompanyDetails.CompanyNumber"]: 
+                                    @Localizer["ConfirmCompanyDetails.CompanyNumber"]:
                                     <br />
                                     @Model.CompaniesHouseNumber
                                 </div>
@@ -89,7 +89,7 @@
                                         @Localizer["ConfirmCompanyDetails.ChangeYourNumber"]
                                     </a>
                                 <li>
-                                    @Localizer["ConfirmCompanyDetails.CheckCompaniesHouse"]
+                                        @Localizer["ConfirmCompanyDetails.CheckCompaniesHouse"]
                                     <a href="@GuidanceLinks.Value.MakeChangesToYourLimitedCompany" class="govuk-link" target="_blank" rel="noopener noreferrer">
                                             @Localizer["ConfirmCompanyDetails.YouCanChangeThem"]
                                     </a>
@@ -98,17 +98,28 @@
                         </div>
                     </details>
 
-                    @if (@Model.IsCompanyAlreadyLinkedToTheParent.Value || @Model.IsCompanyAlreadyLinkedToOtherParent.Value)
+                    @if (@Model.IsCompanyAlreadyLinkedToTheParent.Value)
                     {
                         <p class="govuk-body govuk-!-margin-top-4">
                             <button class="govuk-button" data-module="govuk-button">
                                 @Localizer["ConfirmCompanyDetails.SearchAgain"]
                             </button>
-@*                             <a class="govuk-button govuk-button--secondary" href="@Url.Action("SubsidiariesDownload", "FileUploadSubsidiaries")" role="button" data-module="govuk-button">
-                                @Localizer["producer_link"]
-                            </a> *@
                             <a class="govuk-link govuk-link--no-visited-state govuk-!-margin-top-10 govuk-!-display-inline-block govuk-!-padding-1" asp-controller="SubsidiaryCompaniesHouseNumber" asp-action="Get">@Localizer["ConfirmCompanyDetails.Cancel"]</a>
-                        </p>                   
+                        </p>
+                    }
+                    else if (@Model.IsCompanyAlreadyLinkedToOtherParent.Value)
+                    {
+                        <p class="govuk-body govuk-!-margin-top-4">
+                            <a class="govuk-button" href="@Url.Action("Get", "SubsidiaryCompaniesHouseNumber")" role="button" data-module="govuk-button">
+                                @Localizer["ConfirmCompanyDetails.SearchAgain"]
+                            </a>
+                            <button class="govuk-button govuk-button--secondary" data-module="govuk-button">
+                                @SharedLocalizer["continue"]
+                            </button>
+                            <a class="govuk-link govuk-link--no-visited-state govuk-!-margin-top-10 govuk-!-display-inline-block govuk-!-padding-1" asp-controller="SubsidiaryCompaniesHouseNumber" asp-action="Get">
+                                @Localizer["ConfirmCompanyDetails.Cancel"]
+                            </a>
+                        </p>
                     }
                     else
                     {

@@ -894,8 +894,26 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
                 }
             }));
 
-        // Act
-        var result = await SystemUnderTest.FileUploadResubmissionConfirmation() as ViewResult;
+		var resubmissionApplicationDetails = new PackagingResubmissionApplicationDetails
+		{
+			IsSubmitted = false,
+			ApplicationStatus = ApplicationStatusType.NotStarted,
+			LastSubmittedFile = new LastSubmittedFileDetails() { SubmittedDateTime = submittedAt },
+			SynapseResponse = new SynapseResponse
+			{
+				IsFileSynced = true
+			}
+		};
+		var resubmissionApplicationDetailsCollection = new List<PackagingResubmissionApplicationDetails> { resubmissionApplicationDetails };
+
+		ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(
+		  It.IsAny<Organisation>(),
+		  It.IsAny<List<string>>(),
+		  It.IsAny<Guid?>()))
+		  .ReturnsAsync(resubmissionApplicationDetailsCollection);
+
+		// Act
+		var result = await SystemUnderTest.FileUploadResubmissionConfirmation() as ViewResult;
         var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
 
         // Assert
@@ -913,16 +931,140 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
     public async Task FileUploadResubmissionConfirmation_RedirectsToSublandingPage_WhenSubmissionIsNotFound()
     {
         // Arrange
-        var submittedAt = DateTime.UtcNow.AddDays(-2);
         SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
             .Returns(Task.FromResult(new FrontendSchemeRegistrationSession()));
 
-        // Act
-        var result = await SystemUnderTest.FileUploadResubmissionConfirmation() as RedirectToActionResult;
+		var resubmissionApplicationDetails = new PackagingResubmissionApplicationDetails
+		{
+			IsSubmitted = false,
+			ApplicationStatus = ApplicationStatusType.NotStarted,
+			SynapseResponse = new SynapseResponse
+			{
+				IsFileSynced = true
+			}
+		};
+		var resubmissionApplicationDetailsCollection = new List<PackagingResubmissionApplicationDetails> { resubmissionApplicationDetails };
+
+		ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(
+		  It.IsAny<Organisation>(),
+		  It.IsAny<List<string>>(),
+		  It.IsAny<Guid?>()))
+		  .ReturnsAsync(resubmissionApplicationDetailsCollection);
+
+		// Act
+		var result = await SystemUnderTest.FileUploadResubmissionConfirmation() as RedirectToActionResult;
         var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
 
         // Assert
         result.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("FileUpload");
     }
+
+	[Test]
+	public async Task FileUploadResubmissionConfirmation__GetPackagingDataResubmissionApplicationDetails_ShouldBeCalledOnce()
+	{
+		// Arrange
+		var submittedAt = DateTime.UtcNow.AddDays(-2);
+		SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
+			.Returns(Task.FromResult(new FrontendSchemeRegistrationSession
+			{
+				PomResubmissionSession = new PackagingReSubmissionSession { PomSubmission = new PomSubmission() { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), LastSubmittedFile = new SubmittedFileInformation { FileId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), SubmittedDateTime = submittedAt } } },
+				UserData = new UserData
+				{
+					Organisations = new List<Organisation>
+				{
+					new()
+					{
+						Name = "Test Organisation",
+						OrganisationRole = OrganisationRoles.Producer,
+						NationId = 1
+					}
+				}
+				}
+			}));
+
+		var resubmissionApplicationDetails = new PackagingResubmissionApplicationDetails
+		{
+			IsSubmitted = false,
+			ApplicationStatus = ApplicationStatusType.NotStarted,
+			LastSubmittedFile = new LastSubmittedFileDetails() { SubmittedDateTime = submittedAt },
+			SynapseResponse = new SynapseResponse
+			{
+				IsFileSynced = true
+			}
+		};
+		var resubmissionApplicationDetailsCollection = new List<PackagingResubmissionApplicationDetails> { resubmissionApplicationDetails };
+
+		ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(
+		  It.IsAny<Organisation>(),
+		  It.IsAny<List<string>>(),
+		  It.IsAny<Guid?>()))
+		  .ReturnsAsync(resubmissionApplicationDetailsCollection);
+
+		// Act
+		var result = await SystemUnderTest.FileUploadResubmissionConfirmation() as ViewResult;
+		var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
+
+		// Assert
+		ResubmissionApplicationService.Verify(x => x.GetPackagingDataResubmissionApplicationDetails(It.IsAny<Organisation?>(), It.IsAny<List<string>>(), It.IsAny<Guid?>()), Times.Once);
+		result.Model.Should().BeOfType<FileUploadResubmissionConfirmationViewModel>();
+	}
+
+	[Test]
+	public async Task FileUploadResubmissionConfirmation_ReturnsCorrectViewAndModel_ForCSOUsers()
+	{
+		// Arrange
+		var submittedAt = DateTime.UtcNow.AddDays(-2);
+		var complianceSchemeId = Guid.NewGuid();
+		SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
+			.Returns(Task.FromResult(new FrontendSchemeRegistrationSession
+			{
+				RegistrationSession = new RegistrationSession() { SelectedComplianceScheme = new ComplianceSchemeDto() { Id = complianceSchemeId } },
+				PomResubmissionSession = new PackagingReSubmissionSession { PomSubmission = new PomSubmission() { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), LastSubmittedFile = new SubmittedFileInformation { FileId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), SubmittedDateTime = submittedAt } } },
+				UserData = new UserData
+				{
+					Organisations = new List<Organisation>
+				{
+					new()
+					{
+						Name = "Test Organisation",
+						OrganisationRole = OrganisationRoles.Producer,
+						NationId = 1
+					}
+				}
+				}
+			}));
+
+		var resubmissionApplicationDetails = new PackagingResubmissionApplicationDetails
+		{
+			IsSubmitted = false,
+			ApplicationStatus = ApplicationStatusType.NotStarted,
+			LastSubmittedFile = new LastSubmittedFileDetails() { SubmittedDateTime = submittedAt },
+			SynapseResponse = new SynapseResponse
+			{
+				IsFileSynced = true
+			}
+		};
+		var resubmissionApplicationDetailsCollection = new List<PackagingResubmissionApplicationDetails> { resubmissionApplicationDetails };
+
+		ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(
+		  It.IsAny<Organisation>(),
+		  It.IsAny<List<string>>(),
+		  complianceSchemeId))
+		  .ReturnsAsync(resubmissionApplicationDetailsCollection);
+
+		// Act
+		var result = await SystemUnderTest.FileUploadResubmissionConfirmation() as ViewResult;
+		var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
+
+		// Assert
+		pageBackLink.Should().Be($"/report-data{PagePaths.FileUploadSubmissionDeclaration}");
+		result.Model.Should().BeOfType<FileUploadResubmissionConfirmationViewModel>();
+
+		result.Model.As<FileUploadResubmissionConfirmationViewModel>().Should().BeEquivalentTo(new FileUploadResubmissionConfirmationViewModel
+		{
+			OrganisationRole = _userData.Organisations[0].OrganisationRole,
+			SubmittedAt = submittedAt.ToReadableDate()
+		});
+	}
 }

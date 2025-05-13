@@ -1,10 +1,10 @@
-@using FrontendSchemeRegistration.Application.DTOs.Submission
 @using FrontendSchemeRegistration.UI.Sessions
 @model ResubmissionTaskListViewModel
 
 @{
 	ViewData["Title"] = Localizer["resubmission_task_title"];
 
+	var canStartFileUploadStep = Model.FileUploadStatus is ResubmissionTaskListStatus.NotStarted or ResubmissionTaskListStatus.CanNotStartYet;
 	var canStartViewPayResubmissionFeeStep = Model.FileUploadStatus is ResubmissionTaskListStatus.Completed;
 	var canStartSubmitResubmissionApplicationStep = Model.PaymentViewStatus is ResubmissionTaskListStatus.Completed;
 	var isResubmissionInProgress = Model.IsResubmissionInProgress ?? false;
@@ -29,7 +29,7 @@
 				</div>
 				<div class="govuk-summary-list__row">
 					<dt class="govuk-summary-list__value">
-						@if (Model.ApplicationStatus is ApplicationStatusType.FileUploaded or ApplicationStatusType.SubmittedAndHasRecentFileUpload or ApplicationStatusType.NotStarted)
+						@if (canStartFileUploadStep)
 						{
 							<a asp-controller="PackagingDataResubmission" asp-action="RedirectToFileUpload"
 							   class="govuk-link govuk-link--no-visited-state">

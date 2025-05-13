@@ -179,12 +179,23 @@ public class PackagingDataResubmissionController : Controller
     [Route(PagePaths.FileUploadResubmissionConfirmation)]
     public async Task<IActionResult> FileUploadResubmissionConfirmation()
     {
-        var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-        var submission = session.PomResubmissionSession.PomSubmission;
+		var userData = User.GetUserData();
+		var organisation = userData.Organisations[0];
 
-        if (submission is null)
+		var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+		var complianceSchemeId = session.RegistrationSession.SelectedComplianceScheme?.Id;
+
+		var resubmissionApplicationDetails = await _resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(
+			organisation, new List<string> { session.PomResubmissionSession.SubmissionPeriod },
+			complianceSchemeId);
+
+		var packagingResubmissionApplicationSession = resubmissionApplicationDetails[0].ToPackagingResubmissionApplicationSession(organisation);
+
+		var lastSubmissionDate = packagingResubmissionApplicationSession.LastSubmittedFile?.SubmittedDateTime;
+
+		if (lastSubmissionDate is null)
         {
-            return RedirectToAction("Get", "FileUpload");
+			return RedirectToAction("Get", "FileUpload");
         }
 
         ViewBag.BackLinkToDisplay = Url.Content($"/report-data{PagePaths.FileUploadSubmissionDeclaration}");
@@ -192,8 +203,8 @@ public class PackagingDataResubmissionController : Controller
         var model = new FileUploadResubmissionConfirmationViewModel
         {
             OrganisationRole = session.UserData.Organisations?.FirstOrDefault()?.OrganisationRole,
-            SubmittedAt = submission.LastSubmittedFile.SubmittedDateTime.ToReadableDate(),
-        };
+			SubmittedAt = lastSubmissionDate.Value.ToReadableDate(),
+		};
 
         return View("FileUploadResubmissionConfirmation", model);
     }

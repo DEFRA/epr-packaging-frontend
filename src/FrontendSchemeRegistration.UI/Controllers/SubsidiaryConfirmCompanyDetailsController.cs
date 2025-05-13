@@ -60,7 +60,7 @@ public class SubsidiaryConfirmCompanyDetailsController : Controller
 
         if (model.IsCompanyAlreadyLinkedToOtherParent !=null && (model.IsCompanyAlreadyLinkedToOtherParent.Value))
         {
-            return RedirectToAction("Get", "SubsidiaryCompaniesHouseNumber");
+            return RedirectToAction("Get", "SubsidiaryLocation");
         }
 
         return RedirectToAction("Get", "SubsidiaryLocation");

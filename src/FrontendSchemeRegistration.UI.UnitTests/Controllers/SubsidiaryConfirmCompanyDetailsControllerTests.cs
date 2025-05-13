@@ -201,7 +201,7 @@ public class SubsidiaryConfirmCompanyDetailsControllerTests
 
         // Assert
         result?.ActionName.Should().Be("Get");
-        result.ControllerName.Should().Be("SubsidiaryCompaniesHouseNumber");
+        result.ControllerName.Should().Be("SubsidiaryLocation");
     }
 
     [Test]
