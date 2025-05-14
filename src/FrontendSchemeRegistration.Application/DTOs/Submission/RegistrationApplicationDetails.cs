@@ -18,6 +18,8 @@ public class RegistrationApplicationDetails
 
     public bool IsLateFeeApplicable { get; set; }
 
+    public bool IsOriginalCsoSubmissionLate { get; set; }
+
     public DateTime? RegistrationApplicationSubmittedDate { get; set; }
 
     public string? RegistrationApplicationSubmittedComment { get; set; }

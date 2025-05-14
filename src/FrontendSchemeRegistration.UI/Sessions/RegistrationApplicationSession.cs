@@ -120,6 +120,8 @@ public class RegistrationApplicationSession
 
     public bool IsLateFeeApplicable { get; set; }
 
+    public bool IsOriginalCsoSubmissionLate { get; set; }
+
     public int TotalAmountOutstanding { get; set; }
 
     public string? ApplicationReferenceNumber { get; set; }

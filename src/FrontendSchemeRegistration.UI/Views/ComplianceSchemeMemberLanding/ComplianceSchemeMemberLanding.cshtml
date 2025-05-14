@@ -37,7 +37,7 @@
                 <div class="govuk-inset-text">
                     <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">@Localizer["organisation_id", Model.OrganisationNumber]</p>
                     <p class="govuk-body govuk-!-margin-bottom-1">@Localizer["compliance_scheme_name", Model.ComplianceSchemeName]</p>
-                    <feature name="ShowWasteTileForIndirectProducer">
+                    <feature name="ShowWasteTile">
                         <p class="govuk-body govuk-!-margin-bottom-1">
                             <a asp-controller="FrontendSchemeRegistration" asp-action="ManageComplianceScheme" class="govuk-link govuk-link--no-visited-state">
                                 @Localizer["change_or_remove_compliance_scheme", Model.OrganisationName]
@@ -62,7 +62,7 @@
 
                 @if (Model.CanManageComplianceScheme)
                 {
-                    <feature negate="true" name="ShowWasteTileForIndirectProducer">
+                    <feature negate="true" name="ShowWasteTile">
                     <h2 class="govuk-heading-m govuk-!-margin-bottom-3">@Localizer["change_or_remove_compliance_scheme"]</h2>
 
                     <p class="govuk-body">
@@ -72,7 +72,7 @@
                     </p>
                     </feature>
 
-                    <feature name="ShowWasteTileForIndirectProducer">
+                    <feature name="ShowWasteTile">
                         <div class="govuk-grid-row box-container">
                             <div class="govuk-grid-column-one-half box">
                                 <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">

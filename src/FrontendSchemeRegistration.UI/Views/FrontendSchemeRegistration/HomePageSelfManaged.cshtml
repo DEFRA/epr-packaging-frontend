@@ -176,14 +176,29 @@
 			</div>
 		</div>
 
-        <div class="govuk-grid-column-one-half box">
-            <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
-                <div class="govuk-card-body">
-                    <h2 class="govuk-heading-m">@Localizer["waste_management_fee"]</h2>
-                    <p class="govuk-body govuk-!-margin-bottom-0">@Localizer["no_action_needed_at_the_moment"]</p>
+        <feature name="ShowWasteTile" negate="true">
+            <div class="govuk-grid-column-one-half box">
+                <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
+                    <div class="govuk-card-body">
+                        <h2 class="govuk-heading-m">@Localizer["waste_management_fee"]</h2>
+                        <p class="govuk-body govuk-!-margin-bottom-0">@Localizer["no_action_needed_at_the_moment"]</p>
+                    </div>
                 </div>
             </div>
-        </div>
+        </feature>
+        <feature name="ShowWasteTile">
+            <div class="govuk-grid-column-one-half box">
+                <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
+                    <div class="govuk-card-body">
+                        <h2 class="govuk-heading-m">
+                            <a class="govuk-link govuk-link--no-visited-state" rel="noreferrer noopener" target="_blank"
+                                href="">@Localizer["waste_management_and_admin_fees"]</a>
+                        </h2>
+                        <p class="govuk-body govuk-!-margin-bottom-0">@Localizer["sign_into_the_financial_services_system"]</p>
+                    </div>
+                </div>
+            </div>
+        </feature>
     </div>
 
     <div class="govuk-grid-row box-container">

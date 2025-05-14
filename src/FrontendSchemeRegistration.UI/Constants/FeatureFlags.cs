@@ -22,5 +22,5 @@ public static class FeatureFlags
     public const string ShowRegistrationWarning = "ShowRegistrationWarning";
     public const string ShowPoMSubmission2025 = "ShowPoMSubmission2025";
     public const string ShowYourFeedbackFooter = "ShowYourFeedbackFooter";
-    public const string ShowWasteTileForIndirectProducer = "ShowWasteTileForIndirectProducer";
+    public const string ShowWasteTile = "ShowWasteTile";
 }

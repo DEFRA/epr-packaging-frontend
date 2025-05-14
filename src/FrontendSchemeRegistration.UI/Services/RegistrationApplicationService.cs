@@ -58,6 +58,7 @@ public class RegistrationApplicationService(
         session.RegistrationApplicationSubmittedComment = registrationApplicationDetails.RegistrationApplicationSubmittedComment;
         session.RegistrationFeeCalculationDetails = registrationApplicationDetails.RegistrationFeeCalculationDetails;
         session.IsLateFeeApplicable = registrationApplicationDetails.IsLateFeeApplicable;
+        session.IsOriginalCsoSubmissionLate = registrationApplicationDetails.IsOriginalCsoSubmissionLate;
         session.IsResubmission = (registrationApplicationDetails.IsResubmission ?? isResubmission) ?? false;
 
         int? nationId;
@@ -186,7 +187,7 @@ public class RegistrationApplicationService(
                 SubmissionDate = session.LastSubmittedFile.SubmittedDateTime.Value,
                 ComplianceSchemeMembers = feeCalculationDetails.Select(c => new ComplianceSchemePaymentCalculationRequestMember
                 {
-                    IsLateFeeApplicable = session is { IsLateFeeApplicable: true, IsResubmission: false } || session.IsLateFeeApplicable && c.IsNewJoiner,
+                    IsLateFeeApplicable = session.IsOriginalCsoSubmissionLate || (session is { IsLateFeeApplicable: true, IsResubmission: false } || session.IsLateFeeApplicable && c.IsNewJoiner),
                     IsOnlineMarketplace = c.IsOnlineMarketplace,
                     MemberId = c.OrganisationId,
                     MemberType = c.OrganisationSize,
