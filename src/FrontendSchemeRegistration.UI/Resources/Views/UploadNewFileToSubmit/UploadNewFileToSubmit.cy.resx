@@ -222,7 +222,7 @@
   <data name="packaging_data_rejected" xml:space="preserve">
     <value>Cafodd eich data pecynwaith ei wrthod gan y rheoleiddiwr amgylcheddol oherwydd:</value>
   </data>
-  <data name="no_need_to_resubmit" xml:space="preserve">
+  <data name="you_data_was_accepted" xml:space="preserve">
     <value>Does dim angen ichi ailgyflwyno data pecynwaith</value>
   </data>
   <data name="continue-button" xml:space="preserve">

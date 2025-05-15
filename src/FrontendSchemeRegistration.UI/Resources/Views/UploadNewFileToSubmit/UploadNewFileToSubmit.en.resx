@@ -175,7 +175,7 @@
     <value>If your circumstances change</value>
   </data>
   <data name="if_your_circumstances_change_text_approved_user" xml:space="preserve">
-    <value>You can upload a new file and submit to the environmental regulator. This will replace the last packaging data file that you submitted.</value>
+    <value>If your data is no longer accurate you can upload and submit a new packaging data file to the environmental regulator. This will replace the last file you submitted.</value>
   </data>
   <data name="upload_a_new_file_text_approved_user" xml:space="preserve">
     <value>You can upload a new file and submit to the environmental regulator. This will replace the last packaging data file that you submitted.</value>
@@ -222,8 +222,8 @@
   <data name="packaging_data_rejected" xml:space="preserve">
     <value>Your packaging data was rejected by the environmental regulator because:</value>
   </data>
-  <data name="no_need_to_resubmit" xml:space="preserve">
-    <value>You do not need to resubmit packaging data.</value>
+  <data name="you_data_was_accepted" xml:space="preserve">
+    <value>Your data was accepted by the environment regulator.</value>
   </data>
   <data name="continue-button" xml:space="preserve">
     <value>Continue</value>
@@ -235,7 +235,7 @@
     <value>Go to account home page</value>
   </data>
   <data name="packaging_data_accepted" xml:space="preserve">
-    <value>Your packaging data was accepted by the environmental regulator.</value>
+    <value>Your data was accepted by the environmental regulator</value>
   </data>
   <data name="it_is_your_responsibility_to_make_sure_you_submit_correct_accurate_data_an_approved_person_or_their_delegate_must_verify_an_organisations_data" xml:space="preserve">
     <value>It is your responsibility to make sure you submit correct, accurate data. An approved person or their delegate must verify an organisation’s data.</value>

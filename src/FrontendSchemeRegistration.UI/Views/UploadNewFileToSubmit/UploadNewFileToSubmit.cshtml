@@ -47,7 +47,11 @@
         <div class="govuk-grid-column-two-thirds">
             <feature name="ShowPoMResubmission">
 
-                @if ((accepted || rejectedWithNoResubmission) && isApprovedOrDelegatedUser)
+                @if (accepted && isApprovedOrDelegatedUser)
+                {
+                    <h1 class="govuk-heading-l">@Localizer["packaging_data_accepted"]</h1>
+                }
+                else if (rejectedWithNoResubmission && isApprovedOrDelegatedUser)
                 {
                     <h1 class="govuk-heading-l">@Localizer["you-do-not-need-to-resubmit-packaging-data-title"]</h1>
                 }
@@ -68,12 +72,7 @@
                     <h1 class="govuk-heading-l">@title</h1>
                 }
 
-                @if (accepted && isApprovedOrDelegatedUser)
-                {
-                    <p class="govuk-body">@Localizer["packaging_data_accepted"]</p>
-                    <p class="govuk-body">@Localizer["no_need_to_resubmit"]</p>
-                }
-                else if (accepted && isBasicUser)
+                @if (accepted && isBasicUser)
                 {
                     <p class="govuk-body">@Localizer["packaging_data_accepted"]</p>
                     <p class="govuk-body">@Localizer["no_need_to_update"]</p>
