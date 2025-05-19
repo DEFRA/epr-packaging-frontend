@@ -280,16 +280,23 @@ public class SubmissionPeriodExtensionsTests
 
     [Test]
     [SetUICulture(Language.English)]
-    [TestCase("January", "June", "2023", 2023, true)]
-    [TestCase("January", "June", "2023", 2024, false)]
-    [TestCase("July", "December", "2023", 2024, false)]
-    [TestCase("January", "March", "2024", 2024, false)]
-    [TestCase("January", "June", "2024", 2024, true)]
-    [TestCase("July", "December", "2024", 2024, false)]
-    [TestCase("January", "June", "2025", 2024, true)]
-    [TestCase("July", "December", "2025", 2024, false)]
-    [TestCase("January", "June", "2026", 2024, true)]
-    public void IsJanuaryToJunePeriodFromYearOrLater_ShouldReturnCorrectResult(string startMonth, string endMonth, string year, int fromYear, bool expectedResult)
+    [TestCase("January", "June", "2021", true)]
+    [TestCase("Ionawr", "Fehefin", "2024", true)]
+    [TestCase(null, "June", "2024", false)]
+    [TestCase("January", null, "2024", false)]
+    [TestCase("January", "June", null, false)]
+    [TestCase("", "June", "2024", false)]
+    [TestCase("January", "", "2024", false)]
+    [TestCase("January", "June", "", false)]
+    [TestCase("  January  ", "June", "2024", true)]
+    [TestCase("January", "  June  ", "2024", true)]
+    [TestCase("January", "June", " 2024 ", true)]
+    [TestCase("January", "June", "not-a-year", false)]
+    [TestCase("JANUARY", "JUNE", "2024", true)]
+    [TestCase("january", "june", "2024", true)]
+    [TestCase("Ionawr", "Fehefin", "invalid-year", false)]
+    [TestCase("April", "May", "2024", false)]
+    public void IsJanuaryToJunePeriodFromYearOrLater_ShouldReturnCorrectResult(string startMonth, string endMonth, string year, bool expectedResult)
     {
         var periodDetail = new SubmissionPeriodDetail
         {
@@ -299,7 +306,8 @@ public class SubmissionPeriodExtensionsTests
             DatePeriodYear = year
         };
 
-        var result = periodDetail.IsJanuaryToJunePeriodFromYearOrLater(fromYear);
+        var result = periodDetail.IsJanuaryToJunePeriodFromYearOrLater();
         result.Should().Be(expectedResult);
     }
+
 }

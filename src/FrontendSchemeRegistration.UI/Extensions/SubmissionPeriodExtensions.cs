@@ -81,12 +81,29 @@ public static class SubmissionPeriodExtensions
             .Where(p => p.GetEndDate() <= latestPeriodEndDate);
     }
 
-    public static bool IsJanuaryToJunePeriodFromYearOrLater(this SubmissionPeriodDetail submissionPeriodDetail, int startYear)
+    public static bool IsJanuaryToJunePeriodFromYearOrLater(this SubmissionPeriodDetail submissionPeriodDetail)
     {
-        return submissionPeriodDetail is not null &&
-               submissionPeriodDetail.DatePeriodStartMonth.Equals("January", StringComparison.InvariantCultureIgnoreCase) &&
-               submissionPeriodDetail.DatePeriodEndMonth.Equals("June", StringComparison.InvariantCultureIgnoreCase) &&
-               int.TryParse(submissionPeriodDetail.DatePeriodYear, out var year) &&
-               year >= startYear;
+        if (submissionPeriodDetail == null)
+            return false;
+
+        if (string.IsNullOrWhiteSpace(submissionPeriodDetail.DatePeriodStartMonth) ||
+            string.IsNullOrWhiteSpace(submissionPeriodDetail.DatePeriodEndMonth) ||
+            string.IsNullOrWhiteSpace(submissionPeriodDetail.DatePeriodYear))
+            return false;
+
+        var startMonth = submissionPeriodDetail.DatePeriodStartMonth.Trim();
+        var endMonth = submissionPeriodDetail.DatePeriodEndMonth.Trim();
+        var yearStr = submissionPeriodDetail.DatePeriodYear.Trim();
+
+        if (!int.TryParse(yearStr, out _))
+            return false;
+
+        return (startMonth.Equals("January", StringComparison.InvariantCultureIgnoreCase) &&
+                endMonth.Equals("June", StringComparison.InvariantCultureIgnoreCase)) ||
+               (startMonth.Equals("Ionawr", StringComparison.InvariantCultureIgnoreCase) &&
+                endMonth.Equals("Fehefin", StringComparison.InvariantCultureIgnoreCase));
     }
+
+
+
 }

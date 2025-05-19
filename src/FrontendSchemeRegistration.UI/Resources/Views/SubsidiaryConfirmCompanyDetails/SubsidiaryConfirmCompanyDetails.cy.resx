@@ -145,7 +145,7 @@
     <value>Mae'r manylion yma yn anghywir</value>
   </data>
     <data name="ConfirmCompanyDetails.IfTheseDetails" xml:space="preserve">
-    <value>Os yw'r manylion yma yn anghywir, fe ddylech chi:</value>
+    <value>Os yw'r manylion yma yn anghywir, fe ddylech chi</value>
   </data>
     <data name="ConfirmCompanyDetails.CheckTheCompaniesHouseNumber" xml:space="preserve">
     <value>gwirio rhif Tŷ'r Cwmnïau a sicrhau ei fod yn gywir – os ydych chi wedi’i deipio’n anghywir, gallwch</value>

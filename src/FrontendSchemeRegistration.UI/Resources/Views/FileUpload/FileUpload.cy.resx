@@ -162,6 +162,36 @@
   <data name="upload_file" xml:space="preserve">
     <value>Uwchlwythwch ffeiliau</value>
   </data>
+  <data name="view_and_manage_your" xml:space="preserve">
+    <value>gweld a rheoli'ch</value>
+  </data>
+  <data name="before_you_upload_your_file" xml:space="preserve">
+    <value>Cyn ichi uwchlwytho'ch ffeil</value>
+  </data>
+  <data name="is_submitting_on_your_behalf" xml:space="preserve">
+    <value>Wis submitting on your behalf</value>
+  </data>
+  <data name="subsidiaries" xml:space="preserve">
+    <value>is-gwmnïau</value>
+  </data>
+  <data name="companies_house_number_search" xml:space="preserve">
+    <value>is-gwmni</value>
+  </data>
+  <data name="you_can" xml:space="preserve">
+    <value>Rydych chi'n gallu</value>
+  </data>
+  <data name="add_a" xml:space="preserve">
+    <value>ychwanegu</value>
+  </data>
+  <data name="group" xml:space="preserve">
+    <value>grŵp</value>
+  </data>
+  <data name="if_you_are_part_of_a_group_contact_parent_organisation_to_add_you_to_the_group" xml:space="preserve">
+    <value>os ydych chi'n rhan o grŵp ond yn rhoi gwybod am eich data eich hun, cysylltwch â'r rhiant-sefydliad i'ch ychwanegu chi at y grŵp.</value>
+  </data>
+  <data name="tell_us_who_is_submitting_on_your_behalf_if_you_are_part_of_a" xml:space="preserve">
+    <value>dweud wrthon ni pwy sy'n cyflwyno ar eich rhan os ydych chi'n rhan o</value>
+  </data>
   <data name="no_file_uploaded" xml:space="preserve">
     <value>Dim ffeil wedi’i huwchlwytho</value>
   </data>
@@ -202,7 +232,7 @@
       <value>Gall eich ffeil gymryd sawl munud i uwchlwytho. Peidiwch â chau'r ffenestr tra bo'r ffeil wrthi'n uwchlwytho.</value>
   </data>
   <data name="the_file_must_be:" xml:space="preserve">
-      <value> Rhaid i’r ffeil fod:</value>
+      <value>Rhaid i'r ffeil fod:</value>
   </data>
   <data name="file_must_be_a_csv" xml:space="preserve">
     <value>yn ffeil CSV</value>

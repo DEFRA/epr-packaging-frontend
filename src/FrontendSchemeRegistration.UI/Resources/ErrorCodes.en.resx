@@ -298,6 +298,9 @@ Read the guidance about how to create your organisation details file. Once youâ€
   <data name="63" xml:space="preserve">
     <value>For self-managed consumer waste (CW), you may not be able to offset your own packaging against aluminium (AL), glass (GL), paper or card (PC), or steel (ST). To check what packaging materials you can offset, you'll need to contact your nation's environmental regulator.</value>
   </data>
+  <data name="93" xml:space="preserve">
+    <value>Organisation Size for Org ID must be consistent: all "L" or all "S".</value>
+  </data>
   <data name="813" xml:space="preserve">
     <value>All fields must contain 4000 characters or less</value>
   </data>
@@ -365,7 +368,7 @@ Read the guidance about how to create your organisation details file. Once youâ€
     <value>Large producers must upload packaging data for 1 January to 30 June 2024 and 1 July to 31 December 2024.</value>
   </data>
   <data name="73" xml:space="preserve">
-    <value>Turnover for this organization is recorded as zero. Please verify this is correct before submitting a zero return</value>
+    <value>Turnover for this organisation is recorded as zero. Please verify this is correct before submitting a zero return</value>
   </data>
   <data name="100" xml:space="preserve">
     <value>Large organisations (L) submitting HH, HDC-Glass and PB packaging type must enter a recyclability code in this column for 2025 submission periods onwards â€“ enter one of the following: R for Red, A for Amber, G for Green, R-M for Red-Medical, A-M for Amber-Medical or G-M for Green-Medical</value>

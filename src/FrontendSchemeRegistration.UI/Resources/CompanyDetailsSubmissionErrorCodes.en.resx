@@ -349,7 +349,7 @@
     <value>The organisation's leaver date must be later than its joiner date.</value>
   </data>
   <data name="73" xml:space="preserve">
-    <value>Turnover for this organization is recorded as zero. Please verify this is correct before submitting a zero return</value>
+    <value>Turnover for this organisation is recorded as zero. Please verify this is correct before submitting a zero return</value>
   </data>
   <data name="Error" xml:space="preserve">
     <value>Error</value>

@@ -1,9 +1,11 @@
-﻿using EPR.Common.Authorization.Sessions;
+﻿using EPR.Common.Authorization.Models;
+using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers;
 using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
 using FrontendSchemeRegistration.UI.Sessions;
@@ -26,6 +28,16 @@ public class FileUploadCompanyDetailsWarningsControllerTests
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
     private ValidationOptions _validationOptions;
     private Mock<IUrlHelper> _urlHelperMock;
+    private const string SubmissionPeriod = "Jul to Dec 23";
+
+    private List<string> _journey = new()
+    {
+                        PagePaths.FileUploadCompanyDetailsSubLanding,
+                        PagePaths.FileUploadCompanyDetails,
+                        PagePaths.RegistrationTaskList,
+                        PagePaths.ReviewOrganisationData,
+                        PagePaths.RegistrationTaskList
+    };
 
     [SetUp]
     public void SetUp()
@@ -41,7 +53,7 @@ public class FileUploadCompanyDetailsWarningsControllerTests
             {
                 RegistrationSession = new RegistrationSession
                 {
-                    Journey = new List<string> { PagePaths.FileUploadCompanyDetailsSubLanding, PagePaths.FileUploadCompanyDetails }
+                    Journey = new List<string> { PagePaths.FileUploadCompanyDetailsSubLanding, PagePaths.FileUploadCompanyDetails, PagePaths.RegistrationTaskList }
                 }
             });
 
@@ -137,7 +149,50 @@ public class FileUploadCompanyDetailsWarningsControllerTests
     }
 
     [Test]
-    public async Task Get_RedirectsToFileUploadCompanyDetailsSubLanding_WhenJourneyDoesNotContainFileUploadingPath()
+    public async Task Get_ReturnsFileUploadCompanyDetailsWarningsView_When_Session_RegistrationSession_IsFileUploadJourney_Equals_True()
+    {
+        // Arrange
+        const string fileName = "example.csv";
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(new RegistrationSubmission
+        {
+            CompanyDetailsFileName = fileName,
+            CompanyDetailsDataComplete = true,
+            ValidationPass = true,
+            HasWarnings = true
+        });
+
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SubmissionPeriod = SubmissionPeriod,
+                    IsFileUploadJourneyInvokedViaRegistration = true,
+                    Journey = _journey
+                }
+            });
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("FileUploadCompanyDetailsWarnings");
+        result.ViewData.Keys.Should().HaveCount(1);
+        result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
+        result.ViewData["BackLinkToDisplay"].Should().Be($"/report-data/{PagePaths.RegistrationTaskList}");
+        result.Model.Should().BeEquivalentTo(new FileUploadWarningViewModel()
+        {
+            FileName = fileName,
+            SubmissionId = SubmissionId,
+            MaxWarningsToProcess = 100
+        });
+
+        _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.Once);
+        _sessionManagerMock.Verify(x => x.GetSessionAsync(It.IsAny<ISession>()), Times.Once);
+    }
+
+    [Test]
+    public async Task Get_RedirectsToFileUploadCompanyDetails_WhenJourneyDoesNotContain_RequiredPath()
     {
         // Arrange
         const string fileName = "example.csv";
@@ -161,8 +216,86 @@ public class FileUploadCompanyDetailsWarningsControllerTests
         var result = await _systemUnderTest.Get() as RedirectToActionResult;
 
         // Assert
-        result?.ControllerName.Should().Be(nameof(FileUploadCompanyDetailsSubLandingController).RemoveControllerFromName());
-        result?.ActionName.Should().Be(nameof(FileUploadCompanyDetailsSubLandingController.Get));
+        result?.ControllerName.Should().Be(nameof(FileUploadCompanyDetailsController).RemoveControllerFromName());
+        result?.ActionName.Should().Be(nameof(FileUploadCompanyDetailsController.Get));
+    }
+
+    [Test]
+    public async Task Get_ShouldSetBackLink_To_RegistrationTaskList_WhenisFileUploadJourneyInvokedViaRegistrationisFalse()
+    {
+        // Arrange
+        const string fileName = "example.csv";
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(new RegistrationSubmission
+        {
+            CompanyDetailsFileName = fileName,
+            CompanyDetailsDataComplete = true,
+            ValidationPass = true,
+            HasWarnings = true
+        });
+
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+           .ReturnsAsync(new FrontendSchemeRegistrationSession
+           {
+               RegistrationSession = new RegistrationSession
+               {
+                   SubmissionPeriod = SubmissionPeriod,
+                   IsFileUploadJourneyInvokedViaRegistration = true,
+                   Journey = _journey
+               }
+           });
+
+        var mockUrlHelper = new Mock<IUrlHelper>();
+        mockUrlHelper.Setup(x => x.Content($"~/{PagePaths.RegistrationTaskList}")).Returns($"~/{PagePaths.RegistrationTaskList}");
+        _systemUnderTest.Url = mockUrlHelper.Object;
+
+        // Act
+        var result = _systemUnderTest.Get().Result;
+        var webpageBackLink = _systemUnderTest.ViewBag.BackLinkToDisplay as string;
+
+        // Assert
+        webpageBackLink.Should().Be($"/report-data/{PagePaths.RegistrationTaskList}");
+    }
+
+    [Test]
+    public async Task Post_ShouldSetBackLink_To_RegistrationTaskList_WhenisFileUploadJourneyInvokedViaRegistrationisFalse()
+    {
+        // Arrange
+        const string fileName = "example.csv";
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(new RegistrationSubmission
+        {
+            CompanyDetailsFileName = fileName,
+            CompanyDetailsDataComplete = true,
+            ValidationPass = true,
+            HasWarnings = true
+        });
+
+        var viewModel = new FileUploadWarningViewModel
+        {
+            SubmissionId = SubmissionId,
+            UploadNewFile = null
+        };
+
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+           .ReturnsAsync(new FrontendSchemeRegistrationSession
+           {
+               RegistrationSession = new RegistrationSession
+               {
+                   SubmissionPeriod = SubmissionPeriod,
+                   IsFileUploadJourneyInvokedViaRegistration = true,
+                   Journey = _journey
+               }
+           });
+
+        var mockUrlHelper = new Mock<IUrlHelper>();
+        mockUrlHelper.Setup(x => x.Content($"~/{PagePaths.RegistrationTaskList}")).Returns($"~/{PagePaths.RegistrationTaskList}");
+        _systemUnderTest.Url = mockUrlHelper.Object;
+
+        // Act
+        var result = _systemUnderTest.FileUploadDecision(viewModel).Result;
+        var webpageBackLink = _systemUnderTest.ViewBag.BackLinkToDisplay as string;
+
+        // Assert
+        webpageBackLink.Should().Be($"/report-data/{PagePaths.RegistrationTaskList}");
     }
 
     [Test]

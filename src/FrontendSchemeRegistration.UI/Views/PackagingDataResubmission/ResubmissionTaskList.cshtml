@@ -1,10 +1,12 @@
+@using FrontendSchemeRegistration.Application.DTOs.Submission
 @using FrontendSchemeRegistration.UI.Sessions
 @model ResubmissionTaskListViewModel
 
 @{
 	ViewData["Title"] = Localizer["resubmission_task_title"];
 
-	var canStartFileUploadStep = Model.FileUploadStatus is ResubmissionTaskListStatus.NotStarted or ResubmissionTaskListStatus.CanNotStartYet;
+	var canStartFileUploadStep = (Model.FileUploadStatus is ResubmissionTaskListStatus.NotStarted or ResubmissionTaskListStatus.CanNotStartYet) ||
+								  Model.ApplicationStatus == ApplicationStatusType.FileUploaded; 
 	var canStartViewPayResubmissionFeeStep = Model.FileUploadStatus is ResubmissionTaskListStatus.Completed;
 	var canStartSubmitResubmissionApplicationStep = Model.PaymentViewStatus is ResubmissionTaskListStatus.Completed;
 	var isResubmissionInProgress = Model.IsResubmissionInProgress ?? false;

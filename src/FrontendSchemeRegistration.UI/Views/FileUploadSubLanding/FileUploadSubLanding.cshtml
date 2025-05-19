@@ -102,31 +102,12 @@
                                 <div class="govuk-card-body">
                                     <div class="govuk-card-headers">
                                         @if (Model.IsComplianceScheme)
-                                        {
-                                            if (submissionPeriodDetail.IsJanuaryToJunePeriodFromYearOrLater(2024))
-                                            {
-                                                <h3 class="govuk-heading-m govuk-!-margin-bottom-0">@Localizer["report_members_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) </h3>
-                                                if (implementPackagingDataResubmissionJourney)
-                                                {
-                                                    if (submissionPeriodDetail.InProgressSubmissionPeriodStatus == InProgressSubmissionPeriodStatus.InProgress_Resubmission_FileInSynapse_FeesNotViewed_NotSubmitted)
-                                                    {
-                                                        <br />
-
-                                                        <p class="govuk-body">@Localizer["inprogress_resubmission_fileinsynapse_feesnotviewed_notsubmitted"]</p>
-                                                    }
-                                                    else if (submissionPeriodDetail.InProgressSubmissionPeriodStatus == InProgressSubmissionPeriodStatus.InProgress_Resubmission_FeesViewed_NotSubmitted)
-                                                    {
-                                                        <br />
-
-                                                        <p class="govuk-body">@Localizer["inprogress_resubmission_feesviewed_notsubmitted"]</p>
-                                                    }
-                                                }
-                                            }
-                                            else if (submissionPeriodDetail.DatePeriodYear.Contains("2023"))
+                                        {                                            
+                                            if (submissionPeriodDetail.DatePeriodYear.Contains("2023"))
                                             {
                                                 if (implementPackagingDataResubmissionJourney)
                                                 {
-                                                    <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_members_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) </h3>
+                                                    <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_members_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) </h3> 
                                                     if (submissionPeriodDetail.InProgressSubmissionPeriodStatus == InProgressSubmissionPeriodStatus.InProgress_Resubmission_FileInSynapse_FeesNotViewed_NotSubmitted)
                                                     {
                                                         <br />
@@ -143,6 +124,27 @@
                                                 else
                                                 {
                                                     <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear </h3>
+                                                }
+                                            }
+                                            else if (submissionPeriodDetail.IsJanuaryToJunePeriodFromYearOrLater())
+                                            {
+
+
+                                                <h3 class="govuk-heading-m govuk-!-margin-bottom-0">@Localizer["report_members_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) </h3>
+                                                if (implementPackagingDataResubmissionJourney)
+                                                {
+                                                    if (submissionPeriodDetail.InProgressSubmissionPeriodStatus == InProgressSubmissionPeriodStatus.InProgress_Resubmission_FileInSynapse_FeesNotViewed_NotSubmitted)
+                                                    {
+                                                        <br />
+
+                                                        <p class="govuk-body">@Localizer["inprogress_resubmission_fileinsynapse_feesnotviewed_notsubmitted"]</p>
+                                                    }
+                                                    else if (submissionPeriodDetail.InProgressSubmissionPeriodStatus == InProgressSubmissionPeriodStatus.InProgress_Resubmission_FeesViewed_NotSubmitted)
+                                                    {
+                                                        <br />
+
+                                                        <p class="govuk-body">@Localizer["inprogress_resubmission_feesviewed_notsubmitted"]</p>
+                                                    }
                                                 }
                                             }
                                             else
@@ -165,27 +167,12 @@
                                                 }
                                                 else
                                                 {
-                                                    <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) @Localizer["or"] @Localizer["January_to_December"] @submissionPeriodDetail.DatePeriodYear (@Localizer["small_producers_sentence_text"]) </h3>
+                                                    <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_packaging_data_for"] 
+                                                        @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] 
+                                                        @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) 
+                                                        @Localizer["or"] 
+                                                        @Localizer["January_to_December"] @submissionPeriodDetail.DatePeriodYear (@Localizer["small_producers_sentence_text"]) </h3>
                                                 }
-                                            }
-                                        }
-                                        else if (submissionPeriodDetail.IsJanuaryToJunePeriodFromYearOrLater(2024))
-                                        {
-                                            if (implementPackagingDataResubmissionJourney)
-                                            {
-                                                <h3 class="govuk-heading-m govuk-!-margin-bottom-0">@Localizer["report_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) </h3>
-                                                if(submissionPeriodDetail.InProgressSubmissionPeriodStatus == InProgressSubmissionPeriodStatus.InProgress_Resubmission_FileInSynapse_FeesNotViewed_NotSubmitted)
-                                                {
-                                                    <br /><p class="govuk-body">@Localizer["inprogress_resubmission_fileinsynapse_feesnotviewed_notsubmitted"]</p>
-                                                }
-                                                else if (submissionPeriodDetail.InProgressSubmissionPeriodStatus == InProgressSubmissionPeriodStatus.InProgress_Resubmission_FeesViewed_NotSubmitted)
-                                                {
-                                                    <br /><p class="govuk-body">@Localizer["inprogress_resubmission_feesviewed_notsubmitted"]</p>
-                                                }
-                                            }
-                                            else
-                                            {
-                                                <h3 class="govuk-heading-m govuk-!-margin-bottom-0">@Localizer["report_members_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) </h3>
                                             }
                                         }
                                         else if (submissionPeriodDetail.DatePeriodYear.Contains("2023"))
@@ -211,9 +198,38 @@
                                                 <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear </h3>
                                             }
                                         }
-                                        else
+                                        else if (submissionPeriodDetail.IsJanuaryToJunePeriodFromYearOrLater())
                                         {
-                                            <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) @Localizer["or"] @Localizer["January_to_December"] @submissionPeriodDetail.DatePeriodYear (@Localizer["small_producers_sentence_text"]) </h3>
+                                            if (implementPackagingDataResubmissionJourney)
+                                            {
+                                                <h3 class="govuk-heading-m govuk-!-margin-bottom-0">@Localizer["report_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) </h3>
+                                                if(submissionPeriodDetail.InProgressSubmissionPeriodStatus == InProgressSubmissionPeriodStatus.InProgress_Resubmission_FileInSynapse_FeesNotViewed_NotSubmitted)
+                                                {
+                                                    <br /><p class="govuk-body">@Localizer["inprogress_resubmission_fileinsynapse_feesnotviewed_notsubmitted"]</p>
+                                                }
+                                                else if (submissionPeriodDetail.InProgressSubmissionPeriodStatus == InProgressSubmissionPeriodStatus.InProgress_Resubmission_FeesViewed_NotSubmitted)
+                                                {
+                                                    <br /><p class="govuk-body">@Localizer["inprogress_resubmission_feesviewed_notsubmitted"]</p>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <h3 class="govuk-heading-m govuk-!-margin-bottom-0">
+                                                    @Localizer["report_packaging_data_for"]
+                                                    @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] 
+                                                    @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) </h3> 
+                                            }
+                                        }                                       
+                                        else
+                                        {                                            
+                                            <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_packaging_data_for"] 
+                                                @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] 
+                                                @submissionPeriodDetail.DatePeriodYear 
+                                                (@Localizer["large_producers_sentence_text"])
+                                                @Localizer["or"]
+                                                @Localizer["January_to_December"] 
+                                                @submissionPeriodDetail.DatePeriodYear
+                                                (@Localizer["small_producers_sentence_text"]) </h3> 
                                             if (submissionPeriodDetail.InProgressSubmissionPeriodStatus == InProgressSubmissionPeriodStatus.InProgress_Resubmission_FileInSynapse_FeesNotViewed_NotSubmitted)
                                             {
                                                 <br />

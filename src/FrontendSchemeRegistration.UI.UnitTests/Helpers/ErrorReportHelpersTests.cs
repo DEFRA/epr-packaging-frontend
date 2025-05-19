@@ -291,7 +291,7 @@ public class ErrorReportHelpersTests
                 Column = "R",
                 ColumnName = "testColumnName5",
                 IssueType = "Warning",
-                Message = "Turnover for this organization is recorded as zero. Please verify this is correct before submitting a zero return"
+                Message = "Turnover for this organisation is recorded as zero. Please verify this is correct before submitting a zero return"
             },
         };
 
