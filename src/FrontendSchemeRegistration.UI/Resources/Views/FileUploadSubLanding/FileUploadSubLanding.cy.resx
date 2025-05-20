@@ -166,13 +166,13 @@
     <value>cynhyrchwyr mawr</value>
   </data>
   <data name="small_producers_sentence_text" xml:space="preserve">
-    <value>cynhyrchydd bach</value>
+    <value>cynhyrchwyr bach</value>
   </data>
   <data name="or" xml:space="preserve">
 	<value>neu</value>
   </data>
   <data name ="January_to_December" xml:space="preserve">
-	  <value>Ionawr-Rhagfyr</value>
+	  <value>Ionawr i Ragfyr</value>
   </data>
   <data name="check_the_govuk_guidance" xml:space="preserve">
     <value>Gwiriwch y canllawiau ar GOV.UK (yn agor mewn ffenestr newydd)</value>
