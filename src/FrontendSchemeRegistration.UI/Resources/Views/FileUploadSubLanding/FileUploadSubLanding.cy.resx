@@ -243,4 +243,7 @@
 	<data name="inprogress_resubmission_feesviewed_notsubmitted" xml:space="preserve">
     <value>Rydych chi wedi edrych ar eich ffi. Nawr mae angen ichi gyflwyno i'r rheoleiddiwr.</value>
   </data>
+  <data name="view_your_resubmission" xml:space="preserve">
+    <value>[Welsh]View your resubmission</value>
+  </data>
 </root>

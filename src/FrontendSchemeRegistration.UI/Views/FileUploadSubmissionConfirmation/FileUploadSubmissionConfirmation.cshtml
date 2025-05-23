@@ -33,10 +33,14 @@
 
             <p class="govuk-body">@Localizer["you_will_get_an_email_about_any_next_steps_when_the_environmental_regulator_has_looked_at_your_submission"]</p>
             <p class="govuk-body">@Localizer["you_can_only_make_changes_to_your_submitted_packaging_data_files_after_the_environmental_regulator_has_looked_at_them"]</p>
-
+                                   
             <p class="govuk-body">
                 @Html.ActionLink(Localizer["go_to_your_account_homepage"].Value, "Get", "Landing",
                     null, new { @class = "govuk-link govuk-link--no-visited-state" })
+            </p>
+            <h2 class="govuk-heading-m">@Localizer["give_feedback"]</h2>
+            <p class="govuk-body">
+                <a class="govuk-link govuk-link--no-visited-state" href="https://defragroup.eu.qualtrics.com/jfe/form/SV_a2Bm7vw3cht5B6C" rel="noreferrer noopener" target="_blank">@Localizer["take_an_optional_survey_to_help_us_improve_this_service"]</a>
             </p>
         </div>
     </div>

@@ -2,23 +2,14 @@
 
 @{
     var submissionId = Guid.Parse(ViewData["submissionId"].ToString());
-    var IsAnySubmissionAcceptedForDataPeriod = (bool)ViewData["IsAnySubmissionAcceptedForDataPeriod"];
 }
 
-@if (!IsAnySubmissionAcceptedForDataPeriod)
-{
+<feature name=@FeatureFlags.ImplementPackagingDataResubmissionJourney>
+    @Html.ActionLink(Localizer["continue-button"].Value, "ResubmissionTaskList", "PackagingDataResubmission",
+            null, new { @class = "govuk-button govuk-!-margin-bottom-3" })
+</feature>
+
+<feature name=@FeatureFlags.ImplementPackagingDataResubmissionJourney negate="true">
     @Html.ActionLink(Localizer["continue-button"].Value, "Get", "FileUpload",
-                             new { submissionId = submissionId }, new { @class = "govuk-button govuk-!-margin-bottom-3" })
-}
-else
-{
-    <feature name=@FeatureFlags.ImplementPackagingDataResubmissionJourney>
-        @Html.ActionLink(Localizer["continue-button"].Value, "ResubmissionTaskList", "PackagingDataResubmission",
-                null, new { @class = "govuk-button govuk-!-margin-bottom-3" })
-    </feature>
-
-    <feature name=@FeatureFlags.ImplementPackagingDataResubmissionJourney negate="true">
-        @Html.ActionLink(Localizer["continue-button"].Value, "Get", "FileUpload",
-                new { submissionId = submissionId }, new { @class = "govuk-button govuk-!-margin-bottom-3" })
-    </feature>
-}
+            new { submissionId = submissionId }, new { @class = "govuk-button govuk-!-margin-bottom-3" })
+</feature>

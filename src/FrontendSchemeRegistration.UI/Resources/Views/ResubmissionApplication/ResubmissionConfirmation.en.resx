@@ -140,4 +140,10 @@
 	<data name="check_status_of_your_application" xml:space="preserve">
         <value> to check the status of your application.</value>
     </data>
+	<data name="give_feedback" xml:space="preserve">
+    <value>Give feedback</value>
+  </data>
+	<data name="take_an_optional_survey_to_help_us_improve_this_service" xml:space="preserve">
+    <value>Take an optional survey to help us improve this service.</value>
+  </data>
 </root>

@@ -218,4 +218,7 @@ You can also:</value>
   <data name="You_now_need_to_submit_to_the_regulator" xml:space="preserve">
     <value>You now need to submit to the regulator.</value>
   </data>
+  <data name="you_still_need_to_view_any_additional_fees" xml:space="preserve">
+    <value>You still need to view any additional fees and submit to the regulator.</value>
+  </data>
 </root>

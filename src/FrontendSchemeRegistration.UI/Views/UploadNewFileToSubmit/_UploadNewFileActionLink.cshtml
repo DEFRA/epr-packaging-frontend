@@ -1,24 +1,11 @@
 ﻿@using FrontendSchemeRegistration.UI.Constants
 
-@{
-    var IsAnySubmissionAcceptedForDataPeriod = (bool)ViewData["IsAnySubmissionAcceptedForDataPeriod"];
-}
+<feature name=@FeatureFlags.ImplementPackagingDataResubmissionJourney>
+    @Html.ActionLink(Localizer["upload_new_file"].Value, "ResubmissionTaskList", "PackagingDataResubmission",
+            null, new { @class = "govuk-button govuk-!-margin-bottom-3" })
+</feature>
 
-@if (!IsAnySubmissionAcceptedForDataPeriod)
-{
+<feature name=@FeatureFlags.ImplementPackagingDataResubmissionJourney negate="true">
     @Html.ActionLink(Localizer["upload_new_file"].Value, "Get", "FileUpload",
-                             new { submissionId = Model.SubmissionId }, new { @class = "govuk-button govuk-!-margin-bottom-3" })
-}
-else
-{
-    <feature name=@FeatureFlags.ImplementPackagingDataResubmissionJourney>
-        @Html.ActionLink(Localizer["upload_new_file"].Value, "ResubmissionTaskList", "PackagingDataResubmission",
-                null, new { @class = "govuk-button govuk-!-margin-bottom-3" })
-    </feature>
-
-    <feature name=@FeatureFlags.ImplementPackagingDataResubmissionJourney negate="true">
-        @Html.ActionLink(Localizer["upload_new_file"].Value, "Get", "FileUpload",
-                new { submissionId = Model.SubmissionId }, new { @class = "govuk-button govuk-!-margin-bottom-3" })
-    </feature>
-}
-
+            new { submissionId = Model.SubmissionId }, new { @class = "govuk-button govuk-!-margin-bottom-3" })
+</feature>

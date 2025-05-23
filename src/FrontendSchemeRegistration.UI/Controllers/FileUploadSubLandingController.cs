@@ -4,11 +4,14 @@ using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Options;
+using FrontendSchemeRegistration.Application.Services;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
+using FrontendSchemeRegistration.UI.Controllers.FrontendSchemeRegistration;
 using FrontendSchemeRegistration.UI.Enums;
 using FrontendSchemeRegistration.UI.Extensions;
+using FrontendSchemeRegistration.UI.Resources.Views.FileUpload;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
@@ -16,6 +19,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.FeatureManagement;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace FrontendSchemeRegistration.UI.Controllers;
 
@@ -53,6 +57,8 @@ public class FileUploadSubLandingController(
             session.UserData.Organisations[0],
             periods,
             session.RegistrationSession.SelectedComplianceScheme?.Id);
+
+        session.PomResubmissionSession.PackagingResubmissionApplicationSessions = packagingResubmissionApplicationSessionForAllSubmissionPeriods;
 
         foreach (var submissionPeriod in _submissionPeriods)
         {
@@ -124,7 +130,7 @@ public class FileUploadSubLandingController(
 
     [HttpPost]
     public async Task<IActionResult> Post(string dataPeriod)
-    {          
+    {
         var selectedSubmissionPeriod = FindSubmissionPeriod(dataPeriod);
         if (selectedSubmissionPeriod == null)
         {
@@ -144,13 +150,13 @@ public class FileUploadSubLandingController(
     }
 
     private static void UpdateInProgressSubmissionPeriodStatus(
-        SubmissionPeriodDetail submissionPeriodDetail, 
+        SubmissionPeriodDetail submissionPeriodDetail,
         PackagingResubmissionApplicationSession packagingResubmissionApplicationSession)
     {
         if (submissionPeriodDetail.Status == SubmissionPeriodStatus.InProgress)
         {
-            submissionPeriodDetail.InProgressSubmissionPeriodStatus = packagingResubmissionApplicationSession == null 
-                ? null 
+            submissionPeriodDetail.InProgressSubmissionPeriodStatus = packagingResubmissionApplicationSession == null
+                ? null
                 : packagingResubmissionApplicationSession.ApplicationInProgressSubmissionPeriodStatus;
         }
     }
@@ -251,6 +257,14 @@ public class FileUploadSubLandingController(
 
     private async Task<RedirectToActionResult> HandleSubmissionBasedOnStatus(PomSubmission submission, List<PomSubmission> submissions, string submissionPeriod)
     {
+        var session = await sessionManager.GetSessionAsync(HttpContext.Session);
+
+        var organisationId = session.UserData.Organisations.FirstOrDefault()?.Id;
+        if (organisationId is null)
+        {
+            return RedirectToAction("Get", "FileUploadSubLanding");
+        }
+
         var routeValueDictionary = new RouteValueDictionary { { "submissionId", submission.Id } };
 
         await UpdateSessionForResubmissionJourney(submissions, submissionPeriod);
@@ -263,12 +277,31 @@ public class FileUploadSubLandingController(
         if (!await featureManager.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)))
         {
             return HandleSubmittedSubmission(submission);
-        }       
+        }
+
+        var isAnySubmissionAcceptedForDataPeriod = await submissionService.IsAnySubmissionAcceptedForDataPeriod(submission, organisationId.Value, session.RegistrationSession.SelectedComplianceScheme?.Id);
+
+        if (!isAnySubmissionAcceptedForDataPeriod)
+        {
+            return RedirectToAction(
+                nameof(FileUploadController.Get),
+                nameof(FileUploadController).RemoveControllerFromName(),
+                routeValueDictionary);
+        }
+
+        var packagingResubmissionApplicationSession = session.PomResubmissionSession.PackagingResubmissionApplicationSessions.Find(x => x.SubmissionId == submission.Id);
+
+        if (packagingResubmissionApplicationSession.IsResubmissionInProgress || packagingResubmissionApplicationSession.IsResubmissionComplete)
+        {
+            return RedirectToAction(
+               nameof(PackagingDataResubmissionController.ResubmissionTaskList),
+               nameof(PackagingDataResubmissionController).RemoveControllerFromName());
+        }
 
         return RedirectToAction(
-               nameof(UploadNewFileToSubmitController.Get),
-               nameof(UploadNewFileToSubmitController).RemoveControllerFromName(),
-               routeValueDictionary);
+              nameof(UploadNewFileToSubmitController.Get),
+              nameof(UploadNewFileToSubmitController).RemoveControllerFromName(),
+              routeValueDictionary);
     }
 
     private RedirectToActionResult HandleSubmittedSubmission(PomSubmission submission)

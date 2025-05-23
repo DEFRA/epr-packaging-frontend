@@ -52,12 +52,6 @@ public class UploadNewFileToSubmitController : Controller
             return RedirectToAction("Get", "FileUploadSubLanding");
         }
 
-        var organisationId = session.UserData.Organisations?.FirstOrDefault()?.Id;
-        if (organisationId is null)
-        {
-            return RedirectToAction("Get", "FileUploadSubLanding");
-        }
-
         var submissionId = Request.Query.ContainsKey("submissionId")
             ? Guid.Parse(Request.Query["submissionId"])
             : Guid.Empty;
@@ -128,8 +122,7 @@ public class UploadNewFileToSubmitController : Controller
             RegulatorDecision = decision.Decision,
             IsResubmissionNeeded = decision.IsResubmissionRequired,
             IsSubmittedByPersonDeleted = isSubmittedByPersonDeleted,
-            IsUploadByPersonDeleted = isSubmittedByPersonDeleted,
-            IsAnySubmissionAcceptedForDataPeriod = await _submissionService.IsAnySubmissionAcceptedForDataPeriod(submission, organisationId.Value, session.RegistrationSession.SelectedComplianceScheme?.Id)
+            IsUploadByPersonDeleted = isSubmittedByPersonDeleted
         };
 
         if (!session.RegistrationSession.Journey.Contains(PagePaths.FileUploadSubLanding))

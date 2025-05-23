@@ -282,4 +282,7 @@
   <data name="sign_into_the_financial_services_system" xml:space="preserve">
     <value>Sign into the financial services system (FSS) to view and manage the fees your organisation needs to pay.</value>
   </data>
+  <data name="you_still_need_to_view_any_additional_fees" xml:space="preserve">
+    <value>You still need to view any additional fees and submit to the regulator.</value>
+  </data>
 </root>

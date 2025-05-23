@@ -141,4 +141,10 @@
   <data name="you_will_get_an_email_about_any_next_steps_when_the_environmental_regulator_has_looked_at_your_submission" xml:space="preserve">
     <value>Fe gewch chi neges ebost am unrhyw gamau nesaf pan fydd y rheoleiddiwr amgylcheddol wedi edrych ar eich cyflwyniad.</value>
   </data>
+ <data name="give_feedback" xml:space="preserve">
+    <value>[wales]Give feedback</value>
+ </data>
+ <data name="take_an_optional_survey_to_help_us_improve_this_service" xml:space="preserve">
+    <value>[wales]Take an optional survey to help us improve this service.</value>
+ </data>
 </root>

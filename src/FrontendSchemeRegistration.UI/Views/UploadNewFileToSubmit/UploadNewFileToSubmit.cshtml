@@ -182,14 +182,14 @@
                     {
                         <p class="govuk-body">@Localizer["if_your_circumstances_change_text_approved_user"]</p>
 
-                        @await Html.PartialAsync("_ContinueButtonActionLink", new ViewDataDictionary(ViewData) { { "submissionId", Model.SubmissionId }, { "IsAnySubmissionAcceptedForDataPeriod", Model.IsAnySubmissionAcceptedForDataPeriod } })
+                        @await Html.PartialAsync("_ContinueButtonActionLink", new ViewDataDictionary(ViewData) { { "submissionId", Model.SubmissionId } })
                     }
                     else if (isBasicUser)
                     {
                         <p class="govuk-body">@Localizer["upload_a_new_file_text_basic_user"]</p>
                         <p class="govuk-body">@Localizer["upload_a_new_file_text_permission_basic_user"]</p>
 
-                        @await Html.PartialAsync("_UploadNewFileActionLink", new ViewDataDictionary(ViewData) { { "submissionId", Model.SubmissionId }, { "IsAnySubmissionAcceptedForDataPeriod", Model.IsAnySubmissionAcceptedForDataPeriod } })
+                        @await Html.PartialAsync("_UploadNewFileActionLink", new ViewDataDictionary(ViewData) { { "submissionId", Model.SubmissionId } })
                     }
 
                     <p class="govuk-body">
@@ -204,7 +204,7 @@
                         <h3 class="govuk-summary-card__title govuk-!-padding-bottom-4">@Localizer["if_your_circumstances_change"]</h3>
                         <p class="govuk-body govuk-!-padding-bottom-2">@Localizer["upload_a_new_file_text_approved_user"]</p>
 
-                        @await Html.PartialAsync("_ContinueButtonActionLink", new ViewDataDictionary(ViewData) { { "submissionId", Model.SubmissionId }, { "IsAnySubmissionAcceptedForDataPeriod", Model.IsAnySubmissionAcceptedForDataPeriod } })
+                        @await Html.PartialAsync("_ContinueButtonActionLink", new ViewDataDictionary(ViewData) { { "submissionId", Model.SubmissionId } })
 
                         <p class="govuk-body">
                             @Html.ActionLink(Localizer["go_to_account_home_page"].Value, "Get", "FileUploadSubLanding",
@@ -217,7 +217,7 @@
                         <p class="govuk-body">@Localizer["upload_a_new_file_text_basic_user"]</p>
                         <p class="govuk-body">@Localizer["upload_a_new_file_text_permission_basic_user"]</p>
 
-                        @await Html.PartialAsync("_UploadNewFileActionLink", new ViewDataDictionary(ViewData) { { "submissionId", Model.SubmissionId }, { "IsAnySubmissionAcceptedForDataPeriod", Model.IsAnySubmissionAcceptedForDataPeriod } })
+                        @await Html.PartialAsync("_UploadNewFileActionLink", new ViewDataDictionary(ViewData) { { "submissionId", Model.SubmissionId } })
 
                         <p class="govuk-body">
                             @Html.ActionLink(Localizer["cancel"].Value, "Get", "FileUploadSubLanding",
@@ -228,7 +228,7 @@
                     {
                         <p class="govuk-body govuk-!-padding-bottom-2">@Localizer["need_upload_a_new_file_text_approved_user"]</p>
 
-                        @await Html.PartialAsync("_ContinueButtonActionLink", new ViewDataDictionary(ViewData) { { "submissionId", Model.SubmissionId }, { "IsAnySubmissionAcceptedForDataPeriod", Model.IsAnySubmissionAcceptedForDataPeriod } })
+                        @await Html.PartialAsync("_ContinueButtonActionLink", new ViewDataDictionary(ViewData) { { "submissionId", Model.SubmissionId } })
 
                         <p class="govuk-body">
                             @Html.ActionLink(Localizer["cancel"].Value, "Get", "FileUploadSubLanding",
@@ -239,7 +239,7 @@
                     {
                         <p class="govuk-body">@Localizer["need_upload_a_new_file_text_basic_user"]</p>
 
-                        @await Html.PartialAsync("_UploadNewFileActionLink", new ViewDataDictionary(ViewData) { { "submissionId", Model.SubmissionId }, { "IsAnySubmissionAcceptedForDataPeriod", Model.IsAnySubmissionAcceptedForDataPeriod } })
+                        @await Html.PartialAsync("_UploadNewFileActionLink", new ViewDataDictionary(ViewData) { { "submissionId", Model.SubmissionId } })
 
                         <p class="govuk-body">
                             @Html.ActionLink(Localizer["cancel"].Value, "Get", "FileUploadSubLanding",
@@ -249,7 +249,7 @@
                 }
                 else
                 {
-                   @await Html.PartialAsync("_DecideContinueOrUploadButtonActionLink", new ViewDataDictionary(ViewData) { { "submissionId", Model.SubmissionId } })
+                    @await Html.PartialAsync("_DecideContinueOrUploadButtonActionLink", new ViewDataDictionary(ViewData) { { "submissionId", Model.SubmissionId } })
 
                     <p class="govuk-body">
                         @Html.ActionLink(Localizer["cancel"].Value, "Get", "FileUploadSubLanding",

@@ -27,5 +27,7 @@ public class PackagingReSubmissionSession
 
     public PackagingResubmissionApplicationSession PackagingResubmissionApplicationSession { get; set; } = new();
 
+    public List<PackagingResubmissionApplicationSession> PackagingResubmissionApplicationSessions { get; set; } = new() { };
+
     public FeeBreakdownDetails FeeBreakdownDetails { get; set; } = new();
 }

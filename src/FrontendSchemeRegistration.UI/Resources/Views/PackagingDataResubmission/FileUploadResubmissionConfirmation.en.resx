@@ -153,4 +153,10 @@
 	<data name="print_or_save_as_PDF" xml:space="preserve">
         <value>print or save this page as a PDF</value>
     </data>
+	<data name="give_feedback" xml:space="preserve">
+    <value>Give feedback</value>
+ </data>
+	<data name="take_an_optional_survey_to_help_us_improve_this_service" xml:space="preserve">
+    <value>Take an optional survey to help us improve this service.</value>
+ </data>
 </root>
