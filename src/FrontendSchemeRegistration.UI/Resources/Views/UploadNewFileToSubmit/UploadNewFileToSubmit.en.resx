@@ -151,7 +151,7 @@
     <value>File name</value>
   </data>
   <data name="date_submitted" xml:space="preserve">
-    <value>Date and time submitted</value>
+    <value>Date submitted</value>
   </data>
   <data name="date_uploaded" xml:space="preserve">
     <value>Date uploaded</value>
@@ -235,7 +235,7 @@
     <value>Go to account home page</value>
   </data>
   <data name="packaging_data_accepted" xml:space="preserve">
-    <value>Your data was accepted by the environmental regulator</value>
+    <value>Your data was accepted by the environmental regulator.</value>
   </data>
   <data name="it_is_your_responsibility_to_make_sure_you_submit_correct_accurate_data_an_approved_person_or_their_delegate_must_verify_an_organisations_data" xml:space="preserve">
     <value>It is your responsibility to make sure you submit correct, accurate data. An approved person or their delegate must verify an organisation’s data.</value>

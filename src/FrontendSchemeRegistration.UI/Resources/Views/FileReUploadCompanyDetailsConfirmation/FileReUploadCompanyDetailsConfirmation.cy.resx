@@ -87,7 +87,7 @@
         <value>Mae eich sefydliad eisoes wedi uwchlwytho manylion eich sefydliad aelodau i’r rheoleiddiwr amgylcheddol. Gallwch uwchlwytho’r wybodaeth yma eto os bydd rhywbeth wedi newid. Does dim caniatâd gennych i gyflwyno ffeiliau.</value>
     </data>
     <data name="date_submitted" xml:space="preserve">
-        <value>Dyddiad cyflwyno</value>
+        <value>Y dyddiad y cafodd ei chyflwyno</value>
     </data>
     <data name="submitted_by" xml:space="preserve">
         <value>Cyflwynwyd gan </value>

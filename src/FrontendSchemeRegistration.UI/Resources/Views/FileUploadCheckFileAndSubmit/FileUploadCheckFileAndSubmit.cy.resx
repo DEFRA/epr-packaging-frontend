@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="packaging_data_uploaded" xml:space="preserve">
-    <value>Data pecynwaith wedi’i uwchlwytho </value>
+    <value>Data pecynwaith wedi'i uwchlwytho</value>
   </data>
   <data name="check_and_submit_file" xml:space="preserve">
     <value>Data pecynwaith wedi’i uwchlwytho – gwirio a chyflwyno</value>

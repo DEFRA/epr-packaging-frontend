@@ -120,7 +120,6 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
 
         // Assert
         ResubmissionApplicationService.Verify(x => x.CreatePomResubmissionReferenceNumberForProducer(It.IsAny<FrontendSchemeRegistrationSession?>(), It.IsAny<SubmissionPeriod>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<Guid>(), It.IsAny<int>()), Times.Never);
-        pageBackLink.Should().Be($"/report-data{PagePaths.UploadNewFileToSubmit}?submissionId=147f59f0-3d4e-4557-91d2-db033dffa60b");
     }
 
     [Test]
@@ -213,7 +212,6 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
 
         // Assert
         ResubmissionApplicationService.Verify(x => x.CreatePomResubmissionReferenceNumber(It.IsAny<FrontendSchemeRegistrationSession?>(), It.IsAny<string?>(), It.IsAny<Guid>(), It.IsAny<int>()), Times.Once);
-        pageBackLink.Should().Be($"/report-data{PagePaths.UploadNewFileToSubmit}?submissionId=147f59f0-3d4e-4557-91d2-db033dffa60b");
     }
 
     [Test]
@@ -253,7 +251,6 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
         var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
 
         // Assert
-        pageBackLink.Should().Be($"/report-data{PagePaths.UploadNewFileToSubmit}?submissionId=147f59f0-3d4e-4557-91d2-db033dffa60b");
         result.Model.Should().BeOfType<ResubmissionTaskListViewModel>();
 
         result.Model.As<ResubmissionTaskListViewModel>().Should().BeEquivalentTo(new ResubmissionTaskListViewModel
@@ -327,7 +324,6 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
         var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
 
         // Assert
-        pageBackLink.Should().Be($"/report-data{PagePaths.UploadNewFileToSubmit}?submissionId=147f59f0-3d4e-4557-91d2-db033dffa60b");
         result.Model.Should().BeOfType<ResubmissionTaskListViewModel>();
 
         result.Model.As<ResubmissionTaskListViewModel>().Should().BeEquivalentTo(new ResubmissionTaskListViewModel
@@ -400,7 +396,6 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
         var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
 
         // Assert
-        pageBackLink.Should().Be($"/report-data{PagePaths.UploadNewFileToSubmit}?submissionId=147f59f0-3d4e-4557-91d2-db033dffa60b");
         result.Model.Should().BeOfType<ResubmissionTaskListViewModel>();
 
         result.Model.As<ResubmissionTaskListViewModel>().Should().BeEquivalentTo(new ResubmissionTaskListViewModel
@@ -475,7 +470,6 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
         var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
 
         // Assert
-        pageBackLink.Should().Be($"/report-data{PagePaths.UploadNewFileToSubmit}?submissionId=147f59f0-3d4e-4557-91d2-db033dffa60b");
         result.Model.Should().BeOfType<ResubmissionTaskListViewModel>();
 
         result.Model.As<ResubmissionTaskListViewModel>().Should().BeEquivalentTo(new ResubmissionTaskListViewModel

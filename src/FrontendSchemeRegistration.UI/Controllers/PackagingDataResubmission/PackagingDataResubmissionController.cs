@@ -77,7 +77,6 @@ public class PackagingDataResubmissionController : Controller
         if (submission != null)
         {
             session.PomResubmissionSession.Journey = new List<string> { PagePaths.FileUploadSubLanding, $"/report-data{PagePaths.UploadNewFileToSubmit}?submissionId={submission.Id}", PagePaths.ResubmissionTaskList };
-            SetBackLink(session, PagePaths.ResubmissionTaskList);
 
             if (string.IsNullOrEmpty(session.PomResubmissionSession.PackagingResubmissionApplicationSession.ApplicationReferenceNumber))
             {
