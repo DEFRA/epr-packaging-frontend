@@ -340,6 +340,9 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
   <data name="909" xml:space="preserve">
     <value>Rhaid i gynhyrchwyr mawr uwchlwytho data pecynwaith ar gyfer 1 Ionawr i 30 Mehefin 2024 a 1 Gorffennaf i 31 Rhagfyr 2024.</value>
   </data>
+	<data name="910" xml:space="preserve">
+    <value>Gall cynhyrchwyr bach ond uwchlwytho data pecynnu am gyfnod P0.</value>
+  </data>
   <data name="100" xml:space="preserve">
     <value>Rhaid i sefydliadau mawr (L) sy'n cyflwyno math pecynwaith cartrefi (HH) roi cod ailgylchadwyedd yn y golofn yma ar gyfer cyfnodau cyflwyno 2025ymlaen – rhowch un o'r canlynol: R ar gyfer Coch, A ar gyfer Melyn, G ar gyfer Gwyrdd, R-M ar gyfer Coch-Meddygol, A-M ar gyfer Melyn-Meddygol neu G-M ar gyfer Gwyrdd-Meddygol</value>
   </data>

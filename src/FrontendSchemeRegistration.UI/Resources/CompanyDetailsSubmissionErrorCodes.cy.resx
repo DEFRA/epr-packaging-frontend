@@ -322,7 +322,7 @@
     <value>Rhaid i reswm newid y sefydliad gynnwys rhifau a llythrennau yn unig.</value>
   </data>
   <data name="907" xml:space="preserve">
-    <value>Rhaid i'r cod ymadael fod yn un briflythyren rhwng A ac L.</value>
+    <value>Rhaid i'r cod ymadael fod yn un briflythyren rhwng A ac O.</value>
   </data>
   <data name="908" xml:space="preserve">
     <value>Ni chaiff y dyddiad ymadael fod yn y dyfodol.</value>
@@ -347,6 +347,12 @@
   </data>
   <data name="915" xml:space="preserve">
     <value>Rhaid i ddyddiad ymadael y sefydliad fod yn hwyrach na'i ddyddiad ymuno.</value>
+  </data>
+  <data name="916" xml:space="preserve">
+    <value>W You must enter a joiner date for this subsidiary.</value>
+  </data>
+  <data name="917" xml:space="preserve">
+    <value>W You must enter a joiner date for this organisation.</value>
   </data>
   <data name="73" xml:space="preserve">
     <value>Mae trosiant y sefydliad yma wedi'i gofnodi fel sero. Gwiriwch fod hyn yn gywir cyn ichi gyflwyno ffurflen sy'n dweud sero</value>

@@ -12,6 +12,8 @@ public abstract class AbstractSubmission
 
     public string SubmissionPeriod { get; set; }
 
+    public DateTime Created { get; set; }
+
     public bool ValidationPass { get; set; }
 
     public bool HasWarnings { get; set; }

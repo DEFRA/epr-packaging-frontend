@@ -7,6 +7,8 @@ namespace FrontendSchemeRegistration.Application.DTOs.Submission
     {
         public Guid SubmissionId { get; set; }
 
+        public Guid FileId { get; set; }
+
         public string FileName { get; set; }
 
         public string UserName { get; set; }

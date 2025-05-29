@@ -41,10 +41,26 @@ public class FileDownloadPackagingController : Controller
             fileId = submission.LastUploadedValidFile.FileId;
             fileName = submission.LastUploadedValidFile.FileName;
         }
-        else
+        else if (model.FileId == null)
         {
             fileId = submission.LastSubmittedFile.FileId;
             fileName = submission.LastSubmittedFile.FileName;
+        }
+        else
+        {
+            var submissionHistory = await _submissionService.GetSubmissionHistoryAsync(
+                model.SubmissionId,
+                new DateTime(submission.Created.Year, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+
+            var searchedSubmission = submissionHistory.Where(x => x.FileId == model.FileId).FirstOrDefault();
+
+            if (searchedSubmission == null)
+            {
+                return NotFound();
+            }
+
+            fileId = searchedSubmission.FileId;
+            fileName = searchedSubmission.FileName;
         }
 
         var fileData = await _fileDownloadService.GetFileAsync(fileId, fileName, SubmissionType.Producer, model.SubmissionId);

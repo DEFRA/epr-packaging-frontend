@@ -139,7 +139,7 @@
         public async Task<JsonResult> CheckFileUploadSatus()
         {
             var (userId, organisationId) = GetUserDetails();
-            var fileUploadStatus = await _subsidiaryService.GetSubsidiaryFileUploadStatusAsync(userId,organisationId);
+            var fileUploadStatus = await _subsidiaryService.GetSubsidiaryFileUploadStatusAsync(userId, organisationId);
             return fileUploadStatus switch
             {
                 SubsidiaryFileUploadStatus.FileUploadedSuccessfully =>
@@ -177,9 +177,26 @@
 
             var routeValues = new RouteValueDictionary { { "submissionId", submissionId } };
 
-            return !ModelState.IsValid
-                ? View("SubsidiariesList", await GetSubsidiaryListViewModel(1))
-                : RedirectToAction(nameof(FileUploading), routeValues);
+            if (!ModelState.IsValid)
+            {
+                var page = Request.Query.TryGetValue("page", out var pageAsString)
+                    ? int.Parse(pageAsString.FirstOrDefault())
+                    : 1;
+
+                if (await _featureManager.IsEnabledAsync(FeatureFlags.ShowAllSubsidiaries))
+                {
+                    var searchTerm = Request.Query["searchTerm"].FirstOrDefault();
+
+                    var avm = await GetAllSubsidiaryListViewModel(page, 20, searchTerm);
+                    avm.SearchTerm = searchTerm;
+
+                    return View("AllSubsidiariesList", avm);
+                }
+
+                return View("SubsidiariesList", await GetSubsidiaryListViewModel(page));
+            }
+
+            return RedirectToAction(nameof(FileUploading), routeValues);
         }
 
         [HttpGet]
@@ -228,7 +245,7 @@
         public async Task<IActionResult> FileUploadSuccess()
         {
             var (userId, organisationId) = GetUserDetails();
-            var uploadStatus = await _subsidiaryService.GetUploadStatus(userId,organisationId);
+            var uploadStatus = await _subsidiaryService.GetUploadStatus(userId, organisationId);
             var userData = User.GetUserData();
             var organisation = userData.Organisations[0];
             var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
@@ -236,7 +253,7 @@
             var totalSubsidiariesCount = await _subsidiaryUtilityService.GetSubsidiariesCount(organisation.OrganisationRole, organisationId, selectedComplienceSchemeId);
             await _subsidiaryService.SetSubsidiaryFileUploadStatusViewedAsync(true, userId, organisationId);
             await SaveSession(session, PagePaths.FileUploadSubsidiariesSuccess);
-            
+
             var model = new SubsidiaryFileUploadSuccessViewModel
             {
                 RecordsAdded = uploadStatus?.RowsAdded ?? 0,
@@ -247,7 +264,7 @@
             return View("FileUploadSuccess", model);
         }
 
-               
+
         [HttpGet]
         [Route(PagePaths.SubsidiariesIncompleteFileUpload)]
         public async Task<IActionResult> SubsidiariesIncompleteFileUpload()
@@ -495,7 +512,7 @@
                 var currentSummary = await _complianceSchemeService.GetComplianceSchemeSummary(organisation.Id.Value, complianceSchemeId);
                 result.MemberCount = currentSummary.MemberCount;
             }
-            
+
             var pageUrl = Url.Action(nameof(SubsidiariesList));
 
             result.PagingDetail = new PagingDetail
@@ -508,7 +525,7 @@
             result.IsDirectProducer = isDirectProducer;
             return result;
         }
-        
+
         private async Task<AllSubsidiaryListViewModel> GetAllSubsidiaryListViewModel(int page, int showPerPage, string searchTerm)
         {
             var userData = User.GetUserData();
@@ -528,7 +545,7 @@
                 CurrentPage = response.CurrentPage,
                 PageSize = response.PageSize,
                 TotalItems = response.TotalItems,
-                PagingLink = string.IsNullOrEmpty(searchTerm) ? $"{pageUrl}?page=" :  $"{pageUrl}?searchterm={searchTerm}&page="
+                PagingLink = string.IsNullOrEmpty(searchTerm) ? $"{pageUrl}?page=" : $"{pageUrl}?searchterm={searchTerm}&page="
             };
 
             return result;
@@ -585,15 +602,15 @@
 
             await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
         }
-        
+
         private async Task SavePageNumberToSession(FrontendSchemeRegistrationSession session, int currentPage)
         {
             session.SubsidiarySession.ReturnToSubsidiaryPage = currentPage;
-            
+
             await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
         }
 
-        private void SetBackLink(FrontendSchemeRegistrationSession session,bool fileUploadInProgress = false)
+        private void SetBackLink(FrontendSchemeRegistrationSession session, bool fileUploadInProgress = false)
         {
             var pageFrom = session.SubsidiarySession.Journey.LastOrDefault();
             if (ShouldShowAccountHomeLink(pageFrom))
@@ -612,9 +629,9 @@
                 ViewBag.BackLinkToDisplay = string.Empty;
                 ViewBag.ShouldShowAccountHomeLink = false;
             }
-        
+
         }
-        
+
         private static bool ShouldShowAccountHomeLink(string previousPage)
         {
             return previousPage is PagePaths.FileUploadSubsidiariesSuccess

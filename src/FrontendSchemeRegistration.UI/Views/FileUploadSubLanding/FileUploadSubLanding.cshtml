@@ -287,7 +287,7 @@
                                                     @if (Model.ServiceRole is "Basic User")
                                                     {
                                                         <div class="govuk-card-footer">
-                                                            if(implementPackagingDataResubmissionJourney)
+                                                            @if(implementPackagingDataResubmissionJourney)
                                                             {
                                                                 <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["check_if_you_need_to_resubmit_packaging_data"]</button>
                                                             }

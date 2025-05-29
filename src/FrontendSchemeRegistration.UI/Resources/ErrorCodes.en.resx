@@ -367,6 +367,9 @@ Read the guidance about how to create your organisation details file. Once youâ€
   <data name="909" xml:space="preserve">
     <value>Large producers must upload packaging data for 1 January to 30 June 2024 and 1 July to 31 December 2024.</value>
   </data>
+	<data name="910" xml:space="preserve">
+    <value>Small producers can only upload packaging data for period P0.</value>
+  </data>	
   <data name="73" xml:space="preserve">
     <value>Turnover for this organisation is recorded as zero. Please verify this is correct before submitting a zero return</value>
   </data>

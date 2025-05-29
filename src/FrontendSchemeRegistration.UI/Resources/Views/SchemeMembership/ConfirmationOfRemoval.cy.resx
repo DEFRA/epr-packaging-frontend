@@ -198,10 +198,10 @@ details file.</comment>
     <value>eu tynnu oddi ar ffeil gofrestru'ch sefydliad ac ailuwchlwytho'r ffeil.</value>
   </data>
   <data name="ConfirmationOfRemoval.RegLinkDesc" xml:space="preserve">
-    <value>Os cafodd y sefydliad yma ei gofrestru gennych fel aelod ar neu ar ôl 5 Ebrill 2025</value>
+    <value>Os cafodd y sefydliad yma ei gofrestru gennych fel aelod ar neu ar ôl 1 Ebrill 2025</value>
   </data>
   <data name="ConfirmationOfRemoval.OrgLinkDesc" xml:space="preserve">
-    <value>Os cafodd y sefydliad yma ei gofrestru gennych fel aelod cyn 5 Ebrill 2025</value>
+    <value>Os cafodd y sefydliad yma ei gofrestru gennych fel aelod cyn 1 Ebrill 2025</value>
   </data>
   <data name="ConfirmationOfRemoval.PageTitle" xml:space="preserve">
     <value>Cadarnhad bod yr aelod wedi’i dynnu</value>

@@ -11,4 +11,6 @@ public class FileDownloadViewModel
     public Guid SubmissionId { get; set; }
 
     public string Type { get; set; } = FileDownloadType.Upload;
+
+    public Guid? FileId { get; set; }
 }

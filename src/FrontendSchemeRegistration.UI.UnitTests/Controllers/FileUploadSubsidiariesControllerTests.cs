@@ -870,6 +870,31 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers
         }
 
         [Test]
+        public async Task Post_WhenModelStateIsInvalid_AndFeatureFlagEnabled_ShouldReturnViewResult()
+        {
+            // Arrange
+            _controller.ModelState.AddModelError("Error", "Test error");
+
+            _mockFeatureManager.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ShowAllSubsidiaries))).ReturnsAsync(true);
+
+            _mockSubsidiaryService.Setup(x => x.GetPagedOrganisationSubsidiaries(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()))
+                .ReturnsAsync(new PaginatedResponse<RelationshipResponseModel>
+                {
+                    Items = new List<RelationshipResponseModel>(),
+                    SearchTerms = new List<string>(),
+                    CurrentPage = 1,
+                    PageSize = 1,
+                    TotalItems = 1
+                });
+
+            // Act
+            var result = await _controller.Post();
+
+            // Assert
+            result.Should().BeOfType<ViewResult>().Which.ViewName.Should().Be("AllSubsidiariesList");
+        }
+
+        [Test]
         public async Task FileUploading_WhenSubmissionIsNull_ShouldRedirectToFileUploadGet()
         {
             // Arrange

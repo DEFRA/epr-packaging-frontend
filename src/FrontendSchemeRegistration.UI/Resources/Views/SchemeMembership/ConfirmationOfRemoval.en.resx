@@ -184,10 +184,10 @@ their compliance scheme in their 'Report packaging data' account.</value>
     <value>remove them from your organisation's registration file and re-upload it.</value>
   </data>
   <data name="ConfirmationOfRemoval.RegLinkDesc" xml:space="preserve">
-    <value>If you registered this organisation as a member on or after 5 April 2025</value>
+    <value>If you registered this organisation as a member on or after 1 April 2025</value>
   </data>
   <data name="ConfirmationOfRemoval.OrgLinkDesc" xml:space="preserve">
-    <value>If you registered this organisation as a member before 5 April 2025</value>
+    <value>If you registered this organisation as a member before 1 April 2025</value>
   </data>
   <data name="ConfirmationOfRemoval.PageTitle" xml:space="preserve">
     <value>Confirmation of removal </value>

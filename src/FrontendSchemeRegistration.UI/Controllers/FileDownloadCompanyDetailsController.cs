@@ -29,10 +29,26 @@ public class FileDownloadCompanyDetailsController(ISubmissionService submissionS
             fileId = submission.LastUploadedValidFiles.CompanyDetailsFileId;
             fileName = submission.LastUploadedValidFiles.CompanyDetailsFileName;
         }
-        else
+        else if(model.FileId == null)
         {
             fileId = submission.LastSubmittedFiles.CompanyDetailsFileId;
             fileName = submission.LastSubmittedFiles.CompanyDetailsFileName;
+        }
+        else
+        {
+            var submissionHistory = await submissionService.GetSubmissionHistoryAsync(
+               model.SubmissionId,
+               new DateTime(submission.Created.Year, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+
+            var searchedSubmission = submissionHistory.Where(x => x.FileId == model.FileId).FirstOrDefault();
+
+            if (searchedSubmission == null)
+            {
+                return NotFound();
+            }
+
+            fileId = searchedSubmission.FileId;
+            fileName = searchedSubmission.FileName;
         }
 
         var fileData = await fileDownloadService.GetFileAsync(fileId, fileName, SubmissionType.Registration, model.SubmissionId);

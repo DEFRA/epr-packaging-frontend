@@ -322,7 +322,7 @@
     <value>Organisation change reason must only include numbers and letters.</value>
   </data>
   <data name="907" xml:space="preserve">
-    <value>Leaver code must be a single capital letter between A and L.</value>
+    <value>Leaver code must be a single capital letter between A and O.</value>
   </data>
   <data name="908" xml:space="preserve">
     <value>Leaver date cannot be in the future.</value>
@@ -347,6 +347,12 @@
   </data>
   <data name="915" xml:space="preserve">
     <value>The organisation's leaver date must be later than its joiner date.</value>
+  </data>
+  <data name="916" xml:space="preserve">
+    <value>You must enter a joiner date for this subsidiary.</value>
+  </data>
+  <data name="917" xml:space="preserve">
+    <value>You must enter a joiner date for this organisation.</value>
   </data>
   <data name="73" xml:space="preserve">
     <value>Turnover for this organisation is recorded as zero. Please verify this is correct before submitting a zero return</value>

@@ -1,4 +1,5 @@
 ﻿@using FrontendSchemeRegistration.UI.Constants
+@using System.Web
 @model FileUploadSubmissionHistoryViewModel
 
 @{
@@ -60,7 +61,7 @@
                                             <td class="govuk-table__cell" data-heading="@statusHeader">@Localizer[submissionHistory.Status.ToLower() + "_on"] @(submissionHistory.DateofLatestStatusChange.ToString("dd MMMM yyyy, h:mm") + submissionHistory.DateofLatestStatusChange.ToString("tt").ToLower())</td>
                                             <feature name="@FeatureFlags.EnableCsvDownload">
                                                 <td class="govuk-table__cell" data-heading="@download">
-                                                    <a class="govuk-link--no-visited-state download-button" asp-controller="FileDownloadPackaging" asp-action="Get" asp-route-submissionId="@submissionHistory.SubmissionId" asp-route-type="@FileDownloadType.Submission">@download</a>
+                                                    <a class="govuk-link--no-visited-state download-button" asp-controller="FileDownloadPackaging" asp-action="Get" asp-route-submissionId="@submissionHistory.SubmissionId" asp-route-type="@FileDownloadType.Submission" asp-route-fileId="@submissionHistory.FileId">@download</a>
                                                 </td>
                                             </feature>
                                         </tr>
