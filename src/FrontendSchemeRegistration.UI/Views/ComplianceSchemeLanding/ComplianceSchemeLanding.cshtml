@@ -1,9 +1,8 @@
 @using FrontendSchemeRegistration.Application.DTOs.Submission
 @using FrontendSchemeRegistration.Application.Enums
-@using FrontendSchemeRegistration.UI.Constants
 @using FrontendSchemeRegistration.UI.Sessions
 @using Microsoft.FeatureManagement
-@inject IFeatureManager _featureManager
+@inject IFeatureManager FeatureManager
 @inject IOptions<SiteDateOptions> DateOptions
 
 @model ComplianceSchemeLandingViewModel
@@ -167,7 +166,7 @@
                                          })
                             </h2>
 
-                            @if (_featureManager.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)).Result)
+                            @if (FeatureManager.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)).Result)
                             {
                                 <!-- this is part of the new packaging data resubmission journey -->
                                 @if (!isSubmitted.HasValue || isSubmitted == false)
@@ -263,14 +262,49 @@
 @{
     void ShowProgressStatus(ComplianceSchemeLandingViewModel model)
     {
-        if ((model.ApplicationStatus
-                is ApplicationStatusType.AcceptedByRegulator
-                or ApplicationStatusType.ApprovedByRegulator)
-            || (model.IsResubmission && (model.ApplicationStatus
-                is ApplicationStatusType.NotStarted
+        if (model is
+            {
+                IsResubmission: true,
+                ApplicationStatus: ApplicationStatusType.AcceptedByRegulator
+                or ApplicationStatusType.ApprovedByRegulator
+                or ApplicationStatusType.RejectedByRegulator
+            } or { IsResubmission: true, AdditionalDetailsStatus: RegistrationTaskListStatus.Completed })
+        {
+            <div>
+                <p class="govuk-body">@Localizer["Your_registration_for_x_has_been_granted", model.CurrentYear] @Localizer["Your_registration_reference_number_is_x", model.RegistrationReferenceNumber]</p>
+                @if (model.AdditionalDetailsStatus == RegistrationTaskListStatus.Completed)
+                {
+                    <p class="govuk-body">@Localizer["You_have_resubmitted_registration_data"]</p>
+                }
+                else
+                {
+                    if (model.ApplicationStatus is ApplicationStatusType.AcceptedByRegulator or ApplicationStatusType.ApprovedByRegulator)
+                    {
+                        <p class="govuk-body"><strong>@Localizer["Your_resubmitted_data_has_been_accepted"]</strong></p>
+                    }
+                    else if (model.ApplicationStatus == ApplicationStatusType.RejectedByRegulator)
+                    {
+                        <p class="govuk-body"><strong>@Localizer["Your_resubmitted_registration_data_was_rejected"]</strong></p>
+                    }
+
+                    <p class="govuk-body">
+                        <a href="@FrontendSchemeRegistration.Application.Constants.PagePaths.UpdateRegistrationGuidance"
+                           class="govuk-link govuk-link--no-visited-state">
+                            <strong>@Localizer["Resubmit_your_data_files"]</strong>
+                        </a>
+                    </p>
+                }
+            </div>
+        }
+        else if (model.ApplicationStatus
+                     is ApplicationStatusType.AcceptedByRegulator
+                     or ApplicationStatusType.ApprovedByRegulator
+            || model is {
+                IsResubmission: true,
+                ApplicationStatus: ApplicationStatusType.NotStarted
                 or ApplicationStatusType.FileUploaded
                 or ApplicationStatusType.SubmittedAndHasRecentFileUpload
-        )))
+            })
         {
             <div>
                 <p class="govuk-body">
@@ -321,28 +355,29 @@
                 </div>
             }
         }
-        else if (!model.IsResubmission && model is { PaymentViewStatus: RegistrationTaskListStatus.Completed, AdditionalDetailsStatus: RegistrationTaskListStatus.NotStarted })
+        else if (model is { IsResubmission: false, PaymentViewStatus: RegistrationTaskListStatus.Completed, AdditionalDetailsStatus: RegistrationTaskListStatus.NotStarted })
         {
             <div>
                 <p class="govuk-body">@Localizer["You_have_viewed_your_registration_fees"]</p>
                 <p class="govuk-body">@Localizer["Payment_must_be_made_before_submitting_your_x", model.CurrentYear]</p>
             </div>
         }
-        else if (!model.IsResubmission && model.FileUploadStatus is RegistrationTaskListStatus.Completed && model.PaymentViewStatus is RegistrationTaskListStatus.NotStarted)
+        else if (model is { IsResubmission: false, FileUploadStatus: RegistrationTaskListStatus.Completed, PaymentViewStatus: RegistrationTaskListStatus.NotStarted })
         {
             <div>
                 <p class="govuk-body">@Localizer["You_have_submitted_your_registration_data_for_x", Model.CurrentYear]</p>
                 <p class="govuk-body">@Localizer["View_your_registration_fees_and_payment_methods"]</p>
             </div>
         }
-        else if (model.IsResubmission && ((model.FileUploadStatus is RegistrationTaskListStatus.Pending && model.PaymentViewStatus is RegistrationTaskListStatus.CanNotStartYet) || (model.FileUploadStatus is RegistrationTaskListStatus.Completed && model.PaymentViewStatus is RegistrationTaskListStatus.NotStarted)))
+        else if (model.IsResubmission && (model.FileUploadStatus is RegistrationTaskListStatus.Pending && model.PaymentViewStatus is RegistrationTaskListStatus.CanNotStartYet
+                                          || model.FileUploadStatus is RegistrationTaskListStatus.Completed && model.PaymentViewStatus is RegistrationTaskListStatus.NotStarted))
         {
             <div>
                 <p class="govuk-body">@Localizer["You_have_resubmitted_your_registration_data_for_x", Model.CurrentYear]</p>
                 <p class="govuk-body">@Localizer["View_your_registration_fees_and_payment_methods"]</p>
             </div>
         }
-        else if (model.IsResubmission && (model is { PaymentViewStatus: RegistrationTaskListStatus.Completed, AdditionalDetailsStatus: RegistrationTaskListStatus.NotStarted }))
+        else if (model.IsResubmission && model is { PaymentViewStatus: RegistrationTaskListStatus.Completed, AdditionalDetailsStatus: RegistrationTaskListStatus.NotStarted })
         {
             <div>
                 <p class="govuk-body">@Localizer["You_have_updated_your_data_and_viewed_your_fees"]</p>

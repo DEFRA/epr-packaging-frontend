@@ -2,18 +2,18 @@
 @using FrontendSchemeRegistration.UI.Constants
 @using FrontendSchemeRegistration.UI.Sessions
 @using Microsoft.FeatureManagement
-@inject IFeatureManager	_featureManager
+@inject IFeatureManager FeatureManager
 @model HomePageSelfManagedViewModel
 
 @{
-	var title = Localizer["account_home", Model.OrganisationName];
-	ViewData["Title"] = title;
+    var title = Localizer["account_home", Model.OrganisationName];
+    ViewData["Title"] = title;
 
-	// this is part of the new packaging data resubmission journey
-	var isSubmitted = Model.ResubmissionTaskListViewModel?.IsSubmitted;
-	var isResubmissionComplete = Model.ResubmissionTaskListViewModel?.IsResubmissionComplete;
+    // this is part of the new packaging data resubmission journey
+    var isSubmitted = Model.ResubmissionTaskListViewModel?.IsSubmitted;
+    var isResubmissionComplete = Model.ResubmissionTaskListViewModel?.IsResubmissionComplete;
     var isPackagingResubmissionApplicationStarted = Model.ResubmissionTaskListViewModel?.ApplicationStatus != ApplicationStatusType.NotStarted;
-	var isResubmissionInProgress = isSubmitted == true && isPackagingResubmissionApplicationStarted && Model.ResubmissionTaskListViewModel?.IsResubmissionInProgress == true;
+    var isResubmissionInProgress = isSubmitted == true && isPackagingResubmissionApplicationStarted && Model.ResubmissionTaskListViewModel?.IsResubmissionInProgress == true;
 }
 
 <main class="govuk-main-wrapper" id="main-content" role="main">
@@ -53,11 +53,12 @@
                 @if (Model.CanSelectComplianceScheme)
                 {
                     @using (Html.BeginForm(FormMethod.Post, new
+                                {
+                                    @class = "govuk-!-margin-top-1"
+                                }))
                     {
-                        @class = "govuk-!-margin-top-1"
-                    }))
-                    {
-                        <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left">
+                        <button type="submit"
+                                class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left">
                             @Localizer["add_a_compliance_scheme_to_your_account"]
                         </button>
                     }
@@ -71,7 +72,8 @@
             <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
                 <div class="govuk-card-body">
                     <h2 class="govuk-heading-m">
-                        <a asp-controller="RegistrationApplication" asp-action="@Model.RegistrationApplicationLink" class="govuk-link govuk-link--no-visited-state">
+                        <a asp-controller="RegistrationApplication" asp-action="@Model.RegistrationApplicationLink"
+                           class="govuk-link govuk-link--no-visited-state">
                             @Localizer["registration"]
                         </a>
                     </h2>
@@ -87,7 +89,8 @@
             <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
                 <div class="govuk-card-body">
                     <h2 class="govuk-heading-m">
-                        <a asp-controller="FileUploadCompanyDetailsSubLanding" asp-action="Get" class="govuk-link govuk-link--no-visited-state">
+                        <a asp-controller="FileUploadCompanyDetailsSubLanding" asp-action="Get"
+                           class="govuk-link govuk-link--no-visited-state">
                             @Localizer["report_your_organisation_details"]
                         </a>
                     </h2>
@@ -102,80 +105,80 @@
         </div>
     </div>
 
-	<div class="govuk-grid-row box-container">
-		<!-- TILE: Packaging data -->
-		<div class="govuk-grid-column-one-half box">
-			<div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
-				<div class="govuk-card-body">
+    <div class="govuk-grid-row box-container">
+        <!-- TILE: Packaging data -->
+        <div class="govuk-grid-column-one-half box">
+            <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
+                <div class="govuk-card-body">
 
-					@if (_featureManager.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)).Result)
-					{
-						<!-- this is part of the new packaging data resubmission journey -->
-						<h2 class="govuk-heading-m">
-							@Html.ActionLink(
-																Localizer["report_packaging_data"].Value,
-																"Get",
-																"FileUploadSubLanding",
-																null,
-																new
-																{
-																	@class = "govuk-link govuk-link--no-visited-state"
-																})
-						</h2>
-						@if (!isSubmitted.HasValue || isSubmitted == false)
-						{
-							<p class="govuk-body">@Localizer["you_must_report_packaging_data", Model.LastYear, Model.CurrentYear]</p>
-						}
-						else if (isSubmitted == true && !isPackagingResubmissionApplicationStarted)
-						{
-							<p class="govuk-body">@Localizer["you_must_report_packaging_data", Model.LastYear, Model.CurrentYear]</p>
-							<p class="govuk-body">@Localizer["you_can_also"]</p>
-							<ul class="govuk-list govuk-list--bullet">
-								<li>@Localizer["resubmit_your_packaging_data"]</li>
-								<li>@Localizer["view_your_history"]</li>
-							</ul>
-						}
-						else if (isResubmissionInProgress)
-						{
-							<p class="govuk-body">@Localizer["you_must_report_packaging_data", Model.LastYear, Model.CurrentYear]</p>
-							<p class="govuk-body">@Localizer["you_are_currenlty_resubmitting_data"]</p>
+                    @if (FeatureManager.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)).Result)
+                    {
+                        <!-- this is part of the new packaging data resubmission journey -->
+                        <h2 class="govuk-heading-m">
+                            @Html.ActionLink(
+                                Localizer["report_packaging_data"].Value,
+                                "Get",
+                                "FileUploadSubLanding",
+                                null,
+                                new
+                                {
+                                    @class = "govuk-link govuk-link--no-visited-state"
+                                })
+                        </h2>
+                        @if (!isSubmitted.HasValue || isSubmitted == false)
+                        {
+                            <p class="govuk-body">@Localizer["you_must_report_packaging_data", Model.LastYear, Model.CurrentYear]</p>
+                        }
+                        else if (isSubmitted == true && !isPackagingResubmissionApplicationStarted)
+                        {
+                            <p class="govuk-body">@Localizer["you_must_report_packaging_data", Model.LastYear, Model.CurrentYear]</p>
+                            <p class="govuk-body">@Localizer["you_can_also"]</p>
+                            <ul class="govuk-list govuk-list--bullet">
+                                <li>@Localizer["resubmit_your_packaging_data"]</li>
+                                <li>@Localizer["view_your_history"]</li>
+                            </ul>
+                        }
+                        else if (isResubmissionInProgress)
+                        {
+                            <p class="govuk-body">@Localizer["you_must_report_packaging_data", Model.LastYear, Model.CurrentYear]</p>
+                            <p class="govuk-body">@Localizer["you_are_currenlty_resubmitting_data"]</p>
                             <p class="govuk-body">@Localizer["you_still_need_to_view_any_additional_fees"]</p>
-						}
-						else if (isResubmissionComplete.HasValue && isResubmissionComplete == true)
-						{
-							<p class="govuk-body">@Localizer["you_are_currenlty_resubmitting_data_period", Model.LastYear]</p>
-							<p class="govuk-body">@Localizer["you_can_also"]</p>
-							<ul class="govuk-list govuk-list--bullet">
-								<li>@Localizer["resubmit_your_packaging_data"]</li>
-								<li>@Localizer["view_your_history"]</li>
-							</ul>
-						}
-					}
-					else
-					{
-						<!-- this is part of the old registration submission journey -->
-						<h2 class="govuk-heading-m">
-							@Html.ActionLink(
-								Localizer["packaging_data"].Value,
-								"Get",
-								"FileUploadSubLanding",
-								null,
-								new
-								{
-									@class = "govuk-link govuk-link--no-visited-state"
-								})
-						</h2>
-						<p class="govuk-body">@Localizer["you_must_report_packaging_data_non_resubmission"]</p>
-						<p class="govuk-body">@Localizer["you_can_also"]</p>
-						<ul class="govuk-list govuk-list--bullet">
-						<li>@Localizer["resubmit_your_packaging_data"]</li>
-						<li>@Localizer["view_your_history"]</li>
-					</ul>
-					}
+                        }
+                        else if (isResubmissionComplete.HasValue && isResubmissionComplete == true)
+                        {
+                            <p class="govuk-body">@Localizer["you_are_currenlty_resubmitting_data_period", Model.LastYear]</p>
+                            <p class="govuk-body">@Localizer["you_can_also"]</p>
+                            <ul class="govuk-list govuk-list--bullet">
+                                <li>@Localizer["resubmit_your_packaging_data"]</li>
+                                <li>@Localizer["view_your_history"]</li>
+                            </ul>
+                        }
+                    }
+                    else
+                    {
+                        <!-- this is part of the old registration submission journey -->
+                        <h2 class="govuk-heading-m">
+                            @Html.ActionLink(
+                                Localizer["packaging_data"].Value,
+                                "Get",
+                                "FileUploadSubLanding",
+                                null,
+                                new
+                                {
+                                    @class = "govuk-link govuk-link--no-visited-state"
+                                })
+                        </h2>
+                        <p class="govuk-body">@Localizer["you_must_report_packaging_data_non_resubmission"]</p>
+                        <p class="govuk-body">@Localizer["you_can_also"]</p>
+                        <ul class="govuk-list govuk-list--bullet">
+                            <li>@Localizer["resubmit_your_packaging_data"]</li>
+                            <li>@Localizer["view_your_history"]</li>
+                        </ul>
+                    }
 
-				</div>
-			</div>
-		</div>
+                </div>
+            </div>
+        </div>
 
         <feature name="ShowWasteTile" negate="true">
             <div class="govuk-grid-column-one-half box">
@@ -209,8 +212,8 @@
                     <div class="govuk-card-body">
                         <h2 class="govuk-heading-m">
                             <a href="@FrontendSchemeRegistration.Application.Constants.PagePaths.Prns.ObligationsHome"
-                                class="govuk-link--no-visited-state"
-                                aria-labelledby="@Localizer["prn_heading_text", Model.CurrentYear]">@Localizer["prn_heading_text", Model.CurrentYear]</a>
+                               class="govuk-link--no-visited-state"
+                               aria-labelledby="@Localizer["prn_heading_text", Model.CurrentYear]">@Localizer["prn_heading_text", Model.CurrentYear]</a>
                         </h2>
                         <p class="govuk-body">@Localizer["prn_paragraph_1"]</p>
                         <p class="govuk-body">@Localizer["you_can_also"]</p>
@@ -229,14 +232,14 @@
                     <div class="govuk-card-body">
                         <h2 class="govuk-heading-m">
                             @Html.ActionLink(
-                                     Localizer["subsidiaries"].Value,
-                                     "SubsidiariesList",
-                                     "FileUploadSubsidiaries",
-                                     null,
-                                     new
-                                     {
-                                         @class = "govuk-link govuk-link--no-visited-state"
-                                     })
+                                Localizer["subsidiaries"].Value,
+                                "SubsidiariesList",
+                                "FileUploadSubsidiaries",
+                                null,
+                                new
+                                {
+                                    @class = "govuk-link govuk-link--no-visited-state"
+                                })
                         </h2>
                         <p class="govuk-body govuk-!-margin-bottom-0">@Localizer["add-manage-subsidiaries"]</p>
                     </div>
@@ -249,20 +252,55 @@
 @{
     void ShowProgressStatus(HomePageSelfManagedViewModel model)
     {
-        if ((model.ApplicationStatus
-                is ApplicationStatusType.AcceptedByRegulator
-                or ApplicationStatusType.ApprovedByRegulator)
-            || (model.IsResubmission && (model.ApplicationStatus
-                is ApplicationStatusType.NotStarted
+        if (model is
+            {
+                IsResubmission: true,
+                ApplicationStatus: ApplicationStatusType.AcceptedByRegulator
+                or ApplicationStatusType.ApprovedByRegulator
+                or ApplicationStatusType.RejectedByRegulator
+            } or { IsResubmission: true, AdditionalDetailsStatus: RegistrationTaskListStatus.Completed })
+        {
+            <div>
+                <p class="govuk-body">@Localizer["Your_registration_for_x_has_been_granted", model.CurrentYear] @Localizer["Your_registration_reference_number_is_x", model.RegistrationReferenceNumber]</p>
+                @if (model.AdditionalDetailsStatus == RegistrationTaskListStatus.Completed)
+                {
+                    <p class="govuk-body">@Localizer["You_have_resubmitted_registration_data"]</p>
+                }
+                else
+                {
+                    if (model.ApplicationStatus is ApplicationStatusType.AcceptedByRegulator or ApplicationStatusType.ApprovedByRegulator)
+                    {
+                        <p class="govuk-body"><strong>@Localizer["Your_resubmitted_data_has_been_accepted"]</strong></p>
+                    }
+                    else if (model.ApplicationStatus == ApplicationStatusType.RejectedByRegulator)
+                    {
+                        <p class="govuk-body"><strong>@Localizer["Your_resubmitted_registration_data_was_rejected"]</strong></p>
+                    }
+
+                    <p class="govuk-body">
+                        <a href="@FrontendSchemeRegistration.Application.Constants.PagePaths.UpdateRegistrationGuidance" class="govuk-link govuk-link--no-visited-state">
+                            <strong>@Localizer["Resubmit_your_data_files"]</strong>
+                        </a>
+                    </p>
+                }
+            </div>
+        }
+        else if (model.ApplicationStatus
+                     is ApplicationStatusType.AcceptedByRegulator
+                     or ApplicationStatusType.ApprovedByRegulator
+            || model is {
+                IsResubmission: true,
+                ApplicationStatus: ApplicationStatusType.NotStarted
                 or ApplicationStatusType.FileUploaded
                 or ApplicationStatusType.SubmittedAndHasRecentFileUpload
-        )))
+            })
         {
             <div>
                 <p class="govuk-body">@Localizer["Your_registration_for_x_has_been_granted", model.CurrentYear] @Localizer["Your_registration_reference_number_is_x", model.RegistrationReferenceNumber]</p>
                 <p class="govuk-body"><strong>@Localizer["If_anything_changes_you_should_resubmit"]</strong></p>
                 <p class="govuk-body">
-                    <a href="@FrontendSchemeRegistration.Application.Constants.PagePaths.UpdateRegistrationGuidance" class="govuk-link govuk-link--no-visited-state">
+                    <a href="@FrontendSchemeRegistration.Application.Constants.PagePaths.UpdateRegistrationGuidance"
+                       class="govuk-link govuk-link--no-visited-state">
                         <strong>@Localizer["Resubmit_your_data_files"]</strong>
                     </a>
                 </p>
@@ -304,28 +342,29 @@
                 </div>
             }
         }
-        else if (!model.IsResubmission && model is { PaymentViewStatus: RegistrationTaskListStatus.Completed, AdditionalDetailsStatus: RegistrationTaskListStatus.NotStarted })
+        else if (model is { IsResubmission: false, PaymentViewStatus: RegistrationTaskListStatus.Completed, AdditionalDetailsStatus: RegistrationTaskListStatus.NotStarted })
         {
             <div>
                 <p class="govuk-body">@Localizer["You_have_viewed_your_registration_fees"]</p>
                 <p class="govuk-body">@Localizer["Payment_must_be_made_before_submitting_your_x", model.CurrentYear]</p>
             </div>
         }
-        else if (!model.IsResubmission && model.FileUploadStatus is RegistrationTaskListStatus.Completed && model.PaymentViewStatus is RegistrationTaskListStatus.NotStarted)
+        else if (model is { IsResubmission: false, FileUploadStatus: RegistrationTaskListStatus.Completed, PaymentViewStatus: RegistrationTaskListStatus.NotStarted })
         {
             <div>
                 <p class="govuk-body">@Localizer["You_have_submitted_your_registration_data_for_x", Model.CurrentYear]</p>
                 <p class="govuk-body">@Localizer["View_your_registration_fees_and_payment_methods"]</p>
             </div>
         }
-        else if (model.IsResubmission && ((model.FileUploadStatus is RegistrationTaskListStatus.Pending && model.PaymentViewStatus is RegistrationTaskListStatus.CanNotStartYet) || (model.FileUploadStatus is RegistrationTaskListStatus.Completed && model.PaymentViewStatus is RegistrationTaskListStatus.NotStarted)))
+        else if (model.IsResubmission && (model.FileUploadStatus is RegistrationTaskListStatus.Pending && model.PaymentViewStatus is RegistrationTaskListStatus.CanNotStartYet
+                                          || model.FileUploadStatus is RegistrationTaskListStatus.Completed && model.PaymentViewStatus is RegistrationTaskListStatus.NotStarted))
         {
             <div>
                 <p class="govuk-body">@Localizer["You_have_resubmitted_your_registration_data_for_x", Model.CurrentYear]</p>
                 <p class="govuk-body">@Localizer["View_your_registration_fees_and_payment_methods"]</p>
             </div>
         }
-        else if (model.IsResubmission && (model is { PaymentViewStatus: RegistrationTaskListStatus.Completed, AdditionalDetailsStatus: RegistrationTaskListStatus.NotStarted }))
+        else if (model.IsResubmission && model is { PaymentViewStatus: RegistrationTaskListStatus.Completed, AdditionalDetailsStatus: RegistrationTaskListStatus.NotStarted })
         {
             <div>
                 <p class="govuk-body">@Localizer["You_have_updated_your_data_and_viewed_your_fees"]</p>

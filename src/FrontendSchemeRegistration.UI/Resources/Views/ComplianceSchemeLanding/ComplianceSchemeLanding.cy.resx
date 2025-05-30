@@ -211,4 +211,13 @@ Rydych chi hefyd yn gallu:</value>
 	<data name="you_still_need_to_view_any_additional_fees" xml:space="preserve">
     <value>[Welsh]You still need to view any additional fees and submit to the regulator.</value>
   </data>
+  <data name="You_have_resubmitted_registration_data" xml:space="preserve">
+    <value>not translated yet</value>
+  </data>
+  <data name="Your_resubmitted_registration_data_was_rejected" xml:space="preserve">
+    <value>not translated yet</value>
+  </data>
+  <data name="Your_resubmitted_data_has_been_accepted" xml:space="preserve">
+    <value>not translated yet</value>
+  </data>
 </root>
