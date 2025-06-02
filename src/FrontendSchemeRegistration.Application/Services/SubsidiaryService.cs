@@ -164,7 +164,7 @@ public class SubsidiaryService : ISubsidiaryService
             throw;
         }
     }
-    
+
     public async Task<Stream?> GetAllSubsidiariesStream()
     {
         try

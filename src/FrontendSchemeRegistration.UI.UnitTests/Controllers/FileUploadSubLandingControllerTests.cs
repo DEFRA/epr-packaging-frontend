@@ -1341,7 +1341,7 @@ public class FileUploadSubLandingControllerTests
 
         // Assert
         result.ActionName.Should().Be(nameof(FileUploadCheckFileAndSubmitController.Get));
-        result.ControllerName.Should().Be("UploadNewFileToSubmit");
+        result.ControllerName.Should().Be("FileUploadCheckFileAndSubmit");
         result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(submission.Id);
     }
 
@@ -1463,7 +1463,7 @@ public class FileUploadSubLandingControllerTests
 
         // Assert
         result.ActionName.Should().Be(nameof(UploadNewFileToSubmitController.Get));
-        result.ControllerName.Should().Be("UploadNewFileToSubmit");
+        result.ControllerName.Should().Be("FileUploadCheckFileAndSubmit");
         result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(submission.Id);
     }
 
@@ -1577,7 +1577,7 @@ public class FileUploadSubLandingControllerTests
         // Assert
         result.Should().NotBeNull();
         result.ActionName.Should().Be(nameof(FileUploadWarningController.Get));
-        result.ControllerName.Should().Be("UploadNewFileToSubmit");
+        result.ControllerName.Should().Be("FileUploadWarning");
         result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(submission.Id);
     }
 
@@ -2029,7 +2029,7 @@ public class FileUploadSubLandingControllerTests
         // Assert
         result.Should().NotBeNull();
         result.ActionName.Should().Be(nameof(UploadNewFileToSubmitController.Get));
-        result.ControllerName.Should().Be("UploadNewFileToSubmit");
+        result.ControllerName.Should().Be("FileUploadCheckFileAndSubmit");
     }
 
     [Test]
@@ -2085,7 +2085,7 @@ public class FileUploadSubLandingControllerTests
         // Assert
         result.Should().NotBeNull();
         result.ActionName.Should().Be(nameof(UploadNewFileToSubmitController.Get));
-        result.ControllerName.Should().Be("UploadNewFileToSubmit");
+        result.ControllerName.Should().Be("FileUploadCheckFileAndSubmit");
     }
 
     private static PomSubmission CreatePomSubmissionWithWarningsAndFileIdMismatch()

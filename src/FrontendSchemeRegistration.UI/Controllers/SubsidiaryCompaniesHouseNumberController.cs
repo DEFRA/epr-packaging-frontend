@@ -108,6 +108,7 @@ public class SubsidiaryCompaniesHouseNumberController : Controller
                 if (internalRecordofCompany != null && internalRecordofCompany.ParentCompanyName != null && internalRecordofCompany.ParentCompanyName != parentCompanyDetails.Name)
                 {
                     company.IsCompanyAlreadyLinkedToOtherParent = true;
+                    company.OrganisationId = internalRecordofCompany.ExternalId.ToString();
                     company.OtherParentCompanyName = internalRecordofCompany.ParentCompanyName;
                 }
                 else

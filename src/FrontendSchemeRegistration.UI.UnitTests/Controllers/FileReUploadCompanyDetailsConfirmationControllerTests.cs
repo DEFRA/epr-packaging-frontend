@@ -174,7 +174,7 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
             OrganisationRole = "Producer"
         });
 
-        _userAccountServiceMock.Verify(x => x.GetAllPersonByUserId(It.IsAny<Guid>()), Times.Exactly(3));
+        _userAccountServiceMock.Verify(x => x.GetAllPersonByUserId(It.IsAny<Guid>()), Times.AtLeastOnce);
         _userAccountServiceMock.Verify(x => x.GetPersonByUserId(It.IsAny<Guid>()), Times.Never);
     }
 

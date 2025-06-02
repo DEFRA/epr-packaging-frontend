@@ -262,21 +262,15 @@
 @{
     void ShowProgressStatus(ComplianceSchemeLandingViewModel model)
     {
-        if (model is
-            {
-                IsResubmission: true,
-                ApplicationStatus: ApplicationStatusType.AcceptedByRegulator
-                or ApplicationStatusType.ApprovedByRegulator
-                or ApplicationStatusType.RejectedByRegulator
-            } or { IsResubmission: true, AdditionalDetailsStatus: RegistrationTaskListStatus.Completed })
+        var isResubmissionApprovedRejected = model is { IsResubmission: true, ApplicationStatus: ApplicationStatusType.AcceptedByRegulator or ApplicationStatusType.ApprovedByRegulator or ApplicationStatusType.RejectedByRegulator };
+        var isResubmissionPending = model is { IsResubmission: true, AdditionalDetailsStatus: RegistrationTaskListStatus.Completed };
+
+        if (isResubmissionApprovedRejected || isResubmissionPending)
         {
             <div>
                 <p class="govuk-body">@Localizer["Your_registration_for_x_has_been_granted", model.CurrentYear] @Localizer["Your_registration_reference_number_is_x", model.RegistrationReferenceNumber]</p>
-                @if (model.AdditionalDetailsStatus == RegistrationTaskListStatus.Completed)
-                {
-                    <p class="govuk-body">@Localizer["You_have_resubmitted_registration_data"]</p>
-                }
-                else
+
+                @if (isResubmissionApprovedRejected)
                 {
                     if (model.ApplicationStatus is ApplicationStatusType.AcceptedByRegulator or ApplicationStatusType.ApprovedByRegulator)
                     {
@@ -288,11 +282,14 @@
                     }
 
                     <p class="govuk-body">
-                        <a href="@FrontendSchemeRegistration.Application.Constants.PagePaths.UpdateRegistrationGuidance"
-                           class="govuk-link govuk-link--no-visited-state">
+                        <a href="@FrontendSchemeRegistration.Application.Constants.PagePaths.UpdateRegistrationGuidance" class="govuk-link govuk-link--no-visited-state">
                             <strong>@Localizer["Resubmit_your_data_files"]</strong>
                         </a>
                     </p>
+                }
+                else
+                {
+                    <p class="govuk-body">@Localizer["You_have_resubmitted_registration_data"]</p>
                 }
             </div>
         }

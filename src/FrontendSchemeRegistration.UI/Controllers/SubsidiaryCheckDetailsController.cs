@@ -34,7 +34,6 @@ public class SubsidiaryCheckDetailsController : Controller
         if (session?.SubsidiarySession?.Company == null)
         {
             return RedirectToAction("Get", "SubsidiaryCompaniesHouseNumber");
-            session.SubsidiarySession = new SubsidiarySession();
         }
 
         var viewModel = new SubsidiaryCheckDetailsViewModel()
@@ -84,35 +83,50 @@ public class SubsidiaryCheckDetailsController : Controller
 
         var subsidiary = session.SubsidiarySession.Company;
 
-        var newReferenceNumber = await _subsidiaryService.SaveSubsidiary(new SubsidiaryDto
+        if ((subsidiary?.IsCompanyAlreadyLinkedToOtherParent == true) && !string.IsNullOrEmpty(subsidiary.OtherParentCompanyName))
         {
-            Subsidiary = new OrganisationModel
+            var newReferenceNumber = await _subsidiaryService.AddSubsidiary(new SubsidiaryAddDto 
             {
-                OrganisationType = OrganisationType.NotSet,
-                ProducerType = ProducerType.NotSet,
-                CompaniesHouseNumber = subsidiary.CompaniesHouseNumber,
-                Name = subsidiary.Name,
-                Address = new AddressModel
-                {
-                    SubBuildingName = subsidiary.BusinessAddress?.SubBuildingName,
-                    BuildingName = subsidiary.BusinessAddress?.BuildingName,
-                    BuildingNumber = subsidiary.BusinessAddress?.BuildingNumber,
-                    Street = subsidiary.BusinessAddress?.Street,
-                    Locality = subsidiary.BusinessAddress?.Locality,
-                    DependentLocality = subsidiary.BusinessAddress?.DependentLocality,
-                    Town = subsidiary.BusinessAddress?.Town,
-                    County = subsidiary.BusinessAddress?.County,
-                    Postcode = subsidiary.BusinessAddress?.Postcode,
-                    Country = subsidiary.BusinessAddress?.Country
-                },
-                ValidatedWithCompaniesHouse = true,
-                IsComplianceScheme = false,
-                Nation = session.SubsidiarySession.UkNation
-            },
-            ParentOrganisationId = userOrganisation?.Id
-        });
+                ChildOrganisationId = Guid.Parse(subsidiary.OrganisationId),
+                ParentOrganisationId = userOrganisation?.Id
+            });
 
-        _sessionManager.UpdateSessionAsync(HttpContext.Session, x => x.SubsidiarySession.Company.OrganisationId = newReferenceNumber);
+            _sessionManager.UpdateSessionAsync(HttpContext.Session, x => x.SubsidiarySession.Company.OrganisationId = newReferenceNumber);
+        }
+        else
+        {
+            var newReferenceNumber = await _subsidiaryService.SaveSubsidiary(new SubsidiaryDto
+            {
+                Subsidiary = new OrganisationModel
+                {
+                    OrganisationType = OrganisationType.NotSet,
+                    ProducerType = ProducerType.NotSet,
+                    CompaniesHouseNumber = subsidiary.CompaniesHouseNumber,
+                    Name = subsidiary.Name,
+                    Address = new AddressModel
+                    {
+                        SubBuildingName = subsidiary.BusinessAddress?.SubBuildingName,
+                        BuildingName = subsidiary.BusinessAddress?.BuildingName,
+                        BuildingNumber = subsidiary.BusinessAddress?.BuildingNumber,
+                        Street = subsidiary.BusinessAddress?.Street,
+                        Locality = subsidiary.BusinessAddress?.Locality,
+                        DependentLocality = subsidiary.BusinessAddress?.DependentLocality,
+                        Town = subsidiary.BusinessAddress?.Town,
+                        County = subsidiary.BusinessAddress?.County,
+                        Postcode = subsidiary.BusinessAddress?.Postcode,
+                        Country = subsidiary.BusinessAddress?.Country
+                    },
+                    IsCompanyAlreadyLinkedToOtherParent = subsidiary.IsCompanyAlreadyLinkedToOtherParent,
+                    OtherParentCompanyName = subsidiary.OtherParentCompanyName,
+                    ValidatedWithCompaniesHouse = true,
+                    IsComplianceScheme = false,
+                    Nation = session.SubsidiarySession.UkNation
+                },
+                ParentOrganisationId = userOrganisation?.Id
+            });
+
+            _sessionManager.UpdateSessionAsync(HttpContext.Session, x => x.SubsidiarySession.Company.OrganisationId = newReferenceNumber);
+        }
 
         return RedirectToAction("Get", "SubsidiaryAdded");
     }

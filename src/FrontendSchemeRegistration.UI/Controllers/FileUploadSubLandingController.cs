@@ -298,10 +298,7 @@ public class FileUploadSubLandingController(
                nameof(PackagingDataResubmissionController).RemoveControllerFromName());
         }
 
-        return RedirectToAction(
-              nameof(UploadNewFileToSubmitController.Get),
-              nameof(UploadNewFileToSubmitController).RemoveControllerFromName(),
-              routeValueDictionary);
+        return HandleSubmittedSubmission(submission);
     }
 
     private RedirectToActionResult HandleSubmittedSubmission(PomSubmission submission)

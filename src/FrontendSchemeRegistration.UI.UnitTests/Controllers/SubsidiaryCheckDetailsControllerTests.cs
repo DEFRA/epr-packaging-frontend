@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Identity.Web;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
 using Moq;
 using Newtonsoft.Json;
 
@@ -24,6 +25,8 @@ public class SubsidiaryCheckDetailsControllerTests
     private const string CompaniesHouseNumber = "0123456X";
     private const string CompanyName = "Test company";
     private const string NewSubsidiaryId = "123456";
+    private const string ParentCompaniesHouseNumber = "07073807";
+    private const string ParentCompanyName = "MICROTEC INFORMATION SYSTEMS LTD";
 
     private Mock<HttpContext> _httpContextMock;
     private FrontendSchemeRegistrationSession _session;
@@ -55,7 +58,11 @@ public class SubsidiaryCheckDetailsControllerTests
                 Company = new Company
                 {
                     CompaniesHouseNumber = CompaniesHouseNumber,
-                    Name = CompanyName
+                    Name = CompanyName,
+                    IsCompanyAlreadyLinkedToTheParent = true,
+                    IsCompanyAlreadyLinkedToOtherParent = false,
+                    OtherParentCompanyName = ParentCompanyName,
+                    OrganisationId = Guid.NewGuid().ToString()
                 }
             },
             RegistrationSession = new()
@@ -83,6 +90,9 @@ public class SubsidiaryCheckDetailsControllerTests
 
         _subsidiaryServiceMock = new Mock<ISubsidiaryService>();
         _subsidiaryServiceMock.Setup(x => x.SaveSubsidiary(It.IsAny<SubsidiaryDto>()))
+            .ReturnsAsync(NewSubsidiaryId);
+
+        _subsidiaryServiceMock.Setup(x => x.AddSubsidiary(It.IsAny<SubsidiaryAddDto>()))
             .ReturnsAsync(NewSubsidiaryId);
 
         _userData = new UserData
@@ -128,6 +138,71 @@ public class SubsidiaryCheckDetailsControllerTests
 
         var viewModel = (result as ViewResult).Model as SubsidiaryCheckDetailsViewModel;
         viewModel.CompanyName.Should().Be(CompanyName);
+    }
+
+    [Test]
+    public async Task Post_SubsidiaryCheckDetailsView_WhenCalled_For_IsCompanyAlreadyLinkedToOtherParent()
+    {
+        // Arrange
+        _session = new FrontendSchemeRegistrationSession
+        {
+            SubsidiarySession = new()
+            {
+                Company = new Company
+                {
+                    CompaniesHouseNumber = CompaniesHouseNumber,
+                    Name = CompanyName,
+                    IsCompanyAlreadyLinkedToTheParent = false,
+                    IsCompanyAlreadyLinkedToOtherParent = true,
+                    OtherParentCompanyName = ParentCompanyName,
+                    OrganisationId = Guid.NewGuid().ToString()
+                }
+            },
+            RegistrationSession = new()
+            {
+                Journey = new List<string> { PagePaths.FileUploadSubLanding }
+            },
+            UserData = new UserData
+            {
+                Organisations = new List<EPR.Common.Authorization.Models.Organisation>
+                    {
+                        new()
+                        {
+                            OrganisationRole = OrganisationRoles.Producer
+                        }
+                    }
+            }
+        };
+
+        _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(_session);
+        _sessionManagerMock.Setup(x => x.UpdateSessionAsync(
+            It.IsAny<ISession>(), It.IsAny<Action<FrontendSchemeRegistrationSession>>()))
+            .Callback<ISession, Action<FrontendSchemeRegistrationSession>>((_, action) => action.Invoke(_session));
+
+        _subsidiaryServiceMock = new Mock<ISubsidiaryService>();
+        _subsidiaryServiceMock.Setup(x => x.AddSubsidiary(It.IsAny<SubsidiaryAddDto>()))
+            .ReturnsAsync(NewSubsidiaryId);
+
+        _subsidiaryCheckDetailsController = new SubsidiaryCheckDetailsController(_sessionManagerMock.Object, _subsidiaryServiceMock.Object);
+        _subsidiaryCheckDetailsController.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                Request = { Query = new QueryCollection() },
+                Session = Mock.Of<ISession>(),
+                User = _userMock.Object
+            },
+        };
+        _subsidiaryCheckDetailsController.Url = _urlHelperMock.Object;
+
+        // Act
+        var result = await _subsidiaryCheckDetailsController.Post(new SubsidiaryCheckDetailsViewModel()) as RedirectToActionResult;
+
+        // Assert
+        result?.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("SubsidiaryAdded");
     }
 
     [Test]
@@ -234,12 +309,8 @@ public class SubsidiaryCheckDetailsControllerTests
         var result = await _subsidiaryCheckDetailsController.Post(new SubsidiaryCheckDetailsViewModel()) as RedirectToActionResult;
 
         // Assert
-        _subsidiaryServiceMock.VerifyAll();
-
         result?.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("SubsidiaryAdded");
-
-        _subsidiaryServiceMock.VerifyAll();
         _session.SubsidiarySession.Company.OrganisationId.Should().Be(NewSubsidiaryId);
     }
 }
