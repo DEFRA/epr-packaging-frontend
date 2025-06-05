@@ -91,6 +91,8 @@ public class FileUploadSubLandingController(
                 Comments = decision.Comments,
                 IsSubmitted = submission?.IsSubmitted ?? false,
                 IsResubmissionComplete = packagingResubmissionApplicationSession != null ? packagingResubmissionApplicationSession.IsResubmissionComplete : null,
+                ApplicationStatus = packagingResubmissionApplicationSession?.ApplicationStatus.ToString(),
+                FileUploadStatus = packagingResubmissionApplicationSession?.FileUploadStatus.ToString(),
             };
 
             UpdateInProgressSubmissionPeriodStatus(submissionPeriodDetail, packagingResubmissionApplicationSession);

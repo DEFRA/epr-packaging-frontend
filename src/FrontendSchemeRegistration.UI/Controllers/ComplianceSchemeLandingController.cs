@@ -43,6 +43,7 @@ public class ComplianceSchemeLandingController(
         var defaultComplianceScheme = complianceSchemes.FirstOrDefault();
 
         session.RegistrationSession.SelectedComplianceScheme ??= defaultComplianceScheme;
+        session.UserData = userData;
 
         await SaveNewJourney(session);
 

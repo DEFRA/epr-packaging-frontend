@@ -130,6 +130,8 @@ public class FileUploadSubLandingControllerTests
                     Comments = string.Empty,
                     Decision = string.Empty,
                     IsResubmissionRequired = false,
+                    ApplicationStatus = null,
+                    FileUploadStatus = null
                 },
                 new()
                 {
@@ -143,6 +145,8 @@ public class FileUploadSubLandingControllerTests
                     Decision = string.Empty,
                     IsResubmissionRequired = false,
                     IsResubmissionComplete = false,
+                    ApplicationStatus = "NotStarted",
+                    FileUploadStatus = "NotStarted"
                 }
                 }
             }
@@ -807,7 +811,9 @@ public class FileUploadSubLandingControllerTests
                     Comments = comment,
                     Decision = decisionValue,
                     IsResubmissionRequired = resubmit,
-                    IsResubmissionComplete = false
+                    IsResubmissionComplete = false,
+                    ApplicationStatus = "NotStarted",
+                    FileUploadStatus = "NotStarted"
                 },
                 new()
                 {
@@ -819,7 +825,9 @@ public class FileUploadSubLandingControllerTests
                     Status = SubmissionPeriodStatus.NotStarted,
                     Comments = string.Empty,
                     Decision = string.Empty,
-                    IsResubmissionRequired = false
+                    IsResubmissionRequired = false,
+                    ApplicationStatus = null,
+                    FileUploadStatus = null
                 }
             };
 

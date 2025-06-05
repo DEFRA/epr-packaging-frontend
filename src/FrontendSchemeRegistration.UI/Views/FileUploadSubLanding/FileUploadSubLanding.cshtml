@@ -1,6 +1,8 @@
 @using static FrontendSchemeRegistration.Application.Enums.SubmissionPeriodStatus
+@using FrontendSchemeRegistration.Application.DTOs.Submission
 @using FrontendSchemeRegistration.Application.Enums
 @using FrontendSchemeRegistration.UI.Constants
+@using FrontendSchemeRegistration.UI.Sessions
 @using Microsoft.FeatureManagement
 @inject IFeatureManager _featureManager
 
@@ -120,6 +122,16 @@
 
                                                         <p class="govuk-body">@Localizer["inprogress_resubmission_feesviewed_notsubmitted"]</p>
                                                     }
+                                                    else if (submissionPeriodDetail.FileUploadStatus == "Pending" && submissionPeriodDetail.ApplicationStatus == "FileUploaded")
+                                                    {
+                                                        <br />
+                                                        <p class="govuk-body">@Localizer["you've_uploaded_a_new_file_you_now_need_to_submit_it"]</p>
+                                                    }
+                                                    else if (submissionPeriodDetail.FileUploadStatus == "Pending" && submissionPeriodDetail.ApplicationStatus == "SubmittedToRegulator")
+                                                    {
+                                                        <br />
+                                                        <p class="govuk-body">@Localizer["you've_resubmitted_your_packaging_data_it_may_take_up_to_an_hour_for_our_systems_to_update"]</p>
+                                                    }
                                                 }
                                                 else
                                                 {
@@ -145,6 +157,16 @@
 
                                                         <p class="govuk-body">@Localizer["inprogress_resubmission_feesviewed_notsubmitted"]</p>
                                                     }
+                                                    else if (submissionPeriodDetail.FileUploadStatus == "Pending" && submissionPeriodDetail.ApplicationStatus == "FileUploaded")
+                                                    {
+                                                        <br />
+                                                        <p class="govuk-body">@Localizer["you've_uploaded_a_new_file_you_now_need_to_submit_it"]</p>
+                                                    }
+                                                    else if (submissionPeriodDetail.FileUploadStatus == "Pending" && submissionPeriodDetail.ApplicationStatus == "SubmittedToRegulator")
+                                                    {
+                                                        <br />
+                                                        <p class="govuk-body">@Localizer["you've_resubmitted_your_packaging_data_it_may_take_up_to_an_hour_for_our_systems_to_update"]</p>
+                                                    }
                                                 }
                                             }
                                             else
@@ -163,6 +185,16 @@
                                                         <br />
 
                                                         <p class="govuk-body">@Localizer["inprogress_resubmission_feesviewed_notsubmitted"]</p>
+                                                    }
+                                                    else if (submissionPeriodDetail.FileUploadStatus == "Pending" && submissionPeriodDetail.ApplicationStatus == "FileUploaded")
+                                                    {
+                                                        <br />
+                                                        <p class="govuk-body">@Localizer["you've_uploaded_a_new_file_you_now_need_to_submit_it"]</p>
+                                                    }
+                                                    else if (submissionPeriodDetail.FileUploadStatus == "Pending" && submissionPeriodDetail.ApplicationStatus == "SubmittedToRegulator")
+                                                    {
+                                                        <br />
+                                                        <p class="govuk-body">@Localizer["you've_resubmitted_your_packaging_data_it_may_take_up_to_an_hour_for_our_systems_to_update"]</p>
                                                     }
                                                 }
                                                 else
@@ -192,6 +224,16 @@
 
                                                     <p class="govuk-body">@Localizer["inprogress_resubmission_feesviewed_notsubmitted"]</p>
                                                 }
+                                                else if (submissionPeriodDetail.FileUploadStatus == "Pending" && submissionPeriodDetail.ApplicationStatus == "FileUploaded")
+                                                {
+                                                    <br />
+                                                    <p class="govuk-body">@Localizer["you've_uploaded_a_new_file_you_now_need_to_submit_it"]</p>
+                                                }
+                                                else if (submissionPeriodDetail.FileUploadStatus == "Pending" && submissionPeriodDetail.ApplicationStatus == "SubmittedToRegulator")
+                                                {
+                                                    <br />
+                                                    <p class="govuk-body">@Localizer["you've_resubmitted_your_packaging_data_it_may_take_up_to_an_hour_for_our_systems_to_update"]</p>
+                                                }
                                             }
                                             else
                                             {
@@ -210,6 +252,16 @@
                                                 else if (submissionPeriodDetail.InProgressSubmissionPeriodStatus == InProgressSubmissionPeriodStatus.InProgress_Resubmission_FeesViewed_NotSubmitted)
                                                 {
                                                     <br /><p class="govuk-body">@Localizer["inprogress_resubmission_feesviewed_notsubmitted"]</p>
+                                                }
+                                                else if (submissionPeriodDetail.FileUploadStatus == "Pending" && submissionPeriodDetail.ApplicationStatus == "FileUploaded")
+                                                {
+                                                    <br />
+                                                    <p class="govuk-body">@Localizer["you've_uploaded_a_new_file_you_now_need_to_submit_it"]</p>
+                                                }
+                                                else if (submissionPeriodDetail.FileUploadStatus == "Pending" && submissionPeriodDetail.ApplicationStatus == "SubmittedToRegulator")
+                                                {
+                                                    <br />
+                                                    <p class="govuk-body">@Localizer["you've_resubmitted_your_packaging_data_it_may_take_up_to_an_hour_for_our_systems_to_update"]</p>
                                                 }
                                             }
                                             else
@@ -241,6 +293,16 @@
                                                 <br />
 
                                                 <p class="govuk-body">@Localizer["inprogress_resubmission_feesviewed_notsubmitted"]</p>
+                                            }
+                                            else if (submissionPeriodDetail.FileUploadStatus == "Pending" && submissionPeriodDetail.ApplicationStatus=="FileUploaded")
+                                            {
+                                                <br />
+                                                <p class="govuk-body">@Localizer["you've_uploaded_a_new_file_you_now_need_to_submit_it"]</p>
+                                            }
+                                            else if(submissionPeriodDetail.FileUploadStatus == "Pending" && submissionPeriodDetail.ApplicationStatus == "SubmittedToRegulator")
+                                            {
+                                                <br />
+                                                <p class="govuk-body">@Localizer["you've_resubmitted_your_packaging_data_it_may_take_up_to_an_hour_for_our_systems_to_update"]</p>
                                             }
                                         }
                                     </div>

@@ -322,7 +322,7 @@
     <value>Organisation change reason must only include numbers and letters.</value>
   </data>
   <data name="907" xml:space="preserve">
-    <value>Leaver code must be a single capital letter between A and O.</value>
+    <value>Leaver code must be a single capital letter between A and Q.</value>
   </data>
   <data name="908" xml:space="preserve">
     <value>Leaver date cannot be in the future.</value>

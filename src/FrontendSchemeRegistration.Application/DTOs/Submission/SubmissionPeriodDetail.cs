@@ -32,4 +32,8 @@ public class SubmissionPeriodDetail
     public bool? IsResubmissionComplete { get; set; }
 
     public InProgressSubmissionPeriodStatus? InProgressSubmissionPeriodStatus { get; set; }
+
+    public string ApplicationStatus { get; set; }
+
+    public string FileUploadStatus { get; set; }
 }

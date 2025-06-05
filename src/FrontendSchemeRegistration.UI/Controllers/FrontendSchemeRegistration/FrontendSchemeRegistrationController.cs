@@ -416,6 +416,9 @@ public class FrontendSchemeRegistrationController(
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
         session.SubsidiarySession.Journey.Clear();
 
+        session.UserData = userData;
+        await sessionManager.SaveSessionAsync(HttpContext.Session, session);
+
         var registrationApplicationSession = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation );
 
         var resubmissionApplicationDetails = await resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(
