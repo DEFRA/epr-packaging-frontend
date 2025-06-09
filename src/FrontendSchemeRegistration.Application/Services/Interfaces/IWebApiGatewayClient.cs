@@ -78,7 +78,7 @@ public interface IWebApiGatewayClient
 
 	Task CreatePackagingResubmissionReferenceNumberEvent(Guid submissionId, PackagingResubmissionReferenceNumberCreatedEvent @event);
 
-    Task CreatePackagingResubmissionFeeViewEvent(Guid? submissionId);
+    Task CreatePackagingResubmissionFeeViewEvent(Guid? submissionId, Guid? filedId);
 
     Task CreatePackagingDataResubmissionFeePaymentEvent(Guid? submissionId, Guid? filedId,string paymentMethod);
 

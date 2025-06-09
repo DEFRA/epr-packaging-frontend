@@ -19,7 +19,7 @@ public static class FeatureFlags
     public const string ShowAllSubsidiaries = "ShowAllSubsidiaries";
     public const string ImplementPackagingDataResubmissionJourney = "ImplementPackagingDataResubmissionJourney";
     public const string ShowSessionTimeoutWarning = "ShowSessionTimeoutWarning";
-    public const string ShowRegistrationWarning = "ShowRegistrationWarning";
+    public const string ShowLargeProducerRegistrationWarning = "ShowLargeProducerRegistrationWarning";
     public const string ShowPoMSubmission2025 = "ShowPoMSubmission2025";
     public const string ShowYourFeedbackFooter = "ShowYourFeedbackFooter";
     public const string ShowWasteTile = "ShowWasteTile";

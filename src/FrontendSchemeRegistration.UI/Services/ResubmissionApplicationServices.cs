@@ -104,9 +104,9 @@ public class ResubmissionApplicationServices(
         return await paymentCalculationService.GetRegulatorNation(organisationId);
     }
 
-    public async Task CreatePackagingResubmissionFeeViewEvent(Guid? submissionId)
+    public async Task CreatePackagingResubmissionFeeViewEvent(Guid? submissionId, Guid? filedId)
     {
-        await submissionService.CreatePackagingResubmissionFeeViewEvent(submissionId);
+        await submissionService.CreatePackagingResubmissionFeeViewEvent(submissionId, filedId);
     }
 
     public async Task CreatePackagingDataResubmissionFeePaymentEvent(Guid? submissionId, Guid? filedId, string paymentMethod)

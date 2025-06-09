@@ -586,9 +586,9 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         response.EnsureSuccessStatusCode();
     }
 
-    public async Task CreatePackagingResubmissionFeeViewEvent(Guid? submissionId)
+    public async Task CreatePackagingResubmissionFeeViewEvent(Guid? submissionId, Guid? filedId)
     {
-        var eventPayload = new PackagingResubmissionFeeViewCreatedEvent() { IsPackagingResubmissionFeeViewed = true };
+        var eventPayload = new PackagingResubmissionFeeViewCreatedEvent() { IsPackagingResubmissionFeeViewed = true, FileId = filedId };
         await PrepareAuthenticatedClientAsync();
         var requestPath = $"/api/v1/packaging-resubmission/{submissionId}/create-packaging-resubmission-fee-view-event";
         var response = await _httpClient.PostAsJsonAsync(requestPath, eventPayload);

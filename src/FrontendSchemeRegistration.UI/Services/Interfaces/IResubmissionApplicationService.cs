@@ -25,7 +25,7 @@ namespace FrontendSchemeRegistration.UI.Services.Interfaces
 
         Task<PackagingPaymentResponse> GetResubmissionFees(string applicationReferenceNumber, string regulatorNation, int memberCount, bool isComplianceScheme, DateTime? resubmissionDate);
 
-        Task CreatePackagingResubmissionFeeViewEvent(Guid? submissionId);
+        Task CreatePackagingResubmissionFeeViewEvent(Guid? submissionId, Guid? filedId);
 
         Task CreatePackagingDataResubmissionFeePaymentEvent(Guid? submissionId, Guid? filedId, string paymentMethod);
 

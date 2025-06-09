@@ -1563,12 +1563,14 @@ public class WebApiGatewayClientTests
     {
         // Arrange
         var submissionId = Guid.NewGuid();
+        var filedId = Guid.NewGuid();
+
         _httpMessageHandlerMock.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
             .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent });
 
         // Act & Assert
-        await _webApiGatewayClient.Invoking(x => x.CreatePackagingResubmissionFeeViewEvent(submissionId)).Should().NotThrowAsync();
+        await _webApiGatewayClient.Invoking(x => x.CreatePackagingResubmissionFeeViewEvent(submissionId, filedId)).Should().NotThrowAsync();
 
         var expectedUri = $"https://example.com/api/v1/packaging-resubmission/{submissionId}/create-packaging-resubmission-fee-view-event";
         _httpMessageHandlerMock.Protected().Verify(
@@ -1582,12 +1584,14 @@ public class WebApiGatewayClientTests
     {
         // Arrange
         var submissionId = Guid.NewGuid();
+        var filedId = Guid.NewGuid();
+
         _httpMessageHandlerMock.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
             .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NoContent });
 
         // Act & Assert
-        await _webApiGatewayClient.Invoking(x => x.CreatePackagingResubmissionFeeViewEvent(submissionId)).Should().NotThrowAsync();
+        await _webApiGatewayClient.Invoking(x => x.CreatePackagingResubmissionFeeViewEvent(submissionId, filedId)).Should().NotThrowAsync();
 
         var expectedUri = $"https://example.com/api/v1/packaging-resubmission/{submissionId}/create-packaging-resubmission-fee-view-event";
         _httpMessageHandlerMock.Protected().Verify("SendAsync", Times.Once(),

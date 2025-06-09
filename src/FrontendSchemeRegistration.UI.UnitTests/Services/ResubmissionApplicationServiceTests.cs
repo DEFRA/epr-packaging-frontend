@@ -707,4 +707,18 @@ public class ResubmissionApplicationServiceTests
         result.Should().NotBeNull();
         result.MemberCount.Should().Be(expectedResult.MemberCount);
     }
+
+    [Test]
+    public async Task CreatePackagingResubmissionFeeViewEvent_Calls_SubmissionService_CreatePackagingResubmissionFeeViewEvent_Once()
+    {
+        // Arrange
+        var submssionId = Guid.NewGuid();
+        var fileId = Guid.NewGuid();
+
+        // Act
+        await _service.CreatePackagingResubmissionFeeViewEvent(submssionId, fileId);
+
+        // Assert
+        _mockSubmissionService.Verify(x => x.CreatePackagingResubmissionFeeViewEvent(submssionId, fileId), Times.Once);
+    }
 }

@@ -58,6 +58,10 @@ services.Configure<ForwardedHeadersOptions>(options =>
     options.AllowedHosts = forwardedHeadersOptions.AllowedHosts;
 });
 
+builder.Services.Configure<LargeProducerRegistrationWarning>(
+    builder.Configuration.GetSection("LargeProducerBanner"));
+
+
 services.AddHealthChecks();
 
 services.AddApplicationInsightsTelemetry()

@@ -130,9 +130,9 @@ public class SubmissionService(IWebApiGatewayClient webApiGatewayClient) : ISubm
 		await webApiGatewayClient.CreatePackagingResubmissionReferenceNumberEvent(submissionId, @event);
 	}
 
-    public async Task CreatePackagingResubmissionFeeViewEvent(Guid? submissionId)
+    public async Task CreatePackagingResubmissionFeeViewEvent(Guid? submissionId, Guid? filedId)
     {
-        await webApiGatewayClient.CreatePackagingResubmissionFeeViewEvent(submissionId);
+        await webApiGatewayClient.CreatePackagingResubmissionFeeViewEvent(submissionId, filedId);
     }
 
     public async Task CreatePackagingDataResubmissionFeePaymentEvent(Guid? submissionId, Guid? filedId, string paymentMethod)

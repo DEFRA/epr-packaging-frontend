@@ -143,7 +143,8 @@ public class PackagingDataResubmissionController : Controller
 
         if (paymentResponse != null)
         {
-            await _resubmissionApplicationService.CreatePackagingResubmissionFeeViewEvent(session.PomResubmissionSession.PackagingResubmissionApplicationSession.SubmissionId);
+            await _resubmissionApplicationService.CreatePackagingResubmissionFeeViewEvent(session.PomResubmissionSession.PackagingResubmissionApplicationSession.SubmissionId,
+                                                                                          session.PomResubmissionSession.PomSubmission?.LastSubmittedFile?.FileId);
 
             UpdateResubmissionApplicationPaymentSession(session, paymentResponse);
 

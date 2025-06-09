@@ -128,7 +128,7 @@ public class FileUploadSubmissionDeclarationController : Controller
             }
 
             var isAnySubmissionAcceptedForDataPeriod = await _submissionService.IsAnySubmissionAcceptedForDataPeriod(submission, organisationId.Value, session.RegistrationSession.SelectedComplianceScheme?.Id);
-			await _submissionService.SubmitAsync(submission.Id, fileId.Value, request.DeclarationName, session.PomResubmissionSession?.PackagingResubmissionApplicationSession?.ApplicationReferenceNumber, false);
+			await _submissionService.SubmitAsync(submission.Id, fileId.Value, request.DeclarationName, session.PomResubmissionSession.PackagingResubmissionApplicationSession.ApplicationReferenceNumber, session.PomResubmissionSession.IsPomResubmissionJourney);
 
 			if (!submission.IsSubmitted || !isAnySubmissionAcceptedForDataPeriod)
             {

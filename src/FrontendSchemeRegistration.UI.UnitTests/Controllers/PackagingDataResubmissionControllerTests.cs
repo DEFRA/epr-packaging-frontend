@@ -643,6 +643,45 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
     }
 
     [Test]
+    public async Task ResubmissionFeeCalculation_When_FileIdIsNull_ReturnsCorrectViewAndModel()
+    {
+        // Arrange
+        SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
+            .Returns(Task.FromResult(new FrontendSchemeRegistrationSession
+            {
+                PomResubmissionSession = new PackagingReSubmissionSession
+                {
+                    PackagingResubmissionApplicationSession = new PackagingResubmissionApplicationSession()
+                    {
+                        ApplicationReferenceNumber = "abc"
+                    },
+                    PomSubmission = new PomSubmission() { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b") },
+                    PomSubmissions = new List<PomSubmission> { new PomSubmission { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b") } }
+                }
+            }));
+        UserAccountService.Setup(x => x.GetPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
+        ResubmissionApplicationService.Setup(x => x.GetResubmissionFees(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<DateTime?>())).ReturnsAsync(new PackagingPaymentResponse());
+
+        // Act
+        var result = await SystemUnderTest.ResubmissionFeeCalculations() as ViewResult;
+        var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
+
+        // Assert
+        pageBackLink.Should().Be($"/report-data/{PagePaths.ResubmissionTaskList}");
+        result.Model.Should().BeOfType<ResubmissionFeeViewModel>();
+
+        result.Model.As<ResubmissionFeeViewModel>().Should().BeEquivalentTo(new ResubmissionFeeViewModel
+        {
+            IsComplianceScheme = false,
+            MemberCount = 0,
+            PreviousPaymentsReceived = 0,
+            ResubmissionFee = 0,
+            TotalChargeableItems = 0,
+            TotalOutstanding = 0
+        });
+    }
+
+    [Test]
     public async Task ResubmissionFeeCalculation_HttpRequestExceptionEncountered_And_PreconditionRequired_StatuCode_ReturnModelStateError()
     {
         // Arrange

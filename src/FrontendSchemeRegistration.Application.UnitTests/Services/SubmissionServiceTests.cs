@@ -389,13 +389,14 @@ public class SubmissionServiceTests
     {
         // Arrange
         var submissionId = Guid.NewGuid();
-        
+        var filedId = Guid.NewGuid();
+
         // Act
-        await _submissionService.CreatePackagingResubmissionFeeViewEvent(submissionId);
+        await _submissionService.CreatePackagingResubmissionFeeViewEvent(submissionId, filedId);
 
         // Assert
 
-        _webApiGatewayClientMock.Verify(x => x.CreatePackagingResubmissionFeeViewEvent(submissionId), Times.Once);
+        _webApiGatewayClientMock.Verify(x => x.CreatePackagingResubmissionFeeViewEvent(submissionId, filedId), Times.Once);
     }
 
     [Test]
@@ -617,5 +618,19 @@ public class SubmissionServiceTests
 
         // Assert
         result.Should().BeFalse();
+    }
+
+    [Test]
+    public async Task WhenCreatePackagingResubmissionFeeViewEventIsCalled_CallsWebApiGatewayClient()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var fildId = Guid.NewGuid();
+
+        // Act
+        await _submissionService.CreatePackagingResubmissionFeeViewEvent(submissionId, fildId);
+
+        // Assert
+        _webApiGatewayClientMock.Verify(x => x.CreatePackagingResubmissionFeeViewEvent(submissionId, fildId), Times.Once);
     }
 }
