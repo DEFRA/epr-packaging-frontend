@@ -165,4 +165,19 @@
   <data name="sign_into_the_financial_services_system" xml:space="preserve">
     <value>Sign into the financial services system (FSS) to view and manage the fees your organisation needs to pay.</value>
   </data>
+  <data name="view_and_pay_waste_disposal_fees" xml:space="preserve">
+    <value>View and pay waste disposal fees for packaging (opens in a new tab)</value>
+  </data>
+  <data name="go_to_packuk" xml:space="preserve">
+    <value>Go to PackUK (the scheme administrator for the Extended Producer Responsibility for packaging programme) to:</value>
+  </data>
+  <data name="pay_the_fees" xml:space="preserve">
+    <value>pay the fees your organisation needs to pay</value>
+  </data>
+  <data name="view_previous_payments" xml:space="preserve">
+    <value>view previous payments </value>
+  </data>
+  <data name="learn_more_about_packuk" xml:space="preserve">
+    <value>Learn more about PackUK (opens in a new tab)</value>
+  </data>
 </root>
