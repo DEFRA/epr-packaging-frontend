@@ -385,4 +385,7 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
   <data name="108" xml:space="preserve">
     <value>Gall sefydliadau mawr (L) nodi gradd ailgylchadwyedd ar gyfer cyfnodau cyflwyno 2025 ymlaen o blith yr opsiynau canlynol: R (ar gyfer Coch), A (ar gyfer Melyn), G (ar gyfer Gwyrdd), R-M (ar gyfer Coch-Meddygol), A-M (ar gyfer Melyn-Meddygol) neu G-M (ar gyfer Gwyrdd-Meddygol)</value>
   </data>  
+  <data name="91" xml:space="preserve">
+    <value>W_Do not submit transactional packaging units for this period.</value>
+  </data>
 </root>
