@@ -12,4 +12,6 @@ public class FileUploadErrorsViewModel
     public DateTime SubmissionDeadline { get; set; }
 
     public Guid SubmissionId { get; set; }
+
+    public int? RegistrationYear { get; set; }
 }

@@ -12,4 +12,6 @@ public class FileUploadSuccessViewModel : ViewModelWithOrganisationRole
     public DateTime SubmissionDeadline { get; set; }
     
     public bool IsResubmission { get; set; }
+
+    public int? RegistrationYear { get; set; }
 }

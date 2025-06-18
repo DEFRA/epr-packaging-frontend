@@ -1,4 +1,6 @@
-﻿using FrontendSchemeRegistration.Application.Constants;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.DTOs.Prns;
 using FrontendSchemeRegistration.Application.Enums;
@@ -11,16 +13,14 @@ using FrontendSchemeRegistration.UI.ViewModels.Prns;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 
 namespace FrontendSchemeRegistration.UI.Services;
 
 public class PrnService : IPrnService
 {
     private readonly IAccountServiceApiClient _accountServiceApiClient;
-	private readonly IWebApiGatewayClient _webApiGatewayClient;
-	private readonly IStringLocalizer<PrnCsvResources> _csvLocalizer;
+    private readonly IWebApiGatewayClient _webApiGatewayClient;
+    private readonly IStringLocalizer<PrnCsvResources> _csvLocalizer;
     private readonly IStringLocalizer<PrnDataResources> _dataLocalizer;
     private readonly ILogger<PrnService> _logger;
     private readonly string logPrefix;
@@ -68,7 +68,7 @@ public class PrnService : IPrnService
     public async Task<PrnViewModel> GetPrnByExternalIdAsync(Guid id)
     {
         _logger.LogInformation("{Logprefix}: PrnService - GetPrnByExternalIdAsync: Get Prn for external Id {ExternalId}", logPrefix, id);
-        
+
         var serverResponse = await _webApiGatewayClient.GetPrnByExternalIdAsync(id);
         PrnViewModel model = serverResponse;
 
@@ -183,24 +183,24 @@ public class PrnService : IPrnService
         List<PrnViewModel> prns = new List<PrnViewModel>(prnDtos.Select(x => (PrnViewModel)x));
         var stream = new MemoryStream();
 
-            if (prns.Count > 0)
+        if (prns.Count > 0)
+        {
+            await using (var writer = new StreamWriter(stream, leaveOpen: true))
             {
-                await using (var writer = new StreamWriter(stream, leaveOpen: true))
-                {
-                    await writer.WriteCsvCellAsync(_csvLocalizer["column_header_prn_or_pern_number"]);
-                    await writer.WriteCsvCellAsync(_csvLocalizer["column_header_prn_or_pern"]);
-                    await writer.WriteCsvCellAsync(_csvLocalizer["column_header_status"]);
-                    await writer.WriteCsvCellAsync(_csvLocalizer["column_header_issued_by"]);
-                    await writer.WriteCsvCellAsync(_csvLocalizer["column_header_issued_to"]);
-                    await writer.WriteCsvCellAsync(_csvLocalizer["column_header_accreditation_number"]);
-                    await writer.WriteCsvCellAsync(_csvLocalizer["column_header_date_issued"]);
-                    await writer.WriteCsvCellAsync(_csvLocalizer["column_header_december_waste"]);
-                    await writer.WriteCsvCellAsync(_csvLocalizer["column_header_material"]);
-                    await writer.WriteCsvCellAsync(_csvLocalizer["column_header_recycling_process"]);
-                    await writer.WriteCsvCellAsync(_csvLocalizer["column_header_tonnes"]);
-                    await writer.WriteCsvCellAsync(_csvLocalizer["column_header_date_accepted"]);
-                    await writer.WriteCsvCellAsync(_csvLocalizer["column_header_date_cancelled"]);
-                    writer.WriteLineAsync(_csvLocalizer["column_header_issuer_note"]);
+                await writer.WriteCsvCellAsync(_csvLocalizer["column_header_prn_or_pern_number"]);
+                await writer.WriteCsvCellAsync(_csvLocalizer["column_header_prn_or_pern"]);
+                await writer.WriteCsvCellAsync(_csvLocalizer["column_header_status"]);
+                await writer.WriteCsvCellAsync(_csvLocalizer["column_header_issued_by"]);
+                await writer.WriteCsvCellAsync(_csvLocalizer["column_header_issued_to"]);
+                await writer.WriteCsvCellAsync(_csvLocalizer["column_header_accreditation_number"]);
+                await writer.WriteCsvCellAsync(_csvLocalizer["column_header_date_issued"]);
+                await writer.WriteCsvCellAsync(_csvLocalizer["column_header_december_waste"]);
+                await writer.WriteCsvCellAsync(_csvLocalizer["column_header_material"]);
+                await writer.WriteCsvCellAsync(_csvLocalizer["column_header_recycling_process"]);
+                await writer.WriteCsvCellAsync(_csvLocalizer["column_header_tonnes"]);
+                await writer.WriteCsvCellAsync(_csvLocalizer["column_header_date_accepted"]);
+                await writer.WriteCsvCellAsync(_csvLocalizer["column_header_date_cancelled"]);
+                writer.WriteLineAsync(_csvLocalizer["column_header_issuer_note"]);
 
                 foreach (var prn in prns)
                 {
@@ -228,12 +228,12 @@ public class PrnService : IPrnService
         return stream;
     }
 
-    public async Task<PrnObligationViewModel> GetRecyclingObligationsCalculation(List<Guid> externalIds, int year)
+    public async Task<PrnObligationViewModel> GetRecyclingObligationsCalculation(int year)
     {
-        _logger.LogInformation("{Logprefix}: PrnService - GetRecyclingObligationsCalculation: Get Recycling Obligations Calculation for given year {Year} and {ExternalIds}", logPrefix, year, externalIds);
+        _logger.LogInformation("{Logprefix}: PrnService - GetRecyclingObligationsCalculation: Get Recycling Obligations Calculation for given year {Year}", logPrefix, year);
 
         var prnObligationViewModel = new PrnObligationViewModel();
-        var prnObligationModel = await _webApiGatewayClient.GetRecyclingObligationsCalculation(externalIds, year);
+        var prnObligationModel = await _webApiGatewayClient.GetRecyclingObligationsCalculation(year);
         _logger.LogInformation("{Logprefix}: PrnService - GetRecyclingObligationsCalculation: Get obligations for given year {Year} server response {PrnObligationModel}", logPrefix, year, JsonConvert.SerializeObject(prnObligationModel));
 
         if (prnObligationModel != null)
@@ -288,8 +288,8 @@ public class PrnService : IPrnService
         return new PrnMaterialObligationViewModel
         {
             MaterialName = materialName,
-			OrganisationId = obligations.First().OrganisationId,
-			ObligationToMeet = obligations.Any(r => r.ObligationToMeet != null) ? obligations.Sum(r => r.ObligationToMeet) : null,
+            OrganisationId = obligations.First().OrganisationId,
+            ObligationToMeet = obligations.Any(r => r.ObligationToMeet != null) ? obligations.Sum(r => r.ObligationToMeet) : null,
             TonnageAwaitingAcceptance = obligations.Sum(r => r.TonnageAwaitingAcceptance),
             TonnageAccepted = obligations.Sum(r => r.TonnageAccepted),
             TonnageOutstanding = obligations.Any(r => r.TonnageOutstanding != null) ? obligations.Sum(r => r.TonnageOutstanding) : null,
@@ -313,15 +313,15 @@ public class PrnService : IPrnService
 
     static ObligationStatus GetOverallStatus(IEnumerable<ObligationStatus> statuses)
     {
-        if (statuses.Contains(ObligationStatus.NoDataYet))
-        {
-            return ObligationStatus.NoDataYet;
-        }
         if (statuses.Contains(ObligationStatus.NotMet))
         {
             return ObligationStatus.NotMet;
         }
-        return ObligationStatus.Met;
+        if (statuses.Contains(ObligationStatus.Met))
+        {
+            return ObligationStatus.Met;
+        }
+        return ObligationStatus.NoDataYet;
     }
 
     private static ObligationStatus GetFinalStatus(IEnumerable<PrnMaterialObligationViewModel> materialObligationViewModels)
@@ -329,29 +329,4 @@ public class PrnService : IPrnService
         var totals = materialObligationViewModels.FirstOrDefault(m => m.MaterialName == MaterialType.Totals);
         return totals?.Status ?? ObligationStatus.NoDataYet;
     }
-
-    public async Task<List<Guid>> GetChildOrganisationExternalIdsAsync(Guid organisationId, Guid? complianceSchemeId)
-    {
-        try
-        {
-            var accountApiGetChildOrgExternalIdsUrl = $"organisations/v1/child-organisation-external-ids?organisationId={organisationId}";
-            if (complianceSchemeId is not null && complianceSchemeId != Guid.Empty)
-            {
-                accountApiGetChildOrgExternalIdsUrl += $"&complianceSchemeId={complianceSchemeId}";
-            }
-
-            _logger.LogInformation("{LogPrefix}: PrnService - GetChildOrganisationExternalIdsAsync: Get child organisation external ids via {Url}", logPrefix, accountApiGetChildOrgExternalIdsUrl);
-            var response = await _accountServiceApiClient.SendGetRequest(accountApiGetChildOrgExternalIdsUrl);
-            var content = await response.Content.ReadAsStringAsync();
-            var externalIds = JsonConvert.DeserializeObject<List<Guid>>(content);
-            _logger.LogInformation("{LogPrefix}: PrnService - GetChildOrganisationExternalIdsAsync: Get child organisation external ids are {ExternalIds}", logPrefix, externalIds);
-
-            return externalIds;
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(ex, "{LogPrefix}: PrnService - GetChildOrganisationExternalIdsAsync: Error while retrieving child organisation external ids for {OrganisationId}", logPrefix, organisationId);
-            throw;
-        }
-	}
 }

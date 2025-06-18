@@ -34,7 +34,7 @@
                 <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
                 <strong class="govuk-warning-text__text">
                     <span class="govuk-visually-hidden">Warning</span>
-                    @Localizer["ensure_your_packaging_data_for_year_been_reported_before_registering", DateTime.Today.Year]
+                    @Localizer["ensure_your_packaging_data_for_year_been_reported_before_registering", Model.RegistrationYear]
                 </strong>
             </div>
             <p class="govuk-body">
@@ -52,7 +52,7 @@
                 <a class="govuk-link govuk-link--no-visited-state" rel="noreferrer noopener" target="_blank" href="@GuidanceLinks.Value.ProducerResponsibilitiesForPackagingWaste">@Localizer["more_about_packaging_responsibilities_and_check_need_for_action"]</a>
             </p>
 
-            <a asp-action="RegistrationTaskList" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+            <a asp-action="RegistrationTaskList" asp-route-registrationyear="@Model.RegistrationYear" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
                 @SharedLocalizer["continue"]
             </a>
         </div>

@@ -18,4 +18,6 @@ public class AdditionalInformationViewModel : OrganisationNationViewModel
     public bool IsResubmission { get;  set; }
 
     public bool IsApprovedOrDelegatedUser { get; set; }
+
+    public int RegistrationYear { get; set; }
 }

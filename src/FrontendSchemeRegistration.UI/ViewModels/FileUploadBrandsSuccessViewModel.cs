@@ -14,4 +14,6 @@ public class FileUploadBrandsSuccessViewModel : ViewModelWithOrganisationRole
     public bool IsApprovedUser { get; set; }
     
     public bool IsResubmission { get; set; }
+
+    public int? RegistrationYear { get; set; }
 }

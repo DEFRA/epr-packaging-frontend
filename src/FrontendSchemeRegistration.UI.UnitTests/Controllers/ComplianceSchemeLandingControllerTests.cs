@@ -54,7 +54,7 @@ public class ComplianceSchemeLandingControllerTests
         RegistrationApplicationSubmittedComment = null,
         RegistrationApplicationSubmittedDate = null
     };
-    
+
     [SetUp]
     public void SetUp()
     {
@@ -113,8 +113,24 @@ public class ComplianceSchemeLandingControllerTests
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(GetSessionWithoutSelectedScheme());
 
-        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<bool?>()))
+        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
             .ReturnsAsync(_registrationApplicationSession);
+
+        var registrationApplicationPerYear = new List<RegistrationApplicationPerYearViewModel>()
+        {
+            new RegistrationApplicationPerYearViewModel {
+            ApplicationStatus = _registrationApplicationSession.ApplicationStatus,
+            FileUploadStatus = _registrationApplicationSession.FileUploadStatus,
+            PaymentViewStatus = _registrationApplicationSession.PaymentViewStatus,
+            AdditionalDetailsStatus = _registrationApplicationSession.AdditionalDetailsStatus,
+            ApplicationReferenceNumber = _registrationApplicationSession.ApplicationReferenceNumber,
+            RegistrationReferenceNumber = _registrationApplicationSession.RegistrationReferenceNumber,
+            IsResubmission = _registrationApplicationSession.IsResubmission
+           }
+        };
+
+        _registrationApplicationService.Setup(x => x.BuildRegistrationApplicationPerYearViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+            .ReturnsAsync(registrationApplicationPerYear);
 
         var registrationApplicationDetails = (RegistrationApplicationDetails)null;
         _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
@@ -134,9 +150,15 @@ public class ComplianceSchemeLandingControllerTests
                 CurrentTabSummary = new ComplianceSchemeSummary(),
                 ComplianceSchemes = complianceSchemes,
                 IsApprovedUser = true,
-                ApplicationStatus = ApplicationStatusType.NotStarted,
-                ApplicationReferenceNumber = string.Empty,
-                RegistrationReferenceNumber = string.Empty,
+                RegistrationApplicationsPerYear = new List<RegistrationApplicationPerYearViewModel>()
+                {
+                    new RegistrationApplicationPerYearViewModel
+                    {
+                        ApplicationStatus = ApplicationStatusType.NotStarted,
+                        ApplicationReferenceNumber = string.Empty,
+                        RegistrationReferenceNumber = string.Empty,
+                    }
+                },
                 ResubmissionTaskListViewModel = new ResubmissionTaskListViewModel
                 {
                     AdditionalDetailsStatus = ResubmissionTaskListStatus.CanNotStartYet,
@@ -172,8 +194,21 @@ public class ComplianceSchemeLandingControllerTests
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(GetSessionWithSelectedScheme());
 
-        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<bool?>()))
+        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
             .ReturnsAsync(_registrationApplicationSession);
+
+        var registrationApplicationPerYear = new List<RegistrationApplicationPerYearViewModel>()
+        {
+            new RegistrationApplicationPerYearViewModel {
+            ApplicationStatus = _registrationApplicationSession.ApplicationStatus,
+            FileUploadStatus = _registrationApplicationSession.FileUploadStatus,
+            PaymentViewStatus = _registrationApplicationSession.PaymentViewStatus,
+            AdditionalDetailsStatus = _registrationApplicationSession.AdditionalDetailsStatus,
+            ApplicationReferenceNumber = _registrationApplicationSession.ApplicationReferenceNumber,
+            RegistrationReferenceNumber = _registrationApplicationSession.RegistrationReferenceNumber,
+            IsResubmission = _registrationApplicationSession.IsResubmission
+           }
+        };
 
         var registrationApplicationDetails = (RegistrationApplicationDetails)null;
         _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
@@ -193,9 +228,15 @@ public class ComplianceSchemeLandingControllerTests
                 CurrentTabSummary = new ComplianceSchemeSummary(),
                 ComplianceSchemes = complianceSchemes,
                 IsApprovedUser = true,
-                ApplicationStatus = ApplicationStatusType.NotStarted,
-                ApplicationReferenceNumber = string.Empty,
-                RegistrationReferenceNumber = string.Empty,
+                RegistrationApplicationsPerYear = new List<RegistrationApplicationPerYearViewModel>()
+                {
+                    new RegistrationApplicationPerYearViewModel
+                    {
+                        ApplicationStatus = ApplicationStatusType.NotStarted,
+                        ApplicationReferenceNumber = string.Empty,
+                        RegistrationReferenceNumber = string.Empty,
+                    }
+                },
                 ResubmissionTaskListViewModel = new ResubmissionTaskListViewModel
                 {
                     AdditionalDetailsStatus = ResubmissionTaskListStatus.CanNotStartYet,
@@ -250,6 +291,19 @@ public class ComplianceSchemeLandingControllerTests
             RegistrationApplicationSubmittedDate = null
         };
 
+        var registrationApplicationPerYear = new List<RegistrationApplicationPerYearViewModel>()
+        {
+            new RegistrationApplicationPerYearViewModel {
+            ApplicationStatus = registrationApplicationSession.ApplicationStatus,
+            FileUploadStatus = registrationApplicationSession.FileUploadStatus,
+            PaymentViewStatus = registrationApplicationSession.PaymentViewStatus,
+            AdditionalDetailsStatus = registrationApplicationSession.AdditionalDetailsStatus,
+            ApplicationReferenceNumber = registrationApplicationSession.ApplicationReferenceNumber,
+            RegistrationReferenceNumber = registrationApplicationSession.RegistrationReferenceNumber,
+            IsResubmission = registrationApplicationSession.IsResubmission
+           }
+        };
+
         var registrationApplicationDetails = new RegistrationApplicationDetails
         {
             LastSubmittedFile = new LastSubmittedFileDetails { FileId = Guid.NewGuid() },
@@ -262,8 +316,11 @@ public class ComplianceSchemeLandingControllerTests
             RegistrationApplicationSubmittedDate = null
         };
 
-        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<bool?>()))
-            .ReturnsAsync(registrationApplicationSession);
+        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+            .ReturnsAsync(_registrationApplicationSession);
+
+        _registrationApplicationService.Setup(x => x.BuildRegistrationApplicationPerYearViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+            .ReturnsAsync(registrationApplicationPerYear);
 
         _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
 
@@ -282,11 +339,17 @@ public class ComplianceSchemeLandingControllerTests
                 CurrentTabSummary = new ComplianceSchemeSummary(),
                 ComplianceSchemes = complianceSchemes,
                 IsApprovedUser = true,
-                ApplicationReferenceNumber = reference,
-                FileUploadStatus = RegistrationTaskListStatus.Pending,
-                PaymentViewStatus = RegistrationTaskListStatus.CanNotStartYet,
-                AdditionalDetailsStatus = RegistrationTaskListStatus.CanNotStartYet,
-                ApplicationStatus = ApplicationStatusType.FileUploaded,
+                RegistrationApplicationsPerYear = new List<RegistrationApplicationPerYearViewModel>()
+                {
+                    new RegistrationApplicationPerYearViewModel
+                    {
+                        ApplicationReferenceNumber = reference,
+                        FileUploadStatus = RegistrationTaskListStatus.Pending,
+                        PaymentViewStatus = RegistrationTaskListStatus.CanNotStartYet,
+                        AdditionalDetailsStatus = RegistrationTaskListStatus.CanNotStartYet,
+                        ApplicationStatus = ApplicationStatusType.FileUploaded,
+                    }
+                },
                 ResubmissionTaskListViewModel = new ResubmissionTaskListViewModel
                 {
                     AdditionalDetailsStatus = ResubmissionTaskListStatus.CanNotStartYet,
@@ -353,8 +416,24 @@ public class ComplianceSchemeLandingControllerTests
             RegistrationApplicationSubmittedDate = null
         };
 
-        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<bool?>()))
-            .ReturnsAsync(registrationApplicationSession);
+        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+            .ReturnsAsync(_registrationApplicationSession);
+
+        var registrationApplicationPerYear = new List<RegistrationApplicationPerYearViewModel>()
+        {
+            new RegistrationApplicationPerYearViewModel {
+            ApplicationStatus = registrationApplicationSession.ApplicationStatus,
+            FileUploadStatus = registrationApplicationSession.FileUploadStatus,
+            PaymentViewStatus = registrationApplicationSession.PaymentViewStatus,
+            AdditionalDetailsStatus = registrationApplicationSession.AdditionalDetailsStatus,
+            ApplicationReferenceNumber = registrationApplicationSession.ApplicationReferenceNumber,
+            RegistrationReferenceNumber = registrationApplicationSession.RegistrationReferenceNumber,
+            IsResubmission = registrationApplicationSession.IsResubmission
+           }
+        };
+
+        _registrationApplicationService.Setup(x => x.BuildRegistrationApplicationPerYearViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+            .ReturnsAsync(registrationApplicationPerYear);
 
         _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
 
@@ -373,11 +452,16 @@ public class ComplianceSchemeLandingControllerTests
                 CurrentTabSummary = new ComplianceSchemeSummary(),
                 ComplianceSchemes = complianceSchemes,
                 IsApprovedUser = true,
-                ApplicationReferenceNumber = reference,
-                FileUploadStatus = RegistrationTaskListStatus.Completed,
-                PaymentViewStatus = RegistrationTaskListStatus.Completed,
-                AdditionalDetailsStatus = RegistrationTaskListStatus.NotStarted,
-                ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+                RegistrationApplicationsPerYear = new List<RegistrationApplicationPerYearViewModel>()
+                {
+                    new RegistrationApplicationPerYearViewModel{
+
+                        ApplicationReferenceNumber = reference,
+                        FileUploadStatus = RegistrationTaskListStatus.Completed,
+                        PaymentViewStatus = RegistrationTaskListStatus.Completed,
+                        AdditionalDetailsStatus = RegistrationTaskListStatus.NotStarted,
+                        ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,}
+                },
                 ResubmissionTaskListViewModel = new ResubmissionTaskListViewModel
                 {
                     AdditionalDetailsStatus = ResubmissionTaskListStatus.CanNotStartYet,
@@ -444,8 +528,24 @@ public class ComplianceSchemeLandingControllerTests
             RegistrationApplicationSubmittedDate = DateTime.Now.AddMinutes(-5)
         };
 
-        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<bool?>()))
+        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
             .ReturnsAsync(registrationApplicationSession);
+
+        var registrationApplicationPerYear = new List<RegistrationApplicationPerYearViewModel>()
+        {
+            new RegistrationApplicationPerYearViewModel {
+            ApplicationStatus = registrationApplicationSession.ApplicationStatus,
+            FileUploadStatus = registrationApplicationSession.FileUploadStatus,
+            PaymentViewStatus = registrationApplicationSession.PaymentViewStatus,
+            AdditionalDetailsStatus = registrationApplicationSession.AdditionalDetailsStatus,
+            ApplicationReferenceNumber = registrationApplicationSession.ApplicationReferenceNumber,
+            RegistrationReferenceNumber = registrationApplicationSession.RegistrationReferenceNumber,
+            IsResubmission = registrationApplicationSession.IsResubmission
+           }
+        };
+
+        _registrationApplicationService.Setup(x => x.BuildRegistrationApplicationPerYearViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+            .ReturnsAsync(registrationApplicationPerYear);
 
         _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
 
@@ -464,11 +564,16 @@ public class ComplianceSchemeLandingControllerTests
                 CurrentTabSummary = new ComplianceSchemeSummary(),
                 ComplianceSchemes = complianceSchemes,
                 IsApprovedUser = true,
-                ApplicationReferenceNumber = reference,
-                FileUploadStatus = RegistrationTaskListStatus.Completed,
-                PaymentViewStatus = RegistrationTaskListStatus.Completed,
-                AdditionalDetailsStatus = RegistrationTaskListStatus.Completed,
-                ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+                RegistrationApplicationsPerYear = new List<RegistrationApplicationPerYearViewModel>()
+                {
+                    new RegistrationApplicationPerYearViewModel{
+                        ApplicationReferenceNumber = reference,
+                        FileUploadStatus = RegistrationTaskListStatus.Completed,
+                        PaymentViewStatus = RegistrationTaskListStatus.Completed,
+                        AdditionalDetailsStatus = RegistrationTaskListStatus.Completed,
+                        ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+                    }
+                },
                 ResubmissionTaskListViewModel = new ResubmissionTaskListViewModel
                 {
                     AdditionalDetailsStatus = ResubmissionTaskListStatus.CanNotStartYet,
@@ -519,8 +624,24 @@ public class ComplianceSchemeLandingControllerTests
                 It.IsAny<Guid>()))
             .ReturnsAsync(notificationDtoList);
 
-        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<bool?>()))
+        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
             .ReturnsAsync(_registrationApplicationSession);
+
+        var registrationApplicationPerYear = new List<RegistrationApplicationPerYearViewModel>()
+        {
+            new RegistrationApplicationPerYearViewModel {
+            ApplicationStatus = _registrationApplicationSession.ApplicationStatus,
+            FileUploadStatus = _registrationApplicationSession.FileUploadStatus,
+            PaymentViewStatus = _registrationApplicationSession.PaymentViewStatus,
+            AdditionalDetailsStatus = _registrationApplicationSession.AdditionalDetailsStatus,
+            ApplicationReferenceNumber = _registrationApplicationSession.ApplicationReferenceNumber,
+            RegistrationReferenceNumber = _registrationApplicationSession.RegistrationReferenceNumber,
+            IsResubmission = _registrationApplicationSession.IsResubmission
+           }
+        };
+
+        _registrationApplicationService.Setup(x => x.BuildRegistrationApplicationPerYearViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+            .ReturnsAsync(registrationApplicationPerYear);
 
         var registrationApplicationDetails = (RegistrationApplicationDetails)null;
         _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
@@ -547,10 +668,18 @@ public class ComplianceSchemeLandingControllerTests
                     HasPendingNotification = false,
                     NominatedApprovedPersonEnrolmentId = string.Empty
                 },
-                ApplicationStatus = ApplicationStatusType.NotStarted,
-                AdditionalDetailsStatus = RegistrationTaskListStatus.CanNotStartYet,
-                ApplicationReferenceNumber = string.Empty,
-                RegistrationReferenceNumber = string.Empty,
+                
+                RegistrationApplicationsPerYear = new List<RegistrationApplicationPerYearViewModel>()
+                {
+                    new RegistrationApplicationPerYearViewModel
+                    {
+                        ApplicationStatus = ApplicationStatusType.NotStarted,
+                        AdditionalDetailsStatus = RegistrationTaskListStatus.CanNotStartYet,
+                        ApplicationReferenceNumber = string.Empty,
+                        RegistrationReferenceNumber = string.Empty
+                    }
+                },
+
                 ResubmissionTaskListViewModel=new ResubmissionTaskListViewModel
                 {
                     AdditionalDetailsStatus = ResubmissionTaskListStatus.CanNotStartYet,
@@ -606,8 +735,24 @@ public class ComplianceSchemeLandingControllerTests
                 It.IsAny<Guid>()))
             .ReturnsAsync(notificationDtoList);
 
-        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<bool?>()))
+        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
             .ReturnsAsync(_registrationApplicationSession);
+
+        var registrationApplicationPerYear = new List<RegistrationApplicationPerYearViewModel>()
+        {
+            new RegistrationApplicationPerYearViewModel {
+            ApplicationStatus = _registrationApplicationSession.ApplicationStatus,
+            FileUploadStatus = _registrationApplicationSession.FileUploadStatus,
+            PaymentViewStatus = _registrationApplicationSession.PaymentViewStatus,
+            AdditionalDetailsStatus = _registrationApplicationSession.AdditionalDetailsStatus,
+            ApplicationReferenceNumber = _registrationApplicationSession.ApplicationReferenceNumber,
+            RegistrationReferenceNumber = _registrationApplicationSession.ApplicationReferenceNumber,
+            IsResubmission = _registrationApplicationSession.IsResubmission
+           }
+        };
+
+        _registrationApplicationService.Setup(x => x.BuildRegistrationApplicationPerYearViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+            .ReturnsAsync(registrationApplicationPerYear);
 
         var registrationApplicationDetails = (RegistrationApplicationDetails)null;
         _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
@@ -634,10 +779,16 @@ public class ComplianceSchemeLandingControllerTests
                     HasPendingNotification = true,
                     NominatedApprovedPersonEnrolmentId = string.Empty
                 },
-                ApplicationStatus = ApplicationStatusType.NotStarted,
-                ApplicationReferenceNumber = string.Empty,
-                AdditionalDetailsStatus = RegistrationTaskListStatus.CanNotStartYet,                
-                RegistrationReferenceNumber = string.Empty,
+                RegistrationApplicationsPerYear = new List<RegistrationApplicationPerYearViewModel>
+                {
+                    new RegistrationApplicationPerYearViewModel
+                    {
+                        ApplicationStatus = ApplicationStatusType.NotStarted,
+                        ApplicationReferenceNumber = string.Empty,
+                        AdditionalDetailsStatus = RegistrationTaskListStatus.CanNotStartYet,
+                        RegistrationReferenceNumber = string.Empty
+                    }
+                },
                 ResubmissionTaskListViewModel = new ResubmissionTaskListViewModel
                 {
                     AdditionalDetailsStatus = ResubmissionTaskListStatus.CanNotStartYet,

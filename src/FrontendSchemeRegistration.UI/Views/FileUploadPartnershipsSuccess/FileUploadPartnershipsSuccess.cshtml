@@ -47,7 +47,8 @@
                         "FileReUploadCompanyDetailsConfirmation",
                         new
                         {
-                            submissionId = Model.SubmissionId
+                            submissionId = Model.SubmissionId,
+                            registrationyear = Model.RegistrationYear
                         },
                         new
                         {
@@ -62,7 +63,7 @@
                      Localizer["go_to_review"].Value,
                      "Get",
                      "ReviewCompanyDetails",
-                     new { submissionId = Model.SubmissionId },
+                     new { submissionId = Model.SubmissionId, registrationyear = Model.RegistrationYear },
                      new
                      {
                          @class = "govuk-button"

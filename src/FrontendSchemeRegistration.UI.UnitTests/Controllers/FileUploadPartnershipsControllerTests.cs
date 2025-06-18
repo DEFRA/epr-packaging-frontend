@@ -9,6 +9,7 @@ using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
 using FrontendSchemeRegistration.Application.Options;
+using FrontendSchemeRegistration.UI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -29,12 +30,14 @@ public class FileUploadPartnershipsControllerTests
     private Mock<IFileUploadService> _fileUploadServiceMock;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
     private FileUploadPartnershipsController _systemUnderTest;
+    private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
 
     [SetUp]
     public void SetUp()
     {
         _submissionServiceMock = new Mock<ISubmissionService>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
+        _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
@@ -71,7 +74,7 @@ public class FileUploadPartnershipsControllerTests
             (_submissionServiceMock.Object, 
             _fileUploadServiceMock.Object, 
             _sessionManagerMock.Object,
-            Options.Create(new GlobalVariables { FileUploadLimitInBytes = 268435456, SubsidiaryFileUploadLimitInBytes = 61440 }));
+            Options.Create(new GlobalVariables { FileUploadLimitInBytes = 268435456, SubsidiaryFileUploadLimitInBytes = 61440 }), _registrationApplicationServiceMock.Object);
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
@@ -140,7 +143,7 @@ public class FileUploadPartnershipsControllerTests
         _systemUnderTest.ModelState.AddModelError("file", "Some error");
 
         // Act
-        var result = await _systemUnderTest.Post() as ViewResult;
+        var result = await _systemUnderTest.Post(It.IsAny<string>()) as ViewResult;
 
         // Assert
         _fileUploadServiceMock.Verify(
@@ -188,7 +191,7 @@ public class FileUploadPartnershipsControllerTests
             .ReturnsAsync(submissionId);
 
         // Act
-        var result = await _systemUnderTest.Post() as RedirectToActionResult;
+        var result = await _systemUnderTest.Post(It.IsAny<string>()) as RedirectToActionResult;
 
         // Assert
         result.ControllerName.Should().Contain("FileUploadingPartnerships");

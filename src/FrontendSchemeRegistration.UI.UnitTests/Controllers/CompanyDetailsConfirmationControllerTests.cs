@@ -8,6 +8,7 @@ using Constants;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
+using FrontendSchemeRegistration.UI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
@@ -28,6 +29,8 @@ public class CompanyDetailsConfirmationControllerTests
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
     private CompanyDetailsConfirmationController _systemUnderTest;
     private Mock<IUrlHelper> _urlHelperMock;
+    private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
+
 
     [SetUp]
     public void SetUp()
@@ -39,6 +42,7 @@ public class CompanyDetailsConfirmationControllerTests
         _submissionServiceMock = new Mock<ISubmissionService>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _userAccountServiceMock = new Mock<IUserAccountService>();
+        _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
@@ -63,8 +67,9 @@ public class CompanyDetailsConfirmationControllerTests
                     }
                 }
             });
+        _registrationApplicationServiceMock.Setup(x => x.validateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).ReturnsAsync(DateTime.Now.Year);
 
-        _systemUnderTest = new CompanyDetailsConfirmationController(_submissionServiceMock.Object, _sessionManagerMock.Object, _userAccountServiceMock.Object);
+        _systemUnderTest = new CompanyDetailsConfirmationController(_submissionServiceMock.Object, _sessionManagerMock.Object, _userAccountServiceMock.Object, _registrationApplicationServiceMock.Object);
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
@@ -120,7 +125,7 @@ public class CompanyDetailsConfirmationControllerTests
         result.ViewData.Keys.Should().HaveCount(2);
         result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
         result.ViewData.Keys.Should().Contain("IsFileUploadJourneyInvokedViaRegistration");
-        result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
+        result.ViewData["BackLinkToDisplay"].Should().Be($"~/{PagePaths.FileUploadCompanyDetailsSubLanding}?registrationyear={DateTime.Now.Year}");
         result.ViewData["IsFileUploadJourneyInvokedViaRegistration"].Should().Be(false);
         result.Model.Should().BeEquivalentTo(new CompanyDetailsConfirmationModel
         {
@@ -183,7 +188,7 @@ public class CompanyDetailsConfirmationControllerTests
         result.ViewData.Keys.Should().HaveCount(2);
         result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
         result.ViewData.Keys.Should().Contain("IsFileUploadJourneyInvokedViaRegistration");
-        result.ViewData["BackLinkToDisplay"].Should().Be($"/report-data/{PagePaths.RegistrationTaskList}");
+        result.ViewData["BackLinkToDisplay"].Should().Be($"~/{PagePaths.RegistrationTaskList}?registrationyear={DateTime.Now.Year}");
         result.ViewData["IsFileUploadJourneyInvokedViaRegistration"].Should().Be(true);
         result.Model.Should().BeEquivalentTo(new CompanyDetailsConfirmationModel
         {

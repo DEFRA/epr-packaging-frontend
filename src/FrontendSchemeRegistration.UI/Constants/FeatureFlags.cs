@@ -23,4 +23,5 @@ public static class FeatureFlags
     public const string ShowPoMSubmission2025 = "ShowPoMSubmission2025";
     public const string ShowYourFeedbackFooter = "ShowYourFeedbackFooter";
     public const string ShowWasteTile = "ShowWasteTile";
+    public const string ShowServiceNowFooterLink = "ShowServiceNowFooterLink";
 }

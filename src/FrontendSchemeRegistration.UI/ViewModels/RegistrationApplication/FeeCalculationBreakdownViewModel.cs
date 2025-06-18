@@ -36,4 +36,6 @@ public class FeeCalculationBreakdownViewModel
     public ApplicationStatusType ApplicationStatus { get; set; }
 
     public bool RegistrationApplicationSubmitted { get; set; }
+
+    public int RegistrationYear { get; set; }
 }

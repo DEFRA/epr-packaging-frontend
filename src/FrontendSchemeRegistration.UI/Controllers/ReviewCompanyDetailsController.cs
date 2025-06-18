@@ -6,8 +6,10 @@ using Application.Services.Interfaces;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using Extensions;
+using global::FrontendSchemeRegistration.UI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Sessions;
 using UI.Attributes.ActionFilters;
 using ViewModels;
@@ -20,17 +22,21 @@ public class ReviewCompanyDetailsController : Controller
     private readonly IUserAccountService _accountService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
     private readonly ILogger<ReviewCompanyDetailsController> _logger;
+    private readonly IRegistrationApplicationService _registrationApplicationService;
 
     public ReviewCompanyDetailsController(
         ISubmissionService submissionService,
         IUserAccountService accountService,
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
-        ILogger<ReviewCompanyDetailsController> logger)
+        ILogger<ReviewCompanyDetailsController> logger,
+        IRegistrationApplicationService registrationApplicationService)
+
     {
         _submissionService = submissionService;
         _accountService = accountService;
         _sessionManager = sessionManager;
         _logger = logger;
+        _registrationApplicationService = registrationApplicationService;
     }
 
     [HttpGet]
@@ -39,6 +45,7 @@ public class ReviewCompanyDetailsController : Controller
     {
         var submissionId = Guid.Parse(Request.Query["submissionId"]);
         var userData = User.GetUserData();
+        var registrationYear = await _registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
 
         var submission = await _submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
 
@@ -58,7 +65,7 @@ public class ReviewCompanyDetailsController : Controller
         var isFileUploadJourneyInvokedViaRegistration = session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration;
         var isResubmission = session.RegistrationSession.IsResubmission;
 
-        SetBackLink(isFileUploadJourneyInvokedViaRegistration, isResubmission);
+        this.SetBackLink(isFileUploadJourneyInvokedViaRegistration, isResubmission, registrationYear);
         ViewData["IsFileUploadJourneyInvokedViaRegistration"] = isFileUploadJourneyInvokedViaRegistration;
 
         return View(
@@ -100,7 +107,8 @@ public class ReviewCompanyDetailsController : Controller
                     ? await GetUsersName(submission.LastSubmittedFiles.SubmittedBy.Value)
                     : string.Empty,
                 SubmissionStatus = submission.GetSubmissionStatus(),
-                IsResubmission = isResubmission
+                IsResubmission = isResubmission,
+                RegistrationYear = registrationYear
             });
 
         return RedirectToAction("HandleThrownExceptions", "Error");
@@ -110,6 +118,7 @@ public class ReviewCompanyDetailsController : Controller
     public async Task<IActionResult> Post(ReviewCompanyDetailsViewModel model)
     {
         var submissionId = Guid.Parse(Request.Query["submissionId"]);
+
         var userData = User.GetUserData();
 
         ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
@@ -144,7 +153,8 @@ public class ReviewCompanyDetailsController : Controller
 
         if (model.SubmitOrganisationDetailsResponse.HasValue && !model.SubmitOrganisationDetailsResponse.Value)
         {
-            return isFileUploadJourneyInvokedViaRegistration ? Redirect(PagePaths.RegistrationTaskList) : RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
+            return isFileUploadJourneyInvokedViaRegistration ? (model.RegistrationYear.HasValue) ? Redirect(QueryHelpers.AddQueryString(PagePaths.RegistrationTaskList, "registrationyear", model.RegistrationYear.ToString())) : Redirect(PagePaths.RegistrationTaskList)
+                : RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
         }
 
         if (!model.IsApprovedUser)
@@ -154,20 +164,16 @@ public class ReviewCompanyDetailsController : Controller
 
         try
         {
+             var routeValue = QueryStringExtensions.BuildRouteValues(submissionId: model.SubmissionId, registrationYear: model.RegistrationYear);
+           
             if (model.IsComplianceScheme)
             {
                 await _submissionService.SubmitAsync(submissionId, new Guid(model.OrganisationDetailsFileId), null, session.RegistrationSession.ApplicationReferenceNumber, session.RegistrationSession.IsResubmission);
 
-                return RedirectToAction("Get", "CompanyDetailsConfirmation", new
-                {
-                    model.SubmissionId
-                });
+                return RedirectToAction("Get", "CompanyDetailsConfirmation", routeValue);
             }
 
-            return RedirectToAction("Get", "DeclarationWithFullName", new
-            {
-                model.SubmissionId
-            });
+            return RedirectToAction("Get", "DeclarationWithFullName", routeValue);
         }
         catch (Exception)
         {
@@ -179,11 +185,5 @@ public class ReviewCompanyDetailsController : Controller
     {
         var person = await _accountService.GetAllPersonByUserId(userId);
         return $"{person.FirstName} {person.LastName}";
-    }
-
-    private void SetBackLink(bool isFileUploadJourneyInvokedViaRegistration, bool isResubmission)
-    {
-        var backLink = isFileUploadJourneyInvokedViaRegistration ? PagePaths.RegistrationTaskList : Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
-        ViewBag.BackLinkToDisplay = backLink.AppendResubmissionFlagToQueryString(isResubmission);
     }
 }

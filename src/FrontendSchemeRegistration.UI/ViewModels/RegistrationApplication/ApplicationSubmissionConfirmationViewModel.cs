@@ -16,4 +16,6 @@ public class ApplicationSubmissionConfirmationViewModel : OrganisationNationView
     
     public bool IsComplianceScheme { get; set; }
     public bool isResubmission { get; set; }
+
+    public int RegistrationYear { get; set; }
 }

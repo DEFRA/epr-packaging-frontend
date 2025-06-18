@@ -144,6 +144,15 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.Shared.Partials.Govuk {
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
+        internal static string Footer_OpensInNewTab {
+            get {
+                return ResourceManager.GetString("Footer.OpensInNewTab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
         internal static string Footer_Privacy {
             get {
                 return ResourceManager.GetString("Footer.Privacy", resourceCulture);
@@ -165,6 +174,24 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.Shared.Partials.Govuk {
         internal static string Footer_Telephone {
             get {
                 return ResourceManager.GetString("Footer.Telephone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string Footer_Website {
+            get {
+                return ResourceManager.GetString("Footer.Website", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        internal static string Footer_WebsiteLink {
+            get {
+                return ResourceManager.GetString("Footer.WebsiteLink", resourceCulture);
             }
         }
     }

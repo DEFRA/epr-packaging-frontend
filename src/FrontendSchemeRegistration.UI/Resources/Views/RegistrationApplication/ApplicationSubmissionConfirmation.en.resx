@@ -16,10 +16,10 @@
         <value>Application submission confirmation</value>
     </data>
     <data name="registration_application_submitted_for_approval" xml:space="preserve">
-        <value>Your registration application for 2025 has been submitted for approval</value>
+        <value>Your registration application for {0} has been submitted for approval</value>
     </data>
-    <data name="registration_for_2025_has_been_granted" xml:space="preserve">
-        <value>Your registration for 2025 has been granted</value>
+    <data name="registration_has_been_granted" xml:space="preserve">
+        <value>Your registration for {0} has been granted</value>
     </data>
     <data name="application_reference_number" xml:space="preserve">
         <value>Application reference:</value>

@@ -12,4 +12,7 @@ public class PaymentOptionPayOnlineViewModel
     public string PaymentLink { get; set; }
     
     public bool IsComplianceScheme { get; set; }
+
+    public int RegistrationYear { get; set; }
+
 }

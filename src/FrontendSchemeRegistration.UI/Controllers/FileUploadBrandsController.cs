@@ -9,6 +9,7 @@ using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using Extensions;
 using global::FrontendSchemeRegistration.Application.Options;
+using global::FrontendSchemeRegistration.UI.Services;
 using global::FrontendSchemeRegistration.UI.Services.FileUploadLimits;
 using global::FrontendSchemeRegistration.UI.Services.Messages;
 using Helpers;
@@ -28,17 +29,20 @@ public class FileUploadBrandsController : Controller
     private readonly IFileUploadService _fileUploadService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
     private readonly IOptions<GlobalVariables> _globalVariables;
+    private readonly IRegistrationApplicationService _registrationApplicationService;
 
     public FileUploadBrandsController(
         ISubmissionService submissionService,
         IFileUploadService fileUploadService,
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
-        IOptions<GlobalVariables> globalVariables)
+        IOptions<GlobalVariables> globalVariables,
+        IRegistrationApplicationService registrationApplicationService)
     {
         _submissionService = submissionService;
         _fileUploadService = fileUploadService;
         _sessionManager = sessionManager;
         _globalVariables = globalVariables;
+        _registrationApplicationService = registrationApplicationService;
     }
 
     [HttpGet]
@@ -46,11 +50,12 @@ public class FileUploadBrandsController : Controller
     [SubmissionPeriodActionFilter(PagePaths.FileUploadCompanyDetailsSubLanding)]
     public async Task<IActionResult> Get()
     {
+        var registrationYear = await _registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
 
         if (session is null)
         {
-            return RedirectToAction("Get", "FileUploadCompanyDetails");
+            return RedirectToAction("Get", "FileUploadCompanyDetails", registrationYear is not null ? new { registrationyear = registrationYear.ToString() } : null);
         }
 
         if (!session.RegistrationSession.Journey.Contains<string>(PagePaths.FileUploadCompanyDetails))
@@ -81,24 +86,27 @@ public class FileUploadBrandsController : Controller
                         new FileUploadSuccessViewModel
                         {
                             OrganisationRole = organisationRole,
-                            IsResubmission = session.RegistrationSession.IsResubmission
+                            IsResubmission = session.RegistrationSession.IsResubmission,
+                            RegistrationYear = registrationYear
                         });
                 }
             }
         }
 
-        return RedirectToAction("Get", "FileUploadCompanyDetails");
+        return RedirectToAction("Get", "FileUploadCompanyDetails", registrationYear is not null ? new { registrationyear = registrationYear.ToString() } : null);
+
     }
 
     [HttpPost]
     [RequestSizeLimit(FileSizeLimit.FileSizeLimitInBytes)]
     [SubmissionIdActionFilter(PagePaths.FileUploadCompanyDetailsSubLanding)]
     [SubmissionPeriodActionFilter(PagePaths.FileUploadCompanyDetailsSubLanding)]
-    public async Task<IActionResult> Post()
+    public async Task<IActionResult> Post(string registrationyear)
     {
         Guid? submissionId = Guid.TryParse(Request.Query["submissionId"], out var value) ? value : null;
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         var organisationRole = session.UserData.Organisations.FirstOrDefault()?.OrganisationRole;
+        var registrationYear = await _registrationApplicationService.validateRegistrationYear(registrationyear, true);
 
         submissionId = await _fileUploadService.ProcessUploadAsync(
             Request.ContentType,
@@ -116,21 +124,17 @@ public class FileUploadBrandsController : Controller
 
         session.RegistrationSession.Journey.AddIfNotExists(PagePaths.FileUploadBrands);
         await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
-
+        var routeValues = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear);        
         return !ModelState.IsValid
             ? View("FileUploadBrands", new FileUploadSuccessViewModel
             {
                 OrganisationRole = organisationRole,
-                IsResubmission = session.RegistrationSession.IsResubmission
+                IsResubmission = session.RegistrationSession.IsResubmission,
+                RegistrationYear = registrationYear
             })
             : RedirectToAction(
                 "Get",
                 "FileUploadingBrands",
-                new RouteValueDictionary
-                {
-                    {
-                        "submissionId", submissionId
-                    }
-                });
+                routeValues);
     }
 }

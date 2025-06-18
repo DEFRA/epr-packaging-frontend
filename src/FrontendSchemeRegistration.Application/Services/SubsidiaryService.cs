@@ -193,7 +193,7 @@ public class SubsidiaryService : ISubsidiaryService
         }
         catch (Exception ex)
         {
-            throw ex;
+            throw ;
         }
     }
 

@@ -9,6 +9,8 @@ public class FileUploadCompanyDetailsViewModel : ViewModelWithOrganisationRole
     
     public bool IsResubmission { get; set; }
 
+    public int? RegistrationYear { get; set; }
+
     public string PageHeading
     {
         get

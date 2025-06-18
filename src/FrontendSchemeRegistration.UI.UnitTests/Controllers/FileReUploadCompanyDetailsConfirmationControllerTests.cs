@@ -18,6 +18,7 @@ using Microsoft.Extensions.Primitives;
 using Moq;
 using Organisation = EPR.Common.Authorization.Models.Organisation;
 using FrontendSchemeRegistration.Application.Constants;
+using FrontendSchemeRegistration.UI.Services;
 
 [TestFixture]
 public class FileReUploadCompanyDetailsConfirmationControllerTests
@@ -28,11 +29,14 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
     private Mock<IUserAccountService> _userAccountServiceMock;
     private FileReUploadCompanyDetailsConfirmationController _systemUnderTest;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
+    private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
+
 
     [SetUp]
     public void SetUp()
     {
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
+        _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
@@ -59,7 +63,7 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
         _systemUnderTest =
             new FileReUploadCompanyDetailsConfirmationController(
                 _submissionServiceMock.Object,
-                _userAccountServiceMock.Object, _sessionManagerMock.Object);
+                _userAccountServiceMock.Object, _sessionManagerMock.Object, _registrationApplicationServiceMock.Object);
 
         _systemUnderTest.ControllerContext = new ControllerContext
         {
@@ -77,7 +81,9 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
                 Session = new Mock<ISession>().Object
             }
         };
-        _systemUnderTest.Url = Mock.Of<IUrlHelper>();
+        var urlHelperMock = new Mock<IUrlHelper>();
+        urlHelperMock.Setup(x => x.Content(It.IsAny<string>())).Returns((string contentPath) => contentPath);
+        _systemUnderTest.Url = urlHelperMock.Object;
     }
 
     [Test]
@@ -260,7 +266,7 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
         result.ViewName.Should().Be("FileReUploadCompanyDetailsConfirmation");
         result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
         result.ViewData.Keys.Should().Contain("IsFileUploadJourneyInvokedViaRegistration");
-        result.ViewData["BackLinkToDisplay"].Should().Be($"/report-data/{PagePaths.RegistrationTaskList}");
+        result.ViewData["BackLinkToDisplay"].Should().Be($"~/{PagePaths.RegistrationTaskList}");
         result.Model.Should().BeEquivalentTo(new FileReUploadCompanyDetailsConfirmationViewModel
         {
             SubmissionId = SubmissionId,

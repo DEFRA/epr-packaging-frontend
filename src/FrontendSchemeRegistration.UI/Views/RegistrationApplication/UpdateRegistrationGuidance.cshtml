@@ -1,5 +1,6 @@
 ﻿@{
     ViewData["Title"] = Localizer["update-registration-data"];
+    var registrationYear = Context.Request.Query["registrationyear"];
 }
 <main class="govuk-main-wrapper" id="main-content" role="main">
     <div class="govuk-grid-row">
@@ -22,7 +23,7 @@
                     @Localizer["reporting-organisation-details"]
                 </a> @Localizer["reporting-organisation-details-before-you-start"]
             </p>
-            <a href="@FrontendSchemeRegistration.Application.Constants.PagePaths.RegistrationTaskList?IsResubmission=true" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+            <a href="@($"{Url.Content($"~/{FrontendSchemeRegistration.Application.Constants.PagePaths.RegistrationTaskList}")}?IsResubmission=true&registrationyear={registrationYear}")" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
                 @SharedLocalizer["continue"]
             </a>
         </div>

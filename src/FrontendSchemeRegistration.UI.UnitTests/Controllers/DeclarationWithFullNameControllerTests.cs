@@ -7,6 +7,8 @@ using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
+using FrontendSchemeRegistration.Application.Enums;
+using FrontendSchemeRegistration.UI.Services;
 using FrontendSchemeRegistration.UI.Sessions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -31,6 +33,8 @@ public class DeclarationWithFullNameControllerTests
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
     private Mock<ClaimsPrincipal> _claimsPrincipalMock;
     private DeclarationWithFullNameController _systemUnderTest;
+    private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
+
 
     [SetUp]
     public void SetUp()
@@ -38,13 +42,14 @@ public class DeclarationWithFullNameControllerTests
         _submissionServiceMock = new Mock<ISubmissionService>();
         _claimsPrincipalMock = new Mock<ClaimsPrincipal>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
+        _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
                 RegistrationSession = new RegistrationSession { IsResubmission = true }
             });
 
-        _systemUnderTest = new DeclarationWithFullNameController(_submissionServiceMock.Object, _sessionManagerMock.Object, new NullLogger<DeclarationWithFullNameController>());
+        _systemUnderTest = new DeclarationWithFullNameController(_submissionServiceMock.Object, _sessionManagerMock.Object, new NullLogger<DeclarationWithFullNameController>(), _registrationApplicationServiceMock.Object);
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
@@ -60,7 +65,10 @@ public class DeclarationWithFullNameControllerTests
                 User = _claimsPrincipalMock.Object
             },
         };
-        _systemUnderTest.Url = Mock.Of<IUrlHelper>();
+
+        var urlHelperMock = new Mock<IUrlHelper>();
+        urlHelperMock.Setup(x => x.Content(It.IsAny<string>())).Returns((string contentPath) => contentPath);
+        _systemUnderTest.Url = urlHelperMock.Object;
     }
 
     [TestCase(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Invited)]
@@ -81,6 +89,7 @@ public class DeclarationWithFullNameControllerTests
         // Arrange
         var claims = CreateUserDataClaim(serviceRole, enrolmentStatus, OrganisationRoles.Producer);
         _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+        _registrationApplicationServiceMock.Setup(x => x.validateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).ReturnsAsync(DateTime.Now.Year);
 
         // Act
         var result = await _systemUnderTest.Get() as RedirectToActionResult;
@@ -88,6 +97,38 @@ public class DeclarationWithFullNameControllerTests
         // Assert
         result.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("ReviewCompanyDetails");
+    }
+
+    [Test]
+    public async Task Get_RedirectsToFileUploadSubLandingGet_WhenSubmissionIsNull()
+    {
+        // Arrange
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).Returns(Task.FromResult<RegistrationSubmission>(null));
+
+        // Act
+        var result = await _systemUnderTest.Get() as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadSubLanding");
+    }
+
+    [Test]
+    public async Task Get_RedirectsToFileUploadSubLandingGet_WhenSubmissionDoesNotHaveAValidFile()
+    {
+        // Arrange
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).Returns(Task.FromResult<RegistrationSubmission>(new RegistrationSubmission { HasValidFile = false }));
+
+        // Act
+        var result = await _systemUnderTest.Get() as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadSubLanding");
     }
 
     [Test]
@@ -119,8 +160,11 @@ public class DeclarationWithFullNameControllerTests
         };
         var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
         _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+        _registrationApplicationServiceMock.Setup(x => x.validateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).ReturnsAsync(DateTime.Now.Year);
+
         // Act
         var result = await _systemUnderTest.Get() as ViewResult;
+
         // Assert
         result.ViewName.Should().Be(ViewName);
     }
@@ -142,6 +186,7 @@ public class DeclarationWithFullNameControllerTests
     {
         // Arrange
         var model = new DeclarationWithFullNameViewModel();
+        model.RegistrationYear = DateTime.Now.Year;
         var claims = CreateUserDataClaim(serviceRole, enrolmentStatus, OrganisationRoles.Producer);
         _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
 

@@ -47,7 +47,7 @@
                         @Localizer["you_will_have_to_start_again_if_there_are_errors_in_your_files"]
                     }
                     else{
-                        @Localizer["ensure_x_year_reporting_of_packaging_data_before_registering", DateTime.Today.Year]
+                        @Localizer["ensure_x_year_reporting_of_packaging_data_before_registering", Model.RegistrationYear]
 
                     }
                 </strong>
@@ -67,7 +67,7 @@
 
             
 
-            <form asp-controller="RegistrationApplication" asp-action="AdditionalInformation" method="post">
+            <form asp-controller="RegistrationApplication" asp-action="AdditionalInformation" asp-route-registrationyear="@Model.RegistrationYear" method="post">
                 @Html.TextAreaFor(model => model.AdditionalInformationText, new { @class = "govuk-textarea", @rows = "5" })
                 <button class="govuk-button govuk-body" data-module="govuk-button" type="submit">
                      @if (Model.IsResubmission)

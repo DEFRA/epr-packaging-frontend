@@ -315,6 +315,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         }
 
     }
+
     /// <summary>
     /// Get single PRN
     /// </summary>
@@ -434,14 +435,14 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         }
     }
 
-    public async Task<PrnObligationModel> GetRecyclingObligationsCalculation(List<Guid> externalIds, int year)
+    public async Task<PrnObligationModel> GetRecyclingObligationsCalculation(int year)
     {
         AddComplianceSchemeHeader();
         await PrepareAuthenticatedClientAsync();
 
         try
         {
-            var response = await _httpClient.PostAsJsonAsync($"/api/v1/prn/obligationcalculation/{year}", externalIds);
+            var response = await _httpClient.GetAsync($"/api/v1/prn/obligationcalculation/{year}");
 
             response.EnsureSuccessStatusCode();
 

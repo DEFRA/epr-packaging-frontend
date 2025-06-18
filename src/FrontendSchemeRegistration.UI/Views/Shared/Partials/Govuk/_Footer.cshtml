@@ -29,6 +29,9 @@
 				<h2 class="govuk-!-margin-top-3 govuk-footer__heading govuk-heading-m">@Localizer["Footer.GetHelp"]</h2>
 				<div class="govuk-footer__section govuk-grid-column-two-thirds">
 					<p class="govuk-body">@Localizer["Footer.Email"]: <a class="govuk-link govuk-link--no-visited-state" href="mailto:eprcustomerservice@defra.gov.uk">eprcustomerservice@defra.gov.uk</a></p>
+					<feature name="@FeatureFlags.ShowServiceNowFooterLink">
+						<p class="govuk-body">@Localizer["Footer.Website"]: <a class="govuk-link govuk-link--no-visited-state" rel="noreferrer noopener" target="_blank" href="@urlOptions.Value.ServiceNow">@Localizer["Footer.WebsiteLink"] (@Localizer["Footer.OpensInNewTab"])</a></p>
+					</feature>
 					<p class="govuk-body govuk-!-margin-bottom-2">@Localizer["Footer.Telephone"]: 0300 060 0002 </p>
 					<p class="govuk-body">@Localizer["Footer.OpeningTime"]</p>
 				</div>
@@ -78,6 +81,9 @@ else
 				<div class="govuk-footer__meta-item govuk-footer__meta-item--grow">
 					<h2 class="govuk-heading-m">@Localizer["Footer.GetHelp"]</h2>
 					<p class="govuk-body">@Localizer["Footer.Email"]: <a class="govuk-link govuk-link--no-visited-state" href="mailto:eprcustomerservice@defra.gov.uk">eprcustomerservice@defra.gov.uk</a></p>
+					<feature name="@FeatureFlags.ShowServiceNowFooterLink">
+						<p class="govuk-body">@Localizer["Footer.Website"]: <a class="govuk-link govuk-link--no-visited-state" rel="noreferrer noopener" target="_blank" href="@urlOptions.Value.ServiceNow">@Localizer["Footer.WebsiteLink"] (@Localizer["Footer.OpensInNewTab"])</a></p>
+					</feature>
 					<p class="govuk-body govuk-!-margin-bottom-2">@Localizer["Footer.Telephone"]: 0300 060 0002</p>
 					<p class="govuk-body">@Localizer["Footer.OpeningTime"]</p>
 					<h2 class="govuk-visually-hidden">@Localizer["Footer.SupportLinks"]</h2>

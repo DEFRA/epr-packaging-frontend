@@ -120,23 +120,23 @@
   <data name="Footer.Cookies" xml:space="preserve">
     <value>Cwcis</value>
   </data>
+  <data name="Footer.Privacy" xml:space="preserve">
+    <value>Preifatrwydd</value>
+  </data>
   <data name="Footer.Accessibility" xml:space="preserve">
     <value>Datganiad hygyrchedd</value>
   </data>
   <data name="Footer.AllContent" xml:space="preserve">
     <value>Mae’r holl gynnwys ar gael dan y</value>
   </data>
-  <data name="Footer.CrownCopyright" xml:space="preserve">
-    <value>© Hawlfraint y Goron</value>
+  <data name="Footer.OpenGovernment" xml:space="preserve">
+    <value>Drwydded Llywodraeth Agored, fersiwn 3.0</value>
   </data>
   <data name="Footer.ExceptWhere" xml:space="preserve">
     <value>, oni nodir yn wahanol</value>
   </data>
-  <data name="Footer.OpenGovernment" xml:space="preserve">
-    <value>Drwydded Llywodraeth Agored, fersiwn 3.0</value>
-  </data>
-  <data name="Footer.Privacy" xml:space="preserve">
-    <value>Preifatrwydd</value>
+  <data name="Footer.CrownCopyright" xml:space="preserve">
+    <value>© Hawlfraint y Goron</value>
   </data>
   <data name="Footer.SupportLinks" xml:space="preserve">
     <value>Dolenni cymorth</value>
@@ -148,9 +148,18 @@
     <value>Cael help</value>
   </data>
   <data name="Footer.OpeningTime" xml:space="preserve">
-    <value>Dydd Llun i ddydd Gwener, 8:30am i 4:30pm</value>
+    <value>Dydd Llun i ddydd Gwener, 8am i 6pm</value>
   </data>
   <data name="Footer.Telephone" xml:space="preserve">
     <value>Ffôn</value>
+  </data>
+  <data name="Footer.Website" xml:space="preserve">
+    <value>WWebsite</value>
+  </data>
+  <data name="Footer.OpensInNewTab" xml:space="preserve">
+    <value>opens in new tab</value>
+  </data>
+  <data name="Footer.WebsiteLink" xml:space="preserve">
+    <value>Wawaiting correct production link</value>
   </data>
 </root>

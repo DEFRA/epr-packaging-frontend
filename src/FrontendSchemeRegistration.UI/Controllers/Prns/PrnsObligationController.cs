@@ -44,10 +44,7 @@ public class PrnsObligationController : Controller
 	{
 		var year = DateTime.Now.Year;
 
-        var externalIds = await GetChildOrganisationExternalIdsAsync();
-		_logger.LogInformation("{LogPrefix}: PrnsObligationController - ObligationPerMaterial: Child organisation GUIDs retrived from accounts database: {ExternalIds}", logPrefix, externalIds);
-
-		var viewModel = await _prnService.GetRecyclingObligationsCalculation(externalIds, year);
+		var viewModel = await _prnService.GetRecyclingObligationsCalculation(year);
         _logger.LogInformation("{LogPrefix}: PrnsObligationController - ObligationsHome: Recycling Obligations returned for year {Year} : {Results}", logPrefix, year, JsonConvert.SerializeObject(viewModel));
 
         await FillViewModelFromSessionAsync(viewModel, year);
@@ -67,10 +64,7 @@ public class PrnsObligationController : Controller
 
         if (Enum.TryParse(material, true, out MaterialType materialType))
 		{
-			var externalIds = await GetChildOrganisationExternalIdsAsync();
-			_logger.LogInformation("{LogPrefix}: PrnsObligationController - ObligationPerMaterial: Child organisation GUIDs retrived from accounts database: {ExternalIds}", logPrefix, externalIds);
-
-			viewModel = await _prnService.GetRecyclingObligationsCalculation(externalIds, year);
+			viewModel = await _prnService.GetRecyclingObligationsCalculation(year);
             _logger.LogInformation("{LogPrefix}: PrnsObligationController - ObligationsHome: Recycling Obligations returned for year {Year} : {Results}", logPrefix, year, JsonConvert.SerializeObject(viewModel));
 
             if (materialType == MaterialType.Glass || materialType == MaterialType.GlassRemelt || materialType == MaterialType.RemainingGlass)
@@ -98,29 +92,6 @@ public class PrnsObligationController : Controller
 
         return View(viewModel);
     }
-
-	[NonAction]
-	public async Task<List<Guid>> GetChildOrganisationExternalIdsAsync()
-	{
-		var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-		var organisation = session.UserData.Organisations?.FirstOrDefault();
-
-		if (organisation == null)
-		{
-			_logger.LogInformation("{LogPrefix}: PrnsObligationController - GetChildOrganisationExternalIds: No organisation found in session", logPrefix);
-			return new List<Guid>();
-		}
-
-		if (organisation.OrganisationRole == OrganisationRoles.Producer)
-		{
-			var externalIds = await _prnService.GetChildOrganisationExternalIdsAsync(organisation.Id.Value, null);
-            externalIds.Insert(0, organisation.Id.Value); // Add DR (Producer) guid along with child ids
-			return externalIds;
-		}
-
-		var complianceSchemeId = session.RegistrationSession.SelectedComplianceScheme.Id;
-		return await _prnService.GetChildOrganisationExternalIdsAsync(organisation.Id.Value, complianceSchemeId);
-	}
 
 	[NonAction]
     public async Task FillViewModelFromSessionAsync(PrnObligationViewModel viewModel, int year)

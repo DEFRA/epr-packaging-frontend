@@ -153,15 +153,6 @@
   <data name="packaging_data" xml:space="preserve">
     <value>Packaging data</value>
   </data>
-  <data name="registration" xml:space="preserve">
-    <value>Registration</value>
-  </data>
-  <data name="you_need_to_register_by_1_April" xml:space="preserve">
-    <value>You must register your organisation for {0}.</value>
-  </data>
-  <data name="Apply_by_1st_April_x" xml:space="preserve">
-    <value>Apply by 1st April, {0}</value>
-  </data>
   <data name="you_must_report_packaging_data" xml:space="preserve">
     <value>You must report packaging data for {0}. Report this data by 1 April, {1}.</value>
   </data>
@@ -209,66 +200,6 @@
   </data>
   <data name="prn_unordered_list_point_2" xml:space="preserve">
     <value>check your recycling obligations progress</value>
-  </data>
-  <data name="You_have_submitted_your_registration_data" xml:space="preserve">
-    <value>You have submitted your registration data. It may take up to an hour for our systems to update.</value>
-  </data>
-  <data name="You_will_then_need_to_pay_your_registration_fee" xml:space="preserve">
-    <value>You will then need to pay your registration fee and submit your registration application.</value>
-  </data>
-  <data name="You_have_submitted_your_registration_data_for_x" xml:space="preserve">
-    <value>You have submitted your registration data for {0}.</value>
-  </data>
-  <data name="View_your_registration_fees_and_payment_methods" xml:space="preserve">
-    <value>View your registration fees and payment methods.</value>
-  </data>
-  <data name="You_have_viewed_your_registration_fees" xml:space="preserve">
-    <value>You have viewed your registration fees, and methods of payment.</value>
-  </data>
-  <data name="Payment_must_be_made_before_submitting_your_x" xml:space="preserve">
-    <value>Payment must be made before submitting your {0} application.</value>
-  </data>
-  <data name="Your_registration_application_for_x_has_been_submitted" xml:space="preserve">
-    <value>Your registration application for {0} has been submitted.</value>
-  </data>
-  <data name="Your_registration_for_x_has_been_granted" xml:space="preserve">
-    <value>Your registration for {0} has been granted by the regulator.</value>
-  </data>
-  <data name="Your_registration_reference_number_is_x" xml:space="preserve">
-    <value>Your producer registration number is &lt;strong&gt;{0}&lt;/strong&gt;.</value>
-  </data>
-  <data name="If_anything_changes_you_should_resubmit" xml:space="preserve">
-    <value>Changes to your organisation's data must be reported within 28 days.</value>
-  </data>
-  <data name="Resubmit_your_data_files" xml:space="preserve">
-    <value>Resubmit your data files</value>
-  </data>
-  <data name="The_regulator_has_identified_a_potential_issue" xml:space="preserve">
-    <value>The regulator has identified a potential issue with your application and will contact you.</value>
-  </data>
-  <data name="You_will_need_to_submit_a_corrected_registration_data_file" xml:space="preserve">
-    <value>You will need to submit a corrected registration data file.</value>
-  </data>
-  <data name="Your_registration_application_for_x_has_been_refused" xml:space="preserve">
-    <value>Your registration application for {0} has been refused.</value>
-  </data>
-  <data name="Contact_the_regulator_for_further_advice" xml:space="preserve">
-    <value>Contact the regulator for further advice.</value>
-  </data>
-  <data name="Your_registration_for_X_has_been_cancelled" xml:space="preserve">
-    <value>Your registration for {0} has been cancelled by the regulator.</value>
-  </data>
-  <data name="Contact_your_regulator_if_you_need_advice" xml:space="preserve">
-    <value>Contact your regulator if you need advice.</value>
-  </data>
-  <data name="You_have_resubmitted_your_registration_data_for_x" xml:space="preserve">
-    <value>You have resubmitted your registration data for {0}.</value>
-  </data>
-  <data name="You_have_updated_your_data_and_viewed_your_fees" xml:space="preserve">
-    <value>You've updated your data and viewed your fees.</value>
-  </data>
-  <data name="You_now_need_to_submit_to_the_regulator" xml:space="preserve">
-    <value>You now need to submit to the regulator.</value>
   </data>
   <data name="waste_management_and_admin_fees" xml:space="preserve">
     <value>Waste management and admin fees (opens in a new tab)</value>

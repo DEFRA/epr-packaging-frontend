@@ -68,7 +68,6 @@ public class PrnsObligationControllerTests
 		// Arrange
 		var organisationId = Guid.NewGuid();
 		var childOrganisationId = Guid.NewGuid();
-		var externalIdsIcludingProducerExternalId = new List<Guid> { organisationId, childOrganisationId };
 
 		var session = new FrontendSchemeRegistrationSession
         {
@@ -85,13 +84,10 @@ public class PrnsObligationControllerTests
                 }
             }
         };
-        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>()))
-            .ReturnsAsync(session);
-
-		_prnServiceMock.Setup(p => p.GetChildOrganisationExternalIdsAsync(organisationId, null)).ReturnsAsync([childOrganisationId]);
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
 
 		var viewModel = _fixture.Create<PrnObligationViewModel>();
-        _prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(externalIdsIcludingProducerExternalId, It.IsAny<int>())).ReturnsAsync(viewModel);
+        _prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(It.IsAny<int>())).ReturnsAsync(viewModel);
 
         // Act
         var result = await _controller.ObligationsHome() as ViewResult;
@@ -112,7 +108,6 @@ public class PrnsObligationControllerTests
 		// Arrange
 		var organisationId = Guid.NewGuid();
 		var childOrganisationId = Guid.NewGuid();
-		var externalIdsIcludingProducerExternalId = new List<Guid> { organisationId, childOrganisationId };
 
 		var session = new FrontendSchemeRegistrationSession
         {
@@ -129,15 +124,12 @@ public class PrnsObligationControllerTests
                 }
             }
         };
-        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>()))
-            .ReturnsAsync(session);
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+
         string material = "Glass";
-
-		_prnServiceMock.Setup(x => x.GetChildOrganisationExternalIdsAsync(organisationId, null)).ReturnsAsync([childOrganisationId]);
-
 		int year = DateTime.Now.Year;
 		PrnObligationViewModel viewModel = _fixture.Create<PrnObligationViewModel>();
-        _prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(externalIdsIcludingProducerExternalId, year)).ReturnsAsync(viewModel);
+        _prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(year)).ReturnsAsync(viewModel);
 
         // Act
         var response = await _controller.ObligationPerMaterial(material);
@@ -161,7 +153,6 @@ public class PrnsObligationControllerTests
 		// Arrange
 		var organisationId = Guid.NewGuid();
 		var childOrganisationId = Guid.NewGuid();
-		var externalIdsIcludingProducerExternalId = new List<Guid> { organisationId, childOrganisationId };
 
 		var session = new FrontendSchemeRegistrationSession
         {
@@ -180,7 +171,7 @@ public class PrnsObligationControllerTests
         };
         _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
 
-		_prnServiceMock.Setup(p => p.GetChildOrganisationExternalIdsAsync(organisationId, null)).ReturnsAsync([childOrganisationId]);
+		//_prnServiceMock.Setup(p => p.GetChildOrganisationExternalIdsAsync(organisationId, null)).ReturnsAsync([childOrganisationId]);
 
 		int year = DateTime.Now.Year;
         PrnObligationViewModel viewModel = _fixture.Create<PrnObligationViewModel>();
@@ -189,7 +180,7 @@ public class PrnsObligationControllerTests
             item.MaterialName = Enum.Parse<MaterialType>(material);
             break;
         }
-		_prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(externalIdsIcludingProducerExternalId, year)).ReturnsAsync(viewModel);
+		_prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(year)).ReturnsAsync(viewModel);
 
         // Act
         var response = await _controller.ObligationPerMaterial(material);
@@ -200,7 +191,7 @@ public class PrnsObligationControllerTests
         viewModel.MaterialObligationViewModels.Count.Should().BeGreaterThan(0);
         _controller.ViewData["GlassOrNonGlassResource"].Should().Be(resource);
         _controller.ViewData.Should().ContainKey("BackLinkToDisplay");
-        _prnServiceMock.Verify(x => x.GetRecyclingObligationsCalculation(It.IsAny<List<Guid>>(), year), Times.Once);
+        _prnServiceMock.Verify(x => x.GetRecyclingObligationsCalculation(year), Times.Once);
     }
 
     [Test]
@@ -226,14 +217,14 @@ public class PrnsObligationControllerTests
         string material = "Unknown";
         int year = DateTime.Now.Year;
         PrnObligationViewModel viewModel = _fixture.Create<PrnObligationViewModel>();
-        _prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(It.IsAny<List<Guid>>(), year)).ReturnsAsync(viewModel);
+        _prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(year)).ReturnsAsync(viewModel);
 
         // Act
         var response = await _controller.ObligationPerMaterial(material);
 
         var view = response.Should().BeOfType<ViewResult>().Which;
         view.ViewName.Should().BeNull();
-        _prnServiceMock.Verify(x => x.GetRecyclingObligationsCalculation(It.IsAny<List<Guid>>(), It.IsAny<int>()), Times.Never());
+        _prnServiceMock.Verify(x => x.GetRecyclingObligationsCalculation(It.IsAny<int>()), Times.Never());
         _controller.ViewData.Should().NotContainKey("GlassOrNonGlassResource");
         _controller.ViewData.Should().ContainKey("BackLinkToDisplay");
         _controller.ViewData.Should().ContainKey("ProducerResponsibilityObligationsLink");
@@ -385,105 +376,4 @@ public class PrnsObligationControllerTests
         viewModel.CurrentYear.Should().Be(currentYear);
         viewModel.DeadlineYear.Should().Be(deadlineYear);
     }
-
-	[Test]
-	public async Task GetChildOrganisationExternalIdsAsync_ShouldReturnEmptyResult_WhenOrganisationIsNull()
-	{
-		// Arrange
-		var session = new FrontendSchemeRegistrationSession
-		{
-			UserData = new UserData
-			{
-				Organisations = null
-			}
-		};
-
-		_sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
-
-		// Act
-		var result = await _controller.GetChildOrganisationExternalIdsAsync();
-
-		// Assert
-		result.Should().NotBeNull();
-        result.Count.Should().Be(0);
-	}
-
-	[Test]
-	public async Task GetChildOrganisationExternalIdsAsync_ShouldReturnExternalIds_WhenOrganisationRoleIsProducer()
-	{
-		// Arrange
-        var organisationId = Guid.NewGuid();
-        var childOrganisationId = Guid.NewGuid();
-        var expectedExternalIds = new List<Guid> { organisationId, childOrganisationId };
-		var session = new FrontendSchemeRegistrationSession
-		{
-			UserData = new UserData
-			{
-				Organisations = new List<Organisation>
-				{
-					new() {
-                        Id = organisationId,
-						OrganisationRole = OrganisationRoles.Producer,
-						Name = "Test Organisation",
-						NationId = 1
-					}
-				}
-			}
-		};
-		_sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
-
-        _prnServiceMock.Setup(p => p.GetChildOrganisationExternalIdsAsync(organisationId, null)).ReturnsAsync([childOrganisationId]);
-
-		// Act
-		var result = await _controller.GetChildOrganisationExternalIdsAsync();
-
-		// Assert
-        result.Should().NotBeNull();
-        result.Count.Should().Be(expectedExternalIds.Count);
-        result.Should().BeEquivalentTo(expectedExternalIds);
-	}
-
-	[Test]
-	public async Task GetChildOrganisationExternalIdsAsync_ShouldReturnExternalIds_WhenOrganisationRoleIsComplianceScheme()
-	{
-		// Arrange
-		var organisationId = Guid.NewGuid();
-		var complianceSchemeId = Guid.NewGuid();
-        var expectedExternalIds = _fixture.CreateMany<Guid>().ToList();
-		var session = new FrontendSchemeRegistrationSession
-		{
-			UserData = new UserData
-			{
-				Organisations = new List<Organisation>
-				{
-					new() {
-                        Id = organisationId,
-						OrganisationRole = OrganisationRoles.ComplianceScheme,
-						Name = "Test Organisation",
-						NationId = 1
-					}
-				}
-			},
-			RegistrationSession = new RegistrationSession
-			{
-				SelectedComplianceScheme = new ComplianceSchemeDto
-				{
-                    Id = complianceSchemeId,
-                    Name = "Test Organisation",
-					NationId = 1
-				}
-			}
-		};
-		_sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
-
-		_prnServiceMock.Setup(p => p.GetChildOrganisationExternalIdsAsync(organisationId, complianceSchemeId)).ReturnsAsync(expectedExternalIds);
-
-		// Act
-		var result = await _controller.GetChildOrganisationExternalIdsAsync();
-
-		// Assert
-		result.Should().NotBeNull();
-		result.Count.Should().Be(expectedExternalIds.Count);
-		result.Should().BeEquivalentTo(expectedExternalIds);
-	}
 }

@@ -8,12 +8,14 @@ using Application.Services.Interfaces;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
+using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using Newtonsoft.Json;
 using UI.Controllers.FrontendSchemeRegistration;
@@ -72,6 +74,7 @@ public abstract class FrontendSchemeRegistrationTestBase
     protected FrontendSchemeRegistrationSession FrontEndSchemeRegistrationSession { get; set; }
     
     protected Mock<IResubmissionApplicationService> ResubmissionApplicationService { get; set; }
+    protected Mock<IOptions<GlobalVariables>> globalVariables { get; set; }
 
     protected static void AssertBackLink(ViewResult viewResult, string expectedBackLink)
     {
@@ -106,7 +109,6 @@ public abstract class FrontendSchemeRegistrationTestBase
         RegistrationApplicationService = new Mock<IRegistrationApplicationService>();
         PaymentCalculationService = new Mock<IPaymentCalculationService>();
         ResubmissionApplicationService = new Mock<IResubmissionApplicationService>();
-
 
         SystemUnderTest = new FrontendSchemeRegistrationController(
             SessionManagerMock.Object,

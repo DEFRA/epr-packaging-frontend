@@ -7,6 +7,7 @@ using Constants;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
+using FrontendSchemeRegistration.UI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -28,12 +29,14 @@ public class FileUploadCompanyDetailsErrorsControllerTests
     private Mock<ISubmissionService> _submissionServiceMock;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
     private FileUploadCompanyDetailsErrorsController _systemUnderTest;
+    private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
 
     [SetUp]
     public void SetUp()
     {
         _submissionServiceMock = new Mock<ISubmissionService>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
+        _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
@@ -61,7 +64,7 @@ public class FileUploadCompanyDetailsErrorsControllerTests
                 }
             });
 
-        _systemUnderTest = new FileUploadCompanyDetailsErrorsController(_submissionServiceMock.Object, _sessionManagerMock.Object, _nullLogger);
+        _systemUnderTest = new FileUploadCompanyDetailsErrorsController(_submissionServiceMock.Object, _sessionManagerMock.Object, _nullLogger, _registrationApplicationServiceMock.Object);
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext

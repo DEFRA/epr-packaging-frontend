@@ -22,4 +22,6 @@ public class FileUploadCompanyDetailsSuccessViewModel : ViewModelWithOrganisatio
     public int? OrganisationMemberCount { get; set; }
     
     public bool IsResubmission { get; set; }
+
+    public int? RegistrationYear { get; set; }
 }

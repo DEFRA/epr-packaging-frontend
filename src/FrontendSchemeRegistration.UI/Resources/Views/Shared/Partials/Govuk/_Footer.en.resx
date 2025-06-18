@@ -120,23 +120,23 @@
   <data name="Footer.Cookies" xml:space="preserve">
     <value>Cookies</value>
   </data>
+  <data name="Footer.Privacy" xml:space="preserve">
+    <value>Privacy</value>
+  </data>
   <data name="Footer.Accessibility" xml:space="preserve">
     <value>Accessibility statement</value>
   </data>
   <data name="Footer.AllContent" xml:space="preserve">
     <value>All content is available under the</value>
   </data>
-  <data name="Footer.CrownCopyright" xml:space="preserve">
-    <value>© Crown copyright</value>
+  <data name="Footer.OpenGovernment" xml:space="preserve">
+    <value>Open Government Licence v3.0</value>
   </data>
   <data name="Footer.ExceptWhere" xml:space="preserve">
     <value>, except where otherwise stated</value>
   </data>
-  <data name="Footer.OpenGovernment" xml:space="preserve">
-    <value>Open Government Licence v3.0</value>
-  </data>
-  <data name="Footer.Privacy" xml:space="preserve">
-    <value>Privacy</value>
+  <data name="Footer.CrownCopyright" xml:space="preserve">
+    <value>© Crown copyright</value>
   </data>
   <data name="Footer.SupportLinks" xml:space="preserve">
     <value>Support links</value>
@@ -148,7 +148,7 @@
     <value>Get help</value>
   </data>
   <data name="Footer.OpeningTime" xml:space="preserve">
-    <value>Monday to Friday, 8:30am to 4:30pm</value>
+    <value>Monday to Friday, 8am to 6pm</value>
   </data>
   <data name="Footer.Telephone" xml:space="preserve">
     <value>Telephone</value>
@@ -158,5 +158,14 @@
   </data>
   <data name="Footer.ReportAProblem" xml:space="preserve">
     <value>Report a problem with this page</value>
+  </data>
+  <data name="Footer.Website" xml:space="preserve">
+    <value>Website</value>
+  </data>
+  <data name="Footer.OpensInNewTab" xml:space="preserve">
+    <value>opens in new tab</value>
+  </data>
+  <data name="Footer.WebsiteLink" xml:space="preserve">
+    <value>awaiting correct production link</value>
   </data>
 </root>

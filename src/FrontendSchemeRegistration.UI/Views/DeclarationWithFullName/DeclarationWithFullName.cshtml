@@ -16,7 +16,7 @@
                 @Html.HiddenFor(model => model.OrganisationDetailsFileId)
                 @Html.HiddenFor(model => model.OrganisationName)
                 @Html.HiddenFor(model => model.IsResubmission)
-                
+                @Html.HiddenFor(model => model.RegistrationYear)
                 @if (!ViewData.ModelState.IsValid)
                 {
                     @await Html.PartialAsync("Partials/Govuk/_ErrorsViewModelSummary", errorsViewModel)

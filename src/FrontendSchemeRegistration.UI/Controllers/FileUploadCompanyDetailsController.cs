@@ -9,6 +9,7 @@ using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using Extensions;
 using global::FrontendSchemeRegistration.Application.Options;
+using global::FrontendSchemeRegistration.UI.Services;
 using global::FrontendSchemeRegistration.UI.Services.FileUploadLimits;
 using global::FrontendSchemeRegistration.UI.Services.Messages;
 using Helpers;
@@ -30,22 +31,26 @@ public class FileUploadCompanyDetailsController : Controller
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
     private readonly ISubmissionService _submissionService;
     private readonly IOptions<GlobalVariables> _globalVariables;
+    private readonly IRegistrationApplicationService _registrationApplicationService;
 
     public FileUploadCompanyDetailsController(
         ISubmissionService submissionService,
         IFileUploadService fileUploadService,
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
-        IOptions<GlobalVariables> globalVariables)
+        IOptions<GlobalVariables> globalVariables,
+        IRegistrationApplicationService registrationApplicationService)
     {
         _submissionService = submissionService;
         _fileUploadService = fileUploadService;
         _sessionManager = sessionManager;
         _globalVariables = globalVariables;
+        _registrationApplicationService = registrationApplicationService;
     }
 
     [HttpGet]
     public async Task<IActionResult> Get()
     {
+        var registrationYear = await _registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         if (session is not null)
         {
@@ -62,7 +67,7 @@ public class FileUploadCompanyDetailsController : Controller
                     }
                 }
 
-                SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission);
+                this.SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, registrationYear);
 
                 return View(
                     "FileUploadCompanyDetails",
@@ -70,7 +75,8 @@ public class FileUploadCompanyDetailsController : Controller
                     {
                         SubmissionDeadline = session.RegistrationSession.SubmissionDeadline,
                         OrganisationRole = organisationRole,
-                        IsResubmission = session.RegistrationSession.IsResubmission
+                        IsResubmission = session.RegistrationSession.IsResubmission,
+                        RegistrationYear = registrationYear
                     });
             }
         }
@@ -80,9 +86,15 @@ public class FileUploadCompanyDetailsController : Controller
 
     [HttpPost]
     [RequestSizeLimit(FileSizeLimit.FileSizeLimitInBytes)]
-    public async Task<IActionResult> Post()
+    public async Task<IActionResult> Post(string registrationyear)
     {
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState.Where(e => e.Value.Errors.Count > 0).Select(e => $"{e.Key}: {e.Value.Errors.First().ErrorMessage}").ToList();
+        }
         Guid? submissionId = Guid.TryParse(Request.Query["submissionId"], out var value) ? value : null;
+        var registrationYear = await _registrationApplicationService.validateRegistrationYear(registrationyear, true);
+
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         session.RegistrationSession.LatestRegistrationSet ??= new Dictionary<string, Guid>();
 
@@ -107,8 +119,9 @@ public class FileUploadCompanyDetailsController : Controller
         var organisationRole = session.UserData.Organisations.FirstOrDefault()?.OrganisationRole;
 
         await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
-        SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission);
-
+        this.SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, registrationYear);
+        var routeValue = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear);
+       
         return !ModelState.IsValid
             ? View(
                 "FileUploadCompanyDetails",
@@ -116,22 +129,13 @@ public class FileUploadCompanyDetailsController : Controller
                 {
                     SubmissionDeadline = session.RegistrationSession.SubmissionDeadline,
                     OrganisationRole = organisationRole,
-                    IsResubmission = session.RegistrationSession.IsResubmission
+                    IsResubmission = session.RegistrationSession.IsResubmission,
+                    RegistrationYear = registrationYear
                 })
             : RedirectToAction(
                 "Get",
                 "UploadingOrganisationDetails",
-                new RouteValueDictionary
-                {
-                    {
-                        "submissionId", submissionId
-                    }
-                });
+                routeValue);
     }
 
-    private void SetBackLink(bool isFileUploadJourneyInvokedViaRegistration, bool isResubmission)
-    {
-        var backLink = isFileUploadJourneyInvokedViaRegistration ? Url.Content($"~/{PagePaths.RegistrationTaskList}") : Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
-        ViewBag.BackLinkToDisplay = backLink.AppendResubmissionFlagToQueryString(isResubmission);
-    }
 }

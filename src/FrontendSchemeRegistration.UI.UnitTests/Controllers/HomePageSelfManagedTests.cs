@@ -25,113 +25,135 @@ using UI.ViewModels;
 [TestFixture]
 public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
 {
-	private const string ViewName = "HomePageSelfManaged";
-	private const string OrganisationName = "Test Organisation";
-	private const string OrganisationNumber = "123456";
-	private const string OrganisationRole = OrganisationRoles.Producer;
-	private readonly Guid _organisationId = Guid.NewGuid();
-	private readonly Guid _userId = Guid.NewGuid();
-	private UserData _userData;
-	 private readonly RegistrationApplicationSession _registrationApplicationSession = new RegistrationApplicationSession
-	{
-		LastSubmittedFile = new LastSubmittedFileDetails { FileId = Guid.NewGuid() },
-		RegistrationFeeCalculationDetails = null,
-		ApplicationReferenceNumber = "",
-		RegistrationReferenceNumber = "",
-		SubmissionId = Guid.NewGuid(),
-		RegistrationFeePaymentMethod = null,
-		IsSubmitted = true,
-		ApplicationStatus = ApplicationStatusType.NotStarted,
-		RegistrationApplicationSubmittedComment = null,
-		RegistrationApplicationSubmittedDate = null
-	};
-	
-	[SetUp]
-	public void Setup()
-	{
-		_userData = new UserData
-		{
-			Id = _userId,
-			Organisations =
-			[
-				new Organisation
-				{
-					Id = _organisationId,
-					Name = OrganisationName,
-					OrganisationRole = OrganisationRole,
-					OrganisationNumber = OrganisationNumber
-				}
-			]
-		};
+    private const string ViewName = "HomePageSelfManaged";
+    private const string OrganisationName = "Test Organisation";
+    private const string OrganisationNumber = "123456";
+    private const string OrganisationRole = OrganisationRoles.Producer;
+    private readonly Guid _organisationId = Guid.NewGuid();
+    private readonly Guid _userId = Guid.NewGuid();
+    private UserData _userData;
+    private readonly RegistrationApplicationSession _registrationApplicationSession = new RegistrationApplicationSession
+    {
+        LastSubmittedFile = new LastSubmittedFileDetails { FileId = Guid.NewGuid() },
+        RegistrationFeeCalculationDetails = null,
+        ApplicationReferenceNumber = "",
+        RegistrationReferenceNumber = "",
+        SubmissionId = Guid.NewGuid(),
+        RegistrationFeePaymentMethod = null,
+        IsSubmitted = true,
+        ApplicationStatus = ApplicationStatusType.NotStarted,
+        RegistrationApplicationSubmittedComment = null,
+        RegistrationApplicationSubmittedDate = null
+    };
 
-		SetupBase(_userData);
-		FrontEndSchemeRegistrationSession = new FrontendSchemeRegistrationSession();
+    [SetUp]
+    public void Setup()
+    {
+        _userData = new UserData
+        {
+            Id = _userId,
+            Organisations =
+            [
+                new Organisation
+                {
+                    Id = _organisationId,
+                    Name = OrganisationName,
+                    OrganisationRole = OrganisationRole,
+                    OrganisationNumber = OrganisationNumber
+                }
+            ]
+        };
 
-		SessionManagerMock.Setup(x =>
-			x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(FrontEndSchemeRegistrationSession);
-	}
+        SetupBase(_userData);
+        FrontEndSchemeRegistrationSession = new FrontendSchemeRegistrationSession();
 
-	[Test]
-	public async Task VisitHomePageSelfManaged_RedirectsToComplianceSchemeMemberLanding_WhenProducerIsLinkedWithAComplianceScheme()
-	{
-		// Arrange
-		ComplianceSchemeService.Setup(x => x.GetProducerComplianceScheme(It.IsAny<Guid>())).ReturnsAsync(new ProducerComplianceSchemeDto());
-		AuthorizationService
-			.Setup(x => x.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<HttpContext>(), PolicyConstants.EprSelectSchemePolicy))
-			.ReturnsAsync(AuthorizationResult.Success);
+        SessionManagerMock.Setup(x =>
+            x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(FrontEndSchemeRegistrationSession);
+    }
 
-		// Act
-		var result = await SystemUnderTest.VisitHomePageSelfManaged() as RedirectToActionResult;
+    [Test]
+    public async Task VisitHomePageSelfManaged_RedirectsToComplianceSchemeMemberLanding_WhenProducerIsLinkedWithAComplianceScheme()
+    {
+        // Arrange
+        ComplianceSchemeService.Setup(x => x.GetProducerComplianceScheme(It.IsAny<Guid>())).ReturnsAsync(new ProducerComplianceSchemeDto());
+        AuthorizationService
+            .Setup(x => x.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<HttpContext>(), PolicyConstants.EprSelectSchemePolicy))
+            .ReturnsAsync(AuthorizationResult.Success);
 
-		// Assert
-		result.ActionName.Should().Be(nameof(ComplianceSchemeMemberLandingController.Get));
-		result.ControllerName.Should().Be(nameof(ComplianceSchemeMemberLandingController).RemoveControllerFromName());
-	}
+        // Act
+        var result = await SystemUnderTest.VisitHomePageSelfManaged() as RedirectToActionResult;
 
-	[Test]
-	[TestCase(ServiceRoles.ApprovedPerson, true)]
-	[TestCase(ServiceRoles.DelegatedPerson, true)]
-	[TestCase(ServiceRoles.BasicUser, false)]
-	public async Task VisitHomePageSelfManaged_ReturnsHomePageSelfManagedViewWithCorrectViewModel_WhenProducerIsNotLinkedWithAComplianceScheme(
-		string serviceRole,
-		bool expectedCanSelectComplianceSchemeValue)
-	{
-		// Arrange
-		AuthorizationService
-			.Setup(x => x.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<HttpContext>(), PolicyConstants.EprSelectSchemePolicy))
-			.ReturnsAsync(AuthorizationResult.Success);
-		_userData.ServiceRole = serviceRole;
-		SetupBase(_userData);
+        // Assert
+        result.ActionName.Should().Be(nameof(ComplianceSchemeMemberLandingController.Get));
+        result.ControllerName.Should().Be(nameof(ComplianceSchemeMemberLandingController).RemoveControllerFromName());
+    }
 
-		var notificationList = new List<NotificationDto>();
-		NotificationService.Setup(x => x.GetCurrentUserNotifications(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(notificationList));
+    [Test]
+    [TestCase(ServiceRoles.ApprovedPerson, true)]
+    [TestCase(ServiceRoles.DelegatedPerson, true)]
+    [TestCase(ServiceRoles.BasicUser, false)]
+    public async Task VisitHomePageSelfManaged_ReturnsHomePageSelfManagedViewWithCorrectViewModel_WhenProducerIsNotLinkedWithAComplianceScheme(
+        string serviceRole,
+        bool expectedCanSelectComplianceSchemeValue)
+    {
+        // Arrange
+        AuthorizationService
+            .Setup(x => x.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<HttpContext>(), PolicyConstants.EprSelectSchemePolicy))
+            .ReturnsAsync(AuthorizationResult.Success);
+        _userData.ServiceRole = serviceRole;
+        SetupBase(_userData);
 
-		RegistrationApplicationService
-			.Setup(s => s.GetRegistrationApplicationSession(
-				It.IsAny<ISession>(),
-				It.IsAny<Organisation>(), It.IsAny<bool?>()))
-			.ReturnsAsync(_registrationApplicationSession);
+        var notificationList = new List<NotificationDto>();
+        NotificationService.Setup(x => x.GetCurrentUserNotifications(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(notificationList));
 
-		// Act
-		var result = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
+        RegistrationApplicationService
+            .Setup(s => s.GetRegistrationApplicationSession(
+                It.IsAny<ISession>(),
+                It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+            .ReturnsAsync(_registrationApplicationSession);
 
-		// Assert
-		result.ViewName.Should().Be(ViewName);
-		result.Model.As<HomePageSelfManagedViewModel>().Should().BeEquivalentTo(new HomePageSelfManagedViewModel
-		{
-			OrganisationName = OrganisationName,
-			OrganisationNumber = OrganisationNumber.ToReferenceNumberFormat(),
-			OrganisationRole = OrganisationRole,
-			CanSelectComplianceScheme = expectedCanSelectComplianceSchemeValue,
-			ApplicationReferenceNumber = string.Empty,
-			RegistrationReferenceNumber = string.Empty,
-			Notification = new NotificationViewModel
-			{
-				HasPendingNotification = false,
-				HasNominatedNotification = false,
-				NominatedEnrolmentId = string.Empty,
-				NominatedApprovedPersonEnrolmentId = string.Empty
-			},
+        var registrationApplicationPerYear = new List<RegistrationApplicationPerYearViewModel>()
+        {
+            new RegistrationApplicationPerYearViewModel {
+            ApplicationStatus = _registrationApplicationSession.ApplicationStatus,
+            FileUploadStatus = _registrationApplicationSession.FileUploadStatus,
+            PaymentViewStatus = _registrationApplicationSession.PaymentViewStatus,
+            AdditionalDetailsStatus = _registrationApplicationSession.AdditionalDetailsStatus,
+            ApplicationReferenceNumber = _registrationApplicationSession.ApplicationReferenceNumber,
+            RegistrationReferenceNumber = _registrationApplicationSession.RegistrationReferenceNumber,
+            IsResubmission = _registrationApplicationSession.IsResubmission
+           }
+        };
+
+        RegistrationApplicationService.Setup(x => x.BuildRegistrationApplicationPerYearViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+            .ReturnsAsync(registrationApplicationPerYear);
+
+        // Act
+        var result = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be(ViewName);
+        result.Model.As<HomePageSelfManagedViewModel>().Should().BeEquivalentTo(new HomePageSelfManagedViewModel
+        {
+            OrganisationName = OrganisationName,
+            OrganisationNumber = OrganisationNumber.ToReferenceNumberFormat(),
+            OrganisationRole = OrganisationRole,
+            CanSelectComplianceScheme = expectedCanSelectComplianceSchemeValue,
+            RegistrationApplicationsPerYear = new List<RegistrationApplicationPerYearViewModel>()
+            {
+                new RegistrationApplicationPerYearViewModel
+                {
+                    ApplicationReferenceNumber = string.Empty,
+                    RegistrationReferenceNumber = string.Empty, 
+                }
+            },
+            Notification = new NotificationViewModel
+            {
+                HasPendingNotification = false,
+                HasNominatedNotification = false,
+                NominatedEnrolmentId = string.Empty,
+                NominatedApprovedPersonEnrolmentId = string.Empty
+            },
             ResubmissionTaskListViewModel = new ResubmissionTaskListViewModel
             {
                 AppReferenceNumber = null,
@@ -139,86 +161,86 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
                 IsResubmissionComplete = null,
             },
         });
-	}
+    }
 
-	[Test]
-	public async Task GivenOnHomePageSelfManagedPage_WhenUserHasPendingNotification_ThenHomePageComplianceSchemeViewModelWithNotificationReturned()
-	{
-		var notificationList = new List<NotificationDto>
-		{
-			new()
-			{
-				Type = NotificationTypes.Packaging.DelegatedPersonPendingApproval
-			}
-		};
-		NotificationService.Setup(x => x.GetCurrentUserNotifications(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(notificationList));
+    [Test]
+    public async Task GivenOnHomePageSelfManagedPage_WhenUserHasPendingNotification_ThenHomePageComplianceSchemeViewModelWithNotificationReturned()
+    {
+        var notificationList = new List<NotificationDto>
+        {
+            new()
+            {
+                Type = NotificationTypes.Packaging.DelegatedPersonPendingApproval
+            }
+        };
+        NotificationService.Setup(x => x.GetCurrentUserNotifications(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(notificationList));
 
-		RegistrationApplicationService
-			.Setup(s => s.GetRegistrationApplicationSession(
-				It.IsAny<ISession>(),
-				It.IsAny<Organisation>(), It.IsAny<bool?>()))
-			.ReturnsAsync(_registrationApplicationSession);
+        RegistrationApplicationService
+            .Setup(s => s.GetRegistrationApplicationSession(
+                It.IsAny<ISession>(),
+                It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+            .ReturnsAsync(_registrationApplicationSession);
 
-		var result = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
+        var result = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
 
-		result.ViewName.Should().Be(ViewName);
+        result.ViewName.Should().Be(ViewName);
 
-		result.Model.As<HomePageSelfManagedViewModel>().Notification.HasPendingNotification.Should().BeTrue();
-		result.Model.As<HomePageSelfManagedViewModel>().Notification.HasNominatedNotification.Should().BeFalse();
-	}
+        result.Model.As<HomePageSelfManagedViewModel>().Notification.HasPendingNotification.Should().BeTrue();
+        result.Model.As<HomePageSelfManagedViewModel>().Notification.HasNominatedNotification.Should().BeFalse();
+    }
 
-	[Test]
-	public async Task GivenOnHomePageSelfManagedPage_WhenUserHasNominated_Notification_ThenHomePageComplianceSchemeViewModelWithNotificationReturned()
-	{
-		var notificationList = new List<NotificationDto>();
-		var nominatedEnrolmentId = Guid.NewGuid().ToString();
-		var notificationData = new List<KeyValuePair<string, string>>
-		{
-			new KeyValuePair<string, string>("EnrolmentId", nominatedEnrolmentId)
-		};
-		notificationList.Add(new NotificationDto
-		{
-			Type = NotificationTypes.Packaging.DelegatedPersonNomination,
-			Data = notificationData
-		});
-		NotificationService.Setup(x => x.GetCurrentUserNotifications(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(notificationList));
+    [Test]
+    public async Task GivenOnHomePageSelfManagedPage_WhenUserHasNominated_Notification_ThenHomePageComplianceSchemeViewModelWithNotificationReturned()
+    {
+        var notificationList = new List<NotificationDto>();
+        var nominatedEnrolmentId = Guid.NewGuid().ToString();
+        var notificationData = new List<KeyValuePair<string, string>>
+        {
+            new KeyValuePair<string, string>("EnrolmentId", nominatedEnrolmentId)
+        };
+        notificationList.Add(new NotificationDto
+        {
+            Type = NotificationTypes.Packaging.DelegatedPersonNomination,
+            Data = notificationData
+        });
+        NotificationService.Setup(x => x.GetCurrentUserNotifications(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(notificationList));
 
-		RegistrationApplicationService
-			.Setup(s => s.GetRegistrationApplicationSession(
-				It.IsAny<ISession>(),
-				It.IsAny<Organisation>(), It.IsAny<bool?>()))
-			.ReturnsAsync(_registrationApplicationSession);
+        RegistrationApplicationService
+            .Setup(s => s.GetRegistrationApplicationSession(
+                It.IsAny<ISession>(),
+                It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+            .ReturnsAsync(_registrationApplicationSession);
 
-		var result = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
+        var result = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
 
-		result.ViewName.Should().Be(ViewName);
+        result.ViewName.Should().Be(ViewName);
 
-		result.Model.As<HomePageSelfManagedViewModel>().Notification.HasNominatedNotification.Should().BeTrue();
-		result.Model.As<HomePageSelfManagedViewModel>().Notification.HasPendingNotification.Should().BeFalse();
-		result.Model.As<HomePageSelfManagedViewModel>().Notification.NominatedEnrolmentId.Should().BeEquivalentTo(nominatedEnrolmentId);
-	}
+        result.Model.As<HomePageSelfManagedViewModel>().Notification.HasNominatedNotification.Should().BeTrue();
+        result.Model.As<HomePageSelfManagedViewModel>().Notification.HasPendingNotification.Should().BeFalse();
+        result.Model.As<HomePageSelfManagedViewModel>().Notification.NominatedEnrolmentId.Should().BeEquivalentTo(nominatedEnrolmentId);
+    }
 
-	[Test]
-	public async Task GivenOnHomePageSelfManagedPage_WhenVisitHomePageSelfManagedHttpGetCalled_WithCallFromUsingComplianceScheme_ThenHomePageComplianceSchemeViewModelReturned()
-	{
-		// Act
-		var result = await SystemUnderTest.HomePageSelfManaged() as RedirectToActionResult;
+    [Test]
+    public async Task GivenOnHomePageSelfManagedPage_WhenVisitHomePageSelfManagedHttpGetCalled_WithCallFromUsingComplianceScheme_ThenHomePageComplianceSchemeViewModelReturned()
+    {
+        // Act
+        var result = await SystemUnderTest.HomePageSelfManaged() as RedirectToActionResult;
 
-		// Assert
-		result.ActionName.Should().Be(nameof(FrontendSchemeRegistrationController.UsingAComplianceScheme));
-		var expectedJourney = new List<string>
-		{
-			PagePaths.HomePageSelfManaged,
-			PagePaths.UsingAComplianceScheme
-		};
-		SessionManagerMock.Verify(
-			x => x.SaveSessionAsync(
-				It.IsAny<ISession>(),
-				It.Is<FrontendSchemeRegistrationSession>(y => y.RegistrationSession.Journey.SequenceEqual(expectedJourney))),
-			Times.Once);
-	}
-	
-	    [Test]
+        // Assert
+        result.ActionName.Should().Be(nameof(FrontendSchemeRegistrationController.UsingAComplianceScheme));
+        var expectedJourney = new List<string>
+        {
+            PagePaths.HomePageSelfManaged,
+            PagePaths.UsingAComplianceScheme
+        };
+        SessionManagerMock.Verify(
+            x => x.SaveSessionAsync(
+                It.IsAny<ISession>(),
+                It.Is<FrontendSchemeRegistrationSession>(y => y.RegistrationSession.Journey.SequenceEqual(expectedJourney))),
+            Times.Once);
+    }
+
+    [Test]
     public async Task Get_ReturnsCorrectViewAndModel_When_FileUploaded_Is_PendingState_ReturnsCorrectViewAndModel()
     {
         // Arrange
@@ -241,8 +263,24 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
             RegistrationApplicationSubmittedDate = null
         };
 
-        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<bool?>()))
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
             .ReturnsAsync(registrationApplicationSession);
+
+        var registrationApplicationPerYear = new List<RegistrationApplicationPerYearViewModel>()
+        {
+            new RegistrationApplicationPerYearViewModel {
+            ApplicationStatus = registrationApplicationSession.ApplicationStatus,
+            FileUploadStatus = registrationApplicationSession.FileUploadStatus,
+            PaymentViewStatus = registrationApplicationSession.PaymentViewStatus,
+            AdditionalDetailsStatus = registrationApplicationSession.AdditionalDetailsStatus,
+            ApplicationReferenceNumber = registrationApplicationSession.ApplicationReferenceNumber,
+            RegistrationReferenceNumber = registrationApplicationSession.RegistrationReferenceNumber,
+            IsResubmission = registrationApplicationSession.IsResubmission
+           }
+        };
+
+        RegistrationApplicationService.Setup(x => x.BuildRegistrationApplicationPerYearViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+            .ReturnsAsync(registrationApplicationPerYear);
 
         // Act
         var response = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
@@ -257,11 +295,17 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
                 OrganisationName = OrganisationName,
                 OrganisationNumber = "123 456",
                 OrganisationRole = "Producer",
-                ApplicationReferenceNumber = reference,
-                FileUploadStatus = RegistrationTaskListStatus.Pending,
-                PaymentViewStatus = RegistrationTaskListStatus.CanNotStartYet,
-                AdditionalDetailsStatus = RegistrationTaskListStatus.CanNotStartYet,
-                ApplicationStatus = ApplicationStatusType.FileUploaded,
+                RegistrationApplicationsPerYear = new List<RegistrationApplicationPerYearViewModel>()
+                {
+                    new RegistrationApplicationPerYearViewModel
+                    {
+                        ApplicationReferenceNumber = reference,
+                        FileUploadStatus = RegistrationTaskListStatus.Pending,
+                        PaymentViewStatus = RegistrationTaskListStatus.CanNotStartYet,
+                        AdditionalDetailsStatus = RegistrationTaskListStatus.CanNotStartYet,
+                        ApplicationStatus = ApplicationStatusType.FileUploaded,
+                    }
+                },
                 ResubmissionTaskListViewModel = new()
             });
     }
@@ -289,8 +333,24 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
             RegistrationApplicationSubmittedDate = null
         };
 
-        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<bool?>()))
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
             .ReturnsAsync(registrationApplicationSession);
+
+        var registrationApplicationPerYear = new List<RegistrationApplicationPerYearViewModel>()
+        {
+            new RegistrationApplicationPerYearViewModel {
+            ApplicationStatus = registrationApplicationSession.ApplicationStatus,
+            FileUploadStatus = registrationApplicationSession.FileUploadStatus,
+            PaymentViewStatus = registrationApplicationSession.PaymentViewStatus,
+            AdditionalDetailsStatus = registrationApplicationSession.AdditionalDetailsStatus,
+            ApplicationReferenceNumber = registrationApplicationSession.ApplicationReferenceNumber,
+            RegistrationReferenceNumber = registrationApplicationSession.RegistrationReferenceNumber,
+            IsResubmission = registrationApplicationSession.IsResubmission
+           }
+        };
+
+        RegistrationApplicationService.Setup(x => x.BuildRegistrationApplicationPerYearViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+            .ReturnsAsync(registrationApplicationPerYear);
 
         // Act
         var response = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
@@ -302,15 +362,22 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
             .And
             .BeEquivalentTo(new HomePageSelfManagedViewModel
             {
+                RegistrationApplicationsPerYear = new List<RegistrationApplicationPerYearViewModel>()
+                {
+                    new RegistrationApplicationPerYearViewModel
+                    {
+                        ApplicationReferenceNumber = reference,
+                        RegistrationReferenceNumber = reference,
+                        FileUploadStatus = RegistrationTaskListStatus.Completed,
+                        PaymentViewStatus = RegistrationTaskListStatus.Completed,
+                        AdditionalDetailsStatus = RegistrationTaskListStatus.NotStarted,
+                        ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+                    }
+                },
                 OrganisationName = OrganisationName,
-                ApplicationReferenceNumber = reference,
-                RegistrationReferenceNumber = reference,
                 OrganisationNumber = "123 456",
                 OrganisationRole = "Producer",
-                FileUploadStatus = RegistrationTaskListStatus.Completed,
-                PaymentViewStatus = RegistrationTaskListStatus.Completed,
-                AdditionalDetailsStatus = RegistrationTaskListStatus.NotStarted,
-                ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+                
                 ResubmissionTaskListViewModel = new()
             });
     }
@@ -338,8 +405,24 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
             RegistrationApplicationSubmittedDate = DateTime.Now.AddMinutes(-5)
         };
 
-        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<bool?>()))
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
             .ReturnsAsync(registrationApplicationSession);
+
+        var registrationApplicationPerYear = new List<RegistrationApplicationPerYearViewModel>()
+        {
+            new RegistrationApplicationPerYearViewModel {
+            ApplicationStatus = registrationApplicationSession.ApplicationStatus,
+            FileUploadStatus = registrationApplicationSession.FileUploadStatus,
+            PaymentViewStatus = registrationApplicationSession.PaymentViewStatus,
+            AdditionalDetailsStatus = registrationApplicationSession.AdditionalDetailsStatus,
+            ApplicationReferenceNumber = registrationApplicationSession.ApplicationReferenceNumber,
+            RegistrationReferenceNumber = registrationApplicationSession.RegistrationReferenceNumber,
+            IsResubmission = registrationApplicationSession.IsResubmission
+           }
+        };
+
+        RegistrationApplicationService.Setup(x => x.BuildRegistrationApplicationPerYearViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+            .ReturnsAsync(registrationApplicationPerYear);
 
         // Act
         var response = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
@@ -354,12 +437,18 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
                 OrganisationName = OrganisationName,
                 OrganisationNumber = "123 456",
                 OrganisationRole = "Producer",
-                ApplicationReferenceNumber = reference,
-                RegistrationReferenceNumber = reference,
-                FileUploadStatus = RegistrationTaskListStatus.Completed,
-                PaymentViewStatus = RegistrationTaskListStatus.Completed,
-                AdditionalDetailsStatus = RegistrationTaskListStatus.Completed,
-                ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+                RegistrationApplicationsPerYear = new List<RegistrationApplicationPerYearViewModel>()
+                {
+                    new RegistrationApplicationPerYearViewModel
+                    {
+                        ApplicationReferenceNumber = reference,
+                        RegistrationReferenceNumber = reference,
+                        FileUploadStatus = RegistrationTaskListStatus.Completed,
+                        PaymentViewStatus = RegistrationTaskListStatus.Completed,
+                        AdditionalDetailsStatus = RegistrationTaskListStatus.Completed,
+                        ApplicationStatus = ApplicationStatusType.SubmittedToRegulator
+                    }
+                },
                 ResubmissionTaskListViewModel = new()
             });
     }

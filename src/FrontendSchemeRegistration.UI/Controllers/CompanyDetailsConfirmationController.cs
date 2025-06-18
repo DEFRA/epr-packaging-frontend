@@ -7,6 +7,7 @@ using Application.Services.Interfaces;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using Extensions;
+using global::FrontendSchemeRegistration.UI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sessions;
@@ -19,14 +20,18 @@ public class CompanyDetailsConfirmationController : Controller
     private readonly ISubmissionService _submissionService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
     private readonly IUserAccountService _accountService;
+    private readonly IRegistrationApplicationService _registrationApplicationService;
 
     public CompanyDetailsConfirmationController(
         ISubmissionService submissionService,
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
-        IUserAccountService accountService)
+        IUserAccountService accountService,
+        IRegistrationApplicationService registrationApplicationService)
     {
         _submissionService = submissionService;
         _sessionManager = sessionManager;
+        _accountService = accountService;
+        _registrationApplicationService = registrationApplicationService;
         _accountService = accountService;
     }
 
@@ -34,6 +39,7 @@ public class CompanyDetailsConfirmationController : Controller
     public async Task<IActionResult> Get()
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+        var registrationYear = await _registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
 
         ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
 
@@ -48,11 +54,12 @@ public class CompanyDetailsConfirmationController : Controller
                 if (submission is not null && submission.IsSubmitted)
                 {
                     var isFileUploadJourneyInvokedViaRegistration = session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration;
-                    SetBackLink(isFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission);
+                    this.SetBackLink(isFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, registrationYear);
 
                     ViewData["IsFileUploadJourneyInvokedViaRegistration"] = isFileUploadJourneyInvokedViaRegistration;
 
                     var submittedDateTime = submission.LastSubmittedFiles.SubmittedDateTime.Value;
+                    var routeValue = QueryStringExtensions.BuildRouteValues(isResubmission : session.RegistrationSession.IsResubmission, registrationYear: registrationYear);                
                     return View(
                         "CompanyDetailsConfirmation",
                         new CompanyDetailsConfirmationModel
@@ -62,7 +69,7 @@ public class CompanyDetailsConfirmationController : Controller
                             SubmittedBy = await GetUsersName(submission.LastSubmittedFiles.SubmittedBy.Value),
                             OrganisationRole = organisationRole,
                             IsResubmission = session.RegistrationSession.IsResubmission,
-                            ReturnToRegistrationLink = Url.Action("RegistrationTaskList", "RegistrationApplication", session.RegistrationSession.IsResubmission ? new { IsResubmission = true } : null)
+                            ReturnToRegistrationLink = Url.Action("RegistrationTaskList", "RegistrationApplication", routeValue)
                         });
                 }
             }
@@ -77,9 +84,4 @@ public class CompanyDetailsConfirmationController : Controller
         return person.GetUserName();
     }
 
-    private void SetBackLink(bool isFileUploadJourneyInvokedViaRegistration, bool isResubmission)
-    {
-        var backLink = isFileUploadJourneyInvokedViaRegistration ? $"/report-data/{PagePaths.RegistrationTaskList}" : Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
-        ViewBag.BackLinkToDisplay = backLink.AppendResubmissionFlagToQueryString(isResubmission);
-    }
 }

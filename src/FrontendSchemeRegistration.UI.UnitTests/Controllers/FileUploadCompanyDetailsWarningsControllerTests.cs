@@ -8,6 +8,7 @@ using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers;
 using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
+using FrontendSchemeRegistration.UI.Services;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Http;
@@ -29,6 +30,8 @@ public class FileUploadCompanyDetailsWarningsControllerTests
     private ValidationOptions _validationOptions;
     private Mock<IUrlHelper> _urlHelperMock;
     private const string SubmissionPeriod = "Jul to Dec 23";
+    private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
+
 
     private List<string> _journey = new()
     {
@@ -48,6 +51,7 @@ public class FileUploadCompanyDetailsWarningsControllerTests
         _urlHelperMock.Setup(x => x.Content(It.IsAny<string>())).Returns((string contentPath) => contentPath);
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _validationOptions = new ValidationOptions { MaxIssuesToProcess = 100 };
+        _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
@@ -62,7 +66,7 @@ public class FileUploadCompanyDetailsWarningsControllerTests
         _systemUnderTest = new FileUploadCompanyDetailsWarningsController(
             _submissionServiceMock.Object,
             _sessionManagerMock.Object,
-            Options.Create(_validationOptions));
+            Options.Create(_validationOptions), _registrationApplicationServiceMock.Object);
 
         _systemUnderTest.ControllerContext = new ControllerContext
         {
@@ -137,7 +141,7 @@ public class FileUploadCompanyDetailsWarningsControllerTests
         result.ViewName.Should().Be("FileUploadCompanyDetailsWarnings");
         result.ViewData.Keys.Should().HaveCount(1);
         result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
-        result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
+        result.ViewData["BackLinkToDisplay"].Should().Be($"~/{PagePaths.FileUploadCompanyDetailsSubLanding}");
         result.Model.Should().BeEquivalentTo(new FileUploadWarningViewModel()
         {
             FileName = fileName,
@@ -179,7 +183,7 @@ public class FileUploadCompanyDetailsWarningsControllerTests
         result.ViewName.Should().Be("FileUploadCompanyDetailsWarnings");
         result.ViewData.Keys.Should().HaveCount(1);
         result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
-        result.ViewData["BackLinkToDisplay"].Should().Be($"/report-data/{PagePaths.RegistrationTaskList}");
+        result.ViewData["BackLinkToDisplay"].Should().Be($"~/{PagePaths.RegistrationTaskList}");
         result.Model.Should().BeEquivalentTo(new FileUploadWarningViewModel()
         {
             FileName = fileName,
@@ -253,7 +257,7 @@ public class FileUploadCompanyDetailsWarningsControllerTests
         var webpageBackLink = _systemUnderTest.ViewBag.BackLinkToDisplay as string;
 
         // Assert
-        webpageBackLink.Should().Be($"/report-data/{PagePaths.RegistrationTaskList}");
+        webpageBackLink.Should().Be($"~/{PagePaths.RegistrationTaskList}");
     }
 
     [Test]
@@ -295,7 +299,7 @@ public class FileUploadCompanyDetailsWarningsControllerTests
         var webpageBackLink = _systemUnderTest.ViewBag.BackLinkToDisplay as string;
 
         // Assert
-        webpageBackLink.Should().Be($"/report-data/{PagePaths.RegistrationTaskList}");
+        webpageBackLink.Should().Be($"~/{PagePaths.RegistrationTaskList}");
     }
 
     [Test]

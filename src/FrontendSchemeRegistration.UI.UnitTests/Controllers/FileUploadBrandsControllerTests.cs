@@ -9,6 +9,7 @@ using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
 using FrontendSchemeRegistration.Application.Options;
+using FrontendSchemeRegistration.UI.Services;
 using FrontendSchemeRegistration.UI.Services.Messages;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -30,13 +31,14 @@ public class FileUploadBrandsControllerTests
     private Mock<IFileUploadService> _fileUploadServiceMock;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
     private FileUploadBrandsController _systemUnderTest;
+    private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
 
     [SetUp]
     public void SetUp()
     {
         _submissionServiceMock = new Mock<ISubmissionService>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
-
+        _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
 
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
@@ -68,12 +70,13 @@ public class FileUploadBrandsControllerTests
                 }
             });
         _fileUploadServiceMock = new Mock<IFileUploadService>();
+        _registrationApplicationServiceMock.Setup(x => x.validateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).ReturnsAsync(DateTime.Now.Year);
 
         _systemUnderTest = new FileUploadBrandsController(
             _submissionServiceMock.Object, 
             _fileUploadServiceMock.Object, 
             _sessionManagerMock.Object,
-            Options.Create(new GlobalVariables { FileUploadLimitInBytes = 268435456, SubsidiaryFileUploadLimitInBytes = 61440 }));
+            Options.Create(new GlobalVariables { FileUploadLimitInBytes = 268435456, SubsidiaryFileUploadLimitInBytes = 61440 }), _registrationApplicationServiceMock.Object);
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
@@ -151,7 +154,7 @@ public class FileUploadBrandsControllerTests
             .ReturnsAsync(submissionId);
 
         // Act
-        var result = await _systemUnderTest.Post() as RedirectToActionResult;
+        var result = await _systemUnderTest.Post(It.IsAny<string>()) as RedirectToActionResult;
 
         // Assert
         result.ControllerName.Should().Contain("FileUploadingBrands");
@@ -186,7 +189,7 @@ public class FileUploadBrandsControllerTests
         _systemUnderTest.ModelState.AddModelError("file", "Some error");
 
         // Act
-        var result = await _systemUnderTest.Post() as ViewResult;
+        var result = await _systemUnderTest.Post(It.IsAny<string>()) as ViewResult;
 
         // Assert
         result.ViewName.Should().Be("FileUploadBrands");

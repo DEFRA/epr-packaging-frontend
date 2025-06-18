@@ -6,6 +6,7 @@ using Application.Enums;
 using Application.Services.Interfaces;
 using EPR.Common.Authorization.Sessions;
 using Extensions;
+using global::FrontendSchemeRegistration.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Resources.Views.FileReUploadConfirmation;
 using Sessions;
@@ -18,21 +19,26 @@ public class FileReUploadCompanyDetailsConfirmationController : Controller
     private readonly ISubmissionService _submissionService;
     private readonly IUserAccountService _accountService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
+    private readonly IRegistrationApplicationService _registrationApplicationService;
 
     public FileReUploadCompanyDetailsConfirmationController(
         ISubmissionService submissionService,
         IUserAccountService accountService,
-        ISessionManager<FrontendSchemeRegistrationSession> sessionManager)
+        ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
+        IRegistrationApplicationService registrationApplicationService)
     {
         _submissionService = submissionService;
         _accountService = accountService;
         _sessionManager = sessionManager;
+        _registrationApplicationService = registrationApplicationService;
+
     }
 
     [HttpGet]
     [SubmissionIdActionFilter(PagePaths.FileUploadCompanyDetailsSubLanding)]
     public async Task<IActionResult> Get()
     {
+        var registrationYear = await _registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         if (session is null)
         {
@@ -41,7 +47,7 @@ public class FileReUploadCompanyDetailsConfirmationController : Controller
 
         var isFileUploadJourneyInvokedViaRegistration = session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration;
 
-        SetBackLink(isFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission);
+        this.SetBackLink(isFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, registrationYear);
         ViewData["IsFileUploadJourneyInvokedViaRegistration"] = isFileUploadJourneyInvokedViaRegistration;
 
         var organisationRole = session.UserData.Organisations.FirstOrDefault()?.OrganisationRole;
@@ -132,9 +138,4 @@ public class FileReUploadCompanyDetailsConfirmationController : Controller
         return (person != null ? $"{person.FirstName} {person.LastName}" : null, person is not null && person.IsDeleted);
     }
 
-    private void SetBackLink(bool isFileUploadJourneyInvokedViaRegistration, bool isResubmission)
-    {
-        var backLink = isFileUploadJourneyInvokedViaRegistration ? $"/report-data/{PagePaths.RegistrationTaskList}" : Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
-        ViewBag.BackLinkToDisplay = backLink.AppendResubmissionFlagToQueryString(isResubmission);
-    }
 }

@@ -6,7 +6,6 @@ using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
 using FrontendSchemeRegistration.Application.DTOs.Subsidiary.FileUploadStatus;
 using FrontendSchemeRegistration.Application.Enums;
-using Microsoft.AspNetCore.Mvc;
 
 namespace FrontendSchemeRegistration.Application.Services.Interfaces;
 
@@ -20,7 +19,7 @@ public interface IWebApiGatewayClient
         SubmissionType submissionType,
         SubmissionSubType? submissionSubType = null,
         Guid? registrationSetId = null,
-        Guid? complianceSchemeId = null, 
+        Guid? complianceSchemeId = null,
         bool? isResubmission = null);
 
     Task<Guid> UploadSubsidiaryFileAsync(
@@ -62,11 +61,11 @@ public interface IWebApiGatewayClient
 
     Task<UploadFileErrorResponse> GetSubsidiaryFileUploadStatusAsync(Guid userId, Guid organisationId);
 
-	Task<PaginatedResponse<PrnModel>> GetSearchPrnsAsync(PaginatedRequest request);
+    Task<PaginatedResponse<PrnModel>> GetSearchPrnsAsync(PaginatedRequest request);
 
-	Task<SubsidiaryUploadStatusDto> GetSubsidiaryUploadStatus(Guid userId, Guid organisationId);
+    Task<SubsidiaryUploadStatusDto> GetSubsidiaryUploadStatus(Guid userId, Guid organisationId);
 
-    Task<PrnObligationModel> GetRecyclingObligationsCalculation(List<Guid> externalIds, int year);
+    Task<PrnObligationModel> GetRecyclingObligationsCalculation(int year);
 
     Task<RegistrationApplicationDetails?> GetRegistrationApplicationDetails(GetRegistrationApplicationDetailsRequest request);
 
@@ -76,7 +75,7 @@ public interface IWebApiGatewayClient
 
     Task<PackagingResubmissionMemberDetails?> GetPackagingResubmissionMemberDetails(PackagingResubmissionMemberRequest request);
 
-	Task CreatePackagingResubmissionReferenceNumberEvent(Guid submissionId, PackagingResubmissionReferenceNumberCreatedEvent @event);
+    Task CreatePackagingResubmissionReferenceNumberEvent(Guid submissionId, PackagingResubmissionReferenceNumberCreatedEvent @event);
 
     Task CreatePackagingResubmissionFeeViewEvent(Guid? submissionId, Guid? filedId);
 

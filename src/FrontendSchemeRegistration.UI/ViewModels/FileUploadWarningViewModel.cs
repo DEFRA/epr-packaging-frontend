@@ -17,4 +17,6 @@ public class FileUploadWarningViewModel
     public int MaxWarningsToProcess { get; set; }
 
     public string MaxReportSize { get; set; }
+
+    public int? RegistrationYear { get; set; }
 }

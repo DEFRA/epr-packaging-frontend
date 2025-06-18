@@ -1,4 +1,5 @@
-﻿using EPR.Common.Authorization.Constants;
+﻿using System.Web;
+using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
@@ -13,6 +14,8 @@ using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
+using Polly.Caching;
 
 namespace FrontendSchemeRegistration.UI.Controllers.RegistrationApplication;
 
@@ -31,8 +34,9 @@ public class RegistrationApplicationController(
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
         var isResubmission = !string.IsNullOrWhiteSpace(HttpContext.Request.Query["IsResubmission"]);
-        
-        var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, isResubmission);
+
+        var registrationYear = await registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"], false);
+        var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, registrationYear.GetValueOrDefault(), isResubmission);    
         session.Journey = [session.IsComplianceScheme ? PagePaths.ComplianceSchemeLanding : PagePaths.HomePageSelfManaged, PagePaths.ProducerRegistrationGuidance];
 
 
@@ -46,7 +50,7 @@ public class RegistrationApplicationController(
                 RegistrationTaskListStatus.Pending
                 or RegistrationTaskListStatus.Completed)
         {
-            return RedirectToAction(nameof(RegistrationTaskList));
+            return RedirectToAction(nameof(RegistrationTaskList), new {registrationyear = registrationYear});
         }
 
         return View(new ProducerRegistrationGuidanceViewModel
@@ -54,6 +58,7 @@ public class RegistrationApplicationController(
             RegulatorNation = session.RegulatorNation,
             OrganisationName = organisation.Name!,
             OrganisationNumber = organisation.OrganisationNumber.ToReferenceNumberFormat(),
+            RegistrationYear = registrationYear.GetValueOrDefault(),
             IsComplianceScheme = userData.Organisations[0].OrganisationRole == OrganisationRoles.ComplianceScheme,
             ComplianceScheme = session.SelectedComplianceScheme?.Name!
         });
@@ -67,11 +72,12 @@ public class RegistrationApplicationController(
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
         var isResubmission = !string.IsNullOrWhiteSpace(HttpContext.Request.Query["IsResubmission"]);
-        
-        var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, isResubmission);
+        var registrationYear = await registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
+
+        var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, registrationYear.GetValueOrDefault(), isResubmission);
         session.Journey = [session.IsComplianceScheme ? PagePaths.ComplianceSchemeLanding : PagePaths.HomePageSelfManaged, PagePaths.RegistrationTaskList];
 
-        SetBackLink(session, PagePaths.RegistrationTaskList);
+        SetBackLink(session, PagePaths.RegistrationTaskList, registrationYear);
 
         return View(new RegistrationTaskListViewModel
         {
@@ -82,7 +88,8 @@ public class RegistrationApplicationController(
             ApplicationStatus = session.ApplicationStatus,
             FileUploadStatus = session.FileUploadStatus,
             PaymentViewStatus = session.PaymentViewStatus,
-            AdditionalDetailsStatus = session.AdditionalDetailsStatus
+            AdditionalDetailsStatus = session.AdditionalDetailsStatus,
+            RegistrationYear = registrationYear.GetValueOrDefault()
         });
     }
     
@@ -93,15 +100,16 @@ public class RegistrationApplicationController(
     {
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
+        var registrationYear = await registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
 
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
         session.Journey = [PagePaths.RegistrationTaskList, PagePaths.RegistrationFeeCalculations];
-        SetBackLink(session, PagePaths.RegistrationFeeCalculations);
+        SetBackLink(session, PagePaths.RegistrationFeeCalculations, registrationYear);
 
         if (session.FileUploadStatus is not RegistrationTaskListStatus.Completed)
         {
             logger.LogWarning("RegistrationApplicationSession.FileUploadStatus is not Completed for ApplicationReferenceNumber {Number}", session.ApplicationReferenceNumber);
-            return RedirectToAction(nameof(RegistrationTaskList));
+            return RedirectToAction(nameof(RegistrationTaskList), new { registrationyear = registrationYear });
         }
 
         logger.LogInformation("getting Registration Fee Details for OrganisationNumber {OrganisationNumber}, ApplicationReferenceNumber {ApplicationReferenceNumber}, selectedComplianceSchemeId {selectedComplianceSchemeId}", organisation.OrganisationNumber!, session.ApplicationReferenceNumber, session.SelectedComplianceScheme?.Id);
@@ -110,13 +118,21 @@ public class RegistrationApplicationController(
         {
             var response = await registrationApplicationService.GetComplianceSchemeRegistrationFees(HttpContext.Session);
 
-            if (response is not null) return View("ComplianceSchemeRegistrationFeeCalculations", response);
+            if (response is not null)
+            {
+                response.RegistrationYear = registrationYear.GetValueOrDefault();
+                return View("ComplianceSchemeRegistrationFeeCalculations", response);
+            }
         }
         else
         {
             var response = await registrationApplicationService.GetProducerRegistrationFees(HttpContext.Session);
 
-            if (response is not null) return View(response);
+            if (response is not null)
+            {
+                response.RegistrationYear = registrationYear.GetValueOrDefault();
+                return View(response);
+            }
         }
 
         logger.LogWarning("Error in Getting Registration Fees Details for SubmissionId {SubmissionId}, OrganisationNumber {OrganisationNumber}, ApplicationReferenceNumber {ApplicationReferenceNumber}, selectedComplianceSchemeId {selectedComplianceSchemeId}", session.SubmissionId, organisation.OrganisationNumber!, session.ApplicationReferenceNumber, session.SelectedComplianceScheme?.Id);
@@ -131,24 +147,26 @@ public class RegistrationApplicationController(
     [Route(PagePaths.SelectPaymentOptions)]
     public async Task<IActionResult> SelectPaymentOptions()
     {
+        var registrationYear = await registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"], false);
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
         session.Journey = [PagePaths.RegistrationFeeCalculations, PagePaths.SelectPaymentOptions];
-        SetBackLink(session, PagePaths.SelectPaymentOptions);
+        SetBackLink(session, PagePaths.SelectPaymentOptions, registrationYear);
 
         var model = new SelectPaymentOptionsViewModel
         {
             RegulatorNation = session.RegulatorNation,
             TotalAmountOutstanding = session.TotalAmountOutstanding,
+            RegistrationYear = registrationYear.GetValueOrDefault()
         };
 
         if (!model.IsEngland)
         {
-            return RedirectToAction(nameof(PayByBankTransfer));
+            return RedirectToAction(nameof(PayByBankTransfer), new { registrationyear = registrationYear });
         }
 
         if (session.FileUploadStatus != RegistrationTaskListStatus.Completed)
         {
-            return RedirectToAction(nameof(RegistrationTaskList));
+            return RedirectToAction(nameof(RegistrationTaskList), new { registrationyear = registrationYear });
         }
 
         return View(model);
@@ -159,11 +177,13 @@ public class RegistrationApplicationController(
     [Route(PagePaths.SelectPaymentOptions)]
     public async Task<IActionResult> SelectPaymentOptions(SelectPaymentOptionsViewModel model)
     {
+        var registrationYear = await registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
-        SetBackLink(session, PagePaths.SelectPaymentOptions);
+        SetBackLink(session, PagePaths.SelectPaymentOptions, registrationYear);
 
         model.RegulatorNation = session.RegulatorNation;
         model.TotalAmountOutstanding = session.TotalAmountOutstanding;
+        model.RegistrationYear = registrationYear.GetValueOrDefault();
 
         if (!ModelState.IsValid)
         {
@@ -173,11 +193,11 @@ public class RegistrationApplicationController(
         switch (model.PaymentOption)
         {
             case (int) PaymentOptions.PayOnline:
-                return RedirectToAction(nameof(PayOnline));
+                return RedirectToAction(nameof(PayOnline), new { registrationyear = registrationYear });
             case (int) PaymentOptions.PayByBankTransfer:
-                return RedirectToAction(nameof(PayByBankTransfer));
+                return RedirectToAction(nameof(PayByBankTransfer), new { registrationyear = registrationYear });
             case (int) PaymentOptions.PayByPhone:
-                return RedirectToAction(nameof(PayByPhone));
+                return RedirectToAction(nameof(PayByPhone), new { registrationyear = registrationYear });
             default: return View(model);
         }
     }
@@ -187,14 +207,15 @@ public class RegistrationApplicationController(
     [Route(PagePaths.PaymentOptionPayByPhone)]
     public async Task<IActionResult> PayByPhone()
     {
+        var registrationYear = await registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
         session.Journey = [PagePaths.SelectPaymentOptions, PagePaths.PaymentOptionPayByPhone];
-        SetBackLink(session, PagePaths.PaymentOptionPayByPhone);
+        SetBackLink(session, PagePaths.PaymentOptionPayByPhone, registrationYear);
 
         if (session.FileUploadStatus != RegistrationTaskListStatus.Completed ||
             string.IsNullOrWhiteSpace(session.ApplicationReferenceNumber))
         {
-            return RedirectToAction(nameof(RegistrationTaskList));
+            return RedirectToAction(nameof(RegistrationTaskList), new { registrationyear = registrationYear });
         }
 
         if (session.PaymentViewStatus != RegistrationTaskListStatus.Completed)
@@ -207,7 +228,9 @@ public class RegistrationApplicationController(
             {
                 IsComplianceScheme = session.IsComplianceScheme,
                 TotalAmountOutstanding = session.TotalAmountOutstanding,
+                RegistrationYear = registrationYear.GetValueOrDefault(),
                 ApplicationReferenceNumber = session.ApplicationReferenceNumber!
+
             });
     }
 
@@ -216,15 +239,16 @@ public class RegistrationApplicationController(
     [Route(PagePaths.PaymentOptionPayOnline)]
     public async Task<IActionResult> PayOnline()
     {
+        var registrationYear = await registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
         session.Journey = [PagePaths.SelectPaymentOptions, PagePaths.PaymentOptionPayOnline];
-        SetBackLink(session, PagePaths.PaymentOptionPayOnline);
+        SetBackLink(session, PagePaths.PaymentOptionPayOnline, registrationYear);
 
         var paymentLink = await registrationApplicationService.InitiatePayment(User, HttpContext.Session);
 
         if (session.FileUploadStatus != RegistrationTaskListStatus.Completed)
         {
-            return RedirectToAction(nameof(RegistrationTaskList));
+            return RedirectToAction(nameof(RegistrationTaskList), new { registrationyear = registrationYear });
         }
 
         if (string.IsNullOrWhiteSpace(paymentLink))
@@ -245,7 +269,8 @@ public class RegistrationApplicationController(
                 IsComplianceScheme = session.IsComplianceScheme,
                 TotalAmountOutstanding = session.TotalAmountOutstanding,
                 ApplicationReferenceNumber = session.ApplicationReferenceNumber!,
-                PaymentLink = paymentLink
+                PaymentLink = paymentLink,
+                RegistrationYear = registrationYear.GetValueOrDefault()
             });
     }
 
@@ -254,13 +279,14 @@ public class RegistrationApplicationController(
     [Route(PagePaths.PaymentOptionPayByBankTransfer)]
     public async Task<IActionResult> PayByBankTransfer()
     {
+        var registrationYear = await registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
         session.Journey = [PagePaths.SelectPaymentOptions, PagePaths.PaymentOptionPayByBankTransfer];
 
         if (session.FileUploadStatus != RegistrationTaskListStatus.Completed ||
             string.IsNullOrWhiteSpace(session.ApplicationReferenceNumber))
         {
-            return RedirectToAction(nameof(RegistrationTaskList));
+            return RedirectToAction(nameof(RegistrationTaskList), new { registrationyear = registrationYear });
         }
 
         var model = new PaymentOptionPayByBankTransferViewModel
@@ -268,16 +294,17 @@ public class RegistrationApplicationController(
             IsComplianceScheme = session.IsComplianceScheme,
             RegulatorNation = session.RegulatorNation,
             ApplicationReferenceNumber = session.ApplicationReferenceNumber!,
-            TotalAmountOutstanding = session.TotalAmountOutstanding
+            TotalAmountOutstanding = session.TotalAmountOutstanding,
+            RegistrationYear = registrationYear.GetValueOrDefault()
         };
 
         if (!model.IsEngland)
         {
-            await SetOrReplaceBackLink(session, PagePaths.PaymentOptionPayByBankTransfer, PagePaths.SelectPaymentOptions, PagePaths.RegistrationFeeCalculations);
+            await SetOrReplaceBackLink(session, PagePaths.PaymentOptionPayByBankTransfer, PagePaths.SelectPaymentOptions, PagePaths.RegistrationFeeCalculations, registrationYear);
         }
         else
         {
-            SetBackLink(session, PagePaths.PaymentOptionPayByBankTransfer);
+            SetBackLink(session, PagePaths.PaymentOptionPayByBankTransfer, registrationYear);
         }
 
         await SaveSession(session, PagePaths.PaymentOptionPayByBankTransfer, null);
@@ -297,10 +324,11 @@ public class RegistrationApplicationController(
     {
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
+        var registrationYear = await registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
 
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
         session.Journey = [PagePaths.RegistrationTaskList, PagePaths.AdditionalInformation];
-        SetBackLink(session, PagePaths.AdditionalInformation);
+        SetBackLink(session, PagePaths.AdditionalInformation, registrationYear);
 
         if (session is
             {
@@ -310,14 +338,14 @@ public class RegistrationApplicationController(
                 ApplicationStatusType.SubmittedToRegulator
             })
         {
-            return RedirectToAction(nameof(SubmitRegistrationRequest));
+            return RedirectToAction(nameof(SubmitRegistrationRequest), new { registrationyear = registrationYear });
         }
 
         if (session.FileUploadStatus != RegistrationTaskListStatus.Completed ||
             session.PaymentViewStatus != RegistrationTaskListStatus.Completed ||
             session.AdditionalDetailsStatus == RegistrationTaskListStatus.Completed)
         {
-            return RedirectToAction(nameof(RegistrationTaskList));
+            return RedirectToAction(nameof(RegistrationTaskList), new { registrationyear = registrationYear });
         }
 
         return View(new AdditionalInformationViewModel
@@ -327,7 +355,8 @@ public class RegistrationApplicationController(
             OrganisationNumber = organisation.OrganisationNumber.ToReferenceNumberFormat(),
             IsComplianceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme,
             ComplianceScheme = session.SelectedComplianceScheme?.Name!,
-            IsResubmission = session.IsResubmission
+            IsResubmission = session.IsResubmission,
+            RegistrationYear = registrationYear.GetValueOrDefault()
         });
     }
 
@@ -336,6 +365,8 @@ public class RegistrationApplicationController(
     [Route(PagePaths.AdditionalInformation)]
     public async Task<IActionResult> AdditionalInformation(AdditionalInformationViewModel model)
     {
+        var registrationYear = await registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
+
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
 
         var isAuthorisedUser = User.GetUserData().ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved);
@@ -349,7 +380,7 @@ public class RegistrationApplicationController(
             await registrationApplicationService.CreateRegistrationApplicationEvent(HttpContext.Session, model.AdditionalInformationText, null, SubmissionType.RegistrationApplicationSubmitted);
         }
 
-        return RedirectToAction(nameof(SubmitRegistrationRequest));
+        return RedirectToAction(nameof(SubmitRegistrationRequest), new { registrationyear = registrationYear });
     }
 
     [HttpGet]
@@ -399,12 +430,13 @@ public class RegistrationApplicationController(
     [Route(PagePaths.SubmitRegistrationRequest)]
     public async Task<IActionResult> SubmitRegistrationRequest()
     {
+        var registrationYear = await registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
 
         if (session.AdditionalDetailsStatus == RegistrationTaskListStatus.Completed)
         {
             session.Journey = [PagePaths.RegistrationTaskList, PagePaths.SubmitRegistrationRequest];
-            SetBackLink(session, PagePaths.SubmitRegistrationRequest);
+            SetBackLink(session, PagePaths.SubmitRegistrationRequest, registrationYear);
         }
 
         return View("ApplicationSubmissionConfirmation",
@@ -416,7 +448,8 @@ public class RegistrationApplicationController(
                 RegistrationApplicationSubmittedDate = session.RegistrationApplicationSubmittedDate.Value,
                 RegistrationReferenceNumber = session.RegistrationReferenceNumber!,
                 ApplicationStatus = session.ApplicationStatus,
-                isResubmission = session.IsResubmission
+                isResubmission = session.IsResubmission,
+                RegistrationYear = registrationYear.GetValueOrDefault()
             }
         );
     }
@@ -428,11 +461,12 @@ public class RegistrationApplicationController(
     {
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
+        var registrationYear = await registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
 
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
         session.Journey = [PagePaths.FileUploadCompanyDetailsSubLanding];
         await sessionManager.SaveSessionAsync(HttpContext.Session, session);
-        await registrationApplicationService.SetRegistrationFileUploadSession(HttpContext.Session, organisation.OrganisationNumber, session.IsResubmission);
+        await registrationApplicationService.SetRegistrationFileUploadSession(HttpContext.Session, organisation.OrganisationNumber, registrationYear.GetValueOrDefault(), session.IsResubmission);
         
         if (session.SubmissionId != null)
         {
@@ -449,7 +483,7 @@ public class RegistrationApplicationController(
                     return RedirectToAction(
                         nameof(FileReUploadCompanyDetailsConfirmationController.Get),
                         nameof(FileReUploadCompanyDetailsConfirmationController).RemoveControllerFromName(),
-                        new RouteValueDictionary { { "submissionId", session.SubmissionId } });
+                        new RouteValueDictionary { { "submissionId", session.SubmissionId }, { "registrationyear", registrationYear } });
                 case ApplicationStatusType.FileUploaded
                     when userData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved):
                 case ApplicationStatusType.SubmittedAndHasRecentFileUpload
@@ -457,7 +491,7 @@ public class RegistrationApplicationController(
                     return RedirectToAction(
                         nameof(ReviewCompanyDetailsController.Get),
                         nameof(ReviewCompanyDetailsController).RemoveControllerFromName(),
-                        new RouteValueDictionary { { "submissionId", session.SubmissionId } });
+                        new RouteValueDictionary { { "submissionId", session.SubmissionId }, { "registrationyear", registrationYear } });
                 case ApplicationStatusType.NotStarted:
                 case ApplicationStatusType.QueriedByRegulator:
                 case ApplicationStatusType.CancelledByRegulator:
@@ -465,11 +499,11 @@ public class RegistrationApplicationController(
                     return RedirectToAction(
                         nameof(FileUploadCompanyDetailsController.Get),
                         nameof(FileUploadCompanyDetailsController).RemoveControllerFromName(),
-                        new RouteValueDictionary { { "submissionId", session.SubmissionId }, { "dataPeriod", session.Period.DataPeriod } });
+                        new RouteValueDictionary { { "submissionId", session.SubmissionId }, { "dataPeriod", session.Period.DataPeriod }, { "registrationyear", registrationYear } });
             }
         }
 
-        return RedirectToAction(nameof(FileUploadCompanyDetailsController.Get), nameof(FileUploadCompanyDetailsController).RemoveControllerFromName(), new RouteValueDictionary { { "dataPeriod", session.Period.DataPeriod } });
+        return RedirectToAction(nameof(FileUploadCompanyDetailsController.Get), nameof(FileUploadCompanyDetailsController).RemoveControllerFromName(), new RouteValueDictionary { { "dataPeriod", session.Period.DataPeriod }, { "registrationyear", registrationYear } });
     }
         
     private static void ClearRestOfJourney(RegistrationApplicationSession session, string currentPagePath)
@@ -489,12 +523,17 @@ public class RegistrationApplicationController(
         await sessionManager.SaveSessionAsync(HttpContext.Session, session);
     }
 
-    private void SetBackLink(RegistrationApplicationSession session, string currentPagePath)
+    private void SetBackLink(RegistrationApplicationSession session, string currentPagePath, int? registrationYear = null)
     {
-        ViewBag.BackLinkToDisplay = session.Journey.PreviousOrDefault(currentPagePath) ?? string.Empty;
+        var previousPage = session.Journey.PreviousOrDefault(currentPagePath) ?? string.Empty;
+        if(registrationYear > 0 && !string.IsNullOrWhiteSpace(previousPage))
+        {
+            previousPage = QueryHelpers.AddQueryString(previousPage, "registrationyear", registrationYear.ToString());            
+        }
+        ViewBag.BackLinkToDisplay = previousPage;
     }
 
-    private async Task SetOrReplaceBackLink(RegistrationApplicationSession session, string currentPagePath, string pagePathToReplace, string pagePathToReplaceWith)
+    private async Task SetOrReplaceBackLink(RegistrationApplicationSession session, string currentPagePath, string pagePathToReplace, string pagePathToReplaceWith, int? registrationYear = null)
     {
         if (!string.IsNullOrEmpty(pagePathToReplace) && !string.IsNullOrEmpty(pagePathToReplaceWith))
         {
@@ -503,6 +542,6 @@ public class RegistrationApplicationController(
             await SaveSession(session, currentPagePath, null);
         }
 
-        SetBackLink(session, currentPagePath);
+        SetBackLink(session, currentPagePath, registrationYear);
     }
 }

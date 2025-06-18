@@ -18,5 +18,9 @@ public class GlobalVariables
 
     public string LogPrefix { get; set; }
     
-    public DateTime LateFeeDeadline { get; set; }
+    public DateTime LateFeeDeadline2025 { get; set; }
+
+    public DateTime LateFeeDeadline2026 { get; set; }
+
+    public string RegistrationYear { get; set; }
 }

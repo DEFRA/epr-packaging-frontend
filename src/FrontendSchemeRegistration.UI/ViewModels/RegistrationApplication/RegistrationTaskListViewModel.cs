@@ -22,7 +22,9 @@ public class RegistrationTaskListViewModel
     public RegistrationTaskListStatus PaymentViewStatus { get; set; }
 
     public RegistrationTaskListStatus AdditionalDetailsStatus { get; set; }
-    
+
+    public int RegistrationYear { get; set; }
+
     public string PageTitle => IsResubmission ? "registration_resubmission_task_title" : "registration_task_title";
     
     public string PageHeading => IsResubmission ? "register_resubmission_company" : "register_company";

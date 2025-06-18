@@ -9,6 +9,7 @@ using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
 using FrontendSchemeRegistration.Application.Options;
+using FrontendSchemeRegistration.UI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -32,12 +33,14 @@ public class FileUploadCompanyDetailsControllerTests
     private Mock<IFileUploadService> _fileUploadServiceMock;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
     private FileUploadCompanyDetailsController _systemUnderTest;
+    private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
 
     [SetUp]
     public void SetUp()
     {
         _submissionServiceMock = new Mock<ISubmissionService>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
+        _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
@@ -65,12 +68,13 @@ public class FileUploadCompanyDetailsControllerTests
             });
 
         _fileUploadServiceMock = new Mock<IFileUploadService>();
+        _registrationApplicationServiceMock.Setup(x => x.validateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).ReturnsAsync(DateTime.Now.Year);
 
         _systemUnderTest = new FileUploadCompanyDetailsController
             (_submissionServiceMock.Object,
             _fileUploadServiceMock.Object,
             _sessionManagerMock.Object,
-            Options.Create(new GlobalVariables { FileUploadLimitInBytes = 268435456, SubsidiaryFileUploadLimitInBytes = 61440 }));
+            Options.Create(new GlobalVariables { FileUploadLimitInBytes = 268435456, SubsidiaryFileUploadLimitInBytes = 61440 }), _registrationApplicationServiceMock.Object);
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
@@ -88,7 +92,9 @@ public class FileUploadCompanyDetailsControllerTests
                 Session = new Mock<ISession>().Object
             }
         };
-        _systemUnderTest.Url = Mock.Of<IUrlHelper>();
+        var urlHelperMock = new Mock<IUrlHelper>();
+        urlHelperMock.Setup(x => x.Content(It.IsAny<string>())).Returns((string contentPath) => contentPath);
+        _systemUnderTest.Url = urlHelperMock.Object;
     }
 
     [Test]
@@ -155,7 +161,8 @@ public class FileUploadCompanyDetailsControllerTests
         result?.Model.Should().BeEquivalentTo(new FileUploadCompanyDetailsViewModel
         {
             SubmissionDeadline = submissionDeadline,
-            OrganisationRole = OrganisationRoles.ComplianceScheme
+            OrganisationRole = OrganisationRoles.ComplianceScheme,
+            RegistrationYear = DateTime.Now.Year
         });
     }
 
@@ -222,7 +229,8 @@ public class FileUploadCompanyDetailsControllerTests
         result?.Model.Should().BeEquivalentTo(new FileUploadCompanyDetailsViewModel
         {
             SubmissionDeadline = submissionDeadline,
-            OrganisationRole = OrganisationRoles.ComplianceScheme
+            OrganisationRole = OrganisationRoles.ComplianceScheme,
+            RegistrationYear = DateTime.Now.Year
         });
     }
 
@@ -319,7 +327,7 @@ public class FileUploadCompanyDetailsControllerTests
         var webpageBackLink = _systemUnderTest.ViewBag.BackLinkToDisplay as string;
 
         // Assert
-        webpageBackLink.Should().Be($"~/{PagePaths.RegistrationTaskList}");
+        webpageBackLink.Should().Be($"~/{PagePaths.RegistrationTaskList}?registrationyear={DateTime.Now.Year}");
     }
 
     [Test]
@@ -384,7 +392,7 @@ public class FileUploadCompanyDetailsControllerTests
         _systemUnderTest.ModelState.AddModelError("file", "Some error");
 
         // Act
-        var result = await _systemUnderTest.Post() as ViewResult;
+        var result = await _systemUnderTest.Post(It.IsAny<string>()) as ViewResult;
 
         // Assert
         _fileUploadServiceMock.Verify(
@@ -438,7 +446,7 @@ public class FileUploadCompanyDetailsControllerTests
             .ReturnsAsync(submissionId);
 
         // Act
-        var result = await _systemUnderTest.Post() as RedirectToActionResult;
+        var result = await _systemUnderTest.Post(It.IsAny<string>()) as RedirectToActionResult;
 
         // Assert
         result.ControllerName.Should().Contain("UploadingOrganisationDetails");

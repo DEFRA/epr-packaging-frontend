@@ -5,6 +5,7 @@ using Application.DTOs.Submission;
 using Application.Services.Interfaces;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
+using global::FrontendSchemeRegistration.UI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sessions;
@@ -17,13 +18,17 @@ public class UploadingOrganisationDetailsController : Controller
 {
     private readonly ISubmissionService _submissionService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
+    private readonly IRegistrationApplicationService _registrationApplicationService;
 
     public UploadingOrganisationDetailsController(
         ISubmissionService submissionService,
-        ISessionManager<FrontendSchemeRegistrationSession> sessionManager)
+        ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
+        IRegistrationApplicationService registrationApplicationService)
     {
         _submissionService = submissionService;
         _sessionManager = sessionManager;
+        _registrationApplicationService = registrationApplicationService;
+
     }
 
     [HttpGet]
@@ -32,16 +37,17 @@ public class UploadingOrganisationDetailsController : Controller
     {
         var submissionId = Guid.Parse(Request.Query["submissionId"]);
         var submission = await _submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
+        var registrationYear = await _registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
 
         if (submission is null)
         {
-            return RedirectToAction("Get", "FileUploadCompanyDetails");
+            return RedirectToAction("Get", "FileUploadCompanyDetails", registrationYear is not null ? new { registrationyear = registrationYear.ToString() } : null);
         }
 
         if (!ValidationHasCompleted(submission) || session is null)
         {
-            return GetUploadingOrganisationDetailsViewResult(submissionId);
+            return GetUploadingOrganisationDetailsViewResult(submissionId, registrationYear);
         }
 
         if (!session.RegistrationSession.Journey.Contains<string>(PagePaths.FileUploadCompanyDetails))
@@ -51,20 +57,20 @@ public class UploadingOrganisationDetailsController : Controller
 
         if (HasFileErrors(submission))
         {
-            return RedirectToAction("Get", "FileUploadCompanyDetails", new { submissionId = submissionId.ToString() });
+            return RedirectToAction("Get", "FileUploadCompanyDetails", registrationYear is not null ? new { submissionId = submissionId.ToString(), registrationyear = registrationYear.ToString()} : new { submissionId = submissionId.ToString() });
         }
 
         if (HasRowValidationErrors(submission))
         {
-            return RedirectToAction("Get", "FileUploadCompanyDetailsErrors", new { submissionId = submissionId.ToString() });
+            return RedirectToAction("Get", "FileUploadCompanyDetailsErrors", registrationYear is not null ? new { submissionId = submissionId.ToString(), registrationyear = registrationYear.ToString() } : new { submissionId = submissionId.ToString() });
         }
 
         if (HasRowValidationWarnings(submission)) // Add warnings
         {
-            return RedirectToAction("Get", "FileUploadCompanyDetailsWarnings", new { submissionId = submissionId.ToString() });
+            return RedirectToAction("Get", "FileUploadCompanyDetailsWarnings", registrationYear is not null ? new { submissionId = submissionId.ToString(), registrationyear = registrationYear.ToString() } : new { submissionId = submissionId.ToString() });
         }
 
-        return RedirectToAction("Get", "FileUploadCompanyDetailsSuccess", new { submissionId = submissionId.ToString() });
+        return RedirectToAction("Get", "FileUploadCompanyDetailsSuccess", registrationYear is not null ? new { submissionId = submissionId.ToString(), registrationyear = registrationYear.ToString() } : new { submissionId = submissionId.ToString() });
     }
 
     private static bool ValidationHasCompleted(RegistrationSubmission submission)
@@ -87,8 +93,8 @@ public class UploadingOrganisationDetailsController : Controller
         return submission.HasWarnings && submission.Errors.Count == 0;
     }
 
-    private ViewResult GetUploadingOrganisationDetailsViewResult(Guid submissionId)
+    private ViewResult GetUploadingOrganisationDetailsViewResult(Guid submissionId, int? registrationYear)
     {
-        return View("UploadingOrganisationDetails", new FileUploadingViewModel { SubmissionId = submissionId.ToString() });
+        return View("UploadingOrganisationDetails", registrationYear is not null ? new FileUploadingViewModel { SubmissionId = submissionId.ToString(), RegistrationYear = registrationYear } : new FileUploadingViewModel { SubmissionId = submissionId.ToString() });
     }
 }

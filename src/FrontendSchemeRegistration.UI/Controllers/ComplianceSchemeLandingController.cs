@@ -51,10 +51,10 @@ public class ComplianceSchemeLandingController(
 
         var currentSummary = await complianceSchemeService.GetComplianceSchemeSummary(organisation.Id.Value, currentComplianceSchemeId);
 
-        var registrationApplicationSession = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation);
-
         var resubmissionApplicationDetails = await resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(
             organisation, new List<string> { _packagingResubmissionPeriod }, session.RegistrationSession.SelectedComplianceScheme?.Id);
+
+        var registrationApplicationPerYearViewModels = await registrationApplicationService.BuildRegistrationApplicationPerYearViewModels(HttpContext.Session, organisation);
 
         var model = new ComplianceSchemeLandingViewModel
         {
@@ -63,14 +63,8 @@ public class ComplianceSchemeLandingController(
             CurrentTabSummary = currentSummary,
             OrganisationName = organisation.Name,
             ComplianceSchemes = complianceSchemes,
-            ApplicationStatus = registrationApplicationSession.ApplicationStatus,
-            ApplicationReferenceNumber = registrationApplicationSession.ApplicationReferenceNumber,
-            RegistrationReferenceNumber = registrationApplicationSession.RegistrationReferenceNumber,
-            FileUploadStatus = registrationApplicationSession.FileUploadStatus,
-            PaymentViewStatus = registrationApplicationSession.PaymentViewStatus,
-            AdditionalDetailsStatus = registrationApplicationSession.AdditionalDetailsStatus,
-            IsResubmission = registrationApplicationSession.IsResubmission,
-            ResubmissionTaskListViewModel = resubmissionApplicationDetails.ToResubmissionTaskListViewModel(organisation)
+            ResubmissionTaskListViewModel = resubmissionApplicationDetails.ToResubmissionTaskListViewModel(organisation),
+            RegistrationApplicationsPerYear = registrationApplicationPerYearViewModels
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id.Value);

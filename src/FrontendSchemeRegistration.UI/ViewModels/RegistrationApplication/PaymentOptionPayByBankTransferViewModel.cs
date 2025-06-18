@@ -15,5 +15,8 @@ namespace FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication
         public bool IsEngland => NationName == Nation.England.ToString();
 
         public bool IsNorthernIreland => NationName == Nation.NorthernIreland.ToString();
+
+        public int RegistrationYear { get; set; }
+
     }
 }

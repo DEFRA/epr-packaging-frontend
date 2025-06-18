@@ -20,5 +20,7 @@ namespace FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication
         public string NationName => NationExtensions.GetNationName(this.RegulatorNation);
 
         public bool IsEngland => NationName == Nation.England.ToString();
+
+        public int RegistrationYear { get; set; }
     }
 }

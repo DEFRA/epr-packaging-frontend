@@ -10,4 +10,7 @@ public class PaymentOptionPayByPhoneViewModel
     public string ApplicationReferenceNumber { get; set; }
     
     public bool IsComplianceScheme { get; set; }
+
+    public int RegistrationYear { get; set; }
+
 }

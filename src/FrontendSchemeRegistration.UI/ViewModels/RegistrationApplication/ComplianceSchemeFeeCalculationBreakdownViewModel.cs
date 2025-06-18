@@ -20,5 +20,7 @@ namespace FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication
         public int LateProducerFee { get; set; }
         public int LateProducersCount { get; set; }
         public bool RegistrationApplicationSubmitted { get; set; }
+
+        public int RegistrationYear { get; set; }
     }
 }

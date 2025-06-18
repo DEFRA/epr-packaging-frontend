@@ -24,7 +24,7 @@
                         @if (Model.FileUploadStatus is RegistrationTaskListStatus.NotStarted or RegistrationTaskListStatus.CanNotStartYet ||
                              Model.ApplicationStatus is ApplicationStatusType.FileUploaded or ApplicationStatusType.SubmittedAndHasRecentFileUpload)
                         {
-                            <a asp-controller="RegistrationApplication" asp-action="RedirectToFileUpload"
+                            <a asp-controller="RegistrationApplication" asp-action="RedirectToFileUpload" asp-route-registrationyear="@Model.RegistrationYear"
                                class="govuk-link govuk-link--no-visited-state">
                                 @Localizer[Model.FileUploadTask]
                             </a>
@@ -47,7 +47,7 @@
                     <dt class="govuk-summary-list__value">
                         @if (canStartViewPayRegistrationFeeStep)
                         {
-                            <a asp-controller="RegistrationApplication" asp-action="RegistrationFeeCalculations"
+                            <a asp-controller="RegistrationApplication" asp-action="RegistrationFeeCalculations" asp-route-registrationyear="@Model.RegistrationYear"
                                class="govuk-link govuk-link--no-visited-state">
                                 @Localizer[Model.ViewPaymentTask]
                             </a>
@@ -70,7 +70,7 @@
                     <dt class="govuk-summary-list__value">
                         @if (canStartSubmitRegistrationApplicationStep)
                         {
-                            <a asp-controller="RegistrationApplication" asp-action="AdditionalInformation"
+                            <a asp-controller="RegistrationApplication" asp-action="AdditionalInformation" asp-route-registrationyear="@Model.RegistrationYear"
                                class="govuk-link govuk-link--no-visited-state">
                                 @Localizer[Model.SubmitRegistrationApplicationTask]
                             </a>

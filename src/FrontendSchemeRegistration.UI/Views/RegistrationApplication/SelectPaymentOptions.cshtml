@@ -21,7 +21,7 @@
                 <li>@Localizer["payment_option_payonline_alternate_text"]</li>
             </ul>
 
-            <form asp-controller="RegistrationApplication" asp-action="SelectPaymentOptions" method="post">
+            <form asp-controller="RegistrationApplication" asp-action="SelectPaymentOptions" asp-route-registrationyear="@Model.RegistrationYear" method="post">
                 <div class="govuk-form-group">
                     <fieldset class="govuk-fieldset js-cookies-page-form-fieldset" id="analytics">
                         <legend></legend>

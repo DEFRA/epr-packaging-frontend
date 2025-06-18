@@ -7,6 +7,7 @@ using Constants;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
+using FrontendSchemeRegistration.UI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -24,12 +25,14 @@ public class UploadingOrganisationDetailsControllerTests
     private Mock<ISubmissionService> _submissionServiceMock;
     private UploadingOrganisationDetailsController _systemUnderTest;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
+    private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
 
     [SetUp]
     public void SetUp()
     {
         _submissionServiceMock = new Mock<ISubmissionService>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
+        _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
@@ -54,8 +57,8 @@ public class UploadingOrganisationDetailsControllerTests
                     }
                 }
             });
-
-        _systemUnderTest = new UploadingOrganisationDetailsController(_submissionServiceMock.Object, _sessionManagerMock.Object);
+        _registrationApplicationServiceMock.Setup(x => x.validateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).ReturnsAsync(DateTime.Now.Year);
+        _systemUnderTest = new UploadingOrganisationDetailsController(_submissionServiceMock.Object, _sessionManagerMock.Object, _registrationApplicationServiceMock.Object);
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
@@ -94,7 +97,8 @@ public class UploadingOrganisationDetailsControllerTests
         // Assert
         result.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("FileUploadCompanyDetailsSuccess");
-        result.RouteValues.Should().HaveCount(1).And.ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId.ToString());
+        result.RouteValues.Should().HaveCount(2).And.ContainKey("registrationyear");
+        result.RouteValues.Should().HaveCount(2).And.ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId.ToString());
     }
 
     [Test]
@@ -118,7 +122,8 @@ public class UploadingOrganisationDetailsControllerTests
         // Assert
         result.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("FileUploadCompanyDetails");
-        result.RouteValues.Should().HaveCount(1).And.ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId.ToString());
+        result.RouteValues.Should().HaveCount(2).And.ContainKey("registrationyear");
+        result.RouteValues.Should().HaveCount(2).And.ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId.ToString());
     }
 
     [Test]
@@ -175,7 +180,8 @@ public class UploadingOrganisationDetailsControllerTests
         // Assert
         result.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("FileUploadCompanyDetailsErrors");
-        result.RouteValues.Should().HaveCount(1).And.ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId.ToString());
+        result.RouteValues.Should().HaveCount(2).And.ContainKey("registrationyear");
+        result.RouteValues.Should().HaveCount(2).And.ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId.ToString());
     }
 
     [Test]
@@ -200,7 +206,8 @@ public class UploadingOrganisationDetailsControllerTests
         // Assert
         result.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("FileUploadCompanyDetailsWarnings");
-        result.RouteValues.Should().HaveCount(1).And.ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId.ToString());
+        result.RouteValues.Should().HaveCount(2).And.ContainKey("registrationyear");
+        result.RouteValues.Should().HaveCount(2).And.ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId.ToString());
     }
 
     [Test]

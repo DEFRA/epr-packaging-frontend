@@ -32,4 +32,10 @@ public class ExternalUrlOptions
     public string FindAndUpdateCompanyInformation { get; set; }
 
     public string ProducerResponsibilityObligations { get; set; }
+
+    public string ServiceNow { get; set; }
+
+    public string FinancialServicesSupplier { get; set; }
+
+    public string LearnMoreAboutPackUK { get; set; }
 }

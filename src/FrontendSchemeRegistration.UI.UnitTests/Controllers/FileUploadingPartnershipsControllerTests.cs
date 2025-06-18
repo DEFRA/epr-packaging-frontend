@@ -7,6 +7,7 @@ using Constants;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
+using FrontendSchemeRegistration.UI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
@@ -23,12 +24,14 @@ public class FileUploadingPartnershipsControllerTests
     private Mock<ISubmissionService> _submissionServiceMock;
     private FileUploadingPartnershipsController _systemUnderTest;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
+    private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
 
     [SetUp]
     public void Setup()
     {
         _submissionServiceMock = new Mock<ISubmissionService>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
+        _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
@@ -53,8 +56,9 @@ public class FileUploadingPartnershipsControllerTests
                     }
                 }
             });
+        _registrationApplicationServiceMock.Setup(x => x.validateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).ReturnsAsync(DateTime.Now.Year);
 
-        _systemUnderTest = new FileUploadingPartnershipsController(_submissionServiceMock.Object, _sessionManagerMock.Object);
+        _systemUnderTest = new FileUploadingPartnershipsController(_submissionServiceMock.Object, _sessionManagerMock.Object, _registrationApplicationServiceMock.Object);
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
@@ -91,7 +95,8 @@ public class FileUploadingPartnershipsControllerTests
         // Assert
         result.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("FileUploadPartnershipsSuccess");
-        result.RouteValues.Should().HaveCount(1).And.ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId.ToString());
+        result.RouteValues.Should().HaveCount(2).And.ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId);
+        result.RouteValues.Should().HaveCount(2).And.ContainKey("registrationyear").WhoseValue.Should().Be(DateTime.Now.Year);
     }
 
     [Test]
@@ -115,7 +120,8 @@ public class FileUploadingPartnershipsControllerTests
         // Assert
         result.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("FileUploadPartnerships");
-        result.RouteValues.Should().HaveCount(1).And.ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId.ToString());
+        result.RouteValues.Should().HaveCount(2).And.ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId);
+        result.RouteValues.Should().HaveCount(2).And.ContainKey("registrationyear").WhoseValue.Should().Be(DateTime.Now.Year);
     }
 
     [Test]

@@ -14,9 +14,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
 using System.Diagnostics.CodeAnalysis;
 using FrontendSchemeRegistration.UI.Services;
-using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using EPR.Common.Authorization.Models;
+using FrontendSchemeRegistration.Application.Options;
+using Microsoft.Extensions.Options;
 
 namespace FrontendSchemeRegistration.UI.Controllers.FrontendSchemeRegistration;
 
@@ -397,7 +398,7 @@ public class FrontendSchemeRegistrationController(
 
         return await SaveSessionAndRedirect(session, nameof(VisitHomePageSelfManaged), PagePaths.ComplianceSchemeStop, PagePaths.HomePageSelfManaged);
     }
-    
+
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
     [Route(PagePaths.HomePageSelfManaged)]
@@ -419,10 +420,8 @@ public class FrontendSchemeRegistrationController(
         session.UserData = userData;
         await sessionManager.SaveSessionAsync(HttpContext.Session, session);
 
-        var registrationApplicationSession = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation );
-
-        var resubmissionApplicationDetails = await resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(
-            organisation, new List<string> { _packagingResubmissionPeriod }, session.RegistrationSession.SelectedComplianceScheme?.Id);
+        var registrationApplicationPerYearViewModels = await registrationApplicationService.BuildRegistrationApplicationPerYearViewModels(HttpContext.Session, organisation);
+        var resubmissionApplicationDetails = await resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(organisation, new List<string> { _packagingResubmissionPeriod }, session.RegistrationSession.SelectedComplianceScheme?.Id);
 
         var viewModel = new HomePageSelfManagedViewModel
         {
@@ -430,14 +429,8 @@ public class FrontendSchemeRegistrationController(
             OrganisationNumber = organisation.OrganisationNumber.ToReferenceNumberFormat(),
             CanSelectComplianceScheme = userData.ServiceRole is ServiceRoles.ApprovedPerson or ServiceRoles.DelegatedPerson,
             OrganisationRole = organisation.OrganisationRole!,
-            ApplicationStatus = registrationApplicationSession.ApplicationStatus,
-            FileUploadStatus = registrationApplicationSession.FileUploadStatus,
-            PaymentViewStatus = registrationApplicationSession.PaymentViewStatus,
-            AdditionalDetailsStatus = registrationApplicationSession.AdditionalDetailsStatus,
-            ApplicationReferenceNumber = registrationApplicationSession.ApplicationReferenceNumber,
-            RegistrationReferenceNumber = registrationApplicationSession.RegistrationReferenceNumber,
-            IsResubmission = registrationApplicationSession.IsResubmission,
-            ResubmissionTaskListViewModel = resubmissionApplicationDetails.ToResubmissionTaskListViewModel(organisation)
+            ResubmissionTaskListViewModel = resubmissionApplicationDetails.ToResubmissionTaskListViewModel(organisation),
+            RegistrationApplicationsPerYear = registrationApplicationPerYearViewModels
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id!.Value);
@@ -524,5 +517,5 @@ public class FrontendSchemeRegistrationController(
         }
 
         return complianceSchemesList;
-    } 
+    }
 }

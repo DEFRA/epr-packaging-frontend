@@ -11,6 +11,7 @@ using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
 using Microsoft.Extensions.Options;
+using FrontendSchemeRegistration.UI.ViewModels;
 
 namespace FrontendSchemeRegistration.UI.Services;
 
@@ -22,19 +23,18 @@ public class RegistrationApplicationService(
     ILogger<RegistrationApplicationService> logger,
     IOptions<GlobalVariables> globalVariables) : IRegistrationApplicationService
 {
-    public async Task<RegistrationApplicationSession> GetRegistrationApplicationSession(ISession httpSession, Organisation organisation, bool? isResubmission = null)
+
+   
+    public async Task<RegistrationApplicationSession> GetRegistrationApplicationSession(ISession httpSession, Organisation organisation, int registrationYear, bool? isResubmission = null)
     {
         var session = await sessionManager.GetSessionAsync(httpSession) ?? new RegistrationApplicationSession();
         var frontEndSession = await frontEndSessionManager.GetSessionAsync(httpSession) ?? new FrontendSchemeRegistrationSession();
 
-        //this is wrong needs fixing 
-        var submissionYear = DateTime.Now.Year;
+        var submissionYear = registrationYear;
         session.Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" };
         session.SubmissionPeriod = session.Period.DataPeriod;
 
-        var lateFeeDeadline = globalVariables.Value.LateFeeDeadline != DateTime.MinValue
-            ? new DateTime(submissionYear, globalVariables.Value.LateFeeDeadline.Month, globalVariables.Value.LateFeeDeadline.Day, 1, 1, 1, DateTimeKind.Utc)
-            : new DateTime(submissionYear, 4, 1, 1, 1, 1, DateTimeKind.Utc);
+        var lateFeeDeadline = registrationYear == 2025 ? globalVariables.Value.LateFeeDeadline2025 : globalVariables.Value.LateFeeDeadline2026;
 
         var registrationApplicationDetails = await submissionService.GetRegistrationApplicationDetails(new GetRegistrationApplicationDetailsRequest
         {
@@ -71,10 +71,10 @@ public class RegistrationApplicationService(
 
         session.RegulatorNation = nationId switch
         {
-            (int) Nation.England => "GB-ENG",
-            (int) Nation.Scotland => "GB-SCT",
-            (int) Nation.Wales => "GB-WLS",
-            (int) Nation.NorthernIreland => "GB-NIR",
+            (int)Nation.England => "GB-ENG",
+            (int)Nation.Scotland => "GB-SCT",
+            (int)Nation.Wales => "GB-WLS",
+            (int)Nation.NorthernIreland => "GB-NIR",
             _ => "regulator"
         };
 
@@ -300,12 +300,12 @@ public class RegistrationApplicationService(
         await sessionManager.SaveSessionAsync(httpSession, session);
     }
 
-    public async Task SetRegistrationFileUploadSession(ISession httpSession, string organisationNumber, bool? isResubmission)
+    public async Task SetRegistrationFileUploadSession(ISession httpSession, string organisationNumber, int registrationYear, bool? isResubmission)
     {
         var frontEndSession = await frontEndSessionManager.GetSessionAsync(httpSession) ?? new FrontendSchemeRegistrationSession();
 
         //this is wrong needs fixing 
-        var submissionYear = DateTime.Now.Year.ToString();
+        var submissionYear = registrationYear;
         var period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" };
 
         frontEndSession.RegistrationSession.SubmissionPeriod = period.DataPeriod;
@@ -315,11 +315,61 @@ public class RegistrationApplicationService(
 
         await frontEndSessionManager.SaveSessionAsync(httpSession, frontEndSession);
     }
+
+    public async Task<List<RegistrationApplicationPerYearViewModel>> BuildRegistrationApplicationPerYearViewModels(ISession httpSession, Organisation organisation)
+    {
+        var years = (globalVariables.Value.RegistrationYear ?? string.Empty).Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+       .Select(y => int.TryParse(y, out var year) ? year : throw new FormatException($"Invalid year: '{y}'"))
+       .OrderByDescending(n => n).ToArray();
+
+        var viewModels = new List<RegistrationApplicationPerYearViewModel>();
+
+        foreach (var (year, index) in years.Select((value, i) => (value, i)))
+        {
+            var registrationApplicationSession = await GetRegistrationApplicationSession(httpSession, organisation, year);
+
+            viewModels.Add(new RegistrationApplicationPerYearViewModel
+            {
+                ApplicationStatus = registrationApplicationSession.ApplicationStatus,
+                FileUploadStatus = registrationApplicationSession.FileUploadStatus,
+                PaymentViewStatus = registrationApplicationSession.PaymentViewStatus,
+                AdditionalDetailsStatus = registrationApplicationSession.AdditionalDetailsStatus,
+                ApplicationReferenceNumber = registrationApplicationSession.ApplicationReferenceNumber,
+                RegistrationReferenceNumber = registrationApplicationSession.RegistrationReferenceNumber,
+                IsResubmission = registrationApplicationSession.IsResubmission,
+                RegistrationYear = year.ToString(),
+                showLargeProducer = index == 0
+            });
+        }
+
+        return viewModels;
+    }
+
+    public async Task<int?> validateRegistrationYear(string registrationYear, bool isParamOptional = false)
+    {
+        if (string.IsNullOrWhiteSpace(registrationYear) && isParamOptional)
+           return null;
+
+        var years = (globalVariables.Value.RegistrationYear ?? string.Empty).Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+       .Select(y => int.TryParse(y, out var year) ? year : throw new FormatException($"Invalid year: '{y}'"))
+       .OrderByDescending(n => n).ToArray();
+
+        if (string.IsNullOrWhiteSpace(registrationYear))
+            throw new ArgumentException("Registration year missing");
+        if (!int.TryParse(registrationYear, out int regYear))
+            throw new ArgumentException("Registration year is not a valid number");
+
+        if (!years.Contains(regYear))
+            throw new ArgumentException("Invalid registration year");
+
+        return regYear;
+
+    }
 }
 
 public interface IRegistrationApplicationService
 {
-    Task<RegistrationApplicationSession> GetRegistrationApplicationSession(ISession httpSession, Organisation organisation, bool? isResubmission = null);
+    Task<RegistrationApplicationSession> GetRegistrationApplicationSession(ISession httpSession, Organisation organisation, int registrationYear, bool? isResubmission = null);
 
     Task<FeeCalculationBreakdownViewModel?> GetProducerRegistrationFees(ISession httpSession);
 
@@ -329,5 +379,10 @@ public interface IRegistrationApplicationService
 
     Task CreateRegistrationApplicationEvent(ISession httpSession, string? comments, string? paymentMethod, SubmissionType submissionType);
 
-    Task SetRegistrationFileUploadSession(ISession httpSession, string organisationNumber, bool? isResubmission);
-}
+    Task SetRegistrationFileUploadSession(ISession httpSession, string organisationNumber, int registrationYear, bool? isResubmission);
+
+    Task<List<RegistrationApplicationPerYearViewModel>> BuildRegistrationApplicationPerYearViewModels(ISession httpSession, Organisation organisation);
+
+    Task<int?> validateRegistrationYear(string registrationYear, bool isParamOptional);
+    
+    }

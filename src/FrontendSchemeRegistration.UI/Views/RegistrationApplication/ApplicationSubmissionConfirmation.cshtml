@@ -17,7 +17,7 @@
                     @if (Model.ApplicationStatus == ApplicationStatusType.AcceptedByRegulator)
                     {
                         <h1 class="govuk-panel__title">
-                            @Localizer["registration_for_2025_has_been_granted"]
+                            @Localizer["registration_has_been_granted", Model.RegistrationYear]
                         </h1>
                         <div class="govuk-panel__body">
                             @Localizer["registration_reference_number"]
@@ -35,7 +35,7 @@
                         else
                         {
                             <h1 class="govuk-panel__title">
-                                @Localizer["registration_application_submitted_for_approval"]
+                                @Localizer["registration_application_submitted_for_approval", Model.RegistrationYear]
                             </h1>
                             <div class="govuk-panel__body">
                                 @Localizer["application_reference_number"]

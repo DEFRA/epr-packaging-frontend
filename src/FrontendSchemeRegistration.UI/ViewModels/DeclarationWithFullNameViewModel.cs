@@ -14,6 +14,8 @@ public class DeclarationWithFullNameViewModel : IValidatableObject
 
     public string OrganisationDetailsFileId { get; set; } = string.Empty;
 
+    public int? RegistrationYear { get; set; }
+
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         return ValidateFullName();

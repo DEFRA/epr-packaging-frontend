@@ -44,7 +44,8 @@
                         "FileReUploadCompanyDetailsConfirmation",
                         new
                         {
-                            submissionId = Model.SubmissionId
+                            submissionId = Model.SubmissionId,
+                            registrationyear = Model.RegistrationYear
                         },
                         new
                         {
@@ -64,7 +65,7 @@
                     @Html.ActionLink(Localizer["continue"].Value,
                         "Get",
                         "FileUploadPartnerships",
-                        new { submissionId = Model.SubmissionId },
+                             new { submissionId = Model.SubmissionId, registrationyear = Model.RegistrationYear },
                         new { @class = "govuk-button govuk-!-margin-top-5" })
                 }
                 else
@@ -74,7 +75,7 @@
                     @Html.ActionLink(Localizer["upload_partner_information"].Value,
                              "Get",
                              "FileUploadPartnerships",
-                             new { submissionId = Model.SubmissionId },
+                             new { submissionId = Model.SubmissionId, registrationyear = Model.RegistrationYear },
                              new { @class = "govuk-button govuk-!-margin-top-5" })
                 }
             }
@@ -86,7 +87,7 @@
                 @Html.ActionLink(Localizer["continue"].Value,
                          "Get",
                          "ReviewCompanyDetails",
-                         new { submissionId = Model.SubmissionId },
+                         new { submissionId = Model.SubmissionId, registrationyear = Model.RegistrationYear },
                          new { @class = "govuk-button govuk-!-margin-top-5" })
             }
             

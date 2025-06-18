@@ -1,4 +1,6 @@
-﻿using AutoFixture;
+﻿using System.Globalization;
+using System.Text;
+using AutoFixture;
 using FluentAssertions;
 using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.DTOs.Prns;
@@ -12,22 +14,17 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
-using Newtonsoft.Json;
-using System.Globalization;
-using System.Net;
-using System.Text;
 
 namespace FrontendSchemeRegistration.UI.UnitTests.Services;
 
 [TestFixture]
 public class PrnServiceTests
 {
-	private Mock<IAccountServiceApiClient> _accountServiceApiClientMock;
-	private Mock<IWebApiGatewayClient> _webApiGatewayClientMock;
+    private Mock<IAccountServiceApiClient> _accountServiceApiClientMock;
+    private Mock<IWebApiGatewayClient> _webApiGatewayClientMock;
     private PrnService _systemUnderTest;
     private static readonly Fixture Fixture = new();
     private Mock<ILogger<PrnService>> _loggerMock;
-    private List<Guid> externalIds = new();
 
     [SetUp]
     public void SetUp()
@@ -39,10 +36,8 @@ public class PrnServiceTests
         var localizerCsv = new StringLocalizer<PrnCsvResources>(factory);
         var localizerData = new StringLocalizer<PrnDataResources>(factory);
 
-		externalIds = Fixture.CreateMany<Guid>().ToList();
-
-		_accountServiceApiClientMock = new Mock<IAccountServiceApiClient>();
-		_webApiGatewayClientMock = new Mock<IWebApiGatewayClient>();
+        _accountServiceApiClientMock = new Mock<IAccountServiceApiClient>();
+        _webApiGatewayClientMock = new Mock<IWebApiGatewayClient>();
         _loggerMock = new Mock<ILogger<PrnService>>();
 
         var globalVariables = Options.Create(new GlobalVariables { LogPrefix = "[FrontendSchemaRegistration]" });
@@ -322,11 +317,11 @@ public class PrnServiceTests
             NumberOfPrnsAwaitingAcceptance = expectedNumberOfPrnsAwaitingAcceptance,
             ObligationData = prnMaterials
         };
-        _webApiGatewayClientMock.Setup(x => x.GetRecyclingObligationsCalculation(externalIds, year))
+        _webApiGatewayClientMock.Setup(x => x.GetRecyclingObligationsCalculation(year))
             .ReturnsAsync(prnObligationModel);
 
         // Act
-        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(externalIds, year);
+        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year);
 
         // Assert
         result.Should().NotBeNull();
@@ -375,47 +370,54 @@ public class PrnServiceTests
         glassBreakDownTotals.TonnageOutstanding.Should().Be(glassRemelt.TonnageOutstanding + remainingGlass.TonnageOutstanding);
     }
 
-    [Theory]
-    [TestCase(ObligationStatus.NotMet)]
-    [TestCase(ObligationStatus.Met)]
-    [TestCase(ObligationStatus.NoDataYet)]
-    public async Task GetRecyclingObligationsCalculation_CheckIfOverallStatus_ReturnsRightStatus(ObligationStatus status)
+    [TestCaseSource(nameof(GetRecyclingObligationsCalculation_TotalRowTestCases))]
+    public async Task GetRecyclingObligationsCalculation_CheckIfOverallStatus_ReturnsRightStatus(List<ObligationStatus> statuses, ObligationStatus expectedMaterialTableStatus, ObligationStatus expectedGlassTableStatus)
     {
         // Arrange
         var year = 2024;
         var materialTypes = new List<MaterialType>
         {
-            MaterialType.Aluminium,
             MaterialType.Glass,
             MaterialType.GlassRemelt,
+            MaterialType.Aluminium,
+            MaterialType.Steel,
             MaterialType.Paper,
             MaterialType.Plastic,
             MaterialType.Wood,
-            MaterialType.Steel,
-            MaterialType.Totals
         };
 
+        var materialCounter = 0;
         var prnMaterials = new List<PrnMaterialObligationModel>();
-        for (int i = 0; i < 8; i++)
+
+        foreach (var status in statuses)
         {
-            var model = Fixture.Build<PrnMaterialObligationModel>()
-                .With(x => x.MaterialName, materialTypes[i].ToString()) // Assign unique MaterialType)
-                .With(x => x.Status, status.ToString())
-                .Create();
+            if (materialCounter > 7)
+            {
+                materialCounter = 0;
+            }
+
+            var model = new PrnMaterialObligationModel
+            {
+                MaterialName = materialTypes[materialCounter].ToString(),
+                Status = status.ToString()
+            };
             prnMaterials.Add(model);
+            materialCounter++;
         }
 
         var prnObligationModel = new PrnObligationModel
         {
             ObligationData = prnMaterials
         };
-        _webApiGatewayClientMock.Setup(x => x.GetRecyclingObligationsCalculation(externalIds, year)).ReturnsAsync(prnObligationModel);
+
+        _webApiGatewayClientMock.Setup(x => x.GetRecyclingObligationsCalculation(year)).ReturnsAsync(prnObligationModel);
 
         // Act
-        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(externalIds, year);
+        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year);
 
         // Assert
-        result.OverallStatus.Should().Be(status);
+        result.MaterialObligationViewModels.Find(x => x.MaterialName == MaterialType.Totals).Status.Should().Be(expectedMaterialTableStatus);
+        result.GlassMaterialObligationViewModels.Find(x => x.MaterialName == MaterialType.Totals).Status.Should().Be(expectedGlassTableStatus);
     }
 
     [Test]
@@ -449,71 +451,13 @@ public class PrnServiceTests
             NumberOfPrnsAwaitingAcceptance = 0,
             ObligationData = prnMaterials
         };
-        _webApiGatewayClientMock.Setup(x => x.GetRecyclingObligationsCalculation(externalIds, year)).ReturnsAsync(prnObligationModel);
+        _webApiGatewayClientMock.Setup(x => x.GetRecyclingObligationsCalculation(year)).ReturnsAsync(prnObligationModel);
 
         // Act
-        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(externalIds, year);
+        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year);
 
         // Assert
         result.OverallStatus.Should().Be(ObligationStatus.NoDataYet);
-    }
-
-    [Theory]
-    [TestCase(ObligationStatus.NotMet)]
-    [TestCase(ObligationStatus.Met)]
-    public async Task GetRecyclingObligationsCalculation_Returns_TotalRowStatus_NotMet(ObligationStatus status)
-    {
-        // Arrange
-        var year = 2023;
-        var organisationId = Guid.NewGuid();
-
-        var materialTypes = new List<MaterialType>
-        {
-            MaterialType.Aluminium,
-            MaterialType.Glass,
-            MaterialType.GlassRemelt,
-            MaterialType.Paper,
-            MaterialType.Plastic,
-            MaterialType.Wood,
-            MaterialType.Steel
-        };
-
-        var prnMaterials = new List<PrnMaterialObligationModel>();
-        for (int i = 0; i < 7; i++)
-        {
-            var model = Fixture.Build<PrnMaterialObligationModel>()
-                .With(x => x.MaterialName, materialTypes[i].ToString()) // Assign unique MaterialType)
-                .With(x => x.ObligationToMeet, (int?)null)
-                .With(x => x.TonnageOutstanding, (int?)null)
-                .With(x => x.Status, status.ToString())
-                .Create();
-            prnMaterials.Add(model);
-        }
-
-        prnMaterials[0].ObligationToMeet = null;
-        prnMaterials[0].TonnageOutstanding = null;
-
-        var prnObligationModel = new PrnObligationModel
-        {
-            NumberOfPrnsAwaitingAcceptance = 2,
-            ObligationData = prnMaterials
-        };
-        _webApiGatewayClientMock.Setup(x => x.GetRecyclingObligationsCalculation(externalIds, year))
-            .ReturnsAsync(prnObligationModel);
-
-        // Act
-        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(externalIds, year);
-
-        // Assert
-        result.Should().NotBeNull();
-        var materialTotals = result.MaterialObligationViewModels.Find(m => m.MaterialName == MaterialType.Totals);
-        materialTotals.Status.Should().Be(status);
-        materialTotals.ObligationToMeet.Should().BeNull();
-        materialTotals.TonnageOutstanding.Should().BeNull();
-        var glassTotals = result.GlassMaterialObligationViewModels.Find(m => m.MaterialName == MaterialType.Totals);
-        glassTotals.Status.Should().Be(status);
-        glassTotals.ObligationToMeet.Should().BeNull();
-        glassTotals.TonnageOutstanding.Should().BeNull();
     }
 
     private static string GetRandomObligationStatus()
@@ -527,11 +471,11 @@ public class PrnServiceTests
     {
         // Arrange
         var year = 2024;
-        _webApiGatewayClientMock.Setup(x => x.GetRecyclingObligationsCalculation(externalIds, year))
+        _webApiGatewayClientMock.Setup(x => x.GetRecyclingObligationsCalculation(year))
             .ReturnsAsync(new PrnObligationModel());
 
         // Act
-        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(externalIds, year);
+        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year);
 
         // Assert
         result.Should().NotBeNull();
@@ -544,11 +488,11 @@ public class PrnServiceTests
     {
         // Arrange
         var year = 2024;
-        _webApiGatewayClientMock.Setup(x => x.GetRecyclingObligationsCalculation(externalIds, year))
+        _webApiGatewayClientMock.Setup(x => x.GetRecyclingObligationsCalculation(year))
             .ReturnsAsync((PrnObligationModel)null);
 
         // Act
-        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(externalIds, year);
+        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year);
 
         // Assert
         result.Should().NotBeNull();
@@ -562,153 +506,40 @@ public class PrnServiceTests
         // Arrange
         var year = 2023;
 
-        _webApiGatewayClientMock.Setup(x => x.GetRecyclingObligationsCalculation(externalIds, year))
+        _webApiGatewayClientMock.Setup(x => x.GetRecyclingObligationsCalculation(year))
             .ThrowsAsync(new Exception("API Error"));
 
         // Act & Assert
         Assert.ThrowsAsync<Exception>(async () =>
-            await _systemUnderTest.GetRecyclingObligationsCalculation(externalIds, year));
+            await _systemUnderTest.GetRecyclingObligationsCalculation(year));
     }
 
-	[Test]
-	public async Task GetChildOrganisationExternalIdsAsync_ShouldReturnExternalIds_WhenApiReturnsValidData()
-	{
-		// Arrange
-		var organisationId = Guid.NewGuid();
-		var complianceSchemeId = Guid.NewGuid();
-		var expectedExternalIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() };
-		var jsonResponse = JsonConvert.SerializeObject(expectedExternalIds);
+    public static IEnumerable<TestCaseData> GetRecyclingObligationsCalculation_TotalRowTestCases
+    {
+        get
+        {
+            // First two statuses in the list of statuses, are related to Glass
 
-		var httpResponse = new HttpResponseMessage
-		{
-			StatusCode = HttpStatusCode.OK,
-			Content = new StringContent(jsonResponse)
-		};
+            yield return new TestCaseData(new List<ObligationStatus> { ObligationStatus.NoDataYet, ObligationStatus.NotMet, ObligationStatus.NotMet,
+                ObligationStatus.NoDataYet, ObligationStatus.NoDataYet, ObligationStatus.NoDataYet,ObligationStatus.NoDataYet }, ObligationStatus.NotMet, ObligationStatus.NotMet);
 
-		_accountServiceApiClientMock.Setup(client => client.SendGetRequest(It.IsAny<string>()))
-		.ReturnsAsync(httpResponse);
+            yield return new TestCaseData(new List<ObligationStatus> { ObligationStatus.NoDataYet, ObligationStatus.Met, ObligationStatus.Met,
+                ObligationStatus.NoDataYet, ObligationStatus.NoDataYet, ObligationStatus.NoDataYet,ObligationStatus.NoDataYet }, ObligationStatus.Met, ObligationStatus.Met);
 
-		// Act
-		var result = await _systemUnderTest.GetChildOrganisationExternalIdsAsync(organisationId, complianceSchemeId);
+            yield return new TestCaseData(new List<ObligationStatus> { ObligationStatus.NoDataYet, ObligationStatus.NoDataYet, ObligationStatus.NoDataYet,
+                ObligationStatus.NoDataYet, ObligationStatus.NoDataYet, ObligationStatus.NoDataYet,ObligationStatus.NoDataYet }, ObligationStatus.NoDataYet, ObligationStatus.NoDataYet);
 
-		// Assert
-		result.Should().NotBeNull();
-		result.Should().BeEquivalentTo(expectedExternalIds);
-		_accountServiceApiClientMock.Verify(client => client.SendGetRequest(It.IsAny<string>()), Times.Once);
-	}
+            yield return new TestCaseData(new List<ObligationStatus> { ObligationStatus.Met, ObligationStatus.NotMet, ObligationStatus.NoDataYet,
+                ObligationStatus.NoDataYet, ObligationStatus.NoDataYet, ObligationStatus.NoDataYet,ObligationStatus.NoDataYet }, ObligationStatus.NotMet, ObligationStatus.NotMet);
 
-	[Test]
-	public async Task GetChildOrganisationExternalIdsAsync_ShouldReturnEmptyList_WhenApiReturnsEmptyResponse()
-	{
-		// Arrange
-		var organisationId = Guid.NewGuid();
-		var complianceSchemeId = Guid.NewGuid();
-		var jsonResponse = "[]";
+            yield return new TestCaseData(new List<ObligationStatus> { ObligationStatus.NoDataYet, ObligationStatus.NoDataYet, ObligationStatus.NoDataYet,
+                ObligationStatus.NoDataYet, ObligationStatus.Met, ObligationStatus.NoDataYet,ObligationStatus.NoDataYet }, ObligationStatus.Met, ObligationStatus.NoDataYet);
 
-		var httpResponse = new HttpResponseMessage
-		{
-			StatusCode = HttpStatusCode.OK,
-			Content = new StringContent(jsonResponse)
-		};
+            yield return new TestCaseData(new List<ObligationStatus> { ObligationStatus.Met, ObligationStatus.Met, ObligationStatus.NoDataYet,
+                ObligationStatus.NoDataYet, ObligationStatus.NoDataYet, ObligationStatus.NoDataYet,ObligationStatus.NoDataYet }, ObligationStatus.Met, ObligationStatus.Met);
 
-		_accountServiceApiClientMock.Setup(client => client.SendGetRequest(It.IsAny<string>()))
-		.ReturnsAsync(httpResponse);
-
-		// Act
-		var result = await _systemUnderTest.GetChildOrganisationExternalIdsAsync(organisationId, complianceSchemeId);
-
-		// Assert
-		result.Should().NotBeNull();
-		result.Should().BeEmpty();
-		_accountServiceApiClientMock.Verify(client => client.SendGetRequest(It.IsAny<string>()), Times.Once);
-	}
-
-	[Test]
-	public async Task GetChildOrganisationExternalIdsAsync_ShouldCallApiWithoutComplianceSchemeId_WhenComplianceSchemeIdIsNull()
-	{
-		// Arrange
-		var organisationId = Guid.NewGuid();
-		Guid? complianceSchemeId = null; // ComplianceSchemeId is null
-		var expectedExternalIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() };
-		var jsonResponse = JsonConvert.SerializeObject(expectedExternalIds);
-
-		var httpResponse = new HttpResponseMessage
-		{
-			StatusCode = HttpStatusCode.OK,
-			Content = new StringContent(jsonResponse)
-		};
-
-		_accountServiceApiClientMock.Setup(client => client.SendGetRequest(It.IsAny<string>()))
-					  .ReturnsAsync(httpResponse);
-
-		// Act
-		var result = await _systemUnderTest.GetChildOrganisationExternalIdsAsync(organisationId, complianceSchemeId);
-
-		// Assert
-		result.Should().NotBeNull();
-		result.Should().BeEquivalentTo(expectedExternalIds);
-
-		_accountServiceApiClientMock.Verify(client => client.SendGetRequest(
-			It.Is<string>(url => url.Contains($"organisationId={organisationId}") && !url.Contains("complianceSchemeId="))
-		), Times.Once);
-	}
-
-	[Test]
-	public async Task GetChildOrganisationExternalIdsAsync_ShouldCallApiWithoutComplianceSchemeId_WhenComplianceSchemeIdIsEmptyGuid()
-	{
-		// Arrange
-		var organisationId = Guid.NewGuid();
-		var complianceSchemeId = Guid.Empty; // ComplianceSchemeId is Empty
-		var expectedExternalIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() };
-		var jsonResponse = JsonConvert.SerializeObject(expectedExternalIds);
-
-		var httpResponse = new HttpResponseMessage
-		{
-			StatusCode = HttpStatusCode.OK,
-			Content = new StringContent(jsonResponse)
-		};
-
-		_accountServiceApiClientMock.Setup(client => client.SendGetRequest(It.IsAny<string>()))
-					  .ReturnsAsync(httpResponse);
-
-		// Act
-		var result = await _systemUnderTest.GetChildOrganisationExternalIdsAsync(organisationId, complianceSchemeId);
-
-		// Assert
-		result.Should().NotBeNull();
-		result.Should().BeEquivalentTo(expectedExternalIds);
-
-		_accountServiceApiClientMock.Verify(client => client.SendGetRequest(
-			It.Is<string>(url => url.Contains($"organisationId={organisationId}") && !url.Contains("complianceSchemeId="))
-		), Times.Once);
-	}
-
-	[Test]
-	public async Task GetChildOrganisationExternalIdsAsync_ShouldLogErrorAndThrow_WhenExceptionOccurs()
-	{
-		// Arrange
-		var organisationId = Guid.NewGuid();
-		var complianceSchemeId = (Guid?)null;
-		var exception = new HttpRequestException("API request failed");
-
-		_accountServiceApiClientMock
-			.Setup(client => client.SendGetRequest(It.IsAny<string>()))
-			.ThrowsAsync(exception);
-
-		// Act & Assert
-		var act = async () => await _systemUnderTest.GetChildOrganisationExternalIdsAsync(organisationId, complianceSchemeId);
-
-		await act.Should()
-			.ThrowAsync<HttpRequestException>()
-			.WithMessage("API request failed");
-
-		_loggerMock.Verify(
-			x => x.Log(
-				LogLevel.Error,
-				It.IsAny<EventId>(),
-				It.Is<It.IsAnyType>((o, t) => o.ToString().Contains("Error while retrieving child organisation external ids")),
-				exception,
-				It.IsAny<Func<It.IsAnyType, Exception, string>>()),
-			Times.Once);
-	}
+            yield return new TestCaseData(new List<ObligationStatus> { ObligationStatus.NotMet, ObligationStatus.Met, ObligationStatus.NoDataYet,
+                ObligationStatus.NoDataYet, ObligationStatus.NoDataYet, ObligationStatus.NoDataYet,ObligationStatus.NoDataYet }, ObligationStatus.NotMet, ObligationStatus.NotMet);
+        }
+    }
 }

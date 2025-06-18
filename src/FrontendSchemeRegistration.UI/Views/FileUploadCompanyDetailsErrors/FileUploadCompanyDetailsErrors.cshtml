@@ -82,7 +82,7 @@
 
                         <input class="govuk-file-upload" title="Choose a file" id="file" name="file" type="file">
                     </div>
-
+                <input type="hidden" name="registrationyear" value="@(Model?.RegistrationYear?.ToString() ?? "")" />
                     <button class="govuk-button" data-module="govuk-button" type="submit">@Localizer["upload_file"]</button>
                 }
             </div>

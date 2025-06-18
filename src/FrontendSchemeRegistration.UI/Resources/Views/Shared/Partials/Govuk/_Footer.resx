@@ -153,4 +153,13 @@
   <data name="Footer.Telephone" xml:space="preserve">
     <value />
   </data>
+  <data name="Footer.Website" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Footer.OpensInNewTab" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Footer.WebsiteLink" xml:space="preserve">
+    <value />
+  </data>
 </root>

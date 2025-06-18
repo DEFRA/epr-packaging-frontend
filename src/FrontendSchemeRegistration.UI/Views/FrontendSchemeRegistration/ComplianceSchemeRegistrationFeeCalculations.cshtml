@@ -29,13 +29,13 @@
 
             @if (!Model.RegistrationApplicationSubmitted)
             {
-                <a asp-action="SelectPaymentOptions" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+                <a asp-action="SelectPaymentOptions" asp-route-registrationyear="@Model.RegistrationYear" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
                     @SharedLocalizer["continue"]
                 </a>
             }
             else
             {
-                <a asp-action="RegistrationTaskList" class="govuk-link govuk-link--no-visited-state">
+                <a asp-action="RegistrationTaskList" asp-route-registrationyear="@Model.RegistrationYear" class="govuk-link govuk-link--no-visited-state">
                     @Localizer["return_to_registration_steps"]
                 </a>
             }

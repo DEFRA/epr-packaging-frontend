@@ -16,10 +16,10 @@
     <value>Cadarnhad bod cais wedi’i gyflwyno</value>
   </data>
   <data name="registration_application_submitted_for_approval" xml:space="preserve">
-    <value>Mae eich cais am gofrestru for 2025 wedi'i gyflwyno i'w gymeradwyo</value>
+    <value>Mae eich cais am gofrestru for {0} wedi'i gyflwyno i'w gymeradwyo</value>
   </data>
-  <data name="registration_for_2025_has_been_granted" xml:space="preserve">
-    <value>Mae eich cofrestriad ar gyfer 2025 wedi'i ganiatáu</value>
+  <data name="registration_has_been_granted" xml:space="preserve">
+    <value>Mae eich cofrestriad ar gyfer {0} wedi'i ganiatáu</value>
   </data>
   <data name="application_reference_number" xml:space="preserve">
     <value>Cyfeirnod y cais:</value>

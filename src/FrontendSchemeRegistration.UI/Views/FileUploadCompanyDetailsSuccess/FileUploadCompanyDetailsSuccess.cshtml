@@ -41,7 +41,8 @@
                         "FileReUploadCompanyDetailsConfirmation",
                         new
                         {
-                            submissionId = Model.SubmissionId
+                            submissionId = Model.SubmissionId,
+                            registrationyear = Model.RegistrationYear
                         },
                         new
                         {
@@ -69,7 +70,8 @@
                             "FileReUploadCompanyDetailsConfirmation",
                             new
                             {
-                                submissionId = Model.SubmissionId
+                                submissionId = Model.SubmissionId,
+                                registrationyear = Model.RegistrationYear
                             },
                             new
                             {
@@ -83,7 +85,8 @@
                          "FileUploadBrands",
                          new
                          {
-                             submissionId = Model.SubmissionId
+                             submissionId = Model.SubmissionId,
+                             registrationyear = Model.RegistrationYear
                          },
                          new
                          {
@@ -105,7 +108,8 @@
                             "FileReUploadCompanyDetailsConfirmation",
                             new
                             {
-                                submissionId = Model.SubmissionId
+                                submissionId = Model.SubmissionId,
+                                registrationyear = Model.RegistrationYear
                             },
                             new
                             {
@@ -119,7 +123,8 @@
                          "FileUploadBrands",
                          new
                          {
-                             submissionId = Model.SubmissionId
+                             submissionId = Model.SubmissionId,
+                             registrationyear = Model.RegistrationYear
                          },
                          new
                          {
@@ -142,7 +147,8 @@
                             "FileReUploadCompanyDetailsConfirmation",
                             new
                             {
-                                submissionId = Model.SubmissionId
+                                submissionId = Model.SubmissionId,
+                                registrationyear = Model.RegistrationYear
                             },
                             new
                             {
@@ -156,7 +162,8 @@
                          "FileUploadPartnerships",
                          new
                          {
-                             submissionId = Model.SubmissionId
+                             submissionId = Model.SubmissionId,
+                             registrationyear = Model.RegistrationYear
                          },
                          new
                          {
@@ -171,7 +178,9 @@
                 @Html.ActionLink(SharedLocalizer["continue"].Value,
                          "Get",
                          "ReviewCompanyDetails",
-                         new { submissionId = Model.SubmissionId },
+                         new { submissionId = Model.SubmissionId,
+                             registrationyear = Model.RegistrationYear
+                         },
                          new { @class = "govuk-button" })
             }
             <p class="govuk-body govuk-!-margin-top-4">

@@ -2,8 +2,6 @@
 
 using System.Globalization;
 using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Primitives;
 
 public static class StringExtensions
 {
@@ -51,12 +49,5 @@ public static class StringExtensions
     {
         const string CompaniesHouseCompany = "Companies House Company";
         return str == CompaniesHouseCompany;
-    }
-
-    public static string AppendResubmissionFlagToQueryString(this string link, bool isResubmission = false)
-    {
-        return isResubmission
-            ? QueryHelpers.AddQueryString(link, new List<KeyValuePair<string, StringValues>> { new("IsResubmission", "true") })
-            : link;
-    }
+    }   
 }

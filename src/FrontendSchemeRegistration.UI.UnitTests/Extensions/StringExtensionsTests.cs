@@ -43,11 +43,112 @@ public class StringExtensionsTests
         var expectedStart = DateTime.MinValue;
         var expectedEnd = DateTime.MinValue;
 
-        // Act
+        
         var actual = periodString.ToStartEndDate();
 
         // Assert
         actual.Start.Should().Be(expectedStart);
         actual.End.Should().Be(expectedEnd);
+    }
+
+    [Test]
+    public void AppendBackLink_ShouldReturnBasePath_WhenNoFlagsSet()
+    {
+        //Arrange
+        var basePath = "test/path";
+
+        // Act
+        var result = basePath.AppendBackLink(false, null);
+
+        // Assert
+        result.Should().Be(basePath);
+    }
+
+    [Test]
+    public void AppendBackLink_ShouldIncludeIsResubmission_WhenSetTrue()
+    {
+        //Arrange
+        var basePath = "test/path";
+
+        // Act
+        var result = basePath.AppendBackLink(true, null);
+
+        //Assert
+        result.Should().Contain("isResubmission=true");
+    }
+
+    [Test]
+    public void AppendBackLink_ShouldIncludeRegistrationYear_WhenProvided()
+    {
+        //Arrange
+        var basePath = "test/path";
+
+        //Act
+        var result = basePath.AppendBackLink(false, 2024);
+
+        //Assert
+        result.Should().Contain("registrationyear=2024");
+    }
+
+    [Test]
+    public void AppendBackLink_ShouldIncludeBothParams_WhenBothSet()
+    {
+        //Arrange
+        var basePath = "test/path";
+
+        //Act
+        var result = basePath.AppendBackLink(true, 2024);
+
+        //Assert
+        result.Should().Contain("isResubmission=true")
+                     .And.Contain("registrationyear=2024");
+    }
+
+    [Test]
+    public void AppendResubmissionFlagToQueryString_ShouldReturnLink_WhenParametersAreNull()
+    {
+        //Arrange
+        string link = "/test";
+        IDictionary<string, string> parameters = null;
+
+        //Act
+        var result = link.AppendResubmissionFlagToQueryString(parameters);
+
+        //Assert
+        result.Should().Be("/test");
+    }
+
+    [Test]
+    public void AppendResubmissionFlagToQueryString_ShouldReturnLink_WhenParametersAreEmpty()
+    {
+        //Arrange
+        string link = "/test";
+        var parameters = new Dictionary<string, string>();
+
+        //Act
+        var result = link.AppendResubmissionFlagToQueryString(parameters);
+
+        //Assert
+        result.Should().Be("/test");
+    }
+
+    [Test]
+    public void AppendResubmissionFlagToQueryString_ShouldAppendQueryParams_WhenParametersAreProvided()
+    {
+        //Arrange
+        string link = "/test";
+        var parameters = new Dictionary<string, string>
+        {
+            { "isResubmission", "true" },
+            { "registrationyear", "2024" }
+        };
+
+        //Act
+        var result = link.AppendResubmissionFlagToQueryString(parameters);
+
+        //Assert
+        result.Should().Contain("/test?")
+              .And.Contain("isResubmission=true")
+              .And.Contain("registrationyear=2024");
     }
 }

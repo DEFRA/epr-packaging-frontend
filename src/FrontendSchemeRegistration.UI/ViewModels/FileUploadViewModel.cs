@@ -6,4 +6,6 @@ using System.Diagnostics.CodeAnalysis;
 public class FileUploadViewModel : ViewModelWithOrganisationRole
 {
     public List<string> ExceptionErrorCodes { get; set; } = new ();
+
+    public int? RegistrationYear { get; set; }
 }

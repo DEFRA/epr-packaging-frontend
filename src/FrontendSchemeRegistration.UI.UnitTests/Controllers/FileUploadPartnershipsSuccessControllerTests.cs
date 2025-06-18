@@ -7,6 +7,7 @@ using Constants;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
+using FrontendSchemeRegistration.UI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
@@ -23,12 +24,14 @@ public class FileUploadPartnershipsSuccessControllerTests
     private FileUploadPartnershipsSuccessController _systemUnderTest;
     private Mock<ISubmissionService> _submissionServiceMock;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
+    private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
 
     [SetUp]
     public void SetUp()
     {
         _submissionServiceMock = new Mock<ISubmissionService>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
+        _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
@@ -53,8 +56,9 @@ public class FileUploadPartnershipsSuccessControllerTests
                     }
                 }
             });
+        _registrationApplicationServiceMock.Setup(x => x.validateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).ReturnsAsync(DateTime.Now.Year);
 
-        _systemUnderTest = new FileUploadPartnershipsSuccessController(_submissionServiceMock.Object, _sessionManagerMock.Object);
+        _systemUnderTest = new FileUploadPartnershipsSuccessController(_submissionServiceMock.Object, _sessionManagerMock.Object, _registrationApplicationServiceMock.Object);
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
@@ -106,7 +110,8 @@ public class FileUploadPartnershipsSuccessControllerTests
         result.Model.Should().BeEquivalentTo(new FileUploadSuccessViewModel
         {
             FileName = fileName,
-            SubmissionId = new Guid(SubmissionId)
+            SubmissionId = new Guid(SubmissionId),
+            RegistrationYear = DateTime.Now.Year
         });
 
         _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.Once);

@@ -111,7 +111,7 @@ public class SubsidiaryCheckDetailsController : Controller
                         Street = subsidiary.BusinessAddress?.Street,
                         Locality = subsidiary.BusinessAddress?.Locality,
                         DependentLocality = subsidiary.BusinessAddress?.DependentLocality,
-                        Town = subsidiary.BusinessAddress?.Town,
+                        Town = subsidiary?.BusinessAddress?.Town,
                         County = subsidiary.BusinessAddress?.County,
                         Postcode = subsidiary.BusinessAddress?.Postcode,
                         Country = subsidiary.BusinessAddress?.Country
