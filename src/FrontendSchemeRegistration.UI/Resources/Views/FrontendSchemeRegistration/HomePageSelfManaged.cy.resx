@@ -211,15 +211,6 @@
   <data name="you_still_need_to_view_any_additional_fees" xml:space="preserve">
     <value>[Welsh]You still need to view any additional fees and submit to the regulator.</value>
   </data>
-  <data name="You_have_resubmitted_registration_data" xml:space="preserve">
-    <value>Rydych chi wedi ailgyflwyno data cofrestru. Mae’r rheoleiddiwr amgylcheddol wrthi’n adolygu’ch data.</value>
-  </data>
-  <data name="Your_resubmitted_registration_data_was_rejected" xml:space="preserve">
-    <value>Mae’r data rydych chi wedi’i ailgyflwyno wedi cael ei wrthod. Cysylltwch â’r rheoleiddiwr amgylcheddol i gael rhagor o gyngor.</value>
-  </data>
-  <data name="Your_resubmitted_data_has_been_accepted" xml:space="preserve">
-    <value>Mae’r data rydych chi wedi’i ailgyflwyno wedi cael ei dderbyn. Rhowch wybod am ragor o newidiadau o fewn 28 diwrnod ar ôl iddyn nhw ddod i rym.</value>
-  </data>
   <data name="view_and_pay_waste_disposal_fees" xml:space="preserve">
     <value>WView and pay waste disposal fees for packaging (opens in a new tab)</value>
   </data>

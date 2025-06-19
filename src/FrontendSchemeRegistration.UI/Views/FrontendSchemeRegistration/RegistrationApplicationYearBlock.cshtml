@@ -36,7 +36,7 @@
         if (isResubmissionApprovedRejected || isResubmissionPending)
         {
             <div>
-                <p class="govuk-body">@Localizer["Your_registration_for_x_has_been_granted", model.CurrentYear] @Localizer["Your_registration_reference_number_is_x", model.RegistrationReferenceNumber]</p>
+                <p class="govuk-body">@Localizer["Your_registration_for_x_has_been_granted", model.RegistrationYear] @Localizer["Your_registration_reference_number_is_x", model.RegistrationReferenceNumber]</p>
 
                 @if (isResubmissionApprovedRejected)
                 {
@@ -50,7 +50,7 @@
                     }
 
                     <p class="govuk-body">
-                        <a href="@FrontendSchemeRegistration.Application.Constants.PagePaths.UpdateRegistrationGuidance" class="govuk-link govuk-link--no-visited-state">
+                        <a href="@($"{FrontendSchemeRegistration.Application.Constants.PagePaths.UpdateRegistrationGuidance}?registrationyear={model.RegistrationYear}")" class="govuk-link govuk-link--no-visited-state">
                             <strong>@Localizer["Resubmit_your_data_files"]</strong>
                         </a>
                     </p>
@@ -73,11 +73,10 @@
             })
         {
             <div>
-                <p class="govuk-body">@Localizer["Your_registration_for_x_has_been_granted", model.CurrentYear] @Localizer["Your_registration_reference_number_is_x", model.RegistrationReferenceNumber]</p>
+                <p class="govuk-body">@Localizer["Your_registration_for_x_has_been_granted", model.RegistrationYear] @Localizer["Your_registration_reference_number_is_x", model.RegistrationReferenceNumber]</p>
                 <p class="govuk-body"><strong>@Localizer["If_anything_changes_you_should_resubmit"]</strong></p>
                 <p class="govuk-body">
-                    <a href="@FrontendSchemeRegistration.Application.Constants.PagePaths.UpdateRegistrationGuidance"
-                       class="govuk-link govuk-link--no-visited-state">
+                    <a href="@($"{FrontendSchemeRegistration.Application.Constants.PagePaths.UpdateRegistrationGuidance}?registrationyear={model.RegistrationYear}")" class="govuk-link govuk-link--no-visited-state">
                         <strong>@Localizer["Resubmit_your_data_files"]</strong>
                     </a>
                 </p>
@@ -93,14 +92,14 @@
         else if (model.ApplicationStatus == ApplicationStatusType.RejectedByRegulator)
         {
             <div>
-                <p class="govuk-body">@Localizer["Your_registration_application_for_x_has_been_refused", model.CurrentYear]</p>
+                <p class="govuk-body">@Localizer["Your_registration_application_for_x_has_been_refused", model.RegistrationYear]</p>
                 <p class="govuk-body">@Localizer["Contact_the_regulator_for_further_advice"]</p>
             </div>
         }
         else if (model.ApplicationStatus == ApplicationStatusType.CancelledByRegulator)
         {
             <div>
-                <p class="govuk-body">@Localizer["Your_registration_for_X_has_been_cancelled", model.CurrentYear]</p>
+                <p class="govuk-body">@Localizer["Your_registration_for_X_has_been_cancelled", model.RegistrationYear]</p>
                 <p class="govuk-body">@Localizer["Contact_your_regulator_if_you_need_advice"]</p>
             </div>
         }
@@ -109,13 +108,13 @@
             if (model.IsResubmission)
             {
                 <div>
-                    <p class="govuk-body">@Localizer["Your_registration_for_x_has_been_granted", model.CurrentYear] @Localizer["Your_registration_reference_number_is_x", model.RegistrationReferenceNumber]</p>
+                    <p class="govuk-body">@Localizer["Your_registration_for_x_has_been_granted", model.RegistrationYear] @Localizer["Your_registration_reference_number_is_x", model.RegistrationReferenceNumber]</p>
                 </div>
             }
             else
             {
                 <div>
-                    <p class="govuk-body">@Localizer["Your_registration_application_for_x_has_been_submitted", model.CurrentYear]</p>
+                    <p class="govuk-body">@Localizer["Your_registration_application_for_x_has_been_submitted", model.RegistrationYear]</p>
                 </div>
             }
         }
@@ -123,13 +122,13 @@
         {
             <div>
                 <p class="govuk-body">@Localizer["You_have_viewed_your_registration_fees"]</p>
-                <p class="govuk-body">@Localizer["Payment_must_be_made_before_submitting_your_x", model.CurrentYear]</p>
+                <p class="govuk-body">@Localizer["Payment_must_be_made_before_submitting_your_x", model.RegistrationYear]</p>
             </div>
         }
         else if (model is { IsResubmission: false, FileUploadStatus: RegistrationTaskListStatus.Completed, PaymentViewStatus: RegistrationTaskListStatus.NotStarted })
         {
             <div>
-                <p class="govuk-body">@Localizer["You_have_submitted_your_registration_data_for_x", Model.CurrentYear]</p>
+                <p class="govuk-body">@Localizer["You_have_submitted_your_registration_data_for_x", Model.RegistrationYear]</p>
                 <p class="govuk-body">@Localizer["View_your_registration_fees_and_payment_methods"]</p>
             </div>
         }
@@ -137,7 +136,7 @@
                                           || model.FileUploadStatus is RegistrationTaskListStatus.Completed && model.PaymentViewStatus is RegistrationTaskListStatus.NotStarted))
         {
             <div>
-                <p class="govuk-body">@Localizer["You_have_resubmitted_your_registration_data_for_x", Model.CurrentYear]</p>
+                <p class="govuk-body">@Localizer["You_have_resubmitted_your_registration_data_for_x", Model.RegistrationYear]</p>
                 <p class="govuk-body">@Localizer["View_your_registration_fees_and_payment_methods"]</p>
             </div>
         }
@@ -157,7 +156,7 @@
         }
         else
         {
-            <p class="govuk-body govuk-!-margin-bottom-0">@Localizer["you_need_to_register_by_1_April", Model.CurrentYear] @Localizer["Apply_by_1st_April_x", Model.CurrentYear]</p>
+            <p class="govuk-body govuk-!-margin-bottom-0">@Localizer["you_need_to_register_by_1_April", Model.RegistrationYear] @Localizer["Apply_by_1st_April_x", Model.RegistrationYear]</p>
         }
     }
 }

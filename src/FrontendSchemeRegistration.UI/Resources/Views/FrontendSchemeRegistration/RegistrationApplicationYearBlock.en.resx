@@ -90,5 +90,13 @@
 	<data name="You_now_need_to_submit_to_the_regulator" xml:space="preserve">
     <value>You now need to submit to the regulator.</value>
   </data>
-
+	<data name="You_have_resubmitted_registration_data" xml:space="preserve">
+    <value>You have resubmitted registration data. The environmental regulator is reviewing your data.</value>
+  </data>
+	<data name="Your_resubmitted_registration_data_was_rejected" xml:space="preserve">
+    <value>Your resubmitted registration data was rejected. Contact the environmental regulator for further advice.</value>
+  </data>
+	<data name="Your_resubmitted_data_has_been_accepted" xml:space="preserve">
+    <value>Your resubmitted data has been accepted. Report further changes within 28 days of them becoming effective.</value>
+  </data>
 </root>
