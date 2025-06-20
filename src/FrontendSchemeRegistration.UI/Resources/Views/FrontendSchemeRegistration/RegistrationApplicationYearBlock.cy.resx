@@ -98,4 +98,10 @@
 	<data name="Your_resubmitted_data_has_been_accepted" xml:space="preserve">
     <value>Mae’r data rydych chi wedi’i ailgyflwyno wedi cael ei dderbyn. Rhowch wybod am ragor o newidiadau o fewn 28 diwrnod ar ôl iddyn nhw ddod i rym.</value>
   </data>
+	<data name="you_need_to_register_by_October" xml:space="preserve">
+    <value>You must apply for registration for {0} on or before 1 October 2025.</value>
+  </data>
+	<data name="you_can_register_after_October" xml:space="preserve">
+    <value>You may apply after 1 October 2025, but may incur a late fee.</value>
+  </data>
 </root>

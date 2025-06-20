@@ -7,9 +7,9 @@
         <div class="govuk-card-body">
             <h2 class="govuk-heading-m">
                 <a asp-controller="RegistrationApplication"
-                   asp-action="@Model.RegistrationApplicationLink"
-                   asp-route-registrationyear="@Model.RegistrationYear"
-                   class="govuk-link govuk-link--no-visited-state">
+                asp-action="@Model.RegistrationApplicationLink"
+                asp-route-registrationyear="@Model.RegistrationYear"
+                class="govuk-link govuk-link--no-visited-state">
                     @Localizer["registration"] @Localizer["for_year", Model.RegistrationYear]
                     @if (@Model.showLargeProducer)
                     {
@@ -128,7 +128,7 @@
         else if (model is { IsResubmission: false, FileUploadStatus: RegistrationTaskListStatus.Completed, PaymentViewStatus: RegistrationTaskListStatus.NotStarted })
         {
             <div>
-                <p class="govuk-body">@Localizer["You_have_submitted_your_registration_data_for_x", Model.RegistrationYear]</p>
+                <p class="govuk-body">@Localizer["You_have_submitted_your_registration_data_for_x", model.RegistrationYear]</p>
                 <p class="govuk-body">@Localizer["View_your_registration_fees_and_payment_methods"]</p>
             </div>
         }
@@ -136,7 +136,7 @@
                                           || model.FileUploadStatus is RegistrationTaskListStatus.Completed && model.PaymentViewStatus is RegistrationTaskListStatus.NotStarted))
         {
             <div>
-                <p class="govuk-body">@Localizer["You_have_resubmitted_your_registration_data_for_x", Model.RegistrationYear]</p>
+                <p class="govuk-body">@Localizer["You_have_resubmitted_your_registration_data_for_x", model.RegistrationYear]</p>
                 <p class="govuk-body">@Localizer["View_your_registration_fees_and_payment_methods"]</p>
             </div>
         }
@@ -156,7 +156,14 @@
         }
         else
         {
-            <p class="govuk-body govuk-!-margin-bottom-0">@Localizer["you_need_to_register_by_1_April", Model.RegistrationYear] @Localizer["Apply_by_1st_April_x", Model.RegistrationYear]</p>
+            if (model.showLargeProducer)
+            {
+                <p class="govuk-body govuk-!-margin-bottom-0">@Localizer["you_need_to_register_by_October", model.RegistrationYear]</p>
+                <p class="govuk-body"> @Localizer["you_can_register_after_October"]</p>
+
+            }else{
+                <p class="govuk-body govuk-!-margin-bottom-0">@Localizer["you_need_to_register_by_1_April", model.RegistrationYear] @Localizer["Apply_by_1st_April_x", model.RegistrationYear]</p>
+            }
         }
     }
 }

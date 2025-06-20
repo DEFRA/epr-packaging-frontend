@@ -101,23 +101,23 @@ public class SubsidiaryCheckDetailsController : Controller
                 {
                     OrganisationType = OrganisationType.NotSet,
                     ProducerType = ProducerType.NotSet,
-                    CompaniesHouseNumber = subsidiary.CompaniesHouseNumber,
-                    Name = subsidiary.Name,
+                    CompaniesHouseNumber = subsidiary?.CompaniesHouseNumber,
+                    Name = subsidiary?.Name,
                     Address = new AddressModel
                     {
-                        SubBuildingName = subsidiary.BusinessAddress?.SubBuildingName,
-                        BuildingName = subsidiary.BusinessAddress?.BuildingName,
-                        BuildingNumber = subsidiary.BusinessAddress?.BuildingNumber,
-                        Street = subsidiary.BusinessAddress?.Street,
-                        Locality = subsidiary.BusinessAddress?.Locality,
-                        DependentLocality = subsidiary.BusinessAddress?.DependentLocality,
+                        SubBuildingName = subsidiary?.BusinessAddress?.SubBuildingName,
+                        BuildingName = subsidiary?.BusinessAddress?.BuildingName,
+                        BuildingNumber = subsidiary?.BusinessAddress?.BuildingNumber,
+                        Street = subsidiary?.BusinessAddress?.Street,
+                        Locality = subsidiary?.BusinessAddress?.Locality,
+                        DependentLocality = subsidiary?.BusinessAddress?.DependentLocality,
                         Town = subsidiary?.BusinessAddress?.Town,
-                        County = subsidiary.BusinessAddress?.County,
-                        Postcode = subsidiary.BusinessAddress?.Postcode,
-                        Country = subsidiary.BusinessAddress?.Country
+                        County = subsidiary?.BusinessAddress?.County,
+                        Postcode = subsidiary?.BusinessAddress?.Postcode,
+                        Country = subsidiary?.BusinessAddress?.Country
                     },
-                    IsCompanyAlreadyLinkedToOtherParent = subsidiary.IsCompanyAlreadyLinkedToOtherParent,
-                    OtherParentCompanyName = subsidiary.OtherParentCompanyName,
+                    IsCompanyAlreadyLinkedToOtherParent = subsidiary?.IsCompanyAlreadyLinkedToOtherParent,
+                    OtherParentCompanyName = subsidiary?.OtherParentCompanyName,
                     ValidatedWithCompaniesHouse = true,
                     IsComplianceScheme = false,
                     Nation = session.SubsidiarySession.UkNation
