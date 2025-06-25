@@ -338,7 +338,9 @@ public class RegistrationApplicationService(
                 RegistrationReferenceNumber = registrationApplicationSession.RegistrationReferenceNumber,
                 IsResubmission = registrationApplicationSession.IsResubmission,
                 RegistrationYear = year.ToString(),
-                showLargeProducer = index == 0
+                IsComplianceScheme = registrationApplicationSession.IsComplianceScheme,
+                showLargeProducer = year == 2026,
+                RegisterSmallProducersCS = DateTime.UtcNow.Date >= globalVariables.Value.SmallProducersRegStartTime2026
             });
         }
 

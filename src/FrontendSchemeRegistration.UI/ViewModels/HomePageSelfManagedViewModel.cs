@@ -29,6 +29,7 @@ public class HomePageSelfManagedViewModel
 [ExcludeFromCodeCoverage]
 public class RegistrationApplicationPerYearViewModel
 {
+    public bool IsComplianceScheme { get; set; }
     public string RegistrationYear { get; set; } = default!;
     public RegistrationTaskListStatus FileUploadStatus { get; set; } = RegistrationTaskListStatus.NotStarted;
     public RegistrationTaskListStatus PaymentViewStatus { get; set; } = RegistrationTaskListStatus.CanNotStartYet;
@@ -38,6 +39,7 @@ public class RegistrationApplicationPerYearViewModel
     public bool IsResubmission { get; set; }
     public ApplicationStatusType ApplicationStatus { get; set; }
     public bool showLargeProducer { get; set; }
+    public bool RegisterSmallProducersCS { get; set; }
     public string CurrentYear => (DateTime.Now.Year).ToString();
     public string RegistrationApplicationLink
        => ApplicationStatus is

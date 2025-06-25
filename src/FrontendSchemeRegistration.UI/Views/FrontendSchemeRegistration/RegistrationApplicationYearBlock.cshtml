@@ -11,7 +11,7 @@
                 asp-route-registrationyear="@Model.RegistrationYear"
                 class="govuk-link govuk-link--no-visited-state">
                     @Localizer["registration"] @Localizer["for_year", Model.RegistrationYear]
-                    @if (@Model.showLargeProducer)
+                    @if (@Model.showLargeProducer && !Model.RegisterSmallProducersCS)
                     {
                         <br />
                         @Localizer["large_producers_only"]
@@ -156,13 +156,23 @@
         }
         else
         {
-            if (model.showLargeProducer)
+            if (!model.showLargeProducer)
             {
-                <p class="govuk-body govuk-!-margin-bottom-0">@Localizer["you_need_to_register_by_October", model.RegistrationYear]</p>
-                <p class="govuk-body"> @Localizer["you_can_register_after_October"]</p>
-
-            }else{
-                <p class="govuk-body govuk-!-margin-bottom-0">@Localizer["you_need_to_register_by_1_April", model.RegistrationYear] @Localizer["Apply_by_1st_April_x", model.RegistrationYear]</p>
+                <p class="govuk-body">@Localizer["you_need_to_register_by_1_April", model.RegistrationYear] @Localizer["Apply_by_1st_April_x", model.RegistrationYear]</p>
+            }
+            else
+            {
+                if (model.IsComplianceScheme)
+                {
+                    <p class="govuk-body">@Localizer[model.RegisterSmallProducersCS ? "Apply_by_1st_April_compliance_small_x" : "Apply_by_1st_October_compliance_large_x", model.RegistrationYear]</p>
+                    <p class="govuk-body">@Localizer["Apply_after_deadline_late_fee"]</p>
+                }
+                else
+                {
+                    <p class="govuk-body">@Localizer[model.RegisterSmallProducersCS ? "Apply_by_1st_April_producer_small_x" : "you_need_to_register_by_October_x", model.RegistrationYear]</p>
+                    <p class="govuk-body">@Localizer[model.RegisterSmallProducersCS ? "Deadline_for_large_producer" : "you_can_register_after_October"]</p>
+                    <p class="govuk-body">@Localizer[model.RegisterSmallProducersCS ? "Apply_after_deadline_late_fee_small_producer" : ""]</p>
+                }
             }
         }
     }

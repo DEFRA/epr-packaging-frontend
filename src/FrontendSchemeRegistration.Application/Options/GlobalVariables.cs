@@ -22,5 +22,7 @@ public class GlobalVariables
 
     public DateTime LateFeeDeadline2026 { get; set; }
 
+    public DateTime SmallProducersRegStartTime2026 { get; set; }
+
     public string RegistrationYear { get; set; }
 }

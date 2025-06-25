@@ -18,6 +18,18 @@
 	<data name="Apply_by_1st_April_x" xml:space="preserve">
     <value>Gwnewch gais erbyn 1 Ebrill, {0}</value>
   </data>
+	<data name="Apply_by_1st_October_x" xml:space="preserve">
+    <value>[Welsh]You must apply for registration for {0} on or before 1 October {1}.</value>
+  </data>
+	<data name="Apply_by_1st_October_compliance_large_x" xml:space="preserve">
+    <value>You must apply for registration for {0} on behalf of large producers on or before 1 October 2025.</value>
+  </data>
+	<data name="Apply_by_1st_April_compliance_small_x" xml:space="preserve">
+    <value>You must apply for registration on behalf of small producers on or before 1 April 2026.</value>
+  </data>
+	<data name="Apply_after_deadline_late_fee" xml:space="preserve">
+    <value>[Welsh]You may apply after this date, but may incur a late fee.</value>
+  </data>
 	<data name="for_year" xml:space="preserve">
     <value>canys {0}</value>
   </data>
@@ -98,10 +110,19 @@
 	<data name="Your_resubmitted_data_has_been_accepted" xml:space="preserve">
     <value>Mae’r data rydych chi wedi’i ailgyflwyno wedi cael ei dderbyn. Rhowch wybod am ragor o newidiadau o fewn 28 diwrnod ar ôl iddyn nhw ddod i rym.</value>
   </data>
-	<data name="you_need_to_register_by_October" xml:space="preserve">
+	<data name="you_need_to_register_by_October_x" xml:space="preserve">
     <value>You must apply for registration for {0} on or before 1 October 2025.</value>
   </data>
 	<data name="you_can_register_after_October" xml:space="preserve">
     <value>You may apply after 1 October 2025, but may incur a late fee.</value>
+  </data>
+	<data name="Apply_by_1st_April_producer_small_x" xml:space="preserve">
+  <value>Small producers must apply for registration for {0} on or before 1 April 2026 to avoid a late fee.</value>
+</data>
+	<data name="Deadline_for_large_producer" xml:space="preserve">
+  <value>The deadline for 2026 registrations for large producers was 1 October 2025.</value>
+</data>
+	<data name="Apply_after_deadline_late_fee_small_producer" xml:space="preserve">
+    <value>You may apply after this date, but may incur a late fee.</value>
   </data>
 </root>
