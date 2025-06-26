@@ -121,7 +121,7 @@
     <value>Large Producers must apply for registration for 2026 on or before 1 October 2025</value>
   </data>
   <data name="apply_for_registration_compliance" xml:space="preserve">
-    <value>You must apply for registration for 2026 on behalf of large producers before 1 October 2025</value>
+    <value>You must apply for registration for 2026 on behalf of large producers on or before 1 October 2025</value>
   </data>
   <data name="apply_for_registration_late_fee" xml:space="preserve">
     <value> You can apply after 1 October 2025, but may incur a late fee</value>
