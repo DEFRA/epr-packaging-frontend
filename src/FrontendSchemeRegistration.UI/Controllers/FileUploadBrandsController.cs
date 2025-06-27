@@ -50,8 +50,8 @@ public class FileUploadBrandsController : Controller
     [SubmissionPeriodActionFilter(PagePaths.FileUploadCompanyDetailsSubLanding)]
     public async Task<IActionResult> Get()
     {
-        var registrationYear = await _registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+        var registrationYear = _registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
 
         if (session is null)
         {
@@ -101,12 +101,12 @@ public class FileUploadBrandsController : Controller
     [RequestSizeLimit(FileSizeLimit.FileSizeLimitInBytes)]
     [SubmissionIdActionFilter(PagePaths.FileUploadCompanyDetailsSubLanding)]
     [SubmissionPeriodActionFilter(PagePaths.FileUploadCompanyDetailsSubLanding)]
-    public async Task<IActionResult> Post(string registrationyear)
+    public async Task<IActionResult> Post(string? registrationyear)
     {
         Guid? submissionId = Guid.TryParse(Request.Query["submissionId"], out var value) ? value : null;
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         var organisationRole = session.UserData.Organisations.FirstOrDefault()?.OrganisationRole;
-        var registrationYear = await _registrationApplicationService.validateRegistrationYear(registrationyear, true);
+        var registrationYear =  _registrationApplicationService.validateRegistrationYear(registrationyear, true);
 
         submissionId = await _fileUploadService.ProcessUploadAsync(
             Request.ContentType,

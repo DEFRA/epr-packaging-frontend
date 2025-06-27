@@ -1582,7 +1582,7 @@ public class RegistrationApplicationServiceTests
     public async Task ValidateRegistrationYear_ShouldReturnNull_WhenYearIsEmpty_AndParamOptionalIsTrue()
     {
         // Act
-        var result = await _service.validateRegistrationYear("", true);
+        var result =  _service.validateRegistrationYear("", true);
 
         // Assert
         result.Should().BeNull();
@@ -1592,7 +1592,7 @@ public class RegistrationApplicationServiceTests
     [Test]
     public async Task ValidateRegistrationYear_ShouldThrowArgumentException_WhenYearIsEmpty_AndParamOptionalIsFalse()
     {
-        var act = async () => await _service.validateRegistrationYear("", false);
+        var act = async () =>  _service.validateRegistrationYear("", false);
         await act.Should().ThrowAsync<ArgumentException>()
             .WithMessage("Registration year missing");
     }
@@ -1600,7 +1600,7 @@ public class RegistrationApplicationServiceTests
     [Test]
     public async Task ValidateRegistrationYear_ShouldThrowArgumentException_WhenYearIsNotANumber()
     {
-        var act = async () => await _service.validateRegistrationYear("abcd", false);
+        var act = async () =>  _service.validateRegistrationYear("abcd", false);
         await act.Should().ThrowAsync<ArgumentException>()
             .WithMessage("Registration year is not a valid number");
     }
@@ -1608,7 +1608,7 @@ public class RegistrationApplicationServiceTests
     [Test]
     public async Task ValidateRegistrationYear_ShouldReturnYear_WhenValid()
     {
-        var result = await _service.validateRegistrationYear("2025", false);
+        var result =  _service.validateRegistrationYear("2025", false);
         result.Should().Be(2025);
     }
 

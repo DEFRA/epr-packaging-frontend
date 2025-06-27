@@ -347,24 +347,28 @@ public class RegistrationApplicationService(
         return viewModels;
     }
 
-    public async Task<int?> validateRegistrationYear(string registrationYear, bool isParamOptional = false)
+    public int? validateRegistrationYear(string? registrationYear, bool isParamOptional = false)
     {
         if (string.IsNullOrWhiteSpace(registrationYear) && isParamOptional)
-           return null;
+        {
+            return null;
+        }
+        else
+        {
+            var years = (globalVariables.Value.RegistrationYear ?? string.Empty).Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+           .Select(y => int.TryParse(y, out var year) ? year : throw new FormatException($"Invalid year: '{y}'"))
+           .OrderByDescending(n => n).ToArray();
 
-        var years = (globalVariables.Value.RegistrationYear ?? string.Empty).Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-       .Select(y => int.TryParse(y, out var year) ? year : throw new FormatException($"Invalid year: '{y}'"))
-       .OrderByDescending(n => n).ToArray();
+            if (string.IsNullOrWhiteSpace(registrationYear))
+                throw new ArgumentException("Registration year missing");
+            if (!int.TryParse(registrationYear, out int regYear))
+                throw new ArgumentException("Registration year is not a valid number");
 
-        if (string.IsNullOrWhiteSpace(registrationYear))
-            throw new ArgumentException("Registration year missing");
-        if (!int.TryParse(registrationYear, out int regYear))
-            throw new ArgumentException("Registration year is not a valid number");
+            if (!years.Contains(regYear))
+                throw new ArgumentException("Invalid registration year");
 
-        if (!years.Contains(regYear))
-            throw new ArgumentException("Invalid registration year");
-
-        return regYear;
+            return regYear;
+        }
 
     }
 }
@@ -385,6 +389,6 @@ public interface IRegistrationApplicationService
 
     Task<List<RegistrationApplicationPerYearViewModel>> BuildRegistrationApplicationPerYearViewModels(ISession httpSession, Organisation organisation);
 
-    Task<int?> validateRegistrationYear(string registrationYear, bool isParamOptional);
+    int? validateRegistrationYear(string? registrationYear, bool isParamOptional = false);
     
     }

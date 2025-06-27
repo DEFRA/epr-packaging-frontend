@@ -29,7 +29,7 @@ public class DeclarationWithFullNameController(
     {
         var submissionId = Guid.Parse(Request.Query["submissionId"]);
         var userData = User.GetUserData();
-        var registrationYear = await registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
+        var registrationYear = registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
 
         var session = await sessionManager.GetSessionAsync(HttpContext.Session);
 

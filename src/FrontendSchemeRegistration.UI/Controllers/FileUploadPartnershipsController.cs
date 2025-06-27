@@ -35,14 +35,14 @@ public class FileUploadPartnershipsController : Controller
         ISubmissionService submissionService,
         IFileUploadService fileUploadService,
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
-        IOptions<GlobalVariables> globalVariables,
-        IRegistrationApplicationService registrationApplicationService)
+        IRegistrationApplicationService registrationApplicationService,
+        IOptions<GlobalVariables> globalVariables)
     {
         _submissionService = submissionService;
         _fileUploadService = fileUploadService;
         _sessionManager = sessionManager;
-        _globalVariables = globalVariables;
         _registrationApplicationService = registrationApplicationService;
+        _globalVariables = globalVariables;
     }
 
     [HttpGet]
@@ -50,7 +50,8 @@ public class FileUploadPartnershipsController : Controller
     [SubmissionPeriodActionFilter(PagePaths.FileUploadCompanyDetailsSubLanding)]
     public async Task<IActionResult> Get()
     {
-        var registrationYear = await _registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
+        var registrationYear = _registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
+        
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         if (session is null)
         {
@@ -94,12 +95,12 @@ public class FileUploadPartnershipsController : Controller
     [RequestSizeLimit(FileSizeLimit.FileSizeLimitInBytes)]
     [SubmissionIdActionFilter(PagePaths.FileUploadCompanyDetailsSubLanding)]
     [SubmissionPeriodActionFilter(PagePaths.FileUploadCompanyDetailsSubLanding)]
-    public async Task<IActionResult> Post(string registrationyear)
+    public async Task<IActionResult> Post(string? registrationyear)
     {
         var submissionId = Guid.Parse(Request.Query["submissionId"]);
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         var organisationRole = session.UserData.Organisations.FirstOrDefault()?.OrganisationRole;
-        var registrationYear = await _registrationApplicationService.validateRegistrationYear(registrationyear, true);
+        var registrationYear = _registrationApplicationService.validateRegistrationYear(registrationyear, true);
 
         submissionId = await _fileUploadService.ProcessUploadAsync(
             Request.ContentType,

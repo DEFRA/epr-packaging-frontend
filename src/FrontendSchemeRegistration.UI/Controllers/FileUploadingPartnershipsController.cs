@@ -24,7 +24,7 @@ public class FileUploadingPartnershipsController(ISubmissionService submissionSe
         var submissionId = Guid.Parse(Request.Query["submissionId"]);
         var submission = await submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
         var session = await sessionManager.GetSessionAsync(HttpContext.Session);
-        var registrationYear = await registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
+        var registrationYear = registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
 
         if (submission is null)
         {

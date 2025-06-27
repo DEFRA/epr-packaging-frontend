@@ -74,7 +74,8 @@ public class FileUploadPartnershipsControllerTests
             (_submissionServiceMock.Object, 
             _fileUploadServiceMock.Object, 
             _sessionManagerMock.Object,
-            Options.Create(new GlobalVariables { FileUploadLimitInBytes = 268435456, SubsidiaryFileUploadLimitInBytes = 61440 }), _registrationApplicationServiceMock.Object);
+            _registrationApplicationServiceMock.Object,
+            Options.Create(new GlobalVariables { FileUploadLimitInBytes = 268435456, SubsidiaryFileUploadLimitInBytes = 61440 }));
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
