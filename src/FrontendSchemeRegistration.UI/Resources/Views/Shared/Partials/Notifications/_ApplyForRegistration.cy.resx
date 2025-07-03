@@ -118,15 +118,15 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="apply_for_registration" xml:space="preserve">
-    <value>wLarge Producers must apply for registration for 2026 on or before 1 October 2025</value>
+    <value>Mae angen i gynhyrchwyr mawr wneud cais am gofrestru ar gyfer 2026 ar nue cyn 1 Hydref 2025.</value>
   </data>
   <data name="apply_for_registration_compliance" xml:space="preserve">
-    <value>wYou must apply for registration for 2026 on behalf of large producers on or before 1 October 2025</value>
+    <value>Rhaid ichi wneud cais am gofrestru ar gyfer 2026 ar ran cynhyrchwyr mawr ar neu cyn 1 Hydref 2025.</value>
   </data>
   <data name="apply_for_registration_late_fee" xml:space="preserve">
-    <value>w You can apply after 1 October 2025, but may incur a late fee</value>
+    <value> Rydych chi’n cael gwneud cais ar ôl 1 Hydref 2025, ond efallai y bydd ffi hwyr.</value>
   </data>
   <data name="apply_for_registration_late_fee_compliance" xml:space="preserve">
-    <value>wYou may still apply for registration after this date, but may incur a late fee</value>
+    <value>Rydych chi’n cael gwneud cais ar ôl y dyddiad yma, ond efallai y bydd ffi hwyr.</value>
   </data>
 </root>
