@@ -1,11 +1,12 @@
 ﻿namespace FrontendSchemeRegistration.UI.Extensions;
 
-using System.Security.Claims;
-using System.Text.Json;
 using EPR.Common.Authorization.Extensions;
 using EPR.Common.Authorization.Models;
+using FrontendSchemeRegistration.Application.Constants;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
+using System.Text.Json;
 
 public static class ClaimsExtensions
 {
@@ -60,5 +61,12 @@ public static class ClaimsExtensions
             .Value;
 
         return Guid.TryParse(claimCorrelationId, out correlationId);
+    }
+
+    public static string TryGetOrganisatonIds(this ClaimsPrincipal claimsPrincipal)
+    {
+        return claimsPrincipal?.Claims?
+            .FirstOrDefault(claim => claim.Type == CustomClaimTypes.OrganisationIds)?
+            .Value;
     }
 }

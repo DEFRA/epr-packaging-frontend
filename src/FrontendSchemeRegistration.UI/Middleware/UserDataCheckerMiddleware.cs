@@ -4,6 +4,7 @@ using Application.Options;
 using Application.Services.Interfaces;
 using EPR.Common.Authorization.Models;
 using Extensions;
+using FrontendSchemeRegistration.Application.Constants;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Options;
 
@@ -55,6 +56,12 @@ public class UserDataCheckerMiddleware : IMiddleware
                         OrganisationType = x.OrganisationType
                     }).ToList()
             };
+
+            var orgIdsClaim = context.User.TryGetOrganisatonIds();
+            if (orgIdsClaim is not null)
+            {
+                _logger.LogInformation("Found claim {Type} with value {Value}", CustomClaimTypes.OrganisationIds, orgIdsClaim);
+            }
 
             await ClaimsExtensions.UpdateUserDataClaimsAndSignInAsync(context, userData);
         }

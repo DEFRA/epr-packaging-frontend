@@ -5,6 +5,7 @@ using System.Text.Json;
 using AutoFixture;
 using EPR.Common.Authorization.Models;
 using FluentAssertions;
+using FrontendSchemeRegistration.Application.Constants;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
@@ -175,5 +176,62 @@ public class ClaimsExtensionsTests
                 It.IsAny<ClaimsPrincipal>(),
                 It.IsAny<AuthenticationProperties>()),
             Times.Once);
+    }
+
+    [Test]
+    public void TryGetOrganisatonIds_ShouldReturnNull_WhenNoOrganisationIdsDataClaimPresent()
+    {
+        // Arrange
+        var claimsPrincipalMock = new Mock<ClaimsPrincipal>();
+        claimsPrincipalMock.Setup(x => x.Claims).Returns(Enumerable.Empty<Claim>());
+
+        // Act
+        var result = claimsPrincipalMock.Object.TryGetOrganisatonIds();
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public void TryGetOrganisatonIds_ShouldReturnUserData_WhenUserDataClaimPresent()
+    {
+        // Arrange
+        const string organisationIds = "012345,67890";
+
+        var claimsPrincipalMock = new Mock<ClaimsPrincipal>();
+        claimsPrincipalMock.Setup(x => x.Claims).Returns(new[] { new Claim(CustomClaimTypes.OrganisationIds, organisationIds) });
+
+        // Act
+        var result = claimsPrincipalMock.Object.TryGetOrganisatonIds();
+
+        // Assert
+        result.Should().Be(organisationIds);
+    }
+
+    [Test]
+    public void TryGetOrganisatonIds_ShouldReturnNull_WhenClaimsIsNull()
+    {
+        // Arrange
+        var claimsPrincipalMock = new Mock<ClaimsPrincipal>();
+        claimsPrincipalMock.Setup(x => x.Claims).Returns((IEnumerable<Claim>)null);
+        
+        // Act
+        var result = claimsPrincipalMock.Object.TryGetOrganisatonIds();
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public void TryGetOrganisatonIds_ShouldReturnNull_WhenClaimsPrincipalIsNull()
+    {
+        // Arrange
+        var claimsPrincipal =  default(ClaimsPrincipal);
+
+        // Act
+        var result = claimsPrincipal.TryGetOrganisatonIds();
+
+        // Assert
+        result.Should().BeNull();
     }
 }

@@ -5,6 +5,7 @@ using Application.DTOs.UserAccount;
 using Application.Options;
 using Application.Services.Interfaces;
 using Controllers;
+using FrontendSchemeRegistration.Application.Constants;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
@@ -129,6 +130,30 @@ public class UserDataCheckerMiddlewareTests : FrontendSchemeRegistrationTestBase
         // Assert
         _userAccountServiceMock.Verify(x => x.GetUserAccount(), Times.Once);
         _requestDelegateMock.Verify(x => x(_httpContextMock.Object), Times.Once);
+    }
+
+    [Test]
+    public async Task Middleware_LogsOrgIdsClaim_WhenClaimIsPresentAtSignIn()
+    {
+        // Arrange
+        const string orgIds = "12345,67890";
+        const string expectedLog = $"Found claim {CustomClaimTypes.OrganisationIds} with value {orgIds}";
+
+        var claims = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim> { new(CustomClaimTypes.OrganisationIds, orgIds) }, "authenticationType"));
+        var serviceProviderMock = new Mock<IServiceProvider>();
+        serviceProviderMock.Setup(x => x.GetService(typeof(IAuthenticationService))).Returns(Mock.Of<IAuthenticationService>());
+        _httpContextMock.Setup(x => x.User).Returns(claims);
+        _httpContextMock.Setup(x => x.RequestServices).Returns(serviceProviderMock.Object);
+        _userAccountServiceMock.Setup(x => x.GetUserAccount()).ReturnsAsync(GetUserAccount());
+
+        // Act
+        await _systemUnderTest.InvokeAsync(_httpContextMock.Object, _requestDelegateMock.Object);
+
+        // Assert
+        _userAccountServiceMock.Verify(x => x.GetUserAccount(), Times.Once);
+        _requestDelegateMock.Verify(x => x(_httpContextMock.Object), Times.Once);
+        
+        _loggerMock.VerifyLog(logger => logger.LogInformation(expectedLog), Times.Once);
     }
 
     private static UserAccountDto GetUserAccount()
