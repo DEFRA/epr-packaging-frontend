@@ -410,6 +410,6 @@ Read the guidance about how to create your organisation details file. Once youâ€
     <value>Large organisations (L) can enter a recyclability rating for 2025 submissions periods onwards from the following options: R (for Red), A (for Amber), G (for Green), R-M (for Red-Medical), A-M (for Amber-Medical) or Green-Medical (G-M)</value>
   </data>
   <data name="91" xml:space="preserve">
-    <value>Do not submit transactional packaging units for this period.</value>
+    <value>Do not submit transitional packaging units for this period.</value>
   </data>
 </root>
