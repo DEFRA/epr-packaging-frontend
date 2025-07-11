@@ -354,6 +354,12 @@
   <data name="917" xml:space="preserve">
     <value>You must enter a joiner date for this organisation.</value>
   </data>
+  <data name="918" xml:space="preserve">
+    <value>You've told us you're a small producer. Register between 1 January and 1 April.</value>
+  </data>
+  <data name="919" xml:space="preserve">
+    <value>You've told us at least one of your members is a small producer. Register these members between 1 January and 1 April 2026.</value>
+  </data>
   <data name="73" xml:space="preserve">
     <value>Turnover for this organisation is recorded as zero. Please verify this is correct before submitting a zero return</value>
   </data>
