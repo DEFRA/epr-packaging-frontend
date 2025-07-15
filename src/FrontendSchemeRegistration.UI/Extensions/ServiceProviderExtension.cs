@@ -271,6 +271,22 @@ public static class ServiceProviderExtension
                 })
             .EnableTokenAcquisitionToCallDownstreamApi([facadeApiOptions.DownstreamScope])
             .AddDistributedTokenCaches();
+
+        services.ConfigureGraphServiceClient(configuration);
+    }
+
+    private static IServiceCollection ConfigureGraphServiceClient(this IServiceCollection services, IConfiguration configuration)
+    {
+        if (configuration.IsFeatureEnabled(FeatureFlags.UseGraphApiForExtendedUserClaims))
+        {
+            services.RegisterGraphServiceClient(configuration);
+        }
+        else
+        {
+            services.RegisterNullGraphServiceClient();
+        }
+
+        return services;
     }
 
     private static void ConfigureCookiePolicy(IServiceCollection services)

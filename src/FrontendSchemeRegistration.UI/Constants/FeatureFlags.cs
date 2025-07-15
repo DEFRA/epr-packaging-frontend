@@ -24,4 +24,5 @@ public static class FeatureFlags
     public const string ShowYourFeedbackFooter = "ShowYourFeedbackFooter";
     public const string ShowWasteTile = "ShowWasteTile";
     public const string ShowServiceNowFooterLink = "ShowServiceNowFooterLink";
+    public const string UseGraphApiForExtendedUserClaims = "UseGraphApiForExtendedUserClaims";
 }

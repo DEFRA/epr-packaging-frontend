@@ -11,6 +11,8 @@ public class Organisation
     [JsonProperty("name")]
     public string OrganisationName { get; set; }
 
+    public string OrganisationNumber { get; set; }
+
     public string OrganisationRole { get; set; }
 
     public string OrganisationType { get; set; }

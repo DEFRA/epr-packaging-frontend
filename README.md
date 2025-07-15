@@ -132,6 +132,8 @@ The structure of the appsettings can be found in the repository. Example configu
 | AzureAdB2C__ResetPasswordPolicyId                          | Azure ADB2C id to reset password policy                                                                          |
 | AzureAdB2C__EditProfilePolicyId                            | Azure ADB2C id to edit profile policy                                                                            |
 | AzureAdB2C__CallbackPath                                   | Callback path for Azure ADB2C                                                                                    |
+| AzureAdB2C__ExtensionsClientId                             | Azure ADB2C Extensions App client id used by Graph API                                                           |
+| AzureAdB2C__TenantId                                       | Azure ADB2C tenant id                                                                                            |
 | AccountsFacadeAPI__BaseEndpoint                            | URL of the account facade                                                                                        |
 | AccountsFacadeAPI__DownstreamScope                         | Downstream scope for the account facade                                                                          |
 | WebAPI__BaseEndpoint                                       | Base endpoint for the Web API                                                                                    |
