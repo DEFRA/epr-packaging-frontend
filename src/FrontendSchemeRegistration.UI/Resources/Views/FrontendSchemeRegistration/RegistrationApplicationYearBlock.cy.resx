@@ -22,7 +22,7 @@
     <value>[Welsh]You must apply for registration for {0} on or before 1 October {1}.</value>
   </data>
 	<data name="Apply_by_1st_October_compliance_large_x" xml:space="preserve">
-    <value>Rhaid ichi wneud cais i gofrestru ar gyfer  ar ran cynhyrchwyr mawr ar neu cyn 1 Hydref 2025.</value>
+    <value>Rhaid ichi wneud cais i gofrestru ar gyfer {0} ar ran cynhyrchwyr mawr ar neu cyn 1 Hydref 2025.</value>
   </data>
 	<data name="Apply_by_1st_April_compliance_small_x" xml:space="preserve">
     <value>Rhaid ichi wneud cais am gofrestru ar ran cynhyrchwyr bach ar neu cyn 1 Ebrill 2026.</value>
@@ -30,14 +30,11 @@
 	<data name="Apply_after_deadline_late_fee" xml:space="preserve">
     <value>Rydych chi’n cael gwneud cais ar ôl y dyddiad yma, ond efallai y bydd ffi hwyr.</value>
   </data>
-	<data name="for_year" xml:space="preserve">
-    <value>canys {0}</value>
-  </data>
 	<data name="large_producers_only" xml:space="preserve">
     <value>(cynhyrchwyr mawr yn unig)</value>
   </data>
-	<data name="registration" xml:space="preserve">
-    <value>Cofrestriad</value>
+	<data name="registration_for_year" xml:space="preserve">
+    <value>Cofrestru ar gyfer {0}</value>
   </data>
     <data name="Your_registration_for_x_has_been_granted" xml:space="preserve">
     <value>Mae eich cofrestriad ar gyfer {0} wedi'i ganiatáu gan y rheoleiddiwr.</value>

@@ -12,11 +12,8 @@
 	<resheader name="writer">
 		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
 	</resheader>
-	<data name="registration" xml:space="preserve">
-    <value>Registration</value>
-  </data>
-	<data name="for_year" xml:space="preserve">
-    <value> for {0}</value>
+	<data name="registration_for_year" xml:space="preserve">
+    <value>Registration for {0}</value>
   </data>
 	<data name="large_producers_only" xml:space="preserve">
     <value>(Large producers only)</value>

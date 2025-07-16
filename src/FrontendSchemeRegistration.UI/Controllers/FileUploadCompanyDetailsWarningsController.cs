@@ -91,14 +91,11 @@ public class FileUploadCompanyDetailsWarningsController : Controller
             return View("FileUploadCompanyDetailsWarnings", model);
         }
 
-        if (model.UploadNewFile.HasValue)
+        if (model.UploadNewFile == true)
         {
-            return model.UploadNewFile.Value ?
-                RedirectToAction("Get", "FileUploadCompanyDetails", model.RegistrationYear.HasValue ? new { submissionId = model.SubmissionId,  registrationyear = model.RegistrationYear } : new { submissionId = model.SubmissionId }) :
-                RedirectToAction("Get", "ReviewCompanyDetails", model.RegistrationYear.HasValue ? new { submissionId = model.SubmissionId, registrationyear = model.RegistrationYear } : new { submissionId = model.SubmissionId });
+            return RedirectToAction("Get", "FileUploadCompanyDetails", new { submissionId = model.SubmissionId });
         }
 
-        return View("FileUploadCompanyDetailsWarnings", model);
+        return RedirectToAction("Get", "FileUploadCompanyDetailsSuccess", new { submissionId = model.SubmissionId });
     }
-
 }
