@@ -375,4 +375,7 @@
   <data name="854" xml:space="preserve">
     <value>Turnover must be provided</value>
   </data>
+  <data name="920" xml:space="preserve">
+    <value>Joiner date must be present when leaver code is present.</value>
+  </data>
 </root>

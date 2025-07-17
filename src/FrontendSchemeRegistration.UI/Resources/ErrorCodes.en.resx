@@ -412,4 +412,7 @@ Read the guidance about how to create your organisation details file. Once youâ€
   <data name="91" xml:space="preserve">
     <value>Do not submit transitional packaging units for this period.</value>
   </data>
+	<data name="109" xml:space="preserve">
+    <value>Only HDC- GL (packaging material) is required for RAM RAG ratings and HH/PB packaging type is required for RAM RAG ratings for all materials</value>
+  </data>
 </root>

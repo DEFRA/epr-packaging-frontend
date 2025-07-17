@@ -388,4 +388,7 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
   <data name="91" xml:space="preserve">
     <value>Peidiwch â chyflwyno unedau pecynwaith trosiannol am y cyfnod yma.</value>
   </data>
+  <data name="109" xml:space="preserve">
+    <value>[Welsh] Only HDC- GL (packaging material) is required for RAM RAG ratings and HH/PB packaging type is required for RAM RAG ratings for all materials</value>
+  </data>
 </root>

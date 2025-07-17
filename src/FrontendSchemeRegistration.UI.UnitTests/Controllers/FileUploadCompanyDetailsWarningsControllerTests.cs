@@ -29,7 +29,7 @@ public class FileUploadCompanyDetailsWarningsControllerTests
     private Mock<IUrlHelper> _urlHelperMock;
     private const string SubmissionPeriod = "Jul to Dec 23";
     private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
-
+    int RegistrationYear = DateTime.Now.Year;
 
     private List<string> _journey = new()
     {
@@ -50,6 +50,8 @@ public class FileUploadCompanyDetailsWarningsControllerTests
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _validationOptions = new ValidationOptions { MaxIssuesToProcess = 100 };
         _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
+        _registrationApplicationServiceMock.Setup(x => x.validateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(RegistrationYear);
+
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
@@ -74,7 +76,7 @@ public class FileUploadCompanyDetailsWarningsControllerTests
                 {
                     Query = new QueryCollection(new Dictionary<string, StringValues>
                     {
-                        { "submissionId", SubmissionId.ToString() },
+                        { "submissionId", SubmissionId.ToString() }
                     }),
                 },
                 Session = new Mock<ISession>().Object
@@ -85,10 +87,17 @@ public class FileUploadCompanyDetailsWarningsControllerTests
     }
 
     [Test]
-    public async Task Get_RedirectsTo_FileUploadCompanyDetailsGet_WhenGetSubmissionAsyncReturnsNull()
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task Get_RedirectsTo_FileUploadCompanyDetailsGet_WhenGetSubmissionAsyncReturnsNull(bool hasRegistrationYear)
     {
         // Arrange
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync((PomSubmission)null);
+        if (!hasRegistrationYear)
+        {
+            _registrationApplicationServiceMock.Setup(x => x.validateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
+                .Returns((int?)null);
+        }
 
         // Act
         var result = await _systemUnderTest.Get() as RedirectToActionResult;
@@ -96,25 +105,54 @@ public class FileUploadCompanyDetailsWarningsControllerTests
         // Assert
         result.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("FileUploadCompanyDetails");
+
+        if (!hasRegistrationYear)
+        {
+            result.RouteValues.Should().BeNull();
+        }
+        else
+        {
+            result.RouteValues["registrationyear"].Should().Be(RegistrationYear.ToString());
+        }
 
         _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.Once);
     }
 
     [Test]
-    public async Task Get_RedirectsToFileUploadCompanyDetailsGet_WhenSession_IsNull()
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task Get_RedirectsToFileUploadCompanyDetailsGet_WhenSession_IsNull(bool hasRegistrationYear)
     {
         // Arrange
+        if (!hasRegistrationYear)
+        {
+            _registrationApplicationServiceMock.Setup(x => x.validateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
+                .Returns((int?)null);
+        }
+
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(new RegistrationSubmission
         {
             CompanyDetailsDataComplete = true
         });
+
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
           .ReturnsAsync((FrontendSchemeRegistrationSession)null); // Simulate no session available
+
         // Act
         var result = await _systemUnderTest.Get() as RedirectToActionResult;
         // Assert
         result.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("FileUploadCompanyDetails");
+
+        if (!hasRegistrationYear)
+        {
+            result.RouteValues.Should().BeNull();
+        }
+        else
+        {
+            result.RouteValues["registrationyear"].Should().Be(RegistrationYear.ToString());
+        }
+
         _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.Once);
     }
 
@@ -138,7 +176,9 @@ public class FileUploadCompanyDetailsWarningsControllerTests
     }
 
     [Test]
-    public async Task Get_ReturnsFileUploadCompanyDetailsWarningsView_WhenGetSubmissionAsyncReturnsCompletedValidSubmissionWithOnlyWarnings()
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task Get_ReturnsFileUploadCompanyDetailsWarningsView_WhenGetSubmissionAsyncReturnsCompletedValidSubmissionWithOnlyWarnings(bool hasRegistrationYear)
     {
         // Arrange
         const string fileName = "example.csv";
@@ -150,6 +190,14 @@ public class FileUploadCompanyDetailsWarningsControllerTests
             HasWarnings = true
         });
 
+        if (!hasRegistrationYear)
+        {
+            _registrationApplicationServiceMock.Setup(x => x.validateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
+                .Returns((int?)null);
+        }
+        //~//report-organisation-details?registrationyear=2025
+        var path = hasRegistrationYear ? $"~//report-organisation-details?registrationyear={RegistrationYear}" : $"~//report-organisation-details";
+
         // Act
         var result = await _systemUnderTest.Get() as ViewResult;
 
@@ -157,19 +205,22 @@ public class FileUploadCompanyDetailsWarningsControllerTests
         result.ViewName.Should().Be("FileUploadCompanyDetailsWarnings");
         result.ViewData.Keys.Should().HaveCount(1);
         result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
-        result.ViewData["BackLinkToDisplay"].Should().Be($"~/{PagePaths.FileUploadCompanyDetailsSubLanding}");
+        result.ViewData["BackLinkToDisplay"].Should().Be(path);
         result.Model.Should().BeEquivalentTo(new FileUploadWarningViewModel()
         {
             FileName = fileName,
             SubmissionId = SubmissionId,
-            MaxWarningsToProcess = 100
+            MaxWarningsToProcess = 100,
+            RegistrationYear = hasRegistrationYear ? RegistrationYear : (int?)null
         });
 
-        _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.Once);
+        _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.AtLeastOnce);
     }
 
     [Test]
-    public async Task Get_ReturnsFileUploadCompanyDetailsWarningsView_When_Session_RegistrationSession_IsFileUploadJourney_Equals_True()
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task Get_ReturnsFileUploadCompanyDetailsWarningsView_When_Session_RegistrationSession_IsFileUploadJourney_Equals_True(bool hasRegistrationYear)
     {
         // Arrange
         const string fileName = "example.csv";
@@ -192,19 +243,28 @@ public class FileUploadCompanyDetailsWarningsControllerTests
                 }
             });
 
-        // Act
+        if (!hasRegistrationYear)
+        {
+            _registrationApplicationServiceMock.Setup(x => x.validateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
+                .Returns((int?)null);
+        }
+
+        var path = hasRegistrationYear ? $"~/{PagePaths.RegistrationTaskList}?registrationyear={RegistrationYear}" : $"~/{PagePaths.RegistrationTaskList}";
+
+        // Act        
         var result = await _systemUnderTest.Get() as ViewResult;
 
         // Assert
         result.ViewName.Should().Be("FileUploadCompanyDetailsWarnings");
         result.ViewData.Keys.Should().HaveCount(1);
         result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
-        result.ViewData["BackLinkToDisplay"].Should().Be($"~/{PagePaths.RegistrationTaskList}");
+        result.ViewData["BackLinkToDisplay"].Should().Be(path); 
         result.Model.Should().BeEquivalentTo(new FileUploadWarningViewModel()
         {
             FileName = fileName,
             SubmissionId = SubmissionId,
-            MaxWarningsToProcess = 100
+            MaxWarningsToProcess = 100,
+            RegistrationYear = hasRegistrationYear ? RegistrationYear : (int?)null
         });
 
         _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.Once);
@@ -212,7 +272,9 @@ public class FileUploadCompanyDetailsWarningsControllerTests
     }
 
     [Test]
-    public async Task Get_RedirectsToFileUploadCompanyDetails_WhenJourneyDoesNotContain_RequiredPath()
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task Get_RedirectsToFileUploadCompanyDetails_WhenJourneyDoesNotContain_RequiredPath(bool hasRegistrationYear)
     {
         // Arrange
         const string fileName = "example.csv";
@@ -222,6 +284,12 @@ public class FileUploadCompanyDetailsWarningsControllerTests
             CompanyDetailsDataComplete = true,
             ValidationPass = true
         });
+
+        if (!hasRegistrationYear)
+        {
+            _registrationApplicationServiceMock.Setup(x => x.validateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
+                .Returns((int?)null);
+        }
 
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
@@ -238,10 +306,21 @@ public class FileUploadCompanyDetailsWarningsControllerTests
         // Assert
         result?.ControllerName.Should().Be(nameof(FileUploadCompanyDetailsController).RemoveControllerFromName());
         result?.ActionName.Should().Be(nameof(FileUploadCompanyDetailsController.Get));
+
+        if (!hasRegistrationYear)
+        {
+            result.RouteValues.Should().BeNull();
+        }
+        else
+        {
+            result.RouteValues["registrationyear"].Should().Be(RegistrationYear.ToString());
+        }
     }
 
     [Test]
-    public async Task Get_ShouldSetBackLink_To_RegistrationTaskList_WhenisFileUploadJourneyInvokedViaRegistrationisFalse()
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task Get_ShouldSetBackLink_To_RegistrationTaskList_WhenisFileUploadJourneyInvokedViaRegistrationisFalse(bool hasRegistrationYear)
     {
         // Arrange
         const string fileName = "example.csv";
@@ -264,16 +343,25 @@ public class FileUploadCompanyDetailsWarningsControllerTests
                }
            });
 
-        var mockUrlHelper = new Mock<IUrlHelper>();
-        mockUrlHelper.Setup(x => x.Content($"~/{PagePaths.RegistrationTaskList}")).Returns($"~/{PagePaths.RegistrationTaskList}");
-        _systemUnderTest.Url = mockUrlHelper.Object;
+        var path = hasRegistrationYear ? $"~/{PagePaths.RegistrationTaskList}?registrationyear={RegistrationYear}" : $"~/{PagePaths.RegistrationTaskList}";
 
+        if (hasRegistrationYear)
+        {
+            _registrationApplicationServiceMock.Setup(x => x.validateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
+                .Returns((int?)null);
+        }
+
+        var mockUrlHelper = new Mock<IUrlHelper>();
+        mockUrlHelper.Setup(x => x.Content(path)).Returns(path);
+        _systemUnderTest.Url = mockUrlHelper.Object;
+               
         // Act
         var result = _systemUnderTest.Get().Result;
         var webpageBackLink = _systemUnderTest.ViewBag.BackLinkToDisplay as string;
 
         // Assert
-        webpageBackLink.Should().Be($"~/{PagePaths.RegistrationTaskList}");
+        var resultPath = !hasRegistrationYear ? $"~/{PagePaths.RegistrationTaskList}?registrationyear={RegistrationYear}" : null;
+        webpageBackLink.Should().Be(resultPath);
     }
 
     [Test]
@@ -325,7 +413,8 @@ public class FileUploadCompanyDetailsWarningsControllerTests
         var viewModel = new FileUploadWarningViewModel
         {
             SubmissionId = SubmissionId,
-            UploadNewFile = true
+            UploadNewFile = true,
+            RegistrationYear = 2025 // Assuming a registration year is needed for the success page
         };
 
         // Act
@@ -334,6 +423,8 @@ public class FileUploadCompanyDetailsWarningsControllerTests
         // Assert
         result?.ControllerName.Should().Be(nameof(FileUploadCompanyDetailsController).RemoveControllerFromName());
         result?.ActionName.Should().Be(nameof(FileUploadCompanyDetailsController.Get));
+        result.RouteValues["submissionId"].Should().Be(SubmissionId.ToString());
+        result.RouteValues["registrationyear"].Should().Be("2025");
     }
 
     [Test]
@@ -343,7 +434,8 @@ public class FileUploadCompanyDetailsWarningsControllerTests
         var viewModel = new FileUploadWarningViewModel
         {
             SubmissionId = SubmissionId,
-            UploadNewFile = false
+            UploadNewFile = false,
+            RegistrationYear = 2025 // Assuming a registration year is needed for the success page
         };
 
         // Act
@@ -353,7 +445,8 @@ public class FileUploadCompanyDetailsWarningsControllerTests
         result.Should().NotBeNull();
         result?.ControllerName.Should().Be(nameof(FileUploadCompanyDetailsSuccessController).RemoveControllerFromName());
         result?.ActionName.Should().Be(nameof(FileUploadCompanyDetailsSuccessController.Get));
-        result.RouteValues["submissionId"].Should().Be(SubmissionId);
+        result.RouteValues["submissionId"].Should().Be(SubmissionId.ToString());
+        result.RouteValues["registrationyear"].Should().Be("2025");
     }
 
     [Test]

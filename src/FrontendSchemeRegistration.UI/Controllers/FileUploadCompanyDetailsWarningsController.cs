@@ -93,9 +93,14 @@ public class FileUploadCompanyDetailsWarningsController : Controller
 
         if (model.UploadNewFile == true)
         {
-            return RedirectToAction("Get", "FileUploadCompanyDetails", new { submissionId = model.SubmissionId });
+            return RedirectToAction("Get", "FileUploadCompanyDetails", model.RegistrationYear is not null ?
+            new { submissionId = model.SubmissionId.ToString(), registrationyear = model.RegistrationYear.ToString() } :
+            new { submissionId = model.SubmissionId.ToString() });
         }
 
-        return RedirectToAction("Get", "FileUploadCompanyDetailsSuccess", new { submissionId = model.SubmissionId });
+        return RedirectToAction("Get", "FileUploadCompanyDetailsSuccess", 
+            model.RegistrationYear is not null ? 
+            new { submissionId = model.SubmissionId.ToString(), registrationyear = model.RegistrationYear.ToString() } : 
+            new { submissionId = model.SubmissionId.ToString() });
     }
 }
