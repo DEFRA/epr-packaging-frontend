@@ -376,6 +376,15 @@
     <value>Turnover must be provided</value>
   </data>
   <data name="920" xml:space="preserve">
-    <value>Joiner date must be present when leaver code is present.</value>
+    <value>Joiner date must be present when joiner code is present.</value>
+  </data>
+  <data name="921" xml:space="preserve">
+    <value>Leaver date should not be present.</value>
+  </data>
+  <data name="922" xml:space="preserve">
+    <value>Leaver date must be present when leaver code is present.</value>
+  </data>
+  <data name="923" xml:space="preserve">
+    <value>Leaver code must be a 2 digit number between 01 and 17.</value>
   </data>
 </root>
