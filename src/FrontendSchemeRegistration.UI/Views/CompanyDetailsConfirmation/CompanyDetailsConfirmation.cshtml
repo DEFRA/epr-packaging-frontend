@@ -104,12 +104,12 @@
 @section Scripts {
     <script type="text/javascript" nonce="@scriptNonce">
         (function () {
-            document.getElementById("print-or-save").onclick = function () {
-                window.print();
-            }
-            document.getElementById("printButton").onclick = function () {
-                window.print();
-            }
+            ['print-or-save', 'printButton'].forEach(function (id) {
+                var btn = document.getElementById(id);
+                if (btn) {
+                    btn.onclick = function () { window.print(); };
+                }
+            });
         })();
     </script>
 }
