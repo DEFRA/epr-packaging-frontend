@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!-- 
+	<!-- 
     Microsoft ResX Schema 
     
     Version 2.0
@@ -59,332 +59,344 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xsd:element name="root" msdata:IsDataSet="true">
-      <xsd:complexType>
-        <xsd:choice maxOccurs="unbounded">
-          <xsd:element name="metadata">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
-              </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="assembly">
-            <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="data">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="resheader">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
-            </xsd:complexType>
-          </xsd:element>
-        </xsd:choice>
-      </xsd:complexType>
-    </xsd:element>
-  </xsd:schema>
-  <resheader name="resmimetype">
-    <value>text/microsoft-resx</value>
-  </resheader>
-  <resheader name="version">
-    <value>2.0</value>
-  </resheader>
-  <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-  <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-  <data name="80" xml:space="preserve">
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="metadata">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" />
+							</xsd:sequence>
+							<xsd:attribute name="name" use="required" type="xsd:string" />
+							<xsd:attribute name="type" type="xsd:string" />
+							<xsd:attribute name="mimetype" type="xsd:string" />
+							<xsd:attribute ref="xml:space" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="assembly">
+						<xsd:complexType>
+							<xsd:attribute name="alias" type="xsd:string" />
+							<xsd:attribute name="name" type="xsd:string" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+							<xsd:attribute ref="xml:space" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<data name="80" xml:space="preserve">
     <value>Invalid File Format</value>
   </data>
-  <data name="82" xml:space="preserve">
+	<data name="82" xml:space="preserve">
     <value>Csv File Is Empty</value>
   </data>
-  <data name="83" xml:space="preserve">
+	<data name="83" xml:space="preserve">
     <value>Invalid Headers</value>
   </data>
-  <data name="801" xml:space="preserve">
+	<data name="801" xml:space="preserve">
     <value>Enter the organisation ID</value>
   </data>
-  <data name="802" xml:space="preserve">
+	<data name="802" xml:space="preserve">
     <value>Enter the organisation name</value>
   </data>
-  <data name="803" xml:space="preserve">
+	<data name="803" xml:space="preserve">
     <value>Enter the home nation code</value>
   </data>
-  <data name="804" xml:space="preserve">
+	<data name="804" xml:space="preserve">
     <value>Home nation code must be one of EN NI SC or WS</value>
   </data>
-  <data name="805" xml:space="preserve">
+	<data name="805" xml:space="preserve">
     <value>Enter the first name of the primary contact</value>
   </data>
-  <data name="806" xml:space="preserve">
+	<data name="806" xml:space="preserve">
     <value>Enter the last name of the primary contact</value>
   </data>
-  <data name="807" xml:space="preserve">
+	<data name="807" xml:space="preserve">
     <value>Enter the email of the primary contact</value>
   </data>
-  <data name="808" xml:space="preserve">
+	<data name="808" xml:space="preserve">
     <value>Enter the phone number of the primary contact</value>
   </data>
-  <data name="809" xml:space="preserve">
+	<data name="809" xml:space="preserve">
     <value>Enter the first line of the registered address</value>
   </data>
-  <data name="810" xml:space="preserve">
+	<data name="810" xml:space="preserve">
     <value>Enter the postcode for the registered address</value>
   </data>
-  <data name="811" xml:space="preserve">
+	<data name="811" xml:space="preserve">
     <value>Enter the phone number for the registered address</value>
   </data>
-  <data name="812" xml:space="preserve">
+	<data name="812" xml:space="preserve">
     <value>If you enter an audit address the country must be one of the following: EN, NI, SC, WS, UK, GB, England, Northern Ireland, Scotland, Wales, United Kingdom or Great Britain</value>
   </data>
-  <data name="814" xml:space="preserve">
+	<data name="814" xml:space="preserve">
     <value>If you enter an audit address, it must include the first line of the address</value>
   </data>
-  <data name="815" xml:space="preserve">
+	<data name="815" xml:space="preserve">
     <value>If you enter an audit address, it must include the postcode</value>
   </data>
-  <data name="816" xml:space="preserve">
+	<data name="816" xml:space="preserve">
     <value>Enter the first line of the principal address</value>
   </data>
-  <data name="817" xml:space="preserve">
+	<data name="817" xml:space="preserve">
     <value>Enter the postcode for the principal address</value>
   </data>
-  <data name="818" xml:space="preserve">
+	<data name="818" xml:space="preserve">
     <value>Enter the phone number for the principal address</value>
   </data>
-  <data name="819" xml:space="preserve">
+	<data name="819" xml:space="preserve">
     <value>Cannot repeat combination of organisation ID and subsidiary ID</value>
   </data>
-  <data name="820" xml:space="preserve">
+	<data name="820" xml:space="preserve">
     <value>SIC code must be a 5 digit number - include zeros at the start if needed</value>
   </data>
-  <data name="821" xml:space="preserve">
+	<data name="821" xml:space="preserve">
     <value>Organisations must have one Primary packaging activity</value>
   </data>
-  <data name="822" xml:space="preserve">
+	<data name="822" xml:space="preserve">
     <value>Organisations cannot have more than one Primary packaging activity</value>
   </data>
-  <data name="823" xml:space="preserve">
+	<data name="823" xml:space="preserve">
     <value>Packaging activity can only be Primary Secondary or No</value>
   </data>
-  <data name="824" xml:space="preserve">
+	<data name="824" xml:space="preserve">
     <value>Enter the packaging activity - supplied under own brand</value>
   </data>
-  <data name="825" xml:space="preserve">
+	<data name="825" xml:space="preserve">
     <value>Enter the packaging activity - packed or filled as unbranded</value>
   </data>
-  <data name="826" xml:space="preserve">
+	<data name="826" xml:space="preserve">
     <value>Enter the packaging activity - imported</value>
   </data>
-  <data name="827" xml:space="preserve">
+	<data name="827" xml:space="preserve">
     <value>Enter the packaging activity - supplied as empty</value>
   </data>
-  <data name="828" xml:space="preserve">
+	<data name="828" xml:space="preserve">
     <value>Enter the packaging activity - hired or loaned</value>
   </data>
-  <data name="829" xml:space="preserve">
+	<data name="829" xml:space="preserve">
     <value>Enter the packaging activity - supplied through an online marketplace owned by the organisation</value>
   </data>
-  <data name="830" xml:space="preserve">
+	<data name="830" xml:space="preserve">
     <value>Enter the packaging activity - selling</value>
   </data>
-  <data name="831" xml:space="preserve">
+	<data name="831" xml:space="preserve">
     <value>Enter Yes or No - does the organisation put packaging on the market which has no brand names, identifying marks or trademarks?</value>
   </data>
-  <data name="840" xml:space="preserve">
+	<data name="840" xml:space="preserve">
     <value>Trading name must be different from organisation name</value>
   </data>
-  <data name="845" xml:space="preserve">
+	<data name="845" xml:space="preserve">
     <value>If you enter a service address, it must include the first line of the address</value>
   </data>
-  <data name="846" xml:space="preserve">
+	<data name="846" xml:space="preserve">
     <value>If you enter a service address, it must include the postcode</value>
   </data>
-  <data name="848" xml:space="preserve">
+	<data name="848" xml:space="preserve">
     <value>Organisation sub type is  LIC POB FRA - this means you must enter details of another organisation with a sub type of LFR TEN or OTH</value>
   </data>
-  <data name="847" xml:space="preserve">
+	<data name="847" xml:space="preserve">
     <value>If you enter a service address, it must include the phone number</value>
   </data>
-  <data name="855" xml:space="preserve">
+	<data name="855" xml:space="preserve">
     <value>Turnover must not include a comma</value>
   </data>
-  <data name="856" xml:space="preserve">
+	<data name="856" xml:space="preserve">
     <value>Turnover must be in millions to two decimal places</value>
   </data>
-  <data name="857" xml:space="preserve">
+	<data name="857" xml:space="preserve">
     <value>Turnover must be greater than 0</value>
   </data>
-  <data name="858" xml:space="preserve">
+	<data name="858" xml:space="preserve">
     <value>Turnover must only include numbers</value>
   </data>
-  <data name="859" xml:space="preserve">
+	<data name="859" xml:space="preserve">
     <value>Companies House number cannot be 00000000</value>
   </data>
-  <data name="860" xml:space="preserve">
+	<data name="860" xml:space="preserve">
     <value>Companies House number not needed for this organisation type</value>
   </data>
-  <data name="861" xml:space="preserve">
+	<data name="861" xml:space="preserve">
     <value>Companies House number does not match this organisation ID - check both</value>
   </data>
-  <data name="865" xml:space="preserve">
+	<data name="865" xml:space="preserve">
     <value>Total tonnage must be greater than 0</value>
   </data>
-  <data name="867" xml:space="preserve">
+	<data name="867" xml:space="preserve">
     <value>Total tonnage must not include a comma</value>
   </data>
-  <data name="868" xml:space="preserve">
+	<data name="868" xml:space="preserve">
     <value>Total tonnage must only include numbers</value>
   </data>
-  <data name="880" xml:space="preserve">
+	<data name="880" xml:space="preserve">
     <value>Enter the organisation type code</value>
   </data>
-  <data name="881" xml:space="preserve">
+	<data name="881" xml:space="preserve">
     <value>Organisation type code must be one of SOL PAR REG PLC LLP LTD LPA COP CIC OUT OTH</value>
   </data>
-  <data name="882" xml:space="preserve">
+	<data name="882" xml:space="preserve">
     <value>Check that the organisation ID is correct</value>
   </data>
-  <data name="883" xml:space="preserve">
+	<data name="883" xml:space="preserve">
     <value>Subsidiary ID does not exist. Check file and try again.</value>
   </data>
-  <data name="884" xml:space="preserve">
+	<data name="884" xml:space="preserve">
     <value>Subsidiary ID is assigned to a different organisation. Check file and try again.</value>
   </data>
-  <data name="885" xml:space="preserve">
+	<data name="885" xml:space="preserve">
     <value>Subsidiary ID does not belong to any organisation.</value>
   </data>
-  <data name="886" xml:space="preserve">
+	<data name="886" xml:space="preserve">
     <value>This companies house number does not match the subsidiary ID.</value>
   </data>
-  <data name="894" xml:space="preserve">
+	<data name="894" xml:space="preserve">
     <value>Organisation size must be S (Small) or L (Large).</value>
   </data>
-  <data name="895" xml:space="preserve">
+	<data name="895" xml:space="preserve">
     <value>Organisation size must be S (Small) or L (Large).</value>
   </data>
-  <data name="896" xml:space="preserve">
+	<data name="896" xml:space="preserve">
     <value>To qualify as a small producer, your most recent annual turnover must be £2 million or less, or your annual total tonnage must be 50 tonnes or less.</value>
   </data>
-  <data name="897" xml:space="preserve">
+	<data name="897" xml:space="preserve">
     <value>To qualify as a large producer, your most recent annual turnover must be more than £2 million, and your annual total tonnage must be more than 50 tonnes.</value>
   </data>
-  <data name="898" xml:space="preserve">
+	<data name="898" xml:space="preserve">
     <value>Joiner date must be in DD/MM/YYYY format.</value>
   </data>
-  <data name="899" xml:space="preserve">
+	<data name="899" xml:space="preserve">
     <value>You must enter a leaver code for this subsidiary.</value>
   </data>
-  <data name="900" xml:space="preserve">
+	<data name="900" xml:space="preserve">
     <value>You must enter a leaver date for this subsidiary.</value>
   </data>
-  <data name="901" xml:space="preserve">
+	<data name="901" xml:space="preserve">
     <value>Leaver date must be in DD/MM/YYYY format.</value>
   </data>
-  <data name="902" xml:space="preserve">
+	<data name="902" xml:space="preserve">
     <value>The subsidiary leaver date must be later than the subsidiary joiner date.</value>
   </data>
-  <data name="903" xml:space="preserve">
+	<data name="903" xml:space="preserve">
     <value>Leaver reason must be present when leaver code is available.</value>
   </data>
-  <data name="904" xml:space="preserve">
+	<data name="904" xml:space="preserve">
     <value>Organisation change reason cannot contain more than 200 characters.</value>
   </data>
-  <data name="905" xml:space="preserve">
+	<data name="905" xml:space="preserve">
     <value>Joiner date does not match joiner date in database.</value>
   </data>
-  <data name="906" xml:space="preserve">
+	<data name="906" xml:space="preserve">
     <value>Organisation change reason must only include numbers and letters.</value>
   </data>
-  <data name="907" xml:space="preserve">
+	<data name="907" xml:space="preserve">
     <value>Leaver code must be a single capital letter between A and Q.</value>
   </data>
-  <data name="908" xml:space="preserve">
+	<data name="908" xml:space="preserve">
     <value>Leaver date cannot be in the future.</value>
   </data>
-  <data name="909" xml:space="preserve">
+	<data name="909" xml:space="preserve">
     <value>Joiner date cannot be in the future.</value>
   </data>
-  <data name="910" xml:space="preserve">
+	<data name="910" xml:space="preserve">
     <value>You must enter a registration type code for this subsidiary.</value>
   </data>
-  <data name="911" xml:space="preserve">
+	<data name="911" xml:space="preserve">
     <value>Registration type code must be either GR (for group registration) or IN (for individual registration).</value>
   </data>
-  <data name="912" xml:space="preserve">
+	<data name="912" xml:space="preserve">
     <value>Enter a registration type code for this organisation.</value>
   </data>
-  <data name="913" xml:space="preserve">
+	<data name="913" xml:space="preserve">
     <value>Enter a leaver code for this organisation.</value>
   </data>
-  <data name="914" xml:space="preserve">
+	<data name="914" xml:space="preserve">
     <value>Enter a leaver date for this organisation.</value>
   </data>
-  <data name="915" xml:space="preserve">
+	<data name="915" xml:space="preserve">
     <value>The organisation's leaver date must be later than its joiner date.</value>
   </data>
-  <data name="916" xml:space="preserve">
+	<data name="916" xml:space="preserve">
     <value>You must enter a joiner date for this subsidiary.</value>
   </data>
-  <data name="917" xml:space="preserve">
+	<data name="917" xml:space="preserve">
     <value>You must enter a joiner date for this organisation.</value>
   </data>
-  <data name="918" xml:space="preserve">
+	<data name="918" xml:space="preserve">
     <value>You've told us you're a small producer. Register between 1 January and 1 April.</value>
   </data>
-  <data name="919" xml:space="preserve">
+	<data name="919" xml:space="preserve">
     <value>You've told us at least one of your members is a small producer. Register these members between 1 January and 1 April 2026.</value>
   </data>
-  <data name="73" xml:space="preserve">
+	<data name="73" xml:space="preserve">
     <value>Turnover for this organisation is recorded as zero. Please verify this is correct before submitting a zero return</value>
   </data>
-  <data name="Error" xml:space="preserve">
+	<data name="Error" xml:space="preserve">
     <value>Error</value>
   </data>
-  <data name="Warning" xml:space="preserve">
+	<data name="Warning" xml:space="preserve">
     <value>Warning</value>
   </data>
-  <data name="869" xml:space="preserve">
+	<data name="869" xml:space="preserve">
     <value>Total tonnage must be provided</value>
   </data>
-  <data name="854" xml:space="preserve">
+	<data name="854" xml:space="preserve">
     <value>Turnover must be provided</value>
   </data>
-  <data name="920" xml:space="preserve">
+	<data name="920" xml:space="preserve">
     <value>Joiner date must be present when joiner code is present.</value>
   </data>
-  <data name="921" xml:space="preserve">
+	<data name="921" xml:space="preserve">
     <value>Leaver date should not be present.</value>
   </data>
-  <data name="922" xml:space="preserve">
+	<data name="922" xml:space="preserve">
     <value>Leaver date must be present when leaver code is present.</value>
   </data>
-  <data name="923" xml:space="preserve">
+	<data name="923" xml:space="preserve">
     <value>Leaver code must be a 2 digit number between 01 and 17.</value>
+  </data>
+	<data name="924" xml:space="preserve">
+    <value>Joiner date not allowed when Leaver Code is present.</value>
+  </data>
+	<data name="925" xml:space="preserve">
+    <value>Leave Or Joinder Code should not be empty.</value>
+  </data>
+	<data name="926" xml:space="preserve">
+    <value>Joiner Or Leaver Code Min length is not correct.</value>
+  </data>
+	<data name="927" xml:space="preserve">
+    <value>Joiner Or Leaver Code Max length not norrect.</value>
   </data>
 </root>

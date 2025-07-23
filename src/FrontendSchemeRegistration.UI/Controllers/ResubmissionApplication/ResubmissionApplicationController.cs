@@ -3,16 +3,17 @@ using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Extensions;
+using FrontendSchemeRegistration.Application.RequestModels;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
 using FrontendSchemeRegistration.UI.Extensions;
+using FrontendSchemeRegistration.UI.Helpers;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.FeatureManagement.Mvc;
 
 namespace FrontendSchemeRegistration.UI.Controllers.ResubmissionApplication;
@@ -24,15 +25,18 @@ public class ResubmissionApplicationController : Controller
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
     private readonly IResubmissionApplicationService _resubmissionApplicationService;
     private readonly IUserAccountService _userAccountService;
+    private readonly IRegulatorService _regulatorService;
 
     public ResubmissionApplicationController(
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
         IResubmissionApplicationService resubmissionApplicationService,
-        IUserAccountService userAccountService)
+        IUserAccountService userAccountService,
+        IRegulatorService regulatorService)
     {
         _resubmissionApplicationService = resubmissionApplicationService;
         _sessionManager = sessionManager;
         _userAccountService = userAccountService;
+        _regulatorService = regulatorService;
     }
 
     [HttpGet]
@@ -215,6 +219,12 @@ public class ResubmissionApplicationController : Controller
     public async Task<IActionResult> SubmitToEnvironmentRegulator()
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+        var submission = session.PomResubmissionSession.PomSubmission;
+        var userData = User.GetUserData();
+
+        var input = ResubmissionEmailRequestBuilder.BuildResubmissionEmail(userData, submission, session);
+
+        await _regulatorService.SendRegulatorResubmissionEmail(input);
 
         return View("ResubmissionConfirmation",
             new ApplicationSubmissionConfirmationViewModel

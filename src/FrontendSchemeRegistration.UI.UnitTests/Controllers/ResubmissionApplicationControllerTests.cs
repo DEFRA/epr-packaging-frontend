@@ -6,10 +6,10 @@ using FluentAssertions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
+using FrontendSchemeRegistration.Application.RequestModels;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Controllers;
 using FrontendSchemeRegistration.UI.Controllers.ResubmissionApplication;
-using FrontendSchemeRegistration.UI.Services;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
@@ -28,6 +28,7 @@ public class ResubmissionApplicationControllerTests
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _mockSessionManager;
     private Mock<IResubmissionApplicationService> _mockResubmissionApplicationServices;
     protected Mock<IUserAccountService> _userAccountService;
+    protected Mock<IRegulatorService> _regulatorService;
 
     private ResubmissionApplicationController _controller;
     private readonly Mock<HttpContext> _httpContextMock = new();
@@ -60,7 +61,8 @@ public class ResubmissionApplicationControllerTests
         _urlHelperMock.Setup(x => x.Content(It.IsAny<string>())).Returns((string contentPath) => contentPath);
 
         _userAccountService = new Mock<IUserAccountService>();
-        _controller = new ResubmissionApplicationController(_mockSessionManager.Object, _mockResubmissionApplicationServices.Object, _userAccountService.Object);
+        _regulatorService = new Mock<IRegulatorService>();
+        _controller = new ResubmissionApplicationController(_mockSessionManager.Object, _mockResubmissionApplicationServices.Object, _userAccountService.Object, _regulatorService.Object);
         _controller.ControllerContext.HttpContext = _httpContextMock.Object;
         _controller.Url = _urlHelperMock.Object;
 
@@ -423,6 +425,8 @@ public class ResubmissionApplicationControllerTests
         // Assert
         result.Should().NotBeNull();
         result.ViewName.Should().Be("ResubmissionConfirmation");
+
+        _regulatorService.Verify(mock => mock.SendRegulatorResubmissionEmail(It.IsAny<ResubmissionEmailRequestModel>()), Times.Once());
 
         model.Should().NotBeNull();
         model.RegistrationApplicationSubmittedDate.Should().Be(expectedDate);

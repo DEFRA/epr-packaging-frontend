@@ -114,11 +114,11 @@ public class FileUploadSubmissionDeclarationController : Controller
         try
         {
             var resubmissionEnabled = await _featureManager.IsEnabledAsync(nameof(FeatureFlags.ShowPoMResubmission));
-            if (submission.LastSubmittedFile != null && resubmissionEnabled)
+            if (submission.LastSubmittedFile != null && resubmissionEnabled && !session.PomResubmissionSession.IsPomResubmissionJourney)
             {
                 ResubmissionEmailRequestModel input = ResubmissionEmailRequestBuilder.BuildResubmissionEmail(userData, submission, session);
 
-                _regulatorService.SendRegulatorResubmissionEmail(input);
+                await _regulatorService.SendRegulatorResubmissionEmail(input);
             }
 
             var organisationId = session.UserData.Organisations?.FirstOrDefault()?.Id;
