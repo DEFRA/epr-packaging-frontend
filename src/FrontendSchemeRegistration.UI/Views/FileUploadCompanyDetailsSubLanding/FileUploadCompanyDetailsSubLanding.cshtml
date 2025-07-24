@@ -68,7 +68,7 @@
                     <h2 class="govuk-heading-m">@Localizer["making_changes_after_april"]</h2>
                     <p class="govuk-body">
                         @Localizer["if_you_need_changes_after_april"],
-                        <a class="govuk-link" asp-controller="RegistrationApplication" asp-action="ProducerRegistrationGuidance">
+                        <a class="govuk-link" asp-controller="Landing" asp-action="Get">
                             @Localizer["registration_file_link"]
                         </a>.@Localizer["you_must_report_changes"].
                     </p>
@@ -88,8 +88,8 @@
 
                         @Html.ActionLink(
                                  Localizer["update_and_resubmit_registration_file"].Value,
-                                 "ProducerRegistrationGuidance",
-                                 "RegistrationApplication", null,
+                                        "Get",
+                                        "Landing", null,
                                  new { @class = "govuk-link govuk-link--no-visited-state" }
                                  )
 
