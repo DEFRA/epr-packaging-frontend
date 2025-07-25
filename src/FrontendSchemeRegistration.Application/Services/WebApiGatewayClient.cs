@@ -464,8 +464,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
             var endpointUrl = $"/api/v1/registration/get-registration-application-details" +
                               $"?OrganisationNumber={request.OrganisationNumber}" +
                               $"&OrganisationId={request.OrganisationId}" +
-                              $"&SubmissionPeriod={request.SubmissionPeriod}" +
-                              $"&LateFeeDeadline={request.LateFeeDeadline:yyyy/MM/dd}";
+                              $"&SubmissionPeriod={request.SubmissionPeriod}";
 
             if (request.ComplianceSchemeId is not null && request.ComplianceSchemeId != Guid.Empty)
             {

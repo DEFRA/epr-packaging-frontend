@@ -1672,7 +1672,7 @@ public class RegistrationApplicationControllerTests
         SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(Session);
 
         RegistrationApplicationService.Setup(x => x.InitiatePayment(It.IsAny<ClaimsPrincipal>(), It.IsAny<ISession>())).ReturnsAsync(string.Empty);
-        RegistrationApplicationService.Setup(x => x.validateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(DateTime.Now.Year);
+        RegistrationApplicationService.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(DateTime.Now.Year);
 
 
         // Act

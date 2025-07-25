@@ -55,7 +55,13 @@ public class RegistrationApplicationServiceTests
         _frontEndSessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
         _loggerMock = new Mock<ILogger<RegistrationApplicationService>>();
-        var globalVariables = Options.Create(new GlobalVariables { LateFeeDeadline2025 = new(DateTime.Today.Year, 4, 1), RegistrationYear = $"{DateTime.Now.Year}, {DateTime.Now.AddYears(1).Year}" });
+        var globalVariables = Options.Create(new GlobalVariables
+        {
+            LateFeeDeadline2025 = new(DateTime.Today.Year, 4, 1),
+            LargeProducerLateFeeDeadline2026 = new(DateTime.Today.Year, 10, 1),
+            SmallProducerLateFeeDeadline2026 = new(DateTime.Today.Year + 1, 4, 1),
+            RegistrationYear = $"{DateTime.Now.Year}, {DateTime.Now.AddYears(1).Year}"
+        });
 
         _fixture = new Fixture();
         _service = new RegistrationApplicationService(_submissionServiceMock.Object, _paymentCalculationServiceMock.Object, _sessionManagerMock.Object, _frontEndSessionManagerMock.Object, _loggerMock.Object, globalVariables);
@@ -575,6 +581,475 @@ public class RegistrationApplicationServiceTests
     }
 
     [Test]
+    public async Task GetRegistrationApplicationSession_SetLateFeeFlag_2025Registration_BeforeDeadline_SetsLateFeeToFalse()
+    {
+        // Arrange
+        var organisation = _fixture.Create<Organisation>();
+        organisation.OrganisationNumber = "123";
+        organisation.NationId = 1;
+
+        var registrationApplicationDetails = new RegistrationApplicationDetails
+        {
+            FirstApplicationSubmittedEventCreatedDatetime = DateTime.Parse("2025/03/31"),
+            ApplicationStatus = ApplicationStatusType.SubmittedToRegulator
+        };
+
+        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(registrationApplicationDetails);
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new RegistrationApplicationSession());
+
+        _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession()
+            });
+
+        // Act
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2025);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsLateFeeApplicable.Should().BeFalse();
+        result.IsOriginalCsoSubmissionLate.Should().BeFalse();
+    }
+
+    [Test]
+    public async Task GetRegistrationApplicationSession_SetLateFeeFlag_2025Registration_AfterDeadline_SetsLateFeeToTrue()
+    {
+        // Arrange
+        var organisation = _fixture.Create<Organisation>();
+        organisation.OrganisationNumber = "123";
+        organisation.NationId = 1;
+
+        var registrationApplicationDetails = new RegistrationApplicationDetails
+        {
+            FirstApplicationSubmittedEventCreatedDatetime = DateTime.Parse("2025/04/02"),
+            ApplicationStatus = ApplicationStatusType.SubmittedToRegulator
+        };
+
+        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(registrationApplicationDetails);
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new RegistrationApplicationSession());
+
+        _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession()
+            });
+
+        // Act
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2025);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsLateFeeApplicable.Should().BeTrue();
+        result.IsOriginalCsoSubmissionLate.Should().BeFalse();
+    }
+
+    [Test]
+    public async Task GetRegistrationApplicationSession_SetLateFeeFlag_2026SmallProducer_BeforeDeadline_SetsLateFeeToFalse()
+    {
+        // Arrange
+        var organisation = _fixture.Create<Organisation>();
+        organisation.OrganisationNumber = "123";
+        organisation.NationId = 1;
+        var lastSubmittedFileDetails = new LastSubmittedFileDetails
+        {
+            FileId = Guid.NewGuid(),
+            SubmittedByName = "test",
+            SubmittedDateTime = DateTime.Now
+        };
+
+        var registrationApplicationDetails = new RegistrationApplicationDetails
+        {
+            FirstApplicationSubmittedEventCreatedDatetime = DateTime.Parse("2025/09/30"),
+            ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+            LastSubmittedFile = lastSubmittedFileDetails,
+            RegistrationFeeCalculationDetails =
+            [
+                new RegistrationFeeCalculationDetails
+                {
+                    OrganisationSize = "S",
+                    NationId = 1
+                }
+            ]
+        };
+
+        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(registrationApplicationDetails);
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new RegistrationApplicationSession
+            {
+                LastSubmittedFile = lastSubmittedFileDetails
+            });
+
+        _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession()
+            });
+
+        // Act
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2026);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsLateFeeApplicable.Should().BeFalse();
+        result.IsOriginalCsoSubmissionLate.Should().BeFalse();
+    }
+
+    [Test]
+    public async Task GetRegistrationApplicationSession_SetLateFeeFlag_2026SmallProducer_AfterDeadline_SetsLateFeeToTrue()
+    {
+        // Arrange
+        var globalVariables = Options.Create(new GlobalVariables
+        {
+            LateFeeDeadline2025 = new(DateTime.Today.Year, 4, 1),
+            LargeProducerLateFeeDeadline2026 = new(DateTime.Today.Year, 10, 1),
+            SmallProducerLateFeeDeadline2026 = DateTime.Today.AddDays(-1),
+            RegistrationYear = $"{DateTime.Now.Year}, {DateTime.Now.AddYears(1).Year}"
+        });
+
+        _fixture = new Fixture();
+        _service = new RegistrationApplicationService(_submissionServiceMock.Object, _paymentCalculationServiceMock.Object, _sessionManagerMock.Object, _frontEndSessionManagerMock.Object, _loggerMock.Object, globalVariables);
+
+        var organisation = _fixture.Create<Organisation>();
+        organisation.OrganisationNumber = "123";
+        organisation.NationId = 1;
+        var lastSubmittedFileDetails = new LastSubmittedFileDetails
+        {
+            FileId = Guid.NewGuid(),
+            SubmittedByName = "test",
+            SubmittedDateTime = DateTime.Now
+        };
+
+        var registrationApplicationDetails = new RegistrationApplicationDetails
+        {
+            FirstApplicationSubmittedEventCreatedDatetime = DateTime.Parse("2025/10/02"),
+            ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+            LastSubmittedFile = lastSubmittedFileDetails,
+            RegistrationFeeCalculationDetails =
+            [
+                new RegistrationFeeCalculationDetails
+                {
+                    OrganisationSize = "S",
+                    NationId = 1
+                }
+            ]
+        };
+
+        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(registrationApplicationDetails);
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new RegistrationApplicationSession
+            {
+                LastSubmittedFile = lastSubmittedFileDetails
+            });
+
+        _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession()
+            });
+
+        // Act
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2026);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsLateFeeApplicable.Should().BeTrue();
+        result.IsOriginalCsoSubmissionLate.Should().BeFalse();
+    }
+
+    [Test]
+    public async Task GetRegistrationApplicationSession_SetLateFeeFlag_2026LargeProducer_BeforeDeadline_SetsLateFeeToFalse()
+    {
+        // Arrange
+        var organisation = _fixture.Create<Organisation>();
+        organisation.OrganisationNumber = "123";
+        organisation.NationId = 1;
+        var lastSubmittedFileDetails = new LastSubmittedFileDetails
+        {
+            FileId = Guid.NewGuid(),
+            SubmittedByName = "test",
+            SubmittedDateTime = DateTime.Now
+        };
+
+        var registrationApplicationDetails = new RegistrationApplicationDetails
+        {
+            FirstApplicationSubmittedEventCreatedDatetime = DateTime.Parse("2025/09/30"),
+            ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+            LastSubmittedFile = lastSubmittedFileDetails,
+            RegistrationFeeCalculationDetails =
+            [
+                new RegistrationFeeCalculationDetails
+                {
+                    OrganisationSize = "L",
+                    NationId = 1
+                }
+            ]
+        };
+
+        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(registrationApplicationDetails);
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new RegistrationApplicationSession
+            {
+                LastSubmittedFile = lastSubmittedFileDetails
+            });
+
+        _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession()
+            });
+
+        // Act
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2026);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsLateFeeApplicable.Should().BeFalse();
+        result.IsOriginalCsoSubmissionLate.Should().BeFalse();
+    }
+
+    [Test]
+    public async Task GetRegistrationApplicationSession_SetLateFeeFlag_2026LargeProducer_AfterDeadline_SetsLateFeeToTrue()
+    {
+        // Arrange
+        var organisation = _fixture.Create<Organisation>();
+        organisation.OrganisationNumber = "123";
+        organisation.NationId = 1;
+        var lastSubmittedFileDetails = new LastSubmittedFileDetails
+        {
+            FileId = Guid.NewGuid(),
+            SubmittedByName = "test",
+            SubmittedDateTime = DateTime.Now
+        };
+
+        var registrationApplicationDetails = new RegistrationApplicationDetails
+        {
+            FirstApplicationSubmittedEventCreatedDatetime = DateTime.Parse("2025/10/02"),
+            ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+            LastSubmittedFile = lastSubmittedFileDetails,
+            RegistrationFeeCalculationDetails =
+            [
+                new RegistrationFeeCalculationDetails
+                {
+                    OrganisationSize = "L",
+                    NationId = 1
+                }
+            ]
+        };
+
+        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(registrationApplicationDetails);
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new RegistrationApplicationSession
+            {
+                LastSubmittedFile = lastSubmittedFileDetails
+            });
+
+        _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession()
+            });
+
+        // Act
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2026);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsLateFeeApplicable.Should().BeTrue();
+        result.IsOriginalCsoSubmissionLate.Should().BeFalse();
+    }
+
+    [Test]
+    public async Task GetRegistrationApplicationSession_SetLateFeeFlag_ComplianceScheme_FirstSubmission_BeforeDeadline_SetsCorrectFlags()
+    {
+        // Arrange
+        var organisation = _fixture.Create<Organisation>();
+        organisation.OrganisationNumber = "123";
+        organisation.NationId = 1;
+
+        var selectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), Name = "Test CS", NationId = 1 };
+
+        var registrationApplicationDetails = new RegistrationApplicationDetails
+        {
+            FirstApplicationSubmittedEventCreatedDatetime = DateTime.Parse("2025/03/31"),
+            ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+            SelectedComplianceScheme = selectedComplianceScheme
+        };
+
+        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(registrationApplicationDetails);
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new RegistrationApplicationSession());
+
+        _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SelectedComplianceScheme = selectedComplianceScheme
+                }
+            });
+
+        // Act
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2025);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsLateFeeApplicable.Should().BeFalse();
+        result.IsOriginalCsoSubmissionLate.Should().BeFalse();
+    }
+
+    [Test]
+    public async Task GetRegistrationApplicationSession_SetLateFeeFlag_ComplianceScheme_FirstSubmission_AfterDeadline_SetsCorrectFlags()
+    {
+        // Arrange
+        var organisation = _fixture.Create<Organisation>();
+        organisation.OrganisationNumber = "123";
+        organisation.NationId = 1;
+
+        var selectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), Name = "Test CS", NationId = 1 };
+
+        var registrationApplicationDetails = new RegistrationApplicationDetails
+        {
+            FirstApplicationSubmittedEventCreatedDatetime = DateTime.Parse("2025/04/02"),
+            ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+            SelectedComplianceScheme = selectedComplianceScheme
+        };
+
+        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(registrationApplicationDetails);
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new RegistrationApplicationSession());
+
+        _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SelectedComplianceScheme = selectedComplianceScheme
+                }
+            });
+
+        // Act
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2025);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsLateFeeApplicable.Should().BeTrue();
+        result.IsOriginalCsoSubmissionLate.Should().BeTrue();
+    }
+
+    [Test]
+    public async Task GetRegistrationApplicationSession_SetLateFeeFlag_ComplianceScheme_WithApprovedOrQueriedRegulatorDecision_SetsCorrectFlags()
+    {
+        // Arrange
+        var organisation = _fixture.Create<Organisation>();
+        organisation.OrganisationNumber = "123";
+        organisation.NationId = 1;
+
+        var selectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), Name = "Test CS", NationId = 1 };
+
+        var registrationApplicationDetails = new RegistrationApplicationDetails
+        {
+            HasAnyApprovedOrQueriedRegulatorDecision = true,
+            IsLatestSubmittedEventAfterFileUpload = true,
+            LatestSubmittedEventCreatedDatetime = DateTime.Parse("2025/04/02"),
+            FirstApplicationSubmittedEventCreatedDatetime = DateTime.Parse("2025/03/31"),
+            ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+            SelectedComplianceScheme = selectedComplianceScheme
+        };
+
+        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(registrationApplicationDetails);
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new RegistrationApplicationSession());
+
+        _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SelectedComplianceScheme = selectedComplianceScheme
+                }
+            });
+
+        // Act
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2025);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsLateFeeApplicable.Should().BeTrue();
+        result.IsOriginalCsoSubmissionLate.Should().BeFalse();
+    }
+
+    [Test]
+    public async Task GetRegistrationApplicationSession_SetLateFeeFlag_NoSubmissionDate_UsesTodayDate()
+    {
+        // Arrange
+        var organisation = _fixture.Create<Organisation>();
+        organisation.OrganisationNumber = "123";
+        organisation.NationId = 1;
+
+        var registrationApplicationDetails = new RegistrationApplicationDetails
+        {
+            FirstApplicationSubmittedEventCreatedDatetime = null,
+            ApplicationStatus = ApplicationStatusType.NotStarted
+        };
+
+        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(registrationApplicationDetails);
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new RegistrationApplicationSession());
+
+        _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession()
+            });
+
+        var globalVariables = Options.Create(new GlobalVariables
+        {
+            LateFeeDeadline2025 = DateTime.Today.AddDays(-1), // Set the deadline yesterday to make today's date trigger late fee
+            SmallProducerLateFeeDeadline2026 = DateTime.Today.AddDays(-1),
+            LargeProducerLateFeeDeadline2026 = DateTime.Today.AddDays(-1)
+        });
+
+        var testService = new RegistrationApplicationService(
+            _submissionServiceMock.Object,
+            _paymentCalculationServiceMock.Object,
+            _sessionManagerMock.Object,
+            _frontEndSessionManagerMock.Object,
+            _loggerMock.Object,
+            globalVariables);
+
+        // Act
+        var result = await testService.GetRegistrationApplicationSession(_httpSession, organisation, 2025);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsLateFeeApplicable.Should().BeTrue(); // Should be true because today is after yesterday's deadline
+        result.IsOriginalCsoSubmissionLate.Should().BeFalse();
+    }
+
+    [Test]
     [TestCase(1, "GB-ENG")]
     [TestCase(2, "GB-NIR")]
     [TestCase(3, "GB-SCT")]
@@ -642,41 +1117,6 @@ public class RegistrationApplicationServiceTests
         // Assert
         applicationDetails.Should().NotBeNull();
         applicationDetails.RegulatorNation.Should().Be("GB-ENG");
-    }
-
-    [Test]
-    public async Task GetRegistrationApplicationSession_ShouldPopulate_Default_LateFee()
-    {
-        // Arrange
-        var globalVariables = Options.Create(new GlobalVariables { LateFeeDeadline2025 = new(DateTime.Today.Year, 4, 1) });
-
-        var organisation = _fixture.Create<Organisation>();
-        organisation.OrganisationNumber = "123";
-        var selectedComplianceSchemeId = Guid.NewGuid();
-        var registrationApplicationDetails = _fixture.Create<RegistrationApplicationDetails>();
-        _session.SelectedComplianceScheme = new ComplianceSchemeDto { Id = selectedComplianceSchemeId };
-        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
-            .ReturnsAsync(_session);
-        _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
-            .ReturnsAsync(new FrontendSchemeRegistrationSession
-            {
-                RegistrationSession = new RegistrationSession
-                {
-                    SelectedComplianceScheme = new ComplianceSchemeDto { Id = selectedComplianceSchemeId, Name = "test", RowNumber = 1, NationId = 1, CreatedOn = DateTime.Now }
-                }
-            });
-
-        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
-            .ReturnsAsync(registrationApplicationDetails);
-
-        // Act
-        _service = new RegistrationApplicationService(_submissionServiceMock.Object, _paymentCalculationServiceMock.Object, _sessionManagerMock.Object, _frontEndSessionManagerMock.Object, _loggerMock.Object, globalVariables);
-
-        var applicationDetails = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year);
-
-        // Assert
-        applicationDetails.Should().NotBeNull();
-        _submissionServiceMock.Verify(s => s.GetRegistrationApplicationDetails(It.Is<GetRegistrationApplicationDetailsRequest>(r => r.LateFeeDeadline == new DateTime(DateTime.Today.Year, 4, 1))));
     }
 
     [Test]
@@ -775,7 +1215,8 @@ public class RegistrationApplicationServiceTests
             LastSubmittedFile = lastSubmittedFile,
             RegulatorNation = "GB-ENG",
             ApplicationReferenceNumber = "",
-            TotalAmountOutstanding = 10
+            TotalAmountOutstanding = 10,
+            IsLateFeeApplicable = true
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string>(), false, It.IsAny<SubmissionType>()), Times.Never);
@@ -863,7 +1304,8 @@ public class RegistrationApplicationServiceTests
             ApplicationReferenceNumber = "Test",
             RegistrationReferenceNumber = "Test",
             SelectedComplianceScheme = cso,
-            TotalAmountOutstanding = 10
+            TotalAmountOutstanding = 10,
+            IsLateFeeApplicable = true
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string>(), false, It.IsAny<SubmissionType>()), Times.Never);
@@ -937,7 +1379,8 @@ public class RegistrationApplicationServiceTests
             LastSubmittedFile = lastSubmittedFile,
             RegulatorNation = "GB-ENG",
             ApplicationReferenceNumber = "Test",
-            RegistrationReferenceNumber = "Test"
+            RegistrationReferenceNumber = "Test",
+            IsLateFeeApplicable = true
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<Guid>(), It.IsAny<Guid?>(), It.IsAny<string?>(), "No-Outstanding-Payment", "Test", false, SubmissionType.RegistrationFeePayment), Times.Once);
@@ -1026,7 +1469,8 @@ public class RegistrationApplicationServiceTests
             RegulatorNation = "GB-NIR",
             SelectedComplianceScheme = cso,
             ApplicationReferenceNumber = "Test",
-            RegistrationReferenceNumber = "Test"
+            RegistrationReferenceNumber = "Test",
+            IsLateFeeApplicable = true
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<Guid>(), It.IsAny<Guid?>(), It.IsAny<string?>(), "No-Outstanding-Payment", It.IsAny<string>(), false, SubmissionType.RegistrationFeePayment), Times.Once);
@@ -1042,13 +1486,12 @@ public class RegistrationApplicationServiceTests
         var organisation = _fixture.Create<Organisation>();
         organisation.OrganisationNumber = "123";
         organisation.NationId = 1;
-        
+
         var registrationApplicationDetails = new RegistrationApplicationDetails
         {
             ApplicationStatus = applicationStatusType,
             SubmissionId = submissionId,
             IsSubmitted = true,
-            IsLateFeeApplicable = false
         };
 
         _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
@@ -1081,7 +1524,8 @@ public class RegistrationApplicationServiceTests
             IsSubmitted = true,
             ApplicationStatus = ApplicationStatusType.NotStarted,
             RegulatorNation = "GB-ENG",
-            ApplicationReferenceNumber = ""
+            ApplicationReferenceNumber = "",
+            IsLateFeeApplicable = true
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string>(), false, It.IsAny<SubmissionType>()), Times.Never);
@@ -1120,8 +1564,7 @@ public class RegistrationApplicationServiceTests
             ApplicationReferenceNumber = "Test",
             RegistrationFeePaymentMethod = "Online",
             RegistrationApplicationSubmittedDate = DateTime.Now.Date,
-            RegistrationApplicationSubmittedComment = "Test",
-            IsLateFeeApplicable = false
+            RegistrationApplicationSubmittedComment = "Test"
         };
 
         _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
@@ -1168,7 +1611,8 @@ public class RegistrationApplicationServiceTests
             RegistrationFeePaymentMethod = "Online",
             RegistrationApplicationSubmittedDate = DateTime.Now.Date,
             RegistrationApplicationSubmittedComment = "Test",
-            TotalAmountOutstanding = 100
+            TotalAmountOutstanding = 100,
+            IsLateFeeApplicable = true
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string>(), false, It.IsAny<SubmissionType>()), Times.Never);
@@ -1582,17 +2026,16 @@ public class RegistrationApplicationServiceTests
     public async Task ValidateRegistrationYear_ShouldReturnNull_WhenYearIsEmpty_AndParamOptionalIsTrue()
     {
         // Act
-        var result =  _service.validateRegistrationYear("", true);
+        var result = _service.ValidateRegistrationYear("", true);
 
         // Assert
         result.Should().BeNull();
-
     }
 
     [Test]
     public async Task ValidateRegistrationYear_ShouldThrowArgumentException_WhenYearIsEmpty_AndParamOptionalIsFalse()
     {
-        var act = async () =>  _service.validateRegistrationYear("", false);
+        var act = async () => _service.ValidateRegistrationYear("");
         await act.Should().ThrowAsync<ArgumentException>()
             .WithMessage("Registration year missing");
     }
@@ -1600,7 +2043,7 @@ public class RegistrationApplicationServiceTests
     [Test]
     public async Task ValidateRegistrationYear_ShouldThrowArgumentException_WhenYearIsNotANumber()
     {
-        var act = async () =>  _service.validateRegistrationYear("abcd", false);
+        var act = async () => _service.ValidateRegistrationYear("test");
         await act.Should().ThrowAsync<ArgumentException>()
             .WithMessage("Registration year is not a valid number");
     }
@@ -1608,10 +2051,9 @@ public class RegistrationApplicationServiceTests
     [Test]
     public async Task ValidateRegistrationYear_ShouldReturnYear_WhenValid()
     {
-        var result =  _service.validateRegistrationYear("2025", false);
+        var result = _service.ValidateRegistrationYear("2025");
         result.Should().Be(2025);
     }
-
 }
 
 internal static class ClaimsPrincipalExtensions

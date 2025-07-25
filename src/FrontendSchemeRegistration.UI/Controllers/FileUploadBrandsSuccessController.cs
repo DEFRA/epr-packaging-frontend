@@ -34,7 +34,7 @@ public class FileUploadBrandsSuccessController : Controller
     public async Task<IActionResult> Get()
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-        var registrationYear =  _registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
+        var registrationYear =  _registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
 
         if (session is not null)
         {

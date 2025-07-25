@@ -24,25 +24,71 @@ public class RegistrationApplicationService(
     IOptions<GlobalVariables> globalVariables) : IRegistrationApplicationService
 {
 
-   
+    private void SetLateFeeFlag(RegistrationApplicationSession session, int registrationYear)
+    {
+        DateTime lateFeeDeadline;
+
+        if (registrationYear == 2025)
+            lateFeeDeadline = globalVariables.Value.LateFeeDeadline2025;
+        else if (session.RegistrationFeeCalculationDetails is null)
+            lateFeeDeadline = DateTime.MaxValue;
+        else if(string.Equals(session.RegistrationFeeCalculationDetails?[0].OrganisationSize, "S", StringComparison.InvariantCultureIgnoreCase))
+            lateFeeDeadline = globalVariables.Value.SmallProducerLateFeeDeadline2026;
+        else
+            lateFeeDeadline = globalVariables.Value.LargeProducerLateFeeDeadline2026;
+
+        session.IsLateFeeApplicable = false;
+        session.IsOriginalCsoSubmissionLate = false;
+
+        //CSO logic
+        if (session.IsComplianceScheme)
+        {
+            if (session is { HasAnyApprovedOrQueriedRegulatorDecision: true, IsLatestSubmittedEventAfterFileUpload: true })
+            {
+                session.IsLateFeeApplicable = session.LatestSubmittedEventCreatedDatetime.Value.Date > lateFeeDeadline;
+            }
+            else if (session.FirstApplicationSubmittedEventCreatedDatetime is not null)
+            {
+                session.IsLateFeeApplicable = session.FirstApplicationSubmittedEventCreatedDatetime > lateFeeDeadline;
+            }
+            else
+            {
+                session.IsLateFeeApplicable = DateTime.Today > lateFeeDeadline;
+            }
+
+            if (session.FirstApplicationSubmittedEventCreatedDatetime is not null)
+            {
+                session.IsOriginalCsoSubmissionLate = session.FirstApplicationSubmittedEventCreatedDatetime > lateFeeDeadline;
+            }
+        }
+        else
+        {
+            //Producer Logic
+            if (session.FirstApplicationSubmittedEventCreatedDatetime is not null)
+            {
+                session.IsLateFeeApplicable = session.FirstApplicationSubmittedEventCreatedDatetime > lateFeeDeadline;
+            }
+            else
+            {
+                session.IsLateFeeApplicable = DateTime.Today > lateFeeDeadline;
+            }
+        }
+    }
+
     public async Task<RegistrationApplicationSession> GetRegistrationApplicationSession(ISession httpSession, Organisation organisation, int registrationYear, bool? isResubmission = null)
     {
         var session = await sessionManager.GetSessionAsync(httpSession) ?? new RegistrationApplicationSession();
         var frontEndSession = await frontEndSessionManager.GetSessionAsync(httpSession) ?? new FrontendSchemeRegistrationSession();
 
-        var submissionYear = registrationYear;
-        session.Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" };
+        session.Period = new SubmissionPeriod { DataPeriod = $"January to December {registrationYear}", StartMonth = "January", EndMonth = "December", Year = $"{registrationYear}" };
         session.SubmissionPeriod = session.Period.DataPeriod;
-
-        var lateFeeDeadline = registrationYear == 2025 ? globalVariables.Value.LateFeeDeadline2025 : globalVariables.Value.LateFeeDeadline2026;
 
         var registrationApplicationDetails = await submissionService.GetRegistrationApplicationDetails(new GetRegistrationApplicationDetailsRequest
         {
             OrganisationNumber = int.Parse(organisation.OrganisationNumber),
             OrganisationId = organisation.Id.Value,
             ComplianceSchemeId = frontEndSession.RegistrationSession.SelectedComplianceScheme?.Id,
-            SubmissionPeriod = session.Period.DataPeriod,
-            LateFeeDeadline = lateFeeDeadline
+            SubmissionPeriod = session.Period.DataPeriod
         }) ?? new RegistrationApplicationDetails();
 
         session.SelectedComplianceScheme = frontEndSession.RegistrationSession.SelectedComplianceScheme;
@@ -57,9 +103,13 @@ public class RegistrationApplicationService(
         session.RegistrationApplicationSubmittedDate = registrationApplicationDetails.RegistrationApplicationSubmittedDate;
         session.RegistrationApplicationSubmittedComment = registrationApplicationDetails.RegistrationApplicationSubmittedComment;
         session.RegistrationFeeCalculationDetails = registrationApplicationDetails.RegistrationFeeCalculationDetails;
-        session.IsLateFeeApplicable = registrationApplicationDetails.IsLateFeeApplicable;
-        session.IsOriginalCsoSubmissionLate = registrationApplicationDetails.IsOriginalCsoSubmissionLate;
+        session.HasAnyApprovedOrQueriedRegulatorDecision = registrationApplicationDetails.HasAnyApprovedOrQueriedRegulatorDecision;
+        session.IsLatestSubmittedEventAfterFileUpload = registrationApplicationDetails.IsLatestSubmittedEventAfterFileUpload;
+        session.LatestSubmittedEventCreatedDatetime = registrationApplicationDetails.LatestSubmittedEventCreatedDatetime;
+        session.FirstApplicationSubmittedEventCreatedDatetime = registrationApplicationDetails.FirstApplicationSubmittedEventCreatedDatetime;
         session.IsResubmission = (registrationApplicationDetails.IsResubmission ?? isResubmission) ?? false;
+
+        SetLateFeeFlag(session, registrationYear);
 
         int? nationId;
         if (session.IsComplianceScheme)
@@ -318,13 +368,13 @@ public class RegistrationApplicationService(
 
     public async Task<List<RegistrationApplicationPerYearViewModel>> BuildRegistrationApplicationPerYearViewModels(ISession httpSession, Organisation organisation)
     {
-        var years = (globalVariables.Value.RegistrationYear ?? string.Empty).Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+        var years = globalVariables.Value.RegistrationYear.Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
        .Select(y => int.TryParse(y, out var year) ? year : throw new FormatException($"Invalid year: '{y}'"))
        .OrderByDescending(n => n).ToArray();
 
         var viewModels = new List<RegistrationApplicationPerYearViewModel>();
 
-        foreach (var (year, index) in years.Select((value, i) => (value, i)))
+        foreach (var year in years)
         {
             var registrationApplicationSession = await GetRegistrationApplicationSession(httpSession, organisation, year);
 
@@ -347,29 +397,25 @@ public class RegistrationApplicationService(
         return viewModels;
     }
 
-    public int? validateRegistrationYear(string? registrationYear, bool isParamOptional = false)
+    public int? ValidateRegistrationYear(string? registrationYear, bool isParamOptional = false)
     {
         if (string.IsNullOrWhiteSpace(registrationYear) && isParamOptional)
-        {
             return null;
-        }
-        else
-        {
-            var years = (globalVariables.Value.RegistrationYear ?? string.Empty).Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-           .Select(y => int.TryParse(y, out var year) ? year : throw new FormatException($"Invalid year: '{y}'"))
-           .OrderByDescending(n => n).ToArray();
 
-            if (string.IsNullOrWhiteSpace(registrationYear))
-                throw new ArgumentException("Registration year missing");
-            if (!int.TryParse(registrationYear, out int regYear))
-                throw new ArgumentException("Registration year is not a valid number");
+        var years = globalVariables.Value.RegistrationYear.Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(y => int.TryParse(y, out var year) ? year : throw new FormatException($"Invalid year: '{y}'"))
+            .OrderByDescending(n => n).ToArray();
 
-            if (!years.Contains(regYear))
-                throw new ArgumentException("Invalid registration year");
+        if (string.IsNullOrWhiteSpace(registrationYear))
+            throw new ArgumentException("Registration year missing");
 
-            return regYear;
-        }
+        if (!int.TryParse(registrationYear, out int regYear))
+            throw new ArgumentException("Registration year is not a valid number");
 
+        if (!years.Contains(regYear))
+            throw new ArgumentException("Invalid registration year");
+
+        return regYear;
     }
 }
 
@@ -389,6 +435,5 @@ public interface IRegistrationApplicationService
 
     Task<List<RegistrationApplicationPerYearViewModel>> BuildRegistrationApplicationPerYearViewModels(ISession httpSession, Organisation organisation);
 
-    int? validateRegistrationYear(string? registrationYear, bool isParamOptional = false);
-    
-    }
+    int? ValidateRegistrationYear(string? registrationYear, bool isParamOptional = false);
+}

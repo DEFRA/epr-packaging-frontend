@@ -50,7 +50,7 @@ public class FileUploadCompanyDetailsController : Controller
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var registrationYear = _registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
+        var registrationYear = _registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         if (session is not null)
         {
@@ -94,7 +94,7 @@ public class FileUploadCompanyDetailsController : Controller
             var errors = ModelState.Where(e => e.Value.Errors.Count > 0).Select(e => $"{e.Key}: {e.Value.Errors.First().ErrorMessage}").ToList();
         }
         Guid? submissionId = Guid.TryParse(Request.Query["submissionId"], out var value) ? value : null;
-        var registrationYear =  _registrationApplicationService.validateRegistrationYear(registrationyear, true);
+        var registrationYear =  _registrationApplicationService.ValidateRegistrationYear(registrationyear, true);
 
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         session.RegistrationSession.LatestRegistrationSet ??= new Dictionary<string, Guid>();

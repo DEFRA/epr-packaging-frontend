@@ -11,6 +11,4 @@ public class GetRegistrationApplicationDetailsRequest
     public Guid? ComplianceSchemeId { get; set; }
 
     public string SubmissionPeriod { get; set; } = null!;
-    
-    public DateTime LateFeeDeadline { get; set; }
 }

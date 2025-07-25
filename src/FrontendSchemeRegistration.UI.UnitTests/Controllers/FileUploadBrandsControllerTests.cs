@@ -70,7 +70,7 @@ public class FileUploadBrandsControllerTests
                 }
             });
         _fileUploadServiceMock = new Mock<IFileUploadService>();
-        _registrationApplicationServiceMock.Setup(x => x.validateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(DateTime.Now.Year);
+        _registrationApplicationServiceMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(DateTime.Now.Year);
 
         _systemUnderTest = new FileUploadBrandsController(
             _submissionServiceMock.Object, 

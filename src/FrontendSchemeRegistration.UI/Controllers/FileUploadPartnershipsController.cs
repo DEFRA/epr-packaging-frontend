@@ -50,7 +50,7 @@ public class FileUploadPartnershipsController : Controller
     [SubmissionPeriodActionFilter(PagePaths.FileUploadCompanyDetailsSubLanding)]
     public async Task<IActionResult> Get()
     {
-        var registrationYear = _registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
+        var registrationYear = _registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
         
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         if (session is null)
@@ -100,7 +100,7 @@ public class FileUploadPartnershipsController : Controller
         var submissionId = Guid.Parse(Request.Query["submissionId"]);
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         var organisationRole = session.UserData.Organisations.FirstOrDefault()?.OrganisationRole;
-        var registrationYear = _registrationApplicationService.validateRegistrationYear(registrationyear, true);
+        var registrationYear = _registrationApplicationService.ValidateRegistrationYear(registrationyear, true);
 
         submissionId = await _fileUploadService.ProcessUploadAsync(
             Request.ContentType,

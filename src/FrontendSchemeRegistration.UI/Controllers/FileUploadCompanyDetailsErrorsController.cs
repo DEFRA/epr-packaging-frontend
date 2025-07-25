@@ -40,7 +40,7 @@ public class FileUploadCompanyDetailsErrorsController : Controller
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var registrationYear = _registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
+        var registrationYear = _registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         if (session is null)
         {

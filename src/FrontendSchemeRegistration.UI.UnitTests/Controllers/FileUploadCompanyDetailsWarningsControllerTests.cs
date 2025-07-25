@@ -50,7 +50,7 @@ public class FileUploadCompanyDetailsWarningsControllerTests
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _validationOptions = new ValidationOptions { MaxIssuesToProcess = 100 };
         _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
-        _registrationApplicationServiceMock.Setup(x => x.validateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(RegistrationYear);
+        _registrationApplicationServiceMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(RegistrationYear);
 
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
@@ -95,7 +95,7 @@ public class FileUploadCompanyDetailsWarningsControllerTests
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync((PomSubmission)null);
         if (!hasRegistrationYear)
         {
-            _registrationApplicationServiceMock.Setup(x => x.validateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
+            _registrationApplicationServiceMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns((int?)null);
         }
 
@@ -126,7 +126,7 @@ public class FileUploadCompanyDetailsWarningsControllerTests
         // Arrange
         if (!hasRegistrationYear)
         {
-            _registrationApplicationServiceMock.Setup(x => x.validateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
+            _registrationApplicationServiceMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns((int?)null);
         }
 
@@ -192,7 +192,7 @@ public class FileUploadCompanyDetailsWarningsControllerTests
 
         if (!hasRegistrationYear)
         {
-            _registrationApplicationServiceMock.Setup(x => x.validateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
+            _registrationApplicationServiceMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns((int?)null);
         }
         //~//report-organisation-details?registrationyear=2025
@@ -245,7 +245,7 @@ public class FileUploadCompanyDetailsWarningsControllerTests
 
         if (!hasRegistrationYear)
         {
-            _registrationApplicationServiceMock.Setup(x => x.validateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
+            _registrationApplicationServiceMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns((int?)null);
         }
 
@@ -287,7 +287,7 @@ public class FileUploadCompanyDetailsWarningsControllerTests
 
         if (!hasRegistrationYear)
         {
-            _registrationApplicationServiceMock.Setup(x => x.validateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
+            _registrationApplicationServiceMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns((int?)null);
         }
 
@@ -347,7 +347,7 @@ public class FileUploadCompanyDetailsWarningsControllerTests
 
         if (hasRegistrationYear)
         {
-            _registrationApplicationServiceMock.Setup(x => x.validateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
+            _registrationApplicationServiceMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns((int?)null);
         }
 

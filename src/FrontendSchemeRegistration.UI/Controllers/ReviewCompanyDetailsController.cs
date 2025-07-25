@@ -45,7 +45,7 @@ public class ReviewCompanyDetailsController : Controller
     {
         var submissionId = Guid.Parse(Request.Query["submissionId"]);
         var userData = User.GetUserData();
-        var registrationYear = _registrationApplicationService.validateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
+        var registrationYear = _registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
 
         var submission = await _submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
 
