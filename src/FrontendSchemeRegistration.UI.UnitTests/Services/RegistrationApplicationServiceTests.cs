@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
+using Newtonsoft.Json;
 
 namespace FrontendSchemeRegistration.UI.UnitTests.Services;
 
@@ -262,19 +263,20 @@ public class RegistrationApplicationServiceTests
     }
 
     [Test]
-    public async Task GetComplianceSchemeRegistrationFees_ShouldUserIsLateFeeApplicable_For_LateFee_When_IsResubmission_False_PaymentCalculationServiceReturnsResponse()
+    public async Task GetComplianceSchemeRegistrationFees_ShouldUserIsLateFeeApplicable_For_LateFee_When_IsResubmission_False_And_Its_Queried_Status_PaymentCalculationServiceReturnsResponse()
     {
         // Arrange
         var session = _fixture.Build<RegistrationApplicationSession>()
             .Create();
 
         session.IsLateFeeApplicable = true;
+        session.HasAnyApprovedOrQueriedRegulatorDecision = true;
         session.IsOriginalCsoSubmissionLate = false;
         session.IsResubmission = false;
 
         session.RegistrationFeeCalculationDetails = _fixture.CreateMany<RegistrationFeeCalculationDetails>(2).ToArray();
-        session.RegistrationFeeCalculationDetails[0].IsNewJoiner = true;
-        session.RegistrationFeeCalculationDetails[1].IsNewJoiner = false;
+        session.RegistrationFeeCalculationDetails[0].IsNewJoiner = false;
+        session.RegistrationFeeCalculationDetails[1].IsNewJoiner = true;
 
         var response = _fixture.Create<ComplianceSchemePaymentCalculationResponse>();
         response.OutstandingPayment = -100;
@@ -287,7 +289,7 @@ public class RegistrationApplicationServiceTests
 
         // Assert
         result.Should().NotBeNull();
-        _paymentCalculationServiceMock.Verify(x => x.GetComplianceSchemeRegistrationFees(It.Is<ComplianceSchemePaymentCalculationRequest>(r => r.ComplianceSchemeMembers[0].IsLateFeeApplicable == true &&
+        _paymentCalculationServiceMock.Verify(x => x.GetComplianceSchemeRegistrationFees(It.Is<ComplianceSchemePaymentCalculationRequest>(r => r.ComplianceSchemeMembers[0].IsLateFeeApplicable == false &&
                                                                                                                                                r.ComplianceSchemeMembers[1].IsLateFeeApplicable == true)));
     }
 
@@ -2061,7 +2063,7 @@ internal static class ClaimsPrincipalExtensions
     public static void SetupClaimsPrincipal(this ClaimsPrincipal user, UserData userData)
     {
         var identity = new ClaimsIdentity();
-        identity.AddClaim(new Claim("http://schemas.microsoft.com/ws/2008/06/identity/claims/userdata", Newtonsoft.Json.JsonConvert.SerializeObject(userData)));
+        identity.AddClaim(new Claim("http://schemas.microsoft.com/ws/2008/06/identity/claims/userdata", JsonConvert.SerializeObject(userData)));
         user.AddIdentity(identity);
     }
 }

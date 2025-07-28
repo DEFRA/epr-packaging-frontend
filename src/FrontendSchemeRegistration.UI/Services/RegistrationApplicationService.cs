@@ -1,17 +1,17 @@
 ﻿using System.Globalization;
 using System.Security.Claims;
+using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.DTOs.PaymentCalculations;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
-using FrontendSchemeRegistration.Application.Services.Interfaces;
-using FrontendSchemeRegistration.UI.Sessions;
-using EPR.Common.Authorization.Models;
 using FrontendSchemeRegistration.Application.Options;
+using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Extensions;
+using FrontendSchemeRegistration.UI.Sessions;
+using FrontendSchemeRegistration.UI.ViewModels;
 using FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
 using Microsoft.Extensions.Options;
-using FrontendSchemeRegistration.UI.ViewModels;
 
 namespace FrontendSchemeRegistration.UI.Services;
 
@@ -23,7 +23,6 @@ public class RegistrationApplicationService(
     ILogger<RegistrationApplicationService> logger,
     IOptions<GlobalVariables> globalVariables) : IRegistrationApplicationService
 {
-
     private void SetLateFeeFlag(RegistrationApplicationSession session, int registrationYear)
     {
         DateTime lateFeeDeadline;
@@ -32,7 +31,7 @@ public class RegistrationApplicationService(
             lateFeeDeadline = globalVariables.Value.LateFeeDeadline2025;
         else if (session.RegistrationFeeCalculationDetails is null)
             lateFeeDeadline = DateTime.MaxValue;
-        else if(string.Equals(session.RegistrationFeeCalculationDetails?[0].OrganisationSize, "S", StringComparison.InvariantCultureIgnoreCase))
+        else if (string.Equals(session.RegistrationFeeCalculationDetails?[0].OrganisationSize, "S", StringComparison.InvariantCultureIgnoreCase))
             lateFeeDeadline = globalVariables.Value.SmallProducerLateFeeDeadline2026;
         else
             lateFeeDeadline = globalVariables.Value.LargeProducerLateFeeDeadline2026;
@@ -121,10 +120,10 @@ public class RegistrationApplicationService(
 
         session.RegulatorNation = nationId switch
         {
-            (int)Nation.England => "GB-ENG",
-            (int)Nation.Scotland => "GB-SCT",
-            (int)Nation.Wales => "GB-WLS",
-            (int)Nation.NorthernIreland => "GB-NIR",
+            (int) Nation.England => "GB-ENG",
+            (int) Nation.Scotland => "GB-SCT",
+            (int) Nation.Wales => "GB-WLS",
+            (int) Nation.NorthernIreland => "GB-NIR",
             _ => "regulator"
         };
 
@@ -237,7 +236,7 @@ public class RegistrationApplicationService(
                 SubmissionDate = session.LastSubmittedFile.SubmittedDateTime.Value,
                 ComplianceSchemeMembers = feeCalculationDetails.Select(c => new ComplianceSchemePaymentCalculationRequestMember
                 {
-                    IsLateFeeApplicable = session.IsOriginalCsoSubmissionLate || (session is { IsLateFeeApplicable: true, IsResubmission: false } || session.IsLateFeeApplicable && c.IsNewJoiner),
+                    IsLateFeeApplicable = session.IsOriginalCsoSubmissionLate || session is { IsLateFeeApplicable: true, IsResubmission: false, HasAnyApprovedOrQueriedRegulatorDecision : false } || session.IsLateFeeApplicable && c.IsNewJoiner,
                     IsOnlineMarketplace = c.IsOnlineMarketplace,
                     MemberId = c.OrganisationId,
                     MemberType = c.OrganisationSize,
@@ -369,8 +368,8 @@ public class RegistrationApplicationService(
     public async Task<List<RegistrationApplicationPerYearViewModel>> BuildRegistrationApplicationPerYearViewModels(ISession httpSession, Organisation organisation)
     {
         var years = globalVariables.Value.RegistrationYear.Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-       .Select(y => int.TryParse(y, out var year) ? year : throw new FormatException($"Invalid year: '{y}'"))
-       .OrderByDescending(n => n).ToArray();
+            .Select(y => int.TryParse(y, out var year) ? year : throw new FormatException($"Invalid year: '{y}'"))
+            .OrderByDescending(n => n).ToArray();
 
         var viewModels = new List<RegistrationApplicationPerYearViewModel>();
 

@@ -1,6 +1,8 @@
 ﻿using EPR.Common.Authorization.Constants;
+using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
+using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Extensions;
 using FrontendSchemeRegistration.Application.RequestModels;
@@ -205,12 +207,23 @@ public class ResubmissionApplicationController : Controller
             submittedByName = await GetUserNameFromId(submission.LastSubmittedFile.SubmittedBy!);
         }
 
-        await _resubmissionApplicationService.CreatePackagingResubmissionApplicationSubmittedCreatedEvent(
-            session.PomResubmissionSession.PackagingResubmissionApplicationSession.SubmissionId,
-            submission?.LastSubmittedFile.FileId, submittedByName,
-            DateTime.Now, model?.AdditionalInformationText);
+        var isResubmitted = session.PomResubmissionSession.PackagingResubmissionApplicationSession.ResubmissionApplicationSubmitted;       
+
+        if (!isResubmitted)
+        {
+            var userData = User.GetUserData();
+            await _resubmissionApplicationService.CreatePackagingResubmissionApplicationSubmittedCreatedEvent(
+                session.PomResubmissionSession.PackagingResubmissionApplicationSession.SubmissionId,
+                submission?.LastSubmittedFile.FileId, submittedByName,
+                DateTime.Now, model?.AdditionalInformationText);
+
+            var input = ResubmissionEmailRequestBuilder.BuildResubmissionEmail(userData, submission, session);
+
+            await _regulatorService.SendRegulatorResubmissionEmail(input);
+        }
 
         return RedirectToAction(nameof(SubmitToEnvironmentRegulator));
+
     }
 
     [HttpGet]
@@ -219,12 +232,7 @@ public class ResubmissionApplicationController : Controller
     public async Task<IActionResult> SubmitToEnvironmentRegulator()
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
-        var submission = session.PomResubmissionSession.PomSubmission;
-        var userData = User.GetUserData();
-
-        var input = ResubmissionEmailRequestBuilder.BuildResubmissionEmail(userData, submission, session);
-
-        await _regulatorService.SendRegulatorResubmissionEmail(input);
+        var submission = session.PomResubmissionSession.PomSubmission;       
 
         return View("ResubmissionConfirmation",
             new ApplicationSubmissionConfirmationViewModel

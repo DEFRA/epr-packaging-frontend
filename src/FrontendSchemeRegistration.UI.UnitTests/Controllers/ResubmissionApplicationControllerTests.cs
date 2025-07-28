@@ -359,6 +359,9 @@ public class ResubmissionApplicationControllerTests
     [Test]
     public async Task AdditionalInformation_Post_ReturnsViewResult_WithValidModel()
     {
+        // Arrange
+        var expectedDate = DateTime.UtcNow;
+        var expectedReference = "REF123";
         var frontendSchemeRegistrationSession = new FrontendSchemeRegistrationSession
         {
             RegistrationSession = new RegistrationSession
@@ -368,11 +371,24 @@ public class ResubmissionApplicationControllerTests
             PomResubmissionSession = new PackagingReSubmissionSession
             {
                 PomSubmissions = new List<PomSubmission> { new PomSubmission { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), IsSubmitted = true, LastSubmittedFile = new SubmittedFileInformation { FileId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b") } } },
-                SubmissionPeriod = "January to December 2024"
-            }
-        };
+                SubmissionPeriod = "January to December 2024",
+                PackagingResubmissionApplicationSession = new PackagingResubmissionApplicationSession
+                {
+                    ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+                    ApplicationReferenceNumber = expectedReference
+                },
+                PomSubmission = new PomSubmission()
+                {
+                    LastSubmittedFile = new SubmittedFileInformation
+                    {
+                        SubmittedDateTime = expectedDate
+                    }
+                }
 
-        var session = new FrontendSchemeRegistrationSession();
+            }
+
+        };
+        
         //_mockSessionManager.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
         _mockSessionManager.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
             .Returns(Task.FromResult(frontendSchemeRegistrationSession));
@@ -382,6 +398,8 @@ public class ResubmissionApplicationControllerTests
         // Act
         var result = await _controller.AdditionalInformation(It.IsAny<AdditionalInformationViewModel>()) as RedirectToActionResult;
         var pageBackLink = _controller.ViewBag.BackLinkToDisplay as string;
+
+        _regulatorService.Verify(mock => mock.SendRegulatorResubmissionEmail(It.IsAny<ResubmissionEmailRequestModel>()), Times.Once());
 
         // Assert
         pageBackLink.Should().Be($"/report-data/{PagePaths.ResubmissionTaskList}");
@@ -424,9 +442,7 @@ public class ResubmissionApplicationControllerTests
 
         // Assert
         result.Should().NotBeNull();
-        result.ViewName.Should().Be("ResubmissionConfirmation");
-
-        _regulatorService.Verify(mock => mock.SendRegulatorResubmissionEmail(It.IsAny<ResubmissionEmailRequestModel>()), Times.Once());
+        result.ViewName.Should().Be("ResubmissionConfirmation");      
 
         model.Should().NotBeNull();
         model.RegistrationApplicationSubmittedDate.Should().Be(expectedDate);
