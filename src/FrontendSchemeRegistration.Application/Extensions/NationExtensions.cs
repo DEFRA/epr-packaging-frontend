@@ -23,5 +23,14 @@ namespace FrontendSchemeRegistration.Application.Extensions
 			(int)Nation.NorthernIreland => "GB-NIR",
 			_ => ""
 		};
-	}
+
+        public static string GetEnvironmentAgencyName(string nationName) => nationName switch
+        {
+            "GB-ENG" => "Environment Agency",
+            "GB-SCT" => "Scottish Environment Protection Agency",
+            "GB-NIR" => "Northern Ireland Environment Agency",
+            "GB-WLS" => "Natural Resources Wales",
+            _ => ""
+        };
+    }
 }

@@ -233,7 +233,7 @@ public class RegistrationApplicationServiceTests
     }
 
     [Test]
-    public async Task GetComplianceSchemeRegistrationFees_ShouldUserIsNewJoiner_For_LateFee_WhenPaymentCalculationServiceReturnsResponse()
+    public async Task GetComplianceSchemeRegistrationFees_ShouldUse_IsNewJoiner_For_LateFee_WhenPaymentCalculationServiceReturnsResponse()
     {
         // Arrange
         var session = _fixture.Build<RegistrationApplicationSession>()
@@ -263,7 +263,7 @@ public class RegistrationApplicationServiceTests
     }
 
     [Test]
-    public async Task GetComplianceSchemeRegistrationFees_ShouldUserIsLateFeeApplicable_For_LateFee_When_IsResubmission_False_And_Its_Queried_Status_PaymentCalculationServiceReturnsResponse()
+    public async Task GetComplianceSchemeRegistrationFees_ShouldUse_IsLateFeeApplicable_For_LateFee_When_IsResubmission_False_PaymentCalculationServiceReturnsResponse()
     {
         // Arrange
         var session = _fixture.Build<RegistrationApplicationSession>()
@@ -289,12 +289,12 @@ public class RegistrationApplicationServiceTests
 
         // Assert
         result.Should().NotBeNull();
-        _paymentCalculationServiceMock.Verify(x => x.GetComplianceSchemeRegistrationFees(It.Is<ComplianceSchemePaymentCalculationRequest>(r => r.ComplianceSchemeMembers[0].IsLateFeeApplicable == false &&
+        _paymentCalculationServiceMock.Verify(x => x.GetComplianceSchemeRegistrationFees(It.Is<ComplianceSchemePaymentCalculationRequest>(r => r.ComplianceSchemeMembers[0].IsLateFeeApplicable == true &&
                                                                                                                                                r.ComplianceSchemeMembers[1].IsLateFeeApplicable == true)));
     }
 
     [Test]
-    public async Task GetComplianceSchemeRegistrationFees_ShouldUserIsOriginalCsoSubmissionLate_For_LateFee_When_PaymentCalculationServiceReturnsResponse()
+    public async Task GetComplianceSchemeRegistrationFees_ShouldUse_IsOriginalCsoSubmissionLate_For_LateFee_When_PaymentCalculationServiceReturnsResponse()
     {
         // Arrange
         var session = _fixture.Build<RegistrationApplicationSession>()
