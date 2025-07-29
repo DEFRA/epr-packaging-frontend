@@ -531,6 +531,52 @@ public class ResubmissionApplicationControllerTests
         _mockResubmissionApplicationServices.Verify(x => x.CreatePackagingDataResubmissionFeePaymentEvent(It.IsAny<Guid?>(), It.IsAny<Guid?>(), It.IsAny<string>()), Times.Never);
     }
 
+    [Test]
+    public async Task SubmitToEnvironmentRegulator_ShouldReturnScottishEnvironmentAgencyName_WhenRegulatorIsScotland()
+    {
+        // Arrange
+        var expectedDate = DateTime.UtcNow;
+        var expectedReference = "REF123";
+
+        var session = new FrontendSchemeRegistrationSession
+        {
+            PomResubmissionSession = new PackagingReSubmissionSession
+            {
+                PackagingResubmissionApplicationSession = new PackagingResubmissionApplicationSession
+                {
+                    ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+                    ApplicationReferenceNumber = expectedReference
+                },
+                PomSubmission = new PomSubmission()
+                {
+                    LastSubmittedFile = new SubmittedFileInformation
+                    {
+                        SubmittedDateTime = expectedDate
+                    }
+                },
+                RegulatorNation = "GB-SCT"
+            }
+        };
+
+        _mockSessionManager.Setup(s => s.GetSessionAsync(It.IsAny<ISession>()))
+                           .ReturnsAsync(session);
+
+        // Act
+        var result = await _controller.SubmitToEnvironmentRegulator() as ViewResult;
+
+        var model = result.Model as ApplicationSubmissionConfirmationViewModel;
+
+        // Assert
+        result.Should().NotBeNull();
+        result.ViewName.Should().Be("ResubmissionConfirmation");
+
+        model.Should().NotBeNull();
+        model.RegistrationApplicationSubmittedDate.Should().Be(expectedDate);
+        model.ApplicationReferenceNumber.Should().Be(expectedReference);
+        model.NationName.Should().Be("Scotland");
+        model.EnvironmentAgency.Should().Be("Scottish Environment Protection Agency");
+    }
+
     private void ValidateViewModel(object model)
     {
         var validationContext = new ValidationContext(model, null, null);

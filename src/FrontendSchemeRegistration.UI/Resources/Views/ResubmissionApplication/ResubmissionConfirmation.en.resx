@@ -107,8 +107,8 @@
 	<data name="your_packaging_data_has_been_resubmitted_to_the_environmental_regulator" xml:space="preserve">
 		<value>Your packaging data has been resubmitted to the environmental regulator</value>
 	</data>
-	<data name="you_submitted_your_packaging_data_to_the_environment_agency_the_environment_regulator_for_england" xml:space="preserve">
-		<value>You've submitted your packaging data to the Environment Agency, the environment regulator for England.</value>
+	<data name="you_submitted_your_packaging_data_to_the_x_for_y" xml:space="preserve">
+		<value>You've submitted your packaging data to the {0}, the environment regulator for {1}.</value>
 	</data>
 	<data name="you_can" xml:space="preserve">
         <value>You can </value>

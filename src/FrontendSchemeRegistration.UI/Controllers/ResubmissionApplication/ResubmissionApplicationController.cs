@@ -239,7 +239,8 @@ public class ResubmissionApplicationController : Controller
             {
                 RegistrationApplicationSubmittedDate = session.PomResubmissionSession.PomSubmission?.LastSubmittedFile.SubmittedDateTime,
                 ApplicationReferenceNumber = session.PomResubmissionSession.PackagingResubmissionApplicationSession.ApplicationReferenceNumber,
-                ApplicationStatus = session.PomResubmissionSession.PackagingResubmissionApplicationSession.ApplicationStatus
+                ApplicationStatus = session.PomResubmissionSession.PackagingResubmissionApplicationSession.ApplicationStatus,
+                RegulatorNation = session.PomResubmissionSession.RegulatorNation
             }
         );
     }

@@ -7,6 +7,8 @@
     ViewData["Title"] = Localizer["resubmission_confirm_title"];
     var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
     var applicationSubmittedDate = Model.RegistrationApplicationSubmittedDate ?? DateTime.Today;
+    var nationName = Model.NationName;
+    var environmentAgency = Model.EnvironmentAgency;
 }
 
 <div class="govuk-width-container">
@@ -22,7 +24,7 @@
                     @Localizer["submitted_date_x", applicationSubmittedDate.ToString("dd MMMM, yyyy")]
                 </p>
                 <p class="govuk-body">
-                    @Localizer["you_submitted_your_packaging_data_to_the_environment_agency_the_environment_regulator_for_england"]
+                    @Localizer["you_submitted_your_packaging_data_to_the_x_for_y", environmentAgency, nationName]
                 </p>
                 <p class="govuk-body">
                     @Localizer["you_can"]

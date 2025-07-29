@@ -107,8 +107,8 @@
     <data name="your_packaging_data_has_been_resubmitted_to_the_environmental_regulator" xml:space="preserve">
     <value>Mae'ch data pecynwaith wedi'i ailgyflwyno i'r rheoleiddiwr amgylcheddol</value>
 	</data>
-    <data name="you_submitted_your_packaging_data_to_the_environment_agency_the_environment_regulator_for_england" xml:space="preserve">
-    <value>Rydych chi wedi cyflwyno'ch data pecynwaith i Asiantaeth yr Amgylchedd, sef rheoleiddiwr amgylcheddol Lloegr.</value>
+    <data name="you_submitted_your_packaging_data_to_the_x_for_y" xml:space="preserve">
+    <value>Rydych chi wedi cyflwyno'ch data pecynwaith i {0}, sef rheoleiddiwr amgylcheddol {1}.</value>
 	</data>
     <data name="you_can" xml:space="preserve">
     <value>Gallwch </value>
