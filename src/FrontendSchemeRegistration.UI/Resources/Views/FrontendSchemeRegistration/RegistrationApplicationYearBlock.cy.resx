@@ -88,9 +88,11 @@
 	<data name="Your_registration_application_for_x_has_been_submitted" xml:space="preserve">
     <value>Mae eich cais am gofrestru ar gyfer {0} wedi'i gyflwyno.</value>
   </data>
-
 	<data name="You_have_resubmitted_your_registration_data_for_x" xml:space="preserve">
     <value>Rydych chi wedi ailgyflwyno'ch data cofrestru ar gyfer {0}.</value>
+  </data>
+	<data name="View_your_registration_fees_and_payment_methods_resubmission" xml:space="preserve">
+    <value>Gweld eich ffioedd cofrestru a'ch dulliau talu.</value>
   </data>
 	<data name="You_have_updated_your_data_and_viewed_your_fees" xml:space="preserve">
     <value>Rydych chi wedi diweddaru'ch data ac wedi gweld eich ffioedd.</value>
