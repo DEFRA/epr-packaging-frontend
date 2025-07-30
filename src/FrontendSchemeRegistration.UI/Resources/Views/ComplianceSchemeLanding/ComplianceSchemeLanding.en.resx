@@ -44,7 +44,7 @@
     <value>view your history</value>
   </data>
     <data name="you_must_report_packaging_data" xml:space="preserve">
-    <value>You must report packaging data for 2024. Report this data by 1 April, 2025.</value>
+    <value>You must report packaging data for {0}. Report this data by 1 {1}, {2}.</value>
   </data>
   <data name="report_organisation_details" xml:space="preserve">
     <value>Report your members’ organisation details</value>
@@ -59,7 +59,7 @@
     <value>You are currently resubmitting data.</value>
   </data>
   <data name="you_are_currenlty_resubmitting_data_period" xml:space="preserve">
-    <value>You have resubmitted packaging data for the July to December 2024 period.</value>	
+    <value>You have resubmitted packaging data for the {0} period.</value>	
   </data>	  
   <data name="packaging_recovery_notes" xml:space="preserve">
     <value>Packaging waste recycling note (PRN) and packaging waste export recycling note (PERN)</value>

@@ -6,11 +6,14 @@ using FluentAssertions;
 using FrontendSchemeRegistration.Application.DTOs.PaymentCalculations;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
+using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Services;
 using FrontendSchemeRegistration.UI.Sessions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.Extensions.Options;
 using Moq;
 using System.Globalization;
 using System.Security.Claims;
@@ -23,6 +26,7 @@ public class ResubmissionApplicationServiceTests
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _mockSessionManager;
     private Mock<ISubmissionService> _mockSubmissionService;
     private Mock<IPaymentCalculationService> _mockPaymentCalculationService;
+    private Mock<IOptions<GlobalVariables>> _mockGlobalVariables;
     private ResubmissionApplicationServices _service;
     private Fixture _fixture;
 
@@ -44,15 +48,50 @@ public class ResubmissionApplicationServiceTests
         }
     };
 
+    private readonly List<SubmissionPeriod> _submissionPeriods = new()
+    {
+        new SubmissionPeriod
+        {
+            DataPeriod = "Data period 1",
+            ActiveFrom = DateTime.Today,
+            Deadline = DateTime.Parse("2023-12-31"),
+            Year = "2023",
+            StartMonth = "September",
+            EndMonth = "December",
+        },
+        new SubmissionPeriod
+        {
+            DataPeriod = "Data period 2",
+            Deadline = DateTime.Parse("2024-03-31"),
+            ActiveFrom = DateTime.Today.AddDays(5),
+            Year = "2024",
+            StartMonth = "January",
+            EndMonth = "March"
+        },
+        new SubmissionPeriod
+        {
+            DataPeriod = "January to June 2025",
+            /* This will be excluded because it is after the latest allowed period ending June 2024 */
+            Deadline = DateTime.Parse("2025-10-01"),
+            ActiveFrom = DateTime.Parse("2025-07-01"),
+            Year = "2025",
+            StartMonth = "January",
+            EndMonth = "June"
+        }
+    };
+
 
     [SetUp]
     public void SetUp()
     {
+        _mockGlobalVariables = new Mock<IOptions<GlobalVariables>>();
+        _mockGlobalVariables.Setup(o => o.Value).Returns(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods });
+
         _mockSessionManager = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _mockSubmissionService = new Mock<ISubmissionService>();
         _mockPaymentCalculationService = new Mock<IPaymentCalculationService>();
         _fixture = new Fixture();
-        _service = new ResubmissionApplicationServices(_mockSessionManager.Object, _mockPaymentCalculationService.Object, _mockSubmissionService.Object);
+        _service = new ResubmissionApplicationServices(_mockSessionManager.Object, _mockPaymentCalculationService.Object, _mockSubmissionService.Object, _mockGlobalVariables.Object);
     }
 
     [Test]
@@ -720,5 +759,33 @@ public class ResubmissionApplicationServiceTests
 
         // Assert
         _mockSubmissionService.Verify(x => x.CreatePackagingResubmissionFeeViewEvent(submssionId, fileId), Times.Once);
+    }
+
+    [Test]
+    public async Task GetActiveSubmissionPeriod_ReturnsCorrectActiveDataPeriod()
+    {
+        // Arrange
+        var expectedResult = new SubmissionPeriod() { DataPeriod = "January to June 2025" };
+
+        // Act
+        var result = await _service.GetActiveSubmissionPeriod();
+
+        // Assert
+        result.Should().NotBeNull();
+        result.DataPeriod.Should().Be(expectedResult.DataPeriod);
+    }
+
+    [Test]
+    public async Task GetActiveSubmissionPeriod_ReturnsCorrectActiveFrom()
+    {
+        // Arrange
+        var expectedResult = new SubmissionPeriod() { DataPeriod = "January to June 2025", ActiveFrom = new DateTime(2025, 07, 01) };
+
+        // Act
+        var result = await _service.GetActiveSubmissionPeriod();
+
+        // Assert
+        result.Should().NotBeNull();
+        result.ActiveFrom.Should().Be(expectedResult.ActiveFrom);
     }
 }

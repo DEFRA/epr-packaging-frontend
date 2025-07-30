@@ -103,6 +103,17 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
         _userData.ServiceRole = serviceRole;
         SetupBase(_userData);
 
+        var submissionPeriod = new SubmissionPeriod
+        {
+            DataPeriod = "Data period 3",
+            /* This will be excluded because it is after the latest allowed period ending June 2024 */
+            Deadline = DateTime.Parse("2025-10-01"),
+            ActiveFrom = DateTime.Today.AddDays(10),
+            Year = "2025",
+            StartMonth = "January",
+            EndMonth = "June"
+        };
+
         var notificationList = new List<NotificationDto>();
         NotificationService.Setup(x => x.GetCurrentUserNotifications(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(notificationList));
 
@@ -111,6 +122,8 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
                 It.IsAny<ISession>(),
                 It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
             .ReturnsAsync(_registrationApplicationSession);
+
+        ResubmissionApplicationService.Setup(x => x.GetActiveSubmissionPeriod()).ReturnsAsync(submissionPeriod);
 
         var registrationApplicationPerYear = new List<RegistrationApplicationPerYearViewModel>()
         {
@@ -121,7 +134,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
             AdditionalDetailsStatus = _registrationApplicationSession.AdditionalDetailsStatus,
             ApplicationReferenceNumber = _registrationApplicationSession.ApplicationReferenceNumber,
             RegistrationReferenceNumber = _registrationApplicationSession.RegistrationReferenceNumber,
-            IsResubmission = _registrationApplicationSession.IsResubmission
+            IsResubmission = _registrationApplicationSession.IsResubmission,
            }
         };
 
@@ -139,6 +152,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
             OrganisationNumber = OrganisationNumber.ToReferenceNumberFormat(),
             OrganisationRole = OrganisationRole,
             CanSelectComplianceScheme = expectedCanSelectComplianceSchemeValue,
+            PackagingResubmissionPeriod = submissionPeriod,
             RegistrationApplicationsPerYear = new List<RegistrationApplicationPerYearViewModel>()
             {
                 new RegistrationApplicationPerYearViewModel
@@ -263,8 +277,21 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
             RegistrationApplicationSubmittedDate = null
         };
 
+        var submissionPeriod = new SubmissionPeriod
+        {
+            DataPeriod = "Data period 3",
+            /* This will be excluded because it is after the latest allowed period ending June 2024 */
+            Deadline = DateTime.Parse("2025-10-01"),
+            ActiveFrom = DateTime.Today.AddDays(10),
+            Year = "2025",
+            StartMonth = "January",
+            EndMonth = "June"
+        };
+
         RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
             .ReturnsAsync(registrationApplicationSession);
+
+        ResubmissionApplicationService.Setup(x => x.GetActiveSubmissionPeriod()).ReturnsAsync(submissionPeriod);
 
         var registrationApplicationPerYear = new List<RegistrationApplicationPerYearViewModel>()
         {
@@ -306,7 +333,8 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
                         ApplicationStatus = ApplicationStatusType.FileUploaded,
                     }
                 },
-                ResubmissionTaskListViewModel = new()
+                ResubmissionTaskListViewModel = new(),
+                PackagingResubmissionPeriod = submissionPeriod
             });
     }
 
@@ -335,6 +363,19 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
 
         RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
             .ReturnsAsync(registrationApplicationSession);
+
+        var submissionPeriod = new SubmissionPeriod
+        {
+            DataPeriod = "Data period 3",
+            /* This will be excluded because it is after the latest allowed period ending June 2024 */
+            Deadline = DateTime.Parse("2025-10-01"),
+            ActiveFrom = DateTime.Today.AddDays(10),
+            Year = "2025",
+            StartMonth = "January",
+            EndMonth = "June"
+        };
+
+        ResubmissionApplicationService.Setup(x => x.GetActiveSubmissionPeriod()).ReturnsAsync(submissionPeriod);
 
         var registrationApplicationPerYear = new List<RegistrationApplicationPerYearViewModel>()
         {
@@ -378,7 +419,8 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
                 OrganisationNumber = "123 456",
                 OrganisationRole = "Producer",
                 
-                ResubmissionTaskListViewModel = new()
+                ResubmissionTaskListViewModel = new(),
+                PackagingResubmissionPeriod = submissionPeriod
             });
     }
 
@@ -405,8 +447,21 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
             RegistrationApplicationSubmittedDate = DateTime.Now.AddMinutes(-5)
         };
 
+        var submissionPeriod = new SubmissionPeriod
+        {
+            DataPeriod = "January to June 2025",
+            /* This will be excluded because it is after the latest allowed period ending June 2024 */
+            Deadline = DateTime.Parse("2025-10-01"),
+            ActiveFrom = DateTime.Parse("2025-07-01"),
+            Year = "2025",
+            StartMonth = "January",
+            EndMonth = "June"
+        };
+
         RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
             .ReturnsAsync(registrationApplicationSession);
+
+        ResubmissionApplicationService.Setup(x => x.GetActiveSubmissionPeriod()).ReturnsAsync(submissionPeriod);
 
         var registrationApplicationPerYear = new List<RegistrationApplicationPerYearViewModel>()
         {
@@ -423,6 +478,8 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
 
         RegistrationApplicationService.Setup(x => x.BuildRegistrationApplicationPerYearViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
             .ReturnsAsync(registrationApplicationPerYear);
+
+        ResubmissionApplicationService.Setup(x => x.GetActiveSubmissionPeriod()).ReturnsAsync(submissionPeriod);
 
         // Act
         var response = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
@@ -449,7 +506,8 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
                         ApplicationStatus = ApplicationStatusType.SubmittedToRegulator
                     }
                 },
-                ResubmissionTaskListViewModel = new()
+                ResubmissionTaskListViewModel = new(),
+                PackagingResubmissionPeriod = submissionPeriod,
             });
     }
 }

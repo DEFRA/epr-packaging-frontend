@@ -36,5 +36,7 @@ namespace FrontendSchemeRegistration.UI.Services.Interfaces
         Task<List<SubmissionPeriodId>> GetSubmissionIdsAsync(Guid organisationId, SubmissionType type, Guid? complianceSchemeId, int? year);
 
         Task<List<SubmissionHistory>> GetSubmissionHistoryAsync(Guid submissionId, DateTime lastSyncTime);
+
+        Task<SubmissionPeriod?> GetActiveSubmissionPeriod();
     }
 }

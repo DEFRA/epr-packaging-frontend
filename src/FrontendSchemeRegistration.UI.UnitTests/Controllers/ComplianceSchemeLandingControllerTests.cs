@@ -7,6 +7,7 @@ using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.DTOs.ComplianceScheme;
 using FrontendSchemeRegistration.Application.DTOs.Notification;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Controllers;
 using FrontendSchemeRegistration.UI.Services;
@@ -16,6 +17,7 @@ using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using Moq;
 using Newtonsoft.Json;
 
@@ -37,9 +39,41 @@ public class ComplianceSchemeLandingControllerTests
     private readonly Mock<IRegistrationApplicationService> _registrationApplicationService = new();
     private readonly Mock<ISubmissionService> _submissionService = new();
     private readonly Mock<IResubmissionApplicationService> _resubmissionApplicationService = new();
+    protected Mock<IOptions<GlobalVariables>> globalVariables { get; set; }
 
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock = new();
     private ComplianceSchemeLandingController _systemUnderTest;
+    private readonly List<SubmissionPeriod> _submissionPeriods = new()
+    {
+        new SubmissionPeriod
+        {
+            DataPeriod = "Data period 1",
+            ActiveFrom = DateTime.Today,
+            Deadline = DateTime.Parse("2023-12-31"),
+            Year = "2023",
+            StartMonth = "September",
+            EndMonth = "December",
+        },
+        new SubmissionPeriod
+        {
+            DataPeriod = "Data period 2",
+            Deadline = DateTime.Parse("2024-03-31"),
+            ActiveFrom = DateTime.Today.AddDays(5),
+            Year = "2024",
+            StartMonth = "January",
+            EndMonth = "March"
+        },
+        new SubmissionPeriod
+        {
+            DataPeriod = "Data period 3",
+            /* This will be excluded because it is after the latest allowed period ending June 2024 */
+            Deadline = DateTime.Parse("2025-10-01"),
+            ActiveFrom = DateTime.Today.AddDays(10),
+            Year = "2025",
+            StartMonth = "January",
+            EndMonth = "June"
+        }
+    };
 
     private readonly RegistrationApplicationSession _registrationApplicationSession = new RegistrationApplicationSession
     {
@@ -79,6 +113,9 @@ public class ComplianceSchemeLandingControllerTests
             new(ClaimTypes.UserData, JsonConvert.SerializeObject(userData))
         };
 
+        globalVariables = new Mock<IOptions<GlobalVariables>>();
+        globalVariables.Setup(o => o.Value).Returns(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods });
+
         _userMock.Setup(x => x.Claims).Returns(claims);
         _httpContextMock.Setup(x => x.User).Returns(_userMock.Object);
         _httpContextMock.Setup(x => x.Session).Returns(new Mock<ISession>().Object);
@@ -91,7 +128,8 @@ public class ComplianceSchemeLandingControllerTests
             _notificationServiceMock.Object,
             _registrationApplicationService.Object,
             _resubmissionApplicationService.Object,
-            _nullLogger)
+            _nullLogger,
+            Options.Create(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods }))
         {
             ControllerContext = { HttpContext = _httpContextMock.Object }
         };
@@ -171,7 +209,8 @@ public class ComplianceSchemeLandingControllerTests
                     OrganisationNumber = string.Empty,
                     PaymentViewStatus = ResubmissionTaskListStatus.CanNotStartYet,
                     ResubmissionApplicationSubmitted = false
-                }
+                },
+                PackagingResubmissionPeriod = globalVariables.Object.Value.SubmissionPeriods.LastOrDefault(),
             });
 
         _sessionManagerMock.Verify(
@@ -249,7 +288,8 @@ public class ComplianceSchemeLandingControllerTests
                     OrganisationNumber = string.Empty,
                     PaymentViewStatus = ResubmissionTaskListStatus.CanNotStartYet,
                     ResubmissionApplicationSubmitted = false
-                }
+                },
+                PackagingResubmissionPeriod = globalVariables.Object.Value.SubmissionPeriods.LastOrDefault(),
             });
 
         _sessionManagerMock.Verify(
@@ -362,7 +402,8 @@ public class ComplianceSchemeLandingControllerTests
                     OrganisationNumber = string.Empty,
                     PaymentViewStatus = ResubmissionTaskListStatus.CanNotStartYet,
                     ResubmissionApplicationSubmitted = false
-                }
+                },
+                PackagingResubmissionPeriod = globalVariables.Object.Value.SubmissionPeriods.LastOrDefault(),
             });
 
         _sessionManagerMock.Verify(
@@ -474,7 +515,8 @@ public class ComplianceSchemeLandingControllerTests
                     OrganisationNumber = string.Empty,
                     PaymentViewStatus = ResubmissionTaskListStatus.CanNotStartYet,
                     ResubmissionApplicationSubmitted = false
-                }
+                },
+                PackagingResubmissionPeriod = globalVariables.Object.Value.SubmissionPeriods.LastOrDefault(),
             });
 
         _sessionManagerMock.Verify(
@@ -586,7 +628,8 @@ public class ComplianceSchemeLandingControllerTests
                     OrganisationNumber = string.Empty,
                     PaymentViewStatus = ResubmissionTaskListStatus.CanNotStartYet,
                     ResubmissionApplicationSubmitted = false
-                }
+                },
+                PackagingResubmissionPeriod = globalVariables.Object.Value.SubmissionPeriods.LastOrDefault(),
             });
 
         _sessionManagerMock.Verify(
@@ -692,7 +735,8 @@ public class ComplianceSchemeLandingControllerTests
                     OrganisationNumber = string.Empty,
                     PaymentViewStatus = ResubmissionTaskListStatus.CanNotStartYet,
                     ResubmissionApplicationSubmitted = false
-                }
+                },
+                PackagingResubmissionPeriod = globalVariables.Object.Value.SubmissionPeriods.LastOrDefault(),
             });
 
         _sessionManagerMock.Verify(
@@ -801,7 +845,8 @@ public class ComplianceSchemeLandingControllerTests
                     OrganisationNumber = string.Empty,
                     PaymentViewStatus = ResubmissionTaskListStatus.CanNotStartYet,
                     ResubmissionApplicationSubmitted = false
-                }
+                },
+                PackagingResubmissionPeriod = globalVariables.Object.Value.SubmissionPeriods.LastOrDefault(),
             });
 
         _sessionManagerMock.Verify(

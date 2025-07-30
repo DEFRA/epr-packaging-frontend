@@ -340,7 +340,7 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
   <data name="909" xml:space="preserve">
     <value>Rhaid i gynhyrchwyr mawr uwchlwytho data pecynwaith ar gyfer 1 Ionawr i 30 Mehefin 2024 a 1 Gorffennaf i 31 Rhagfyr 2024.</value>
   </data>
-	<data name="910" xml:space="preserve">
+  <data name="910" xml:space="preserve">
     <value>Gall cynhyrchwyr bach ond uwchlwytho data pecynnu am gyfnod P0.</value>
   </data>
   <data name="100" xml:space="preserve">
@@ -384,11 +384,11 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
   </data>
   <data name="108" xml:space="preserve">
     <value>Gall sefydliadau mawr (L) nodi gradd ailgylchadwyedd ar gyfer cyfnodau cyflwyno 2025 ymlaen o blith yr opsiynau canlynol: R (ar gyfer Coch), A (ar gyfer Melyn), G (ar gyfer Gwyrdd), R-M (ar gyfer Coch-Meddygol), A-M (ar gyfer Melyn-Meddygol) neu G-M (ar gyfer Gwyrdd-Meddygol)</value>
-  </data>  
+  </data>
   <data name="91" xml:space="preserve">
     <value>Peidiwch â chyflwyno unedau pecynwaith trosiannol am y cyfnod yma.</value>
   </data>
   <data name="109" xml:space="preserve">
-    <value>[Welsh] Only HDC- GL (packaging material) is required for RAM RAG ratings and HH/PB packaging type is required for RAM RAG ratings for all materials</value>
+    <value>Mae codau ailgylcheddadwyedd yn berthnasol yn unig i fathau o ddeunydd pecynnu HH, PB a HDC-GL ar gyfer cyflwyniadau o 2025 ymlaen ar gyfer sefydliadau mawr (L)</value>
   </data>
 </root>

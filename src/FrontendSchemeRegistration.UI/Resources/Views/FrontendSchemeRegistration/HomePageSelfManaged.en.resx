@@ -154,7 +154,7 @@
     <value>Packaging data</value>
   </data>
   <data name="you_must_report_packaging_data" xml:space="preserve">
-    <value>You must report packaging data for {0}. Report this data by 1 April, {1}.</value>
+    <value>You must report packaging data for {0}. Report this data by 1 {1}, {2}.</value>
   </data>
   <data name="you_must_report_packaging_data_non_resubmission" xml:space="preserve">
     <value>You must report packaging data non resubmission</value>

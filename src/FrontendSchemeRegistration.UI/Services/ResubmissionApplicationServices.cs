@@ -6,17 +6,20 @@ using EPR.SubmissionMicroservice.API.Contracts.Submissions.Get;
 using FrontendSchemeRegistration.Application.DTOs.PaymentCalculations;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
+using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Sessions;
+using Microsoft.Extensions.Options;
 
 namespace FrontendSchemeRegistration.UI.Services;
 
 public class ResubmissionApplicationServices(
     ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
     IPaymentCalculationService paymentCalculationService,
-    ISubmissionService submissionService) : IResubmissionApplicationService
+    ISubmissionService submissionService,
+    IOptions<GlobalVariables> globalVariables) : IResubmissionApplicationService
 {
     public async Task<string> CreatePomResubmissionReferenceNumberForProducer(FrontendSchemeRegistrationSession session, SubmissionPeriod submissionPeriod, string organisationNumber, string submittedByName, Guid submissionId, int? historyCount)
     {
@@ -147,5 +150,11 @@ public class ResubmissionApplicationServices(
         await submissionService.CreatePackagingResubmissionReferenceNumberEvent(submissionId, packagingResubmissionReferenceNumberCreatedEvent);
 
         return pomResubmissionReferenceNumber;
+    }
+
+    public async Task<SubmissionPeriod?> GetActiveSubmissionPeriod()
+    {
+        var currentYear = new[] { DateTime.Now.Year.ToString(), (DateTime.Now.Year + 1).ToString() };
+        return globalVariables.Value.SubmissionPeriods.FirstOrDefault(s => currentYear.Contains(s.Year) && s.ActiveFrom.Year == DateTime.Now.Year);
     }
 }

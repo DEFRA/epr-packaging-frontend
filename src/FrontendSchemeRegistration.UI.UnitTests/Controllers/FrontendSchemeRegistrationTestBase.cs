@@ -8,6 +8,7 @@ using Application.Services.Interfaces;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
+using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -30,6 +31,37 @@ public abstract class FrontendSchemeRegistrationTestBase
     private static readonly Guid _complianceSchemeOperatorId = new Guid("00000000-0000-0000-0000-000000000004");
     private readonly Mock<HttpContext> _httpContextMock = new();
     private readonly Mock<ClaimsPrincipal> _userMock = new();
+    private readonly List<SubmissionPeriod> _submissionPeriods = new()
+    {
+        new SubmissionPeriod
+        {
+            DataPeriod = "Data period 1",
+            ActiveFrom = DateTime.Today,
+            Deadline = DateTime.Parse("2023-12-31"),
+            Year = "2023",
+            StartMonth = "September",
+            EndMonth = "December",
+        },
+        new SubmissionPeriod
+        {
+            DataPeriod = "Data period 2",
+            Deadline = DateTime.Parse("2024-03-31"),
+            ActiveFrom = DateTime.Today.AddDays(5),
+            Year = "2024",
+            StartMonth = "January",
+            EndMonth = "March"
+        },
+        new SubmissionPeriod
+        {
+            DataPeriod = "Data period 3",
+            /* This will be excluded because it is after the latest allowed period ending June 2024 */
+            Deadline = DateTime.Parse("2024-12-31"),
+            ActiveFrom = DateTime.Today.AddDays(10),
+            Year = "2025",
+            StartMonth = "July",
+            EndMonth = "December"
+        }
+    };
 
     protected static ProducerComplianceSchemeDto CurrentComplianceScheme => new()
     {
@@ -94,6 +126,9 @@ public abstract class FrontendSchemeRegistrationTestBase
         _userMock.Setup(x => x.Claims).Returns(claims);
         _httpContextMock.Setup(x => x.User).Returns(_userMock.Object);
 
+        globalVariables = new Mock<IOptions<GlobalVariables>>();
+        globalVariables.Setup(o => o.Value).Returns(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods });
+
         var tempDataDictionaryMock = new Mock<ITempDataDictionary>();
 
         SessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
@@ -117,7 +152,7 @@ public abstract class FrontendSchemeRegistrationTestBase
             RegistrationApplicationService.Object,
             ResubmissionApplicationService.Object,
             AuthorizationService.Object,
-            NotificationService.Object);
+        NotificationService.Object);
         SystemUnderTest.ControllerContext.HttpContext = _httpContextMock.Object;
         SystemUnderTest.TempData = tempDataDictionaryMock.Object;
     }

@@ -31,8 +31,6 @@ public class FrontendSchemeRegistrationController(
     INotificationService notificationService)
     : Controller
 {
-    private readonly string _packagingResubmissionPeriod = "July to December 2024";
-
     [HttpGet]
     [Route(PagePaths.ApprovedPersonCreated)]
     [AuthorizeForScopes(ScopeKeySection = "FacadeAPI:DownstreamScope")]
@@ -408,6 +406,8 @@ public class FrontendSchemeRegistrationController(
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
         var producerComplianceScheme = await complianceSchemeService.GetProducerComplianceScheme(organisation.Id!.Value);
+        var currentYear = new[] { DateTime.Now.Year.ToString(), (DateTime.Now.Year + 1).ToString() };
+        var packagingResubmissionPeriod = await resubmissionApplicationService.GetActiveSubmissionPeriod();
 
         if (producerComplianceScheme is not null && authorizationService.AuthorizeAsync(User, HttpContext, PolicyConstants.EprSelectSchemePolicy).Result.Succeeded)
         {
@@ -421,7 +421,7 @@ public class FrontendSchemeRegistrationController(
         await sessionManager.SaveSessionAsync(HttpContext.Session, session);
 
         var registrationApplicationPerYearViewModels = await registrationApplicationService.BuildRegistrationApplicationPerYearViewModels(HttpContext.Session, organisation);
-        var resubmissionApplicationDetails = await resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(organisation, new List<string> { _packagingResubmissionPeriod }, session.RegistrationSession.SelectedComplianceScheme?.Id);
+        var resubmissionApplicationDetails = await resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(organisation, new List<string> { packagingResubmissionPeriod?.DataPeriod }, session.RegistrationSession.SelectedComplianceScheme?.Id);
 
         var viewModel = new HomePageSelfManagedViewModel
         {
@@ -430,7 +430,8 @@ public class FrontendSchemeRegistrationController(
             CanSelectComplianceScheme = userData.ServiceRole is ServiceRoles.ApprovedPerson or ServiceRoles.DelegatedPerson,
             OrganisationRole = organisation.OrganisationRole!,
             ResubmissionTaskListViewModel = resubmissionApplicationDetails.ToResubmissionTaskListViewModel(organisation),
-            RegistrationApplicationsPerYear = registrationApplicationPerYearViewModels
+            RegistrationApplicationsPerYear = registrationApplicationPerYearViewModels,
+            PackagingResubmissionPeriod = packagingResubmissionPeriod
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id!.Value);

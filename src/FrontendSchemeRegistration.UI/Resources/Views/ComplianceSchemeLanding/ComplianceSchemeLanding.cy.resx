@@ -46,7 +46,7 @@
     <value>Data pecynwaith yr aelodau</value>
   </data>
   <data name="you_must_report_packaging_data" xml:space="preserve">
-    <value>Rhaid ichi roi gwybod am ddata pecynwaith ar gyfer Ionawr i Fehefin a Gorffennaf i Ragfyr.</value>
+    <value>Angen ichi roi gwybod am ddata pecynwaith ar gyfer {0}. Roi gwybod am ddata hwn erbyn 1 {1} {2}.</value>
   </data>
   <data name="resubmit_your_packaging_data" xml:space="preserve">
     <value>ailgyflwyno data pecynwaith eich aelodau</value>

@@ -367,9 +367,9 @@ Read the guidance about how to create your organisation details file. Once youâ€
   <data name="909" xml:space="preserve">
     <value>Large producers must upload packaging data for 1 January to 30 June 2024 and 1 July to 31 December 2024.</value>
   </data>
-	<data name="910" xml:space="preserve">
+  <data name="910" xml:space="preserve">
     <value>Small producers can only upload packaging data for period P0.</value>
-  </data>	
+  </data>
   <data name="73" xml:space="preserve">
     <value>Turnover for this organisation is recorded as zero. Please verify this is correct before submitting a zero return</value>
   </data>
@@ -412,7 +412,7 @@ Read the guidance about how to create your organisation details file. Once youâ€
   <data name="91" xml:space="preserve">
     <value>Do not submit transitional packaging units for this period.</value>
   </data>
-	<data name="109" xml:space="preserve">
-    <value>Only HDC- GL (packaging material) is required for RAM RAG ratings and HH/PB packaging type is required for RAM RAG ratings for all materials</value>
+  <data name="109" xml:space="preserve">
+    <value>Recyclability codes are applicable only for HH, PB and HDC-GL packaging material types for 2025 onwards submissions for large organisations (L)</value>
   </data>
 </root>
