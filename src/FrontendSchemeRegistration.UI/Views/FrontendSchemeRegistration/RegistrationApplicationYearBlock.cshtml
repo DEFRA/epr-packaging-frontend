@@ -137,7 +137,7 @@
         {
             <div>
                 <p class="govuk-body">@Localizer["You_have_resubmitted_your_registration_data_for_x", model.RegistrationYear]</p>
-                <p class="govuk-body">@Localizer["View_your_registration_fees_and_payment_methods"]</p>
+                <p class="govuk-body">@Localizer["View_your_registration_fees_and_payment_methods_resubmission"]</p>
             </div>
         }
         else if (model.IsResubmission && model is { PaymentViewStatus: RegistrationTaskListStatus.Completed, AdditionalDetailsStatus: RegistrationTaskListStatus.NotStarted })

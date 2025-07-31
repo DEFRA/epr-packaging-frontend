@@ -91,7 +91,10 @@
     <value>Your registration application for {0} has been submitted.</value>
   </data>
 	<data name="You_have_resubmitted_your_registration_data_for_x" xml:space="preserve">
-    <value>You have resubmitted your registration data for {0}.</value>
+    <value>Your resubmission has been uploaded. It will take up to 1 hour to calculate your fee.</value>
+  </data>
+	<data name="View_your_registration_fees_and_payment_methods_resubmission" xml:space="preserve">
+    <value>You can then view and pay your fees and complete your ​application.</value>
   </data>
 	<data name="You_have_updated_your_data_and_viewed_your_fees" xml:space="preserve">
     <value>You've updated your data and viewed your fees.</value>

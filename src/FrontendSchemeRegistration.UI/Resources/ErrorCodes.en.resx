@@ -377,13 +377,13 @@ Read the guidance about how to create your organisation details file. Once youâ€
     <value>Large organisations (L) submitting HH, HDC-Glass and PB packaging type must enter a recyclability code in this column for 2025 submission periods onwards â€“ enter one of the following: R for Red, A for Amber, G for Green, R-M for Red-Medical, A-M for Amber-Medical or G-M for Green-Medical</value>
   </data>
   <data name="101" xml:space="preserve">
-    <value>Large organisations (L) submitting HH, HDC and PB packaging type for plastic (PL) packaging material must enter the material subtype breakdown as flexible or rigid for 2025 submission periods onwards</value>
+    <value>Large organisations (L) submitting HH, HDC and PB packaging type for plastic (PL) packaging material must enter the material subtype breakdown as Flexible or Rigid for 2025 submission periods onwards</value>
   </data>
-  <data name="102" xml:space="preserve">
+	<data name="102" xml:space="preserve">
     <value>Recyclability codes are not required for submission periods before 2025 for large organisations (L)</value>
   </data>
-  <data name="103" xml:space="preserve">
-    <value>Large organisations (L) submitting HH, HDC and PB packaging type for plastic (PL) packaging material and entering the material subtype breakdown must only enter flexible or rigid for 2025 submission periods onwards</value>
+	<data name="103" xml:space="preserve">
+    <value>Large organisations (L) submitting HH, HDC and PB packaging type for plastic (PL) packaging material and entering the material subtype breakdown must only enter Flexible or Rigid for 2025 submission periods onwards</value>
   </data>
   <data name="104" xml:space="preserve">
     <value>Large organisations (L) must enter a recyclability code for 2025 submission periods onwards from the following options: R (for Red), A (for Amber), G (for Green), R-M (for Red-Medical), A-M (for Amber-Medical) or Green-Medical (G-M)</value>
