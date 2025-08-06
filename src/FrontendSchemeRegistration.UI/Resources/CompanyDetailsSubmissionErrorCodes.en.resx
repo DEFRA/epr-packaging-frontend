@@ -391,7 +391,7 @@
     <value>Joiner date not allowed when Leaver Code is present.</value>
   </data>
 	<data name="925" xml:space="preserve">
-    <value>Leave Or Joinder Code should not be empty.</value>
+    <value>Joiner or Leaver Code should not be empty.</value>
   </data>
 	<data name="926" xml:space="preserve">
     <value>Joiner Or Leaver Code Min length is not correct.</value>
