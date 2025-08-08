@@ -39,11 +39,6 @@ public class SubmissionService(IWebApiGatewayClient webApiGatewayClient) : ISubm
         return await webApiGatewayClient.GetSubmissionsAsync<T>(queryString);
     }
 
-    public async Task SubmitAsync(Guid submissionId, Guid fileId)
-    {
-        await SubmitAsync(submissionId, fileId, null, null, false);
-    }
-
     public async Task SubmitAsync(Guid submissionId, Guid fileId, string? submittedBy, string? appReferenceNumber = null, bool? isResubmitted = null)
     {
         var payload = new SubmissionPayload

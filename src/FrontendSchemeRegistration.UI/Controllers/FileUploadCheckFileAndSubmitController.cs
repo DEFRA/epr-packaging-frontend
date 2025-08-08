@@ -1,21 +1,22 @@
-﻿namespace FrontendSchemeRegistration.UI.Controllers;
-
-using Application.Constants;
-using Application.DTOs.Submission;
-using Application.Services.Interfaces;
-using Constants;
-using EPR.Common.Authorization.Constants;
+﻿using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
-using Extensions;
-using global::FrontendSchemeRegistration.Application.RequestModels;
-using global::FrontendSchemeRegistration.UI.Helpers;
+using FrontendSchemeRegistration.Application.Constants;
+using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.RequestModels;
+using FrontendSchemeRegistration.Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
+using FrontendSchemeRegistration.UI.Constants;
+using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
+using FrontendSchemeRegistration.UI.Extensions;
+using FrontendSchemeRegistration.UI.Helpers;
+using FrontendSchemeRegistration.UI.Sessions;
+using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement;
-using Sessions;
-using UI.Attributes.ActionFilters;
-using ViewModels;
+
+namespace FrontendSchemeRegistration.UI.Controllers;
 
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
 [Route(PagePaths.FileUploadCheckFileAndSubmit)]
@@ -117,7 +118,10 @@ public class FileUploadCheckFileAndSubmitController : Controller
         try
         {
             var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-            await _submissionService.SubmitAsync(submission.Id, model.LastValidFileId.Value);
+
+            session.EnsureApplicationReferenceIsPresent();
+
+            await _submissionService.SubmitAsync(submission.Id, model.LastValidFileId.Value, null, session.RegistrationSession.ApplicationReferenceNumber, session.RegistrationSession.IsResubmission);
             var resubmissionEnabled = await _featureManager.IsEnabledAsync(nameof(FeatureFlags.ShowPoMResubmission));
             if (submission.LastSubmittedFile != null && resubmissionEnabled && !session.PomResubmissionSession.IsPomResubmissionJourney)
             {

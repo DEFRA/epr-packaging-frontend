@@ -3,6 +3,7 @@ using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
+using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
 using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Services;
 using FrontendSchemeRegistration.UI.Sessions;
@@ -55,9 +56,9 @@ public class DeclarationWithFullNameController(
         var reviewOrganisationDataPath = PagePaths.ReviewOrganisationData.StartsWith('/')
             ? PagePaths.ReviewOrganisationData
             : Path.Combine("/", PagePaths.ReviewOrganisationData);
-       
+
         var routeValue = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear);
-        ViewBag.BackLinkToDisplay = QueryHelpers.AddQueryString(Url.Content($"~{reviewOrganisationDataPath}"), routeValue.ToDictionary(k => k.Key, k=> k.Value.ToString() ?? string.Empty));
+        ViewBag.BackLinkToDisplay = QueryHelpers.AddQueryString(Url.Content($"~{reviewOrganisationDataPath}"), routeValue.ToDictionary(k => k.Key, k => k.Value.ToString() ?? string.Empty));
 
         return View(ViewName, new DeclarationWithFullNameViewModel
         {
@@ -72,12 +73,17 @@ public class DeclarationWithFullNameController(
     [HttpPost]
     public async Task<IActionResult> Post(DeclarationWithFullNameViewModel model)
     {
+        if (!ModelState.IsValid)
+        {
+            return View(ViewName, model);
+        }
+
         var submissionId = Guid.Parse(Request.Query["submissionId"]);
         var userData = User.GetUserData();
 
         if (!userData.CanSubmit())
         {
-            var routeValues = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: model.RegistrationYear);          
+            var routeValues = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: model.RegistrationYear);
             return RedirectToAction("Get", "ReviewCompanyDetails", routeValues);
         }
 
@@ -96,16 +102,14 @@ public class DeclarationWithFullNameController(
 
         ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadSubLanding}");
 
-        if (!ModelState.IsValid)
-        {
-            return View(ViewName, model);
-        }
-
         try
         {
             var session = await sessionManager.GetSessionAsync(HttpContext.Session);
 
+            session.EnsureApplicationReferenceIsPresent();
+
             await submissionService.SubmitAsync(submissionId, new Guid(model.OrganisationDetailsFileId), model.FullName, session.RegistrationSession.ApplicationReferenceNumber, session.RegistrationSession.IsResubmission);
+
             return (model.RegistrationYear.HasValue ? RedirectToAction("Get", ConfirmationViewName, new { submissionId, registrationyear = model.RegistrationYear.ToString() }) : RedirectToAction("Get", ConfirmationViewName, new { submissionId }));
         }
         catch (Exception)

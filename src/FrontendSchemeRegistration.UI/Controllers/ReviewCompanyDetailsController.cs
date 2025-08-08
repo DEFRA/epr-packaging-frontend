@@ -1,18 +1,19 @@
-﻿namespace FrontendSchemeRegistration.UI.Controllers;
-
-using Application.Constants;
-using Application.DTOs.Submission;
-using Application.Services.Interfaces;
-using EPR.Common.Authorization.Constants;
+﻿using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
-using Extensions;
-using global::FrontendSchemeRegistration.UI.Services;
+using FrontendSchemeRegistration.Application.Constants;
+using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
+using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
+using FrontendSchemeRegistration.UI.Extensions;
+using FrontendSchemeRegistration.UI.Services;
+using FrontendSchemeRegistration.UI.Sessions;
+using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
-using Sessions;
-using UI.Attributes.ActionFilters;
-using ViewModels;
+
+namespace FrontendSchemeRegistration.UI.Controllers;
 
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
 [Route(PagePaths.ReviewOrganisationData)]
@@ -117,6 +118,11 @@ public class ReviewCompanyDetailsController : Controller
     [HttpPost]
     public async Task<IActionResult> Post(ReviewCompanyDetailsViewModel model)
     {
+        if (!ModelState.IsValid)
+        {
+            return View("ReviewCompanyDetails", model);
+        }
+
         var submissionId = Guid.Parse(Request.Query["submissionId"]);
 
         var userData = User.GetUserData();
@@ -131,11 +137,6 @@ public class ReviewCompanyDetailsController : Controller
         {
             var routeValues = new RouteValueDictionary { { "submissionId", submissionId.ToString() } };
             return RedirectToAction("Get", routeValues);
-        }
-
-        if (!ModelState.IsValid)
-        {
-            return View("ReviewCompanyDetails", model);
         }
 
         var submission = await _submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
@@ -153,8 +154,13 @@ public class ReviewCompanyDetailsController : Controller
 
         if (model.SubmitOrganisationDetailsResponse.HasValue && !model.SubmitOrganisationDetailsResponse.Value)
         {
-            return isFileUploadJourneyInvokedViaRegistration ? (model.RegistrationYear.HasValue) ? Redirect(QueryHelpers.AddQueryString(PagePaths.RegistrationTaskList, "registrationyear", model.RegistrationYear.ToString())) : Redirect(PagePaths.RegistrationTaskList)
-                : RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
+            if (isFileUploadJourneyInvokedViaRegistration)
+                if (model.RegistrationYear.HasValue)
+                    return Redirect(QueryHelpers.AddQueryString(PagePaths.RegistrationTaskList, "registrationyear", model.RegistrationYear.ToString()));
+                else
+                    return Redirect(PagePaths.RegistrationTaskList);
+
+            return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
         }
 
         if (!model.IsApprovedUser)
@@ -164,10 +170,12 @@ public class ReviewCompanyDetailsController : Controller
 
         try
         {
-             var routeValue = QueryStringExtensions.BuildRouteValues(submissionId: model.SubmissionId, registrationYear: model.RegistrationYear);
-           
+            var routeValue = QueryStringExtensions.BuildRouteValues(submissionId: model.SubmissionId, registrationYear: model.RegistrationYear);
+
             if (model.IsComplianceScheme)
             {
+                session.EnsureApplicationReferenceIsPresent();
+
                 await _submissionService.SubmitAsync(submissionId, new Guid(model.OrganisationDetailsFileId), null, session.RegistrationSession.ApplicationReferenceNumber, session.RegistrationSession.IsResubmission);
 
                 return RedirectToAction("Get", "CompanyDetailsConfirmation", routeValue);

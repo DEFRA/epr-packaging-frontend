@@ -153,12 +153,6 @@
   <data name="Footer.Telephone" xml:space="preserve">
     <value>Telephone</value>
   </data>
-  <data name="Footer.GiveFeedback" xml:space="preserve">
-    <value>Give feedback on this service</value>
-  </data>
-  <data name="Footer.ReportAProblem" xml:space="preserve">
-    <value>Report a problem with this page</value>
-  </data>
   <data name="Footer.Website" xml:space="preserve">
     <value>Website</value>
   </data>
@@ -166,6 +160,12 @@
     <value>opens in new tab</value>
   </data>
   <data name="Footer.WebsiteLink" xml:space="preserve">
-    <value>awaiting correct production link</value>
+    <value>EPR ServiceNow helpdesk</value>
+  </data>
+  <data name="Footer.GiveFeedback" xml:space="preserve">
+    <value>Give feedback on this service</value>
+  </data>
+  <data name="Footer.ReportAProblem" xml:space="preserve">
+    <value>Report a problem with this page</value>
   </data>
 </root>

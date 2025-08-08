@@ -1,28 +1,30 @@
-﻿namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
-
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Text.Json;
-using Application.DTOs.Submission;
-using Application.DTOs.UserAccount;
-using Application.Services.Interfaces;
-using Constants;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
 using FrontendSchemeRegistration.Application.Constants;
+using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.DTOs.UserAccount;
+using FrontendSchemeRegistration.Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Constants;
+using FrontendSchemeRegistration.UI.Controllers;
+using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Services;
+using FrontendSchemeRegistration.UI.Sessions;
+using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Primitives;
 using Moq;
-using UI.Controllers;
-using UI.Extensions;
-using UI.Sessions;
-using UI.ViewModels;
 using Organisation = EPR.Common.Authorization.Models.Organisation;
+
+namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
+
+using Organisation = Organisation;
 
 public class ReviewCompanyDetailsControllerTests
 {
@@ -166,15 +168,15 @@ public class ReviewCompanyDetailsControllerTests
         _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
 
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
-           .ReturnsAsync(new FrontendSchemeRegistrationSession
-           {
-               RegistrationSession = new RegistrationSession
-               {
-                   SubmissionDeadline = SubmissionDeadline,
-                   IsFileUploadJourneyInvokedViaRegistration = true
-               },
-               UserData = new UserData { Organisations = { new() { OrganisationRole = OrganisationRoles.ComplianceScheme } }, ServiceRole = ServiceRoles.ApprovedPerson }
-           });
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SubmissionDeadline = SubmissionDeadline,
+                    IsFileUploadJourneyInvokedViaRegistration = true
+                },
+                UserData = new UserData { Organisations = { new() { OrganisationRole = OrganisationRoles.ComplianceScheme } }, ServiceRole = ServiceRoles.ApprovedPerson }
+            });
 
         // Act
         var result = await _systemUnderTest.Get() as ViewResult;
@@ -198,7 +200,7 @@ public class ReviewCompanyDetailsControllerTests
         // Arrange
         _submissionService
             .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
-            .ReturnsAsync((RegistrationSubmission)null);
+            .ReturnsAsync((RegistrationSubmission) null);
 
         var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
         _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
@@ -340,7 +342,7 @@ public class ReviewCompanyDetailsControllerTests
                 HasValidFile = true
             });
 
-        _submissionService.Setup(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>()));
+        _submissionService.Setup(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<bool?>()));
 
         var model = GenerateReviewCompanyDetailsModel(OrganisationRoles.ComplianceScheme, true, true);
 
@@ -353,6 +355,43 @@ public class ReviewCompanyDetailsControllerTests
         // Assert
         result?.ActionName.Should().Be("Get");
         result?.ControllerName.Should().Be("CompanyDetailsConfirmation");
+        _submissionService.Verify(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<bool?>()), Times.Once);
+    }
+
+    [Test]
+    public async Task Post_Throw_exception_when_valid_Period_but_missing_app_ref_number()
+    {
+        // Arrange
+        _submissionService
+            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(new RegistrationSubmission
+            {
+                HasValidFile = true
+            });
+
+        _submissionService.Setup(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<bool?>()));
+
+        var model = GenerateReviewCompanyDetailsModel(OrganisationRoles.ComplianceScheme, true, true);
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession =
+                {
+                    SubmissionPeriod = "January to December 2025",
+                    ApplicationReferenceNumber = null,
+                }
+            });
+
+        // Act
+        var result = await _systemUnderTest.Post(model) as RedirectToActionResult;
+
+        // Assert
+        result?.ActionName.Should().Be("HandleThrownSubmissionException");
+        result?.ControllerName.Should().Be("Error");
     }
 
     [TestCase(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Invited)]
@@ -397,6 +436,163 @@ public class ReviewCompanyDetailsControllerTests
         // Assert
         result?.ActionName.Should().Be("Get");
         result?.ControllerName.Should().Be("FileUploadCompanyDetailsSubLanding");
+    }
+
+    [Test]
+    public async Task Post_ReturnsCorrectView_WhenModelStateIsInvalid()
+    {
+        // Arrange
+        var model = new ReviewCompanyDetailsViewModel();
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+        _systemUnderTest.ModelState.AddModelError("Key", "Value");
+
+        // Act
+        var result = await _systemUnderTest.Post(model) as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("ReviewCompanyDetails");
+    }
+
+    [Test]
+    public async Task Post_ReturnsCorrectView_WhenModelIsApprovedUserIsFalse()
+    {
+        // Arrange
+        var model = new ReviewCompanyDetailsViewModel
+        {
+            IsApprovedUser = false
+        };
+
+        _submissionService
+            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(new RegistrationSubmission
+            {
+                HasValidFile = true
+            });
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Post(model) as UnauthorizedResult;
+
+        // Assert
+        result.Should().NotBeNull();
+    }
+
+    [Test]
+    public async Task Post_ReturnsCorrectView_WhenSubmitOrganisationDetailsResponseFalseAndIsFileUploadJourneyInvokedViaRegistrationAndRegistrationYearIsNull()
+    {
+        // Arrange
+        var model = new ReviewCompanyDetailsViewModel
+        {
+            IsApprovedUser = true,
+            SubmitOrganisationDetailsResponse = false
+        };
+
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    IsFileUploadJourneyInvokedViaRegistration = true
+                }
+            });
+
+        _submissionService
+            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(new RegistrationSubmission
+            {
+                HasValidFile = true
+            });
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Post(model) as RedirectResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Url.Should().NotContain("registrationyear");
+    }
+
+    [Test]
+    public async Task Post_ReturnsCorrectView_WhenSubmitOrganisationDetailsResponseFalseAndIsFileUploadJourneyInvokedViaRegistrationAndRegistrationYearIs2025()
+    {
+        // Arrange
+        var model = new ReviewCompanyDetailsViewModel
+        {
+            IsApprovedUser = true,
+            SubmitOrganisationDetailsResponse = false,
+            RegistrationYear = 2025
+        };
+
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    IsFileUploadJourneyInvokedViaRegistration = true
+                }
+            });
+
+        _submissionService
+            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(new RegistrationSubmission
+            {
+                HasValidFile = true
+            });
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Post(model) as RedirectResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Url.Should().Contain("registrationyear");
+    }
+
+    [Test]
+    public async Task Post_ReturnsCorrectView_WhenSubmitOrganisationDetailsResponseFalseAndIsFileUploadJourneyInvokedViaRegistrationIsFalse()
+    {
+        // Arrange
+        var model = new ReviewCompanyDetailsViewModel
+        {
+            IsApprovedUser = true,
+            SubmitOrganisationDetailsResponse = false,
+            RegistrationYear = 2025
+        };
+
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    IsFileUploadJourneyInvokedViaRegistration = false
+                }
+            });
+
+        _submissionService
+            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(new RegistrationSubmission
+            {
+                HasValidFile = true
+            });
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Post(model) as RedirectToActionResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadCompanyDetailsSubLanding");
     }
 
     private static ReviewCompanyDetailsViewModel GenerateReviewCompanyDetailsModel(string role, bool isApprovedUser, bool? submitOrgDetails)

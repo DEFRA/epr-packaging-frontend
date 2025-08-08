@@ -1,24 +1,23 @@
-﻿namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
-
-using Application.DTOs.Submission;
-using Application.Services.Interfaces;
-using Constants;
+﻿using System.Security.Claims;
+using System.Text.Json;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
-using FrontendSchemeRegistration.Application.Enums;
+using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Constants;
+using FrontendSchemeRegistration.UI.Controllers;
 using FrontendSchemeRegistration.UI.Services;
 using FrontendSchemeRegistration.UI.Sessions;
+using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Primitives;
 using Moq;
-using System.Security.Claims;
-using System.Text.Json;
-using UI.Controllers;
-using UI.ViewModels;
+
+namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
 
 [TestFixture]
 public class DeclarationWithFullNameControllerTests
@@ -215,6 +214,36 @@ public class DeclarationWithFullNameControllerTests
     }
 
     [Test]
+    public async Task Post_ReturnsCorrectView_WhenModelStateIsInvalid()
+    {
+        // Arrange
+        var model = new DeclarationWithFullNameViewModel();
+        var submission = new PomSubmission
+        {
+            Id = _submissionId,
+            IsSubmitted = false,
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileName = "last-valid-file.csv",
+                UploadedBy = Guid.NewGuid(),
+                FileUploadDateTime = DateTime.Now,
+                FileId = Guid.NewGuid()
+            }
+        };
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+        _systemUnderTest.ModelState.AddModelError("Key", "Value");
+
+        // Act
+        var result = await _systemUnderTest.Post(model) as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be(ViewName);
+    }
+
+    [Test]
     public async Task Post_ShowsError_WhenErrorPresent()
     {
         // Arrange
@@ -250,6 +279,49 @@ public class DeclarationWithFullNameControllerTests
         result.ViewName.Should().Be(ViewName);
     }
 
+    [Test]
+    public async Task Post_ShowsError_When_valid_Period_but_missing_App_Ref()
+    {
+        // Arrange
+        var submission = new RegistrationSubmission
+        {
+            Id = Guid.NewGuid(),
+            IsSubmitted = false,
+            LastUploadedValidFiles = new UploadedRegistrationFilesInformation
+            {
+                CompanyDetailsFileName = "FileName",
+                CompanyDetailsUploadDatetime = DateTime.Now,
+                CompanyDetailsUploadedBy = Guid.NewGuid(),
+                CompanyDetailsFileId = Guid.NewGuid()
+            },
+            HasValidFile = true
+        };
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession
+            {
+                ApplicationReferenceNumber = null,
+                SubmissionPeriod = "January to December 2025"
+            }
+        });
+
+        var submissionDeclarationRequest = new DeclarationWithFullNameViewModel
+        {
+            FullName = DeclarationName
+        };
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Post(submissionDeclarationRequest) as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("OrganisationDetailsSubmissionFailed");
+    }
+
     [TestCase(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved)]
     [TestCase(ServiceRoles.DelegatedPerson, EnrolmentStatuses.Approved)]
     public async Task Post_ReturnsSubmissionComplete_WhenDeclarationNameIsValid(string serviceRole, string enrolmentStatus)
@@ -271,6 +343,14 @@ public class DeclarationWithFullNameControllerTests
         _submissionServiceMock
             .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
             .ReturnsAsync(submission);
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession
+            {
+                ApplicationReferenceNumber = "test",
+                SubmissionPeriod = "January to December 2025"
+            }
+        });
 
         var submissionDeclarationRequest = new DeclarationWithFullNameViewModel
         {
@@ -287,6 +367,7 @@ public class DeclarationWithFullNameControllerTests
         // Assert
         result.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("CompanyDetailsConfirmation");
+        _submissionServiceMock.Verify(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<bool?>()), Times.Once);
     }
 
     [Test]

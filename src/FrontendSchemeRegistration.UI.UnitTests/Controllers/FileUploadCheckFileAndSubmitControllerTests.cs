@@ -12,7 +12,6 @@ using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.RequestModels;
-using FrontendSchemeRegistration.Application.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
@@ -809,7 +808,9 @@ public class FileUploadCheckFileAndSubmitControllerTests
                    {
                        Name = "Compliance Scheme Name",
                        NationId = 2,
-                   }
+                   },
+                   SubmissionPeriod = "January to December 2025",
+                   ApplicationReferenceNumber = "TestRef"
                },
                UserData = new UserData
                {
@@ -836,7 +837,7 @@ public class FileUploadCheckFileAndSubmitControllerTests
         result.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("FileUploadSubmissionConfirmation");
         result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(submission.Id.ToString());
-        _submissionServiceMock.Verify(x => x.SubmitAsync(submission.Id, fileId), Times.Once);
+        _submissionServiceMock.Verify(x => x.SubmitAsync(submission.Id, fileId, It.IsAny<string>(), It.Is<string?>(rf => rf == "TestRef"), It.IsAny<bool?>()), Times.Once);
     }
 
     [Test]
@@ -856,8 +857,18 @@ public class FileUploadCheckFileAndSubmitControllerTests
                 FileId = fileId
             }
         };
+
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession
+            {
+                ApplicationReferenceNumber = "Test",
+                IsResubmission = false,
+                SubmissionPeriod = "January to December 2025"
+            }
+        });
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
-        _submissionServiceMock.Setup(x => x.SubmitAsync(submission.Id, fileId)).ThrowsAsync(new Exception());
+        _submissionServiceMock.Setup(x => x.SubmitAsync(submission.Id, fileId, It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<bool?>())).ThrowsAsync(new Exception());
 
         var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.ComplianceScheme);
         _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
@@ -869,7 +880,50 @@ public class FileUploadCheckFileAndSubmitControllerTests
         result.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("FileUploadSubmissionError");
         result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(submission.Id.ToString());
-        _submissionServiceMock.Verify(x => x.SubmitAsync(submission.Id, fileId), Times.Once);
+        _submissionServiceMock.Verify(x => x.SubmitAsync(submission.Id, fileId, It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<bool?>()), Times.Once);
+    }
+
+    [Test]
+    public async Task Post_RedirectsToFileUploadSubmissionErrorGet_When_App_Ref_missing_for_valid_Period()
+    {
+        // Arrange
+        var fileId = Guid.NewGuid();
+        var model = new FileUploadCheckFileAndSubmitViewModel { LastValidFileId = fileId };
+        var submission = new PomSubmission
+        {
+            Id = _submissionId,
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileName = "last-valid-file.csv",
+                UploadedBy = _lastValidFileUploadedByUserId,
+                FileUploadDateTime = DateTime.Now,
+                FileId = fileId
+            }
+        };
+
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession
+            {
+                ApplicationReferenceNumber = null,
+                IsResubmission = false,
+                SubmissionPeriod = "January to December 2025"
+            }
+        });
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        _submissionServiceMock.Setup(x => x.SubmitAsync(submission.Id, fileId, It.IsAny<string>(), null, It.IsAny<bool?>()));
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.ComplianceScheme);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Post(model) as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadSubmissionError");
+        result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(submission.Id.ToString());
+        _submissionServiceMock.Verify(x => x.SubmitAsync(submission.Id, fileId, It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<bool?>()), Times.Never);
     }
 
     [TestCase(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved)]
@@ -901,7 +955,7 @@ public class FileUploadCheckFileAndSubmitControllerTests
         result.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("FileUploadSubmissionDeclaration");
         result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(submission.Id.ToString());
-        _submissionServiceMock.Verify(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>()), Times.Never);
+        _submissionServiceMock.Verify(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<bool?>()), Times.Never);
     }
 
     [Test]

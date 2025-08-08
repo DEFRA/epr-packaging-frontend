@@ -158,7 +158,7 @@ public class SubmissionServiceTests
         var fileId = Guid.NewGuid();
 
         // Act
-        await _submissionService.SubmitAsync(submissionId, fileId);
+        await _submissionService.SubmitAsync(submissionId, fileId, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>());
 
         // Assert
         _webApiGatewayClientMock.Verify(x => x.SubmitAsync(submissionId, It.IsAny<SubmissionPayload>()), Times.Once);
