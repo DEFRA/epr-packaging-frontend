@@ -59,7 +59,7 @@ public class FileReUploadCompanyDetailsConfirmationController : Controller
             return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
         }
 
-        var model = await GetViewModel(submission, session);
+        var model = await GetViewModel(submission, session, registrationYear);
 
         session.RegistrationSession.Journey.AddIfNotExists(PagePaths.FileUploadCompanyDetailsSubLanding);
         await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
@@ -69,7 +69,7 @@ public class FileReUploadCompanyDetailsConfirmationController : Controller
 
     private async Task<FileReUploadCompanyDetailsConfirmationViewModel> GetViewModel(
         RegistrationSubmission submission,
-        FrontendSchemeRegistrationSession session)
+        FrontendSchemeRegistrationSession session, int? registrationYear = null)
     {
         var model = new FileReUploadCompanyDetailsConfirmationViewModel
         {
@@ -80,7 +80,8 @@ public class FileReUploadCompanyDetailsConfirmationController : Controller
             Status = submission.GetSubmissionStatus(),
             SubmissionDeadline = session.RegistrationSession.SubmissionDeadline.ToReadableLongMonthDeadlineDate(),
             OrganisationRole = session.UserData.Organisations.FirstOrDefault()?.OrganisationRole,
-            HasValidfile = submission.HasValidFile
+            HasValidfile = submission.HasValidFile,
+            RegistrationYear = registrationYear
         };
 
         if (model.Status.Equals(SubmissionPeriodStatus.FileUploaded) ||

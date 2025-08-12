@@ -41,4 +41,6 @@ public class FileReUploadCompanyDetailsConfirmationViewModel : ViewModelWithOrga
     public bool HasValidfile { get; set; }
 
     public SubmissionPeriodStatus Status { get; set; }
+
+    public int? RegistrationYear { get; set; }
 }
