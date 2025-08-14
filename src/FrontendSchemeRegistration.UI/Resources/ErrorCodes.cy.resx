@@ -347,13 +347,13 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
     <value>Rhaid i sefydliadau mawr (L) sy'n cyflwyno math pecynwaith cartrefi (HH) roi cod ailgylchadwyedd yn y golofn yma ar gyfer cyfnodau cyflwyno 2025ymlaen – rhowch un o'r canlynol: R ar gyfer Coch, A ar gyfer Melyn, G ar gyfer Gwyrdd, R-M ar gyfer Coch-Meddygol, A-M ar gyfer Melyn-Meddygol neu G-M ar gyfer Gwyrdd-Meddygol</value>
   </data>
   <data name="101" xml:space="preserve">
-    <value>Rhaid i sefydliadau mawr (L) sy'n cyflwyno math pecynwaith HH, HDC a PB ar gyfer deunydd pacio plastig (PL) roi'r dadansoddiad o isdeipiau'r deunyddiau fel hyblyg neu anhyblyg ar gyfer cyfnodau cyflwyno 2025 ymlaen</value>
+    <value>Rhaid i sefydliadau mawr (L) sy'n cyflwyno math pecynwaith HH a PB ar gyfer deunydd pacio plastig (PL) roi'r dadansoddiad o isdeipiau'r deunyddiau fel Hyblyg neu Anhyblyg ar gyfer cyfnodau cyflwyno 2025 ymlaen</value>
   </data>
   <data name="102" xml:space="preserve">
     <value>Does dim angen codau ailgylchadwyedd ar gyfer cyfnodau cyflwyno cyn 2025 yn achos sefydliadau mawr (L)</value>
   </data>
   <data name="103" xml:space="preserve">
-    <value>Rhaid i sefydliadau mawr (L) sy'n cyflwyno math pecynwaith HH, HDC a PB  ar gyfer deunydd pacio plastig (PL) ac sy'n rhoi'r dadansoddiad o isdeipiau'r deunyddiau roi hyblyg neu anhyblyg yn unig ar gyfer cyfnodau cyflwyno 2025 ymlaen</value>
+    <value>Rhaid i sefydliadau mawr (L) sy'n cyflwyno math pecynwaith HH a PB  ar gyfer deunydd pacio plastig (PL) ac sy'n rhoi'r dadansoddiad o isdeipiau'r deunyddiau roi Hyblyg neu Anhyblyg yn unig ar gyfer cyfnodau cyflwyno 2025 ymlaen</value>
   </data>
   <data name="104" xml:space="preserve">
     <value>Rhaid i sefydliadau mawr (L) roi cod ailgylchadwyedd ar gyfer cyfnodau cyflwyno 2025 ymlaen o blith yr opsiynau canlynol: R (ar gyfer Coch), A (ar gyfer Melyn), G (ar gyfer Gwyrdd), R-M (ar gyfer Coch-Meddygol), A-M (ar gyfer Melyn-Meddygol) neu G-M (ar gyfer Gwyrdd-Meddygol</value>

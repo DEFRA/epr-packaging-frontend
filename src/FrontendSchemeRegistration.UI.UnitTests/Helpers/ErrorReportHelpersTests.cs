@@ -43,7 +43,7 @@ public class ErrorReportHelpersTests
     [TestCase("en-GB", "44", "Enter the time period for submission")]
     [TestCase("en-GB", "45", "When packaging material is other (OT), you must enter the name of the material in packaging material subtype. It must not include numbers or commas.")]
     [TestCase("en-GB", "46", "Subsidiary ID must only include letters a to z, and numbers. It must be 32 characters or less.")]
-    [TestCase("en-GB", "47", "Packaging material subtype not needed for this packaging material.")]
+    [TestCase("en-GB", "47", "Packaging material subtype not needed for this packaging material")]
     [TestCase("en-GB", "48", "Total weight of a single packaging material transferred to any country must not be more than the total collected. For example, you cannot transfer more plastic than you collect. Check the weight of this packaging material transferred to another country for all rows for this organisation.")]
     [TestCase("en-GB", "49", "When packaging type is self-managed waste (CW and OW), you must enter the from country")]
     [TestCase("en-GB", "50", "Submission period must be the same for all of this organisation's packaging data")]
