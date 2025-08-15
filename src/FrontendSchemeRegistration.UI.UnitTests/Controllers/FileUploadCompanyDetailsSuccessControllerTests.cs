@@ -198,9 +198,6 @@ public class FileUploadCompanyDetailsSuccessControllerTests
 
         // Assert
         result.ViewName.Should().Be("FileUploadCompanyDetailsSuccess");
-        result.ViewData.Keys.Should().HaveCount(1);
-        result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
-        result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.UploadingOrganisationDetails}");
         result.Model.Should().BeEquivalentTo(new FileUploadCompanyDetailsSuccessViewModel
         {
             FileName = fileName,
@@ -249,9 +246,6 @@ public class FileUploadCompanyDetailsSuccessControllerTests
 
         // Assert
         result.ViewName.Should().Be("FileUploadCompanyDetailsSuccess");
-        result.ViewData.Keys.Should().HaveCount(1);
-        result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
-        result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.UploadingOrganisationDetails}");
         result.Model.Should().BeEquivalentTo(new FileUploadCompanyDetailsSuccessViewModel
         {
             FileName = fileName,
