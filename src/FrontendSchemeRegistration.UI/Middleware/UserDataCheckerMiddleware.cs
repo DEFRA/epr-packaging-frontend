@@ -91,10 +91,17 @@ public class UserDataCheckerMiddleware : IMiddleware
         }
 
         var organisationIds = string.Join(",", accountUser.Organisations.Select(o => o.OrganisationNumber));
+
+        if (accountUser.ServiceRole is null)
+        {
+            _logger.LogInformation("User authenticated but does not have a service role assigned. Clearing orgIds.");
+            organisationIds = null;
+        }
+
         if (organisationIds != orgIdsClaim && _graphService is not null)
         {
+            _logger.LogInformation("Calling Graph Service to patch {Type} with value {Value}", OrganisationIdsExtensionClaimName, organisationIds);
             await _graphService.PatchUserProperty(accountUser.Id, OrganisationIdsExtensionClaimName, organisationIds);
-            _logger.LogInformation("Patched {Type} with value {Value}", OrganisationIdsExtensionClaimName, organisationIds);
         }
     }
 

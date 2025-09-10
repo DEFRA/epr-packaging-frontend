@@ -111,7 +111,6 @@ public class ComplianceSchemeMemberLandingControllerTests
             ComplianceSchemeName = ComplianceSchemeName,
             OrganisationName = OrganisationName,
             OrganisationId = _organisationId,
-            CanManageComplianceScheme = true,
             ServiceRole = ServiceRoles.ApprovedPerson,
             OrganisationNumber = OrganisationNumber.ToReferenceNumberFormat()
         });
@@ -158,7 +157,6 @@ public class ComplianceSchemeMemberLandingControllerTests
             ComplianceSchemeName = ComplianceSchemeName,
             OrganisationName = OrganisationName,
             OrganisationId = _organisationId,
-            CanManageComplianceScheme = true,
             ServiceRole = ServiceRoles.ApprovedPerson,
             OrganisationNumber = OrganisationNumber.ToReferenceNumberFormat(),
             Notification = new NotificationViewModel
@@ -211,7 +209,6 @@ public class ComplianceSchemeMemberLandingControllerTests
             ComplianceSchemeName = ComplianceSchemeName,
             OrganisationName = OrganisationName,
             OrganisationId = _organisationId,
-            CanManageComplianceScheme = true,
             ServiceRole = ServiceRoles.ApprovedPerson,
             OrganisationNumber = OrganisationNumber.ToReferenceNumberFormat(),
             Notification = new NotificationViewModel

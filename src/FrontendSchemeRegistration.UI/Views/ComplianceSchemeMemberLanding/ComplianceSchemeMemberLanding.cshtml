@@ -52,42 +52,39 @@
 
                 <p class="govuk-body">@Localizer["paying_fees_and_charges_to_the_scheme_administrator"]</p>
 
-                @if (Model.CanManageComplianceScheme)
-                {
-                    <feature negate="true" name="ShowWasteTile">
-                        <h2 class="govuk-heading-m govuk-!-margin-bottom-3">@Localizer["change_or_remove_compliance_scheme"]</h2>
+                <feature negate="true" name="ShowWasteTile">
+                    <h2 class="govuk-heading-m govuk-!-margin-bottom-3">@Localizer["change_or_remove_compliance_scheme"]</h2>
 
-                        <p class="govuk-body">
-                            @Localizer["you_can"]
-                            <a asp-controller="FrontendSchemeRegistration" asp-action="ManageComplianceScheme" class="govuk-link govuk-link--no-visited-state">
-                                @Localizer["change_or_remove_compliance_scheme_link", Model.OrganisationName]
-                            </a>.
-                        </p>
-                    </feature>
-                    <feature name="@FeatureFlags.ShowWasteTile">
-                        <div class="govuk-grid-row box-container">
-                            <div class="govuk-grid-column-one-half box">
-                                <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
-                                    <div class="govuk-card-body">
-                                        <h2 class="govuk-heading-m">
-                                            <a class="govuk-link govuk-link--no-visited-state" rel="noreferrer noopener" target="_blank"
-                                               href="@ExternalUrls.Value.FinancialServicesSupplier">@Localizer["view_and_pay_waste_disposal_fees"]</a>
-                                        </h2>
-                                        <p class="govuk-body">@Localizer["go_to_packuk"]</p>
-                                        <ul class="govuk-list govuk-list--bullet">
-                                            <li>@Localizer["pay_the_fees"]</li>
-                                            <li>@Localizer["view_previous_payments"]</li>
-                                        </ul>
-                                        <p class="govuk-body">
-                                            <a class="govuk-link govuk-link--no-visited-state" rel="noreferrer noopener" target="_blank"
-                                               href="@ExternalUrls.Value.LearnMoreAboutPackUK">@Localizer["learn_more_about_packuk"].</a>
-                                        </p>
-                                    </div>
+                    <p class="govuk-body">
+                        @Localizer["you_can"]
+                        <a asp-controller="FrontendSchemeRegistration" asp-action="ManageComplianceScheme" class="govuk-link govuk-link--no-visited-state">
+                            @Localizer["change_or_remove_compliance_scheme_link", Model.OrganisationName]
+                        </a>.
+                    </p>
+                </feature>
+                <feature name="@FeatureFlags.ShowWasteTile">
+                    <div class="govuk-grid-row box-container">
+                        <div class="govuk-grid-column-one-half box">
+                            <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
+                                <div class="govuk-card-body">
+                                    <h2 class="govuk-heading-m">
+                                        <a class="govuk-link govuk-link--no-visited-state" rel="noreferrer noopener" target="_blank"
+                                            href="@ExternalUrls.Value.FinancialServicesSupplier">@Localizer["view_and_pay_waste_disposal_fees"]</a>
+                                    </h2>
+                                    <p class="govuk-body">@Localizer["go_to_packuk"]</p>
+                                    <ul class="govuk-list govuk-list--bullet">
+                                        <li>@Localizer["pay_the_fees"]</li>
+                                        <li>@Localizer["view_previous_payments"]</li>
+                                    </ul>
+                                    <p class="govuk-body">
+                                        <a class="govuk-link govuk-link--no-visited-state" rel="noreferrer noopener" target="_blank"
+                                            href="@ExternalUrls.Value.LearnMoreAboutPackUK">@Localizer["learn_more_about_packuk"].</a>
+                                    </p>
                                 </div>
                             </div>
                         </div>
-                    </feature>
-                }
+                    </div>
+                </feature>
 
                 <h2 class="govuk-heading-m govuk-!-margin-bottom-3">@Localizer["responsible_for", Model.ComplianceSchemeName]</h2>
 

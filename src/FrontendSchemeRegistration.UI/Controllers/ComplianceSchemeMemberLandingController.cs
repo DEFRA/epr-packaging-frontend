@@ -61,7 +61,6 @@ public class ComplianceSchemeMemberLandingController : Controller
             OrganisationName = organisation.Name,
             OrganisationId = organisation.Id.Value,
             OrganisationNumber = organisation.OrganisationNumber.ToReferenceNumberFormat(),
-            CanManageComplianceScheme = userData.ServiceRole is ServiceRoles.ApprovedPerson or ServiceRoles.DelegatedPerson,
             ServiceRole = userData.ServiceRole
         };
 

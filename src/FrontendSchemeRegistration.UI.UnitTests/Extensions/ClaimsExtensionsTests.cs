@@ -193,7 +193,7 @@ public class ClaimsExtensionsTests
     }
 
     [Test]
-    public void TryGetOrganisatonIds_ShouldReturnUserData_WhenUserDataClaimPresent()
+    public void TryGetOrganisatonIds_ShouldReturnExpectedOrganisationIds_WhenUserDataClaimPresent()
     {
         // Arrange
         const string organisationIds = "012345,67890";

@@ -13,8 +13,6 @@ public class ComplianceSchemeMemberLandingViewModel
 
     public string OrganisationNumber { get; set; }
 
-    public bool CanManageComplianceScheme { get; set; }
-
     public string ServiceRole { get; set; }
 
     public NotificationViewModel Notification { get; set; } = new NotificationViewModel();

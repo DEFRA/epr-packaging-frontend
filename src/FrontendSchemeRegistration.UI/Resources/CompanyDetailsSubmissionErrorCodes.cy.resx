@@ -349,7 +349,7 @@
     <value>Rhaid i ddyddiad ymadael y sefydliad fod yn hwyrach na'i ddyddiad ymuno.</value>
   </data>
 	<data name="916" xml:space="preserve">
-    <value>W You must enter a joiner date for this subsidiary.</value>
+    <value>W Joiner date is mandatory for this code.</value>
   </data>
 	<data name="917" xml:space="preserve">
     <value>W You must enter a joiner date for this organisation.</value>
@@ -398,5 +398,14 @@
   </data>
 	<data name="927" xml:space="preserve">
     <value>[Welsh] Joiner Or Leaver Code Max length not norrect.</value>
+  </data>
+	<data name="928" xml:space="preserve">
+    <value>[Welsh] Joiner code must be present when joiner date is present.</value>
+  </data>
+	<data name="929" xml:space="preserve">
+    <value>[Welsh] Only one date should be present.</value>
+  </data>
+	<data name="930" xml:space="preserve">
+    <value>[Welsh] Additional comment is required for this leaver code.</value>
   </data>
 </root>

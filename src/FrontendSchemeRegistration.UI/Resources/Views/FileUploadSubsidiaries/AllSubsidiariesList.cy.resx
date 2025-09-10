@@ -157,7 +157,7 @@
     <value>W To add subsidiaries you will need to upload a CSV file.</value>
   </data>
   <data name="subsidiaries_not_found" xml:space="preserve">
-    <value>W Subsidiary not found</value>
+    <value>Is-gwmni heb ei ganfod</value>
   </data>
   <data name="subsidiaries_will_appear" xml:space="preserve">
     <value>W Subsidiaries will appear here after they have been processed.</value>
@@ -202,7 +202,7 @@
     <value>Chwilio</value>
   </data>
   <data name="subsidiary_not_found_message" xml:space="preserve">
-    <value>W Make sure you entered the correct subsidiary name, ID or Companies House number. If you need to add a subsidiary to&lt;br /&gt;this parent company, use the file upload to create a subsidiary ID and then update and resubmit your registration file.</value>
+    <value>Gwnewch yn siŵr eich bod wedi rhoi enw, ID neu Rif Tŷ'r Cwmni cywir yr is-gwmni. Os oes angen ichi ychwanegu is-gwmni at y rhiant-gwmni yma, defnyddiwch y broses uwchlwytho ffeil i greu ID is-gwmni ac wedyn diweddaru ac uwchlwytho'ch ffeil gofrestru.</value>
   </data>
   <data name="subsidiary_not_found_resubmit_warning_text" xml:space="preserve">
     <value>w</value>

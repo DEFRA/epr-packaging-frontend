@@ -298,16 +298,16 @@
     <value>Joiner date must be in DD/MM/YYYY format.</value>
   </data>
 	<data name="899" xml:space="preserve">
-    <value>You must enter a leaver code for this subsidiary.</value>
+    <value>You must enter a leaver code when leaver date is present.</value>
   </data>
 	<data name="900" xml:space="preserve">
-    <value>You must enter a leaver date for this subsidiary.</value>
+    <value>You must enter a leaver date for this leaver code.</value>
   </data>
 	<data name="901" xml:space="preserve">
     <value>Leaver date must be in DD/MM/YYYY format.</value>
   </data>
 	<data name="902" xml:space="preserve">
-    <value>The subsidiary leaver date must be later than the subsidiary joiner date.</value>
+    <value>The leaver date must be later than the joiner date.</value>
   </data>
 	<data name="903" xml:space="preserve">
     <value>Leaver reason must be present when leaver code is available.</value>
@@ -331,7 +331,7 @@
     <value>Joiner date cannot be in the future.</value>
   </data>
 	<data name="910" xml:space="preserve">
-    <value>You must enter a registration type code for this subsidiary.</value>
+    <value>You must enter a registration type code for this leaver code.</value>
   </data>
 	<data name="911" xml:space="preserve">
     <value>Registration type code must be either GR (for group registration) or IN (for individual registration).</value>
@@ -349,7 +349,7 @@
     <value>The organisation's leaver date must be later than its joiner date.</value>
   </data>
 	<data name="916" xml:space="preserve">
-    <value>You must enter a joiner date for this subsidiary.</value>
+    <value>Joiner date is mandatory for this code.</value>
   </data>
 	<data name="917" xml:space="preserve">
     <value>You must enter a joiner date for this organisation.</value>
@@ -398,5 +398,14 @@
   </data>
 	<data name="927" xml:space="preserve">
     <value>Joiner Or Leaver Code Max length not norrect.</value>
+  </data>
+	<data name="928" xml:space="preserve">
+    <value>Joiner code must be present when joiner date is present.</value>
+  </data>
+	<data name="929" xml:space="preserve">
+    <value>Only one date should be present.</value>
+  </data>
+	<data name="930" xml:space="preserve">
+    <value>Additional comment is required for this code.</value>
   </data>
 </root>

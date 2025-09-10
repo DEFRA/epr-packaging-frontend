@@ -202,7 +202,7 @@ public class UserDataCheckerMiddlewareTests : FrontendSchemeRegistrationTestBase
     }
 
     [Test]
-    public async Task Middleware_DoesNotCallsGraphService_WhenOrgIdsClaimIsEmpty_And_GraphApiFeature_IsNotEnabled()
+    public async Task Middleware_DoesNotCallGraphService_WhenOrgIdsClaimIsEmpty_And_GraphApiFeature_IsNotEnabled()
     {
         // Arrange
         const string orgIds = "123456";
@@ -247,7 +247,7 @@ public class UserDataCheckerMiddlewareTests : FrontendSchemeRegistrationTestBase
     }
 
     [Test]
-    public async Task Middleware_DoesNotCallsGraphService_WhenOrgIdsClaimMatches()
+    public async Task Middleware_DoesNotCallGraphService_WhenOrgIdsClaimMatches()
     {
         // Arrange
         var orgIds = "123456";
@@ -296,6 +296,60 @@ public class UserDataCheckerMiddlewareTests : FrontendSchemeRegistrationTestBase
 
         // Assert
         await act.Should().NotThrowAsync<Exception>();
+    }
+
+    [Test]
+    public async Task Middleware_ClearsOrgIds_And_CallsGraphService_WhenUserHasNoServiceRole()
+    {
+        // Arrange
+        const string orgIds = "123456,078910";
+        var claims = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>() { new(CustomClaimTypes.OrganisationIds, orgIds) }, "authenticationType"));
+        var serviceProviderMock = new Mock<IServiceProvider>();
+        serviceProviderMock.Setup(x => x.GetService(typeof(IAuthenticationService))).Returns(Mock.Of<IAuthenticationService>());
+        _httpContextMock.Setup(x => x.User).Returns(claims);
+        _httpContextMock.Setup(x => x.RequestServices).Returns(serviceProviderMock.Object);
+
+        _featureManagerMock
+            .Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.UseGraphApiForExtendedUserClaims)))
+            .ReturnsAsync(true);
+
+        var user = GetUserAccount();
+        user.User.ServiceRole = null;
+        user.User.ServiceRoleId = 0;
+        AddSecondOrganisationToUser(user);
+        _userAccountServiceMock.Setup(x => x.GetUserAccount()).ReturnsAsync(user);
+
+        // Act
+        await _systemUnderTest.InvokeAsync(_httpContextMock.Object, _requestDelegateMock.Object);
+
+        // Assert
+        _graphServiceMock.Verify(x => x.PatchUserProperty(It.IsAny<Guid>(), OrganisationIdsExtensionClaimName, null, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    public async Task Middleware_DoesNotCallGraphService_WhenOrgIdsClaimIsEmpty_AndUserHasNoServiceRole()
+    {
+        // Arrange
+        const string orgIds = "123456";
+        var claims = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(), "authenticationType"));
+        var serviceProviderMock = new Mock<IServiceProvider>();
+        serviceProviderMock.Setup(x => x.GetService(typeof(IAuthenticationService))).Returns(Mock.Of<IAuthenticationService>());
+        _httpContextMock.Setup(x => x.User).Returns(claims);
+        _httpContextMock.Setup(x => x.RequestServices).Returns(serviceProviderMock.Object);
+
+        var user = GetUserAccount();
+        user.User.ServiceRole = null;
+        user.User.ServiceRoleId = 0;
+        _userAccountServiceMock.Setup(x => x.GetUserAccount()).ReturnsAsync(user);
+
+        _featureManagerMock
+            .Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.UseGraphApiForExtendedUserClaims)))
+            .ReturnsAsync(true);
+
+        // Act
+        await _systemUnderTest.InvokeAsync(_httpContextMock.Object, _requestDelegateMock.Object);
+
+        // Assert
+        _graphServiceMock.Verify(x => x.PatchUserProperty(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     private static UserAccountDto GetUserAccount()

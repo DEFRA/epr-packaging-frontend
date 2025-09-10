@@ -1007,7 +1007,7 @@
         <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="EPR.Common.Authorization" Version="1.0.18" />
+        <PackageReference Include="EPR.Common.Authorization" Version="1.0.20" />
         <PackageReference Include="Microsoft.Identity.Web" Version="3.0.1" />
     </ItemGroup>
     <ItemGroup>
