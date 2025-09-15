@@ -10,7 +10,8 @@
         <h1>@Model.NumberOfPrnsAwaitingAcceptance</h1>
     </p>
     <p class="govuk-body">
-        <a href="@PagePaths.Prns.ShowAwaitingAcceptance" class="govuk-link govuk-link--no-visited-state" aria-labelledby="@Localizer["accept_or_reject_prns_and_perns"]">
+        <span id="arialblAcceptOrRejectPRNs" class="govuk-visually-hidden">@Localizer["accept_or_reject_prns_and_perns"]</span>
+        <a href="@PagePaths.Prns.ShowAwaitingAcceptance" class="govuk-link govuk-link--no-visited-state" aria-labelledby="arialblAcceptOrRejectPRNs">
             @Localizer["accept_or_reject_prns_and_perns"]
         </a>
     </p>

@@ -18,6 +18,7 @@
         </tr>
     </thead>
     <tbody class="govuk-table__body">
+        @{ var idNumber = 0; }
         @foreach (var obligation in Model.PrnMaterialObligationViewModels)
         {
             <tr class="govuk-table__row">
@@ -25,11 +26,15 @@
                     <strong>
                         @if (Model.ShowMaterialsAsHyperlink && obligation.MaterialName != MaterialType.Totals)
                         {
+                            idNumber++;
+                            var arialblId = $"{obligation.MaterialName}_{idNumber}";
+                            <span id="@arialblId" class="govuk-visually-hidden">@Localizer["arialabel_" + PrnMaterialObligationViewModel.MaterialNameResource(obligation.MaterialName)].Value</span>
+                            
                             @Html.ActionLink(Localizer[PrnMaterialObligationViewModel.MaterialNameResource(obligation.MaterialName)].Value
                                 , nameof(PrnsObligationController.ObligationPerMaterial)
                                 , "PrnsObligation"
                                 , new { material = obligation.MaterialName }
-                                , new { @class = "govuk-link", aria_labelledby = Localizer["arialabel_" + PrnMaterialObligationViewModel.MaterialNameResource(obligation.MaterialName)].Value }
+                                , new { @class = "govuk-link", aria_labelledby = arialblId }
                             )
                         }
                         else

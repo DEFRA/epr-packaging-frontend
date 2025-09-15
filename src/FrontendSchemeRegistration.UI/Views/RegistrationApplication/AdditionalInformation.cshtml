@@ -48,7 +48,7 @@
                     }
                     else{
                         @Localizer["ensure_x_year_reporting_of_packaging_data_before_registering", Model.RegistrationYear - 1]
-
+                    
                     }
                 </strong>
             </div>
@@ -56,19 +56,21 @@
             {
                 <p class="govuk-body govuk-!-font-weight-bold">@Localizer["you_must_be_an_approved_or_delegated_person_to_resubmit_your_data"]</p>
                 <p class="govuk-body govuk-!-margin-bottom-2">@Localizer["you_can_use_the_comment_box_to_enter_additional_information_which_may_assist_the_regulator"]</p>
-
+            
             }
             else
             {
                 <p class="govuk-body">@Localizer["you_must_be_approved_or_delegated_person_to_submit_data_complete_registration"]</p>
                 <h2 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["additional_information"]</h2>
                 <p class="govuk-body govuk-!-margin-bottom-2">@Localizer["use_comment_box_for_additional_info_to_assist_regulator"]</p>
-            }
+            }                       
 
             
-
+            
             <form asp-controller="RegistrationApplication" asp-action="AdditionalInformation" asp-route-registrationyear="@Model.RegistrationYear" method="post">
-                @Html.TextAreaFor(model => model.AdditionalInformationText, new { @class = "govuk-textarea", @rows = "5" })
+                <span id="arialblAdditionalInfo2" class="govuk-visually-hidden">@Localizer["additional_information"]</span>
+                @Html.TextAreaFor(model => model.AdditionalInformationText, new { @class = "govuk-textarea", @rows = "5", @id = "AdditionalInformation", aria_labelledby = "arialblAdditionalInfo2" })
+                
                 <button class="govuk-button govuk-body" data-module="govuk-button" type="submit">
                      @if (Model.IsResubmission)
                      {

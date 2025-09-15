@@ -62,6 +62,7 @@
 
              <div class="govuk-form-group govuk-!-margin-top-7 @(ViewData.ModelState.IsValid ? string.Empty : "govuk-form-group--error")">
 
+                 <span id="environment-regulator-hint" class="govuk-hint govuk-visually-hidden">@Localizer["do_you_want_to_upload_a_new_file"]</span>
                  <fieldset class="govuk-fieldset" aria-describedby="environment-regulator-hint">
                      <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
                          <h1 class="govuk-fieldset__heading">@Localizer["do_you_want_to_upload_a_new_file"]</h1>

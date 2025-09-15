@@ -19,13 +19,14 @@
                 <p class="govuk-body govuk-!-margin-bottom-2">@Localizer["use_comment_box_for_additional_info_to_assist_regulator"]</p>
 
                 <form asp-controller="ResubmissionApplication" asp-action="AdditionalInformation" method="post">
-                    @Html.TextAreaFor(model => model.AdditionalInformationText, new { @class = "govuk-textarea", @rows = "5" })
+                    <span id="arialblAdditionalInformation" class="govuk-visually-hidden">@Localizer["additional_information"]</span>                 
+                    @Html.TextAreaFor(model => model.AdditionalInformationText, new { @class = "govuk-textarea", @rows = "5" , @id = "AdditionalInfo", aria_labelledby = "arialblAdditionalInformation" })
+                    
                     <button class="govuk-button govuk-body" data-module="govuk-button" type="submit">
                         @Localizer["submit_to_the_environmental_regulator"]
                     </button>
                 </form>
             }
-
         </div>
     </div>
 </main>

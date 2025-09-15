@@ -65,7 +65,7 @@
         </script>
     
         @await Component.InvokeAsync("CookieBanner")
-        <a href="#main-content" class="govuk-skip-link" data-module="govuk-skip-link">@SharedLocalizer["skip_to_main_content_text"]</a>
+        <a id="main-content" href="#main-content" class="govuk-skip-link" data-module="govuk-skip-link">@SharedLocalizer["skip_to_main_content_text"]</a>
 
         @await Html.PartialAsync("Partials/Govuk/_Header", ExternalUrlOptions.Value)
 
