@@ -97,8 +97,6 @@ public class PrnsObligationController : Controller
     public async Task FillViewModelFromSessionAsync(PrnObligationViewModel viewModel, int year)
 	{
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-		_logger.LogInformation("{LogPrefix}: PrnsObligationController - FillViewModelFromSessionAsync: Session results : {Results}", logPrefix, JsonConvert.SerializeObject(session));
-
 
 		var organisation = session.UserData.Organisations?.FirstOrDefault();
 
@@ -115,7 +113,5 @@ public class PrnsObligationController : Controller
 		viewModel.NationId = isDirectProducer ? organisation.NationId : session.RegistrationSession.SelectedComplianceScheme?.NationId ?? 0;
 		viewModel.CurrentYear = year;
 		viewModel.DeadlineYear = year + 1;
-
-		_logger.LogInformation("{LogPrefix}: PrnsObligationController - FillViewModelFromSessionAsync: View model filled with organisation details from Session: {Year}, obligation model: {ViewModel}", logPrefix, year, JsonConvert.SerializeObject(viewModel));
     }
 }
