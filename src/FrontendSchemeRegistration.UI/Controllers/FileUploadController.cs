@@ -18,6 +18,7 @@ using Services.FileUploadLimits;
 using Services.Interfaces;
 using Services.Messages;
 using Sessions;
+using System.Text;
 using UI.Attributes.ActionFilters;
 using ViewModels;
 
@@ -89,6 +90,15 @@ public class FileUploadController : Controller
         return RedirectToAction("Get", "FileUploadSubLanding");
     }
 
+    public static Stream GetStreamWithGetBytes(string sampleString, Encoding? encoding = null)
+    {
+        encoding ??= Encoding.UTF8;
+
+        var byteArray = encoding.GetBytes(sampleString);
+        var memoryStream = new MemoryStream(byteArray);
+
+        return memoryStream;
+    }
     [HttpPost]
     [RequestSizeLimit(FileSizeLimit.FileSizeLimitInBytes)]
     public async Task<IActionResult> Post()
@@ -106,10 +116,12 @@ public class FileUploadController : Controller
         session.RegistrationSession.Journey.AddIfNotExists(PagePaths.FileUpload);
         session.PomResubmissionSession.Journey.AddIfNotExists(PagePaths.FileUpload);
         await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
+        
+        var eicarString = "X5O!P%@AP [4\\PZX54(P^)7CC)7}$ EICAR-STANDARD-ANTIVIRUS-TEST-FILE! $H+H*";
 
         submissionId = await _fileUploadService.ProcessUploadAsync(
             Request.ContentType,
-            Request.Body,
+            GetStreamWithGetBytes(eicarString.Replace(" ", string.Empty)),
             session.RegistrationSession.SubmissionPeriod,
             ModelState,
             submissionId,
