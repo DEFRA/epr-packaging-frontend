@@ -408,4 +408,7 @@
 	<data name="930" xml:space="preserve">
     <value>Additional comment is required for this code.</value>
   </data>
+	<data name="931" xml:space="preserve">
+    <value>Leaver date is mandatory for this code.</value>
+  </data>
 </root>

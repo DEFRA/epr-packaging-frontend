@@ -14,6 +14,10 @@ $govuk-assets-path: '/report-data/';
 
 $narrow-media-width: 40.0625em;
 
+.govuk-tag{
+    max-width: inherit !important;
+}
+
 .two-card-row {
     @media (min-width: $narrow-media-width) {
         display: flex;

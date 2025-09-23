@@ -408,4 +408,7 @@
 	<data name="930" xml:space="preserve">
     <value>[Welsh] Additional comment is required for this leaver code.</value>
   </data>
+	<data name="931" xml:space="preserve">
+    <value>[Welsh] Leaver date is mandatory for this code.</value>
+  </data>
 </root>
