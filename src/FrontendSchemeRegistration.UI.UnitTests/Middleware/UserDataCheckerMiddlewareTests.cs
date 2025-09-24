@@ -4,6 +4,7 @@ using Application.DTOs.UserAccount;
 using Application.Options;
 using Application.Services.Interfaces;
 using Controllers;
+using EPR.Common.Authorization.Services;
 using EPR.Common.Authorization.Services.Interfaces;
 using FluentAssertions;
 using FrontendSchemeRegistration.Application.Constants;
@@ -269,7 +270,7 @@ public class UserDataCheckerMiddlewareTests : FrontendSchemeRegistrationTestBase
     }
 
     [Test]
-    public async Task Middleware_DoesNotThrowException_WhenGraphServiceIsNull()
+    public async Task Middleware_DoesNotThrowException_WhenGraphServiceIsNulllGraphService()
     {
         // Arrange
         const string orgIds = "123456";
@@ -284,11 +285,13 @@ public class UserDataCheckerMiddlewareTests : FrontendSchemeRegistrationTestBase
             .Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.UseGraphApiForExtendedUserClaims)))
             .ReturnsAsync(true);
 
+        var graphService = new NullGraphService();
+
         _systemUnderTest = new UserDataCheckerMiddleware(
             Options.Create(_frontEndAccountCreationOptions),
             _userAccountServiceMock.Object,
             _featureManagerMock.Object,
-            (IGraphService)null,
+            graphService,
             _loggerMock.Object);
 
         // Act

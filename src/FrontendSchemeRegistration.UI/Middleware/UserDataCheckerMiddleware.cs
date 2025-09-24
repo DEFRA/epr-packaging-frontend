@@ -3,6 +3,7 @@
 using Application.Options;
 using Application.Services.Interfaces;
 using EPR.Common.Authorization.Models;
+using EPR.Common.Authorization.Services;
 using EPR.Common.Authorization.Services.Interfaces;
 using Extensions;
 using FrontendSchemeRegistration.Application.Constants;
@@ -98,7 +99,7 @@ public class UserDataCheckerMiddleware : IMiddleware
             organisationIds = null;
         }
 
-        if (organisationIds != orgIdsClaim && _graphService is not null)
+        if (organisationIds != orgIdsClaim && _graphService is not NullGraphService)
         {
             _logger.LogInformation("Calling Graph Service to patch {Type} with value {Value}", OrganisationIdsExtensionClaimName, organisationIds);
             await _graphService.PatchUserProperty(accountUser.Id, OrganisationIdsExtensionClaimName, organisationIds);
