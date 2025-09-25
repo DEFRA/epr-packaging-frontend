@@ -155,6 +155,6 @@ public class ResubmissionApplicationServices(
     public async Task<SubmissionPeriod?> GetActiveSubmissionPeriod()
     {
         var currentYear = new[] { DateTime.Now.Year.ToString(), (DateTime.Now.Year + 1).ToString() };
-        return globalVariables.Value.SubmissionPeriods.FirstOrDefault(s => currentYear.Contains(s.Year) && s.ActiveFrom.Year == DateTime.Now.Year);
+        return globalVariables.Value.SubmissionPeriods.Find(s => currentYear.Contains(s.Year) && s.ActiveFrom.Year == DateTime.Now.Year);
     }
 }

@@ -18,16 +18,14 @@ namespace FrontendSchemeRegistration.UI.Services;
 
 public class PrnService : IPrnService
 {
-    private readonly IAccountServiceApiClient _accountServiceApiClient;
     private readonly IWebApiGatewayClient _webApiGatewayClient;
     private readonly IStringLocalizer<PrnCsvResources> _csvLocalizer;
     private readonly IStringLocalizer<PrnDataResources> _dataLocalizer;
     private readonly ILogger<PrnService> _logger;
     private readonly string logPrefix;
 
-    public PrnService(IAccountServiceApiClient accountServiceApiClient, IWebApiGatewayClient webApiGatewayClient, IStringLocalizer<PrnCsvResources> csvLocalizer, IStringLocalizer<PrnDataResources> dataLocalizer, IOptions<GlobalVariables> globalVariables, ILogger<PrnService> logger)
+    public PrnService(IWebApiGatewayClient webApiGatewayClient, IStringLocalizer<PrnCsvResources> csvLocalizer, IStringLocalizer<PrnDataResources> dataLocalizer, IOptions<GlobalVariables> globalVariables, ILogger<PrnService> logger)
     {
-        _accountServiceApiClient = accountServiceApiClient;
         _webApiGatewayClient = webApiGatewayClient;
         _csvLocalizer = csvLocalizer;
         _dataLocalizer = dataLocalizer;

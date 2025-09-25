@@ -36,7 +36,7 @@ public static class ServiceProviderExtension
         ConfigureAuthorization(services, configuration);
         ConfigureSession(services);
         RegisterServices(services);
-        RegisterHttpClients(services, configuration);
+        RegisterHttpClients(services);
         RegisterPrnTimeProviderServices(services, configuration);
 
         return services;
@@ -165,7 +165,7 @@ public static class ServiceProviderExtension
         }
     }
 
-    private static void RegisterHttpClients(IServiceCollection services, IConfiguration configuration)
+    private static void RegisterHttpClients(IServiceCollection services)
     {
         services.AddHttpClient<IAccountServiceApiClient, AccountServiceApiClient>((sp, client) =>
         {

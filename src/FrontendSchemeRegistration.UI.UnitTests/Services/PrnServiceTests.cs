@@ -20,7 +20,6 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Services;
 [TestFixture]
 public class PrnServiceTests
 {
-    private Mock<IAccountServiceApiClient> _accountServiceApiClientMock;
     private Mock<IWebApiGatewayClient> _webApiGatewayClientMock;
     private PrnService _systemUnderTest;
     private static readonly Fixture Fixture = new();
@@ -36,13 +35,12 @@ public class PrnServiceTests
         var localizerCsv = new StringLocalizer<PrnCsvResources>(factory);
         var localizerData = new StringLocalizer<PrnDataResources>(factory);
 
-        _accountServiceApiClientMock = new Mock<IAccountServiceApiClient>();
         _webApiGatewayClientMock = new Mock<IWebApiGatewayClient>();
         _loggerMock = new Mock<ILogger<PrnService>>();
 
         var globalVariables = Options.Create(new GlobalVariables { LogPrefix = "[FrontendSchemaRegistration]" });
 
-        _systemUnderTest = new PrnService(_accountServiceApiClientMock.Object, _webApiGatewayClientMock.Object, localizerCsv, localizerData, globalVariables, _loggerMock.Object);
+        _systemUnderTest = new PrnService(_webApiGatewayClientMock.Object, localizerCsv, localizerData, globalVariables, _loggerMock.Object);
     }
 
     [Test]

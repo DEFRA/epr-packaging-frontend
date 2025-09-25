@@ -232,7 +232,6 @@ public class ResubmissionApplicationController : Controller
     public async Task<IActionResult> SubmitToEnvironmentRegulator()
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
-        var submission = session.PomResubmissionSession.PomSubmission;       
 
         return View("ResubmissionConfirmation",
             new ApplicationSubmissionConfirmationViewModel

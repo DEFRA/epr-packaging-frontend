@@ -193,11 +193,12 @@ public class SubsidiaryService : ISubsidiaryService
         }
         catch (Exception ex)
         {
-            throw ;
+            _logger.LogError(ex, "Failed to retrieve subsidiary data");
+            throw;
         }
     }
 
-    public async Task<PaginatedResponse<RelationshipResponseModel>> GetPagedOrganisationSubsidiaries(int page, int showPerPage, string searchTerm = null)
+    public async Task<PaginatedResponse<RelationshipResponseModel>> GetPagedOrganisationSubsidiaries(int page, int showPerPage, string searchTerm)
     {
         try
         {

@@ -2,7 +2,13 @@
 using FrontendSchemeRegistration.UI.Services;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.ViewModels.Prns;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Moq;
 using Newtonsoft.Json.Linq;
 
@@ -15,7 +21,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Services
         private Mock<IPrnService> _prnServiceMock;
         private Mock<IViewRenderService> _viewRenderServiceMock;
         private DownloadPrnService _systemUnderTest;
-
+       
         [SetUp]
         public void SetUp()
         {
@@ -31,8 +37,8 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Services
             var id = Guid.NewGuid();
             var viewName = "TestView";
             var actionContext = new ActionContext();
-            
-            PrnViewModel prnData = new PrnViewModel { PrnOrPernNumber = "12345" }; 
+
+            PrnViewModel prnData = new PrnViewModel { PrnOrPernNumber = "12345" };
             _prnServiceMock.Setup(service => service.GetPrnForPdfByExternalIdAsync(id)).ReturnsAsync(prnData);
 
             var htmlContent = "<html>Test HTML Content</html>";
@@ -53,6 +59,66 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Services
 
             _prnServiceMock.Verify(service => service.GetPrnForPdfByExternalIdAsync(id), Times.Once);
             _viewRenderServiceMock.Verify(service => service.RenderViewToStringAsync(actionContext, viewName, prnData), Times.Once);
+        }
+
+        [Test]
+        public async Task DownloadPrnAsync_WithValidData_ReturnsOkObjectResultWithCorrectJson()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+            var viewName = "PrnPdfView";
+            var actionContext = new ActionContext();
+
+            var prnData = new PrnViewModel
+            {
+                PrnOrPernNumber = "12345"
+            };
+
+            var htmlContent = "<html><body>Rendered PRN</body></html>";
+
+            _prnServiceMock
+                .Setup(service => service.GetPrnForPdfByExternalIdAsync(id))
+                .ReturnsAsync(prnData);
+
+            _viewRenderServiceMock
+                .Setup(service => service.RenderViewToStringAsync(actionContext, viewName, prnData))
+                .ReturnsAsync(htmlContent);
+
+            // Act
+            var result = await _systemUnderTest.DownloadPrnAsync(id, viewName, actionContext);
+
+            // Assert
+            result.Should().BeOfType<OkObjectResult>();
+            var okResult = result as OkObjectResult;
+            okResult.Should().NotBeNull();
+
+            var jsonResult = JObject.FromObject(okResult.Value);
+
+            jsonResult["fileName"].ToString().Should().Be("12345");
+            jsonResult["htmlContent"].ToString().Should().Be(htmlContent);
+
+            // Verify interactions
+            _prnServiceMock.Verify(service => service.GetPrnForPdfByExternalIdAsync(id), Times.Once);
+            _viewRenderServiceMock.Verify(service => service.RenderViewToStringAsync(actionContext, viewName, prnData), Times.Once);
+        }
+
+        [Test]
+        public async Task DownloadPrnAsync_WhenPrnServiceReturnsNull_ReturnsBadRequest()
+        {
+            // Arrange
+            var id = Guid.NewGuid();
+            var viewName = "PrnPdfView";
+            var actionContext = new ActionContext();
+
+            _prnServiceMock
+                .Setup(service => service.GetPrnForPdfByExternalIdAsync(id))
+                .ReturnsAsync((PrnViewModel)null);
+
+            // Act
+            var result = await _systemUnderTest.DownloadPrnAsync(id, viewName, actionContext);
+
+            // Assert
+            result.Should().BeOfType<BadRequestResult>();
         }
     }
 }

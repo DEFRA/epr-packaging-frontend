@@ -52,7 +52,7 @@ public class FileDownloadPackagingController : Controller
                 model.SubmissionId,
                 new DateTime(submission.Created.Year, 1, 1, 0, 0, 0, DateTimeKind.Utc));
 
-            var searchedSubmission = submissionHistory.Where(x => x.FileId == model.FileId).FirstOrDefault();
+            var searchedSubmission = submissionHistory.Find(x => x.FileId == model.FileId);
 
             if (searchedSubmission == null)
             {

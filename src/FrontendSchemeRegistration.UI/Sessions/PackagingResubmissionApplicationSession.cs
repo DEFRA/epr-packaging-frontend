@@ -85,17 +85,18 @@ public class PackagingResubmissionApplicationSession
     {
         get
         {
-            if ((!IsResubmissionFeeViewed.HasValue || IsResubmissionFeeViewed.Value == false)
-                && (FileReachedSynapse)
-                && (!ResubmissionApplicationSubmitted))
+            if ((!IsResubmissionFeeViewed.HasValue || !IsResubmissionFeeViewed.Value)
+                && FileReachedSynapse && !ResubmissionApplicationSubmitted)
             {
                 return InProgressSubmissionPeriodStatus.InProgress_Resubmission_FileInSynapse_FeesNotViewed_NotSubmitted;
             }
-            if ((IsResubmissionFeeViewed.HasValue && IsResubmissionFeeViewed.Value == true)
-                && (!ResubmissionApplicationSubmitted) && FileReachedSynapse)
+
+            if (IsResubmissionFeeViewed.HasValue && IsResubmissionFeeViewed.Value
+                && !ResubmissionApplicationSubmitted && FileReachedSynapse)
             {
                 return InProgressSubmissionPeriodStatus.InProgress_Resubmission_FeesViewed_NotSubmitted;
             }
+
             return null;
         }
     }

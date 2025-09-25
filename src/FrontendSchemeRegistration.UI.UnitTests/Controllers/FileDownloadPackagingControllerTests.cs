@@ -1,6 +1,7 @@
 ﻿using EPR.Common.Authorization.Models;
 using FluentAssertions;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers;
@@ -296,5 +297,172 @@ public class FileDownloadPackagingControllerTests
             {
                 new (ClaimTypes.UserData, JsonSerializer.Serialize(userData))
             };
+    }
+
+    [Test]
+    public async Task Get_Should_Return_BadRequest_When_ModelState_Invalid()
+    {
+        // Arrange
+        var model = new FileDownloadViewModel
+        {
+            SubmissionId = Guid.Empty,  // triggers the condition
+            Type = FileDownloadType.Upload
+        };
+
+        _systemUnderTest.ModelState.AddModelError("dummy", "error"); // also triggers ModelState invalid
+
+        // Act
+        var result = await _systemUnderTest.Get(model);
+
+        // Assert
+        result.Should().BeOfType<BadRequestResult>();
+    }
+
+    [Test]
+    public async Task Get_ReturnsNotFound_When_SpecifiedFileDoesNotExist()
+    {
+        // Arrange
+        var submissionHistory = new List<SubmissionHistory>
+        {
+        new SubmissionHistory { FileId = Guid.NewGuid(), FileName = "someFile.csv" }
+        };
+
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(new PomSubmission { Id = _submissionId, Created = DateTime.Now });
+
+        _submissionServiceMock.Setup(x => x.GetSubmissionHistoryAsync(It.IsAny<Guid>(), It.IsAny<DateTime>()))
+            .ReturnsAsync(submissionHistory);
+
+        var mockHttpContext = new Mock<HttpContext>();
+        var claims = CreateUserDataClaim(OrganisationRoles.Producer);
+        var identity = new ClaimsIdentity(claims, "TestAuthType");
+        var claimsPrincipal = new ClaimsPrincipal(identity);
+        mockHttpContext.Setup(c => c.User).Returns(claimsPrincipal);
+
+        _systemUnderTest.ControllerContext = new ControllerContext
+        {
+            HttpContext = mockHttpContext.Object
+        };
+
+        var viewModel = new FileDownloadViewModel
+        {
+            SubmissionId = _submissionId,
+            FileId = Guid.NewGuid(),
+            Type = FileDownloadType.Submission
+        };
+
+        // Act
+        var result = await _systemUnderTest.Get(viewModel) as NotFoundResult;
+
+        // Assert
+        result.Should().BeOfType<NotFoundResult>();
+    }
+
+    [Test]
+    public async Task Get_ReturnsNotFound_When_FileIdNotInHistory()
+    {
+        // Arrange
+        var model = new FileDownloadViewModel
+        {
+            SubmissionId = Guid.NewGuid(),
+            FileId = Guid.NewGuid(),
+            Type = FileDownloadType.Submission
+        };
+
+        var submission = new PomSubmission
+        {
+            Created = DateTime.UtcNow,
+            LastSubmittedFile = new SubmittedFileInformation
+            {
+                FileId = Guid.NewGuid(),
+                FileName = "last.csv"
+            }
+        };
+
+        _submissionServiceMock
+            .Setup(s => s.GetSubmissionAsync<PomSubmission>(model.SubmissionId))
+            .ReturnsAsync(submission);
+
+        _submissionServiceMock
+            .Setup(s => s.GetSubmissionHistoryAsync(model.SubmissionId, It.IsAny<DateTime>()))
+            .ReturnsAsync([]); 
+
+        var controller = new FileDownloadPackagingController(
+            _submissionServiceMock.Object,
+            _fileDownloadServiceMock.Object);
+
+        // Act
+        var result = await controller.Get(model);
+
+        // Assert
+        result.Should().BeOfType<NotFoundResult>();
+    }
+
+    [Test]
+    public async Task Get_ReturnsFileContent_When_FileIdMatchesHistory()
+    {
+        // Arrange
+        var fileId = Guid.NewGuid();
+        var fileName = "matchedFile.csv";
+        var submissionHistory = new List<SubmissionHistory>
+    {
+        new SubmissionHistory { FileId = fileId, FileName = fileName }
+    };
+
+        _submissionServiceMock.Setup(s => s.GetSubmissionAsync<PomSubmission>(_submissionId))
+            .ReturnsAsync(new PomSubmission { Id = _submissionId, Created = DateTime.UtcNow });
+
+        _submissionServiceMock.Setup(s => s.GetSubmissionHistoryAsync(_submissionId, It.IsAny<DateTime>()))
+            .ReturnsAsync(submissionHistory);
+
+        _fileDownloadServiceMock.Setup(f => f.GetFileAsync(fileId, fileName, SubmissionType.Producer, _submissionId))
+            .ReturnsAsync(new byte[] { 1, 2, 3 });
+
+        var model = new FileDownloadViewModel
+        {
+            SubmissionId = _submissionId,
+            FileId = fileId,
+            Type = FileDownloadType.Submission
+        };
+
+        // Act
+        var result = await _systemUnderTest.Get(model) as FileContentResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        result.FileDownloadName.Should().Be(fileName);
+        result.FileContents.Should().Equal(new byte[] { 1, 2, 3 });
+    }
+
+    [Test]
+    public async Task Get_ReturnsNotFound_When_FileIdDoesNotMatchHistory()
+    {
+        // Arrange
+        var existingFileId = Guid.NewGuid();
+        var nonMatchingFileId = Guid.NewGuid();
+
+        var submissionHistory = new List<SubmissionHistory>
+    {
+        new SubmissionHistory { FileId = existingFileId, FileName = "existingFile.csv" }
+    };
+
+        _submissionServiceMock.Setup(s => s.GetSubmissionAsync<PomSubmission>(_submissionId))
+            .ReturnsAsync(new PomSubmission { Id = _submissionId, Created = DateTime.UtcNow });
+
+        _submissionServiceMock.Setup(s => s.GetSubmissionHistoryAsync(_submissionId, It.IsAny<DateTime>()))
+            .ReturnsAsync(submissionHistory);
+
+        var model = new FileDownloadViewModel
+        {
+            SubmissionId = _submissionId,
+            FileId = nonMatchingFileId,
+            Type = FileDownloadType.Submission
+        };
+
+        // Act
+        var result = await _systemUnderTest.Get(model);
+
+        // Assert
+        result.Should().BeOfType<NotFoundResult>();
     }
 }

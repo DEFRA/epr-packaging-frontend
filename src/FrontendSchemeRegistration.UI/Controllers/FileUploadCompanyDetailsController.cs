@@ -88,11 +88,6 @@ public class FileUploadCompanyDetailsController : Controller
     [RequestSizeLimit(FileSizeLimit.FileSizeLimitInBytes)]
     public async Task<IActionResult> Post(string? registrationyear)
     {
-       
-        if (!ModelState.IsValid)
-        {
-            var errors = ModelState.Where(e => e.Value.Errors.Count > 0).Select(e => $"{e.Key}: {e.Value.Errors.First().ErrorMessage}").ToList();
-        }
         Guid? submissionId = Guid.TryParse(Request.Query["submissionId"], out var value) ? value : null;
         var registrationYear =  _registrationApplicationService.ValidateRegistrationYear(registrationyear, true);
 

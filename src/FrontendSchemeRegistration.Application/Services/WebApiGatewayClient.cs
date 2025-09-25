@@ -493,7 +493,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
     {
         await PrepareAuthenticatedClientAsync();
 
-        var submissionPeriods = request.SubmissionPeriods.Any() ? $"&SubmissionPeriods={string.Join("&SubmissionPeriods=", request.SubmissionPeriods)}" : string.Empty;
+        var submissionPeriods = request.SubmissionPeriods?.Count > 0 ? $"&SubmissionPeriods={string.Join("&SubmissionPeriods=", request.SubmissionPeriods)}" : string.Empty;
 
         try
         {
@@ -517,7 +517,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error Getting Pom Resubmission ApplicationDetails for organisation Id : {request.OrganisationId} and submission period(s): {submissionPeriods}");
+            _logger.LogError(ex, "Error Getting Pom Resubmission ApplicationDetails for organisation Id : {OrganisationId} and submission period(s): {SubmissionPeriods}", request.OrganisationId, submissionPeriods);
             return null!;
         }
     }

@@ -1030,4 +1030,38 @@ public class SubsidiaryServiceTests
         // Assert
         _accountServiceApiClientMock.Verify(client => client.SendGetRequest(expectedUrl), Times.Once);
     }
+
+    [Test]
+    public async Task GetOrganisationParent_WhenApiResponseIsNotSuccessful_ReturnsNull()
+    {
+        // Arrange
+        var referenceNumber = "abcd";
+
+        var response = new HttpResponseMessage(HttpStatusCode.BadRequest); // not success
+        _accountServiceApiClientMock
+            .Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _sut.GetOrganisationParent(referenceNumber);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetUnpagedOrganisationSubsidiaries_ShouldReturnNull_WhenResponseIsNotSuccessful()
+    {
+        // Arrange
+        var badResponse = new HttpResponseMessage(HttpStatusCode.BadRequest); // force IsSuccessStatusCode = false
+        _accountServiceApiClientMock
+            .Setup(x => x.SendGetRequest("organisations/organisationRelationshipsWithoutPaging"))
+            .ReturnsAsync(badResponse);
+
+        // Act
+        var result = await _sut.GetUnpagedOrganisationSubsidiaries();
+
+        // Assert
+        result.Should().BeNull();
+    }
 }

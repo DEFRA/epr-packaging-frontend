@@ -18,6 +18,11 @@ namespace FrontendSchemeRegistration.UI.Services
         {
             var prn = await _prnService.GetPrnForPdfByExternalIdAsync(id);
 
+            if (prn == null)
+            {
+                return new BadRequestResult();
+            }
+
             string htmlContent = await _viewRenderService.RenderViewToStringAsync(actionContext, viewName, prn);
 
             return new OkObjectResult(new { fileName = prn.PrnOrPernNumber, htmlContent });

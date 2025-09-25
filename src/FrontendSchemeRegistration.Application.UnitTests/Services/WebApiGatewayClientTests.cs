@@ -342,6 +342,388 @@ public class WebApiGatewayClientTests
     }
 
     [Test]
+    public async Task GetProducerValidationErrorsAsync_Should_Return_List_When_Successful()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+
+        var expectedErrors = new List<ProducerValidationError>
+    {
+        new ProducerValidationError
+        {
+            ProducerId = "P1",
+            SubsidiaryId = "S1",
+            ProducerType = "TypeA",
+            ProducerSize = "Large",
+            DataSubmissionPeriod = "2024-12",
+            WasteType = "Plastic",
+            MaterialType = "PET",
+            MaterialSubType = "Bottle",
+            Issue = "Test issue",
+            RowNumber = 1,
+            ErrorCodes = new List<string> { "E1" }
+        }
+    };
+
+        var responseMessage = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = JsonContent.Create(expectedErrors)
+        };
+
+        _httpMessageHandlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(req =>
+                    req.Method == HttpMethod.Get &&
+                    req.RequestUri.ToString().Contains($"/{submissionId}/producer-validations")),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(responseMessage);
+
+        // Act
+        var result = await _webApiGatewayClient.GetProducerValidationErrorsAsync(submissionId);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().HaveCount(1);
+        result.First().ProducerId.Should().Be("P1");
+        result.First().Issue.Should().Be("Test issue");
+        result.First().ErrorCodes.Should().Contain("E1");
+    }
+
+    [Test]
+    public async Task GetRegistrationValidationErrorsAsync_Should_Return_List_When_Successful()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+
+        var expectedErrors = new List<RegistrationValidationError>
+    {
+        new RegistrationValidationError
+        {
+            OrganisationId = "O1",
+            SubsidiaryId = "S1",
+            RowNumber = 1,
+            IssueType = "Error",
+            ColumnErrors = new List<ColumnValidationError>
+            {
+                new ColumnValidationError
+                {
+                    ErrorCode = "C1",
+                    ColumnIndex = 0,
+                    ColumnName = "Col1"
+                }
+            }
+        }
+    };
+
+        var responseMessage = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = JsonContent.Create(expectedErrors)
+        };
+
+        _httpMessageHandlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(req =>
+                    req.Method == HttpMethod.Get &&
+                    req.RequestUri.ToString().Contains($"/{submissionId}/organisation-details-errors")),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(responseMessage);
+
+        // Act
+        var result = await _webApiGatewayClient.GetRegistrationValidationErrorsAsync(submissionId);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().HaveCount(1);
+        result.First().OrganisationId.Should().Be("O1");
+        result.First().SubsidiaryId.Should().Be("S1");
+        result.First().RowNumber.Should().Be(1);
+        result.First().IssueType.Should().Be("Error");
+        result.First().ColumnErrors.Should().HaveCount(1);
+        result.First().ColumnErrors.First().ErrorCode.Should().Be("C1");
+        result.First().ColumnErrors.First().ColumnIndex.Should().Be(0);
+        result.First().ColumnErrors.First().ColumnName.Should().Be("Col1");
+    }
+    [Test]
+    public async Task GetSubsidiaryFileUploadStatusAsync_Should_Throw_And_Log_When_HttpClient_Fails()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var organisationId = Guid.NewGuid();
+
+        _httpMessageHandlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ThrowsAsync(new HttpRequestException("Network failure"));
+
+        // Act
+        Func<Task> act = async () => await _webApiGatewayClient.GetSubsidiaryFileUploadStatusAsync(userId, organisationId);
+
+        // Assert
+        await act.Should().ThrowAsync<HttpRequestException>()
+                 .WithMessage("Network failure"); 
+    }
+
+    [Test]
+    public async Task GetPackagingResubmissionMemberDetails_Should_Rethrow_When_StatusCode_In_PassThroughExceptions()
+    {
+        // Arrange
+        var request = new PackagingResubmissionMemberRequest
+        {
+            SubmissionId = Guid.NewGuid(),
+            ComplianceSchemeId = Guid.NewGuid().ToString()
+        };
+
+        var httpRequestException = new HttpRequestException(
+            "Precondition required",
+            null,
+            HttpStatusCode.PreconditionRequired
+        );
+
+        _httpMessageHandlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ThrowsAsync(httpRequestException);
+
+        // Act
+        Func<Task> act = async () => await _webApiGatewayClient.GetPackagingResubmissionMemberDetails(request);
+
+        // Assert
+        await act.Should().ThrowAsync<HttpRequestException>();
+    }
+
+    [Test]
+    public async Task GetSubsidiaryFileUploadStatusAsync_Should_Throw_And_Log_When_HttpClient_Throws()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var organisationId = Guid.NewGuid();
+
+        // Mock HttpClient to throw an exception
+        _httpMessageHandlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ThrowsAsync(new HttpRequestException("Network failure"));
+
+        // Act
+        Func<Task> act = async () => await _webApiGatewayClient.GetSubsidiaryFileUploadStatusAsync(userId, organisationId);
+
+        // Assert
+        await act.Should().ThrowAsync<HttpRequestException>()
+                 .WithMessage("Network failure");
+    }
+
+    [Test]
+    public async Task GetPackagingDataResubmissionApplicationDetails_Should_Return_Null_When_NoContent()
+    {
+        // Arrange
+        var request = new GetPackagingResubmissionApplicationDetailsRequest
+        {
+            OrganisationId = Guid.NewGuid(),
+            SubmissionPeriods = new List<string> { "2025-12" },
+            ComplianceSchemeId = Guid.NewGuid()
+        };
+
+        var responseMessage = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.NoContent
+        };
+
+        _httpMessageHandlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(req =>
+                    req.Method == HttpMethod.Get &&
+                    req.RequestUri.ToString().Contains(request.OrganisationId.ToString())),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(responseMessage);
+
+        // Act
+        var result = await _webApiGatewayClient.GetPackagingDataResubmissionApplicationDetails(request);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetPackagingDataResubmissionApplicationDetails_Should_Include_SubmissionPeriods_When_NotEmpty()
+    {
+        // Arrange
+        var request = new GetPackagingResubmissionApplicationDetailsRequest
+        {
+            OrganisationId = Guid.NewGuid(),
+            SubmissionPeriods = new List<string> { "2024-12" },
+            ComplianceSchemeId = Guid.NewGuid()
+        };
+
+        var responseMessage = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.NoContent
+        };
+
+        _httpMessageHandlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(req =>
+                    req.RequestUri.ToString().Contains($"SubmissionPeriods={request.SubmissionPeriods.First()}")),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(responseMessage);
+
+        // Act
+        var result = await _webApiGatewayClient.GetPackagingDataResubmissionApplicationDetails(request);
+
+        // Assert
+        result.Should().BeNull();
+    }
+    [Test]
+    public async Task GetPackagingDataResubmissionApplicationDetails_Should_Handle_Empty_SubmissionPeriods()
+    {
+        // Arrange
+        var request = new GetPackagingResubmissionApplicationDetailsRequest
+        {
+            OrganisationId = Guid.NewGuid(),
+            SubmissionPeriods = new List<string>(), // empty list
+            ComplianceSchemeId = Guid.NewGuid()
+        };
+
+        var responseMessage = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.NoContent
+        };
+
+        _httpMessageHandlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(req =>
+                    !req.RequestUri.ToString().Contains("SubmissionPeriods")),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(responseMessage);
+
+        // Act
+        var result = await _webApiGatewayClient.GetPackagingDataResubmissionApplicationDetails(request);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    [TestCase(null)]
+    [TestCase("00000000-0000-0000-0000-000000000000")]
+    public async Task GetPackagingDataResubmissionApplicationDetails_Should_Not_Append_ComplianceSchemeId_When_Null_Or_Empty(string guidString)
+    {
+        // Arrange
+        Guid? complianceSchemeId = guidString is null ? (Guid?)null : Guid.Parse(guidString);
+
+        var request = new GetPackagingResubmissionApplicationDetailsRequest
+        {
+            OrganisationId = Guid.NewGuid(),
+            SubmissionPeriods = new List<string> { "2024-12" },
+            ComplianceSchemeId = complianceSchemeId
+        };
+
+        var responseMessage = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.NoContent
+        };
+
+        _httpMessageHandlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(req =>
+                    !req.RequestUri.ToString().Contains("ComplianceSchemeId")),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(responseMessage);
+
+        // Act
+        var result = await _webApiGatewayClient.GetPackagingDataResubmissionApplicationDetails(request);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetPackagingDataResubmissionApplicationDetails_Should_Append_ComplianceSchemeId_When_NotEmpty()
+    {
+        // Arrange
+        var request = new GetPackagingResubmissionApplicationDetailsRequest
+        {
+            OrganisationId = Guid.NewGuid(),
+            SubmissionPeriods = new List<string> { "2024-12" },
+            ComplianceSchemeId = Guid.NewGuid()
+        };
+
+        var responseMessage = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.NoContent
+        };
+
+        _httpMessageHandlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(req =>
+                    req.RequestUri.ToString().Contains($"ComplianceSchemeId={request.ComplianceSchemeId}")),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(responseMessage);
+
+        // Act
+        var result = await _webApiGatewayClient.GetPackagingDataResubmissionApplicationDetails(request);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetPackagingDataResubmissionApplicationDetails_Should_Handle_Null_SubmissionPeriods()
+    {
+        // Arrange
+        var request = new GetPackagingResubmissionApplicationDetailsRequest
+        {
+            OrganisationId = Guid.NewGuid(),
+            SubmissionPeriods = null, // explicitly null
+            ComplianceSchemeId = Guid.NewGuid()
+        };
+
+        var responseMessage = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.NoContent
+        };
+
+        _httpMessageHandlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(req =>
+                    !req.RequestUri.ToString().Contains("SubmissionPeriods")),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(responseMessage);
+
+        // Act
+        var result = await _webApiGatewayClient.GetPackagingDataResubmissionApplicationDetails(request);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
     public async Task SubmitAsync_DoesNotThrowException_WhenSubmitIsSuccessful()
     {
         // Arrange
@@ -1191,12 +1573,133 @@ public class WebApiGatewayClientTests
 
         // Assert
         result.Should().BeNull();
+
         _loggerMock.VerifyLog(
             x => x.LogError(
                 It.IsAny<Exception>(),
-                It.Is<string>(msg => msg.Contains("Error Getting Registration Application Submission Details")),
+                "Error Getting Registration Application Submission Details for organisation Id : {OrganisationId}",
                 request.OrganisationId),
             Times.Once);
+    }
+
+    [Test]
+    public async Task GetRegistrationApplicationDetails_Should_Execute_ComplianceSchemeId_Append()
+    {
+        // Arrange
+        var complianceSchemeId = Guid.NewGuid();
+        var request = new GetRegistrationApplicationDetailsRequest
+        {
+            OrganisationId = Guid.NewGuid(),
+            OrganisationNumber = 123,
+            SubmissionPeriod = "2024-12",
+            ComplianceSchemeId = complianceSchemeId
+        };
+
+        var responseMessage = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = JsonContent.Create(new RegistrationApplicationDetails
+            {
+                ApplicationReferenceNumber = "testRef",
+                ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+                IsSubmitted = true
+            })
+        };
+
+        _httpMessageHandlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(req =>
+                    req.Method == HttpMethod.Get &&
+                    req.RequestUri.ToString().Contains($"ComplianceSchemeId={complianceSchemeId}")),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(responseMessage);
+
+        // Act
+        var result = await _webApiGatewayClient.GetRegistrationApplicationDetails(request);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.ApplicationReferenceNumber.Should().Be("testRef");
+
+        _httpMessageHandlerMock
+            .Protected()
+            .Verify(
+                "SendAsync",
+                Times.Once(),
+                ItExpr.Is<HttpRequestMessage>(req =>
+                    req.RequestUri.ToString().Contains($"ComplianceSchemeId={complianceSchemeId}")),
+                ItExpr.IsAny<CancellationToken>()
+            );
+    }
+
+    [Test]
+    [TestCase(null)]
+    [TestCase("00000000-0000-0000-0000-000000000000")]
+    public async Task GetRegistrationApplicationDetails_Should_Not_Append_ComplianceSchemeId_When_Null_Or_Empty(string guidString)
+    {
+        // Arrange
+        Guid? complianceSchemeId = guidString is null ? (Guid?)null : Guid.Parse(guidString);
+
+        var request = new GetRegistrationApplicationDetailsRequest
+        {
+            OrganisationId = Guid.NewGuid(),
+            OrganisationNumber = 123,
+            SubmissionPeriod = "2024-12",
+            ComplianceSchemeId = complianceSchemeId
+        };
+
+        var responseMessage = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.NoContent
+        };
+
+        _httpMessageHandlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(req => !req.RequestUri.ToString().Contains("ComplianceSchemeId")),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(responseMessage);
+
+        // Act
+        var result = await _webApiGatewayClient.GetRegistrationApplicationDetails(request);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetRegistrationApplicationDetails_Should_Append_ComplianceSchemeId_When_Valid()
+    {
+        // Arrange
+        var request = new GetRegistrationApplicationDetailsRequest
+        {
+            OrganisationId = Guid.NewGuid(),
+            OrganisationNumber = 123,
+            SubmissionPeriod = "2024-12",
+            ComplianceSchemeId = Guid.NewGuid()
+        };
+
+        var responseMessage = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.NoContent
+        };
+
+        _httpMessageHandlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(req => req.RequestUri.ToString().Contains($"ComplianceSchemeId={request.ComplianceSchemeId}")),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(responseMessage);
+
+        // Act
+        var result = await _webApiGatewayClient.GetRegistrationApplicationDetails(request);
+
+        // Assert
+        result.Should().BeNull();
     }
 
     [Test]
@@ -1296,6 +1799,107 @@ public class WebApiGatewayClientTests
     }
 
     [Test]
+    public async Task GetPackagingResubmissionMemberDetails_Should_Return_Null_When_Response_Is_NoContent()
+    {
+        // Arrange
+        var request = new PackagingResubmissionMemberRequest
+        {
+            SubmissionId = Guid.NewGuid(),
+            ComplianceSchemeId = Guid.NewGuid().ToString()
+        };
+
+        var responseMessage = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.NoContent
+        };
+
+        _httpMessageHandlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(req =>
+                    req.Method == HttpMethod.Get &&
+                    req.RequestUri.ToString().Contains(request.SubmissionId.ToString()) &&
+                    req.RequestUri.ToString().Contains($"ComplianceSchemeId={request.ComplianceSchemeId}")),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(responseMessage);
+
+        // Act
+        var result = await _webApiGatewayClient.GetPackagingResubmissionMemberDetails(request);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetPackagingDataResubmissionApplicationDetails_Should_Append_ComplianceSchemeId_When_NotNullOrEmpty()
+    {
+        // Arrange
+        var request = new GetPackagingResubmissionApplicationDetailsRequest
+        {
+            OrganisationId = Guid.NewGuid(),
+            SubmissionPeriods = new List<string> { "2025-12" },
+            ComplianceSchemeId = Guid.NewGuid()
+        };
+
+        var responseMessage = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.NoContent
+        };
+
+        _httpMessageHandlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(req =>
+                    req.RequestUri.ToString().Contains($"ComplianceSchemeId={request.ComplianceSchemeId}")),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(responseMessage);
+
+        // Act
+        var result = await _webApiGatewayClient.GetPackagingDataResubmissionApplicationDetails(request);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    [TestCase(null)]
+    [TestCase("00000000-0000-0000-0000-000000000000")]
+    public async Task GetPackagingDataResubmissionApplicationDetails_Should_Not_Append_ComplianceSchemeId_When_NullOrEmpty(string guidString)
+    {
+        // Arrange
+        Guid? complianceSchemeId = guidString is null ? (Guid?)null : Guid.Parse(guidString);
+
+        var request = new GetPackagingResubmissionApplicationDetailsRequest
+        {
+            OrganisationId = Guid.NewGuid(),
+            SubmissionPeriods = new List<string> { "2025-12" },
+            ComplianceSchemeId = complianceSchemeId
+        };
+
+        var responseMessage = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.NoContent
+        };
+
+        _httpMessageHandlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(req =>
+                    !req.RequestUri.ToString().Contains("ComplianceSchemeId")),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(responseMessage);
+
+        // Act
+        var result = await _webApiGatewayClient.GetPackagingDataResubmissionApplicationDetails(request);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
     public async Task GetPackagingDataResubmissionApplicationDetails_With_MultipleSubmissionPeriods_Should_Return_Details_When_Successful()
     {
         // Arrange
@@ -1347,42 +1951,6 @@ public class WebApiGatewayClientTests
         result.Count.Should().Be(2);
         result.First().Should().BeEquivalentTo(expectedDetails.First());
         result.Select(x => x.ApplicationReferenceNumber).First().Should().BeEquivalentTo(expectedDetails.First().ApplicationReferenceNumber);
-    }
-
-
-    [Test]
-    public async Task GetPackagingDataResubmissionApplicationDetails_Should_Return_Null_When_NoContent()
-    {
-        // Arrange
-        var request = new GetPackagingResubmissionApplicationDetailsRequest
-        {
-            OrganisationId = Guid.NewGuid(),
-            OrganisationNumber = 123,
-            SubmissionPeriods = new List<string> { "2024-12" }
-        };
-
-        var responseMessage = new HttpResponseMessage
-        {
-            StatusCode = HttpStatusCode.NoContent
-        };
-
-        _httpMessageHandlerMock
-            .Protected()
-            .Setup<Task<HttpResponseMessage>>(
-                "SendAsync",
-                ItExpr.Is<HttpRequestMessage>(req =>
-                    req.Method == HttpMethod.Get &&
-                    req.RequestUri.ToString().Contains($"OrganisationNumber={request.OrganisationNumber}") &&
-                    req.RequestUri.ToString().Contains($"OrganisationId={request.OrganisationId}") &&
-                    req.RequestUri.ToString().Contains($"SubmissionPeriod={request.SubmissionPeriods}")),
-                ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(responseMessage);
-
-        // Act
-        var result = await _webApiGatewayClient.GetPackagingDataResubmissionApplicationDetails(request);
-
-        // Assert
-        result.Should().BeNull();
     }
 
     [Test]
@@ -1513,6 +2081,42 @@ public class WebApiGatewayClientTests
         Assert.That(ex != null);
         Assert.That(ex.GetType() == typeof(HttpRequestException));
         Assert.That(ex.Message.Contains(testMessage));
+    }
+
+    [Test]
+    public async Task GetPackagingResubmissionMemberDetails_Should_LogError_When_HttpRequestException_StatusCodeNotInPassThrough()
+    {
+        // Arrange
+        var request = new PackagingResubmissionMemberRequest
+        {
+            SubmissionId = Guid.NewGuid(),
+            ComplianceSchemeId = Guid.NewGuid().ToString()
+        };
+
+        var httpRequestException = new HttpRequestException("Some failure", null, HttpStatusCode.BadRequest);
+
+        _httpMessageHandlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ThrowsAsync(httpRequestException);
+
+        // Act
+        var result = await _webApiGatewayClient.GetPackagingResubmissionMemberDetails(request);
+
+        // Assert
+        result.Should().BeNull();
+
+        _loggerMock.Verify(
+            x => x.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Error Getting Pom Resubmission MemberDetails")),
+                httpRequestException,
+                It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+            Times.Once);
     }
 
     [Test]

@@ -72,7 +72,7 @@ public class PackagingDataResubmissionController : Controller
             organisation, new List<string> { session.PomResubmissionSession.SubmissionPeriod },
             complianceSchemeId);
 
-        await UpdateSession(session, resubmissionApplicationDetails.First(), organisation, isComplianceScheme, complianceSchemeSummary, submissionPeriod);
+        await UpdateSession(session, resubmissionApplicationDetails[0], organisation, isComplianceScheme, complianceSchemeSummary, submissionPeriod);
 
         if (submission != null)
         {

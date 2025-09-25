@@ -1,9 +1,10 @@
 ﻿using FrontendSchemeRegistration.UI.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
 
 namespace FrontendSchemeRegistration.UI.Services
@@ -22,40 +23,55 @@ namespace FrontendSchemeRegistration.UI.Services
             _serviceProvider = serviceProvider;
         }
 
-        public async Task<string> RenderViewToStringAsync(ActionContext actionContext, string viewName, object model)
+        public Task<string> RenderViewToStringAsync(ActionContext actionContext, string viewName, object model)
+        {
+            var view = ValidateAndGetView(actionContext, viewName);
+            return RenderViewContentAsync(actionContext, view, model);
+        }
+
+        private IView ValidateAndGetView(ActionContext actionContext, string viewName)
+        {
+            ArgumentNullException.ThrowIfNull(actionContext);
+
+            if (string.IsNullOrWhiteSpace(viewName))
+            {
+                throw new ArgumentException("View name cannot be null or empty.", nameof(viewName));
+            }
+
+            var viewResult = _viewEngine.FindView(actionContext, viewName, isMainPage: false);
+
+            if (viewResult.View == null)
+            {
+                throw new InvalidOperationException($"View '{viewName}' not found.");
+            }
+
+            return viewResult.View;
+        }
+
+        private async Task<string> RenderViewContentAsync(ActionContext actionContext, IView view, object model)
         {
             var httpContext = _httpContextAccessor.HttpContext;
 
-            using (var sw = new StringWriter())
+            var sw = new StringWriter();
+
+            var viewDictionary = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
             {
-                var viewResult = _viewEngine.FindView(actionContext, viewName, false);
+                Model = model
+            };
+            viewDictionary["IsPdf"] = true;
 
-                if (viewResult.View == null)
-                {
-                    throw new ArgumentNullException($"View '{viewName}' not found.");
-                }
+            var tempData = new TempDataDictionary(httpContext, _serviceProvider.GetRequiredService<ITempDataProvider>());
 
-                var viewDictionary = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
-                {
-                    Model = model
-                };
+            var viewContext = new ViewContext(
+                actionContext,
+                view,
+                viewDictionary,
+                tempData,
+                sw,
+                new HtmlHelperOptions());
 
-                viewDictionary["IsPdf"] = true;
-
-                var tempData = new TempDataDictionary(httpContext, _serviceProvider.GetRequiredService<ITempDataProvider>());
-
-                var viewContext = new ViewContext(
-                    actionContext,
-                    viewResult.View,
-                    viewDictionary,
-                    tempData,
-                    sw,
-                    new HtmlHelperOptions());
-
-                await viewResult.View.RenderAsync(viewContext);
-
-                return sw.ToString();
-            }
+            await view.RenderAsync(viewContext);
+            return sw.ToString();
         }
     }
 }
