@@ -2,7 +2,7 @@
 
 ## Overview
 
-Frontend Scheme Registration handles the front end POM and Organisation Details upload
+Frontend Scheme Registration handles the front end POM (Placed On Market) and Organisation Details upload
 
 ## How To Run
 
