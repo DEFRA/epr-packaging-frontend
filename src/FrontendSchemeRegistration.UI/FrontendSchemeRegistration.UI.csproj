@@ -1,1177 +1,1167 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-
-    <PropertyGroup>
-        <Nullable>enable</Nullable>
-        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-        <CodeAnalysisRuleSet>../stylecop.ruleset</CodeAnalysisRuleSet>
-        <UserSecretsId>1439f55f-9123-4c58-8ab4-ae9114a85b11</UserSecretsId>
-        <InvariantGlobalization>false</InvariantGlobalization>
-        <!-- SonarCloud does not recognise file-scoped namespaces in current version. -->
-        <NoWarn>S3903,S5693,S5144,S4507,S4792</NoWarn>
-    </PropertyGroup>
-
-    <ItemGroup>
-      <Compile Remove="ViewModels\GovUk\NewFolder\**" />
-      <Compile Remove="ViewModels\Shared\GovUK\**" />
-      <Compile Remove="Views\Shared\Partials\Timeout\**" />
-      <Compile Remove="Views\SubsidiaryCompaniesHouseNumberSearch\**" />
-      <Content Remove="ViewModels\GovUk\NewFolder\**" />
-      <Content Remove="ViewModels\Shared\GovUK\**" />
-      <Content Remove="Views\Shared\Partials\Timeout\**" />
-      <Content Remove="Views\SubsidiaryCompaniesHouseNumberSearch\**" />
-      <EmbeddedResource Remove="ViewModels\GovUk\NewFolder\**" />
-      <EmbeddedResource Remove="ViewModels\Shared\GovUK\**" />
-      <EmbeddedResource Remove="Views\Shared\Partials\Timeout\**" />
-      <EmbeddedResource Remove="Views\SubsidiaryCompaniesHouseNumberSearch\**" />
-      <None Remove="ViewModels\GovUk\NewFolder\**" />
-      <None Remove="ViewModels\Shared\GovUK\**" />
-      <None Remove="Views\Shared\Partials\Timeout\**" />
-      <None Remove="Views\SubsidiaryCompaniesHouseNumberSearch\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\FrontendSchemeRegistration.Application\FrontendSchemeRegistration.Application.csproj" />
-    </ItemGroup>
-
-    <Target Name="NpmInstall" Inputs="package.json" Outputs="node_modules/.install-stamp">
-        <Exec Command="npm install" Condition="'$(RestorePackagesWithLockFile)' != 'true'" />
-
-        <!-- Write the stamp file, so incremental builds work -->
-        <Touch Files="node_modules/.install-stamp" AlwaysCreate="true" />
-    </Target>
-
-    <Target Name="NpmRunBuildFrontend" DependsOnTargets="NpmInstall" BeforeTargets="BeforeBuild">
-        <Exec Command="npm run build-frontend" />
-    </Target>
-
-    <ItemGroup>
-        <Content Update="Views\Shared\Partials\Prns\_calculationsNonGlass.cshtml">
-          <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-          <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-        </Content>
-        <Content Include="assets\images\spinner.gif">
-            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-        </Content>
-        <Content Include="assets\js\print.js">
-            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-        </Content>
-        <Content Remove="libman.json" />
-        <Content Remove="Views\ComplianceSchemeConfirmation\Confirm.cshtml" />
-        <Content Remove="Views\HomePageComplianceScheme\HomePageComplianceScheme.cshtml" />
-        <Content Remove="Views\ChangeComplianceSchemeOptions\ChangeComplianceSchemeOptions.cshtml" />
-        <Content Remove="Views\ComplianceSchemeConfirmation\Confirmation.cshtml" />
-        <Content Remove="Views\HomePageSelfManaged\HomePageSelfManaged.cshtml" />
-        <Content Remove="Views\Shared\TimeoutSignedOut.cshtml" />
-        <Content Update="assets\js\print.js">
-            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-        </Content>
-        <Content Update="assets\js\print.js">
-            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-        </Content>
-        <Content Update="assets\js\print.js">
-            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-        </Content>
-        <Content Update="assets\js\print.js">
-            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-        </Content>
-        <Content Update="assets\js\print.js">
-            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-        </Content>
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="AutoMapper" Version="13.0.1" />
-        <PackageReference Include="CsvHelper" Version="33.0.1" />
-        <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="8.0.7" />
-        <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" Version="8.8.0" />
-        <PackageReference Include="Microsoft.FeatureManagement" Version="3.5.0" />
-        <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" Version="3.5.0" />
-        <PackageReference Include="Microsoft.Graph" Version="5.85.0" />
-        <PackageReference Include="PactNet" Version="4.5.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.7" />
-        <PackageReference Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="8.0.7" />
-        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.7" />
-        <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
-        <PackageReference Include="System.ComponentModel.TypeConverter" Version="4.3.0" />
-        <PackageReference Include="System.Drawing.Common" Version="8.0.7" />
-        <PackageReference Include="System.Security.Cryptography.Pkcs" Version="8.0.0" />
-    </ItemGroup>
-    <ItemGroup>
-        <EmbeddedResource Update="Resources\CompanyDetailsSubmissionErrorCodes.cy.resx">
-          <SubType>Designer</SubType>
-          <Generator></Generator>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\Application\PrivacyPolicy.en.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>PrivacyPolicy.en.Designer.cs</LastGenOutput>
-            <DependentUpon>PrivacyPolicy.resx</DependentUpon>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\ErrorMessages.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>ErrorMessages.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\SharedResources.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>SharedResources.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\ComplianceSchemeMemberLandingPage\ComplianceSchemeMemberLandingPage.cy.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\ComplianceSchemeMemberLandingPage\ComplianceSchemeMemberLandingPage.en.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\ComplianceSchemeMemberLandingPage\ComplianceSchemeMemberLandingPage.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>ComplianceSchemeMemberLandingPage.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadCompanyDetailsWarnings\FileUploadCompanyDetailsWarnings.resx">
-          <LastGenOutput>FileUploadCompanyDetailsWarnings.Designer.cs</LastGenOutput>
-          <Generator>ResXFileCodeGenerator</Generator>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadSubmissionConfirmation\FileUploadSubmissionConfirmation.en.resx">
-            <SubType>Designer</SubType>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadSubmissionConfirmation\FileUploadSubmissionConfirmation.resx">
-            <SubType>Designer</SubType>
-            <LastGenOutput>FileUploadSubmissionConfirmation.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadCompanyDetailsSubmissionHistory\FileUploadCompanyDetailsSubmissionHistory.en.resx">
-          <SubType>Designer</SubType>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadSubsidiaries\AllSubsidiariesList.cy.resx">
-          <SubType>Designer</SubType>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadSubsidiaries\ConfirmRemoveSubsidiary.cy.resx">
-          <SubType>Designer</SubType>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadSubsidiaries\ConfirmRemoveSubsidiarySuccess.en.resx">
-          <SubType>Designer</SubType>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadSubsidiaries\ConfirmRemoveSubsidiarySuccess.cy.resx">
-          <SubType>Designer</SubType>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadSubsidiaries\AllSubsidiariesList.en.resx">
-          <SubType>Designer</SubType>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadSubsidiaries\SubsidiariesList.cy.resx">
-          <SubType>Designer</SubType>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\PackagingDataResubmission\FileUploadResubmissionConfirmation.en.resx">
-          <SubType>Designer</SubType>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\PackagingDataResubmission\FileUploadResubmissionConfirmation.cy.resx">
-          <SubType>Designer</SubType>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\Prns\RejectedPrn.cy.resx">
-          <SubType>Designer</SubType>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\Prns\RejectedPrn.en.resx">
-          <SubType>Designer</SubType>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\SchemeMembership\SchemeMembers.cy.resx">
-            <SubType>Designer</SubType>
-            <LastGenOutput>SignedOut.en.Designer.cs</LastGenOutput>
-            <Generator>ResXFileCodeGenerator</Generator>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\SchemeMembership\SchemeMembers.en.resx">
-            <LastGenOutput>SignedOut.en.Designer.cs</LastGenOutput>
-            <Generator>ResXFileCodeGenerator</Generator>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\Shared\_TimeoutSessionWarning.resx">
-          <LastGenOutput>_TimeoutSessionWarning.Designer.cs</LastGenOutput>
-          <Generator>ResXFileCodeGenerator</Generator>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\Shared\Partials\Notifications\_NominatedApprovedPerson.cy.resx">
-          <SubType>Designer</SubType>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\Shared\Partials\Prns\_calculationsNonGlass.cy.resx">
-          <SubType>Designer</SubType>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\Shared\Partials\Prns\_calculationsNonGlass.en.resx">
-          <SubType>Designer</SubType>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\SubsidiaryAdded\SubsidiaryAdded.resx">
-          <Generator></Generator>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\UploadNewFileToSubmit\UploadNewFileToSubmit.en.resx">
-            <SubType>Designer</SubType>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\UploadNewFileToSubmit\UploadNewFileToSubmit.resx">
-            <SubType>Designer</SubType>
-            <LastGenOutput>UploadNewFileToSubmit.Designer.cs</LastGenOutput>
-            <Generator>ResXFileCodeGenerator</Generator>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadCompanyDetailsSuccess\FileUploadCompanyDetailsSuccess.cy.resx">
-            <SubType>Designer</SubType>
-            <LastGenOutput>FileUploadCompanyDetailsSuccess.en.Designer.cs</LastGenOutput>
-            <Generator>ResXFileCodeGenerator</Generator>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUpload\FileUpload.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>FileUpload.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\NominatedDelegatedPerson\TelephoneNumber.en.resx">
-            <LastGenOutput>SignedOut.en.Designer.cs</LastGenOutput>
-            <Generator>ResXFileCodeGenerator</Generator>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\PrivacyPolicy\PrivacyPolicy.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>PrivacyPolicy.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\Shared\Partials\Notifications\_NominatedAsDelegatedPerson.resx">
-            <LastGenOutput>_NominatedAsDelegatedPerson.Designer.cs</LastGenOutput>
-            <Generator>ResXFileCodeGenerator</Generator>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\Shared\Partials\Notifications\_WaitingForApproval.resx">
-            <LastGenOutput>_WaitingForApproval.Designer.cs</LastGenOutput>
-            <Generator>ResXFileCodeGenerator</Generator>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\TaskList\TaskList.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>TaskList.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\Shared\Partials\Govuk\_WarningText.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>_WarningText.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\SharedResources.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>SharedResources.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\Application\Declaration.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>Declaration.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploading\FileUploading.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>FileUploading.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadFailure\FileUploadFailure.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>FileUploadFailure.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\ErrorCodes.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>ErrorCodes.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadCompanyDetailsSuccess\FileUploadCompanyDetailsSuccess.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>FileUploadCompanyDetailsSuccess.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadCompanyDetailsSuccess\FileUploadCompanyDetailsSuccess.en.resx">
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadCompanyDetailsSuccess\FileUploadCompanyDetailsSuccess.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>FileUploadCompanyDetailsSuccess.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadCompanyDetailsSuccess\FileUploadCompanyDetailsSuccess.en.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>FileUploadCompanyDetailsSuccess.en.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadCompanyDetails\FileUploadCompanyDetails.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>FileUploadCompanyDetails.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadCompanyDetails\FileUploadCompanyDetails.en.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\UploadingOrganisationDetails\UploadingOrganisationDetails.resx">
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadBrands\FileUploadBrands.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>FileUploadBrands.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\UploadingOrganisationDetails\UploadingOrganisationDetails.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>UploadingOrganisationDetails.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\Compliance\Confirmation.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>Confirmation.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\Shared\Partials\Govuk\_Header.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>_Header.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\HomePage\HomePage.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>HomePage.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\Home\SignedOut.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>SignedOut.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\Home\SignedOut.en.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>SignedOut.en.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\Home\SignedOut.cy.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>SignedOut.en.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\NominatedDelegatedPerson\InviteChangePermissions.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>InviteChangePermissions.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\NominatedDelegatedPerson\InviteChangePermissions.en.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>InviteChangePermissions.en.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\NominatedDelegatedPerson\InviteChangePermissions.cy.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>InviteChangePermissions.cy.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\Shared\Components\PhaseBanner\Default.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>Default.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\Error\ProblemWithServiceError.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>ProblemWithServiceError.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>ComplianceSchemeLandingPage.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.cy.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>ComplianceSchemeLandingPage.cy.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.en.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>ComplianceSchemeLandingPage.en.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadSubLanding\FileUploadSubLanding.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>FileUploadSubLanding.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadCompanyDetailsSubLanding\FileUploadCompanyDetailsSubLanding.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>FileUploadCompanyDetailsSubLanding.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>ComplianceSchemeLandingPage.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.cy.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>ComplianceSchemeLandingPage.cy.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.en.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>ComplianceSchemeLandingPage.en.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\ReviewCompanyDetails\ReviewCompanyDetails.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>ReviewCompanyDetails.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>ComplianceSchemeLandingPage.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.cy.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>ComplianceSchemeLandingPage.cy.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.en.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>ComplianceSchemeLandingPage.en.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>ComplianceSchemeLandingPage.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.cy.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>ComplianceSchemeLandingPage.cy.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.en.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>ComplianceSchemeLandingPage.en.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadBrandsSuccess\FileUploadBrandsSuccess.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>FileUploadBrandsSuccess.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadSubLanding\FileUploadSubLanding.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>FileUploadSubLanding.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadCompanyDetailsSubLanding\FileUploadCompanyDetailsSubLanding.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>FileUploadCompanyDetailsSubLanding.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadPartnerships\FileUploadPartnerships.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>FileUploadPartnerships.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadingPartnerships\FileUploadingPartnerships.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>FileUploadingPartnerships.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadPartnershipsSuccess\FileUploadPartnershipsSuccess.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>FileUploadPartnershipsSuccess.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadingBrands\FileUploadingBrands.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>FileUploadingBrands.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\Shared\Partials\Govuk\_Footer.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>_Footer.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\NominatedDelegatedPerson\TelephoneNumber.cy.resx">
-            <LastGenOutput>SignedOut.en.Designer.cs</LastGenOutput>
-            <Generator>ResXFileCodeGenerator</Generator>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>FileUploadCheckFileAndSubmit.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>DeclarationWithFullName.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\SubmissionDeclaration\SubmissionDeclaration.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>SubmissionDeclaration.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\OrganisationDetailsSubmissionFailed\OrganisationDetailsSubmissionFailed.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>OrganisationDetailsSubmissionFailed.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\MembersOrganisationDetailsSubmissionFailed\MembersOrganisationDetailsSubmissionFailed.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>MembersOrganisationDetailsSubmissionFailed.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\MemberDetails\MemberDetails.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>MemberDetails.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\MemberDetails\MemberDetails.cy.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>MemberDetails.cy.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\MemberDetails\MemberDetails.en.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>MemberDetails.en.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\SchemeMemberShip\MemberDetails\MemberDetails.cy.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>MemberDetails.cy.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\SchemeMemberShip\MemberDetails\MemberDetails.en.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>MemberDetails.en.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\SchemeMemberShip\MemberDetails\MemberDetails.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>MemberDetails.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\SchemeMembership\MemberDetails.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>MemberDetails.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\SchemeMembership\MemberDetails.cy.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>MemberDetails.cy.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\SchemeMembership\MemberDetails.en.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>MemberDetails.en.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadWarning\FileUploadWarning.resx">
-          <Generator>ResXFileCodeGenerator</Generator>
-          <LastGenOutput>FileUploadWarning.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadingCompanyDetailsErrors\FileUploadingCompanyDetailsErrors.resx">
-          <Generator>ResXFileCodeGenerator</Generator>
-          <LastGenOutput>FileUploadingCompanyDetailsErrors.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadingCompanyDetailsErrors\FileUploadingCompanyDetailsErrors.cy.resx">
-          <Generator>ResXFileCodeGenerator</Generator>
-          <LastGenOutput>FileUploadingCompanyDetailsErrors.cy.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadingCompanyDetailsErrors\FileUploadingCompanyDetailsErrors.en.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-          <LastGenOutput>FileUploadingCompanyDetailsErrors.en.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\CompanyDetailsSubmissionErrorCodes.en.resx">
-          <Generator></Generator>
-        </EmbeddedResource>
-    </ItemGroup>
-    <ItemGroup>
-        <EmbeddedResource Update="Resources\Views\FileUploadSubmissionError\FileUploadSubmissionError.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>FileUploadSubmissionError.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\Error\ProblemWithSubmissionError.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>ProblemWithSubmissionError.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-    </ItemGroup>
-    <ItemGroup>
-        <Compile Update="Resources\Views\Application\PrivacyPolicy.en.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>PrivacyPolicy.en.resx</DependentUpon>
-        </Compile>
-        <Compile Remove="Attributes\ActionFilters\ApplicationActionFilterAttribute.cs" />
-        <Compile Remove="Controllers\SubsidiaryCompaniesHouseNumberSearchController.cs" />
-        <Compile Update="Resources\ErrorMessages.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>ErrorMessages.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\SharedResources.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>SharedResources.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\ComplianceSchemeMemberLandingPage\ComplianceSchemeMemberLandingPage.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>ComplianceSchemeMemberLandingPage.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadCompanyDetailsWarnings\FileUploadCompanyDetailsWarnings.Designer.cs">
-          <DependentUpon>FileUploadCompanyDetailsWarnings.resx</DependentUpon>
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadSubmissionConfirmation\FileUploadSubmissionConfirmation.Designer.cs">
-            <DependentUpon>FileUploadSubmissionConfirmation.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FrontendSchemeRegistration\Stop.Designer.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>Stop.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\SchemeMembership\MemberDetails.Designer.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>MemberDetails.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\SchemeMembership\ReasonsForRemoval.Designer.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>ReasonsForRemoval.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\Shared\_TimeoutSessionWarning.Designer.cs">
-          <DependentUpon>_TimeoutSessionWarning.resx</DependentUpon>
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-        </Compile>
-        <Compile Update="Resources\Views\UploadNewFileToSubmit\UploadNewFileToSubmit.Designer.cs">
-            <DependentUpon>UploadNewFileToSubmit.resx</DependentUpon>
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-        </Compile>
-        <Compile Update="Resources\Views\FileUpload\FileUpload.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>FileUpload.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\PrivacyPolicy\PrivacyPolicy.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>PrivacyPolicy.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\Shared\Partials\Notifications\_NominatedAsDelegatedPerson.Designer.cs">
-            <DependentUpon>_NominatedAsDelegatedPerson.resx</DependentUpon>
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-        </Compile>
-        <Compile Update="Resources\Views\Shared\Partials\Notifications\_WaitingForApproval.Designer.cs">
-            <DependentUpon>_WaitingForApproval.resx</DependentUpon>
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-        </Compile>
-        <Compile Update="Resources\Views\TaskList\TaskList.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>TaskList.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\Shared\Partials\Govuk\_WarningText.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>_WarningText.resx</DependentUpon>
-        </Compile>
-        <Compile Remove="Attributes\ActionFilters\ApplicationActionFilterAttribute.cs" />
-        <Compile Update="Resources\Views\FileUploading\FileUploading.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>FileUploading.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadFailure\FileUploadFailure.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>FileUploadFailure.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\ErrorCodes.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>ErrorCodes.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadCompanyDetails\FileUploadCompanyDetails.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>FileUploadCompanyDetails.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\UploadingOrganisationDetails\UploadingOrganisationDetails.Designer.cs">
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadBrands\FileUploadBrands.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>FileUploadBrands.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\UploadingOrganisationDetails\UploadingOrganisationDetails.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>UploadingOrganisationDetails.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\Shared\Partials\Govuk\_Header.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>_Header.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\HomePage\HomePage.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>HomePage.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\Home\SignedOut.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>SignedOut.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\NominatedDelegatedPerson\InviteChangePermissions.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>InviteChangePermissions.resx</DependentUpon>
-        </Compile>
-        <Compile Remove="Controllers\FrontendSchemeRegistration\LandingPageController.cs" />
-        <Compile Remove="Controllers\ComplianceSchemeStopController.cs" />
-        <Compile Remove="Controllers\UsingComplianceSchemeController.cs" />
-        <Compile Remove="Controllers\ChangeComplianceSchemeOptionsController.cs" />
-        <Compile Remove="Controllers\HomePageComplianceSchemeController.cs" />
-        <Compile Remove="Views\ChangeComplianceSchemeOptions\ChangeComplianceSchemeOptions.cshtml.cs" />
-        <Compile Remove="Controllers\ComplianceSchemeConfirmationController.cs" />
-        <Compile Remove="Controllers\SelectComplianceSchemeController.cs" />
-        <Compile Remove="Controllers\HomePageSelfManagedController.cs" />
-        <None Remove="assets\js\print.js" />
-        <Compile Update="Resources\Views\Shared\Components\PhaseBanner\Default.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>Default.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\Error\ProblemWithServiceError.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>ProblemWithServiceError.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.Designer.cs">
-        </Compile>
-        <Compile Update="Resources\Views\ReviewCompanyDetails\ReviewCompanyDetails.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>ReviewCompanyDetails.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>ComplianceSchemelandingPage.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.Designer.cs">
-            <DependentUpon>ComplianceSchemeLandingPage.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadCompanyDetailsSuccess\FileUploadCompanyDetailsSuccess.Designer.cs">
-        </Compile>
-        <Compile Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.Designer.cs">
-            <DependentUpon>ComplianceSchemeLandingPage.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadCompanyDetailsSuccess\FileUploadCompanyDetailsSuccess.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>FileUploadCompanyDetailsSuccess.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadBrandsSuccess\FileUploadBrandsSuccess.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>FileUploadBrandsSuccess.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadSubLanding\FileUploadSubLanding.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>FileUploadSubLanding.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadCompanyDetailsSubLanding\FileUploadCompanyDetailsSubLanding.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>FileUploadCompanyDetailsSubLanding.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadPartnerships\FileUploadPartnerships.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>FileUploadPartnerships.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadingPartnerships\FileUploadingPartnerships.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>FileUploadingPartnerships.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadPartnershipsSuccess\FileUploadPartnershipsSuccess.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>FileUploadPartnershipsSuccess.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>DeclarationWithFullName.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadingBrands\FileUploadingBrands.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>FileUploadingBrands.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\Shared\Partials\Govuk\_Footer.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>_Footer.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>DeclarationWithFullName.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadSubmissionError\FileUploadSubmissionError.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>FileUploadSubmissionError.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\SubmissionDeclaration\SubmissionDeclaration.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-        </Compile>
-        <Compile Update="Resources\Views\OrganisationDetailsSubmissionFailed\OrganisationDetailsSubmissionFailed.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>OrganisationDetailsSubmissionFailed.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\MembersOrganisationDetailsSubmissionFailed\MembersOrganisationDetailsSubmissionFailed.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>MembersOrganisationDetailsSubmissionFailed.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\Error\ProblemWithSubmissionError.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>ProblemWithSubmissionError.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\Error\ProblemWithSubmissionError.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>ProblemWithSubmissionError.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\MemberDetails\MemberDetails.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>MemberDetails.resx</DependentUpon>
-        </Compile>
-        <Compile Remove="ViewModels\MemberDetailsModel.cs" />
-        <Compile Update="Resources\Views\FileUploadWarning\FileUploadWarning.Designer.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>FileUploadWarning.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadingCompanyDetailsErrors\FileUploadingCompanyDetailsErrors.Designer.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>FileUploadingCompanyDetailsErrors.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadingCompanyDetailsErrors\FileUploadingCompanyDetailsErrors.cy.Designer.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>FileUploadingCompanyDetailsErrors.cy.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadingCompanyDetailsErrors\FileUploadingCompanyDetailsErrors.en.Designer.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>FileUploadingCompanyDetailsErrors.en.resx</DependentUpon>
-        </Compile>
-    </ItemGroup>
-    <ItemGroup>
-        <Compile Update="Resources\SharedResources.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>SharedResources.resx</DependentUpon>
-        </Compile>
-        <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
-        <Compile Update="Resources\Views\Application\Declaration.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>Declaration.resx</DependentUpon>
-        </Compile>
-        <_ContentIncludedByDefault Remove="Views\SubmissionComplete\SubmissionComplete.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\MembersOrganisationDetailsSubmissionFailed\MembersOrganisationDetailsSubmissionFailed.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\Shared\Partials\SubmissionFailed\_SubmissionFailed.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\FileUploadSubmissionFailure\FileUploadSubmissionFailure.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\FileUploadSubmissionConfirmationOld\FileUploadSubmissionConfirmation.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\Shared\Partials\Govuk\TaskList\_Group.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\Shared\Partials\Govuk\TaskList\_Task.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\Shared\Partials\Govuk\TaskList\_TaskList.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\TaskList\TaskList.cshtml" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <AdditionalFiles Include="Views\FileUploadFailure\FileUploadFailure.cshtml" />
-        <AdditionalFiles Include="Views\Home\TimeoutSignedOut.cshtml" />
-        <AdditionalFiles Include="Views\UploadingOrganisationDetails\UploadingOrganisationDetails.cshtml" />
-        <AdditionalFiles Include="Views\FrontendSchemeRegistration\LandingPage.cshtml" />
-        <AdditionalFiles Include="Views\FrontendSchemeRegistration\SelectComplianceScheme.cshtml" />
-        <AdditionalFiles Include="Views\FrontendSchemeRegistration\Stop.cshtml" />
-        <AdditionalFiles Include="Views\FrontendSchemeRegistration\UsingComplianceScheme.cshtml" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <_ContentIncludedByDefault Remove="Views\Stub\Index.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <UpToDateCheckInput Remove="Views\Stub\Index.cshtml" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>DeclarationWithFullName.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>DeclarationWithFullName.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
-        </Compile>
-        <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
-        <EmbeddedResource Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>FileUploadCheckFileAndSubmit.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\SubmissionDeclaration\SubmissionDeclaration.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>SubmissionDeclaration.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\OrganisationDetailsSubmissionFailed\OrganisationDetailsSubmissionFailed.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>OrganisationDetailsSubmissionFailed.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\MembersOrganisationDetailsSubmissionFailed\MembersOrganisationDetailsSubmissionFailed.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>MembersOrganisationDetailsSubmissionFailed.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-    </ItemGroup>
-    <ItemGroup>
-        <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>DeclarationWithFullName.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\OrganisationDetailsSubmissionFailed\OrganisationDetailsSubmissionFailed.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>OrganisationDetailsSubmissionFailed.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\MembersOrganisationDetailsSubmissionFailed\MembersOrganisationDetailsSubmissionFailed.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>MembersOrganisationDetailsSubmissionFailed.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\SubmissionDeclaration\SubmissionDeclaration.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-        </Compile>
-        <_ContentIncludedByDefault Remove="Views\SubmissionComplete\SubmissionComplete.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
-        <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>DeclarationWithFullName.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>DeclarationWithFullName.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
-        </Compile>
-        <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
-    </ItemGroup>
-    <ItemGroup>
-        <PackageReference Include="EPR.Common.Authorization" Version="1.0.21" />
-        <PackageReference Include="Microsoft.Identity.Web" Version="3.0.1" />
-    </ItemGroup>
-    <ItemGroup>
-        <EmbeddedResource Update="Resources\Views\SubmissionDeclaration\SubmissionDeclaration.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>SubmissionDeclaration.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\FileUploadSubmissionError\FileUploadSubmissionError.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>FileUploadSubmissionError.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\Error\ProblemWithSubmissionError.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>ProblemWithSubmissionError.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\SubmissionDeclaration\SubmissionDeclaration.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>SubmissionDeclaration.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\OrganisationDetailsSubmissionFailed\OrganisationDetailsSubmissionFailed.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>OrganisationDetailsSubmissionFailed.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\MembersOrganisationDetailsSubmissionFailed\MembersOrganisationDetailsSubmissionFailed.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>MembersOrganisationDetailsSubmissionFailed.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-    </ItemGroup>
-    <ItemGroup>
-        <Compile Update="Resources\Views\SubmissionDeclaration\SubmissionDeclaration.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-        </Compile>
-        <Compile Update="Resources\Views\OrganisationDetailsSubmissionFailed\OrganisationDetailsSubmissionFailed.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>OrganisationDetailsSubmissionFailed.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\MembersOrganisationDetailsSubmissionFailed\MembersOrganisationDetailsSubmissionFailed.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>MembersOrganisationDetailsSubmissionFailed.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadSubmissionError\FileUploadSubmissionError.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>FileUploadSubmissionError.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\SubmissionDeclaration\SubmissionDeclaration.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-        </Compile>
-        <Compile Update="Resources\Views\Error\ProblemWithSubmissionError.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>ProblemWithSubmissionError.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\Error\ProblemWithSubmissionError.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>ProblemWithSubmissionError.resx</DependentUpon>
-        </Compile>
-        <_ContentIncludedByDefault Remove="Views\SubmissionComplete\SubmissionComplete.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\FileUploadSubmissionFailure\FileUploadSubmissionFailure.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\SubmissionComplete\SubmissionComplete.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\MembersOrganisationDetailsSubmissionFailed\MembersOrganisationDetailsSubmissionFailed.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\Shared\Partials\SubmissionFailed\_SubmissionFailed.cshtml" />
-    </ItemGroup>
-    <ItemGroup>
-        <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>DeclarationWithFullName.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>DeclarationWithFullName.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
-        </Compile>
-        <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
-        <EmbeddedResource Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>FileUploadCheckFileAndSubmit.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\SubmissionDeclaration\SubmissionDeclaration.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>SubmissionDeclaration.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\OrganisationDetailsSubmissionFailed\OrganisationDetailsSubmissionFailed.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>OrganisationDetailsSubmissionFailed.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\MembersOrganisationDetailsSubmissionFailed\MembersOrganisationDetailsSubmissionFailed.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>MembersOrganisationDetailsSubmissionFailed.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\SchemeMembership\ConfirmationOfRemoval.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>ConfirmationOfRemoval.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\SchemeMembership\ConfirmationOfRemoval.cy.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>ConfirmationOfRemoval.cy.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\SchemeMembership\ConfirmationOfRemoval.en.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>ConfirmationOfRemoval.en.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\UploadNewFileToSubmit\_ContinueButtonActionLink.cy.resx">
-          <SubType>Designer</SubType>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\UploadNewFileToSubmit\_ContinueButtonActionLink.en.resx">
-          <SubType>Designer</SubType>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\UploadNewFileToSubmit\_DecideContinueOrUploadButtonActionLink.cy.resx">
-          <SubType>Designer</SubType>
-        </EmbeddedResource>
-        <EmbeddedResource Update="Resources\Views\UploadNewFileToSubmit\_DecideContinueOrUploadButtonActionLink.en.resx">
-          <SubType>Designer</SubType>
-        </EmbeddedResource>
-    </ItemGroup>
-    <ItemGroup>
-        <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>DeclarationWithFullName.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\OrganisationDetailsSubmissionFailed\OrganisationDetailsSubmissionFailed.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>OrganisationDetailsSubmissionFailed.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\MembersOrganisationDetailsSubmissionFailed\MembersOrganisationDetailsSubmissionFailed.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>MembersOrganisationDetailsSubmissionFailed.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\SubmissionDeclaration\SubmissionDeclaration.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-        </Compile>
-        <_ContentIncludedByDefault Remove="Views\SubmissionComplete\SubmissionComplete.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
-        <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>DeclarationWithFullName.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>DeclarationWithFullName.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\SchemeMembership\ConfirmationOfRemoval.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>ConfirmationOfRemoval.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\SchemeMembership\ConfirmationOfRemoval.cy.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>ConfirmationOfRemoval.cy.resx</DependentUpon>
-        </Compile>
-        <Compile Update="Resources\Views\SchemeMembership\ConfirmationOfRemoval.en.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>ConfirmationOfRemoval.en.resx</DependentUpon>
-        </Compile>
-        <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
-    </ItemGroup>
-	<ItemGroup>
-		<SonarQubeSetting Include="sonar.coverage.exclusions">
-			<Value>ViewModels/ComplianceSchemeLandingViewModel*.cs,Views/**/*.cshtml,Program.cs,gulpfile.js,**/print.js,**/refresh.js,**/sub-status-refresh.js,**/download-pdf.js,**/loadingspinner.js,**/sessionTimeout.js</Value>
-		</SonarQubeSetting>
-        <SonarQubeSetting Include="sonar.cpd.exclusions">
-            <Value>Views/**/*.cshtml</Value>
-        </SonarQubeSetting>
-	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="Controllers\Common\" />
-	  <Folder Include="wwwroot\" />
-	</ItemGroup>
-
+  <PropertyGroup>
+    <Nullable>enable</Nullable>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <CodeAnalysisRuleSet>../stylecop.ruleset</CodeAnalysisRuleSet>
+    <UserSecretsId>1439f55f-9123-4c58-8ab4-ae9114a85b11</UserSecretsId>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <!-- SonarCloud does not recognise file-scoped namespaces in current version. -->
+    <NoWarn>S3903,S5693,S5144,S4507,S4792</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="ViewModels\GovUk\NewFolder\**" />
+    <Compile Remove="ViewModels\Shared\GovUK\**" />
+    <Compile Remove="Views\Shared\Partials\Timeout\**" />
+    <Compile Remove="Views\SubsidiaryCompaniesHouseNumberSearch\**" />
+    <Content Remove="ViewModels\GovUk\NewFolder\**" />
+    <Content Remove="ViewModels\Shared\GovUK\**" />
+    <Content Remove="Views\Shared\Partials\Timeout\**" />
+    <Content Remove="Views\SubsidiaryCompaniesHouseNumberSearch\**" />
+    <EmbeddedResource Remove="ViewModels\GovUk\NewFolder\**" />
+    <EmbeddedResource Remove="ViewModels\Shared\GovUK\**" />
+    <EmbeddedResource Remove="Views\Shared\Partials\Timeout\**" />
+    <EmbeddedResource Remove="Views\SubsidiaryCompaniesHouseNumberSearch\**" />
+    <None Remove="ViewModels\GovUk\NewFolder\**" />
+    <None Remove="ViewModels\Shared\GovUK\**" />
+    <None Remove="Views\Shared\Partials\Timeout\**" />
+    <None Remove="Views\SubsidiaryCompaniesHouseNumberSearch\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../../epr-common/src/EPR.Common/EPR.Common.Authorization/EPR.Common.Authorization.csproj" />
+    <ProjectReference Include="..\FrontendSchemeRegistration.Application\FrontendSchemeRegistration.Application.csproj" />
+  </ItemGroup>
+  <Target Name="NpmInstall" Inputs="package.json" Outputs="node_modules/.install-stamp">
+    <Exec Command="npm install" Condition="'$(RestorePackagesWithLockFile)' != 'true'" />
+    <!-- Write the stamp file, so incremental builds work -->
+    <Touch Files="node_modules/.install-stamp" AlwaysCreate="true" />
+  </Target>
+  <Target Name="NpmRunBuildFrontend" DependsOnTargets="NpmInstall" BeforeTargets="BeforeBuild">
+    <Exec Command="npm run build-frontend" />
+  </Target>
+  <ItemGroup>
+    <Content Update="Views\Shared\Partials\Prns\_calculationsNonGlass.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="assets\images\spinner.gif">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="assets\js\print.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Remove="libman.json" />
+    <Content Remove="Views\ComplianceSchemeConfirmation\Confirm.cshtml" />
+    <Content Remove="Views\HomePageComplianceScheme\HomePageComplianceScheme.cshtml" />
+    <Content Remove="Views\ChangeComplianceSchemeOptions\ChangeComplianceSchemeOptions.cshtml" />
+    <Content Remove="Views\ComplianceSchemeConfirmation\Confirmation.cshtml" />
+    <Content Remove="Views\HomePageSelfManaged\HomePageSelfManaged.cshtml" />
+    <Content Remove="Views\Shared\TimeoutSignedOut.cshtml" />
+    <Content Update="assets\js\print.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="assets\js\print.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="assets\js\print.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="assets\js\print.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="assets\js\print.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
+    <PackageReference Include="CsvHelper" Version="33.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="8.0.7" />
+    <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" Version="8.8.0" />
+    <PackageReference Include="Microsoft.FeatureManagement" Version="3.5.0" />
+    <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" Version="3.5.0" />
+    <PackageReference Include="Microsoft.Graph" Version="5.85.0" />
+    <PackageReference Include="PactNet" Version="4.5.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="8.0.7" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.7" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
+    <PackageReference Include="System.ComponentModel.TypeConverter" Version="4.3.0" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.7" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="8.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\CompanyDetailsSubmissionErrorCodes.cy.resx">
+      <SubType>Designer</SubType>
+      <Generator>
+      </Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Application\PrivacyPolicy.en.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>PrivacyPolicy.en.Designer.cs</LastGenOutput>
+      <DependentUpon>PrivacyPolicy.resx</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\ErrorMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ErrorMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\SharedResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SharedResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\ComplianceSchemeMemberLandingPage\ComplianceSchemeMemberLandingPage.cy.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\ComplianceSchemeMemberLandingPage\ComplianceSchemeMemberLandingPage.en.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\ComplianceSchemeMemberLandingPage\ComplianceSchemeMemberLandingPage.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ComplianceSchemeMemberLandingPage.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadCompanyDetailsWarnings\FileUploadCompanyDetailsWarnings.resx">
+      <LastGenOutput>FileUploadCompanyDetailsWarnings.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadSubmissionConfirmation\FileUploadSubmissionConfirmation.en.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadSubmissionConfirmation\FileUploadSubmissionConfirmation.resx">
+      <SubType>Designer</SubType>
+      <LastGenOutput>FileUploadSubmissionConfirmation.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadCompanyDetailsSubmissionHistory\FileUploadCompanyDetailsSubmissionHistory.en.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadSubsidiaries\AllSubsidiariesList.cy.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadSubsidiaries\ConfirmRemoveSubsidiary.cy.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadSubsidiaries\ConfirmRemoveSubsidiarySuccess.en.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadSubsidiaries\ConfirmRemoveSubsidiarySuccess.cy.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadSubsidiaries\AllSubsidiariesList.en.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadSubsidiaries\SubsidiariesList.cy.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\PackagingDataResubmission\FileUploadResubmissionConfirmation.en.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\PackagingDataResubmission\FileUploadResubmissionConfirmation.cy.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Prns\RejectedPrn.cy.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Prns\RejectedPrn.en.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\SchemeMembership\SchemeMembers.cy.resx">
+      <SubType>Designer</SubType>
+      <LastGenOutput>SignedOut.en.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\SchemeMembership\SchemeMembers.en.resx">
+      <LastGenOutput>SignedOut.en.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Shared\_TimeoutSessionWarning.resx">
+      <LastGenOutput>_TimeoutSessionWarning.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Shared\Partials\Notifications\_NominatedApprovedPerson.cy.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Shared\Partials\Prns\_calculationsNonGlass.cy.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Shared\Partials\Prns\_calculationsNonGlass.en.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\SubsidiaryAdded\SubsidiaryAdded.resx">
+      <Generator>
+      </Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\UploadNewFileToSubmit\UploadNewFileToSubmit.en.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\UploadNewFileToSubmit\UploadNewFileToSubmit.resx">
+      <SubType>Designer</SubType>
+      <LastGenOutput>UploadNewFileToSubmit.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadCompanyDetailsSuccess\FileUploadCompanyDetailsSuccess.cy.resx">
+      <SubType>Designer</SubType>
+      <LastGenOutput>FileUploadCompanyDetailsSuccess.en.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUpload\FileUpload.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileUpload.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\NominatedDelegatedPerson\TelephoneNumber.en.resx">
+      <LastGenOutput>SignedOut.en.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\PrivacyPolicy\PrivacyPolicy.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>PrivacyPolicy.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Shared\Partials\Notifications\_NominatedAsDelegatedPerson.resx">
+      <LastGenOutput>_NominatedAsDelegatedPerson.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Shared\Partials\Notifications\_WaitingForApproval.resx">
+      <LastGenOutput>_WaitingForApproval.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\TaskList\TaskList.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>TaskList.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Shared\Partials\Govuk\_WarningText.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>_WarningText.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\SharedResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SharedResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Application\Declaration.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Declaration.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploading\FileUploading.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileUploading.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadFailure\FileUploadFailure.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileUploadFailure.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\ErrorCodes.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ErrorCodes.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadCompanyDetailsSuccess\FileUploadCompanyDetailsSuccess.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileUploadCompanyDetailsSuccess.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadCompanyDetailsSuccess\FileUploadCompanyDetailsSuccess.en.resx">
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadCompanyDetailsSuccess\FileUploadCompanyDetailsSuccess.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileUploadCompanyDetailsSuccess.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadCompanyDetailsSuccess\FileUploadCompanyDetailsSuccess.en.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileUploadCompanyDetailsSuccess.en.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadCompanyDetails\FileUploadCompanyDetails.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileUploadCompanyDetails.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadCompanyDetails\FileUploadCompanyDetails.en.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\UploadingOrganisationDetails\UploadingOrganisationDetails.resx">
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadBrands\FileUploadBrands.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileUploadBrands.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\UploadingOrganisationDetails\UploadingOrganisationDetails.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>UploadingOrganisationDetails.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Compliance\Confirmation.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Confirmation.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Shared\Partials\Govuk\_Header.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>_Header.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\HomePage\HomePage.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>HomePage.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Home\SignedOut.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SignedOut.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Home\SignedOut.en.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SignedOut.en.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Home\SignedOut.cy.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SignedOut.en.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\NominatedDelegatedPerson\InviteChangePermissions.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>InviteChangePermissions.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\NominatedDelegatedPerson\InviteChangePermissions.en.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>InviteChangePermissions.en.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\NominatedDelegatedPerson\InviteChangePermissions.cy.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>InviteChangePermissions.cy.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Shared\Components\PhaseBanner\Default.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Default.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Error\ProblemWithServiceError.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ProblemWithServiceError.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ComplianceSchemeLandingPage.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.cy.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ComplianceSchemeLandingPage.cy.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.en.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ComplianceSchemeLandingPage.en.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadSubLanding\FileUploadSubLanding.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileUploadSubLanding.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadCompanyDetailsSubLanding\FileUploadCompanyDetailsSubLanding.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileUploadCompanyDetailsSubLanding.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ComplianceSchemeLandingPage.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.cy.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ComplianceSchemeLandingPage.cy.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.en.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ComplianceSchemeLandingPage.en.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\ReviewCompanyDetails\ReviewCompanyDetails.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ReviewCompanyDetails.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ComplianceSchemeLandingPage.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.cy.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ComplianceSchemeLandingPage.cy.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.en.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ComplianceSchemeLandingPage.en.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ComplianceSchemeLandingPage.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.cy.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ComplianceSchemeLandingPage.cy.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.en.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ComplianceSchemeLandingPage.en.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadBrandsSuccess\FileUploadBrandsSuccess.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileUploadBrandsSuccess.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadSubLanding\FileUploadSubLanding.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileUploadSubLanding.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadCompanyDetailsSubLanding\FileUploadCompanyDetailsSubLanding.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileUploadCompanyDetailsSubLanding.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadPartnerships\FileUploadPartnerships.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileUploadPartnerships.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadingPartnerships\FileUploadingPartnerships.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileUploadingPartnerships.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadPartnershipsSuccess\FileUploadPartnershipsSuccess.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileUploadPartnershipsSuccess.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadingBrands\FileUploadingBrands.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileUploadingBrands.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Shared\Partials\Govuk\_Footer.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>_Footer.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\NominatedDelegatedPerson\TelephoneNumber.cy.resx">
+      <LastGenOutput>SignedOut.en.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileUploadCheckFileAndSubmit.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>DeclarationWithFullName.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\SubmissionDeclaration\SubmissionDeclaration.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SubmissionDeclaration.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\OrganisationDetailsSubmissionFailed\OrganisationDetailsSubmissionFailed.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>OrganisationDetailsSubmissionFailed.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\MembersOrganisationDetailsSubmissionFailed\MembersOrganisationDetailsSubmissionFailed.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MembersOrganisationDetailsSubmissionFailed.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\MemberDetails\MemberDetails.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MemberDetails.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\MemberDetails\MemberDetails.cy.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MemberDetails.cy.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\MemberDetails\MemberDetails.en.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MemberDetails.en.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\SchemeMemberShip\MemberDetails\MemberDetails.cy.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MemberDetails.cy.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\SchemeMemberShip\MemberDetails\MemberDetails.en.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MemberDetails.en.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\SchemeMemberShip\MemberDetails\MemberDetails.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MemberDetails.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\SchemeMembership\MemberDetails.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MemberDetails.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\SchemeMembership\MemberDetails.cy.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MemberDetails.cy.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\SchemeMembership\MemberDetails.en.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MemberDetails.en.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadWarning\FileUploadWarning.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileUploadWarning.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadingCompanyDetailsErrors\FileUploadingCompanyDetailsErrors.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileUploadingCompanyDetailsErrors.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadingCompanyDetailsErrors\FileUploadingCompanyDetailsErrors.cy.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileUploadingCompanyDetailsErrors.cy.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadingCompanyDetailsErrors\FileUploadingCompanyDetailsErrors.en.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileUploadingCompanyDetailsErrors.en.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\CompanyDetailsSubmissionErrorCodes.en.resx">
+      <Generator>
+      </Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Views\FileUploadSubmissionError\FileUploadSubmissionError.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileUploadSubmissionError.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Error\ProblemWithSubmissionError.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ProblemWithSubmissionError.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Resources\Views\Application\PrivacyPolicy.en.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>PrivacyPolicy.en.resx</DependentUpon>
+    </Compile>
+    <Compile Remove="Attributes\ActionFilters\ApplicationActionFilterAttribute.cs" />
+    <Compile Remove="Controllers\SubsidiaryCompaniesHouseNumberSearchController.cs" />
+    <Compile Update="Resources\ErrorMessages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ErrorMessages.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\SharedResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SharedResources.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\ComplianceSchemeMemberLandingPage\ComplianceSchemeMemberLandingPage.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ComplianceSchemeMemberLandingPage.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadCompanyDetailsWarnings\FileUploadCompanyDetailsWarnings.Designer.cs">
+      <DependentUpon>FileUploadCompanyDetailsWarnings.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadSubmissionConfirmation\FileUploadSubmissionConfirmation.Designer.cs">
+      <DependentUpon>FileUploadSubmissionConfirmation.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FrontendSchemeRegistration\Stop.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Stop.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\SchemeMembership\MemberDetails.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>MemberDetails.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\SchemeMembership\ReasonsForRemoval.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ReasonsForRemoval.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\Shared\_TimeoutSessionWarning.Designer.cs">
+      <DependentUpon>_TimeoutSessionWarning.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Resources\Views\UploadNewFileToSubmit\UploadNewFileToSubmit.Designer.cs">
+      <DependentUpon>UploadNewFileToSubmit.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Resources\Views\FileUpload\FileUpload.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUpload.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\PrivacyPolicy\PrivacyPolicy.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>PrivacyPolicy.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\Shared\Partials\Notifications\_NominatedAsDelegatedPerson.Designer.cs">
+      <DependentUpon>_NominatedAsDelegatedPerson.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Resources\Views\Shared\Partials\Notifications\_WaitingForApproval.Designer.cs">
+      <DependentUpon>_WaitingForApproval.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Resources\Views\TaskList\TaskList.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>TaskList.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\Shared\Partials\Govuk\_WarningText.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>_WarningText.resx</DependentUpon>
+    </Compile>
+    <Compile Remove="Attributes\ActionFilters\ApplicationActionFilterAttribute.cs" />
+    <Compile Update="Resources\Views\FileUploading\FileUploading.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploading.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadFailure\FileUploadFailure.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadFailure.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\ErrorCodes.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ErrorCodes.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadCompanyDetails\FileUploadCompanyDetails.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadCompanyDetails.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\UploadingOrganisationDetails\UploadingOrganisationDetails.Designer.cs">
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadBrands\FileUploadBrands.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadBrands.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\UploadingOrganisationDetails\UploadingOrganisationDetails.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UploadingOrganisationDetails.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\Shared\Partials\Govuk\_Header.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>_Header.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\HomePage\HomePage.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>HomePage.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\Home\SignedOut.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SignedOut.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\NominatedDelegatedPerson\InviteChangePermissions.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>InviteChangePermissions.resx</DependentUpon>
+    </Compile>
+    <Compile Remove="Controllers\FrontendSchemeRegistration\LandingPageController.cs" />
+    <Compile Remove="Controllers\ComplianceSchemeStopController.cs" />
+    <Compile Remove="Controllers\UsingComplianceSchemeController.cs" />
+    <Compile Remove="Controllers\ChangeComplianceSchemeOptionsController.cs" />
+    <Compile Remove="Controllers\HomePageComplianceSchemeController.cs" />
+    <Compile Remove="Views\ChangeComplianceSchemeOptions\ChangeComplianceSchemeOptions.cshtml.cs" />
+    <Compile Remove="Controllers\ComplianceSchemeConfirmationController.cs" />
+    <Compile Remove="Controllers\SelectComplianceSchemeController.cs" />
+    <Compile Remove="Controllers\HomePageSelfManagedController.cs" />
+    <None Remove="assets\js\print.js" />
+    <Compile Update="Resources\Views\Shared\Components\PhaseBanner\Default.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Default.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\Error\ProblemWithServiceError.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ProblemWithServiceError.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.Designer.cs">
+    </Compile>
+    <Compile Update="Resources\Views\ReviewCompanyDetails\ReviewCompanyDetails.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ReviewCompanyDetails.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ComplianceSchemelandingPage.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.Designer.cs">
+      <DependentUpon>ComplianceSchemeLandingPage.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadCompanyDetailsSuccess\FileUploadCompanyDetailsSuccess.Designer.cs">
+    </Compile>
+    <Compile Update="Resources\Views\ComplianceSchemeLandingPage\ComplianceSchemeLandingPage.Designer.cs">
+      <DependentUpon>ComplianceSchemeLandingPage.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadCompanyDetailsSuccess\FileUploadCompanyDetailsSuccess.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadCompanyDetailsSuccess.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadBrandsSuccess\FileUploadBrandsSuccess.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadBrandsSuccess.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadSubLanding\FileUploadSubLanding.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadSubLanding.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadCompanyDetailsSubLanding\FileUploadCompanyDetailsSubLanding.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadCompanyDetailsSubLanding.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadPartnerships\FileUploadPartnerships.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadPartnerships.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadingPartnerships\FileUploadingPartnerships.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadingPartnerships.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadPartnershipsSuccess\FileUploadPartnershipsSuccess.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadPartnershipsSuccess.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DeclarationWithFullName.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadingBrands\FileUploadingBrands.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadingBrands.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\Shared\Partials\Govuk\_Footer.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>_Footer.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DeclarationWithFullName.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadSubmissionError\FileUploadSubmissionError.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadSubmissionError.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\SubmissionDeclaration\SubmissionDeclaration.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Resources\Views\OrganisationDetailsSubmissionFailed\OrganisationDetailsSubmissionFailed.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>OrganisationDetailsSubmissionFailed.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\MembersOrganisationDetailsSubmissionFailed\MembersOrganisationDetailsSubmissionFailed.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>MembersOrganisationDetailsSubmissionFailed.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\Error\ProblemWithSubmissionError.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ProblemWithSubmissionError.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\Error\ProblemWithSubmissionError.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ProblemWithSubmissionError.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\MemberDetails\MemberDetails.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>MemberDetails.resx</DependentUpon>
+    </Compile>
+    <Compile Remove="ViewModels\MemberDetailsModel.cs" />
+    <Compile Update="Resources\Views\FileUploadWarning\FileUploadWarning.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadWarning.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadingCompanyDetailsErrors\FileUploadingCompanyDetailsErrors.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadingCompanyDetailsErrors.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadingCompanyDetailsErrors\FileUploadingCompanyDetailsErrors.cy.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadingCompanyDetailsErrors.cy.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadingCompanyDetailsErrors\FileUploadingCompanyDetailsErrors.en.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadingCompanyDetailsErrors.en.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Resources\SharedResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SharedResources.resx</DependentUpon>
+    </Compile>
+    <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
+    <Compile Update="Resources\Views\Application\Declaration.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Declaration.resx</DependentUpon>
+    </Compile>
+    <_ContentIncludedByDefault Remove="Views\SubmissionComplete\SubmissionComplete.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\MembersOrganisationDetailsSubmissionFailed\MembersOrganisationDetailsSubmissionFailed.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\Partials\SubmissionFailed\_SubmissionFailed.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\FileUploadSubmissionFailure\FileUploadSubmissionFailure.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\FileUploadSubmissionConfirmationOld\FileUploadSubmissionConfirmation.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\Partials\Govuk\TaskList\_Group.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\Partials\Govuk\TaskList\_Task.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\Partials\Govuk\TaskList\_TaskList.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\TaskList\TaskList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="Views\FileUploadFailure\FileUploadFailure.cshtml" />
+    <AdditionalFiles Include="Views\Home\TimeoutSignedOut.cshtml" />
+    <AdditionalFiles Include="Views\UploadingOrganisationDetails\UploadingOrganisationDetails.cshtml" />
+    <AdditionalFiles Include="Views\FrontendSchemeRegistration\LandingPage.cshtml" />
+    <AdditionalFiles Include="Views\FrontendSchemeRegistration\SelectComplianceScheme.cshtml" />
+    <AdditionalFiles Include="Views\FrontendSchemeRegistration\Stop.cshtml" />
+    <AdditionalFiles Include="Views\FrontendSchemeRegistration\UsingComplianceScheme.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Views\Stub\Index.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Stub\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DeclarationWithFullName.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DeclarationWithFullName.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
+    </Compile>
+    <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
+    <EmbeddedResource Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileUploadCheckFileAndSubmit.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\SubmissionDeclaration\SubmissionDeclaration.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SubmissionDeclaration.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\OrganisationDetailsSubmissionFailed\OrganisationDetailsSubmissionFailed.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>OrganisationDetailsSubmissionFailed.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\MembersOrganisationDetailsSubmissionFailed\MembersOrganisationDetailsSubmissionFailed.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MembersOrganisationDetailsSubmissionFailed.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DeclarationWithFullName.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\OrganisationDetailsSubmissionFailed\OrganisationDetailsSubmissionFailed.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>OrganisationDetailsSubmissionFailed.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\MembersOrganisationDetailsSubmissionFailed\MembersOrganisationDetailsSubmissionFailed.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>MembersOrganisationDetailsSubmissionFailed.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\SubmissionDeclaration\SubmissionDeclaration.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <_ContentIncludedByDefault Remove="Views\SubmissionComplete\SubmissionComplete.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
+    <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DeclarationWithFullName.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DeclarationWithFullName.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
+    </Compile>
+    <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Identity.Web" Version="3.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Views\SubmissionDeclaration\SubmissionDeclaration.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SubmissionDeclaration.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\FileUploadSubmissionError\FileUploadSubmissionError.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileUploadSubmissionError.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\Error\ProblemWithSubmissionError.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ProblemWithSubmissionError.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\SubmissionDeclaration\SubmissionDeclaration.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SubmissionDeclaration.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\OrganisationDetailsSubmissionFailed\OrganisationDetailsSubmissionFailed.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>OrganisationDetailsSubmissionFailed.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\MembersOrganisationDetailsSubmissionFailed\MembersOrganisationDetailsSubmissionFailed.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MembersOrganisationDetailsSubmissionFailed.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Resources\Views\SubmissionDeclaration\SubmissionDeclaration.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Resources\Views\OrganisationDetailsSubmissionFailed\OrganisationDetailsSubmissionFailed.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>OrganisationDetailsSubmissionFailed.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\MembersOrganisationDetailsSubmissionFailed\MembersOrganisationDetailsSubmissionFailed.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>MembersOrganisationDetailsSubmissionFailed.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadSubmissionError\FileUploadSubmissionError.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadSubmissionError.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\SubmissionDeclaration\SubmissionDeclaration.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Resources\Views\Error\ProblemWithSubmissionError.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ProblemWithSubmissionError.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\Error\ProblemWithSubmissionError.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ProblemWithSubmissionError.resx</DependentUpon>
+    </Compile>
+    <_ContentIncludedByDefault Remove="Views\SubmissionComplete\SubmissionComplete.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\FileUploadSubmissionFailure\FileUploadSubmissionFailure.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\SubmissionComplete\SubmissionComplete.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\MembersOrganisationDetailsSubmissionFailed\MembersOrganisationDetailsSubmissionFailed.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Shared\Partials\SubmissionFailed\_SubmissionFailed.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DeclarationWithFullName.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DeclarationWithFullName.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
+    </Compile>
+    <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
+    <EmbeddedResource Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileUploadCheckFileAndSubmit.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\SubmissionDeclaration\SubmissionDeclaration.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SubmissionDeclaration.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\OrganisationDetailsSubmissionFailed\OrganisationDetailsSubmissionFailed.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>OrganisationDetailsSubmissionFailed.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\MembersOrganisationDetailsSubmissionFailed\MembersOrganisationDetailsSubmissionFailed.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MembersOrganisationDetailsSubmissionFailed.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\SchemeMembership\ConfirmationOfRemoval.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ConfirmationOfRemoval.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\SchemeMembership\ConfirmationOfRemoval.cy.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ConfirmationOfRemoval.cy.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\SchemeMembership\ConfirmationOfRemoval.en.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ConfirmationOfRemoval.en.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\UploadNewFileToSubmit\_ContinueButtonActionLink.cy.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\UploadNewFileToSubmit\_ContinueButtonActionLink.en.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\UploadNewFileToSubmit\_DecideContinueOrUploadButtonActionLink.cy.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\UploadNewFileToSubmit\_DecideContinueOrUploadButtonActionLink.en.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DeclarationWithFullName.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\OrganisationDetailsSubmissionFailed\OrganisationDetailsSubmissionFailed.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>OrganisationDetailsSubmissionFailed.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\MembersOrganisationDetailsSubmissionFailed\MembersOrganisationDetailsSubmissionFailed.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>MembersOrganisationDetailsSubmissionFailed.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\SubmissionDeclaration\SubmissionDeclaration.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <_ContentIncludedByDefault Remove="Views\SubmissionComplete\SubmissionComplete.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
+    <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DeclarationWithFullName.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DeclarationWithFullName.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\SchemeMembership\ConfirmationOfRemoval.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ConfirmationOfRemoval.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\SchemeMembership\ConfirmationOfRemoval.cy.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ConfirmationOfRemoval.cy.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\Views\SchemeMembership\ConfirmationOfRemoval.en.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ConfirmationOfRemoval.en.resx</DependentUpon>
+    </Compile>
+    <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <SonarQubeSetting Include="sonar.coverage.exclusions">
+      <Value>ViewModels/ComplianceSchemeLandingViewModel*.cs,Views/**/*.cshtml,Program.cs,gulpfile.js,**/print.js,**/refresh.js,**/sub-status-refresh.js,**/download-pdf.js,**/loadingspinner.js,**/sessionTimeout.js</Value>
+    </SonarQubeSetting>
+    <SonarQubeSetting Include="sonar.cpd.exclusions">
+      <Value>Views/**/*.cshtml</Value>
+    </SonarQubeSetting>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Controllers\Common\" />
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
   <PropertyGroup>
     <NoWarn>S4507,S4792</NoWarn>
   </PropertyGroup>

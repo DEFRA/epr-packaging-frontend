@@ -23,6 +23,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		stylecop.ruleset = stylecop.ruleset
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EPR.Common.Authorization", "..\..\epr-common\src\EPR.Common\EPR.Common.Authorization\EPR.Common.Authorization.csproj", "{2951186C-0CC9-4432-BC33-05941F647E9F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,10 @@ Global
 		{9886CC51-26A6-44C9-9516-8A9A3CC184FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9886CC51-26A6-44C9-9516-8A9A3CC184FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9886CC51-26A6-44C9-9516-8A9A3CC184FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2951186C-0CC9-4432-BC33-05941F647E9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2951186C-0CC9-4432-BC33-05941F647E9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2951186C-0CC9-4432-BC33-05941F647E9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2951186C-0CC9-4432-BC33-05941F647E9F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
