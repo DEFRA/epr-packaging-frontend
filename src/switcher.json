@@ -1,0 +1,28 @@
+{
+  "solution": "FrontendSchemeRegistration.sln",
+  "solutionFolder": null,
+  "mappings": {
+    "EPR.Common.Authorization": "../../epr-common/src/EPR.Common/EPR.Common.Authorization/EPR.Common.Authorization.csproj"
+  },
+  "restore": [
+    {
+      "name": "FrontendSchemeRegistration.UI",
+      "packages": [
+        {
+          "packageName": "EPR.Common.Authorization",
+          "version": "1.0.21"
+        }
+      ]
+    },
+    {
+      "name": "FrontendSchemeRegistration.Application",
+      "packages": [
+        {
+          "packageName": "EPR.Common.Authorization",
+          "version": "1.0.21"
+        }
+      ]
+    }
+  ],
+  "removeProjects": true
+}
