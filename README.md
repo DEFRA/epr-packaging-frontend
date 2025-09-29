@@ -30,7 +30,7 @@ Add the following to your `src/Nuget.Config`
 ```
 
 ##### Members of the public
-Clone the [epr_common](https://dev.azure.com/defragovuk/RWD-CPR-EPR4P-ADO/_git/epr_common) repository and add it as a project to the solution you wish to use it in. By default the repository will reference the files as if they are coming from the NuGet package. You simply need to update the references to make them point to the newly added project.
+Clone the [epr_common](https://github.com/DEFRA/epr-common) repository and add it as a project to the solution you wish to use it in. By default the repository will reference the files as if they are coming from the NuGet package. You simply need to update the references to make them point to the newly added project.
 
 ### Run
 Go to `src/FrontendSchemeRegistration.UI` directory and execute:
