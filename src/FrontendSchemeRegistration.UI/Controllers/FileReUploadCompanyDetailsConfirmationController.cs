@@ -84,6 +84,16 @@ public class FileReUploadCompanyDetailsConfirmationController : Controller
             RegistrationYear = registrationYear
         };
 
+        if (model.Status.Equals(SubmissionPeriodStatus.NotStarted) && !string.IsNullOrEmpty(submission.CompanyDetailsFileName))
+        {
+            var companyDetailsUploadedBy = await GetUsersName(submission.CompanyDetailsUploadedBy);
+
+            model.CompanyDetailsFileName = submission.CompanyDetailsFileName;
+            model.CompanyDetailsFileUploadDate = submission.CompanyDetailsUploadedDate?.ToReadableDate();
+            model.CompanyDetailsFileUploadedBy = companyDetailsUploadedBy.UserName;
+            model.IsCompanyDetailsFileUploadedByDeleted = companyDetailsUploadedBy.IsDeleted;
+        }
+
         if (model.Status.Equals(SubmissionPeriodStatus.FileUploaded) ||
             model.Status.Equals(SubmissionPeriodStatus.SubmittedAndHasRecentFileUpload))
         {

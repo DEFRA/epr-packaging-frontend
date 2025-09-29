@@ -378,4 +378,51 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
         _userAccountServiceMock.Verify(x => x.GetAllPersonByUserId(It.IsAny<Guid>()), Times.Once);
         _userAccountServiceMock.Verify(x => x.GetPersonByUserId(It.IsAny<Guid>()), Times.Never);
     }
+
+    [Test]
+    public async Task Get_ReturnsCorrectViewAndModel_WhenCalledWithUploadedCompanyFile()
+    {
+        // Arrange
+        const string orgDetailsFileName = "filename.csv";
+        DateTime orgDetailsUploadDate = DateTime.UtcNow;
+        Guid orgDetailsUploadedBy = Guid.NewGuid();
+
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(SubmissionId)).ReturnsAsync(new RegistrationSubmission
+        {
+            Id = SubmissionId,
+            CompanyDetailsFileName = orgDetailsFileName,
+            CompanyDetailsUploadedDate = orgDetailsUploadDate,
+            CompanyDetailsUploadedBy = orgDetailsUploadedBy,
+            HasValidFile = true,
+        });
+        const string firstName = "first";
+        const string lastName = "last";
+        const string fullName = $"{firstName} {lastName}";
+
+        _userAccountServiceMock.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new PersonDto
+        {
+            FirstName = firstName,
+            LastName = lastName
+        });
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("FileReUploadCompanyDetailsConfirmation");
+        result.Model.Should().BeEquivalentTo(new FileReUploadCompanyDetailsConfirmationViewModel
+        {
+            SubmissionId = SubmissionId,
+            CompanyDetailsFileName = orgDetailsFileName,
+            CompanyDetailsFileUploadDate = orgDetailsUploadDate.ToReadableDate(),
+            CompanyDetailsFileUploadedBy = fullName,
+            SubmissionDeadline = SubmissionDeadline.ToReadableDate(),
+            HasValidfile = true,
+            Status = SubmissionPeriodStatus.NotStarted,
+            OrganisationRole = "Producer"
+        });
+
+        _userAccountServiceMock.Verify(x => x.GetAllPersonByUserId(It.IsAny<Guid>()), Times.Once);
+        _userAccountServiceMock.Verify(x => x.GetPersonByUserId(It.IsAny<Guid>()), Times.Never);
+    }
 }

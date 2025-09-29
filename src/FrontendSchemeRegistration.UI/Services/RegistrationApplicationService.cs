@@ -31,7 +31,7 @@ public class RegistrationApplicationService(
             lateFeeDeadline = globalVariables.Value.LateFeeDeadline2025;
         else if (session.RegistrationFeeCalculationDetails is null)
             lateFeeDeadline = DateTime.MaxValue;
-        else if (string.Equals(session.RegistrationFeeCalculationDetails?[0].OrganisationSize, "S", StringComparison.InvariantCultureIgnoreCase))
+        else if (string.Equals(session.RegistrationFeeCalculationDetails?[0].OrganisationSize, "Small", StringComparison.InvariantCultureIgnoreCase))
             lateFeeDeadline = globalVariables.Value.SmallProducerLateFeeDeadline2026;
         else
             lateFeeDeadline = globalVariables.Value.LargeProducerLateFeeDeadline2026;
@@ -236,7 +236,11 @@ public class RegistrationApplicationService(
                 SubmissionDate = session.LastSubmittedFile.SubmittedDateTime.Value,
                 ComplianceSchemeMembers = feeCalculationDetails.Select(c => new ComplianceSchemePaymentCalculationRequestMember
                 {
-                    IsLateFeeApplicable = session.IsOriginalCsoSubmissionLate || session is { IsLateFeeApplicable: true, IsResubmission: false } || session.IsLateFeeApplicable && c.IsNewJoiner,
+                    // Apply late fee to all producers if original submission was late or
+                    // not a single submission and current submission is late 
+                    // if above two are not satisified that means file are submitted on time its new submission either due to queried
+                    // check individual producer is new joiner so late fee applicable on producer level rather than file
+                    IsLateFeeApplicable = session.IsOriginalCsoSubmissionLate || session.FirstApplicationSubmittedEventCreatedDatetime is null  && session.IsLateFeeApplicable || session.IsLateFeeApplicable && c.IsNewJoiner,
                     IsOnlineMarketplace = c.IsOnlineMarketplace,
                     MemberId = c.OrganisationId,
                     MemberType = c.OrganisationSize,
