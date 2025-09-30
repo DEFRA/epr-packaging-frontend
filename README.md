@@ -30,7 +30,15 @@ Add the following to your `src/Nuget.Config`
 ```
 
 ##### Members of the public
-Clone the [epr_common](https://github.com/DEFRA/epr-common) repository and add it as a project to the solution you wish to use it in. By default the repository will reference the files as if they are coming from the NuGet package. You simply need to update the references to make them point to the newly added project.
+
+
+By default this repository references the nuget packages from a private NuGet package.
+
+1. Clone the [epr-common](https://github.com/DEFRA/epr-common) repository as a sibling folder of this one.
+2. Install [dnt](https://github.com/RicoSuter/DNT)
+3. Run `dnt switch-to-projects` in folder `src/ of this repo
+
+More info: [DNT switch projects documentation](https://github.com/RicoSuter/DNT?tab=readme-ov-file#switch-to-projects)
 
 ### Run
 Go to `src/FrontendSchemeRegistration.UI` directory and execute:
