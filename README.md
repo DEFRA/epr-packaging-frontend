@@ -40,14 +40,35 @@ By default this repository references the nuget packages from a private NuGet pa
 
 More info: [DNT switch projects documentation](https://github.com/RicoSuter/DNT?tab=readme-ov-file#switch-to-projects)
 
-### Run
-Go to `src/FrontendSchemeRegistration.UI` directory and execute:
+## Redis
+
+### Run Redis with docker
+
+Recommended way of running Redis is to run it via Docker. In terminal run:
 
 ```
+docker run -d --name epr-producers- -p 6379:6379 -p 8001:8001 redis/redis-stack:latest
+```
+
+### Redis App settings
+
+Configure the app to talk to the local redis
+
+```
+cd src/FrontendSchemeRegistration.UI
+dotnet user-secrets set "Redis:InstanceName" "epr-producers-"
+dotnet user-secrets set "Redis:ConnectionString" "localhost:6379"
+```
+
+### Run
+
+```
+cd src/FrontendSchemeRegistration.UI
 dotnet run
 ```
 
 ## Docker
+
 Run in terminal at the solution source root:
 
 ```
@@ -64,26 +85,11 @@ You can configure each appsetting by adding ```-e``` flag to the above command.
 
 Do a GET Request to ```http://localhost:5167/admin/health``` to confirm that the service is running.
 
-## Redis
-
-### App settings
-Add the following variables to appsettings.Development.json/appsettings.json:
-```
-"Redis__InstanceName": "epr-producers-",
-"Redis__ConnectionString": "localhost:6379"
-```
-
-### To install Redis and Redis Stack
-Recommended way of running Redis is to run it via Docker. In terminal run:
-```
-docker run -d --name epr-producers- -p 6379:6379 -p 8001:8001 redis/redis-stack:latest
-```
-
 ### Inspect Redis keys in the session
 To view the keys in Redis cache, open browser and point at: http://localhost:8001/redis-stack/browser
 
 ## MaxIssuesToProcess and MaxIssueReportSize app settings
-This is currently set to 1000 in the app settings. Basic calculations/tests for this limit means the maximum error/warning report size will never be greater than 5MB. 
+This is currently set to 1000 in the app settings. Basic calculations/tests for this limit means the maximum error/warning report size will never be greater than 5MB.
 If this issue limit increases the MaxIssueReportSize setting will also need changed to reflect this.
 
 # How To Test
@@ -158,7 +164,7 @@ The structure of the appsettings can be found in the repository. Example configu
 | PhaseBanner__Enabled                                       | Display phase banner                                                                                             |
 | EprAuthorizationConfig__FacadeBaseUrl                      | URL to the account facade (Don't rename variable name, it's used in EPR.Common)                                  |
 | EprAuthorizationConfig__FacadeUserAccountEndpoint          | Endpoint in the account facade for users (Don't rename variable name, it's used in EPR.Common)                   |
-| EprAuthorizationConfig__FacadeDownStreamScope              | B2C scope for account facade (Don't rename variable name, it's used in EPR.Common)                               | 
+| EprAuthorizationConfig__FacadeDownStreamScope              | B2C scope for account facade (Don't rename variable name, it's used in EPR.Common)                               |
 | EmailAddresses__DataProtection                             | Email address for data protection queries                                                                        |
 | EmailAddresses__DefraGroupProtectionOfficer                | Email address for the DEFRA group protection officer                                                             |
 | SiteDates__PrivacyLastUpdated                              | Last time the privacy policy was updated                                                                         |
