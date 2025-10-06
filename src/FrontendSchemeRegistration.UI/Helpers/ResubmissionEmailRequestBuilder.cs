@@ -16,7 +16,7 @@ namespace FrontendSchemeRegistration.UI.Helpers
             {
                 OrganisationNumber = organisation?.OrganisationNumber,
                 ProducerOrganisationName = organisation?.Name,
-                SubmissionPeriod = submission.SubmissionPeriod,
+                SubmissionPeriod = submission.ActualSubmissionPeriod ?? submission.SubmissionPeriod,
                 NationId = organisation?.NationId ?? 0,
                 IsComplianceScheme = organisation?.OrganisationRole == OrganisationRoles.ComplianceScheme,
             };

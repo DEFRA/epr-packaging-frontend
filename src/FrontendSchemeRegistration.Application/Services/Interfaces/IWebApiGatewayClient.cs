@@ -32,6 +32,8 @@ public interface IWebApiGatewayClient
     Task<T?> GetSubmissionAsync<T>(Guid id)
         where T : AbstractSubmission;
 
+    Task<PoMActualSubmissionPeriod> GetActualSubmissionPeriodAsync(Guid submissionId, string submissionPeriod);
+
     Task<List<T>> GetSubmissionsAsync<T>(string queryString)
         where T : AbstractSubmission;
 

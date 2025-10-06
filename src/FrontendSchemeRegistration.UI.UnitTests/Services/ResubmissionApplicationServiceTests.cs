@@ -788,4 +788,24 @@ public class ResubmissionApplicationServiceTests
         result.Should().NotBeNull();
         result.ActiveFrom.Should().Be(expectedResult.ActiveFrom);
     }
+
+    [Test]
+    public async Task GetActualSubmissionPeriod_ShouldReturn_SubmissionPeriod()
+    {
+        // Arrange
+        var expectedResult = "January to December 2025";
+        var submissionId = Guid.NewGuid();
+        var submissionPeriod = "July to December 2025";
+
+        _mockSubmissionService
+            .Setup(x => x.GetActualSubmissionPeriod(submissionId, submissionPeriod))
+            .ReturnsAsync(expectedResult);
+
+        // Act
+        var result = await _service.GetActualSubmissionPeriod(submissionId, submissionPeriod);
+
+        // Assert
+        result.Should().Be(expectedResult);
+        _mockSubmissionService.Verify(x => x.GetActualSubmissionPeriod(submissionId, submissionPeriod), Times.Once);
+    }
 }

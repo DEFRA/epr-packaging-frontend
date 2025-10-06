@@ -145,6 +145,29 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         }
     }
 
+    public async Task<PoMActualSubmissionPeriod> GetActualSubmissionPeriodAsync(Guid submissionId, string submissionPeriod)
+    {
+        try
+        {
+            await PrepareAuthenticatedClientAsync();
+            var response = await _httpClient.GetAsync($"/api/v1/submissions/actual-submission-period/{submissionId}?submissionPeriod={WebUtility.UrlEncode(submissionPeriod)}");
+
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return new PoMActualSubmissionPeriod() { ActualSubmissionPeriod = submissionPeriod };
+            }
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadFromJsonAsync<PoMActualSubmissionPeriod>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting actual submission period for SubmissionId {SubmissionId} (period: {SubmissionPeriod})", submissionId, submissionPeriod);
+            throw;
+        }
+    }
+
     /// <summary>
     /// Gets Producer validation issues i.e. errors & warnings.
     /// </summary>

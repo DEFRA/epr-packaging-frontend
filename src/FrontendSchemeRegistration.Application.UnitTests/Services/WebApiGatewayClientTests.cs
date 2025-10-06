@@ -272,6 +272,78 @@ public class WebApiGatewayClientTests
     }
 
     [Test]
+    public async Task GetActualSubmissionPeriodAsync_ReturnsActualSubmissionPeriod()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var submissionPeriod = "July - December 2025";
+        var actualSubmissionPeriod = "January to December 2025";
+        var response = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent(JsonSerializer.Serialize(new PoMActualSubmissionPeriod {  ActualSubmissionPeriod = actualSubmissionPeriod }))
+        };
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _webApiGatewayClient.GetActualSubmissionPeriodAsync(submissionId, submissionPeriod);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.ActualSubmissionPeriod.Should().Be(actualSubmissionPeriod);
+
+    }
+
+    [Test]
+    public async Task GetActualSubmissionPeriodAsync_ReturnsPassedInSubmissionPeriod_WhenResponseCodeIsNotFound()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var submissionPeriod = "July - December 2025";
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.NotFound });
+
+        // Act
+        var result = await _webApiGatewayClient.GetActualSubmissionPeriodAsync(submissionId, submissionPeriod);
+
+        // Assert
+        result.ActualSubmissionPeriod.Should().Be(submissionPeriod);
+    }
+
+    [Test]
+    public async Task GetActualSubmissionPeriodAsync__ThrowsException_WhenResponseCodeIsNotSuccessfulOr404()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var submissionPeriod = "July - December 2025";
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.InternalServerError });
+
+        // Act / Assert
+        await _webApiGatewayClient
+            .Invoking(x => x.GetActualSubmissionPeriodAsync(submissionId, submissionPeriod))
+            .Should()
+            .ThrowAsync<HttpRequestException>();
+        _loggerMock.VerifyLog(x => x.LogError("Error getting actual submission period for SubmissionId {SubmissionId} (period: {SubmissionPeriod})", submissionId, submissionPeriod));
+    }
+
+    [Test]
     public async Task GetSubmissionsAsync_ThrowsException_WhenResponseCodeIsNotSuccessfulOr404()
     {
         // Arrange

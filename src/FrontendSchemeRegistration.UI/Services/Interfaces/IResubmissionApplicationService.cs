@@ -38,5 +38,7 @@ namespace FrontendSchemeRegistration.UI.Services.Interfaces
         Task<List<SubmissionHistory>> GetSubmissionHistoryAsync(Guid submissionId, DateTime lastSyncTime);
 
         Task<SubmissionPeriod?> GetActiveSubmissionPeriod();
+
+        Task<string> GetActualSubmissionPeriod(Guid submissionId, string submissionPeriod);
     }
 }

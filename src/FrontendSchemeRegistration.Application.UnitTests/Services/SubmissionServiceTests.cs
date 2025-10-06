@@ -40,6 +40,27 @@ public class SubmissionServiceTests
     }
 
     [Test]
+    public async Task GetActualSubmissionPeriod_Returns_ActualSubmissionPeriod()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var returnedSubmissionPeriod = "January To December 2025";
+        var sentSubmissionPeriod = "July - December 2025";
+
+        _webApiGatewayClientMock
+            .Setup(x => x.GetActualSubmissionPeriodAsync(submissionId, It.IsAny<string>()))
+            .ReturnsAsync(new PoMActualSubmissionPeriod { ActualSubmissionPeriod = returnedSubmissionPeriod });
+
+        // Act
+        var result = await _submissionService.GetActualSubmissionPeriod(submissionId, sentSubmissionPeriod);
+
+        // Assert
+        result.Should().Be(returnedSubmissionPeriod);
+        _webApiGatewayClientMock.Verify(x => x.GetActualSubmissionPeriodAsync(submissionId, sentSubmissionPeriod), Times.Once);
+    }
+
+
+    [Test]
     public async Task GetSubmissionsAsync_CallsClientWithCorrectQueryString_WhenSubmissionPeriodsListIsEmpty()
     {
         // Arrange

@@ -1,11 +1,9 @@
-using System.Web;
 using EPR.SubmissionMicroservice.API.Contracts.Submissions.Get;
 using EPR.SubmissionMicroservice.Data.Entities.SubmissionEvent;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
-using FrontendSchemeRegistration.Application.DTOs.UserAccount;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
+using System.Web;
 
 namespace FrontendSchemeRegistration.Application.Services;
 
@@ -14,6 +12,12 @@ public class SubmissionService(IWebApiGatewayClient webApiGatewayClient) : ISubm
     public async Task<T> GetSubmissionAsync<T>(Guid submissionId) where T : AbstractSubmission
     {
         return await webApiGatewayClient.GetSubmissionAsync<T>(submissionId);
+    }
+
+    public async Task<string> GetActualSubmissionPeriod(Guid submissionId, string submissionPeriod)
+    { 
+        var pomActualSubmissionPeriod = await webApiGatewayClient.GetActualSubmissionPeriodAsync(submissionId, submissionPeriod);
+        return pomActualSubmissionPeriod.ActualSubmissionPeriod;
     }
 
     public async Task<List<T>> GetSubmissionsAsync<T>(List<string> periods, int? limit, Guid? complianceSchemeId) where T : AbstractSubmission

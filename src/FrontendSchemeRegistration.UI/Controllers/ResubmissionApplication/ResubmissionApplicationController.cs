@@ -6,6 +6,7 @@ using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Extensions;
 using FrontendSchemeRegistration.Application.RequestModels;
+using FrontendSchemeRegistration.Application.Services;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
@@ -216,6 +217,14 @@ public class ResubmissionApplicationController : Controller
                 session.PomResubmissionSession.PackagingResubmissionApplicationSession.SubmissionId,
                 submission?.LastSubmittedFile.FileId, submittedByName,
                 DateTime.Now, model?.AdditionalInformationText);
+
+            // The submission period for small producers is stored in Cosmos as July-December, however it's *actually* January-December.
+            // For the email to the regulator, it needs to be the *actual* submission period
+            if (submission is not null)
+            {
+                var actualSubmissionPeriod = await _resubmissionApplicationService.GetActualSubmissionPeriod(submission.Id, submission.SubmissionPeriod);
+                submission.ActualSubmissionPeriod = actualSubmissionPeriod;
+            }
 
             var input = ResubmissionEmailRequestBuilder.BuildResubmissionEmail(userData, submission, session);
 

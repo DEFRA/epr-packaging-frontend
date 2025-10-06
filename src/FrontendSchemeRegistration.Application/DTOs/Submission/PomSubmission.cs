@@ -17,4 +17,6 @@ public class PomSubmission : AbstractSubmission
     public UploadedFileInformation? LastUploadedValidFile { get; set; }
 
     public SubmittedFileInformation? LastSubmittedFile { get; set; }
+
+    public string ActualSubmissionPeriod { get; set; }
 }

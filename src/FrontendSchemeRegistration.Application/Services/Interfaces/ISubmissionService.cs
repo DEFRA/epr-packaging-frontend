@@ -9,6 +9,8 @@ public interface ISubmissionService
 {
     Task<T?> GetSubmissionAsync<T>(Guid submissionId) where T : AbstractSubmission;
 
+    Task<string> GetActualSubmissionPeriod(Guid submissionId, string submissionPeriod);
+
     Task<List<T>> GetSubmissionsAsync<T>(List<string> periods, int? limit, Guid? complianceSchemeId) where T : AbstractSubmission;
 
     Task SubmitAsync(Guid submissionId, Guid fileId, string submittedBy, string? appReferenceNumber = null, bool? isResubmitted = null);

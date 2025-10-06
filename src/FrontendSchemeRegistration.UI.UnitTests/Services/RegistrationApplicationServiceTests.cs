@@ -817,7 +817,7 @@ public class RegistrationApplicationServiceTests
 
         var registrationApplicationDetails = new RegistrationApplicationDetails
         {
-            FirstApplicationSubmittedEventCreatedDatetime = DateTime.Parse("2025/10/02"),
+            FirstApplicationSubmittedEventCreatedDatetime = DateTime.Today.AddDays(-1).AddMinutes(1),
             ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
             LastSubmittedFile = lastSubmittedFileDetails,
             RegistrationFeeCalculationDetails =
