@@ -1,5 +1,5 @@
 $govuk-assets-path: '/report-data/';
-@import 'index';
+@import 'node_modules/govuk-frontend/govuk/all';
 
 // Abstracts
 @import './abstracts/utilities';
@@ -13,10 +13,6 @@ $govuk-assets-path: '/report-data/';
 @import './components/tabs';
 
 $narrow-media-width: 40.0625em;
-
-.govuk-tag{
-    max-width: inherit !important;
-}
 
 .two-card-row {
     @media (min-width: $narrow-media-width) {
