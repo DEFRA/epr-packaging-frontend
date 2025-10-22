@@ -161,6 +161,9 @@ public class FrontendSchemeRegistrationController(
             return await SaveSessionAndRedirect(session, nameof(SelectComplianceScheme), PagePaths.UsingAComplianceScheme, PagePaths.SelectComplianceScheme);
         }
 
+        if (session.RegistrationSession.Journey[0] == "landing")
+            session.RegistrationSession.NotificationMessage = "created_new_approved_person";
+
         return await SaveSessionAndRedirect(session, nameof(VisitHomePageSelfManaged), PagePaths.UsingAComplianceScheme, PagePaths.HomePageSelfManaged);
     }
 
