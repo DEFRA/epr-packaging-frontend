@@ -25,4 +25,7 @@ public static class FeatureFlags
     public const string ShowWasteTile = "ShowWasteTile";
     public const string ShowServiceNowFooterLink = "ShowServiceNowFooterLink";
     public const string UseGraphApiForExtendedUserClaims = "UseGraphApiForExtendedUserClaims";
+    public const string EnableRegistrationFeeV2 = "EnableRegistrationFeeV2";
+
+    public const string IncludeSubsidariesInFeeCalculationsForProducers = "IncludeSubsidariesInFeeCalculationsForProducers";
 }

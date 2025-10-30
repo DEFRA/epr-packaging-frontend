@@ -107,7 +107,7 @@ public class PaymentCalculationServiceTests
             x.SendPostRequest(It.IsAny<string>(), It.IsAny<PaymentCalculationRequest>())).ReturnsAsync(response);
 
         // Act
-        var result = await _systemUnderTest.GetProducerRegistrationFees(It.IsAny<PaymentCalculationRequest>());
+        var result = await _systemUnderTest.GetProducerRegistrationFees(new PaymentCalculationRequest() { ApplicationReferenceNumber= "A2"});
 
         // Assert
         result.Should().BeOfType(typeof(PaymentCalculationResponse));
@@ -270,7 +270,7 @@ public class PaymentCalculationServiceTests
             x.SendPostRequest(It.IsAny<string>(), It.IsAny<ComplianceSchemePaymentCalculationRequest>())).ReturnsAsync(response);
 
         // Act
-        var result = await _systemUnderTest.GetComplianceSchemeRegistrationFees(It.IsAny<ComplianceSchemePaymentCalculationRequest>());
+        var result = await _systemUnderTest.GetComplianceSchemeRegistrationFees(new ComplianceSchemePaymentCalculationRequest() { ApplicationReferenceNumber = "A1B2"});
 
         // Assert
         result.Should().BeOfType(typeof(ComplianceSchemePaymentCalculationResponse));
@@ -418,4 +418,240 @@ public class PaymentCalculationServiceTests
         // Assert
         result.Should().BeEquivalentTo(response);
     }
+
+    [Test]
+    public async Task GetProducerRegistrationFees_V2_Succeeds()
+    {
+        // Arrange
+        var response = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = PaymentCalculationServiceTests.CalculationResponse.ToJsonContent(_jsonOptions)
+        };
+
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendPostRequest(It.IsAny<string>(), It.IsAny<ProducerPaymentCalculationV2Request>()))
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _systemUnderTest.GetProducerRegistrationFees(new ProducerPaymentCalculationV2Request { ApplicationReferenceNumber = "V2-OK" });
+
+        // Assert
+        result.Should().BeEquivalentTo(PaymentCalculationServiceTests.CalculationResponse);
+    }
+
+    [Test]
+    public async Task GetProducerRegistrationFees_V2_NotFound_ReturnsNull()
+    {
+        // Arrange
+        var response = new HttpResponseMessage(HttpStatusCode.NotFound);
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendPostRequest(It.IsAny<string>(), It.IsAny<ProducerPaymentCalculationV2Request>()))
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _systemUnderTest.GetProducerRegistrationFees(new ProducerPaymentCalculationV2Request { ApplicationReferenceNumber = "V2-NF" });
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetProducerRegistrationFees_V2_ServerError_EnsureSuccess_Throws_ReturnsNull()
+    {
+        // Arrange
+        var response = new HttpResponseMessage(HttpStatusCode.InternalServerError)
+        {
+            Content = new StringContent("error")
+        };
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendPostRequest(It.IsAny<string>(), It.IsAny<ProducerPaymentCalculationV2Request>()))
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _systemUnderTest.GetProducerRegistrationFees(new ProducerPaymentCalculationV2Request { ApplicationReferenceNumber = "V2-500" });
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetProducerRegistrationFees_V2_Exception_ReturnsNull()
+    {
+        // Arrange
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendPostRequest(It.IsAny<string>(), It.IsAny<ProducerPaymentCalculationV2Request>()))
+            .ThrowsAsync(new Exception("exception"));
+
+        // Act
+        var result = await _systemUnderTest.GetProducerRegistrationFees(new ProducerPaymentCalculationV2Request { ApplicationReferenceNumber = "V2-EX" });
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetComplianceSchemeRegistrationFees_V2_Succeeds()
+    {
+        // Arrange
+        var response = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = PaymentCalculationServiceTests._complianceSchemeCalculationResponse.ToJsonContent(_jsonOptions)
+        };
+
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendPostRequest(It.IsAny<string>(), It.IsAny<ComplianceSchemePaymentCalculationV2Request>()))
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _systemUnderTest.GetComplianceSchemeRegistrationFees(new ComplianceSchemePaymentCalculationV2Request { ApplicationReferenceNumber = "CSV2-OK" });
+
+        // Assert
+        result.Should().BeEquivalentTo(PaymentCalculationServiceTests._complianceSchemeCalculationResponse);
+    }
+
+    [Test]
+    public async Task GetComplianceSchemeRegistrationFees_V2_NotFound_ReturnsNull()
+    {
+        // Arrange
+        var response = new HttpResponseMessage(HttpStatusCode.NotFound);
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendPostRequest(It.IsAny<string>(), It.IsAny<ComplianceSchemePaymentCalculationV2Request>()))
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _systemUnderTest.GetComplianceSchemeRegistrationFees(new ComplianceSchemePaymentCalculationV2Request { ApplicationReferenceNumber = "CSV2-NF" });
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetComplianceSchemeRegistrationFees_V2_ServerError_EnsureSuccess_Throws_ReturnsNull()
+    {
+        // Arrange
+        var response = new HttpResponseMessage(HttpStatusCode.InternalServerError)
+        {
+            Content = new StringContent("error")
+        };
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendPostRequest(It.IsAny<string>(), It.IsAny<ComplianceSchemePaymentCalculationV2Request>()))
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _systemUnderTest.GetComplianceSchemeRegistrationFees(new ComplianceSchemePaymentCalculationV2Request { ApplicationReferenceNumber = "CSV2-500" });
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetComplianceSchemeRegistrationFees_V2_Exception_ReturnsNull()
+    {
+        // Arrange
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendPostRequest(It.IsAny<string>(), It.IsAny<ComplianceSchemePaymentCalculationV2Request>()))
+            .ThrowsAsync(new Exception("error"));
+
+        // Act
+        var result = await _systemUnderTest.GetComplianceSchemeRegistrationFees(new ComplianceSchemePaymentCalculationV2Request { ApplicationReferenceNumber = "CSV2-EX" });
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task InitiatePayment_WhenClientThrowsException_ReturnsEmpty()
+    {
+        // Arrange
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendPostRequest(It.IsAny<string>(), It.IsAny<PaymentInitiationRequest>()))
+            .ThrowsAsync(new Exception("error"));
+
+        // Act
+        var result = await _systemUnderTest.InitiatePayment(PaymentCalculationServiceTests.PaymentRequest);
+
+        // Assert
+        result.Should().Be(string.Empty);
+    }
+
+    [Test]
+    public async Task GetProducerRegistrationFees_ServerError_EnsureSuccess_Throws_ReturnsNull()
+    {
+        // Arrange
+        var response = new HttpResponseMessage(HttpStatusCode.InternalServerError)
+        {
+            Content = new StringContent("error")
+        };
+
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendPostRequest(It.IsAny<string>(), It.IsAny<PaymentCalculationRequest>()))
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _systemUnderTest.GetProducerRegistrationFees(new PaymentCalculationRequest { ApplicationReferenceNumber = "P-500" });
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetComplianceSchemeRegistrationFees_ServerError_EnsureSuccess_Throws_ReturnsNull()
+    {
+        // Arrange
+        var response = new HttpResponseMessage(HttpStatusCode.InternalServerError)
+        {
+            Content = new StringContent("error")
+        };
+
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendPostRequest(It.IsAny<string>(), It.IsAny<ComplianceSchemePaymentCalculationRequest>()))
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _systemUnderTest.GetComplianceSchemeRegistrationFees(new ComplianceSchemePaymentCalculationRequest { ApplicationReferenceNumber = "CS-500" });
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetResubmissionFees_ServerError_EnsureSuccess_Throws_ReturnsNull_ForProducer()
+    {
+        // Arrange
+        var response = new HttpResponseMessage(HttpStatusCode.InternalServerError)
+        {
+            Content = new StringContent("error")
+        };
+
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendPostRequest(It.IsAny<string>(), It.IsAny<PackagingPaymentRequest>()))
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _systemUnderTest.GetResubmissionFees("ref", "GB-ENG", memberCount: 0, isComplianceScheme: false, resubmissionDate: null);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetRegulatorNation_ServerError_EnsureSuccess_Throws_ReturnsEmpty()
+    {
+        // Arrange
+        var response = new HttpResponseMessage(HttpStatusCode.InternalServerError)
+        {
+            Content = new StringContent("error")
+        };
+
+        _accountServiceApiClientMock
+            .Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _systemUnderTest.GetRegulatorNation(Guid.NewGuid());
+
+        // Assert
+        result.Should().BeEmpty();
+    }
+
 }

@@ -82,7 +82,7 @@ public class ComplianceSchemeService : IComplianceSchemeService
             var result = await _accountServiceApiClient.SendGetRequest(
                 $"{ComplianceSchemePaths.GetForProducer}?producerOrganisationId={producerOrganisationId}");
 
-            if (result.StatusCode == HttpStatusCode.NotFound)
+            if (result.StatusCode == HttpStatusCode.NotFound || result.StatusCode == HttpStatusCode.NoContent)
             {
                 return null;
             }

@@ -140,7 +140,7 @@
     <value>Ailgyflwyniad data pecynwaith</value>
   </data>
 	<data name="table-content-packaging-data-resubmission-fee-cs" xml:space="preserve">
-    <value>[Welsh]Packaging data resubmission for {0} members</value>
+    <value>Ailgyflwyno data pecynnu ar ran {0} o aelodau</value>
   </data>
 
 	<data name="table-content-item-total-chargeable-tiems" xml:space="preserve">

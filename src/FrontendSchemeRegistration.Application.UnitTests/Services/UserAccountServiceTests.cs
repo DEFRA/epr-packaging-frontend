@@ -73,7 +73,7 @@ public class UserAccountServiceTests
     public async Task GetUserAccount_WhenUserNotFound_ReturnsNull()
     {
         // Arrange
-        var response = new HttpResponseMessage(HttpStatusCode.NotFound);
+        var response = new HttpResponseMessage(HttpStatusCode.NoContent);
         _userAccountServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>()))
             .ReturnsAsync(response);
 

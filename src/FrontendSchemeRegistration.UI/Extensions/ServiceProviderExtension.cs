@@ -15,10 +15,12 @@ using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Time.Testing;
+using Microsoft.FeatureManagement;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.TokenCacheProviders.Distributed;
 using StackExchange.Redis;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
 using CookieOptions = FrontendSchemeRegistration.Application.Options.CookieOptions;
 using SessionOptions = FrontendSchemeRegistration.Application.Options.SessionOptions;
 
@@ -138,6 +140,17 @@ public static class ServiceProviderExtension
         services.AddScoped<ISubsidiaryService, SubsidiaryService>();
         services.AddScoped<IPaymentCalculationService, PaymentCalculationService>();
         services.AddScoped<ISubsidiaryUtilityService, SubsidiaryUtilityService>();
+        services.AddScoped<RegistrationApplicationServiceDependencies>(sp => new RegistrationApplicationServiceDependencies
+        {
+            SubmissionService = sp.GetRequiredService<ISubmissionService>(),
+            PaymentCalculationService = sp.GetRequiredService<IPaymentCalculationService>(),
+            RegistrationSessionManager = sp.GetRequiredService<ISessionManager<RegistrationApplicationSession>>(),
+            FrontendSessionManager = sp.GetRequiredService<ISessionManager<FrontendSchemeRegistrationSession>>(),
+            Logger = sp.GetRequiredService<ILogger<RegistrationApplicationService>>(),
+            FeatureManager = sp.GetRequiredService<IFeatureManager>(),
+            HttpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>(),
+            GlobalVariables = sp.GetRequiredService<IOptions<GlobalVariables>>()
+        });
         services.AddScoped<IRegistrationApplicationService, RegistrationApplicationService>();
         services.AddTransient<IDateTimeProvider, SystemDateTimeProvider>();
         services.AddSingleton<IPatchService, PatchService>();
@@ -180,8 +193,19 @@ public static class ServiceProviderExtension
         {
             var facadeApiOptions = sp.GetRequiredService<IOptions<PaymentFacadeApiOptions>>().Value;
             var httpClientOptions = sp.GetRequiredService<IOptions<HttpClientOptions>>().Value;
+            var featureManager = sp.GetRequiredService<IFeatureManager>();
 
-            client.BaseAddress = new Uri(facadeApiOptions.BaseUrl);
+            var baseUrl = facadeApiOptions.BaseUrl;
+
+            var useV2 = featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeV2)
+                .GetAwaiter().GetResult();
+
+            if (useV2)
+            {
+                baseUrl = Regex.Replace(baseUrl, @"/v1(/|$)", "/v2$1", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
+            }
+
+            client.BaseAddress = new Uri(baseUrl);
             client.Timeout = TimeSpan.FromSeconds(httpClientOptions.TimeoutSeconds);
         });
     }

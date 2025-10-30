@@ -108,7 +108,7 @@ public class PackagingDataResubmissionController : Controller
     [Route(PagePaths.ResubmissionFeeCalculations)]
     public async Task<IActionResult> ResubmissionFeeCalculations()
     {
-        int memberCount = 0;
+        int memberCount = 1;
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
         var isComplianceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
@@ -151,7 +151,7 @@ public class PackagingDataResubmissionController : Controller
             return View("ResubmissionFee", new ResubmissionFeeViewModel
             {
                 IsComplianceScheme = isComplianceScheme,
-                MemberCount = paymentResponse.MemberCount,
+                MemberCount = memberCount,
                 PreviousPaymentsReceived = paymentResponse.PreviousPaymentsReceived,
                 ResubmissionFee = paymentResponse.ResubmissionFee,
                 TotalChargeableItems = paymentResponse.ResubmissionFee,
@@ -179,23 +179,23 @@ public class PackagingDataResubmissionController : Controller
     [Route(PagePaths.FileUploadResubmissionConfirmation)]
     public async Task<IActionResult> FileUploadResubmissionConfirmation()
     {
-		var userData = User.GetUserData();
-		var organisation = userData.Organisations[0];
+        var userData = User.GetUserData();
+        var organisation = userData.Organisations[0];
 
-		var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-		var complianceSchemeId = session.RegistrationSession.SelectedComplianceScheme?.Id;
+        var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+        var complianceSchemeId = session.RegistrationSession.SelectedComplianceScheme?.Id;
 
-		var resubmissionApplicationDetails = await _resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(
-			organisation, new List<string> { session.PomResubmissionSession.SubmissionPeriod },
-			complianceSchemeId);
+        var resubmissionApplicationDetails = await _resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(
+            organisation, new List<string> { session.PomResubmissionSession.SubmissionPeriod },
+            complianceSchemeId);
 
-		var packagingResubmissionApplicationSession = resubmissionApplicationDetails[0].ToPackagingResubmissionApplicationSession(organisation);
+        var packagingResubmissionApplicationSession = resubmissionApplicationDetails[0].ToPackagingResubmissionApplicationSession(organisation);
 
-		var lastSubmissionDate = packagingResubmissionApplicationSession.LastSubmittedFile?.SubmittedDateTime;
+        var lastSubmissionDate = packagingResubmissionApplicationSession.LastSubmittedFile?.SubmittedDateTime;
 
-		if (lastSubmissionDate is null)
+        if (lastSubmissionDate is null)
         {
-			return RedirectToAction("Get", "FileUpload");
+            return RedirectToAction("Get", "FileUpload");
         }
 
         ViewBag.BackLinkToDisplay = Url.Content($"/report-data{PagePaths.FileUploadSubmissionDeclaration}");
@@ -203,8 +203,8 @@ public class PackagingDataResubmissionController : Controller
         var model = new FileUploadResubmissionConfirmationViewModel
         {
             OrganisationRole = session.UserData.Organisations?.FirstOrDefault()?.OrganisationRole,
-			SubmittedAt = lastSubmissionDate.Value.ToReadableDate(),
-		};
+            SubmittedAt = lastSubmissionDate.Value.ToReadableDate(),
+        };
 
         return View("FileUploadResubmissionConfirmation", model);
     }
@@ -231,9 +231,9 @@ public class PackagingDataResubmissionController : Controller
 
     public async Task<int> GetMemberCount(Guid? submissionId, bool isComplianceScheme, Guid? complianceSchemeId)
     {
-        if (!isComplianceScheme)
+        if (!isComplianceScheme && !await _resubmissionApplicationService.GetFeatureFlagForProducersFeebreakdown())
         {
-            return 0;
+            return 1;
         }
 
         var response = await _resubmissionApplicationService.GetPackagingResubmissionMemberDetails(new PackagingResubmissionMemberRequest()

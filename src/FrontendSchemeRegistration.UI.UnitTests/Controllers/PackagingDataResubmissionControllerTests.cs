@@ -622,6 +622,7 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
             }));
         UserAccountService.Setup(x => x.GetPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
         ResubmissionApplicationService.Setup(x => x.GetResubmissionFees(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<DateTime?>())).ReturnsAsync(new PackagingPaymentResponse());
+        ResubmissionApplicationService.Setup(x => x.GetPackagingResubmissionMemberDetails(It.IsAny<PackagingResubmissionMemberRequest>())).ReturnsAsync(new PackagingResubmissionMemberDetails() { MemberCount = 1 });
 
         // Act
         var result = await SystemUnderTest.ResubmissionFeeCalculations() as ViewResult;
@@ -634,7 +635,7 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
         result.Model.As<ResubmissionFeeViewModel>().Should().BeEquivalentTo(new ResubmissionFeeViewModel
         {
             IsComplianceScheme = false,
-            MemberCount = 0,
+            MemberCount = 1,
             PreviousPaymentsReceived = 0,
             ResubmissionFee = 0,
             TotalChargeableItems = 0,
@@ -661,7 +662,7 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
             }));
         UserAccountService.Setup(x => x.GetPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
         ResubmissionApplicationService.Setup(x => x.GetResubmissionFees(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<DateTime?>())).ReturnsAsync(new PackagingPaymentResponse());
-
+        ResubmissionApplicationService.Setup(x => x.GetPackagingResubmissionMemberDetails(It.IsAny<PackagingResubmissionMemberRequest>())).ReturnsAsync(new PackagingResubmissionMemberDetails() { MemberCount = 1 });
         // Act
         var result = await SystemUnderTest.ResubmissionFeeCalculations() as ViewResult;
         var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
@@ -673,7 +674,7 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
         result.Model.As<ResubmissionFeeViewModel>().Should().BeEquivalentTo(new ResubmissionFeeViewModel
         {
             IsComplianceScheme = false,
-            MemberCount = 0,
+            MemberCount = 1,
             PreviousPaymentsReceived = 0,
             ResubmissionFee = 0,
             TotalChargeableItems = 0,
@@ -787,7 +788,7 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
 
 
     [Test]
-    public async Task GetMemberCount_ReturnsZeroForProducers()
+    public async Task GetMemberCount_ReturnsOneForProducers_WhenFeatureFlagIsOff()
     {
         // Arrange
         var submissionId = Guid.NewGuid();
@@ -797,7 +798,25 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
         var result = await SystemUnderTest.GetMemberCount(submissionId, iscomplianceScheme, It.IsAny<Guid?>());
 
         // Assert
-        result.Should().Be(default(int));
+        result.Should().Be(1);
+    }
+
+    [Test]
+    public async Task GetMemberCount_ReturnsMemberCountForProducers_WhenFeatureFlagIsOn()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var memberCount = 2;
+        var iscomplianceScheme = false;
+
+        ResubmissionApplicationService.Setup(x => x.GetPackagingResubmissionMemberDetails(It.IsAny<PackagingResubmissionMemberRequest>())).ReturnsAsync(new PackagingResubmissionMemberDetails() { MemberCount = memberCount });
+        ResubmissionApplicationService.Setup(x => x.GetFeatureFlagForProducersFeebreakdown()).ReturnsAsync(true);
+
+        // Act
+        var result = await SystemUnderTest.GetMemberCount(submissionId, iscomplianceScheme, It.IsAny<Guid?>());
+
+        // Assert
+        result.Should().Be(memberCount);
     }
 
     [Test]
@@ -847,8 +866,7 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
         Assert.ThrowsAsync<HttpRequestException>(async () =>
             await SystemUnderTest.GetMemberCount(submissionId, iscomplianceScheme, It.IsAny<Guid?>()));
     }
-
-
+    
     [Test]
     public async Task GetSubmissionHistory_ReturnsValidHistoryCount_WhenAValidSubmissionIsPassed()
     {
@@ -927,26 +945,26 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
                 }
             }));
 
-		var resubmissionApplicationDetails = new PackagingResubmissionApplicationDetails
-		{
-			IsSubmitted = false,
-			ApplicationStatus = ApplicationStatusType.NotStarted,
-			LastSubmittedFile = new LastSubmittedFileDetails() { SubmittedDateTime = submittedAt },
-			SynapseResponse = new SynapseResponse
-			{
-				IsFileSynced = true
-			}
-		};
-		var resubmissionApplicationDetailsCollection = new List<PackagingResubmissionApplicationDetails> { resubmissionApplicationDetails };
+        var resubmissionApplicationDetails = new PackagingResubmissionApplicationDetails
+        {
+            IsSubmitted = false,
+            ApplicationStatus = ApplicationStatusType.NotStarted,
+            LastSubmittedFile = new LastSubmittedFileDetails() { SubmittedDateTime = submittedAt },
+            SynapseResponse = new SynapseResponse
+            {
+                IsFileSynced = true
+            }
+        };
+        var resubmissionApplicationDetailsCollection = new List<PackagingResubmissionApplicationDetails> { resubmissionApplicationDetails };
 
-		ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(
-		  It.IsAny<Organisation>(),
-		  It.IsAny<List<string>>(),
-		  It.IsAny<Guid?>()))
-		  .ReturnsAsync(resubmissionApplicationDetailsCollection);
+        ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(
+          It.IsAny<Organisation>(),
+          It.IsAny<List<string>>(),
+          It.IsAny<Guid?>()))
+          .ReturnsAsync(resubmissionApplicationDetailsCollection);
 
-		// Act
-		var result = await SystemUnderTest.FileUploadResubmissionConfirmation() as ViewResult;
+        // Act
+        var result = await SystemUnderTest.FileUploadResubmissionConfirmation() as ViewResult;
         var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
 
         // Assert
@@ -967,25 +985,25 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
         SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
             .Returns(Task.FromResult(new FrontendSchemeRegistrationSession()));
 
-		var resubmissionApplicationDetails = new PackagingResubmissionApplicationDetails
-		{
-			IsSubmitted = false,
-			ApplicationStatus = ApplicationStatusType.NotStarted,
-			SynapseResponse = new SynapseResponse
-			{
-				IsFileSynced = true
-			}
-		};
-		var resubmissionApplicationDetailsCollection = new List<PackagingResubmissionApplicationDetails> { resubmissionApplicationDetails };
+        var resubmissionApplicationDetails = new PackagingResubmissionApplicationDetails
+        {
+            IsSubmitted = false,
+            ApplicationStatus = ApplicationStatusType.NotStarted,
+            SynapseResponse = new SynapseResponse
+            {
+                IsFileSynced = true
+            }
+        };
+        var resubmissionApplicationDetailsCollection = new List<PackagingResubmissionApplicationDetails> { resubmissionApplicationDetails };
 
-		ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(
-		  It.IsAny<Organisation>(),
-		  It.IsAny<List<string>>(),
-		  It.IsAny<Guid?>()))
-		  .ReturnsAsync(resubmissionApplicationDetailsCollection);
+        ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(
+          It.IsAny<Organisation>(),
+          It.IsAny<List<string>>(),
+          It.IsAny<Guid?>()))
+          .ReturnsAsync(resubmissionApplicationDetailsCollection);
 
-		// Act
-		var result = await SystemUnderTest.FileUploadResubmissionConfirmation() as RedirectToActionResult;
+        // Act
+        var result = await SystemUnderTest.FileUploadResubmissionConfirmation() as RedirectToActionResult;
         var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
 
         // Assert
@@ -993,111 +1011,111 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
         result.ControllerName.Should().Be("FileUpload");
     }
 
-	[Test]
-	public async Task FileUploadResubmissionConfirmation__GetPackagingDataResubmissionApplicationDetails_ShouldBeCalledOnce()
-	{
-		// Arrange
-		var submittedAt = DateTime.UtcNow.AddDays(-2);
-		SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
-			.Returns(Task.FromResult(new FrontendSchemeRegistrationSession
-			{
-				PomResubmissionSession = new PackagingReSubmissionSession { PomSubmission = new PomSubmission() { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), LastSubmittedFile = new SubmittedFileInformation { FileId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), SubmittedDateTime = submittedAt } } },
-				UserData = new UserData
-				{
-					Organisations = new List<Organisation>
-				{
-					new()
-					{
-						Name = "Test Organisation",
-						OrganisationRole = OrganisationRoles.Producer,
-						NationId = 1
-					}
-				}
-				}
-			}));
+    [Test]
+    public async Task FileUploadResubmissionConfirmation__GetPackagingDataResubmissionApplicationDetails_ShouldBeCalledOnce()
+    {
+        // Arrange
+        var submittedAt = DateTime.UtcNow.AddDays(-2);
+        SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
+            .Returns(Task.FromResult(new FrontendSchemeRegistrationSession
+            {
+                PomResubmissionSession = new PackagingReSubmissionSession { PomSubmission = new PomSubmission() { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), LastSubmittedFile = new SubmittedFileInformation { FileId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), SubmittedDateTime = submittedAt } } },
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation>
+                {
+                    new()
+                    {
+                        Name = "Test Organisation",
+                        OrganisationRole = OrganisationRoles.Producer,
+                        NationId = 1
+                    }
+                }
+                }
+            }));
 
-		var resubmissionApplicationDetails = new PackagingResubmissionApplicationDetails
-		{
-			IsSubmitted = false,
-			ApplicationStatus = ApplicationStatusType.NotStarted,
-			LastSubmittedFile = new LastSubmittedFileDetails() { SubmittedDateTime = submittedAt },
-			SynapseResponse = new SynapseResponse
-			{
-				IsFileSynced = true
-			}
-		};
-		var resubmissionApplicationDetailsCollection = new List<PackagingResubmissionApplicationDetails> { resubmissionApplicationDetails };
+        var resubmissionApplicationDetails = new PackagingResubmissionApplicationDetails
+        {
+            IsSubmitted = false,
+            ApplicationStatus = ApplicationStatusType.NotStarted,
+            LastSubmittedFile = new LastSubmittedFileDetails() { SubmittedDateTime = submittedAt },
+            SynapseResponse = new SynapseResponse
+            {
+                IsFileSynced = true
+            }
+        };
+        var resubmissionApplicationDetailsCollection = new List<PackagingResubmissionApplicationDetails> { resubmissionApplicationDetails };
 
-		ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(
-		  It.IsAny<Organisation>(),
-		  It.IsAny<List<string>>(),
-		  It.IsAny<Guid?>()))
-		  .ReturnsAsync(resubmissionApplicationDetailsCollection);
+        ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(
+          It.IsAny<Organisation>(),
+          It.IsAny<List<string>>(),
+          It.IsAny<Guid?>()))
+          .ReturnsAsync(resubmissionApplicationDetailsCollection);
 
-		// Act
-		var result = await SystemUnderTest.FileUploadResubmissionConfirmation() as ViewResult;
-		var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
+        // Act
+        var result = await SystemUnderTest.FileUploadResubmissionConfirmation() as ViewResult;
+        var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
 
-		// Assert
-		ResubmissionApplicationService.Verify(x => x.GetPackagingDataResubmissionApplicationDetails(It.IsAny<Organisation?>(), It.IsAny<List<string>>(), It.IsAny<Guid?>()), Times.Once);
-		result.Model.Should().BeOfType<FileUploadResubmissionConfirmationViewModel>();
-	}
+        // Assert
+        ResubmissionApplicationService.Verify(x => x.GetPackagingDataResubmissionApplicationDetails(It.IsAny<Organisation?>(), It.IsAny<List<string>>(), It.IsAny<Guid?>()), Times.Once);
+        result.Model.Should().BeOfType<FileUploadResubmissionConfirmationViewModel>();
+    }
 
-	[Test]
-	public async Task FileUploadResubmissionConfirmation_ReturnsCorrectViewAndModel_ForCSOUsers()
-	{
-		// Arrange
-		var submittedAt = DateTime.UtcNow.AddDays(-2);
-		var complianceSchemeId = Guid.NewGuid();
-		SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
-			.Returns(Task.FromResult(new FrontendSchemeRegistrationSession
-			{
-				RegistrationSession = new RegistrationSession() { SelectedComplianceScheme = new ComplianceSchemeDto() { Id = complianceSchemeId } },
-				PomResubmissionSession = new PackagingReSubmissionSession { PomSubmission = new PomSubmission() { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), LastSubmittedFile = new SubmittedFileInformation { FileId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), SubmittedDateTime = submittedAt } } },
-				UserData = new UserData
-				{
-					Organisations = new List<Organisation>
-				{
-					new()
-					{
-						Name = "Test Organisation",
-						OrganisationRole = OrganisationRoles.Producer,
-						NationId = 1
-					}
-				}
-				}
-			}));
+    [Test]
+    public async Task FileUploadResubmissionConfirmation_ReturnsCorrectViewAndModel_ForCSOUsers()
+    {
+        // Arrange
+        var submittedAt = DateTime.UtcNow.AddDays(-2);
+        var complianceSchemeId = Guid.NewGuid();
+        SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
+            .Returns(Task.FromResult(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession() { SelectedComplianceScheme = new ComplianceSchemeDto() { Id = complianceSchemeId } },
+                PomResubmissionSession = new PackagingReSubmissionSession { PomSubmission = new PomSubmission() { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), LastSubmittedFile = new SubmittedFileInformation { FileId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), SubmittedDateTime = submittedAt } } },
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation>
+                {
+                    new()
+                    {
+                        Name = "Test Organisation",
+                        OrganisationRole = OrganisationRoles.Producer,
+                        NationId = 1
+                    }
+                }
+                }
+            }));
 
-		var resubmissionApplicationDetails = new PackagingResubmissionApplicationDetails
-		{
-			IsSubmitted = false,
-			ApplicationStatus = ApplicationStatusType.NotStarted,
-			LastSubmittedFile = new LastSubmittedFileDetails() { SubmittedDateTime = submittedAt },
-			SynapseResponse = new SynapseResponse
-			{
-				IsFileSynced = true
-			}
-		};
-		var resubmissionApplicationDetailsCollection = new List<PackagingResubmissionApplicationDetails> { resubmissionApplicationDetails };
+        var resubmissionApplicationDetails = new PackagingResubmissionApplicationDetails
+        {
+            IsSubmitted = false,
+            ApplicationStatus = ApplicationStatusType.NotStarted,
+            LastSubmittedFile = new LastSubmittedFileDetails() { SubmittedDateTime = submittedAt },
+            SynapseResponse = new SynapseResponse
+            {
+                IsFileSynced = true
+            }
+        };
+        var resubmissionApplicationDetailsCollection = new List<PackagingResubmissionApplicationDetails> { resubmissionApplicationDetails };
 
-		ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(
-		  It.IsAny<Organisation>(),
-		  It.IsAny<List<string>>(),
-		  complianceSchemeId))
-		  .ReturnsAsync(resubmissionApplicationDetailsCollection);
+        ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(
+          It.IsAny<Organisation>(),
+          It.IsAny<List<string>>(),
+          complianceSchemeId))
+          .ReturnsAsync(resubmissionApplicationDetailsCollection);
 
-		// Act
-		var result = await SystemUnderTest.FileUploadResubmissionConfirmation() as ViewResult;
-		var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
+        // Act
+        var result = await SystemUnderTest.FileUploadResubmissionConfirmation() as ViewResult;
+        var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
 
-		// Assert
-		pageBackLink.Should().Be($"/report-data{PagePaths.FileUploadSubmissionDeclaration}");
-		result.Model.Should().BeOfType<FileUploadResubmissionConfirmationViewModel>();
+        // Assert
+        pageBackLink.Should().Be($"/report-data{PagePaths.FileUploadSubmissionDeclaration}");
+        result.Model.Should().BeOfType<FileUploadResubmissionConfirmationViewModel>();
 
-		result.Model.As<FileUploadResubmissionConfirmationViewModel>().Should().BeEquivalentTo(new FileUploadResubmissionConfirmationViewModel
-		{
-			OrganisationRole = _userData.Organisations[0].OrganisationRole,
-			SubmittedAt = submittedAt.ToReadableDate()
-		});
-	}
+        result.Model.As<FileUploadResubmissionConfirmationViewModel>().Should().BeEquivalentTo(new FileUploadResubmissionConfirmationViewModel
+        {
+            OrganisationRole = _userData.Organisations[0].OrganisationRole,
+            SubmittedAt = submittedAt.ToReadableDate()
+        });
+    }
 }

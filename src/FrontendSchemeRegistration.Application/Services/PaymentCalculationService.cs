@@ -19,58 +19,37 @@ public class PaymentCalculationService(
 {
 	private readonly JsonSerializerOptions _options = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
-    public async Task<PaymentCalculationResponse?> GetProducerRegistrationFees(PaymentCalculationRequest request)
-    {
-        try
-        {
-            var result = await paymentCalculationServiceApiClient.SendPostRequest(options.Value.Endpoints.ProducerRegistrationFeesEndpoint, request);
-            
-            if (result.StatusCode == HttpStatusCode.NotFound)
-            {
-                logger.LogError("registration fees details Not Found fees for producer reference {ReferenceNumber}", request.ApplicationReferenceNumber);
-                return null;
-            }
+    public Task<PaymentCalculationResponse?> GetProducerRegistrationFees(PaymentCalculationRequest request) =>
+        PostToPaymentCalculationService<PaymentCalculationRequest, PaymentCalculationResponse>(
+            options.Value.Endpoints.ProducerRegistrationFeesEndpoint,
+            request,
+            "registration fees details Not Found fees for producer reference {ReferenceNumber}",
+            "Failed to retrieve registration fees for producer reference {ReferenceNumber}",
+            request.ApplicationReferenceNumber);
 
-            result.EnsureSuccessStatusCode();
-            var jsonContent = RemoveDecimalValues(await result.Content.ReadAsStringAsync());
-            var feeResponse =  JsonSerializer.Deserialize<PaymentCalculationResponse>(jsonContent, _options);
+    public Task<PaymentCalculationResponse?> GetProducerRegistrationFees(ProducerPaymentCalculationV2Request request) =>
+        PostToPaymentCalculationService<ProducerPaymentCalculationV2Request, PaymentCalculationResponse>(
+            options.Value.Endpoints.ProducerRegistrationFeesEndpoint,
+            request,
+            "V2 Service registration fees details Not Found fees for producer reference {ReferenceNumber}",
+            "V2 Service Failed to retrieve registration fees for producer reference {ReferenceNumber}",
+            request.ApplicationReferenceNumber);
 
-			return feeResponse;
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Failed to retrieve registration fees for producer reference {ReferenceNumber}", request.ApplicationReferenceNumber);
-        }
+    public Task<ComplianceSchemePaymentCalculationResponse?> GetComplianceSchemeRegistrationFees(ComplianceSchemePaymentCalculationRequest request) =>
+        PostToPaymentCalculationService<ComplianceSchemePaymentCalculationRequest, ComplianceSchemePaymentCalculationResponse>(
+            options.Value.Endpoints.ComplianceSchemeRegistrationFeesEndpoint,
+            request,
+            "registration fees details Not Found for compliance scheme reference {ReferenceNumber}",
+            "Failed to retrieve registration fees for compliance scheme reference {ReferenceNumber}",
+            request.ApplicationReferenceNumber);
 
-		return null;
-    }
-
-    public async Task<ComplianceSchemePaymentCalculationResponse?> GetComplianceSchemeRegistrationFees(ComplianceSchemePaymentCalculationRequest request)
-    {
-        try
-        {
-            var result = await paymentCalculationServiceApiClient.SendPostRequest(options.Value.Endpoints.ComplianceSchemeRegistrationFeesEndpoint, request);
-
-            if (result.StatusCode == HttpStatusCode.NotFound)
-            {
-                logger.LogError("registration fees details Not Found for compliance scheme reference {ReferenceNumber}", request.ApplicationReferenceNumber);
-                return null;
-            }
-
-            result.EnsureSuccessStatusCode();
-
-            var jsonContent = RemoveDecimalValues(await result.Content.ReadAsStringAsync());
-            var feeResponse = JsonSerializer.Deserialize<ComplianceSchemePaymentCalculationResponse>(jsonContent, _options);
-
-            return feeResponse;
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Failed to retrieve registration fees for compliance scheme reference {ReferenceNumber}", request.ApplicationReferenceNumber);
-        }
-
-        return null;
-    }
+    public Task<ComplianceSchemePaymentCalculationResponse?> GetComplianceSchemeRegistrationFees(ComplianceSchemePaymentCalculationV2Request request) =>
+        PostToPaymentCalculationService<ComplianceSchemePaymentCalculationV2Request, ComplianceSchemePaymentCalculationResponse>(
+            options.Value.Endpoints.ComplianceSchemeRegistrationFeesEndpoint,
+            request,
+            "V2 Service registration fees details Not Found for compliance scheme reference {ReferenceNumber}",
+            "V2 Service Failed to retrieve registration fees for compliance scheme reference {ReferenceNumber}",
+            request.ApplicationReferenceNumber);
 
     public async Task<string> InitiatePayment(PaymentInitiationRequest request)
     {
@@ -168,4 +147,34 @@ public class PaymentCalculationService(
 	{
 		return Regex.Replace(jsonString, @"(\d+)\.0+", "$1", RegexOptions.None, TimeSpan.FromMilliseconds(100));
 	}
+
+    private async Task<TResponse?> PostToPaymentCalculationService<TRequest, TResponse>(
+        string endpoint,
+        TRequest request,
+        string notFoundLogMessage,
+        string errorLogMessage,
+        string referenceNumber)
+    {
+        try
+        {
+            var result = await paymentCalculationServiceApiClient.SendPostRequest(endpoint, request);
+
+            if (result.StatusCode == HttpStatusCode.NotFound)
+            {
+                logger.LogError(notFoundLogMessage, referenceNumber);
+                return default;
+            }
+
+            result.EnsureSuccessStatusCode();
+
+            var jsonContent = RemoveDecimalValues(await result.Content.ReadAsStringAsync());
+            return JsonSerializer.Deserialize<TResponse>(jsonContent, _options);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, errorLogMessage, referenceNumber);
+            return default;
+        }
+    }
+
 }

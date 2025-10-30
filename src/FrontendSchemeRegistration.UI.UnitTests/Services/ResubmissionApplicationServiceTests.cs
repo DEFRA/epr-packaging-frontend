@@ -10,10 +10,12 @@ using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Services;
+using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Sessions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Options;
+using Microsoft.FeatureManagement;
 using Moq;
 using System.Globalization;
 using System.Security.Claims;
@@ -27,6 +29,7 @@ public class ResubmissionApplicationServiceTests
     private Mock<ISubmissionService> _mockSubmissionService;
     private Mock<IPaymentCalculationService> _mockPaymentCalculationService;
     private Mock<IOptions<GlobalVariables>> _mockGlobalVariables;
+    private Mock<IFeatureManager> _mockFeatureManager;
     private ResubmissionApplicationServices _service;
     private Fixture _fixture;
 
@@ -86,12 +89,13 @@ public class ResubmissionApplicationServiceTests
     {
         _mockGlobalVariables = new Mock<IOptions<GlobalVariables>>();
         _mockGlobalVariables.Setup(o => o.Value).Returns(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods });
+        _mockFeatureManager = new Mock<IFeatureManager>();
 
         _mockSessionManager = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _mockSubmissionService = new Mock<ISubmissionService>();
         _mockPaymentCalculationService = new Mock<IPaymentCalculationService>();
         _fixture = new Fixture();
-        _service = new ResubmissionApplicationServices(_mockSessionManager.Object, _mockPaymentCalculationService.Object, _mockSubmissionService.Object, _mockGlobalVariables.Object);
+        _service = new ResubmissionApplicationServices(_mockSessionManager.Object, _mockPaymentCalculationService.Object, _mockSubmissionService.Object, _mockGlobalVariables.Object, _mockFeatureManager.Object);
     }
 
     [Test]
@@ -807,5 +811,33 @@ public class ResubmissionApplicationServiceTests
         // Assert
         result.Should().Be(expectedResult);
         _mockSubmissionService.Verify(x => x.GetActualSubmissionPeriod(submissionId, submissionPeriod), Times.Once);
+    }
+
+    [Test]
+    public async Task GetFeatureFlagForProducersFeebreakdown_ShouldReturnTrueIfFeatureIsEnabled()
+    {
+        // Arrange
+        _mockFeatureManager.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.IncludeSubsidariesInFeeCalculationsForProducers))).ReturnsAsync(true);
+        var expectedResult = true;
+
+        // Act
+        var result = await _service.GetFeatureFlagForProducersFeebreakdown();
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [Test]
+    public async Task GetFeatureFlagForProducersFeebreakdown_ShouldReturnFalseIfFeatureIsDisabled()
+    {
+        // Arrange
+        _mockFeatureManager.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.IncludeSubsidariesInFeeCalculationsForProducers))).ReturnsAsync(false);
+        var expectedResult = true;
+
+        // Act
+        var result = await _service.GetFeatureFlagForProducersFeebreakdown();
+
+        // Assert
+        result.Should().BeFalse();
     }
 }

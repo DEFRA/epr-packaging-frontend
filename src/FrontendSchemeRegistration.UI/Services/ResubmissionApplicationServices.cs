@@ -12,6 +12,7 @@ using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Sessions;
 using Microsoft.Extensions.Options;
+using Microsoft.FeatureManagement;
 
 namespace FrontendSchemeRegistration.UI.Services;
 
@@ -19,7 +20,8 @@ public class ResubmissionApplicationServices(
     ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
     IPaymentCalculationService paymentCalculationService,
     ISubmissionService submissionService,
-    IOptions<GlobalVariables> globalVariables) : IResubmissionApplicationService
+    IOptions<GlobalVariables> globalVariables,
+    IFeatureManager featureManager) : IResubmissionApplicationService
 {
     public async Task<string> CreatePomResubmissionReferenceNumberForProducer(FrontendSchemeRegistrationSession session, SubmissionPeriod submissionPeriod, string organisationNumber, string submittedByName, Guid submissionId, int? historyCount)
     {
@@ -161,5 +163,10 @@ public class ResubmissionApplicationServices(
     public async Task<string> GetActualSubmissionPeriod(Guid submissionId, string submissionPeriod)
     {
         return await submissionService.GetActualSubmissionPeriod(submissionId, submissionPeriod);
+    }
+
+    public async Task<bool> GetFeatureFlagForProducersFeebreakdown()
+    {
+        return await featureManager.IsEnabledAsync(nameof(FeatureFlags.IncludeSubsidariesInFeeCalculationsForProducers));
     }
 }

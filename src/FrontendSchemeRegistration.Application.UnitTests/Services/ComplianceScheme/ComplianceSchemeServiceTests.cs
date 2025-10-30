@@ -79,10 +79,11 @@ public class ComplianceSchemeServiceTests : ServiceTestBase<IComplianceSchemeSer
     }
 
     [Test]
-    public async Task GetProducerComplianceScheme_ReturnsNotFound()
+    // Not happy with the test name but following the pattern here. Should have been GetProducerComplianceScheme_WhenSchemeNotfound_ReturnsNoContent
+    public async Task GetProducerComplianceScheme_ReturnsNoContent()
     {
         // Arrange
-        _complianceSchemeService = MockService(HttpStatusCode.NotFound, null);
+        _complianceSchemeService = MockService(HttpStatusCode.NoContent, null);
 
         // Act
         var result = await _complianceSchemeService.GetProducerComplianceScheme(_organisation.Id);

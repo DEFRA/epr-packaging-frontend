@@ -29,7 +29,7 @@ public class UserAccountService : IUserAccountService
         try
         {
             var result = await _accountServiceApiClient.SendGetRequest(UserAccountPaths.Get);
-            if (result.StatusCode == HttpStatusCode.NotFound)
+            if (result.StatusCode == HttpStatusCode.NotFound || result.StatusCode == HttpStatusCode.NoContent)
             {
                 return null;
             }

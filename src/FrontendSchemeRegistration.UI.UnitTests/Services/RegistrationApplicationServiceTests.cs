@@ -16,6 +16,7 @@ using FrontendSchemeRegistration.UI.Sessions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.FeatureManagement;
 using Moq;
 using Newtonsoft.Json;
 
@@ -33,6 +34,8 @@ public class RegistrationApplicationServiceTests
     private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
     private Fixture _fixture;
     private RegistrationApplicationService _service;
+    private Mock<IFeatureManager> _featureManagerMock;
+    private Mock<IHttpContextAccessor> _httpContextAccessorMock;
 
     private readonly RegistrationApplicationSession _session = new RegistrationApplicationSession
     {
@@ -56,6 +59,10 @@ public class RegistrationApplicationServiceTests
         _frontEndSessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
         _loggerMock = new Mock<ILogger<RegistrationApplicationService>>();
+        _featureManagerMock = new Mock<IFeatureManager>();
+        _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+
+        
         var globalVariables = Options.Create(new GlobalVariables
         {
             LateFeeDeadline2025 = new(DateTime.Today.Year, 4, 1),
@@ -65,12 +72,31 @@ public class RegistrationApplicationServiceTests
         });
 
         _fixture = new Fixture();
-        _service = new RegistrationApplicationService(_submissionServiceMock.Object, _paymentCalculationServiceMock.Object, _sessionManagerMock.Object, _frontEndSessionManagerMock.Object, _loggerMock.Object, globalVariables);
 
-        //this is wrong needs fixing 
+        var deps = new RegistrationApplicationServiceDependencies
+        {
+            SubmissionService = _submissionServiceMock.Object,
+            PaymentCalculationService = _paymentCalculationServiceMock.Object,
+            RegistrationSessionManager = _sessionManagerMock.Object,
+            FrontendSessionManager = _frontEndSessionManagerMock.Object,
+            Logger = _loggerMock.Object,
+            FeatureManager = _featureManagerMock.Object,
+            HttpContextAccessor = _httpContextAccessorMock.Object,
+            GlobalVariables = globalVariables
+        };
+
+        _service = new RegistrationApplicationService(deps);
+
         var submissionYear = DateTime.Now.Year.ToString();
-        _session.Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" };
+        _session.Period = new SubmissionPeriod
+        {
+            DataPeriod = $"January to December {submissionYear}",
+            StartMonth = "January",
+            EndMonth = "December",
+            Year = $"{submissionYear}"
+        };
         _session.SubmissionPeriod = _session.Period.DataPeriod;
+
     }
 
     [Test]
@@ -802,12 +828,24 @@ public class RegistrationApplicationServiceTests
             RegistrationYear = $"{DateTime.Now.Year}, {DateTime.Now.AddYears(1).Year}"
         });
 
-        _fixture = new Fixture();
-        _service = new RegistrationApplicationService(_submissionServiceMock.Object, _paymentCalculationServiceMock.Object, _sessionManagerMock.Object, _frontEndSessionManagerMock.Object, _loggerMock.Object, globalVariables);
+        var deps = new RegistrationApplicationServiceDependencies
+        {
+            SubmissionService = _submissionServiceMock.Object,
+            PaymentCalculationService = _paymentCalculationServiceMock.Object,
+            RegistrationSessionManager = _sessionManagerMock.Object,
+            FrontendSessionManager = _frontEndSessionManagerMock.Object,
+            Logger = _loggerMock.Object,
+            FeatureManager = _featureManagerMock.Object,
+            HttpContextAccessor = _httpContextAccessorMock.Object,
+            GlobalVariables = globalVariables
+        };
+
+        _service = new RegistrationApplicationService(deps);
 
         var organisation = _fixture.Create<Organisation>();
         organisation.OrganisationNumber = "123";
         organisation.NationId = 1;
+
         var lastSubmittedFileDetails = new LastSubmittedFileDetails
         {
             FileId = Guid.NewGuid(),
@@ -823,23 +861,26 @@ public class RegistrationApplicationServiceTests
             RegistrationFeeCalculationDetails =
             [
                 new RegistrationFeeCalculationDetails
-                {
-                    OrganisationSize = "Small",
-                    NationId = 1
-                }
+            {
+                OrganisationSize = "Small",
+                NationId = 1
+            }
             ]
         };
 
-        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+        _submissionServiceMock
+            .Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
             .ReturnsAsync(registrationApplicationDetails);
 
-        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+        _sessionManagerMock
+            .Setup(sm => sm.GetSessionAsync(_httpSession))
             .ReturnsAsync(new RegistrationApplicationSession
             {
                 LastSubmittedFile = lastSubmittedFileDetails
             });
 
-        _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+        _frontEndSessionManagerMock
+            .Setup(sm => sm.GetSessionAsync(_httpSession))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
                 RegistrationSession = new RegistrationSession()
@@ -1119,16 +1160,9 @@ public class RegistrationApplicationServiceTests
             LargeProducerLateFeeDeadline2026 = DateTime.Today.AddDays(-1)
         });
 
-        var testService = new RegistrationApplicationService(
-            _submissionServiceMock.Object,
-            _paymentCalculationServiceMock.Object,
-            _sessionManagerMock.Object,
-            _frontEndSessionManagerMock.Object,
-            _loggerMock.Object,
-            globalVariables);
-
+     
         // Act
-        var result = await testService.GetRegistrationApplicationSession(_httpSession, organisation, 2025);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2025);
 
         // Assert
         result.Should().NotBeNull();
@@ -2142,6 +2176,389 @@ public class RegistrationApplicationServiceTests
         var result = _service.ValidateRegistrationYear("2025");
         result.Should().Be(2025);
     }
+
+    [Test]
+    public async Task GetProducerRegistrationFees_WhenV2Enabled_SendsV2Request_With_All_New_Fields()
+    {
+        _featureManagerMock.Setup(f => f.IsEnabledAsync("EnableRegistrationFeeV2")).ReturnsAsync(true);
+
+        _session.Period = new SubmissionPeriod { StartMonth = "January", EndMonth = "June", Year = "2025" };
+        _session.LastSubmittedFile ??= new LastSubmittedFileDetails();
+        _session.LastSubmittedFile.FileId = Guid.NewGuid();
+        _session.LastSubmittedFile.SubmittedDateTime = DateTime.UtcNow;
+
+        _session.RegistrationFeeCalculationDetails = _fixture.CreateMany<RegistrationFeeCalculationDetails>(1).ToArray();
+        _session.RegistrationFeeCalculationDetails[0].OrganisationSize = "Large";
+        _session.RegistrationFeeCalculationDetails[0].NumberOfSubsidiaries = 3;
+        _session.RegistrationFeeCalculationDetails[0].NumberOfSubsidiariesBeingOnlineMarketPlace = 1;
+        _session.RegistrationFeeCalculationDetails[0].IsOnlineMarketplace = true;
+
+        var userData = new UserData
+        {
+            Id = Guid.NewGuid(),
+            Organisations = new List<Organisation> { new Organisation { Id = Guid.NewGuid(), OrganisationNumber = "222" } }
+        };
+        var principal = new ClaimsPrincipal();
+        principal.SetupClaimsPrincipal(userData);
+        var httpContext = new DefaultHttpContext { User = principal };
+        _httpContextAccessorMock.SetupGet(x => x.HttpContext).Returns(httpContext);
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(_session);
+
+        ProducerPaymentCalculationV2Request? captured = null;
+        _paymentCalculationServiceMock
+            .Setup(p => p.GetProducerRegistrationFees(It.IsAny<ProducerPaymentCalculationV2Request>()))
+            .Callback<ProducerPaymentCalculationV2Request>(r => captured = r)
+            .ReturnsAsync(_fixture.Build<PaymentCalculationResponse>()
+                .With(x => x.SubsidiariesFeeBreakdown, new SubsidiariesFeeBreakdown())
+                .Create());
+
+        // Act
+        var result = await _service.GetProducerRegistrationFees(_httpSession);
+
+        // Assert
+        result.Should().NotBeNull("V2 call still returns mapped breakdown");
+
+        captured.Should().NotBeNull();
+        captured!.FileId.Should().Be(_session.LastSubmittedFile.FileId!.Value);
+        captured.ExternalId.Should().Be(userData.Organisations.First().Id!.Value);
+        captured.PayerId.Should().Be(222);
+        captured.PayerTypeId.Should().Be(1);
+
+        var expectedEarliest = new DateTimeOffset(new DateTime(int.Parse(_session.Period.Year), 06, 30), TimeSpan.Zero);
+        captured.InvoicePeriod.Should().BeOnOrAfter(expectedEarliest);
+
+        captured.Regulator.Should().Be(_session.RegulatorNation);
+        captured.ApplicationReferenceNumber.Should().Be(_session.ApplicationReferenceNumber);
+        captured.IsLateFeeApplicable.Should().Be(_session.IsLateFeeApplicable);
+        captured.IsProducerOnlineMarketplace.Should().BeTrue();
+        captured.NoOfSubsidiariesOnlineMarketplace.Should().Be(1);
+        captured.NumberOfSubsidiaries.Should().Be(3);
+        captured.ProducerType.Should().Be("Large");
+        captured.SubmissionDate.Should().Be(_session.LastSubmittedFile.SubmittedDateTime!.Value);
+    }
+
+    [Test]
+    public async Task GetComplianceSchemeRegistrationFees_WhenV2Enabled_SendsV2Request_With_All_New_Fields()
+    {
+        _featureManagerMock.Setup(f => f.IsEnabledAsync("EnableRegistrationFeeV2")).ReturnsAsync(true);
+
+        _session.Period = new SubmissionPeriod { StartMonth = "January", EndMonth = "June", Year = "2025" };
+        _session.LastSubmittedFile ??= new LastSubmittedFileDetails();
+        _session.LastSubmittedFile.FileId = Guid.NewGuid();
+        _session.LastSubmittedFile.SubmittedDateTime = DateTime.UtcNow;
+
+        _session.SelectedComplianceScheme = new ComplianceSchemeDto
+        {
+            Id = Guid.NewGuid(),
+            NationId = 2,
+            Name = "Test CS",
+            RowNumber = 123
+        };
+        _session.RegistrationFeeCalculationDetails = _fixture.CreateMany<RegistrationFeeCalculationDetails>(2).ToArray();
+
+        var userData = new UserData
+        {
+            Id = Guid.NewGuid(),
+            Organisations = new List<Organisation> { new Organisation { Id = Guid.NewGuid(), OrganisationNumber = "123" } }
+        };
+        var principal = new ClaimsPrincipal();
+        principal.SetupClaimsPrincipal(userData);
+        var httpContext = new DefaultHttpContext { User = principal };
+        _httpContextAccessorMock.SetupGet(x => x.HttpContext).Returns(httpContext);
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(_session);
+
+        ComplianceSchemePaymentCalculationV2Request? captured = null;
+        _paymentCalculationServiceMock
+            .Setup(p => p.GetComplianceSchemeRegistrationFees(It.IsAny<ComplianceSchemePaymentCalculationV2Request>()))
+            .Callback<ComplianceSchemePaymentCalculationV2Request>(r => captured = r)
+            .ReturnsAsync(_fixture.Build<ComplianceSchemePaymentCalculationResponse>()
+                .With(x => x.ComplianceSchemeMembersWithFees, new List<ComplianceSchemePaymentCalculationResponseMember>())
+                .Create());
+
+        // Act
+        var result = await _service.GetComplianceSchemeRegistrationFees(_httpSession);
+
+        // Assert
+        result.Should().NotBeNull("V2 call still returns mapped breakdown");
+
+        captured.Should().NotBeNull();
+        captured!.FileId.Should().Be(_session.LastSubmittedFile.FileId!.Value);
+        captured.ExternalId.Should().Be(_session.SelectedComplianceScheme.Id!);
+        captured.PayerTypeId.Should().Be(2);
+        captured.PayerId.Should().Be(123);
+
+        var expectedEarliest = new DateTimeOffset(new DateTime(int.Parse(_session.Period.Year), 06, 30), TimeSpan.Zero);
+        captured.InvoicePeriod.Should().BeOnOrAfter(expectedEarliest);
+
+        captured.ApplicationReferenceNumber.Should().Be(_session.ApplicationReferenceNumber);
+        captured.Regulator.Should().Be(_session.RegulatorNation);
+        captured.SubmissionDate.Should().Be(_session.LastSubmittedFile.SubmittedDateTime!.Value);
+    }
+
+    [Test]
+    public async Task GetProducerRegistrationFees_WhenV2Disabled_SendsV1Request()
+    {
+        _featureManagerMock.Setup(f => f.IsEnabledAsync("EnableRegistrationFeeV2")).ReturnsAsync(false);
+
+        _session.RegistrationFeeCalculationDetails = _fixture.CreateMany<RegistrationFeeCalculationDetails>(1).ToArray();
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(_session);
+
+        PaymentCalculationRequest? captured = null;
+        _paymentCalculationServiceMock
+            .Setup(p => p.GetProducerRegistrationFees(It.IsAny<PaymentCalculationRequest>()))
+            .Callback<PaymentCalculationRequest>(r => captured = r)
+            .ReturnsAsync(_fixture.Build<PaymentCalculationResponse>()
+                .With(x => x.SubsidiariesFeeBreakdown, new SubsidiariesFeeBreakdown())
+                .Create());
+
+        var result = await _service.GetProducerRegistrationFees(_httpSession);
+
+        result.Should().NotBeNull();
+        captured.Should().NotBeNull();
+        captured!.GetType().Should().Be(typeof(PaymentCalculationRequest)); 
+
+        captured.Regulator.Should().Be(_session.RegulatorNation);
+        captured.ApplicationReferenceNumber.Should().Be(_session.ApplicationReferenceNumber);
+        captured.IsLateFeeApplicable.Should().Be(_session.IsLateFeeApplicable);
+        captured.ProducerType.Should().Be(_session.RegistrationFeeCalculationDetails[0].OrganisationSize);
+        captured.SubmissionDate.Should().Be(_session.LastSubmittedFile.SubmittedDateTime!.Value);
+    }
+
+    [Test]
+    public async Task GetProducerRegistrationFees_WhenV2Enabled_ButNoOrganisations_FallsBackToV1()
+    {
+        _featureManagerMock.Setup(f => f.IsEnabledAsync("EnableRegistrationFeeV2")).ReturnsAsync(true);
+
+        _session.RegistrationFeeCalculationDetails = _fixture.CreateMany<RegistrationFeeCalculationDetails>(1).ToArray();
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(_session);
+
+        var userData = new UserData { Id = Guid.NewGuid(), Organisations = new List<Organisation>() };
+        var principal = new ClaimsPrincipal();
+        principal.SetupClaimsPrincipal(userData);
+        var httpContext = new DefaultHttpContext { User = principal };
+        _httpContextAccessorMock.SetupGet(x => x.HttpContext).Returns(httpContext);
+
+        PaymentCalculationRequest? captured = null;
+        _paymentCalculationServiceMock
+            .Setup(p => p.GetProducerRegistrationFees(It.IsAny<PaymentCalculationRequest>()))
+            .Callback<PaymentCalculationRequest>(r => captured = r)
+            .ReturnsAsync(_fixture.Build<PaymentCalculationResponse>()
+                .With(x => x.SubsidiariesFeeBreakdown, new SubsidiariesFeeBreakdown())
+                .Create());
+
+        // Act
+        var result = await _service.GetProducerRegistrationFees(_httpSession);
+
+        // Assert
+        result.Should().NotBeNull("we still compute using v1 when no org is available for v2");
+        captured.Should().NotBeNull();
+        captured!.GetType().Should().Be(typeof(PaymentCalculationRequest), "v1 request should be used when there is no first organisation to index");
+    }
+
+
+    [Test]
+    public void Constructor_ShouldThrow_ArgumentNull_When_Dependencies_IsNull()
+    {
+        // Act
+        Action act = () => new RegistrationApplicationService(null!);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+   
+
+    [Test]
+    public void Constructor_ShouldThrow_InvalidOperation_When_SubmissionService_IsNull()
+    {
+        var deps = new RegistrationApplicationServiceDependencies
+        {
+            SubmissionService = null!,
+            PaymentCalculationService = _paymentCalculationServiceMock.Object,
+            RegistrationSessionManager = _sessionManagerMock.Object,
+            FrontendSessionManager = _frontEndSessionManagerMock.Object,
+            Logger = _loggerMock.Object,
+            FeatureManager = _featureManagerMock.Object,
+            HttpContextAccessor = _httpContextAccessorMock.Object,
+            GlobalVariables = Options.Create(new GlobalVariables())
+        };
+
+        Action act = () => new RegistrationApplicationService(deps);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.SubmissionService)} cannot be null.");
+    }
+
+    [Test]
+    public void Constructor_ShouldThrow_InvalidOperation_When_PaymentCalculationService_IsNull()
+    {
+      
+        var deps = new RegistrationApplicationServiceDependencies
+        {
+            SubmissionService = _submissionServiceMock.Object,
+            PaymentCalculationService = null!,
+            RegistrationSessionManager = _sessionManagerMock.Object,
+            FrontendSessionManager = _frontEndSessionManagerMock.Object,
+            Logger = _loggerMock.Object,
+            FeatureManager = _featureManagerMock.Object,
+            HttpContextAccessor = _httpContextAccessorMock.Object,
+            GlobalVariables = Options.Create(new GlobalVariables())
+        };
+
+        Action act = () => new RegistrationApplicationService(deps);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.PaymentCalculationService)} cannot be null.");
+    }
+
+    [Test]
+    public void Constructor_ShouldThrow_InvalidOperation_When_RegistrationSessionManager_IsNull()
+    {
+        var deps = new RegistrationApplicationServiceDependencies
+        {
+            SubmissionService = _submissionServiceMock.Object,
+            PaymentCalculationService = _paymentCalculationServiceMock.Object,
+            RegistrationSessionManager = null!,
+            FrontendSessionManager = _frontEndSessionManagerMock.Object,
+            Logger = _loggerMock.Object,
+            FeatureManager = _featureManagerMock.Object,
+            HttpContextAccessor = _httpContextAccessorMock.Object,
+            GlobalVariables = Options.Create(new GlobalVariables())
+        };
+
+        Action act = () => new RegistrationApplicationService(deps);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.RegistrationSessionManager)} cannot be null.");
+    }
+
+    [Test]
+    public void Constructor_ShouldThrow_InvalidOperation_When_FrontendSessionManager_IsNull()
+    {
+        var deps = new RegistrationApplicationServiceDependencies
+        {
+            SubmissionService = _submissionServiceMock.Object,
+            PaymentCalculationService = _paymentCalculationServiceMock.Object,
+            RegistrationSessionManager = _sessionManagerMock.Object,
+            FrontendSessionManager = null!,
+            Logger = _loggerMock.Object,
+            FeatureManager = _featureManagerMock.Object,
+            HttpContextAccessor = _httpContextAccessorMock.Object,
+            GlobalVariables = Options.Create(new GlobalVariables())
+        };
+
+        Action act = () => new RegistrationApplicationService(deps);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.FrontendSessionManager)} cannot be null.");
+    }
+
+    [Test]
+    public void Constructor_ShouldThrow_InvalidOperation_When_Logger_IsNull()
+    {
+        var deps = new RegistrationApplicationServiceDependencies
+        {
+            SubmissionService = _submissionServiceMock.Object,
+            PaymentCalculationService = _paymentCalculationServiceMock.Object,
+            RegistrationSessionManager = _sessionManagerMock.Object,
+            FrontendSessionManager = _frontEndSessionManagerMock.Object,
+            Logger = null!,
+            FeatureManager = _featureManagerMock.Object,
+            HttpContextAccessor = _httpContextAccessorMock.Object,
+            GlobalVariables = Options.Create(new GlobalVariables())
+        };
+
+        Action act = () => new RegistrationApplicationService(deps);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.Logger)} cannot be null.");
+    }
+
+    [Test]
+    public void Constructor_ShouldThrow_InvalidOperation_When_FeatureManager_IsNull()
+    {
+        var deps = new RegistrationApplicationServiceDependencies
+        {
+            SubmissionService = _submissionServiceMock.Object,
+            PaymentCalculationService = _paymentCalculationServiceMock.Object,
+            RegistrationSessionManager = _sessionManagerMock.Object,
+            FrontendSessionManager = _frontEndSessionManagerMock.Object,
+            Logger = _loggerMock.Object,
+            FeatureManager = null!,
+            HttpContextAccessor = _httpContextAccessorMock.Object,
+            GlobalVariables = Options.Create(new GlobalVariables())
+        };
+
+        Action act = () => new RegistrationApplicationService(deps);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.FeatureManager)} cannot be null.");
+    }
+
+    [Test]
+    public void Constructor_ShouldThrow_InvalidOperation_When_HttpContextAccessor_IsNull()
+    {
+        var deps = new RegistrationApplicationServiceDependencies
+        {
+            SubmissionService = _submissionServiceMock.Object,
+            PaymentCalculationService = _paymentCalculationServiceMock.Object,
+            RegistrationSessionManager = _sessionManagerMock.Object,
+            FrontendSessionManager = _frontEndSessionManagerMock.Object,
+            Logger = _loggerMock.Object,
+            FeatureManager = _featureManagerMock.Object,
+            HttpContextAccessor = null!,
+            GlobalVariables = Options.Create(new GlobalVariables())
+        };
+
+        Action act = () => new RegistrationApplicationService(deps);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.HttpContextAccessor)} cannot be null.");
+    }
+
+    [Test]
+    public void Constructor_ShouldThrow_InvalidOperation_When_GlobalVariables_IsNull()
+    {
+        var deps = new RegistrationApplicationServiceDependencies
+        {
+            SubmissionService = _submissionServiceMock.Object,
+            PaymentCalculationService = _paymentCalculationServiceMock.Object,
+            RegistrationSessionManager = _sessionManagerMock.Object,
+            FrontendSessionManager = _frontEndSessionManagerMock.Object,
+            Logger = _loggerMock.Object,
+            FeatureManager = _featureManagerMock.Object,
+            HttpContextAccessor = _httpContextAccessorMock.Object,
+            GlobalVariables = null!
+        };
+
+        Action act = () => new RegistrationApplicationService(deps);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.GlobalVariables)} cannot be null.");
+    }
+
+    [Test]
+    public void Constructor_Should_NotThrow_When_All_Dependencies_Are_Provided()
+    {
+        var deps = new RegistrationApplicationServiceDependencies
+        {
+            SubmissionService = _submissionServiceMock.Object,
+            PaymentCalculationService = _paymentCalculationServiceMock.Object,
+            RegistrationSessionManager = _sessionManagerMock.Object,
+            FrontendSessionManager = _frontEndSessionManagerMock.Object,
+            Logger = _loggerMock.Object,
+            FeatureManager = _featureManagerMock.Object,
+            HttpContextAccessor = _httpContextAccessorMock.Object,
+            GlobalVariables = Options.Create(new GlobalVariables())
+        };
+
+        Action act = () => new RegistrationApplicationService(deps);
+
+        act.Should().NotThrow();
+    }
+
 }
 
 internal static class ClaimsPrincipalExtensions
