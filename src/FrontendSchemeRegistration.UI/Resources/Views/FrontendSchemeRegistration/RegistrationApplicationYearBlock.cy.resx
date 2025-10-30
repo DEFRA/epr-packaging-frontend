@@ -33,6 +33,12 @@
 	<data name="large_producers_only" xml:space="preserve">
     <value>(cynhyrchwyr mawr yn unig)</value>
   </data>
+    <data name="large_producer_registration" xml:space="preserve">
+        <value>Large producer {0} registration</value>
+    </data>
+	<data name="small_producer_registration" xml:space="preserve">
+        <value>Small producer {0} registration</value>
+    </data>
 	<data name="registration_for_year" xml:space="preserve">
     <value>Cofrestru ar gyfer {0}</value>
   </data>

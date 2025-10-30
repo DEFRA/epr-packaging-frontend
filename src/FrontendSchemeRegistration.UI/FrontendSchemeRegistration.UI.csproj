@@ -173,6 +173,9 @@
             <Generator>ResXFileCodeGenerator</Generator>
             <LastGenOutput>SharedResources.Designer.cs</LastGenOutput>
         </EmbeddedResource>
+		<EmbeddedResource Update="Resources\Views\ComplianceSchemeLanding\CSSubLanding.cy.resx">
+			<SubType>Designer</SubType>
+		</EmbeddedResource>		
         <EmbeddedResource Update="Resources\Views\ComplianceSchemeMemberLandingPage\ComplianceSchemeMemberLandingPage.cy.resx">
             <Generator>ResXFileCodeGenerator</Generator>
         </EmbeddedResource>

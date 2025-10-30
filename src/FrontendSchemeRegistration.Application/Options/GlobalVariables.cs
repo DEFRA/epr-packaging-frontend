@@ -1,7 +1,5 @@
-﻿namespace FrontendSchemeRegistration.Application.Options;
-
-using System.Diagnostics.CodeAnalysis;
-using DTOs.Submission;
+﻿using System.Diagnostics.CodeAnalysis;
+using FrontendSchemeRegistration.Application.DTOs.Submission;
 
 [ExcludeFromCodeCoverage]
 public class GlobalVariables
@@ -25,6 +23,8 @@ public class GlobalVariables
     public DateTime SmallProducerLateFeeDeadline2026 { get; set; }
 
     public DateTime SmallProducersRegStartTime2026 { get; set; }
+
+    public DateTime LargeProducersRegStartTime2025 { get; set; }
 
     public string RegistrationYear { get; set; }
 }
