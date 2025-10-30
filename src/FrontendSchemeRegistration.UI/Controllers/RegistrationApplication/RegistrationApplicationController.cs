@@ -1,5 +1,4 @@
-﻿using System.Web;
-using EPR.Common.Authorization.Constants;
+﻿using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
@@ -15,7 +14,6 @@ using FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
-using Polly.Caching;
 
 namespace FrontendSchemeRegistration.UI.Controllers.RegistrationApplication;
 
@@ -26,6 +24,7 @@ public class RegistrationApplicationController(
 )
     : Controller
 {
+
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
     [Route(PagePaths.ProducerRegistrationGuidance)]
@@ -36,9 +35,17 @@ public class RegistrationApplicationController(
         var isResubmission = !string.IsNullOrWhiteSpace(HttpContext.Request.Query["IsResubmission"]);
 
         var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], false);
-        var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, registrationYear.GetValueOrDefault(), isResubmission);    
-        session.Journey = [session.IsComplianceScheme ? PagePaths.ComplianceSchemeLanding : PagePaths.HomePageSelfManaged, PagePaths.ProducerRegistrationGuidance];
+        var producerSize = HttpContext.Request.Query["producersize"].ToString();
+        if (registrationYear >= 2026 && !new[] { "large", "small" }.Contains(producerSize.ToLower()))
+        {
+            return RedirectToAction("HandleThrownExceptions", "Error");
+        }
 
+        //TODO: Pass the Producer Size to the Submission Service for filtering once implemented
+        var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, registrationYear.GetValueOrDefault(), isResubmission);    
+        session.Journey = [session.IsComplianceScheme ? $"{PagePaths.ComplianceSchemeLanding}/{PagePaths.CSSubLanding}" : PagePaths.HomePageSelfManaged, PagePaths.ProducerRegistrationGuidance];
+
+        SetBackLink(session, PagePaths.ProducerRegistrationGuidance);
 
         if (session.ApplicationStatus is
                 ApplicationStatusType.FileUploaded
@@ -59,6 +66,7 @@ public class RegistrationApplicationController(
             OrganisationName = organisation.Name!,
             OrganisationNumber = organisation.OrganisationNumber.ToReferenceNumberFormat(),
             RegistrationYear = registrationYear.GetValueOrDefault(),
+            ProducerSize = producerSize,
             IsComplianceScheme = userData.Organisations[0].OrganisationRole == OrganisationRoles.ComplianceScheme,
             ComplianceScheme = session.SelectedComplianceScheme?.Name!
         });

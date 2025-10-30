@@ -1,11 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using EPR.Common.Authorization.Constants;
-using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
-using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
-using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Services;
@@ -30,6 +27,36 @@ public class ComplianceSchemeLandingController(
     IOptions<GlobalVariables> globalVariables)
     : Controller
 {
+    [HttpGet]
+    [Route(PagePaths.CSSubLanding)]
+    public async Task<IActionResult> CSSubLanding()
+    {
+        var userData = User.GetUserData();
+        var organisation = userData.Organisations[0];
+        var registrationApplicationPerYearViewModels = await registrationApplicationService.BuildRegistrationApplicationPerYearViewModels(HttpContext.Session, organisation);
+        var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+        var complianceSchemes = await complianceSchemeService.GetOperatorComplianceSchemes(organisation.Id.Value);
+        var currentComplianceSchemeId = session.RegistrationSession.SelectedComplianceScheme.Id;
+        var currentSummary = await complianceSchemeService.GetComplianceSchemeSummary(organisation.Id.Value, currentComplianceSchemeId);
+        var model = new ComplianceSchemeLandingViewModel
+        {
+            RegistrationApplicationsPerYear = registrationApplicationPerYearViewModels,
+            ComplianceSchemes = complianceSchemes,
+            CurrentTabSummary = currentSummary,
+            LargeProducerLinkActive = LargeProducerLinkActive(),
+            SmallProducerLinkActive = SmallProducerLinkActive()
+        };
+        return View(model);
+    }
+    private bool LargeProducerLinkActive()
+    {
+        return DateTime.UtcNow.Date >= globalVariables.Value.LargeProducersRegStartTime2025;
+    }
+    private bool SmallProducerLinkActive()
+    {
+        return DateTime.UtcNow.Date >= globalVariables.Value.SmallProducersRegStartTime2026;
+    }
+
     [HttpGet]
     [ExcludeFromCodeCoverage]
     public async Task<IActionResult> Get()

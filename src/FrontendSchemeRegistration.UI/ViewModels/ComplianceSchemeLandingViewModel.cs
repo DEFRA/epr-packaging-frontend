@@ -29,4 +29,8 @@ public class ComplianceSchemeLandingViewModel
     public List<RegistrationApplicationPerYearViewModel> RegistrationApplicationsPerYear { get; set; } = new();
 
     public SubmissionPeriod PackagingResubmissionPeriod { get; set; }
+
+    public bool LargeProducerLinkActive { get; set; }
+
+    public bool SmallProducerLinkActive { get; set; }
 }

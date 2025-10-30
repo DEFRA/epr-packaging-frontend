@@ -8,6 +8,21 @@
 <main class="govuk-main-wrapper" id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-three-quarters">
+            @if (Model.IsComplianceScheme)
+            {
+                if (Model.ProducerSize == "large")
+                {
+                    <span class="govuk-caption-l">@Localizer["large_producer_registration", Model.RegistrationYear]</span>
+                }
+                else if (Model.ProducerSize == "small")
+                {
+                    <span class="govuk-caption-l">@Localizer["small_producer_registration", Model.RegistrationYear]</span>
+                }
+                else
+                {
+                    throw new InvalidOperationException("Invalid producer size");
+                }
+            }
             <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
                 @if (Model.IsComplianceScheme)
                 {
@@ -52,7 +67,7 @@
                 <a class="govuk-link govuk-link--no-visited-state" rel="noreferrer noopener" target="_blank" href="@GuidanceLinks.Value.ProducerResponsibilitiesForPackagingWaste">@Localizer["more_about_packaging_responsibilities_and_check_need_for_action"]</a>
             </p>
 
-            <a asp-action="RegistrationTaskList" asp-route-registrationyear="@Model.RegistrationYear" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+            <a asp-action="RegistrationTaskList" asp-route-registrationyear="@Model.RegistrationYear" asp-route-producersize="@Model.ProducerSize" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
                 @SharedLocalizer["continue"]
             </a>
         </div>

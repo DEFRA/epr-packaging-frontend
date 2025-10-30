@@ -75,6 +75,9 @@ public class ComplianceSchemeLandingControllerTests
         }
     };
 
+    private readonly DateTime _smallProducersRegStartTime2026 = new DateTime(2026, 1, 1);
+    private readonly DateTime _largeProducersRegStartTime2025 = new DateTime(2026, 7, 1);
+
     private readonly RegistrationApplicationSession _registrationApplicationSession = new RegistrationApplicationSession
     {
         LastSubmittedFile = new LastSubmittedFileDetails { FileId = Guid.NewGuid() },
@@ -114,7 +117,11 @@ public class ComplianceSchemeLandingControllerTests
         };
 
         globalVariables = new Mock<IOptions<GlobalVariables>>();
-        globalVariables.Setup(o => o.Value).Returns(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods });
+        globalVariables.Setup(o => o.Value).Returns(new GlobalVariables
+        {
+            BasePath = "path",
+            SubmissionPeriods = _submissionPeriods
+        });
 
         _userMock.Setup(x => x.Claims).Returns(claims);
         _httpContextMock.Setup(x => x.User).Returns(_userMock.Object);
@@ -129,7 +136,13 @@ public class ComplianceSchemeLandingControllerTests
             _registrationApplicationService.Object,
             _resubmissionApplicationService.Object,
             _nullLogger,
-            Options.Create(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods }))
+            Options.Create(new GlobalVariables
+            {
+                BasePath = "path",
+                SubmissionPeriods = _submissionPeriods,
+                LargeProducersRegStartTime2025 = _largeProducersRegStartTime2025,
+                SmallProducersRegStartTime2026 = _smallProducersRegStartTime2026,
+            }))
         {
             ControllerContext = { HttpContext = _httpContextMock.Object }
         };
@@ -897,6 +910,78 @@ public class ComplianceSchemeLandingControllerTests
         _sessionManagerMock.Verify(
             x => x.UpdateSessionAsync(
                 It.IsAny<ISession>(), It.IsAny<Action<FrontendSchemeRegistrationSession>>()), Times.Never);
+    }
+
+    [Test]
+    public async Task CSSubLanding_Returns_DefaultView_With_Expected_Model()
+    {
+        var orgId = Guid.NewGuid();
+        var csId = Guid.NewGuid();
+        _systemUnderTest.ControllerContext.HttpContext.User = BuildUserWithOrg(orgId);
+        var session = new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession
+            {
+                SelectedComplianceScheme = new ComplianceSchemeDto { Id = csId }
+            },
+            UserData = new UserData { Organisations = [new Organisation { Id = orgId }] }
+        };
+        var complianceSchemes = new List<ComplianceSchemeDto> { new() { Id = csId } };
+        var summary = new ComplianceSchemeSummary();
+        var perYearModels = new List<RegistrationApplicationPerYearViewModel>
+            {
+                new() { RegistrationYear = "2025" }
+            };
+        _sessionManagerMock.Setup(s => s.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+        _complianceSchemeServiceMock.Setup(s => s.GetOperatorComplianceSchemes(It.IsAny<Guid>())).ReturnsAsync(complianceSchemes);
+        _complianceSchemeServiceMock.Setup(s => s.GetComplianceSchemeSummary(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(summary);
+        _registrationApplicationService
+            .Setup(s => s.BuildRegistrationApplicationPerYearViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+            .ReturnsAsync(perYearModels);
+        // Act
+        var result = await _systemUnderTest.CSSubLanding() as ViewResult;
+        // Assert
+        result.Should().NotBeNull();
+        result!.ViewName.Should().BeNull();
+        result.Model.Should().BeOfType<ComplianceSchemeLandingViewModel>()
+            .Which.Should().BeEquivalentTo(new
+            {
+                RegistrationApplicationsPerYear = perYearModels,
+                ComplianceSchemes = complianceSchemes,
+                CurrentTabSummary = summary
+            });
+        _sessionManagerMock.Verify(s => s.GetSessionAsync(It.IsAny<ISession>()), Times.Once);
+        _complianceSchemeServiceMock.Verify(s => s.GetOperatorComplianceSchemes(It.IsAny<Guid>()), Times.Once);
+        _complianceSchemeServiceMock.Verify(s => s.GetComplianceSchemeSummary(It.IsAny<Guid>(), It.IsAny<Guid>()), Times.Once);
+        _registrationApplicationService.Verify(s =>
+            s.BuildRegistrationApplicationPerYearViewModels(
+                It.IsAny<ISession>(),
+                It.IsAny<Organisation>()), Times.Once);
+    }
+    private static ClaimsPrincipal BuildUserWithOrg(Guid organisationId)
+    {
+        var userData = new UserData
+        {
+            Id = Guid.NewGuid(),
+            Organisations = [new Organisation { Id = organisationId, Name = "Org" }],
+            ServiceRole = "Approved Person"
+        };
+        return new ClaimsPrincipal(
+            new ClaimsIdentity(
+                [new Claim(ClaimTypes.UserData, JsonConvert.SerializeObject(userData))],
+                "TestAuth"));
+    }
+    private sealed class DummySession : ISession
+    {
+        public bool IsAvailable => true;
+        public string Id => Guid.NewGuid().ToString();
+        public IEnumerable<string> Keys => Array.Empty<string>();
+        public void Clear() { }
+        public Task CommitAsync(CancellationToken token = default) => Task.CompletedTask;
+        public Task LoadAsync(CancellationToken token = default) => Task.CompletedTask;
+        public void Remove(string key) { }
+        public void Set(string key, byte[] value) { }
+        public bool TryGetValue(string key, out byte[] value) { value = Array.Empty<byte>(); return false; }
     }
 
     private List<ComplianceSchemeDto> GetComplianceSchemes() => new()

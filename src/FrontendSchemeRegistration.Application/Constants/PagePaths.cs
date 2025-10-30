@@ -36,6 +36,7 @@ public static class PagePaths
     public const string UploadNewFileToSubmit = "/upload-new-file-to-submit";
     public const string HomePageComplianceScheme = "producer-compliance-scheme";
     public const string HomePageSelfManaged = "home-self-managed";
+    public const string CSSubLanding = "cs-sub-landing";
     public const string ProducerRegistrationGuidance = "producer-registration-guidance";
     public const string RegistrationTaskList = "registration-task-list";
     public const string RegistrationFeeCalculations = "registration-fee-calculations";

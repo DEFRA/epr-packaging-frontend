@@ -34,6 +34,7 @@ public class RegistrationApplicationControllerTests
 {
     private const string OrganisationName = "Acme Org Ltd";
     private const string SubmissionPeriod = "Jul to Dec 23";
+    private const string ProducerSize = "large";
 
     private static readonly RegistrationFeeCalculationDetails[] _feeCalculationDetails =
     [
@@ -135,7 +136,7 @@ public class RegistrationApplicationControllerTests
         SystemUnderTest.ControllerContext.HttpContext.Session = new Mock<ISession>().Object;
         SystemUnderTest.TempData = tempDataDictionaryMock.Object;
 
-        var queryStrings = new QueryCollection(new Dictionary<string, StringValues> { { "registrationyear", DateTime.Now.Year.ToString() } });
+        var queryStrings = new QueryCollection(new Dictionary<string, StringValues> { { "registrationyear", DateTime.Now.Year.ToString() }, { "producersize", ProducerSize } });
 
         _httpRequestMock.Setup(x => x.Query).Returns(queryStrings);
         _httpContextMock.Setup(x => x.Features.Get<IRequestCultureFeature>())
@@ -749,8 +750,50 @@ public class RegistrationApplicationControllerTests
             RegulatorNation = nationCode,
             ComplianceScheme = complianceScheme.Name,
             OrganisationName = _userData.Organisations[0].Name,
-            OrganisationNumber = _userData.Organisations[0].OrganisationNumber.ToReferenceNumberFormat()
+            OrganisationNumber = _userData.Organisations[0].OrganisationNumber.ToReferenceNumberFormat(),
+            ProducerSize = ProducerSize
         });
+    }
+
+    [Test]
+    public async Task WhenRegistrationDataNotSubmitted_InvalidProducerSize_ProducerRegistrationGuidance_ReturnsErrorViewModel()
+    {
+        // Arrange
+        const string nationCode = "GB-ENG";
+        var complianceScheme = new ComplianceSchemeDto
+        {
+            Id = Guid.NewGuid(),
+            Name = "Biffpack (Environment Agency)",
+            NationId = 1,
+            CreatedOn = DateTime.Now
+        };
+        var registrationApplicationDetails = new RegistrationApplicationSession
+        {
+            SelectedComplianceScheme = complianceScheme,
+            RegulatorNation = nationCode
+        };
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+            .ReturnsAsync(registrationApplicationDetails);
+        RegistrationApplicationService.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
+            .Returns(2026);
+        Session = new RegistrationApplicationSession
+        {
+            Journey = [PagePaths.ProducerRegistrationGuidance],
+            SelectedComplianceScheme = complianceScheme,
+            RegulatorNation = nationCode
+        };
+        SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(Session);
+        var producerSize = "invalid";
+        _httpRequestMock.Setup(x => x.Query).Returns(new QueryCollection(new Dictionary<string, StringValues>
+        {
+            { "registrationyear", "2026" },
+            { "producersize", producerSize }
+        }));
+        // Act
+        var result = await SystemUnderTest.ProducerRegistrationGuidance() as RedirectToActionResult;
+        // Assert
+        result.ControllerName.Should().Be("Error");
+        result.ActionName.Should().Be("HandleThrownExceptions");
     }
 
     [Test]

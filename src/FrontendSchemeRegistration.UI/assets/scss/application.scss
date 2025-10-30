@@ -436,3 +436,13 @@ table.cookies-table {
     background: rgba(0, 0, 0, 0.5); /* Gray with transparency */
     z-index: 1040; /* Ensure it is behind the modal but above everything else */
 }
+
+.app-summary-card__title-wrapper--no-background {
+    background: transparent !important;
+}
+
+.disabled-link {
+    pointer-events: none; /* Prevents all mouse activity */
+    cursor: default; /* Changes cursor to default pointer */
+    color: #999; /* Styles the text to appear inactive */
+}

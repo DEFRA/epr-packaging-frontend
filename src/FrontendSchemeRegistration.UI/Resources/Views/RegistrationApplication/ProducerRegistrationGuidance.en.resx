@@ -18,7 +18,13 @@
     <data name="register_company" xml:space="preserve">
         <value>{0} registration</value>
     </data>
-    <data name="scheme_registration_details" xml:space="preserve">
+	<data name="large_producer_registration" xml:space="preserve">
+        <value>Large producer {0} registration</value>
+    </data>
+	<data name="small_producer_registration" xml:space="preserve">
+        <value>Small producer {0} registration</value>
+    </data>
+	<data name="scheme_registration_details" xml:space="preserve">
         <value>Scheme registration details</value>
     </data>
     <data name="organisation_id_x" xml:space="preserve">
