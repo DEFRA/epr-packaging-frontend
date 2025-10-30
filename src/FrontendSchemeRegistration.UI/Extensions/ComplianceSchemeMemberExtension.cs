@@ -48,5 +48,8 @@ namespace FrontendSchemeRegistration.UI.Extensions
 
         internal static IList<int> GetSubsidiariesCompanies(this List<ComplianceSchemePaymentCalculationResponseMember> complianceSchemeMembers) =>
             complianceSchemeMembers.Where(r => r.SubsidiariesFee > 0).Select(r => r.SubsidiariesFee).ToList();
+
+        internal static IList<int> GetLateSubsidiaryFees(this List<ComplianceSchemePaymentCalculationResponseMember> complianceSchemeMembers) =>
+            complianceSchemeMembers.Where(r => r.SubsidiariesLateRegistrationFee > 0).Select(r => r.SubsidiariesLateRegistrationFee).ToList();
     }
 }

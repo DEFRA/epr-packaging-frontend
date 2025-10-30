@@ -11,6 +11,6 @@ public class ComplianceSchemePaymentCalculationResponseMember
     public int MemberLateRegistrationFee { get; set; }
     public int SubsidiariesFee { get; set; }
     public int TotalMemberFee { get; set; }
-
+    public int SubsidiariesLateRegistrationFee { get; set; }
     public SubsidiariesFeeBreakdown SubsidiariesFeeBreakdown { get; set; }
 }

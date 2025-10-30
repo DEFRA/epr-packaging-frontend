@@ -38,4 +38,6 @@ public class FeeCalculationBreakdownViewModel
     public bool RegistrationApplicationSubmitted { get; set; }
 
     public int RegistrationYear { get; set; }
+
+    public int NumberOfLateSubsidiaries { get; set; }
 }

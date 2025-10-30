@@ -18,4 +18,6 @@ public class RegistrationFeeCalculationDetails
     public bool IsNewJoiner { get; set; }
 
     public int NationId { get; set; }
+
+    public int NumberOfLateSubsidiaries { get; set; }
 }

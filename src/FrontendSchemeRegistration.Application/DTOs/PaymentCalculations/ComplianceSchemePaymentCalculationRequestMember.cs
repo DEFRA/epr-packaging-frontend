@@ -8,4 +8,5 @@ public class ComplianceSchemePaymentCalculationRequestMember
     public bool IsLateFeeApplicable { get; set; }
     public int NumberOfSubsidiaries { get; set; }
     public int NoOfSubsidiariesOnlineMarketplace { get; set; }
+    public int NumberofLateSubsidiaries { get; set; }
 }
