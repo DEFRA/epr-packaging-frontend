@@ -225,7 +225,8 @@ public class RegistrationApplicationService : IRegistrationApplicationService
                     NoOfSubsidiariesOnlineMarketplace = feeCalculationDetails.NumberOfSubsidiariesBeingOnlineMarketPlace,
                     NumberOfSubsidiaries = feeCalculationDetails.NumberOfSubsidiaries,
                     ProducerType = feeCalculationDetails.OrganisationSize,
-                    SubmissionDate = session.LastSubmittedFile.SubmittedDateTime!.Value
+                    SubmissionDate = session.LastSubmittedFile.SubmittedDateTime!.Value,
+                    NumberOfLateSubsidiaries = session.IsLateFeeApplicable ? 0 : feeCalculationDetails.NumberOfLateSubsidiaries
                 };
 
                 response = await paymentCalculationService.GetProducerRegistrationFees(v2);
@@ -241,7 +242,8 @@ public class RegistrationApplicationService : IRegistrationApplicationService
                     NoOfSubsidiariesOnlineMarketplace = feeCalculationDetails.NumberOfSubsidiariesBeingOnlineMarketPlace,
                     NumberOfSubsidiaries = feeCalculationDetails.NumberOfSubsidiaries,
                     ProducerType = feeCalculationDetails.OrganisationSize,
-                    SubmissionDate = session.LastSubmittedFile.SubmittedDateTime!.Value
+                    SubmissionDate = session.LastSubmittedFile.SubmittedDateTime!.Value,
+                    NumberOfLateSubsidiaries = session.IsLateFeeApplicable ? 0 : feeCalculationDetails.NumberOfLateSubsidiaries
                 };
 
                 response = await paymentCalculationService.GetProducerRegistrationFees(v1);
@@ -258,7 +260,8 @@ public class RegistrationApplicationService : IRegistrationApplicationService
                 NoOfSubsidiariesOnlineMarketplace = feeCalculationDetails.NumberOfSubsidiariesBeingOnlineMarketPlace,
                 NumberOfSubsidiaries = feeCalculationDetails.NumberOfSubsidiaries,
                 ProducerType = feeCalculationDetails.OrganisationSize,
-                SubmissionDate = session.LastSubmittedFile.SubmittedDateTime!.Value
+                SubmissionDate = session.LastSubmittedFile.SubmittedDateTime!.Value,
+                NumberOfLateSubsidiaries = session.IsLateFeeApplicable ? 0 : feeCalculationDetails.NumberOfLateSubsidiaries
             };
 
             response = await paymentCalculationService.GetProducerRegistrationFees(v1);
@@ -289,7 +292,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             TotalFeeAmount = response.TotalFee,
             TotalAmountOutstanding = session.TotalAmountOutstanding,
             IsRegistrationFeePaid = session.IsRegistrationFeePaid,
-            ProducerLateRegistrationFee = response.ProducerLateRegistrationFee,
+            ProducerLateRegistrationFee = response.ProducerLateRegistrationFee + response.SubsidiariesLateRegistrationFee,
             RegistrationApplicationSubmitted = session.RegistrationApplicationSubmitted
         };
     }
@@ -323,22 +326,25 @@ public class RegistrationApplicationService : IRegistrationApplicationService
                 Regulator = session.RegulatorNation,
                 ApplicationReferenceNumber = session.ApplicationReferenceNumber,
                 SubmissionDate = session.LastSubmittedFile.SubmittedDateTime!.Value,
-                ComplianceSchemeMembers = feeCalculationDetails.Select(c => new ComplianceSchemePaymentCalculationRequestMember
+                ComplianceSchemeMembers = feeCalculationDetails.Select(c =>
                 {
-                    // Apply late fee to all producers if original submission was late or
-                    // not a single submission and current submission is late 
-                    // if above two are not satisified that means file are submitted on time its new submission either due to queried
-                    // check individual producer is new joiner so late fee applicable on producer level rather than file
-                    IsLateFeeApplicable =
-                        session.IsOriginalCsoSubmissionLate
-                        || (session.FirstApplicationSubmittedEventCreatedDatetime is null && session.IsLateFeeApplicable)
-                        || (session.IsLateFeeApplicable && c.IsNewJoiner),
-                    IsOnlineMarketplace = c.IsOnlineMarketplace,
-                    MemberId = c.OrganisationId,
-                    MemberType = c.OrganisationSize,
-                    NoOfSubsidiariesOnlineMarketplace = c.NumberOfSubsidiariesBeingOnlineMarketPlace,
-                    NumberOfSubsidiaries = c.NumberOfSubsidiaries
-                    
+                var isLateFeeApplicable = session.IsOriginalCsoSubmissionLate || session.FirstApplicationSubmittedEventCreatedDatetime is null
+                    && session.IsLateFeeApplicable || session.IsLateFeeApplicable && c.IsNewJoiner;
+
+                    return new ComplianceSchemePaymentCalculationRequestMember
+                    {
+                        // Apply late fee to all producers if original submission was late or
+                        // not a single submission and current submission is late 
+                        // if above two are not satisified that means file are submitted on time its new submission either due to queried
+                        // check individual producer is new joiner so late fee applicable on producer level rather than file
+                        IsLateFeeApplicable = isLateFeeApplicable,
+                        IsOnlineMarketplace = c.IsOnlineMarketplace,
+                        MemberId = c.OrganisationId,
+                        MemberType = c.OrganisationSize,
+                        NoOfSubsidiariesOnlineMarketplace = c.NumberOfSubsidiariesBeingOnlineMarketPlace,
+                        NumberOfSubsidiaries = c.NumberOfSubsidiaries,
+                        NumberofLateSubsidiaries = session.IsLateFeeApplicable && !isLateFeeApplicable ? c.NumberOfLateSubsidiaries : 0
+                    }; 
                 }).ToList()
             };
 
@@ -351,21 +357,25 @@ public class RegistrationApplicationService : IRegistrationApplicationService
                 Regulator = session.RegulatorNation,
                 ApplicationReferenceNumber = session.ApplicationReferenceNumber,
                 SubmissionDate = session.LastSubmittedFile.SubmittedDateTime!.Value,
-                ComplianceSchemeMembers = feeCalculationDetails.Select(c => new ComplianceSchemePaymentCalculationRequestMember
+                ComplianceSchemeMembers = feeCalculationDetails.Select(c =>
                 {
-                    // Apply late fee to all producers if original submission was late or
-                    // not a single submission and current submission is late 
-                    // if above two are not satisified that means file are submitted on time its new submission either due to queried
-                    // check individual producer is new joiner so late fee applicable on producer level rather than file
-                    IsLateFeeApplicable =
-                        session.IsOriginalCsoSubmissionLate
-                        || (session.FirstApplicationSubmittedEventCreatedDatetime is null && session.IsLateFeeApplicable)
-                        || (session.IsLateFeeApplicable && c.IsNewJoiner),
-                    IsOnlineMarketplace = c.IsOnlineMarketplace,
-                    MemberId = c.OrganisationId,
-                    MemberType = c.OrganisationSize,
-                    NoOfSubsidiariesOnlineMarketplace = c.NumberOfSubsidiariesBeingOnlineMarketPlace,
-                    NumberOfSubsidiaries = c.NumberOfSubsidiaries
+                var isLateFeeApplicable = session.IsOriginalCsoSubmissionLate || session.FirstApplicationSubmittedEventCreatedDatetime is null
+                    && session.IsLateFeeApplicable || session.IsLateFeeApplicable && c.IsNewJoiner;
+
+                    return new ComplianceSchemePaymentCalculationRequestMember
+                    {
+                        // Apply late fee to all producers if original submission was late or
+                        // not a single submission and current submission is late 
+                        // if above two are not satisified that means file are submitted on time its new submission either due to queried
+                        // check individual producer is new joiner so late fee applicable on producer level rather than file
+                        IsLateFeeApplicable = isLateFeeApplicable,
+                        IsOnlineMarketplace = c.IsOnlineMarketplace,
+                        MemberId = c.OrganisationId,
+                        MemberType = c.OrganisationSize,
+                        NoOfSubsidiariesOnlineMarketplace = c.NumberOfSubsidiariesBeingOnlineMarketPlace,
+                        NumberOfSubsidiaries = c.NumberOfSubsidiaries,
+                        NumberofLateSubsidiaries = session.IsLateFeeApplicable && !isLateFeeApplicable ? c.NumberOfLateSubsidiaries : 0
+                    };
                 }).ToList()
             };
 
@@ -388,6 +398,9 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         var lateFees = response.ComplianceSchemeMembersWithFees.GetLateProducers();
         var subsidiariesFees = response.ComplianceSchemeMembersWithFees.GetSubsidiariesCompanies();
         var subsidiariesCount = feeCalculationDetails.Sum(d => d.NumberOfSubsidiaries);
+        var lateSubsidiaryFees = response.ComplianceSchemeMembersWithFees.GetLateSubsidiaryFees();
+        var lateProducersFees = response.ComplianceSchemeMembersWithFees.GetLateProducers();
+
 
         return new ComplianceSchemeFeeCalculationBreakdownViewModel
         {
@@ -400,7 +413,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             OnlineMarketplaceCount = onlineMarketplaces.Count,
             SubsidiaryCompanyFee = subsidiariesFees.Sum(),
             SubsidiaryCompanyCount = subsidiariesCount,
-            LateProducerFee = lateFees.Sum(),
+            LateProducerFee = lateProducersFees.Sum() + lateSubsidiaryFees.Sum(),
             LateProducersCount = lateFees.Count,
             TotalPreviousPayments = response.PreviousPayment,
             TotalFeeAmount = response.TotalFee,
