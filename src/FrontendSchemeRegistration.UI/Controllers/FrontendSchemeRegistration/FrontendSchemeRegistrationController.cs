@@ -425,6 +425,7 @@ public class FrontendSchemeRegistrationController(
         var registrationApplicationPerYearViewModels = await registrationApplicationService.BuildRegistrationApplicationPerYearViewModels(HttpContext.Session, organisation);
         var resubmissionApplicationDetails = await resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(organisation, new List<string> { packagingResubmissionPeriod?.DataPeriod }, session.RegistrationSession.SelectedComplianceScheme?.Id);
 
+        var currentYear = DateTime.Now.Year;
         var viewModel = new HomePageSelfManagedViewModel
         {
             OrganisationName = organisation.Name!,
@@ -433,7 +434,8 @@ public class FrontendSchemeRegistrationController(
             OrganisationRole = organisation.OrganisationRole!,
             ResubmissionTaskListViewModel = resubmissionApplicationDetails.ToResubmissionTaskListViewModel(organisation),
             RegistrationApplicationsPerYear = registrationApplicationPerYearViewModels,
-            PackagingResubmissionPeriod = packagingResubmissionPeriod
+            PackagingResubmissionPeriod = packagingResubmissionPeriod,
+            ComplianceYear = DateTime.Now.Month == 1 ? (currentYear - 1).ToString() : currentYear.ToString()
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id!.Value);

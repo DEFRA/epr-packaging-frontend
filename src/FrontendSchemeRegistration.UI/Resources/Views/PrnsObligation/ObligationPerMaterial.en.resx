@@ -133,7 +133,7 @@
     <value>Producer Responsibility Obligations (Packaging and Packaging Waste) Regulations 2024</value>
   </data>
   <data name="producer_responsibility_obligations_href_part3" xml:space="preserve">
-    <value>to understand how material recycling targets for 2025 are set.</value>
+    <value>to understand how material recycling targets for {0} are set.</value>
   </data>
   <data name="if_you_believe_your_data_is_incorrect_contact_your_regulator_immediately" xml:space="preserve">
     <value>If you believe your data is incorrect, contact your regulator immediately.</value>
