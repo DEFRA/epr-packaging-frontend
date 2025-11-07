@@ -510,6 +510,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
                 RegistrationYear = year.ToString(),
                 IsComplianceScheme = registrationApplicationSession.IsComplianceScheme,
                 showLargeProducer = year == 2026,
+                feature_AlwaysShowLargeProducerJourneyMessage = await featureManager.IsEnabledAsync(FeatureFlags.AlwaysShowLargeProducerJourneyMessage),
                 RegisterSmallProducersCS = DateTime.UtcNow.Date >= globalVariables.Value.SmallProducersRegStartTime2026
             });
         }
