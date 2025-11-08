@@ -28,4 +28,5 @@ public static class FeatureFlags
     public const string EnableRegistrationFeeV2 = "EnableRegistrationFeeV2";
 
     public const string IncludeSubsidariesInFeeCalculationsForProducers = "IncludeSubsidariesInFeeCalculationsForProducers";
+    public const string AlwaysShowLargeProducerJourneyMessage = "AlwaysShowLargeProducerJourneyMessage";
 }
