@@ -20,10 +20,10 @@
             </h2>
             <table>
                 <caption>Debug Info</caption>
-                <tr><th>Feature Flag</th><th>ShowLargeProducer</th><th>RegisterSmallProducersCS</th></tr>
+                <tr><th scope="col">Feature Flag</th><th scope="col">ShowLargeProducer</th><th scope="col">RegisterSmallProducersCS</th></tr>
                 <tr><td>@Model.feature_AlwaysShowLargeProducerJourneyMessage</td><td>@Model.showLargeProducer</td><td>@Model.RegisterSmallProducersCS</td></tr>
-                <tr><th>Previous Decision</th><td>@(Model.showLargeProducer && !Model.RegisterSmallProducersCS)</td></tr>
-                <tr><th>New Decision</th><td>@(Model.feature_AlwaysShowLargeProducerJourneyMessage || (@Model.showLargeProducer && !Model.RegisterSmallProducersCS))</td></tr>
+                <tr><th scope="row">Previous Decision</th><td>@(Model.showLargeProducer && !Model.RegisterSmallProducersCS)</td></tr>
+                <tr><th scope="row">New Decision</th><td>@(Model.feature_AlwaysShowLargeProducerJourneyMessage || (@Model.showLargeProducer && !Model.RegisterSmallProducersCS))</td></tr>
             </table>
             <p class="govuk-body">
                 @{
