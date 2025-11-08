@@ -11,6 +11,10 @@
                 asp-route-registrationyear="@Model.RegistrationYear"
                 class="govuk-link govuk-link--no-visited-state">
                     @Localizer["registration_for_year", Model.RegistrationYear]
+                    <table>
+                        <tr><td>@Model.showLargeProducer</td><td>Model.RegisterSmallProducersCS</td></tr>
+                        <tr><td>@Model.showLargeProducer</td><td>@Model.showLargeProducer && !Model.RegisterSmallProducersCS</td></tr>
+                    </table>
                     @if (Model.feature_AlwaysShowLargeProducerJourneyMessage || (@Model.showLargeProducer && !Model.RegisterSmallProducersCS))
                     {
                         <br />
