@@ -60,13 +60,13 @@ public class PrnsObligationController : Controller
     [Route(PagePaths.Prns.ObligationPerMaterial + "/{material}")]
     public async Task<IActionResult> ObligationPerMaterial(string material)
     {
-        PrnObligationViewModel viewModel = new();
-        var complianceYear = GetComplianceYear(CurrentMonth);
+        PrnObligationViewModel viewModel = new();        
 
         _logger.LogInformation("{LogPrefix}: PrnsObligationController - ObligationPerMaterial: Get Recycling Obligations Calculation request for year {Year}, material {Material}", logPrefix, CurrentYear, material);
 
         if (Enum.TryParse(material, true, out MaterialType materialType))
         {
+            var complianceYear = GetComplianceYear(CurrentMonth);
             viewModel = await _prnService.GetRecyclingObligationsCalculation(complianceYear);
             _logger.LogInformation("{LogPrefix}: PrnsObligationController - ObligationsHome: Recycling Obligations returned for year {Year} : {Results}", logPrefix, CurrentYear, JsonConvert.SerializeObject(viewModel));
 
