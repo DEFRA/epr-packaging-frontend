@@ -12,6 +12,7 @@ public class ProducerRegistrationGuidanceViewModel : OrganisationNationViewModel
     public string OrganisationName { get; set; }
 
     public string OrganisationNumber { get; set; }
-    
+
     public int RegistrationYear { get; set; }
+    public string ProducerSize { get; set; }
 }
