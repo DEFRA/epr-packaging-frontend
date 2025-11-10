@@ -11,7 +11,7 @@
                 asp-route-registrationyear="@Model.RegistrationYear"
                 class="govuk-link govuk-link--no-visited-state">
                     @Localizer["registration_for_year", Model.RegistrationYear]
-                    @if ( (Model.IsComplianceScheme && Model.feature_AlwaysShowLargeProducerJourneyMessage) || (@Model.showLargeProducer && !Model.RegisterSmallProducersCS))
+                    @if ( (Model.RegistrationYear != "2025" && Model.IsComplianceScheme && Model.feature_AlwaysShowLargeProducerJourneyMessage) || (@Model.showLargeProducer && !Model.RegisterSmallProducersCS))
                     {
                         <br />
                         @Localizer["large_producers_only"]
