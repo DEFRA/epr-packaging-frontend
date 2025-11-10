@@ -861,7 +861,7 @@ public class WebApiGatewayClientTests
     {
         // Arrange
         var submissionId = Guid.NewGuid();
-        var payload = new RegistrationApplicationPayload { Comments = "Pay part-payment of Sterling 24,500", ApplicationReferenceNumber = "PEPR00002125P1" };
+        var payload = new RegistrationApplicationPayload { Comments = "Pay part-payment of £24,500", ApplicationReferenceNumber = "PEPR00002125P1" };
 
         _httpMessageHandlerMock.Protected()
             .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
