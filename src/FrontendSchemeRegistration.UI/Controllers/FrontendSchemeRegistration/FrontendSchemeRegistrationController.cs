@@ -435,7 +435,7 @@ public class FrontendSchemeRegistrationController(
             ResubmissionTaskListViewModel = resubmissionApplicationDetails.ToResubmissionTaskListViewModel(organisation),
             RegistrationApplicationsPerYear = registrationApplicationPerYearViewModels,
             PackagingResubmissionPeriod = packagingResubmissionPeriod,
-            ComplianceYear = DateTime.Now.Month == 1 ? (currentYear - 1).ToString() : currentYear.ToString()
+            ComplianceYear = DateTime.Now.Month == 1 ? (currentYear - 1).ToString() : currentYear.ToString() // this is a temp fix for the compliance window change
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id!.Value);

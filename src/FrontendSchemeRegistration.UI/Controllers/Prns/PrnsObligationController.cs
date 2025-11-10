@@ -25,6 +25,9 @@ public class PrnsObligationController : Controller
     private readonly ExternalUrlOptions _urlOptions;
     private readonly ILogger<PrnsObligationController> _logger;
     private readonly string logPrefix;
+
+    private static readonly int CurrentYear = DateTime.Now.Year;
+    private static readonly int CurrentMonth = DateTime.Now.Month;
     private const int January = 1;
 
     public PrnsObligationController(ISessionManager<FrontendSchemeRegistrationSession> sessionManager, IPrnService prnService, IOptions<GlobalVariables> globalVariables, IOptions<ExternalUrlOptions> urlOptions, ILogger<PrnsObligationController> logger)
@@ -43,13 +46,11 @@ public class PrnsObligationController : Controller
     [Route(PagePaths.Prns.ObligationsHome)]
     public async Task<IActionResult> ObligationsHome()
     {
-        var currentYear = DateTime.Now.Year;
-        int currentMonth = DateTime.Now.Month;
-
-        var viewModel = await _prnService.GetRecyclingObligationsCalculation(currentYear);
-        _logger.LogInformation("{LogPrefix}: PrnsObligationController - ObligationsHome: Recycling Obligations returned for year {Year} : {Results}", logPrefix, currentYear, JsonConvert.SerializeObject(viewModel));
-
-        await FillViewModelFromSessionAsync(viewModel, currentYear, currentMonth);
+        var complianceYear = GetComplianceYear(CurrentMonth);
+        var viewModel = await _prnService.GetRecyclingObligationsCalculation(complianceYear);
+        _logger.LogInformation("{LogPrefix}: PrnsObligationController - ObligationsHome: Recycling Obligations returned for year {Year} : {Results}", logPrefix, CurrentYear, JsonConvert.SerializeObject(viewModel));
+               
+        await FillViewModelFromSessionAsync(viewModel, CurrentYear, CurrentMonth);
 
         ViewBag.HomeLinkToDisplay = _globalVariables.Value.BasePath;
         return View(viewModel);
@@ -59,16 +60,15 @@ public class PrnsObligationController : Controller
     [Route(PagePaths.Prns.ObligationPerMaterial + "/{material}")]
     public async Task<IActionResult> ObligationPerMaterial(string material)
     {
-        int currentYear = DateTime.Now.Year;
-        int currentMonth = DateTime.Now.Month;
         PrnObligationViewModel viewModel = new();
+        var complianceYear = GetComplianceYear(CurrentMonth);
 
-        _logger.LogInformation("{LogPrefix}: PrnsObligationController - ObligationPerMaterial: Get Recycling Obligations Calculation request for year {Year}, material {Material}", logPrefix, currentYear, material);
+        _logger.LogInformation("{LogPrefix}: PrnsObligationController - ObligationPerMaterial: Get Recycling Obligations Calculation request for year {Year}, material {Material}", logPrefix, CurrentYear, material);
 
         if (Enum.TryParse(material, true, out MaterialType materialType))
         {
-            viewModel = await _prnService.GetRecyclingObligationsCalculation(currentYear);
-            _logger.LogInformation("{LogPrefix}: PrnsObligationController - ObligationsHome: Recycling Obligations returned for year {Year} : {Results}", logPrefix, currentYear, JsonConvert.SerializeObject(viewModel));
+            viewModel = await _prnService.GetRecyclingObligationsCalculation(complianceYear);
+            _logger.LogInformation("{LogPrefix}: PrnsObligationController - ObligationsHome: Recycling Obligations returned for year {Year} : {Results}", logPrefix, CurrentYear, JsonConvert.SerializeObject(viewModel));
 
             if (materialType == MaterialType.Glass || materialType == MaterialType.GlassRemelt || materialType == MaterialType.RemainingGlass)
             {
@@ -82,8 +82,8 @@ public class PrnsObligationController : Controller
                 ViewData[GlassOrNonGlassResource] = PrnMaterialObligationViewModel.MaterialCategoryResource(materialType);
             }
         }
-
-        await FillViewModelFromSessionAsync(viewModel, currentYear, currentMonth);
+        
+        await FillViewModelFromSessionAsync(viewModel, CurrentYear, CurrentMonth);
 
         if (_urlOptions.ProducerResponsibilityObligations is not null)
         {
@@ -94,7 +94,7 @@ public class PrnsObligationController : Controller
         ViewBag.BackLinkToDisplay = Url.Content($"~/{PagePaths.Prns.ObligationsHome}");
 
         return View(viewModel);
-    }
+    }  
 
     [NonAction]
     public async Task FillViewModelFromSessionAsync(PrnObligationViewModel viewModel, int currentYear, int currentMonth)
@@ -115,8 +115,19 @@ public class PrnsObligationController : Controller
         viewModel.OrganisationName = isDirectProducer ? organisation.Name : session.RegistrationSession.SelectedComplianceScheme?.Name;
         viewModel.NationId = isDirectProducer ? organisation.NationId : session.RegistrationSession.SelectedComplianceScheme?.NationId ?? 0;
 
-        var isCurrentMonthJanuary = currentMonth == January;
-        viewModel.ComplianceYear = isCurrentMonthJanuary ? currentYear - 1 : currentYear;
-        viewModel.DeadlineYear = isCurrentMonthJanuary ? currentYear : currentYear + 1;
+        var isJanuary = IsCurrentMonthJanuary(currentMonth);
+        viewModel.ComplianceYear = isJanuary ? currentYear - 1 : currentYear;
+        viewModel.DeadlineYear = isJanuary ? currentYear : currentYear + 1;
+    }
+
+    // This is a temp fix for the compliance window change
+    private static int GetComplianceYear(int currentMonth)
+    {
+        return IsCurrentMonthJanuary(currentMonth) ? CurrentYear - 1 : CurrentYear;
+    }
+
+    private static bool IsCurrentMonthJanuary(int currentMonth)
+    {
+        return currentMonth == January;
     }
 }
