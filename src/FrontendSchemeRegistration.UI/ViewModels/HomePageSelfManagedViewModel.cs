@@ -44,6 +44,7 @@ public class RegistrationApplicationPerYearViewModel
     public bool IsResubmission { get; set; }
     public ApplicationStatusType ApplicationStatus { get; set; }
     public bool showLargeProducer { get; set; }
+    public bool feature_AlwaysShowLargeProducerJourneyMessage { get; set; }
     public bool RegisterSmallProducersCS { get; set; }
     public string CurrentYear => (DateTime.Now.Year).ToString();
     public string RegistrationApplicationLink
