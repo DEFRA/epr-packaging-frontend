@@ -16,7 +16,10 @@ public class HomePageSelfManagedViewModel
 
     public string OrganisationRole { get; set; } = string.Empty;
 
-    public string CurrentYear => (DateTime.Now.Year).ToString();
+    /// <summary>
+    /// Obligation year
+    /// </summary>
+    public string ComplianceYear { get; set; }
 
     public string LastYear => (DateTime.Now.Year - 1).ToString();
 

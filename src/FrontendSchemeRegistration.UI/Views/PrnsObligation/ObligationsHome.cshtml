@@ -2,20 +2,23 @@
 @using FrontendSchemeRegistration.Application.Enums
 @model PrnObligationViewModel
 @{
-    var pageTitle = Localizer["manage_your_recycling_obligations", Model.CurrentYear];
+    var pageTitle = Localizer["manage_your_recycling_obligations", Model.ComplianceYear];
     ViewData["Title"] = pageTitle;
 }
 
 <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+
+    @await Html.PartialAsync("Partials/Prns/_notificationBanner")
+
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            <span id="arialblTitle" class="govuk-visually-hidden">@Localizer["manage_your_recycling_obligations", Model.CurrentYear]</span>
+            <span id="arialblTitle" class="govuk-visually-hidden">@Localizer["manage_your_recycling_obligations", Model.ComplianceYear]</span>
             <h1 class="govuk-heading-l govuk-!-margin-bottom-5" aria-labelledby="arialblTitle">
-            @Localizer["manage_your_recycling_obligations", Model.CurrentYear]
+            @Localizer["manage_your_recycling_obligations", Model.ComplianceYear]
             </h1>
-            
+
             @await Html.PartialAsync("Partials/Prns/_obligationsHeader", Model)
-            <p class="govuk-body">@Localizer["you_have_until"] <strong>@Localizer["january"] @Model.DeadlineYear</strong> @Localizer["to_meet_your_recycling_obligations_for"] @Model.CurrentYear.</p>
+            <p class="govuk-body">@Localizer["you_have_until"] <strong>@Localizer["january"] @Model.DeadlineYear</strong> @Localizer["to_meet_your_recycling_obligations_for"] @Model.ComplianceYear.</p>
             
             <div class="govuk-warning-text">
                 <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
@@ -39,31 +42,31 @@
             {
                 <p class="govuk-body">@Localizer["your_recycling_obligations_will_be"]</p>
                 <ul class="govuk-list govuk-list--bullet">
-                    <li>@Localizer["you_submit_your_packaging_data_for", Model.CurrentYear - 1]</li>
+                    <li>@Localizer["you_submit_your_packaging_data_for", Model.ComplianceYear - 1]</li>
                     <li>@Localizer["the_regulator_accepts_your_data_submissions"]</li>
                 </ul>
                 <p class="govuk-body">@Localizer["you_can_start_acquiring_and_accepting"]</p>
             }
             else
             {
-                <p class="govuk-body">@Localizer["acquire_and_accept_advisory_text", Model.CurrentYear]</p>
+                <p class="govuk-body">@Localizer["acquire_and_accept_advisory_text", Model.ComplianceYear]</p>
             }
             @await Html.PartialAsync("Partials/Prns/_prnMaterialTable",
-                new PrnMaterialObligationTableViewModel
-                {
-                    TableCaption = "your_recycling_obligations_progress",
-                    ShowMaterialsAsHyperlink = true,
-                    PrnMaterialObligationViewModels = Model.MaterialObligationViewModels
-                })
+            new PrnMaterialObligationTableViewModel
+            {
+                TableCaption = "your_recycling_obligations_progress",
+                ShowMaterialsAsHyperlink = true,
+                PrnMaterialObligationViewModels = Model.MaterialObligationViewModels
+            })
             <h3 class="govuk-heading-m">@Localizer["how_to_meet_the_glass_recycling_obligation"]</h3>
             <p class="govuk-body">@Localizer["how_to_meet_the_glass_recycling_obligation_description", Model.GlassMaterialObligationViewModels[0].MaterialTargetPercentage]</p>
             @await Html.PartialAsync("Partials/Prns/_prnMaterialTable",
-                new PrnMaterialObligationTableViewModel
-                {
-                    TableCaption = "glass_recycling_obligation_breakdown",
-                    ShowMaterialsAsHyperlink = true,
-                    PrnMaterialObligationViewModels = Model.GlassMaterialObligationViewModels
-                })
+                        new PrnMaterialObligationTableViewModel
+                        {
+                            TableCaption = "glass_recycling_obligation_breakdown",
+                            ShowMaterialsAsHyperlink = true,
+                            PrnMaterialObligationViewModels = Model.GlassMaterialObligationViewModels
+                        })
         </div>
     </div>
     <div class="govuk-grid-row">

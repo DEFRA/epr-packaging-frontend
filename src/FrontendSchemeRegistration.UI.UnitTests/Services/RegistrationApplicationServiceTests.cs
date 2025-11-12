@@ -2361,11 +2361,7 @@ public class RegistrationApplicationServiceTests
     [Test]
     public void Constructor_ShouldThrow_ArgumentNull_When_Dependencies_IsNull()
     {
-        // Act
-        Action act = () => new RegistrationApplicationService(null!);
-
-        // Assert
-        act.Should().Throw<ArgumentNullException>();
+        Assert.Throws<ArgumentNullException>(() => new RegistrationApplicationService(null!));
     }
 
    
@@ -2385,10 +2381,8 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = Options.Create(new GlobalVariables())
         };
 
-        Action act = () => new RegistrationApplicationService(deps);
-
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.SubmissionService)} cannot be null.");
+        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps));
+        ex.Message.Should().Be($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.SubmissionService)} cannot be null.");
     }
 
     [Test]
@@ -2407,10 +2401,8 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = Options.Create(new GlobalVariables())
         };
 
-        Action act = () => new RegistrationApplicationService(deps);
-
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.PaymentCalculationService)} cannot be null.");
+        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps));
+        ex.Message.Should().Be($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.PaymentCalculationService)} cannot be null.");
     }
 
     [Test]
@@ -2428,10 +2420,8 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = Options.Create(new GlobalVariables())
         };
 
-        Action act = () => new RegistrationApplicationService(deps);
-
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.RegistrationSessionManager)} cannot be null.");
+        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps));
+        ex.Message.Should().Be($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.RegistrationSessionManager)} cannot be null.");
     }
 
     [Test]
@@ -2449,10 +2439,8 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = Options.Create(new GlobalVariables())
         };
 
-        Action act = () => new RegistrationApplicationService(deps);
-
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.FrontendSessionManager)} cannot be null.");
+        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps));
+        ex.Message.Should().Be($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.FrontendSessionManager)} cannot be null.");
     }
 
     [Test]
@@ -2470,10 +2458,8 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = Options.Create(new GlobalVariables())
         };
 
-        Action act = () => new RegistrationApplicationService(deps);
-
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.Logger)} cannot be null.");
+        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps));
+        ex.Message.Should().Be($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.Logger)} cannot be null.");
     }
 
     [Test]
@@ -2491,10 +2477,8 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = Options.Create(new GlobalVariables())
         };
 
-        Action act = () => new RegistrationApplicationService(deps);
-
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.FeatureManager)} cannot be null.");
+        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps));
+        ex.Message.Should().Be($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.FeatureManager)} cannot be null.");
     }
 
     [Test]
@@ -2512,10 +2496,8 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = Options.Create(new GlobalVariables())
         };
 
-        Action act = () => new RegistrationApplicationService(deps);
-
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.HttpContextAccessor)} cannot be null.");
+        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps));
+        ex.Message.Should().Be($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.HttpContextAccessor)} cannot be null.");
     }
 
     [Test]
@@ -2533,10 +2515,8 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = null!
         };
 
-        Action act = () => new RegistrationApplicationService(deps);
-
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.GlobalVariables)} cannot be null.");
+        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps));
+        ex.Message.Should().Be($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.GlobalVariables)} cannot be null.");
     }
 
     [Test]
@@ -2554,9 +2534,7 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = Options.Create(new GlobalVariables())
         };
 
-        Action act = () => new RegistrationApplicationService(deps);
-
-        act.Should().NotThrow();
+        Assert.DoesNotThrow(() => new RegistrationApplicationService(deps));
     }
 
 }
