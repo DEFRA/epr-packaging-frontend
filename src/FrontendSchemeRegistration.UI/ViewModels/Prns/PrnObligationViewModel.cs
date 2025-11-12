@@ -9,7 +9,11 @@ public class PrnObligationViewModel
     public string OrganisationRole { get; set; }
     public string OrganisationName { get; set; }
     public int? NationId { get; set; }
-    public int CurrentYear { get; set; }
+
+    /// <summary>
+    /// Obligation year
+    /// </summary>
+    public int ComplianceYear { get; set; }
     public int DeadlineYear { get; set; }
     public int NumberOfPrnsAwaitingAcceptance { get; set; }
 

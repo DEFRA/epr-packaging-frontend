@@ -4,7 +4,7 @@
 @{
     var materialResourceName = ViewData.ContainsKey("GlassOrNonGlassResource")? ViewData["GlassOrNonGlassResource"].ToString(): string.Empty;
     var materialName = Localizer[materialResourceName].Value;
-    var pageTitle = Localizer["page_title", Model.CurrentYear, materialName];
+    var pageTitle = Localizer["page_title", Model.ComplianceYear, materialName];
 
     ViewData["Title"] = pageTitle;
 }

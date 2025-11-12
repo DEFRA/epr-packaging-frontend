@@ -127,7 +127,7 @@
     <value>Statws presennol eich rhwymedigaeth ailgylchu ar gyfer {0}</value>
   </data>
   <data name="producer_responsibility_obligations_href_part1" xml:space="preserve">
-    <value>I ddeall sut mae targedau ailgylchu deunyddiau ar gyfer 2025 yn cael eu gosod, gweler</value>
+    <value>I ddeall sut mae targedau ailgylchu deunyddiau ar gyfer {0} yn cael eu gosod, gweler</value>
   </data>
   <data name="producer_responsibility_obligations_href_part2" xml:space="preserve">
     <value>Rheoliadau Rhwymedigaethau Cyfrifoldeb Cynhyrchwyr (Pecynwaith a Gwastraff Pecynwaith) 2024</value>
