@@ -19,7 +19,7 @@
     <value>We applied this formula to calculate your total glass obligation</value>
   </data>
 	<data name="is_n_tonnes_the_total_glass_you_reported_to_the_nearest_tonne" xml:space="preserve">
-		<value>is {0} tonnes (the total glass material you reported for 2024 to the nearest tonne)</value>
+		<value>is {0} tonnes (the total glass material you reported for {1} to the nearest tonne)</value>
 	</data>
   <data name="is_n_percent_recycling_target_for_glass_set_by_the_yyyy_regulations" xml:space="preserve">
     <value>is {0}% (recycling target for glass set by the {1} regulations)</value>

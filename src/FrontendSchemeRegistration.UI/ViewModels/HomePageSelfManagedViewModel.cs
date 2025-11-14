@@ -16,7 +16,10 @@ public class HomePageSelfManagedViewModel
 
     public string OrganisationRole { get; set; } = string.Empty;
 
-    public string CurrentYear => (DateTime.Now.Year).ToString();
+    /// <summary>
+    /// Obligation year
+    /// </summary>
+    public string ComplianceYear { get; set; }
 
     public string LastYear => (DateTime.Now.Year - 1).ToString();
 
@@ -41,6 +44,7 @@ public class RegistrationApplicationPerYearViewModel
     public bool IsResubmission { get; set; }
     public ApplicationStatusType ApplicationStatus { get; set; }
     public bool showLargeProducer { get; set; }
+    public bool feature_AlwaysShowLargeProducerJourneyMessage { get; set; }
     public bool RegisterSmallProducersCS { get; set; }
     public string CurrentYear => (DateTime.Now.Year).ToString();
     public string RegistrationApplicationLink
