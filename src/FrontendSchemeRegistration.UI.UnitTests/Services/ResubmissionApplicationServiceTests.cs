@@ -88,7 +88,7 @@ public class ResubmissionApplicationServiceTests
     public void SetUp()
     {
         _mockGlobalVariables = new Mock<IOptions<GlobalVariables>>();
-        _mockGlobalVariables.Setup(o => o.Value).Returns(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods });
+        _mockGlobalVariables.Setup(o => o.Value).Returns(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods, CurrentMonth = 1, CurrentYear = 2025 });
         _mockFeatureManager = new Mock<IFeatureManager>();
 
         _mockSessionManager = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
@@ -841,17 +841,16 @@ public class ResubmissionApplicationServiceTests
         result.Should().BeFalse();
     }
 
-    //[Test]
-    //public async Task GetCurrentMonthAndYearForRecyclingObligations_ShouldReturn_DesiredMonth_AndYear()
-    //{
-    //    // Arrange
-    //    _mockFeatureManager.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.IncludeSubsidariesInFeeCalculationsForProducers))).ReturnsAsync(true);
-    //    var expectedResult = true;
+    [Test]
+    public async Task GetCurrentMonthAndYearForRecyclingObligations_ShouldReturn_DesiredMonth_AndYear()
+    {
+        // Arrange
 
-    //    // Act
-    //    var result = await _service.GetFeatureFlagForProducersFeebreakdown();
+        // Act
+        var result = await _service.GetCurrentMonthAndYearForRecyclingObligations();
 
-    //    // Assert
-    //    result.Should().BeTrue();
-    //}
+        // Assert
+        result.currentMonth.Should().Be(1);
+        result.currentYear.Should().Be(2025);
+    }
 }
