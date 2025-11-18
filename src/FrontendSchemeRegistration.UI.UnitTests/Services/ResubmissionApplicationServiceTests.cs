@@ -88,7 +88,7 @@ public class ResubmissionApplicationServiceTests
     public void SetUp()
     {
         _mockGlobalVariables = new Mock<IOptions<GlobalVariables>>();
-        _mockGlobalVariables.Setup(o => o.Value).Returns(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods, CurrentMonth = 1, CurrentYear = 2025 });
+        _mockGlobalVariables.Setup(o => o.Value).Returns(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods, OverrideCurrentMonth = 1, OverrideCurrentYear = 2025 });
         _mockFeatureManager = new Mock<IFeatureManager>();
 
         _mockSessionManager = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();

@@ -173,7 +173,7 @@ public class ResubmissionApplicationServices(
     public Task<(int currentMonth, int currentYear)> GetCurrentMonthAndYearForRecyclingObligations()
     {
         return Task.FromResult((
-            globalVariables.Value.CurrentMonth ?? DateTime.Now.Month,
-            globalVariables.Value.CurrentYear ?? DateTime.Now.Year));
+            globalVariables.Value.OverrideCurrentMonth ?? DateTime.Now.Month,
+            globalVariables.Value.OverrideCurrentYear ?? DateTime.Now.Year));
     }
 }

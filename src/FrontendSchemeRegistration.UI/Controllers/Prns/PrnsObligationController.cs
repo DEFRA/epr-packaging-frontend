@@ -38,8 +38,8 @@ public class PrnsObligationController : Controller
         _urlOptions = urlOptions.Value;
         _logger = logger;
         logPrefix = _globalVariables.Value.LogPrefix;
-        _currentYear = _globalVariables.Value.CurrentYear ?? DateTime.Now.Year;
-        _currentMonth = _globalVariables.Value.CurrentMonth ?? DateTime.Now.Month;
+        _currentYear = _globalVariables.Value.OverrideCurrentYear ?? DateTime.Now.Year;
+        _currentMonth = _globalVariables.Value.OverrideCurrentMonth ?? DateTime.Now.Month;
     }
 
     private const string GlassOrNonGlassResource = "GlassOrNonGlassResource";

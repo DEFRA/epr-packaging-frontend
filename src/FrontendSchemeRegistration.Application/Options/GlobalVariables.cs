@@ -29,13 +29,14 @@ public class GlobalVariables
     public string RegistrationYear { get; set; }
 
     /// <summary>
-    /// To Show appropriate Recycling Obligation values for the compliance year 
+    /// Shows appropriate Recycling Obligation compliance year
+    /// based on a given year, if not provided current year will be used
     /// </summary>
-    public int? CurrentYear { get; set; }
+    public int? OverrideCurrentYear { get; set; }
 
     /// <summary>
-    /// To Show appropriate Recycling Obligation values 
-    /// for the compliance year based on a current month
+    /// Shows appropriate Recycling Obligation values compliance year 
+    /// based on a given month, if not provided current month will be used
     /// </summary>
-    public int? CurrentMonth { get; set; }
+    public int? OverrideCurrentMonth { get; set; }
 }
