@@ -840,4 +840,18 @@ public class ResubmissionApplicationServiceTests
         // Assert
         result.Should().BeFalse();
     }
+
+    //[Test]
+    //public async Task GetCurrentMonthAndYearForRecyclingObligations_ShouldReturn_DesiredMonth_AndYear()
+    //{
+    //    // Arrange
+    //    _mockFeatureManager.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.IncludeSubsidariesInFeeCalculationsForProducers))).ReturnsAsync(true);
+    //    var expectedResult = true;
+
+    //    // Act
+    //    var result = await _service.GetFeatureFlagForProducersFeebreakdown();
+
+    //    // Assert
+    //    result.Should().BeTrue();
+    //}
 }

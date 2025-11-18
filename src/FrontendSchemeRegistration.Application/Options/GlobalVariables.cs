@@ -27,4 +27,15 @@ public class GlobalVariables
     public DateTime SmallProducersRegStartTime2026 { get; set; }
 
     public string RegistrationYear { get; set; }
+
+    /// <summary>
+    /// To Show appropriate Recycling Obligation values for the compliance year 
+    /// </summary>
+    public int? CurrentYear { get; set; }
+
+    /// <summary>
+    /// To Show appropriate Recycling Obligation values 
+    /// for the compliance year based on a current month
+    /// </summary>
+    public int? CurrentMonth { get; set; }
 }
