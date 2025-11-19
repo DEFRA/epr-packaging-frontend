@@ -45,7 +45,7 @@ public class PrnsObligationControllerTests
         };
 
         _urlOptionsMock!.Setup(x => x.Value).Returns(externalUrlOptions);
-        var globalVariables = Options.Create(new GlobalVariables { BasePath = "BasePath", LogPrefix = "[FrontendSchemaRegistration]" });
+        var globalVariables = Options.Create(new GlobalVariables { BasePath = "BasePath", LogPrefix = "[FrontendSchemaRegistration]", OverrideCurrentYear = 2025, OverrideCurrentMonth = 11 });
         _loggerMock = new Mock<ILogger<PrnsObligationController>>();
 
         _controller = new PrnsObligationController(_sessionManagerMock.Object, _prnServiceMock.Object, globalVariables, _urlOptionsMock.Object, _loggerMock.Object)
@@ -171,9 +171,9 @@ public class PrnsObligationControllerTests
         };
         _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
 
-		//_prnServiceMock.Setup(p => p.GetChildOrganisationExternalIdsAsync(organisationId, null)).ReturnsAsync([childOrganisationId]);
+        //_prnServiceMock.Setup(p => p.GetChildOrganisationExternalIdsAsync(organisationId, null)).ReturnsAsync([childOrganisationId]);
 
-		int year = DateTime.Now.Year;
+        int year = DateTime.Now.Year;
         PrnObligationViewModel viewModel = _fixture.Create<PrnObligationViewModel>();
         foreach (var item in viewModel.MaterialObligationViewModels)
         {
@@ -182,15 +182,30 @@ public class PrnsObligationControllerTests
         }
 		_prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(year)).ReturnsAsync(viewModel);
 
+        var globalVariables = Options.Create(new GlobalVariables { BasePath = "BasePath", LogPrefix = "[FrontendSchemaRegistration]", OverrideCurrentYear = year, OverrideCurrentMonth = 3 });
+
+        var controller = new PrnsObligationController(_sessionManagerMock.Object, _prnServiceMock.Object, globalVariables, _urlOptionsMock.Object, _loggerMock.Object)
+        {
+            Url = _urlHelperMock.Object,
+            ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    Session = new Mock<ISession>().Object
+                }
+            }
+        };
+
+
         // Act
-        var response = await _controller.ObligationPerMaterial(material);
+        var response = await controller.ObligationPerMaterial(material);
 
         var view = response.Should().BeOfType<ViewResult>().Which;
         view.ViewName.Should().BeNull();
         viewModel.GlassMaterialObligationViewModels.Count.Should().Be(0);
         viewModel.MaterialObligationViewModels.Count.Should().BeGreaterThan(0);
-        _controller.ViewData["GlassOrNonGlassResource"].Should().Be(resource);
-        _controller.ViewData.Should().ContainKey("BackLinkToDisplay");
+        controller.ViewData["GlassOrNonGlassResource"].Should().Be(resource);
+        controller.ViewData.Should().ContainKey("BackLinkToDisplay");
         _prnServiceMock.Verify(x => x.GetRecyclingObligationsCalculation(year), Times.Once);
     }
 
@@ -423,5 +438,67 @@ public class PrnsObligationControllerTests
         viewModel.NationId.Should().Be(0);
         viewModel.ComplianceYear.Should().Be(expectedComplianceYear);
         viewModel.DeadlineYear.Should().Be(expectedDeadlineYear);
+    }
+
+    [Test]    
+    [TestCase(1, 2025, 2024)]
+    [TestCase(null, null, null)]
+    public async Task ObligationPerMaterial_ReturnsView_When_ComplianceMonth_isJanuary(int? currentMonth, int? currentYear, int? expectedComplianceYear)
+    {
+        // Arrange
+        var session = new FrontendSchemeRegistrationSession
+        {
+            UserData = new UserData
+            {
+                Organisations = new List<Organisation>
+            {
+                new() {
+                    Id = Guid.NewGuid(),
+                    OrganisationRole = OrganisationRoles.Producer,
+                    Name = "Test Organisation",
+                    NationId = 1
+                }
+            }
+            }
+        };
+
+        if (currentMonth is null && currentYear is null)
+        {
+            expectedComplianceYear = DateTime.Now.Month == 1 ? DateTime.Now.Year - 1 : DateTime.Now.Year;
+        }
+
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+        
+        string material = "Paper";
+        PrnObligationViewModel viewModel = _fixture.Create<PrnObligationViewModel>();
+        foreach (var item in viewModel.MaterialObligationViewModels)
+        {
+            item.MaterialName = Enum.Parse<MaterialType>(material);
+            break;
+        }
+        _prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(expectedComplianceYear.Value)).ReturnsAsync(viewModel);
+
+        var globalVariables = Options.Create(new GlobalVariables { BasePath = "BasePath", LogPrefix = "[FrontendSchemaRegistration]", OverrideCurrentMonth = currentMonth, OverrideCurrentYear = currentYear });
+        var controller = new PrnsObligationController(_sessionManagerMock.Object, _prnServiceMock.Object, globalVariables, _urlOptionsMock.Object, _loggerMock.Object)
+        {
+            Url = _urlHelperMock.Object,
+            ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    Session = new Mock<ISession>().Object
+                }
+            }
+        };
+
+        // Act
+        var response = await controller.ObligationPerMaterial(material);
+
+        var view = response.Should().BeOfType<ViewResult>().Which;
+        view.ViewName.Should().BeNull();
+        _prnServiceMock.Verify(x => x.GetRecyclingObligationsCalculation(It.IsAny<int>()), Times.Once());
+        controller.ViewData.Should().ContainKey("GlassOrNonGlassResource");
+        controller.ViewData.Should().ContainKey("BackLinkToDisplay");
+        controller.ViewData.Should().ContainKey("ProducerResponsibilityObligationsLink");
     }
 }
