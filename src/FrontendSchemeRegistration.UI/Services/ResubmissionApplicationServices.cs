@@ -169,4 +169,11 @@ public class ResubmissionApplicationServices(
     {
         return await featureManager.IsEnabledAsync(nameof(FeatureFlags.IncludeSubsidariesInFeeCalculationsForProducers));
     }
+
+    public Task<(int currentMonth, int currentYear)> GetCurrentMonthAndYearForRecyclingObligations()
+    {
+        return Task.FromResult((
+            globalVariables.Value.OverrideCurrentMonth ?? DateTime.Now.Month,
+            globalVariables.Value.OverrideCurrentYear ?? DateTime.Now.Year));
+    }
 }
