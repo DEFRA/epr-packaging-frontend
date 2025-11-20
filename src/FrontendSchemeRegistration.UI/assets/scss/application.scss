@@ -436,3 +436,8 @@ table.cookies-table {
     background: rgba(0, 0, 0, 0.5); /* Gray with transparency */
     z-index: 1040; /* Ensure it is behind the modal but above everything else */
 }
+
+.govuk-notification-banner__content > * {
+    box-sizing: border-box;
+    max-width: 100%
+}

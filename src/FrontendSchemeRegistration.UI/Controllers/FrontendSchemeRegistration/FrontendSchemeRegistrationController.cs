@@ -425,6 +425,8 @@ public class FrontendSchemeRegistrationController(
         var registrationApplicationPerYearViewModels = await registrationApplicationService.BuildRegistrationApplicationPerYearViewModels(HttpContext.Session, organisation);
         var resubmissionApplicationDetails = await resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(organisation, new List<string> { packagingResubmissionPeriod?.DataPeriod }, session.RegistrationSession.SelectedComplianceScheme?.Id);
 
+        // Note: We are reading desired values using existing service to avoid SonarQube issue for adding 8th parameter in the constructor.
+        var currentPeriod = await resubmissionApplicationService.GetCurrentMonthAndYearForRecyclingObligations();
         var viewModel = new HomePageSelfManagedViewModel
         {
             OrganisationName = organisation.Name!,
@@ -433,7 +435,8 @@ public class FrontendSchemeRegistrationController(
             OrganisationRole = organisation.OrganisationRole!,
             ResubmissionTaskListViewModel = resubmissionApplicationDetails.ToResubmissionTaskListViewModel(organisation),
             RegistrationApplicationsPerYear = registrationApplicationPerYearViewModels,
-            PackagingResubmissionPeriod = packagingResubmissionPeriod
+            PackagingResubmissionPeriod = packagingResubmissionPeriod,
+            ComplianceYear = currentPeriod.currentMonth == 1 ? (currentPeriod.currentYear - 1).ToString() : currentPeriod.currentYear.ToString() // this is a temp fix for the compliance window change
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id!.Value);

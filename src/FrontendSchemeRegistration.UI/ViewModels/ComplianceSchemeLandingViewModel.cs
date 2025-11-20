@@ -19,8 +19,12 @@ public class ComplianceSchemeLandingViewModel
     public NotificationViewModel Notification { get; set; } = new();
 
     public List<DatePeriod> SubmissionPeriods { get; set; } = new();
+      
+    /// <summary>
+    /// Obligation year
+    /// </summary>
+    public string ComplianceYear { get; set; }
 
-    public string CurrentYear => (DateTime.Now.Year).ToString();
 
     public bool IsApprovedUser { get; set; }
 

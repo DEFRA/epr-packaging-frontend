@@ -114,13 +114,16 @@ public class ComplianceSchemeLandingControllerTests
         };
 
         globalVariables = new Mock<IOptions<GlobalVariables>>();
-        globalVariables.Setup(o => o.Value).Returns(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods });
+        globalVariables.Setup(o => o.Value).Returns(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods, OverrideCurrentMonth = 1, OverrideCurrentYear = 2026 });
 
         _userMock.Setup(x => x.Claims).Returns(claims);
         _httpContextMock.Setup(x => x.User).Returns(_userMock.Object);
         _httpContextMock.Setup(x => x.Session).Returns(new Mock<ISession>().Object);
         _notificationServiceMock.Setup(x => x.GetCurrentUserNotifications(It.IsAny<Guid>(), It.IsAny<Guid>()));
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
+
+        _resubmissionApplicationService.Setup(x => x.GetCurrentMonthAndYearForRecyclingObligations())
+            .Returns(Task.FromResult((1, 2026)));
 
         _systemUnderTest = new ComplianceSchemeLandingController(
             _sessionManagerMock.Object,
@@ -211,6 +214,7 @@ public class ComplianceSchemeLandingControllerTests
                     ResubmissionApplicationSubmitted = false
                 },
                 PackagingResubmissionPeriod = globalVariables.Object.Value.SubmissionPeriods.LastOrDefault(),
+                ComplianceYear = "2025"
             });
 
         _sessionManagerMock.Verify(
@@ -290,6 +294,7 @@ public class ComplianceSchemeLandingControllerTests
                     ResubmissionApplicationSubmitted = false
                 },
                 PackagingResubmissionPeriod = globalVariables.Object.Value.SubmissionPeriods.LastOrDefault(),
+                ComplianceYear = "2025"
             });
 
         _sessionManagerMock.Verify(
@@ -404,6 +409,7 @@ public class ComplianceSchemeLandingControllerTests
                     ResubmissionApplicationSubmitted = false
                 },
                 PackagingResubmissionPeriod = globalVariables.Object.Value.SubmissionPeriods.LastOrDefault(),
+                ComplianceYear = "2025"
             });
 
         _sessionManagerMock.Verify(
@@ -517,6 +523,7 @@ public class ComplianceSchemeLandingControllerTests
                     ResubmissionApplicationSubmitted = false
                 },
                 PackagingResubmissionPeriod = globalVariables.Object.Value.SubmissionPeriods.LastOrDefault(),
+                ComplianceYear = "2025"
             });
 
         _sessionManagerMock.Verify(
@@ -630,6 +637,7 @@ public class ComplianceSchemeLandingControllerTests
                     ResubmissionApplicationSubmitted = false
                 },
                 PackagingResubmissionPeriod = globalVariables.Object.Value.SubmissionPeriods.LastOrDefault(),
+                ComplianceYear = "2025"
             });
 
         _sessionManagerMock.Verify(
@@ -737,6 +745,7 @@ public class ComplianceSchemeLandingControllerTests
                     ResubmissionApplicationSubmitted = false
                 },
                 PackagingResubmissionPeriod = globalVariables.Object.Value.SubmissionPeriods.LastOrDefault(),
+                ComplianceYear = "2025"
             });
 
         _sessionManagerMock.Verify(
@@ -847,6 +856,7 @@ public class ComplianceSchemeLandingControllerTests
                     ResubmissionApplicationSubmitted = false
                 },
                 PackagingResubmissionPeriod = globalVariables.Object.Value.SubmissionPeriods.LastOrDefault(),
+                ComplianceYear = "2025"
             });
 
         _sessionManagerMock.Verify(
