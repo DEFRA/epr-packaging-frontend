@@ -72,9 +72,14 @@ public class RegistrationApplicationController(
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
         var isResubmission = !string.IsNullOrWhiteSpace(HttpContext.Request.Query["IsResubmission"]);
+        ProducerSize? producerSize = null;
+        if (Enum.TryParse<ProducerSize>(HttpContext.Request.Query["producersize"].ToString(), true, out var producerSizeResult))
+        {
+            producerSize = producerSizeResult;
+        };
         var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
 
-        var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, registrationYear.GetValueOrDefault(), isResubmission);
+        var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, registrationYear.GetValueOrDefault(), isResubmission, producerSize);
         session.Journey = [session.IsComplianceScheme ? PagePaths.ComplianceSchemeLanding : PagePaths.HomePageSelfManaged, PagePaths.RegistrationTaskList];
 
         SetBackLink(session, PagePaths.RegistrationTaskList, registrationYear);

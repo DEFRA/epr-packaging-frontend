@@ -145,7 +145,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             if (producerSize != null)
             {
                 session.ProducerSize = producerSize;
-                session.OrganisationName = $"{producerSize} producer {registrationYear}";  //[Producer journey chosen (Large or Small)] producer [yyyy (registration year)]    
+                session.OrganisationName = $"{producerSize} producer {registrationYear}";
             }
         }
         else if (session.FileReachedSynapse)

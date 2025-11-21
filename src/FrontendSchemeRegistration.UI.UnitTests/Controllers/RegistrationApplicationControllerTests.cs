@@ -265,6 +265,55 @@ public class RegistrationApplicationControllerTests
         });
     }
 
+    [TestCase("Large", ProducerSize.Large)]
+    [TestCase("small", ProducerSize.Small)]
+    [TestCase("Medium", null)]
+    public async Task Then_Parses_ProducerSize_Query_String_Value_To_ApplicationService_And_Defaults(string producerSize, ProducerSize? expectedProducerSize)
+    {
+        // Arrange
+        SetupBase(GetUserData("Compliance Scheme"));
+        var queryStrings = new QueryCollection(new Dictionary<string, StringValues>
+        {
+            { "registrationyear", DateTime.Now.Year.ToString() },
+            { "producersize", producerSize}
+        });
+        _httpRequestMock.Setup(x => x.Query).Returns(queryStrings);
+
+        var details = new RegistrationApplicationSession
+        {
+            IsSubmitted = false,
+            ApplicationStatus = ApplicationStatusType.NotStarted,
+            RegistrationFeePaymentMethod = null,
+            SelectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), NationId = 1, Name = "test", RowNumber = 1 },
+            OrganisationName = producerSize
+        };
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), expectedProducerSize)).ReturnsAsync(details);
+        SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new RegistrationApplicationSession
+        {
+            IsSubmitted = false,
+            ApplicationStatus = ApplicationStatusType.NotStarted,
+            RegistrationFeePaymentMethod = null,
+            SelectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), NationId = 1, Name = "test", RowNumber = 1 },
+        });
+
+        // Act
+        var result = await SystemUnderTest.RegistrationTaskList() as ViewResult;
+        var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
+
+        // Assert
+        pageBackLink.Should().Be(PagePaths.ComplianceSchemeLanding);
+        result.Model.Should().BeOfType<RegistrationTaskListViewModel>();
+        RegistrationApplicationService.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<ISession>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<SubmissionType>()), Times.Never);
+
+        result.Model.As<RegistrationTaskListViewModel>().Should().BeEquivalentTo(new RegistrationTaskListViewModel
+        {
+            OrganisationName = producerSize,
+            OrganisationNumber = _userData.Organisations[0].OrganisationNumber.ToReferenceNumberFormat(),
+            FileUploadStatus = RegistrationTaskListStatus.NotStarted,
+            IsComplianceScheme = true
+        });
+    }
+
     [Test]
     public async Task RegistrationTaskList_SubmitRegistrationData_When_FileUploaded_Is_PendingState_ReturnsCorrectViewAndModel()
     {
