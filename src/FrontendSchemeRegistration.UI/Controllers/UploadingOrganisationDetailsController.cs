@@ -55,6 +55,12 @@ public class UploadingOrganisationDetailsController : Controller
             return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
         }
 
+        return HandleErrorsAndWarnings(submission, registrationYear, submissionId);
+    }
+
+    private IActionResult HandleErrorsAndWarnings(RegistrationSubmission submission, int? registrationYear,
+        Guid submissionId)
+    {
         if (HasFileErrors(submission))
         {
             return RedirectToAction("Get", "FileUploadCompanyDetails", registrationYear is not null ? new { submissionId = submissionId.ToString(), registrationyear = registrationYear.ToString()} : new { submissionId = submissionId.ToString() });
