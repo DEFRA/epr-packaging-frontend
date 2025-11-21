@@ -43,6 +43,7 @@ public class ComplianceSchemeLandingControllerTests
 
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock = new();
     private ComplianceSchemeLandingController _systemUnderTest;
+    private List<ComplianceSchemeDto> _complianceSchemeDtos;
     private readonly List<SubmissionPeriod> _submissionPeriods = new()
     {
         new SubmissionPeriod
@@ -125,6 +126,22 @@ public class ComplianceSchemeLandingControllerTests
         _resubmissionApplicationService.Setup(x => x.GetCurrentMonthAndYearForRecyclingObligations())
             .Returns(Task.FromResult((1, 2026)));
 
+         _complianceSchemeDtos = GetComplianceSchemes();
+        _complianceSchemeServiceMock
+            .Setup(service => service.GetOperatorComplianceSchemes(It.IsAny<Guid>()))
+            .ReturnsAsync(_complianceSchemeDtos);
+        
+        _complianceSchemeServiceMock
+            .Setup(service => service.GetComplianceSchemeSummary(It.IsAny<Guid>(), It.IsAny<Guid>()))
+            .ReturnsAsync(new ComplianceSchemeSummary());
+        
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(GetSessionWithoutSelectedScheme());
+        
+        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<ProducerSize?>()))
+            .ReturnsAsync(_registrationApplicationSession);
+        
+        
         _systemUnderTest = new ComplianceSchemeLandingController(
             _sessionManagerMock.Object,
             _complianceSchemeServiceMock.Object,
@@ -142,21 +159,6 @@ public class ComplianceSchemeLandingControllerTests
     public async Task Get_ReturnsCorrectViewAndModel_WhenSelectedComplianceSchemeDoesNotExistInSession()
     {
         // Arrange
-        var complianceSchemes = GetComplianceSchemes();
-        _complianceSchemeServiceMock
-            .Setup(service => service.GetOperatorComplianceSchemes(It.IsAny<Guid>()))
-            .ReturnsAsync(complianceSchemes);
-
-        _complianceSchemeServiceMock
-            .Setup(service => service.GetComplianceSchemeSummary(It.IsAny<Guid>(), It.IsAny<Guid>()))
-            .ReturnsAsync(new ComplianceSchemeSummary());
-
-        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
-            .ReturnsAsync(GetSessionWithoutSelectedScheme());
-
-        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
-            .ReturnsAsync(_registrationApplicationSession);
-
         var registrationApplicationPerYear = new List<RegistrationApplicationPerYearViewModel>()
         {
             new RegistrationApplicationPerYearViewModel {
@@ -189,7 +191,7 @@ public class ComplianceSchemeLandingControllerTests
                 OrganisationName = OrganisationName,
                 CurrentComplianceSchemeId = _complianceSchemeOneId,
                 CurrentTabSummary = new ComplianceSchemeSummary(),
-                ComplianceSchemes = complianceSchemes,
+                ComplianceSchemes = _complianceSchemeDtos,
                 IsApprovedUser = true,
                 RegistrationApplicationsPerYear = new List<RegistrationApplicationPerYearViewModel>()
                 {
@@ -237,7 +239,7 @@ public class ComplianceSchemeLandingControllerTests
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(GetSessionWithSelectedScheme());
 
-        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<ProducerSize?>()))
             .ReturnsAsync(_registrationApplicationSession);
 
         var registrationApplicationPerYear = new List<RegistrationApplicationPerYearViewModel>()
@@ -250,12 +252,16 @@ public class ComplianceSchemeLandingControllerTests
             ApplicationReferenceNumber = _registrationApplicationSession.ApplicationReferenceNumber,
             RegistrationReferenceNumber = _registrationApplicationSession.RegistrationReferenceNumber,
             IsResubmission = _registrationApplicationSession.IsResubmission
-           }
+            }
         };
 
         var registrationApplicationDetails = (RegistrationApplicationDetails)null;
         _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
 
+
+//        _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+//            .ReturnsAsync((RegistrationApplicationDetails)null);
+        
         // Act
         var response = await _systemUnderTest.Get() as ViewResult;
 
@@ -308,19 +314,6 @@ public class ComplianceSchemeLandingControllerTests
         // Arrange
         const string reference = "PEPR00002125P1";
         var submissionId = Guid.NewGuid();
-        var complianceSchemes = GetComplianceSchemes();
-        var session = GetSessionWithSelectedScheme();
-
-        _complianceSchemeServiceMock
-            .Setup(service => service.GetOperatorComplianceSchemes(It.IsAny<Guid>()))
-            .ReturnsAsync(complianceSchemes);
-
-        _complianceSchemeServiceMock
-            .Setup(service => service.GetComplianceSchemeSummary(It.IsAny<Guid>(), It.IsAny<Guid>()))
-            .ReturnsAsync(new ComplianceSchemeSummary());
-
-        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
-            .ReturnsAsync(session);
 
         var registrationApplicationSession = new RegistrationApplicationSession
         {
@@ -360,8 +353,10 @@ public class ComplianceSchemeLandingControllerTests
             RegistrationApplicationSubmittedComment = null,
             RegistrationApplicationSubmittedDate = null
         };
-
-        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(GetSessionWithSelectedScheme());
+        
+        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<ProducerSize?>()))
             .ReturnsAsync(_registrationApplicationSession);
 
         _registrationApplicationService.Setup(x => x.BuildRegistrationApplicationPerYearViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
@@ -382,10 +377,10 @@ public class ComplianceSchemeLandingControllerTests
                 CurrentComplianceSchemeId = _complianceSchemeTwoId,
                 OrganisationName = OrganisationName,
                 CurrentTabSummary = new ComplianceSchemeSummary(),
-                ComplianceSchemes = complianceSchemes,
+                ComplianceSchemes = _complianceSchemeDtos,
                 IsApprovedUser = true,
-                RegistrationApplicationsPerYear = new List<RegistrationApplicationPerYearViewModel>()
-                {
+                RegistrationApplicationsPerYear =
+                [
                     new RegistrationApplicationPerYearViewModel
                     {
                         ApplicationReferenceNumber = reference,
@@ -394,7 +389,7 @@ public class ComplianceSchemeLandingControllerTests
                         AdditionalDetailsStatus = RegistrationTaskListStatus.CanNotStartYet,
                         ApplicationStatus = ApplicationStatusType.FileUploaded,
                     }
-                },
+                ],
                 ResubmissionTaskListViewModel = new ResubmissionTaskListViewModel
                 {
                     AdditionalDetailsStatus = ResubmissionTaskListStatus.CanNotStartYet,
@@ -423,20 +418,7 @@ public class ComplianceSchemeLandingControllerTests
         // Arrange
         const string reference = "PEPR00002125P1";
         var submissionId = Guid.NewGuid();
-        var complianceSchemes = GetComplianceSchemes();
-        var session = new FrontendSchemeRegistrationSession();
-
-        _complianceSchemeServiceMock
-            .Setup(service => service.GetOperatorComplianceSchemes(It.IsAny<Guid>()))
-            .ReturnsAsync(complianceSchemes);
-
-        _complianceSchemeServiceMock
-            .Setup(service => service.GetComplianceSchemeSummary(It.IsAny<Guid>(), It.IsAny<Guid>()))
-            .ReturnsAsync(new ComplianceSchemeSummary());
-
-        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
-            .ReturnsAsync(session);
-
+        
         var registrationApplicationSession = new RegistrationApplicationSession
         {
             LastSubmittedFile = new LastSubmittedFileDetails { FileId = Guid.NewGuid() },
@@ -463,7 +445,7 @@ public class ComplianceSchemeLandingControllerTests
             RegistrationApplicationSubmittedDate = null
         };
 
-        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<ProducerSize?>()))
             .ReturnsAsync(_registrationApplicationSession);
 
         var registrationApplicationPerYear = new List<RegistrationApplicationPerYearViewModel>()
@@ -497,7 +479,7 @@ public class ComplianceSchemeLandingControllerTests
                 CurrentComplianceSchemeId = _complianceSchemeOneId,
                 OrganisationName = OrganisationName,
                 CurrentTabSummary = new ComplianceSchemeSummary(),
-                ComplianceSchemes = complianceSchemes,
+                ComplianceSchemes = _complianceSchemeDtos,
                 IsApprovedUser = true,
                 RegistrationApplicationsPerYear = new List<RegistrationApplicationPerYearViewModel>()
                 {
@@ -577,7 +559,7 @@ public class ComplianceSchemeLandingControllerTests
             RegistrationApplicationSubmittedDate = DateTime.Now.AddMinutes(-5)
         };
 
-        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<ProducerSize?>()))
             .ReturnsAsync(registrationApplicationSession);
 
         var registrationApplicationPerYear = new List<RegistrationApplicationPerYearViewModel>()
@@ -675,7 +657,7 @@ public class ComplianceSchemeLandingControllerTests
                 It.IsAny<Guid>()))
             .ReturnsAsync(notificationDtoList);
 
-        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<ProducerSize?>()))
             .ReturnsAsync(_registrationApplicationSession);
 
         var registrationApplicationPerYear = new List<RegistrationApplicationPerYearViewModel>()
@@ -788,7 +770,7 @@ public class ComplianceSchemeLandingControllerTests
                 It.IsAny<Guid>()))
             .ReturnsAsync(notificationDtoList);
 
-        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<ProducerSize?>()))
             .ReturnsAsync(_registrationApplicationSession);
 
         var registrationApplicationPerYear = new List<RegistrationApplicationPerYearViewModel>()

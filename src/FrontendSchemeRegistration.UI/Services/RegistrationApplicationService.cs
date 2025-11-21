@@ -134,14 +134,19 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         session.LatestSubmittedEventCreatedDatetime = registrationApplicationDetails.LatestSubmittedEventCreatedDatetime;
         session.FirstApplicationSubmittedEventCreatedDatetime = registrationApplicationDetails.FirstApplicationSubmittedEventCreatedDatetime;
         session.IsResubmission = (registrationApplicationDetails.IsResubmission ?? isResubmission) ?? false;
-
+        session.OrganisationName = organisation.Name;
+        
         SetLateFeeFlag(session, registrationYear);
 
         int? nationId;
         if (session.IsComplianceScheme)
         {
             nationId = session.SelectedComplianceScheme.NationId;
-            session.ProducerSize = producerSize;
+            if (producerSize != null)
+            {
+                session.ProducerSize = producerSize;
+                session.OrganisationName = $"{producerSize} producer {registrationYear}";  //[Producer journey chosen (Large or Small)] producer [yyyy (registration year)]    
+            }
         }
         else if (session.FileReachedSynapse)
             nationId = session.RegistrationFeeCalculationDetails[0].NationId;

@@ -147,4 +147,5 @@ public class RegistrationApplicationSession
 
     public ComplianceSchemeDto? SelectedComplianceScheme { get; set; }
     public ProducerSize? ProducerSize { get; set; }
+    public string? OrganisationName { get; set; }
 }
