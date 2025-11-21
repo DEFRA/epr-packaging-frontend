@@ -82,7 +82,7 @@ public class RegistrationApplicationController(
         return View(new RegistrationTaskListViewModel
         {
             IsResubmission = session.IsResubmission,
-            OrganisationName = organisation.Name!,
+            OrganisationName = session.OrganisationName ?? organisation.Name,
             IsComplianceScheme = session.IsComplianceScheme,
             OrganisationNumber = organisation.OrganisationNumber.ToReferenceNumberFormat(),
             ApplicationStatus = session.ApplicationStatus,
