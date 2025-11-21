@@ -101,7 +101,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         }
     }
 
-    public async Task<RegistrationApplicationSession> GetRegistrationApplicationSession(ISession httpSession, Organisation organisation, int registrationYear, bool? isResubmission = null)
+    public async Task<RegistrationApplicationSession> GetRegistrationApplicationSession(ISession httpSession, Organisation organisation, int registrationYear, bool? isResubmission = null, ProducerSize? producerSize = null)
     {
         var session = await sessionManager.GetSessionAsync(httpSession) ?? new RegistrationApplicationSession();
         var frontEndSession = await frontEndSessionManager.GetSessionAsync(httpSession) ?? new FrontendSchemeRegistrationSession();
@@ -139,7 +139,10 @@ public class RegistrationApplicationService : IRegistrationApplicationService
 
         int? nationId;
         if (session.IsComplianceScheme)
+        {
             nationId = session.SelectedComplianceScheme.NationId;
+            session.ProducerSize = producerSize;
+        }
         else if (session.FileReachedSynapse)
             nationId = session.RegistrationFeeCalculationDetails[0].NationId;
         else
@@ -548,7 +551,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
 
 public interface IRegistrationApplicationService
 {
-    Task<RegistrationApplicationSession> GetRegistrationApplicationSession(ISession httpSession, Organisation organisation, int registrationYear, bool? isResubmission = null);
+    Task<RegistrationApplicationSession> GetRegistrationApplicationSession(ISession httpSession, Organisation organisation, int registrationYear, bool? isResubmission = null, ProducerSize? producerSize  = null);
 
     Task<FeeCalculationBreakdownViewModel?> GetProducerRegistrationFees(ISession httpSession);
 
