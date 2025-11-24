@@ -15,11 +15,18 @@
         <div class="govuk-grid-column-three-quarters">
             @if (!string.IsNullOrEmpty(Model.Caption))
             {
-                <span class="govuk-caption-l">@Model.Caption</span>    
+                <span class="govuk-caption-l">@Localizer[Model.PageHeading, Model.Caption]</span>
+                <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+                    @Model.OrganisationName
+                </h1>
             }
-            <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
-                @Localizer[Model.PageHeading, Model.OrganisationName]
-            </h1>
+            else
+            {
+                <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+                    @Localizer[Model.PageHeading, Model.OrganisationName]
+                </h1>    
+            }
+            
             <dl class="govuk-summary-list">
                 <div class="govuk-summary-list__row">
                 </div>

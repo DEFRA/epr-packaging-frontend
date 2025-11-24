@@ -1339,7 +1339,7 @@ public class RegistrationApplicationServiceTests
             ApplicationReferenceNumber = "",
             TotalAmountOutstanding = 10,
             IsLateFeeApplicable = true,
-            RegistrationCaption = organisation.Name
+            RegistrationCaption = null
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string>(), false, It.IsAny<SubmissionType>()), Times.Never);
@@ -1409,7 +1409,7 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null, ProducerSize.Small);
 
         // Assert
         var submissionYear = DateTime.Now.Year.ToString();
@@ -1429,7 +1429,8 @@ public class RegistrationApplicationServiceTests
             SelectedComplianceScheme = cso,
             TotalAmountOutstanding = 10,
             IsLateFeeApplicable = true,
-            RegistrationCaption = organisation.Name
+            ProducerSize = ProducerSize.Small,
+            RegistrationCaption = $"Small producer {DateTime.Now.Year}"
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string>(), false, It.IsAny<SubmissionType>()), Times.Never);
@@ -1505,7 +1506,7 @@ public class RegistrationApplicationServiceTests
             ApplicationReferenceNumber = "Test",
             RegistrationReferenceNumber = "Test",
             IsLateFeeApplicable = true,
-            RegistrationCaption = organisation.Name
+            RegistrationCaption = null
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<Guid>(), It.IsAny<Guid?>(), It.IsAny<string?>(), "No-Outstanding-Payment", "Test", false, SubmissionType.RegistrationFeePayment), Times.Once);
@@ -1596,7 +1597,7 @@ public class RegistrationApplicationServiceTests
             ApplicationReferenceNumber = "Test",
             RegistrationReferenceNumber = "Test",
             IsLateFeeApplicable = true,
-            RegistrationCaption = organisation.Name
+            RegistrationCaption = null
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<Guid>(), It.IsAny<Guid?>(), It.IsAny<string?>(), "No-Outstanding-Payment", It.IsAny<string>(), false, SubmissionType.RegistrationFeePayment), Times.Once);
@@ -1652,7 +1653,7 @@ public class RegistrationApplicationServiceTests
             RegulatorNation = "GB-ENG",
             ApplicationReferenceNumber = "",
             IsLateFeeApplicable = true,
-            RegistrationCaption = organisation.Name
+            RegistrationCaption = null
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string>(), false, It.IsAny<SubmissionType>()), Times.Never);
@@ -1740,7 +1741,7 @@ public class RegistrationApplicationServiceTests
             RegistrationApplicationSubmittedComment = "Test",
             TotalAmountOutstanding = 100,
             IsLateFeeApplicable = true,
-            RegistrationCaption = organisation.Name
+            RegistrationCaption = null
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string>(), false, It.IsAny<SubmissionType>()), Times.Never);
