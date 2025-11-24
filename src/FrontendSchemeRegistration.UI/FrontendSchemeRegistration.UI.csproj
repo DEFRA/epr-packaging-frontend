@@ -11,25 +11,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Remove="ViewModels\GovUk\NewFolder\**" />
-      <Compile Remove="ViewModels\Shared\GovUK\**" />
-      <Compile Remove="Views\Shared\Partials\Timeout\**" />
-      <Compile Remove="Views\SubsidiaryCompaniesHouseNumberSearch\**" />
-      <Content Remove="ViewModels\GovUk\NewFolder\**" />
-      <Content Remove="ViewModels\Shared\GovUK\**" />
-      <Content Remove="Views\Shared\Partials\Timeout\**" />
-      <Content Remove="Views\SubsidiaryCompaniesHouseNumberSearch\**" />
-      <EmbeddedResource Remove="ViewModels\GovUk\NewFolder\**" />
-      <EmbeddedResource Remove="ViewModels\Shared\GovUK\**" />
-      <EmbeddedResource Remove="Views\Shared\Partials\Timeout\**" />
-      <EmbeddedResource Remove="Views\SubsidiaryCompaniesHouseNumberSearch\**" />
-      <None Remove="ViewModels\GovUk\NewFolder\**" />
-      <None Remove="ViewModels\Shared\GovUK\**" />
-      <None Remove="Views\Shared\Partials\Timeout\**" />
-      <None Remove="Views\SubsidiaryCompaniesHouseNumberSearch\**" />
-    </ItemGroup>
-
-    <ItemGroup>
         <ProjectReference Include="..\FrontendSchemeRegistration.Application\FrontendSchemeRegistration.Application.csproj" />
     </ItemGroup>
 
@@ -105,13 +86,6 @@
             <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
             <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
         </Content>
-        <Content Remove="libman.json" />
-        <Content Remove="Views\ComplianceSchemeConfirmation\Confirm.cshtml" />
-        <Content Remove="Views\HomePageComplianceScheme\HomePageComplianceScheme.cshtml" />
-        <Content Remove="Views\ChangeComplianceSchemeOptions\ChangeComplianceSchemeOptions.cshtml" />
-        <Content Remove="Views\ComplianceSchemeConfirmation\Confirmation.cshtml" />
-        <Content Remove="Views\HomePageSelfManaged\HomePageSelfManaged.cshtml" />
-        <Content Remove="Views\Shared\TimeoutSignedOut.cshtml" />
         <Content Update="assets\js\print.js">
             <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
             <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
@@ -576,8 +550,6 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>PrivacyPolicy.en.resx</DependentUpon>
         </Compile>
-        <Compile Remove="Attributes\ActionFilters\ApplicationActionFilterAttribute.cs" />
-        <Compile Remove="Controllers\SubsidiaryCompaniesHouseNumberSearchController.cs" />
         <Compile Update="Resources\ErrorMessages.Designer.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
@@ -656,7 +628,6 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>_WarningText.resx</DependentUpon>
         </Compile>
-        <Compile Remove="Attributes\ActionFilters\ApplicationActionFilterAttribute.cs" />
         <Compile Update="Resources\Views\FileUploading\FileUploading.Designer.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
@@ -709,15 +680,6 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>InviteChangePermissions.resx</DependentUpon>
         </Compile>
-        <Compile Remove="Controllers\FrontendSchemeRegistration\LandingPageController.cs" />
-        <Compile Remove="Controllers\ComplianceSchemeStopController.cs" />
-        <Compile Remove="Controllers\UsingComplianceSchemeController.cs" />
-        <Compile Remove="Controllers\ChangeComplianceSchemeOptionsController.cs" />
-        <Compile Remove="Controllers\HomePageComplianceSchemeController.cs" />
-        <Compile Remove="Views\ChangeComplianceSchemeOptions\ChangeComplianceSchemeOptions.cshtml.cs" />
-        <Compile Remove="Controllers\ComplianceSchemeConfirmationController.cs" />
-        <Compile Remove="Controllers\SelectComplianceSchemeController.cs" />
-        <Compile Remove="Controllers\HomePageSelfManagedController.cs" />
         <None Remove="assets\js\print.js" />
         <Compile Update="Resources\Views\Shared\Components\PhaseBanner\Default.Designer.cs">
             <DesignTime>True</DesignTime>
@@ -848,7 +810,6 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>MemberDetails.resx</DependentUpon>
         </Compile>
-        <Compile Remove="ViewModels\MemberDetailsModel.cs" />
         <Compile Update="Resources\Views\FileUploadWarning\FileUploadWarning.Designer.cs">
           <DesignTime>True</DesignTime>
           <AutoGen>True</AutoGen>
@@ -876,46 +837,17 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>SharedResources.resx</DependentUpon>
         </Compile>
-        <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
         <Compile Update="Resources\Views\Application\Declaration.Designer.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
             <DependentUpon>Declaration.resx</DependentUpon>
         </Compile>
-        <_ContentIncludedByDefault Remove="Views\SubmissionComplete\SubmissionComplete.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\MembersOrganisationDetailsSubmissionFailed\MembersOrganisationDetailsSubmissionFailed.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\Shared\Partials\SubmissionFailed\_SubmissionFailed.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\FileUploadSubmissionFailure\FileUploadSubmissionFailure.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\FileUploadSubmissionConfirmationOld\FileUploadSubmissionConfirmation.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\Shared\Partials\Govuk\TaskList\_Group.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\Shared\Partials\Govuk\TaskList\_Task.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\Shared\Partials\Govuk\TaskList\_TaskList.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\TaskList\TaskList.cshtml" />
     </ItemGroup>
     <ItemGroup>
         <None Include="wwwroot\images\spinner.gif" />
     </ItemGroup>
 
     <ItemGroup>
-        <AdditionalFiles Include="Views\FileUploadFailure\FileUploadFailure.cshtml" />
-        <AdditionalFiles Include="Views\Home\TimeoutSignedOut.cshtml" />
-        <AdditionalFiles Include="Views\UploadingOrganisationDetails\UploadingOrganisationDetails.cshtml" />
-        <AdditionalFiles Include="Views\FrontendSchemeRegistration\LandingPage.cshtml" />
-        <AdditionalFiles Include="Views\FrontendSchemeRegistration\SelectComplianceScheme.cshtml" />
-        <AdditionalFiles Include="Views\FrontendSchemeRegistration\Stop.cshtml" />
-        <AdditionalFiles Include="Views\FrontendSchemeRegistration\UsingComplianceScheme.cshtml" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <_ContentIncludedByDefault Remove="Views\Stub\Index.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <UpToDateCheckInput Remove="Views\Stub\Index.cshtml" />
-    </ItemGroup>
-
-    <ItemGroup>
         <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
@@ -936,8 +868,6 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
         </Compile>
-        <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
         <EmbeddedResource Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.resx">
             <Generator>ResXFileCodeGenerator</Generator>
             <LastGenOutput>FileUploadCheckFileAndSubmit.Designer.cs</LastGenOutput>
@@ -985,8 +915,6 @@
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
         </Compile>
-        <_ContentIncludedByDefault Remove="Views\SubmissionComplete\SubmissionComplete.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
         <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
@@ -1007,8 +935,6 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
         </Compile>
-        <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="EPR.Common.Authorization" Version="1.0.22" />
@@ -1074,11 +1000,6 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>ProblemWithSubmissionError.resx</DependentUpon>
         </Compile>
-        <_ContentIncludedByDefault Remove="Views\SubmissionComplete\SubmissionComplete.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\FileUploadSubmissionFailure\FileUploadSubmissionFailure.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\SubmissionComplete\SubmissionComplete.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\MembersOrganisationDetailsSubmissionFailed\MembersOrganisationDetailsSubmissionFailed.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\Shared\Partials\SubmissionFailed\_SubmissionFailed.cshtml" />
     </ItemGroup>
     <ItemGroup>
         <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
@@ -1101,8 +1022,6 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>FileUploadCheckFileAndSubmit.resx</DependentUpon>
         </Compile>
-        <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
         <EmbeddedResource Update="Resources\Views\FileUploadCheckFileAndSubmit\FileUploadCheckFileAndSubmit.resx">
             <Generator>ResXFileCodeGenerator</Generator>
             <LastGenOutput>FileUploadCheckFileAndSubmit.Designer.cs</LastGenOutput>
@@ -1174,8 +1093,6 @@
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
         </Compile>
-        <_ContentIncludedByDefault Remove="Views\SubmissionComplete\SubmissionComplete.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
         <Compile Update="Resources\Views\DeclarationWithFullName\DeclarationWithFullName.Designer.cs">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
@@ -1211,8 +1128,6 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>ConfirmationOfRemoval.en.resx</DependentUpon>
         </Compile>
-        <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
-        <_ContentIncludedByDefault Remove="Views\FileUploadSuccess\FileUploadSuccess.cshtml" />
     </ItemGroup>
 	<ItemGroup>
 		<SonarQubeSetting Include="sonar.coverage.exclusions">
@@ -1221,9 +1136,6 @@
         <SonarQubeSetting Include="sonar.cpd.exclusions">
             <Value>Views/**/*.cshtml</Value>
         </SonarQubeSetting>
-	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="Controllers\Common\" />
 	</ItemGroup>
 
   <PropertyGroup>
