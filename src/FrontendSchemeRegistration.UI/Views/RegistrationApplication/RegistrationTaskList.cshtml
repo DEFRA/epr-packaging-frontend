@@ -15,7 +15,7 @@
         <div class="govuk-grid-column-three-quarters">
             @if (!string.IsNullOrEmpty(Model.Caption))
             {
-                <span class="govuk-caption-l">@Localizer[Model.PageHeading, Model.Caption]</span>
+                <p class="govuk-caption-l">@Localizer[Model.PageHeading, Model.Caption]</p>
                 <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
                     @Model.OrganisationName
                 </h1>
