@@ -3,7 +3,6 @@ namespace FrontendSchemeRegistration.UI.ViewModels;
 using System.Diagnostics.CodeAnalysis;
 using Application.DTOs.ComplianceScheme;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
-using FrontendSchemeRegistration.UI.Sessions;
 
 [ExcludeFromCodeCoverage]
 public class ComplianceSchemeLandingViewModel
@@ -24,8 +23,7 @@ public class ComplianceSchemeLandingViewModel
     /// Obligation year
     /// </summary>
     public string ComplianceYear { get; set; }
-
-
+    
     public bool IsApprovedUser { get; set; }
 
     public ResubmissionTaskListViewModel ResubmissionTaskListViewModel { get; set; }

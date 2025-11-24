@@ -4,6 +4,7 @@ using FrontendSchemeRegistration.UI.Sessions;
 
 namespace FrontendSchemeRegistration.UI.ViewModels;
 
+using Application.DTOs.ComplianceScheme;
 
 [ExcludeFromCodeCoverage]
 public class HomePageSelfManagedViewModel
@@ -59,4 +60,11 @@ public class RegistrationApplicationPerYearViewModel
               or RegistrationTaskListStatus.Completed
            ? "RegistrationTaskList"
            : "ProducerRegistrationGuidance";
+}
+
+[ExcludeFromCodeCoverage]
+public class RegisterYourMembersViewModel
+{
+    public string RegisterYourMembersLink = "MembersRegistrationSubmissionPeriodSelection";
+    public ComplianceSchemeSummary ComplianceSchemeSummary { get; set; }//carried over for nation data
 }
