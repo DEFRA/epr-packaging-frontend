@@ -37,6 +37,7 @@ public static class PagePaths
     public const string HomePageComplianceScheme = "producer-compliance-scheme";
     public const string HomePageSelfManaged = "home-self-managed";
     public const string ProducerRegistrationGuidance = "producer-registration-guidance";
+    public const string CsoRegistration = "cso-registration";
     public const string RegistrationTaskList = "registration-task-list";
     public const string RegistrationFeeCalculations = "registration-fee-calculations";
     public const string SelectPaymentOptions = "select-payment-options";
