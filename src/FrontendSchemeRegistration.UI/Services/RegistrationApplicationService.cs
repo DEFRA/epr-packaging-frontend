@@ -145,7 +145,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             if (producerSize != null)
             {
                 session.ProducerSize = producerSize;
-                session.RegistrationCaption = $"{producerSize} producer {registrationYear}";
+                session.RegistrationCaption = $"{producerSize} producer {registrationYear}"; // TODO this will need localisation for Wales
             }
         }
         else if (session.FileReachedSynapse)
