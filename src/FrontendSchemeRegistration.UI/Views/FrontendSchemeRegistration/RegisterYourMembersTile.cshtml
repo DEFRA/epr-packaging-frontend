@@ -1,0 +1,29 @@
+@model RegisterYourMembersViewModel
+
+<div class="govuk-grid-column-one-half box" xmlns="http://www.w3.org/1999/html">
+    <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
+        <div class="govuk-card-body">
+            <h2 class="govuk-heading-m">
+                <a asp-controller="RegistrationApplication"
+                   asp-action="@Model.RegisterYourMembersLink"
+                   class="govuk-link govuk-link--no-visited-state">
+                    RegisterYourMembers
+                </a>
+                @Html.ActionLink(
+                    "Register Your Members", //"Localizer["register_your_members"].Value,
+                    "RegistrationSubLanding",
+                    "RegistrationApplication",
+                    new { RegistrationApplicationPerYearViewModel = "2026", ComplianceSchemeName = Model.ComplianceSchemeSummary.Name, Nation = Model.ComplianceSchemeSummary.Nation },
+                    new
+                    {
+                        @class = "govuk-link--no-visited-state"
+                    })
+            </h2>
+            <p class="govuk-body">
+                Large and small producers must be registered separately.
+                <br/>
+                You can also resubmit registration details.
+            </p>
+        </div>
+    </div>
+</div>

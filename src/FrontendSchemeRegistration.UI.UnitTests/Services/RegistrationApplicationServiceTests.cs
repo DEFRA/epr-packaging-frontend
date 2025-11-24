@@ -2143,7 +2143,7 @@ public class RegistrationApplicationServiceTests
         applicationPerYearViewModel.Where(vm => vm.RegistrationYear == DateTime.Now.Year.ToString()).Should().NotBeNull();
         applicationPerYearViewModel.Where(vm => vm.RegistrationYear == DateTime.Now.AddYears(1).Year.ToString()).Should().NotBeNull();
     }
-
+ 
     [Test]
     public async Task ValidateRegistrationYear_ShouldReturnNull_WhenYearIsEmpty_AndParamOptionalIsTrue()
     {
