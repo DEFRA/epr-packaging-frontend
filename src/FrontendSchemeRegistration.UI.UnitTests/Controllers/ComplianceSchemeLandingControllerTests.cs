@@ -255,10 +255,6 @@ public class ComplianceSchemeLandingControllerTests
         var registrationApplicationDetails = (RegistrationApplicationDetails)null;
         _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
 
-
-//        _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
-//            .ReturnsAsync((RegistrationApplicationDetails)null);
-        
         // Act
         var response = await _systemUnderTest.Get() as ViewResult;
 
@@ -439,7 +435,7 @@ public class ComplianceSchemeLandingControllerTests
 
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(session);
-        
+
         var registrationApplicationSession = new RegistrationApplicationSession
         {
             LastSubmittedFile = new LastSubmittedFileDetails { FileId = Guid.NewGuid() },
