@@ -24,6 +24,7 @@ public class RegistrationTaskListViewModel
     public RegistrationTaskListStatus AdditionalDetailsStatus { get; set; }
 
     public int RegistrationYear { get; set; }
+    public string? Caption { get; set; } = null;
 
     public string PageTitle => IsResubmission ? "registration_resubmission_task_title" : "registration_task_title";
     
@@ -40,4 +41,5 @@ public class RegistrationTaskListViewModel
     public string SubmitRegistrationApplicationTask => IsResubmission ? "submit_amended_data" : "submit_registration_application";
     
     public string CompletedSubmitRegistrationApplicationTask => IsResubmission ? "registration_resubmission_application_has_been_submitted" : "registration_application_has_been_submitted";
+    
 }

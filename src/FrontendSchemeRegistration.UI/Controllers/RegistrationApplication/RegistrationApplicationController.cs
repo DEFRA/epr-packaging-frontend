@@ -87,14 +87,15 @@ public class RegistrationApplicationController(
         return View(new RegistrationTaskListViewModel
         {
             IsResubmission = session.IsResubmission,
-            OrganisationName = session.OrganisationName ?? organisation.Name,
+            OrganisationName = organisation.Name,
             IsComplianceScheme = session.IsComplianceScheme,
             OrganisationNumber = organisation.OrganisationNumber.ToReferenceNumberFormat(),
             ApplicationStatus = session.ApplicationStatus,
             FileUploadStatus = session.FileUploadStatus,
             PaymentViewStatus = session.PaymentViewStatus,
             AdditionalDetailsStatus = session.AdditionalDetailsStatus,
-            RegistrationYear = registrationYear.GetValueOrDefault()
+            RegistrationYear = registrationYear.GetValueOrDefault(),
+            Caption = session.RegistrationCaption
         });
     }
     

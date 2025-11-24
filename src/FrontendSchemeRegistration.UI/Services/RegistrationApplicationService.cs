@@ -134,7 +134,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         session.LatestSubmittedEventCreatedDatetime = registrationApplicationDetails.LatestSubmittedEventCreatedDatetime;
         session.FirstApplicationSubmittedEventCreatedDatetime = registrationApplicationDetails.FirstApplicationSubmittedEventCreatedDatetime;
         session.IsResubmission = (registrationApplicationDetails.IsResubmission ?? isResubmission) ?? false;
-        session.OrganisationName = organisation.Name;
+        session.RegistrationCaption = organisation.Name;
         
         SetLateFeeFlag(session, registrationYear);
 
@@ -145,7 +145,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             if (producerSize != null)
             {
                 session.ProducerSize = producerSize;
-                session.OrganisationName = $"{producerSize} producer {registrationYear}";
+                session.RegistrationCaption = $"{producerSize} producer {registrationYear}";
             }
         }
         else if (session.FileReachedSynapse)
