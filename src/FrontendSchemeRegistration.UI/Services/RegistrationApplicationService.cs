@@ -134,8 +134,6 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         session.LatestSubmittedEventCreatedDatetime = registrationApplicationDetails.LatestSubmittedEventCreatedDatetime;
         session.FirstApplicationSubmittedEventCreatedDatetime = registrationApplicationDetails.FirstApplicationSubmittedEventCreatedDatetime;
         session.IsResubmission = (registrationApplicationDetails.IsResubmission ?? isResubmission) ?? false;
-        
-        
         SetLateFeeFlag(session, registrationYear);
 
         int? nationId;
