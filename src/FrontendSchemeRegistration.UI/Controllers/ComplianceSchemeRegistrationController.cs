@@ -13,11 +13,7 @@ public class ComplianceSchemeRegistrationController() : Controller
     [HttpGet]
     public Task<IActionResult> ComplianceSchemeRegistration(string nation)
     {
-        var csoRegViewModel = new ComplianceSchemeRegistrationViewModel()
-        {
-            ComplianceSchemeName = "foo cso",
-            Nation = nation
-        };
+        var csoRegViewModel = new ComplianceSchemeRegistrationViewModel("foo cso", nation);
         
         return Task.FromResult<IActionResult>(View(csoRegViewModel));
     }
