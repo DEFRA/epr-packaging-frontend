@@ -108,33 +108,33 @@
             </div>
 
             <div class="govuk-grid-row box-container">
-                @if (submissionPeriods.Exists(x => Convert.ToInt32(x.Year) >= 2026))
+                @if (submissionPeriods.Exists(x => Model.ComplianceYearAsInteger() >= 2026))
                 {
                     var vModel = new RegisterYourMembersViewModel();
                     vModel.ComplianceSchemeSummary = Model.CurrentTabSummary;
-                    <partial name="~/Views/FrontendSchemeRegistration/RegisterYourMembersTile.cshtml" model="vModel" />
+                    <partial name="~/Views/FrontendSchemeRegistration/RegisterYourMembersTile.cshtml" model="vModel"/>
                 }
                 else
-                { 
+                {
                     @foreach (var app in Model.RegistrationApplicationsPerYear)
                     {
-                        <partial name="~/Views/FrontendSchemeRegistration/RegistrationApplicationYearBlock.cshtml" model="app" />
+                        <partial name="~/Views/FrontendSchemeRegistration/RegistrationApplicationYearBlock.cshtml" model="app"/>
                     }
                 }
-                
+
                 <div class="govuk-grid-column-one-half box">
                     <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
                         <div class="govuk-card-body">
                             <h2 class="govuk-heading-m govuk-link">
                                 @Html.ActionLink(
-                                         Localizer["members_organisation_details"].Value,
-                                         "Get",
-                                         "FileUploadCompanyDetailsSubLanding",
-                                         null,
-                                         new
-                                         {
-                                             @class = "govuk-link--no-visited-state"
-                                         })
+                                    Localizer["members_organisation_details"].Value,
+                                    "Get",
+                                    "FileUploadCompanyDetailsSubLanding",
+                                    null,
+                                    new
+                                    {
+                                        @class = "govuk-link--no-visited-state"
+                                    })
                             </h2>
                             <p class="govuk-body">@Localizer["you_must_report_org_data"]</p>
                             <p class="govuk-body">@Localizer["you_can_also"]</p>
