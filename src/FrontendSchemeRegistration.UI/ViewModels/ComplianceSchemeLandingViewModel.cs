@@ -23,6 +23,7 @@ public class ComplianceSchemeLandingViewModel
     /// Obligation year
     /// </summary>
     public string ComplianceYear { get; set; }
+    public int ComplianceYearAsInteger()=>(int.TryParse(ComplianceYear, out var year) ? year : 0);
     
     public bool IsApprovedUser { get; set; }
 
