@@ -147,5 +147,5 @@ public class RegistrationApplicationSession
 
     public ComplianceSchemeDto? SelectedComplianceScheme { get; set; }
     public ProducerSize? ProducerSize { get; set; }
-    public string? RegistrationCaption { get; set; }
+    public bool ShowRegistrationCaption { get; set; }
 }

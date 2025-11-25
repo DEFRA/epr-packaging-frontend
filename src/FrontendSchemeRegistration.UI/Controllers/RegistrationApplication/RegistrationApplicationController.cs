@@ -95,7 +95,8 @@ public class RegistrationApplicationController(
             PaymentViewStatus = session.PaymentViewStatus,
             AdditionalDetailsStatus = session.AdditionalDetailsStatus,
             RegistrationYear = registrationYear.GetValueOrDefault(),
-            Caption = session.RegistrationCaption
+            ShowRegistrationCaption = session.ShowRegistrationCaption,
+            ProducerSize = session.ProducerSize
         });
     }
     
