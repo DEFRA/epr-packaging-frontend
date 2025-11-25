@@ -42,5 +42,11 @@ namespace FrontendSchemeRegistration.UI.Services.Interfaces
         Task<string> GetActualSubmissionPeriod(Guid submissionId, string submissionPeriod);
 
         Task<bool> GetFeatureFlagForProducersFeebreakdown();
+
+        /// <summary>
+        /// Returns current month and year for recycling obligations or default if values are null
+        /// </summary>
+        /// <returns></returns>
+        Task<(int currentMonth, int currentYear)> GetCurrentMonthAndYearForRecyclingObligations();
     }
 }

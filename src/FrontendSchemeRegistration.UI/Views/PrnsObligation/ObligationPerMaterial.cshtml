@@ -4,7 +4,7 @@
 @{
     var materialResourceName = ViewData.ContainsKey("GlassOrNonGlassResource")? ViewData["GlassOrNonGlassResource"].ToString(): string.Empty;
     var materialName = Localizer[materialResourceName].Value;
-    var pageTitle = Localizer["page_title", Model.CurrentYear, materialName];
+    var pageTitle = Localizer["page_title", Model.ComplianceYear, materialName];
 
     ViewData["Title"] = pageTitle;
 }
@@ -51,8 +51,8 @@
 
             <p class="govuk-body">
                 @Localizer["producer_responsibility_obligations_href_part1"]
-                <a href="@ViewBag.ProducerResponsibilityObligationsLink" class="govuk-link">@Localizer["producer_responsibility_obligations_href_part2"]</a>
-                @Localizer["producer_responsibility_obligations_href_part3"]
+                <a href="@ViewBag.ProducerResponsibilityObligationsLink" class="govuk-link" rel="noreferrer noopener" target="_blank">@Localizer["producer_responsibility_obligations_href_part2"]</a>
+                @Localizer["producer_responsibility_obligations_href_part3", Model.ComplianceYear]
             </p>
 
             @if (@Model?.MaterialObligationViewModels?.Count > 0)

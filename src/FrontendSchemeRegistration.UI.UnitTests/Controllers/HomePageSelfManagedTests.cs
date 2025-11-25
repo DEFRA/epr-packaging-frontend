@@ -2,9 +2,11 @@ using FrontendSchemeRegistration.Application.DTOs;
 
 namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
 
+using System.Security.Claims;
 using Application.Constants;
 using Application.DTOs.ComplianceScheme;
 using Application.DTOs.Notification;
+using Application.DTOs.Submission;
 using Constants;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Models;
@@ -16,8 +18,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using System.Security.Claims;
-using Application.DTOs.Submission;
 using UI.Controllers;
 using UI.Controllers.ControllerExtensions;
 using UI.ViewModels;
@@ -143,6 +143,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
 
         // Act
         var result = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
+        var complianceYear = ((HomePageSelfManagedViewModel)result.Model).ComplianceYear;
 
         // Assert
         result.ViewName.Should().Be(ViewName);
@@ -158,7 +159,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
                 new RegistrationApplicationPerYearViewModel
                 {
                     ApplicationReferenceNumber = string.Empty,
-                    RegistrationReferenceNumber = string.Empty, 
+                    RegistrationReferenceNumber = string.Empty,
                 }
             },
             Notification = new NotificationViewModel
@@ -174,6 +175,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
                 IsResubmissionInProgress = null,
                 IsResubmissionComplete = null,
             },
+            ComplianceYear = complianceYear
         });
     }
 
@@ -311,6 +313,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
 
         // Act
         var response = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
+        var complianceYear = ((HomePageSelfManagedViewModel)response.Model).ComplianceYear;
 
         // Assert
         response.ViewName.Should().Be("HomePageSelfManaged");
@@ -334,7 +337,8 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
                     }
                 },
                 ResubmissionTaskListViewModel = new(),
-                PackagingResubmissionPeriod = submissionPeriod
+                PackagingResubmissionPeriod = submissionPeriod,
+                ComplianceYear = complianceYear
             });
     }
 
@@ -395,6 +399,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
 
         // Act
         var response = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
+        var complianceYear = ((HomePageSelfManagedViewModel)response.Model).ComplianceYear;
 
         // Assert
         response.ViewName.Should().Be("HomePageSelfManaged");
@@ -418,9 +423,10 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
                 OrganisationName = OrganisationName,
                 OrganisationNumber = "123 456",
                 OrganisationRole = "Producer",
-                
+
                 ResubmissionTaskListViewModel = new(),
-                PackagingResubmissionPeriod = submissionPeriod
+                PackagingResubmissionPeriod = submissionPeriod,
+                ComplianceYear = complianceYear
             });
     }
 
@@ -483,6 +489,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
 
         // Act
         var response = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
+        var complianceYear = ((HomePageSelfManagedViewModel)response.Model).ComplianceYear;
 
         // Assert
         response.ViewName.Should().Be("HomePageSelfManaged");
@@ -508,6 +515,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
                 },
                 ResubmissionTaskListViewModel = new(),
                 PackagingResubmissionPeriod = submissionPeriod,
+                ComplianceYear = complianceYear
             });
     }
 }
