@@ -7,9 +7,9 @@
                 @Html.ActionLink(
                     // TODO this will need localisation for Wales
                     "Register Your Members", //"Localizer["register_your_members"].Value,
-                    "RegistrationSubLanding",
-                    "RegistrationApplication",
-                    new { RegistrationApplicationPerYearViewModel = "2026", ComplianceSchemeName = Model.ComplianceSchemeSummary.Name, Nation = Model.ComplianceSchemeSummary.Nation },
+                    "ComplianceSchemeRegistration",
+                    "ComplianceSchemeRegistration",
+                    new ComplianceSchemeRegistrationViewModel( Model.ComplianceSchemeSummary.Name, Model.ComplianceSchemeSummary.Nation.ToString() ),
                     new
                     {
                         @class = "govuk-link--no-visited-state"

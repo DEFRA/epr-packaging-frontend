@@ -16,6 +16,6 @@ public class ComplianceSchemeLandingViewModelTests
         {
             ComplianceYear = complianceYear
         };
-        Assert.That(model.ComplianceYearAsInteger(), Is.EqualTo(yearAsInt));
+        Assert.That(model.ComplianceYearAsInteger(complianceYear), Is.EqualTo(yearAsInt));
     }
 }

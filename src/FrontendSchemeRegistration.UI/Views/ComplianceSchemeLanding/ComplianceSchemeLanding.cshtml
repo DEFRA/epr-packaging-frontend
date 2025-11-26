@@ -108,7 +108,7 @@
             </div>
 
             <div class="govuk-grid-row box-container">
-                @if (submissionPeriods.Exists(x => Model.ComplianceYearAsInteger() >= 2026))
+                @if (submissionPeriods.Exists(x => Model.ComplianceYearAsInteger(x.Year) >= 2026))
                 {
                     var vModel = new RegisterYourMembersViewModel();
                     vModel.ComplianceSchemeSummary = Model.CurrentTabSummary;
