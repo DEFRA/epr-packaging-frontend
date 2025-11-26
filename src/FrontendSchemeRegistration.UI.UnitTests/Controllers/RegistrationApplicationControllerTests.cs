@@ -1783,25 +1783,31 @@ public class RegistrationApplicationControllerTests
         SessionManagerMock.VerifyNoOtherCalls();
     }
 
-    [Test]
-    public void RedirectToFileUpload_ReturnsCorrectView()
+    [TestCase(ProducerSize.Large)]
+    [TestCase(ProducerSize.Small)]
+    [TestCase(null)]
+    public async Task RedirectToFileUpload_ReturnsCorrectView_WithRouteParams(ProducerSize? expectedProducerSize)
     {
         // Arrange
+        var expectedDataPeriod = "April 2025 to March 2026";
         Session = new RegistrationApplicationSession
         {
             Journey = [PagePaths.FileUploadCompanyDetailsSubLanding],
-            SubmissionPeriod = "April 2025 to March 2026",
-            Period = new SubmissionPeriod { DataPeriod = "April 2025 to March 2026" },
+            SubmissionPeriod = expectedDataPeriod,
+            Period = new SubmissionPeriod { DataPeriod = expectedDataPeriod },
+            ProducerSize = expectedProducerSize
         };
 
         SessionManagerMock.Setup(x =>
             x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(Session);
 
         // Act
-        var result = SystemUnderTest.RedirectToFileUpload().Result as RedirectToActionResult;
+        var result = await SystemUnderTest.RedirectToFileUpload() as RedirectToActionResult;
 
         // Assert
-        result.ActionName.Should().Be(nameof(FileUploadCompanyDetailsController.Get));
+        result!.ActionName.Should().Be(nameof(FileUploadCompanyDetailsController.Get));
+        result.RouteValues!["producerSize"].Should().Be(expectedProducerSize);
+        result.RouteValues!["dataPeriod"].Should().Be(expectedDataPeriod);
         RegistrationApplicationService.Verify(x => x.SetRegistrationFileUploadSession(It.IsAny<ISession>(), _userData.Organisations[0].OrganisationNumber, It.IsAny<int>(), It.IsAny<bool?>()), Times.Once);
     }
 
@@ -1817,7 +1823,7 @@ public class RegistrationApplicationControllerTests
     [TestCase(ApplicationStatusType.SubmittedAndHasRecentFileUpload, "Basic User", "FileReUploadCompanyDetailsConfirmation", "submissionId")]
     [TestCase(ApplicationStatusType.SubmittedAndHasRecentFileUpload, "Delegated Person", "ReviewCompanyDetails", "submissionId")]
     [TestCase(ApplicationStatusType.SubmittedAndHasRecentFileUpload, "Approved Person", "ReviewCompanyDetails", "submissionId")]
-    public void RedirectToRightAction_RedirectsToCorrectAction(
+    public async Task RedirectToRightAction_RedirectsToCorrectAction(
         ApplicationStatusType status,
         string role,
         string expectedController,
@@ -1845,7 +1851,7 @@ public class RegistrationApplicationControllerTests
         SetupUserData(new UserData { ServiceRole = role, Organisations = [new Organisation { OrganisationRole = OrganisationRoles.Producer }] });
 
         // Act
-        var result = SystemUnderTest.RedirectToFileUpload().Result as RedirectToActionResult;
+        var result = await SystemUnderTest.RedirectToFileUpload() as RedirectToActionResult;
 
         // Assert
         result.ControllerName.Should().Be(expectedController);
@@ -1931,7 +1937,7 @@ public class RegistrationApplicationControllerTests
     }
 
     [Test]
-    public void WhenComplianceSchemeNotFound_RegistrationFeeCalculations_RedirectsTo_HandleThrownExceptions()
+    public async Task WhenComplianceSchemeNotFound_RegistrationFeeCalculations_RedirectsTo_HandleThrownExceptions()
     {
         SetupBase(GetUserData("Compliance Scheme"));
 
@@ -1954,7 +1960,7 @@ public class RegistrationApplicationControllerTests
         RegistrationApplicationService.Setup(x => x.GetComplianceSchemeRegistrationFees(It.IsAny<ISession>())).ReturnsAsync((ComplianceSchemeFeeCalculationBreakdownViewModel) null);
 
         // Act
-        var result = SystemUnderTest.RegistrationFeeCalculations().Result;
+        var result = await SystemUnderTest.RegistrationFeeCalculations();
 
         // Assert
         result.Should().BeOfType<RedirectToActionResult>();
@@ -1964,7 +1970,7 @@ public class RegistrationApplicationControllerTests
     }
 
     [Test]
-    public void RedirectToUpdateRegistrationGuidance_ReturnsCorrectView()
+    public async Task RedirectToUpdateRegistrationGuidance_ReturnsCorrectView()
     {
         // Arrange
         SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new RegistrationApplicationSession());
@@ -1976,7 +1982,7 @@ public class RegistrationApplicationControllerTests
             .ReturnsAsync(registrationApplicationSession);
 
         // Act
-        var result = SystemUnderTest.UpdateRegistrationGuidance().Result;
+        var result = await SystemUnderTest.UpdateRegistrationGuidance();
         // Assert
         result.Should().BeOfType<ViewResult>().Which.ViewName.Should().BeNullOrEmpty();
     }

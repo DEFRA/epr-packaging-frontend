@@ -1,0 +1,52 @@
+@model FileUploadCompanyDetailsViewModel;
+@{
+    ViewData["Title"] = Localizer["title_upload_organisation_details_home"];
+}
+
+<partial name="Partials/Govuk/_AccountActionBar"/>
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <partial model="ViewData.ModelState" name="Partials/Govuk/_ErrorSummary"/>
+            }
+            
+            <p class="govuk-caption-l">@Localizer[Model.PageHeadingCso, Model.ProducerSize, Model.RegistrationYear]</p>
+            <h1 class="govuk-heading-l govuk-!-margin-bottom-6">@Localizer[Model.PageHeading]</h1>
+            
+            <p class="govuk-body">@Localizer["before_you_start"] <a class="govuk-link" rel="noreferrer noopener" target="_blank" href="@GuidanceLinks.Value.HowToReportOrganisationDetails">@Localizer["how_to_report_organisation_details"]</a>.</p>
+            <p class="govuk-body">@Localizer["you_should"]</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>@Localizer["all_files_ready"]</li>
+                <li>@Localizer["ensure_file_format"]</li>
+                <li>@Localizer["include_information"]</li>
+                <li>@Localizer["available_document_template"]</li>
+            </ul>
+            <p class="govuk-body">@Localizer["file_rejected"]</p>
+            <ul class="govuk-list govuk-list--bullet">
+                <li>@Localizer["large_producer_detail"]</li>
+                <li>@Localizer["subsidiaries_guidance"] <a class="govuk-link govuk-link--no-visited-state" href="#" target="_blank">@Localizer["manage_your_subsidiaries"]</a></li>
+            </ul>
+      
+            <form method="post" enctype="multipart/form-data" class="details-file-upload-form">
+                <div class="govuk-form-group @(ViewData.ModelState.IsValid ? string.Empty : "govuk-form-group--error")">
+                    <p class="govuk-body">
+                        @Localizer["file_upload_warning"]
+                    </p>
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <partial model="@ViewData.ModelState.GetModelStateEntry("file")" name="Partials/Govuk/_Error"/>
+                    }
+                    <input class="govuk-file-upload" title="Choose a file" id="file" name="file" type="file">
+                </div>
+                <input type="hidden" name="registrationyear" value="@(Model.RegistrationYear?.ToString() ?? "")" />
+                <input type="hidden" name="producersize" value="@Model.ProducerSize" />
+                <button class="govuk-button" data-module="govuk-button" type="submit">@Localizer["upload_file"]</button>
+            </form>
+        </div>
+    </div>
+</main>

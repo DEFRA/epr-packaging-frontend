@@ -51,6 +51,11 @@ public class FileUploadCompanyDetailsController : Controller
     public async Task<IActionResult> Get()
     {
         var registrationYear = _registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
+        ProducerSize? producerSize = null;
+        if (Enum.TryParse<ProducerSize>(HttpContext.Request.Query["producersize"].ToString(), true, out var producerSizeResult))
+        {
+            producerSize = producerSizeResult;
+        }
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         if (session is not null)
         {
@@ -70,13 +75,14 @@ public class FileUploadCompanyDetailsController : Controller
                 this.SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, registrationYear);
 
                 return View(
-                    "FileUploadCompanyDetails",
+                    producerSize==null ? "FileUploadCompanyDetails" : "FileUploadCompanyDetailsCso",
                     new FileUploadCompanyDetailsViewModel
                     {
                         SubmissionDeadline = session.RegistrationSession.SubmissionDeadline,
                         OrganisationRole = organisationRole,
                         IsResubmission = session.RegistrationSession.IsResubmission,
-                        RegistrationYear = registrationYear
+                        RegistrationYear = registrationYear,
+                        ProducerSize = producerSize
                     });
             }
         }
@@ -86,7 +92,7 @@ public class FileUploadCompanyDetailsController : Controller
 
     [HttpPost]
     [RequestSizeLimit(FileSizeLimit.FileSizeLimitInBytes)]
-    public async Task<IActionResult> Post(string? registrationyear)
+    public async Task<IActionResult> Post(string? registrationyear, ProducerSize? producerSize)
     {
         Guid? submissionId = Guid.TryParse(Request.Query["submissionId"], out var value) ? value : null;
         var registrationYear =  _registrationApplicationService.ValidateRegistrationYear(registrationyear, true);
@@ -120,13 +126,14 @@ public class FileUploadCompanyDetailsController : Controller
        
         return !ModelState.IsValid
             ? View(
-                "FileUploadCompanyDetails",
+                producerSize==null ? "FileUploadCompanyDetails" : "FileUploadCompanyDetailsCso",
                 new FileUploadCompanyDetailsViewModel
                 {
                     SubmissionDeadline = session.RegistrationSession.SubmissionDeadline,
                     OrganisationRole = organisationRole,
                     IsResubmission = session.RegistrationSession.IsResubmission,
-                    RegistrationYear = registrationYear
+                    RegistrationYear = registrationYear,
+                    ProducerSize = producerSize
                 })
             : RedirectToAction(
                 "Get",
