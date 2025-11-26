@@ -23,11 +23,12 @@ public class ComplianceSchemeRegistrationController(
     {
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
-        var complianceSchemes = await complianceSchemeService.GetOperatorComplianceSchemes(organisation.Id.Value);
-        var cso = complianceSchemes.Single(cs => cs.NationId == (int)nation);
-        var registrationApplicationPerYearViewModels = await registrationApplicationService.BuildRegistrationApplicationPerYearViewModels(HttpContext.Session, organisation);
+        var complianceSchemesTask = complianceSchemeService.GetOperatorComplianceSchemes(organisation.Id.Value);
+        var registrationApplicationPerYearViewModelsTask = registrationApplicationService.BuildRegistrationApplicationPerYearViewModels(HttpContext.Session, organisation);
+        await Task.WhenAll(complianceSchemesTask, registrationApplicationPerYearViewModelsTask);
+        var cso = complianceSchemesTask.Result.Single(cs => cs.NationId == (int)nation);
 
-        var csoRegViewModel = new ComplianceSchemeRegistrationViewModel(cso.Name, nation.ToString(), registrationApplicationPerYearViewModels, 2026);
+        var csoRegViewModel = new ComplianceSchemeRegistrationViewModel(cso.Name, nation.ToString(), registrationApplicationPerYearViewModelsTask.Result, 2026);
         
         return View(csoRegViewModel);
     }
