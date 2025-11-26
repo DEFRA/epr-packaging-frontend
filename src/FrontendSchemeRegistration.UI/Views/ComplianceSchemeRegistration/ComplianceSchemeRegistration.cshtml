@@ -1,0 +1,20 @@
+@model ComplianceSchemeRegistrationViewModel
+
+@{
+    ViewData["Title"] = @Localizer["title"];
+}
+
+
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper" id="main-content" role="main">
+
+        <h1 class="govuk-heading-l">@Localizer["title"]</h1>
+
+        <dl class="govuk-body">
+            <dd>@Localizer["cso-label"]:</dd>
+            <dt>@Model.ComplianceSchemeName</dt>
+            <dd>@Localizer["regulator-label"]:</dd>
+            <dt>Environment Agency (@Model.Nation)</dt>
+        </dl>
+    </main>
+</div>
