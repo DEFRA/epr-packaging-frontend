@@ -1,4 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.UI.Sessions;
 
@@ -29,6 +29,7 @@ public class RegistrationTaskListViewModel
     public string PageTitle => IsResubmission ? "registration_resubmission_task_title" : "registration_task_title";
     
     public string PageHeading => IsResubmission ? "register_resubmission_company" : "register_company";
+    public string PageHeadingCso => "register_company_size";
     
     public string FileUploadTask => IsResubmission ? "update_registration_details" : "submit_registration_data";
     

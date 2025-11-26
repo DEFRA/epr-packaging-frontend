@@ -21,6 +21,9 @@
     <data name="register_company" xml:space="preserve">
         <value>{0} registration</value>
     </data>
+    <data name="register_company_size" xml:space="preserve">
+        <value>{0} producer {1} registration</value>
+    </data>
     <data name="register_resubmission_company" xml:space="preserve">
         <value>{0} data resubmission</value>
     </data>
