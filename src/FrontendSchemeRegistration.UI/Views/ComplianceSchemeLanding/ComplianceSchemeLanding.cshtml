@@ -110,9 +110,7 @@
             <div class="govuk-grid-row box-container">
                 @if (submissionPeriods.Exists(x => Model.ComplianceYearAsInteger(x.Year) >= 2026))
                 {
-                    var vModel = new RegisterYourMembersViewModel();
-                    vModel.ComplianceSchemeSummary = Model.CurrentTabSummary;
-                    <partial name="~/Views/FrontendSchemeRegistration/RegisterYourMembersTile.cshtml" model="vModel"/>
+                    <partial name="~/Views/FrontendSchemeRegistration/RegisterYourMembersTile.cshtml" model="Model.GetRegisterYourMembersViewModel()"/>
                 }
                 else
                 {

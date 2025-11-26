@@ -39,4 +39,6 @@ public class ComplianceSchemeLandingViewModel
     public List<RegistrationApplicationPerYearViewModel> RegistrationApplicationsPerYear { get; set; } = new();
 
     public SubmissionPeriod PackagingResubmissionPeriod { get; set; }
+    
+    public RegisterYourMembersViewModel GetRegisterYourMembersViewModel() => new() {ComplianceSchemeSummary = CurrentTabSummary};
 }
