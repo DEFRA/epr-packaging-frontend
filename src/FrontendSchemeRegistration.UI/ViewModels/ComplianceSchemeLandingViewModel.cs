@@ -3,7 +3,6 @@ namespace FrontendSchemeRegistration.UI.ViewModels;
 using System.Diagnostics.CodeAnalysis;
 using Application.DTOs.ComplianceScheme;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
-using FrontendSchemeRegistration.UI.Sessions;
 
 [ExcludeFromCodeCoverage]
 public class ComplianceSchemeLandingViewModel
@@ -25,7 +24,14 @@ public class ComplianceSchemeLandingViewModel
     /// </summary>
     public string ComplianceYear { get; set; }
 
+    public int ComplianceYearAsInteger(string complianceYear)
+    {
+        var yearInt = int.TryParse(complianceYear, out var year) ? year : 0;
+        return yearInt;
+    }
 
+    
+    
     public bool IsApprovedUser { get; set; }
 
     public ResubmissionTaskListViewModel ResubmissionTaskListViewModel { get; set; }
@@ -33,4 +39,6 @@ public class ComplianceSchemeLandingViewModel
     public List<RegistrationApplicationPerYearViewModel> RegistrationApplicationsPerYear { get; set; } = new();
 
     public SubmissionPeriod PackagingResubmissionPeriod { get; set; }
+    
+    public RegisterYourMembersViewModel GetRegisterYourMembersViewModel() => new() {ComplianceSchemeSummary = CurrentTabSummary};
 }

@@ -37,6 +37,7 @@ public static class PagePaths
     public const string HomePageComplianceScheme = "producer-compliance-scheme";
     public const string HomePageSelfManaged = "home-self-managed";
     public const string ProducerRegistrationGuidance = "producer-registration-guidance";
+    public const string CsoRegistration = "cso-registration";
     public const string RegistrationTaskList = "registration-task-list";
     public const string RegistrationFeeCalculations = "registration-fee-calculations";
     public const string SelectPaymentOptions = "select-payment-options";
@@ -90,17 +91,12 @@ public static class PagePaths
     public const string SubsidiaryAdded = "/subsidiary-added";
     public const string SubsidiaryCompaniesHouseNumberSearch = "/subsidiary-companies-house-number-search";
     public const string SubsidiaryConfirmCompanyDetails = "/subsidiary-confirm-company-details";
-    public const string RegisteredWithCompaniesHouse = "/subsidiary-registered-with-companies-house";
     public const string SubsidiaryCheckYourDetails = "/subsidiary-check-your-details";
-    public const string SubsidiaryUkNation = "/subsidiary-uk-nation";
     public const string SubsidiaryLocation = "/subsidiary-location";
     public const string SubsidiaryCheckDetails = "/subsidiary-check-details";
     public const string SubsidiariesDownload = "/subsidiaries-download";
     public const string SubsidiariesDownloadView = "/subsidiaries-export-file-downloading";
     public const string SubsidiariesDownloadFailed = "/subsidiaries-export-problem-downloading-file";
-    public const string SubsidiaryTemplateDownload = "/subsidiary-template-download";
-    public const string SubsidiaryTemplateDownloadView = "/subsidiary-template-download-view";
-    public const string SubsidiaryTemplateDownloadFailed = "/subsidiary-template-download-failed";
     public const string SubsidiariesIncompleteFileUpload = "/subsidiaries-incomplete-file-upload";
     public const string SubsidiariesFileNotUploaded = "/subsidiaries-file-not-uploaded";
     public const string SubsidiariesFileUploadWarningsReport = "/subsidiaries-file-upload-warnings-report";
