@@ -25,4 +25,34 @@
   <data name="regulator-label" xml:space="preserve">
     <value>Regulator</value>
   </data>
+  <data name="england.regulator" xml:space="preserve">
+    <value>Environment Agency (England)</value>
+  </data>
+  <data name="scotland.regulator" xml:space="preserve">
+    <value>Scottish Environment Protection Agency (Scotland)</value>
+  </data>
+  <data name="wales.regulator" xml:space="preserve">
+    <value>Natural Resources Wales (NRW) (Wales)</value>
+  </data>
+  <data name="northernireland.regulator" xml:space="preserve">
+    <value>Office for Environmental Protection (OEP) (Northern Ireland)</value>
+  </data>
+	<data name="current_large_producer_registration_title" xml:space="preserve">
+		<value>Large producer {0} registration</value>
+	</data>
+	<data name="current_small_producer_registration_title" xml:space="preserve">
+		<value>Small producer {0} registration</value>
+	</data>
+  <data name="small_producer_instructions1.2026" xml:space="preserve">
+		<value>Small producers must apply for registration on or before 1 April 2026.</value>
+	</data>
+  <data name="small_producer_instructions2.2026" xml:space="preserve">
+		<value>Applications made after this date could incur a late fee.</value>
+	</data>
+  <data name="large_producer_instructions1.2026" xml:space="preserve">
+		<value>Large producers needed to apply for registration on or before 1 October 2025.</value>
+	</data>
+  <data name="large_producer_instructions2.2026" xml:space="preserve">
+		<value>Applications made after this date could incur a late fee.</value>
+	</data>
 </root>

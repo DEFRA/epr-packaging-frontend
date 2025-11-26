@@ -14,7 +14,60 @@
             <dd>@Localizer["cso-label"]:</dd>
             <dt>@Model.ComplianceSchemeName</dt>
             <dd>@Localizer["regulator-label"]:</dd>
-            <dt>Environment Agency (@Model.Nation)</dt>
+            <dt>@Localizer[$"{Model.Nation.ToLowerInvariant()}.regulator"]</dt>
         </dl>
+        <h2 class="govuk-heading-m">@Model.CurrentRegistrationYear</h2>
+
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-one-half">
+                <div class="govuk-summary-card">
+                    <div class="govuk-summary-card__title-wrapper app-summary-card__title-wrapper--no-background">
+                        <h2 class="govuk-summary-card__title">
+                            <a asp-controller="Registration" asp-action="LargeProducer" class="govuk-link">
+                                @string.Format(Localizer["current_small_producer_registration_title"].Value, @Model.CurrentRegistrationYear)
+                            </a>
+                        </h2>
+                    </div>
+
+                    <div class="govuk-summary-card__content">
+                        <div class="govuk-summary-card__body">
+                            <p class="govuk-body">@Localizer[$"small_producer_instructions1.{Model.CurrentRegistrationYear}"]</p>
+                            <p class="govuk-body">@Localizer[$"small_producer_instructions2.{Model.CurrentRegistrationYear}"]</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="govuk-grid-column-one-half">
+                <div class="govuk-summary-card">
+                    <div class="govuk-summary-card__title-wrapper app-summary-card__title-wrapper--no-background">
+                        <h2 class="govuk-summary-card__title">
+                            <a asp-controller="Registration" asp-action="SmallProducer" class="govuk-link">
+                                @string.Format(Localizer["current_large_producer_registration_title"].Value, @Model.CurrentRegistrationYear)
+                            </a>
+                        </h2>
+                    </div>
+
+                    <div class="govuk-summary-card__content">
+                        <div class="govuk-summary-card__body">
+                            <p class="govuk-body">@Localizer[$"large_producer_instructions1.{Model.CurrentRegistrationYear}"]</p>
+                            <p class="govuk-body">@Localizer[$"large_producer_instructions2.{Model.CurrentRegistrationYear}"]</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <h2 class="govuk-heading-m">@Model.PreviousRegistrationYear</h2>
+        <div class="govuk-grid-row">
+            <div>
+                @foreach (var app in Model.RegistrationApplicationsPerYear)
+                {
+                    if (app.RegistrationYear?.ToString() == @Model.PreviousRegistrationYear.ToString())
+                    {
+                        <partial name="~/Views/FrontendSchemeRegistration/RegistrationApplicationYearBlock.cshtml" model="app" />
+                    }
+                }
+            </div>
+        </div>
     </main>
 </div>
