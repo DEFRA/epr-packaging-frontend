@@ -4,16 +4,12 @@
     <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
         <div class="govuk-card-body">
             <h2 class="govuk-heading-m">
-                @Html.ActionLink(
-                    // TODO this will need localisation for Wales
-                    "Register Your Members", //"Localizer["register_your_members"].Value,
-                    "ComplianceSchemeRegistration",
-                    "ComplianceSchemeRegistration",
-                    new ComplianceSchemeRegistrationViewModel( Model.ComplianceSchemeSummary.Name, Model.ComplianceSchemeSummary.Nation.ToString() ),
-                    new
-                    {
-                        @class = "govuk-link--no-visited-state"
-                    })
+                <a asp-controller="ComplianceSchemeRegistration"
+                   asp-action="ComplianceSchemeRegistration"
+                   asp-route-nation="@Model.ComplianceSchemeSummary.Nation.ToString()"
+                   class="govuk-link govuk-link--no-visited-state">
+                    Register Your Members
+                </a>
             </h2>
             <p class="govuk-body">
                 <!--TODO this will need localisation for Wales -->
