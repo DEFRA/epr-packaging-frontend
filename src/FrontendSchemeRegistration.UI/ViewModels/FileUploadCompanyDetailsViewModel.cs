@@ -12,23 +12,5 @@ public class FileUploadCompanyDetailsViewModel : ViewModelWithOrganisationRole
     public ProducerSize? ProducerSize { get; set; }
     public string PageHeadingCso = "register_company_size";
     public string OrganisationName { get; set; }
-
-    public string PageHeading
-    {
-        get
-        {
-            if (IsResubmission)
-            {
-                return "upload_organisation_details";
-            }
-            else if (IsComplianceScheme)
-            {
-                return "report_your_member_organisation_detail";
-            }
-            else
-            {
-                return "report_your_organisation_detail";
-            }
-        }
-    }
+    public string PageHeading = "report_your_organisation_detail";
 }
