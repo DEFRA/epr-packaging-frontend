@@ -13,9 +13,20 @@
 <main class="govuk-main-wrapper" id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-three-quarters">
-            <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
-                @Localizer[Model.PageHeading, Model.OrganisationName]
-            </h1>
+            @if (!string.IsNullOrEmpty(Model.Caption))
+            {
+                <p class="govuk-caption-l">@Localizer[Model.PageHeading, Model.Caption]</p>
+                <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+                    @Model.OrganisationName
+                </h1>
+            }
+            else
+            {
+                <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+                    @Localizer[Model.PageHeading, Model.OrganisationName]
+                </h1>    
+            }
+            
             <dl class="govuk-summary-list">
                 <div class="govuk-summary-list__row">
                 </div>
@@ -90,7 +101,7 @@
                     </dd>
                 </div>
             </dl>
-            @if(Model.IsComplianceScheme)
+            @if (Model.IsComplianceScheme)
             {
                 <p class="govuk-body govuk-!-margin-top-4">
                     <a asp-controller="ComplianceSchemeLanding" asp-action="Get" class="govuk-link">@Localizer["return_to_dashboard"]</a>

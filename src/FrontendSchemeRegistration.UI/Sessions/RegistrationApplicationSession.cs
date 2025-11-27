@@ -146,4 +146,6 @@ public class RegistrationApplicationSession
     public LastSubmittedFileDetails LastSubmittedFile { get; set; } = new LastSubmittedFileDetails();
 
     public ComplianceSchemeDto? SelectedComplianceScheme { get; set; }
+    public ProducerSize? ProducerSize { get; set; }
+    public string? RegistrationCaption { get; set; }
 }
