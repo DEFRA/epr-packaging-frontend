@@ -48,14 +48,10 @@ public class FileUploadCompanyDetailsController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get()
+    public async Task<IActionResult> Get([FromQuery]string? registrationYear = null, [FromQuery]ProducerSize? producerSize = null)
     {
-        var registrationYear = _registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
-        ProducerSize? producerSize = null;
-        if (Enum.TryParse<ProducerSize>(HttpContext.Request.Query["producersize"].ToString(), true, out var producerSizeResult))
-        {
-            producerSize = producerSizeResult;
-        }
+        var validatedRegistrationYear = _registrationApplicationService.ValidateRegistrationYear(registrationYear, true);
+        
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         if (session is not null)
         {
@@ -72,16 +68,17 @@ public class FileUploadCompanyDetailsController : Controller
                     }
                 }
 
-                this.SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, registrationYear);
+                this.SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, validatedRegistrationYear);
 
+                var viewName = producerSize == null ? "FileUploadCompanyDetails" : "FileUploadCompanyDetailsCso";
                 return View(
-                    producerSize==null ? "FileUploadCompanyDetails" : "FileUploadCompanyDetailsCso",
+                    viewName,
                     new FileUploadCompanyDetailsViewModel
                     {
                         SubmissionDeadline = session.RegistrationSession.SubmissionDeadline,
                         OrganisationRole = organisationRole,
                         IsResubmission = session.RegistrationSession.IsResubmission,
-                        RegistrationYear = registrationYear,
+                        RegistrationYear = validatedRegistrationYear,
                         ProducerSize = producerSize
                     });
             }
@@ -123,10 +120,11 @@ public class FileUploadCompanyDetailsController : Controller
         await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
         this.SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, registrationYear);
         var routeValue = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear);
-       
+
+        var viewName = producerSize == null ? "FileUploadCompanyDetails" : "FileUploadCompanyDetailsCso";
         return !ModelState.IsValid
             ? View(
-                producerSize==null ? "FileUploadCompanyDetails" : "FileUploadCompanyDetailsCso",
+                viewName,
                 new FileUploadCompanyDetailsViewModel
                 {
                     SubmissionDeadline = session.RegistrationSession.SubmissionDeadline,
