@@ -392,7 +392,7 @@ public class FileUploadCompanyDetailsControllerTests
         _systemUnderTest.ModelState.AddModelError("file", "Some error");
 
         // Act
-        var result = await _systemUnderTest.Post(It.IsAny<string>()) as ViewResult;
+        var result = await _systemUnderTest.Post(It.IsAny<string>(), null) as ViewResult;
 
         // Assert
         _fileUploadServiceMock.Verify(
@@ -411,6 +411,40 @@ public class FileUploadCompanyDetailsControllerTests
                 It.IsAny<bool?>()),
             Times.Once);
         result.ViewName.Should().Be("FileUploadCompanyDetails");
+    }
+    
+    [Test]
+    public async Task Post_ReturnsFileUploadCompanyDetailsCsoView_WhenTheModelStateIsInvalid_And_Has_Producer_Size()
+    {
+        // Arrange
+        const string contentType = "content-type";
+
+        _systemUnderTest.ControllerContext.HttpContext.Request.ContentType = contentType;
+        _systemUnderTest.ControllerContext.HttpContext.Request.Query = new QueryCollection();
+        _systemUnderTest.ModelState.AddModelError("file", "Some error");
+
+        // Act
+        var result = await _systemUnderTest.Post(It.IsAny<string>(), ProducerSize.Large) as ViewResult;
+
+        // Assert
+        _fileUploadServiceMock.Verify(
+            x => x.ProcessUploadAsync(
+                contentType,
+                It.IsAny<Stream>(),
+                SubmissionPeriod,
+                It.IsAny<ModelStateDictionary>(),
+                null,
+                SubmissionType.Registration,
+                It.IsAny<IFileUploadMessages>(),
+                It.IsAny<IFileUploadSize>(),
+                SubmissionSubType.CompanyDetails,
+                It.IsAny<Guid?>(),
+                It.IsAny<Guid?>(),
+                It.IsAny<bool?>()),
+            Times.Once);
+        result.ViewName.Should().Be("FileUploadCompanyDetailsCso");
+        var actualModel = result.Model as FileUploadCompanyDetailsViewModel;
+        actualModel.ProducerSize.Should().Be(ProducerSize.Large);
     }
 
     [Test]
@@ -446,7 +480,7 @@ public class FileUploadCompanyDetailsControllerTests
             .ReturnsAsync(submissionId);
 
         // Act
-        var result = await _systemUnderTest.Post(It.IsAny<string>()) as RedirectToActionResult;
+        var result = await _systemUnderTest.Post(It.IsAny<string>(),null) as RedirectToActionResult;
 
         // Assert
         result.ControllerName.Should().Contain("UploadingOrganisationDetails");
