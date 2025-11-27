@@ -114,7 +114,12 @@ public class ComplianceSchemeLandingControllerTests
         };
 
         globalVariables = new Mock<IOptions<GlobalVariables>>();
-        globalVariables.Setup(o => o.Value).Returns(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods, OverrideCurrentMonth = 1, OverrideCurrentYear = 2026 });
+        globalVariables.Setup(o => o.Value)
+            .Returns(new GlobalVariables { 
+                BasePath = "path", 
+                SubmissionPeriods = _submissionPeriods,
+                OverrideCurrentMonth = 1,
+                OverrideCurrentYear = 2026 });
 
         _userMock.Setup(x => x.Claims).Returns(claims);
         _httpContextMock.Setup(x => x.User).Returns(_userMock.Object);

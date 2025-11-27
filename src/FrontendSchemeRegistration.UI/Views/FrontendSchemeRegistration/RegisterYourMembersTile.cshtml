@@ -1,0 +1,22 @@
+@model RegisterYourMembersViewModel
+
+<div class="govuk-grid-column-one-half box" xmlns="http://www.w3.org/1999/html">
+    <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
+        <div class="govuk-card-body">
+            <h2 class="govuk-heading-m">
+                <a asp-controller="ComplianceSchemeRegistration"
+                   asp-action="ComplianceSchemeRegistration"
+                   asp-route-nation="@Model.ComplianceSchemeSummary.Nation.ToString()"
+                   class="govuk-link govuk-link--no-visited-state">
+                    Register Your Members
+                </a>
+            </h2>
+            <p class="govuk-body">
+                <!--TODO this will need localisation for Wales -->
+                Large and small producers must be registered separately.
+                <br/>
+                You can also resubmit registration details.
+            </p>
+        </div>
+    </div>
+</div>
