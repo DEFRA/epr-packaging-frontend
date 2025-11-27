@@ -54,4 +54,10 @@
     <data name="report_your_organisation_detail" xml:space="preserve">
         <value />
     </data>
+    <data name="report_your_member_organisation_detail" xml:space="preserve">
+        <value />
+    </data>
+    <data name="upload_organisation_details" xml:space="preserve">
+        <value />
+    </data>
 </root>

@@ -117,5 +117,17 @@ namespace FrontendSchemeRegistration.UI.Views.FileUploadCompanyDetails {
                 return ResourceManager.GetString("report_your_organisation_detail", resourceCulture);
             }
         }
+        
+        internal static string report_your_member_organisation_detail {
+            get {
+                return ResourceManager.GetString("report_your_member_organisation_detail", resourceCulture);
+            }
+        }
+        
+        internal static string upload_organisation_details {
+            get {
+                return ResourceManager.GetString("upload_organisation_details", resourceCulture);
+            }
+        }
     }
 }
