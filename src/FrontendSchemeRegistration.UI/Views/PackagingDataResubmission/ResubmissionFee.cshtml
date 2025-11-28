@@ -13,7 +13,7 @@
                 @await Html.PartialAsync("../Shared/Partials/Govuk/_ErrorsViewModelSummary", errorsViewModel)
             }
             
-            @if(Model.IsComplianceScheme && Model.MemberCount ==0)
+            @if(Model.MemberCount == 0)
             {
                 <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
                     @Localizer["resubmission-you-have-no-additional-fee-to-pay"]
