@@ -10,6 +10,7 @@ using FrontendSchemeRegistration.Application.Services;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
+using FrontendSchemeRegistration.UI.Controllers.FrontendSchemeRegistration;
 using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Helpers;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
@@ -208,7 +209,7 @@ public class ResubmissionApplicationController : Controller
             submittedByName = await GetUserNameFromId(submission.LastSubmittedFile.SubmittedBy!);
         }
 
-        var isResubmitted = session.PomResubmissionSession.PackagingResubmissionApplicationSession.ResubmissionApplicationSubmitted;       
+        var isResubmitted = session.PomResubmissionSession.PackagingResubmissionApplicationSession.ResubmissionApplicationSubmitted;
 
         if (!isResubmitted)
         {
@@ -268,9 +269,17 @@ public class ResubmissionApplicationController : Controller
                     Enum.GetName(typeof(PaymentOptions), PaymentOptions.PayByPhone));
         }
 
+        var isComplianceScheme = string.Equals(session.PomResubmissionSession.PackagingResubmissionApplicationSession.Organisation.OrganisationRole, OrganisationRoles.ComplianceScheme, StringComparison.CurrentCultureIgnoreCase);
+
+        if (isComplianceScheme)
+        {
+            return RedirectToAction(
+                    nameof(ComplianceSchemeLandingController.Get),
+                    nameof(ComplianceSchemeLandingController).RemoveControllerFromName());
+        }
         return RedirectToAction(
-                nameof(ComplianceSchemeLandingController.Get),
-                nameof(ComplianceSchemeLandingController).RemoveControllerFromName());
+                  nameof(FrontendSchemeRegistrationController.VisitHomePageSelfManaged),
+                  nameof(FrontendSchemeRegistrationController).RemoveControllerFromName());
     }
 
     private void SetBackLink(FrontendSchemeRegistrationSession session, string currentPagePath)
