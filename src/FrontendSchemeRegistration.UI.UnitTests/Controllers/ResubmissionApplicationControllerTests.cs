@@ -5,10 +5,13 @@ using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.RequestModels;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers;
+using FrontendSchemeRegistration.UI.Controllers.FrontendSchemeRegistration;
 using FrontendSchemeRegistration.UI.Controllers.ResubmissionApplication;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Sessions;
@@ -460,7 +463,8 @@ public class ResubmissionApplicationControllerTests
                 PackagingResubmissionApplicationSession = new PackagingResubmissionApplicationSession()
                 {
                     SubmissionId = Guid.NewGuid(),
-                    LastSubmittedFile = new LastSubmittedFileDetails() { FileId = Guid.NewGuid() }
+                    LastSubmittedFile = new LastSubmittedFileDetails() { FileId = Guid.NewGuid() },
+                    Organisation = new Organisation() { OrganisationRole = OrganisationRoles.ComplianceScheme }
                 }
             }
         };
@@ -475,6 +479,34 @@ public class ResubmissionApplicationControllerTests
         // Assert
         result.ControllerName.Should().Be("ComplianceSchemeLanding");
         result.ActionName.Should().Be(nameof(ComplianceSchemeLandingController.Get));
+    }
+
+    [Test]
+    public async Task RedirectToComplianceSchemeDashboard_Redirects_ProducersLanding()
+    {
+        var frontendSchemeRegistrationSession = new FrontendSchemeRegistrationSession
+        {
+            PomResubmissionSession = new PackagingReSubmissionSession
+            {
+                PackagingResubmissionApplicationSession = new PackagingResubmissionApplicationSession()
+                {
+                    SubmissionId = Guid.NewGuid(),
+                    LastSubmittedFile = new LastSubmittedFileDetails() { FileId = Guid.NewGuid() },
+                    Organisation = new Organisation() { OrganisationRole = OrganisationRoles.Producer }
+                }
+            }
+        };
+
+        var session = new FrontendSchemeRegistrationSession();
+        _mockSessionManager.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
+            .Returns(Task.FromResult(frontendSchemeRegistrationSession));
+
+        // Act
+        var result = await _controller.RedirectToComplianceSchemeDashboard() as RedirectToActionResult;
+
+        // Assert
+        result.ControllerName.Should().Be("FrontendSchemeRegistration");
+        result.ActionName.Should().Be(nameof(FrontendSchemeRegistrationController.VisitHomePageSelfManaged));
     }
 
     [Test]
