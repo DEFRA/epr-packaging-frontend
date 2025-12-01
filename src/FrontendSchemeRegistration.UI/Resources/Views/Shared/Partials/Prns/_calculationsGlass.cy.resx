@@ -21,7 +21,7 @@
 		<value>Fe ddefnyddion ni'r fformwla yma i gyfrifo cyfanswm eich rhwymedigaeth gwydr</value>
 	</data>
 	<data name="is_n_tonnes_the_total_glass_you_reported_to_the_nearest_tonne" xml:space="preserve">
-		<value>yw {0} o dunelli (cyfanswm y gwydr y rhoesoch chi wybod amdano ar gyfer 2024, i'r dunnell agosaf)</value>
+		<value>yw {0} o dunelli (cyfanswm y gwydr y rhoesoch chi wybod amdano ar gyfer {1}, i'r dunnell agosaf)</value>
 	</data>
 	<data name="is_n_percent_recycling_target_for_glass_set_by_the_yyyy_regulations" xml:space="preserve">
 		<value> yw {0} (y targed ailgylchu ar gyfer {1} ar gyfer gwydr)</value>
