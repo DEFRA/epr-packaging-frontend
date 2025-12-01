@@ -144,4 +144,7 @@
   <data name="upload_file" xml:space="preserve">
     <value />
   </data>
+  <data name="register_company_size" xml:space="preserve">
+    <value />
+  </data>
 </root>
