@@ -19,24 +19,6 @@
   <data name="title" xml:space="preserve">
     <value>Register your members</value>
   </data>
-  <data name="cso-label" xml:space="preserve">
-    <value>Compliance scheme</value>
-  </data>
-  <data name="regulator-label" xml:space="preserve">
-    <value>Regulator</value>
-  </data>
-  <data name="england.regulator" xml:space="preserve">
-    <value>Environment Agency (England)</value>
-  </data>
-  <data name="scotland.regulator" xml:space="preserve">
-    <value>Scottish Environment Protection Agency (Scotland)</value>
-  </data>
-  <data name="wales.regulator" xml:space="preserve">
-    <value>Natural Resources Wales (NRW) (Wales)</value>
-  </data>
-  <data name="northernireland.regulator" xml:space="preserve">
-    <value>Office for Environmental Protection (OEP) (Northern Ireland)</value>
-  </data>
 	<data name="current_large_producer_registration_title" xml:space="preserve">
 		<value>Large producer {0} registration</value>
 	</data>
