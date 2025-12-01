@@ -1,5 +1,5 @@
 $govuk-assets-path: '/report-data/';
-@import 'node_modules/govuk-frontend/govuk/all';
+@import 'index';
 
 // Abstracts
 @import './abstracts/utilities';
