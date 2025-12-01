@@ -28,10 +28,8 @@
                     </div>
 
                     <div class="govuk-summary-card__content">
-                        <div class="govuk-summary-card__body">
-                            <p class="govuk-body">@Localizer[$"small_producer_instructions1.{Model.CurrentRegistrationYear}"]</p>
-                            <p class="govuk-body">@Localizer[$"small_producer_instructions2.{Model.CurrentRegistrationYear}"]</p>
-                        </div>
+                        <p class="govuk-body">@Localizer[$"small_producer_instructions1.{Model.CurrentRegistrationYear}"]</p>
+                        <p class="govuk-body">@Localizer[$"small_producer_instructions2.{Model.CurrentRegistrationYear}"]</p>
                     </div>
                 </div>
             </div>
@@ -48,10 +46,8 @@
                     </div>
 
                     <div class="govuk-summary-card__content">
-                        <div class="govuk-summary-card__body">
-                            <p class="govuk-body">@Localizer[$"large_producer_instructions1.{Model.CurrentRegistrationYear}"]</p>
-                            <p class="govuk-body">@Localizer[$"large_producer_instructions2.{Model.CurrentRegistrationYear}"]</p>
-                        </div>
+                        <p class="govuk-body">@Localizer[$"large_producer_instructions1.{Model.CurrentRegistrationYear}"]</p>
+                        <p class="govuk-body">@Localizer[$"large_producer_instructions2.{Model.CurrentRegistrationYear}"]</p>
                     </div>
                 </div>
             </div>
@@ -62,6 +58,7 @@
                 {
                     if (registrationApplication.RegistrationYear?.ToString() == @Model.PreviousRegistrationYear.ToString())
                     {
+                        registrationApplication.SummaryCardStyling = true;
                         <partial name="~/Views/FrontendSchemeRegistration/RegistrationApplicationYearBlock.cshtml" model="registrationApplication" />
                     }
                 }
