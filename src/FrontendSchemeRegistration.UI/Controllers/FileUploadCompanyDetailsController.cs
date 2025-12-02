@@ -119,7 +119,7 @@ public class FileUploadCompanyDetailsController : Controller
 
         await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
         this.SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, registrationYear);
-        var routeValue = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear);
+        var routeValue = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear, producerSize: producerSize);
 
         var viewName = producerSize == null ? "FileUploadCompanyDetails" : "FileUploadCompanyDetailsCso";
         return !ModelState.IsValid

@@ -447,8 +447,9 @@ public class FileUploadCompanyDetailsControllerTests
         actualModel.ProducerSize.Should().Be(ProducerSize.Large);
     }
 
-    [Test]
-    public async Task Post_RedirectsTo_UploadingOrganisationDetails_WhenTheModelStateIsValid()
+    [TestCase(ProducerSize.Large)]
+    [TestCase(null)]
+    public async Task Post_RedirectsTo_UploadingOrganisationDetails_WhenTheModelStateIsValid(ProducerSize? producerSize)
     {
         // Arrange
         const string contentType = "content-type";
@@ -460,6 +461,9 @@ public class FileUploadCompanyDetailsControllerTests
             {
                 {
                     "submissionId", submissionId.ToString()
+                },
+                {
+                    "producerSize",producerSize.ToString()
                 }
             });
 
@@ -480,10 +484,19 @@ public class FileUploadCompanyDetailsControllerTests
             .ReturnsAsync(submissionId);
 
         // Act
-        var result = await _systemUnderTest.Post(It.IsAny<string>(),null) as RedirectToActionResult;
+        var result = await _systemUnderTest.Post(It.IsAny<string>(), producerSize) as RedirectToActionResult;
 
         // Assert
         result.ControllerName.Should().Contain("UploadingOrganisationDetails");
         result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(submissionId);
+        if (producerSize == null)
+        {
+            result.RouteValues.Should().NotContainKey("producersize");
+        }
+        else
+        {
+            result.RouteValues.Should().ContainKey("producersize").WhoseValue.Should().Be(producerSize.ToString());    
+        }
+        
     }
 }
