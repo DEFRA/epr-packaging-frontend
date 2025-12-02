@@ -68,7 +68,7 @@ public class FileUploadCompanyDetailsController : Controller
                     }
                 }
 
-                this.SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, validatedRegistrationYear);
+                this.SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, validatedRegistrationYear, producerSize:producerSize);
 
                 var viewName = producerSize == null ? "FileUploadCompanyDetails" : "FileUploadCompanyDetailsCso";
                 return View(

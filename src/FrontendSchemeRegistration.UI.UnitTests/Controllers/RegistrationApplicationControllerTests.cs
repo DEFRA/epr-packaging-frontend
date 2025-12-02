@@ -194,7 +194,8 @@ public class RegistrationApplicationControllerTests
             ApplicationStatus = ApplicationStatusType.NotStarted,
             RegistrationFeePaymentMethod = null,
             SelectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), NationId = 1, Name = "test", RowNumber = 1 },
-            ShowRegistrationCaption = true
+            ShowRegistrationCaption = true,
+            ProducerSize = null
         };
         RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<ProducerSize?>())).ReturnsAsync(details);
         SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new RegistrationApplicationSession
@@ -237,7 +238,8 @@ public class RegistrationApplicationControllerTests
             ApplicationStatus = ApplicationStatusType.NotStarted,
             RegistrationFeePaymentMethod = null,
             SelectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), NationId = 1, Name = "test", RowNumber = 1 },
-            ShowRegistrationCaption = false
+            ShowRegistrationCaption = false,
+            ProducerSize = null
         };
         RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<ProducerSize?>())).ReturnsAsync(details);
         SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new RegistrationApplicationSession
@@ -302,10 +304,16 @@ public class RegistrationApplicationControllerTests
         var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
 
         // Assert
-        pageBackLink.Should().Be(PagePaths.ComplianceSchemeLanding);
+        if (expectedProducerSize == null)
+        {
+            pageBackLink.Should().Be(PagePaths.ComplianceSchemeLanding);
+        }
+        else
+        {
+            pageBackLink.Should().Be($"{PagePaths.ComplianceSchemeLanding}?producersize={expectedProducerSize.ToString()}");    
+        }
         result.Model.Should().BeOfType<RegistrationTaskListViewModel>();
         RegistrationApplicationService.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<ISession>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<SubmissionType>()), Times.Never);
-
         result.Model.As<RegistrationTaskListViewModel>().Should().BeEquivalentTo(new RegistrationTaskListViewModel
         {
             OrganisationName = _userData.Organisations[0].Name,
@@ -389,7 +397,8 @@ public class RegistrationApplicationControllerTests
             IsSubmitted = true,
             ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
             RegistrationApplicationSubmittedComment = null,
-            RegistrationApplicationSubmittedDate = null
+            RegistrationApplicationSubmittedDate = null,
+            ProducerSize = null
         };
 
         RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<ProducerSize?>()))
