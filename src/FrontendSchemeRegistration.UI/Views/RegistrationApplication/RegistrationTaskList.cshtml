@@ -36,6 +36,7 @@
                              Model.ApplicationStatus is ApplicationStatusType.FileUploaded or ApplicationStatusType.SubmittedAndHasRecentFileUpload)
                         {
                             <a asp-controller="RegistrationApplication" asp-action="RedirectToFileUpload" asp-route-registrationyear="@Model.RegistrationYear"
+                               asp-route-producersize="@Model.ProducerSize"
                                class="govuk-link govuk-link--no-visited-state">
                                 @Localizer[Model.FileUploadTask]
                             </a>
