@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Security.Claims;
 using AutoFixture;
 using EPR.Common.Authorization.Models;
@@ -1339,7 +1339,7 @@ public class RegistrationApplicationServiceTests
             ApplicationReferenceNumber = "",
             TotalAmountOutstanding = 10,
             IsLateFeeApplicable = true,
-            RegistrationCaption = null
+            ShowRegistrationCaption = false
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string>(), false, It.IsAny<SubmissionType>()), Times.Never);
@@ -1430,7 +1430,7 @@ public class RegistrationApplicationServiceTests
             TotalAmountOutstanding = 10,
             IsLateFeeApplicable = true,
             ProducerSize = ProducerSize.Small,
-            RegistrationCaption = $"Small producer {DateTime.Now.Year}"
+            ShowRegistrationCaption = true
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string>(), false, It.IsAny<SubmissionType>()), Times.Never);
@@ -1506,7 +1506,7 @@ public class RegistrationApplicationServiceTests
             ApplicationReferenceNumber = "Test",
             RegistrationReferenceNumber = "Test",
             IsLateFeeApplicable = true,
-            RegistrationCaption = null
+            ShowRegistrationCaption = false
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<Guid>(), It.IsAny<Guid?>(), It.IsAny<string?>(), "No-Outstanding-Payment", "Test", false, SubmissionType.RegistrationFeePayment), Times.Once);
@@ -1597,7 +1597,7 @@ public class RegistrationApplicationServiceTests
             ApplicationReferenceNumber = "Test",
             RegistrationReferenceNumber = "Test",
             IsLateFeeApplicable = true,
-            RegistrationCaption = null
+            ShowRegistrationCaption = false
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<Guid>(), It.IsAny<Guid?>(), It.IsAny<string?>(), "No-Outstanding-Payment", It.IsAny<string>(), false, SubmissionType.RegistrationFeePayment), Times.Once);
@@ -1653,7 +1653,7 @@ public class RegistrationApplicationServiceTests
             RegulatorNation = "GB-ENG",
             ApplicationReferenceNumber = "",
             IsLateFeeApplicable = true,
-            RegistrationCaption = null
+            ShowRegistrationCaption = false
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string>(), false, It.IsAny<SubmissionType>()), Times.Never);
@@ -1741,7 +1741,7 @@ public class RegistrationApplicationServiceTests
             RegistrationApplicationSubmittedComment = "Test",
             TotalAmountOutstanding = 100,
             IsLateFeeApplicable = true,
-            RegistrationCaption = null
+            ShowRegistrationCaption = false
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string>(), false, It.IsAny<SubmissionType>()), Times.Never);
@@ -1885,7 +1885,7 @@ public class RegistrationApplicationServiceTests
         // Assert
         session.Should().NotBeNull();
         session.ProducerSize.Should().Be(ProducerSize.Large);
-        session.RegistrationCaption.Should().Be($"Large producer {DateTime.Now.Year}");
+        session.ShowRegistrationCaption.Should().BeTrue();
     }
     
     [Test]
@@ -1921,7 +1921,7 @@ public class RegistrationApplicationServiceTests
         session.SubmissionId.Should().Be(registrationApplicationDetails.SubmissionId);
         session.ApplicationReferenceNumber.Should().Be(registrationApplicationDetails.ApplicationReferenceNumber);
         session.ProducerSize.Should().Be(ProducerSize.Small);
-        session.RegistrationCaption.Should().Be($"Small producer {DateTime.Now.Year}");
+        session.ShowRegistrationCaption.Should().BeTrue();
     }
     
     [Test]
@@ -1957,7 +1957,7 @@ public class RegistrationApplicationServiceTests
         session.Should().NotBeNull();
         session.SubmissionId.Should().Be(registrationApplicationDetails.SubmissionId);
         session.ProducerSize.Should().BeNull();
-        session.RegistrationCaption.Should().Be(session.RegistrationCaption);
+        session.ShowRegistrationCaption.Should().Be(session.ShowRegistrationCaption);
     }
 
     [Test]

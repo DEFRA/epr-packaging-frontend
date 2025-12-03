@@ -1,4 +1,4 @@
-﻿using System.Web;
+using System.Web;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
@@ -76,7 +76,7 @@ public class RegistrationApplicationController(
         if (Enum.TryParse<ProducerSize>(HttpContext.Request.Query["producersize"].ToString(), true, out var producerSizeResult))
         {
             producerSize = producerSizeResult;
-        };
+        }
         var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
 
         var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, registrationYear.GetValueOrDefault(), isResubmission, producerSize);
@@ -95,7 +95,8 @@ public class RegistrationApplicationController(
             PaymentViewStatus = session.PaymentViewStatus,
             AdditionalDetailsStatus = session.AdditionalDetailsStatus,
             RegistrationYear = registrationYear.GetValueOrDefault(),
-            Caption = session.RegistrationCaption
+            ShowRegistrationCaption = session.ShowRegistrationCaption,
+            ProducerSize = session.ProducerSize
         });
     }
     
@@ -509,7 +510,7 @@ public class RegistrationApplicationController(
             }
         }
 
-        return RedirectToAction(nameof(FileUploadCompanyDetailsController.Get), nameof(FileUploadCompanyDetailsController).RemoveControllerFromName(), new RouteValueDictionary { { "dataPeriod", session.Period.DataPeriod }, { "registrationyear", registrationYear } });
+        return RedirectToAction(nameof(FileUploadCompanyDetailsController.Get), nameof(FileUploadCompanyDetailsController).RemoveControllerFromName(), new RouteValueDictionary { { "dataPeriod", session.Period.DataPeriod }, { "registrationyear", registrationYear }, {"producersize", session.ProducerSize} });
     }
         
     private static void ClearRestOfJourney(RegistrationApplicationSession session, string currentPagePath)
