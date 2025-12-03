@@ -38,4 +38,7 @@
     <data name="uploading_organisation_details" xml:space="preserve">
         <value>Wrthi’n uwchlwytho manylion y sefydliad</value>
     </data>
+    <data name="register_company_size" xml:space="preserve">
+        <value>{0} canllawiau {1} cofrestru</value>
+    </data>
 </root>

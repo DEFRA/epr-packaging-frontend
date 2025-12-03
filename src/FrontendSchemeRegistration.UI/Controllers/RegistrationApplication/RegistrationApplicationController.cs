@@ -82,7 +82,7 @@ public class RegistrationApplicationController(
         var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, registrationYear.GetValueOrDefault(), isResubmission, producerSize);
         session.Journey = [session.IsComplianceScheme ? PagePaths.ComplianceSchemeLanding : PagePaths.HomePageSelfManaged, PagePaths.RegistrationTaskList];
 
-        SetBackLink(session, PagePaths.RegistrationTaskList, registrationYear);
+        SetBackLink(session, PagePaths.RegistrationTaskList, registrationYear, producerSize);
 
         return View(new RegistrationTaskListViewModel
         {
@@ -464,7 +464,7 @@ public class RegistrationApplicationController(
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
     [Route(PagePaths.RedirectFileUploadCompanyDetails)]
-    public async Task<IActionResult> RedirectToFileUpload()
+    public async Task<IActionResult> RedirectToFileUpload(ProducerSize? producerSize = null)
     {
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
@@ -506,7 +506,7 @@ public class RegistrationApplicationController(
                     return RedirectToAction(
                         nameof(FileUploadCompanyDetailsController.Get),
                         nameof(FileUploadCompanyDetailsController).RemoveControllerFromName(),
-                        new RouteValueDictionary { { "submissionId", session.SubmissionId }, { "dataPeriod", session.Period.DataPeriod }, { "registrationyear", registrationYear } });
+                        new RouteValueDictionary { { "submissionId", session.SubmissionId }, { "dataPeriod", session.Period.DataPeriod }, { "registrationyear", registrationYear },{"producersize", session.ProducerSize} });
             }
         }
 
@@ -530,17 +530,23 @@ public class RegistrationApplicationController(
         await sessionManager.SaveSessionAsync(HttpContext.Session, session);
     }
 
-    private void SetBackLink(RegistrationApplicationSession session, string currentPagePath, int? registrationYear = null)
+    private void SetBackLink(RegistrationApplicationSession session, string currentPagePath, int? registrationYear = null, ProducerSize? producerSize = null)
     {
         var previousPage = session.Journey.PreviousOrDefault(currentPagePath) ?? string.Empty;
         if(registrationYear > 0 && !string.IsNullOrWhiteSpace(previousPage))
         {
             previousPage = QueryHelpers.AddQueryString(previousPage, "registrationyear", registrationYear.ToString());            
         }
+
+        if (producerSize.HasValue && !string.IsNullOrWhiteSpace(previousPage))
+        {
+            previousPage = QueryHelpers.AddQueryString(previousPage, "producersize", producerSize.ToString());
+        }
+        
         ViewBag.BackLinkToDisplay = previousPage;
     }
 
-    private async Task SetOrReplaceBackLink(RegistrationApplicationSession session, string currentPagePath, string pagePathToReplace, string pagePathToReplaceWith, int? registrationYear = null)
+    private async Task SetOrReplaceBackLink(RegistrationApplicationSession session, string currentPagePath, string pagePathToReplace, string pagePathToReplaceWith, int? registrationYear = null, ProducerSize? producerSize = null)
     {
         if (!string.IsNullOrEmpty(pagePathToReplace) && !string.IsNullOrEmpty(pagePathToReplaceWith))
         {
@@ -549,6 +555,6 @@ public class RegistrationApplicationController(
             await SaveSession(session, currentPagePath, null);
         }
 
-        SetBackLink(session, currentPagePath, registrationYear);
+        SetBackLink(session, currentPagePath, registrationYear, producerSize);
     }
 }

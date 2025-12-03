@@ -11,6 +11,15 @@
         <div class="govuk-grid-column-two-thirds">
             <div class="govuk-grid-column-full">
                 <noscript>
+                    @if (Model.ShowRegistrationCaption)
+                    {
+                        <p class="govuk-caption-l">@Localizer["register_company_size", Model.ProducerSize, Model.RegistrationYear]</p>
+                        <h1 class="govuk-heading-l">@Localizer["uploading_file"]</h1>
+                    }
+                    else
+                    {
+                        <h1 class="govuk-heading-l">@Localizer["uploading_file"]</h1>    
+                    }
                     <h1 class="govuk-heading-l">@Localizer["uploading_file"]</h1>
                     <p class="govuk-body">
                         @Localizer["to_see_if_the_file_has_finished_uploading"]
@@ -21,7 +30,8 @@
                             new
                             {
                                 submissionId = Model.SubmissionId,
-                                registrationyear = Model.RegistrationYear
+                                registrationyear = Model.RegistrationYear,
+                                producerSize = Model.ProducerSize
                             },
                             new
                             {
