@@ -1,4 +1,4 @@
-﻿using System.Web;
+using System.Web;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
