@@ -1,4 +1,4 @@
-﻿namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
+namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
 
 using Application.Constants;
 using Application.DTOs.Submission;

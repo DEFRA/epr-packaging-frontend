@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Security.Claims;
 using AutoFixture;
 using EPR.Common.Authorization.Models;
