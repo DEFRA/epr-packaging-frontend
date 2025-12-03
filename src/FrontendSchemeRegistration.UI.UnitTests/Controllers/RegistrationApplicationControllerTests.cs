@@ -193,15 +193,108 @@ public class RegistrationApplicationControllerTests
             IsSubmitted = false,
             ApplicationStatus = ApplicationStatusType.NotStarted,
             RegistrationFeePaymentMethod = null,
-            SelectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), NationId = 1, Name = "test", RowNumber = 1 }
+            SelectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), NationId = 1, Name = "test", RowNumber = 1 },
+            RegistrationCaption = _userData.Organisations[0].Name
         };
-        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>())).ReturnsAsync(details);
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<ProducerSize?>())).ReturnsAsync(details);
         SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new RegistrationApplicationSession
         {
             IsSubmitted = false,
             ApplicationStatus = ApplicationStatusType.NotStarted,
             RegistrationFeePaymentMethod = null,
-            SelectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), NationId = 1, Name = "test", RowNumber = 1 }
+            SelectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), NationId = 1, Name = "test", RowNumber = 1 },
+            
+        });
+
+        // Act
+        var result = await SystemUnderTest.RegistrationTaskList() as ViewResult;
+        var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
+
+        // Assert
+        pageBackLink.Should().Be(PagePaths.ComplianceSchemeLanding);
+        result.Model.Should().BeOfType<RegistrationTaskListViewModel>();
+        RegistrationApplicationService.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<ISession>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<SubmissionType>()), Times.Never);
+
+        result.Model.As<RegistrationTaskListViewModel>().Should().BeEquivalentTo(new RegistrationTaskListViewModel
+        {
+            OrganisationName = _userData.Organisations[0].Name!,
+            OrganisationNumber = _userData.Organisations[0].OrganisationNumber.ToReferenceNumberFormat(),
+            FileUploadStatus = RegistrationTaskListStatus.NotStarted,
+            IsComplianceScheme = true,
+            Caption = details.RegistrationCaption!,
+        });
+    }
+    
+    [Test]
+    public async Task RegistrationTaskList_Defaults_To_UserData_Organisation_Name_When_Not_In_Session_And_ReturnsCorrectViewAndModel()
+    {
+        // Arrange
+        SetupBase(GetUserData("Compliance Scheme"));
+
+        var details = new RegistrationApplicationSession
+        {
+            IsSubmitted = false,
+            ApplicationStatus = ApplicationStatusType.NotStarted,
+            RegistrationFeePaymentMethod = null,
+            SelectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), NationId = 1, Name = "test", RowNumber = 1 },
+            RegistrationCaption = null
+        };
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<ProducerSize?>())).ReturnsAsync(details);
+        SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new RegistrationApplicationSession
+        {
+            IsSubmitted = false,
+            ApplicationStatus = ApplicationStatusType.NotStarted,
+            RegistrationFeePaymentMethod = null,
+            SelectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), NationId = 1, Name = "test", RowNumber = 1 },
+        });
+
+        // Act
+        var result = await SystemUnderTest.RegistrationTaskList() as ViewResult;
+        var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
+
+        // Assert
+        pageBackLink.Should().Be(PagePaths.ComplianceSchemeLanding);
+        result.Model.Should().BeOfType<RegistrationTaskListViewModel>();
+        RegistrationApplicationService.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<ISession>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<SubmissionType>()), Times.Never);
+
+        result.Model.As<RegistrationTaskListViewModel>().Should().BeEquivalentTo(new RegistrationTaskListViewModel
+        {
+            OrganisationName = _userData.Organisations[0].Name!,
+            OrganisationNumber = _userData.Organisations[0].OrganisationNumber.ToReferenceNumberFormat(),
+            FileUploadStatus = RegistrationTaskListStatus.NotStarted,
+            IsComplianceScheme = true
+        });
+    }
+
+    [TestCase("Large", ProducerSize.Large)]
+    [TestCase("small", ProducerSize.Small)]
+    [TestCase("Medium", null)]
+    public async Task Then_Parses_ProducerSize_Query_String_Value_To_ApplicationService_And_Defaults(string producerSize, ProducerSize? expectedProducerSize)
+    {
+        // Arrange
+        SetupBase(GetUserData("Compliance Scheme"));
+        var queryStrings = new QueryCollection(new Dictionary<string, StringValues>
+        {
+            { "registrationyear", DateTime.Now.Year.ToString() },
+            { "producersize", producerSize}
+        });
+        _httpRequestMock.Setup(x => x.Query).Returns(queryStrings);
+
+        var details = new RegistrationApplicationSession
+        {
+            IsSubmitted = false,
+            ApplicationStatus = ApplicationStatusType.NotStarted,
+            RegistrationFeePaymentMethod = null,
+            SelectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), NationId = 1, Name = "test", RowNumber = 1 },
+            RegistrationCaption = producerSize
+        };
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), expectedProducerSize)).ReturnsAsync(details);
+        SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new RegistrationApplicationSession
+        {
+            IsSubmitted = false,
+            ApplicationStatus = ApplicationStatusType.NotStarted,
+            RegistrationFeePaymentMethod = null,
+            SelectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), NationId = 1, Name = "test", RowNumber = 1 },
         });
 
         // Act
@@ -216,6 +309,7 @@ public class RegistrationApplicationControllerTests
         result.Model.As<RegistrationTaskListViewModel>().Should().BeEquivalentTo(new RegistrationTaskListViewModel
         {
             OrganisationName = _userData.Organisations[0].Name,
+            Caption = producerSize,
             OrganisationNumber = _userData.Organisations[0].OrganisationNumber.ToReferenceNumberFormat(),
             FileUploadStatus = RegistrationTaskListStatus.NotStarted,
             IsComplianceScheme = true
@@ -239,9 +333,10 @@ public class RegistrationApplicationControllerTests
             IsSubmitted = true,
             ApplicationStatus = ApplicationStatusType.FileUploaded,
             RegistrationApplicationSubmittedComment = null,
-            RegistrationApplicationSubmittedDate = null
+            RegistrationApplicationSubmittedDate = null,
+            RegistrationCaption = _userData.Organisations[0].Name
         };
-        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<ProducerSize?>()))
             .ReturnsAsync(registrationApplicationDetails);
 
         SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new RegistrationApplicationSession
@@ -267,12 +362,13 @@ public class RegistrationApplicationControllerTests
 
         result.Model.As<RegistrationTaskListViewModel>().Should().BeEquivalentTo(new RegistrationTaskListViewModel
         {
-            OrganisationName = _userData.Organisations[0].Name,
+            OrganisationName = _userData.Organisations[0].Name!,
             OrganisationNumber = _userData.Organisations[0].OrganisationNumber.ToReferenceNumberFormat(),
             FileUploadStatus = RegistrationTaskListStatus.Pending,
             PaymentViewStatus = RegistrationTaskListStatus.CanNotStartYet,
             AdditionalDetailsStatus = RegistrationTaskListStatus.CanNotStartYet,
-            ApplicationStatus = ApplicationStatusType.FileUploaded
+            ApplicationStatus = ApplicationStatusType.FileUploaded,
+            Caption = registrationApplicationDetails.RegistrationCaption!
         });
     }
 
@@ -296,7 +392,7 @@ public class RegistrationApplicationControllerTests
             RegistrationApplicationSubmittedDate = null
         };
 
-        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<ProducerSize?>()))
             .ReturnsAsync(registrationApplicationDetails);
 
         SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new RegistrationApplicationSession
@@ -353,7 +449,7 @@ public class RegistrationApplicationControllerTests
             RegistrationApplicationSubmittedDate = DateTime.Now.AddMinutes(-5)
         };
 
-        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(),It.IsAny<ProducerSize?>()))
             .ReturnsAsync(registrationApplicationDetails);
 
         SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new RegistrationApplicationSession
@@ -420,7 +516,7 @@ public class RegistrationApplicationControllerTests
             RegistrationApplicationSubmittedDate = DateTime.Now.AddMinutes(-5)
         };
 
-        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<ProducerSize?>()))
             .ReturnsAsync(registrationApplicationDetails);
 
         SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new RegistrationApplicationSession
@@ -469,7 +565,7 @@ public class RegistrationApplicationControllerTests
             RegistrationFeePaymentMethod = null
         };
 
-        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<ProducerSize?>()))
             .ReturnsAsync(registrationApplicationDetails);
 
         SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new RegistrationApplicationSession
@@ -725,7 +821,7 @@ public class RegistrationApplicationControllerTests
             SelectedComplianceScheme = complianceScheme,
             RegulatorNation = nationCode
         };
-        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<ProducerSize?>()))
             .ReturnsAsync(registrationApplicationDetails);
 
         Session = new RegistrationApplicationSession
@@ -772,7 +868,7 @@ public class RegistrationApplicationControllerTests
             ApplicationStatus = statusType
         };
 
-        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<ProducerSize?>()))
             .ReturnsAsync(registrationApplicationDetails);
 
         Session = new RegistrationApplicationSession
@@ -845,7 +941,7 @@ public class RegistrationApplicationControllerTests
             SubmissionId = Guid.NewGuid(),
             RegistrationFeeCalculationDetails = [new RegistrationFeeCalculationDetails { NumberOfSubsidiariesBeingOnlineMarketPlace = 1, IsOnlineMarketplace = true, OrganisationSize = "Large", NumberOfSubsidiaries = 1, OrganisationId = "1234" }]
         };
-        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(),It.IsAny<ProducerSize?>()))
             .ReturnsAsync(registrationApplicationDetails);
 
         Session = new RegistrationApplicationSession
@@ -882,7 +978,7 @@ public class RegistrationApplicationControllerTests
             ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
             RegistrationFeeCalculationDetails = [new RegistrationFeeCalculationDetails { NumberOfSubsidiariesBeingOnlineMarketPlace = 1, IsOnlineMarketplace = true, OrganisationSize = "Large", NumberOfSubsidiaries = 1, OrganisationId = "1234" }]
         };
-        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<ProducerSize?>()))
             .ReturnsAsync(registrationApplicationDetails);
 
         Session = new RegistrationApplicationSession
@@ -929,7 +1025,7 @@ public class RegistrationApplicationControllerTests
             RegistrationApplicationSubmittedDate = null,
             RegistrationFeeCalculationDetails = [new RegistrationFeeCalculationDetails { OrganisationId = "1", OrganisationSize = "L" }]
         };
-        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<ProducerSize?>()))
             .ReturnsAsync(registrationApplicationDetails);
 
         Session = new RegistrationApplicationSession
@@ -1779,7 +1875,7 @@ public class RegistrationApplicationControllerTests
             IsSubmitted = true,
             SelectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), NationId = 1, Name = "Test", RowNumber = 1 }
         };
-        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<ProducerSize?>()))
             .ReturnsAsync(registrationApplicationDetails);
 
         Session = new RegistrationApplicationSession
@@ -1876,7 +1972,7 @@ public class RegistrationApplicationControllerTests
         {
             RegistrationReferenceNumber = null
         };
-        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<ProducerSize?>()))
             .ReturnsAsync(registrationApplicationSession);
 
         // Act
