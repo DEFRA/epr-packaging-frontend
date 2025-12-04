@@ -7,6 +7,7 @@ using Application.Constants;
 using Application.DTOs.ComplianceScheme;
 using Application.DTOs.Notification;
 using Application.DTOs.Submission;
+using Application.Enums;
 using Constants;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Models;

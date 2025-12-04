@@ -2,6 +2,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
 
 using Application.Constants;
 using Application.DTOs.Submission;
+using Application.Enums;
 using Application.Services.Interfaces;
 using Constants;
 using EPR.Common.Authorization.Models;

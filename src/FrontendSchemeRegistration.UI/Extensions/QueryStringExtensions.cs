@@ -2,8 +2,7 @@
 
 namespace FrontendSchemeRegistration.UI.Extensions;
 
-using Sessions;
-
+using Application.Enums;
 
 public static class QueryStringExtensions
 {

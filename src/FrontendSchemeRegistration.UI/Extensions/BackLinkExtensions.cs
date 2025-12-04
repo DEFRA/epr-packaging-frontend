@@ -4,7 +4,7 @@ using System.Security.Policy;
 
 namespace FrontendSchemeRegistration.UI.Extensions;
 
-using Sessions;
+using Application.Enums;
 
 public static class BackLinkExtensions
 {

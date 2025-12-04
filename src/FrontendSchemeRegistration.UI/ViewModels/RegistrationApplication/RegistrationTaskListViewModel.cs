@@ -4,6 +4,8 @@ using FrontendSchemeRegistration.UI.Sessions;
 
 namespace FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
 
+using Application.Enums;
+
 [ExcludeFromCodeCoverage]
 public class RegistrationTaskListViewModel
 {

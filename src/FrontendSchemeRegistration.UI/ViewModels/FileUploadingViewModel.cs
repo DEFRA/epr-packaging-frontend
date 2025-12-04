@@ -1,7 +1,7 @@
 ﻿namespace FrontendSchemeRegistration.UI.ViewModels;
 
 using System.Diagnostics.CodeAnalysis;
-using Sessions;
+using Application.Enums;
 
 [ExcludeFromCodeCoverage]
 public class FileUploadingViewModel
