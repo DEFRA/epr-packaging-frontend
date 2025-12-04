@@ -23,6 +23,8 @@ using Newtonsoft.Json;
 
 namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
 
+using Application.Enums;
+
 [TestFixture]
 public class ComplianceSchemeLandingControllerTests
 {

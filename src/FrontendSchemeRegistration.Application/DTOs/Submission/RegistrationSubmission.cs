@@ -43,4 +43,6 @@ public class RegistrationSubmission : AbstractSubmission
     public int? RowErrorCount { get; set; }
 
     public int? OrganisationMemberCount { get; set; }
+    
+    public RegistrationJourney? RegistrationJourney { get; set; }
 }

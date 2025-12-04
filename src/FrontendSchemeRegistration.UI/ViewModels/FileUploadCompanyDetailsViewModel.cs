@@ -1,6 +1,7 @@
 ﻿namespace FrontendSchemeRegistration.UI.ViewModels;
 
 using System.Diagnostics.CodeAnalysis;
+using Application.Enums;
 using Sessions;
 
 [ExcludeFromCodeCoverage]

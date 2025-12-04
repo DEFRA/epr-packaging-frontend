@@ -5,6 +5,7 @@ namespace FrontendSchemeRegistration.UI.Sessions;
 
 using Application.DTOs;
 using Application.DTOs.Submission;
+using Application.Enums;
 
 [ExcludeFromCodeCoverage]
 public class RegistrationApplicationSession

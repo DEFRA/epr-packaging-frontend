@@ -1,4 +1,4 @@
-namespace FrontendSchemeRegistration.UI.Sessions;
+namespace FrontendSchemeRegistration.Application.Enums;
 
 public enum RegistrationJourney
 {
