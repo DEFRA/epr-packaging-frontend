@@ -38,8 +38,7 @@
                 <div class="govuk-summary-card">
                     <div class="govuk-summary-card__title-wrapper app-summary-card__title-wrapper--no-background">
                         <h2 class="govuk-summary-card__title">
-                            <!-- TODO - use ProducerSize enum instead of hardcoded Large value -->
-                            <a asp-controller="RegistrationApplication" asp-action="RegistrationTaskList" asp-route-producersize="Large" asp-route-registrationyear="@Model.CurrentRegistrationYear" class="govuk-link">
+                            <a asp-controller="RegistrationApplication" asp-action="RegistrationTaskList" asp-route-registrationjourney="@RegistrationJourney.CsoLargeProducer" asp-route-registrationyear="@Model.CurrentRegistrationYear" class="govuk-link">
                                 @Localizer["current_large_producer_registration_title", @Model.CurrentRegistrationYear]
                             </a>
                         </h2>

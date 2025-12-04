@@ -148,6 +148,6 @@
     <value>Large producer {0} registration</value>
   </data>
   <data name="register_company_size_small" xml:space="preserve">
-    <value>Small producer {1} registration</value>
+    <value>Small producer {0} registration</value>
   </data>
 </root>
