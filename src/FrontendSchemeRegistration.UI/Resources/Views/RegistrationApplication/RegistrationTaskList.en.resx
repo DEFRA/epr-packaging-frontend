@@ -22,7 +22,7 @@
         <value>{0} registration</value>
     </data>
     <data name="register_company_size_large" xml:space="preserve">
-        <value>Large producer {1} registration</value>
+        <value>Large producer {0} registration</value>
     </data>
     <data name="register_resubmission_company" xml:space="preserve">
         <value>{0} data resubmission</value>
@@ -79,6 +79,6 @@
         <value>Your application has been submitted</value>
     </data>
     <data name="register_company_size_small" xml:space="preserve">
-        <value>Small producer {1} registration</value>
+        <value>Small producer {0} registration</value>
     </data>
 </root>

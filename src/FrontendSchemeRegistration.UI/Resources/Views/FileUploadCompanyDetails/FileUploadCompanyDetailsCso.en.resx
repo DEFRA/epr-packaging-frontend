@@ -160,7 +160,7 @@
     <value>Do not close the window while the file is uploading. This may take a few minutes.</value>
   </data>
   <data name="register_company_size_large" xml:space="preserve">
-    <value>Large producer {1} registration</value>
+    <value>Large producer {0} registration</value>
   </data>
   <data name="report_your_organisation_detail" xml:space="preserve">
     <value>Report your members’ organisation
@@ -175,6 +175,6 @@ details</value>
 details</value>
   </data>
   <data name="register_company_size_small" xml:space="preserve">
-    <value>Small producer {1} registration</value>
+    <value>Small producer {0} registration</value>
   </data>
 </root>

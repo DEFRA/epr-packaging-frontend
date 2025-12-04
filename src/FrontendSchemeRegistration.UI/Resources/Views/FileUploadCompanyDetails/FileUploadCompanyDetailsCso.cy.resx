@@ -160,7 +160,7 @@
     <value>Do not close the window while the file is uploading. This may take a few minutes.</value>
   </data>
   <data name="register_company_size_large" xml:space="preserve">
-    <value>Large canllawiau {1} cofrestru</value>
+    <value>Large canllawiau {0} cofrestru</value>
   </data>
   <data name="report_your_organisation_detail" xml:space="preserve">
     <value>Rhoi gwybod am fanylion eich sefydliad</value>
@@ -172,6 +172,6 @@
     <value>Rhoi gwybod am fanylion eich sefydliad</value>
   </data>
   <data name="register_company_size_small" xml:space="preserve">
-    <value>Small canllawiau {1} cofrestru</value>
+    <value>Small canllawiau {0} cofrestru</value>
   </data>
 </root>
