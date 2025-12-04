@@ -146,7 +146,7 @@ public class UploadingOrganisationDetailsControllerTests
         result.ViewName.Should().Be("UploadingOrganisationDetails");
         var actualModel = result.Model.As<FileUploadingViewModel>();
         actualModel.SubmissionId.Should().Be(SubmissionId.ToString());
-        actualModel.ProducerSize.Should().Be(null);
+        actualModel.RegistrationJourney.Should().Be(null);
         actualModel.ShowRegistrationCaption.Should().BeFalse();
     }
     
@@ -162,19 +162,19 @@ public class UploadingOrganisationDetailsControllerTests
 
 
         _registrationApplicationServiceMock.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(),
-            It.Is<Organisation>(c => c.Name == "Test Organisation"), 2025, false, ProducerSize.Large));
+            It.Is<Organisation>(c => c.Name == "Test Organisation"), 2025, false, RegistrationJourney.CsoLargeProducer));
         _submissionServiceMock
             .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
             .ReturnsAsync(submission);
 
         // Act
-        var result = await _systemUnderTest.Get(SubmissionId, ProducerSize.Large) as ViewResult;
+        var result = await _systemUnderTest.Get(SubmissionId, RegistrationJourney.CsoLargeProducer) as ViewResult;
 
         // Assert
         result.ViewName.Should().Be("UploadingOrganisationDetails");
         var actualModel = result.Model.As<FileUploadingViewModel>();
         actualModel.SubmissionId.Should().Be(SubmissionId.ToString());
-        actualModel.ProducerSize.Should().Be(ProducerSize.Large);
+        actualModel.RegistrationJourney.Should().Be(RegistrationJourney.CsoLargeProducer);
         actualModel.ShowRegistrationCaption.Should().BeTrue();
     }
 

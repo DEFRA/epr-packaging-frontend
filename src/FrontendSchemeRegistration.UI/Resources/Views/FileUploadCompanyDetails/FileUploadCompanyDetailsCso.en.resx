@@ -159,8 +159,8 @@
   <data name="file_upload_warning" xml:space="preserve">
     <value>Do not close the window while the file is uploading. This may take a few minutes.</value>
   </data>
-  <data name="register_company_size" xml:space="preserve">
-    <value>{0} producer {1} registration</value>
+  <data name="register_company_size_large" xml:space="preserve">
+    <value>Large producer {1} registration</value>
   </data>
   <data name="report_your_organisation_detail" xml:space="preserve">
     <value>Report your members’ organisation
@@ -173,5 +173,8 @@ details</value>
   <data name="upload_organisation_details" xml:space="preserve">
     <value>Report your members’ organisation
 details</value>
+  </data>
+  <data name="register_company_size_small" xml:space="preserve">
+    <value>Small producer {1} registration</value>
   </data>
 </root>

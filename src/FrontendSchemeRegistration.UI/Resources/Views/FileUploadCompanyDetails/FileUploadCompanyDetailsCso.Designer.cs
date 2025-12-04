@@ -106,9 +106,9 @@ namespace FrontendSchemeRegistration.UI.Views.FileUploadCompanyDetails {
             }
         }
         
-        internal static string register_company_size {
+        internal static string register_company_size_large {
             get {
-                return ResourceManager.GetString("register_company_size", resourceCulture);
+                return ResourceManager.GetString("register_company_size_large", resourceCulture);
             }
         }
         
@@ -127,6 +127,12 @@ namespace FrontendSchemeRegistration.UI.Views.FileUploadCompanyDetails {
         internal static string upload_organisation_details {
             get {
                 return ResourceManager.GetString("upload_organisation_details", resourceCulture);
+            }
+        }
+        
+        internal static string register_company_size_small {
+            get {
+                return ResourceManager.GetString("register_company_size_small", resourceCulture);
             }
         }
     }

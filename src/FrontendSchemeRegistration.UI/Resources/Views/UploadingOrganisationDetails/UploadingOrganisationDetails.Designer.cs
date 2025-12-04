@@ -100,9 +100,15 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.UploadingOrganisationDet
             }
         }
         
-        internal static string register_company_size {
+        internal static string register_company_size_large {
             get {
-                return ResourceManager.GetString("register_company_size", resourceCulture);
+                return ResourceManager.GetString("register_company_size_large", resourceCulture);
+            }
+        }
+        
+        internal static string register_company_size_small {
+            get {
+                return ResourceManager.GetString("register_company_size_small", resourceCulture);
             }
         }
     }

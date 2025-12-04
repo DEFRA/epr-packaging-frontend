@@ -1409,7 +1409,7 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null, ProducerSize.Small);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null, RegistrationJourney.CsoSmallProducer);
 
         // Assert
         var submissionYear = DateTime.Now.Year.ToString();
@@ -1429,7 +1429,7 @@ public class RegistrationApplicationServiceTests
             SelectedComplianceScheme = cso,
             TotalAmountOutstanding = 10,
             IsLateFeeApplicable = true,
-            ProducerSize = ProducerSize.Small,
+            RegistrationJourney = RegistrationJourney.CsoSmallProducer,
             ShowRegistrationCaption = true
         });
 
@@ -1880,11 +1880,11 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(registrationApplicationDetails);
 
         // Act
-        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null, ProducerSize.Large);
+        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null, RegistrationJourney.CsoLargeProducer);
 
         // Assert
         session.Should().NotBeNull();
-        session.ProducerSize.Should().Be(ProducerSize.Large);
+        session.RegistrationJourney.Should().Be(RegistrationJourney.CsoLargeProducer);
         session.ShowRegistrationCaption.Should().BeTrue();
     }
     
@@ -1914,13 +1914,13 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(registrationApplicationDetails);
 
         // Act
-        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null, ProducerSize.Small);
+        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null, RegistrationJourney.CsoSmallProducer);
 
         // Assert
         session.Should().NotBeNull();
         session.SubmissionId.Should().Be(registrationApplicationDetails.SubmissionId);
         session.ApplicationReferenceNumber.Should().Be(registrationApplicationDetails.ApplicationReferenceNumber);
-        session.ProducerSize.Should().Be(ProducerSize.Small);
+        session.RegistrationJourney.Should().Be(RegistrationJourney.CsoSmallProducer);
         session.ShowRegistrationCaption.Should().BeTrue();
     }
     
@@ -1934,7 +1934,7 @@ public class RegistrationApplicationServiceTests
         var registrationApplicationDetails = _fixture.Create<RegistrationApplicationDetails>();
         registrationApplicationDetails.RegistrationFeeCalculationDetails = [new RegistrationFeeCalculationDetails { OrganisationId = "123", NationId = 2, OrganisationSize = "Large" }];
         _session.SelectedComplianceScheme = new ComplianceSchemeDto { Id = selectedComplianceSchemeId, NationId = 1 };
-        _session.ProducerSize = null;
+        _session.RegistrationJourney = null;
 
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
             .ReturnsAsync(_session);
@@ -1951,12 +1951,12 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(registrationApplicationDetails);
 
         // Act
-        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null, ProducerSize.Small);
+        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null, RegistrationJourney.CsoSmallProducer);
 
         // Assert
         session.Should().NotBeNull();
         session.SubmissionId.Should().Be(registrationApplicationDetails.SubmissionId);
-        session.ProducerSize.Should().BeNull();
+        session.RegistrationJourney.Should().BeNull();
         session.ShowRegistrationCaption.Should().Be(session.ShowRegistrationCaption);
     }
 
@@ -2245,7 +2245,7 @@ public class RegistrationApplicationServiceTests
             RegistrationApplicationSubmittedComment = null,
             RegistrationApplicationSubmittedDate = null
         };
-        _registrationApplicationServiceMock.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<ProducerSize?>()))
+        _registrationApplicationServiceMock.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>()))
             .ReturnsAsync(registrationApplicationSession);
 
         // Act

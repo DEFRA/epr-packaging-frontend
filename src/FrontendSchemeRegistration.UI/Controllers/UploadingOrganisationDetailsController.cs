@@ -33,7 +33,7 @@ public class UploadingOrganisationDetailsController : Controller
 
     [HttpGet]
     [SubmissionIdActionFilter(PagePaths.FileUploadCompanyDetails)]
-    public async Task<IActionResult> Get([FromQuery] Guid submissionId, [FromQuery] ProducerSize? producerSize = null)
+    public async Task<IActionResult> Get([FromQuery] Guid submissionId, [FromQuery] RegistrationJourney? registrationJourney = null)
     {
         var registrationYear = _registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
         
@@ -52,7 +52,7 @@ public class UploadingOrganisationDetailsController : Controller
 
         if (!ValidationHasCompleted(submission) || session is null)
         {
-            return GetUploadingOrganisationDetailsViewResult(submissionId, registrationYear, producerSize);
+            return GetUploadingOrganisationDetailsViewResult(submissionId, registrationYear, registrationJourney);
         }
 
         if (!session.RegistrationSession.Journey.Contains<string>(PagePaths.FileUploadCompanyDetails))
@@ -98,8 +98,8 @@ public class UploadingOrganisationDetailsController : Controller
         return submission.HasWarnings && submission.Errors.Count == 0;
     }
 
-    private ViewResult GetUploadingOrganisationDetailsViewResult(Guid submissionId, int? registrationYear, ProducerSize? registrationProducerSize)
+    private ViewResult GetUploadingOrganisationDetailsViewResult(Guid submissionId, int? registrationYear, RegistrationJourney? registrationJourney)
     {
-        return View("UploadingOrganisationDetails", registrationYear is not null ? new FileUploadingViewModel { SubmissionId = submissionId.ToString(), RegistrationYear = registrationYear , ProducerSize = registrationProducerSize} : new FileUploadingViewModel { SubmissionId = submissionId.ToString() });
+        return View("UploadingOrganisationDetails", registrationYear is not null ? new FileUploadingViewModel { SubmissionId = submissionId.ToString(), RegistrationYear = registrationYear , RegistrationJourney = registrationJourney} : new FileUploadingViewModel { SubmissionId = submissionId.ToString() });
     }
 }

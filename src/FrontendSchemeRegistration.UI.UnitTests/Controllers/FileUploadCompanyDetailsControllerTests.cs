@@ -424,7 +424,7 @@ public class FileUploadCompanyDetailsControllerTests
         _systemUnderTest.ModelState.AddModelError("file", "Some error");
 
         // Act
-        var result = await _systemUnderTest.Post(It.IsAny<string>(), ProducerSize.Large) as ViewResult;
+        var result = await _systemUnderTest.Post(It.IsAny<string>(), RegistrationJourney.CsoLargeProducer) as ViewResult;
 
         // Assert
         _fileUploadServiceMock.Verify(
@@ -444,12 +444,12 @@ public class FileUploadCompanyDetailsControllerTests
             Times.Once);
         result.ViewName.Should().Be("FileUploadCompanyDetailsCso");
         var actualModel = result.Model as FileUploadCompanyDetailsViewModel;
-        actualModel.ProducerSize.Should().Be(ProducerSize.Large);
+        actualModel.RegistrationJounrey.Should().Be(RegistrationJourney.CsoLargeProducer);
     }
 
-    [TestCase(ProducerSize.Large)]
+    [TestCase(RegistrationJourney.CsoLargeProducer)]
     [TestCase(null)]
-    public async Task Post_RedirectsTo_UploadingOrganisationDetails_WhenTheModelStateIsValid(ProducerSize? producerSize)
+    public async Task Post_RedirectsTo_UploadingOrganisationDetails_WhenTheModelStateIsValid(RegistrationJourney? registrationJourney)
     {
         // Arrange
         const string contentType = "content-type";
@@ -463,7 +463,7 @@ public class FileUploadCompanyDetailsControllerTests
                     "submissionId", submissionId.ToString()
                 },
                 {
-                    "producerSize",producerSize.ToString()
+                    "registrationjounrey",registrationJourney.ToString()
                 }
             });
 
@@ -484,18 +484,18 @@ public class FileUploadCompanyDetailsControllerTests
             .ReturnsAsync(submissionId);
 
         // Act
-        var result = await _systemUnderTest.Post(It.IsAny<string>(), producerSize) as RedirectToActionResult;
+        var result = await _systemUnderTest.Post(It.IsAny<string>(), registrationJourney) as RedirectToActionResult;
 
         // Assert
         result.ControllerName.Should().Contain("UploadingOrganisationDetails");
         result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(submissionId);
-        if (producerSize == null)
+        if (registrationJourney == null)
         {
-            result.RouteValues.Should().NotContainKey("producersize");
+            result.RouteValues.Should().NotContainKey("registrationjourney");
         }
         else
         {
-            result.RouteValues.Should().ContainKey("producersize").WhoseValue.Should().Be(producerSize.ToString());    
+            result.RouteValues.Should().ContainKey("registrationjourney").WhoseValue.Should().Be(registrationJourney.ToString());    
         }
         
     }

@@ -21,8 +21,8 @@
     <data name="register_company" xml:space="preserve">
         <value>{0} registration</value>
     </data>
-    <data name="register_company_size" xml:space="preserve">
-        <value>{0} producer {1} registration</value>
+    <data name="register_company_size_large" xml:space="preserve">
+        <value>Large producer {1} registration</value>
     </data>
     <data name="register_resubmission_company" xml:space="preserve">
         <value>{0} data resubmission</value>
@@ -77,5 +77,8 @@
     </data>
 	<data name="registration_resubmission_application_has_been_submitted" xml:space="preserve">
         <value>Your application has been submitted</value>
+    </data>
+    <data name="register_company_size_small" xml:space="preserve">
+        <value>Small producer {1} registration</value>
     </data>
 </root>

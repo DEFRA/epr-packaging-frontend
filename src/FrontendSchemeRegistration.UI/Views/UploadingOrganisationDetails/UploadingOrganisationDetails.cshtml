@@ -1,3 +1,4 @@
+@using FrontendSchemeRegistration.UI.Sessions
 @model FileUploadingViewModel
 
 @{
@@ -13,7 +14,15 @@
                 <noscript>
                     @if (Model.ShowRegistrationCaption)
                     {
-                        <p class="govuk-caption-l">@Localizer["register_company_size", Model.ProducerSize, Model.RegistrationYear]</p>
+                        if (Model.RegistrationJourney == RegistrationJourney.CsoLargeProducer)
+                        {
+                            <p class="govuk-caption-l">@Localizer["register_company_size_large", Model.RegistrationYear]</p>    
+                        }
+                        else if (Model.RegistrationJourney == RegistrationJourney.CsoSmallProducer)
+                        {
+                            <p class="govuk-caption-l">@Localizer["register_company_size_small", Model.RegistrationYear]</p>
+                        }
+                        
                         <h1 class="govuk-heading-l">@Localizer["uploading_file"]</h1>
                     }
                     else
@@ -31,7 +40,7 @@
                             {
                                 submissionId = Model.SubmissionId,
                                 registrationyear = Model.RegistrationYear,
-                                producerSize = Model.ProducerSize
+                                registrationJourney = Model.RegistrationJourney
                             },
                             new
                             {

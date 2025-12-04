@@ -101,7 +101,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         }
     }
 
-    public async Task<RegistrationApplicationSession> GetRegistrationApplicationSession(ISession httpSession, Organisation organisation, int registrationYear, bool? isResubmission = null, ProducerSize? producerSize = null)
+    public async Task<RegistrationApplicationSession> GetRegistrationApplicationSession(ISession httpSession, Organisation organisation, int registrationYear, bool? isResubmission = null, RegistrationJourney? registrationJourney = null)
     {
         var session = await sessionManager.GetSessionAsync(httpSession) ?? new RegistrationApplicationSession();
         var frontEndSession = await frontEndSessionManager.GetSessionAsync(httpSession) ?? new FrontendSchemeRegistrationSession();
@@ -140,9 +140,9 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         if (session.IsComplianceScheme)
         {
             nationId = session.SelectedComplianceScheme.NationId;
-            if (producerSize != null)
+            if (registrationJourney != null)
             {
-                session.ProducerSize = producerSize;
+                session.RegistrationJourney = registrationJourney;
                 session.ShowRegistrationCaption = true; //$"{producerSize} producer {registrationYear}"; // TODO this will need localisation for Wales
             }
         }
@@ -554,7 +554,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
 
 public interface IRegistrationApplicationService
 {
-    Task<RegistrationApplicationSession> GetRegistrationApplicationSession(ISession httpSession, Organisation organisation, int registrationYear, bool? isResubmission = null, ProducerSize? producerSize  = null);
+    Task<RegistrationApplicationSession> GetRegistrationApplicationSession(ISession httpSession, Organisation organisation, int registrationYear, bool? isResubmission = null, RegistrationJourney? registrationJourney  = null);
 
     Task<FeeCalculationBreakdownViewModel?> GetProducerRegistrationFees(ISession httpSession);
 

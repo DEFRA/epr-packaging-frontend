@@ -29,7 +29,8 @@ public class RegistrationTaskListViewModel
     public string PageTitle => IsResubmission ? "registration_resubmission_task_title" : "registration_task_title";
     
     public string PageHeading => IsResubmission ? "register_resubmission_company" : "register_company";
-    public string PageHeadingCso => "register_company_size";
+    public string PageHeadingCsoLarge => "register_company_size_large";
+    public string PageHeadingCsoSmall => "register_company_size_small";
     
     public string FileUploadTask => IsResubmission ? "update_registration_details" : "submit_registration_data";
     
@@ -42,5 +43,5 @@ public class RegistrationTaskListViewModel
     public string SubmitRegistrationApplicationTask => IsResubmission ? "submit_amended_data" : "submit_registration_application";
     
     public string CompletedSubmitRegistrationApplicationTask => IsResubmission ? "registration_resubmission_application_has_been_submitted" : "registration_application_has_been_submitted";
-    public ProducerSize? ProducerSize { get; set; }
+    public RegistrationJourney? RegistrationJounrey { get; set; }
 }
