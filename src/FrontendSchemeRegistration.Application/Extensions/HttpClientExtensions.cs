@@ -76,6 +76,13 @@ public static class HttpClientExtensions
             httpClient.AddDefaultRequestHeaderIfDoesNotContain("RegistrationSetId", registrationSetId.ToString());
         }
     }
+    public static void AddHeaderRegistrationJourneyIfNotNull(this HttpClient httpClient, string? registrationJourney)
+    {
+        if (!string.IsNullOrEmpty(registrationJourney))
+        {
+            httpClient.AddDefaultRequestHeaderIfDoesNotContain("RegistrationJourney", registrationJourney);
+        }
+    }
 
     private static void AddDefaultRequestHeaderIfDoesNotContain(this HttpClient httpClient, string name, string value)
     {

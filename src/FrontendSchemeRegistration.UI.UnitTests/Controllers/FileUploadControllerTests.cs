@@ -280,7 +280,8 @@ public class FileUploadControllerTests
                 null,
                 null,
                 null,
-                It.IsAny<bool?>()),
+                It.IsAny<bool?>(),
+                null),
             Times.Once);
     }
 
@@ -294,7 +295,9 @@ public class FileUploadControllerTests
 
         _fileUploadServiceMock
             .Setup(x =>
-                x.ProcessUploadAsync(ContentType, It.IsAny<Stream>(), SubmissionPeriod, new ModelStateDictionary(), SubmissionId, SubmissionType.Producer, It.IsAny<IFileUploadMessages>(), It.IsAny<IFileUploadSize>(), null, null, null, It.IsAny<bool?>()))
+                x.ProcessUploadAsync(ContentType, It.IsAny<Stream>(), SubmissionPeriod, new ModelStateDictionary(),
+                    SubmissionId, SubmissionType.Producer, It.IsAny<IFileUploadMessages>(), It.IsAny<IFileUploadSize>(),
+                    null, null, null, It.IsAny<bool?>(), null))
             .ReturnsAsync(SubmissionId);
 
         // Act
@@ -316,7 +319,9 @@ public class FileUploadControllerTests
 
         _fileUploadServiceMock
             .Setup(x =>
-                x.ProcessUploadAsync(ContentType, It.IsAny<Stream>(), SubmissionPeriod, new ModelStateDictionary(), SubmissionId, SubmissionType.Producer, It.IsAny<IFileUploadMessages>(), It.IsAny<IFileUploadSize>(), null, null, null, It.IsAny<bool?>()))
+                x.ProcessUploadAsync(ContentType, It.IsAny<Stream>(), SubmissionPeriod, new ModelStateDictionary(),
+                    SubmissionId, SubmissionType.Producer, It.IsAny<IFileUploadMessages>(), It.IsAny<IFileUploadSize>(),
+                    null, null, null, It.IsAny<bool?>(), null))
             .ReturnsAsync(SubmissionId);
 
         // Act

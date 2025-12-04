@@ -160,7 +160,8 @@ public class FileUploadPartnershipsControllerTests
                 SubmissionSubType.Partnerships,
                 _registrationSetId,
                 null,
-                It.IsAny<bool?>()),
+                It.IsAny<bool?>(),
+                null),
             Times.Once);
         result.ViewName.Should().Be("FileUploadPartnerships");
     }
@@ -188,7 +189,8 @@ public class FileUploadPartnershipsControllerTests
                 SubmissionSubType.Partnerships,
                 _registrationSetId,
                 null,
-                It.IsAny<bool?>()))
+                It.IsAny<bool?>(),
+                null))
             .ReturnsAsync(submissionId);
 
         // Act
