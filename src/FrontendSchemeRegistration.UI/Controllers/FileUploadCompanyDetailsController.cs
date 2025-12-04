@@ -48,7 +48,7 @@ public class FileUploadCompanyDetailsController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery]string? registrationYear = null, [FromQuery]ProducerSize? producerSize = null)
+    public async Task<IActionResult> Get([FromQuery]string? registrationYear = null, [FromQuery]RegistrationJourney? registrationJourney = null)
     {
         var validatedRegistrationYear = _registrationApplicationService.ValidateRegistrationYear(registrationYear, true);
         
@@ -68,9 +68,9 @@ public class FileUploadCompanyDetailsController : Controller
                     }
                 }
 
-                this.SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, validatedRegistrationYear, producerSize:producerSize);
+                this.SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, validatedRegistrationYear, registrationJourney:registrationJourney);
 
-                var viewName = producerSize == null ? "FileUploadCompanyDetails" : "FileUploadCompanyDetailsCso";
+                var viewName = registrationJourney == null ? "FileUploadCompanyDetails" : "FileUploadCompanyDetailsCso";
                 return View(
                     viewName,
                     new FileUploadCompanyDetailsViewModel
@@ -79,7 +79,7 @@ public class FileUploadCompanyDetailsController : Controller
                         OrganisationRole = organisationRole,
                         IsResubmission = session.RegistrationSession.IsResubmission,
                         RegistrationYear = validatedRegistrationYear,
-                        ProducerSize = producerSize
+                        RegistrationJounrey = registrationJourney
                     });
             }
         }
@@ -89,7 +89,7 @@ public class FileUploadCompanyDetailsController : Controller
 
     [HttpPost]
     [RequestSizeLimit(FileSizeLimit.FileSizeLimitInBytes)]
-    public async Task<IActionResult> Post(string? registrationyear, ProducerSize? producerSize)
+    public async Task<IActionResult> Post(string? registrationyear, RegistrationJourney? registrationJourney)
     {
         Guid? submissionId = Guid.TryParse(Request.Query["submissionId"], out var value) ? value : null;
         var registrationYear =  _registrationApplicationService.ValidateRegistrationYear(registrationyear, true);
@@ -119,9 +119,9 @@ public class FileUploadCompanyDetailsController : Controller
 
         await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
         this.SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, registrationYear);
-        var routeValue = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear, producerSize: producerSize);
+        var routeValue = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear, registrationJourney: registrationJourney);
 
-        var viewName = producerSize == null ? "FileUploadCompanyDetails" : "FileUploadCompanyDetailsCso";
+        var viewName = registrationJourney == null ? "FileUploadCompanyDetails" : "FileUploadCompanyDetailsCso";
         return !ModelState.IsValid
             ? View(
                 viewName,
@@ -131,7 +131,7 @@ public class FileUploadCompanyDetailsController : Controller
                     OrganisationRole = organisationRole,
                     IsResubmission = session.RegistrationSession.IsResubmission,
                     RegistrationYear = registrationYear,
-                    ProducerSize = producerSize
+                    RegistrationJounrey = registrationJourney
                 })
             : RedirectToAction(
                 "Get",

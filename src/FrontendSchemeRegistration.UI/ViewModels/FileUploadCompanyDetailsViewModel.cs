@@ -9,7 +9,7 @@ public class FileUploadCompanyDetailsViewModel : ViewModelWithOrganisationRole
     public DateTime SubmissionDeadline { get; set; }
     public bool IsResubmission { get; set; }
     public int? RegistrationYear { get; set; }
-    public ProducerSize? ProducerSize { get; set; }
+    public RegistrationJourney? RegistrationJounrey { get; set; }
     public string PageHeadingCso = "register_company_size";
     public string OrganisationName { get; set; }
 

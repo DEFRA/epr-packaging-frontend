@@ -48,7 +48,7 @@
     <data name="file_upload_warning" xml:space="preserve">
         <value />
     </data>
-    <data name="register_company_size" xml:space="preserve">
+    <data name="register_company_size_large" xml:space="preserve">
         <value />
     </data>
     <data name="report_your_organisation_detail" xml:space="preserve">
@@ -58,6 +58,9 @@
         <value />
     </data>
     <data name="upload_organisation_details" xml:space="preserve">
+        <value />
+    </data>
+    <data name="register_company_size_small" xml:space="preserve">
         <value />
     </data>
 </root>

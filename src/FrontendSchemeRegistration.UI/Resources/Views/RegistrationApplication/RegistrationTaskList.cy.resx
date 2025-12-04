@@ -21,9 +21,9 @@
 	<data name="register_company" xml:space="preserve">
         <value>{0} cofrestru</value>
     </data>
-	<data name="register_company_size" xml:space="preserve">
-        <value>{0} canllawiau {1} cofrestru</value>
-    </data>
+	<data name="register_company_size_large" xml:space="preserve">
+		<value>Large canllawiau {0} cofrestru</value>
+	</data>
 	<data name="register_resubmission_company" xml:space="preserve">
         <value>Cyflwyniad data {0}</value>
     </data>
@@ -78,4 +78,7 @@
 	<data name="registration_resubmission_application_has_been_submitted" xml:space="preserve">
         <value>Mae eich cais am gofrestru wedi'i gyflwyno</value>
     </data>
+	<data name="register_company_size_small" xml:space="preserve">
+		<value>Small canllawiau {0} cofrestru</value>
+	</data>
 </root>

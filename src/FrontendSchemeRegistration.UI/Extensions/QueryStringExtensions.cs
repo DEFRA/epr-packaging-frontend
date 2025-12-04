@@ -7,7 +7,7 @@ using Sessions;
 
 public static class QueryStringExtensions
 {
-    public static RouteValueDictionary BuildRouteValues(Guid? submissionId = null, bool? isResubmission = null, int? registrationYear = null, ProducerSize? producerSize = null)
+    public static RouteValueDictionary BuildRouteValues(Guid? submissionId = null, bool? isResubmission = null, int? registrationYear = null, RegistrationJourney? registrationJourney = null)
     {
 
         var routeValues = new RouteValueDictionary();
@@ -21,8 +21,8 @@ public static class QueryStringExtensions
         if(registrationYear.HasValue && registrationYear.Value > 0)
             routeValues["registrationyear"] = registrationYear.Value;
 
-        if(producerSize.HasValue)
-            routeValues["producersize"] = producerSize.Value.ToString();
+        if(registrationJourney.HasValue)
+            routeValues["registrationjourney"] = registrationJourney.Value.ToString();
         
         return routeValues;
     }
