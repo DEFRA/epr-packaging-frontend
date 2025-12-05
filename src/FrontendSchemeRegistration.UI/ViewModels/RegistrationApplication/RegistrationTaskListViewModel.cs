@@ -45,5 +45,5 @@ public class RegistrationTaskListViewModel
     public string SubmitRegistrationApplicationTask => IsResubmission ? "submit_amended_data" : "submit_registration_application";
     
     public string CompletedSubmitRegistrationApplicationTask => IsResubmission ? "registration_resubmission_application_has_been_submitted" : "registration_application_has_been_submitted";
-    public RegistrationJourney? RegistrationJounrey { get; set; }
+    public RegistrationJourney? RegistrationJourney { get; set; }
 }
