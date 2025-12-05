@@ -36,7 +36,7 @@
             <p class="govuk-body">@Localizer["file_rejected"]</p>
             <ul class="govuk-list govuk-list--bullet">
                 <li>@Localizer["large_producer_detail"]</li>
-                <li>@Localizer["subsidiaries_guidance"] <a class="govuk-link govuk-link--no-visited-state" href="#" target="_blank">@Localizer["manage_your_subsidiaries"]</a></li>
+                <li>@Localizer["subsidiaries_guidance"] <a class="govuk-link govuk-link--no-visited-state" asp-controller="FileUploadSubsidiaries" asp-action="SubsidiariesList" >@Localizer["manage_your_subsidiaries"]</a></li>
             </ul>
       
             <form method="post" enctype="multipart/form-data" class="details-file-upload-form">
