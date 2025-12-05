@@ -411,4 +411,10 @@
 	<data name="931" xml:space="preserve">
     <value>[Welsh] Leaver date is mandatory for this code.</value>
   </data>
+	<data name="932" xml:space="preserve">
+		<value>[Welsh] This file includes small producer details. Upload a file that contains only large producer details.</value>
+	</data>
+	<data name="933" xml:space="preserve">
+		<value>[Welsh] This file includes large producer details. Upload a file that contains only small producer details.</value>
+	</data>
 </root>
