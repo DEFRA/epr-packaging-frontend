@@ -58,7 +58,8 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         SubmissionSubType? submissionSubType = null,
         Guid? registrationSetId = null,
         Guid? complianceSchemeId = null,
-        bool? isResubmission = null)
+        bool? isResubmission = null,
+        string? registrationJourney = null)
     {
         await PrepareAuthenticatedClientAsync();
 
@@ -70,6 +71,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         _httpClient.AddHeaderRegistrationSetIdIfNotNull(registrationSetId);
         _httpClient.AddHeaderComplianceSchemeIdIfNotNull(complianceSchemeId);
         _httpClient.AddHeaderIsResubmissionIfNotNull(isResubmission);
+        _httpClient.AddHeaderRegistrationJourneyIfNotNull(registrationJourney);
 
         var response = await _httpClient.PostAsync("api/v1/file-upload", new ByteArrayContent(byteArray));
 

@@ -150,7 +150,8 @@ public class FileUploadBrandsControllerTests
                 SubmissionSubType.Brands,
                 _registrationSetId,
                 null,
-                It.IsAny<bool?>()))
+                It.IsAny<bool?>(),
+                null))
             .ReturnsAsync(submissionId);
 
         // Act
@@ -184,7 +185,8 @@ public class FileUploadBrandsControllerTests
                 SubmissionSubType.Brands,
                 _registrationSetId,
                 null,
-                It.IsAny<bool?>()))
+                It.IsAny<bool?>(),
+                null))
             .ReturnsAsync(submissionId);
         _systemUnderTest.ModelState.AddModelError("file", "Some error");
 

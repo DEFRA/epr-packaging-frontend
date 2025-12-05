@@ -112,7 +112,8 @@ public class FileUploadCompanyDetailsController : Controller
             SubmissionSubType.CompanyDetails,
             session.RegistrationSession.LatestRegistrationSet[session.RegistrationSession.SubmissionPeriod],
             session.RegistrationSession.SelectedComplianceScheme?.Id,
-            session.RegistrationSession.IsResubmission);
+            session.RegistrationSession.IsResubmission,
+            registrationJourney?.ToString());
 
         session.RegistrationSession.Journey.AddIfNotExists(PagePaths.FileUploadCompanyDetails);
         var organisationRole = session.UserData.Organisations.FirstOrDefault()?.OrganisationRole;

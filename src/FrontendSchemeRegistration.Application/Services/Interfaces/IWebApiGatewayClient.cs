@@ -20,7 +20,8 @@ public interface IWebApiGatewayClient
         SubmissionSubType? submissionSubType = null,
         Guid? registrationSetId = null,
         Guid? complianceSchemeId = null,
-        bool? isResubmission = null);
+        bool? isResubmission = null,
+        string? registrationJourney = null);
 
     Task<Guid> UploadSubsidiaryFileAsync(
         byte[] byteArray,

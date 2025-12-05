@@ -78,7 +78,8 @@ public class FileUploadServiceTests
                 submissionSubType,
                 registrationSetId,
                 complianceSchemeId,
-                true),
+                true, 
+                null),
             Times.Never);
     }
 
@@ -123,6 +124,7 @@ public class FileUploadServiceTests
                 submissionSubType,
                 registrationSetId,
                 complianceSchemeId,
+                null,
                 null),
             Times.Never);
     }
@@ -169,7 +171,8 @@ public class FileUploadServiceTests
                 submissionSubType,
                 registrationSetId,
                 complianceSchemeId,
-                false),
+                false,
+                null),
             Times.Never);
     }
 
@@ -214,13 +217,14 @@ public class FileUploadServiceTests
                 submissionSubType,
                 registrationSetId,
                 complianceSchemeId,
-                It.IsAny<bool?>()),
+                It.IsAny<bool?>(),
+                null),
             Times.Never);
     }
 
     [Test]
     [TestCase(SubmissionType.Producer)]
-    [TestCase(SubmissionType.Producer, null, null, null, true)]
+    [TestCase(SubmissionType.Producer, null, null, null, true,"SomeValue")]
     [TestCase(SubmissionType.Registration, SubmissionSubType.CompanyDetails)]
     [TestCaseSource(typeof(TestCaseHelper), nameof(TestCaseHelper.GenerateRegistrationInformationWithSubId), new object[] { false })]
     [TestCaseSource(typeof(TestCaseHelper), nameof(TestCaseHelper.GenerateRegistrationInformationWithSubId), new object[] { true })]
@@ -229,7 +233,8 @@ public class FileUploadServiceTests
         SubmissionSubType? submissionSubType = null,
         Guid? registrationSetId = null,
         Guid? complianceSchemeId = null,
-        bool withSubmissionId = false)
+        bool withSubmissionId = false,
+        string registrationJourney = null)
     {
         // Arrange
         const string contentType = "multipart/form-data; boundary=----WebKitFormBoundaryaTDX1qGUHmeOnwjh";
@@ -239,7 +244,7 @@ public class FileUploadServiceTests
         Guid? submissionId = withSubmissionId ? Guid.NewGuid() : null;
 
         // Act
-        await _fileUploadService.ProcessUploadAsync(contentType, stream, SubmissionPeriod, _modelStateDictionary, submissionId, submissionType, new DefaultFileUploadMessages(), new DefaultFileUploadLimit(_globalVariables), submissionSubType, registrationSetId, complianceSchemeId);
+        await _fileUploadService.ProcessUploadAsync(contentType, stream, SubmissionPeriod, _modelStateDictionary, submissionId, submissionType, new DefaultFileUploadMessages(), new DefaultFileUploadLimit(_globalVariables), submissionSubType, registrationSetId, complianceSchemeId,null, registrationJourney);
 
         // Assert
         GetModelStateErrors().Should().BeEmpty();
@@ -253,7 +258,8 @@ public class FileUploadServiceTests
                 submissionSubType,
                 registrationSetId,
                 complianceSchemeId,
-                It.IsAny<bool?>()),
+                It.IsAny<bool?>(),
+                registrationJourney),
             Times.Once);
     }
 
