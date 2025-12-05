@@ -1,4 +1,4 @@
-﻿namespace FrontendSchemeRegistration.UI.Controllers;
+namespace FrontendSchemeRegistration.UI.Controllers;
 
 using Application.Constants;
 using Application.DTOs.Submission;
@@ -48,9 +48,10 @@ public class FileUploadCompanyDetailsController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get()
+    public async Task<IActionResult> Get([FromQuery]string? registrationYear = null, [FromQuery]RegistrationJourney? registrationJourney = null)
     {
-        var registrationYear = _registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
+        var validatedRegistrationYear = _registrationApplicationService.ValidateRegistrationYear(registrationYear, true);
+        
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         if (session is not null)
         {
@@ -67,16 +68,18 @@ public class FileUploadCompanyDetailsController : Controller
                     }
                 }
 
-                this.SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, registrationYear);
+                this.SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, validatedRegistrationYear, registrationJourney:registrationJourney);
 
+                var viewName = registrationJourney == null ? "FileUploadCompanyDetails" : "FileUploadCompanyDetailsCso";
                 return View(
-                    "FileUploadCompanyDetails",
+                    viewName,
                     new FileUploadCompanyDetailsViewModel
                     {
                         SubmissionDeadline = session.RegistrationSession.SubmissionDeadline,
                         OrganisationRole = organisationRole,
                         IsResubmission = session.RegistrationSession.IsResubmission,
-                        RegistrationYear = registrationYear
+                        RegistrationYear = validatedRegistrationYear,
+                        RegistrationJounrey = registrationJourney
                     });
             }
         }
@@ -86,7 +89,7 @@ public class FileUploadCompanyDetailsController : Controller
 
     [HttpPost]
     [RequestSizeLimit(FileSizeLimit.FileSizeLimitInBytes)]
-    public async Task<IActionResult> Post(string? registrationyear)
+    public async Task<IActionResult> Post(string? registrationyear, RegistrationJourney? registrationJourney)
     {
         Guid? submissionId = Guid.TryParse(Request.Query["submissionId"], out var value) ? value : null;
         var registrationYear =  _registrationApplicationService.ValidateRegistrationYear(registrationyear, true);
@@ -116,17 +119,19 @@ public class FileUploadCompanyDetailsController : Controller
 
         await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
         this.SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, registrationYear);
-        var routeValue = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear);
-       
+        var routeValue = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear, registrationJourney: registrationJourney);
+
+        var viewName = registrationJourney == null ? "FileUploadCompanyDetails" : "FileUploadCompanyDetailsCso";
         return !ModelState.IsValid
             ? View(
-                "FileUploadCompanyDetails",
+                viewName,
                 new FileUploadCompanyDetailsViewModel
                 {
                     SubmissionDeadline = session.RegistrationSession.SubmissionDeadline,
                     OrganisationRole = organisationRole,
                     IsResubmission = session.RegistrationSession.IsResubmission,
-                    RegistrationYear = registrationYear
+                    RegistrationYear = registrationYear,
+                    RegistrationJounrey = registrationJourney
                 })
             : RedirectToAction(
                 "Get",

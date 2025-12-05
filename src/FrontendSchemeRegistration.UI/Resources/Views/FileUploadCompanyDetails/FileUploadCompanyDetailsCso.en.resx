@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -117,37 +117,64 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="do_not_close_the_page_and_do_not_refresh" xml:space="preserve">
-    <value />
-  </data>
-  <data name="it_may_take_a_few_minutes_do_not_close_the_page" xml:space="preserve">
-    <value />
-  </data>
-  <data name="refresh_this_page" xml:space="preserve">
-    <value />
-  </data>
-  <data name="spinner_alt_text" xml:space="preserve">
-    <value />
-  </data>
-  <data name="this_may_take_a_few_minutes_we_ll_refresh" xml:space="preserve">
-    <value />
-  </data>
-  <data name="to_see_if_the_file_has_finished_uploading" xml:space="preserve">
-    <value />
-  </data>
-  <data name="uploading_file" xml:space="preserve">
-    <value />
-  </data>
-  <data name="uploading_organisation_details" xml:space="preserve">
-    <value />
-  </data>
   <data name="upload_file" xml:space="preserve">
-    <value />
+    <value>Upload file</value>
+  </data>
+  <data name="before_you_start" xml:space="preserve">
+    <value>Before you start, read the guidance on how to</value>
+  </data>
+  <data name="how_to_report_organisation_details" xml:space="preserve">
+    <value>report organisation details (opens in a new window)</value>
+  </data>
+  <data name="manage_your_subsidiaries" xml:space="preserve">
+    <value>Manage your subsidiaries</value>
+  </data>
+  <data name="title_upload_organisation_details_home" xml:space="preserve">
+    <value>Upload organisation details home</value>
+  </data>
+  <data name="you_should" xml:space="preserve">
+    <value>You should:</value>
+  </data>
+  <data name="all_files_ready" xml:space="preserve">
+    <value>have all your files ready to upload</value>
+  </data>
+  <data name="ensure_file_format" xml:space="preserve">
+    <value>ensure any file to be uploaded is in .csv format</value>
+  </data>
+  <data name="include_information" xml:space="preserve">
+    <value>include brand and partner information if required</value>
+  </data>
+  <data name="available_document_template" xml:space="preserve">
+    <value>use the available document templates</value>
+  </data>
+  <data name="file_rejected" xml:space="preserve">
+    <value>Your file will be rejected if you:</value>
+  </data>
+  <data name="large_producer_detail" xml:space="preserve">
+    <value>include large producers' details</value>
+  </data>
+  <data name="subsidiaries_guidance" xml:space="preserve">
+    <value>are reporting for subsidiaries and haven't used the subsidiary ID provided</value>
+  </data>
+  <data name="file_upload_warning" xml:space="preserve">
+    <value>Do not close the window while the file is uploading. This may take a few minutes.</value>
   </data>
   <data name="register_company_size_large" xml:space="preserve">
-    <value />
+    <value>Large producer {0} registration</value>
+  </data>
+  <data name="report_your_organisation_detail" xml:space="preserve">
+    <value>Report your members’ organisation
+details</value>
+  </data>
+  <data name="report_your_member_organisation_detail" xml:space="preserve">
+    <value>Report your members’ organisation
+details</value>
+  </data>
+  <data name="upload_organisation_details" xml:space="preserve">
+    <value>Report your members’ organisation
+details</value>
   </data>
   <data name="register_company_size_small" xml:space="preserve">
-    <value />
+    <value>Small producer {0} registration</value>
   </data>
 </root>

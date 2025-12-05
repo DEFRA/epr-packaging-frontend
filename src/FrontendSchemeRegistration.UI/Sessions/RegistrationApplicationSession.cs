@@ -5,6 +5,7 @@ namespace FrontendSchemeRegistration.UI.Sessions;
 
 using Application.DTOs;
 using Application.DTOs.Submission;
+using Application.Enums;
 
 [ExcludeFromCodeCoverage]
 public class RegistrationApplicationSession
@@ -146,4 +147,6 @@ public class RegistrationApplicationSession
     public LastSubmittedFileDetails LastSubmittedFile { get; set; } = new LastSubmittedFileDetails();
 
     public ComplianceSchemeDto? SelectedComplianceScheme { get; set; }
+    public RegistrationJourney? RegistrationJourney { get; set; }
+    public bool ShowRegistrationCaption { get; set; }
 }

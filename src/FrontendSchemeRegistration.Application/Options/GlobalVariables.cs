@@ -10,6 +10,9 @@ public class GlobalVariables
 
     public int FileUploadLimitInBytes { get; set; }
 
+    /// <summary>
+    /// When bound to appSettings, this represents the POM submission periods - NOT registration periods
+    /// </summary>
     public List<SubmissionPeriod> SubmissionPeriods { get; set; }
 
     public bool UseLocalSession { get; set; }

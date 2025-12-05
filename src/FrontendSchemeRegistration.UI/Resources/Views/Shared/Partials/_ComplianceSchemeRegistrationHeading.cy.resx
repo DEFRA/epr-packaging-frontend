@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -117,37 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="do_not_close_the_page_and_do_not_refresh" xml:space="preserve">
-    <value />
-  </data>
-  <data name="it_may_take_a_few_minutes_do_not_close_the_page" xml:space="preserve">
-    <value />
-  </data>
-  <data name="refresh_this_page" xml:space="preserve">
-    <value />
-  </data>
-  <data name="spinner_alt_text" xml:space="preserve">
-    <value />
-  </data>
-  <data name="this_may_take_a_few_minutes_we_ll_refresh" xml:space="preserve">
-    <value />
-  </data>
-  <data name="to_see_if_the_file_has_finished_uploading" xml:space="preserve">
-    <value />
-  </data>
-  <data name="uploading_file" xml:space="preserve">
-    <value />
-  </data>
-  <data name="uploading_organisation_details" xml:space="preserve">
-    <value />
-  </data>
-  <data name="upload_file" xml:space="preserve">
-    <value />
-  </data>
-  <data name="register_company_size_large" xml:space="preserve">
-    <value />
-  </data>
-  <data name="register_company_size_small" xml:space="preserve">
-    <value />
-  </data>
+	<data name="register_company_size_large" xml:space="preserve">
+		<value>Large canllawiau {0} cofrestru</value>
+	</data>
+	<data name="register_company_size_small" xml:space="preserve">
+		<value>Small canllawiau {0} cofrestru</value>
+	</data>
 </root>

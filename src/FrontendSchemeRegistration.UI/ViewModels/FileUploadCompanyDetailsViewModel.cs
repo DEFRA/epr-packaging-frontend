@@ -1,15 +1,18 @@
 ﻿namespace FrontendSchemeRegistration.UI.ViewModels;
 
 using System.Diagnostics.CodeAnalysis;
+using Application.Enums;
+using Sessions;
 
 [ExcludeFromCodeCoverage]
 public class FileUploadCompanyDetailsViewModel : ViewModelWithOrganisationRole
 {
     public DateTime SubmissionDeadline { get; set; }
-    
     public bool IsResubmission { get; set; }
-
     public int? RegistrationYear { get; set; }
+    public RegistrationJourney? RegistrationJounrey { get; set; }
+    public string PageHeadingCso = "register_company_size";
+    public string OrganisationName { get; set; }
 
     public string PageHeading
     {

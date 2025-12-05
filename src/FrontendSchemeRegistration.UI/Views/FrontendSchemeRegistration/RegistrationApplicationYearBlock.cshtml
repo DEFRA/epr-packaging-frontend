@@ -3,13 +3,13 @@
 @model RegistrationApplicationPerYearViewModel
 
 <div class="govuk-grid-column-one-half box">
-    <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
-        <div class="govuk-card-body">
-            <h2 class="govuk-heading-m">
+    <div class="@GetCardCssClass()">
+        <div class="@GetHeaderContainerCssClass()">
+            <h2 class="@GetHeaderCssClass()">
                 <a asp-controller="RegistrationApplication"
-                asp-action="@Model.RegistrationApplicationLink"
-                asp-route-registrationyear="@Model.RegistrationYear"
-                class="govuk-link govuk-link--no-visited-state">
+                   asp-action="@Model.RegistrationApplicationLink"
+                   asp-route-registrationyear="@Model.RegistrationYear"
+                   class="govuk-link govuk-link--no-visited-state">
                     @Localizer["registration_for_year", Model.RegistrationYear]
                     @if ((Model.RegistrationYear != "2025" && Model.IsComplianceScheme && Model.feature_AlwaysShowLargeProducerJourneyMessage) || (@Model.showLargeProducer && !Model.RegisterSmallProducersCS))
                     {
@@ -18,16 +18,21 @@
                     }
                 </a>
             </h2>
-            <p class="govuk-body">
-                @{
-                    ShowProgressStatus(Model);
-                }
-            </p>
+        </div>
+        <div class="@GetBodyCssClass()">
+            @{
+                ShowProgressStatus(Model);
+            }
         </div>
     </div>
 </div>
 
 @{
+    string GetCardCssClass() => Model.SummaryCardStyling ? "govuk-summary-card" : "govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-card-body govuk-!-margin-bottom-7";
+    string GetHeaderContainerCssClass() => Model.SummaryCardStyling ? "govuk-summary-card__title-wrapper app-summary-card__title-wrapper--no-background" : string.Empty; 
+    string GetHeaderCssClass() => Model.SummaryCardStyling ? "govuk-summary-card__title" : "govuk-heading-m";
+    string GetBodyCssClass() => Model.SummaryCardStyling ? "govuk-summary-card__content" : "govuk-body";
+
     void ShowProgressStatus(RegistrationApplicationPerYearViewModel model)
     {
         var isResubmissionApprovedRejected = model is { IsResubmission: true, ApplicationStatus: ApplicationStatusType.AcceptedByRegulator or ApplicationStatusType.ApprovedByRegulator or ApplicationStatusType.RejectedByRegulator };

@@ -1,7 +1,8 @@
-﻿namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
+namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
 
 using Application.Constants;
 using Application.DTOs.Submission;
+using Application.Enums;
 using Application.Services.Interfaces;
 using Constants;
 using EPR.Common.Authorization.Models;
@@ -10,7 +11,6 @@ using FluentAssertions;
 using FrontendSchemeRegistration.UI.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Primitives;
 using Moq;
 using UI.Controllers;
@@ -92,7 +92,7 @@ public class UploadingOrganisationDetailsControllerTests
             .ReturnsAsync(submission);
 
         // Act
-        var result = await _systemUnderTest.Get() as RedirectToActionResult;
+        var result = await _systemUnderTest.Get(SubmissionId) as RedirectToActionResult;
 
         // Assert
         result.ActionName.Should().Be("Get");
@@ -117,7 +117,7 @@ public class UploadingOrganisationDetailsControllerTests
             .ReturnsAsync(submission);
 
         // Act
-        var result = await _systemUnderTest.Get() as RedirectToActionResult;
+        var result = await _systemUnderTest.Get(SubmissionId) as RedirectToActionResult;
 
         // Assert
         result.ActionName.Should().Be("Get");
@@ -141,18 +141,49 @@ public class UploadingOrganisationDetailsControllerTests
             .ReturnsAsync(submission);
 
         // Act
-        var result = await _systemUnderTest.Get() as ViewResult;
+        var result = await _systemUnderTest.Get(SubmissionId) as ViewResult;
 
         // Assert
         result.ViewName.Should().Be("UploadingOrganisationDetails");
-        result.Model.As<FileUploadingViewModel>().SubmissionId.Should().Be(SubmissionId.ToString());
+        var actualModel = result.Model.As<FileUploadingViewModel>();
+        actualModel.SubmissionId.Should().Be(SubmissionId.ToString());
+        actualModel.RegistrationJourney.Should().Be(null);
+        actualModel.ShowRegistrationCaption.Should().BeFalse();
+    }
+    
+    [Test]
+    public async Task Get_Returns_FileUploadingViewModel__And_Sets_Producer_Size_When_Company_Detail_Data_Has_Not_Finished_Processing_For_CSO_Jounrey()
+    {
+        // Arrange
+        var submission = new RegistrationSubmission
+        {
+            Id = SubmissionId,
+            CompanyDetailsDataComplete = false,
+        };
+
+
+        _registrationApplicationServiceMock.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(),
+            It.Is<Organisation>(c => c.Name == "Test Organisation"), 2025, false, RegistrationJourney.CsoLargeProducer));
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(submission);
+
+        // Act
+        var result = await _systemUnderTest.Get(SubmissionId, RegistrationJourney.CsoLargeProducer) as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("UploadingOrganisationDetails");
+        var actualModel = result.Model.As<FileUploadingViewModel>();
+        actualModel.SubmissionId.Should().Be(SubmissionId.ToString());
+        actualModel.RegistrationJourney.Should().Be(RegistrationJourney.CsoLargeProducer);
+        actualModel.ShowRegistrationCaption.Should().BeTrue();
     }
 
     [Test]
     public async Task Get_RedirectsToFileUploadCompanyDetails_WhenNoSubmissionIsFound()
     {
         // Act
-        var result = await _systemUnderTest.Get() as RedirectToActionResult;
+        var result = await _systemUnderTest.Get(SubmissionId) as RedirectToActionResult;
 
         // Assert
         result.ActionName.Should().Be(nameof(FileUploadCompanyDetailsController.Get));
@@ -175,7 +206,7 @@ public class UploadingOrganisationDetailsControllerTests
             .ReturnsAsync(submission);
 
         // Act
-        var result = await _systemUnderTest.Get() as RedirectToActionResult;
+        var result = await _systemUnderTest.Get(SubmissionId) as RedirectToActionResult;
 
         // Assert
         result.ActionName.Should().Be("Get");
@@ -201,7 +232,7 @@ public class UploadingOrganisationDetailsControllerTests
             .ReturnsAsync(submission);
 
         // Act
-        var result = await _systemUnderTest.Get() as RedirectToActionResult;
+        var result = await _systemUnderTest.Get(SubmissionId) as RedirectToActionResult;
 
         // Assert
         result.ActionName.Should().Be("Get");
@@ -229,7 +260,7 @@ public class UploadingOrganisationDetailsControllerTests
             .ReturnsAsync((FrontendSchemeRegistrationSession)null);
 
         // Act
-        var result = await _systemUnderTest.Get() as ViewResult;
+        var result = await _systemUnderTest.Get(SubmissionId) as ViewResult;
 
         // Assert
         result.ViewName.Should().Be("UploadingOrganisationDetails");

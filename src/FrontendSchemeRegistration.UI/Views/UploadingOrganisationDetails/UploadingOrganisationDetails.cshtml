@@ -1,3 +1,4 @@
+@using FrontendSchemeRegistration.Application.Enums
 @model FileUploadingViewModel
 
 @{
@@ -11,6 +12,23 @@
         <div class="govuk-grid-column-two-thirds">
             <div class="govuk-grid-column-full">
                 <noscript>
+                    @if (Model.ShowRegistrationCaption)
+                    {
+                        if (Model.RegistrationJourney == RegistrationJourney.CsoLargeProducer)
+                        {
+                            <p class="govuk-caption-l">@Localizer["register_company_size_large", Model.RegistrationYear]</p>    
+                        }
+                        else if (Model.RegistrationJourney == RegistrationJourney.CsoSmallProducer)
+                        {
+                            <p class="govuk-caption-l">@Localizer["register_company_size_small", Model.RegistrationYear]</p>
+                        }
+                        
+                        <h1 class="govuk-heading-l">@Localizer["uploading_file"]</h1>
+                    }
+                    else
+                    {
+                        <h1 class="govuk-heading-l">@Localizer["uploading_file"]</h1>    
+                    }
                     <h1 class="govuk-heading-l">@Localizer["uploading_file"]</h1>
                     <p class="govuk-body">
                         @Localizer["to_see_if_the_file_has_finished_uploading"]
@@ -21,7 +39,8 @@
                             new
                             {
                                 submissionId = Model.SubmissionId,
-                                registrationyear = Model.RegistrationYear
+                                registrationyear = Model.RegistrationYear,
+                                registrationJourney = Model.RegistrationJourney
                             },
                             new
                             {

@@ -7,6 +7,7 @@ using Application.Constants;
 using Application.DTOs.ComplianceScheme;
 using Application.DTOs.Notification;
 using Application.DTOs.Submission;
+using Application.Enums;
 using Constants;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Models;
@@ -120,7 +121,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
         RegistrationApplicationService
             .Setup(s => s.GetRegistrationApplicationSession(
                 It.IsAny<ISession>(),
-                It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+                It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>()))
             .ReturnsAsync(_registrationApplicationSession);
 
         ResubmissionApplicationService.Setup(x => x.GetActiveSubmissionPeriod()).ReturnsAsync(submissionPeriod);
@@ -194,7 +195,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
         RegistrationApplicationService
             .Setup(s => s.GetRegistrationApplicationSession(
                 It.IsAny<ISession>(),
-                It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+                It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>()))
             .ReturnsAsync(_registrationApplicationSession);
 
         var result = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
@@ -224,7 +225,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
         RegistrationApplicationService
             .Setup(s => s.GetRegistrationApplicationSession(
                 It.IsAny<ISession>(),
-                It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+                It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>()))
             .ReturnsAsync(_registrationApplicationSession);
 
         var result = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
@@ -290,7 +291,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
             EndMonth = "June"
         };
 
-        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>()))
             .ReturnsAsync(registrationApplicationSession);
 
         ResubmissionApplicationService.Setup(x => x.GetActiveSubmissionPeriod()).ReturnsAsync(submissionPeriod);
@@ -365,7 +366,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
             RegistrationApplicationSubmittedDate = null
         };
 
-        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>()))
             .ReturnsAsync(registrationApplicationSession);
 
         var submissionPeriod = new SubmissionPeriod
@@ -464,7 +465,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
             EndMonth = "June"
         };
 
-        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(),It.IsAny<RegistrationJourney?>()))
             .ReturnsAsync(registrationApplicationSession);
 
         ResubmissionApplicationService.Setup(x => x.GetActiveSubmissionPeriod()).ReturnsAsync(submissionPeriod);
