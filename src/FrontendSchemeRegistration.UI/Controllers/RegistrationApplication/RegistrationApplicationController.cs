@@ -96,7 +96,7 @@ public class RegistrationApplicationController(
             AdditionalDetailsStatus = session.AdditionalDetailsStatus,
             RegistrationYear = registrationYear.GetValueOrDefault(),
             ShowRegistrationCaption = session.ShowRegistrationCaption,
-            RegistrationJounrey = session.RegistrationJourney
+            RegistrationJourney = session.RegistrationJourney
         });
     }
     

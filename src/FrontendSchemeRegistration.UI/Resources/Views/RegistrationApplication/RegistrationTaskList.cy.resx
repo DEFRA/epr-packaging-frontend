@@ -21,9 +21,6 @@
 	<data name="register_company" xml:space="preserve">
         <value>{0} cofrestru</value>
     </data>
-	<data name="register_company_size_large" xml:space="preserve">
-		<value>Large canllawiau {0} cofrestru</value>
-	</data>
 	<data name="register_resubmission_company" xml:space="preserve">
         <value>Cyflwyniad data {0}</value>
     </data>

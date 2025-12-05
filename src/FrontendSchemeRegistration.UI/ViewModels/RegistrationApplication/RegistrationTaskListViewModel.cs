@@ -19,6 +19,7 @@ public class RegistrationTaskListViewModel
     
     public ApplicationStatusType ApplicationStatus { get; set; }
 
+    
     public RegistrationTaskListStatus FileUploadStatus { get; set; }
 
     public RegistrationTaskListStatus PaymentViewStatus { get; set; }
@@ -31,9 +32,7 @@ public class RegistrationTaskListViewModel
     public string PageTitle => IsResubmission ? "registration_resubmission_task_title" : "registration_task_title";
     
     public string PageHeading => IsResubmission ? "register_resubmission_company" : "register_company";
-    public string PageHeadingCsoLarge => "register_company_size_large";
-    public string PageHeadingCsoSmall => "register_company_size_small";
-    
+
     public string FileUploadTask => IsResubmission ? "update_registration_details" : "submit_registration_data";
     
     public string CompletedFileUploadTask => IsResubmission ? "you_have_resubmitted_organisation_brand_partner_details" : "you_have_submitted_organisation_brand_partner_details";
@@ -45,5 +44,5 @@ public class RegistrationTaskListViewModel
     public string SubmitRegistrationApplicationTask => IsResubmission ? "submit_amended_data" : "submit_registration_application";
     
     public string CompletedSubmitRegistrationApplicationTask => IsResubmission ? "registration_resubmission_application_has_been_submitted" : "registration_application_has_been_submitted";
-    public RegistrationJourney? RegistrationJounrey { get; set; }
+    public RegistrationJourney? RegistrationJourney { get; set; }
 }

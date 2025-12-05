@@ -1,6 +1,6 @@
 @using FrontendSchemeRegistration.Application.DTOs.Submission
-@using FrontendSchemeRegistration.Application.Enums
 @using FrontendSchemeRegistration.UI.Sessions
+@using FrontendSchemeRegistration.UI.ViewModels.Shared
 @model FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication.RegistrationTaskListViewModel
 
 @{
@@ -8,33 +8,19 @@
 
     var canStartViewPayRegistrationFeeStep = Model.PaymentViewStatus is RegistrationTaskListStatus.NotStarted or RegistrationTaskListStatus.Completed;
     var canStartSubmitRegistrationApplicationStep = Model.AdditionalDetailsStatus is RegistrationTaskListStatus.NotStarted or RegistrationTaskListStatus.Completed;
+    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+        Model.ShowRegistrationCaption, 
+        Model.RegistrationJourney, 
+        Model.ShowRegistrationCaption ? Model.OrganisationName : null,
+        !Model.ShowRegistrationCaption ? Localizer[Model.PageHeading, Model.OrganisationName] : null,
+        Model.RegistrationYear);
 }
 
 <main class="govuk-main-wrapper" id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-three-quarters">
-            @if (Model.ShowRegistrationCaption)
-            {
-                if (Model.RegistrationJounrey == RegistrationJourney.CsoSmallProducer)
-                {
-                    <p class="govuk-caption-l">@Localizer[Model.PageHeadingCsoSmall, Model.RegistrationYear]</p>    
-                }
-                else if (Model.RegistrationJounrey == RegistrationJourney.CsoLargeProducer)
-                {
-                    <p class="govuk-caption-l">@Localizer[Model.PageHeadingCsoLarge, Model.RegistrationYear]</p>
-                }
-                
-                <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
-                    @Model.OrganisationName
-                </h1>
-            }
-            else
-            {
-                <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
-                    @Localizer[Model.PageHeading, Model.OrganisationName]
-                </h1>    
-            }
-            
+            <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel"/>
+
             <dl class="govuk-summary-list">
                 <div class="govuk-summary-list__row">
                 </div>
@@ -44,7 +30,7 @@
                              Model.ApplicationStatus is ApplicationStatusType.FileUploaded or ApplicationStatusType.SubmittedAndHasRecentFileUpload)
                         {
                             <a asp-controller="RegistrationApplication" asp-action="RedirectToFileUpload" asp-route-registrationyear="@Model.RegistrationYear"
-                               asp-route-registrationjourney="@Model.RegistrationJounrey"
+                               asp-route-registrationjourney="@Model.RegistrationJourney"
                                class="govuk-link govuk-link--no-visited-state">
                                 @Localizer[Model.FileUploadTask]
                             </a>
