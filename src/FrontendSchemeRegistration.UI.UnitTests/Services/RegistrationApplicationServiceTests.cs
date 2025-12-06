@@ -289,6 +289,70 @@ public class RegistrationApplicationServiceTests
     }
 
     [Test]
+    public async Task GetComplianceSchemeRegistrationFees_ShouldUse_IsLateFeeApplicable_AndNewJoiner_For_SubLateFee__PaymentCalculationServiceReturnsResponse()
+    {
+        // Arrange
+        var session = _fixture.Build<RegistrationApplicationSession>()
+            .Create();
+
+        session.IsLateFeeApplicable = true;
+        session.HasAnyApprovedOrQueriedRegulatorDecision = true;
+        session.IsOriginalCsoSubmissionLate = false;
+
+        session.RegistrationFeeCalculationDetails = _fixture.CreateMany<RegistrationFeeCalculationDetails>(2).ToArray();
+        session.RegistrationFeeCalculationDetails[0].IsNewJoiner = false;
+        session.RegistrationFeeCalculationDetails[1].IsNewJoiner = true;
+        session.RegistrationFeeCalculationDetails[1].NumberOfLateSubsidiaries = 1;
+
+        var response = _fixture.Create<ComplianceSchemePaymentCalculationResponse>();
+        response.OutstandingPayment = -100;
+        response.ComplianceSchemeMembersWithFees[1].SubsidiariesLateRegistrationFee = 332;
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(session);
+        _paymentCalculationServiceMock.Setup(pcs => pcs.GetComplianceSchemeRegistrationFees(It.IsAny<ComplianceSchemePaymentCalculationRequest>()))
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _service.GetComplianceSchemeRegistrationFees(_httpSession);
+
+        // Assert
+        result.Should().NotBeNull();
+        _paymentCalculationServiceMock.Verify(x => x.GetComplianceSchemeRegistrationFees(It.Is<ComplianceSchemePaymentCalculationRequest>(r => r.ComplianceSchemeMembers[0].IsLateFeeApplicable == false &&
+                                                                                                                                               r.ComplianceSchemeMembers[1].IsLateFeeApplicable == true &&
+                                                                                                                                               r.ComplianceSchemeMembers[1].NumberofLateSubsidiaries == 0)));
+    }
+
+    [Test]
+    public async Task GetComplianceSchemeRegistrationFees_ShouldNotApply_SubLateFee_If_IsLateFeeNotApplicable_AndNewJoiner__PaymentCalculationServiceReturnsResponse()
+    {
+        // Arrange
+        var session = _fixture.Build<RegistrationApplicationSession>()
+            .Create();
+
+        session.IsLateFeeApplicable = false;
+        session.HasAnyApprovedOrQueriedRegulatorDecision = false;
+        session.IsOriginalCsoSubmissionLate = false;
+
+        session.RegistrationFeeCalculationDetails = _fixture.CreateMany<RegistrationFeeCalculationDetails>(2).ToArray();
+        session.RegistrationFeeCalculationDetails[0].IsNewJoiner = false;
+        session.RegistrationFeeCalculationDetails[1].IsNewJoiner = true;
+        session.RegistrationFeeCalculationDetails[1].NumberOfLateSubsidiaries = 1;
+
+        var response = _fixture.Create<ComplianceSchemePaymentCalculationResponse>();
+        response.OutstandingPayment = -100;
+        response.ComplianceSchemeMembersWithFees[1].SubsidiariesLateRegistrationFee = 332;
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(session);
+        _paymentCalculationServiceMock.Setup(pcs => pcs.GetComplianceSchemeRegistrationFees(It.IsAny<ComplianceSchemePaymentCalculationRequest>()))
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _service.GetComplianceSchemeRegistrationFees(_httpSession);
+
+        // Assert
+        result.Should().NotBeNull();
+        _paymentCalculationServiceMock.Verify(x => x.GetComplianceSchemeRegistrationFees(It.Is<ComplianceSchemePaymentCalculationRequest>(r => r.ComplianceSchemeMembers[1].NumberofLateSubsidiaries == 0)));
+    }
+
+    [Test]
     public async Task GetComplianceSchemeRegistrationFees_ShouldUse_IsLateFeeApplicable_AndNewJoiner_For_LateFee_When_Application_IsInQueriedStatus_PaymentCalculationServiceReturnsResponse()
     {
         // Arrange

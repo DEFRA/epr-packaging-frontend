@@ -20,5 +20,7 @@ namespace FrontendSchemeRegistration.Application.DTOs.PaymentCalculations
         public string ApplicationReferenceNumber { get; set; }
 
         public DateTime SubmissionDate { get; set; }
+
+        public int NumberOfLateSubsidiaries { get; set; }
     }
 }
