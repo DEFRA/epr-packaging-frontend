@@ -46,7 +46,9 @@ public class FileUploadCompanyDetailsSuccessController : Controller
             return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
         }
 
-        var organisationRole = session.UserData.Organisations?.FirstOrDefault()?.OrganisationRole;
+        // assume user has an org
+        var organisation = session.UserData.Organisations[0];
+        var organisationRole = organisation.OrganisationRole;
 
         if (organisationRole is not null)
         {
@@ -72,9 +74,11 @@ public class FileUploadCompanyDetailsSuccessController : Controller
                         SubmissionDeadline = session.RegistrationSession.SubmissionDeadline,
                         OrganisationRole = organisationRole,
                         IsApprovedUser = session.UserData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved),
-                        OrganisationMemberCount = organisationRole == OrganisationRoles.ComplianceScheme ? submission.OrganisationMemberCount : null,
+                        IsCso = organisationRole == OrganisationRoles.ComplianceScheme,
+                        OrganisationName = organisation.Name,
                         IsResubmission = session.RegistrationSession.IsResubmission,
-                        RegistrationYear = registrationYear
+                        RegistrationYear = registrationYear,
+                        RegistrationJourney = submission.RegistrationJourney,
                     });
             }
         }
