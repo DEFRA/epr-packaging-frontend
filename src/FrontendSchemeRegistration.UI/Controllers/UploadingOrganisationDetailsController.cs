@@ -68,7 +68,7 @@ public class UploadingOrganisationDetailsController : Controller
 
         if (HasRowValidationErrors(submission))
         {
-            return RedirectToAction("Get", "FileUploadCompanyDetailsErrors", registrationYear is not null ? new { submissionId = submissionId.ToString(), registrationyear = registrationYear.ToString() } : new { submissionId = submissionId.ToString() });
+            return RedirectToAction("Get", "FileUploadCompanyDetailsErrors", registrationYear is not null ? new { submissionId = submissionId.ToString(), registrationyear = registrationYear.ToString(), registrationJourney } : new { submissionId = submissionId.ToString(), registrationJourney });
         }
 
         if (HasRowValidationWarnings(submission)) // Add warnings
@@ -101,6 +101,6 @@ public class UploadingOrganisationDetailsController : Controller
 
     private ViewResult GetUploadingOrganisationDetailsViewResult(Guid submissionId, int? registrationYear, RegistrationJourney? registrationJourney)
     {
-        return View("UploadingOrganisationDetails", registrationYear is not null ? new FileUploadingViewModel { SubmissionId = submissionId.ToString(), RegistrationYear = registrationYear , RegistrationJourney = registrationJourney} : new FileUploadingViewModel { SubmissionId = submissionId.ToString() });
+        return View("UploadingOrganisationDetails", registrationYear is not null ? new FileUploadingViewModel { SubmissionId = submissionId.ToString(), RegistrationYear = registrationYear , RegistrationJourney = registrationJourney} : new FileUploadingViewModel { SubmissionId = submissionId.ToString(), RegistrationJourney = registrationJourney});
     }
 }

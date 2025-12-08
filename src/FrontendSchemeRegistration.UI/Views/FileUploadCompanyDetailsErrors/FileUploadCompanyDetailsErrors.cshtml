@@ -1,20 +1,27 @@
+@using FrontendSchemeRegistration.UI.ViewModels.Shared
 @model FileUploadErrorsViewModel
 
 @{
     ViewData["Title"] = Localizer["upload_organisation_details_error"];
+    
+    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+        Model.ShowRegistrationCaption, 
+        Model.RegistrationJourney, 
+        null,
+        Localizer["organisation_details"],
+        Model.RegistrationYear ?? 0); //This isn't ideal, It wont show the heading as the ShowRegistrationCaption is false if this is null and the journey
 }
 
-@await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
+<partial name="Partials/Govuk/_AccountActionBar"/>
 
 <main class="govuk-main-wrapper" id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            @if (!ViewData.ModelState.IsValid)
-            {
-                @await Html.PartialAsync("Partials/Govuk/_ErrorSummary", ViewData.ModelState)
-            }
+            
+            <partial name="Partials/Govuk/_ErrorSummary" mode="@ViewData.ModelState"/>
 
-                <h1 class="govuk-heading-l">@Localizer["organisation_details"]</h1>
+            <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel"/>
+
                 @if (Model.ErrorCount == 1)
                  {
                      <p class="govuk-body">
