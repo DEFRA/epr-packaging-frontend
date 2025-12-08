@@ -63,7 +63,7 @@ public class UploadingOrganisationDetailsController : Controller
 
         if (HasFileErrors(submission))
         {
-            return RedirectToAction("Get", "FileUploadCompanyDetails", registrationYear is not null ? new { submissionId = submissionId.ToString(), registrationyear = registrationYear.ToString()} : new { submissionId = submissionId.ToString() });
+            return RedirectToAction("Get", "FileUploadCompanyDetails", registrationYear is not null ? new { submissionId = submissionId.ToString(), registrationyear = registrationYear.ToString(), registrationJourney} : new { submissionId = submissionId.ToString() });
         }
 
         if (HasRowValidationErrors(submission))

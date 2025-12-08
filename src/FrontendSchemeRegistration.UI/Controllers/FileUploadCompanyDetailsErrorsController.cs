@@ -73,7 +73,7 @@ public class FileUploadCompanyDetailsErrorsController : Controller
                 ModelState);
         }
 
-        this.SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, registrationYear, registrationJourney: submission.RegistrationJourney);
+        this.SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, registrationYear, registrationJourney: submission.RegistrationJourney ?? registrationJourney);
 
         return View(
             "FileUploadCompanyDetailsErrors",
@@ -84,7 +84,7 @@ public class FileUploadCompanyDetailsErrorsController : Controller
                 ErrorCount = submission.RowErrorCount.GetValueOrDefault(0),
                 SubmissionId = submissionId,
                 RegistrationYear = registrationYear,
-                RegistrationJourney = submission.RegistrationJourney
+                RegistrationJourney = submission.RegistrationJourney ?? registrationJourney
             });
     }
 

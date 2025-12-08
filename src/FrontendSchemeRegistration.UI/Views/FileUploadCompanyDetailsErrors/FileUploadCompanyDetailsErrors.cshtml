@@ -18,8 +18,11 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             
-            <partial name="Partials/Govuk/_ErrorSummary" mode="@ViewData.ModelState"/>
-
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <partial name="Partials/Govuk/_ErrorSummary" mode="ViewData.ModelState"/>    
+            }
+            
             <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel"/>
 
                 @if (Model.ErrorCount == 1)
@@ -89,7 +92,8 @@
 
                         <input class="govuk-file-upload" title="Choose a file" id="file" name="file" type="file">
                     </div>
-                <input type="hidden" name="registrationyear" value="@(Model?.RegistrationYear?.ToString() ?? "")" />
+                    <input type="hidden" name="registrationyear" value="@(Model?.RegistrationYear?.ToString() ?? "")" />
+                    <input type="hidden" name="registrationJourney" value="@(Model?.RegistrationJourney?.ToString() ?? "")" />
                     <button class="govuk-button" data-module="govuk-button" type="submit">@Localizer["upload_file"]</button>
                 }
             </div>
