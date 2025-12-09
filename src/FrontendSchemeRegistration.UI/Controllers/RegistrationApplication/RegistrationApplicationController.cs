@@ -111,7 +111,7 @@ public class RegistrationApplicationController(
 
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
         session.Journey = [PagePaths.RegistrationTaskList, PagePaths.RegistrationFeeCalculations];
-        SetBackLink(session, PagePaths.RegistrationFeeCalculations, registrationYear);
+        SetBackLink(session, PagePaths.RegistrationFeeCalculations, registrationYear, registrationJourney);
 
         if (session.FileUploadStatus is not RegistrationTaskListStatus.Completed)
         {
