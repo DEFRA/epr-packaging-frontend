@@ -1,15 +1,22 @@
+@using FrontendSchemeRegistration.UI.ViewModels.Shared
 @model FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication.ComplianceSchemeFeeCalculationBreakdownViewModel
 
 @{
     ViewData["Title"] = Localizer["registration_fee_calculations"];
+    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+        Model.ShowRegistrationCaption, 
+        Model.RegistrationJourney, 
+        null,
+        @Localizer[!Model.IsRegistrationFeePaid ? "registration_fee_due" : "registration_fee"],
+        Model.RegistrationYear);
 }
 
 <main class="govuk-main-wrapper" id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
-                @Localizer[!Model.IsRegistrationFeePaid ? "registration_fee_due" : "registration_fee"]
-            </h1>
+            
+            <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel"/>
+            
             @if (!Model.IsRegistrationFeePaid)
             {
                 <p class="govuk-body">
@@ -26,7 +33,7 @@
             <partial name="_ComplianceSchemeFeeCalculationBreakdown" model="@Model"/>
 
             <br/><br/>
-            
+
             <p class="govuk-body govuk-!-margin-top-4">
                 @if (Model is { RegistrationApplicationSubmitted: false, TotalAmountOutstanding: > 0 })
                 {
