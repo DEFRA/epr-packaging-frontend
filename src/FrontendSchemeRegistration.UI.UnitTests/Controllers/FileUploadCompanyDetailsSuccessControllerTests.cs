@@ -204,7 +204,7 @@ public class FileUploadCompanyDetailsSuccessControllerTests
             RequiresBrandsFile = true,
             RequiresPartnershipsFile = true,
             OrganisationRole = OrganisationRoles.ComplianceScheme,
-            OrganisationMemberCount = 10
+            IsCso = true
         });
 
         _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.Once);
@@ -252,7 +252,7 @@ public class FileUploadCompanyDetailsSuccessControllerTests
             RequiresBrandsFile = true,
             RequiresPartnershipsFile = true,
             OrganisationRole = OrganisationRoles.Producer,
-            OrganisationMemberCount = null
+            IsCso = false
         });
 
         _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.Once);

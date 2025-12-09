@@ -1,6 +1,7 @@
 ﻿namespace FrontendSchemeRegistration.UI.ViewModels;
 
 using System.Diagnostics.CodeAnalysis;
+using Application.Enums;
 using Newtonsoft.Json;
 
 [ExcludeFromCodeCoverage]
@@ -19,9 +20,13 @@ public class FileUploadCompanyDetailsSuccessViewModel : ViewModelWithOrganisatio
 
     public bool IsApprovedUser { get; set; }
 
-    public int? OrganisationMemberCount { get; set; }
+    public bool IsCso { get; set; }
     
     public bool IsResubmission { get; set; }
 
     public int? RegistrationYear { get; set; }
+    
+    public RegistrationJourney? RegistrationJourney { get; set; }
+    
+    public string OrganisationName { get; set; }
 }
