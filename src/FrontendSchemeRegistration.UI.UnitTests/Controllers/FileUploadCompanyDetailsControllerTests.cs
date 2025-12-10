@@ -408,7 +408,8 @@ public class FileUploadCompanyDetailsControllerTests
                 SubmissionSubType.CompanyDetails,
                 It.IsAny<Guid?>(),
                 It.IsAny<Guid?>(),
-                It.IsAny<bool?>()),
+                It.IsAny<bool?>(),
+                null),
             Times.Once);
         result.ViewName.Should().Be("FileUploadCompanyDetails");
     }
@@ -440,7 +441,8 @@ public class FileUploadCompanyDetailsControllerTests
                 SubmissionSubType.CompanyDetails,
                 It.IsAny<Guid?>(),
                 It.IsAny<Guid?>(),
-                It.IsAny<bool?>()),
+                It.IsAny<bool?>(),
+                nameof(RegistrationJourney.CsoLargeProducer)),
             Times.Once);
         result.ViewName.Should().Be("FileUploadCompanyDetailsCso");
         var actualModel = result.Model as FileUploadCompanyDetailsViewModel;
@@ -480,7 +482,8 @@ public class FileUploadCompanyDetailsControllerTests
                 SubmissionSubType.CompanyDetails,
                 It.IsAny<Guid?>(),
                 It.IsAny<Guid?>(),
-                It.IsAny<bool?>()))
+                It.IsAny<bool?>(),
+                registrationJourney !=null ? registrationJourney.ToString() : null))
             .ReturnsAsync(submissionId);
 
         // Act

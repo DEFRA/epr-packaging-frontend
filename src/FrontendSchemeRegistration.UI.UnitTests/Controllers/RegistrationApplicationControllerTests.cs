@@ -638,7 +638,7 @@ public class RegistrationApplicationControllerTests
             });
 
         // Act
-        var result = await SystemUnderTest.RegistrationFeeCalculations() as ViewResult;
+        var result = await SystemUnderTest.RegistrationFeeCalculations(null) as ViewResult;
 
         // Assert
         result.Model.Should().BeOfType<FeeCalculationBreakdownViewModel>();
@@ -678,7 +678,7 @@ public class RegistrationApplicationControllerTests
         RegistrationApplicationService.Setup(x => x.GetProducerRegistrationFees(It.IsAny<ISession>())).ReturnsAsync((FeeCalculationBreakdownViewModel) null);
 
         // Act
-        var result = SystemUnderTest.RegistrationFeeCalculations().Result;
+        var result = SystemUnderTest.RegistrationFeeCalculations(null).Result;
 
         // Assert
         var selectedCs = Session.SelectedComplianceScheme?.Id;
@@ -720,7 +720,7 @@ public class RegistrationApplicationControllerTests
             });
 
         // Act
-        var result = await SystemUnderTest.RegistrationFeeCalculations() as RedirectToActionResult;
+        var result = await SystemUnderTest.RegistrationFeeCalculations(null) as RedirectToActionResult;
 
         // Assert
         result.ActionName.Should().Be(nameof(RegistrationApplicationController.RegistrationTaskList));
@@ -785,7 +785,7 @@ public class RegistrationApplicationControllerTests
             });
 
         // Act
-        await SystemUnderTest.RegistrationFeeCalculations();
+        await SystemUnderTest.RegistrationFeeCalculations(null);
 
         // Assert
         RegistrationApplicationService.Verify(s => s.GetProducerRegistrationFees(It.IsAny<ISession>()), Times.Once);
@@ -806,7 +806,7 @@ public class RegistrationApplicationControllerTests
             .ReturnsAsync(mockSession);
 
         // Act
-        var result = await SystemUnderTest.RegistrationFeeCalculations();
+        var result = await SystemUnderTest.RegistrationFeeCalculations(null);
 
         // Assert
         result.Should().BeOfType<RedirectToActionResult>()
@@ -1924,7 +1924,7 @@ public class RegistrationApplicationControllerTests
         });
 
         // Act
-        var result = await SystemUnderTest.RegistrationFeeCalculations() as ViewResult;
+        var result = await SystemUnderTest.RegistrationFeeCalculations(RegistrationJourney.CsoLargeProducer) as ViewResult;
 
         // Assert
         result.Model.Should().BeOfType<ComplianceSchemeFeeCalculationBreakdownViewModel>();
@@ -1941,7 +1941,8 @@ public class RegistrationApplicationControllerTests
             SubsidiaryCompanyCount = 2,
             SubsidiaryCompanyFee = 11000,
             TotalFeeAmount = 12345,
-            TotalPreviousPayments = 23456
+            TotalPreviousPayments = 23456,
+            RegistrationJourney = RegistrationJourney.CsoLargeProducer
         });
     }
 
@@ -1969,7 +1970,7 @@ public class RegistrationApplicationControllerTests
         RegistrationApplicationService.Setup(x => x.GetComplianceSchemeRegistrationFees(It.IsAny<ISession>())).ReturnsAsync((ComplianceSchemeFeeCalculationBreakdownViewModel) null);
 
         // Act
-        var result = await SystemUnderTest.RegistrationFeeCalculations();
+        var result = await SystemUnderTest.RegistrationFeeCalculations(null);
 
         // Assert
         result.Should().BeOfType<RedirectToActionResult>();

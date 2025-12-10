@@ -122,8 +122,9 @@ public class UploadingOrganisationDetailsControllerTests
         // Assert
         result.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("FileUploadCompanyDetails");
-        result.RouteValues.Should().HaveCount(2).And.ContainKey("registrationyear");
-        result.RouteValues.Should().HaveCount(2).And.ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId.ToString());
+        result.RouteValues.Should().HaveCount(3);
+        result.RouteValues.Should().ContainKey("registrationyear");
+        result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId.ToString());
     }
 
     [Test]
@@ -211,8 +212,9 @@ public class UploadingOrganisationDetailsControllerTests
         // Assert
         result.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("FileUploadCompanyDetailsErrors");
-        result.RouteValues.Should().HaveCount(2).And.ContainKey("registrationyear");
-        result.RouteValues.Should().HaveCount(2).And.ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId.ToString());
+        result.RouteValues.Should().HaveCount(3);
+        result.RouteValues.Should().ContainKey("registrationyear");
+        result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId.ToString());
     }
 
     [Test]

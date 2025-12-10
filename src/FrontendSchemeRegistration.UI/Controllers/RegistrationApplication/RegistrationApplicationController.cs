@@ -103,7 +103,7 @@ public class RegistrationApplicationController(
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
     [Route(PagePaths.RegistrationFeeCalculations)]
-    public async Task<IActionResult> RegistrationFeeCalculations()
+    public async Task<IActionResult> RegistrationFeeCalculations([FromQuery]RegistrationJourney? registrationJourney)
     {
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
@@ -111,7 +111,7 @@ public class RegistrationApplicationController(
 
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
         session.Journey = [PagePaths.RegistrationTaskList, PagePaths.RegistrationFeeCalculations];
-        SetBackLink(session, PagePaths.RegistrationFeeCalculations, registrationYear);
+        SetBackLink(session, PagePaths.RegistrationFeeCalculations, registrationYear, registrationJourney);
 
         if (session.FileUploadStatus is not RegistrationTaskListStatus.Completed)
         {
@@ -128,6 +128,7 @@ public class RegistrationApplicationController(
             if (response is not null)
             {
                 response.RegistrationYear = registrationYear.GetValueOrDefault();
+                response.RegistrationJourney = registrationJourney;
                 return View("ComplianceSchemeRegistrationFeeCalculations", response);
             }
         }

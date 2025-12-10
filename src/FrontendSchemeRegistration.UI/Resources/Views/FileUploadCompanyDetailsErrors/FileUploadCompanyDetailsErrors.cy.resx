@@ -31,7 +31,7 @@
         <value>Mae hyn yn golygu bod manylion y sefydliad heb gael eu huwchlwytho.</value>
     </data>
     <data name="how_to_fix" xml:space="preserve">
-        <value>Sut i gywiro'r gwallau</value>
+        <value>Fix your errors</value>
     </data>
     <data name="download_csv" xml:space="preserve">
         <value>Lawrlwythwch eich adroddiad gwallau (CSV, 5MB ar y mwyaf)</value>

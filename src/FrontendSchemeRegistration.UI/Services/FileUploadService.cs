@@ -28,7 +28,8 @@ public class FileUploadService(IWebApiGatewayClient webApiGatewayClient) : IFile
         SubmissionSubType? submissionSubType = null,
         Guid? registrationSetId = null,
         Guid? complianceSchemeId = null,
-        bool? isResubmission = null)
+        bool? isResubmission = null,
+        string? registrationJourney = null)
     {
         var fileValidationResult = await ValidateUploadAsync(contentType, fileStream, modelState);
         if (!modelState.IsValid)
@@ -51,7 +52,8 @@ public class FileUploadService(IWebApiGatewayClient webApiGatewayClient) : IFile
                 submissionSubType,
                 registrationSetId,
                 complianceSchemeId,
-                isResubmission);
+                isResubmission,
+                registrationJourney);
         }
 
         return Guid.Empty;

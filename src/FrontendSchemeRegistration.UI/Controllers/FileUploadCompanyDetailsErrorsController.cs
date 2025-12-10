@@ -2,6 +2,7 @@
 
 using Application.Constants;
 using Application.DTOs.Submission;
+using Application.Enums;
 using Application.Services.Interfaces;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
@@ -38,7 +39,7 @@ public class FileUploadCompanyDetailsErrorsController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get()
+    public async Task<IActionResult> Get([FromQuery] RegistrationJourney? registrationJourney = null)
     {
         var registrationYear = _registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
@@ -72,7 +73,7 @@ public class FileUploadCompanyDetailsErrorsController : Controller
                 ModelState);
         }
 
-        this.SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, registrationYear);
+        this.SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, registrationYear, registrationJourney: submission.RegistrationJourney ?? registrationJourney);
 
         return View(
             "FileUploadCompanyDetailsErrors",
@@ -82,7 +83,8 @@ public class FileUploadCompanyDetailsErrorsController : Controller
                 OrganisationRole = organisation.OrganisationRole,
                 ErrorCount = submission.RowErrorCount.GetValueOrDefault(0),
                 SubmissionId = submissionId,
-                RegistrationYear = registrationYear
+                RegistrationYear = registrationYear,
+                RegistrationJourney = submission.RegistrationJourney ?? registrationJourney
             });
     }
 
