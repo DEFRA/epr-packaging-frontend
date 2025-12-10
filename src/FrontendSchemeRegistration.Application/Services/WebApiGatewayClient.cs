@@ -496,6 +496,11 @@ public class WebApiGatewayClient : IWebApiGatewayClient
                 endpointUrl += $"&ComplianceSchemeId={request.ComplianceSchemeId}";
             }
 
+            if (!string.IsNullOrWhiteSpace(request.RegistrationJourney))
+            {
+                endpointUrl += $"&RegistrationJourney={request.RegistrationJourney}";
+            }
+
             var response = await _httpClient.GetAsync(endpointUrl);
 
             response.EnsureSuccessStatusCode();
