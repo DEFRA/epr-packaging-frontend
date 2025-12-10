@@ -119,7 +119,7 @@ public class FileUploadCompanyDetailsController : Controller
         var organisationRole = session.UserData.Organisations.FirstOrDefault()?.OrganisationRole;
 
         await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
-        this.SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, registrationYear);
+        this.SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, registrationYear, registrationJourney);
         var routeValue = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear, registrationJourney: registrationJourney);
 
         var viewName = registrationJourney == null ? "FileUploadCompanyDetails" : "FileUploadCompanyDetailsCso";
