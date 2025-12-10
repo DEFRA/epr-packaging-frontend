@@ -114,7 +114,8 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             OrganisationNumber = int.Parse(organisation.OrganisationNumber),
             OrganisationId = organisation.Id.Value,
             ComplianceSchemeId = frontEndSession.RegistrationSession.SelectedComplianceScheme?.Id,
-            SubmissionPeriod = session.Period.DataPeriod
+            SubmissionPeriod = session.Period.DataPeriod,
+            RegistrationJourney = registrationJourney?.ToString()
         }) ?? new RegistrationApplicationDetails();
 
         session.SelectedComplianceScheme = frontEndSession.RegistrationSession.SelectedComplianceScheme;

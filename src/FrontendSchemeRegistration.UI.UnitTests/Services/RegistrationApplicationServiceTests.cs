@@ -1910,7 +1910,9 @@ public class RegistrationApplicationServiceTests
                 }
             });
 
-        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+        _submissionServiceMock.Setup(ss =>
+                ss.GetRegistrationApplicationDetails(It.Is<GetRegistrationApplicationDetailsRequest>(c =>
+                    c.RegistrationJourney == nameof(RegistrationJourney.CsoSmallProducer))))
             .ReturnsAsync(registrationApplicationDetails);
 
         // Act
