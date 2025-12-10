@@ -72,9 +72,6 @@
     <data name="you_do_not_need_to_report_brand_information" xml:space="preserve">
         <value>You do not need to report brand information.</value>
     </data>
-    <data name="return_to_dashboard" xml:space="preserve">
-        <value>Return to the dashboard</value>
-    </data>
     <data name="you_can_upload_again" xml:space="preserve">
         <value>you can upload again</value>
     </data>

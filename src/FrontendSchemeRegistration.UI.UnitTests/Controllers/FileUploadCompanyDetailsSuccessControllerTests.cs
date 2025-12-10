@@ -211,7 +211,7 @@ public class FileUploadCompanyDetailsSuccessControllerTests
     }
 
     [Test]
-    public async Task Get_DoesNotPopulateMemberCount_WhenOrganisationRoleIsProducer()
+    public async Task Get_SetsIsCsoToFalse_WhenOrganisationRoleIsProducer()
     {
         // Arrange
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
