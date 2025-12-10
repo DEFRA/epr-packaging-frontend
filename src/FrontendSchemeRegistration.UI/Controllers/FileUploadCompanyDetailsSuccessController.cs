@@ -11,6 +11,7 @@ using Extensions;
 using global::FrontendSchemeRegistration.UI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Sessions;
 using UI.Attributes.ActionFilters;
 using ViewModels;
@@ -63,6 +64,9 @@ public class FileUploadCompanyDetailsSuccessController : Controller
 
             if (submission is not null)
             {
+                var routeValue = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear);
+                ViewBag.BackLinkToDisplay = QueryHelpers.AddQueryString(Url.Content($"~{PagePaths.FileUploadCompanyDetails}"), routeValue.ToDictionary(k => k.Key, k => k.Value.ToString() ?? string.Empty));
+
                 return View(
                     "FileUploadCompanyDetailsSuccess",
                     new FileUploadCompanyDetailsSuccessViewModel
