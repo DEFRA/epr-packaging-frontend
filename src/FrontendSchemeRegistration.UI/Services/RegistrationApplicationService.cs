@@ -353,27 +353,35 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         }
         else
         {
+            var complianceSchemeMembers = feeCalculationDetails.Select(c => new ComplianceSchemePaymentCalculationRequestMember
+            {
+                // Apply late fee to all producers if original submission was late or
+                // not a single submission and current submission is late 
+                // if above two are not satisified that means file are submitted on time its new submission either due to queried
+                // check individual producer is new joiner so late fee applicable on producer level rather than file
+                IsLateFeeApplicable =
+                    session.IsOriginalCsoSubmissionLate
+                    || (session.FirstApplicationSubmittedEventCreatedDatetime is null && session.IsLateFeeApplicable)
+                    || (session.IsLateFeeApplicable && c.IsNewJoiner),
+                IsOnlineMarketplace = c.IsOnlineMarketplace,
+                MemberId = c.OrganisationId,
+                MemberType = c.OrganisationSize,
+                NoOfSubsidiariesOnlineMarketplace = c.NumberOfSubsidiariesBeingOnlineMarketPlace,
+                NumberOfSubsidiaries = c.NumberOfSubsidiaries
+            }).ToList();
+
+            // TODO Temporary logic to exclude registration fee for CSO small (2026)
+            // - currently a CSO registration with only Small Producer journey will incorrectly not be charged registration fee
+            // (it is assumed to have been charged for the Large Producer journey)
+            bool includeRegistrationFee = !(session.RegistrationJourney == RegistrationJourney.CsoSmallProducer);
+
             var v1 = new ComplianceSchemePaymentCalculationRequest
             {
                 Regulator = session.RegulatorNation,
                 ApplicationReferenceNumber = session.ApplicationReferenceNumber,
                 SubmissionDate = session.LastSubmittedFile.SubmittedDateTime!.Value,
-                ComplianceSchemeMembers = feeCalculationDetails.Select(c => new ComplianceSchemePaymentCalculationRequestMember
-                {
-                    // Apply late fee to all producers if original submission was late or
-                    // not a single submission and current submission is late 
-                    // if above two are not satisified that means file are submitted on time its new submission either due to queried
-                    // check individual producer is new joiner so late fee applicable on producer level rather than file
-                    IsLateFeeApplicable =
-                        session.IsOriginalCsoSubmissionLate
-                        || (session.FirstApplicationSubmittedEventCreatedDatetime is null && session.IsLateFeeApplicable)
-                        || (session.IsLateFeeApplicable && c.IsNewJoiner),
-                    IsOnlineMarketplace = c.IsOnlineMarketplace,
-                    MemberId = c.OrganisationId,
-                    MemberType = c.OrganisationSize,
-                    NoOfSubsidiariesOnlineMarketplace = c.NumberOfSubsidiariesBeingOnlineMarketPlace,
-                    NumberOfSubsidiaries = c.NumberOfSubsidiaries
-                }).ToList()
+                ComplianceSchemeMembers = complianceSchemeMembers,
+                IncludeRegistrationFee = includeRegistrationFee
             };
 
             response = await paymentCalculationService.GetComplianceSchemeRegistrationFees(v1);
