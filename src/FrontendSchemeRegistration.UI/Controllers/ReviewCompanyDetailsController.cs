@@ -4,7 +4,6 @@ using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
-using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
 using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Services;
 using FrontendSchemeRegistration.UI.Sessions;
@@ -14,6 +13,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 
 namespace FrontendSchemeRegistration.UI.Controllers;
+
+using Application.Enums;
 
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
 [Route(PagePaths.ReviewOrganisationData)]
@@ -42,7 +43,7 @@ public class ReviewCompanyDetailsController : Controller
 
     [HttpGet]
     [SubmissionIdActionFilter("/error")]
-    public async Task<IActionResult> Get()
+    public async Task<IActionResult> Get([FromQuery] RegistrationJourney? registrationJourney)
     {
         var submissionId = Guid.Parse(Request.Query["submissionId"]);
         var userData = User.GetUserData();
@@ -97,6 +98,7 @@ public class ReviewCompanyDetailsController : Controller
                 HasPreviousSubmission = submission.LastSubmittedFiles is not null,
                 HasPreviousBrandsSubmission = submission.LastSubmittedFiles is not null && !string.IsNullOrWhiteSpace(submission.LastSubmittedFiles.BrandsFileName),
                 HasPreviousPartnersSubmission = submission.LastSubmittedFiles is not null && !string.IsNullOrWhiteSpace(submission.LastSubmittedFiles.PartnersFileName),
+                RegistrationJourney = registrationJourney,
                 SubmittedCompanyDetailsFileName = submission.LastSubmittedFiles?.CompanyDetailsFileName,
                 SubmittedCompanyDetailsDateTime = submission.LastSubmittedFiles?.SubmittedDateTime?.ToReadableDate(),
                 SubmittedBrandsFileName = submission.LastSubmittedFiles?.BrandsFileName,
@@ -170,16 +172,7 @@ public class ReviewCompanyDetailsController : Controller
 
         try
         {
-            var routeValue = QueryStringExtensions.BuildRouteValues(submissionId: model.SubmissionId, registrationYear: model.RegistrationYear);
-
-            if (model.IsComplianceScheme)
-            {
-                session.EnsureApplicationReferenceIsPresent();
-
-                await _submissionService.SubmitAsync(submissionId, new Guid(model.OrganisationDetailsFileId), null, session.RegistrationSession.ApplicationReferenceNumber, session.RegistrationSession.IsResubmission);
-
-                return RedirectToAction("Get", "CompanyDetailsConfirmation", routeValue);
-            }
+            var routeValue = QueryStringExtensions.BuildRouteValues(submissionId: model.SubmissionId, registrationYear: model.RegistrationYear, registrationJourney: model.RegistrationJourney);
 
             return RedirectToAction("Get", "DeclarationWithFullName", routeValue);
         }
