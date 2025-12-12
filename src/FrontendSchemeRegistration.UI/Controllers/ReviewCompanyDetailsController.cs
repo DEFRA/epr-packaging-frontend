@@ -66,7 +66,7 @@ public class ReviewCompanyDetailsController : Controller
         var isFileUploadJourneyInvokedViaRegistration = session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration;
         var isResubmission = session.RegistrationSession.IsResubmission;
 
-        this.SetBackLink(isFileUploadJourneyInvokedViaRegistration, isResubmission, registrationYear);
+        this.SetBackLink(isFileUploadJourneyInvokedViaRegistration, isResubmission, registrationYear, submission.RegistrationJourney);
         ViewData["IsFileUploadJourneyInvokedViaRegistration"] = isFileUploadJourneyInvokedViaRegistration;
 
         return View(
@@ -109,7 +109,8 @@ public class ReviewCompanyDetailsController : Controller
                     : string.Empty,
                 SubmissionStatus = submission.GetSubmissionStatus(),
                 IsResubmission = isResubmission,
-                RegistrationYear = registrationYear
+                RegistrationYear = registrationYear,
+                RegistrationJourney = submission.RegistrationJourney
             });
 
         return RedirectToAction("HandleThrownExceptions", "Error");

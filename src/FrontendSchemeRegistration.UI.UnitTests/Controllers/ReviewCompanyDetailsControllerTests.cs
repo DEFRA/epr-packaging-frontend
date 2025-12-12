@@ -24,6 +24,7 @@ using Organisation = EPR.Common.Authorization.Models.Organisation;
 
 namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
 
+using Application.Enums;
 using Organisation = Organisation;
 
 public class ReviewCompanyDetailsControllerTests
@@ -100,14 +101,15 @@ public class ReviewCompanyDetailsControllerTests
     [TestCase(ServiceRoles.BasicUser, EnrolmentStatuses.Pending, false)]
     [TestCase(ServiceRoles.BasicUser, EnrolmentStatuses.NotSet, false)]
     [TestCase(ServiceRoles.BasicUser, EnrolmentStatuses.Rejected, false)]
-    public async Task Get_ReturnsCorrectView(string serviceRole, string enrolmentStatus, bool expectedIsApprovedUser)
+    [TestCase(ServiceRoles.BasicUser, EnrolmentStatuses.Approved, false, RegistrationJourney.CsoLargeProducer)]
+    public async Task Get_ReturnsCorrectView(string serviceRole, string enrolmentStatus, bool expectedIsApprovedUser, RegistrationJourney? expectedRegistrationJourney = null)
     {
         // Arrange
         const string firstName = "First Name";
         const string lastName = "Last Name";
         _submissionService
             .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
-            .ReturnsAsync(GenerateRegistrationSubmission());
+            .ReturnsAsync(GenerateRegistrationSubmission(expectedRegistrationJourney));
         _userAccountServiceMock.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>()))
             .ReturnsAsync(new PersonDto
             {
@@ -126,12 +128,21 @@ public class ReviewCompanyDetailsControllerTests
         result.ViewData.Keys.Should().HaveCount(2);
         result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
         result.ViewData.Keys.Should().Contain("IsFileUploadJourneyInvokedViaRegistration");
-        result.ViewData["BackLinkToDisplay"].Should().Be($"~/{PagePaths.FileUploadCompanyDetailsSubLanding}?registrationyear={DateTime.Now.Year}");
+        if (expectedRegistrationJourney != null)
+        {
+            result.ViewData["BackLinkToDisplay"].Should().Be($"~/{PagePaths.FileUploadCompanyDetailsSubLanding}?registrationyear={DateTime.Now.Year}&registrationjourney={expectedRegistrationJourney.ToString()}");
+        }
+        else
+        {
+            result.ViewData["BackLinkToDisplay"].Should().Be($"~/{PagePaths.FileUploadCompanyDetailsSubLanding}?registrationyear={DateTime.Now.Year}");    
+        }
+        
         result.ViewData["IsFileUploadJourneyInvokedViaRegistration"].Should().Be(false);
         var model = result.Model.As<ReviewCompanyDetailsViewModel>();
         model.OrganisationDetailsUploadedBy.Should().BeEquivalentTo($"{firstName} {lastName}");
         model.RegistrationSubmissionDeadline.Should().BeEquivalentTo(SubmissionDeadline.ToReadableDate());
         model.IsApprovedUser.Should().Be(expectedIsApprovedUser);
+        model.RegistrationJourney.Should().Be(expectedRegistrationJourney);
     }
 
     [TestCase(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, true)]
@@ -629,7 +640,7 @@ public class ReviewCompanyDetailsControllerTests
         };
     }
 
-    private static RegistrationSubmission GenerateRegistrationSubmission()
+    private static RegistrationSubmission GenerateRegistrationSubmission(RegistrationJourney? registrationJourney = null)
     {
         return new RegistrationSubmission
         {
@@ -673,7 +684,8 @@ public class ReviewCompanyDetailsControllerTests
                 BrandsUploadDatetime = DateTime.UtcNow,
                 PartnershipsUploadedBy = Guid.NewGuid(),
                 PartnershipsUploadDatetime = null
-            }
+            },
+            RegistrationJourney = registrationJourney
         };
     }
 

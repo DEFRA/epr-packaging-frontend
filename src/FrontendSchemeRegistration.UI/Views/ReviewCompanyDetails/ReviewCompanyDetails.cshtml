@@ -1,5 +1,6 @@
 @using FrontendSchemeRegistration.Application.Enums
 @using FrontendSchemeRegistration.UI.Constants
+@using FrontendSchemeRegistration.UI.ViewModels.Shared
 
 @model ReviewCompanyDetailsViewModel
 
@@ -14,6 +15,19 @@
     var dateSubmitted = Localizer["date_submitted"];
     var submittedBy = Localizer["submitted_by"];
     bool isFileUploadJourneyInvokedViaRegistration = (bool)ViewData["IsFileUploadJourneyInvokedViaRegistration"];
+
+    var heading = Localizer[Model.IsApprovedUser ? "check_files_and_submit" : "files_youve_uploaded"];
+    if (Model.HasPreviousSubmission)
+    {
+        heading = Localizer["check_files_and_submit"];
+    }
+    
+    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+        Model.ShowRegistrationCaption, 
+        Model.RegistrationJourney, 
+        null,
+        heading,
+        Model.RegistrationYear ?? 0);
 }
 
 @await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
@@ -29,17 +43,8 @@
             @using (Html.BeginForm("Get", "Landing", null, FormMethod.Get))
             {
                 <div class="govuk-form-group">
-                    <h1 class="govuk-heading-l govuk-!-margin-top-4 govuk-!-margin-bottom-7">
-                        @if (Model.HasPreviousSubmission)
-                        {
-                            @Localizer["check_files_and_submit"]
-                        }
-                        else
-                        {
-                            @Localizer[Model.IsApprovedUser ? "check_files_and_submit" : "files_youve_uploaded"]
-                        }
-                    </h1>
-
+                    <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel"/>
+                    
                     <div class="govuk-summary-card">
                         <div class="govuk-summary-card__title-wrapper">
                             <h2 class="govuk-summary-card__title govuk-!-text-align-left">
@@ -49,34 +54,34 @@
                                 @if (Model.SubmissionStatus == SubmissionPeriodStatus.SubmittedAndHasRecentFileUpload)
                                 {
                                     @Html.ActionLink(
-                                             Localizer["change"].Value,
-                                             "Get",
-                                             "FileReUploadCompanyDetailsConfirmation",
-                                             new
-                                             {
-                                                 submissionId = Model.SubmissionId,
-                                                 registrationyear = Model.RegistrationYear
-                                             },
-                                             new
-                                             {
-                                                 @class = "govuk-link--no-visited-state"
-                                             })
+                                        Localizer["change"].Value,
+                                        "Get",
+                                        "FileReUploadCompanyDetailsConfirmation",
+                                        new
+                                        {
+                                            submissionId = Model.SubmissionId,
+                                            registrationyear = Model.RegistrationYear
+                                        },
+                                        new
+                                        {
+                                            @class = "govuk-link--no-visited-state"
+                                        })
                                 }
                                 else
                                 {
                                     @Html.ActionLink(
-                                             Localizer["change"].Value,
-                                             "Get",
-                                             "FileUploadCompanyDetails",
-                                             new
-                                             {
-                                                 submissionId = Model.SubmissionId,
-                                                 registrationyear = Model.RegistrationYear
-                                             },
-                                             new
-                                             {
-                                                 @class = "govuk-link--no-visited-state"
-                                             })
+                                        Localizer["change"].Value,
+                                        "Get",
+                                        "FileUploadCompanyDetails",
+                                        new
+                                        {
+                                            submissionId = Model.SubmissionId,
+                                            registrationyear = Model.RegistrationYear
+                                        },
+                                        new
+                                        {
+                                            @class = "govuk-link--no-visited-state"
+                                        })
                                 }
                             </p>
                         </div>
@@ -84,56 +89,56 @@
                             <table class="govuk-table govuk-!-margin-bottom-0 responsive-table">
                                 <caption class="govuk-visually-hidden">@Localizer["detail_regarding_the_latest_file_uploaded"]</caption>
                                 <thead class="govuk-table__head">
-                                    <tr class="govuk-table__row">
-                                        <th scope="col" class="govuk-table__header">@fileName</th>
-                                        <th scope="col" class="govuk-table__header">@dateUploaded</th>
-                                        <th scope="col" class="govuk-table__header">@uploadedBy</th>
-                                        <feature name="@FeatureFlags.EnableCsvDownload">
-                                            <td class="govuk-table__header no-wrap-text"></td>
-                                        </feature>
-                                    </tr>
+                                <tr class="govuk-table__row">
+                                    <th scope="col" class="govuk-table__header">@fileName</th>
+                                    <th scope="col" class="govuk-table__header">@dateUploaded</th>
+                                    <th scope="col" class="govuk-table__header">@uploadedBy</th>
+                                    <feature name="@FeatureFlags.EnableCsvDownload">
+                                        <td class="govuk-table__header no-wrap-text"></td>
+                                    </feature>
+                                </tr>
                                 </thead>
                                 <tbody class="govuk-table__body">
+                                <tr class="govuk-table__row">
+                                    <td data-heading="@fileName" class="govuk-table__cell break-word">@Model.OrganisationDetailsFileName</td>
+                                    <td data-heading="@dateUploaded" class="govuk-table__cell break-word">@Model.OrganisationDetailsFileUploadDate</td>
+                                    <td data-heading="@uploadedBy" class="govuk-table__cell break-word">@Model.OrganisationDetailsUploadedBy</td>
+                                    <feature name="@FeatureFlags.EnableCsvDownload">
+                                        <td data-heading="@download" class="govuk-table__cell no-wrap-text">
+                                            @Html.ActionLink(
+                                                download.Value,
+                                                "Get",
+                                                "FileDownloadCompanyDetails",
+                                                new { SubmissionId = Model.SubmissionId, Type = FileDownloadType.Upload },
+                                                new
+                                                {
+                                                    @class = "govuk-link--no-visited-state download-button"
+                                                })
+                                        </td>
+                                    </feature>
+                                </tr>
+                                @if (Model.BrandsRequired)
+                                {
                                     <tr class="govuk-table__row">
-                                        <td data-heading="@fileName" class="govuk-table__cell break-word">@Model.OrganisationDetailsFileName</td>
-                                        <td data-heading="@dateUploaded" class="govuk-table__cell break-word">@Model.OrganisationDetailsFileUploadDate</td>
-                                        <td data-heading="@uploadedBy" class="govuk-table__cell break-word">@Model.OrganisationDetailsUploadedBy</td>
+                                        <td data-heading="@fileName" class="govuk-table__cell break-word">@Model.BrandFileName</td>
+                                        <td data-heading="@dateUploaded" class="govuk-table__cell break-word">@Model.BrandFileUploadDate</td>
+                                        <td data-heading="@uploadedBy" class="govuk-table__cell break-word">@Model.BrandUploadedBy</td>
                                         <feature name="@FeatureFlags.EnableCsvDownload">
-                                            <td data-heading="@download" class="govuk-table__cell no-wrap-text">
-                                                @Html.ActionLink(
-                                                         download.Value,
-                                                         "Get",
-                                                         "FileDownloadCompanyDetails",
-                                                         new { SubmissionId = Model.SubmissionId, Type = FileDownloadType.Upload },
-                                                         new
-                                                         {
-                                                             @class = "govuk-link--no-visited-state download-button"
-                                                         })
-                                            </td>
+                                            <td data-heading="@download" class="govuk-table__cell no-wrap-text"></td>
                                         </feature>
                                     </tr>
-                                    @if (Model.BrandsRequired)
-                                    {
-                                        <tr class="govuk-table__row">
-                                            <td data-heading="@fileName" class="govuk-table__cell break-word">@Model.BrandFileName</td>
-                                            <td data-heading="@dateUploaded" class="govuk-table__cell break-word">@Model.BrandFileUploadDate</td>
-                                            <td data-heading="@uploadedBy" class="govuk-table__cell break-word">@Model.BrandUploadedBy</td>
-                                            <feature name="@FeatureFlags.EnableCsvDownload">
-                                                <td data-heading="@download" class="govuk-table__cell no-wrap-text"></td>
-                                            </feature>
-                                        </tr>
-                                    }
-                                    @if (Model.PartnersRequired)
-                                    {
-                                        <tr class="govuk-table__row">
-                                            <td data-heading="@fileName" class="govuk-table__cell break-word">@Model.PartnerFileName</td>
-                                            <td data-heading="@dateUploaded" class="govuk-table__cell break-word">@Model.PartnerFileUploadDate</td>
-                                            <td data-heading="@uploadedBy" class="govuk-table__cell break-word">@Model.PartnerUploadedBy</td>
-                                            <feature name="@FeatureFlags.EnableCsvDownload">
-                                                <td data-heading="@download" class="govuk-table__cell no-wrap-text"></td>
-                                            </feature>
-                                        </tr>
-                                    }
+                                }
+                                @if (Model.PartnersRequired)
+                                {
+                                    <tr class="govuk-table__row">
+                                        <td data-heading="@fileName" class="govuk-table__cell break-word">@Model.PartnerFileName</td>
+                                        <td data-heading="@dateUploaded" class="govuk-table__cell break-word">@Model.PartnerFileUploadDate</td>
+                                        <td data-heading="@uploadedBy" class="govuk-table__cell break-word">@Model.PartnerUploadedBy</td>
+                                        <feature name="@FeatureFlags.EnableCsvDownload">
+                                            <td data-heading="@download" class="govuk-table__cell no-wrap-text"></td>
+                                        </feature>
+                                    </tr>
+                                }
                                 </tbody>
                             </table>
                         </div>

@@ -66,6 +66,8 @@ public class ReviewCompanyDetailsViewModel : ViewModelWithOrganisationRole, IVal
     public bool IsResubmission { get; set; }
 
     public int? RegistrationYear { get; set; }
+    public RegistrationJourney? RegistrationJourney { get; set; }
+    public bool ShowRegistrationCaption => RegistrationJourney != null && RegistrationYear != null;
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
