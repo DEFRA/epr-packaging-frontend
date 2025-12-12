@@ -91,7 +91,7 @@ public class DeclarationWithFullNameControllerTests
         _registrationApplicationServiceMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(DateTime.Now.Year);
 
         // Act
-        var result = await _systemUnderTest.Get() as RedirectToActionResult;
+        var result = await _systemUnderTest.Get(null) as RedirectToActionResult;
 
         // Assert
         result.ActionName.Should().Be("Get");
@@ -107,7 +107,7 @@ public class DeclarationWithFullNameControllerTests
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).Returns(Task.FromResult<RegistrationSubmission>(null));
 
         // Act
-        var result = await _systemUnderTest.Get() as RedirectToActionResult;
+        var result = await _systemUnderTest.Get(null) as RedirectToActionResult;
 
         // Assert
         result.ActionName.Should().Be("Get");
@@ -123,7 +123,7 @@ public class DeclarationWithFullNameControllerTests
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).Returns(Task.FromResult<RegistrationSubmission>(new RegistrationSubmission { HasValidFile = false }));
 
         // Act
-        var result = await _systemUnderTest.Get() as RedirectToActionResult;
+        var result = await _systemUnderTest.Get(null) as RedirectToActionResult;
 
         // Assert
         result.ActionName.Should().Be("Get");
@@ -162,7 +162,7 @@ public class DeclarationWithFullNameControllerTests
         _registrationApplicationServiceMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(DateTime.Now.Year);
 
         // Act
-        var result = await _systemUnderTest.Get() as ViewResult;
+        var result = await _systemUnderTest.Get(null) as ViewResult;
 
         // Assert
         result.ViewName.Should().Be(ViewName);
