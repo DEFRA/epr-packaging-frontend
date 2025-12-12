@@ -48,4 +48,7 @@
     <data name="text_assistive.warning" xml:space="preserve">
         <value />
     </data>
+    <data name="cso_act_on_behalf" xml:space="preserve">
+        <value />
+    </data>
 </root>

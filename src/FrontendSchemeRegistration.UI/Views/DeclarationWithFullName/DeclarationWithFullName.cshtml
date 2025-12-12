@@ -1,8 +1,15 @@
-﻿@model DeclarationWithFullNameViewModel
+﻿@using FrontendSchemeRegistration.UI.ViewModels.Shared
+@model DeclarationWithFullNameViewModel
 
 @{
     ViewData["Title"] = Localizer["declaration"];
     var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer);
+    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+        Model.ShowRegistrationCaption, 
+        Model.RegistrationJourney, 
+        null,
+        Localizer["declaration"],
+        Model.RegistrationYear);
 }
 
 @await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
@@ -21,8 +28,8 @@
                 {
                     @await Html.PartialAsync("Partials/Govuk/_ErrorsViewModelSummary", errorsViewModel)
                 }
-                
-                <h1 class="govuk-heading-l">@Localizer["declaration"]</h1>
+
+                <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel"/>
 
                 @if (Model.IsResubmission)
                 {
@@ -34,7 +41,16 @@
                 }
                 
                 <ul class="govuk-list govuk-list--bullet">
-                    <li>@String.Format(Localizer["you_can_act_on_behalf"].Value, Model.OrganisationName)</li>
+                    <li>
+                        @if (Model.IsCso)
+                        {
+                            @Localizer["cso_act_on_behalf"]
+                        }
+                        else
+                        {
+                            @Localizer["you_can_act_on_behalf", Model.OrganisationName]
+                        }
+                    </li>
                     @if (Model.IsResubmission)
                     {
                         <li>@Localizer["this_data_is_accurate"]</li>

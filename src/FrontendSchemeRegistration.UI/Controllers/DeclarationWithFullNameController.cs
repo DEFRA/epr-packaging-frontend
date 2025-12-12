@@ -13,6 +13,9 @@ using Microsoft.AspNetCore.WebUtilities;
 
 namespace FrontendSchemeRegistration.UI.Controllers;
 
+using Application.Enums;
+using Constants;
+
 [Route(PagePaths.DeclarationWithFullName)]
 public class DeclarationWithFullNameController(
     ISubmissionService submissionService,
@@ -26,7 +29,7 @@ public class DeclarationWithFullNameController(
 
     [HttpGet]
     [SubmissionIdActionFilter(PagePaths.FileUploadCompanyDetailsSubLanding)]
-    public async Task<IActionResult> Get()
+    public async Task<IActionResult> Get([FromQuery]RegistrationJourney? registrationJourney)
     {
         var submissionId = Guid.Parse(Request.Query["submissionId"]);
         var userData = User.GetUserData();
@@ -59,14 +62,21 @@ public class DeclarationWithFullNameController(
 
         var routeValue = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear);
         ViewBag.BackLinkToDisplay = QueryHelpers.AddQueryString(Url.Content($"~{reviewOrganisationDataPath}"), routeValue.ToDictionary(k => k.Key, k => k.Value.ToString() ?? string.Empty));
+        
+        var organisation = session.UserData.Organisations[0];
+        var regJourney = registrationJourney ?? submission.RegistrationJourney;
+        bool isCso = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
 
         return View(ViewName, new DeclarationWithFullNameViewModel
         {
-            OrganisationName = User.GetUserData().Organisations[0].Name,
+            OrganisationName = organisation.Name,
             OrganisationDetailsFileId = submission.LastUploadedValidFiles.CompanyDetailsFileId.ToString(),
             SubmissionId = submissionId,
             IsResubmission = session.RegistrationSession.IsResubmission,
-            RegistrationYear = registrationYear
+            RegistrationYear = registrationYear,
+            RegistrationJourney = regJourney,
+            ShowRegistrationCaption = isCso && registrationJourney is not null && registrationYear is not null,
+            IsCso = isCso
         });
     }
 
