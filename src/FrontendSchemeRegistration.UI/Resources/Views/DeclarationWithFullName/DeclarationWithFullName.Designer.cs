@@ -111,5 +111,11 @@ namespace FrontendSchemeRegistration.UI.Resources.Views.DeclarationWithFullName 
                 return ResourceManager.GetString("cso_act_on_behalf", resourceCulture);
             }
         }
+        
+        internal static string cso_enforcement_warning {
+            get {
+                return ResourceManager.GetString("cso_enforcement_warning", resourceCulture);
+            }
+        }
     }
 }

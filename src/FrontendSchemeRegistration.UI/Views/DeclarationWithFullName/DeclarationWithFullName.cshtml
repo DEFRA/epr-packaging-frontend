@@ -85,7 +85,14 @@
                     <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
                     <strong class="govuk-warning-text__text">
                         <span class="govuk-warning-text__assistive">@Localizer["text_assistive.warning"]</span>
-                        @String.Format(Localizer["may_face_enforcement"].Value, Model.OrganisationName)
+                        @if (Model.IsCso)
+                        {
+                            @Localizer["cso_enforcement_warning"]
+                        }
+                        else
+                        {
+                            @Localizer["may_face_enforcement", Model.OrganisationName]
+                        }
                     </strong>
                 </div>
 
