@@ -59,13 +59,13 @@ public class DeclarationWithFullNameController(
         var reviewOrganisationDataPath = PagePaths.ReviewOrganisationData.StartsWith('/')
             ? PagePaths.ReviewOrganisationData
             : Path.Combine("/", PagePaths.ReviewOrganisationData);
-
-        var routeValue = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear);
-        ViewBag.BackLinkToDisplay = QueryHelpers.AddQueryString(Url.Content($"~{reviewOrganisationDataPath}"), routeValue.ToDictionary(k => k.Key, k => k.Value.ToString() ?? string.Empty));
         
         var organisation = session.UserData.Organisations[0];
         var regJourney = registrationJourney ?? submission.RegistrationJourney;
         bool isCso = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
+
+        var routeValue = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear, registrationJourney: regJourney);
+        ViewBag.BackLinkToDisplay = QueryHelpers.AddQueryString(Url.Content($"~{reviewOrganisationDataPath}"), routeValue.ToDictionary(k => k.Key, k => k.Value.ToString() ?? string.Empty));
 
         return View(ViewName, new DeclarationWithFullNameViewModel
         {
