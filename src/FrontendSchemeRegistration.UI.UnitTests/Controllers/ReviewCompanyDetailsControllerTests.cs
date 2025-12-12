@@ -121,7 +121,7 @@ public class ReviewCompanyDetailsControllerTests
         _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
 
         // Act
-        var result = await _systemUnderTest.Get() as ViewResult;
+        var result = await _systemUnderTest.Get(null) as ViewResult;
 
         // Assert
         result.ViewName.Should().Be("ReviewCompanyDetails");
@@ -190,7 +190,7 @@ public class ReviewCompanyDetailsControllerTests
             });
 
         // Act
-        var result = await _systemUnderTest.Get() as ViewResult;
+        var result = await _systemUnderTest.Get(null) as ViewResult;
 
         // Assert
         result.ViewName.Should().Be("ReviewCompanyDetails");
@@ -217,7 +217,7 @@ public class ReviewCompanyDetailsControllerTests
         _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
 
         // Act
-        var result = await _systemUnderTest.Get() as RedirectToActionResult;
+        var result = await _systemUnderTest.Get(null) as RedirectToActionResult;
 
         // Assert
         result.ActionName.Should().Be("Get");
@@ -239,7 +239,7 @@ public class ReviewCompanyDetailsControllerTests
         _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
 
         // Act
-        var result = await _systemUnderTest.Get() as RedirectToActionResult;
+        var result = await _systemUnderTest.Get(null) as RedirectToActionResult;
 
         // Assert
         result?.ActionName.Should().Be("Get");
@@ -343,7 +343,7 @@ public class ReviewCompanyDetailsControllerTests
     }
 
     [Test]
-    public async Task Post_RedirectsToCompanyDetailsConfirmation_WhenComplianceSchemeSubmits()
+    public async Task Post_RedirectsToDeclarationWithFullName_WhenComplianceSchemeSubmits()
     {
         // Arrange
         _submissionService
@@ -352,8 +352,6 @@ public class ReviewCompanyDetailsControllerTests
             {
                 HasValidFile = true
             });
-
-        _submissionService.Setup(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<bool?>()));
 
         var model = GenerateReviewCompanyDetailsModel(OrganisationRoles.ComplianceScheme, true, true);
 
@@ -365,44 +363,7 @@ public class ReviewCompanyDetailsControllerTests
 
         // Assert
         result?.ActionName.Should().Be("Get");
-        result?.ControllerName.Should().Be("CompanyDetailsConfirmation");
-        _submissionService.Verify(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<bool?>()), Times.Once);
-    }
-
-    [Test]
-    public async Task Post_Throw_exception_when_valid_Period_but_missing_app_ref_number()
-    {
-        // Arrange
-        _submissionService
-            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
-            .ReturnsAsync(new RegistrationSubmission
-            {
-                HasValidFile = true
-            });
-
-        _submissionService.Setup(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<bool?>()));
-
-        var model = GenerateReviewCompanyDetailsModel(OrganisationRoles.ComplianceScheme, true, true);
-
-        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
-        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
-
-        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
-            .ReturnsAsync(new FrontendSchemeRegistrationSession
-            {
-                RegistrationSession =
-                {
-                    SubmissionPeriod = "January to December 2025",
-                    ApplicationReferenceNumber = null,
-                }
-            });
-
-        // Act
-        var result = await _systemUnderTest.Post(model) as RedirectToActionResult;
-
-        // Assert
-        result?.ActionName.Should().Be("HandleThrownSubmissionException");
-        result?.ControllerName.Should().Be("Error");
+        result?.ControllerName.Should().Be("DeclarationWithFullName");
     }
 
     [TestCase(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Invited)]

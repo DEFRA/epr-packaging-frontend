@@ -499,7 +499,7 @@ public class RegistrationApplicationController(
                     return RedirectToAction(
                         nameof(ReviewCompanyDetailsController.Get),
                         nameof(ReviewCompanyDetailsController).RemoveControllerFromName(),
-                        new RouteValueDictionary { { "submissionId", session.SubmissionId }, { "registrationyear", registrationYear } });
+                        new RouteValueDictionary { { "submissionId", session.SubmissionId }, { "registrationyear", registrationYear }, { "registrationjourney", registrationJourney } });
                 case ApplicationStatusType.NotStarted:
                 case ApplicationStatusType.QueriedByRegulator:
                 case ApplicationStatusType.CancelledByRegulator:
