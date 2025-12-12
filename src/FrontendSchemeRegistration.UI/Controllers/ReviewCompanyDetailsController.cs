@@ -67,7 +67,7 @@ public class ReviewCompanyDetailsController : Controller
         var isFileUploadJourneyInvokedViaRegistration = session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration;
         var isResubmission = session.RegistrationSession.IsResubmission;
 
-        this.SetBackLink(isFileUploadJourneyInvokedViaRegistration, isResubmission, registrationYear, submission.RegistrationJourney);
+        this.SetBackLink(isFileUploadJourneyInvokedViaRegistration, isResubmission, registrationYear, submission.RegistrationJourney ?? registrationJourney);
         ViewData["IsFileUploadJourneyInvokedViaRegistration"] = isFileUploadJourneyInvokedViaRegistration;
 
         return View(
@@ -111,7 +111,7 @@ public class ReviewCompanyDetailsController : Controller
                 SubmissionStatus = submission.GetSubmissionStatus(),
                 IsResubmission = isResubmission,
                 RegistrationYear = registrationYear,
-                RegistrationJourney = submission.RegistrationJourney
+                RegistrationJourney = submission.RegistrationJourney ?? registrationJourney
             });
 
         return RedirectToAction("HandleThrownExceptions", "Error");
@@ -120,20 +120,21 @@ public class ReviewCompanyDetailsController : Controller
     [HttpPost]
     public async Task<IActionResult> Post(ReviewCompanyDetailsViewModel model)
     {
+        var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+        var isFileUploadJourneyInvokedViaRegistration = session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration;
+        ViewData["IsFileUploadJourneyInvokedViaRegistration"] = isFileUploadJourneyInvokedViaRegistration;
+        
         if (!ModelState.IsValid)
         {
             return View("ReviewCompanyDetails", model);
         }
 
-        var submissionId = Guid.Parse(Request.Query["submissionId"]);
-
+        var submissionId = model.SubmissionId;
+        
         var userData = User.GetUserData();
 
         ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
 
-        var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-        var isFileUploadJourneyInvokedViaRegistration = session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration;
-        ViewData["IsFileUploadJourneyInvokedViaRegistration"] = isFileUploadJourneyInvokedViaRegistration;
 
         if (!userData.CanSubmit())
         {
