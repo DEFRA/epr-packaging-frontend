@@ -98,7 +98,6 @@ public class ReviewCompanyDetailsController : Controller
                 HasPreviousSubmission = submission.LastSubmittedFiles is not null,
                 HasPreviousBrandsSubmission = submission.LastSubmittedFiles is not null && !string.IsNullOrWhiteSpace(submission.LastSubmittedFiles.BrandsFileName),
                 HasPreviousPartnersSubmission = submission.LastSubmittedFiles is not null && !string.IsNullOrWhiteSpace(submission.LastSubmittedFiles.PartnersFileName),
-                RegistrationJourney = registrationJourney,
                 SubmittedCompanyDetailsFileName = submission.LastSubmittedFiles?.CompanyDetailsFileName,
                 SubmittedCompanyDetailsDateTime = submission.LastSubmittedFiles?.SubmittedDateTime?.ToReadableDate(),
                 SubmittedBrandsFileName = submission.LastSubmittedFiles?.BrandsFileName,
