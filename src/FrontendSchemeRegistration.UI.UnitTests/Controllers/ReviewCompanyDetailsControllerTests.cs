@@ -71,13 +71,6 @@ public class ReviewCompanyDetailsControllerTests
         {
             HttpContext = new DefaultHttpContext
             {
-                Request =
-                {
-                    Query = new QueryCollection(new Dictionary<string, StringValues>
-                    {
-                        { "submissionId", SubmissionId }
-                    })
-                },
                 Session = new Mock<ISession>().Object,
                 User = _claimsPrincipalMock.Object
             }
@@ -107,9 +100,10 @@ public class ReviewCompanyDetailsControllerTests
         // Arrange
         const string firstName = "First Name";
         const string lastName = "Last Name";
+        var submission = GenerateRegistrationSubmission(expectedRegistrationJourney);
         _submissionService
-            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
-            .ReturnsAsync(GenerateRegistrationSubmission(expectedRegistrationJourney));
+            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(submission.Id))
+            .ReturnsAsync(submission);
         _userAccountServiceMock.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>()))
             .ReturnsAsync(new PersonDto
             {
@@ -121,7 +115,7 @@ public class ReviewCompanyDetailsControllerTests
         _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
 
         // Act
-        var result = await _systemUnderTest.Get(null) as ViewResult;
+        var result = await _systemUnderTest.Get(submission.Id) as ViewResult;
 
         // Assert
         result.ViewName.Should().Be("ReviewCompanyDetails");
@@ -165,9 +159,10 @@ public class ReviewCompanyDetailsControllerTests
         // Arrange
         const string firstName = "First Name";
         const string lastName = "Last Name";
+        var submission = GenerateRegistrationSubmission();
         _submissionService
-            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
-            .ReturnsAsync(GenerateRegistrationSubmission());
+            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(submission.Id))
+            .ReturnsAsync(submission);
         _userAccountServiceMock.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>()))
             .ReturnsAsync(new PersonDto
             {
@@ -190,7 +185,7 @@ public class ReviewCompanyDetailsControllerTests
             });
 
         // Act
-        var result = await _systemUnderTest.Get(null) as ViewResult;
+        var result = await _systemUnderTest.Get(submission.Id) as ViewResult;
 
         // Assert
         result.ViewName.Should().Be("ReviewCompanyDetails");
@@ -217,7 +212,7 @@ public class ReviewCompanyDetailsControllerTests
         _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
 
         // Act
-        var result = await _systemUnderTest.Get(null) as RedirectToActionResult;
+        var result = await _systemUnderTest.Get(Guid.NewGuid()) as RedirectToActionResult;
 
         // Assert
         result.ActionName.Should().Be("Get");
@@ -228,10 +223,12 @@ public class ReviewCompanyDetailsControllerTests
     public async Task Get_RedirectsToFileUploadCompanyDetailsSubLandingGet_WhenHasInvalidFile()
     {
         // Arrange
+        var submissionId = Guid.NewGuid();
         _submissionService
             .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
             .ReturnsAsync(new RegistrationSubmission
             {
+                Id = submissionId,
                 HasValidFile = false
             });
 
@@ -239,7 +236,7 @@ public class ReviewCompanyDetailsControllerTests
         _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
 
         // Act
-        var result = await _systemUnderTest.Get(null) as RedirectToActionResult;
+        var result = await _systemUnderTest.Get(submissionId) as RedirectToActionResult;
 
         // Assert
         result?.ActionName.Should().Be("Get");

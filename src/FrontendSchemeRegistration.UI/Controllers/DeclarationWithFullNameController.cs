@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.WebUtilities;
 
 namespace FrontendSchemeRegistration.UI.Controllers;
 
+using Constants;
+
 [Route(PagePaths.DeclarationWithFullName)]
 public class DeclarationWithFullNameController(
     ISubmissionService submissionService,
@@ -26,9 +28,8 @@ public class DeclarationWithFullNameController(
 
     [HttpGet]
     [SubmissionIdActionFilter(PagePaths.FileUploadCompanyDetailsSubLanding)]
-    public async Task<IActionResult> Get()
+    public async Task<IActionResult> Get([FromQuery]Guid submissionId)
     {
-        var submissionId = Guid.Parse(Request.Query["submissionId"]);
         var userData = User.GetUserData();
         var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
 
@@ -56,29 +57,34 @@ public class DeclarationWithFullNameController(
         var reviewOrganisationDataPath = PagePaths.ReviewOrganisationData.StartsWith('/')
             ? PagePaths.ReviewOrganisationData
             : Path.Combine("/", PagePaths.ReviewOrganisationData);
+        
+        var organisation = userData.Organisations[0];
+        bool isCso = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
 
         var routeValue = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear);
         ViewBag.BackLinkToDisplay = QueryHelpers.AddQueryString(Url.Content($"~{reviewOrganisationDataPath}"), routeValue.ToDictionary(k => k.Key, k => k.Value.ToString() ?? string.Empty));
 
         return View(ViewName, new DeclarationWithFullNameViewModel
         {
-            OrganisationName = User.GetUserData().Organisations[0].Name,
+            OrganisationName = organisation.Name,
             OrganisationDetailsFileId = submission.LastUploadedValidFiles.CompanyDetailsFileId.ToString(),
             SubmissionId = submissionId,
             IsResubmission = session.RegistrationSession.IsResubmission,
-            RegistrationYear = registrationYear
+            RegistrationYear = registrationYear,
+            RegistrationJourney = submission.RegistrationJourney,
+            ShowRegistrationCaption = isCso && submission.RegistrationJourney is not null && registrationYear is not null,
+            IsCso = isCso
         });
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post(DeclarationWithFullNameViewModel model)
+    public async Task<IActionResult> Post([FromQuery]Guid submissionId, DeclarationWithFullNameViewModel model)
     {
         if (!ModelState.IsValid)
         {
             return View(ViewName, model);
         }
 
-        var submissionId = Guid.Parse(Request.Query["submissionId"]);
         var userData = User.GetUserData();
 
         if (!userData.CanSubmit())
