@@ -123,6 +123,7 @@ public class ReviewCompanyDetailsController : Controller
         
         if (!ModelState.IsValid)
         {
+            this.SetBackLink(isFileUploadJourneyInvokedViaRegistration, model.IsResubmission, model.RegistrationYear, model.RegistrationJourney);
             return View("ReviewCompanyDetails", model);
         }
 
