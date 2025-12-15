@@ -127,7 +127,7 @@ public class CompanyDetailsConfirmationControllerTests
         result.ViewData.Keys.Should().HaveCount(2);
         result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
         result.ViewData.Keys.Should().Contain("IsFileUploadJourneyInvokedViaRegistration");
-        result.ViewData["BackLinkToDisplay"].Should().Be($"~/{PagePaths.FileUploadCompanyDetailsSubLanding}?registrationyear={submissionTime.Year}");
+        result.ViewData["BackLinkToDisplay"].Should().Be($"~/{PagePaths.FileUploadCompanyDetailsSubLanding}?registrationyear={submissionTime.Year}&registrationjourney={RegistrationJourney.CsoLargeProducer}");
         result.ViewData["IsFileUploadJourneyInvokedViaRegistration"].Should().Be(false);
         result.Model.Should().BeEquivalentTo(new CompanyDetailsConfirmationModel
         {

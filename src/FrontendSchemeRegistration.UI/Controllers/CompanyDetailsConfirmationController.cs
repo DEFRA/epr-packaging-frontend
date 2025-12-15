@@ -2,6 +2,7 @@
 
 using Application.Constants;
 using Application.DTOs.Submission;
+using Application.Enums;
 using Application.Extensions;
 using Application.Services.Interfaces;
 using EPR.Common.Authorization.Constants;
@@ -53,13 +54,19 @@ public class CompanyDetailsConfirmationController : Controller
 
                 if (submission is not null && submission.IsSubmitted)
                 {
-                    var isFileUploadJourneyInvokedViaRegistration = session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration;
-                    this.SetBackLink(isFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, registrationYear);
+                    var isInvokedViaRegistration = session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration;
+                    this.SetBackLink(
+                        isInvokedViaRegistration, 
+                        session.RegistrationSession.IsResubmission,
+                        registrationYear,
+                        submission.RegistrationJourney);
 
-                    ViewData["IsFileUploadJourneyInvokedViaRegistration"] = isFileUploadJourneyInvokedViaRegistration;
+                    ViewData["IsFileUploadJourneyInvokedViaRegistration"] = isInvokedViaRegistration;
 
                     var submittedDateTime = submission.LastSubmittedFiles.SubmittedDateTime.Value;
-                    var routeValue = QueryStringExtensions.BuildRouteValues(isResubmission : session.RegistrationSession.IsResubmission, registrationYear: registrationYear);
+                    var routeValue = QueryStringExtensions.BuildRouteValues(
+                        isResubmission : session.RegistrationSession.IsResubmission,
+                        registrationYear: registrationYear);
                     var orgName = session.UserData.Organisations[0].Name;
                     
                     return View(
