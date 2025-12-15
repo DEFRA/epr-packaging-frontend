@@ -125,14 +125,15 @@ public class CompanyDetailsConfirmationControllerTests
         result.ViewData.Keys.Should().HaveCount(2);
         result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
         result.ViewData.Keys.Should().Contain("IsFileUploadJourneyInvokedViaRegistration");
-        result.ViewData["BackLinkToDisplay"].Should().Be($"~/{PagePaths.FileUploadCompanyDetailsSubLanding}?registrationyear={DateTime.Now.Year}");
+        result.ViewData["BackLinkToDisplay"].Should().Be($"~/{PagePaths.FileUploadCompanyDetailsSubLanding}?registrationyear={submissionTime.Year}");
         result.ViewData["IsFileUploadJourneyInvokedViaRegistration"].Should().Be(false);
         result.Model.Should().BeEquivalentTo(new CompanyDetailsConfirmationModel
         {
             SubmissionTime = submissionTime.ToTimeHoursMinutes(),
             SubmittedDate = submissionTime.ToReadableDate(),
             SubmittedBy = fullName,
-            OrganisationRole = OrganisationRoles.ComplianceScheme
+            OrganisationRole = OrganisationRoles.ComplianceScheme,
+            RegistrationYear = submissionTime.Year
         });
     }
 
@@ -188,14 +189,15 @@ public class CompanyDetailsConfirmationControllerTests
         result.ViewData.Keys.Should().HaveCount(2);
         result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
         result.ViewData.Keys.Should().Contain("IsFileUploadJourneyInvokedViaRegistration");
-        result.ViewData["BackLinkToDisplay"].Should().Be($"~/{PagePaths.RegistrationTaskList}?registrationyear={DateTime.Now.Year}");
+        result.ViewData["BackLinkToDisplay"].Should().Be($"~/{PagePaths.RegistrationTaskList}?registrationyear={submissionTime.Year}");
         result.ViewData["IsFileUploadJourneyInvokedViaRegistration"].Should().Be(true);
         result.Model.Should().BeEquivalentTo(new CompanyDetailsConfirmationModel
         {
             SubmissionTime = submissionTime.ToTimeHoursMinutes(),
             SubmittedDate = submissionTime.ToReadableDate(),
             SubmittedBy = fullName,
-            OrganisationRole = OrganisationRoles.ComplianceScheme
+            OrganisationRole = OrganisationRoles.ComplianceScheme,
+            RegistrationYear = submissionTime.Year
         });
     }
 
