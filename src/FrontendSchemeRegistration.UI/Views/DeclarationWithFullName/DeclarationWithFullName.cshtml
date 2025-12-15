@@ -9,7 +9,7 @@
         Model.RegistrationJourney, 
         null,
         Localizer["declaration"],
-        Model.RegistrationYear);
+        Model.RegistrationYear ?? 0);
 }
 
 @await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
