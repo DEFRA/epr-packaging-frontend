@@ -60,7 +60,7 @@ public class DeclarationWithFullNameController(
             ? PagePaths.ReviewOrganisationData
             : Path.Combine("/", PagePaths.ReviewOrganisationData);
         
-        var organisation = session.UserData.Organisations[0];
+        var organisation = userData.Organisations[0];
         var regJourney = registrationJourney ?? submission.RegistrationJourney;
         bool isCso = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
 
