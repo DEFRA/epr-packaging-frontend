@@ -17,5 +17,6 @@ public class ProducerRegistrationGuidanceViewModel : OrganisationNationViewModel
     public int RegistrationYear { get; set; }
     
     public RegistrationJourney? RegistrationJourney { get; set; }
+
     public bool ShowRegistrationCaption { get; set; } = false;
 }
