@@ -123,4 +123,7 @@
 	<data name="register_company_size_small" xml:space="preserve">
 		<value>Small canllawiau {0} cofrestru</value>
 	</data>
+  <data name="register_direct_company" xml:space="preserve">
+    <value>[WELSH] {0} cofrestru</value>
+  </data>
 </root>

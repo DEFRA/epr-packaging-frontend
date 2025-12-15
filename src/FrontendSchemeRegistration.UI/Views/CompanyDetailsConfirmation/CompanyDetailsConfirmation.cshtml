@@ -1,40 +1,52 @@
-@using FrontendSchemeRegistration.UI.Constants
+@using FrontendSchemeRegistration.UI.ViewModels.Shared
 @model CompanyDetailsConfirmationModel
 
 @{
     ViewData["Title"] = Localizer[Model.IsComplianceScheme ? "page_title_compliance" : "page_title_producer"];
     var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
-    bool IsFileUploadJourneyInvokedViaRegistration = (bool)ViewData["IsFileUploadJourneyInvokedViaRegistration"];
+    bool isFileUploadJourneyInvokedViaRegistration = (bool)ViewData["IsFileUploadJourneyInvokedViaRegistration"];
+    var heading = Model.RegistrationJourney.ToString().Contains("cso", StringComparison.OrdinalIgnoreCase) ? Model.OrganisationName : "";
+    
+    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+        Model.ShowRegistrationCaption, 
+        Model.RegistrationJourney, 
+        heading,
+        null,
+        Model.RegistrationYear,
+        OrganisationName: Model.OrganisationName); //This isn't ideal, It wont show the heading as the ShowRegistrationCaption is false if this is null and the journey
 }
 
 @await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
 
 <main class="govuk-main-wrapper" id="main-content" role="main">
     <div class="govuk-grid-row">
-        @if (IsFileUploadJourneyInvokedViaRegistration)
+        @if (isFileUploadJourneyInvokedViaRegistration)
         {
             <div class="govuk-grid-column-two-thirds">
-
-                <div class="govuk-panel govuk-panel--confirmation">
-                    <h1 class="govuk-panel__title">
-                        @Localizer[Model.RegistrationSubmissionTask]
-                    </h1>
+                
+                <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+                    <div class="govuk-notification-banner__header">
+                        <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                            @Localizer["success"]
+                        </h2>
+                    </div>
+                    <div class="govuk-notification-banner__content">
+                        <h3 class="govuk-notification-banner__heading">
+                            @Localizer[Model.RegistrationSubmissionTask]
+                        </h3>
+                        <p class="govuk-body">@Localizer[Model.RegistrationSubmissionTask]</p>
+                    </div>
                 </div>
+                
+                <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel"/>
+
                 <p class="govuk-body">
-                    @Localizer[Model.SubmissionTask, Model.SubmittedBy, Model.SubmissionTime, Model.SubmittedDate]
-                    @if (!Model.IsResubmission)
-                    {
-                        <button id="printButton" class="govuk-link govuk-link--no-visited-state govuk-body-m js-show">@Localizer["print_this_page"]</button>
-                    }
+                    @Localizer["you_can"]<button id="printButton" class="govuk-link govuk-link--no-visited-state govuk-body-m js-show">@Localizer["print_or_save_as_PDF"]</button>
                 </p>
 
                 <div class="govuk-inset-text">
                     <p class="govuk-body">@Localizer["it_may_take_an_hour"]</p>
                 </div>
-
-                <noscript>
-                    <p class="govuk-body">@Localizer["you_can_save_this_page"]</p>
-                </noscript>
 
                 <h3 class="govuk-heading-m">@Localizer["what_happens_next"]</h3>
                 <p class="govuk-body">@Localizer["you_still_need_to"]</p>
@@ -50,20 +62,11 @@
                     </a>
                 </p>
 
-                @if (Model.IsResubmission)
-                {
-                    <p class="govuk-body govuk-!-margin-bottom-4">
-                        @Localizer["you_can"]
-                        <a href="#" id="print-or-save" target="_blank" class="govuk-link govuk-link--no-visited-state">
-                            @Localizer["print_or_save_as_PDF"]
-                        </a>
-                    </p>
-                }
-
             </div>
         }
         else
         {
+            <!-- TODO: fix this for non registration journeys -->
             <div class="govuk-grid-column-two-thirds">
 
                 <div class="govuk-panel govuk-panel--confirmation">
@@ -96,7 +99,6 @@
                                  @class = "govuk-link govuk-link--no-visited-state"
                              })
                 </p>
-
             </div>
         }
     </div>

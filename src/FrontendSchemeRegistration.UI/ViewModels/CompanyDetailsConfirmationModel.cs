@@ -1,7 +1,7 @@
 ﻿namespace FrontendSchemeRegistration.UI.ViewModels;
 
 using System.Diagnostics.CodeAnalysis;
-using System.Security.Policy;
+using Application.Enums;
 
 [ExcludeFromCodeCoverage]
 public class CompanyDetailsConfirmationModel : ViewModelWithOrganisationRole
@@ -23,4 +23,12 @@ public class CompanyDetailsConfirmationModel : ViewModelWithOrganisationRole
     public string SubmitToRegulatorTask => IsResubmission ? "submit_to_environmental_regulator" : "apply_for_registration";
 
     public string ReturnToRegistrationLink { get; set; }
+    
+    public bool ShowRegistrationCaption { get; set; }
+    
+    public RegistrationJourney? RegistrationJourney { get; set; }
+    
+    public int RegistrationYear { get; set; }
+    
+    public string OrganisationName { get; set; }
 }
