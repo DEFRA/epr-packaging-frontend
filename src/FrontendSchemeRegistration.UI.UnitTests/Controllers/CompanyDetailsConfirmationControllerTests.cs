@@ -3,6 +3,7 @@
 using Application.Constants;
 using Application.DTOs.Submission;
 using Application.DTOs.UserAccount;
+using Application.Enums;
 using Application.Services.Interfaces;
 using Constants;
 using EPR.Common.Authorization.Models;
@@ -104,7 +105,8 @@ public class CompanyDetailsConfirmationControllerTests
             {
                 SubmittedDateTime = submissionTime,
                 SubmittedBy = Guid.NewGuid()
-            }
+            },
+            RegistrationJourney = RegistrationJourney.CsoLargeProducer,
         });
 
         const string firstName = "first";
@@ -133,7 +135,8 @@ public class CompanyDetailsConfirmationControllerTests
             SubmittedDate = submissionTime.ToReadableDate(),
             SubmittedBy = fullName,
             OrganisationRole = OrganisationRoles.ComplianceScheme,
-            RegistrationYear = submissionTime.Year
+            RegistrationYear = submissionTime.Year,
+            RegistrationJourney = RegistrationJourney.CsoLargeProducer
         });
     }
 
