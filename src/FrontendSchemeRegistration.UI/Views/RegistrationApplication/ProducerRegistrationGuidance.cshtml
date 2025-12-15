@@ -20,24 +20,23 @@
 
             <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel" />
 
-            <div class="govuk-inset-text govuk-!-margin-bottom-4">
-                @if (Model.IsComplianceScheme)
-                {
-                    <p class="govuk-body govuk-!-font-weight-bold">@Localizer["compliance_scheme_x", Model.ComplianceScheme]
-                        <br/>@Localizer["regulator"]@Localizer[$"{nationName}.environmental_regulator"]
-                    </p>
-                }
-                else
-                {
-                    <p class="govuk-body govuk-!-font-weight-bold">@Localizer["organisation_id_x", Model.OrganisationNumber]</p>
-                }
-            </div>
-            <div class="govuk-warning-text">
-                <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-                <strong class="govuk-warning-text__text">
-                    <span class="govuk-visually-hidden">Warning</span>
-                    @Localizer["ensure_your_packaging_data_for_year_been_reported_before_registering", Model.RegistrationYear - 1]
-                </strong>
+            @if (Model.IsComplianceScheme)
+            {
+                <p class ="govuk-body-l">
+                    @Localizer["compliance_scheme_x", Model.ComplianceScheme]
+                    <br/>@Localizer["regulator"]@Localizer[$"{nationName}.environmental_regulator"]
+                </p>
+            }
+            else
+            {
+                <p class="govuk-body-l">@Localizer["organisation_id_x", Model.OrganisationNumber]</p>
+            }
+            <div class="govuk-inset-text">
+                <p class="govuk-body">
+                <strong>
+                        @Localizer["ensure_your_packaging_data_for_year_been_reported_before_registering", Model.RegistrationYear - 1, Model.RegistrationYear]
+                    </strong>
+                </p>
             </div>
             <p class="govuk-body">
                 @Localizer["if_you_are_obligated_under_PRO_2024_you_must_register"]<br/>
