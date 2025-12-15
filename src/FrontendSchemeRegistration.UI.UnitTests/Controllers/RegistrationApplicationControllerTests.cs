@@ -212,7 +212,7 @@ public class RegistrationApplicationControllerTests
         var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
 
         // Assert
-        pageBackLink.Should().Be(PagePaths.ComplianceSchemeLanding);
+        pageBackLink.Should().Be(PagePaths.ProducerRegistrationGuidance);
         result.Model.Should().BeOfType<RegistrationTaskListViewModel>();
         RegistrationApplicationService.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<ISession>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<SubmissionType>()), Times.Never);
 
@@ -255,7 +255,7 @@ public class RegistrationApplicationControllerTests
         var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
 
         // Assert
-        pageBackLink.Should().Be(PagePaths.ComplianceSchemeLanding);
+        pageBackLink.Should().Be(PagePaths.ProducerRegistrationGuidance);
         result.Model.Should().BeOfType<RegistrationTaskListViewModel>();
         RegistrationApplicationService.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<ISession>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<SubmissionType>()), Times.Never);
 
@@ -306,11 +306,11 @@ public class RegistrationApplicationControllerTests
         // Assert
         if (expectedRegistrationJourney == null)
         {
-            pageBackLink.Should().Be(PagePaths.ComplianceSchemeLanding);
+            pageBackLink.Should().Be(PagePaths.ProducerRegistrationGuidance);
         }
         else
         {
-            pageBackLink.Should().Be($"{PagePaths.ComplianceSchemeLanding}?registrationjourney={expectedRegistrationJourney.ToString()}");    
+            pageBackLink.Should().Be($"{PagePaths.ProducerRegistrationGuidance}?registrationjourney={expectedRegistrationJourney.ToString()}");    
         }
         result.Model.Should().BeOfType<RegistrationTaskListViewModel>();
         RegistrationApplicationService.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<ISession>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<SubmissionType>()), Times.Never);
@@ -424,7 +424,7 @@ public class RegistrationApplicationControllerTests
         var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
 
         // Assert
-        pageBackLink.Should().Be(PagePaths.HomePageSelfManaged);
+        pageBackLink.Should().Be(PagePaths.ProducerRegistrationGuidance);
         result.Model.Should().BeOfType<RegistrationTaskListViewModel>();
 
         result.Model.As<RegistrationTaskListViewModel>().Should().BeEquivalentTo(new RegistrationTaskListViewModel
