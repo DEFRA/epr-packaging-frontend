@@ -35,10 +35,19 @@ public class RegistrationApplicationController(
         var organisation = userData.Organisations[0];
         var isResubmission = !string.IsNullOrWhiteSpace(HttpContext.Request.Query["IsResubmission"]);
 
+        RegistrationJourney? registrationJourney = null;
+        if (Enum.TryParse<RegistrationJourney>(HttpContext.Request.Query["registrationjourney"].ToString(), true, out var registrationJourneyResult))
+        {
+            registrationJourney = registrationJourneyResult;
+        }
         var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], false);
-        var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, registrationYear.GetValueOrDefault(), isResubmission);    
+
+        var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, registrationYear.GetValueOrDefault(), isResubmission, registrationJourney);
+
         session.Journey = [session.IsComplianceScheme ? PagePaths.ComplianceSchemeLanding : PagePaths.HomePageSelfManaged, PagePaths.ProducerRegistrationGuidance];
 
+        await SaveSession(session, PagePaths.ProducerRegistrationGuidance, null);
+        SetBackLink(session, PagePaths.ProducerRegistrationGuidance, registrationYear, registrationJourney);
 
         if (session.ApplicationStatus is
                 ApplicationStatusType.FileUploaded
@@ -50,7 +59,7 @@ public class RegistrationApplicationController(
                 RegistrationTaskListStatus.Pending
                 or RegistrationTaskListStatus.Completed)
         {
-            return RedirectToAction(nameof(RegistrationTaskList), new {registrationyear = registrationYear});
+            return RedirectToAction(nameof(RegistrationTaskList), new {registrationyear = registrationYear, registrationjourney = registrationJourney});
         }
 
         return View(new ProducerRegistrationGuidanceViewModel
@@ -60,7 +69,9 @@ public class RegistrationApplicationController(
             OrganisationNumber = organisation.OrganisationNumber.ToReferenceNumberFormat(),
             RegistrationYear = registrationYear.GetValueOrDefault(),
             IsComplianceScheme = userData.Organisations[0].OrganisationRole == OrganisationRoles.ComplianceScheme,
-            ComplianceScheme = session.SelectedComplianceScheme?.Name!
+            ComplianceScheme = session.SelectedComplianceScheme?.Name!,
+            RegistrationJourney = registrationJourney,
+            ShowRegistrationCaption = session.ShowRegistrationCaption
         });
     }
 
@@ -80,7 +91,7 @@ public class RegistrationApplicationController(
         var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
 
         var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, registrationYear.GetValueOrDefault(), isResubmission, registrationJourney);
-        session.Journey = [session.IsComplianceScheme ? PagePaths.ComplianceSchemeLanding : PagePaths.HomePageSelfManaged, PagePaths.RegistrationTaskList];
+        session.Journey = [session.IsComplianceScheme ? PagePaths.ComplianceSchemeLanding : PagePaths.HomePageSelfManaged, PagePaths.ProducerRegistrationGuidance, PagePaths.RegistrationTaskList];
 
         SetBackLink(session, PagePaths.RegistrationTaskList, registrationYear, registrationJourney);
 

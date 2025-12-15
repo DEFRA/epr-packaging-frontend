@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
+using FrontendSchemeRegistration.Application.Enums;
 
 namespace FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
 
@@ -14,4 +15,7 @@ public class ProducerRegistrationGuidanceViewModel : OrganisationNationViewModel
     public string OrganisationNumber { get; set; }
     
     public int RegistrationYear { get; set; }
+    
+    public RegistrationJourney? RegistrationJourney { get; set; }
+    public bool ShowRegistrationCaption { get; set; } = false;
 }
