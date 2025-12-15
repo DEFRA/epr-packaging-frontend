@@ -136,7 +136,7 @@ public class CompanyDetailsConfirmationControllerTests
             SubmittedBy = fullName,
             OrganisationRole = OrganisationRoles.ComplianceScheme,
             RegistrationYear = submissionTime.Year,
-            RegistrationJourney = RegistrationJourney.CsoLargeProducer
+            RegistrationJourney = RegistrationJourney.CsoLargeProducer,
         });
     }
 
@@ -200,7 +200,7 @@ public class CompanyDetailsConfirmationControllerTests
             SubmittedDate = submissionTime.ToReadableDate(),
             SubmittedBy = fullName,
             OrganisationRole = OrganisationRoles.ComplianceScheme,
-            RegistrationYear = submissionTime.Year
+            RegistrationYear = submissionTime.Year,
         });
     }
 
@@ -268,7 +268,7 @@ public class CompanyDetailsConfirmationControllerTests
                         PagePaths.FileUploadCompanyDetailsSubLanding,
                         PagePaths.FileUploadCompanyDetails,
                         PagePaths.FileUploadBrands,
-                        PagePaths.FileUploadPartnerships
+                        PagePaths.FileUploadPartnerships,
                     },
                     IsFileUploadJourneyInvokedViaRegistration = false
                 }
