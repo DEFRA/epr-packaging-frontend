@@ -22,6 +22,8 @@ using Newtonsoft.Json;
 
 namespace FrontendSchemeRegistration.UI.UnitTests.Services;
 
+using Application.Services;
+
 [TestFixture]
 public class RegistrationApplicationServiceTests
 {
@@ -1343,7 +1345,7 @@ public class RegistrationApplicationServiceTests
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(
-            It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), false,
+            It.IsAny<RegistrationApplicationData>(), It.IsAny<string>(), false,
             It.IsAny<SubmissionType>(), It.IsAny<RegistrationJourney>()),
             Times.Never);
     }
@@ -1437,7 +1439,7 @@ public class RegistrationApplicationServiceTests
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(
-            It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), false,
+                It.IsAny<RegistrationApplicationData>(), It.IsAny<string>(), false,
             It.IsAny<SubmissionType>(), It.IsAny<RegistrationJourney>()),
             Times.Never);
     }
@@ -1518,7 +1520,8 @@ public class RegistrationApplicationServiceTests
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(
-            It.IsAny<Guid>(), It.IsAny<Guid?>(), It.IsAny<string>(), "No-Outstanding-Payment", "Test", false,
+                It.Is<RegistrationApplicationData>(data => data.PaymentMethod == "No-Outstanding-Payment"),
+             "Test", false,
             SubmissionType.RegistrationFeePayment, It.IsAny<RegistrationJourney>()),
             Times.Once);
     }
@@ -1612,7 +1615,8 @@ public class RegistrationApplicationServiceTests
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(
-            It.IsAny<Guid>(), It.IsAny<Guid?>(), It.IsAny<string>(), "No-Outstanding-Payment", It.IsAny<string>(),
+            It.Is<RegistrationApplicationData>(data => data.PaymentMethod == "No-Outstanding-Payment"),
+            It.IsAny<string>(),
             false, SubmissionType.RegistrationFeePayment, null),
             Times.Once);
     }
@@ -1671,7 +1675,8 @@ public class RegistrationApplicationServiceTests
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(
-            It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), false,
+            It.IsAny<RegistrationApplicationData>(),
+            It.IsAny<string>(), false,
             It.IsAny<SubmissionType>(), It.IsAny<RegistrationJourney>()),
             Times.Never);
     }
@@ -1762,7 +1767,8 @@ public class RegistrationApplicationServiceTests
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(
-            It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), false,
+                It.IsAny<RegistrationApplicationData>(),
+            It.IsAny<string>(), false,
             It.IsAny<SubmissionType>(), It.IsAny<RegistrationJourney>()),
             Times.Never);
     }
@@ -2020,7 +2026,8 @@ public class RegistrationApplicationServiceTests
         // Assert
         session.Should().NotBeNull();
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(
-            It.IsAny<Guid>(), It.IsAny<Guid?>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(),
+                It.IsAny<RegistrationApplicationData>(),
+                It.IsAny<string>(), It.IsAny<bool>(),
             It.IsAny<SubmissionType>(), It.IsAny<RegistrationJourney>()),
             Times.Once);
     }
@@ -2062,8 +2069,11 @@ public class RegistrationApplicationServiceTests
         // Assert
         session.Should().NotBeNull();
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(
-            It.IsAny<Guid>(), It.IsAny<Guid?>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(),
-            It.IsAny<SubmissionType>(), null),
+            It.IsAny<RegistrationApplicationData>(),
+            It.IsAny<string>(),
+            It.IsAny<bool>(),
+            It.IsAny<SubmissionType>(),
+            null),
             Times.Once);
     }
 
@@ -2082,10 +2092,11 @@ public class RegistrationApplicationServiceTests
 
         // Assert
         _submissionServiceMock.Verify(ss => ss.CreateRegistrationApplicationEvent(
-            _session.SubmissionId.Value,
-            complianceSchemeId,
-            comments,
-            paymentMethod,
+            It.Is<RegistrationApplicationData>(data => 
+                data.ComplianceSchemeId == complianceSchemeId &&
+                data.Comments == comments &&
+                data.PaymentMethod == paymentMethod &&
+                data.SubmissionId == _session.SubmissionId.Value),
             _session.ApplicationReferenceNumber, false,
             submissionType, 
             It.IsAny<RegistrationJourney>()), Times.Once);
@@ -2095,21 +2106,23 @@ public class RegistrationApplicationServiceTests
     public async Task SubmitRegistrationApplication_ShouldSaveFeePaymentMethod()
     {
         // Arrange
-        var feePaymentMethod = _fixture.Create<string>();
+        var paymentMethod = _fixture.Create<string>();
         var submissionType = _fixture.Create<SubmissionType>();
         var complianceSchemeId = _session.SelectedComplianceScheme?.Id;
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(_session);
 
         // Act
-        await _service.CreateRegistrationApplicationEvent(_httpSession, null, feePaymentMethod, submissionType);
+        await _service.CreateRegistrationApplicationEvent(_httpSession, null, paymentMethod, submissionType);
 
         // Assert
         _submissionServiceMock.Verify(ss => ss.CreateRegistrationApplicationEvent(
-            _session.SubmissionId.Value,
-            complianceSchemeId,
-            null,
-            feePaymentMethod,
-            _session.ApplicationReferenceNumber, false,
+            It.Is<RegistrationApplicationData>(data => 
+                data.ComplianceSchemeId == complianceSchemeId &&
+                data.Comments == null &&
+                data.PaymentMethod == paymentMethod &&
+                data.SubmissionId == _session.SubmissionId.Value),
+            _session.ApplicationReferenceNumber,
+            false,
             submissionType, 
             It.IsAny<RegistrationJourney>()), Times.Once);
 
@@ -2130,11 +2143,13 @@ public class RegistrationApplicationServiceTests
 
         // Assert
         _submissionServiceMock.Verify(ss => ss.CreateRegistrationApplicationEvent(
-            _session.SubmissionId.Value,
-            complianceSchemeId,
-            comments,
-            null,
-            _session.ApplicationReferenceNumber, false,
+            It.Is<RegistrationApplicationData>(data => 
+                data.ComplianceSchemeId == complianceSchemeId &&
+                data.Comments == comments &&
+                data.PaymentMethod == null &&
+                data.SubmissionId == _session.SubmissionId.Value),
+            _session.ApplicationReferenceNumber,
+            false,
             submissionType, 
             It.IsAny<RegistrationJourney>()), Times.Once);
 
@@ -2155,11 +2170,13 @@ public class RegistrationApplicationServiceTests
 
         // Assert
         _submissionServiceMock.Verify(ss => ss.CreateRegistrationApplicationEvent(
-            _session.SubmissionId.Value,
-            complianceSchemeId,
-            null,
-            paymentMethod,
-            _session.ApplicationReferenceNumber, false,
+            It.Is<RegistrationApplicationData>(data => 
+                data.ComplianceSchemeId == complianceSchemeId &&
+                data.Comments == null &&
+                data.PaymentMethod == paymentMethod &&
+                data.SubmissionId == _session.SubmissionId.Value),
+           _session.ApplicationReferenceNumber,
+            false,
             submissionType, 
             It.IsAny<RegistrationJourney>()), Times.Once);
     }
@@ -2178,11 +2195,13 @@ public class RegistrationApplicationServiceTests
 
         // Assert
         _submissionServiceMock.Verify(ss => ss.CreateRegistrationApplicationEvent(
-            _session.SubmissionId.Value,
-            complianceSchemeId,
-            comments,
-            null,
-            _session.ApplicationReferenceNumber, false,
+            It.Is<RegistrationApplicationData>(data => 
+                data.ComplianceSchemeId == complianceSchemeId &&
+                data.Comments == comments &&
+                data.PaymentMethod == null &&
+                data.SubmissionId == _session.SubmissionId.Value),
+            _session.ApplicationReferenceNumber,
+            false,
             submissionType, 
             It.IsAny<RegistrationJourney>()), Times.Once);
     }
@@ -2206,11 +2225,13 @@ public class RegistrationApplicationServiceTests
 
         // Assert
         _submissionServiceMock.Verify(ss => ss.CreateRegistrationApplicationEvent(
-            _session.SubmissionId.Value,
-            complianceSchemeId,
-            comments,
-            paymentMethod,
-            _session.ApplicationReferenceNumber, false,
+            It.Is<RegistrationApplicationData>(data => 
+                data.ComplianceSchemeId == complianceSchemeId &&
+                data.Comments == comments &&
+                data.PaymentMethod == paymentMethod &&
+                data.SubmissionId == _session.SubmissionId.Value),
+            _session.ApplicationReferenceNumber,
+            false,
             submissionType, 
             It.IsAny<RegistrationJourney>()), Times.Once);
     }

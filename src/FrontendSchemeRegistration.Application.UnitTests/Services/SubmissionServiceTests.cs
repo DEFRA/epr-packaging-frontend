@@ -220,9 +220,10 @@ public class SubmissionServiceTests
         var submissionType = SubmissionType.RegistrationFeePayment;
         var paymentMethod = "test";
         var comment = "test";
-
+        RegistrationApplicationData applicationData = new RegistrationApplicationData(submissionId, complianceSchemeId, comment, paymentMethod);
+        
         // Act
-        await _submissionService.CreateRegistrationApplicationEvent(submissionId, complianceSchemeId, comment, paymentMethod, reference, false, submissionType, RegistrationJourney.CsoLargeProducer);
+        await _submissionService.CreateRegistrationApplicationEvent(applicationData, reference, false, submissionType, RegistrationJourney.CsoLargeProducer);
 
         // Assert
         _webApiGatewayClientMock.Verify(x => x.CreateRegistrationApplicationEvent(submissionId, It.Is<RegistrationApplicationPayload>(p =>
@@ -238,11 +239,12 @@ public class SubmissionServiceTests
     {
         // Arrange
         var submissionId = Guid.NewGuid();
-        const string comments = "Pay part-payment of £24,500 now";
+        const string comment = "Pay part-payment of £24,500 now";
         const string applicationReference = "PEPR00002125P1";
+        RegistrationApplicationData applicationData = new RegistrationApplicationData(submissionId, null, comment, null);
 
         // Act
-        await _submissionService.CreateRegistrationApplicationEvent(submissionId, null, comments, null,
+        await _submissionService.CreateRegistrationApplicationEvent(applicationData,
             applicationReference, false, SubmissionType.RegistrationApplicationSubmitted,
             RegistrationJourney.CsoLargeProducer);
 

@@ -17,6 +17,7 @@ using Microsoft.FeatureManagement;
 
 namespace FrontendSchemeRegistration.UI.Services;
 
+using Application.Services;
 
 public class RegistrationApplicationService : IRegistrationApplicationService
 {
@@ -463,11 +464,15 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     {
         var session = await sessionManager.GetSessionAsync(httpSession);
 
-        await submissionService.CreateRegistrationApplicationEvent(
+        var registrationApplicationData = new RegistrationApplicationData(
             session.SubmissionId.Value,
             session.SelectedComplianceScheme?.Id,
             comments,
-            paymentMethod,
+            paymentMethod
+        );
+        
+        await submissionService.CreateRegistrationApplicationEvent(
+            registrationApplicationData,
             session.ApplicationReferenceNumber,
             session.IsResubmission,
             submissionType, 
