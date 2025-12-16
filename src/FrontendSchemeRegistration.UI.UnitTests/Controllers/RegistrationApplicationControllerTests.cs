@@ -300,7 +300,12 @@ public class RegistrationApplicationControllerTests
         });
 
         // Act
-        var result = await SystemUnderTest.RegistrationTaskList() as ViewResult;
+        RegistrationJourney? parsedRegistrationJourney = null;
+        if (Enum.TryParse<RegistrationJourney>(registrationJourney, true, out var parsedJourney))
+        {
+            parsedRegistrationJourney = parsedJourney;
+        }
+        var result = await SystemUnderTest.RegistrationTaskList(parsedRegistrationJourney) as ViewResult;
         var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
 
         // Assert
