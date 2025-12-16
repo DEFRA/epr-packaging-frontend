@@ -14,8 +14,6 @@ using Microsoft.AspNetCore.WebUtilities;
 
 namespace FrontendSchemeRegistration.UI.Controllers;
 
-using Application.Enums;
-
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
 [Route(PagePaths.ReviewOrganisationData)]
 public class ReviewCompanyDetailsController : Controller
@@ -43,9 +41,8 @@ public class ReviewCompanyDetailsController : Controller
 
     [HttpGet]
     [SubmissionIdActionFilter("/error")]
-    public async Task<IActionResult> Get([FromQuery] RegistrationJourney? registrationJourney)
+    public async Task<IActionResult> Get([FromQuery] Guid submissionId)
     {
-        var submissionId = Guid.Parse(Request.Query["submissionId"]);
         var userData = User.GetUserData();
         var registrationYear = _registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
 
@@ -67,7 +64,7 @@ public class ReviewCompanyDetailsController : Controller
         var isFileUploadJourneyInvokedViaRegistration = session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration;
         var isResubmission = session.RegistrationSession.IsResubmission;
 
-        this.SetBackLink(isFileUploadJourneyInvokedViaRegistration, isResubmission, registrationYear, submission.RegistrationJourney ?? registrationJourney);
+        this.SetBackLink(isFileUploadJourneyInvokedViaRegistration, isResubmission, registrationYear, submission.RegistrationJourney);
         ViewData["IsFileUploadJourneyInvokedViaRegistration"] = isFileUploadJourneyInvokedViaRegistration;
 
         return View(
@@ -111,7 +108,7 @@ public class ReviewCompanyDetailsController : Controller
                 SubmissionStatus = submission.GetSubmissionStatus(),
                 IsResubmission = isResubmission,
                 RegistrationYear = registrationYear,
-                RegistrationJourney = submission.RegistrationJourney ?? registrationJourney
+                RegistrationJourney = submission.RegistrationJourney
             });
 
         return RedirectToAction("HandleThrownExceptions", "Error");
@@ -126,6 +123,7 @@ public class ReviewCompanyDetailsController : Controller
         
         if (!ModelState.IsValid)
         {
+            this.SetBackLink(isFileUploadJourneyInvokedViaRegistration, model.IsResubmission, model.RegistrationYear, model.RegistrationJourney);
             return View("ReviewCompanyDetails", model);
         }
 
@@ -173,7 +171,7 @@ public class ReviewCompanyDetailsController : Controller
 
         try
         {
-            var routeValue = QueryStringExtensions.BuildRouteValues(submissionId: model.SubmissionId, registrationYear: model.RegistrationYear, registrationJourney: model.RegistrationJourney);
+            var routeValue = QueryStringExtensions.BuildRouteValues(submissionId: model.SubmissionId, registrationYear: model.RegistrationYear);
 
             return RedirectToAction("Get", "DeclarationWithFullName", routeValue);
         }
