@@ -14,7 +14,6 @@ using FrontendSchemeRegistration.Application.Extensions;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.RequestModels;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;

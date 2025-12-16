@@ -56,30 +56,32 @@ public class SubmissionService(IWebApiGatewayClient webApiGatewayClient) : ISubm
         await webApiGatewayClient.SubmitAsync(submissionId, payload);
     }
 
-    public async Task CreateRegistrationApplicationEvent(Guid submissionId, Guid? complianceSchemeId, string? comments, string? paymentMethod, string applicationReferenceNumber, bool isResubmission, SubmissionType submissionType)
+    public async Task CreateRegistrationApplicationEvent(RegistrationApplicationData registrationApplicationData, string applicationReferenceNumber, bool isResubmission, SubmissionType submissionType,
+        RegistrationJourney? registrationJourney)
     {
         var applicationPayload = new RegistrationApplicationPayload
         {
             ApplicationReferenceNumber = applicationReferenceNumber,
-            ComplianceSchemeId = complianceSchemeId,
-            PaymentMethod = paymentMethod ?? string.Empty,
+            ComplianceSchemeId = registrationApplicationData.ComplianceSchemeId,
+            PaymentMethod = registrationApplicationData.PaymentMethod ?? string.Empty,
             PaymentStatus = "Not-Applicable",
             PaidAmount = "0",
-            Comments = comments,
+            Comments = registrationApplicationData.Comments,
             SubmissionType = submissionType,
-            IsResubmission = isResubmission
+            IsResubmission = isResubmission,
+            RegistrationJourney = registrationJourney?.ToString(),
         };
-        await webApiGatewayClient.CreateRegistrationApplicationEvent(submissionId, applicationPayload);
+        await webApiGatewayClient.CreateRegistrationApplicationEvent(registrationApplicationData.SubmissionId, applicationPayload);
     }
 
     public async Task<T> GetDecisionAsync<T>(int? limit, Guid submissionId, SubmissionType type) where T : AbstractDecision
     {
-        var queryString = $"";
+        var queryString = "";
 
         if (limit is > 0)
         {
             queryString += $"limit={limit}";
-            queryString += $"&";
+            queryString += "&";
         }
 
         queryString += $"submissionId={submissionId}&type={type}";
@@ -164,4 +166,16 @@ public class SubmissionService(IWebApiGatewayClient webApiGatewayClient) : ISubm
         }
         return false;
     }
+}
+
+public class RegistrationApplicationData(
+    Guid submissionId,
+    Guid? complianceSchemeId,
+    string comments,
+    string paymentMethod)
+{
+    public Guid SubmissionId { get; set; } = submissionId;
+    public Guid? ComplianceSchemeId { get; } = complianceSchemeId;
+    public string Comments { get; } = comments;
+    public string? PaymentMethod { get; set; } = paymentMethod;
 }

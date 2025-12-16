@@ -21,4 +21,6 @@ public class RegistrationApplicationPayload
     public string? Comments { get; set; }
     
     public bool IsResubmission { get; set; }
+    
+    public string? RegistrationJourney { get; set; }
 }

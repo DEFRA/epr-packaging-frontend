@@ -78,4 +78,10 @@
     <data name="print_or_save_as_PDF" xml:space="preserve">
         <value />
     </data>
+    <data name="success" xml:space="preserve">
+        <value/>
+    </data>
+    <data name="it_may_take_an_hour" xml:space="preserve">
+        <value/>
+    </data>
 </root>
