@@ -1,5 +1,3 @@
-using EPR.Common.Authorization.Constants;
-using EPR.Common.Authorization.Models;
 using EPR.SubmissionMicroservice.API.Contracts.Submissions.Get;
 using EPR.SubmissionMicroservice.Data.Entities.SubmissionEvent;
 using FluentAssertions;
@@ -7,8 +5,6 @@ using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Services;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
-using FrontendSchemeRegistration.UI.Constants;
-using FrontendSchemeRegistration.UI.Sessions;
 using Moq;
 
 namespace FrontendSchemeRegistration.Application.UnitTests.Services;
@@ -226,7 +222,7 @@ public class SubmissionServiceTests
         var comment = "test";
 
         // Act
-        await _submissionService.CreateRegistrationApplicationEvent(submissionId, complianceSchemeId, comment, paymentMethod, reference, false, submissionType);
+        await _submissionService.CreateRegistrationApplicationEvent(submissionId, complianceSchemeId, comment, paymentMethod, reference, false, submissionType, RegistrationJourney.CsoLargeProducer);
 
         // Assert
         _webApiGatewayClientMock.Verify(x => x.CreateRegistrationApplicationEvent(submissionId, It.Is<RegistrationApplicationPayload>(p =>
@@ -246,7 +242,9 @@ public class SubmissionServiceTests
         const string applicationReference = "PEPR00002125P1";
 
         // Act
-        await _submissionService.CreateRegistrationApplicationEvent(submissionId, null, comments, null, applicationReference, false, SubmissionType.RegistrationApplicationSubmitted);
+        await _submissionService.CreateRegistrationApplicationEvent(submissionId, null, comments, null,
+            applicationReference, false, SubmissionType.RegistrationApplicationSubmitted,
+            RegistrationJourney.CsoLargeProducer);
 
         // Assert
         _webApiGatewayClientMock.Verify(x => x.CreateRegistrationApplicationEvent(submissionId, It.IsAny<RegistrationApplicationPayload>()), Times.Once);

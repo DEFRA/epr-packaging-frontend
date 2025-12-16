@@ -8,8 +8,8 @@ public class ComplianceSchemeRegistrationHeadingViewModelTest
     [Test]
     public void ComplianceSchemeRegistrationHeadingViewModel()
     {
-        var viewModel = new ComplianceSchemeRegistrationHeadingViewModel(true, RegistrationJourney.CsoLargeProducer, "Heading", null, 2025, "Org Name");
-        Assert.That(viewModel.OrganisationName, Is.EqualTo("Org Name"));
+        var viewModel = new ComplianceSchemeRegistrationHeadingViewModel(true, RegistrationJourney.CsoLargeProducer, "Heading", null, 2025);
+        Assert.That(viewModel.Heading, Is.EqualTo("Heading"));
         Assert.That(viewModel.RegistrationYear, Is.EqualTo(2025));
         Assert.That(viewModel.RegistrationJourney, Is.EqualTo(RegistrationJourney.CsoLargeProducer));
     }

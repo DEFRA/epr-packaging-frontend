@@ -470,8 +470,8 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             paymentMethod,
             session.ApplicationReferenceNumber,
             session.IsResubmission,
-            submissionType
-        );
+            submissionType, 
+            session.RegistrationJourney);
 
         if (!string.IsNullOrWhiteSpace(paymentMethod))
         {

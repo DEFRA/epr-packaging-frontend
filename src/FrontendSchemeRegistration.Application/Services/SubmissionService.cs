@@ -56,7 +56,9 @@ public class SubmissionService(IWebApiGatewayClient webApiGatewayClient) : ISubm
         await webApiGatewayClient.SubmitAsync(submissionId, payload);
     }
 
-    public async Task CreateRegistrationApplicationEvent(Guid submissionId, Guid? complianceSchemeId, string? comments, string? paymentMethod, string applicationReferenceNumber, bool isResubmission, SubmissionType submissionType)
+    public async Task CreateRegistrationApplicationEvent(Guid submissionId, Guid? complianceSchemeId, string? comments,
+        string? paymentMethod, string applicationReferenceNumber, bool isResubmission, SubmissionType submissionType,
+        RegistrationJourney? registrationJourney)
     {
         var applicationPayload = new RegistrationApplicationPayload
         {
@@ -67,19 +69,20 @@ public class SubmissionService(IWebApiGatewayClient webApiGatewayClient) : ISubm
             PaidAmount = "0",
             Comments = comments,
             SubmissionType = submissionType,
-            IsResubmission = isResubmission
+            IsResubmission = isResubmission,
+            RegistrationJourney = registrationJourney?.ToString(),
         };
         await webApiGatewayClient.CreateRegistrationApplicationEvent(submissionId, applicationPayload);
     }
 
     public async Task<T> GetDecisionAsync<T>(int? limit, Guid submissionId, SubmissionType type) where T : AbstractDecision
     {
-        var queryString = $"";
+        var queryString = "";
 
         if (limit is > 0)
         {
             queryString += $"limit={limit}";
-            queryString += $"&";
+            queryString += "&";
         }
 
         queryString += $"submissionId={submissionId}&type={type}";
