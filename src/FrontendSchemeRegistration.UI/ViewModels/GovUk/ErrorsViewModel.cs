@@ -27,7 +27,7 @@ public class ErrorsViewModel
 
     public Dictionary<string, List<ErrorViewModel>> Errors { get; }
 
-    public List<ErrorViewModel>? this[string key] => Errors.FirstOrDefault(e => e.Key == key).Value;
+    public List<ErrorViewModel>? this[string key] => Errors.GetValueOrDefault(key);
 
     public bool HasErrorKey(string key) => Errors.Any(e => e.Key == key);
 
@@ -46,3 +46,4 @@ public class ErrorsViewModel
         return orderedErrors;
     }
 }
+

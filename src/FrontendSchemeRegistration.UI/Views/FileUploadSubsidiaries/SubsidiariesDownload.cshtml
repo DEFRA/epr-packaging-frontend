@@ -17,7 +17,9 @@
                 </div>
                 @if (!downloadCompleted)
                 {
-                    <meta http-equiv="refresh" content="0; url='/report-data/subsidiaries-export'" />
+                    <script>
+                        window.location.replace('/report-data/subsidiaries-export');
+                    </script>
                 }
             </div>
         </div>

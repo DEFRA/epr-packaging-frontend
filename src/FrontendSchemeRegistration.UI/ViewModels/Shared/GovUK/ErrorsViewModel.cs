@@ -26,7 +26,7 @@ public class ErrorsViewModel
 
     public List<ErrorViewModel>? this[string key] => Errors.FirstOrDefault(e => e.Key == key).Errors;
 
-    public bool HasErrorKey(string key) => Errors.Any(e => e.Item1 == key);
+    public bool HasErrorKey(string key) => Errors.Exists(e => e.Item1 == key);
 
     private static List<(string Key, List<ErrorViewModel> Errors)> GetOrderedErrors(
        List<(string Key, List<ErrorViewModel> Errors)> errors, Func<string, string> localiseFunc, string[]? fieldOrder)
