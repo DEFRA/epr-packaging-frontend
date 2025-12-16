@@ -11,4 +11,4 @@ public record ComplianceSchemeRegistrationHeadingViewModel(
     RegistrationJourney? RegistrationJourney,
     string? Heading, 
     LocalizedHtmlString? LocalizedHeading,
-    int RegistrationYear);
+    int? RegistrationYear);

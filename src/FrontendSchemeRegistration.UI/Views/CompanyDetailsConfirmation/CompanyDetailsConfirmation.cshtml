@@ -12,8 +12,7 @@
         Model.RegistrationJourney, 
         heading,
         null,
-        Model.RegistrationYear,
-        OrganisationName: Model.OrganisationName); //This isn't ideal, It wont show the heading as the ShowRegistrationCaption is false if this is null and the journey
+        Model.RegistrationYear); //This isn't ideal, It wont show the heading as the ShowRegistrationCaption is false if this is null and the journey
 }
 
 @await Html.PartialAsync("Partials/Govuk/_AccountActionBar")

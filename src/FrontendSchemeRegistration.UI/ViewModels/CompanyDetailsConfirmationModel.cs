@@ -28,7 +28,7 @@ public class CompanyDetailsConfirmationModel : ViewModelWithOrganisationRole
     
     public RegistrationJourney? RegistrationJourney { get; set; }
     
-    public int RegistrationYear { get; set; }
+    public int? RegistrationYear { get; set; }
     
     public string OrganisationName { get; set; }
 }

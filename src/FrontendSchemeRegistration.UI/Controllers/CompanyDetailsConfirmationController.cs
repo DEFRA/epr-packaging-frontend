@@ -79,7 +79,7 @@ public class CompanyDetailsConfirmationController : Controller
                             OrganisationRole = organisationRole,
                             IsResubmission = session.RegistrationSession.IsResubmission,
                             ReturnToRegistrationLink = Url.Action("RegistrationTaskList", "RegistrationApplication", routeValue),
-                            RegistrationYear = registrationYear ?? 0,
+                            RegistrationYear = registrationYear,
                             RegistrationJourney = submission.RegistrationJourney,
                             OrganisationName = orgName,
                         });
