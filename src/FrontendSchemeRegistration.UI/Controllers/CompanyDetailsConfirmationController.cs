@@ -2,7 +2,6 @@
 
 using Application.Constants;
 using Application.DTOs.Submission;
-using Application.Enums;
 using Application.Extensions;
 using Application.Services.Interfaces;
 using EPR.Common.Authorization.Constants;
