@@ -29,17 +29,12 @@ public class RegistrationApplicationController(
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
     [Route(PagePaths.ProducerRegistrationGuidance)]
-    public async Task<IActionResult> ProducerRegistrationGuidance()
+    public async Task<IActionResult> ProducerRegistrationGuidance([FromQuery] RegistrationJourney? registrationJourney = null)
     {
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
         var isResubmission = !string.IsNullOrWhiteSpace(HttpContext.Request.Query["IsResubmission"]);
 
-        RegistrationJourney? registrationJourney = null;
-        if (Enum.TryParse<RegistrationJourney>(HttpContext.Request.Query["registrationjourney"].ToString(), true, out var registrationJourneyResult))
-        {
-            registrationJourney = registrationJourneyResult;
-        }
         var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], false);
 
         var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, registrationYear.GetValueOrDefault(), isResubmission, registrationJourney);
@@ -78,16 +73,12 @@ public class RegistrationApplicationController(
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
     [Route(PagePaths.RegistrationTaskList)]
-    public async Task<IActionResult> RegistrationTaskList()
+    public async Task<IActionResult> RegistrationTaskList([FromQuery] RegistrationJourney? registrationJourney = null)
     {
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
         var isResubmission = !string.IsNullOrWhiteSpace(HttpContext.Request.Query["IsResubmission"]);
-        RegistrationJourney? registrationJourney = null;
-        if (Enum.TryParse<RegistrationJourney>(HttpContext.Request.Query["registrationjourney"].ToString(), true, out var registrationJourneyResult))
-        {
-            registrationJourney = registrationJourneyResult;
-        }
+
         var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
 
         var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, registrationYear.GetValueOrDefault(), isResubmission, registrationJourney);
@@ -510,7 +501,7 @@ public class RegistrationApplicationController(
                     return RedirectToAction(
                         nameof(ReviewCompanyDetailsController.Get),
                         nameof(ReviewCompanyDetailsController).RemoveControllerFromName(),
-                        new RouteValueDictionary { { "submissionId", session.SubmissionId }, { "registrationyear", registrationYear } });
+                        new RouteValueDictionary { { "submissionId", session.SubmissionId }, { "registrationyear", registrationYear }, { "registrationjourney", registrationJourney } });
                 case ApplicationStatusType.NotStarted:
                 case ApplicationStatusType.QueriedByRegulator:
                 case ApplicationStatusType.CancelledByRegulator:
