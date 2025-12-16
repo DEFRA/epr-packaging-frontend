@@ -336,7 +336,7 @@ public class RegistrationApplicationController(
 
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
         session.Journey = [PagePaths.RegistrationTaskList, PagePaths.AdditionalInformation];
-        SetBackLink(session, PagePaths.AdditionalInformation, registrationYear);
+        SetBackLink(session, PagePaths.AdditionalInformation, registrationYear, session.RegistrationJourney);
 
         if (session is
             {
@@ -364,7 +364,8 @@ public class RegistrationApplicationController(
             IsComplianceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme,
             ComplianceScheme = session.SelectedComplianceScheme?.Name!,
             IsResubmission = session.IsResubmission,
-            RegistrationYear = registrationYear.GetValueOrDefault()
+            RegistrationYear = registrationYear.GetValueOrDefault(),
+            RegistrationJourney = session.RegistrationJourney
         });
     }
 

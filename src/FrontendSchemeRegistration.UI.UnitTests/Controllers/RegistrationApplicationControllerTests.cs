@@ -998,7 +998,8 @@ public class RegistrationApplicationControllerTests
             RegistrationFeePaymentMethod = registrationApplicationDetails.RegistrationFeePaymentMethod,
             RegulatorNation = registrationApplicationDetails.RegulatorNation,
             SubmissionId = registrationApplicationDetails.SubmissionId,
-            RegistrationFeeCalculationDetails = registrationApplicationDetails.RegistrationFeeCalculationDetails
+            RegistrationFeeCalculationDetails = registrationApplicationDetails.RegistrationFeeCalculationDetails,
+            RegistrationJourney = RegistrationJourney.CsoSmallProducer
         };
 
         SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(Session);
@@ -1015,7 +1016,8 @@ public class RegistrationApplicationControllerTests
             RegulatorNation = Session.RegulatorNation,
             OrganisationName = _userData.Organisations[0].Name,
             OrganisationNumber = _userData.Organisations[0].OrganisationNumber.ToReferenceNumberFormat(),
-            ComplianceScheme = Session.SelectedComplianceScheme?.Name
+            ComplianceScheme = Session.SelectedComplianceScheme?.Name,
+            RegistrationJourney = Session.RegistrationJourney
         });
     }
 

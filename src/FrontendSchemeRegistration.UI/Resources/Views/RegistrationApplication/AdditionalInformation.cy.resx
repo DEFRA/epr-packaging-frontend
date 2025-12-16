@@ -72,4 +72,7 @@
     <data name="registration_data_resubmission" xml:space="preserve">
         <value>Ailgyflwyniad data cofrestru {0}.</value>
     </data>
+    <data name="inset_delay_text" xml:space="preserve">
+        <value>To avoid registration delays, report your 2025 packaging data before applying to register for 2026.</value>
+    </data>
 </root>
