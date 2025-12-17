@@ -39,10 +39,10 @@ public class RegistrationApplicationController(
 
         var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, registrationYear.GetValueOrDefault(), isResubmission, registrationJourney);
 
-        session.Journey = [session.IsComplianceScheme ? PagePaths.ComplianceSchemeLanding : PagePaths.HomePageSelfManaged, PagePaths.ProducerRegistrationGuidance];
+        session.Journey = [session.IsComplianceScheme ? PagePaths.CsoRegistration : PagePaths.HomePageSelfManaged, PagePaths.ProducerRegistrationGuidance];
 
-        await SaveSession(session, PagePaths.ProducerRegistrationGuidance, null);
-        SetBackLink(session, PagePaths.ProducerRegistrationGuidance, registrationYear, registrationJourney);
+        var nation = NationExtensions.GetNationName(session.RegulatorNation);
+        SetBackLink(session, PagePaths.ProducerRegistrationGuidance, null, null, session.IsComplianceScheme ? nation : null);
 
         if (session.ApplicationStatus is
                 ApplicationStatusType.FileUploaded
@@ -82,7 +82,7 @@ public class RegistrationApplicationController(
         var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
 
         var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, registrationYear.GetValueOrDefault(), isResubmission, registrationJourney);
-        session.Journey = [session.IsComplianceScheme ? PagePaths.ComplianceSchemeLanding : PagePaths.HomePageSelfManaged, PagePaths.ProducerRegistrationGuidance, PagePaths.RegistrationTaskList];
+        session.Journey = [PagePaths.ProducerRegistrationGuidance, PagePaths.RegistrationTaskList];
 
         SetBackLink(session, PagePaths.RegistrationTaskList, registrationYear, registrationJourney);
 
@@ -533,7 +533,7 @@ public class RegistrationApplicationController(
         await sessionManager.SaveSessionAsync(HttpContext.Session, session);
     }
 
-    private void SetBackLink(RegistrationApplicationSession session, string currentPagePath, int? registrationYear = null, RegistrationJourney? registrationJourney = null)
+    private void SetBackLink(RegistrationApplicationSession session, string currentPagePath, int? registrationYear = null, RegistrationJourney? registrationJourney = null, string? nation = null)
     {
         var previousPage = session.Journey.PreviousOrDefault(currentPagePath) ?? string.Empty;
         if(registrationYear > 0 && !string.IsNullOrWhiteSpace(previousPage))
@@ -545,7 +545,12 @@ public class RegistrationApplicationController(
         {
             previousPage = QueryHelpers.AddQueryString(previousPage, "registrationjourney", registrationJourney.ToString());
         }
-        
+
+        if (nation is not null && !string.IsNullOrWhiteSpace(previousPage))
+        {
+            previousPage = QueryHelpers.AddQueryString(previousPage, "nation", nation.ToString());
+        }
+
         ViewBag.BackLinkToDisplay = previousPage;
     }
 
