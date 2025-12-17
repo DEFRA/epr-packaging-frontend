@@ -2,7 +2,6 @@
 
 using Application.Constants;
 using Application.DTOs.Submission;
-using Application.Enums;
 using Application.Services.Interfaces;
 using Constants;
 using EPR.Common.Authorization.Models;
@@ -271,17 +270,9 @@ public class FileUploadControllerTests
             x => x.ProcessUploadAsync(
                 ContentType,
                 It.IsAny<Stream>(),
-                SubmissionPeriod,
                 It.IsAny<ModelStateDictionary>(),
-                null,
-                SubmissionType.Producer,
-                It.IsAny<IFileUploadMessages>(),
                 It.IsAny<IFileUploadSize>(),
-                null,
-                null,
-                null,
-                It.IsAny<bool?>(),
-                null),
+                It.IsAny<FileUploadSubmissionDetails>()),
             Times.Once);
     }
 
@@ -295,9 +286,8 @@ public class FileUploadControllerTests
 
         _fileUploadServiceMock
             .Setup(x =>
-                x.ProcessUploadAsync(ContentType, It.IsAny<Stream>(), SubmissionPeriod, new ModelStateDictionary(),
-                    SubmissionId, SubmissionType.Producer, It.IsAny<IFileUploadMessages>(), It.IsAny<IFileUploadSize>(),
-                    null, null, null, It.IsAny<bool?>(), null))
+                x.ProcessUploadAsync(ContentType, It.IsAny<Stream>(), new ModelStateDictionary(), It.IsAny<IFileUploadSize>(),
+                    It.IsAny<FileUploadSubmissionDetails>()))
             .ReturnsAsync(SubmissionId);
 
         // Act
@@ -319,9 +309,8 @@ public class FileUploadControllerTests
 
         _fileUploadServiceMock
             .Setup(x =>
-                x.ProcessUploadAsync(ContentType, It.IsAny<Stream>(), SubmissionPeriod, new ModelStateDictionary(),
-                    SubmissionId, SubmissionType.Producer, It.IsAny<IFileUploadMessages>(), It.IsAny<IFileUploadSize>(),
-                    null, null, null, It.IsAny<bool?>(), null))
+                x.ProcessUploadAsync(ContentType, It.IsAny<Stream>(), new ModelStateDictionary(), It.IsAny<IFileUploadSize>(),
+                    It.IsAny<FileUploadSubmissionDetails>()))
             .ReturnsAsync(SubmissionId);
 
         // Act
