@@ -142,9 +142,9 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         if (session.IsComplianceScheme)
         {
             nationId = session.SelectedComplianceScheme.NationId;
+            session.RegistrationJourney = registrationJourney;
             if (registrationJourney != null)
             {
-                session.RegistrationJourney = registrationJourney;
                 session.ShowRegistrationCaption = true; //$"{producerSize} producer {registrationYear}"; // TODO this will need localisation for Wales
             }
         }

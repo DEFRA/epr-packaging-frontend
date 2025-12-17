@@ -64,6 +64,6 @@
         <value>Rhagor o wybodaeth am gyfrifoldebau pecynwaith a gwirio a oes angen ichi weithredu (yn agor mewn tab newydd)</value>
     </data>
     <data name="ensure_your_packaging_data_for_year_been_reported_before_registering" xml:space="preserve">
-        <value>Gwnewch yn siŵr eich bod wedi rhoi gwybod am eich data pecynwaith ar gyfer {0} cyn cofrestru. Gall methiant arwain at oedi wrth asesu’ch cofrestriad.</value>
+        <value>To avoid registration delays, report your {0} packaging data before applying to register for {1}.</value>
     </data>
 </root>

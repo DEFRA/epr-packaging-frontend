@@ -1,41 +1,42 @@
 @model FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication.ProducerRegistrationGuidanceViewModel
+@using FrontendSchemeRegistration.Application.Enums
+@using FrontendSchemeRegistration.UI.ViewModels.Shared
 
 @{
     ViewData["Title"] = Localizer["producer_registration_guidance_title"];
     var nationName = Model.NationName.ToLower();
+
+    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+        Model.ShowRegistrationCaption,
+        Model.RegistrationJourney,
+        Model.IsComplianceScheme ? Localizer["scheme_registration_details"].Value : string.Format(Localizer["register_company"].Value, Model.OrganisationName),
+        null,
+        Model.RegistrationYear);
 }
 
 <main class="govuk-main-wrapper" id="main-content" role="main">
     <div class="govuk-grid-row">
-        <div class="govuk-grid-column-three-quarters">
-            <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
-                @if (Model.IsComplianceScheme)
-                {
-                    @Localizer["scheme_registration_details"]
-                }
-                else
-                {
-                    @Localizer["register_company", Model.OrganisationName]
-                }
-            </h1>
-            <div class="govuk-inset-text govuk-!-margin-bottom-4">
-                @if (Model.IsComplianceScheme)
-                {
-                    <p class="govuk-body govuk-!-font-weight-bold">@Localizer["compliance_scheme_x", Model.ComplianceScheme]
-                        <br/>@Localizer["regulator"]@Localizer[$"{nationName}.environmental_regulator"]
-                    </p>
-                }
-                else
-                {
-                    <p class="govuk-body govuk-!-font-weight-bold">@Localizer["organisation_id_x", Model.OrganisationNumber]</p>
-                }
-            </div>
-            <div class="govuk-warning-text">
-                <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-                <strong class="govuk-warning-text__text">
-                    <span class="govuk-visually-hidden">Warning</span>
-                    @Localizer["ensure_your_packaging_data_for_year_been_reported_before_registering", Model.RegistrationYear - 1]
-                </strong>
+        <div class="govuk-grid-column-two-thirds">
+
+            <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel" />
+
+            @if (Model.IsComplianceScheme)
+            {
+                <p class ="govuk-body-l">
+                    @Localizer["compliance_scheme_x", Model.ComplianceScheme]
+                    <br/>@Localizer["regulator"]@Localizer[$"{nationName}.environmental_regulator"]
+                </p>
+            }
+            else
+            {
+                <p class="govuk-body-l">@Localizer["organisation_id_x", Model.OrganisationNumber]</p>
+            }
+            <div class="govuk-inset-text">
+                <p class="govuk-body">
+                <strong>
+                        @Localizer["ensure_your_packaging_data_for_year_been_reported_before_registering", Model.RegistrationYear - 1, Model.RegistrationYear]
+                    </strong>
+                </p>
             </div>
             <p class="govuk-body">
                 @Localizer["if_you_are_obligated_under_PRO_2024_you_must_register"]<br/>
@@ -52,7 +53,7 @@
                 <a class="govuk-link govuk-link--no-visited-state" rel="noreferrer noopener" target="_blank" href="@GuidanceLinks.Value.ProducerResponsibilitiesForPackagingWaste">@Localizer["more_about_packaging_responsibilities_and_check_need_for_action"]</a>
             </p>
 
-            <a asp-action="RegistrationTaskList" asp-route-registrationyear="@Model.RegistrationYear" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+            <a asp-action="RegistrationTaskList" asp-route-registrationyear="@Model.RegistrationYear" asp-route-registrationjourney="@Model.RegistrationJourney" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
                 @SharedLocalizer["continue"]
             </a>
         </div>
