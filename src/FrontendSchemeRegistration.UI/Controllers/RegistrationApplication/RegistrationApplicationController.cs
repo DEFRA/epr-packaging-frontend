@@ -533,7 +533,7 @@ public class RegistrationApplicationController(
         await sessionManager.SaveSessionAsync(HttpContext.Session, session);
     }
 
-    private void SetBackLink(RegistrationApplicationSession session, string currentPagePath, int? registrationYear = null, RegistrationJourney? registrationJourney = null, string? regulatorNation = null)
+    private void SetBackLink(RegistrationApplicationSession session, string currentPagePath, int? registrationYear = null, RegistrationJourney? registrationJourney = null, string? nation = null)
     {
         var previousPage = session.Journey.PreviousOrDefault(currentPagePath) ?? string.Empty;
         if(registrationYear > 0 && !string.IsNullOrWhiteSpace(previousPage))
@@ -546,9 +546,9 @@ public class RegistrationApplicationController(
             previousPage = QueryHelpers.AddQueryString(previousPage, "registrationjourney", registrationJourney.ToString());
         }
 
-        if (regulatorNation is not null && !string.IsNullOrWhiteSpace(previousPage))
+        if (nation is not null && !string.IsNullOrWhiteSpace(previousPage))
         {
-            previousPage = QueryHelpers.AddQueryString(previousPage, "nation", regulatorNation.ToString());
+            previousPage = QueryHelpers.AddQueryString(previousPage, "nation", nation.ToString());
         }
 
         ViewBag.BackLinkToDisplay = previousPage;
