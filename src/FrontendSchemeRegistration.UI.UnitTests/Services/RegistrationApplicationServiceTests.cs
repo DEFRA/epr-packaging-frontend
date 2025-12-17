@@ -2021,7 +2021,7 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(response);
 
         // Act
-        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year);
+        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null, RegistrationJourney.CsoLargeProducer);
 
         // Assert
         session.Should().NotBeNull();

@@ -128,7 +128,7 @@ public class ResubmissionApplicationServiceTests
         };
 
         _mockSubmissionService
-            .Setup(x => x.SubmitAsync(mockPomSubmission.Id, mockPomSubmission.LastSubmittedFile.FileId, submittedByName, It.IsAny<string>(), null))
+            .Setup(x => x.SubmitAsync(mockPomSubmission.Id, mockPomSubmission.LastSubmittedFile.FileId, submittedByName, It.IsAny<string>(), null, null))
             .Returns(Task.CompletedTask);
 
         _mockSessionManager
@@ -175,7 +175,7 @@ public class ResubmissionApplicationServiceTests
         };
 
         _mockSubmissionService
-            .Setup(x => x.SubmitAsync(mockPomSubmissions.First().Id, mockPomSubmissions.First().LastSubmittedFile.FileId, submittedByName, It.IsAny<string>(), null))
+            .Setup(x => x.SubmitAsync(mockPomSubmissions.First().Id, mockPomSubmissions.First().LastSubmittedFile.FileId, submittedByName, It.IsAny<string>(), null, null))
             .Returns(Task.CompletedTask);
 
         _mockSessionManager
@@ -225,7 +225,7 @@ public class ResubmissionApplicationServiceTests
         };
 
         _mockSubmissionService
-            .Setup(x => x.SubmitAsync(mockPomSubmission.Id, mockPomSubmission.LastSubmittedFile.FileId, submittedByName, It.IsAny<string>(), null))
+            .Setup(x => x.SubmitAsync(mockPomSubmission.Id, mockPomSubmission.LastSubmittedFile.FileId, submittedByName, It.IsAny<string>(), null, null))
             .Returns(Task.CompletedTask);
 
         _mockSessionManager
@@ -274,7 +274,7 @@ public class ResubmissionApplicationServiceTests
         };
 
         _mockSubmissionService
-            .Setup(x => x.SubmitAsync(mockPomSubmission.Id, mockPomSubmission.LastSubmittedFile.FileId, submittedByName, It.IsAny<string>(), null))
+            .Setup(x => x.SubmitAsync(mockPomSubmission.Id, mockPomSubmission.LastSubmittedFile.FileId, submittedByName, It.IsAny<string>(), null, null))
             .Returns(Task.CompletedTask);
 
         _mockSessionManager
@@ -325,7 +325,7 @@ public class ResubmissionApplicationServiceTests
         };
 
         _mockSubmissionService
-            .Setup(x => x.SubmitAsync(mockPomSubmission.Id, mockPomSubmission.LastSubmittedFile.FileId, submittedByName, It.IsAny<string>(), null))
+            .Setup(x => x.SubmitAsync(mockPomSubmission.Id, mockPomSubmission.LastSubmittedFile.FileId, submittedByName, It.IsAny<string>(), null, null))
             .Returns(Task.CompletedTask);
 
         _mockSessionManager
@@ -373,7 +373,7 @@ public class ResubmissionApplicationServiceTests
         };
 
         _mockSubmissionService
-            .Setup(x => x.SubmitAsync(mockPomSubmission.Id, mockPomSubmission.LastSubmittedFile.FileId, submittedByName, It.IsAny<string>(), null))
+            .Setup(x => x.SubmitAsync(mockPomSubmission.Id, mockPomSubmission.LastSubmittedFile.FileId, submittedByName, It.IsAny<string>(), null, null))
             .Returns(Task.CompletedTask);
 
         _mockSessionManager
