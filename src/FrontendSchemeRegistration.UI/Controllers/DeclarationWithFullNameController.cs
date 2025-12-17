@@ -114,7 +114,10 @@ public class DeclarationWithFullNameController(
 
             session.EnsureApplicationReferenceIsPresent();
 
-            await submissionService.SubmitAsync(submissionId, new Guid(model.OrganisationDetailsFileId), model.FullName, session.RegistrationSession.ApplicationReferenceNumber, session.RegistrationSession.IsResubmission);
+            await submissionService.SubmitAsync(submissionId, new Guid(model.OrganisationDetailsFileId), model.FullName,
+                session.RegistrationSession.ApplicationReferenceNumber,
+                session.RegistrationSession.IsResubmission,
+                submission.RegistrationJourney);
 
             return (model.RegistrationYear.HasValue ? RedirectToAction("Get", ConfirmationViewName, new { submissionId, registrationyear = model.RegistrationYear.ToString() }) : RedirectToAction("Get", ConfirmationViewName, new { submissionId }));
         }
