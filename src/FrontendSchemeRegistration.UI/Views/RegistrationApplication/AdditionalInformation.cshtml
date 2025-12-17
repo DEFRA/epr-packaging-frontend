@@ -26,17 +26,17 @@
         <div class="govuk-grid-column-three-quarters">
             <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel"/>
             
-            <div class="govuk-inset-text govuk-!-margin-bottom-4">
+            <div class="govuk-!-margin-bottom-4">
                 @if (Model.IsComplianceScheme)
                 {
-                    <p class="govuk-body govuk-!-font-weight-bold">
+                    <p class="govuk-body-l">
                         @Localizer["compliance_scheme_x", Model.ComplianceScheme]
                         <br/>@Localizer["regulator"]@Localizer[$"{nationName}.environmental_regulator"]
                     </p>
                 }
                 else
                 {
-                    <p class="govuk-body govuk-!-font-weight-bold">@Localizer["organisation_id_x", Model.OrganisationNumber]</p>
+                    <p class="govuk-body-l">@Localizer["organisation_id_x", Model.OrganisationNumber]</p>
                 }
             </div>
             <div class="govuk-inset-text">
