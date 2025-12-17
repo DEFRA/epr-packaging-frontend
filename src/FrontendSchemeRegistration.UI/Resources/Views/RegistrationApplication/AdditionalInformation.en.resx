@@ -73,6 +73,6 @@
         <value>{0} registration data resubmission</value>
     </data>
     <data name="inset_delay_text" xml:space="preserve">
-        <value>To avoid registration delays, report your 2025 packaging data before applying to register for 2026.</value>
+        <value>To avoid registration delays, report your {0} packaging data before applying to register for {1}.</value>
     </data>
 </root>
