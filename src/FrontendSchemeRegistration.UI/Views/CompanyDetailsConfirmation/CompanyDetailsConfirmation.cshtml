@@ -5,14 +5,14 @@
     ViewData["Title"] = Localizer[Model.IsComplianceScheme ? "page_title_compliance" : "page_title_producer"];
     var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
     bool isFileUploadJourneyInvokedViaRegistration = (bool)ViewData["IsFileUploadJourneyInvokedViaRegistration"];
-    var heading = Model.RegistrationJourney.ToString().Contains("cso", StringComparison.OrdinalIgnoreCase) ? Model.OrganisationName : "";
+    var heading = Model.IsComplianceScheme ? Model.OrganisationName : "";
     
     var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
         Model.ShowRegistrationCaption, 
         Model.RegistrationJourney, 
         heading,
         null,
-        Model.RegistrationYear); //This isn't ideal, It wont show the heading as the ShowRegistrationCaption is false if this is null and the journey
+        Model.RegistrationYear);
 }
 
 @await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
@@ -31,12 +31,12 @@
                     </div>
                     <div class="govuk-notification-banner__content">
                         <h3 class="govuk-notification-banner__heading">
-                            @Localizer[Model.RegistrationSubmissionTask]
+                            Registration data submitted
                         </h3>
-                        <p class="govuk-body">@Localizer[Model.RegistrationSubmissionTask]</p>
+                        <p class="govuk-body">@Localizer["submitted_by", Model.SubmittedBy, Model.SubmissionTime, Model.SubmittedDate]</p>
                     </div>
                 </div>
-                
+
                 <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel"/>
 
                 <p class="govuk-body">
@@ -65,13 +65,19 @@
         }
         else
         {
-            <!-- TODO: fix this for non registration journeys -->
             <div class="govuk-grid-column-two-thirds">
 
-                <div class="govuk-panel govuk-panel--confirmation">
-                    <h1 class="govuk-panel__title">
-                        @Localizer["organisation_details_submitted"]
-                    </h1>
+                <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+                    <div class="govuk-notification-banner__header">
+                        <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                            @Localizer["success"]
+                        </h2>
+                    </div>
+                    <div class="govuk-notification-banner__content">
+                        <h3 class="govuk-notification-banner__heading">
+                            @Localizer["organisation_details_submitted"]
+                        </h3>
+                    </div>
                 </div>
 
                 <p class="govuk-body">
