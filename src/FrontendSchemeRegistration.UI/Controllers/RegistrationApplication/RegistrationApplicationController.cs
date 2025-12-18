@@ -162,9 +162,8 @@ public class RegistrationApplicationController(
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
         var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], false);
-        var isResubmission = !string.IsNullOrWhiteSpace(HttpContext.Request.Query["IsResubmission"]);
-        
-        var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, registrationYear.GetValueOrDefault(), isResubmission, registrationJourney);
+
+        var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
         session.Journey = [PagePaths.RegistrationFeeCalculations, PagePaths.SelectPaymentOptions];
         SetBackLink(session, PagePaths.SelectPaymentOptions, registrationYear, registrationJourney);
 

@@ -429,7 +429,7 @@ public class RegistrationApplicationControllerTests
         var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
 
         // Assert
-        pageBackLink.Should().Be(PagePaths.ProducerRegistrationGuidance);
+        pageBackLink.Should().Be(PagePaths.HomePageSelfManaged);
         result.Model.Should().BeOfType<RegistrationTaskListViewModel>();
 
         result.Model.As<RegistrationTaskListViewModel>().Should().BeEquivalentTo(new RegistrationTaskListViewModel
@@ -1309,8 +1309,7 @@ public class RegistrationApplicationControllerTests
             LastSubmittedFile = new LastSubmittedFileDetails { SubmittedDateTime = DateTime.Now, SubmittedByName = "test", FileId = Guid.NewGuid() }
         };
 
-        SessionManagerMock.Setup(x =>
-            x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(Session);
+        SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(Session);
 
         // Act
         var result = SystemUnderTest.SelectPaymentOptions().Result;
@@ -1326,12 +1325,16 @@ public class RegistrationApplicationControllerTests
     public void WhenNationNotEngland_SelectPaymentOptions_RedirectsToPayByBankTransfer(string nationCode, string nationName)
     {
         // Arrange
-        Session = new RegistrationApplicationSession
+        var details = new RegistrationApplicationSession
         {
-            Journey = [PagePaths.SelectPaymentOptions],
-            RegulatorNation = nationCode
+            IsSubmitted = false,
+            ApplicationStatus = ApplicationStatusType.NotStarted,
+            RegistrationFeePaymentMethod = null,
+            SelectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), NationId = 1, Name = "test", RowNumber = 1 },
+            RegulatorNation = nationCode,
         };
-        SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(Session);
+
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>())).ReturnsAsync(details);
 
         // Act
         var result = SystemUnderTest.SelectPaymentOptions().Result;
