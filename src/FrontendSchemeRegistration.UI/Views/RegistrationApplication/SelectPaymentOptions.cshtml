@@ -1,33 +1,28 @@
 @using FrontendSchemeRegistration.Application.Enums
+@using FrontendSchemeRegistration.UI.ViewModels.Shared
 @model FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication.SelectPaymentOptionsViewModel
 
 @{
     ViewData["Title"] = Localizer["select_payment_option"];
     var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer);
+    
+    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+        Model.ShowRegistrationCaption,
+        Model.RegistrationJourney,
+        null,
+        Localizer["choose_how_to_pay_your_registration_fee_heading"],
+        Model.RegistrationYear);
 }
 
 <main class="govuk-main-wrapper" id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
-                @Localizer["pay_your_registration_fee_heading"]
-            </h1>
-            <p class="govuk-body">
-                @Localizer["pay_your_registration_fee_text"] <strong>&pound;@ConvertToThousandSeparatedDecimal(Model.TotalAmountOutstanding)</strong> @Localizer["one_in_three_ways"]
-            </p>
-            <ul class="govuk-list govuk-list--bullet">
-                <li>@Localizer["payment_option_paybybanktransfer_alternate_text"]</li>
-                <li>@Localizer["payment_option_paybyphone_alternate_text"]</li>
-                <li>@Localizer["payment_option_payonline_alternate_text"]</li>
-            </ul>
+            <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel" />
 
-            <form asp-controller="RegistrationApplication" asp-action="SelectPaymentOptions" asp-route-registrationyear="@Model.RegistrationYear" method="post">
+            <form asp-controller="RegistrationApplication" asp-action="SelectPaymentOptions" asp-route-registrationyear="@Model.RegistrationYear" asp-route-registrationjourney="@Model.RegistrationJourney" method="post">
                 <div class="govuk-form-group">
                     <fieldset class="govuk-fieldset js-cookies-page-form-fieldset" id="analytics">
                         <legend></legend>
-                        <p class="govuk-body">
-                            @Localizer["select_payment_method"]
-                        </p>
                         <div class="govuk-form-group@(!ViewData.ModelState.IsValid ? " govuk-form-group--error" : "")">
                             @if (!ViewData.ModelState.IsValid)
                             {

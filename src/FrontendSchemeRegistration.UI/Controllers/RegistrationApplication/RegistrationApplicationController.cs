@@ -1,4 +1,3 @@
-using System.Web;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
@@ -16,6 +15,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Polly.Caching;
+using System;
+using System.Web;
 
 namespace FrontendSchemeRegistration.UI.Controllers.RegistrationApplication;
 
@@ -39,23 +40,15 @@ public class RegistrationApplicationController(
 
         var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, registrationYear.GetValueOrDefault(), isResubmission, registrationJourney);
 
+        if (session.SkipProducerRegistrationGuidance)
+        {
+            return RedirectToAction(nameof(RegistrationTaskList), new { registrationyear = registrationYear, registrationjourney = registrationJourney });
+        }
+
         session.Journey = [session.IsComplianceScheme ? PagePaths.CsoRegistration : PagePaths.HomePageSelfManaged, PagePaths.ProducerRegistrationGuidance];
 
         var nation = NationExtensions.GetNationName(session.RegulatorNation);
         SetBackLink(session, PagePaths.ProducerRegistrationGuidance, null, null, session.IsComplianceScheme ? nation : null);
-
-        if (session.ApplicationStatus is
-                ApplicationStatusType.FileUploaded
-                or ApplicationStatusType.SubmittedAndHasRecentFileUpload
-                or ApplicationStatusType.CancelledByRegulator
-                or ApplicationStatusType.QueriedByRegulator
-                or ApplicationStatusType.RejectedByRegulator
-            || session.FileUploadStatus is
-                RegistrationTaskListStatus.Pending
-                or RegistrationTaskListStatus.Completed)
-        {
-            return RedirectToAction(nameof(RegistrationTaskList), new {registrationyear = registrationYear, registrationjourney = registrationJourney});
-        }
 
         return View(new ProducerRegistrationGuidanceViewModel
         {
@@ -82,9 +75,18 @@ public class RegistrationApplicationController(
         var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
 
         var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, registrationYear.GetValueOrDefault(), isResubmission, registrationJourney);
-        session.Journey = [PagePaths.ProducerRegistrationGuidance, PagePaths.RegistrationTaskList];
-
-        SetBackLink(session, PagePaths.RegistrationTaskList, registrationYear, registrationJourney);
+        
+        if (session.SkipProducerRegistrationGuidance)
+        {
+            session.Journey = [session.IsComplianceScheme ? PagePaths.CsoRegistration : PagePaths.HomePageSelfManaged, PagePaths.RegistrationTaskList];
+            var nation = NationExtensions.GetNationName(session.RegulatorNation);
+            SetBackLink(session, PagePaths.RegistrationTaskList, null, null, session.IsComplianceScheme ? nation : null);
+        }
+        else
+        {
+            session.Journey = [PagePaths.ProducerRegistrationGuidance, PagePaths.RegistrationTaskList];
+            SetBackLink(session, PagePaths.RegistrationTaskList, registrationYear, registrationJourney);
+        }
 
         return View(new RegistrationTaskListViewModel
         {
@@ -155,18 +157,26 @@ public class RegistrationApplicationController(
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
     [Route(PagePaths.SelectPaymentOptions)]
-    public async Task<IActionResult> SelectPaymentOptions()
+    public async Task<IActionResult> SelectPaymentOptions([FromQuery] RegistrationJourney? registrationJourney = null)
     {
+        var userData = User.GetUserData();
+        var organisation = userData.Organisations[0];
         var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], false);
-        var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
+        var isResubmission = !string.IsNullOrWhiteSpace(HttpContext.Request.Query["IsResubmission"]);
+        
+        var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, registrationYear.GetValueOrDefault(), isResubmission, registrationJourney);
         session.Journey = [PagePaths.RegistrationFeeCalculations, PagePaths.SelectPaymentOptions];
-        SetBackLink(session, PagePaths.SelectPaymentOptions, registrationYear);
+        SetBackLink(session, PagePaths.SelectPaymentOptions, registrationYear, registrationJourney);
 
         var model = new SelectPaymentOptionsViewModel
         {
             RegulatorNation = session.RegulatorNation,
             TotalAmountOutstanding = session.TotalAmountOutstanding,
-            RegistrationYear = registrationYear.GetValueOrDefault()
+            RegistrationYear = registrationYear.GetValueOrDefault(),
+            ShowRegistrationCaption = session.ShowRegistrationCaption,
+            RegistrationJourney = session.RegistrationJourney,
+            IsComplianceScheme = session.IsComplianceScheme,
+            OrganisationName = organisation.Name!
         };
 
         if (!model.IsEngland)
@@ -187,7 +197,7 @@ public class RegistrationApplicationController(
     [Route(PagePaths.SelectPaymentOptions)]
     public async Task<IActionResult> SelectPaymentOptions(SelectPaymentOptionsViewModel model)
     {
-        var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
+        var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], false);
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
         SetBackLink(session, PagePaths.SelectPaymentOptions, registrationYear);
 
@@ -202,11 +212,11 @@ public class RegistrationApplicationController(
 
         switch (model.PaymentOption)
         {
-            case (int) PaymentOptions.PayOnline:
+            case (int)PaymentOptions.PayOnline:
                 return RedirectToAction(nameof(PayOnline), new { registrationyear = registrationYear });
-            case (int) PaymentOptions.PayByBankTransfer:
+            case (int)PaymentOptions.PayByBankTransfer:
                 return RedirectToAction(nameof(PayByBankTransfer), new { registrationyear = registrationYear });
-            case (int) PaymentOptions.PayByPhone:
+            case (int)PaymentOptions.PayByPhone:
                 return RedirectToAction(nameof(PayByPhone), new { registrationyear = registrationYear });
             default: return View(model);
         }

@@ -18,6 +18,9 @@
 	<data name="pay_your_registration_fee_heading" xml:space="preserve">
 		<value>How to pay your registration fee</value>
 	</data>
+  <data name="choose_how_to_pay_your_registration_fee_heading" xml:space="preserve">
+		<value>Choose how to pay your registration fee</value>
+	</data>
 	<data name="pay_your_registration_fee_text" xml:space="preserve">
 		<value>You can pay your registration fee of</value>
 	</data>

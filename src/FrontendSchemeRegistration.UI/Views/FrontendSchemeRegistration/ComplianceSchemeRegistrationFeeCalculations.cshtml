@@ -29,7 +29,7 @@
 
             @if (!Model.RegistrationApplicationSubmitted)
             {
-                <a asp-action="SelectPaymentOptions" asp-route-registrationyear="@Model.RegistrationYear" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+                <a asp-action="SelectPaymentOptions" asp-route-registrationyear="@Model.RegistrationYear" asp-route-registrationjourney="@Model.RegistrationJourney" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
                     @SharedLocalizer["continue"]
                 </a>
             }
