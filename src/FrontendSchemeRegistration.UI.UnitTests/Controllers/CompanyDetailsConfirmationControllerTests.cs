@@ -131,6 +131,7 @@ public class CompanyDetailsConfirmationControllerTests
         result.ViewData["IsFileUploadJourneyInvokedViaRegistration"].Should().Be(false);
         result.Model.Should().BeEquivalentTo(new CompanyDetailsConfirmationModel
         {
+            ShowRegistrationCaption = true,
             SubmissionTime = submissionTime.ToTimeHoursMinutes(),
             SubmittedDate = submissionTime.ToReadableDate(),
             SubmittedBy = fullName,
@@ -147,7 +148,8 @@ public class CompanyDetailsConfirmationControllerTests
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
-                UserData = new UserData { Organisations = { new Organisation { OrganisationRole = OrganisationRoles.ComplianceScheme } } },
+                UserData = new UserData { Organisations =
+                    { new Organisation { OrganisationRole = OrganisationRoles.ComplianceScheme } } },
                 RegistrationSession = new RegistrationSession
                 {
                     Journey = new List<string>
@@ -157,8 +159,9 @@ public class CompanyDetailsConfirmationControllerTests
                         PagePaths.FileUploadBrands,
                         PagePaths.FileUploadPartnerships
                     },
-                    IsFileUploadJourneyInvokedViaRegistration = true
-                }
+                    IsFileUploadJourneyInvokedViaRegistration = true,
+                },
+                
             });
 
         DateTime submissionTime = DateTime.UtcNow;
@@ -171,7 +174,8 @@ public class CompanyDetailsConfirmationControllerTests
             {
                 SubmittedDateTime = submissionTime,
                 SubmittedBy = Guid.NewGuid()
-            }
+            },
+            RegistrationJourney = RegistrationJourney.CsoLargeProducer,
         });
 
         const string firstName = "first";
@@ -192,15 +196,18 @@ public class CompanyDetailsConfirmationControllerTests
         result.ViewData.Keys.Should().HaveCount(2);
         result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
         result.ViewData.Keys.Should().Contain("IsFileUploadJourneyInvokedViaRegistration");
-        result.ViewData["BackLinkToDisplay"].Should().Be($"~/{PagePaths.RegistrationTaskList}?registrationyear={submissionTime.Year}");
+        result.ViewData["BackLinkToDisplay"].Should()
+            .Be($"~/{PagePaths.RegistrationTaskList}?registrationyear={submissionTime.Year}&registrationjourney=CsoLargeProducer");
         result.ViewData["IsFileUploadJourneyInvokedViaRegistration"].Should().Be(true);
         result.Model.Should().BeEquivalentTo(new CompanyDetailsConfirmationModel
         {
+            ShowRegistrationCaption = true,
             SubmissionTime = submissionTime.ToTimeHoursMinutes(),
             SubmittedDate = submissionTime.ToReadableDate(),
             SubmittedBy = fullName,
             OrganisationRole = OrganisationRoles.ComplianceScheme,
             RegistrationYear = submissionTime.Year,
+            RegistrationJourney = RegistrationJourney.CsoLargeProducer,
         });
     }
 
