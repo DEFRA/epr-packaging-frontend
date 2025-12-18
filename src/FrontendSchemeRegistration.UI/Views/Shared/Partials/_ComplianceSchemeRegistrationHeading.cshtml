@@ -5,11 +5,11 @@
 {
     if (Model.RegistrationJourney == RegistrationJourney.CsoSmallProducer)
     {
-        <p class="govuk-caption-l">@Localizer["register_company_size_small", Model.RegistrationYear]</p>    
+        <span class="govuk-caption-l">@Localizer["register_company_size_small", Model.RegistrationYear]</span>    
     }
     else if (Model.RegistrationJourney == RegistrationJourney.CsoLargeProducer)
     {
-        <p class="govuk-caption-l">@Localizer["register_company_size_large", Model.RegistrationYear]</p>
+        <span class="govuk-caption-l">@Localizer["register_company_size_large", Model.RegistrationYear]</span>
     }
 }
 <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
