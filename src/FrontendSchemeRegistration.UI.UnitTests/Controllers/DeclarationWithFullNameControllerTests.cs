@@ -14,10 +14,11 @@ using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Primitives;
 using Moq;
 
 namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
+
+using Application.Enums;
 
 [TestFixture]
 public class DeclarationWithFullNameControllerTests
@@ -331,7 +332,8 @@ public class DeclarationWithFullNameControllerTests
                 CompanyDetailsUploadedBy = Guid.NewGuid(),
                 CompanyDetailsFileId = Guid.NewGuid()
             },
-            HasValidFile = true
+            HasValidFile = true,
+            RegistrationJourney = RegistrationJourney.CsoLargeProducer
         };
         _submissionServiceMock
             .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
@@ -360,7 +362,8 @@ public class DeclarationWithFullNameControllerTests
         // Assert
         result.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("CompanyDetailsConfirmation");
-        _submissionServiceMock.Verify(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<bool?>()), Times.Once);
+        _submissionServiceMock.Verify(x => x.SubmitAsync(It.IsAny<Guid>(), 
+            It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney>()), Times.Once);
     }
 
     [Test]
@@ -384,7 +387,7 @@ public class DeclarationWithFullNameControllerTests
             .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
             .ReturnsAsync(submission);
         _submissionServiceMock
-            .Setup(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), null, false))
+            .Setup(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), null, false, null))
             .ThrowsAsync(new Exception());
 
         var submissionDeclarationRequest = new DeclarationWithFullNameViewModel

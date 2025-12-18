@@ -172,7 +172,7 @@ public class ComplianceSchemeLandingControllerTests
             AdditionalDetailsStatus = _registrationApplicationSession.AdditionalDetailsStatus,
             ApplicationReferenceNumber = _registrationApplicationSession.ApplicationReferenceNumber,
             RegistrationReferenceNumber = _registrationApplicationSession.RegistrationReferenceNumber,
-            IsResubmission = _registrationApplicationSession.IsResubmission
+            IsResubmission = _registrationApplicationSession.IsResubmission,
            }
         };
 

@@ -13,9 +13,12 @@ public interface ISubmissionService
 
     Task<List<T>> GetSubmissionsAsync<T>(List<string> periods, int? limit, Guid? complianceSchemeId) where T : AbstractSubmission;
 
-    Task SubmitAsync(Guid submissionId, Guid fileId, string submittedBy, string? appReferenceNumber = null, bool? isResubmitted = null);
+    Task SubmitAsync(Guid submissionId, Guid fileId, string submittedBy,  
+        string? appReferenceNumber = null, bool? isResubmitted = null,
+        RegistrationJourney? registrationJourney = null);
 
-    Task CreateRegistrationApplicationEvent(Guid submissionId, Guid? complianceSchemeId, string? comments, string? paymentMethod, string applicationReferenceNumber, bool isResubmission, SubmissionType submissionType);
+    Task CreateRegistrationApplicationEvent(RegistrationApplicationData registrationApplicationData, string applicationReferenceNumber, bool isResubmission, SubmissionType submissionType,
+        RegistrationJourney? registrationJourney);
     
     Task<T> GetDecisionAsync<T>(int? limit, Guid submissionId, SubmissionType type) where T : AbstractDecision;
 

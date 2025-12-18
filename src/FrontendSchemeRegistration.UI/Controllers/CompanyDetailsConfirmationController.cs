@@ -53,13 +53,21 @@ public class CompanyDetailsConfirmationController : Controller
 
                 if (submission is not null && submission.IsSubmitted)
                 {
-                    var isFileUploadJourneyInvokedViaRegistration = session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration;
-                    this.SetBackLink(isFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, registrationYear);
+                    var isInvokedViaRegistration = session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration;
+                    this.SetBackLink(
+                        isInvokedViaRegistration, 
+                        session.RegistrationSession.IsResubmission,
+                        registrationYear,
+                        submission.RegistrationJourney);
 
-                    ViewData["IsFileUploadJourneyInvokedViaRegistration"] = isFileUploadJourneyInvokedViaRegistration;
+                    ViewData["IsFileUploadJourneyInvokedViaRegistration"] = isInvokedViaRegistration;
 
                     var submittedDateTime = submission.LastSubmittedFiles.SubmittedDateTime.Value;
-                    var routeValue = QueryStringExtensions.BuildRouteValues(isResubmission : session.RegistrationSession.IsResubmission, registrationYear: registrationYear);                
+                    var routeValue = QueryStringExtensions.BuildRouteValues(
+                        isResubmission : session.RegistrationSession.IsResubmission,
+                        registrationYear: registrationYear);
+                    var orgName = session.UserData.Organisations[0].Name;
+                    
                     return View(
                         "CompanyDetailsConfirmation",
                         new CompanyDetailsConfirmationModel
@@ -69,7 +77,10 @@ public class CompanyDetailsConfirmationController : Controller
                             SubmittedBy = await GetUsersName(submission.LastSubmittedFiles.SubmittedBy.Value),
                             OrganisationRole = organisationRole,
                             IsResubmission = session.RegistrationSession.IsResubmission,
-                            ReturnToRegistrationLink = Url.Action("RegistrationTaskList", "RegistrationApplication", routeValue)
+                            ReturnToRegistrationLink = Url.Action("RegistrationTaskList", "RegistrationApplication", routeValue),
+                            RegistrationYear = registrationYear,
+                            RegistrationJourney = submission.RegistrationJourney,
+                            OrganisationName = orgName,
                         });
                 }
             }
@@ -83,5 +94,4 @@ public class CompanyDetailsConfirmationController : Controller
         var person = await _accountService.GetPersonByUserId(userId);
         return person.GetUserName();
     }
-
 }

@@ -21,7 +21,7 @@
                 <div class="govuk-summary-card">
                     <div class="govuk-summary-card__title-wrapper app-summary-card__title-wrapper--no-background">
                         <h2 class="govuk-summary-card__title">
-                            <a asp-controller="RegistrationApplication" asp-action="RegistrationTaskList" asp-route-registrationjourney="@RegistrationJourney.CsoSmallProducer" asp-route-registrationyear="@Model.CurrentRegistrationYear" class="govuk-link">
+                            <a asp-controller="RegistrationApplication" asp-action="ProducerRegistrationGuidance" asp-route-registrationjourney="@RegistrationJourney.CsoSmallProducer" asp-route-registrationyear="@Model.CurrentRegistrationYear" class="govuk-link">
                                 @Localizer["current_small_producer_registration_title", @Model.CurrentRegistrationYear]
                             </a>
                         </h2>
@@ -38,7 +38,7 @@
                 <div class="govuk-summary-card">
                     <div class="govuk-summary-card__title-wrapper app-summary-card__title-wrapper--no-background">
                         <h2 class="govuk-summary-card__title">
-                            <a asp-controller="RegistrationApplication" asp-action="RegistrationTaskList" asp-route-registrationjourney="@RegistrationJourney.CsoLargeProducer" asp-route-registrationyear="@Model.CurrentRegistrationYear" class="govuk-link">
+                            <a asp-controller="RegistrationApplication" asp-action="ProducerRegistrationGuidance" asp-route-registrationjourney="@RegistrationJourney.CsoLargeProducer" asp-route-registrationyear="@Model.CurrentRegistrationYear" class="govuk-link">
                                 @Localizer["current_large_producer_registration_title", @Model.CurrentRegistrationYear]
                             </a>
                         </h2>
