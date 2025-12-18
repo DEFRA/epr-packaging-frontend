@@ -110,16 +110,19 @@ public class FileUploadController : Controller
         submissionId = await _fileUploadService.ProcessUploadAsync(
             Request.ContentType,
             Request.Body,
-            session.RegistrationSession.SubmissionPeriod,
             ModelState,
-            submissionId,
-            SubmissionType.Producer,
-            new DefaultFileUploadMessages(),
             new DefaultFileUploadLimit(_globalVariables),
-            null,
-            null,
-            session.RegistrationSession.SelectedComplianceScheme?.Id,
-            session.RegistrationSession.IsResubmission);
+            new FileUploadSubmissionDetails()
+            {
+                SubmissionPeriod = session.RegistrationSession.SubmissionPeriod,
+                SubmissionId = submissionId,
+                SubmissionType = SubmissionType.Producer,
+                RegistrationJourney = null,
+                RegistrationSetId = null,
+                ComplianceSchemeId = session.RegistrationSession.SelectedComplianceScheme?.Id,
+                IsResubmission = session.RegistrationSession.IsResubmission,
+                SubmissionSubType = null
+            });
 
         var routeValues = new RouteValueDictionary { { "submissionId", submissionId } };
 

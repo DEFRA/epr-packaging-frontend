@@ -4,6 +4,7 @@ using Application.Constants;
 using Application.DTOs.Submission;
 using Application.Extensions;
 using Application.Services.Interfaces;
+using Constants;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using Extensions;
@@ -45,7 +46,8 @@ public class CompanyDetailsConfirmationController : Controller
 
         if (session is not null)
         {
-            var organisationRole = session.UserData.Organisations?.FirstOrDefault()?.OrganisationRole;
+            var organisation = session.UserData.Organisations?.FirstOrDefault();
+            var organisationRole = organisation?.OrganisationRole;
 
             if (organisationRole is not null && Guid.TryParse(Request.Query["submissionId"], out var submissionId))
             {
@@ -66,12 +68,15 @@ public class CompanyDetailsConfirmationController : Controller
                     var routeValue = QueryStringExtensions.BuildRouteValues(
                         isResubmission : session.RegistrationSession.IsResubmission,
                         registrationYear: registrationYear);
-                    var orgName = session.UserData.Organisations[0].Name;
                     
+                    bool showRegistrationCaption = organisationRole == OrganisationRoles.ComplianceScheme 
+                                                   && submission.RegistrationJourney is not null 
+                                                   && registrationYear is not null;
                     return View(
                         "CompanyDetailsConfirmation",
                         new CompanyDetailsConfirmationModel
                         {
+                            ShowRegistrationCaption = showRegistrationCaption,
                             SubmittedDate = submittedDateTime.ToReadableDate(),
                             SubmissionTime = submittedDateTime.ToTimeHoursMinutes(),
                             SubmittedBy = await GetUsersName(submission.LastSubmittedFiles.SubmittedBy.Value),
@@ -80,7 +85,7 @@ public class CompanyDetailsConfirmationController : Controller
                             ReturnToRegistrationLink = Url.Action("RegistrationTaskList", "RegistrationApplication", routeValue),
                             RegistrationYear = registrationYear,
                             RegistrationJourney = submission.RegistrationJourney,
-                            OrganisationName = orgName,
+                            OrganisationName = organisation.Name,
                         });
                 }
             }

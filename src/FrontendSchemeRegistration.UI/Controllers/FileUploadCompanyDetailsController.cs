@@ -103,17 +103,19 @@ public class FileUploadCompanyDetailsController : Controller
         submissionId = await _fileUploadService.ProcessUploadAsync(
             Request.ContentType,
             Request.Body,
-            session.RegistrationSession.SubmissionPeriod,
             ModelState,
-            submissionId,
-            SubmissionType.Registration,
-            new DefaultFileUploadMessages(),
             new DefaultFileUploadLimit(_globalVariables),
-            SubmissionSubType.CompanyDetails,
-            session.RegistrationSession.LatestRegistrationSet[session.RegistrationSession.SubmissionPeriod],
-            session.RegistrationSession.SelectedComplianceScheme?.Id,
-            session.RegistrationSession.IsResubmission,
-            registrationJourney?.ToString());
+            new FileUploadSubmissionDetails()
+            {
+                SubmissionPeriod = session.RegistrationSession.SubmissionPeriod,
+                SubmissionId = submissionId,
+                RegistrationSetId = session.RegistrationSession.LatestRegistrationSet[session.RegistrationSession.SubmissionPeriod],
+                IsResubmission = session.RegistrationSession.IsResubmission,
+                ComplianceSchemeId = session.RegistrationSession.SelectedComplianceScheme?.Id,
+                SubmissionType = SubmissionType.Registration,
+                SubmissionSubType = SubmissionSubType.CompanyDetails,
+                RegistrationJourney = registrationJourney?.ToString()
+            });
 
         session.RegistrationSession.Journey.AddIfNotExists(PagePaths.FileUploadCompanyDetails);
         var organisationRole = session.UserData.Organisations.FirstOrDefault()?.OrganisationRole;

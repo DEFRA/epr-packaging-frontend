@@ -14,9 +14,6 @@ using FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
-using Polly.Caching;
-using System;
-using System.Web;
 
 namespace FrontendSchemeRegistration.UI.Controllers.RegistrationApplication;
 
@@ -165,7 +162,7 @@ public class RegistrationApplicationController(
 
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
         session.Journey = [PagePaths.RegistrationFeeCalculations, PagePaths.SelectPaymentOptions];
-        SetBackLink(session, PagePaths.SelectPaymentOptions, registrationYear, registrationJourney);
+        SetBackLink(session, PagePaths.SelectPaymentOptions, registrationYear, session.RegistrationJourney);
 
         var model = new SelectPaymentOptionsViewModel
         {
@@ -196,13 +193,20 @@ public class RegistrationApplicationController(
     [Route(PagePaths.SelectPaymentOptions)]
     public async Task<IActionResult> SelectPaymentOptions(SelectPaymentOptionsViewModel model)
     {
+        var userData = User.GetUserData();
+        var organisation = userData.Organisations[0];
         var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], false);
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
-        SetBackLink(session, PagePaths.SelectPaymentOptions, registrationYear);
+        session.Journey = [PagePaths.RegistrationFeeCalculations, PagePaths.SelectPaymentOptions];
+        SetBackLink(session, PagePaths.SelectPaymentOptions, registrationYear, session.RegistrationJourney);
 
         model.RegulatorNation = session.RegulatorNation;
         model.TotalAmountOutstanding = session.TotalAmountOutstanding;
         model.RegistrationYear = registrationYear.GetValueOrDefault();
+        model.ShowRegistrationCaption = session.ShowRegistrationCaption;
+        model.RegistrationJourney = session.RegistrationJourney;
+        model.IsComplianceScheme = session.IsComplianceScheme;
+        model.OrganisationName = organisation.Name!;
 
         if (!ModelState.IsValid)
         {
@@ -212,11 +216,11 @@ public class RegistrationApplicationController(
         switch (model.PaymentOption)
         {
             case (int)PaymentOptions.PayOnline:
-                return RedirectToAction(nameof(PayOnline), new { registrationyear = registrationYear });
+                return RedirectToAction(nameof(PayOnline), new { registrationyear = registrationYear, registrationjourney = session.RegistrationJourney });
             case (int)PaymentOptions.PayByBankTransfer:
-                return RedirectToAction(nameof(PayByBankTransfer), new { registrationyear = registrationYear });
+                return RedirectToAction(nameof(PayByBankTransfer), new { registrationyear = registrationYear, registrationjourney = session.RegistrationJourney });
             case (int)PaymentOptions.PayByPhone:
-                return RedirectToAction(nameof(PayByPhone), new { registrationyear = registrationYear });
+                return RedirectToAction(nameof(PayByPhone), new { registrationyear = registrationYear, registrationjourney = session.RegistrationJourney });
             default: return View(model);
         }
     }
@@ -314,7 +318,8 @@ public class RegistrationApplicationController(
             RegulatorNation = session.RegulatorNation,
             ApplicationReferenceNumber = session.ApplicationReferenceNumber!,
             TotalAmountOutstanding = session.TotalAmountOutstanding,
-            RegistrationYear = registrationYear.GetValueOrDefault()
+            RegistrationYear = registrationYear.GetValueOrDefault(),
+            RegistrationJourney = session.RegistrationJourney
         };
 
         if (!model.IsEngland)

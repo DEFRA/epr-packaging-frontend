@@ -156,4 +156,7 @@
     <data name="submit_your_application_from_registration_dashboard" xml:space="preserve">
         <value>Submit your application from the registration dashboard</value>
     </data>
+    <data name="continue" xml:space="preserve">
+        <value>Continue</value>
+    </data>
 </root>
