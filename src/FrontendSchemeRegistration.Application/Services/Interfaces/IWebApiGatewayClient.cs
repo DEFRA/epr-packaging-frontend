@@ -14,14 +14,7 @@ public interface IWebApiGatewayClient
     Task<Guid> UploadFileAsync(
         byte[] byteArray,
         string fileName,
-        string submissionPeriod,
-        Guid? submissionId,
-        SubmissionType submissionType,
-        SubmissionSubType? submissionSubType = null,
-        Guid? registrationSetId = null,
-        Guid? complianceSchemeId = null,
-        bool? isResubmission = null,
-        string? registrationJourney = null);
+        FileUploadSubmissionDetails submissionDetails);
 
     Task<Guid> UploadSubsidiaryFileAsync(
         byte[] byteArray,
@@ -85,4 +78,16 @@ public interface IWebApiGatewayClient
     Task CreatePackagingDataResubmissionFeePaymentEvent(Guid? submissionId, Guid? filedId,string paymentMethod);
 
     Task CreatePackagingResubmissionApplicationSubmittedCreatedEvent(Guid? submissionId, Guid? filedId, string submittedBy, DateTime submissionDate, string comment);
+}
+
+public class FileUploadSubmissionDetails
+{
+    public string SubmissionPeriod { get; set; }
+    public Guid? SubmissionId { get; set; }
+    public SubmissionType SubmissionType { get; set; }
+    public SubmissionSubType? SubmissionSubType  { get; set; } = null;
+    public Guid? RegistrationSetId { get; set; } = null;
+    public Guid? ComplianceSchemeId { get; set; } = null;
+    public bool? IsResubmission { get; set; } = null;
+    public string? RegistrationJourney { get; set; } = null;
 }

@@ -1,16 +1,29 @@
 ﻿@using FrontendSchemeRegistration.Application.Enums
-@using FrontendSchemeRegistration.UI.Constants
+@using FrontendSchemeRegistration.UI.ViewModels.Shared
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication.PaymentOptionPayByBankTransferViewModel
 
 @{
     ViewData["Title"] = Localizer["pay_by_bank_transfer_title"];
     var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
     var nationNameToLowercase = Model.NationName.ToLower();
+
+    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+        Model.IsComplianceScheme, 
+        Model.RegistrationJourney, 
+        null,
+        null,
+        Model.RegistrationYear); 
+    }
 }
 
 <main class="govuk-main-wrapper" id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-three-quarters">
+            @if (Model.IsComplianceScheme)
+            {
+                <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel"/>
+            }
             <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
                 @Localizer["pay_by_bank_transfer_heading"]
             </h1>
@@ -102,7 +115,9 @@
             <p class="govuk-body govuk-!-margin-top-4">
                 @if (Model.IsComplianceScheme)
                 {
-                    <a asp-controller="ComplianceSchemeLanding" asp-action="Get" class="govuk-link">@Localizer["return_to_dashboard"]</a>
+                    <a class="govuk-button" href="@Url.Action("Get", "ComplianceSchemeLanding")" role="button" data-module="govuk-button">
+                        @Localizer["continue"]
+                    </a>
                 }
                 else
                 {

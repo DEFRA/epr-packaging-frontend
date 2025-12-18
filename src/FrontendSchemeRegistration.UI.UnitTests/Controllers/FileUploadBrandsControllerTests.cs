@@ -2,7 +2,6 @@
 
 using Application.Constants;
 using Application.DTOs.Submission;
-using Application.Enums;
 using Application.Services.Interfaces;
 using Constants;
 using EPR.Common.Authorization.Models;
@@ -10,7 +9,6 @@ using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.UI.Services;
-using FrontendSchemeRegistration.UI.Services.Messages;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -141,17 +139,9 @@ public class FileUploadBrandsControllerTests
             .Setup(x => x.ProcessUploadAsync(
                 contentType,
                 It.IsAny<Stream>(),
-                _submissionPeriod,
                 It.IsAny<ModelStateDictionary>(),
-                submissionId,
-                SubmissionType.Registration,
-                It.IsAny<IFileUploadMessages>(),
                 It.IsAny<IFileUploadSize>(),
-                SubmissionSubType.Brands,
-                _registrationSetId,
-                null,
-                It.IsAny<bool?>(),
-                null))
+                It.IsAny<FileUploadSubmissionDetails>()))
             .ReturnsAsync(submissionId);
 
         // Act
@@ -176,17 +166,9 @@ public class FileUploadBrandsControllerTests
             .Setup(x => x.ProcessUploadAsync(
                 contentType,
                 It.IsAny<Stream>(),
-                _submissionPeriod,
                 It.IsAny<ModelStateDictionary>(),
-                submissionId,
-                SubmissionType.Registration,
-                new DefaultFileUploadMessages(),
                 It.IsAny<IFileUploadSize>(),
-                SubmissionSubType.Brands,
-                _registrationSetId,
-                null,
-                It.IsAny<bool?>(),
-                null))
+                It.IsAny<FileUploadSubmissionDetails>()))
             .ReturnsAsync(submissionId);
         _systemUnderTest.ModelState.AddModelError("file", "Some error");
 

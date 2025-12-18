@@ -399,17 +399,9 @@ public class FileUploadCompanyDetailsControllerTests
             x => x.ProcessUploadAsync(
                 contentType,
                 It.IsAny<Stream>(),
-                SubmissionPeriod,
                 It.IsAny<ModelStateDictionary>(),
-                null,
-                SubmissionType.Registration,
-                It.IsAny<IFileUploadMessages>(),
                 It.IsAny<IFileUploadSize>(),
-                SubmissionSubType.CompanyDetails,
-                It.IsAny<Guid?>(),
-                It.IsAny<Guid?>(),
-                It.IsAny<bool?>(),
-                null),
+                It.IsAny<FileUploadSubmissionDetails>()),
             Times.Once);
         result.ViewName.Should().Be("FileUploadCompanyDetails");
     }
@@ -432,17 +424,9 @@ public class FileUploadCompanyDetailsControllerTests
             x => x.ProcessUploadAsync(
                 contentType,
                 It.IsAny<Stream>(),
-                SubmissionPeriod,
                 It.IsAny<ModelStateDictionary>(),
-                null,
-                SubmissionType.Registration,
-                It.IsAny<IFileUploadMessages>(),
                 It.IsAny<IFileUploadSize>(),
-                SubmissionSubType.CompanyDetails,
-                It.IsAny<Guid?>(),
-                It.IsAny<Guid?>(),
-                It.IsAny<bool?>(),
-                nameof(RegistrationJourney.CsoLargeProducer)),
+                It.IsAny<FileUploadSubmissionDetails>()),
             Times.Once);
         result.ViewName.Should().Be("FileUploadCompanyDetailsCso");
         var actualModel = result.Model as FileUploadCompanyDetailsViewModel;
@@ -473,17 +457,9 @@ public class FileUploadCompanyDetailsControllerTests
             .Setup(x => x.ProcessUploadAsync(
                 contentType,
                 It.IsAny<Stream>(),
-                SubmissionPeriod,
                 It.IsAny<ModelStateDictionary>(),
-                submissionId,
-                SubmissionType.Registration,
-                It.IsAny<IFileUploadMessages>(),
                 It.IsAny<IFileUploadSize>(),
-                SubmissionSubType.CompanyDetails,
-                It.IsAny<Guid?>(),
-                It.IsAny<Guid?>(),
-                It.IsAny<bool?>(),
-                registrationJourney !=null ? registrationJourney.ToString() : null))
+                It.IsAny<FileUploadSubmissionDetails>()))
             .ReturnsAsync(submissionId);
 
         // Act
