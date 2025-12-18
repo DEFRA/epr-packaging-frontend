@@ -620,6 +620,7 @@ public class RegistrationApplicationControllerTests
             RegistrationFeePaymentMethod = null,
             LastSubmittedFile = new LastSubmittedFileDetails { FileId = Guid.NewGuid(), SubmittedDateTime = DateTime.Now },
             RegistrationFeeCalculationDetails = _feeCalculationDetails,
+            RegistrationJourney = null,
             IsSubmitted = true
         };
         SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(Session);
@@ -639,11 +640,11 @@ public class RegistrationApplicationControllerTests
                 TotalPreviousPayments = CalculationResponse.PreviousPayment,
                 TotalFeeAmount = CalculationResponse.TotalFee,
                 IsRegistrationFeePaid = Session.IsRegistrationFeePaid,
-                ProducerLateRegistrationFee = CalculationResponse.ProducerLateRegistrationFee
+                ProducerLateRegistrationFee = CalculationResponse.ProducerLateRegistrationFee,
             });
 
         // Act
-        var result = await SystemUnderTest.RegistrationFeeCalculations(null) as ViewResult;
+        var result = await SystemUnderTest.RegistrationFeeCalculations() as ViewResult;
 
         // Assert
         result.Model.Should().BeOfType<FeeCalculationBreakdownViewModel>();
@@ -676,14 +677,15 @@ public class RegistrationApplicationControllerTests
             ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
             IsSubmitted = true,
             RegistrationFeeCalculationDetails = [new RegistrationFeeCalculationDetails { OrganisationId = "1", OrganisationSize = "L" }],
-            LastSubmittedFile = new LastSubmittedFileDetails { SubmittedDateTime = DateTime.Now }
+            LastSubmittedFile = new LastSubmittedFileDetails { SubmittedDateTime = DateTime.Now },
+            RegistrationJourney = null
         };
         SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(Session);
 
         RegistrationApplicationService.Setup(x => x.GetProducerRegistrationFees(It.IsAny<ISession>())).ReturnsAsync((FeeCalculationBreakdownViewModel) null);
 
         // Act
-        var result = SystemUnderTest.RegistrationFeeCalculations(null).Result;
+        var result = SystemUnderTest.RegistrationFeeCalculations().Result;
 
         // Assert
         var selectedCs = Session.SelectedComplianceScheme?.Id;
@@ -702,7 +704,8 @@ public class RegistrationApplicationControllerTests
         {
             Journey = [PagePaths.RegistrationFeeCalculations],
             SubmissionId = null,
-            ApplicationReferenceNumber = null
+            ApplicationReferenceNumber = null,
+            RegistrationJourney = null
         };
         SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(Session);
 
@@ -725,7 +728,7 @@ public class RegistrationApplicationControllerTests
             });
 
         // Act
-        var result = await SystemUnderTest.RegistrationFeeCalculations(null) as RedirectToActionResult;
+        var result = await SystemUnderTest.RegistrationFeeCalculations() as RedirectToActionResult;
 
         // Assert
         result.ActionName.Should().Be(nameof(RegistrationApplicationController.RegistrationTaskList));
@@ -753,7 +756,8 @@ public class RegistrationApplicationControllerTests
             ApplicationReferenceNumber = "456",
             ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
             RegistrationFeeCalculationDetails = producerDetails,
-            LastSubmittedFile = new LastSubmittedFileDetails { SubmittedDateTime = DateTime.Now }
+            LastSubmittedFile = new LastSubmittedFileDetails { SubmittedDateTime = DateTime.Now },
+            RegistrationJourney = null,
         };
 
         var registrationFeesResponse = new PaymentCalculationResponse
@@ -790,7 +794,7 @@ public class RegistrationApplicationControllerTests
             });
 
         // Act
-        await SystemUnderTest.RegistrationFeeCalculations(null);
+        await SystemUnderTest.RegistrationFeeCalculations();
 
         // Assert
         RegistrationApplicationService.Verify(s => s.GetProducerRegistrationFees(It.IsAny<ISession>()), Times.Once);
@@ -803,7 +807,8 @@ public class RegistrationApplicationControllerTests
         var mockSession = new RegistrationApplicationSession
         {
             SubmissionId = Guid.NewGuid(),
-            ApplicationReferenceNumber = "TestRef"
+            ApplicationReferenceNumber = "TestRef",
+            RegistrationJourney = null,
         };
 
         SessionManagerMock
@@ -811,7 +816,7 @@ public class RegistrationApplicationControllerTests
             .ReturnsAsync(mockSession);
 
         // Act
-        var result = await SystemUnderTest.RegistrationFeeCalculations(null);
+        var result = await SystemUnderTest.RegistrationFeeCalculations();
 
         // Assert
         result.Should().BeOfType<RedirectToActionResult>()
@@ -1910,7 +1915,8 @@ public class RegistrationApplicationControllerTests
             RegistrationFeePaymentMethod = registrationApplicationDetails.RegistrationFeePaymentMethod,
             RegulatorNation = registrationApplicationDetails.RegulatorNation,
             SubmissionId = registrationApplicationDetails.SubmissionId,
-            SelectedComplianceScheme = registrationApplicationDetails.SelectedComplianceScheme
+            SelectedComplianceScheme = registrationApplicationDetails.SelectedComplianceScheme,
+            RegistrationJourney = RegistrationJourney.CsoLargeProducer
         };
 
         SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(Session);
@@ -1932,7 +1938,7 @@ public class RegistrationApplicationControllerTests
         });
 
         // Act
-        var result = await SystemUnderTest.RegistrationFeeCalculations(RegistrationJourney.CsoLargeProducer) as ViewResult;
+        var result = await SystemUnderTest.RegistrationFeeCalculations() as ViewResult;
 
         // Assert
         result.Model.Should().BeOfType<ComplianceSchemeFeeCalculationBreakdownViewModel>();
@@ -1970,6 +1976,7 @@ public class RegistrationApplicationControllerTests
             LastSubmittedFile = new LastSubmittedFileDetails { FileId = Guid.NewGuid(), SubmittedDateTime = DateTime.Now },
             RegistrationFeeCalculationDetails = _feeCalculationDetails,
             IsSubmitted = true,
+            RegistrationJourney = null
             //SelectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), NationId = 1, Name = "test", RowNumber = 1 }
         };
 
@@ -1978,7 +1985,7 @@ public class RegistrationApplicationControllerTests
         RegistrationApplicationService.Setup(x => x.GetComplianceSchemeRegistrationFees(It.IsAny<ISession>())).ReturnsAsync((ComplianceSchemeFeeCalculationBreakdownViewModel) null);
 
         // Act
-        var result = await SystemUnderTest.RegistrationFeeCalculations(null);
+        var result = await SystemUnderTest.RegistrationFeeCalculations();
 
         // Assert
         result.Should().BeOfType<RedirectToActionResult>();

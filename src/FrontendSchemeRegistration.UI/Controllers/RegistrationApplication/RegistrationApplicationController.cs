@@ -60,6 +60,7 @@ public class RegistrationApplicationController(
         });
     }
 
+
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
     [Route(PagePaths.RegistrationTaskList)]
@@ -69,10 +70,10 @@ public class RegistrationApplicationController(
         var organisation = userData.Organisations[0];
         var isResubmission = !string.IsNullOrWhiteSpace(HttpContext.Request.Query["IsResubmission"]);
 
-        var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
+        var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], false);
 
         var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, registrationYear.GetValueOrDefault(), isResubmission, registrationJourney);
-        
+
         if (session.SkipProducerRegistrationGuidance)
         {
             session.Journey = [session.IsComplianceScheme ? PagePaths.CsoRegistration : PagePaths.HomePageSelfManaged, PagePaths.RegistrationTaskList];
@@ -100,11 +101,11 @@ public class RegistrationApplicationController(
             RegistrationJourney = session.RegistrationJourney
         });
     }
-    
+
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
     [Route(PagePaths.RegistrationFeeCalculations)]
-    public async Task<IActionResult> RegistrationFeeCalculations([FromQuery]RegistrationJourney? registrationJourney)
+    public async Task<IActionResult> RegistrationFeeCalculations()
     {
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
@@ -112,7 +113,7 @@ public class RegistrationApplicationController(
 
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
         session.Journey = [PagePaths.RegistrationTaskList, PagePaths.RegistrationFeeCalculations];
-        SetBackLink(session, PagePaths.RegistrationFeeCalculations, registrationYear, registrationJourney);
+        SetBackLink(session, PagePaths.RegistrationFeeCalculations, registrationYear);
 
         if (session.FileUploadStatus is not RegistrationTaskListStatus.Completed)
         {
@@ -129,7 +130,7 @@ public class RegistrationApplicationController(
             if (response is not null)
             {
                 response.RegistrationYear = registrationYear.GetValueOrDefault();
-                response.RegistrationJourney = registrationJourney;
+                response.RegistrationJourney = session.RegistrationJourney;
                 return View("ComplianceSchemeRegistrationFeeCalculations", response);
             }
         }
@@ -154,7 +155,7 @@ public class RegistrationApplicationController(
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
     [Route(PagePaths.SelectPaymentOptions)]
-    public async Task<IActionResult> SelectPaymentOptions([FromQuery] RegistrationJourney? registrationJourney = null)
+    public async Task<IActionResult> SelectPaymentOptions()
     {
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
@@ -198,7 +199,7 @@ public class RegistrationApplicationController(
         var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], false);
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
         session.Journey = [PagePaths.RegistrationFeeCalculations, PagePaths.SelectPaymentOptions];
-        SetBackLink(session, PagePaths.SelectPaymentOptions, registrationYear, session.RegistrationJourney);
+        SetBackLink(session, PagePaths.SelectPaymentOptions, registrationYear);
 
         model.RegulatorNation = session.RegulatorNation;
         model.TotalAmountOutstanding = session.TotalAmountOutstanding;
@@ -216,11 +217,11 @@ public class RegistrationApplicationController(
         switch (model.PaymentOption)
         {
             case (int)PaymentOptions.PayOnline:
-                return RedirectToAction(nameof(PayOnline), new { registrationyear = registrationYear, registrationjourney = session.RegistrationJourney });
+                return RedirectToAction(nameof(PayOnline), new { registrationyear = registrationYear });
             case (int)PaymentOptions.PayByBankTransfer:
-                return RedirectToAction(nameof(PayByBankTransfer), new { registrationyear = registrationYear, registrationjourney = session.RegistrationJourney });
+                return RedirectToAction(nameof(PayByBankTransfer), new { registrationyear = registrationYear });
             case (int)PaymentOptions.PayByPhone:
-                return RedirectToAction(nameof(PayByPhone), new { registrationyear = registrationYear, registrationjourney = session.RegistrationJourney });
+                return RedirectToAction(nameof(PayByPhone), new { registrationyear = registrationYear });
             default: return View(model);
         }
     }
@@ -481,7 +482,7 @@ public class RegistrationApplicationController(
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
     [Route(PagePaths.RedirectFileUploadCompanyDetails)]
-    public async Task<IActionResult> RedirectToFileUpload(RegistrationJourney? registrationJourney = null)
+    public async Task<IActionResult> RedirectToFileUpload()
     {
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
@@ -515,7 +516,7 @@ public class RegistrationApplicationController(
                     return RedirectToAction(
                         nameof(ReviewCompanyDetailsController.Get),
                         nameof(ReviewCompanyDetailsController).RemoveControllerFromName(),
-                        new RouteValueDictionary { { "submissionId", session.SubmissionId }, { "registrationyear", registrationYear }, { "registrationjourney", registrationJourney } });
+                        new RouteValueDictionary { { "submissionId", session.SubmissionId }, { "registrationyear", registrationYear }, { "registrationjourney", session.RegistrationJourney } });
                 case ApplicationStatusType.NotStarted:
                 case ApplicationStatusType.QueriedByRegulator:
                 case ApplicationStatusType.CancelledByRegulator:
@@ -550,9 +551,9 @@ public class RegistrationApplicationController(
     private void SetBackLink(RegistrationApplicationSession session, string currentPagePath, int? registrationYear = null, RegistrationJourney? registrationJourney = null, string? nation = null)
     {
         var previousPage = session.Journey.PreviousOrDefault(currentPagePath) ?? string.Empty;
-        if(registrationYear > 0 && !string.IsNullOrWhiteSpace(previousPage))
+        if (registrationYear > 0 && !string.IsNullOrWhiteSpace(previousPage))
         {
-            previousPage = QueryHelpers.AddQueryString(previousPage, "registrationyear", registrationYear.ToString());            
+            previousPage = QueryHelpers.AddQueryString(previousPage, "registrationyear", registrationYear.ToString());
         }
 
         if (registrationJourney.HasValue && !string.IsNullOrWhiteSpace(previousPage))
