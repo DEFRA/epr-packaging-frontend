@@ -111,16 +111,20 @@ public class FileUploadBrandsController : Controller
         submissionId = await _fileUploadService.ProcessUploadAsync(
             Request.ContentType,
             Request.Body,
-            session.RegistrationSession.SubmissionPeriod,
-        ModelState,
-        submissionId,
-            SubmissionType.Registration,
-            new DefaultFileUploadMessages(),
+            ModelState,
             new DefaultFileUploadLimit(_globalVariables),
-            SubmissionSubType.Brands,
-            session.RegistrationSession.LatestRegistrationSet[session.RegistrationSession.SubmissionPeriod],
-            null,
-            session.RegistrationSession.IsResubmission);
+            new FileUploadSubmissionDetails()
+            {
+                SubmissionPeriod = session.RegistrationSession.SubmissionPeriod,
+                SubmissionId = submissionId,
+                SubmissionType = SubmissionType.Registration,
+                SubmissionSubType = SubmissionSubType.Brands,
+                RegistrationSetId =
+                    session.RegistrationSession.LatestRegistrationSet[session.RegistrationSession.SubmissionPeriod],
+                IsResubmission = session.RegistrationSession.IsResubmission,
+                ComplianceSchemeId = null,
+                RegistrationJourney = null
+            });
 
         session.RegistrationSession.Journey.AddIfNotExists(PagePaths.FileUploadBrands);
         await _sessionManager.SaveSessionAsync(HttpContext.Session, session);

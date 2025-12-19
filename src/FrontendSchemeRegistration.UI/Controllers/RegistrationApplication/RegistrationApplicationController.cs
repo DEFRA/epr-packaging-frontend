@@ -1,4 +1,3 @@
-using System.Web;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
@@ -15,7 +14,6 @@ using FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
-using Polly.Caching;
 
 namespace FrontendSchemeRegistration.UI.Controllers.RegistrationApplication;
 
@@ -305,7 +303,8 @@ public class RegistrationApplicationController(
             RegulatorNation = session.RegulatorNation,
             ApplicationReferenceNumber = session.ApplicationReferenceNumber!,
             TotalAmountOutstanding = session.TotalAmountOutstanding,
-            RegistrationYear = registrationYear.GetValueOrDefault()
+            RegistrationYear = registrationYear.GetValueOrDefault(),
+            RegistrationJourney = session.RegistrationJourney
         };
 
         if (!model.IsEngland)
