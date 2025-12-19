@@ -113,7 +113,7 @@ public class RegistrationApplicationController(
 
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
         session.Journey = [PagePaths.RegistrationTaskList, PagePaths.RegistrationFeeCalculations];
-        SetBackLink(session, PagePaths.RegistrationFeeCalculations, registrationYear);
+        SetBackLink(session, PagePaths.RegistrationFeeCalculations, registrationYear, session.RegistrationJourney);
 
         if (session.FileUploadStatus is not RegistrationTaskListStatus.Completed)
         {
@@ -183,7 +183,7 @@ public class RegistrationApplicationController(
 
         if (session.FileUploadStatus != RegistrationTaskListStatus.Completed)
         {
-            return RedirectToAction(nameof(RegistrationTaskList), new { registrationyear = registrationYear });
+            return RedirectToAction(nameof(RegistrationTaskList), new { registrationyear = registrationYear, registrationJourney = session.RegistrationJourney });
         }
 
         return View(model);
@@ -239,7 +239,7 @@ public class RegistrationApplicationController(
         if (session.FileUploadStatus != RegistrationTaskListStatus.Completed ||
             string.IsNullOrWhiteSpace(session.ApplicationReferenceNumber))
         {
-            return RedirectToAction(nameof(RegistrationTaskList), new { registrationyear = registrationYear });
+            return RedirectToAction(nameof(RegistrationTaskList), new { registrationyear = registrationYear, registrationJourney = session.RegistrationJourney });
         }
 
         if (session.PaymentViewStatus != RegistrationTaskListStatus.Completed)
@@ -272,7 +272,7 @@ public class RegistrationApplicationController(
 
         if (session.FileUploadStatus != RegistrationTaskListStatus.Completed)
         {
-            return RedirectToAction(nameof(RegistrationTaskList), new { registrationyear = registrationYear });
+            return RedirectToAction(nameof(RegistrationTaskList), new { registrationyear = registrationYear, registrationJourney = session.RegistrationJourney });
         }
 
         if (string.IsNullOrWhiteSpace(paymentLink))
@@ -310,7 +310,7 @@ public class RegistrationApplicationController(
         if (session.FileUploadStatus != RegistrationTaskListStatus.Completed ||
             string.IsNullOrWhiteSpace(session.ApplicationReferenceNumber))
         {
-            return RedirectToAction(nameof(RegistrationTaskList), new { registrationyear = registrationYear });
+            return RedirectToAction(nameof(RegistrationTaskList), new { registrationyear = registrationYear, registrationJourney = session.RegistrationJourney });
         }
 
         var model = new PaymentOptionPayByBankTransferViewModel
@@ -353,7 +353,7 @@ public class RegistrationApplicationController(
 
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
         session.Journey = [PagePaths.RegistrationTaskList, PagePaths.AdditionalInformation];
-        SetBackLink(session, PagePaths.AdditionalInformation, registrationYear);
+        SetBackLink(session, PagePaths.AdditionalInformation, registrationYear, session.RegistrationJourney);
 
         if (session is
             {
@@ -370,7 +370,7 @@ public class RegistrationApplicationController(
             session.PaymentViewStatus != RegistrationTaskListStatus.Completed ||
             session.AdditionalDetailsStatus == RegistrationTaskListStatus.Completed)
         {
-            return RedirectToAction(nameof(RegistrationTaskList), new { registrationyear = registrationYear });
+            return RedirectToAction(nameof(RegistrationTaskList), new { registrationyear = registrationYear, registrationJourney = session.RegistrationJourney });
         }
 
         return View(new AdditionalInformationViewModel
