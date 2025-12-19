@@ -39,7 +39,6 @@ public static class ServiceProviderExtension
         ConfigureSession(services);
         RegisterServices(services);
         RegisterHttpClients(services);
-        RegisterPrnTimeProviderServices(services, configuration);
 
         return services;
     }
@@ -163,19 +162,7 @@ public static class ServiceProviderExtension
         services.AddScoped<IFileDownloadService, FileDownloadService>();
         services.AddScoped<ComplianceSchemeIdHttpContextFilterAttribute>();
         services.AddScoped<IResubmissionApplicationService, ResubmissionApplicationServices>();
-    }
-
-    // When testing PRNs use a configurable date in place of the current date
-    private static void RegisterPrnTimeProviderServices(IServiceCollection services, IConfiguration configuration)
-    {
-        // Check feature flags, [FeatureGate] won't work here
-        if (configuration.IsFeatureEnabled(FeatureFlags.ShowPrn) && configuration.IsFeatureEnabled(FeatureFlags.OverridePrnCurrentDateForTestingPurposes))
-        {
-            var prnOptions = configuration.GetSection("Prn").Get<PrnOptions>();
-            var fake = new FakeTimeProvider();
-            fake.SetUtcNow(new DateTimeOffset(new DateTime(prnOptions.Year, prnOptions.Month, prnOptions.Day, 0, 0, 0, DateTimeKind.Utc)));
-            services.AddSingleton(typeof(TimeProvider), fake);
-        }
+        services.AddSingleton(TimeProvider.System);
     }
 
     private static void RegisterHttpClients(IServiceCollection services)
