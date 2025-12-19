@@ -1,0 +1,22 @@
+{
+  "submissionId" : "a0eedd38-cc58-4cb1-bfa4-617914219e92",
+  "isSubmitted" : false,
+  "isResubmission" : false,
+  "applicationReferenceNumber" : null,
+  "registrationReferenceNumber" : null,
+  "lastSubmittedFile" : {
+    "fileId" : null,
+    "submittedByName" : null,
+    "submittedDateTime" : null
+  },
+  "registrationFeePaymentMethod" : null,
+  "hasAnyApprovedOrQueriedRegulatorDecision" : false,
+  "isLatestSubmittedEventAfterFileUpload" : false,
+  "latestSubmittedEventCreatedDatetime" : null,
+  "firstApplicationSubmittedEventCreatedDatetime" : null,
+  "registrationApplicationSubmittedDate" : null,
+  "registrationApplicationSubmittedComment" : null,
+  "registrationApplicationSubmitted" : false,
+  "applicationStatus" : 1,
+  "registrationFeeCalculationDetails" : null
+}
