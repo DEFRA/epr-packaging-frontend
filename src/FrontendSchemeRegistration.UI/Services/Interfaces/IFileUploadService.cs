@@ -1,6 +1,7 @@
 ﻿namespace FrontendSchemeRegistration.UI.Services.Interfaces;
 
 using Application.Enums;
+using Application.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 public interface IFileUploadService
@@ -8,17 +9,9 @@ public interface IFileUploadService
     Task<Guid> ProcessUploadAsync(
         string? contentType,
         Stream fileStream,
-        string submissionPeriod,
         ModelStateDictionary modelState,
-        Guid? submissionId,
-        SubmissionType submissionType,
-        IFileUploadMessages fileUploadMessages,
         IFileUploadSize fileUploadSize,
-        SubmissionSubType? submissionSubType = null,
-        Guid? registrationSetId = null,
-        Guid? complianceSchemeId = null,
-        bool? isResubmission = null,
-        string? registrationJourney = null);
+        FileUploadSubmissionDetails submissionDetails);
 
     Task<Guid> ProcessUploadAsync(
         string? contentType,
@@ -30,3 +23,4 @@ public interface IFileUploadService
         IFileUploadSize fileUploadSize,
         Guid? complianceSchemeId = null);
 }
+
