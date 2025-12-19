@@ -149,4 +149,14 @@ public class RegistrationApplicationSession
     public ComplianceSchemeDto? SelectedComplianceScheme { get; set; }
     public RegistrationJourney? RegistrationJourney { get; set; }
     public bool ShowRegistrationCaption { get; set; }
+    public bool SkipProducerRegistrationGuidance =>
+    ApplicationStatus is
+        ApplicationStatusType.FileUploaded
+        or ApplicationStatusType.SubmittedAndHasRecentFileUpload
+        or ApplicationStatusType.CancelledByRegulator
+        or ApplicationStatusType.QueriedByRegulator
+        or ApplicationStatusType.RejectedByRegulator
+    || FileUploadStatus is
+        RegistrationTaskListStatus.Pending
+        or RegistrationTaskListStatus.Completed;
 }
