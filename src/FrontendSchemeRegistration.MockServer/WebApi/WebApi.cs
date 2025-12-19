@@ -40,7 +40,7 @@ public static class WebApi
             ).RespondWith(Response.Create()
                 .WithStatusCode(200)
                 .WithHeader("Content-Type", "application/json")
-                .WithBodyFromFile("WebApi/Responses/SmallProducerRegistrationApplicationDetails.json"));
+                .WithBodyFromFile("WebApi/Responses/RegistrationTaskList/SmallProducerRegistrationApplicationDetails.json"));
         
         server.Given(Request.Create()
             .UsingGet()
@@ -49,7 +49,7 @@ public static class WebApi
         ).RespondWith(Response.Create()
             .WithStatusCode(200)
             .WithHeader("Content-Type", "application/json")
-            .WithBodyFromFile("WebApi/Responses/LargeProducerRegistrationApplicationDetails.json"));
+            .WithBodyFromFile("WebApi/Responses/RegistrationTaskList/LargeProducerRegistrationApplicationDetailsInProgress.json"));
 
         // Producer validations
         server.Given(Request.Create()

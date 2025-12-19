@@ -1,0 +1,39 @@
+{
+  "registrationJourney" : "DirectLargeProducer",
+  "submissionId" : "bca65d91-e945-4132-a1bb-6ceffa470fbe",
+  "isSubmitted" : true,
+  "isResubmission" : false,
+  "applicationReferenceNumber" : "dba7a138-34a6-4d83-a380-5210d210d528",
+  "registrationReferenceNumber" : null,
+  "lastSubmittedFile" : {
+    "fileId" : "e3e3a99e-5e90-4dc5-8e5e-e66294d3fb8e",
+    "submittedByName" : "Auto test",
+    "submittedDateTime" : "2025-12-16T17:38:37.4309743Z"
+  },
+  "registrationFeePaymentMethod" : null,
+  "hasAnyApprovedOrQueriedRegulatorDecision" : false,
+  "isLatestSubmittedEventAfterFileUpload" : true,
+  "latestSubmittedEventCreatedDatetime" : "2025-12-16T17:38:37.4309743Z",
+  "firstApplicationSubmittedEventCreatedDatetime" : "2025-12-17T00:00:00Z",
+  "registrationApplicationSubmittedDate" : null,
+  "registrationApplicationSubmittedComment" : null,
+  "registrationApplicationSubmitted" : true,
+  "applicationStatus" : 3,
+  "registrationFeeCalculationDetails" : [ {
+    "organisationId" : "154922",
+    "numberOfSubsidiaries" : 0,
+    "numberOfSubsidiariesBeingOnlineMarketPlace" : 0,
+    "organisationSize" : "Small",
+    "isOnlineMarketplace" : true,
+    "isNewJoiner" : false,
+    "nationId" : 1
+  }, {
+    "organisationId" : "154923",
+    "numberOfSubsidiaries" : 0,
+    "numberOfSubsidiariesBeingOnlineMarketPlace" : 0,
+    "organisationSize" : "Small",
+    "isOnlineMarketplace" : true,
+    "isNewJoiner" : false,
+    "nationId" : 1
+  } ]
+}
