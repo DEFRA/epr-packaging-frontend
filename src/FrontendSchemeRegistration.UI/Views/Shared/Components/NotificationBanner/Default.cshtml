@@ -1,0 +1,17 @@
+@model FrontendSchemeRegistration.UI.ViewModels.Shared.Components.NotificationBanner.NotificationBannerViewModel
+
+<div class="govuk-notification-banner" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+    <div class="govuk-notification-banner__header">
+        <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+            @Localizer[Model.TitleResource]
+        </h2>
+    </div>
+    <div class="govuk-notification-banner__content">
+        <h3 class="govuk-notification-banner__heading">
+            @Localizer[Model.HeaderResource]
+        </h3>
+        <p class="govuk-body">
+            @Localizer[Model.BodyResource]
+        </p>
+    </div>
+</div>
