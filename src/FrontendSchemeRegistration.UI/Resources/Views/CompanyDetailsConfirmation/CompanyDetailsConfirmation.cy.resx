@@ -90,4 +90,7 @@
   <data name="success" xml:space="preserve">
     <value>Llwyddiant</value>
   </data>
+  <data name="producer_registration" xml:space="preserve">
+    <value>[WELSH] Cofrestru {0}</value>
+  </data>
 </root>

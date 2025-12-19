@@ -12,21 +12,14 @@
         Model.IsComplianceScheme, 
         Model.RegistrationJourney, 
         null,
-        null,
-        Model.RegistrationYear); 
-    }
+        @Localizer["pay_by_bank_transfer_heading"],
+        Model.RegistrationYear);
 }
 
 <main class="govuk-main-wrapper" id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-three-quarters">
-            @if (Model.IsComplianceScheme)
-            {
-                <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel"/>
-            }
-            <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
-                @Localizer["pay_by_bank_transfer_heading"]
-            </h1>
+            <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel"/>
             <p class="govuk-body">
                 @Localizer["pay_registration_fee_of"] <strong>£@ConvertToThousandSeparatedDecimal(Model.TotalAmountOutstanding)</strong> @Localizer["by_bank_transfer"]
             </p>
