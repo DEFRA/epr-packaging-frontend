@@ -5,13 +5,13 @@
     ViewData["Title"] = Localizer[Model.IsComplianceScheme ? "page_title_compliance" : "page_title_producer"];
     var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
     bool isFileUploadJourneyInvokedViaRegistration = (bool)ViewData["IsFileUploadJourneyInvokedViaRegistration"];
-    var heading = Model.IsComplianceScheme ? Model.OrganisationName : "";
-    
+    var heading = Model.IsComplianceScheme ? Model.OrganisationName : null ;
+    var localHeading = !Model.IsComplianceScheme ? Localizer["producer_registration", Model.OrganisationName] : null;
     var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
         Model.ShowRegistrationCaption, 
         Model.RegistrationJourney, 
         heading,
-        null,
+        localHeading,
         Model.RegistrationYear);
 }
 
