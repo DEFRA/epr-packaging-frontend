@@ -111,7 +111,6 @@ public static class ServiceProviderExtension
         services.Configure<SiteDateOptions>(configuration.GetSection(SiteDateOptions.ConfigSection));
         services.Configure<CookieOptions>(configuration.GetSection(CookieOptions.ConfigSection));
         services.Configure<GoogleAnalyticsOptions>(configuration.GetSection(GoogleAnalyticsOptions.ConfigSection));
-        services.Configure<GuidanceLinkOptions>(configuration.GetSection(GuidanceLinkOptions.ConfigSection));
         services.Configure<MsalOptions>(configuration.GetSection(MsalOptions.ConfigSection));
         services.Configure<AzureAdB2COptions>(configuration.GetSection(AzureAdB2COptions.ConfigSection));
         services.Configure<HttpClientOptions>(configuration.GetSection(HttpClientOptions.ConfigSection));
@@ -122,6 +121,8 @@ public static class ServiceProviderExtension
         services.Configure<RedisOptions>(configuration.GetSection(RedisOptions.ConfigSection));
         services.Configure<ComplianceSchemeMembersPaginationOptions>(configuration.GetSection(ComplianceSchemeMembersPaginationOptions.ConfigSection));
         services.Configure<SessionOptions>(configuration.GetSection(SessionOptions.ConfigSection));
+
+        services.AddSingleton<GuidanceLinkOptions>();
     }
 
     private static void RegisterServices(IServiceCollection services)
