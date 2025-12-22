@@ -25,15 +25,19 @@ public class ComplianceSchemeLandingController(
     IRegistrationApplicationService registrationApplicationService,
     IResubmissionApplicationService resubmissionApplicationService,
     ILogger<ComplianceSchemeLandingController> logger,
-    IOptions<GlobalVariables> globalVariables)
+    IOptions<GlobalVariables> globalVariables,
+    TimeProvider? timeProvider)
     : Controller
 {
+    private readonly TimeProvider _timeProvider = timeProvider ?? TimeProvider.System;
+
     [HttpGet]
     [ExcludeFromCodeCoverage]
     public async Task<IActionResult> Get()
     {
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
         var userData = User.GetUserData();
+        var nowDateTime = _timeProvider.GetLocalNow().DateTime;
 
         var organisation = userData.Organisations[0];
 
@@ -43,8 +47,8 @@ public class ComplianceSchemeLandingController(
 
         session.RegistrationSession.SelectedComplianceScheme ??= defaultComplianceScheme;
         session.UserData = userData;
-        var currentYear = new[] { DateTime.Now.Year.ToString(), (DateTime.Now.Year + 1).ToString() };
-        var packagingResubmissionPeriod = globalVariables.Value.SubmissionPeriods.Find(s => currentYear.Contains(s.Year) && s.ActiveFrom.Year == DateTime.Now.Year);
+        var currentYear = new[] { nowDateTime.Year.ToString(), (nowDateTime.Year + 1).ToString() };
+        var packagingResubmissionPeriod = globalVariables.Value.SubmissionPeriods.Find(s => currentYear.Contains(s.Year) && s.ActiveFrom.Year == nowDateTime.Year);
 
         await SaveNewJourney(session);
 
