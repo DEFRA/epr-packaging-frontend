@@ -26,6 +26,8 @@ using SessionOptions = FrontendSchemeRegistration.Application.Options.SessionOpt
 
 namespace FrontendSchemeRegistration.UI.Extensions;
 
+using Microsoft.AspNetCore.Authentication.Cookies;
+
 [ExcludeFromCodeCoverage]
 public static class ServiceProviderExtension
 {
