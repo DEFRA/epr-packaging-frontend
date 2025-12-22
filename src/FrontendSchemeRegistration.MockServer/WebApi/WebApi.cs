@@ -1,11 +1,13 @@
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 using WireMock.Server;
+using WireMock.Types;
 
 namespace FrontendSchemeRegistration.MockServer.WebApi;
 
-using WireMock.Types;
+using System.Diagnostics.CodeAnalysis;
 
+[ExcludeFromCodeCoverage]
 public static class WebApi
 {
     public static WireMockServer WithWebApi(this WireMockServer server)

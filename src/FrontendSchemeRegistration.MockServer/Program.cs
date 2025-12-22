@@ -1,14 +1,8 @@
-namespace FrontendSchemeRegistration.MockServer;
+using FrontendSchemeRegistration.MockServer;
 
-internal class Program
-{
-    private static void Main(string[] args)
-    {
-        Console.WriteLine($"FrontendSchemeRegistration.MockServer starting on http://localhost:9091");
+Console.WriteLine("FrontendSchemeRegistration.MockServer starting on http://localhost:9091");
 
-        MockApiServer.Start();
+MockApiServer.Start();
 
-        Console.WriteLine("Press any key to stop.");
-        Console.ReadKey();
-    }
-}
+Console.WriteLine("Press any key to stop.");
+Console.ReadKey();

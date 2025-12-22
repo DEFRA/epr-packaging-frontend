@@ -5,6 +5,9 @@ using WireMock.Types;
 
 namespace FrontendSchemeRegistration.MockServer.WebApi;
 
+using System.Diagnostics.CodeAnalysis;
+
+[ExcludeFromCodeCoverage]
 public static class Payment
 {
     public static WireMockServer WithPayments(this WireMockServer server)

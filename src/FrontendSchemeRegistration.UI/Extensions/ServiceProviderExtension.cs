@@ -26,6 +26,8 @@ using SessionOptions = FrontendSchemeRegistration.Application.Options.SessionOpt
 
 namespace FrontendSchemeRegistration.UI.Extensions;
 
+using Microsoft.AspNetCore.Authentication.Cookies;
+
 [ExcludeFromCodeCoverage]
 public static class ServiceProviderExtension
 {
@@ -260,6 +262,22 @@ public static class ServiceProviderExtension
             options.Cookie.Path = "/";
             options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         });
+    }
+
+    private static void ConfigureStubAuthentication(IServiceCollection services)
+    {
+        services
+            .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+            {
+                options.LoginPath = "/stub-signin";
+                options.ExpireTimeSpan = TimeSpan.FromHours(1);
+                options.Cookie.Name = "";
+                options.SlidingExpiration = true;
+                options.Cookie.IsEssential = true;
+                options.Cookie.SameSite = SameSiteMode.None;
+
+            });
     }
 
     private static void ConfigureAuthentication(IServiceCollection services, IConfiguration configuration)
