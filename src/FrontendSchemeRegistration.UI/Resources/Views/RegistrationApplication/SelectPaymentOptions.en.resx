@@ -31,13 +31,13 @@
 		<value>Select a payment method.</value>
 	</data>
 	<data name="payment_option_paybyphone" xml:space="preserve">
-        <value>Pay by phone</value>
+        <value>By phone</value>
     </data>
 	<data name="payment_option_paybybanktransfer" xml:space="preserve">
-        <value>Pay by bank transfer</value>
+        <value>By bank transfer</value>
     </data>
 	<data name="payment_option_payonline" xml:space="preserve">
-        <value>Pay Online</value>
+        <value>Online</value>
     </data>
 	<data name="payment_option_paybyphone_alternate_text" xml:space="preserve">
         <value>By phone</value>
