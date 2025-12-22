@@ -8,6 +8,8 @@ public class FileUploadingViewModel
 {
     public string? SubmissionId { get; set; }
     public int? RegistrationYear { get; set; }
-    public bool ShowRegistrationCaption => RegistrationJourney != null;
+
+    public bool ShowRegistrationCaption { get; set; } = false;
+
     public RegistrationJourney? RegistrationJourney { get; set; }
 }

@@ -5,6 +5,7 @@ using Application.DTOs.Submission;
 using Application.Services.Interfaces;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
+using global::FrontendSchemeRegistration.Application.Extensions;
 using global::FrontendSchemeRegistration.UI.Extensions;
 using global::FrontendSchemeRegistration.UI.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -19,23 +20,23 @@ public class FileUploadingBrandsController : Controller
 {
     private readonly ISubmissionService _submissionService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
-    private readonly IRegistrationApplicationService _registrationApplicationService;
+    private readonly ISessionManager<RegistrationApplicationSession> _registrationApplicationSessionManager;
 
     public FileUploadingBrandsController(
         ISubmissionService submissionService,
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
-        IRegistrationApplicationService registrationApplicationService)
+        ISessionManager<RegistrationApplicationSession> registrationApplicationSessionManager)
     {
         _submissionService = submissionService;
         _sessionManager = sessionManager;
-        _registrationApplicationService = registrationApplicationService;
+        _registrationApplicationSessionManager = registrationApplicationSessionManager;
     }
 
     [HttpGet]
     [SubmissionIdActionFilter(PagePaths.FileUploadCompanyDetailsSubLanding)]
     public async Task<IActionResult> Get()
     {
-        var registrationYear = _registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
+        var registrationYear = int.TryParse(HttpContext.Request.Query["registrationyear"], out var year) ? (int?)year : null;
         var submissionId = Guid.Parse(Request.Query["submissionId"]);
         var submission = await _submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
@@ -47,7 +48,7 @@ public class FileUploadingBrandsController : Controller
 
         if (session is null)
         {
-            return GetFileUploadingBrandsViewResult(submissionId, registrationYear);
+            return await GetFileUploadingBrandsViewResult(submissionId, registrationYear);
         }
 
         if (!session.RegistrationSession.Journey.Contains<string>(PagePaths.FileUploadBrands))
@@ -57,7 +58,7 @@ public class FileUploadingBrandsController : Controller
 
         return submission.BrandsDataComplete || submission.Errors.Count > 0
             ? GetNextPage(submission.Id, submission.Errors.Count > 0, registrationYear)
-            : GetFileUploadingBrandsViewResult(submissionId, registrationYear);
+            : await GetFileUploadingBrandsViewResult(submissionId, registrationYear);
     }
 
     private RedirectToActionResult GetNextPage(Guid submissionId, bool exceptionErrorOccurred, int? registrationYear)
@@ -68,9 +69,17 @@ public class FileUploadingBrandsController : Controller
             : RedirectToAction("Get", "FileUploadBrandsSuccess", routeValues);
     }
 
-    private ViewResult GetFileUploadingBrandsViewResult(Guid submissionId, int? registrationYear)
+    private async Task<ViewResult> GetFileUploadingBrandsViewResult(Guid submissionId, int? registrationYear)
     {
-        return View("FileUploadingBrands", registrationYear is not null ? new FileUploadingViewModel { SubmissionId = submissionId.ToString(), RegistrationYear = registrationYear } : new FileUploadingViewModel { SubmissionId = submissionId.ToString() });
+        var registrationApplicationSession = await _registrationApplicationSessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
+
+        return View("FileUploadingBrands", new FileUploadingViewModel
+        {
+            SubmissionId = submissionId.ToString(),
+            RegistrationYear = registrationYear,
+            ShowRegistrationCaption = registrationApplicationSession.ShowRegistrationCaption,
+            RegistrationJourney = registrationApplicationSession.RegistrationJourney
+        });
     }
 
 }

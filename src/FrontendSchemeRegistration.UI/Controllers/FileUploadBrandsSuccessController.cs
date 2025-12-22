@@ -7,6 +7,7 @@ using Application.Services.Interfaces;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using Extensions;
+using global::FrontendSchemeRegistration.Application.Extensions;
 using global::FrontendSchemeRegistration.UI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,13 +21,13 @@ public class FileUploadBrandsSuccessController : Controller
 {
     private readonly ISubmissionService _submissionService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
-    private readonly IRegistrationApplicationService _registrationApplicationService;
+    private readonly ISessionManager<RegistrationApplicationSession> _registrationApplicationSessionManager;
 
-    public FileUploadBrandsSuccessController(ISubmissionService submissionService, ISessionManager<FrontendSchemeRegistrationSession> sessionManager, IRegistrationApplicationService registrationApplicationService)
+    public FileUploadBrandsSuccessController(ISubmissionService submissionService, ISessionManager<FrontendSchemeRegistrationSession> sessionManager, ISessionManager<RegistrationApplicationSession> registrationApplicationSessionManager)
     {
         _submissionService = submissionService;
         _sessionManager = sessionManager;
-        _registrationApplicationService = registrationApplicationService;
+        _registrationApplicationSessionManager = registrationApplicationSessionManager;
     }
 
     [HttpGet]
@@ -34,7 +35,7 @@ public class FileUploadBrandsSuccessController : Controller
     public async Task<IActionResult> Get()
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-        var registrationYear =  _registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
+        var registrationYear = int.TryParse(HttpContext.Request.Query["registrationyear"], out var year) ? (int?)year : null;
 
         if (session is not null)
         {
@@ -50,6 +51,8 @@ public class FileUploadBrandsSuccessController : Controller
                 var submission = await _submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
                 if (submission is { RequiresBrandsFile: true, BrandsDataComplete: true })
                 {
+                    var registrationApplicationSession = await _registrationApplicationSessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
+
                     return View("FileUploadBrandsSuccess", new FileUploadBrandsSuccessViewModel
                     {
                         SubmissionId = submission.Id,
@@ -58,7 +61,9 @@ public class FileUploadBrandsSuccessController : Controller
                         OrganisationRole = organisationRole,
                         IsApprovedUser = session.UserData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved),
                         IsResubmission = session.RegistrationSession.IsResubmission,
-                        RegistrationYear = registrationYear
+                        RegistrationYear = registrationYear,
+                        ShowRegistrationCaption = registrationApplicationSession.ShowRegistrationCaption,
+                        RegistrationJourney = registrationApplicationSession.RegistrationJourney
                     });
                 }
             }
