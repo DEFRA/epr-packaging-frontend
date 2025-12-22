@@ -26,18 +26,16 @@ public class ComplianceSchemeLandingController(
     IResubmissionApplicationService resubmissionApplicationService,
     ILogger<ComplianceSchemeLandingController> logger,
     IOptions<GlobalVariables> globalVariables,
-    TimeProvider? timeProvider)
+    TimeProvider timeProvider)
     : Controller
 {
-    private readonly TimeProvider _timeProvider = timeProvider ?? TimeProvider.System;
-
     [HttpGet]
     [ExcludeFromCodeCoverage]
     public async Task<IActionResult> Get()
     {
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
         var userData = User.GetUserData();
-        var nowDateTime = _timeProvider.GetLocalNow().DateTime;
+        var nowDateTime = timeProvider.GetLocalNow().DateTime;
 
         var organisation = userData.Organisations[0];
 

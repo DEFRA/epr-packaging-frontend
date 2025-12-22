@@ -127,6 +127,7 @@ public static class ServiceProviderExtension
 
     private static void RegisterServices(IServiceCollection services)
     {
+        services.AddSingleton(TimeProvider.System);
         services.AddScoped<ICompaniesHouseService, CompaniesHouseService>();
         services.AddScoped<IComplianceSchemeMemberService, ComplianceSchemeMemberService>();
         services.AddScoped<ICookieService, CookieService>();
@@ -155,7 +156,6 @@ public static class ServiceProviderExtension
             GlobalVariables = sp.GetRequiredService<IOptions<GlobalVariables>>()
         });
         services.AddScoped<IRegistrationApplicationService, RegistrationApplicationService>();
-        services.AddTransient<IDateTimeProvider, SystemDateTimeProvider>();
         services.AddSingleton<IPatchService, PatchService>();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.AddTransient<UserDataCheckerMiddleware>();
