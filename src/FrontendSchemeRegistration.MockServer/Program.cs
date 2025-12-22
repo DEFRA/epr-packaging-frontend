@@ -1,10 +1,17 @@
 using System.Diagnostics.CodeAnalysis;
-using FrontendSchemeRegistration.MockServer;
 
-[assembly:ExcludeFromCodeCoverage]
-Console.WriteLine("FrontendSchemeRegistration.MockServer starting on http://localhost:9091");
+namespace FrontendSchemeRegistration.MockServer;
 
-MockApiServer.Start();
+[ExcludeFromCodeCoverage]
+public static class Program
+{
+    private static void Main()
+    {
+        Console.WriteLine("FrontendSchemeRegistration.MockServer starting on http://localhost:9091");
 
-Console.WriteLine("Press any key to stop.");
-Console.ReadKey();
+        MockApiServer.Start();
+
+        Console.WriteLine("Press any key to stop.");
+        Console.ReadKey();
+    }
+}
