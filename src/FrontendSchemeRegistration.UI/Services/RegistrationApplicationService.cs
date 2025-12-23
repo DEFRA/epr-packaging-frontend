@@ -146,11 +146,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         if (session.IsComplianceScheme)
         {
             nationId = session.SelectedComplianceScheme.NationId;
-            session.RegistrationJourney = registrationJourney;
-            if (registrationJourney != null)
-            {
-                session.ShowRegistrationCaption = true; //$"{producerSize} producer {registrationYear}"; // TODO this will need localisation for Wales
-            }
+            session.RegistrationJourney = registrationApplicationDetails.RegistrationJourney ?? registrationJourney;
         }
         else if (session.FileReachedSynapse)
             nationId = session.RegistrationFeeCalculationDetails[0].NationId;

@@ -194,7 +194,6 @@ public class RegistrationApplicationControllerTests
             ApplicationStatus = ApplicationStatusType.NotStarted,
             RegistrationFeePaymentMethod = null,
             SelectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), NationId = 1, Name = "test", RowNumber = 1 },
-            ShowRegistrationCaption = true,
             RegistrationJourney = null
         };
         RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>())).ReturnsAsync(details);
@@ -204,7 +203,6 @@ public class RegistrationApplicationControllerTests
             ApplicationStatus = ApplicationStatusType.NotStarted,
             RegistrationFeePaymentMethod = null,
             SelectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), NationId = 1, Name = "test", RowNumber = 1 },
-            
         });
 
         // Act
@@ -222,7 +220,7 @@ public class RegistrationApplicationControllerTests
             OrganisationNumber = _userData.Organisations[0].OrganisationNumber.ToReferenceNumberFormat(),
             FileUploadStatus = RegistrationTaskListStatus.NotStarted,
             IsComplianceScheme = true,
-            ShowRegistrationCaption = true,
+            ShowRegistrationCaption = false,
         });
     }
     
@@ -238,7 +236,6 @@ public class RegistrationApplicationControllerTests
             ApplicationStatus = ApplicationStatusType.NotStarted,
             RegistrationFeePaymentMethod = null,
             SelectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), NationId = 1, Name = "test", RowNumber = 1 },
-            ShowRegistrationCaption = false,
             RegistrationJourney = null
         };
         RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>())).ReturnsAsync(details);
@@ -288,7 +285,7 @@ public class RegistrationApplicationControllerTests
             ApplicationStatus = ApplicationStatusType.NotStarted,
             RegistrationFeePaymentMethod = null,
             SelectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), NationId = 1, Name = "test", RowNumber = 1 },
-            ShowRegistrationCaption = false
+            RegistrationJourney = null
         };
         RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), expectedRegistrationJourney)).ReturnsAsync(details);
         SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new RegistrationApplicationSession
@@ -347,7 +344,7 @@ public class RegistrationApplicationControllerTests
             ApplicationStatus = ApplicationStatusType.FileUploaded,
             RegistrationApplicationSubmittedComment = null,
             RegistrationApplicationSubmittedDate = null,
-            ShowRegistrationCaption = true
+            RegistrationJourney = RegistrationJourney.DirectLargeProducer
         };
         RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>()))
             .ReturnsAsync(registrationApplicationDetails);
@@ -381,7 +378,8 @@ public class RegistrationApplicationControllerTests
             PaymentViewStatus = RegistrationTaskListStatus.CanNotStartYet,
             AdditionalDetailsStatus = RegistrationTaskListStatus.CanNotStartYet,
             ApplicationStatus = ApplicationStatusType.FileUploaded,
-            ShowRegistrationCaption = true
+            ShowRegistrationCaption = true,
+            RegistrationJourney = RegistrationJourney.DirectLargeProducer
         });
     }
 

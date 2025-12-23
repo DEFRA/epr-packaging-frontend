@@ -3,6 +3,9 @@ using FrontendSchemeRegistration.Application.DTOs.ComplianceScheme;
 
 namespace FrontendSchemeRegistration.Application.DTOs.Submission;
 
+using System.Text.Json.Serialization;
+using Enums;
+
 [ExcludeFromCodeCoverage]
 public class RegistrationApplicationDetails
 {
@@ -37,4 +40,7 @@ public class RegistrationApplicationDetails
     public ComplianceSchemeDto? SelectedComplianceScheme { get; set; }
     
     public LastSubmittedFileDetails LastSubmittedFile { get; set; } = new LastSubmittedFileDetails();
+    
+    [JsonConverter( typeof(JsonStringEnumConverter))]
+    public RegistrationJourney? RegistrationJourney { get; set; }
 }
