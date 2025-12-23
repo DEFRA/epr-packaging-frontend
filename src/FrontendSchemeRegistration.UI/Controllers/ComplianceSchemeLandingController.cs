@@ -3,7 +3,6 @@ using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.Enums;
-using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Services;
@@ -12,7 +11,6 @@ using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
 namespace FrontendSchemeRegistration.UI.Controllers;
 
@@ -25,7 +23,6 @@ public class ComplianceSchemeLandingController(
     IRegistrationApplicationService registrationApplicationService,
     IResubmissionApplicationService resubmissionApplicationService,
     ILogger<ComplianceSchemeLandingController> logger,
-    IOptions<GlobalVariables> globalVariables,
     TimeProvider timeProvider)
     : Controller
 {
@@ -46,7 +43,9 @@ public class ComplianceSchemeLandingController(
         session.RegistrationSession.SelectedComplianceScheme ??= defaultComplianceScheme;
         session.UserData = userData;
         var currentYear = new[] { nowDateTime.Year.ToString(), (nowDateTime.Year + 1).ToString() };
-        var packagingResubmissionPeriod = globalVariables.Value.SubmissionPeriods.Find(s => currentYear.Contains(s.Year) && s.ActiveFrom.Year == nowDateTime.Year);
+
+        // Note: We are adding a service method here to avoid SonarQube issue for adding 8th parameter in the constructor.
+        var packagingResubmissionPeriod = resubmissionApplicationService.PackagingResubmissionPeriod(currentYear, nowDateTime);
 
         await SaveNewJourney(session);
 

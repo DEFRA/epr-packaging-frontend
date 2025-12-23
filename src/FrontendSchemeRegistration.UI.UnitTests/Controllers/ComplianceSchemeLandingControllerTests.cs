@@ -158,6 +158,8 @@ public class ComplianceSchemeLandingControllerTests
 
         _resubmissionApplicationService.Setup(x => x.GetCurrentMonthAndYearForRecyclingObligations())
             .Returns(Task.FromResult((1, 2026)));
+        _resubmissionApplicationService.Setup(x => x.PackagingResubmissionPeriod(It.IsAny<string[]>(), It.IsAny<DateTime>()))
+            .Returns(_submissionPeriods.FirstOrDefault(sp => sp.Year == _currentYear));
 
         //can be used for time travel testing
         var testTimeProvider = TimeProvider.System;
@@ -169,7 +171,6 @@ public class ComplianceSchemeLandingControllerTests
             _registrationApplicationService.Object,
             _resubmissionApplicationService.Object,
             _nullLogger,
-            Options.Create(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods }),
             testTimeProvider)
         {
             ControllerContext = { HttpContext = _httpContextMock.Object }
