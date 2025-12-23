@@ -51,21 +51,21 @@
                 @if (Model.IsEngland)
                 {
                     <h2 class="govuk-heading-m">@Localizer["after_youve_paid"]</h2>
-                    <p class="govuk-body govuk-!-margin-bottom-1">@Localizer["submit_application_from_registration_dashboard"]</p>
                     <p class="govuk-body govuk-!-margin-bottom-1">@Localizer["england.for_BACS_remittance_send_details"]<a href="mailto:@Localizer["england.packaging_producers_EA"]" class="govuk-link">@Localizer["england.packaging_producers_EA"]</a></p>
+                    <p class="govuk-body govuk-!-margin-bottom-1">2. @Localizer["continue_registration_application"]</p>
                 }
                 else if(Model.IsNorthernIreland)
                 {
                     <h2 class="govuk-heading-m">@Localizer["after_youve_paid"]</h2>
                     <fieldset class="govuk-fieldset">
                         <legend class="govuk-fieldset__legend">
-                            <label class="govuk-label">@Localizer["submit_application_from_registration_dashboard"]</label>
                             <label class="govuk-label">
-                                @Localizer["northernireland.send_remittance_advice_to"]
+                                1. @Localizer["send_bacs_remittance_to"]
                                 <a href="mailto:@Localizer["northernireland.bill_to_cash_team_account"]" class="govuk-link">@Localizer["northernireland.bill_to_cash_team_account"]</a>
                                 @Localizer["and_space"]
                                 <a href="mailto:@Localizer["northernireland.packaging_daera"]" class="govuk-link">@Localizer["northernireland.packaging_daera"]</a>
                             </label>
+                            <label class="govuk-label">2. @Localizer["continue_registration_application"]</label>
                         </legend>
                     </fieldset>
                 }

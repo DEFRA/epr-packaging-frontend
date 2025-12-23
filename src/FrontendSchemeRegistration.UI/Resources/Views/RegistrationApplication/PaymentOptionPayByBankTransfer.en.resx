@@ -139,7 +139,7 @@
         <value>packaging@daera-ni.gov.uk</value>
     </data>
     <data name="england.for_BACS_remittance_send_details" xml:space="preserve">
-        <value>2. Send BACS remittance to </value>
+        <value>1. Send BACS remittance to </value>
     </data>
     <data name="england.packaging_producers_EA" xml:space="preserve">
         <value>packagingproducers@environment-agency.gov.uk</value>
@@ -161,5 +161,11 @@
     </data>
     <data name="continue" xml:space="preserve">
         <value>Continue</value>
+    </data>
+    <data name="continue_registration_application" xml:space="preserve">
+        <value>Continue registration application</value>
+    </data>
+    <data name="send_bacs_remittance_to" xml:space="preserve">
+        <value>Send BACS_remittance to </value>
     </data>
 </root>
