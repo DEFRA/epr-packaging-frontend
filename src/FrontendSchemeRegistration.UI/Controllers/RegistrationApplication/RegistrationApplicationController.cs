@@ -294,7 +294,8 @@ public class RegistrationApplicationController(
                 TotalAmountOutstanding = session.TotalAmountOutstanding,
                 ApplicationReferenceNumber = session.ApplicationReferenceNumber!,
                 PaymentLink = paymentLink,
-                RegistrationYear = registrationYear.GetValueOrDefault()
+                RegistrationYear = registrationYear.GetValueOrDefault(),
+                RegistrationJourney = session.RegistrationJourney
             });
     }
 

@@ -1720,7 +1720,8 @@ public class RegistrationApplicationControllerTests
             IsSubmitted = true,
             SubmissionId = Guid.NewGuid(),
             RegistrationFeeCalculationDetails = [new RegistrationFeeCalculationDetails { OrganisationId = "1", OrganisationSize = "L" }],
-            LastSubmittedFile = new LastSubmittedFileDetails { SubmittedDateTime = DateTime.Now, SubmittedByName = "test", FileId = Guid.NewGuid() }
+            LastSubmittedFile = new LastSubmittedFileDetails { SubmittedDateTime = DateTime.Now, SubmittedByName = "test", FileId = Guid.NewGuid() },
+            RegistrationJourney = RegistrationJourney.CsoLargeProducer
         };
         SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(Session);
 
@@ -1732,11 +1733,14 @@ public class RegistrationApplicationControllerTests
         result.ViewName.Should().Be(viewName);
         result.Model.Should().BeOfType<PaymentOptionPayOnlineViewModel>();
 
-        result.Model.As<PaymentOptionPayOnlineViewModel>().Should().BeEquivalentTo(new PaymentOptionPayOnlineViewModel
+        result.Model.As<PaymentOptionPayOnlineViewModel>().Should().BeEquivalentTo(new
         {
-            TotalAmountOutstanding = Session.TotalAmountOutstanding,
-            ApplicationReferenceNumber = Session.ApplicationReferenceNumber,
-            PaymentLink = expectedPaymentLink
+            Session.TotalAmountOutstanding,
+            Session.ApplicationReferenceNumber,
+            PaymentLink = expectedPaymentLink,
+            TotalAmount = (Session.TotalAmountOutstanding /100).ToString("#,##0.00"),
+            RegistrationJourney = RegistrationJourney.CsoLargeProducer,
+            ShowRegistrationCaption = true
         });
     }
 
