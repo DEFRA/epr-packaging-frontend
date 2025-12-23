@@ -167,9 +167,6 @@ public class FileUploadBrandsController : Controller
         
         var routeValues = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear, registrationJourney: registrationJourney);
         var baseUrl = Url.Content($"~{PagePaths.OrganisationDetailsUploaded}");
-        if (!string.IsNullOrWhiteSpace(baseUrl))
-        {
-            ViewBag.BackLinkToDisplay = QueryHelpers.AddQueryString(baseUrl, routeValues.ToDictionary(k => k.Key, k => k.Value?.ToString() ?? string.Empty));
-        }
+        ViewBag.BackLinkToDisplay = QueryHelpers.AddQueryString(baseUrl, routeValues.ToDictionary(k => k.Key, k => k.Value?.ToString() ?? string.Empty));
     }
 }
