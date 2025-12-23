@@ -176,4 +176,10 @@ public class ResubmissionApplicationServices(
             globalVariables.Value.OverrideCurrentMonth ?? DateTime.Now.Month,
             globalVariables.Value.OverrideCurrentYear ?? DateTime.Now.Year));
     }
+
+    public SubmissionPeriod PackagingResubmissionPeriod(string[] currentYear, DateTime nowDateTime)
+    {
+        var packagingResubmissionPeriod = globalVariables.Value.SubmissionPeriods.Find(s => currentYear.Contains(s.Year) && s.ActiveFrom.Year == nowDateTime.Year);
+        return packagingResubmissionPeriod;
+    }
 }
