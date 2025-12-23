@@ -8,18 +8,17 @@ using Constants;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using Extensions;
-using global::FrontendSchemeRegistration.Application.Extensions;
 using global::FrontendSchemeRegistration.Application.Options;
-using global::FrontendSchemeRegistration.UI.Services;
 using global::FrontendSchemeRegistration.UI.Services.FileUploadLimits;
-using global::FrontendSchemeRegistration.UI.Services.Messages;
 using Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using Services.Interfaces;
 using Sessions;
 using UI.Attributes.ActionFilters;
+using UI.Sessions;
 using ViewModels;
 
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
@@ -83,6 +82,8 @@ public class FileUploadBrandsController : Controller
                     await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
 
                     var registrationApplicationSession = await _registrationApplicationSessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
+                    
+                    SetBackLinkToOrganisationDetailsUploaded(submissionId, registrationYear, registrationApplicationSession.RegistrationJourney);
 
                     return View(
                         "FileUploadBrands",
@@ -138,6 +139,8 @@ public class FileUploadBrandsController : Controller
         if (!ModelState.IsValid)
         {
             var registrationApplicationSession = await _registrationApplicationSessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
+            
+            SetBackLinkToOrganisationDetailsUploaded(submissionId, registrationYear, registrationApplicationSession.RegistrationJourney);
 
             return View("FileUploadBrands", new FileUploadSuccessViewModel
             {
@@ -153,5 +156,16 @@ public class FileUploadBrandsController : Controller
             "Get",
             "FileUploadingBrands",
             routeValues);
+    }
+    
+    private void SetBackLinkToOrganisationDetailsUploaded(Guid? submissionId, int? registrationYear, RegistrationJourney? registrationJourney)
+    {
+        if (!submissionId.HasValue)
+        {
+            return;
+        }
+        
+        var routeValues = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear, registrationJourney: registrationJourney);
+        ViewBag.BackLinkToDisplay = QueryHelpers.AddQueryString(Url.Content($"~{PagePaths.OrganisationDetailsUploaded}"), routeValues.ToDictionary(k => k.Key, k => k.Value?.ToString() ?? string.Empty));
     }
 }

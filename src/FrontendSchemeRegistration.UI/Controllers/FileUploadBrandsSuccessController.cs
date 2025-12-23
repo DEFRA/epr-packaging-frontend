@@ -11,8 +11,10 @@ using global::FrontendSchemeRegistration.Application.Extensions;
 using global::FrontendSchemeRegistration.UI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Sessions;
 using UI.Attributes.ActionFilters;
+using UI.Sessions;
 using ViewModels;
 
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
@@ -52,6 +54,8 @@ public class FileUploadBrandsSuccessController : Controller
                 if (submission is { RequiresBrandsFile: true, BrandsDataComplete: true })
                 {
                     var registrationApplicationSession = await _registrationApplicationSessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
+                    
+                    SetBackLinkToFileUploadBrands(submission.Id, registrationYear, registrationApplicationSession.RegistrationJourney);
 
                     return View("FileUploadBrandsSuccess", new FileUploadBrandsSuccessViewModel
                     {
@@ -70,5 +74,11 @@ public class FileUploadBrandsSuccessController : Controller
         }
 
         return RedirectToAction("Get", "FileUploadCompanyDetails", registrationYear is not null ? new { registrationyear = registrationYear.ToString() } : null);
+    }
+    
+    private void SetBackLinkToFileUploadBrands(Guid submissionId, int? registrationYear, RegistrationJourney? registrationJourney)
+    {
+        var routeValues = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear, registrationJourney: registrationJourney);
+        ViewBag.BackLinkToDisplay = QueryHelpers.AddQueryString(Url.Content($"~{PagePaths.FileUploadBrands}"), routeValues.ToDictionary(k => k.Key, k => k.Value?.ToString() ?? string.Empty));
     }
 }

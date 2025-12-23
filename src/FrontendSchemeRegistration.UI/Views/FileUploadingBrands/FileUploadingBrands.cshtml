@@ -20,32 +20,30 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel" />
-            <div class="govuk-grid-column-full">
-                <noscript>
-                    <p class="govuk-body">
-                        @Localizer["to_see_if_the_file_has_finished_uploading"]
-                        @Html.ActionLink(
-                            Localizer["refresh_this_page"].Value,
-                            "Get",
-                            "FileUploadingBrands",
-                            new
-                            {
-                                submissionId = Model.SubmissionId,
-                                registrationyear = Model.RegistrationYear
-                            },
-                            new
-                            {
-                                @class = "govuk-link"
-                            }).
-                    </p>
-                    <p class="govuk-body">@Localizer["it_may_take_a_few_minutes_do_not_close_the_page"]</p>
-                </noscript>
+            <noscript>
+                <p class="govuk-body">
+                    @Localizer["to_see_if_the_file_has_finished_uploading"]
+                    @Html.ActionLink(
+                        Localizer["refresh_this_page"].Value,
+                        "Get",
+                        "FileUploadingBrands",
+                        new
+                        {
+                            submissionId = Model.SubmissionId,
+                            registrationyear = Model.RegistrationYear
+                        },
+                        new
+                        {
+                            @class = "govuk-link"
+                        }).
+                </p>
+                <p class="govuk-body">@Localizer["it_may_take_a_few_minutes_do_not_close_the_page"]</p>
+            </noscript>
 
-                <div class="js-show">
-                    <p class="govuk-body">@Localizer["this_may_take_a_few_minutes_we_ll_refresh"]</p>
-                    <p class="govuk-body">@Localizer["do_not_close_the_page_and_do_not_refresh"]</p>
-                    <img src="~/images/spinner.gif" width="50" height="50" alt="@Localizer["spinner_alt_text"]">
-                </div>
+            <div class="js-show">
+                <p class="govuk-body">@Localizer["this_may_take_a_few_minutes_we_ll_refresh"]</p>
+                <p class="govuk-body">@Localizer["do_not_close_the_page_and_do_not_refresh"]</p>
+                <img src="~/images/spinner.gif" width="50" height="50" alt="@Localizer["spinner_alt_text"]">
             </div>
         </div>
     </div>

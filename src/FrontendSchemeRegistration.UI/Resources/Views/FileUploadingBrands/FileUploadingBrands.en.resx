@@ -13,7 +13,7 @@
     </resheader>
 
     <data name="uploading_brands" xml:space="preserve">
-        <value>Uploading brand information</value>
+        <value>Uploading brand details</value>
     </data>
     <data name="to_see_if_the_file_has_finished_uploading" xml:space="preserve">
         <value>To see if the file has finished uploading,</value>
