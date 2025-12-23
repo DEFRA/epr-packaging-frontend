@@ -23,5 +23,8 @@
     <None Update="WebApi\Responses\RegistrationTaskList\LargeProducerRegistrationApplicationDetailsInProgress.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="WebApi\Responses\Payment\online-payments.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

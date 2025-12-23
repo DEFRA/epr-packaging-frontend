@@ -33,4 +33,7 @@
     <data name="return_to_dashboard" xml:space="preserve">
         <value>Return to the dashboard</value>
     </data>
+    <data name="view_registration_steps" xml:space="preserve">
+        <value>View registration steps</value>
+    </data>
 </root>
