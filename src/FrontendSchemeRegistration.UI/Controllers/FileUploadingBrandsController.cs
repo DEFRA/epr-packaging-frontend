@@ -21,22 +21,26 @@ public class FileUploadingBrandsController : Controller
     private readonly ISubmissionService _submissionService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
     private readonly ISessionManager<RegistrationApplicationSession> _registrationApplicationSessionManager;
+    private readonly IRegistrationApplicationService _registrationApplicationService;
 
     public FileUploadingBrandsController(
         ISubmissionService submissionService,
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
-        ISessionManager<RegistrationApplicationSession> registrationApplicationSessionManager)
+        ISessionManager<RegistrationApplicationSession> registrationApplicationSessionManager,
+        IRegistrationApplicationService registrationApplicationService)
     {
         _submissionService = submissionService;
         _sessionManager = sessionManager;
         _registrationApplicationSessionManager = registrationApplicationSessionManager;
+        _registrationApplicationService = registrationApplicationService;
     }
 
     [HttpGet]
     [SubmissionIdActionFilter(PagePaths.FileUploadCompanyDetailsSubLanding)]
     public async Task<IActionResult> Get()
     {
-        var registrationYear = int.TryParse(HttpContext.Request.Query["registrationyear"], out var year) ? (int?)year : null;
+        var registrationYear = _registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
+
         var submissionId = Guid.Parse(Request.Query["submissionId"]);
         var submission = await _submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
@@ -77,7 +81,6 @@ public class FileUploadingBrandsController : Controller
         {
             SubmissionId = submissionId.ToString(),
             RegistrationYear = registrationYear,
-            ShowRegistrationCaption = registrationApplicationSession.ShowRegistrationCaption,
             RegistrationJourney = registrationApplicationSession.RegistrationJourney
         });
     }

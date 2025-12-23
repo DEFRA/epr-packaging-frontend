@@ -78,7 +78,16 @@ public class FileUploadBrandsSuccessController : Controller
     
     private void SetBackLinkToFileUploadBrands(Guid submissionId, int? registrationYear, RegistrationJourney? registrationJourney)
     {
+        if (Url == null)
+        {
+            return;
+        }
+        
         var routeValues = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear, registrationJourney: registrationJourney);
-        ViewBag.BackLinkToDisplay = QueryHelpers.AddQueryString(Url.Content($"~{PagePaths.FileUploadBrands}"), routeValues.ToDictionary(k => k.Key, k => k.Value?.ToString() ?? string.Empty));
+        var baseUrl = Url.Content($"~{PagePaths.FileUploadBrands}");
+        if (!string.IsNullOrWhiteSpace(baseUrl))
+        {
+            ViewBag.BackLinkToDisplay = QueryHelpers.AddQueryString(baseUrl, routeValues.ToDictionary(k => k.Key, k => k.Value?.ToString() ?? string.Empty));
+        }
     }
 }

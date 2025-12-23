@@ -24,6 +24,7 @@ public class FileUploadBrandsSuccessControllerTests
     private FileUploadBrandsSuccessController _systemUnderTest;
     private Mock<ISubmissionService> _submissionServiceMock;
     private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
+    private Mock<ISessionManager<RegistrationApplicationSession>> _registrationApplicationSessionManagerMock;
 
     [SetUp]
     public void SetUp()
@@ -32,6 +33,7 @@ public class FileUploadBrandsSuccessControllerTests
 
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
+        _registrationApplicationSessionManagerMock = new Mock<ISessionManager<RegistrationApplicationSession>>();
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
@@ -57,7 +59,10 @@ public class FileUploadBrandsSuccessControllerTests
                 }
             });
 
-        _systemUnderTest = new FileUploadBrandsSuccessController(_submissionServiceMock.Object, _sessionManagerMock.Object, _registrationApplicationServiceMock.Object);
+        _systemUnderTest = new FileUploadBrandsSuccessController(
+            _submissionServiceMock.Object,
+            _sessionManagerMock.Object,
+            _registrationApplicationSessionManagerMock.Object);
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
