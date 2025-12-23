@@ -47,20 +47,16 @@
                         </a>
                     </p>
                 }
-                @if (Model.IsNorthernIreland)
-                {
-                    <p class="govuk-body govuk-!-margin-bottom-2">@Localizer["northernireland.cheques_payable_to_DAERA_General_Account"]</p>
-                }
                 
                 @if (Model.IsEngland)
                 {
-                    <h2 class="govuk-heading-m">@Localizer["after_payment_is_made"]</h2>
+                    <h2 class="govuk-heading-m">@Localizer["after_youve_paid"]</h2>
                     <p class="govuk-body govuk-!-margin-bottom-1">@Localizer["submit_application_from_registration_dashboard"]</p>
                     <p class="govuk-body govuk-!-margin-bottom-1">@Localizer["england.for_BACS_remittance_send_details"]<a href="mailto:@Localizer["england.packaging_producers_EA"]" class="govuk-link">@Localizer["england.packaging_producers_EA"]</a></p>
                 }
                 else if(Model.IsNorthernIreland)
                 {
-                    <h2 class="govuk-heading-m">@Localizer["after_payment_is_made"]</h2>
+                    <h2 class="govuk-heading-m">@Localizer["after_youve_paid"]</h2>
                     <fieldset class="govuk-fieldset">
                         <legend class="govuk-fieldset__legend">
                             <label class="govuk-label">@Localizer["submit_application_from_registration_dashboard"]</label>
