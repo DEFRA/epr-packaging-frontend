@@ -313,4 +313,71 @@ public class UploadingOrganisationDetailsControllerTests
         result.ViewName.Should().Be("UploadingOrganisationDetails");
         result.Model.As<FileUploadingViewModel>().SubmissionId.Should().Be(SubmissionId.ToString());
     }
+    
+    
+    [Test]
+    public Task RedirectToFileUploadCompanyDetails()
+    {
+        var resultForNull =  _testUploadingOrgDetailsController.RedirectToFileUploadCompanyDetails(null) as RedirectToActionResult;
+        var resultFor2026 =  _testUploadingOrgDetailsController.RedirectToFileUploadCompanyDetails(2026) as RedirectToActionResult;
+
+        Assert.That(resultForNull.ActionName, Is.EqualTo("Get"));
+        Assert.That(resultForNull.ControllerName, Is.EqualTo(nameof(FileUploadCompanyDetailsController).RemoveControllerFromName()));
+        Assert.That(resultForNull.RouteValues, Is.Null);
+        
+        Assert.That(resultFor2026.ActionName, Is.EqualTo("Get"));
+        Assert.That(resultFor2026.RouteValues.ContainsKey("registrationyear"));
+        Assert.That(resultFor2026.ControllerName, Is.EqualTo(nameof(FileUploadCompanyDetailsController).RemoveControllerFromName()));
+        
+        return Task.CompletedTask;
+    }
+    
+    [Test]
+    public Task RedirectToFileUploadCompanyDetailsErrors()
+    {
+        var resultForNull =  _testUploadingOrgDetailsController.RedirectToFileUploadCompanyDetailsErrors(Guid.NewGuid(), null, null) as RedirectToActionResult;
+        var resultFor2026 =  _testUploadingOrgDetailsController.RedirectToFileUploadCompanyDetailsErrors(Guid.NewGuid(), null, 2026) as RedirectToActionResult;
+
+        Assert.That(resultForNull.ActionName, Is.EqualTo("Get"));
+        
+        Assert.That(resultForNull.ControllerName, Is.EqualTo(nameof(FileUploadCompanyDetailsErrorsController).RemoveControllerFromName()));
+        
+        Assert.That(resultForNull.RouteValues.Count, Is.EqualTo(2));
+        Assert.That(resultForNull.RouteValues.ContainsKey("submissionId"));
+        Assert.That(resultForNull.RouteValues.  ContainsKey("registrationJourney"));
+        
+        Assert.That(resultFor2026.ActionName, Is.EqualTo("Get"));
+        
+        Assert.That(resultFor2026.RouteValues.Count, Is.EqualTo(3));
+        Assert.That(resultFor2026.RouteValues.ContainsKey("registrationyear"));
+        Assert.That(resultFor2026.RouteValues.ContainsKey("submissionId"));
+        
+        Assert.That(resultFor2026.ControllerName, Is.EqualTo(nameof(FileUploadCompanyDetailsErrorsController).RemoveControllerFromName()));
+        
+        return Task.CompletedTask;
+    }
+    
+    [Test]
+    public Task RedirectToFileUploadCompanyDetailsWarnings()
+    {
+        var resultForNull =  _testUploadingOrgDetailsController.RedirectToFileUploadCompanyDetailsWarnings(Guid.NewGuid(), null) as RedirectToActionResult;
+        var resultFor2026 =  _testUploadingOrgDetailsController.RedirectToFileUploadCompanyDetailsWarnings(Guid.NewGuid(), 2026) as RedirectToActionResult;
+
+        Assert.That(resultForNull.ActionName, Is.EqualTo("Get"));
+        
+        Assert.That(resultForNull.ControllerName, Is.EqualTo(nameof(FileUploadCompanyDetailsWarningsController).RemoveControllerFromName()));
+        
+        Assert.That(resultForNull.RouteValues.Count, Is.EqualTo(1));
+        Assert.That(resultForNull.RouteValues.ContainsKey("submissionId"));
+        
+        Assert.That(resultFor2026.ActionName, Is.EqualTo("Get"));
+        
+        Assert.That(resultFor2026.RouteValues.Count, Is.EqualTo(2));
+        Assert.That(resultFor2026.RouteValues.ContainsKey("registrationyear"));
+        Assert.That(resultFor2026.RouteValues.ContainsKey("submissionId"));
+        
+        Assert.That(resultFor2026.ControllerName, Is.EqualTo(nameof(FileUploadCompanyDetailsWarningsController).RemoveControllerFromName()));
+        
+        return Task.CompletedTask;
+    }
 }
