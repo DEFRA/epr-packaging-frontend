@@ -16,7 +16,7 @@
         Model.RegistrationYear);
 }
 
-<main class="govuk-main-wrapper" id="main-content" role="main">
+<main class="govuk-main-wrapper" id="main-content" role="main" xmlns="http://www.w3.org/1999/html">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-three-quarters">
             <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel"/>
@@ -76,12 +76,14 @@
                         @Localizer["submit_your_application_from_registration_dashboard"]
                     </p>
                 }
+                <br/>
                 <p class="govuk-body govuk-!-margin-bottom-4">
                     @Localizer["you_can"]
                     <a href="#" id="print-or-save" target="_blank" class="govuk-link govuk-link--no-visited-state">
                         @Localizer["print_or_save_as_PDF"]
                     </a>
                 </p>
+                <br/>
             </div>
 
             <p class="govuk-body govuk-!-margin-top-4">
