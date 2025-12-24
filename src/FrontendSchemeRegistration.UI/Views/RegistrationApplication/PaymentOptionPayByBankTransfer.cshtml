@@ -89,7 +89,7 @@
             <p class="govuk-body govuk-!-margin-top-4">
                 @if (Model.IsComplianceScheme)
                 {
-                    <a class="govuk-button" href="@Url.Action("Get", "ComplianceSchemeLanding")" role="button" data-module="govuk-button">
+                    <a class="govuk-button" href="@Url.Action("RegistrationTaskList", "RegistrationApplication",  new { RegistrationJourney = @Model.RegistrationJourney })" role="button" data-module="govuk-button">
                         @Localizer["continue"]
                     </a>
                 }
