@@ -89,6 +89,9 @@
             <p class="govuk-body govuk-!-margin-top-4">
                 @if (Model.IsComplianceScheme)
                 {
+                    <a asp-controller="RegistrationApplication" asp-action="RegistrationTaskList" asp-route-registrationyear="@Model.RegistrationYear" asp-route-registrationjourney="@Model.RegistrationJourney"class="govuk-button">
+                        @Localizer["continue"]
+                    </a>
                     <a class="govuk-button" href="@Url.Action("RegistrationTaskList", "RegistrationApplication",  new { RegistrationJourney = @Model.RegistrationJourney })" role="button" data-module="govuk-button">
                         @Localizer["continue"]
                     </a>
