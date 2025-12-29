@@ -91,6 +91,8 @@
   </data>
     <data name="producer_registration" xml:space="preserve">
         <value>{0} registration</value>
-        
+    </data>
+    <data name="continue" xml:space="preserve">
+        <value>Continue</value>
     </data>
 </root>
