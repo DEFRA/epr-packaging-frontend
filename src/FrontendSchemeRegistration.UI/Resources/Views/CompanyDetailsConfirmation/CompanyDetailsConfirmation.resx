@@ -84,4 +84,7 @@
     <data name="it_may_take_an_hour" xml:space="preserve">
         <value/>
     </data>
+    <data name="continue" xml:space="preserve">
+        <value/>
+    </data>
 </root>

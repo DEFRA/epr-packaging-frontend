@@ -55,11 +55,9 @@
                     <li>@Localizer[Model.SubmitToRegulatorTask]</li>
                 </ul>
 
-                <p class="govuk-body">
-                    <a href="@Model.ReturnToRegistrationLink" class="govuk-link govuk-link--no-visited-state govuk-body-m">
-                        @Localizer["return_to_registration"]
-                    </a>
-                </p>
+                <a asp-controller="RegistrationApplication" asp-action="RegistrationTaskList" asp-route-registrationyear="@Model.RegistrationYear" asp-route-registrationjourney="@Model.RegistrationJourney"class="govuk-button">
+                    @Localizer["continue"]
+                </a>
 
             </div>
         }

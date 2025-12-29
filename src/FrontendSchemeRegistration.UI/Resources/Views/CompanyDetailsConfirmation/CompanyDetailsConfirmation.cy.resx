@@ -93,4 +93,7 @@
   <data name="producer_registration" xml:space="preserve">
     <value>[WELSH] Cofrestru {0}</value>
   </data>
+  <data name="continue" xml:space="preserve">
+        <value>Parhau</value>
+  </data>
 </root>
