@@ -6,17 +6,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
 
 using System.Security.Claims;
-using Application.Constants;
 using Application.DTOs.ComplianceScheme;
 using Application.DTOs.Submission;
 using Application.Enums;
-using Application.Options;
 using Application.Services.Interfaces;
 using AutoFixture;
 using EPR.Common.Authorization.Models;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
-using Microsoft.Graph.Models;
+using Microsoft.FeatureManagement;
 using Moq;
 using Newtonsoft.Json;
 using UI.Services;
@@ -29,6 +26,8 @@ public class ComplianceSchemeRegistrationControllerTests
     private Mock<IRegistrationApplicationService> _registrationApplicationService;
     private Mock<HttpContext> _httpContextMock;
     private Mock<ClaimsPrincipal> _userMock;
+    private Mock<IFeatureManager> _featureManagerMock;
+    
     private readonly IFixture _fixture = new Fixture();
 
     private readonly List<SubmissionPeriod> _submissionPeriods = new()
@@ -70,6 +69,9 @@ public class ComplianceSchemeRegistrationControllerTests
         _registrationApplicationService = new();
         _httpContextMock = new();
         _userMock = new();
+        _featureManagerMock = new();
+        
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(It.IsAny<string>())).ReturnsAsync(false);
         
         var orgs = _fixture.Build<Organisation>()
             .With(o => o.OrganisationRole, "ComplianceScheme")
@@ -89,7 +91,7 @@ public class ComplianceSchemeRegistrationControllerTests
         _httpContextMock.Setup(x => x.User).Returns(_userMock.Object);
         _httpContextMock.Setup(x => x.Session).Returns(new Mock<ISession>().Object);
 
-        _sut = new(_complianceSchemeService.Object, _registrationApplicationService.Object)
+        _sut = new(_complianceSchemeService.Object, _registrationApplicationService.Object, _featureManagerMock.Object)
         {
             ControllerContext = { HttpContext = _httpContextMock.Object }
         };
