@@ -329,7 +329,7 @@ public class PackagingDataResubmissionController : Controller
 
     private async Task<string> GetUserNameFromId(Guid userId)
     {
-        var user = await _userAccountService.GetPersonByUserId(userId);
+        var user = await _userAccountService.GetAllPersonByUserId(userId);
         return $"{user.FirstName} {user.LastName}";
     }
 
