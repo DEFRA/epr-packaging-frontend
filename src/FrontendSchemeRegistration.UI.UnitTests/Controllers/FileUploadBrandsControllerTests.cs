@@ -286,4 +286,44 @@ public class FileUploadBrandsControllerTests
         result?.ActionName.Should().Be("Get");
         result?.ControllerName.Should().Be("FileUploadCompanyDetails");
     }
+
+    [Test]
+    public async Task Get_SetsBackLinkToOrganisationDetailsUploaded_WhenRequiresBrandsFile()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var registrationYear = DateTime.Now.Year;
+
+        _systemUnderTest.ControllerContext.HttpContext.Request.Query =
+            new QueryCollection(new Dictionary<string, StringValues>
+            {
+                { "submissionId", submissionId.ToString() },
+                { "registrationyear", registrationYear.ToString() }
+            });
+
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(new RegistrationSubmission { RequiresBrandsFile = true });
+
+        _registrationApplicationSessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new RegistrationApplicationSession
+            {
+                RegistrationJourney = FrontendSchemeRegistration.Application.Enums.RegistrationJourney.CsoLargeProducer
+            });
+
+        var urlMock = new Mock<IUrlHelper>();
+        urlMock.Setup(x => x.Content($"~{PagePaths.OrganisationDetailsUploaded}"))
+            .Returns($"~{PagePaths.OrganisationDetailsUploaded}");
+        _systemUnderTest.Url = urlMock.Object;
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        result?.ViewName.Should().Be("FileUploadBrands");
+        var backlink = _systemUnderTest.ViewBag.BackLinkToDisplay as string;
+        backlink.Should().NotBeNull();
+        backlink.Should().Contain($"submissionId={submissionId}");
+        backlink.Should().Contain($"registrationyear={registrationYear}");
+        backlink.Should().Contain("registrationjourney=CsoLargeProducer");
+    }
 }

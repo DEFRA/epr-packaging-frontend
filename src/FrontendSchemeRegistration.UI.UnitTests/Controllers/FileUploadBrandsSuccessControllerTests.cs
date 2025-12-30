@@ -212,6 +212,56 @@ public class FileUploadBrandsSuccessControllerTests
         _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.Never);
     }
 
+
+    [Test]
+    public async Task Get_SetsBackLinkToFileUploadBrands_WhenSubmissionIsValid()
+    {
+        // Arrange
+        SetupSessionManagerMockWithComplianceScheme();
+        var submissionGuid = Guid.Parse(SubmissionId);
+        var registrationYear = DateTime.Now.Year;
+
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(new RegistrationSubmission
+            {
+                Id = submissionGuid,
+                BrandsFileName = "brands.csv",
+                RequiresBrandsFile = true,
+                BrandsDataComplete = true,
+                RequiresPartnershipsFile = false
+            });
+
+        _registrationApplicationSessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new RegistrationApplicationSession
+            {
+                RegistrationJourney = FrontendSchemeRegistration.Application.Enums.RegistrationJourney.CsoSmallProducer
+            });
+
+        _registrationApplicationServiceMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), true)).Returns(registrationYear);
+
+        var urlMock = new Mock<IUrlHelper>();
+        urlMock.Setup(x => x.Content($"~{PagePaths.FileUploadBrands}"))
+            .Returns($"~{PagePaths.FileUploadBrands}");
+        _systemUnderTest.Url = urlMock.Object;
+
+        _systemUnderTest.ControllerContext.HttpContext.Request.Query =
+            new QueryCollection(new Dictionary<string, StringValues>
+            {
+                { "submissionId", SubmissionId },
+                { "registrationyear", registrationYear.ToString() }
+            });
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("FileUploadBrandsSuccess");
+        var backlink = _systemUnderTest.ViewBag.BackLinkToDisplay as string;
+        backlink.Should().NotBeNull();
+        backlink.Should().Contain($"submissionId={SubmissionId}");
+        backlink.Should().Contain($"registrationyear={registrationYear}");
+    }
+
     private void SetupSessionManagerMockWithComplianceScheme()
     {
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
