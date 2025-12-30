@@ -24,12 +24,17 @@ public class FileUploadBrandsSuccessController : Controller
     private readonly ISubmissionService _submissionService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
     private readonly ISessionManager<RegistrationApplicationSession> _registrationApplicationSessionManager;
+    private readonly IRegistrationApplicationService _registrationApplicationService;
 
-    public FileUploadBrandsSuccessController(ISubmissionService submissionService, ISessionManager<FrontendSchemeRegistrationSession> sessionManager, ISessionManager<RegistrationApplicationSession> registrationApplicationSessionManager)
+    public FileUploadBrandsSuccessController(ISubmissionService submissionService, 
+        ISessionManager<FrontendSchemeRegistrationSession> sessionManager, 
+        ISessionManager<RegistrationApplicationSession> registrationApplicationSessionManager,
+        IRegistrationApplicationService registrationApplicationService)
     {
         _submissionService = submissionService;
         _sessionManager = sessionManager;
         _registrationApplicationSessionManager = registrationApplicationSessionManager;
+        _registrationApplicationService = registrationApplicationService;
     }
 
     [HttpGet]
@@ -37,7 +42,7 @@ public class FileUploadBrandsSuccessController : Controller
     public async Task<IActionResult> Get()
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-        var registrationYear = int.TryParse(HttpContext.Request.Query["registrationyear"], out var year) ? (int?)year : null;
+        var registrationYear = _registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
 
         if (session is not null)
         {
@@ -78,11 +83,8 @@ public class FileUploadBrandsSuccessController : Controller
     
     private void SetBackLinkToFileUploadBrands(Guid submissionId, int? registrationYear, RegistrationJourney? registrationJourney)
     {
-        if (Url == null)
-        {
-            return;
-        }
-        
+        if (Url is null) return;
+
         var routeValues = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear, registrationJourney: registrationJourney);
         var baseUrl = Url.Content($"~{PagePaths.FileUploadBrands}");
         ViewBag.BackLinkToDisplay = QueryHelpers.AddQueryString(baseUrl, routeValues.ToDictionary(k => k.Key, k => k.Value?.ToString() ?? string.Empty));

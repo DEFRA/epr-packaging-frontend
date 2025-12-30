@@ -9,6 +9,7 @@ using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using Extensions;
 using global::FrontendSchemeRegistration.Application.Options;
+using global::FrontendSchemeRegistration.UI.Services;
 using global::FrontendSchemeRegistration.UI.Services.FileUploadLimits;
 using Helpers;
 using Microsoft.AspNetCore.Authorization;
@@ -18,7 +19,6 @@ using Microsoft.Extensions.Options;
 using Services.Interfaces;
 using Sessions;
 using UI.Attributes.ActionFilters;
-using UI.Sessions;
 using ViewModels;
 
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
@@ -30,19 +30,22 @@ public class FileUploadBrandsController : Controller
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
     private readonly ISessionManager<RegistrationApplicationSession> _registrationApplicationSessionManager;
     private readonly IOptions<GlobalVariables> _globalVariables;
+    private readonly IRegistrationApplicationService _registrationApplicationService;
 
     public FileUploadBrandsController(
         ISubmissionService submissionService,
         IFileUploadService fileUploadService,
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
         ISessionManager<RegistrationApplicationSession> registrationApplicationSessionManager,
-        IOptions<GlobalVariables> globalVariables)
+        IOptions<GlobalVariables> globalVariables,
+        IRegistrationApplicationService registrationApplicationService)
     {
         _submissionService = submissionService;
         _fileUploadService = fileUploadService;
         _sessionManager = sessionManager;
         _registrationApplicationSessionManager = registrationApplicationSessionManager;
         _globalVariables = globalVariables;
+        _registrationApplicationService = registrationApplicationService;
     }
 
     [HttpGet]
@@ -51,7 +54,7 @@ public class FileUploadBrandsController : Controller
     public async Task<IActionResult> Get()
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-        var registrationYear = int.TryParse(HttpContext.Request.Query["registrationyear"], out var year) ? (int?)year : null;
+        var registrationYear = _registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
 
         if (session is null)
         {
@@ -112,7 +115,7 @@ public class FileUploadBrandsController : Controller
         Guid? submissionId = Guid.TryParse(Request.Query["submissionId"], out var value) ? value : null;
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         var organisationRole = session.UserData.Organisations.FirstOrDefault()?.OrganisationRole;
-        var registrationYear = int.TryParse(registrationyear, out var year) ? (int?)year : null;
+        var registrationYear = _registrationApplicationService.ValidateRegistrationYear(registrationyear, true);
 
         submissionId = await _fileUploadService.ProcessUploadAsync(
             Request.ContentType,
@@ -160,11 +163,8 @@ public class FileUploadBrandsController : Controller
     
     private void SetBackLinkToOrganisationDetailsUploaded(Guid? submissionId, int? registrationYear, RegistrationJourney? registrationJourney)
     {
-        if (!submissionId.HasValue || Url == null)
-        {
-            return;
-        }
-        
+        if (Url is null) return;
+
         var routeValues = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear, registrationJourney: registrationJourney);
         var baseUrl = Url.Content($"~{PagePaths.OrganisationDetailsUploaded}");
         ViewBag.BackLinkToDisplay = QueryHelpers.AddQueryString(baseUrl, routeValues.ToDictionary(k => k.Key, k => k.Value?.ToString() ?? string.Empty));

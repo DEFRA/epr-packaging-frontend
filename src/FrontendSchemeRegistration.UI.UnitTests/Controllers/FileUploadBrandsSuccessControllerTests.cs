@@ -62,7 +62,8 @@ public class FileUploadBrandsSuccessControllerTests
         _systemUnderTest = new FileUploadBrandsSuccessController(
             _submissionServiceMock.Object,
             _sessionManagerMock.Object,
-            _registrationApplicationSessionManagerMock.Object);
+            _registrationApplicationSessionManagerMock.Object,
+            _registrationApplicationServiceMock.Object);
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
