@@ -1,6 +1,7 @@
 ﻿namespace FrontendSchemeRegistration.UI.ViewModels;
 
 using System.ComponentModel.DataAnnotations;
+using Application.Enums;
 
 public class DeclarationWithFullNameViewModel : IValidatableObject
 {
@@ -15,6 +16,12 @@ public class DeclarationWithFullNameViewModel : IValidatableObject
     public string OrganisationDetailsFileId { get; set; } = string.Empty;
 
     public int? RegistrationYear { get; set; }
+    
+    public bool ShowRegistrationCaption { get; set; }
+    
+    public RegistrationJourney? RegistrationJourney { get; set; }
+    
+    public bool IsCso  { get; set; }
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {

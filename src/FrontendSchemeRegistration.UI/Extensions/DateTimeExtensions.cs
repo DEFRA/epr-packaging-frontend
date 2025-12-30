@@ -8,8 +8,6 @@ public static class DateTimeExtensions
 
     public static string ToReadableLongMonthDeadlineDate(this DateTime dateTime) => dateTime.ToString("d MMMM yyyy");
 
-    public static string ToReadableShortMonthDeadlineDate(this DateTime dateTime) => dateTime.ToString("d MMM yyyy");
-
     public static string ToShortReadableDate(this DateTime dateTime) => dateTime.UtcToGmt().ToString("d MMM yyyy");
 
     public static string ToShortReadableWithShortYearDate(this DateTime dateTime) => dateTime.UtcToGmt().ToString("d MMM yy");

@@ -12,4 +12,6 @@ public class SubmissionPayload
     public string? AppReferenceNumber { get; set; }
     
     public bool? IsResubmission { get; set; }
+    
+    public string? RegistrationJourney { get; set; }
 }

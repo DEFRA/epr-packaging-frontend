@@ -2,6 +2,7 @@
 
 using Application.Constants;
 using Application.DTOs.Submission;
+using Application.Enums;
 using Application.Services.Interfaces;
 using Constants;
 using EPR.Common.Authorization.Models;
@@ -30,10 +31,12 @@ public class FileUploadCompanyDetailsErrorsControllerTests
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
     private FileUploadCompanyDetailsErrorsController _systemUnderTest;
     private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
+    private Mock<IUrlHelper> _urlHelper;
 
     [SetUp]
     public void SetUp()
     {
+        _urlHelper = new Mock<IUrlHelper>();
         _submissionServiceMock = new Mock<ISubmissionService>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
@@ -82,7 +85,7 @@ public class FileUploadCompanyDetailsErrorsControllerTests
                 Session = new Mock<ISession>().Object
             }
         };
-        _systemUnderTest.Url = Mock.Of<IUrlHelper>();
+        _systemUnderTest.Url = _urlHelper.Object;
     }
 
     [Test]
@@ -181,10 +184,12 @@ public class FileUploadCompanyDetailsErrorsControllerTests
     public async Task Get_ReturnsFileUploadCompanyDetailsLandingPageView_WhenSubmissionIsValid()
     {
         // Arrange
+        _urlHelper.Setup(x => x.Content("~//report-organisation-details")).Returns("/someurl");
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
             .ReturnsAsync(new RegistrationSubmission
             {
-                RowErrorCount = 5
+                RowErrorCount = 5,
+                RegistrationJourney = RegistrationJourney.CsoLargeProducer
             });
 
         // Act
@@ -197,6 +202,8 @@ public class FileUploadCompanyDetailsErrorsControllerTests
             OrganisationRole = OrganisationRoles.Producer,
             ErrorCount = RowErrorCount,
             SubmissionId = SubmissionId,
+            RegistrationJourney = RegistrationJourney.CsoLargeProducer
+            
         });
         _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.Once);
     }

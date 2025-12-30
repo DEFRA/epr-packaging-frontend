@@ -50,4 +50,10 @@
     <data name="text_assistive.warning" xml:space="preserve">
         <value>Warning</value>
     </data>
+    <data name="cso_act_on_behalf" xml:space="preserve">
+        <value>you can act on behalf of your organisation</value>
+    </data>
+    <data name="cso_enforcement_warning" xml:space="preserve">
+        <value>Your organisation may face enforcement action if the data is inaccurate</value>
+    </data>
 </root>

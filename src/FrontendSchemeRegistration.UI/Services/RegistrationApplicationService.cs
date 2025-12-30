@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Security.Claims;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
@@ -17,6 +17,7 @@ using Microsoft.FeatureManagement;
 
 namespace FrontendSchemeRegistration.UI.Services;
 
+using Application.Services;
 
 public class RegistrationApplicationService : IRegistrationApplicationService
 {
@@ -28,9 +29,11 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     private readonly IFeatureManager featureManager;
     private readonly IHttpContextAccessor httpContextAccessor;
     private readonly IOptions<GlobalVariables> globalVariables;
+    private readonly TimeProvider _dateTimeProvider;
 
-    public RegistrationApplicationService(RegistrationApplicationServiceDependencies dependencies)
+    public RegistrationApplicationService(RegistrationApplicationServiceDependencies dependencies, TimeProvider dateTimeProvider)
     {
+        _dateTimeProvider = dateTimeProvider;
         ArgumentNullException.ThrowIfNull(dependencies);
         
         submissionService = dependencies.SubmissionService
@@ -79,7 +82,8 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             }
             else
             {
-                session.IsLateFeeApplicable = DateTime.Today > lateFeeDeadline;
+                var today = _dateTimeProvider.GetLocalNow().Date;
+                session.IsLateFeeApplicable = today > lateFeeDeadline;
             }
 
             if (session.FirstApplicationSubmittedEventCreatedDatetime is not null)
@@ -96,12 +100,13 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             }
             else
             {
-                session.IsLateFeeApplicable = DateTime.Today > lateFeeDeadline;
+                var today = _dateTimeProvider.GetLocalNow().Date;
+                session.IsLateFeeApplicable = today > lateFeeDeadline;
             }
         }
     }
 
-    public async Task<RegistrationApplicationSession> GetRegistrationApplicationSession(ISession httpSession, Organisation organisation, int registrationYear, bool? isResubmission = null)
+    public async Task<RegistrationApplicationSession> GetRegistrationApplicationSession(ISession httpSession, Organisation organisation, int registrationYear, bool? isResubmission = null, RegistrationJourney? registrationJourney = null)
     {
         var session = await sessionManager.GetSessionAsync(httpSession) ?? new RegistrationApplicationSession();
         var frontEndSession = await frontEndSessionManager.GetSessionAsync(httpSession) ?? new FrontendSchemeRegistrationSession();
@@ -114,7 +119,8 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             OrganisationNumber = int.Parse(organisation.OrganisationNumber),
             OrganisationId = organisation.Id.Value,
             ComplianceSchemeId = frontEndSession.RegistrationSession.SelectedComplianceScheme?.Id,
-            SubmissionPeriod = session.Period.DataPeriod
+            SubmissionPeriod = session.Period.DataPeriod,
+            RegistrationJourney = registrationJourney?.ToString()
         }) ?? new RegistrationApplicationDetails();
 
         session.SelectedComplianceScheme = frontEndSession.RegistrationSession.SelectedComplianceScheme;
@@ -134,12 +140,14 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         session.LatestSubmittedEventCreatedDatetime = registrationApplicationDetails.LatestSubmittedEventCreatedDatetime;
         session.FirstApplicationSubmittedEventCreatedDatetime = registrationApplicationDetails.FirstApplicationSubmittedEventCreatedDatetime;
         session.IsResubmission = (registrationApplicationDetails.IsResubmission ?? isResubmission) ?? false;
-
         SetLateFeeFlag(session, registrationYear);
 
         int? nationId;
         if (session.IsComplianceScheme)
+        {
             nationId = session.SelectedComplianceScheme.NationId;
+            session.RegistrationJourney = registrationApplicationDetails.RegistrationJourney ?? registrationJourney;
+        }
         else if (session.FileReachedSynapse)
             nationId = session.RegistrationFeeCalculationDetails[0].NationId;
         else
@@ -346,27 +354,35 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         }
         else
         {
+            var complianceSchemeMembers = feeCalculationDetails.Select(c => new ComplianceSchemePaymentCalculationRequestMember
+            {
+                // Apply late fee to all producers if original submission was late or
+                // not a single submission and current submission is late 
+                // if above two are not satisified that means file are submitted on time its new submission either due to queried
+                // check individual producer is new joiner so late fee applicable on producer level rather than file
+                IsLateFeeApplicable =
+                    session.IsOriginalCsoSubmissionLate
+                    || (session.FirstApplicationSubmittedEventCreatedDatetime is null && session.IsLateFeeApplicable)
+                    || (session.IsLateFeeApplicable && c.IsNewJoiner),
+                IsOnlineMarketplace = c.IsOnlineMarketplace,
+                MemberId = c.OrganisationId,
+                MemberType = c.OrganisationSize,
+                NoOfSubsidiariesOnlineMarketplace = c.NumberOfSubsidiariesBeingOnlineMarketPlace,
+                NumberOfSubsidiaries = c.NumberOfSubsidiaries
+            }).ToList();
+
+            // TODO Temporary logic to exclude registration fee for CSO small (2026)
+            // - currently a CSO registration with only Small Producer journey will incorrectly not be charged registration fee
+            // (it is assumed to have been charged for the Large Producer journey)
+            bool includeRegistrationFee = !(session.RegistrationJourney == RegistrationJourney.CsoSmallProducer);
+
             var v1 = new ComplianceSchemePaymentCalculationRequest
             {
                 Regulator = session.RegulatorNation,
                 ApplicationReferenceNumber = session.ApplicationReferenceNumber,
                 SubmissionDate = session.LastSubmittedFile.SubmittedDateTime!.Value,
-                ComplianceSchemeMembers = feeCalculationDetails.Select(c => new ComplianceSchemePaymentCalculationRequestMember
-                {
-                    // Apply late fee to all producers if original submission was late or
-                    // not a single submission and current submission is late 
-                    // if above two are not satisified that means file are submitted on time its new submission either due to queried
-                    // check individual producer is new joiner so late fee applicable on producer level rather than file
-                    IsLateFeeApplicable =
-                        session.IsOriginalCsoSubmissionLate
-                        || (session.FirstApplicationSubmittedEventCreatedDatetime is null && session.IsLateFeeApplicable)
-                        || (session.IsLateFeeApplicable && c.IsNewJoiner),
-                    IsOnlineMarketplace = c.IsOnlineMarketplace,
-                    MemberId = c.OrganisationId,
-                    MemberType = c.OrganisationSize,
-                    NoOfSubsidiariesOnlineMarketplace = c.NumberOfSubsidiariesBeingOnlineMarketPlace,
-                    NumberOfSubsidiaries = c.NumberOfSubsidiaries
-                }).ToList()
+                ComplianceSchemeMembers = complianceSchemeMembers,
+                IncludeRegistrationFee = includeRegistrationFee
             };
 
             response = await paymentCalculationService.GetComplianceSchemeRegistrationFees(v1);
@@ -434,7 +450,8 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         var session = await sessionManager.GetSessionAsync(httpSession);
         var referenceNumber = organisationNumber;
         var periodEnd = DateTime.Parse($"30 {session.Period.EndMonth} {session.Period.Year}", new CultureInfo("en-GB"));
-        var periodNumber = DateTime.Today <= periodEnd ? 1 : 2;
+        var today = _dateTimeProvider.GetLocalNow().Date;
+        var periodNumber = today <= periodEnd ? 1 : 2;
 
         if (session.IsComplianceScheme)
         {
@@ -448,15 +465,19 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     {
         var session = await sessionManager.GetSessionAsync(httpSession);
 
-        await submissionService.CreateRegistrationApplicationEvent(
+        var registrationApplicationData = new RegistrationApplicationData(
             session.SubmissionId.Value,
             session.SelectedComplianceScheme?.Id,
             comments,
-            paymentMethod,
+            paymentMethod
+        );
+        
+        await submissionService.CreateRegistrationApplicationEvent(
+            registrationApplicationData,
             session.ApplicationReferenceNumber,
             session.IsResubmission,
-            submissionType
-        );
+            submissionType, 
+            session.RegistrationJourney);
 
         if (!string.IsNullOrWhiteSpace(paymentMethod))
         {
@@ -548,7 +569,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
 
 public interface IRegistrationApplicationService
 {
-    Task<RegistrationApplicationSession> GetRegistrationApplicationSession(ISession httpSession, Organisation organisation, int registrationYear, bool? isResubmission = null);
+    Task<RegistrationApplicationSession> GetRegistrationApplicationSession(ISession httpSession, Organisation organisation, int registrationYear, bool? isResubmission = null, RegistrationJourney? registrationJourney  = null);
 
     Task<FeeCalculationBreakdownViewModel?> GetProducerRegistrationFees(ISession httpSession);
 

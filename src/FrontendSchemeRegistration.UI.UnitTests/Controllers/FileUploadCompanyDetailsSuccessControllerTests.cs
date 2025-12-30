@@ -204,14 +204,14 @@ public class FileUploadCompanyDetailsSuccessControllerTests
             RequiresBrandsFile = true,
             RequiresPartnershipsFile = true,
             OrganisationRole = OrganisationRoles.ComplianceScheme,
-            OrganisationMemberCount = 10
+            IsCso = true
         });
 
         _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.Once);
     }
 
     [Test]
-    public async Task Get_DoesNotPopulateMemberCount_WhenOrganisationRoleIsProducer()
+    public async Task Get_SetsIsCsoToFalse_WhenOrganisationRoleIsProducer()
     {
         // Arrange
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
@@ -252,7 +252,7 @@ public class FileUploadCompanyDetailsSuccessControllerTests
             RequiresBrandsFile = true,
             RequiresPartnershipsFile = true,
             OrganisationRole = OrganisationRoles.Producer,
-            OrganisationMemberCount = null
+            IsCso = false
         });
 
         _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.Once);

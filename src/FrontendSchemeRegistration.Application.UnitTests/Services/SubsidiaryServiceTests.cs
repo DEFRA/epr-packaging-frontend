@@ -3,7 +3,6 @@
 using Application.Services;
 using Application.Services.Interfaces;
 using FluentAssertions;
-using FluentAssertions.Common;
 using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.DTOs.Organisation;
 using FrontendSchemeRegistration.Application.DTOs.Subsidiary;

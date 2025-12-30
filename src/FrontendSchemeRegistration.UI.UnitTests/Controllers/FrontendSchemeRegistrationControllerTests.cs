@@ -1,9 +1,7 @@
 using EPR.Common.Authorization.Models;
 using FluentAssertions;
 using FrontendSchemeRegistration.Application.Constants;
-using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.UI.Sessions;
-using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;

@@ -1,3 +1,5 @@
+@using FrontendSchemeRegistration.UI.ViewModels.Shared
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FileUploadCompanyDetailsSuccessViewModel
 
 @{
@@ -27,9 +29,14 @@
                     <p class="govuk-body break-word">@Model.FileName</p>
                 </div>
             </div>
-            @if (Model.OrganisationMemberCount is not null)
+            @if (Model.IsCso)
             {
-                <p class="govuk-body">@Localizer["the_file_has"] @Model.OrganisationMemberCount @Localizer["of_your_members"]</p>
+                <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="new ComplianceSchemeRegistrationHeadingViewModel(
+                    true, 
+                    Model.RegistrationJourney, 
+                    Model.OrganisationName,
+                    null,
+                    Model.RegistrationYear.Value)"/>
             }
 
             @if (Model.IsResubmission)
@@ -183,16 +190,6 @@
                          },
                          new { @class = "govuk-button" })
             }
-            <p class="govuk-body govuk-!-margin-top-4">
-                @if (Model.IsComplianceScheme)
-                {
-                    <a asp-controller="ComplianceSchemeLanding" asp-action="Get" class="govuk-link">@Localizer["return_to_dashboard"]</a>
-                }
-                else
-                {
-                    <a asp-controller="FrontendSchemeRegistration" asp-action="HomePageSelfManaged" class="govuk-link">@Localizer["return_to_dashboard"]</a>
-                }
-            </p>
         </div>
     </div>
 </main>

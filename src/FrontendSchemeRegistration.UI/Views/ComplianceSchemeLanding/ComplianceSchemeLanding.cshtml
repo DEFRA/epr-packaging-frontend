@@ -8,7 +8,7 @@
 
 @{
     ViewData["Title"] = Localizer["home"];
-    var submissionPeriods = GlobalVariables?.Value.SubmissionPeriods ?? new List<SubmissionPeriod>();
+    var registrationYears = GlobalVariables?.Value.RegistrationYear.Split(',');
 
     // this is part of the new packaging data resubmission journey
     var isSubmitted = Model.ResubmissionTaskListViewModel?.IsSubmitted;
@@ -108,7 +108,7 @@
             </div>
 
             <div class="govuk-grid-row box-container">
-                @if (submissionPeriods.Exists(x => Model.ComplianceYearAsInteger(x.Year) >= 2026))
+                @if (registrationYears.Any(x => Model.ComplianceYearAsInteger(x) >= 2026))
                 {
                     <partial name="~/Views/FrontendSchemeRegistration/RegisterYourMembersTile.cshtml" model="Model.GetRegisterYourMembersViewModel()"/>
                 }

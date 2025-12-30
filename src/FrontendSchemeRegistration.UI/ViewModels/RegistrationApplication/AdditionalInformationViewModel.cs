@@ -2,6 +2,8 @@
 
 namespace FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
 
+using Application.Enums;
+
 [ExcludeFromCodeCoverage]
 public class AdditionalInformationViewModel : OrganisationNationViewModel
 {
@@ -20,4 +22,6 @@ public class AdditionalInformationViewModel : OrganisationNationViewModel
     public bool IsApprovedOrDelegatedUser { get; set; }
 
     public int RegistrationYear { get; set; }
+    public RegistrationJourney? RegistrationJourney { get; set; }
+    public bool ShowRegistrationCaption => RegistrationJourney != null;
 }

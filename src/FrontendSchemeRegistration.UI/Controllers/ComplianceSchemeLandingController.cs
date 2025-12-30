@@ -1,11 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using EPR.Common.Authorization.Constants;
-using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
-using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
-using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Services;
@@ -14,7 +11,6 @@ using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
 namespace FrontendSchemeRegistration.UI.Controllers;
 
@@ -27,7 +23,7 @@ public class ComplianceSchemeLandingController(
     IRegistrationApplicationService registrationApplicationService,
     IResubmissionApplicationService resubmissionApplicationService,
     ILogger<ComplianceSchemeLandingController> logger,
-    IOptions<GlobalVariables> globalVariables)
+    TimeProvider timeProvider)
     : Controller
 {
     [HttpGet]
@@ -36,6 +32,7 @@ public class ComplianceSchemeLandingController(
     {
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
         var userData = User.GetUserData();
+        var nowDateTime = timeProvider.GetLocalNow().DateTime;
 
         var organisation = userData.Organisations[0];
 
@@ -45,8 +42,10 @@ public class ComplianceSchemeLandingController(
 
         session.RegistrationSession.SelectedComplianceScheme ??= defaultComplianceScheme;
         session.UserData = userData;
-        var currentYear = new[] { DateTime.Now.Year.ToString(), (DateTime.Now.Year + 1).ToString() };
-        var packagingResubmissionPeriod = globalVariables.Value.SubmissionPeriods.Find(s => currentYear.Contains(s.Year) && s.ActiveFrom.Year == DateTime.Now.Year);
+        var currentYear = new[] { nowDateTime.Year.ToString(), (nowDateTime.Year + 1).ToString() };
+
+        // Note: We are adding a service method here to avoid SonarQube issue for adding 8th parameter in the constructor.
+        var packagingResubmissionPeriod = resubmissionApplicationService.PackagingResubmissionPeriod(currentYear, nowDateTime);
 
         await SaveNewJourney(session);
 

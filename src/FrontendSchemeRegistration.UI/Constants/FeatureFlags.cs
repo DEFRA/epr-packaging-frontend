@@ -29,4 +29,5 @@ public static class FeatureFlags
 
     public const string IncludeSubsidariesInFeeCalculationsForProducers = "IncludeSubsidariesInFeeCalculationsForProducers";
     public const string AlwaysShowLargeProducerJourneyMessage = "AlwaysShowLargeProducerJourneyMessage";
+    public const string DisplayCsoSmallProducerRegistration = "DisplayCsoSmallProducerRegistration";
 }

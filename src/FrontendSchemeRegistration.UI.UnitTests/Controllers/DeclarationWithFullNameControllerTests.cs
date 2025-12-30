@@ -14,10 +14,11 @@ using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Primitives;
 using Moq;
 
 namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
+
+using Application.Enums;
 
 [TestFixture]
 public class DeclarationWithFullNameControllerTests
@@ -53,13 +54,6 @@ public class DeclarationWithFullNameControllerTests
         {
             HttpContext = new DefaultHttpContext
             {
-                Request =
-                {
-                    Query = new QueryCollection(new Dictionary<string, StringValues>
-                    {
-                        { "submissionId", _submissionId.ToString() },
-                    }),
-                },
                 Session = new Mock<ISession>().Object,
                 User = _claimsPrincipalMock.Object
             },
@@ -91,7 +85,7 @@ public class DeclarationWithFullNameControllerTests
         _registrationApplicationServiceMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(DateTime.Now.Year);
 
         // Act
-        var result = await _systemUnderTest.Get() as RedirectToActionResult;
+        var result = await _systemUnderTest.Get(_submissionId) as RedirectToActionResult;
 
         // Assert
         result.ActionName.Should().Be("Get");
@@ -107,7 +101,7 @@ public class DeclarationWithFullNameControllerTests
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).Returns(Task.FromResult<RegistrationSubmission>(null));
 
         // Act
-        var result = await _systemUnderTest.Get() as RedirectToActionResult;
+        var result = await _systemUnderTest.Get(_submissionId) as RedirectToActionResult;
 
         // Assert
         result.ActionName.Should().Be("Get");
@@ -123,7 +117,7 @@ public class DeclarationWithFullNameControllerTests
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).Returns(Task.FromResult<RegistrationSubmission>(new RegistrationSubmission { HasValidFile = false }));
 
         // Act
-        var result = await _systemUnderTest.Get() as RedirectToActionResult;
+        var result = await _systemUnderTest.Get(_submissionId) as RedirectToActionResult;
 
         // Assert
         result.ActionName.Should().Be("Get");
@@ -162,7 +156,7 @@ public class DeclarationWithFullNameControllerTests
         _registrationApplicationServiceMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(DateTime.Now.Year);
 
         // Act
-        var result = await _systemUnderTest.Get() as ViewResult;
+        var result = await _systemUnderTest.Get(_submissionId) as ViewResult;
 
         // Assert
         result.ViewName.Should().Be(ViewName);
@@ -190,7 +184,7 @@ public class DeclarationWithFullNameControllerTests
         _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
 
         // Act
-        var result = await _systemUnderTest.Post(model) as RedirectToActionResult;
+        var result = await _systemUnderTest.Post(Guid.NewGuid(), model) as RedirectToActionResult;
 
         // Assert
         result.ActionName.Should().Be("Get");
@@ -206,7 +200,7 @@ public class DeclarationWithFullNameControllerTests
         _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
 
         // Act
-        var result = await _systemUnderTest.Post(submissionDeclarationRequest) as RedirectToActionResult;
+        var result = await _systemUnderTest.Post(Guid.NewGuid(), submissionDeclarationRequest) as RedirectToActionResult;
 
         // Assert
         result.ActionName.Should().Be("Get");
@@ -237,7 +231,7 @@ public class DeclarationWithFullNameControllerTests
         _systemUnderTest.ModelState.AddModelError("Key", "Value");
 
         // Act
-        var result = await _systemUnderTest.Post(model) as ViewResult;
+        var result = await _systemUnderTest.Post(submission.Id, model) as ViewResult;
 
         // Assert
         result.ViewName.Should().Be(ViewName);
@@ -273,7 +267,7 @@ public class DeclarationWithFullNameControllerTests
         _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
 
         // Act
-        var result = await _systemUnderTest.Post(submissionDeclarationRequest) as ViewResult;
+        var result = await _systemUnderTest.Post(submission.Id, submissionDeclarationRequest) as ViewResult;
 
         // Assert
         result.ViewName.Should().Be(ViewName);
@@ -315,7 +309,7 @@ public class DeclarationWithFullNameControllerTests
         _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
 
         // Act
-        var result = await _systemUnderTest.Post(submissionDeclarationRequest) as RedirectToActionResult;
+        var result = await _systemUnderTest.Post(submission.Id, submissionDeclarationRequest) as RedirectToActionResult;
 
         // Assert
         result.ActionName.Should().Be("Get");
@@ -338,7 +332,8 @@ public class DeclarationWithFullNameControllerTests
                 CompanyDetailsUploadedBy = Guid.NewGuid(),
                 CompanyDetailsFileId = Guid.NewGuid()
             },
-            HasValidFile = true
+            HasValidFile = true,
+            RegistrationJourney = RegistrationJourney.CsoLargeProducer
         };
         _submissionServiceMock
             .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
@@ -362,12 +357,13 @@ public class DeclarationWithFullNameControllerTests
         _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
 
         // Act
-        var result = await _systemUnderTest.Post(submissionDeclarationRequest) as RedirectToActionResult;
+        var result = await _systemUnderTest.Post(submission.Id, submissionDeclarationRequest) as RedirectToActionResult;
 
         // Assert
         result.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("CompanyDetailsConfirmation");
-        _submissionServiceMock.Verify(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<bool?>()), Times.Once);
+        _submissionServiceMock.Verify(x => x.SubmitAsync(It.IsAny<Guid>(), 
+            It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney>()), Times.Once);
     }
 
     [Test]
@@ -391,7 +387,7 @@ public class DeclarationWithFullNameControllerTests
             .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
             .ReturnsAsync(submission);
         _submissionServiceMock
-            .Setup(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), null, false))
+            .Setup(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), null, false, null))
             .ThrowsAsync(new Exception());
 
         var submissionDeclarationRequest = new DeclarationWithFullNameViewModel
@@ -403,7 +399,7 @@ public class DeclarationWithFullNameControllerTests
         _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
 
         // Act
-        var result = await _systemUnderTest.Post(submissionDeclarationRequest) as RedirectToActionResult;
+        var result = await _systemUnderTest.Post(submission.Id, submissionDeclarationRequest) as RedirectToActionResult;
 
         // Assert
         result.ActionName.Should().Be("Get");
@@ -432,7 +428,7 @@ public class DeclarationWithFullNameControllerTests
         _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
 
         // Act
-        var result = await _systemUnderTest.Post(submissionDeclarationRequest) as RedirectToActionResult;
+        var result = await _systemUnderTest.Post(submission.Id, submissionDeclarationRequest) as RedirectToActionResult;
 
         // Assert
         result.ActionName.Should().Be("Get");

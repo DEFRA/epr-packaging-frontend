@@ -11,7 +11,6 @@ using Extensions;
 using global::FrontendSchemeRegistration.Application.Options;
 using global::FrontendSchemeRegistration.UI.Services;
 using global::FrontendSchemeRegistration.UI.Services.FileUploadLimits;
-using global::FrontendSchemeRegistration.UI.Services.Messages;
 using Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -105,17 +104,21 @@ public class FileUploadPartnershipsController : Controller
         submissionId = await _fileUploadService.ProcessUploadAsync(
             Request.ContentType,
             Request.Body,
-            session.RegistrationSession.SubmissionPeriod,
             ModelState,
-            submissionId,
-            SubmissionType.Registration,
-            new DefaultFileUploadMessages(),
             new DefaultFileUploadLimit(_globalVariables),
-            SubmissionSubType.Partnerships,
-            session.RegistrationSession.LatestRegistrationSet[session.RegistrationSession.SubmissionPeriod],
-            null,
-            session.RegistrationSession.IsResubmission);
-
+            new FileUploadSubmissionDetails()
+            {
+                SubmissionPeriod = session.RegistrationSession.SubmissionPeriod,
+                SubmissionId = submissionId,
+                SubmissionType = SubmissionType.Registration,
+                SubmissionSubType = SubmissionSubType.Partnerships,
+                RegistrationSetId =
+                    session.RegistrationSession.LatestRegistrationSet[session.RegistrationSession.SubmissionPeriod],
+                IsResubmission = session.RegistrationSession.IsResubmission,
+                ComplianceSchemeId = null,
+                RegistrationJourney = null
+            });
+            
         session.RegistrationSession.Journey.AddIfNotExists(PagePaths.FileUploadPartnerships);
         await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
         var routeValues = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear);        

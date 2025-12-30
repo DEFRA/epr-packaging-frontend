@@ -516,7 +516,7 @@ public class FileUploadSubmissionDeclarationControllerTests
             .Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>()))
             .ReturnsAsync(submission);
         _submissionServiceMock
-            .Setup(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), string.Empty, false))
+            .Setup(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), string.Empty, false, null))
             .ThrowsAsync(new Exception());
         _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(true);
 
@@ -576,7 +576,7 @@ public class FileUploadSubmissionDeclarationControllerTests
             .Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>()))
             .ReturnsAsync(submission);
         _submissionServiceMock
-            .Setup(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), string.Empty, false));
+            .Setup(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), string.Empty, false, null));
         _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(true);
 
         _sessionManagerMock
@@ -636,7 +636,7 @@ public class FileUploadSubmissionDeclarationControllerTests
             .Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>()))
             .ReturnsAsync(submission);
         _submissionServiceMock
-            .Setup(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), string.Empty, false));
+            .Setup(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), string.Empty, false, It.IsAny<RegistrationJourney>()));
         _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(false);
 
         _sessionManagerMock
@@ -685,7 +685,7 @@ public class FileUploadSubmissionDeclarationControllerTests
             .Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>()))
             .ReturnsAsync(submission);
         _submissionServiceMock
-            .Setup(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), string.Empty, false));
+            .Setup(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), string.Empty, false, null));
         _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(false);
 
         _sessionManagerMock

@@ -157,6 +157,6 @@
     <value>Select yes if you want to upload a new file</value>
   </data>
   <data name="please_select_payment_method" xml:space="preserve">
-    <value>Please select an option</value>
+    <value>Select how you want to pay your registration fee</value>
   </data>
 </root>

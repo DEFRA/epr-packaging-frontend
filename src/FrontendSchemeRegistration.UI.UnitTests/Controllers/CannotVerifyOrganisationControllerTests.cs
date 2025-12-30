@@ -1,20 +1,11 @@
 ﻿namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
 
-using System.Security.Claims;
-using System.Text.Json;
-using Application.DTOs.ComplianceScheme;
-using Application.Services.Interfaces;
-using Constants;
-using EPR.Common.Authorization.Models;
 using FluentAssertions;
 using FrontendSchemeRegistration.Application.Constants;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Moq;
 using UI.Controllers;
-using UI.Controllers.ControllerExtensions;
-using UI.Controllers.FrontendSchemeRegistration;
 
 [TestFixture]
 public class CannotVerifyOrganisationControllerTests

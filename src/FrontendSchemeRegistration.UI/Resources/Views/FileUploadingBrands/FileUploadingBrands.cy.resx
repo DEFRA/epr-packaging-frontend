@@ -12,7 +12,7 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="uploading_brands" xml:space="preserve">
-        <value>Wrthi’n uwchlwytho gwybodaeth brand </value>
+        <value>Uploading brand details</value>
     </data>
     <data name="to_see_if_the_file_has_finished_uploading" xml:space="preserve">
         <value>I weld a ydy’r ffeil wedi gorffen uwchlwytho,</value>

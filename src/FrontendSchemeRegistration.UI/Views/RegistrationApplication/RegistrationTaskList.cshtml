@@ -1,6 +1,6 @@
 @using FrontendSchemeRegistration.Application.DTOs.Submission
 @using FrontendSchemeRegistration.UI.Sessions
-@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using FrontendSchemeRegistration.UI.ViewModels.Shared
 @model FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication.RegistrationTaskListViewModel
 
 @{
@@ -8,14 +8,19 @@
 
     var canStartViewPayRegistrationFeeStep = Model.PaymentViewStatus is RegistrationTaskListStatus.NotStarted or RegistrationTaskListStatus.Completed;
     var canStartSubmitRegistrationApplicationStep = Model.AdditionalDetailsStatus is RegistrationTaskListStatus.NotStarted or RegistrationTaskListStatus.Completed;
+    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+        Model.ShowRegistrationCaption, 
+        Model.RegistrationJourney, 
+        Model.ShowRegistrationCaption ? Model.OrganisationName : null,
+        !Model.ShowRegistrationCaption ? Localizer[Model.PageHeading, Model.OrganisationName] : null,
+        Model.RegistrationYear);
 }
 
 <main class="govuk-main-wrapper" id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-three-quarters">
-            <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
-                @Localizer[Model.PageHeading, Model.OrganisationName]
-            </h1>
+            <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel"/>
+
             <dl class="govuk-summary-list">
                 <div class="govuk-summary-list__row">
                 </div>
@@ -90,7 +95,7 @@
                     </dd>
                 </div>
             </dl>
-            @if(Model.IsComplianceScheme)
+            @if (Model.IsComplianceScheme)
             {
                 <p class="govuk-body govuk-!-margin-top-4">
                     <a asp-controller="ComplianceSchemeLanding" asp-action="Get" class="govuk-link">@Localizer["return_to_dashboard"]</a>

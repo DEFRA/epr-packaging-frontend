@@ -64,6 +64,6 @@
         <value>Find out more about packaging responsibilities and check if you need to take action (opens in a new tab)</value>
     </data>
     <data name="ensure_your_packaging_data_for_year_been_reported_before_registering" xml:space="preserve">
-        <value>Ensure your packaging data for {0} has been reported before registering. Failure may result in delays to your registration being assessed.</value>
+        <value>To avoid registration delays, report your {0} packaging data before applying to register for {1}.</value>
     </data>
 </root>

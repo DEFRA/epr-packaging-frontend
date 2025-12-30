@@ -21,7 +21,7 @@
 
             <ol class="govuk-list govuk-list--number govuk-list--spaced">
                 <li><a href="@Url.Action("SubsidiariesFileUploadWarningsReport", "FileUploadSubsidiaries")" class="govuk-link--no-visited-state">@Localizer["download_your_warnings", Model.WarningsReportDisplaySize]</a></li>
-                <li>@Localizer["you_may_also"] <a href="@GuidanceLinks.Value.HowToCompleteSubsidiaryFile" rel="noreferrer noopener" target="_blank" class="govuk-link">@Localizer["how_to_complete"]</a> @Localizer["you_may_also_suffix"]</li>
+                <li>@Localizer["you_may_also"] <a href="@GuidanceLinks.HowToCompleteSubsidiaryFile" rel="noreferrer noopener" target="_blank" class="govuk-link">@Localizer["how_to_complete"]</a> @Localizer["you_may_also_suffix"]</li>
             </ol>
 
             <form asp-controller="FileUploadSubsidiaries" asp-action="@action" method="post">

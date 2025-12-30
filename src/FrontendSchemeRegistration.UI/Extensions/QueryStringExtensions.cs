@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.WebUtilities;
 
 namespace FrontendSchemeRegistration.UI.Extensions;
+
+using Application.Enums;
+
 public static class QueryStringExtensions
 {
-    public static RouteValueDictionary BuildRouteValues(Guid? submissionId = null, bool? isResubmission = null, int? registrationYear = null)
+    public static RouteValueDictionary BuildRouteValues(Guid? submissionId = null, bool? isResubmission = null, int? registrationYear = null, RegistrationJourney? registrationJourney = null)
     {
 
         var routeValues = new RouteValueDictionary();
@@ -17,6 +20,9 @@ public static class QueryStringExtensions
         if(registrationYear.HasValue && registrationYear.Value > 0)
             routeValues["registrationyear"] = registrationYear.Value;
 
+        if(registrationJourney.HasValue)
+            routeValues["registrationjourney"] = registrationJourney.Value.ToString();
+        
         return routeValues;
     }
 

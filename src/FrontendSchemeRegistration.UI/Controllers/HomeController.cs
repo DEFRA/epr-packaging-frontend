@@ -3,7 +3,6 @@
 using Application.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics.CodeAnalysis;
 
 [AllowAnonymous]
 public class HomeController : Controller

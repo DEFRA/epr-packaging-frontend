@@ -20,21 +20,14 @@ public class NotificationViewModel
     public void BuildFromNotificationList(List<NotificationDto> notificationList)
     {
         NotificationDto delegatedPersonPendingApproval = null;
-        NotificationDto delegatedPersonNomination = null;
-        NotificationDto approvedPersonNomination = null;
-
-        if (notificationList != null)
+        
+        NotificationDto delegatedPersonNomination = notificationList.Find(n => n.Type == NotificationTypes.Packaging.DelegatedPersonNomination);
+        if (delegatedPersonNomination == null)
         {
-            delegatedPersonNomination = notificationList.Find(n => n.Type == NotificationTypes.Packaging.DelegatedPersonNomination);
-
-            if (delegatedPersonNomination == null)
-            {
-                delegatedPersonPendingApproval = notificationList.Find(n => n.Type == NotificationTypes.Packaging.DelegatedPersonPendingApproval);
-            }
-
-            approvedPersonNomination = notificationList.Find(n => n.Type == NotificationTypes.Packaging.ApprovedsPersonNomination);
+            delegatedPersonPendingApproval = notificationList.Find(n => n.Type == NotificationTypes.Packaging.DelegatedPersonPendingApproval);
         }
 
+        NotificationDto approvedPersonNomination = notificationList.Find(n => n.Type == NotificationTypes.Packaging.ApprovedsPersonNomination);
         if (delegatedPersonNomination != null && !delegatedPersonNomination.Data.Any(d => d.Key == "EnrolmentId"))
         {
             throw new ArgumentException("Delegated person nomination missing 'EnrolmentId'", nameof(notificationList));

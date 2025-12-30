@@ -108,4 +108,16 @@
 	<data name="depending_on_your_browser_it_will_open_in_new_window_or_save_to_folder_resubmission" xml:space="preserve">
     <value>(Gan ddibynnu ar eich porwr, bydd yn agor mewn ffesnestr neu dab newydd, neu'n cael ei gadw yn eich ffolder lawrlwythiadau.).</value>
   </data>
+  <data name="you_have_submitted_small" xml:space="preserve">
+    <value>You have submitted your small producer {0} registration to </value>
+  </data>
+  <data name="you_have_submitted_large" xml:space="preserve">
+    <value>You have submitted your large producer {0} registration to </value>
+  </data>
+  <data name="return_to_your" xml:space="preserve">
+    <value>Return to register your members </value>
+  </data>
+  <data name="you_can_print_or_save" xml:space="preserve">
+    <value>print or save this page as a PDF</value>
+  </data>
 </root>

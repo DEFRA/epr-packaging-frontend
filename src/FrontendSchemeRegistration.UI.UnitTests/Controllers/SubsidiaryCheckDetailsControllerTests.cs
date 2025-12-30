@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Identity.Web;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
 using Moq;
 using Newtonsoft.Json;
 

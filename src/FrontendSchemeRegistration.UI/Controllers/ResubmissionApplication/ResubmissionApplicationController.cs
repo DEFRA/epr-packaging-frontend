@@ -1,12 +1,8 @@
 ﻿using EPR.Common.Authorization.Constants;
-using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
-using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Extensions;
-using FrontendSchemeRegistration.Application.RequestModels;
-using FrontendSchemeRegistration.Application.Services;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;

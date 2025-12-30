@@ -18,6 +18,9 @@
 	<data name="pay_your_registration_fee_heading" xml:space="preserve">
 		<value>How to pay your registration fee</value>
 	</data>
+  <data name="choose_how_to_pay_your_registration_fee_heading" xml:space="preserve">
+		<value>Choose how to pay your registration fee</value>
+	</data>
 	<data name="pay_your_registration_fee_text" xml:space="preserve">
 		<value>You can pay your registration fee of</value>
 	</data>
@@ -28,13 +31,13 @@
 		<value>Select a payment method.</value>
 	</data>
 	<data name="payment_option_paybyphone" xml:space="preserve">
-        <value>Pay by phone</value>
+        <value>By phone</value>
     </data>
 	<data name="payment_option_paybybanktransfer" xml:space="preserve">
-        <value>Pay by bank transfer</value>
+        <value>By bank transfer</value>
     </data>
 	<data name="payment_option_payonline" xml:space="preserve">
-        <value>Pay Online</value>
+        <value>Online</value>
     </data>
 	<data name="payment_option_paybyphone_alternate_text" xml:space="preserve">
         <value>By phone</value>

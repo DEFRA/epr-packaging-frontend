@@ -10,4 +10,5 @@ public class ComplianceSchemePaymentCalculationRequest
     public DateTime SubmissionDate { get; set; }
     public string ProduerSize { get; set; }
     public List<ComplianceSchemePaymentCalculationRequestMember> ComplianceSchemeMembers { get; set; }
+    public bool IncludeRegistrationFee { get; set; } = true;
 }

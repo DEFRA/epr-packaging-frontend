@@ -151,16 +151,9 @@ public class FileUploadPartnershipsControllerTests
             x => x.ProcessUploadAsync(
                 contentType,
                 It.IsAny<Stream>(),
-                _submissionPeriod,
                 It.IsAny<ModelStateDictionary>(),
-                new Guid(SubmissionId),
-                SubmissionType.Registration,
-                It.IsAny<IFileUploadMessages>(),
                 It.IsAny<IFileUploadSize>(),
-                SubmissionSubType.Partnerships,
-                _registrationSetId,
-                null,
-                It.IsAny<bool?>()),
+                It.IsAny<FileUploadSubmissionDetails>()),
             Times.Once);
         result.ViewName.Should().Be("FileUploadPartnerships");
     }
@@ -179,16 +172,15 @@ public class FileUploadPartnershipsControllerTests
             .Setup(x => x.ProcessUploadAsync(
                 contentType,
                 It.IsAny<Stream>(),
-                _submissionPeriod,
                 It.IsAny<ModelStateDictionary>(),
-                submissionId,
-                SubmissionType.Registration,
-                It.IsAny<IFileUploadMessages>(),
                 It.IsAny<IFileUploadSize>(),
-                SubmissionSubType.Partnerships,
-                _registrationSetId,
-                null,
-                It.IsAny<bool?>()))
+                It.Is<FileUploadSubmissionDetails>(
+                    x => x.SubmissionPeriod == _submissionPeriod
+                    && x.SubmissionId == submissionId
+                    && x.SubmissionType == SubmissionType.Registration
+                    && x.SubmissionSubType == SubmissionSubType.Partnerships
+                    && x.RegistrationSetId == _registrationSetId
+                    && x.ComplianceSchemeId == null)))
             .ReturnsAsync(submissionId);
 
         // Act

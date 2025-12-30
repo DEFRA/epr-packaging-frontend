@@ -80,11 +80,19 @@
 	<data name="submit_to_environmental_regulator" xml:space="preserve">
         <value>submit to the environmental regulator</value>
     </data>
-
     <data name="you_can" xml:space="preserve">
         <value>You can </value>
     </data>
     <data name="print_or_save_as_PDF" xml:space="preserve">
         <value>print or save this page as a PDF</value>
+    </data>
+    <data name="success" xml:space="preserve">
+    <value>Success</value>
+  </data>
+    <data name="producer_registration" xml:space="preserve">
+        <value>{0} registration</value>
+    </data>
+    <data name="continue" xml:space="preserve">
+        <value>Continue</value>
     </data>
 </root>

@@ -48,5 +48,7 @@ namespace FrontendSchemeRegistration.UI.Services.Interfaces
         /// </summary>
         /// <returns></returns>
         Task<(int currentMonth, int currentYear)> GetCurrentMonthAndYearForRecyclingObligations();
+
+        SubmissionPeriod PackagingResubmissionPeriod(string[] currentYear, DateTime nowDateTime);
     }
 }

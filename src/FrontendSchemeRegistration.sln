@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FrontendSchemeRegistration.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FrontendSchemeRegistration.PactTests", "FrontendSchemeRegistration.PactTests\FrontendSchemeRegistration.PactTests.csproj", "{9886CC51-26A6-44C9-9516-8A9A3CC184FC}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FrontendSchemeRegistration.MockServer", "FrontendSchemeRegistration.MockServer\FrontendSchemeRegistration.MockServer.csproj", "{5C3E2C0D-A7D4-4C0C-A7C9-3EAF6A4A4B78}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{82A10A05-6E05-4157-AFF1-5E090BD99F95}"
 	ProjectSection(SolutionItems) = preProject
 		..\CONTRIBUTING.md = ..\CONTRIBUTING.md
@@ -49,7 +51,11 @@ Global
 		{9886CC51-26A6-44C9-9516-8A9A3CC184FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9886CC51-26A6-44C9-9516-8A9A3CC184FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9886CC51-26A6-44C9-9516-8A9A3CC184FC}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
+		{5C3E2C0D-A7D4-4C0C-A7C9-3EAF6A4A4B78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C3E2C0D-A7D4-4C0C-A7C9-3EAF6A4A4B78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C3E2C0D-A7D4-4C0C-A7C9-3EAF6A4A4B78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C3E2C0D-A7D4-4C0C-A7C9-3EAF6A4A4B78}.Release|Any CPU.Build.0 = Release|Any CPU
+EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection

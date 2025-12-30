@@ -37,7 +37,8 @@ public class TestCaseHelper
             SubmissionSubType.CompanyDetails,
             Guid.NewGuid(),
             Guid.NewGuid(),
-            withSubmissionId
+            withSubmissionId,
+            null
         };
     }
 

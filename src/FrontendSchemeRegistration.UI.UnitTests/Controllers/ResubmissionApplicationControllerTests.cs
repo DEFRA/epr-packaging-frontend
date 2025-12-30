@@ -5,7 +5,6 @@ using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
-using FrontendSchemeRegistration.Application.DTOs.Subsidiary;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.RequestModels;
 using FrontendSchemeRegistration.Application.Services.Interfaces;

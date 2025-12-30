@@ -5,7 +5,6 @@ using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.CompaniesHouse;
 using FrontendSchemeRegistration.Application.DTOs.ComplianceScheme;
 using FrontendSchemeRegistration.Application.DTOs.Organisation;
-using FrontendSchemeRegistration.Application.DTOs.Prns;
 using FrontendSchemeRegistration.Application.DTOs.Subsidiary.OrganisationSubsidiaryList;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
@@ -29,7 +28,6 @@ public class SubsidiaryCompaniesHouseNumberControllerTests
 {
     private const string CompaniesHouseNumber = "07073807";
     private const string CompanyName = "MICROTEC INFORMATION SYSTEMS LTD";
-    private const string NewSubsidiaryId = "123456";
     private static readonly string[] TestError = { "Test error" };
     private static readonly string[] ErrorMessage = { "Error message" };
 
@@ -38,18 +36,15 @@ public class SubsidiaryCompaniesHouseNumberControllerTests
 
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
     private Mock<ICompaniesHouseService> _companiesHouseServiceMock;
-    private Mock<ISubsidiaryService> _subsidirayServiceMock;
+    private Mock<ISubsidiaryService> _subsidiaryServiceMock;
     private Mock<ClaimsPrincipal> _claimsPrincipalMock;
     private SubsidiaryCompaniesHouseNumberController _subsidiaryCompaniesHouseNumberController;
     private Mock<IOptions<ExternalUrlOptions>> _urlOptionsMock = null;
 
     private Mock<IUrlHelper> _urlHelperMock;
-    private UserData _userData;
     private Guid _organisationId = Guid.NewGuid();
-    private Guid _userId = Guid.NewGuid();
     private readonly Guid OrganisationId = Guid.NewGuid();
     private readonly Guid UserId = Guid.NewGuid();
-    private Mock<ITempDataDictionary> _tempDataDictionaryMock = null!;
     private readonly Mock<ClaimsPrincipal> _userMock = new();
 
     private List<Claim> CreateUserDataClaim(string organisationRole, string serviceRole = null)
@@ -139,7 +134,7 @@ public class SubsidiaryCompaniesHouseNumberControllerTests
         _companiesHouseServiceMock.Setup(x => x.GetCompanyByCompaniesHouseNumber(CompaniesHouseNumber))
             .ReturnsAsync(new Company());
 
-        _subsidirayServiceMock = new Mock<ISubsidiaryService>();
+        _subsidiaryServiceMock = new Mock<ISubsidiaryService>();
         var sddf = Guid.NewGuid();
 
         // Arrange
@@ -158,23 +153,15 @@ public class SubsidiaryCompaniesHouseNumberControllerTests
                     new() { CompaniesHouseNumber ="421229428", OrganisationNumber = "741229428", OrganisationName = "Subsidiary3" , JoinerDate = null},
                 }
         };
-        _subsidirayServiceMock.Setup(s => s.GetOrganisationSubsidiaries(It.IsAny<Guid>())).ReturnsAsync(orgModel);
-
-        _userData = new UserData
-        {
-            Email = "test@test.com",
-            Organisations = new List<EPR.Common.Authorization.Models.Organisation> { new() { Id = _organisationId } }
-        };
+        _subsidiaryServiceMock.Setup(s => s.GetOrganisationSubsidiaries(It.IsAny<Guid>())).ReturnsAsync(orgModel);
 
         _httpContextMock.Setup(x => x.Session).Returns(Mock.Of<ISession>());
-
-        _tempDataDictionaryMock = new Mock<ITempDataDictionary>();
-
+        
         _subsidiaryCompaniesHouseNumberController = new SubsidiaryCompaniesHouseNumberController(
             _urlOptionsMock.Object,
             _companiesHouseServiceMock.Object,
             _sessionManagerMock.Object,
-            _subsidirayServiceMock.Object,
+            _subsidiaryServiceMock.Object,
             new NullLogger<SubsidiaryCompaniesHouseNumberController>());
         _subsidiaryCompaniesHouseNumberController.ControllerContext = new ControllerContext
         {
@@ -260,15 +247,10 @@ public class SubsidiaryCompaniesHouseNumberControllerTests
             TradingName = "DEF"
         };
 
-        var subsidiaryResponse = new OrganisationRelationshipModel()
-        {
-            Relationships = new List<RelationshipResponseModel> { new RelationshipResponseModel(), new RelationshipResponseModel() } // count = 2
-        };
-
         _companiesHouseServiceMock.Setup(x => x.GetCompanyByCompaniesHouseNumber(companiesHouseNumber))
             .ReturnsAsync(subCompany);
 
-        _subsidirayServiceMock.Setup(s => s.GetOrganisationByReferenceNumber(parentExpectedOrganisationDto.RegistrationNumber))
+        _subsidiaryServiceMock.Setup(s => s.GetOrganisationByReferenceNumber(parentExpectedOrganisationDto.RegistrationNumber))
             .ReturnsAsync(parentExpectedOrganisationDto);
 
         // Act
@@ -298,7 +280,6 @@ public class SubsidiaryCompaniesHouseNumberControllerTests
     public async Task Post_SubsidiaryCompaniesHouseNumberSearch_With_No_Relationships()
     {
         // Arrange
-        var subsSession = _session.SubsidiarySession;
         var companiesHouseNumber = "14796704";
         var companyName = "BBB ENTERPRISE LTD";
 
@@ -327,23 +308,12 @@ public class SubsidiaryCompaniesHouseNumberControllerTests
         _companiesHouseServiceMock.Setup(x => x.GetCompanyByCompaniesHouseNumber(companiesHouseNumber))
             .ReturnsAsync(subCompany);
 
-        _subsidirayServiceMock.Setup(s => s.GetOrganisationByReferenceNumber(parentExpectedOrganisationDto.RegistrationNumber))
+        _subsidiaryServiceMock.Setup(s => s.GetOrganisationByReferenceNumber(parentExpectedOrganisationDto.RegistrationNumber))
             .ReturnsAsync(parentExpectedOrganisationDto);
 
-        var orgModel = new OrganisationRelationshipModel
-        {
-            Organisation = new OrganisationDetailModel
-            {
-                Id = Guid.NewGuid(),
-                Name = "MICROTEC INFORMATION SYSTEMS LTD",
-                OrganisationNumber = "127516"
-            },
-            Relationships = null
-        };
+        _subsidiaryServiceMock.Setup(r => r.GetOrganisationSubsidiaries(It.IsAny<Guid>())).ReturnsAsync((OrganisationRelationshipModel)null);
 
-        _subsidirayServiceMock.Setup(r => r.GetOrganisationSubsidiaries(It.IsAny<Guid>())).ReturnsAsync((OrganisationRelationshipModel)null);
-
-        _subsidirayServiceMock.Setup(s => s.GetOrganisationByReferenceNumber(parentExpectedOrganisationDto.RegistrationNumber))
+        _subsidiaryServiceMock.Setup(s => s.GetOrganisationByReferenceNumber(parentExpectedOrganisationDto.RegistrationNumber))
             .ReturnsAsync(parentExpectedOrganisationDto);
 
         _subsidiaryCompaniesHouseNumberController.Url = _urlHelperMock.Object;
@@ -414,10 +384,10 @@ public class SubsidiaryCompaniesHouseNumberControllerTests
         _companiesHouseServiceMock.Setup(x => x.GetCompanyByCompaniesHouseNumber(linkedCHNumber))
             .ReturnsAsync(new Company { CompaniesHouseNumber = linkedCHNumber, Name = "Subsidiary2" });
 
-        _subsidirayServiceMock.Setup(s => s.GetOrganisationByReferenceNumber(It.IsAny<string>()))
+        _subsidiaryServiceMock.Setup(s => s.GetOrganisationByReferenceNumber(It.IsAny<string>()))
             .ReturnsAsync(new OrganisationDto { ExternalId = Guid.NewGuid(), Name = "Parent Co" });
 
-        _subsidirayServiceMock.Setup(s => s.GetOrganisationSubsidiaries(It.IsAny<Guid>()))
+        _subsidiaryServiceMock.Setup(s => s.GetOrganisationSubsidiaries(It.IsAny<Guid>()))
             .ReturnsAsync(new OrganisationRelationshipModel
             {
                 Relationships = new List<RelationshipResponseModel>
@@ -448,10 +418,10 @@ public class SubsidiaryCompaniesHouseNumberControllerTests
         _companiesHouseServiceMock.Setup(x => x.GetCompanyByCompaniesHouseNumber(unlinkedCHNumber))
             .ReturnsAsync(new Company { CompaniesHouseNumber = unlinkedCHNumber, Name = "Unlinked Co" });
 
-        _subsidirayServiceMock.Setup(s => s.GetOrganisationByReferenceNumber(It.IsAny<string>()))
+        _subsidiaryServiceMock.Setup(s => s.GetOrganisationByReferenceNumber(It.IsAny<string>()))
             .ReturnsAsync(new OrganisationDto { ExternalId = Guid.NewGuid(), Name = "Parent Co" });
 
-        _subsidirayServiceMock.Setup(s => s.GetOrganisationSubsidiaries(It.IsAny<Guid>()))
+        _subsidiaryServiceMock.Setup(s => s.GetOrganisationSubsidiaries(It.IsAny<Guid>()))
             .ReturnsAsync(new OrganisationRelationshipModel
             {
                 Relationships = new List<RelationshipResponseModel>
@@ -475,7 +445,7 @@ public class SubsidiaryCompaniesHouseNumberControllerTests
             _urlOptionsMock.Object,
             _companiesHouseServiceMock.Object,
             _sessionManagerMock.Object,
-            _subsidirayServiceMock.Object,
+            _subsidiaryServiceMock.Object,
             new NullLogger<SubsidiaryCompaniesHouseNumberController>());
 
         controller.ControllerContext = new ControllerContext
@@ -532,9 +502,9 @@ public class SubsidiaryCompaniesHouseNumberControllerTests
 
         _companiesHouseServiceMock.Setup(x => x.GetCompanyByCompaniesHouseNumber(It.IsAny<string>()))
             .ReturnsAsync(new Company());
-        _subsidirayServiceMock.Setup(x => x.GetOrganisationByReferenceNumber(It.IsAny<string>()))
+        _subsidiaryServiceMock.Setup(x => x.GetOrganisationByReferenceNumber(It.IsAny<string>()))
             .ReturnsAsync(new OrganisationDto { ExternalId = Guid.NewGuid(), Name = "ParentCo" });
-        _subsidirayServiceMock.Setup(x => x.GetOrganisationSubsidiaries(It.IsAny<Guid>()))
+        _subsidiaryServiceMock.Setup(x => x.GetOrganisationSubsidiaries(It.IsAny<Guid>()))
             .ReturnsAsync(new OrganisationRelationshipModel { Relationships = new List<RelationshipResponseModel>() });
 
         // Act
@@ -552,9 +522,9 @@ public class SubsidiaryCompaniesHouseNumberControllerTests
 
         _companiesHouseServiceMock.Setup(x => x.GetCompanyByCompaniesHouseNumber("14796704"))
             .ReturnsAsync(new Company());
-        _subsidirayServiceMock.Setup(x => x.GetOrganisationByReferenceNumber(It.IsAny<string>()))
+        _subsidiaryServiceMock.Setup(x => x.GetOrganisationByReferenceNumber(It.IsAny<string>()))
             .ReturnsAsync(new OrganisationDto { ExternalId = Guid.NewGuid() });
-        _subsidirayServiceMock.Setup(x => x.GetOrganisationSubsidiaries(It.IsAny<Guid>()))
+        _subsidiaryServiceMock.Setup(x => x.GetOrganisationSubsidiaries(It.IsAny<Guid>()))
             .ReturnsAsync(new OrganisationRelationshipModel());
 
         // Act
@@ -578,9 +548,9 @@ public class SubsidiaryCompaniesHouseNumberControllerTests
 
         _companiesHouseServiceMock.Setup(x => x.GetCompanyByCompaniesHouseNumber("123456"))
             .ReturnsAsync(company);
-        _subsidirayServiceMock.Setup(x => x.GetOrganisationByReferenceNumber(It.IsAny<string>()))
+        _subsidiaryServiceMock.Setup(x => x.GetOrganisationByReferenceNumber(It.IsAny<string>()))
             .ReturnsAsync(parent);
-        _subsidirayServiceMock.Setup(x => x.GetOrganisationSubsidiaries(It.IsAny<Guid>()))
+        _subsidiaryServiceMock.Setup(x => x.GetOrganisationSubsidiaries(It.IsAny<Guid>()))
             .ReturnsAsync(new OrganisationRelationshipModel { Relationships = relationships });
 
         // Act
@@ -615,11 +585,11 @@ public class SubsidiaryCompaniesHouseNumberControllerTests
 
         _companiesHouseServiceMock.Setup(x => x.GetCompanyByCompaniesHouseNumber("123456"))
             .ReturnsAsync(company);
-        _subsidirayServiceMock.Setup(x => x.GetOrganisationByReferenceNumber(It.IsAny<string>()))
+        _subsidiaryServiceMock.Setup(x => x.GetOrganisationByReferenceNumber(It.IsAny<string>()))
             .ReturnsAsync(parent);
-        _subsidirayServiceMock.Setup(x => x.GetOrganisationSubsidiaries(It.IsAny<Guid>()))
+        _subsidiaryServiceMock.Setup(x => x.GetOrganisationSubsidiaries(It.IsAny<Guid>()))
             .ReturnsAsync(new OrganisationRelationshipModel { Relationships = relationships });
-        _subsidirayServiceMock.Setup(x => x.GetOrganisationsByCompaniesHouseNumber(It.IsAny<string>()))
+        _subsidiaryServiceMock.Setup(x => x.GetOrganisationsByCompaniesHouseNumber(It.IsAny<string>()))
             .ReturnsAsync(parentExpectedOrganisationDto);
 
         // Act
@@ -653,11 +623,11 @@ public class SubsidiaryCompaniesHouseNumberControllerTests
 
         _companiesHouseServiceMock.Setup(x => x.GetCompanyByCompaniesHouseNumber("123456"))
             .ReturnsAsync(company);
-        _subsidirayServiceMock.Setup(x => x.GetOrganisationByReferenceNumber(It.IsAny<string>()))
+        _subsidiaryServiceMock.Setup(x => x.GetOrganisationByReferenceNumber(It.IsAny<string>()))
             .ReturnsAsync(thisParent);
-        _subsidirayServiceMock.Setup(x => x.GetOrganisationSubsidiaries(It.IsAny<Guid>()))
+        _subsidiaryServiceMock.Setup(x => x.GetOrganisationSubsidiaries(It.IsAny<Guid>()))
             .ReturnsAsync(new OrganisationRelationshipModel { Relationships = relationships });
-        _subsidirayServiceMock.Setup(x => x.GetOrganisationsByCompaniesHouseNumber(It.IsAny<string>()))
+        _subsidiaryServiceMock.Setup(x => x.GetOrganisationsByCompaniesHouseNumber(It.IsAny<string>()))
             .ReturnsAsync(childExpectedOrganisationDto);
 
         // Act
@@ -706,7 +676,7 @@ public class SubsidiaryCompaniesHouseNumberControllerTests
             CompaniesHouseNumber = CompaniesHouseNumber
         };
 
-        _subsidirayServiceMock
+        _subsidiaryServiceMock
         .Setup(s => s.GetOrganisationByReferenceNumber(It.IsAny<string>()))
         .ReturnsAsync(new OrganisationDto
         {
@@ -714,7 +684,7 @@ public class SubsidiaryCompaniesHouseNumberControllerTests
             Name = "Test Parent"
         });
 
-        _subsidirayServiceMock
+        _subsidiaryServiceMock
             .Setup(s => s.GetOrganisationSubsidiaries(It.IsAny<Guid>()))
             .ReturnsAsync(new OrganisationRelationshipModel
             {
@@ -818,8 +788,6 @@ public class SubsidiaryCompaniesHouseNumberControllerTests
         result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.FileUploadSubsidiaries}");
     }
 
-
-
     private void SetupTempData(Dictionary<string, object> values = null)
     {
         var tempData = new TempDataDictionary(
@@ -835,23 +803,7 @@ public class SubsidiaryCompaniesHouseNumberControllerTests
 
         _subsidiaryCompaniesHouseNumberController.TempData = tempData;
     }
-
-    private void SetupTempDataWithModelError(string chNumber, string errorKey, string errorMessage)
-    {
-        var modelState = new Dictionary<string, string[]>
-        {
-            { errorKey, new[] { errorMessage } }
-        };
-
-        var serialized = Newtonsoft.Json.JsonConvert.SerializeObject(modelState);
-
-        SetupTempData(new Dictionary<string, object>
-        {
-            ["CompaniesHouseNumber"] = chNumber,
-            ["ModelState"] = serialized
-        });
-    }
-
+    
     private void SetUpConfigOption()
     {
         var externalUrlOptions = new ExternalUrlOptions

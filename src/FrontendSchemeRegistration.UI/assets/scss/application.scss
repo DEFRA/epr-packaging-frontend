@@ -441,3 +441,16 @@ table.cookies-table {
     box-sizing: border-box;
     max-width: 100%
 }
+
+.cso-regulator-subtitle {
+    &__label {
+        float: left;
+        margin-inline-start: 0;
+        margin-right: 5px;
+        &::after {
+            content: ":";
+        }
+    }
+}
+
+    

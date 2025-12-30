@@ -1,5 +1,4 @@
-﻿using Azure;
-using EPR.Common.Authorization.Constants;
+﻿using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.CompaniesHouse;

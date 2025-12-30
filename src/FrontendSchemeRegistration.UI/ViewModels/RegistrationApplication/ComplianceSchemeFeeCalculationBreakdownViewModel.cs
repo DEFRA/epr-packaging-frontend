@@ -1,5 +1,7 @@
 namespace FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication
 {
+    using Application.Enums;
+
     public class ComplianceSchemeFeeCalculationBreakdownViewModel
     {
         public int TotalAmountOutstanding { get; set; }
@@ -22,5 +24,7 @@ namespace FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication
         public bool RegistrationApplicationSubmitted { get; set; }
 
         public int RegistrationYear { get; set; }
+        public RegistrationJourney? RegistrationJourney { get; set; }
+        public bool ShowRegistrationCaption => RegistrationJourney != null;
     }
 }
