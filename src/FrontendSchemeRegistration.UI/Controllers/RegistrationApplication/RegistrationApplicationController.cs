@@ -253,8 +253,8 @@ public class RegistrationApplicationController(
                 IsComplianceScheme = session.IsComplianceScheme,
                 TotalAmountOutstanding = session.TotalAmountOutstanding,
                 RegistrationYear = registrationYear.GetValueOrDefault(),
-                ApplicationReferenceNumber = session.ApplicationReferenceNumber!
-
+                ApplicationReferenceNumber = session.ApplicationReferenceNumber!,
+                RegistrationJourney = session.RegistrationJourney
             });
     }
 
