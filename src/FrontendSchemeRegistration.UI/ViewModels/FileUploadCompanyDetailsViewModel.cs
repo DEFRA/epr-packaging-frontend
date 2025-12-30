@@ -2,7 +2,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 using Application.Enums;
-using Sessions;
 
 [ExcludeFromCodeCoverage]
 public class FileUploadCompanyDetailsViewModel : ViewModelWithOrganisationRole
