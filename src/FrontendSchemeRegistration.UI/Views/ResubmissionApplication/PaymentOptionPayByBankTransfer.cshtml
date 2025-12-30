@@ -1,12 +1,20 @@
 ﻿@using FrontendSchemeRegistration.Application.Enums
-@using FrontendSchemeRegistration.UI.Constants
 @using FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication
+@using FrontendSchemeRegistration.UI.ViewModels.Shared
 @model PaymentOptionPayByBankTransferViewModel
 
 @{
+    // POM DATA RESUBMISSION ?
     ViewData["Title"] = Localizer["pay_by_bank_transfer_title"];
     var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
     var nationNameToLowercase = Model.NationName.ToLower();
+    
+    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+        Model.IsComplianceScheme, 
+        Model.RegistrationJourney, 
+        null,
+        @Localizer["pay_by_bank_transfer_heading"],
+        Model.RegistrationYear);
 }
 
 <main class="govuk-main-wrapper" id="main-content" role="main">

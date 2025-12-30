@@ -1,18 +1,9 @@
 ﻿namespace FrontendSchemeRegistration.UI.UnitTests.Services;
 
-using System.Globalization;
-using System.Text;
 using Application.Enums;
-using Application.Options;
 using Application.Services.Interfaces;
 using FluentAssertions;
-using FrontendSchemeRegistration.UI.Services.FileUploadLimits;
-using FrontendSchemeRegistration.UI.Services.Interfaces;
-using FrontendSchemeRegistration.UI.Services.Messages;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.Extensions.Options;
 using Moq;
-using TestHelpers;
 using UI.Services;
 
 [TestFixture]

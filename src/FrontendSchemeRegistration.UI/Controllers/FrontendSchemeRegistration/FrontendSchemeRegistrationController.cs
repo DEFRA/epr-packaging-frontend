@@ -15,9 +15,6 @@ using Microsoft.Identity.Web;
 using System.Diagnostics.CodeAnalysis;
 using FrontendSchemeRegistration.UI.Services;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
-using EPR.Common.Authorization.Models;
-using FrontendSchemeRegistration.Application.Options;
-using Microsoft.Extensions.Options;
 
 namespace FrontendSchemeRegistration.UI.Controllers.FrontendSchemeRegistration;
 
