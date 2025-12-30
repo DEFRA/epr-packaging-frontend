@@ -38,11 +38,11 @@
             <feature name="@FeatureFlags.EnableSubsidiaryJoinerAndLeaverColumns">
                 <p class="govuk-body">
                     @Localizer["read_the_guidance_on"] <a class="govuk-link" rel="noreferrer noopener" target="_blank"
-                                                          href="@GuidanceLinks.Value.HowToReportOrganisationDetails">@Localizer["how_to_report_organisation_details_new_tab"]</a>
+                                                          href="@GuidanceLinks.HowToReportOrganisationDetails">@Localizer["how_to_report_organisation_details_new_tab"]</a>
                 </p>
                 <h2 class="govuk-heading-m">@Localizer["if_youve_missed_a_deadline_to_submit"]</h2>
                 <p class="govuk-body">
-                    @Localizer["if_youve_missed_a_deadline_without_action"] <a href="@GuidanceLinks.Value.HowToBuildCsvFileToReportYourOrganisationData"
+                    @Localizer["if_youve_missed_a_deadline_without_action"] <a href="@GuidanceLinks.HowToBuildCsvFileToReportYourOrganisationData"
                                                                                target="_blank"
                                                                                class="govuk-link"
                                                                                rel="noreferrer noopener">@Localizer["check_the_govuk_guidance_new_tab"]</a>
@@ -51,12 +51,12 @@
             <feature name="@FeatureFlags.EnableSubsidiaryJoinerAndLeaverColumns" negate="true">
                 <p class="govuk-body">
                     @Localizer["read_the_guidance_on"] <a class="govuk-link" rel="noreferrer noopener" target="_blank"
-                                                          href="@GuidanceLinks.Value.HowToReportOrganisationDetails">@Localizer["how_to_report_organisation_details"]</a>
+                                                          href="@GuidanceLinks.HowToReportOrganisationDetails">@Localizer["how_to_report_organisation_details"]</a>
                 </p>
 
                 <h2 class="govuk-heading-m">@Localizer["if_youve_missed_a_deadline_to_submit"]</h2>
                 <p class="govuk-body">
-                    @Localizer["if_youve_missed_a_deadline"] <a href="@GuidanceLinks.Value.HowToBuildCsvFileToReportYourOrganisationData"
+                    @Localizer["if_youve_missed_a_deadline"] <a href="@GuidanceLinks.HowToBuildCsvFileToReportYourOrganisationData"
                                                                 target="_blank"
                                                                 class="govuk-link"
                                                                 rel="noreferrer noopener">@Localizer["check_the_govuk_guidance"]</a>
@@ -74,7 +74,7 @@
                     </p>
 
                     <p class="govuk-body">
-                        @Localizer["ConfirmationOfRemoval.AddingOrRemovingMembers"] <a class="govuk-link" rel="noreferrer noopener" target="_blank" href="@GuidanceLinks.Value.PrnObligation">@Localizer["ConfirmationOfRemoval.GuidelinesForExtendedProducer"]</a>
+                        @Localizer["ConfirmationOfRemoval.AddingOrRemovingMembers"] <a class="govuk-link" rel="noreferrer noopener" target="_blank" href="@GuidanceLinks.PrnObligation">@Localizer["ConfirmationOfRemoval.GuidelinesForExtendedProducer"]</a>
                     </p>
                 </feature>
             }
@@ -97,7 +97,7 @@
                     </p>
                     <p class="govuk-body">
                         @Localizer["adding_or_removing_members_affect_packaging_obligations"]
-                        <a href="@GuidanceLinks.Value.PrnObligation"
+                        <a href="@GuidanceLinks.PrnObligation"
                            class="govuk-link"
                            target="_blank"
                            rel="noreferrer noopener">@Localizer["guideline_for_extended_producer_responsibility_link"]</a>

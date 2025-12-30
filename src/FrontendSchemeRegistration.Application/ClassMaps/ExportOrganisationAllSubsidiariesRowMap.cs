@@ -1,7 +1,6 @@
 ﻿namespace FrontendSchemeRegistration.Application.ClassMaps;
 
 using CsvHelper.Configuration;
-using DTOs.Subsidiary;
 using System.Diagnostics.CodeAnalysis;
 
 [ExcludeFromCodeCoverage]

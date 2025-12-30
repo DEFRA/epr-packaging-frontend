@@ -1,24 +1,32 @@
-﻿@using FrontendSchemeRegistration.UI.Constants
+﻿@using FrontendSchemeRegistration.Application.Enums
+@using FrontendSchemeRegistration.UI.Constants
+@using FrontendSchemeRegistration.UI.ViewModels.Shared
 @model FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication.PaymentOptionPayByPhoneViewModel
 
 @{
     ViewData["Title"] = Localizer["pay_by_phone_title"];
-    var totalAmount = (Model.TotalAmountOutstanding / 100).ToString("#,##0.00");
     var scriptNonce = (string?) Context.Items[ContextKeys.ScriptNonceKey];
+
+    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+        Model.IsComplianceScheme,
+        Model.RegistrationJourney,
+        null,
+        @Localizer["pay_by_phone_heading"],
+        Model.RegistrationYear);
 }
 
 <div class="govuk-width-container">
     <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
-                <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
-                    @Localizer["pay_by_phone_heading"]
-                </h1>
+
+                <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel" />
 
                 <p class="govuk-body">
-                    @Localizer["pay_registration_fee_of"]<b>£@totalAmount</b>
+                    @Localizer["pay_registration_fee_of"]<b>£@Model.TotalAmount</b>
                     @Localizer["by_phone"]
                 </p>
+
                 <p class="govuk-body">
                     @Localizer["have_bank_details_ready"]
                 </p>
@@ -47,7 +55,7 @@
                     </p>
                 </div>
                 <p class="govuk-body">
-                    @Localizer["submit_application_from_dashboard_once_payment_been_made"]
+                    @Localizer["continue_registration"]
                 </p>
                 <p class="govuk-body">
                     @Localizer["you_can"]

@@ -253,8 +253,8 @@ public class RegistrationApplicationController(
                 IsComplianceScheme = session.IsComplianceScheme,
                 TotalAmountOutstanding = session.TotalAmountOutstanding,
                 RegistrationYear = registrationYear.GetValueOrDefault(),
-                ApplicationReferenceNumber = session.ApplicationReferenceNumber!
-
+                ApplicationReferenceNumber = session.ApplicationReferenceNumber!,
+                RegistrationJourney = session.RegistrationJourney
             });
     }
 
@@ -294,7 +294,8 @@ public class RegistrationApplicationController(
                 TotalAmountOutstanding = session.TotalAmountOutstanding,
                 ApplicationReferenceNumber = session.ApplicationReferenceNumber!,
                 PaymentLink = paymentLink,
-                RegistrationYear = registrationYear.GetValueOrDefault()
+                RegistrationYear = registrationYear.GetValueOrDefault(),
+                RegistrationJourney = session.RegistrationJourney
             });
     }
 
@@ -381,7 +382,8 @@ public class RegistrationApplicationController(
             IsComplianceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme,
             ComplianceScheme = session.SelectedComplianceScheme?.Name!,
             IsResubmission = session.IsResubmission,
-            RegistrationYear = registrationYear.GetValueOrDefault()
+            RegistrationYear = registrationYear.GetValueOrDefault(),
+            RegistrationJourney = session.RegistrationJourney
         });
     }
 
@@ -461,7 +463,7 @@ public class RegistrationApplicationController(
         if (session.AdditionalDetailsStatus == RegistrationTaskListStatus.Completed)
         {
             session.Journey = [PagePaths.RegistrationTaskList, PagePaths.SubmitRegistrationRequest];
-            SetBackLink(session, PagePaths.SubmitRegistrationRequest, registrationYear);
+            SetBackLink(session, PagePaths.SubmitRegistrationRequest, registrationYear, session.RegistrationJourney);
         }
 
         return View("ApplicationSubmissionConfirmation",
@@ -474,7 +476,8 @@ public class RegistrationApplicationController(
                 RegistrationReferenceNumber = session.RegistrationReferenceNumber!,
                 ApplicationStatus = session.ApplicationStatus,
                 isResubmission = session.IsResubmission,
-                RegistrationYear = registrationYear.GetValueOrDefault()
+                RegistrationYear = registrationYear.GetValueOrDefault(),
+                RegistrationJourney = session.RegistrationJourney
             }
         );
     }

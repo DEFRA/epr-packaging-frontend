@@ -38,6 +38,8 @@ public class RegistrationApplicationServiceTests
     private RegistrationApplicationService _service;
     private Mock<IFeatureManager> _featureManagerMock;
     private Mock<IHttpContextAccessor> _httpContextAccessorMock;
+    private TimeProvider _dateTimeProvider;
+
 
     private readonly RegistrationApplicationSession _session = new RegistrationApplicationSession
     {
@@ -55,6 +57,7 @@ public class RegistrationApplicationServiceTests
     [SetUp]
     public void Setup()
     {
+        _dateTimeProvider = TimeProvider.System;
         _submissionServiceMock = new Mock<ISubmissionService>();
         _paymentCalculationServiceMock = new Mock<IPaymentCalculationService>();
         _sessionManagerMock = new Mock<ISessionManager<RegistrationApplicationSession>>();
@@ -87,7 +90,7 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = globalVariables
         };
 
-        _service = new RegistrationApplicationService(deps);
+        _service = new RegistrationApplicationService(deps, _dateTimeProvider);
 
         var submissionYear = DateTime.Now.Year.ToString();
         _session.Period = new SubmissionPeriod
@@ -842,7 +845,7 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = globalVariables
         };
 
-        _service = new RegistrationApplicationService(deps);
+        _service = new RegistrationApplicationService(deps, _dateTimeProvider);
 
         var organisation = _fixture.Create<Organisation>();
         organisation.OrganisationNumber = "123";
@@ -1341,7 +1344,7 @@ public class RegistrationApplicationServiceTests
             ApplicationReferenceNumber = "",
             TotalAmountOutstanding = 10,
             IsLateFeeApplicable = true,
-            ShowRegistrationCaption = false
+            RegistrationJourney = null
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(
@@ -1434,8 +1437,7 @@ public class RegistrationApplicationServiceTests
             SelectedComplianceScheme = cso,
             TotalAmountOutstanding = 10,
             IsLateFeeApplicable = true,
-            RegistrationJourney = RegistrationJourney.CsoSmallProducer,
-            ShowRegistrationCaption = true
+            RegistrationJourney = RegistrationJourney.CsoSmallProducer
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(
@@ -1492,8 +1494,7 @@ public class RegistrationApplicationServiceTests
                 RegistrationReferenceNumber = "Test",
                 IsSubmitted = true,
                 RegistrationFeeCalculationDetails = feeCalculationDetails,
-                LastSubmittedFile = lastSubmittedFile,
-                RegistrationJourney = RegistrationJourney.CsoLargeProducer
+                LastSubmittedFile = lastSubmittedFile
             });
 
         // Act
@@ -1515,14 +1516,13 @@ public class RegistrationApplicationServiceTests
             ApplicationReferenceNumber = "Test",
             RegistrationReferenceNumber = "Test",
             IsLateFeeApplicable = true,
-            ShowRegistrationCaption = false,
-            RegistrationJourney = RegistrationJourney.CsoLargeProducer
+            RegistrationJourney = null
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(
                 It.Is<RegistrationApplicationData>(data => data.PaymentMethod == "No-Outstanding-Payment"),
              "Test", false,
-            SubmissionType.RegistrationFeePayment, It.IsAny<RegistrationJourney>()),
+            SubmissionType.RegistrationFeePayment, It.IsAny<RegistrationJourney?>()),
             Times.Once);
     }
 
@@ -1611,7 +1611,7 @@ public class RegistrationApplicationServiceTests
             ApplicationReferenceNumber = "Test",
             RegistrationReferenceNumber = "Test",
             IsLateFeeApplicable = true,
-            ShowRegistrationCaption = false
+            RegistrationJourney = null
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(
@@ -1660,7 +1660,7 @@ public class RegistrationApplicationServiceTests
 
         // Assert
         var submissionYear = DateTime.Now.Year.ToString();
-        result.Should().BeEquivalentTo(new RegistrationApplicationSession
+        result.Should().BeEquivalentTo(new
         {
             Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" },
             SubmissionPeriod = "January to December 2025",
@@ -1745,7 +1745,7 @@ public class RegistrationApplicationServiceTests
 
         // Assert
         var submissionYear = DateTime.Now.Year.ToString();
-        result.Should().BeEquivalentTo(new RegistrationApplicationSession
+        result.Should().BeEquivalentTo(new
         {
             Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" },
             SubmissionPeriod = "January to December 2025",
@@ -1757,7 +1757,6 @@ public class RegistrationApplicationServiceTests
             LastSubmittedFile = lastSubmittedFile,
             RegulatorNation = "GB-ENG",
             ApplicationReferenceNumber = "Test",
-            RegistrationReferenceNumber = null,
             RegistrationFeePaymentMethod = "Online",
             RegistrationApplicationSubmittedDate = DateTime.Now.Date,
             RegistrationApplicationSubmittedComment = "Test",
@@ -1881,7 +1880,7 @@ public class RegistrationApplicationServiceTests
     }
     
     [Test]
-    public async Task GetRegistrationApplicationSession_CSO_Sets_Producer_Size_In_Session_And_ReturnsCorrectViewAndModel()
+    public async Task GetRegistrationApplicationSession_CSO_Sets_Producer_Size_In_Session_And_ReturnsCorrectViewAndModel_When_Not_In_Submission_Service()
     {
         // Arrange
         var organisation = _fixture.Create<Organisation>();
@@ -1889,6 +1888,7 @@ public class RegistrationApplicationServiceTests
         var selectedComplianceSchemeId = Guid.NewGuid();
         var registrationApplicationDetails = _fixture.Create<RegistrationApplicationDetails>();
         registrationApplicationDetails.RegistrationFeeCalculationDetails = [new RegistrationFeeCalculationDetails { OrganisationId = "123", NationId = 2, OrganisationSize = "Large" }];
+        registrationApplicationDetails.RegistrationJourney = null;
         _session.SelectedComplianceScheme = new ComplianceSchemeDto { Id = selectedComplianceSchemeId, NationId = 1 };
 
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
@@ -1923,6 +1923,7 @@ public class RegistrationApplicationServiceTests
         var selectedComplianceSchemeId = Guid.NewGuid();
         var registrationApplicationDetails = _fixture.Create<RegistrationApplicationDetails>();
         registrationApplicationDetails.RegistrationFeeCalculationDetails = [new RegistrationFeeCalculationDetails { OrganisationId = "123", NationId = 2, OrganisationSize = "Large" }];
+        registrationApplicationDetails.RegistrationJourney = null;
         _session.SelectedComplianceScheme = new ComplianceSchemeDto { Id = selectedComplianceSchemeId, NationId = 1 };
 
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
@@ -2041,7 +2042,9 @@ public class RegistrationApplicationServiceTests
         var registrationApplicationDetails = _fixture.Create<RegistrationApplicationDetails>();
         registrationApplicationDetails.RegistrationFeeCalculationDetails = [new RegistrationFeeCalculationDetails { OrganisationId = "123", NationId = 2, OrganisationSize = "Large" }];
         registrationApplicationDetails.ApplicationStatus = ApplicationStatusType.SubmittedToRegulator;
+        registrationApplicationDetails.RegistrationJourney = null;
         _session.SelectedComplianceScheme = null;
+        _session.RegistrationJourney = null;
 
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
             .ReturnsAsync(_session);
@@ -2518,16 +2521,13 @@ public class RegistrationApplicationServiceTests
         captured.Should().NotBeNull();
         captured!.GetType().Should().Be(typeof(PaymentCalculationRequest), "v1 request should be used when there is no first organisation to index");
     }
-
-
+    
     [Test]
     public void Constructor_ShouldThrow_ArgumentNull_When_Dependencies_IsNull()
     {
-        Assert.Throws<ArgumentNullException>(() => new RegistrationApplicationService(null!));
+        Assert.Throws<ArgumentNullException>(() => new RegistrationApplicationService(null!, _dateTimeProvider));
     }
-
-   
-
+    
     [Test]
     public void Constructor_ShouldThrow_InvalidOperation_When_SubmissionService_IsNull()
     {
@@ -2543,7 +2543,7 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = Options.Create(new GlobalVariables())
         };
 
-        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps));
+        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
         ex.Message.Should().Be($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.SubmissionService)} cannot be null.");
     }
 
@@ -2563,7 +2563,7 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = Options.Create(new GlobalVariables())
         };
 
-        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps));
+        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
         ex.Message.Should().Be($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.PaymentCalculationService)} cannot be null.");
     }
 
@@ -2582,7 +2582,7 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = Options.Create(new GlobalVariables())
         };
 
-        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps));
+        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
         ex.Message.Should().Be($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.RegistrationSessionManager)} cannot be null.");
     }
 
@@ -2601,7 +2601,7 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = Options.Create(new GlobalVariables())
         };
 
-        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps));
+        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
         ex.Message.Should().Be($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.FrontendSessionManager)} cannot be null.");
     }
 
@@ -2620,7 +2620,7 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = Options.Create(new GlobalVariables())
         };
 
-        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps));
+        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
         ex.Message.Should().Be($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.Logger)} cannot be null.");
     }
 
@@ -2639,7 +2639,7 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = Options.Create(new GlobalVariables())
         };
 
-        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps));
+        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
         ex.Message.Should().Be($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.FeatureManager)} cannot be null.");
     }
 
@@ -2658,7 +2658,7 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = Options.Create(new GlobalVariables())
         };
 
-        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps));
+        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
         ex.Message.Should().Be($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.HttpContextAccessor)} cannot be null.");
     }
 
@@ -2677,7 +2677,7 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = null!
         };
 
-        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps));
+        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
         ex.Message.Should().Be($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.GlobalVariables)} cannot be null.");
     }
 
@@ -2696,7 +2696,7 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = Options.Create(new GlobalVariables())
         };
 
-        Assert.DoesNotThrow(() => new RegistrationApplicationService(deps));
+        Assert.DoesNotThrow(() => new RegistrationApplicationService(deps, _dateTimeProvider));
     }
 
 }

@@ -29,9 +29,11 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     private readonly IFeatureManager featureManager;
     private readonly IHttpContextAccessor httpContextAccessor;
     private readonly IOptions<GlobalVariables> globalVariables;
+    private readonly TimeProvider _dateTimeProvider;
 
-    public RegistrationApplicationService(RegistrationApplicationServiceDependencies dependencies)
+    public RegistrationApplicationService(RegistrationApplicationServiceDependencies dependencies, TimeProvider dateTimeProvider)
     {
+        _dateTimeProvider = dateTimeProvider;
         ArgumentNullException.ThrowIfNull(dependencies);
         
         submissionService = dependencies.SubmissionService
@@ -80,7 +82,8 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             }
             else
             {
-                session.IsLateFeeApplicable = DateTime.Today > lateFeeDeadline;
+                var today = _dateTimeProvider.GetLocalNow().Date;
+                session.IsLateFeeApplicable = today > lateFeeDeadline;
             }
 
             if (session.FirstApplicationSubmittedEventCreatedDatetime is not null)
@@ -97,7 +100,8 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             }
             else
             {
-                session.IsLateFeeApplicable = DateTime.Today > lateFeeDeadline;
+                var today = _dateTimeProvider.GetLocalNow().Date;
+                session.IsLateFeeApplicable = today > lateFeeDeadline;
             }
         }
     }
@@ -142,11 +146,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         if (session.IsComplianceScheme)
         {
             nationId = session.SelectedComplianceScheme.NationId;
-            session.RegistrationJourney = registrationJourney;
-            if (registrationJourney != null)
-            {
-                session.ShowRegistrationCaption = true; //$"{producerSize} producer {registrationYear}"; // TODO this will need localisation for Wales
-            }
+            session.RegistrationJourney = registrationApplicationDetails.RegistrationJourney ?? registrationJourney;
         }
         else if (session.FileReachedSynapse)
             nationId = session.RegistrationFeeCalculationDetails[0].NationId;
@@ -450,7 +450,8 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         var session = await sessionManager.GetSessionAsync(httpSession);
         var referenceNumber = organisationNumber;
         var periodEnd = DateTime.Parse($"30 {session.Period.EndMonth} {session.Period.Year}", new CultureInfo("en-GB"));
-        var periodNumber = DateTime.Today <= periodEnd ? 1 : 2;
+        var today = _dateTimeProvider.GetLocalNow().Date;
+        var periodNumber = today <= periodEnd ? 1 : 2;
 
         if (session.IsComplianceScheme)
         {

@@ -30,14 +30,14 @@
 	<data name="select_payment_method" xml:space="preserve">
 		<value>Dewiswch ddull talu.</value>
 	</data>
-	<data name="payment_option_paybyphone" xml:space="preserve">
-        <value>Talu dros y ffôn</value>
+  <data name="payment_option_paybyphone" xml:space="preserve">
+        <value>By phone</value>
     </data>
-	<data name="payment_option_paybybanktransfer" xml:space="preserve">
-        <value>Talu drwy drosglwyddiad banc</value>
+  <data name="payment_option_paybybanktransfer" xml:space="preserve">
+        <value>By bank transfer</value>
     </data>
-	<data name="payment_option_payonline" xml:space="preserve">
-        <value>Talu ar-lein</value>
+  <data name="payment_option_payonline" xml:space="preserve">
+        <value>Online</value>
     </data>
 	<data name="payment_option_paybyphone_alternate_text" xml:space="preserve">
         <value>Dros y ffôn</value>

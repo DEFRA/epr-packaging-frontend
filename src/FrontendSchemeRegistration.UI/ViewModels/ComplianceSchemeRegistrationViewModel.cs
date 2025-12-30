@@ -7,4 +7,5 @@ public record class ComplianceSchemeRegistrationViewModel(
     int CurrentRegistrationYear)
 {
     public int PreviousRegistrationYear { get; } = CurrentRegistrationYear - 1;
+    public bool DisplayCsoSmallProducerRegistration { get; set; } = false;
 };

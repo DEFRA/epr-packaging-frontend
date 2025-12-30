@@ -17,6 +17,12 @@
 <main class="govuk-main-wrapper" id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @await Html.PartialAsync("Partials/Govuk/_ErrorSummary", ViewData.ModelState)
+            }
+
             <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel" />
 
             <form asp-controller="RegistrationApplication" asp-action="SelectPaymentOptions" asp-route-registrationyear="@Model.RegistrationYear" method="post">

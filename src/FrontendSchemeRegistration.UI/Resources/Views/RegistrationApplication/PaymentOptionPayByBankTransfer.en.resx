@@ -123,6 +123,9 @@
     <data name="after_payment_is_made" xml:space="preserve">
         <value>After payment is made</value>
     </data>
+    <data name="after_youve_paid" xml:space="preserve">
+        <value>After you've paid</value>
+    </data>
     <data name="submit_application_from_registration_dashboard" xml:space="preserve">
         <value>1. Submit your application from the registration dashboard.</value>
     </data>
@@ -136,7 +139,7 @@
         <value>packaging@daera-ni.gov.uk</value>
     </data>
     <data name="england.for_BACS_remittance_send_details" xml:space="preserve">
-        <value>2. Send BACS remittance to </value>
+        <value>1. Send BACS remittance to </value>
     </data>
     <data name="england.packaging_producers_EA" xml:space="preserve">
         <value>packagingproducers@environment-agency.gov.uk</value>
@@ -158,5 +161,11 @@
     </data>
     <data name="continue" xml:space="preserve">
         <value>Continue</value>
+    </data>
+    <data name="continue_registration_application" xml:space="preserve">
+        <value>Continue registration application</value>
+    </data>
+    <data name="send_bacs_remittance_to" xml:space="preserve">
+        <value>Send BACS_remittance to </value>
     </data>
 </root>

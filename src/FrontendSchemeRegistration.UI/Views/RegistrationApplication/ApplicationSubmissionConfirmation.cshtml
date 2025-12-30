@@ -1,4 +1,5 @@
 @using FrontendSchemeRegistration.Application.DTOs.Submission
+@using FrontendSchemeRegistration.Application.Enums
 @using FrontendSchemeRegistration.UI.Constants
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication.ApplicationSubmissionConfirmationViewModel
@@ -59,7 +60,6 @@
                 }
                 else
                 {
-
                     <p class="govuk-body">
                         @if (Model.isResubmission)
                         {
@@ -70,14 +70,31 @@
                                 <a href="#" id="print-record" target="_blank" class="govuk-link govuk-link--no-visited-state">
                                     @Localizer["print_record_resubmission"]
                                 </a>
-                                    @SharedLocalizer["or"]
+                                @SharedLocalizer["or"]
                                 <a href="#" id="print-or-save" target="_blank" class="govuk-link govuk-link--no-visited-state">
                                     @Localizer["download_record_of_submission_as_PDF_resubmission"]
                                 </a>
                                 @Localizer["depending_on_your_browser_it_will_open_in_new_window_or_save_to_folder_resubmission"]
                             </p>
-                        }else{
-                            @Localizer["your_application_submitted_to"]
+                        }
+                        else
+                        {
+                            if (Model.RegistrationJourney != null)
+                            {
+                                if (Model.RegistrationJourney == RegistrationJourney.CsoSmallProducer)
+                                {
+                                    @Localizer["you_have_submitted_small", Model.RegistrationYear]
+                                }
+                                else if (Model.RegistrationJourney == RegistrationJourney.CsoLargeProducer)
+                                {
+                                    @Localizer["you_have_submitted_large", Model.RegistrationYear]
+                                }
+                            }
+                            else
+                            {
+                                @Localizer["your_application_submitted_to"]
+                            }
+
                             @Localizer[$"{nationName}.environmental_regulator"]
                         }
                     </p>
@@ -87,7 +104,18 @@
                             @Localizer["use_application_reference_in_communication_with_regulator"]
                         </p>
                     }
-                    <h3 class="govuk-heading-s">@Localizer["what_happens_next"]</h3>
+
+                    @if (!Model.isResubmission)
+                    {
+                        <p class="govuk-body">
+                            @Localizer["you_can"]
+                            <a href="#" id="print-record" target="_blank" class="govuk-link govuk-link--no-visited-state">
+                                @Localizer["you_can_print_or_save"]
+                            </a>.
+                        </p>
+                    }
+
+                    <h2 class="govuk-heading-m">@Localizer["what_happens_next"]</h2>
                     @if (Model.isResubmission)
                     {
                         <p class="govuk-body">
@@ -114,35 +142,19 @@
                             @Localizer["you_will_be_contacted_about_your_application_within_12_weeks"]
                         </p>
                         <p class="govuk-body">
-                            @Localizer["visit_your"]
                             @if (Model.IsComplianceScheme)
                             {
-                                <a asp-controller="ComplianceSchemeLanding" asp-action="Get" class="govuk-link">@Localizer["account_home_page"]</a>
+                                <a asp-controller="ComplianceSchemeLanding" asp-action="Get" class="govuk-link">@Localizer["return_to_your"]</a>
                             }
                             else
                             {
-                                <a asp-controller="FrontendSchemeRegistration" asp-action="VisitHomePageSelfManaged" class="govuk-link">@Localizer["account_home_page"]</a>
+                                <a asp-controller="FrontendSchemeRegistration" asp-action="VisitHomePageSelfManaged" class="govuk-link">@Localizer["return_to_your"]</a>
                             }
                             @Localizer["check_status_of_your_application"]
                         </p>
                     }
-                    
-                }
 
-                @if (!Model.isResubmission)
-                    {
-                        <p class="govuk-body">
-                            @Localizer["you_can"]
-                            <a href="#" id="print-record" target="_blank" class="govuk-link govuk-link--no-visited-state">
-                                @Localizer["print_record"]
-                            </a>
-                            @SharedLocalizer["or"]
-                            <a href="#" id="print-or-save" target="_blank" class="govuk-link govuk-link--no-visited-state">
-                                @Localizer["download_record_of_submission_as_PDF"]
-                            </a>
-                            @Localizer["depending_on_your_browser_it_will_open_in_new_window_or_save_to_folder"]
-                        </p>
-                    }
+                }
             </div>
         </div>
     </main>
