@@ -7,11 +7,14 @@ using Application.Services.Interfaces;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using Extensions;
+using global::FrontendSchemeRegistration.Application.Extensions;
 using global::FrontendSchemeRegistration.UI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Sessions;
 using UI.Attributes.ActionFilters;
+using UI.Sessions;
 using ViewModels;
 
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
@@ -20,12 +23,17 @@ public class FileUploadBrandsSuccessController : Controller
 {
     private readonly ISubmissionService _submissionService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
+    private readonly ISessionManager<RegistrationApplicationSession> _registrationApplicationSessionManager;
     private readonly IRegistrationApplicationService _registrationApplicationService;
 
-    public FileUploadBrandsSuccessController(ISubmissionService submissionService, ISessionManager<FrontendSchemeRegistrationSession> sessionManager, IRegistrationApplicationService registrationApplicationService)
+    public FileUploadBrandsSuccessController(ISubmissionService submissionService, 
+        ISessionManager<FrontendSchemeRegistrationSession> sessionManager, 
+        ISessionManager<RegistrationApplicationSession> registrationApplicationSessionManager,
+        IRegistrationApplicationService registrationApplicationService)
     {
         _submissionService = submissionService;
         _sessionManager = sessionManager;
+        _registrationApplicationSessionManager = registrationApplicationSessionManager;
         _registrationApplicationService = registrationApplicationService;
     }
 
@@ -34,7 +42,7 @@ public class FileUploadBrandsSuccessController : Controller
     public async Task<IActionResult> Get()
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-        var registrationYear =  _registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
+        var registrationYear = _registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
 
         if (session is not null)
         {
@@ -50,6 +58,10 @@ public class FileUploadBrandsSuccessController : Controller
                 var submission = await _submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
                 if (submission is { RequiresBrandsFile: true, BrandsDataComplete: true })
                 {
+                    var registrationApplicationSession = await _registrationApplicationSessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
+                    
+                    SetBackLinkToFileUploadBrands(submission.Id, registrationYear, registrationApplicationSession.RegistrationJourney);
+
                     return View("FileUploadBrandsSuccess", new FileUploadBrandsSuccessViewModel
                     {
                         SubmissionId = submission.Id,
@@ -58,12 +70,23 @@ public class FileUploadBrandsSuccessController : Controller
                         OrganisationRole = organisationRole,
                         IsApprovedUser = session.UserData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved),
                         IsResubmission = session.RegistrationSession.IsResubmission,
-                        RegistrationYear = registrationYear
+                        RegistrationYear = registrationYear,
+                        ShowRegistrationCaption = registrationApplicationSession.ShowRegistrationCaption,
+                        RegistrationJourney = registrationApplicationSession.RegistrationJourney
                     });
                 }
             }
         }
 
         return RedirectToAction("Get", "FileUploadCompanyDetails", registrationYear is not null ? new { registrationyear = registrationYear.ToString() } : null);
+    }
+    
+    private void SetBackLinkToFileUploadBrands(Guid submissionId, int? registrationYear, RegistrationJourney? registrationJourney)
+    {
+        if (Url is null) return;
+
+        var routeValues = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear, registrationJourney: registrationJourney);
+        var baseUrl = Url.Content($"~{PagePaths.FileUploadBrands}");
+        ViewBag.BackLinkToDisplay = QueryHelpers.AddQueryString(baseUrl, routeValues.ToDictionary(k => k.Key, k => k.Value?.ToString() ?? string.Empty));
     }
 }
