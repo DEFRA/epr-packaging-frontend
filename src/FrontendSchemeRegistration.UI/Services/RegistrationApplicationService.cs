@@ -591,24 +591,3 @@ public sealed class RegistrationApplicationServiceDependencies
     public required IHttpContextAccessor HttpContextAccessor { get; init; }
     public required IOptions<GlobalVariables> GlobalVariables { get; init; }
 }
-
-public class ReferenceNumberBuilder
-{
-    public static string Build(SubmissionPeriod period, string organisationNumber, TimeProvider tp, bool isComplianceScheme, int complianceSchemeRowNumber )
-    {
-        var referenceNumber = organisationNumber;
-        var intMonth = DateTime.ParseExact(period.EndMonth, "MMMM", CultureInfo.CurrentCulture).Month;
-        var daysInMonth = DateTime.DaysInMonth(Convert.ToInt32(period.Year), intMonth);
-        var periodEnd = DateTime.Parse($"{daysInMonth} {period.EndMonth} {period.Year}", new CultureInfo("en-GB"));
-        
-        var today = tp.GetLocalNow().Date;
-        var periodNumber = today <= periodEnd ? 1 : 2;
-
-        if (isComplianceScheme)
-        {
-            referenceNumber += complianceSchemeRowNumber.ToString("D3");
-        }
-
-        return $"PEPR{referenceNumber}{periodEnd.Year - 2000}P{periodNumber}";
-    }
-}

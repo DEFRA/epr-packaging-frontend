@@ -578,6 +578,7 @@ public class RegistrationApplicationServiceTests
     {
         // Arrange
         var organisationNumber = "123";
+        string expectedApplicationReferenceNumber = $"PEPR{organisationNumber}{_dateTimeProvider.GetUtcNow().Year - 2000}P1";
 
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
             .ReturnsAsync(_session);
@@ -597,7 +598,7 @@ public class RegistrationApplicationServiceTests
         // Assert
         _frontEndSessionManagerMock.Verify(
             m => m.SaveSessionAsync(_httpSession, It.Is<FrontendSchemeRegistrationSession>(session =>
-                session.RegistrationSession.ApplicationReferenceNumber == "PEPR12325P1")),
+                session.RegistrationSession.ApplicationReferenceNumber == expectedApplicationReferenceNumber)),
             Times.Once);
     }
 
@@ -2710,3 +2711,4 @@ internal static class ClaimsPrincipalExtensions
         user.AddIdentity(identity);
     }
 }
+
