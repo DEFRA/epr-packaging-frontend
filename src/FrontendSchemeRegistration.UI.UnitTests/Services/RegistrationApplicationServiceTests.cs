@@ -621,25 +621,29 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(frontEndSession);
 
         //this is wrong needs fixing 
-        var submissionYear = DateTime.Now.AddYears(-1).Year.ToString();
+        var submissionYear = _dateTimeProvider.GetUtcNow().AddYears(-1).Year;
         _session.Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" };
-
+        
+        var expectedApplicationReferenceNumber = $"PEPR{organisationNumber}{submissionYear - 2000}P2";
         // Act
         await _service.SetRegistrationFileUploadSession(_httpSession, organisationNumber, It.IsAny<int>(), false);
 
         // Assert
         _frontEndSessionManagerMock.Verify(
             m => m.SaveSessionAsync(_httpSession, It.Is<FrontendSchemeRegistrationSession>(session =>
-                session.RegistrationSession.ApplicationReferenceNumber == "PEPR12324P2")),
+                session.RegistrationSession.ApplicationReferenceNumber == expectedApplicationReferenceNumber)),
             Times.Once);
     }
 
     [Test]
-    public async Task CreateApplicationReferenceNumber_ShouldCreateNewSession_WhenNoSessionExists()
+    public async Task CreateApplicationReferenceNumber_ShouldCreateNewSession_WithExpectedApplicationReferenceNumber_WhenNoSessionExists()
     {
         // Arrange
         var organisationNumber = "123";
         _session.SelectedComplianceScheme = null!;
+        var periodEnd = DateTime.Parse("31 December" + _session.Period.Year, new CultureInfo("en-GB"));
+        var periodNumber = DateTime.Today <= periodEnd ? 1 : 2;
+        var expectedApplicationReferenceNumber = $"PEPR{organisationNumber}{periodEnd.Year - 2000}P{periodNumber}";
 
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
             .ReturnsAsync(_session);
@@ -656,14 +660,10 @@ public class RegistrationApplicationServiceTests
         // Act
         await _service.SetRegistrationFileUploadSession(_httpSession, organisationNumber, It.IsAny<int>(), false);
 
-        var periodEnd = DateTime.Parse($"30 {_session.Period.EndMonth} {_session.Period.Year}", new CultureInfo("en-GB"));
-        var periodNumber = DateTime.Today <= periodEnd ? 1 : 2;
-        var applicationReferenceNumber = $"PEPR{organisationNumber}{(periodEnd.Year - 2000)}P{periodNumber}";
-
         // Assert
         _frontEndSessionManagerMock.Verify(
             m => m.SaveSessionAsync(_httpSession, It.Is<FrontendSchemeRegistrationSession>(session =>
-                session.RegistrationSession.ApplicationReferenceNumber == applicationReferenceNumber)),
+                session.RegistrationSession.ApplicationReferenceNumber == expectedApplicationReferenceNumber)),
             Times.Once);
     }
 
@@ -825,13 +825,13 @@ public class RegistrationApplicationServiceTests
     [Test]
     public async Task GetRegistrationApplicationSession_SetLateFeeFlag_2026SmallProducer_AfterDeadline_SetsLateFeeToTrue()
     {
-        // Arrange
+        var dateTime2025 = new DateTime(2025,12, 30);
         var globalVariables = Options.Create(new GlobalVariables
         {
-            LateFeeDeadline2025 = new(DateTime.Today.Year, 4, 1),
-            LargeProducerLateFeeDeadline2026 = new(DateTime.Today.Year, 10, 1),
-            SmallProducerLateFeeDeadline2026 = DateTime.Today.AddDays(-1),
-            RegistrationYear = $"{DateTime.Now.Year}, {DateTime.Now.AddYears(1).Year}"
+            LateFeeDeadline2025 = new(dateTime2025.Year, 4, 1),
+            LargeProducerLateFeeDeadline2026 = new(dateTime2025.Year, 10, 1),
+            SmallProducerLateFeeDeadline2026 = dateTime2025.AddDays(-1),
+            RegistrationYear = $"{dateTime2025.Year}, {dateTime2025.AddYears(1).Year}"
         });
 
         var deps = new RegistrationApplicationServiceDependencies
@@ -856,7 +856,7 @@ public class RegistrationApplicationServiceTests
         {
             FileId = Guid.NewGuid(),
             SubmittedByName = "test",
-            SubmittedDateTime = DateTime.Now
+            SubmittedDateTime = dateTime2025
         };
 
         var registrationApplicationDetails = new RegistrationApplicationDetails
@@ -867,10 +867,10 @@ public class RegistrationApplicationServiceTests
             RegistrationFeeCalculationDetails =
             [
                 new RegistrationFeeCalculationDetails
-            {
-                OrganisationSize = "Small",
-                NationId = 1
-            }
+                {
+                    OrganisationSize = "Small",
+                    NationId = 1
+                }
             ]
         };
 
@@ -912,7 +912,7 @@ public class RegistrationApplicationServiceTests
         {
             FileId = Guid.NewGuid(),
             SubmittedByName = "test",
-            SubmittedDateTime = DateTime.Now
+            SubmittedDateTime = _dateTimeProvider.GetUtcNow().DateTime
         };
 
         var registrationApplicationDetails = new RegistrationApplicationDetails
@@ -965,7 +965,7 @@ public class RegistrationApplicationServiceTests
         {
             FileId = Guid.NewGuid(),
             SubmittedByName = "test",
-            SubmittedDateTime = DateTime.Now
+            SubmittedDateTime = _dateTimeProvider.GetUtcNow().DateTime
         };
 
         var registrationApplicationDetails = new RegistrationApplicationDetails
