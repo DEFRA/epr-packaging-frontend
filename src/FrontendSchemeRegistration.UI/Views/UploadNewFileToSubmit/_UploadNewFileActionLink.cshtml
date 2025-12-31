@@ -1,6 +1,4 @@
-﻿@using FrontendSchemeRegistration.UI.Constants
-
-<feature name=@FeatureFlags.ImplementPackagingDataResubmissionJourney>
+﻿<feature name=@FeatureFlags.ImplementPackagingDataResubmissionJourney>
     @Html.ActionLink(Localizer["upload_new_file"].Value, "ResubmissionTaskList", "PackagingDataResubmission",
             null, new { @class = "govuk-button govuk-!-margin-bottom-3" })
 </feature>

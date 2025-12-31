@@ -110,8 +110,6 @@ public class ReviewCompanyDetailsController : Controller
                 RegistrationYear = registrationYear,
                 RegistrationJourney = submission.RegistrationJourney
             });
-
-        return RedirectToAction("HandleThrownExceptions", "Error");
     }
 
     [HttpPost]

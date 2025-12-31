@@ -11,10 +11,10 @@ using Extensions;
 using global::FrontendSchemeRegistration.Application.Options;
 using global::FrontendSchemeRegistration.UI.Services;
 using global::FrontendSchemeRegistration.UI.Services.FileUploadLimits;
-using global::FrontendSchemeRegistration.UI.Services.Messages;
 using Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using Services.Interfaces;
 using Sessions;
@@ -28,6 +28,7 @@ public class FileUploadBrandsController : Controller
     private readonly ISubmissionService _submissionService;
     private readonly IFileUploadService _fileUploadService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
+    private readonly ISessionManager<RegistrationApplicationSession> _registrationApplicationSessionManager;
     private readonly IOptions<GlobalVariables> _globalVariables;
     private readonly IRegistrationApplicationService _registrationApplicationService;
 
@@ -35,12 +36,14 @@ public class FileUploadBrandsController : Controller
         ISubmissionService submissionService,
         IFileUploadService fileUploadService,
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
+        ISessionManager<RegistrationApplicationSession> registrationApplicationSessionManager,
         IOptions<GlobalVariables> globalVariables,
         IRegistrationApplicationService registrationApplicationService)
     {
         _submissionService = submissionService;
         _fileUploadService = fileUploadService;
         _sessionManager = sessionManager;
+        _registrationApplicationSessionManager = registrationApplicationSessionManager;
         _globalVariables = globalVariables;
         _registrationApplicationService = registrationApplicationService;
     }
@@ -81,13 +84,19 @@ public class FileUploadBrandsController : Controller
                     session.RegistrationSession.Journey.AddIfNotExists(PagePaths.FileUploadBrands);
                     await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
 
+                    var registrationApplicationSession = await _registrationApplicationSessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
+                    
+                    SetBackLinkToOrganisationDetailsUploaded(submissionId, registrationYear, registrationApplicationSession.RegistrationJourney);
+
                     return View(
                         "FileUploadBrands",
                         new FileUploadSuccessViewModel
                         {
                             OrganisationRole = organisationRole,
                             IsResubmission = session.RegistrationSession.IsResubmission,
-                            RegistrationYear = registrationYear
+                            RegistrationYear = registrationYear,
+                            ShowRegistrationCaption = registrationApplicationSession.ShowRegistrationCaption,
+                            RegistrationJourney = registrationApplicationSession.RegistrationJourney
                         });
                 }
             }
@@ -106,7 +115,7 @@ public class FileUploadBrandsController : Controller
         Guid? submissionId = Guid.TryParse(Request.Query["submissionId"], out var value) ? value : null;
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         var organisationRole = session.UserData.Organisations.FirstOrDefault()?.OrganisationRole;
-        var registrationYear =  _registrationApplicationService.ValidateRegistrationYear(registrationyear, true);
+        var registrationYear = _registrationApplicationService.ValidateRegistrationYear(registrationyear, true);
 
         submissionId = await _fileUploadService.ProcessUploadAsync(
             Request.ContentType,
@@ -128,17 +137,36 @@ public class FileUploadBrandsController : Controller
 
         session.RegistrationSession.Journey.AddIfNotExists(PagePaths.FileUploadBrands);
         await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
-        var routeValues = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear);        
-        return !ModelState.IsValid
-            ? View("FileUploadBrands", new FileUploadSuccessViewModel
+        var routeValues = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear);
+        
+        if (!ModelState.IsValid)
+        {
+            var registrationApplicationSession = await _registrationApplicationSessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
+            
+            SetBackLinkToOrganisationDetailsUploaded(submissionId, registrationYear, registrationApplicationSession.RegistrationJourney);
+
+            return View("FileUploadBrands", new FileUploadSuccessViewModel
             {
                 OrganisationRole = organisationRole,
                 IsResubmission = session.RegistrationSession.IsResubmission,
-                RegistrationYear = registrationYear
-            })
-            : RedirectToAction(
-                "Get",
-                "FileUploadingBrands",
-                routeValues);
+                RegistrationYear = registrationYear,
+                ShowRegistrationCaption = registrationApplicationSession.ShowRegistrationCaption,
+                RegistrationJourney = registrationApplicationSession.RegistrationJourney
+            });
+        }
+        
+        return RedirectToAction(
+            "Get",
+            "FileUploadingBrands",
+            routeValues);
+    }
+    
+    private void SetBackLinkToOrganisationDetailsUploaded(Guid? submissionId, int? registrationYear, RegistrationJourney? registrationJourney)
+    {
+        if (Url is null) return;
+
+        var routeValues = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear, registrationJourney: registrationJourney);
+        var baseUrl = Url.Content($"~{PagePaths.OrganisationDetailsUploaded}");
+        ViewBag.BackLinkToDisplay = QueryHelpers.AddQueryString(baseUrl, routeValues.ToDictionary(k => k.Key, k => k.Value?.ToString() ?? string.Empty));
     }
 }

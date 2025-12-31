@@ -30,6 +30,7 @@ public class FileUploadBrandsControllerTests
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
     private FileUploadBrandsController _systemUnderTest;
     private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
+    private Mock<ISessionManager<RegistrationApplicationSession>> _registrationApplicationSessionManagerMock;
 
     [SetUp]
     public void SetUp()
@@ -37,6 +38,7 @@ public class FileUploadBrandsControllerTests
         _submissionServiceMock = new Mock<ISubmissionService>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
+        _registrationApplicationSessionManagerMock = new Mock<ISessionManager<RegistrationApplicationSession>>();
 
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
@@ -74,7 +76,9 @@ public class FileUploadBrandsControllerTests
             _submissionServiceMock.Object, 
             _fileUploadServiceMock.Object, 
             _sessionManagerMock.Object,
-            Options.Create(new GlobalVariables { FileUploadLimitInBytes = 268435456, SubsidiaryFileUploadLimitInBytes = 61440 }), _registrationApplicationServiceMock.Object);
+            _registrationApplicationSessionManagerMock.Object,
+            Options.Create(new GlobalVariables { FileUploadLimitInBytes = 268435456, SubsidiaryFileUploadLimitInBytes = 61440 }),
+            _registrationApplicationServiceMock.Object);
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
@@ -281,5 +285,45 @@ public class FileUploadBrandsControllerTests
         // Assert
         result?.ActionName.Should().Be("Get");
         result?.ControllerName.Should().Be("FileUploadCompanyDetails");
+    }
+
+    [Test]
+    public async Task Get_SetsBackLinkToOrganisationDetailsUploaded_WhenRequiresBrandsFile()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var registrationYear = DateTime.Now.Year;
+
+        _systemUnderTest.ControllerContext.HttpContext.Request.Query =
+            new QueryCollection(new Dictionary<string, StringValues>
+            {
+                { "submissionId", submissionId.ToString() },
+                { "registrationyear", registrationYear.ToString() }
+            });
+
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(new RegistrationSubmission { RequiresBrandsFile = true });
+
+        _registrationApplicationSessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new RegistrationApplicationSession
+            {
+                RegistrationJourney = FrontendSchemeRegistration.Application.Enums.RegistrationJourney.CsoLargeProducer
+            });
+
+        var urlMock = new Mock<IUrlHelper>();
+        urlMock.Setup(x => x.Content($"~{PagePaths.OrganisationDetailsUploaded}"))
+            .Returns($"~{PagePaths.OrganisationDetailsUploaded}");
+        _systemUnderTest.Url = urlMock.Object;
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        result?.ViewName.Should().Be("FileUploadBrands");
+        var backlink = _systemUnderTest.ViewBag.BackLinkToDisplay as string;
+        backlink.Should().NotBeNull();
+        backlink.Should().Contain($"submissionId={submissionId}");
+        backlink.Should().Contain($"registrationyear={registrationYear}");
+        backlink.Should().Contain("registrationjourney=CsoLargeProducer");
     }
 }

@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.FeatureManagement;
 using Moq;
-using System.Globalization;
 using System.Security.Claims;
 
 namespace FrontendSchemeRegistration.UI.UnitTests.Services;
