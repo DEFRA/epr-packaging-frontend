@@ -159,4 +159,10 @@
     <data name="continue" xml:space="preserve">
         <value>Parhau</value>
     </data>
+    <data name="after_youve_paid" xml:space="preserve">
+        <value>[WELSH] After you've paid</value>
+    </data>
+    <data name="pay_resubmission_fee_of" xml:space="preserve">
+        <value>[WELSH] Pay resubmission fee of </value>
+    </data>
 </root>

@@ -198,9 +198,6 @@
   <data name="scotland_online_payment_link" xml:space="preserve">
     <value>Online payments | Beta | SEPA | Scottish Environment Protection Agency</value>
   </data>
-  <data name="northernireland.cheques_payable_to_DAERA_General_Account" xml:space="preserve">
-    <value>NIEA also accepts cheques. Cheques should be payable to DAERA General Account, and sent to:</value>
-  </data>
   <data name="you_can_also" xml:space="preserve">
     <value>You can also</value>
   </data>
@@ -221,9 +218,6 @@
   </data>
   <data name="northernireland.Tonagh_LISBURN" xml:space="preserve">
     <value>Tonagh, LISBURN BT28 3AL</value>
-  </data>
-  <data name="northernireland.application_reference_on_back_of_cheque" xml:space="preserve">
-    <value>Write your payment reference ({0}) on the back of the cheque.</value>
   </data>
   <data name="after_payment_is_made" xml:space="preserve">
     <value>After payment is made</value>
@@ -260,5 +254,8 @@
   </data>
   <data name="submit_your_application_from_registration_dashboard" xml:space="preserve">
     <value>Submit your data from the packaging data resubmission dashboard.</value>
+  </data>
+  <data name="after_youve_paid" xml:space="preserve">
+    <value>After you've paid</value>
   </data>
 </root>
