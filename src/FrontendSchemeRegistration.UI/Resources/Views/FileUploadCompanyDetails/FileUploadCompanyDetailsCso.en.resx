@@ -177,4 +177,7 @@ details</value>
   <data name="register_company_size_small" xml:space="preserve">
     <value>Small producer {0} registration</value>
   </data>
+  <data name="continue" xml:space="preserve">
+    <value>Continue</value>
+  </data>
 </root>

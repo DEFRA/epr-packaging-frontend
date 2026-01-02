@@ -19,6 +19,8 @@ using System.Security.Claims;
 
 namespace FrontendSchemeRegistration.UI.UnitTests.Services;
 
+using Microsoft.Extensions.Time.Testing;
+
 [TestFixture]
 public class ResubmissionApplicationServiceTests
 {
@@ -29,6 +31,8 @@ public class ResubmissionApplicationServiceTests
     private Mock<IFeatureManager> _mockFeatureManager;
     private ResubmissionApplicationServices _service;
     private Fixture _fixture;
+    private FakeTimeProvider FakeTimeProvider2025 = new FakeTimeProvider();
+    
 
     private readonly FrontendSchemeRegistrationSession _session = new FrontendSchemeRegistrationSession
     {
@@ -84,6 +88,7 @@ public class ResubmissionApplicationServiceTests
     [SetUp]
     public void SetUp()
     {
+        FakeTimeProvider2025.SetUtcNow(new DateTimeOffset(new DateTime(2025, 1, 1)));
         _mockGlobalVariables = new Mock<IOptions<GlobalVariables>>();
         _mockGlobalVariables.Setup(o => o.Value).Returns(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods, OverrideCurrentMonth = 1, OverrideCurrentYear = 2025 });
         _mockFeatureManager = new Mock<IFeatureManager>();
@@ -738,7 +743,7 @@ public class ResubmissionApplicationServiceTests
         var expectedResult = new SubmissionPeriod() { DataPeriod = "January to June 2025" };
 
         // Act
-        var result = await _service.GetActiveSubmissionPeriod();
+        var result = await _service.GetActiveSubmissionPeriod(FakeTimeProvider2025);
 
         // Assert
         result.Should().NotBeNull();
@@ -752,7 +757,7 @@ public class ResubmissionApplicationServiceTests
         var expectedResult = new SubmissionPeriod() { DataPeriod = "January to June 2025", ActiveFrom = new DateTime(2025, 07, 01) };
 
         // Act
-        var result = await _service.GetActiveSubmissionPeriod();
+        var result = await _service.GetActiveSubmissionPeriod(FakeTimeProvider2025);
 
         // Assert
         result.Should().NotBeNull();
@@ -810,7 +815,8 @@ public class ResubmissionApplicationServiceTests
     [Test]
     public async Task GetCurrentMonthAndYearForRecyclingObligations_ShouldReturn_Desired_JanMonth_And_2025Year()
     {
-        var result = await _service.GetCurrentMonthAndYearForRecyclingObligations();
+        
+        var result = await _service.GetCurrentMonthAndYearForRecyclingObligations(FakeTimeProvider2025);
         
         result.currentMonth.Should().Be(1);
         result.currentYear.Should().Be(2025);
@@ -825,7 +831,7 @@ public class ResubmissionApplicationServiceTests
         var service = new ResubmissionApplicationServices(_mockSessionManager.Object, _mockPaymentCalculationService.Object, _mockSubmissionService.Object, _mockGlobalVariables.Object, _mockFeatureManager.Object);
 
         // Act
-        var result = await service.GetCurrentMonthAndYearForRecyclingObligations();
+        var result = await service.GetCurrentMonthAndYearForRecyclingObligations(TimeProvider.System);
 
         // Assert
         result.currentMonth.Should().Be(DateTime.Now.Month);
@@ -876,7 +882,7 @@ public class ResubmissionApplicationServiceTests
     [Test]
     public async Task PackagingResubmissionPeriod()
     {
-        var result = _service.PackagingResubmissionPeriod(new []{"2025"}, new DateTime(2025, 03, 01));
+        var result = _service.PackagingResubmissionPeriod(new[]{"2025"}, new DateTime(2025, 03, 01));
         Assert.That(result.Year, Is.EqualTo("2025"));
     }
 }

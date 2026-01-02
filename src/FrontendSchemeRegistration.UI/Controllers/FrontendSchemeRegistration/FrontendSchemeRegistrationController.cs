@@ -28,6 +28,13 @@ public class FrontendSchemeRegistrationController(
     INotificationService notificationService)
     : Controller
 {
+    private TimeProvider _timeProvider = TimeProvider.System;
+
+    public void SetTestTimeProvider(TimeProvider testProvider)
+    {
+        _timeProvider = testProvider;
+    }
+
     [HttpGet]
     [Route(PagePaths.ApprovedPersonCreated)]
     [AuthorizeForScopes(ScopeKeySection = "FacadeAPI:DownstreamScope")]
@@ -406,7 +413,7 @@ public class FrontendSchemeRegistrationController(
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
         var producerComplianceScheme = await complianceSchemeService.GetProducerComplianceScheme(organisation.Id!.Value);
-        var packagingResubmissionPeriod = await resubmissionApplicationService.GetActiveSubmissionPeriod();
+        var packagingResubmissionPeriod = await resubmissionApplicationService.GetActiveSubmissionPeriod(_timeProvider);
 
         if (producerComplianceScheme is not null && authorizationService.AuthorizeAsync(User, HttpContext, PolicyConstants.EprSelectSchemePolicy).Result.Succeeded)
         {
@@ -423,7 +430,7 @@ public class FrontendSchemeRegistrationController(
         var resubmissionApplicationDetails = await resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(organisation, new List<string> { packagingResubmissionPeriod?.DataPeriod }, session.RegistrationSession.SelectedComplianceScheme?.Id);
 
         // Note: We are reading desired values using existing service to avoid SonarQube issue for adding 8th parameter in the constructor.
-        var currentPeriod = await resubmissionApplicationService.GetCurrentMonthAndYearForRecyclingObligations();
+        var currentPeriod = await resubmissionApplicationService.GetCurrentMonthAndYearForRecyclingObligations(_timeProvider);
         var viewModel = new HomePageSelfManagedViewModel
         {
             OrganisationName = organisation.Name!,

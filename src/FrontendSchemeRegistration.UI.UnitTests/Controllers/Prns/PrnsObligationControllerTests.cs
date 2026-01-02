@@ -45,7 +45,7 @@ public class PrnsObligationControllerTests
         };
 
         _urlOptionsMock!.Setup(x => x.Value).Returns(externalUrlOptions);
-        var globalVariables = Options.Create(new GlobalVariables { BasePath = "BasePath", LogPrefix = "[FrontendSchemaRegistration]", OverrideCurrentYear = 2025, OverrideCurrentMonth = 11 });
+        var globalVariables = Options.Create(new GlobalVariables { BasePath = "BasePath", LogPrefix = "[FrontendSchemaRegistration]", OverrideCurrentYear = 2026, OverrideCurrentMonth = 11 });
         _loggerMock = new Mock<ILogger<PrnsObligationController>>();
 
         _controller = new PrnsObligationController(_sessionManagerMock.Object, _prnServiceMock.Object, globalVariables, _urlOptionsMock.Object, _loggerMock.Object)

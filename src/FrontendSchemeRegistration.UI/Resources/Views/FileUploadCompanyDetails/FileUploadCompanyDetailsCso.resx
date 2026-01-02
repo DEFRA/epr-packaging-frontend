@@ -63,4 +63,8 @@
     <data name="register_company_size_small" xml:space="preserve">
         <value />
     </data>
+    <data name="continue" xml:space="preserve">
+        <value>continue</value>
+        <comment>continue</comment>
+    </data>
 </root>

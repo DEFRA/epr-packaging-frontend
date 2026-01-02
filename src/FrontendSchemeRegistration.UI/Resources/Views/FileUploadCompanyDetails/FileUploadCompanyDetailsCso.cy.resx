@@ -174,4 +174,7 @@
   <data name="register_company_size_small" xml:space="preserve">
     <value>Small canllawiau {0} cofrestru</value>
   </data>
+  <data name="continue" xml:space="preserve">
+    <value>Parhau</value>
+  </data>
 </root>
