@@ -39,7 +39,7 @@ public class RegistrationApplicationServiceTests
     private Mock<IFeatureManager> _featureManagerMock;
     private Mock<IHttpContextAccessor> _httpContextAccessorMock;
     private TimeProvider _dateTimeProvider;
-
+    private int _validRegistrationYear;
 
     private readonly RegistrationApplicationSession _session = new RegistrationApplicationSession
     {
@@ -58,6 +58,7 @@ public class RegistrationApplicationServiceTests
     public void Setup()
     {
         _dateTimeProvider = TimeProvider.System;
+        _validRegistrationYear = _dateTimeProvider.GetLocalNow().Year;
         _submissionServiceMock = new Mock<ISubmissionService>();
         _paymentCalculationServiceMock = new Mock<IPaymentCalculationService>();
         _sessionManagerMock = new Mock<ISessionManager<RegistrationApplicationSession>>();
@@ -66,14 +67,13 @@ public class RegistrationApplicationServiceTests
         _loggerMock = new Mock<ILogger<RegistrationApplicationService>>();
         _featureManagerMock = new Mock<IFeatureManager>();
         _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
-
         
         var globalVariables = Options.Create(new GlobalVariables
         {
-            LateFeeDeadline2025 = new(DateTime.Today.Year, 4, 1),
-            LargeProducerLateFeeDeadline2026 = new(DateTime.Today.Year, 10, 1),
-            SmallProducerLateFeeDeadline2026 = new(DateTime.Today.Year + 1, 4, 1),
-            RegistrationYear = $"{DateTime.Now.Year}, {DateTime.Now.AddYears(1).Year}"
+            LateFeeDeadline2025 = new(2025, 4, 1),
+            LargeProducerLateFeeDeadline2026 = new(2025, 10, 1),
+            SmallProducerLateFeeDeadline2026 = new(2026, 4, 1),
+            RegistrationYear = $"{_validRegistrationYear}, {(_validRegistrationYear + 1)}"
         });
 
         _fixture = new Fixture();
@@ -1282,6 +1282,7 @@ public class RegistrationApplicationServiceTests
     public async Task GetRegistrationApplicationSession_ShouldCall_GetProducerRegistrationFees_When_File_Upload_Is_Completed_And_Payment_Is_Not_Completed()
     {
         // Arrange
+        var submissionYear = DateTime.Now.Year;
         var submissionId = Guid.NewGuid();
         var organisation = _fixture.Create<Organisation>();
         organisation.OrganisationNumber = "123";
@@ -1327,14 +1328,14 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, submissionYear);
 
         // Assert
-        var submissionYear = DateTime.Now.Year.ToString();
+       
         result.Should().BeEquivalentTo(new RegistrationApplicationSession
         {
             Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" },
-            SubmissionPeriod = "January to December 2025",
+            SubmissionPeriod = $"January to December {submissionYear}",
             SubmissionId = submissionId,
             IsSubmitted = true,
             ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
@@ -1358,6 +1359,7 @@ public class RegistrationApplicationServiceTests
     public async Task GetRegistrationApplicationSession_For_CSO_ShouldCall_GetComplianceSchemeRegistrationFees_When_File_Upload_Is_Completed_And_Payment_Is_Not_Completed()
     {
         // Arrange
+        var submissionYear = DateTime.Now.Year;
         var submissionId = Guid.NewGuid();
         var organisation = _fixture.Create<Organisation>();
         organisation.OrganisationNumber = "123";
@@ -1418,14 +1420,14 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null, RegistrationJourney.CsoSmallProducer);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, submissionYear, null, RegistrationJourney.CsoSmallProducer);
 
         // Assert
-        var submissionYear = DateTime.Now.Year.ToString();
+       
         result.Should().BeEquivalentTo(new RegistrationApplicationSession
         {
             Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" },
-            SubmissionPeriod = "January to December 2025",
+            SubmissionPeriod = $"January to December {submissionYear}",
             SubmissionId = submissionId,
             IsSubmitted = true,
             ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
@@ -1437,8 +1439,8 @@ public class RegistrationApplicationServiceTests
             RegistrationReferenceNumber = "Test",
             SelectedComplianceScheme = cso,
             TotalAmountOutstanding = 10,
-            IsLateFeeApplicable = true,
-            RegistrationJourney = RegistrationJourney.CsoSmallProducer
+            RegistrationJourney = RegistrationJourney.CsoSmallProducer,
+            IsLateFeeApplicable = true
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(
@@ -1506,7 +1508,7 @@ public class RegistrationApplicationServiceTests
         result.Should().BeEquivalentTo(new RegistrationApplicationSession
         {
             Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" },
-            SubmissionPeriod = "January to December 2025",
+            SubmissionPeriod = $"January to December {submissionYear}",
             SubmissionId = submissionId,
             IsSubmitted = true,
             ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
@@ -1531,6 +1533,7 @@ public class RegistrationApplicationServiceTests
     public async Task GetRegistrationApplicationSession_For_CSO_ShouldCall_SubmitRegistrationApplication_When_Outstanding_Payment_Amount_Is_Zero()
     {
         // Arrange
+        var submissionYear = DateTime.Now.Year;
         var submissionId = Guid.NewGuid();
         var organisation = _fixture.Create<Organisation>();
         organisation.OrganisationNumber = "123";
@@ -1593,14 +1596,13 @@ public class RegistrationApplicationServiceTests
                 }
             });
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, submissionYear);
 
         // Assert
-        var submissionYear = DateTime.Now.Year.ToString();
         result.Should().BeEquivalentTo(new RegistrationApplicationSession
         {
             Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" },
-            SubmissionPeriod = "January to December 2025",
+            SubmissionPeriod = $"January to December {submissionYear}",
             SubmissionId = submissionId,
             IsSubmitted = true,
             ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
@@ -1611,8 +1613,8 @@ public class RegistrationApplicationServiceTests
             SelectedComplianceScheme = cso,
             ApplicationReferenceNumber = "Test",
             RegistrationReferenceNumber = "Test",
-            IsLateFeeApplicable = true,
-            RegistrationJourney = null
+            RegistrationJourney = null,
+            IsLateFeeApplicable = true
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(
@@ -1664,14 +1666,13 @@ public class RegistrationApplicationServiceTests
         result.Should().BeEquivalentTo(new
         {
             Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" },
-            SubmissionPeriod = "January to December 2025",
+            SubmissionPeriod = $"January to December {submissionYear}",
             SubmissionId = submissionId,
             IsResubmission = true,
             IsSubmitted = true,
             ApplicationStatus = ApplicationStatusType.NotStarted,
             RegulatorNation = "GB-ENG",
             ApplicationReferenceNumber = "",
-            IsLateFeeApplicable = true,
             ShowRegistrationCaption = false
         });
 
@@ -1686,6 +1687,7 @@ public class RegistrationApplicationServiceTests
     public async Task GetRegistrationApplicationSession_ReSubmission_Does_Not_Reset_Status_On_Second_Pass_And_ReturnsCorrectViewAndModel()
     {
         // Arrange
+        var submissionYear = DateTime.Now.Year;
         var submissionId = Guid.NewGuid();
         var organisation = _fixture.Create<Organisation>();
         organisation.OrganisationNumber = "123";
@@ -1745,11 +1747,10 @@ public class RegistrationApplicationServiceTests
         var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, true);
 
         // Assert
-        var submissionYear = DateTime.Now.Year.ToString();
         result.Should().BeEquivalentTo(new
         {
             Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" },
-            SubmissionPeriod = "January to December 2025",
+            SubmissionPeriod = $"January to December {submissionYear}",
             SubmissionId = submissionId,
             IsSubmitted = true,
             IsResubmission = true,
@@ -1762,7 +1763,6 @@ public class RegistrationApplicationServiceTests
             RegistrationApplicationSubmittedDate = DateTime.Now.Date,
             RegistrationApplicationSubmittedComment = "Test",
             TotalAmountOutstanding = 100,
-            IsLateFeeApplicable = true,
             ShowRegistrationCaption = false
         });
 
@@ -1777,6 +1777,7 @@ public class RegistrationApplicationServiceTests
     public async Task GetRegistrationApplicationSession_Producer_Should_Get_NationID_From_File_And_ReturnsCorrectViewAndModel()
     {
         // Arrange
+        var submissionYear = DateTime.Now.Year;
         var organisation = _fixture.Create<Organisation>();
         organisation.OrganisationNumber = "123";
         organisation.NationId = 1;
@@ -1800,7 +1801,7 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(registrationApplicationDetails);
 
         // Act
-        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year);
+        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, submissionYear);
 
         // Assert
         session.Should().NotBeNull();
@@ -2339,8 +2340,8 @@ public class RegistrationApplicationServiceTests
     [Test]
     public async Task ValidateRegistrationYear_ShouldReturnYear_WhenValid()
     {
-        var result = _service.ValidateRegistrationYear("2025");
-        result.Should().Be(2025);
+        var result = _service.ValidateRegistrationYear(_validRegistrationYear.ToString());
+        result.Should().Be(_validRegistrationYear);
     }
 
     [Test]

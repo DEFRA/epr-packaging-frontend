@@ -26,13 +26,20 @@ public class ComplianceSchemeLandingController(
     TimeProvider timeProvider)
     : Controller
 {
+    private TimeProvider _timeProvider = timeProvider;
+
+    public void SetTestTimeProvider(TimeProvider testTimeProvider)
+    {
+        _timeProvider = testTimeProvider;
+    }
+
     [HttpGet]
     [ExcludeFromCodeCoverage]
     public async Task<IActionResult> Get()
     {
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
         var userData = User.GetUserData();
-        var nowDateTime = timeProvider.GetLocalNow().DateTime;
+        var nowDateTime = _timeProvider.GetLocalNow().DateTime;
 
         var organisation = userData.Organisations[0];
 
@@ -43,10 +50,12 @@ public class ComplianceSchemeLandingController(
         session.RegistrationSession.SelectedComplianceScheme ??= defaultComplianceScheme;
         session.UserData = userData;
         var currentYear = new[] { nowDateTime.Year.ToString(), (nowDateTime.Year + 1).ToString() };
-
+        // Note: We are reading desired values using existing service to avoid SonarQube issue for adding 8th parameter in the constructor.
+        var currentPeriod = await resubmissionApplicationService.GetCurrentMonthAndYearForRecyclingObligations(_timeProvider);
         // Note: We are adding a service method here to avoid SonarQube issue for adding 8th parameter in the constructor.
         var packagingResubmissionPeriod = resubmissionApplicationService.PackagingResubmissionPeriod(currentYear, nowDateTime);
 
+        
         await SaveNewJourney(session);
 
         var currentComplianceSchemeId = session.RegistrationSession.SelectedComplianceScheme.Id;
@@ -58,8 +67,7 @@ public class ComplianceSchemeLandingController(
 
         var registrationApplicationPerYearViewModels = await registrationApplicationService.BuildRegistrationApplicationPerYearViewModels(HttpContext.Session, organisation);
 
-        // Note: We are reading desired values using existing service to avoid SonarQube issue for adding 8th parameter in the constructor.
-        var currentPeriod = await resubmissionApplicationService.GetCurrentMonthAndYearForRecyclingObligations();
+        
         
         var model = new ComplianceSchemeLandingViewModel
         {
