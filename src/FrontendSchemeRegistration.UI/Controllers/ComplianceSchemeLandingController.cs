@@ -54,7 +54,6 @@ public class ComplianceSchemeLandingController(
         var currentPeriod = await resubmissionApplicationService.GetCurrentMonthAndYearForRecyclingObligations(_timeProvider);
         // Note: We are adding a service method here to avoid SonarQube issue for adding 8th parameter in the constructor.
         var packagingResubmissionPeriod = resubmissionApplicationService.PackagingResubmissionPeriod(currentYear, nowDateTime);
-
         
         await SaveNewJourney(session);
 
@@ -66,8 +65,6 @@ public class ComplianceSchemeLandingController(
             organisation, new List<string> { packagingResubmissionPeriod?.DataPeriod }, session.RegistrationSession.SelectedComplianceScheme?.Id);
 
         var registrationApplicationPerYearViewModels = await registrationApplicationService.BuildRegistrationApplicationPerYearViewModels(HttpContext.Session, organisation);
-
-        
         
         var model = new ComplianceSchemeLandingViewModel
         {

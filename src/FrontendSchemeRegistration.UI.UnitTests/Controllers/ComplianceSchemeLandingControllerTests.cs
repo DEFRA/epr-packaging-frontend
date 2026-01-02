@@ -395,6 +395,10 @@ public class ComplianceSchemeLandingControllerTests
         _sessionManagerMock.Verify(
             x => x.SaveSessionAsync(
                 It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()), Times.Exactly(1));
+        
+        _resubmissionApplicationService.Verify(
+            x => x.GetCurrentMonthAndYearForRecyclingObligations(
+                It.IsAny<TimeProvider>()), Times.AtLeastOnce);
     }
 
     [Test]
