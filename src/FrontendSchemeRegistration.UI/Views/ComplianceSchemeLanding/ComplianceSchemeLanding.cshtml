@@ -164,7 +164,7 @@
                             @if (FeatureManager.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)).Result)
                             {
                                 <!-- this is part of the new packaging data resubmission journey -->
-                                @if (!isSubmitted.HasValue || isSubmitted == false)
+                                @if (isSubmitted != null && !isSubmitted.HasValue || isSubmitted == false)
                                 {
                                     <p class="govuk-body">@Localizer["you_must_report_packaging_data", Model.PackagingResubmissionPeriod.Year, Model.PackagingResubmissionPeriod.Deadline.Date.ToString("MMMM"), Model.PackagingResubmissionPeriod.Year]</p>
                                 }
