@@ -396,7 +396,7 @@ public class ResubmissionApplicationControllerTests
         _mockSessionManager.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
             .Returns(Task.FromResult(frontendSchemeRegistrationSession));
 
-        _userAccountService.Setup(x => x.GetPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
+        _userAccountService.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
 
         // Act
         var result = await _controller.AdditionalInformation(It.IsAny<AdditionalInformationViewModel>()) as RedirectToActionResult;
