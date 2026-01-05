@@ -35,7 +35,22 @@
                         else
                         {
                             <h1 class="govuk-panel__title">
-                                @Localizer["registration_application_submitted_for_approval", Model.RegistrationYear]
+                                @if (Model.RegistrationJourney != null)
+                                {
+                                    if (Model.RegistrationJourney == RegistrationJourney.CsoSmallProducer)
+                                    {
+                                        @Localizer["registration_application_submitted_for_approval_small", Model.RegistrationYear]
+                                    }
+                                    else if (Model.RegistrationJourney == RegistrationJourney.CsoLargeProducer)
+                                    {
+                                        @Localizer["registration_application_submitted_for_approval_large", Model.RegistrationYear]
+                                    }
+                                }
+                                else
+                                {
+                                    @Localizer["registration_application_submitted_for_approval", Model.RegistrationYear]
+                                }
+                                
                             </h1>
                             <div class="govuk-panel__body">
                                 @Localizer["application_reference_number"]
@@ -64,16 +79,9 @@
                         {
                             @Localizer["you_resubmitted_your_organisation_data_to"]
                             @Localizer[$"{nationName}.environmental_regulator"]
-                            <p class="govuk-body">
-                                @Localizer["you_can_resubmission"]
-                                <a href="#" id="print-record" target="_blank" class="govuk-link govuk-link--no-visited-state">
-                                    @Localizer["print_record_resubmission"]
-                                </a>
-                                @SharedLocalizer["or"]
-                                <a href="#" id="print-or-save" target="_blank" class="govuk-link govuk-link--no-visited-state">
-                                    @Localizer["download_record_of_submission_as_PDF_resubmission"]
-                                </a>
-                                @Localizer["depending_on_your_browser_it_will_open_in_new_window_or_save_to_folder_resubmission"]
+                            <p class="govuk-body js-show">
+                                @Localizer["you_can"]
+                                <button id="printButton" class="govuk-link govuk-link--no-visited-state govuk-body-m">@Localizer["you_can_print_or_save"]</button>
                             </p>
                         }
                         else
@@ -102,15 +110,9 @@
                         <p class="govuk-body">
                             @Localizer["use_application_reference_in_communication_with_regulator"]
                         </p>
-                    }
-
-                    @if (!Model.isResubmission)
-                    {
-                        <p class="govuk-body">
+                        <p class="govuk-body js-show">
                             @Localizer["you_can"]
-                            <a href="#" id="print-record" target="_blank" class="govuk-link govuk-link--no-visited-state">
-                                @Localizer["you_can_print_or_save"]
-                            </a>.
+                            <button id="printButton" class="govuk-link govuk-link--no-visited-state govuk-body-m">@Localizer["you_can_print_or_save"]</button>
                         </p>
                     }
 
@@ -152,22 +154,9 @@
                             @Localizer["check_status_of_your_application"]
                         </p>
                     }
-
                 }
             </div>
         </div>
     </main>
 </div>
-
-@section Scripts {
-    <script type="text/javascript" nonce="@scriptNonce">
-        (function () {
-            document.getElementById("print-or-save").onclick = function () {
-                window.print();
-            }
-            document.getElementById("print-record").onclick = function () {
-                window.print();
-            }
-        })();
-    </script>
-}
+<script src="~/js/print.js"></script>
