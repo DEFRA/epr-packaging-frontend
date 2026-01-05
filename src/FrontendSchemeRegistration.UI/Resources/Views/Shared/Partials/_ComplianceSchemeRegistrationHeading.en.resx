@@ -123,4 +123,7 @@
   <data name="register_company_size_small" xml:space="preserve">
     <value>Small producer {0} registration</value>
   </data>
+  <data name="register_direct_company" xml:space="preserve">
+    <value>{0} registration</value>
+  </data>
 </root>

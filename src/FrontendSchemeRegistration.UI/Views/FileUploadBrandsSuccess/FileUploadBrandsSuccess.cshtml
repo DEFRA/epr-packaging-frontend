@@ -1,14 +1,26 @@
-﻿@model FileUploadBrandsSuccessViewModel
+﻿@using FrontendSchemeRegistration.Application.Enums
+@using FrontendSchemeRegistration.UI.ViewModels.Shared
+@using FrontendSchemeRegistration.Application.Extensions
+@model FileUploadBrandsSuccessViewModel
 
 @{
-    ViewData["Title"] = Localizer["brand_information_uploaded"];
+    ViewData["Title"] = Localizer["brand_details_uploaded"];
+    
+    var organisationName = Model.ShowRegistrationCaption ? User.GetUserData().Organisations.FirstOrDefault()?.Name : null;
+    
+    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+        Model.ShowRegistrationCaption,
+        Model.RegistrationJourney,
+        organisationName,
+        null,
+        Model.RegistrationYear);
 }
 
 @await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
 
 <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
     <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds govuk-!-margin-top-8">
+        <div class="govuk-grid-column-two-thirds">
 
             <div class="govuk-notification-banner govuk-notification-banner--success"
                  role="alert"
@@ -22,18 +34,13 @@
                 </div>
                 <div class="govuk-notification-banner__content">
                     <h3 class="govuk-notification-banner__heading">
-                        @if (Model.IsResubmission)
-                        {
-                            @Localizer["brand_details_uploaded"]
-                        }
-                        else
-                        {
-                            @Localizer["brand_information_uploaded"]
-                        } 
+                        @Localizer["brand_details_uploaded"]
                     </h3>
                     <p class="govuk-body break-word">@Model.FileName</p>
                 </div>
             </div>
+
+            <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel" />
 
             @if (Model.IsResubmission)
             {
@@ -72,7 +79,7 @@
                 {
                     <p class="govuk-body">@Localizer["you_also_need_to_give_information_about_partners"]</p>
 
-                    @Html.ActionLink(Localizer["upload_partner_information"].Value,
+                    @Html.ActionLink(Localizer["continue"].Value,
                              "Get",
                              "FileUploadPartnerships",
                              new { submissionId = Model.SubmissionId, registrationyear = Model.RegistrationYear },

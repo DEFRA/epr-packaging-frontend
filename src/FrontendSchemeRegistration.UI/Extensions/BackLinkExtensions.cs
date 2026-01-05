@@ -1,6 +1,5 @@
 ﻿using FrontendSchemeRegistration.Application.Constants;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Policy;
 
 namespace FrontendSchemeRegistration.UI.Extensions;
 

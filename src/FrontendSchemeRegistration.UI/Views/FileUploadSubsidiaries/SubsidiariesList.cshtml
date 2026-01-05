@@ -1,5 +1,4 @@
 ﻿@using FrontendSchemeRegistration.Application.Constants
-@using FrontendSchemeRegistration.UI.Constants
 @model SubsidiaryListViewModel
 
 @{
@@ -164,7 +163,7 @@
                             <p class="govuk-body">@Localizer["subsidiaries_need_to_upload_csv"]</p>
 
                             <p class="govuk-body">
-                                <a href="@GuidanceLinks.Value.HowToCompleteSubsidiaryFile" class="govuk-link" rel="noreferrer noopener" target="_blank">@Localizer["how_to_create_your_subsidiary"].</a>
+                                <a href="@GuidanceLinks.HowToCompleteSubsidiaryFile" class="govuk-link" rel="noreferrer noopener" target="_blank">@Localizer["how_to_create_your_subsidiary"].</a>
                             </p>
                         }
 
@@ -181,7 +180,7 @@
                                         </p>
                                         <p class="govuk-body">
                                             @Localizer["before_you_upload"]
-                                            <a href="@GuidanceLinks.Value.HowToCompleteSubsidiaryFile" class="govuk-link" rel="noreferrer noopener" target="_blank">@Localizer["subsidiary_file_template"]</a>.
+                                            <a href="@GuidanceLinks.HowToCompleteSubsidiaryFile" class="govuk-link" rel="noreferrer noopener" target="_blank">@Localizer["subsidiary_file_template"]</a>.
                                         </p>
                                     }
 

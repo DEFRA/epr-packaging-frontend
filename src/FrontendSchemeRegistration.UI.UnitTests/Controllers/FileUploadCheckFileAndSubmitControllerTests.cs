@@ -837,7 +837,8 @@ public class FileUploadCheckFileAndSubmitControllerTests
         result.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("FileUploadSubmissionConfirmation");
         result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(submission.Id.ToString());
-        _submissionServiceMock.Verify(x => x.SubmitAsync(submission.Id, fileId, It.IsAny<string>(), It.Is<string?>(rf => rf == "TestRef"), It.IsAny<bool?>()), Times.Once);
+        _submissionServiceMock.Verify(x => x.SubmitAsync(
+            submission.Id, fileId, It.IsAny<string>(), It.Is<string?>(rf => rf == "TestRef"), It.IsAny<bool?>(), null), Times.Once);
     }
 
     [Test]
@@ -868,7 +869,7 @@ public class FileUploadCheckFileAndSubmitControllerTests
             }
         });
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
-        _submissionServiceMock.Setup(x => x.SubmitAsync(submission.Id, fileId, It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<bool?>())).ThrowsAsync(new Exception());
+        _submissionServiceMock.Setup(x => x.SubmitAsync(submission.Id, fileId, It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<bool?>(), null)).ThrowsAsync(new Exception());
 
         var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.ComplianceScheme);
         _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
@@ -880,7 +881,7 @@ public class FileUploadCheckFileAndSubmitControllerTests
         result.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("FileUploadSubmissionError");
         result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(submission.Id.ToString());
-        _submissionServiceMock.Verify(x => x.SubmitAsync(submission.Id, fileId, It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<bool?>()), Times.Once);
+        _submissionServiceMock.Verify(x => x.SubmitAsync(submission.Id, fileId, It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<bool?>(), null), Times.Once);
     }
 
     [Test]
@@ -911,7 +912,7 @@ public class FileUploadCheckFileAndSubmitControllerTests
             }
         });
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
-        _submissionServiceMock.Setup(x => x.SubmitAsync(submission.Id, fileId, It.IsAny<string>(), null, It.IsAny<bool?>()));
+        _submissionServiceMock.Setup(x => x.SubmitAsync(submission.Id, fileId, It.IsAny<string>(), null, It.IsAny<bool?>(), null));
 
         var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.ComplianceScheme);
         _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
@@ -923,7 +924,7 @@ public class FileUploadCheckFileAndSubmitControllerTests
         result.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("FileUploadSubmissionError");
         result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(submission.Id.ToString());
-        _submissionServiceMock.Verify(x => x.SubmitAsync(submission.Id, fileId, It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<bool?>()), Times.Never);
+        _submissionServiceMock.Verify(x => x.SubmitAsync(submission.Id, fileId, It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<bool?>(), null), Times.Never);
     }
 
     [TestCase(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved)]
@@ -955,7 +956,8 @@ public class FileUploadCheckFileAndSubmitControllerTests
         result.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("FileUploadSubmissionDeclaration");
         result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(submission.Id.ToString());
-        _submissionServiceMock.Verify(x => x.SubmitAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<bool?>()), Times.Never);
+        _submissionServiceMock.Verify(x => x.SubmitAsync(
+            It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<bool?>(), null), Times.Never);
     }
 
     [Test]

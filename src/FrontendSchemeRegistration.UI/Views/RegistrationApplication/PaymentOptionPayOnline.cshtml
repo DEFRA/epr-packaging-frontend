@@ -1,20 +1,25 @@
+@using FrontendSchemeRegistration.UI.ViewModels.Shared
 @model FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication.PaymentOptionPayOnlineViewModel
 
 @{
     ViewData["Title"] = Localizer["pay_online_title"];
-    var totalAmount = (Model.TotalAmountOutstanding / 100).ToString("#,##0.00");
+    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+        Model.ShowRegistrationCaption, 
+        Model.RegistrationJourney, 
+        null,
+        Localizer["pay_online_through_GovUK"],
+        Model.RegistrationYear);
 }
 
 <div class="govuk-width-container">
     <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
-                <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
-                    @Localizer["pay_online_through_GovUK"]
-                </h1>
+                
+                <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel"/>
 
                 <p class="govuk-body">
-                    @Localizer["pay_registration_fee_of"]<b>&pound;@totalAmount</b>
+                    @Localizer["pay_registration_fee_of"]<b>&pound;@Model.TotalAmount</b>
                     @Localizer["using_GovUk_secure_payments_service"]
                 </p>
                 <p class="govuk-body">
@@ -24,14 +29,7 @@
                     <a class="govuk-button govuk-body" href="@Model.PaymentLink">@Localizer["pay_online_now"]</a>
                 </p>
                 <p class="govuk-body govuk-!-margin-top-4">
-                    @if (Model.IsComplianceScheme)
-                    {
-                        <a asp-controller="ComplianceSchemeLanding" asp-action="Get" class="govuk-link">@Localizer["return_to_dashboard"]</a>
-                    }
-                    else
-                    {
-                        <a asp-controller="FrontendSchemeRegistration" asp-action="VisitHomePageSelfManaged" class="govuk-link">@Localizer["return_to_dashboard"]</a>
-                    }
+                    <a asp-controller="RegistrationApplication" asp-action="RegistrationTaskList" asp-route-registrationyear="@Model.RegistrationYear" class="govuk-link">@Localizer["view_registration_steps"]</a>
                 </p>
             </div>
         </div>

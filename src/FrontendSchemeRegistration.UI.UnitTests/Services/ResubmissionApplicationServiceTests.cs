@@ -10,14 +10,11 @@ using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Services;
-using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Sessions;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Options;
 using Microsoft.FeatureManagement;
 using Moq;
-using System.Globalization;
 using System.Security.Claims;
 
 namespace FrontendSchemeRegistration.UI.UnitTests.Services;
@@ -128,7 +125,7 @@ public class ResubmissionApplicationServiceTests
         };
 
         _mockSubmissionService
-            .Setup(x => x.SubmitAsync(mockPomSubmission.Id, mockPomSubmission.LastSubmittedFile.FileId, submittedByName, It.IsAny<string>(), null))
+            .Setup(x => x.SubmitAsync(mockPomSubmission.Id, mockPomSubmission.LastSubmittedFile.FileId, submittedByName, It.IsAny<string>(), null, null))
             .Returns(Task.CompletedTask);
 
         _mockSessionManager
@@ -139,7 +136,6 @@ public class ResubmissionApplicationServiceTests
         var response = await _service.CreatePomResubmissionReferenceNumberForProducer(session, submissionPeriod, organisationNumber, submittedByName, submissionId, 1);
 
         // Assert
-        var periodEnd = DateTime.Parse("30 March 2025", new CultureInfo("en-GB"));
         var expectedReferenceNumbers = new List<KeyValuePair<string, string>>();
         var expectedReferenceNumber = new KeyValuePair<string, string>("January to June 2025", $"PEPR123452502S02");
         expectedReferenceNumbers.Add(expectedReferenceNumber);
@@ -175,7 +171,7 @@ public class ResubmissionApplicationServiceTests
         };
 
         _mockSubmissionService
-            .Setup(x => x.SubmitAsync(mockPomSubmissions.First().Id, mockPomSubmissions.First().LastSubmittedFile.FileId, submittedByName, It.IsAny<string>(), null))
+            .Setup(x => x.SubmitAsync(mockPomSubmissions.First().Id, mockPomSubmissions.First().LastSubmittedFile.FileId, submittedByName, It.IsAny<string>(), null, null))
             .Returns(Task.CompletedTask);
 
         _mockSessionManager
@@ -186,7 +182,6 @@ public class ResubmissionApplicationServiceTests
         var response = await _service.CreatePomResubmissionReferenceNumberForProducer(session, submissionPeriod, organisationNumber, submittedByName, submissionId, 1);
 
         // Assert
-        var periodEnd = DateTime.Parse("30 April 2025", new CultureInfo("en-GB"));
         var expectedReferenceNumbers = new List<KeyValuePair<string, string>>();
         var expectedReferenceNumber = new KeyValuePair<string, string>("January to June 2025", "PEPR678902502S02");
         expectedReferenceNumbers.Add(expectedReferenceNumber);
@@ -225,7 +220,7 @@ public class ResubmissionApplicationServiceTests
         };
 
         _mockSubmissionService
-            .Setup(x => x.SubmitAsync(mockPomSubmission.Id, mockPomSubmission.LastSubmittedFile.FileId, submittedByName, It.IsAny<string>(), null))
+            .Setup(x => x.SubmitAsync(mockPomSubmission.Id, mockPomSubmission.LastSubmittedFile.FileId, submittedByName, It.IsAny<string>(), null, null))
             .Returns(Task.CompletedTask);
 
         _mockSessionManager
@@ -274,7 +269,7 @@ public class ResubmissionApplicationServiceTests
         };
 
         _mockSubmissionService
-            .Setup(x => x.SubmitAsync(mockPomSubmission.Id, mockPomSubmission.LastSubmittedFile.FileId, submittedByName, It.IsAny<string>(), null))
+            .Setup(x => x.SubmitAsync(mockPomSubmission.Id, mockPomSubmission.LastSubmittedFile.FileId, submittedByName, It.IsAny<string>(), null, null))
             .Returns(Task.CompletedTask);
 
         _mockSessionManager
@@ -285,9 +280,7 @@ public class ResubmissionApplicationServiceTests
         var response = await _service.CreatePomResubmissionReferenceNumberForCSO(session, submissionPeriod, organisationNumber, submittedByName, submissionId, 1);
 
         // Assert
-        var expectedReferenceNumbers = new List<KeyValuePair<string, string>>();
         var expectedReferenceNumber = new KeyValuePair<string, string>("July to December 2025", $"PEPR12345E250202");
-        expectedReferenceNumbers.Add(expectedReferenceNumber);
         response.Should().Be(expectedReferenceNumber.Value);
     }
 
@@ -325,7 +318,7 @@ public class ResubmissionApplicationServiceTests
         };
 
         _mockSubmissionService
-            .Setup(x => x.SubmitAsync(mockPomSubmission.Id, mockPomSubmission.LastSubmittedFile.FileId, submittedByName, It.IsAny<string>(), null))
+            .Setup(x => x.SubmitAsync(mockPomSubmission.Id, mockPomSubmission.LastSubmittedFile.FileId, submittedByName, It.IsAny<string>(), null, null))
             .Returns(Task.CompletedTask);
 
         _mockSessionManager
@@ -373,7 +366,7 @@ public class ResubmissionApplicationServiceTests
         };
 
         _mockSubmissionService
-            .Setup(x => x.SubmitAsync(mockPomSubmission.Id, mockPomSubmission.LastSubmittedFile.FileId, submittedByName, It.IsAny<string>(), null))
+            .Setup(x => x.SubmitAsync(mockPomSubmission.Id, mockPomSubmission.LastSubmittedFile.FileId, submittedByName, It.IsAny<string>(), null, null))
             .Returns(Task.CompletedTask);
 
         _mockSessionManager
@@ -479,13 +472,6 @@ public class ResubmissionApplicationServiceTests
         var submissionPeriods = new List<string> { "January to June 2024", "January to June 2025" };
         var complianceSchemeId = Guid.NewGuid();
 
-        var getPackagingResubmissionApplicationDetailsRequest = new GetPackagingResubmissionApplicationDetailsRequest
-        {
-            OrganisationId = organisation.Id.Value,
-            ComplianceSchemeId = complianceSchemeId,
-            SubmissionPeriods = submissionPeriods
-        };
-
         var expectedResult = new List<PackagingResubmissionApplicationDetails>()
         {
             new PackagingResubmissionApplicationDetails { IsResubmitted = true, ApplicationReferenceNumber = "abc" }
@@ -512,13 +498,6 @@ public class ResubmissionApplicationServiceTests
         var submissionPeriods = new List<string> { "January to June 2024", "January to June 2025" };
         var complianceSchemeId = Guid.NewGuid();
 
-        var getPackagingResubmissionApplicationDetailsRequest = new GetPackagingResubmissionApplicationDetailsRequest
-        {
-            OrganisationId = organisation.Id.Value,
-            ComplianceSchemeId = complianceSchemeId,
-            SubmissionPeriods = submissionPeriods
-        };
-
         List<PackagingResubmissionApplicationDetails> expected = new List<PackagingResubmissionApplicationDetails>();
 
         _mockSubmissionService
@@ -540,13 +519,6 @@ public class ResubmissionApplicationServiceTests
         var organisation = new Organisation { Id = Guid.NewGuid(), OrganisationNumber = "12345" };
         var submissionPeriods = new List<string> { "January to June 2024", "January to June 2025" };
         var complianceSchemeId = Guid.NewGuid();
-
-        var getPackagingResubmissionApplicationDetailsRequest = new GetPackagingResubmissionApplicationDetailsRequest
-        {
-            OrganisationId = organisation.Id.Value,
-            ComplianceSchemeId = complianceSchemeId,
-            SubmissionPeriods = submissionPeriods
-        };
 
         List<PackagingResubmissionApplicationDetails> expected = null;
 
@@ -659,8 +631,6 @@ public class ResubmissionApplicationServiceTests
     {
         // Arrange
         var organisation = new Organisation { Id = Guid.NewGuid(), OrganisationNumber = "12345" };
-        var submissionPeriods = new List<string> { "January to June 2025" };
-        var complianceSchemeId = Guid.NewGuid();
 
         var expectedResult = new List<SubmissionPeriodId>()
         {
@@ -683,8 +653,6 @@ public class ResubmissionApplicationServiceTests
     public async Task GetSubmissionHistoryAsync_Return_ListOf_PreviousSubmissions()
     {
         // Arrange
-        var organisation = new Organisation { Id = Guid.NewGuid(), OrganisationNumber = "12345" };
-        var submissionPeriods = new List<string> { "January to June 2025" };
         var submssionId = Guid.NewGuid();
 
         var expectedResult = new List<SubmissionHistory>()
@@ -708,8 +676,6 @@ public class ResubmissionApplicationServiceTests
     public async Task GetPackagingResubmissionMemberDetails_Return_MemberDetails()
     {
         // Arrange
-        var organisation = new Organisation { Id = Guid.NewGuid(), OrganisationNumber = "12345" };
-        var submissionPeriods = new List<string> { "January to June 2025" };
         var submssionId = Guid.NewGuid();
 
         var request = new PackagingResubmissionMemberRequest
@@ -844,12 +810,8 @@ public class ResubmissionApplicationServiceTests
     [Test]
     public async Task GetCurrentMonthAndYearForRecyclingObligations_ShouldReturn_Desired_JanMonth_And_2025Year()
     {
-        // Arrange       
-
-        // Act
         var result = await _service.GetCurrentMonthAndYearForRecyclingObligations();
-
-        // Assert
+        
         result.currentMonth.Should().Be(1);
         result.currentYear.Should().Be(2025);
     }
@@ -868,5 +830,53 @@ public class ResubmissionApplicationServiceTests
         // Assert
         result.currentMonth.Should().Be(DateTime.Now.Month);
         result.currentYear.Should().Be(DateTime.Now.Year);
+    }
+    
+    [Test]
+    public async Task GetRegulatorNation()
+    {
+        _mockPaymentCalculationService.Setup(pcs => pcs.GetRegulatorNation(It.IsAny<Guid?>()))
+            .ReturnsAsync("bob");
+        var result = await _service.GetRegulatorNation(Guid.NewGuid());
+
+        Assert.That(result, Is.EqualTo("bob"));
+    }
+    
+    [Test]
+    public async Task CreatePackagingDataResubmissionFeePaymentEvent()
+    {
+        var submissionId = Guid.NewGuid();
+        var filedId = Guid.NewGuid();
+        _mockSubmissionService.Setup(ss =>
+                ss.CreatePackagingDataResubmissionFeePaymentEvent(It.IsAny<Guid>(), It.IsAny<Guid>(),
+                    It.IsAny<string>()))
+            .Returns(Task.CompletedTask);
+        await _service.CreatePackagingDataResubmissionFeePaymentEvent(submissionId, filedId, "abc");
+
+        _mockSubmissionService.Verify(ss => ss.CreatePackagingDataResubmissionFeePaymentEvent(submissionId, filedId, "abc"), Times.Once);
+    }
+    
+    [Test]
+    public async Task CreatePackagingResubmissionApplicationSubmittedCreatedEvent()
+    {
+        var submissionId = Guid.NewGuid();
+        var filedId = Guid.NewGuid();
+        var dt = DateTime.Now;
+        
+        _mockSubmissionService.Setup(ss =>
+                ss.CreatePackagingResubmissionApplicationSubmittedCreatedEvent(It.IsAny<Guid>(), It.IsAny<Guid>(),
+                    It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<string>()))
+            .Returns(Task.CompletedTask);
+        
+        await _service.CreatePackagingResubmissionApplicationSubmittedCreatedEvent(submissionId, filedId, "submittedBy",dt , "comment");
+
+        _mockSubmissionService.Verify(ss => ss.CreatePackagingResubmissionApplicationSubmittedCreatedEvent(submissionId, filedId, "submittedBy", dt, "comment"), Times.Once);
+    }
+    
+    [Test]
+    public async Task PackagingResubmissionPeriod()
+    {
+        var result = _service.PackagingResubmissionPeriod(new []{"2025"}, new DateTime(2025, 03, 01));
+        Assert.That(result.Year, Is.EqualTo("2025"));
     }
 }

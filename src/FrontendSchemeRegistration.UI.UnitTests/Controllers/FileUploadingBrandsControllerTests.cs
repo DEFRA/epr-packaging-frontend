@@ -25,6 +25,7 @@ public class FileUploadingBrandsControllerTests
     private FileUploadingBrandsController _systemUnderTest;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
     private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
+    private Mock<ISessionManager<RegistrationApplicationSession>> _registrationApplicationSessionManagerMock;
 
     [SetUp]
     public void SetUp()
@@ -32,6 +33,8 @@ public class FileUploadingBrandsControllerTests
         _submissionServiceMock = new Mock<ISubmissionService>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
+        _registrationApplicationSessionManagerMock = new Mock<ISessionManager<RegistrationApplicationSession>>();
+
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
@@ -58,7 +61,12 @@ public class FileUploadingBrandsControllerTests
             });
         _registrationApplicationServiceMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(DateTime.Now.Year);
 
-        _systemUnderTest = new FileUploadingBrandsController(_submissionServiceMock.Object, _sessionManagerMock.Object, _registrationApplicationServiceMock.Object);
+        _systemUnderTest = new FileUploadingBrandsController(
+            _submissionServiceMock.Object,
+            _sessionManagerMock.Object,
+            _registrationApplicationSessionManagerMock.Object,
+            _registrationApplicationServiceMock.Object);
+
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext

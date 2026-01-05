@@ -54,15 +54,10 @@ public class DeclarationWithFullNameController(
             return RedirectToAction("Get", "FileUploadSubLanding");
         }
 
-        var reviewOrganisationDataPath = PagePaths.ReviewOrganisationData.StartsWith('/')
-            ? PagePaths.ReviewOrganisationData
-            : Path.Combine("/", PagePaths.ReviewOrganisationData);
-        
         var organisation = userData.Organisations[0];
         bool isCso = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
 
-        var routeValue = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear);
-        ViewBag.BackLinkToDisplay = QueryHelpers.AddQueryString(Url.Content($"~{reviewOrganisationDataPath}"), routeValue.ToDictionary(k => k.Key, k => k.Value.ToString() ?? string.Empty));
+        SetBackLink(submissionId, registrationYear);
 
         return View(ViewName, new DeclarationWithFullNameViewModel
         {
@@ -82,6 +77,7 @@ public class DeclarationWithFullNameController(
     {
         if (!ModelState.IsValid)
         {
+            SetBackLink(submissionId, model.RegistrationYear);
             return View(ViewName, model);
         }
 
@@ -114,7 +110,10 @@ public class DeclarationWithFullNameController(
 
             session.EnsureApplicationReferenceIsPresent();
 
-            await submissionService.SubmitAsync(submissionId, new Guid(model.OrganisationDetailsFileId), model.FullName, session.RegistrationSession.ApplicationReferenceNumber, session.RegistrationSession.IsResubmission);
+            await submissionService.SubmitAsync(submissionId, new Guid(model.OrganisationDetailsFileId), model.FullName,
+                session.RegistrationSession.ApplicationReferenceNumber,
+                session.RegistrationSession.IsResubmission,
+                submission.RegistrationJourney);
 
             return (model.RegistrationYear.HasValue ? RedirectToAction("Get", ConfirmationViewName, new { submissionId, registrationyear = model.RegistrationYear.ToString() }) : RedirectToAction("Get", ConfirmationViewName, new { submissionId }));
         }
@@ -122,5 +121,14 @@ public class DeclarationWithFullNameController(
         {
             return RedirectToAction("Get", SubmissionErrorViewName, new { submissionId });
         }
+    }
+
+    private void SetBackLink(Guid submissionId, int? registrationYear)
+    {
+        var reviewOrganisationDataPath = PagePaths.ReviewOrganisationData.StartsWith('/')
+            ? PagePaths.ReviewOrganisationData
+            : Path.Combine("/", PagePaths.ReviewOrganisationData);
+        var routeValue = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear);
+        ViewBag.BackLinkToDisplay = QueryHelpers.AddQueryString(Url.Content($"~{reviewOrganisationDataPath}"), routeValue.ToDictionary(k => k.Key, k => k.Value.ToString() ?? string.Empty));
     }
 }
