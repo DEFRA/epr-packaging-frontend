@@ -29,11 +29,11 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     private readonly IFeatureManager featureManager;
     private readonly IHttpContextAccessor httpContextAccessor;
     private readonly IOptions<GlobalVariables> globalVariables;
-    private readonly TimeProvider _dateTimeProvider;
+    private readonly TimeProvider _timeProvider;
 
-    public RegistrationApplicationService(RegistrationApplicationServiceDependencies dependencies, TimeProvider dateTimeProvider)
+    public RegistrationApplicationService(RegistrationApplicationServiceDependencies dependencies, TimeProvider timeProvider)
     {
-        _dateTimeProvider = dateTimeProvider;
+        _timeProvider = timeProvider;
         ArgumentNullException.ThrowIfNull(dependencies);
         
         submissionService = dependencies.SubmissionService
@@ -82,7 +82,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             }
             else
             {
-                var today = _dateTimeProvider.GetLocalNow().Date;
+                var today = _timeProvider.GetLocalNow().Date;
                 session.IsLateFeeApplicable = today > lateFeeDeadline;
             }
 
@@ -100,7 +100,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             }
             else
             {
-                var today = _dateTimeProvider.GetLocalNow().Date;
+                var today = _timeProvider.GetLocalNow().Date;
                 session.IsLateFeeApplicable = today > lateFeeDeadline;
             }
         }
@@ -445,22 +445,6 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         return await paymentCalculationService.InitiatePayment(request);
     }
 
-    private async Task<string> CreateApplicationReferenceNumber(ISession httpSession, string organisationNumber)
-    {
-        var session = await sessionManager.GetSessionAsync(httpSession);
-        var referenceNumber = organisationNumber;
-        var periodEnd = DateTime.Parse($"30 {session.Period.EndMonth} {session.Period.Year}", new CultureInfo("en-GB"));
-        var today = _dateTimeProvider.GetLocalNow().Date;
-        var periodNumber = today <= periodEnd ? 1 : 2;
-
-        if (session.IsComplianceScheme)
-        {
-            referenceNumber += session.SelectedComplianceScheme.RowNumber.ToString("D3");
-        }
-
-        return $"PEPR{referenceNumber}{periodEnd.Year - 2000}P{periodNumber}";
-    }
-
     public async Task CreateRegistrationApplicationEvent(ISession httpSession, string? comments, string? paymentMethod, SubmissionType submissionType)
     {
         var session = await sessionManager.GetSessionAsync(httpSession);
@@ -493,6 +477,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
 
     public async Task SetRegistrationFileUploadSession(ISession httpSession, string organisationNumber, int registrationYear, bool? isResubmission)
     {
+        var registrationSessionTask = sessionManager.GetSessionAsync(httpSession);
         var frontEndSession = await frontEndSessionManager.GetSessionAsync(httpSession) ?? new FrontendSchemeRegistrationSession();
 
         //this is wrong needs fixing 
@@ -502,8 +487,16 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         frontEndSession.RegistrationSession.SubmissionPeriod = period.DataPeriod;
         frontEndSession.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration = true;
         frontEndSession.RegistrationSession.IsResubmission = isResubmission ?? false;
-        frontEndSession.RegistrationSession.ApplicationReferenceNumber = await CreateApplicationReferenceNumber(httpSession, organisationNumber);
-
+        
+        var registrationSession = await registrationSessionTask;
+        
+        frontEndSession.RegistrationSession.ApplicationReferenceNumber = ReferenceNumberBuilder.Build(
+            registrationSession.Period,
+            organisationNumber,
+            _timeProvider,
+            registrationSession.IsComplianceScheme,
+            registrationSession.SelectedComplianceScheme?.RowNumber ?? 0); 
+        
         await frontEndSessionManager.SaveSessionAsync(httpSession, frontEndSession);
     }
 
