@@ -463,7 +463,6 @@ public class RegistrationApplicationController(
         if (session.AdditionalDetailsStatus == RegistrationTaskListStatus.Completed)
         {
             session.Journey = [PagePaths.RegistrationTaskList, PagePaths.SubmitRegistrationRequest];
-            SetBackLink(session, PagePaths.SubmitRegistrationRequest, registrationYear, session.RegistrationJourney);
         }
 
         return View("ApplicationSubmissionConfirmation",

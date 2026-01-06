@@ -120,4 +120,10 @@
   <data name="you_can_print_or_save" xml:space="preserve">
     <value>print or save this page as a PDF</value>
   </data>
+  <data name="registration_application_submitted_for_approval_large" xml:space="preserve">
+    <value>You have submitted your {0} large producer registration application</value>
+  </data>
+  <data name="registration_application_submitted_for_approval_small" xml:space="preserve">
+    <value>You have submitted your {0} small producer registration application</value>
+  </data>
 </root>
