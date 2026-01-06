@@ -24,6 +24,8 @@ using Newtonsoft.Json;
 namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
 
 using Application.Enums;
+using Microsoft.Extensions.Time.Testing;
+using DateTimeOffset = System.DateTimeOffset;
 
 [TestFixture]
 public class ComplianceSchemeLandingControllerTests
@@ -45,7 +47,7 @@ public class ComplianceSchemeLandingControllerTests
     protected Mock<IOptions<GlobalVariables>> globalVariables { get; set; }
 
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock = new();
-    private ComplianceSchemeLandingController _systemUnderTest;
+    private ComplianceSchemeLandingController _complianceSchemeLandingController;
     private readonly List<SubmissionPeriod> _submissionPeriods = new()
     {
         new SubmissionPeriod
@@ -118,6 +120,10 @@ public class ComplianceSchemeLandingControllerTests
         RegistrationApplicationSubmittedDate = null
     };
 
+    private int _overrideCurrentYear = 2026;
+    private TimeProvider _testTimeProvider;
+    private int _overrideCurrentMonth = 1;
+
     [SetUp]
     public void SetUp()
     {
@@ -143,12 +149,13 @@ public class ComplianceSchemeLandingControllerTests
         };
 
         globalVariables = new Mock<IOptions<GlobalVariables>>();
+        
         globalVariables.Setup(o => o.Value)
             .Returns(new GlobalVariables { 
                 BasePath = "path", 
                 SubmissionPeriods = _submissionPeriods,
-                OverrideCurrentMonth = 1,
-                OverrideCurrentYear = 2026 });
+                OverrideCurrentMonth = _overrideCurrentMonth,
+                OverrideCurrentYear = _overrideCurrentYear });
 
         _userMock.Setup(x => x.Claims).Returns(claims);
         _httpContextMock.Setup(x => x.User).Returns(_userMock.Object);
@@ -156,31 +163,81 @@ public class ComplianceSchemeLandingControllerTests
         _notificationServiceMock.Setup(x => x.GetCurrentUserNotifications(It.IsAny<Guid>(), It.IsAny<Guid>()));
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
 
-        _resubmissionApplicationService.Setup(x => x.GetCurrentMonthAndYearForRecyclingObligations())
-            .Returns(Task.FromResult((1, 2026)));
+        _resubmissionApplicationService.Setup(x => x.GetCurrentMonthAndYearForRecyclingObligations(_testTimeProvider))
+            .Returns(Task.FromResult((1, _overrideCurrentYear)));
         _resubmissionApplicationService.Setup(x => x.PackagingResubmissionPeriod(It.IsAny<string[]>(), It.IsAny<DateTime>()))
             .Returns(_submissionPeriods.FirstOrDefault(sp => sp.Year == _currentYear));
 
         //can be used for time travel testing
-        var testTimeProvider = TimeProvider.System;
+        _testTimeProvider = TimeProvider.System;
         
-        _systemUnderTest = new ComplianceSchemeLandingController(
+        _complianceSchemeLandingController = new ComplianceSchemeLandingController(
             _sessionManagerMock.Object,
             _complianceSchemeServiceMock.Object,
             _notificationServiceMock.Object,
             _registrationApplicationService.Object,
             _resubmissionApplicationService.Object,
             _nullLogger,
-            testTimeProvider)
+            _testTimeProvider)
         {
             ControllerContext = { HttpContext = _httpContextMock.Object }
         };
     }
 
     [Test]
-    public async Task Get_ReturnsCorrectViewAndModel_WhenSelectedComplianceSchemeDoesNotExistInSession()
+    [TestCase(2025, 11, 2026, 1, 2025)]
+    [TestCase(2025, 11, 2026, 4, 2025)]
+    [TestCase(2025, 11, 2027, 1, 2025)]
+    
+    [TestCase(2025, 12, 2026, 1, 2025)]
+    [TestCase(2025, 12, 2026, 5, 2025)]
+    [TestCase(2025, 12, 2027, 1, 2025)]
+    
+    [TestCase(2026,  1, 2026, 1, 2025)]
+    [TestCase(2026,  1, 2026, 6, 2025)]
+    [TestCase(2026,  1, 2027, 1, 2025)]
+    
+    [TestCase(2026,  2, 2026, 1, 2026)]
+    [TestCase(2026,  2, 2027, 1, 2026)]
+    
+    [TestCase(2026,  3, 2026, 1, 2026)]
+    [TestCase(2026,  3, 2027, 1, 2026)]
+    
+    [TestCase(2026,  6, 2026, 1, 2026)]
+    [TestCase(2026,  6, 2027, 1, 2026)]
+    
+    [TestCase(2027,  1, 2026, 1, 2026)]
+    [TestCase(2027,  1, 2027, 1, 2026)]
+    
+    [TestCase(2026,  6, null, null, 2026)]
+    [TestCase(2027,  1, null, null, 2026)]
+    
+    public async Task Get_ReturnsCorrectViewAndModel_WhenSelectedComplianceSchemeDoesNotExistInSession(
+        int year, int month, int? overrideCurrentYearConfigSetting, int? overrideCurrentMonthConfigSetting,
+        int expectedComplianceYear)
     {
-        // Arrange
+        //override Setup
+        globalVariables.Setup(o => o.Value)
+            .Returns(new GlobalVariables { 
+                BasePath = "path", 
+                SubmissionPeriods = _submissionPeriods,
+                OverrideCurrentMonth = overrideCurrentMonthConfigSetting,
+                OverrideCurrentYear = overrideCurrentYearConfigSetting });
+        
+        //Time travel setup
+        var ftp = new FakeTimeProvider();
+        ftp.SetUtcNow(new DateTimeOffset(new DateTime(year, month, 01)));
+        _complianceSchemeLandingController.SetTestTimeProvider(ftp);
+        
+        _resubmissionApplicationService.Setup(x => x.GetCurrentMonthAndYearForRecyclingObligations(ftp))
+            .Returns(Task.FromResult((month, year)));
+        
+        _resubmissionApplicationService.Setup(x => x.PackagingResubmissionPeriod(It.IsAny<string[]>(), It.Is<DateTime>(dt => dt.Month != 1)))
+            .Returns(_submissionPeriods.FirstOrDefault(sp => sp.Year == year.ToString() && sp.ActiveFrom.Year == year));
+        _resubmissionApplicationService.Setup(x => x.PackagingResubmissionPeriod(It.IsAny<string[]>(), It.Is<DateTime>(dt => dt.Month == 1)))
+            .Returns(_submissionPeriods.FirstOrDefault(sp => sp.Year == (year-1).ToString() && sp.ActiveFrom.Year == year-1));
+        //End Time travel Setup
+        
         var complianceSchemes = GetComplianceSchemes();
         _complianceSchemeServiceMock
             .Setup(service => service.GetOperatorComplianceSchemes(It.IsAny<Guid>()))
@@ -215,7 +272,7 @@ public class ComplianceSchemeLandingControllerTests
         _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
 
         // Act
-        var response = await _systemUnderTest.Get() as ViewResult;
+        var response = await _complianceSchemeLandingController.Get() as ViewResult;
 
         // Assert
         response.ViewName.Should().Be("ComplianceSchemeLanding");
@@ -251,8 +308,8 @@ public class ComplianceSchemeLandingControllerTests
                     PaymentViewStatus = ResubmissionTaskListStatus.CanNotStartYet,
                     ResubmissionApplicationSubmitted = false
                 },
-                PackagingResubmissionPeriod = globalVariables.Object.Value.SubmissionPeriods.FirstOrDefault(sp => sp.Year == _currentYear),
-                ComplianceYear = _currentYear
+                PackagingResubmissionPeriod = globalVariables.Object.Value.SubmissionPeriods.FirstOrDefault(sp => sp.Year == expectedComplianceYear.ToString()),
+                ComplianceYear = expectedComplianceYear.ToString()
             });
 
         _sessionManagerMock.Verify(
@@ -295,7 +352,7 @@ public class ComplianceSchemeLandingControllerTests
         _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
 
         // Act
-        var response = await _systemUnderTest.Get() as ViewResult;
+        var response = await _complianceSchemeLandingController.Get() as ViewResult;
 
         // Assert
         response.ViewName.Should().Be("ComplianceSchemeLanding");
@@ -332,12 +389,16 @@ public class ComplianceSchemeLandingControllerTests
                     ResubmissionApplicationSubmitted = false
                 },
                 PackagingResubmissionPeriod = globalVariables.Object.Value.SubmissionPeriods.FirstOrDefault(sp => sp.Year == _currentYear),
-                ComplianceYear = _currentYear
+                ComplianceYear = (_overrideCurrentYear-1).ToString()
             });
 
         _sessionManagerMock.Verify(
             x => x.SaveSessionAsync(
                 It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()), Times.Exactly(1));
+        
+        _resubmissionApplicationService.Verify(
+            x => x.GetCurrentMonthAndYearForRecyclingObligations(
+                It.IsAny<TimeProvider>()), Times.AtLeastOnce);
     }
 
     [Test]
@@ -408,7 +469,7 @@ public class ComplianceSchemeLandingControllerTests
         _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
 
         // Act
-        var response = await _systemUnderTest.Get() as ViewResult;
+        var response = await _complianceSchemeLandingController.Get() as ViewResult;
 
         // Assert
         response.ViewName.Should().Be("ComplianceSchemeLanding");
@@ -447,7 +508,7 @@ public class ComplianceSchemeLandingControllerTests
                     ResubmissionApplicationSubmitted = false
                 },
                 PackagingResubmissionPeriod = globalVariables.Object.Value.SubmissionPeriods.FirstOrDefault(sp => sp.Year == _currentYear),
-                ComplianceYear = _currentYear
+                ComplianceYear = (_overrideCurrentYear-1).ToString()
             });
 
         _sessionManagerMock.Verify(
@@ -523,7 +584,7 @@ public class ComplianceSchemeLandingControllerTests
         _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
 
         // Act
-        var response = await _systemUnderTest.Get() as ViewResult;
+        var response = await _complianceSchemeLandingController.Get() as ViewResult;
 
         // Assert
         response.ViewName.Should().Be("ComplianceSchemeLanding");
@@ -561,7 +622,7 @@ public class ComplianceSchemeLandingControllerTests
                     ResubmissionApplicationSubmitted = false
                 },
                 PackagingResubmissionPeriod = globalVariables.Object.Value.SubmissionPeriods.FirstOrDefault(sp => sp.Year == _currentYear),
-                ComplianceYear = _currentYear
+                ComplianceYear = (_overrideCurrentYear-1).ToString()
             });
 
         _sessionManagerMock.Verify(
@@ -637,7 +698,7 @@ public class ComplianceSchemeLandingControllerTests
         _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
 
         // Act
-        var response = await _systemUnderTest.Get() as ViewResult;
+        var response = await _complianceSchemeLandingController.Get() as ViewResult;
 
         // Assert
         response.ViewName.Should().Be("ComplianceSchemeLanding");
@@ -675,7 +736,7 @@ public class ComplianceSchemeLandingControllerTests
                     ResubmissionApplicationSubmitted = false
                 },
                 PackagingResubmissionPeriod = globalVariables.Object.Value.SubmissionPeriods.FirstOrDefault(sp => sp.Year == _currentYear),
-                ComplianceYear = _currentYear
+                ComplianceYear = (_overrideCurrentYear-1).ToString()
             });
 
         _sessionManagerMock.Verify(
@@ -686,6 +747,9 @@ public class ComplianceSchemeLandingControllerTests
     [Test]
     public async Task Get_ReturnsCorrectViewAndModel_UserHasNominatedNotification()
     {
+        _resubmissionApplicationService.Setup(x => x.GetCurrentMonthAndYearForRecyclingObligations(_testTimeProvider))
+            .Returns(Task.FromResult((_testTimeProvider.GetUtcNow().Month, _testTimeProvider.GetUtcNow().Year)));
+        
         var notificationDtoList = new List<NotificationDto>
         {
             new()
@@ -732,11 +796,11 @@ public class ComplianceSchemeLandingControllerTests
         _registrationApplicationService.Setup(x => x.BuildRegistrationApplicationPerYearViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
             .ReturnsAsync(registrationApplicationPerYear);
 
-        var registrationApplicationDetails = (RegistrationApplicationDetails)null;
+        var registrationApplicationDetails = (RegistrationApplicationDetails) null;
         _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
 
         // Act
-        var response = await _systemUnderTest.Get() as ViewResult;
+        var response = await _complianceSchemeLandingController.Get() as ViewResult;
 
         // Assert
         response.ViewName.Should().Be("ComplianceSchemeLanding");
@@ -769,7 +833,7 @@ public class ComplianceSchemeLandingControllerTests
                     }
                 },
 
-                ResubmissionTaskListViewModel=new ResubmissionTaskListViewModel
+                ResubmissionTaskListViewModel = new ResubmissionTaskListViewModel
                 {
                     AdditionalDetailsStatus = ResubmissionTaskListStatus.CanNotStartYet,
                     ApplicationStatus = ApplicationStatusType.NotStarted,
@@ -783,7 +847,7 @@ public class ComplianceSchemeLandingControllerTests
                     ResubmissionApplicationSubmitted = false
                 },
                 PackagingResubmissionPeriod = globalVariables.Object.Value.SubmissionPeriods.FirstOrDefault(sp => sp.Year == _currentYear),
-                ComplianceYear = _currentYear
+                ComplianceYear = (_overrideCurrentYear-1).ToString()
             });
 
         _sessionManagerMock.Verify(
@@ -849,7 +913,7 @@ public class ComplianceSchemeLandingControllerTests
         _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
 
         // Act
-        var response = await _systemUnderTest.Get() as ViewResult;
+        var response = await _complianceSchemeLandingController.Get() as ViewResult;
 
         // Assert
         response.ViewName.Should().Be("ComplianceSchemeLanding");
@@ -894,7 +958,7 @@ public class ComplianceSchemeLandingControllerTests
                     ResubmissionApplicationSubmitted = false
                 },
                 PackagingResubmissionPeriod = globalVariables.Object.Value.SubmissionPeriods.FirstOrDefault(sp => sp.Year == _currentYear),
-                ComplianceYear = _currentYear
+                ComplianceYear = (_overrideCurrentYear-1).ToString()
             });
 
         _sessionManagerMock.Verify(
@@ -918,7 +982,7 @@ public class ComplianceSchemeLandingControllerTests
             .Callback<ISession, Action<FrontendSchemeRegistrationSession>>((_, action) => action.Invoke(capturedSession));
 
         // Act
-        var result = await _systemUnderTest.Post(_complianceSchemeOneId.ToString()) as RedirectToActionResult;
+        var result = await _complianceSchemeLandingController.Post(_complianceSchemeOneId.ToString()) as RedirectToActionResult;
 
         // Assert
         result.ActionName.Should().Be(nameof(ComplianceSchemeLandingController.Get));
@@ -937,7 +1001,7 @@ public class ComplianceSchemeLandingControllerTests
         _complianceSchemeServiceMock.Setup(x => x.GetOperatorComplianceSchemes(It.IsAny<Guid>())).ReturnsAsync(complianceSchemes);
 
         // Act
-        var result = await _systemUnderTest.Post(unknownComplianceSchemeId) as RedirectToActionResult;
+        var result = await _complianceSchemeLandingController.Post(unknownComplianceSchemeId) as RedirectToActionResult;
 
         // Assert
         result.ActionName.Should().Be(nameof(ComplianceSchemeLandingController.Get));
