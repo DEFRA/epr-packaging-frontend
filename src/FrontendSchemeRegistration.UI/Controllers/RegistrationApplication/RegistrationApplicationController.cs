@@ -35,7 +35,7 @@ public class RegistrationApplicationController(
 
         var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], false);
 
-        var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, registrationYear.GetValueOrDefault(), isResubmission, registrationJourney);
+        var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, registrationYear.GetValueOrDefault(), registrationJourney, isResubmission);
 
         if (session.SkipProducerRegistrationGuidance)
         {
@@ -72,7 +72,8 @@ public class RegistrationApplicationController(
 
         var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], false);
 
-        var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, registrationYear.GetValueOrDefault(), isResubmission, registrationJourney);
+        var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, registrationYear.GetValueOrDefault(), registrationJourney, isResubmission);
+        session.Journey = [session.IsComplianceScheme ? PagePaths.ComplianceSchemeLanding : PagePaths.HomePageSelfManaged, PagePaths.RegistrationTaskList];
 
         if (session.SkipProducerRegistrationGuidance)
         {

@@ -26,13 +26,14 @@ public class ComplianceSchemeRegistrationController(
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
         var complianceSchemesTask = complianceSchemeService.GetOperatorComplianceSchemes(organisation.Id.Value);
-        var registrationApplicationPerYearViewModelsTask = registrationApplicationService.BuildRegistrationApplicationPerYearViewModels(HttpContext.Session, organisation);
-        await Task.WhenAll(complianceSchemesTask, registrationApplicationPerYearViewModelsTask);
+        var registrationApplicationYearViewModelsTask = registrationApplicationService.BuildRegistrationYearApplicationsViewModels(HttpContext.Session, organisation);
+        var legacyViewModelsPerTask = registrationApplicationService.BuildRegistrationApplicationPerYearViewModels(HttpContext.Session, organisation);
+        await Task.WhenAll(complianceSchemesTask, registrationApplicationYearViewModelsTask, legacyViewModelsPerTask);
         var cso = complianceSchemesTask.Result.Single(cs => cs.NationId == (int)nation);
 
         ViewBag.BackLinkToDisplay = PagePaths.ComplianceSchemeLanding;
 
-        var csoRegViewModel = new ComplianceSchemeRegistrationViewModel(cso.Name, nation.ToString(), registrationApplicationPerYearViewModelsTask.Result, 2026);
+        var csoRegViewModel = new ComplianceSchemeRegistrationViewModel(cso.Name, nation.ToString(), registrationApplicationYearViewModelsTask.Result, legacyViewModelsPerTask.Result, 2026);
         csoRegViewModel.DisplayCsoSmallProducerRegistration = await featureManager.IsEnabledAsync(FeatureFlags.DisplayCsoSmallProducerRegistration);
         
         return View(csoRegViewModel);

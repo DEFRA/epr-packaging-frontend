@@ -23,6 +23,7 @@ using Newtonsoft.Json;
 namespace FrontendSchemeRegistration.UI.UnitTests.Services;
 
 using Application.Services;
+using UI.Services.RegistrationPeriods;
 
 [TestFixture]
 public class RegistrationApplicationServiceTests
@@ -38,6 +39,7 @@ public class RegistrationApplicationServiceTests
     private RegistrationApplicationService _service;
     private Mock<IFeatureManager> _featureManagerMock;
     private Mock<IHttpContextAccessor> _httpContextAccessorMock;
+    private Mock<IRegistrationPeriodProvider> _mockRegistrationPeriodProvider;
     private TimeProvider _dateTimeProvider;
     private int _validRegistrationYear;
 
@@ -67,6 +69,7 @@ public class RegistrationApplicationServiceTests
         _loggerMock = new Mock<ILogger<RegistrationApplicationService>>();
         _featureManagerMock = new Mock<IFeatureManager>();
         _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+        _mockRegistrationPeriodProvider = new Mock<IRegistrationPeriodProvider>();
         
         var globalVariables = Options.Create(new GlobalVariables
         {
@@ -87,7 +90,8 @@ public class RegistrationApplicationServiceTests
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
-            GlobalVariables = globalVariables
+            GlobalVariables = globalVariables,
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
 
         _service = new RegistrationApplicationService(deps, _dateTimeProvider);
@@ -691,7 +695,7 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(registrationApplicationDetails);
 
         // Act
-        var applicationDetails = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year);
+        var applicationDetails = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null);
 
         // Assert
         applicationDetails.Should().NotBeNull();
@@ -726,7 +730,7 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2025);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2025, null);
 
         // Assert
         result.Should().NotBeNull();
@@ -761,7 +765,7 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2025);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2025, null);
 
         // Assert
         result.Should().NotBeNull();
@@ -814,7 +818,7 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2026);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2026, null);
 
         // Assert
         result.Should().NotBeNull();
@@ -843,7 +847,8 @@ public class RegistrationApplicationServiceTests
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
-            GlobalVariables = globalVariables
+            GlobalVariables = globalVariables,
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
 
         _service = new RegistrationApplicationService(deps, _dateTimeProvider);
@@ -893,7 +898,7 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2026);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2026, null);
 
         // Assert
         result.Should().NotBeNull();
@@ -946,7 +951,7 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2026);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2026, null);
 
         // Assert
         result.Should().NotBeNull();
@@ -999,7 +1004,7 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2026);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2026, null);
 
         // Assert
         result.Should().NotBeNull();
@@ -1040,7 +1045,7 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2025);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2025, null);
 
         // Assert
         result.Should().NotBeNull();
@@ -1081,7 +1086,7 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2025);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2025, null);
 
         // Assert
         result.Should().NotBeNull();
@@ -1125,7 +1130,7 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2025);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2025, null);
 
         // Assert
         result.Should().NotBeNull();
@@ -1168,7 +1173,7 @@ public class RegistrationApplicationServiceTests
 
      
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2025);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2025, null);
 
         // Assert
         result.Should().NotBeNull();
@@ -1207,7 +1212,7 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(registrationApplicationDetails);
 
         // Act
-        var applicationDetails = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year);
+        var applicationDetails = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null);
 
         // Assert
         applicationDetails.Should().NotBeNull();
@@ -1240,7 +1245,7 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(registrationApplicationDetails);
 
         // Act
-        var applicationDetails = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year);
+        var applicationDetails = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null);
 
         // Assert
         applicationDetails.Should().NotBeNull();
@@ -1270,7 +1275,7 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync((RegistrationApplicationDetails) null);
 
         // Act
-        var registrationApplicationDetails = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year);
+        var registrationApplicationDetails = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null);
 
         // Assert
         registrationApplicationDetails.Should().NotBeNull();
@@ -1328,7 +1333,7 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, submissionYear);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, submissionYear, null);
 
         // Assert
        
@@ -1420,7 +1425,7 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, submissionYear, null, RegistrationJourney.CsoSmallProducer);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, submissionYear, RegistrationJourney.CsoSmallProducer, null);
 
         // Assert
        
@@ -1501,7 +1506,7 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null);
 
         // Assert
         var submissionYear = DateTime.Now.Year.ToString();
@@ -1596,7 +1601,7 @@ public class RegistrationApplicationServiceTests
                 }
             });
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, submissionYear);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, submissionYear, null);
 
         // Assert
         result.Should().BeEquivalentTo(new RegistrationApplicationSession
@@ -1659,7 +1664,7 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, true);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null, true);
 
         // Assert
         var submissionYear = DateTime.Now.Year.ToString();
@@ -1744,7 +1749,7 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, true);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null, true);
 
         // Assert
         result.Should().BeEquivalentTo(new
@@ -1801,7 +1806,7 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(registrationApplicationDetails);
 
         // Act
-        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, submissionYear);
+        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, submissionYear, null);
 
         // Assert
         session.Should().NotBeNull();
@@ -1837,7 +1842,7 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(registrationApplicationDetails);
 
         // Act
-        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year);
+        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null);
 
         // Assert
         session.Should().NotBeNull();
@@ -1872,7 +1877,7 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(registrationApplicationDetails);
 
         // Act
-        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year);
+        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null);
 
         // Assert
         session.Should().NotBeNull();
@@ -1908,7 +1913,7 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(registrationApplicationDetails);
 
         // Act
-        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null, RegistrationJourney.CsoLargeProducer);
+        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, RegistrationJourney.CsoLargeProducer, null);
 
         // Assert
         session.Should().NotBeNull();
@@ -1945,7 +1950,7 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(registrationApplicationDetails);
 
         // Act
-        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null, RegistrationJourney.CsoSmallProducer);
+        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, RegistrationJourney.CsoSmallProducer, null);
 
         // Assert
         session.Should().NotBeNull();
@@ -1982,7 +1987,7 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(registrationApplicationDetails);
 
         // Act
-        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null, RegistrationJourney.CsoSmallProducer);
+        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, RegistrationJourney.CsoSmallProducer, null);
 
         // Assert
         session.Should().NotBeNull();
@@ -2024,7 +2029,7 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(response);
 
         // Act
-        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null, RegistrationJourney.CsoLargeProducer);
+        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, RegistrationJourney.CsoLargeProducer, null);
 
         // Assert
         session.Should().NotBeNull();
@@ -2069,7 +2074,7 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(response);
 
         // Act
-        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year);
+        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null);
 
         // Assert
         session.Should().NotBeNull();
@@ -2299,7 +2304,7 @@ public class RegistrationApplicationServiceTests
             RegistrationApplicationSubmittedComment = null,
             RegistrationApplicationSubmittedDate = null
         };
-        _registrationApplicationServiceMock.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>()))
+        _registrationApplicationServiceMock.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<RegistrationJourney?>(), It.IsAny<bool?>()))
             .ReturnsAsync(registrationApplicationSession);
 
         // Act
@@ -2542,7 +2547,8 @@ public class RegistrationApplicationServiceTests
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
-            GlobalVariables = Options.Create(new GlobalVariables())
+            GlobalVariables = Options.Create(new GlobalVariables()),
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -2562,7 +2568,8 @@ public class RegistrationApplicationServiceTests
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
-            GlobalVariables = Options.Create(new GlobalVariables())
+            GlobalVariables = Options.Create(new GlobalVariables()),
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -2581,7 +2588,8 @@ public class RegistrationApplicationServiceTests
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
-            GlobalVariables = Options.Create(new GlobalVariables())
+            GlobalVariables = Options.Create(new GlobalVariables()),
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -2600,7 +2608,8 @@ public class RegistrationApplicationServiceTests
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
-            GlobalVariables = Options.Create(new GlobalVariables())
+            GlobalVariables = Options.Create(new GlobalVariables()),
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -2619,7 +2628,8 @@ public class RegistrationApplicationServiceTests
             Logger = null!,
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
-            GlobalVariables = Options.Create(new GlobalVariables())
+            GlobalVariables = Options.Create(new GlobalVariables()),
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -2638,7 +2648,8 @@ public class RegistrationApplicationServiceTests
             Logger = _loggerMock.Object,
             FeatureManager = null!,
             HttpContextAccessor = _httpContextAccessorMock.Object,
-            GlobalVariables = Options.Create(new GlobalVariables())
+            GlobalVariables = Options.Create(new GlobalVariables()),
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -2657,7 +2668,8 @@ public class RegistrationApplicationServiceTests
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = null!,
-            GlobalVariables = Options.Create(new GlobalVariables())
+            GlobalVariables = Options.Create(new GlobalVariables()),
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -2676,7 +2688,8 @@ public class RegistrationApplicationServiceTests
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
-            GlobalVariables = null!
+            GlobalVariables = null!,
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -2695,7 +2708,8 @@ public class RegistrationApplicationServiceTests
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
-            GlobalVariables = Options.Create(new GlobalVariables())
+            GlobalVariables = Options.Create(new GlobalVariables()),
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
 
         Assert.DoesNotThrow(() => new RegistrationApplicationService(deps, _dateTimeProvider));

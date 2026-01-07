@@ -15,7 +15,13 @@
 	<data name="registration_for_year" xml:space="preserve">
     <value>Registration for {0}</value>
   </data>
-	<data name="large_producers_only" xml:space="preserve">
+  <data name="current_large_producer_registration_title" xml:space="preserve">
+    <value>Large producer {0} registration</value>
+  </data>
+  <data name="current_small_producer_registration_title" xml:space="preserve">
+	<value>Small producer {0} registration</value>
+  </data>
+  <data name="large_producers_only" xml:space="preserve">
     <value>(Large producers only)</value>
   </data>
 	<data name="you_need_to_register_by_1_April" xml:space="preserve">
@@ -33,6 +39,18 @@
 	<data name="Apply_by_1st_April_compliance_small_x" xml:space="preserve">
     <value>You must apply for registration on behalf of small producers on or before 1 April 2026.</value>
   </data>
+  <data name="cso_small_producer_instructions1" xml:space="preserve">
+		<value>Small producers must apply for registration on or before {0}.</value>
+	</data>
+  <data name="cso_small_producer_instructions2" xml:space="preserve">
+		<value>Applications made after this date could incur a late fee.</value>
+	</data>
+  <data name="cso_large_producer_instructions1" xml:space="preserve">
+		<value>Large producers needed to apply for registration on or before {0}.</value>
+	</data>
+  <data name="cso_large_producer_instructions2" xml:space="preserve">
+		<value>Applications made after this date could incur a late fee.</value>
+	</data>
 	<data name="Apply_after_deadline_late_fee" xml:space="preserve">
     <value>You may apply after this date, but may incur a late fee.</value>
   </data>
