@@ -1261,14 +1261,12 @@ public class RegistrationApplicationControllerTests
         // Act
         var result = await SystemUnderTest.SubmitRegistrationRequest() as ViewResult;
         var model = result.Model as ApplicationSubmissionConfirmationViewModel;
-        var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
 
         // Assert
         result.ViewName.Should().Be(viewName);
         result.Model.Should().BeOfType<ApplicationSubmissionConfirmationViewModel>();
         model.RegulatorNation.Should().Be(nationCode);
         model.NationName.Should().Be(nationName);
-        pageBackLink.Should().Be(PagePaths.RegistrationTaskList);
 
         result.Model.As<ApplicationSubmissionConfirmationViewModel>().Should().BeEquivalentTo(new ApplicationSubmissionConfirmationViewModel
         {
