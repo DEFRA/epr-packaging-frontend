@@ -124,6 +124,6 @@
 		<value>Small canllawiau {0} cofrestru</value>
 	</data>
   <data name="register_direct_company" xml:space="preserve">
-    <value>[WELSH] {0} cofrestru</value>
+    <value>{0} cofrestru</value>
   </data>
 </root>

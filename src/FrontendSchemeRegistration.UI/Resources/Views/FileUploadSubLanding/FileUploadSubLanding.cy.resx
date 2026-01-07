@@ -247,9 +247,9 @@
     <value>[Welsh]View your resubmission</value>
   </data>
   <data name="you've_uploaded_a_new_file_you_now_need_to_submit_it" xml:space="preserve">
-    <value>WYou've uploaded a new file. You now need to submit it.</value>
+    <value>[WELSH]You've uploaded a new file. You now need to submit it.</value>
   </data>
   <data name="you've_resubmitted_your_packaging_data_it_may_take_up_to_an_hour_for_our_systems_to_update" xml:space="preserve">
-    <value>WYou've resubmitted your packaging data. It may take up to an hour for our systems to update. You can then view any additional fees and submit to the regulator.</value>
+    <value>[WELSH]You've resubmitted your packaging data. It may take up to an hour for our systems to update. You can then view any additional fees and submit to the regulator.</value>
   </data>
 </root>

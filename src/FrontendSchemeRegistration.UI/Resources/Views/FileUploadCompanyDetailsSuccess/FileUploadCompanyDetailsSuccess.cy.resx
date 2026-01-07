@@ -189,4 +189,7 @@
   <data name="partner_details" xml:space="preserve">
     <value>manylion partner</value>
   </data>
+  <data name="return_to_dashboard" xml:space="preserve">
+    <value>Yn ôl i’r dangosfwrdd</value>
+  </data>
 </root>

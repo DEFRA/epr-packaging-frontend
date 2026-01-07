@@ -73,6 +73,6 @@
         <value>Ailgyflwyniad data cofrestru {0}.</value>
     </data>
     <data name="inset_delay_text" xml:space="preserve">
-        <value>To avoid registration delays, report your {0} packaging data before applying to register for {1}.</value>
+        <value>[WELSH]To avoid registration delays, report your {0} packaging data before applying to register for {1}.</value>
     </data>
 </root>

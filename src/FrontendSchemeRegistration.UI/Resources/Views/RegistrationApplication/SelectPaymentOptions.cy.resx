@@ -36,9 +36,9 @@
   <data name="payment_option_paybybanktransfer" xml:space="preserve">
         <value>Drwy drosglwyddiad banc</value>
     </data>
-  <data name="payment_option_payonline" xml:space="preserve">
-        <value>[WELSH] Online</value>
-    </data>
+	<data name="payment_option_payonline" xml:space="preserve">
+		<value>Ar-lein</value>
+	</data>
 	<data name="payment_option_paybyphone_alternate_text" xml:space="preserve">
         <value>Dros y ffôn</value>
     </data>

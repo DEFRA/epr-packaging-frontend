@@ -148,7 +148,7 @@
     <value>Rhoi gwybod am fanylion eich sefydliad</value>
   </data>
   <data name="in_2023_you_need_to_data_for" xml:space="preserve">
-    <value />
+    <value>[WELSH] In 2023 you need to data for</value>
   </data>
   <data name="packaging_data" xml:space="preserve">
     <value>Data pecynwaith</value>
@@ -203,10 +203,10 @@
     <value>gwirio cynnydd eich rhwymedigaethau ailgylchu</value>
   </data>
   <data name="waste_management_and_admin_fees" xml:space="preserve">
-    <value>WWaste management and admin fees (opens in a new tab)</value>
+    <value>[WELSH]Waste management and admin fees (opens in a new tab)</value>
   </data>
   <data name="sign_into_the_financial_services_system" xml:space="preserve">
-    <value>WSign into the financial services system (FSS) to view and manage the fees your organisation needs to pay.</value>
+    <value>[WELSH]Sign into the financial services system (FSS) to view and manage the fees your organisation needs to pay.</value>
   </data>
   <data name="you_still_need_to_view_any_additional_fees" xml:space="preserve">
     <value>[Welsh]You still need to view any additional fees and submit to the regulator.</value>
@@ -225,5 +225,11 @@
   </data>
   <data name="learn_more_about_packuk" xml:space="preserve">
     <value>Dysgu mwy am PecynUK (yn agor mewn tab newydd)</value>
+  </data>
+  <data name="you_are_currenlty_resubmitting_data" xml:space="preserve">
+    <value>[WELSH] You are currently resubmitting data.</value>
+  </data>
+  <data name="you_are_currenlty_resubmitting_data_period" xml:space="preserve">
+    <value>[WELSH] You have resubmitted packaging data for the July to December {0} period.</value>
   </data>
 </root>
