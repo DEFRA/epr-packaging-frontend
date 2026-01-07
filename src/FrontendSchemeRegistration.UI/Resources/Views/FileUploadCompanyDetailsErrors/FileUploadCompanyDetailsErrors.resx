@@ -72,4 +72,8 @@
     <data name="may_get_another_error" xml:space="preserve">
         <value />
     </data>
+    <data name="continue" xml:space="preserve">
+        <value>continue</value>
+        <comment>continue</comment>
+    </data>
 </root>
