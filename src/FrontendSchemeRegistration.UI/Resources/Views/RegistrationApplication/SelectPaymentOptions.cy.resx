@@ -19,7 +19,7 @@
 		<value>Sut i dalu'ch ffi gofrestru</value>
 	</data>
   <data name="choose_how_to_pay_your_registration_fee_heading" xml:space="preserve">
-		<value>Choose how to pay your registration fee</value>
+		<value>Dewiswch sut i dalu'ch ffi gofrestru</value>
 	</data>
 	<data name="pay_your_registration_fee_text" xml:space="preserve">
 		<value>Gallwch dalu’ch ffi gofrestru o</value>
@@ -31,13 +31,13 @@
 		<value>Dewiswch ddull talu.</value>
 	</data>
   <data name="payment_option_paybyphone" xml:space="preserve">
-        <value>By phone</value>
+        <value>Dros y ffôn</value>
     </data>
   <data name="payment_option_paybybanktransfer" xml:space="preserve">
-        <value>By bank transfer</value>
+        <value>Drwy drosglwyddiad banc</value>
     </data>
   <data name="payment_option_payonline" xml:space="preserve">
-        <value>Online</value>
+        <value>[WELSH] Online</value>
     </data>
 	<data name="payment_option_paybyphone_alternate_text" xml:space="preserve">
         <value>Dros y ffôn</value>
