@@ -72,4 +72,7 @@
     <data name="may_get_another_error" xml:space="preserve">
         <value>Os oes rhagor o wallau, efallai y cewch chi adroddiad gwallau arall.</value>
     </data>
+    <data name="continue" xml:space="preserve">
+        <value>Parhau</value>
+    </data>
 </root>
