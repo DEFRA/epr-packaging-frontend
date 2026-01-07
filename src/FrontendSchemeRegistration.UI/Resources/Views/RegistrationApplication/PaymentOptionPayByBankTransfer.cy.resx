@@ -124,7 +124,7 @@
         <value>Ar ôl i’r taliad gael ei wneud</value>
     </data>
     <data name="after_youve_paid" xml:space="preserve">
-        <value>[WELSH] After you've paid</value>
+        <value>Ar ôl ichi dalu</value>
     </data>
     <data name="submit_application_from_registration_dashboard" xml:space="preserve">
         <value>1. Cyflwynwch eich cais o'r dangosfwrdd cofrestru pan fydd y taliad wedi'i wneud.</value>
@@ -163,9 +163,9 @@
         <value>Parhau</value>
     </data>
     <data name="continue_registration_application" xml:space="preserve">
-        <value>[WELSH] Continue registration application</value>
+        <value>Parhau â'r cais am gofrestru</value>
     </data>
     <data name="send_bacs_remittance_to" xml:space="preserve">
-        <value>[WELSH] Send BACS_remittance to </value>
+        <value>Anfon hysbysiad talu BACS at </value>
     </data>
 </root>
