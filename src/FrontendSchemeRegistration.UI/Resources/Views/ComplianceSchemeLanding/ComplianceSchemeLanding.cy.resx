@@ -211,4 +211,10 @@ Rydych chi hefyd yn gallu:</value>
 	<data name="you_still_need_to_view_any_additional_fees" xml:space="preserve">
     <value>[Welsh]You still need to view any additional fees and submit to the regulator.</value>
   </data>
+  <data name="you_are_currenlty_resubmitting_data_period" xml:space="preserve">
+    <value>[WELSH] You have resubmitted packaging data for the {0} period.</value>
+  </data>
+  <data name="you_are_currenlty_resubmitting_data" xml:space="preserve">
+    <value>[WELSH] You are currently resubmitting data.</value>
+  </data>
 </root>

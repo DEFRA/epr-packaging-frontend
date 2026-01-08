@@ -1,13 +1,13 @@
 ﻿<root>
 	<data name="detail_name_header" xml:space="preserve">
-        <value>WSection</value>
-    </data>
+		<value>[WELSH]Section</value>
+	</data>
 	<data name="detail_value_header" xml:space="preserve">
-        <value>WValue</value>
-    </data>
+		<value>[WELSH]Value</value>
+	</data>
 	<data name="detail_action_header" xml:space="preserve">
-        <value>WAction</value>
-    </data>
+		<value>[WELSH]Action</value>
+	</data>
 	<data name="check-details" xml:space="preserve">
         <value>Gwiriwch eich atebion</value>
     </data>
@@ -39,6 +39,9 @@
         <value>Datganiad</value>
     </data>
 	<data name="text_assistive.warning" xml:space="preserve">
-        <value>WWarning</value>
+		<value>Rhybudd</value>
+	</data>
+	<data name="subsidiary-companies-house-number" xml:space="preserve">
+		<value>[WELSH] Companies House number</value>
 	</data>
 </root>

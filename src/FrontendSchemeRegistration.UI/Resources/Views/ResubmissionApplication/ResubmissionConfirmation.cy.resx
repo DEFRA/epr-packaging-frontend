@@ -99,7 +99,7 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="resubmission_confirm_title" xml:space="preserve">
-    <value>WResubmission confirmation</value>
+        <value>[WELSH]Resubmission confirmation</value>
     </data>
     <data name="submitted_date_x" xml:space="preserve">
     <value>Wedi’i gyflwyno {0}</value>
@@ -141,9 +141,9 @@
     <value> i wirio statws eich cais.</value>
     </data>
     <data name="give_feedback" xml:space="preserve">
-    <value>[wales]Give feedback</value>
+        <value>[WELSH]Give feedback</value>
     </data>
     <data name="take_an_optional_survey_to_help_us_improve_this_service" xml:space="preserve">
-    <value>[wales]Take an optional survey to help us improve this service.</value>
+        <value>[WELSH]Take an optional survey to help us improve this service.</value>
     </data>
 </root>

@@ -264,4 +264,7 @@
   <data name="ConfirmationOfRemoval.GuidelinesForExtendedProducer" xml:space="preserve">
     <value>canllawiau ynghylch cyfrifoldeb estynedig cynhyrchwyr dros becynwaith (yn agor mewn tab newydd).</value>
   </data>
+  <data name="small_producers" xml:space="preserve">
+    <value>cynhyrchwyr bach</value>
+  </data>
 </root>

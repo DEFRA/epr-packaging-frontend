@@ -91,9 +91,9 @@
     <value>Llwyddiant</value>
   </data>
   <data name="producer_registration" xml:space="preserve">
-    <value>[WELSH] Cofrestru {0}</value>
+    <value>Cofrestru {0}</value>
   </data>
   <data name="continue" xml:space="preserve">
-        <value>Parhau</value>
+    <value>Parhau</value>
   </data>
 </root>

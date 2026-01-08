@@ -117,4 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="cso-label" xml:space="preserve">
+    <value>[WELSH] Compliance scheme</value>
+  </data>
+  <data name="england.regulator" xml:space="preserve">
+    <value>Environment Agency (England)</value>
+  </data>
+  <data name="northernireland.regulator" xml:space="preserve">
+    <value>Office for Environmental Protection (OEP) (Northern Ireland)</value>
+  </data>
+  <data name="regulator-label" xml:space="preserve">
+    <value>Rheoleiddiwr</value>
+  </data>
+  <data name="wales.regulator" xml:space="preserve">
+    <value>Cyfoeth Naturiol Cymru (CNC)</value>
+  </data>
 </root>

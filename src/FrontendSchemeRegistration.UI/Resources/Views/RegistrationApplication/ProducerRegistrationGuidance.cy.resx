@@ -64,6 +64,6 @@
         <value>Rhagor o wybodaeth am gyfrifoldebau pecynwaith a gwirio a oes angen ichi weithredu (yn agor mewn tab newydd)</value>
     </data>
     <data name="ensure_your_packaging_data_for_year_been_reported_before_registering" xml:space="preserve">
-        <value>To avoid registration delays, report your {0} packaging data before applying to register for {1}.</value>
+        <value>[WELSH]To avoid registration delays, report your {0} packaging data before applying to register for {1}.</value>
     </data>
 </root>

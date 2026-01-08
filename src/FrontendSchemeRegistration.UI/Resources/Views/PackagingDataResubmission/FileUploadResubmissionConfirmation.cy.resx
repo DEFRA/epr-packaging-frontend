@@ -13,45 +13,45 @@
 		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
 	</resheader>
 	<data name="page_title_producer" xml:space="preserve">
-        <value></value>
-    </data>
+		<value>[WELSH] Confirmation that your packaging data have been updated</value>
+	</data>
 	<data name="page_title_compliance" xml:space="preserve">
-        <value></value>
-    </data>
+		<value>[WELSH] Confirmation that Packaging data have been updated</value>
+	</data>
 	<data name="packaging_data_updated" xml:space="preserve">
-        <value></value>
-    </data>
+		<value>[WELSH] Packaging data updated</value>
+	</data>
 	<data name="submitted_on_z" xml:space="preserve">
-		<value></value>
-    </data>
+		<value>Wedi’i gyflwyno {0}</value>
+	</data>
 	<data name="it_may_take_an_hour" xml:space="preserve">
-		<value></value>
+		<value>[WELSH] It may take up to an hour for our systems to update.</value>
 	</data>
 	<data name="what_happens_next" xml:space="preserve">
-        <value></value>
-    </data>
+		<value>Beth sy'n digwydd nesaf</value>
+	</data>
 	<data name="you_still_need_to" xml:space="preserve">
-        <value></value>
-    </data>
+		<value>[WELSH]You still need to:</value>
+	</data>
 	<data name="view_your_updated_fee" xml:space="preserve">
-        <value></value>
-    </data>
+		<value>[WELSH] view your updated fees and pay if necessary</value>
+	</data>
 	<data name="submit_to_the_environmental_regulator" xml:space="preserve">
-        <value></value>
-    </data>
+		<value>Cyflwyno i'r rheoleiddiwr amgylcheddol</value>
+	</data>
 	<data name="continue_resubmitting" xml:space="preserve">
-        <value></value>
-    </data>
+		<value>[WELSH] Continue resubmitting</value>
+	</data>
 	<data name="you_can" xml:space="preserve">
-        <value></value>
-    </data>
+		<value>Gallwch chi </value>
+	</data>
 	<data name="print_or_save_as_PDF" xml:space="preserve">
-        <value></value>
+        <value>argraffu'r dudalen hon neu ei chadw fel PDF</value>
     </data>
 	<data name="give_feedback" xml:space="preserve">
-    <value>Give feedback</value>
- </data>
+		<value>[WELSH]Give feedback</value>
+	</data>
 	<data name="take_an_optional_survey_to_help_us_improve_this_service" xml:space="preserve">
-    <value>Take an optional survey to help us improve this service.</value>
- </data>
+		<value>[WELSH]Take an optional survey to help us improve this service.</value>
+	</data>
 </root>

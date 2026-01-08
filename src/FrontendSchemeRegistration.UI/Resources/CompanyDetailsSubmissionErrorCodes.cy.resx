@@ -349,16 +349,16 @@
     <value>Rhaid i ddyddiad ymadael y sefydliad fod yn hwyrach na'i ddyddiad ymuno.</value>
   </data>
 	<data name="916" xml:space="preserve">
-    <value>W Joiner date is mandatory for this code.</value>
+    <value>Mae dyddiad ymuno yn orfodol ar gyfer y cod yma.</value>
   </data>
 	<data name="917" xml:space="preserve">
-    <value>W You must enter a joiner date for this organisation.</value>
+    <value>Rhaid ichi roi dyddiad ymuno ar gyfer y sefydliad yma.</value>
   </data>
 	<data name="918" xml:space="preserve">
-    <value>[Welsh]You've told us you're a small producer. Register between 1 January and 1 April.</value>
+    <value>Rydych chi wedi dweud mai cynhyrchydd bach ydych chi. Cofrestrwch rhwng 1 Ionawr a 1 Ebrill.</value>
   </data>
 	<data name="919" xml:space="preserve">
-    <value>[Welsh]You've told us at least one of your members is a small producer. Register these members between 1 January and 1 April 2026.</value>
+    <value>Rydych chi wedi dweud mai cynhyrchydd bach yw o leiaf un o'ch aelodau. Cofrestrwch yr aelodau yma rhwng 1 Ionawr a 1 Ebrill.</value>
   </data>
 	<data name="73" xml:space="preserve">
     <value>Mae trosiant y sefydliad yma wedi'i gofnodi fel sero. Gwiriwch fod hyn yn gywir cyn ichi gyflwyno ffurflen sy'n dweud sero</value>
@@ -382,34 +382,34 @@
     <value>[Welsh] Leaver date should not be present.</value>
   </data>
 	<data name="922" xml:space="preserve">
-    <value>[Welsh] Leaver date must be present when leaver code is present.</value>
+    <value>Rhaid i'r dyddiad ymuno fod yn bresennol pan fo cod ymadael yn bresennol</value>
   </data>
 	<data name="923" xml:space="preserve">
-    <value>[Welsh] Leaver code must be a 2 digit number between 01 and 17.</value>
+    <value>Rhaid i'r cod ymadael fod yn rhif 2 ddigid rhwng 01 a 17.</value>
   </data>
 	<data name="924" xml:space="preserve">
-    <value>[Welsh] Joiner date not allowed when Leaver Code is present.</value>
+    <value>Ni chaniateir dyddiad ymuno pan fo cod ymadael yn bresennol.</value>
   </data>
 	<data name="925" xml:space="preserve">
-    <value>[Welsh] Leaver Or Joiner Code should not be empty.</value>
+    <value>Ni ddylai'r cod ymuno neu ymadael fod yn wag.</value>
   </data>
 	<data name="926" xml:space="preserve">
-    <value>[Welsh] Joiner Or Leaver Code Min length is not correct.</value>
+    <value>Nid yw isafswm hyd y cod ymuno neu ymadael yn gywir.</value>
   </data>
 	<data name="927" xml:space="preserve">
-    <value>[Welsh] Joiner Or Leaver Code Max length not norrect.</value>
+    <value>Nid yw uchafswm hyd y cod ymuno neu ymadael yn gywir.</value>
   </data>
 	<data name="928" xml:space="preserve">
-    <value>[Welsh] Joiner code must be present when joiner date is present.</value>
+    <value>Rhaid i god ymuno fod yn bresennol pan fo dyddiad ymuno yn bresennol.</value>
   </data>
 	<data name="929" xml:space="preserve">
-    <value>[Welsh] Only one date should be present.</value>
+    <value>Dim ond un dyddiad ddylai fod yn bresennol.</value>
   </data>
 	<data name="930" xml:space="preserve">
-    <value>[Welsh] Additional comment is required for this leaver code.</value>
+    <value>Mae  sylw ychwanegol yn orfodol ar gyfer y cod ymadael.</value>
   </data>
 	<data name="931" xml:space="preserve">
-    <value>[Welsh] Leaver date is mandatory for this code.</value>
+    <value>Mae dyddiad ymadael yn orfodol ar gyfer y cod yma.</value>
   </data>
 	<data name="932" xml:space="preserve">
 		<value>[Welsh] This file includes small producer details. Upload a file that contains only large producer details.</value>
