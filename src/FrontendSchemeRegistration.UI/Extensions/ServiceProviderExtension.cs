@@ -23,11 +23,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using CookieOptions = FrontendSchemeRegistration.Application.Options.CookieOptions;
 using SessionOptions = FrontendSchemeRegistration.Application.Options.SessionOptions;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("FrontendSchemeRegistration.UI.UnitTests")]
 namespace FrontendSchemeRegistration.UI.Extensions;
 
 using Application.Options.ReistrationPeriodPatterns;
-using Microsoft.Graph.Models.ExternalConnectors;
 using Services.RegistrationPeriods;
 
 [ExcludeFromCodeCoverage]

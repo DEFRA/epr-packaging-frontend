@@ -528,7 +528,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
                 RegistrationYear = year.ToString(),
                 IsComplianceScheme = registrationApplicationSession.IsComplianceScheme,
                 showLargeProducer = year == 2026,
-                RegisterSmallProducersCS = DateTime.UtcNow.Date >= globalVariables.Value.SmallProducersRegStartTime2026,
+                RegisterSmallProducersCS = _timeProvider.GetUtcNow().Date >= globalVariables.Value.SmallProducersRegStartTime2026,
                 DeadlineDate = registrationApplicationSession.IsComplianceScheme ? globalVariables.Value.LargeProducerLateFeeDeadline2026 : DateTime.MinValue   // this is only displayed for CSOs 
             });
         }
@@ -558,7 +558,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
                 RegistrationYear = window.RegistrationYear.ToString(),
                 IsComplianceScheme = registrationApplicationSession.IsComplianceScheme,
                 showLargeProducer = window.RegistrationYear == 2026,
-                RegisterSmallProducersCS = DateTime.UtcNow.Date >= globalVariables.Value.SmallProducersRegStartTime2026,
+                RegisterSmallProducersCS = _timeProvider.GetUtcNow().Date >= globalVariables.Value.SmallProducersRegStartTime2026,
                 RegistrationJourney = window.Journey,
                 DeadlineDate = window.DeadlineDate
             });
