@@ -1,6 +1,9 @@
 @using FrontendSchemeRegistration.Application.DTOs.Submission
+@using FrontendSchemeRegistration.Application.Enums
 @using FrontendSchemeRegistration.UI.Sessions
-@model RegistrationApplicationPerYearViewModel
+@using FrontendSchemeRegistration.UI.ViewModels.Shared
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model FrontendSchemeRegistration.UI.ViewModels.Shared.RegistrationApplicationViewModel
 
 <div class="govuk-grid-column-one-half box">
     <div class="@GetCardCssClass()">
@@ -8,13 +11,20 @@
             <h2 class="@GetHeaderCssClass()">
                 <a asp-controller="RegistrationApplication"
                    asp-action="@Model.RegistrationApplicationLink"
+                   asp-route-registrationjourney="@Model.RegistrationJourney"
                    asp-route-registrationyear="@Model.RegistrationYear"
                    class="govuk-link govuk-link--no-visited-state">
-                    @Localizer["registration_for_year", Model.RegistrationYear]
-                    @if ((Model.RegistrationYear != "2025" && Model.IsComplianceScheme && Model.feature_AlwaysShowLargeProducerJourneyMessage) || (@Model.showLargeProducer && !Model.RegisterSmallProducersCS))
+                    @if (Model.RegistrationJourney == RegistrationJourney.CsoLargeProducer)
                     {
-                        <br />
-                        @Localizer["large_producers_only"]
+                        @Localizer["current_large_producer_registration_title", Model.RegistrationYear]    
+                    }
+                    else if (Model.RegistrationJourney == RegistrationJourney.CsoSmallProducer)
+                    {
+                        @Localizer["current_small_producer_registration_title", Model.RegistrationYear]
+                    }
+                    else
+                    {
+                        @Localizer["registration_for_year", Model.RegistrationYear]
                     }
                 </a>
             </h2>
@@ -33,7 +43,7 @@
     string GetHeaderCssClass() => Model.SummaryCardStyling ? "govuk-summary-card__title" : "govuk-heading-m";
     string GetBodyCssClass() => Model.SummaryCardStyling ? "govuk-summary-card__content" : "govuk-body";
 
-    void ShowProgressStatus(RegistrationApplicationPerYearViewModel model)
+    void ShowProgressStatus(RegistrationApplicationViewModel model)
     {
         var isResubmissionApprovedRejected = model is { IsResubmission: true, ApplicationStatus: ApplicationStatusType.AcceptedByRegulator or ApplicationStatusType.ApprovedByRegulator or ApplicationStatusType.RejectedByRegulator };
         var isResubmissionPending = model is { IsResubmission: true, AdditionalDetailsStatus: RegistrationTaskListStatus.Completed };
@@ -169,8 +179,8 @@
             {
                 if (model.IsComplianceScheme)
                 {
-                    <p class="govuk-body">@Localizer[model.RegisterSmallProducersCS ? "Apply_by_1st_April_compliance_small_x" : "Apply_by_1st_October_compliance_large_x", model.RegistrationYear]</p>
-                    <p class="govuk-body">@Localizer["Apply_after_deadline_late_fee"]</p>
+                    <p class="govuk-body">@Localizer[model.RegistrationJourney == RegistrationJourney.CsoSmallProducer ? "cso_small_producer_instructions1" : "cso_large_producer_instructions1", model.DeadlineDate.AddDays(-1).ToString("d MMM yyyy")]</p>
+                    <p class="govuk-body">@Localizer[model.RegistrationJourney == RegistrationJourney.CsoSmallProducer ? "cso_small_producer_instructions2" : "cso_large_producer_instructions2"]</p>
                 }
                 else
                 {

@@ -108,17 +108,7 @@
             </div>
 
             <div class="govuk-grid-row box-container">
-                @if (registrationYears.Any(x => Model.ComplianceYearAsInteger(x) >= 2026))
-                {
-                    <partial name="~/Views/FrontendSchemeRegistration/RegisterYourMembersTile.cshtml" model="Model.GetRegisterYourMembersViewModel()"/>
-                }
-                else
-                {
-                    @foreach (var app in Model.RegistrationApplicationsPerYear)
-                    {
-                        <partial name="~/Views/FrontendSchemeRegistration/RegistrationApplicationYearBlock.cshtml" model="app"/>
-                    }
-                }
+                <partial name="~/Views/FrontendSchemeRegistration/RegisterYourMembersTile.cshtml" model="Model.GetRegisterYourMembersViewModel()"/>
 
                 <div class="govuk-grid-column-one-half box">
                     <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">

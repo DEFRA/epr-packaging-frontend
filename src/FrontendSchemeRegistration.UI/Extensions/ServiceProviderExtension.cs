@@ -26,6 +26,10 @@ using SessionOptions = FrontendSchemeRegistration.Application.Options.SessionOpt
 
 namespace FrontendSchemeRegistration.UI.Extensions;
 
+using Application.Options.ReistrationPeriodPatterns;
+using Microsoft.Graph.Models.ExternalConnectors;
+using Services.RegistrationPeriods;
+
 [ExcludeFromCodeCoverage]
 public static class ServiceProviderExtension
 {
@@ -100,6 +104,7 @@ public static class ServiceProviderExtension
     private static void ConfigureOptions(IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<GlobalVariables>(configuration);
+        services.Configure<IEnumerable<RegistrationPeriodPattern>>(configuration.GetSection(RegistrationPeriodPattern.ConfigSection));
         services.Configure<PhaseBannerOptions>(configuration.GetSection(PhaseBannerOptions.Section));
         services.Configure<FrontEndAccountManagementOptions>(configuration.GetSection(FrontEndAccountManagementOptions.ConfigSection));
         services.Configure<FrontEndAccountCreationOptions>(configuration.GetSection(FrontEndAccountCreationOptions.ConfigSection));
@@ -121,6 +126,7 @@ public static class ServiceProviderExtension
         services.Configure<SessionOptions>(configuration.GetSection(SessionOptions.ConfigSection));
 
         services.AddSingleton<GuidanceLinkOptions>();
+        services.Configure<List<RegistrationPeriodPattern>>(configuration.GetSection(RegistrationPeriodPattern.ConfigSection));
     }
 
     private static void RegisterServices(IServiceCollection services)
@@ -151,7 +157,8 @@ public static class ServiceProviderExtension
             Logger = sp.GetRequiredService<ILogger<RegistrationApplicationService>>(),
             FeatureManager = sp.GetRequiredService<IFeatureManager>(),
             HttpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>(),
-            GlobalVariables = sp.GetRequiredService<IOptions<GlobalVariables>>()
+            GlobalVariables = sp.GetRequiredService<IOptions<GlobalVariables>>(),
+            RegistrationPeriodProvider = sp.GetRequiredService<IRegistrationPeriodProvider>(),
         });
         services.AddScoped<IRegistrationApplicationService, RegistrationApplicationService>();
         services.AddSingleton<IPatchService, PatchService>();
@@ -164,6 +171,7 @@ public static class ServiceProviderExtension
         services.AddScoped<IFileDownloadService, FileDownloadService>();
         services.AddScoped<ComplianceSchemeIdHttpContextFilterAttribute>();
         services.AddScoped<IResubmissionApplicationService, ResubmissionApplicationServices>();
+        services.AddSingleton<IRegistrationPeriodProvider, RegistrationPeriodProvider>();
     }
 
     // When testing PRNs use a configurable date in place of the current date

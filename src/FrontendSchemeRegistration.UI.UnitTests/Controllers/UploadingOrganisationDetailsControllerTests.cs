@@ -209,7 +209,7 @@ public class UploadingOrganisationDetailsControllerTests
 
 
         _registrationApplicationServiceMock.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(),
-            It.Is<Organisation>(c => c.Name == "Test Organisation"), 2025, false, RegistrationJourney.CsoLargeProducer));
+            It.Is<Organisation>(c => c.Name == "Test Organisation"), 2025, RegistrationJourney.CsoLargeProducer, false));
         _submissionServiceMock
             .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
             .ReturnsAsync(submission);

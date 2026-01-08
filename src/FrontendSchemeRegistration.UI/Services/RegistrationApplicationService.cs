@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Security.Claims;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
@@ -18,6 +18,8 @@ using Microsoft.FeatureManagement;
 namespace FrontendSchemeRegistration.UI.Services;
 
 using Application.Services;
+using RegistrationPeriods;
+using ViewModels.Shared;
 
 public class RegistrationApplicationService : IRegistrationApplicationService
 {
@@ -30,6 +32,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     private readonly IHttpContextAccessor httpContextAccessor;
     private readonly IOptions<GlobalVariables> globalVariables;
     private readonly TimeProvider _timeProvider;
+    private readonly IRegistrationPeriodProvider _registrationPeriodProvider;
 
     public RegistrationApplicationService(RegistrationApplicationServiceDependencies dependencies, TimeProvider timeProvider)
     {
@@ -52,6 +55,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             ?? throw new InvalidOperationException($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(dependencies.HttpContextAccessor)} cannot be null.");
         globalVariables = dependencies.GlobalVariables
             ?? throw new InvalidOperationException($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(dependencies.GlobalVariables)} cannot be null.");
+        _registrationPeriodProvider = dependencies.RegistrationPeriodProvider;
     }
     private void SetLateFeeFlag(RegistrationApplicationSession session, int registrationYear)
     {
@@ -106,7 +110,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         }
     }
 
-    public async Task<RegistrationApplicationSession> GetRegistrationApplicationSession(ISession httpSession, Organisation organisation, int registrationYear, bool? isResubmission = null, RegistrationJourney? registrationJourney = null)
+    public async Task<RegistrationApplicationSession> GetRegistrationApplicationSession(ISession httpSession, Organisation organisation, int registrationYear, RegistrationJourney? registrationJourney, bool? isResubmission = null)
     {
         var session = await sessionManager.GetSessionAsync(httpSession) ?? new RegistrationApplicationSession();
         var frontEndSession = await frontEndSessionManager.GetSessionAsync(httpSession) ?? new FrontendSchemeRegistrationSession();
@@ -500,19 +504,19 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         await frontEndSessionManager.SaveSessionAsync(httpSession, frontEndSession);
     }
 
-    public async Task<List<RegistrationApplicationPerYearViewModel>> BuildRegistrationApplicationPerYearViewModels(ISession httpSession, Organisation organisation)
+    public async Task<List<RegistrationApplicationViewModel>> BuildRegistrationApplicationPerYearViewModels(ISession httpSession, Organisation organisation)
     {
         var years = globalVariables.Value.RegistrationYear.Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .Select(y => int.TryParse(y, out var year) ? year : throw new FormatException($"Invalid year: '{y}'"))
             .OrderByDescending(n => n).ToArray();
 
-        var viewModels = new List<RegistrationApplicationPerYearViewModel>();
+        var viewModels = new List<RegistrationApplicationViewModel>();
 
         foreach (var year in years)
         {
-            var registrationApplicationSession = await GetRegistrationApplicationSession(httpSession, organisation, year);
+            var registrationApplicationSession = await GetRegistrationApplicationSession(httpSession, organisation, year, null);
 
-            viewModels.Add(new RegistrationApplicationPerYearViewModel
+            viewModels.Add(new RegistrationApplicationViewModel
             {
                 ApplicationStatus = registrationApplicationSession.ApplicationStatus,
                 FileUploadStatus = registrationApplicationSession.FileUploadStatus,
@@ -524,12 +528,43 @@ public class RegistrationApplicationService : IRegistrationApplicationService
                 RegistrationYear = year.ToString(),
                 IsComplianceScheme = registrationApplicationSession.IsComplianceScheme,
                 showLargeProducer = year == 2026,
-                feature_AlwaysShowLargeProducerJourneyMessage = await featureManager.IsEnabledAsync(FeatureFlags.AlwaysShowLargeProducerJourneyMessage),
-                RegisterSmallProducersCS = DateTime.UtcNow.Date >= globalVariables.Value.SmallProducersRegStartTime2026
+                RegisterSmallProducersCS = DateTime.UtcNow.Date >= globalVariables.Value.SmallProducersRegStartTime2026,
+                DeadlineDate = registrationApplicationSession.IsComplianceScheme ? globalVariables.Value.LargeProducerLateFeeDeadline2026 : DateTime.MinValue   // this is only displayed for CSOs 
             });
         }
 
         return viewModels;
+    }
+
+    public async Task<List<RegistrationYearApplicationsViewModel>> BuildRegistrationYearApplicationsViewModels(ISession httpSession, Organisation organisation)
+    {
+        var applications = new List<RegistrationApplicationViewModel>();
+
+        var windows = _registrationPeriodProvider.GetRegistrationWindows(organisation.OrganisationRole == OrganisationRoles.ComplianceScheme).OrderByDescending(ra => ra.RegistrationYear);
+
+        foreach (var window in windows)
+        {
+            var registrationApplicationSession = await GetRegistrationApplicationSession(httpSession, organisation, window.RegistrationYear, window.Journey);
+
+            applications.Add(new RegistrationApplicationViewModel
+            {
+                ApplicationStatus = registrationApplicationSession.ApplicationStatus,
+                FileUploadStatus = registrationApplicationSession.FileUploadStatus,
+                PaymentViewStatus = registrationApplicationSession.PaymentViewStatus,
+                AdditionalDetailsStatus = registrationApplicationSession.AdditionalDetailsStatus,
+                ApplicationReferenceNumber = registrationApplicationSession.ApplicationReferenceNumber,
+                RegistrationReferenceNumber = registrationApplicationSession.RegistrationReferenceNumber,
+                IsResubmission = registrationApplicationSession.IsResubmission,
+                RegistrationYear = window.RegistrationYear.ToString(),
+                IsComplianceScheme = registrationApplicationSession.IsComplianceScheme,
+                showLargeProducer = window.RegistrationYear == 2026,
+                RegisterSmallProducersCS = DateTime.UtcNow.Date >= globalVariables.Value.SmallProducersRegStartTime2026,
+                RegistrationJourney = window.Journey,
+                DeadlineDate = window.DeadlineDate
+            });
+        }
+
+        return applications.GroupBy(a => a.RegistrationYear).Select(a => new RegistrationYearApplicationsViewModel(int.Parse(a.Key), a)).ToList();
     }
 
     public int? ValidateRegistrationYear(string? registrationYear, bool isParamOptional = false)
@@ -562,7 +597,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
 
 public interface IRegistrationApplicationService
 {
-    Task<RegistrationApplicationSession> GetRegistrationApplicationSession(ISession httpSession, Organisation organisation, int registrationYear, bool? isResubmission = null, RegistrationJourney? registrationJourney  = null);
+    Task<RegistrationApplicationSession> GetRegistrationApplicationSession(ISession httpSession, Organisation organisation, int registrationYear, RegistrationJourney? registrationJourney, bool? isResubmission = null);
 
     Task<FeeCalculationBreakdownViewModel?> GetProducerRegistrationFees(ISession httpSession);
 
@@ -574,8 +609,11 @@ public interface IRegistrationApplicationService
 
     Task SetRegistrationFileUploadSession(ISession httpSession, string organisationNumber, int registrationYear, bool? isResubmission);
 
-    Task<List<RegistrationApplicationPerYearViewModel>> BuildRegistrationApplicationPerYearViewModels(ISession httpSession, Organisation organisation);
+    Task<List<RegistrationApplicationViewModel>> BuildRegistrationApplicationPerYearViewModels(ISession httpSession, Organisation organisation);
 
+    Task<List<RegistrationYearApplicationsViewModel>> BuildRegistrationYearApplicationsViewModels(
+        ISession httpSession, Organisation organisation);
+    
     int? ValidateRegistrationYear(string? registrationYear, bool isParamOptional = false);
 }
 
@@ -590,4 +628,5 @@ public sealed class RegistrationApplicationServiceDependencies
     public required IFeatureManager FeatureManager { get; init; }
     public required IHttpContextAccessor HttpContextAccessor { get; init; }
     public required IOptions<GlobalVariables> GlobalVariables { get; init; }
+    public required IRegistrationPeriodProvider RegistrationPeriodProvider { get; init; }
 }

@@ -64,7 +64,6 @@ public class ComplianceSchemeLandingController(
         var resubmissionApplicationDetails = await resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(
             organisation, new List<string> { packagingResubmissionPeriod?.DataPeriod }, session.RegistrationSession.SelectedComplianceScheme?.Id);
 
-        var registrationApplicationPerYearViewModels = await registrationApplicationService.BuildRegistrationApplicationPerYearViewModels(HttpContext.Session, organisation);
         
         var model = new ComplianceSchemeLandingViewModel
         {
@@ -74,7 +73,6 @@ public class ComplianceSchemeLandingController(
             OrganisationName = organisation.Name,
             ComplianceSchemes = complianceSchemes,
             ResubmissionTaskListViewModel = resubmissionApplicationDetails.ToResubmissionTaskListViewModel(organisation),
-            RegistrationApplicationsPerYear = registrationApplicationPerYearViewModels,
             PackagingResubmissionPeriod = packagingResubmissionPeriod,
             ComplianceYear = currentPeriod.currentMonth == 1 ? (currentPeriod.currentYear - 1).ToString() : currentPeriod.currentYear.ToString() // this is a temp fix for the compliance window change
         };
