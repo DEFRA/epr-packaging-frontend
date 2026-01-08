@@ -136,7 +136,7 @@
     <value>Is-gwmnïau</value>
   </data>
   <data name="no_ch_number" xml:space="preserve">
-    <value>W No CH Number</value>
+    <value>[WELSH] No CH Number</value>
   </data>
   <data name="no_subsidiaries_added" xml:space="preserve">
     <value>W No subsidiaries added for this organisation.</value>
@@ -175,7 +175,7 @@
     <value>Tynnu</value>
   </data>
   <data name="how_to_complete_file" xml:space="preserve">
-    <value>W How to create your subsidiaries file (opens in a new tab)</value>
+    <value>[WELSH]How to create your subsidiaries file (opens in a new tab)</value>
   </data>
   <data name="upload_a_file" xml:space="preserve">
     <value>Uwchlwytho ffeil</value>
@@ -196,10 +196,10 @@
     <value>Bydd is-gwmnïau yn ymddangos yma ar ôl cael eu prosesu.</value>
   </data>
   <data name="adding_subsidiaries" xml:space="preserve">
-    <value>WAdding subsidiaries</value>
+    <value>[WELSH]Adding subsidiaries</value>
   </data>
   <data name="upload_a_csv_file" xml:space="preserve">
-    <value>w_Upload a CSV file</value>
+    <value>[WELSH]Upload a CSV file</value>
   </data>
   <data name="download_subsidiaries_list" xml:space="preserve">
     <value>Lawrlwytho rhestr is-gwmnïau</value>
@@ -208,7 +208,7 @@
     <value>Sut i greu'ch ffeil is-gwmni (yn agor mewn tab newydd)</value>
   </data>
   <data name="informing_us_of_a_change" xml:space="preserve">
-    <value>WInforming us of a change</value>
+    <value>[WELSH]Informing us of a change</value>
   </data>
   <data name="if_any_of_your_subsidiaries" xml:space="preserve">
     <value>WIf any of your subsidiaries' organisation details change, you must notify the regulator within 28 days by</value>
@@ -217,31 +217,31 @@
     <value>Wupdating and resubmitting your registration file</value>
   </data>
   <data name="removing_subsidiaries" xml:space="preserve">
-    <value>WRemoving subsidiaries</value>
+    <value>[WELSH]Removing subsidiaries</value>
   </data>
   <data name="update_and_resubmit" xml:space="preserve">
-    <value>Wupdate and resubmit your registration file</value>
+    <value>[WELSH]update and resubmit your registration file</value>
   </data>
   <data name="to_permanently_remove_subsidiaries" xml:space="preserve">
-    <value>WTo permanently remove subsidiaries, you must</value>
+    <value>[WELSH]To permanently remove subsidiaries, you must</value>
   </data>
   <data name="joined" xml:space="preserve">
-    <value>W_Joined</value>
+    <value>[WELSH] Joined</value>
   </data>
   <data name="within_28_days_of_the_change" xml:space="preserve">
-    <value>Wwithin 28 days of the change</value>
+    <value>[WELSH]within 28 days of the change. You will need to enter the subsidiary IDs to do this.</value>
   </data>
   <data name="reporting" xml:space="preserve">
-    <value>W_Reporting</value>
+    <value>[WELSH] Reporting</value>
   </data>
   <data name="create_subsidiary_ids" xml:space="preserve">
-    <value>WCreate subsidiary IDs</value>
+    <value>[WELSH]Create subsidiary IDs</value>
   </data>
   <data name="upload_subsidiary_file" xml:space="preserve">
-    <value>WUpload subsidiary file</value>
+    <value>Uwchlwytho ffeil is-gwmni</value>
   </data>
   <data name="before_you_upload" xml:space="preserve">
-    <value>WBefore you upload your file, make sure you're using the latest version of the</value>
+    <value>[WELSH]Before you upload your file, make sure you're using the latest version of the</value>
   </data>
   <data name="subsidiary_file_template" xml:space="preserve">
     <value>Wsubsidiary file template (opens in a new tab)</value>
@@ -250,19 +250,19 @@
     <value>WAdding and removing subsidiaries</value>
   </data>
   <data name="to_add_or_remove" xml:space="preserve">
-    <value>WTo add or remove subsidiaries, you must</value>
+    <value>I ychwanegu neu dynnu is-gwmnïau, rhaid ichi</value>
   </data>
   <data name="use_the_file_upload" xml:space="preserve">
-    <value>WUse the file upload to create subsidiary IDs - you will need these subsidiary IDs to add subsidiaries to your organisation.</value>
+    <value>[WELSH]Use the file upload to create subsidiary IDs - you will need these subsidiary IDs to add subsidiaries to your organisation.</value>
   </data>
   <data name="manage_subsidiaries" xml:space="preserve">
     <value>Rheoli is-gwmnïau</value>
   </data>
   <data name="producer_label" xml:space="preserve">
-    <value>W_producer</value>
+    <value>[WELSH]Producer</value>
   </data>
   <data name="regulator_label" xml:space="preserve">
-    <value>W_regulator</value>
+    <value>Rheoleiddiwr</value>
   </data>
   <data name="subsidiaries_label" xml:space="preserve">
     <value>Is-gwmnïau</value>

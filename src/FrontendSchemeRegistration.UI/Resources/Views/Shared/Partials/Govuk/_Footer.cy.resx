@@ -154,12 +154,18 @@
     <value>Ffôn</value>
   </data>
   <data name="Footer.Website" xml:space="preserve">
-    <value>WWebsite</value>
+    <value>[WELSH]Website</value>
   </data>
   <data name="Footer.OpensInNewTab" xml:space="preserve">
-    <value>opens in new tab</value>
+    <value>[WELSH]opens in new tab</value>
   </data>
   <data name="Footer.WebsiteLink" xml:space="preserve">
-    <value>WEPR ServiceNow helpdesk</value>
+    <value>[WELSH]EPR ServiceNow helpdesk</value>
+  </data>
+  <data name="Footer.GiveFeedback" xml:space="preserve">
+    <value>[WELSH] Give feedback on this service</value>
+  </data>
+  <data name="Footer.ReportAProblem" xml:space="preserve">
+    <value>[WELSH] Report a problem with this page</value>
   </data>
 </root>

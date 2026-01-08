@@ -72,4 +72,8 @@
     <data name="may_get_another_error" xml:space="preserve">
         <value>If there are more errors, you may get another error report.</value>
     </data>
+    <data name="continue" xml:space="preserve">
+        <value>Continue</value>
+        <comment>continue</comment>
+    </data>
 </root>

@@ -25,7 +25,7 @@
     <value>Cyfeirnod y cais:</value>
   </data>
   <data name="registration_reference_number" xml:space="preserve">
-    <value>WProducer registration number:</value>
+    <value>[WELSH] Producer registration number:</value>
   </data>
   <data name="submitted_date_x" xml:space="preserve">
     <value>Wedi’i gyflwyno {0}</value>
@@ -52,7 +52,7 @@
     <value>Defnyddiwch gyfeirnod eich cais mewn unrhyw gyfathrebiadau â'r rheoleiddiwr amgylcheddol.</value>
   </data>
   <data name="use_registration_reference_number_in_communication_with_regulator" xml:space="preserve">
-    <value>WUse your producer registration number in any communication with the environmental regulator.</value>
+    <value>[WELSH] Use your producer registration number in any communication with the environmental regulator.</value>
   </data>
   <data name="you_can" xml:space="preserve">
     <value>Gallwch chi </value>
@@ -109,15 +109,21 @@
     <value>(Gan ddibynnu ar eich porwr, bydd yn agor mewn ffesnestr neu dab newydd, neu'n cael ei gadw yn eich ffolder lawrlwythiadau.).</value>
   </data>
   <data name="you_have_submitted_small" xml:space="preserve">
-    <value>You have submitted your small producer {0} registration to </value>
+    <value>[WELSH] You have submitted your small producer {0} registration to </value>
   </data>
   <data name="you_have_submitted_large" xml:space="preserve">
-    <value>You have submitted your large producer {0} registration to </value>
+    <value>[WELSH] You have submitted your large producer {0} registration to </value>
   </data>
   <data name="return_to_your" xml:space="preserve">
-    <value>Return to register your members </value>
+    <value>Dychwelyd i gofrestru'ch aelodau </value>
   </data>
   <data name="you_can_print_or_save" xml:space="preserve">
-    <value>print or save this page as a PDF</value>
+    <value>[WELSH] print or save this page as a PDF</value>
+  </data>
+  <data name="registration_application_submitted_for_approval_large" xml:space="preserve">
+    <value>[WELSH] You have submitted your {0} large producer registration application</value>
+  </data>
+  <data name="registration_application_submitted_for_approval_small" xml:space="preserve">
+    <value>[WELSH] You have submitted your {0} small producer registration application</value>
   </data>
 </root>

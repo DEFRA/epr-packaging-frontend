@@ -133,34 +133,34 @@
     <value>Llwythwch i fyny fanylion y sefydliad adref</value>
   </data>
   <data name="you_should" xml:space="preserve">
-    <value>You should:</value>
+    <value>Dylech chi:</value>
   </data>
   <data name="all_files_ready" xml:space="preserve">
-    <value>have all your files ready to upload</value>
+    <value>fod â'ch holl ffeiliau yn barod i'w huwchlwytho </value>
   </data>
   <data name="ensure_file_format" xml:space="preserve">
-    <value>ensure any file to be uploaded is in .csv format</value>
+    <value>sicrhau bod unrhyw ffeil sydd i'w huwchlwytho yn y fformat .csv</value>
   </data>
   <data name="include_information" xml:space="preserve">
-    <value>include brand and partner information if required</value>
+    <value>cynnwys gwybodaeth am frandiau a phartneriaid os oes ei hangen</value>
   </data>
   <data name="available_document_template" xml:space="preserve">
-    <value>use the available document templates</value>
+    <value>defnyddio'r templedi dogfennau sydd ar gael.</value>
   </data>
   <data name="file_rejected" xml:space="preserve">
-    <value>Your file will be rejected if you:</value>
+    <value>Bydd eich ffeil yn cael ei gwrthod os byddwch chi:</value>
   </data>
   <data name="large_producer_detail" xml:space="preserve">
-    <value>include large producers' details</value>
+    <value>yn cynnwys manylion cynhyrchwyr mawr</value>
   </data>
   <data name="subsidiaries_guidance" xml:space="preserve">
-    <value>are reporting for subsidiaries and haven't used the subsidiary ID provided</value>
+    <value>yn rhoi gwybod ar ran is-gwmnïau a heb ddefnyddio'r ID is-gwmni a ddarparwyd {Rheoli'ch is-gwmnïau}</value>
   </data>
   <data name="file_upload_warning" xml:space="preserve">
-    <value>Do not close the window while the file is uploading. This may take a few minutes.</value>
+    <value>Peidiwch â chau'r ffenestr wrth i'r ffeil uwchlwytho. Gall hyn gymryd ychydig funudau.</value>
   </data>
   <data name="register_company_size_large" xml:space="preserve">
-    <value>Large canllawiau {0} cofrestru</value>
+    <value>[WELSH] Large canllawiau {0} cofrestru</value>
   </data>
   <data name="report_your_organisation_detail" xml:space="preserve">
     <value>Rhoi gwybod am fanylion eich sefydliad</value>
@@ -172,7 +172,7 @@
     <value>Rhoi gwybod am fanylion eich sefydliad</value>
   </data>
   <data name="register_company_size_small" xml:space="preserve">
-    <value>Small canllawiau {0} cofrestru</value>
+    <value>[WELSH] Small canllawiau {0} cofrestru</value>
   </data>
   <data name="continue" xml:space="preserve">
     <value>Parhau</value>

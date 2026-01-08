@@ -133,19 +133,19 @@
     <value>Lawrlwytho rhestr is-gwmnïau</value>
   </data>
   <data name="joined" xml:space="preserve">
-    <value>W Joined</value>
+    <value>[WELSH] Joined</value>
   </data>
   <data name="no_ch_number" xml:space="preserve">
-    <value>W No CH Number</value>
+    <value>[WELSH] No CH Number</value>
   </data>
   <data name="remove_subsidiary" xml:space="preserve">
     <value>Tynnu</value>
   </data>
   <data name="reporting" xml:space="preserve">
-    <value>W Reporting</value>
+    <value>[WELSH] Reporting</value>
   </data>
   <data name="return_to_account_home" xml:space="preserve">
-    <value>W Account home</value>
+    <value>[WELSH] Account home</value>
   </data>
   <data name="subsidiaries" xml:space="preserve">
     <value>Is-gwmnïau</value>
@@ -154,13 +154,13 @@
     <value>Rhestr is-gwmnïau</value>
   </data>
   <data name="subsidiaries_need_to_upload_csv" xml:space="preserve">
-    <value>W To add subsidiaries you will need to upload a CSV file.</value>
+    <value>[WELSH] To add subsidiaries you will need to upload a CSV file.</value>
   </data>
   <data name="subsidiaries_not_found" xml:space="preserve">
     <value>Is-gwmni heb ei ganfod</value>
   </data>
   <data name="subsidiaries_will_appear" xml:space="preserve">
-    <value>W Subsidiaries will appear here after they have been processed.</value>
+    <value>[WELSH] Subsidiaries will appear here after they have been processed.</value>
   </data>
   <data name="subsidiary_accuracy_warning_text" xml:space="preserve">
     <value>Gwiriwch fod yr holl wybodaeth rydych chi wedi'i darparu yn gywir. Os nad yw'n gywir neu os oes unrhyw wybodaeth ar goll, bydd angen ichi ddarparu'r data cywir. Defnyddiwch IDs yr is-gwmnïau ar gyfer holl fanylion y sefydliad a phob cyflwyniad data pecynwaith yn y dyfodol.</value>
@@ -205,7 +205,7 @@
     <value>Gwnewch yn siŵr eich bod wedi rhoi enw, ID neu Rif Tŷ'r Cwmni cywir yr is-gwmni. Os oes angen ichi ychwanegu is-gwmni at y rhiant-gwmni yma, defnyddiwch y broses uwchlwytho ffeil i greu ID is-gwmni ac wedyn diweddaru ac uwchlwytho'ch ffeil gofrestru.</value>
   </data>
   <data name="subsidiary_not_found_resubmit_warning_text" xml:space="preserve">
-    <value>w</value>
+    <value>[WELSH] If you need to add a subsidiary to this parent company, click on add a single subsidiary button below or use the file upload to create a subsidiary ID and then update and resubmit your registration file.</value>
   </data>
   <data name="before_you_start" xml:space="preserve">
     <value>Cyn ichi ddechrau</value>

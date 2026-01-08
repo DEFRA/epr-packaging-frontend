@@ -168,7 +168,7 @@ details file.</comment>
     <comment>wreturn to view all scheme members</comment>
   </data>
   <data name="ConfirmationOfRemoval.FromMemberReg" xml:space="preserve">
-    <value>Wfrom either your registration file or your members organisation file, depending on which period this change is to be recorded.</value>
+    <value>[WELSH]from either your registration file or your members organisation file, depending on which period this change is to be recorded.</value>
   </data>
   <data name="ConfirmationOfRemoval.IfYouUploadFileReg" xml:space="preserve">
     <value>WIf you’ve already uploaded this file, you’ll need to remove this member and then re-upload the appropriate file. If you’ve submitted this file to the environmental regulator, you must re-submit the updated file within the next 28 days.</value>
@@ -177,7 +177,7 @@ details file.</comment>
     <value>Wre-upload and submit members’ organisation details-Historical</value>
   </data>
   <data name="ConfirmationOfRemoval.ReUploadReg" xml:space="preserve">
-    <value>WResubmit the registration file-Current period</value>
+    <value>[WELSH]Resubmit the registration file-Current period</value>
   </data>
   <data name="ConfirmationOfRemoval.IfRemovedReg" xml:space="preserve">
     <value>Os hoffech chi eu hychwanegu nhw at eich cyfrif eto, bydd angen iddyn nhw eich enwi chi fel eu cynllun cydymffurfio yn eu cyfrif 'Rhoi gwybod am ddata pecynwaith'.</value>

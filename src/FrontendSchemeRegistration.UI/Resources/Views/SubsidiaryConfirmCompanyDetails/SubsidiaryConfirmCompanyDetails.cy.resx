@@ -165,4 +165,10 @@
     <data name="ConfirmCompanyDetails.IsAlreadyLinkedToOtherParent" xml:space="preserve">
     <value>Mae {0} eisoes wedi’i gysylltu â</value>
   </data>
+    <data name="Cancel" xml:space="preserve">
+        <value>Canslo</value>
+    </data>
+    <data name="producer_link" xml:space="preserve">
+        <value>[WELSH]View Linked Producer</value>
+    </data>
 </root>

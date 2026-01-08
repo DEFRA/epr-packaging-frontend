@@ -159,4 +159,7 @@
     <data name="continue" xml:space="preserve">
         <value>Parhau</value>
     </data>
+    <data name="pay_resubmission_fee_of" xml:space="preserve">
+        <value>[WELSH]Pay the packaging data resubmission fee of</value>
+    </data>
 </root>
