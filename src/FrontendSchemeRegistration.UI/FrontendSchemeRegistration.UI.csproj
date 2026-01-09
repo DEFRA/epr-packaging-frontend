@@ -1137,6 +1137,9 @@
             <Value>Views/**/*.cshtml</Value>
         </SonarQubeSetting>
 	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Services\RegistrationPeriods\" />
+	</ItemGroup>
 
   <PropertyGroup>
     <NoWarn>S4507,S4792</NoWarn>

@@ -29,6 +29,7 @@ public class ComplianceSchemeLandingControllerTests
     private const string OrganisationName = "Acme Org Ltd";
 
     private readonly string _currentYear = DateTime.Now.Year.ToString();
+    private readonly string _lastYear = DateTime.Now.AddYears(-1).Year.ToString();
     private readonly Guid _organisationId = Guid.NewGuid();
     private readonly Guid _complianceSchemeOneId = Guid.NewGuid();
     private readonly Guid _complianceSchemeTwoId = Guid.NewGuid();
@@ -245,7 +246,7 @@ public class ComplianceSchemeLandingControllerTests
                     ResubmissionApplicationSubmitted = false
                 },
                 PackagingResubmissionPeriod = globalVariables.Object.Value.SubmissionPeriods.FirstOrDefault(sp => sp.Year == _currentYear),
-                ComplianceYear = _currentYear
+                ComplianceYear = DateTime.Now.Month > 1 ? _currentYear : _lastYear
             });
 
         _sessionManagerMock.Verify(
@@ -325,7 +326,7 @@ public class ComplianceSchemeLandingControllerTests
                     ResubmissionApplicationSubmitted = false
                 },
                 PackagingResubmissionPeriod = globalVariables.Object.Value.SubmissionPeriods.FirstOrDefault(sp => sp.Year == _currentYear),
-                ComplianceYear = _currentYear
+                ComplianceYear = DateTime.Now.Month > 1 ? _currentYear : _lastYear
             });
 
         _sessionManagerMock.Verify(
@@ -440,7 +441,7 @@ public class ComplianceSchemeLandingControllerTests
                     ResubmissionApplicationSubmitted = false
                 },
                 PackagingResubmissionPeriod = globalVariables.Object.Value.SubmissionPeriods.FirstOrDefault(sp => sp.Year == _currentYear),
-                ComplianceYear = _currentYear
+                ComplianceYear = DateTime.Now.Month > 1 ? _currentYear : _lastYear
             });
 
         _sessionManagerMock.Verify(
@@ -554,7 +555,7 @@ public class ComplianceSchemeLandingControllerTests
                     ResubmissionApplicationSubmitted = false
                 },
                 PackagingResubmissionPeriod = globalVariables.Object.Value.SubmissionPeriods.FirstOrDefault(sp => sp.Year == _currentYear),
-                ComplianceYear = _currentYear
+                ComplianceYear = DateTime.Now.Month > 1 ? _currentYear : _lastYear
             });
 
         _sessionManagerMock.Verify(
@@ -668,7 +669,7 @@ public class ComplianceSchemeLandingControllerTests
                     ResubmissionApplicationSubmitted = false
                 },
                 PackagingResubmissionPeriod = globalVariables.Object.Value.SubmissionPeriods.FirstOrDefault(sp => sp.Year == _currentYear),
-                ComplianceYear = _currentYear
+                ComplianceYear = DateTime.Now.Month > 1 ? _currentYear : _lastYear
             });
 
         _sessionManagerMock.Verify(
@@ -776,7 +777,7 @@ public class ComplianceSchemeLandingControllerTests
                     ResubmissionApplicationSubmitted = false
                 },
                 PackagingResubmissionPeriod = globalVariables.Object.Value.SubmissionPeriods.FirstOrDefault(sp => sp.Year == _currentYear),
-                ComplianceYear = _currentYear
+                ComplianceYear = DateTime.Now.Month > 1 ? _currentYear : _lastYear
             });
 
         _sessionManagerMock.Verify(
@@ -887,7 +888,7 @@ public class ComplianceSchemeLandingControllerTests
                     ResubmissionApplicationSubmitted = false
                 },
                 PackagingResubmissionPeriod = globalVariables.Object.Value.SubmissionPeriods.FirstOrDefault(sp => sp.Year == _currentYear),
-                ComplianceYear = _currentYear
+                ComplianceYear = DateTime.Now.Month > 1 ? _currentYear : _lastYear
             });
 
         _sessionManagerMock.Verify(

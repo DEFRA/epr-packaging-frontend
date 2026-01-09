@@ -36,6 +36,8 @@ public class RegistrationApplicationServiceTests
     private RegistrationApplicationService _service;
     private Mock<IFeatureManager> _featureManagerMock;
     private Mock<IHttpContextAccessor> _httpContextAccessorMock;
+    private TimeProvider _dateTimeProvider;
+    private int _validRegistrationYear;
 
     private readonly RegistrationApplicationSession _session = new RegistrationApplicationSession
     {
@@ -53,6 +55,8 @@ public class RegistrationApplicationServiceTests
     [SetUp]
     public void Setup()
     {
+        _dateTimeProvider = TimeProvider.System;
+        _validRegistrationYear = _dateTimeProvider.GetLocalNow().Year;
         _submissionServiceMock = new Mock<ISubmissionService>();
         _paymentCalculationServiceMock = new Mock<IPaymentCalculationService>();
         _sessionManagerMock = new Mock<ISessionManager<RegistrationApplicationSession>>();
@@ -61,14 +65,13 @@ public class RegistrationApplicationServiceTests
         _loggerMock = new Mock<ILogger<RegistrationApplicationService>>();
         _featureManagerMock = new Mock<IFeatureManager>();
         _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
-
         
         var globalVariables = Options.Create(new GlobalVariables
         {
-            LateFeeDeadline2025 = new(DateTime.Today.Year, 4, 1),
-            LargeProducerLateFeeDeadline2026 = new(DateTime.Today.Year, 10, 1),
-            SmallProducerLateFeeDeadline2026 = new(DateTime.Today.Year + 1, 4, 1),
-            RegistrationYear = $"{DateTime.Now.Year}, {DateTime.Now.AddYears(1).Year}"
+            LateFeeDeadline2025 = new(2025, 4, 1),
+            LargeProducerLateFeeDeadline2026 = new(2025, 10, 1),
+            SmallProducerLateFeeDeadline2026 = new(2026, 4, 1),
+            RegistrationYear = $"{_validRegistrationYear}, {_validRegistrationYear + 1}"
         });
 
         _fixture = new Fixture();
@@ -85,7 +88,7 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = globalVariables
         };
 
-        _service = new RegistrationApplicationService(deps);
+        _service = new RegistrationApplicationService(deps, _dateTimeProvider);
 
         var submissionYear = DateTime.Now.Year.ToString();
         _session.Period = new SubmissionPeriod
@@ -573,7 +576,8 @@ public class RegistrationApplicationServiceTests
     {
         // Arrange
         var organisationNumber = "123";
-
+        string expectedApplicationReferenceNumber = $"PEPR{organisationNumber}{_dateTimeProvider.GetUtcNow().Year - 2000}P1";
+        
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
             .ReturnsAsync(_session);
 
@@ -592,7 +596,7 @@ public class RegistrationApplicationServiceTests
         // Assert
         _frontEndSessionManagerMock.Verify(
             m => m.SaveSessionAsync(_httpSession, It.Is<FrontendSchemeRegistrationSession>(session =>
-                session.RegistrationSession.ApplicationReferenceNumber == "PEPR12325P1")),
+                session.RegistrationSession.ApplicationReferenceNumber == expectedApplicationReferenceNumber)),
             Times.Once);
     }
 
@@ -601,7 +605,8 @@ public class RegistrationApplicationServiceTests
     {
         // Arrange
         var organisationNumber = "123";
-
+        string expectedApplicationReferenceNumber = $"PEPR{organisationNumber}{_dateTimeProvider.GetUtcNow().Year - 2000-1}P2";
+        
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
             .ReturnsAsync(_session);
 
@@ -624,7 +629,7 @@ public class RegistrationApplicationServiceTests
         // Assert
         _frontEndSessionManagerMock.Verify(
             m => m.SaveSessionAsync(_httpSession, It.Is<FrontendSchemeRegistrationSession>(session =>
-                session.RegistrationSession.ApplicationReferenceNumber == "PEPR12324P2")),
+                session.RegistrationSession.ApplicationReferenceNumber == expectedApplicationReferenceNumber)),
             Times.Once);
     }
 
@@ -840,7 +845,7 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = globalVariables
         };
 
-        _service = new RegistrationApplicationService(deps);
+        _service = new RegistrationApplicationService(deps, _dateTimeProvider);
 
         var organisation = _fixture.Create<Organisation>();
         organisation.OrganisationNumber = "123";
@@ -1328,7 +1333,7 @@ public class RegistrationApplicationServiceTests
         result.Should().BeEquivalentTo(new RegistrationApplicationSession
         {
             Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" },
-            SubmissionPeriod = "January to December 2025",
+            SubmissionPeriod = $"January to December {submissionYear}",
             SubmissionId = submissionId,
             IsSubmitted = true,
             ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
@@ -1415,7 +1420,7 @@ public class RegistrationApplicationServiceTests
         result.Should().BeEquivalentTo(new RegistrationApplicationSession
         {
             Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" },
-            SubmissionPeriod = "January to December 2025",
+            SubmissionPeriod = $"January to December {submissionYear}",
             SubmissionId = submissionId,
             IsSubmitted = true,
             ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
@@ -1492,7 +1497,7 @@ public class RegistrationApplicationServiceTests
         result.Should().BeEquivalentTo(new RegistrationApplicationSession
         {
             Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" },
-            SubmissionPeriod = "January to December 2025",
+            SubmissionPeriod = $"January to December {submissionYear}",
             SubmissionId = submissionId,
             IsSubmitted = true,
             ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
@@ -1581,7 +1586,7 @@ public class RegistrationApplicationServiceTests
         result.Should().BeEquivalentTo(new RegistrationApplicationSession
         {
             Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" },
-            SubmissionPeriod = "January to December 2025",
+            SubmissionPeriod = $"January to December {submissionYear}",
             SubmissionId = submissionId,
             IsSubmitted = true,
             ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
@@ -1640,14 +1645,13 @@ public class RegistrationApplicationServiceTests
         result.Should().BeEquivalentTo(new RegistrationApplicationSession
         {
             Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" },
-            SubmissionPeriod = "January to December 2025",
+            SubmissionPeriod = $"January to December {submissionYear}",
             SubmissionId = submissionId,
             IsResubmission = true,
             IsSubmitted = true,
             ApplicationStatus = ApplicationStatusType.NotStarted,
             RegulatorNation = "GB-ENG",
-            ApplicationReferenceNumber = "",
-            IsLateFeeApplicable = true
+            ApplicationReferenceNumber = ""
         });
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string>(), false, It.IsAny<SubmissionType>()), Times.Never);
@@ -1720,7 +1724,7 @@ public class RegistrationApplicationServiceTests
         result.Should().BeEquivalentTo(new RegistrationApplicationSession
         {
             Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" },
-            SubmissionPeriod = "January to December 2025",
+            SubmissionPeriod = $"January to December {submissionYear}",
             SubmissionId = submissionId,
             IsSubmitted = true,
             IsResubmission = true,
@@ -2173,8 +2177,8 @@ public class RegistrationApplicationServiceTests
     [Test]
     public async Task ValidateRegistrationYear_ShouldReturnYear_WhenValid()
     {
-        var result = _service.ValidateRegistrationYear("2025");
-        result.Should().Be(2025);
+        var result = _service.ValidateRegistrationYear("2026");
+        result.Should().Be(2026);
     }
 
     [Test]
@@ -2361,7 +2365,7 @@ public class RegistrationApplicationServiceTests
     [Test]
     public void Constructor_ShouldThrow_ArgumentNull_When_Dependencies_IsNull()
     {
-        Assert.Throws<ArgumentNullException>(() => new RegistrationApplicationService(null!));
+        Assert.Throws<ArgumentNullException>(() => new RegistrationApplicationService(null!, _dateTimeProvider));
     }
 
    
@@ -2381,7 +2385,7 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = Options.Create(new GlobalVariables())
         };
 
-        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps));
+        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
         ex.Message.Should().Be($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.SubmissionService)} cannot be null.");
     }
 
@@ -2401,7 +2405,7 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = Options.Create(new GlobalVariables())
         };
 
-        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps));
+        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
         ex.Message.Should().Be($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.PaymentCalculationService)} cannot be null.");
     }
 
@@ -2420,7 +2424,7 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = Options.Create(new GlobalVariables())
         };
 
-        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps));
+        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
         ex.Message.Should().Be($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.RegistrationSessionManager)} cannot be null.");
     }
 
@@ -2439,7 +2443,7 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = Options.Create(new GlobalVariables())
         };
 
-        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps));
+        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
         ex.Message.Should().Be($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.FrontendSessionManager)} cannot be null.");
     }
 
@@ -2458,7 +2462,7 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = Options.Create(new GlobalVariables())
         };
 
-        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps));
+        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
         ex.Message.Should().Be($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.Logger)} cannot be null.");
     }
 
@@ -2477,7 +2481,7 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = Options.Create(new GlobalVariables())
         };
 
-        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps));
+        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
         ex.Message.Should().Be($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.FeatureManager)} cannot be null.");
     }
 
@@ -2496,7 +2500,7 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = Options.Create(new GlobalVariables())
         };
 
-        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps));
+        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
         ex.Message.Should().Be($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.HttpContextAccessor)} cannot be null.");
     }
 
@@ -2515,7 +2519,7 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = null!
         };
 
-        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps));
+        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
         ex.Message.Should().Be($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.GlobalVariables)} cannot be null.");
     }
 
@@ -2534,9 +2538,8 @@ public class RegistrationApplicationServiceTests
             GlobalVariables = Options.Create(new GlobalVariables())
         };
 
-        Assert.DoesNotThrow(() => new RegistrationApplicationService(deps));
+        Assert.DoesNotThrow(() => new RegistrationApplicationService(deps, _dateTimeProvider));
     }
-
 }
 
 internal static class ClaimsPrincipalExtensions

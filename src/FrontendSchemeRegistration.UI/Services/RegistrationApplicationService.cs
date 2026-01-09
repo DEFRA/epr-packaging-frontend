@@ -28,9 +28,11 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     private readonly IFeatureManager featureManager;
     private readonly IHttpContextAccessor httpContextAccessor;
     private readonly IOptions<GlobalVariables> globalVariables;
+    private readonly TimeProvider _timeProvider;
 
-    public RegistrationApplicationService(RegistrationApplicationServiceDependencies dependencies)
+    public RegistrationApplicationService(RegistrationApplicationServiceDependencies dependencies, TimeProvider timeProvider)
     {
+        _timeProvider = timeProvider;
         ArgumentNullException.ThrowIfNull(dependencies);
         
         submissionService = dependencies.SubmissionService
@@ -79,7 +81,8 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             }
             else
             {
-                session.IsLateFeeApplicable = DateTime.Today > lateFeeDeadline;
+                var today = _timeProvider.GetLocalNow().Date;
+                session.IsLateFeeApplicable = today > lateFeeDeadline;
             }
 
             if (session.FirstApplicationSubmittedEventCreatedDatetime is not null)
@@ -96,7 +99,8 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             }
             else
             {
-                session.IsLateFeeApplicable = DateTime.Today > lateFeeDeadline;
+                var today = _timeProvider.GetLocalNow().Date;
+                session.IsLateFeeApplicable = today > lateFeeDeadline;
             }
         }
     }
@@ -464,7 +468,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         }
         else
         {
-            session.RegistrationApplicationSubmittedDate = DateTime.Now;
+            session.RegistrationApplicationSubmittedDate = _timeProvider.GetLocalNow().DateTime;
         }
 
         await sessionManager.SaveSessionAsync(httpSession, session);
@@ -472,6 +476,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
 
     public async Task SetRegistrationFileUploadSession(ISession httpSession, string organisationNumber, int registrationYear, bool? isResubmission)
     {
+        var registrationSessionTask = sessionManager.GetSessionAsync(httpSession);
         var frontEndSession = await frontEndSessionManager.GetSessionAsync(httpSession) ?? new FrontendSchemeRegistrationSession();
 
         //this is wrong needs fixing 
@@ -481,8 +486,16 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         frontEndSession.RegistrationSession.SubmissionPeriod = period.DataPeriod;
         frontEndSession.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration = true;
         frontEndSession.RegistrationSession.IsResubmission = isResubmission ?? false;
-        frontEndSession.RegistrationSession.ApplicationReferenceNumber = await CreateApplicationReferenceNumber(httpSession, organisationNumber);
-
+        
+        var registrationSession = await registrationSessionTask;
+        
+        frontEndSession.RegistrationSession.ApplicationReferenceNumber = ReferenceNumberBuilder.Build(
+            registrationSession.Period,
+            organisationNumber,
+            _timeProvider,
+            registrationSession.IsComplianceScheme,
+            registrationSession.SelectedComplianceScheme?.RowNumber ?? 0); 
+        
         await frontEndSessionManager.SaveSessionAsync(httpSession, frontEndSession);
     }
 
@@ -511,7 +524,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
                 IsComplianceScheme = registrationApplicationSession.IsComplianceScheme,
                 showLargeProducer = year == 2026,
                 feature_AlwaysShowLargeProducerJourneyMessage = await featureManager.IsEnabledAsync(FeatureFlags.AlwaysShowLargeProducerJourneyMessage),
-                RegisterSmallProducersCS = DateTime.UtcNow.Date >= globalVariables.Value.SmallProducersRegStartTime2026
+                RegisterSmallProducersCS = _timeProvider.GetUtcNow().Date >= globalVariables.Value.SmallProducersRegStartTime2026
             });
         }
 
