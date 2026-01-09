@@ -107,7 +107,6 @@ public class PrnsObligationControllerTests
     {
 		// Arrange
 		var organisationId = Guid.NewGuid();
-		var childOrganisationId = Guid.NewGuid();
 
 		var session = new FrontendSchemeRegistrationSession
         {
@@ -127,7 +126,9 @@ public class PrnsObligationControllerTests
         _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
 
         string material = "Glass";
-		int year = DateTime.Now.Year;
+        int month = DateTime.Now.Month;
+		int year = month > 1 ? DateTime.Now.Year : DateTime.Now.Year - 1;
+        
 		PrnObligationViewModel viewModel = _fixture.Create<PrnObligationViewModel>();
         _prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(year)).ReturnsAsync(viewModel);
 
