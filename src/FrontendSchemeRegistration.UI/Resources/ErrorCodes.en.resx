@@ -406,9 +406,6 @@ Read the guidance about how to create your organisation details file. Once youâ€
   <data name="69" xml:space="preserve">
     <value>Submission period for January to December 2025 will be 2025-P0</value>
   </data>
-  <data name="76" xml:space="preserve">
-    <value>You're reporting packaging data for July to December 2025. Submission period must be 2025-P4.</value>
-  </data>
   <data name="77" xml:space="preserve">
     <value>Submission period for January to June 2026 will be 2026-H1</value>
   </data>
