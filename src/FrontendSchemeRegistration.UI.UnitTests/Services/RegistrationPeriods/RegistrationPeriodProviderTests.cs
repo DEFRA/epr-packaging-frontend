@@ -328,9 +328,4 @@ public class RegistrationPeriodProviderTests
             ClosingDate = new Date { Day = closing.Day, Month = closing.Month, YearOffset = closing.Year - 2026 }
         };
     }
-
-    private RegistrationJourney? CastToNullableRegistrationJourney(RegistrationJourney? journey)
-    {
-        return journey == null ? (RegistrationJourney?)null : journey.Value;
-    }
 }

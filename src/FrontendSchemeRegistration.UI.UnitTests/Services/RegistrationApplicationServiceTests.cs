@@ -22,7 +22,9 @@ using Newtonsoft.Json;
 
 namespace FrontendSchemeRegistration.UI.UnitTests.Services;
 
+using Application.Options.ReistrationPeriodPatterns;
 using Application.Services;
+using Microsoft.Extensions.Time.Testing;
 using UI.Services.RegistrationPeriods;
 
 [TestFixture]
@@ -40,7 +42,7 @@ public class RegistrationApplicationServiceTests
     private Mock<IFeatureManager> _featureManagerMock;
     private Mock<IHttpContextAccessor> _httpContextAccessorMock;
     private Mock<IRegistrationPeriodProvider> _mockRegistrationPeriodProvider;
-    private TimeProvider _dateTimeProvider;
+    private FakeTimeProvider _dateTimeProvider;
     private int _validRegistrationYear;
 
     private readonly RegistrationApplicationSession _session = new RegistrationApplicationSession
@@ -59,7 +61,7 @@ public class RegistrationApplicationServiceTests
     [SetUp]
     public void Setup()
     {
-        _dateTimeProvider = TimeProvider.System;
+        _dateTimeProvider = new FakeTimeProvider();
         _validRegistrationYear = _dateTimeProvider.GetLocalNow().Year;
         _submissionServiceMock = new Mock<ISubmissionService>();
         _paymentCalculationServiceMock = new Mock<IPaymentCalculationService>();
@@ -2317,6 +2319,61 @@ public class RegistrationApplicationServiceTests
     }
  
     [Test]
+    public async Task BuildRegistrationApplicationYearViewModels_ShouldReturnApplicationYears()
+    {
+        //Arrange
+        var organisation = new Organisation
+        {
+            Id = Guid.NewGuid(),
+            Name = "Test",
+            OrganisationNumber = "552555"
+        };
+        
+        _dateTimeProvider.SetUtcNow(new DateTime(2026, 3, 1));
+
+        var registrationApplicationSession = new RegistrationApplicationSession
+        {
+            LastSubmittedFile = new LastSubmittedFileDetails { FileId = Guid.NewGuid() },
+            RegistrationFeeCalculationDetails = null,
+            ApplicationReferenceNumber = "",
+            RegistrationReferenceNumber = "",
+            SubmissionId = Guid.NewGuid(),
+            RegistrationFeePaymentMethod = null,
+            IsSubmitted = true,
+            ApplicationStatus = ApplicationStatusType.NotStarted,
+            RegistrationApplicationSubmittedComment = null,
+            RegistrationApplicationSubmittedDate = null
+        };
+        _registrationApplicationServiceMock.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<RegistrationJourney?>(), It.IsAny<bool?>()))
+            .ReturnsAsync(registrationApplicationSession);
+
+        IReadOnlyCollection<RegistrationWindow> registrationWindows =
+            [
+                CreateRegistrationWindow(RegistrationJourney.CsoLargeProducer, 2026),
+                CreateRegistrationWindow(RegistrationJourney.CsoSmallProducer, 2026),
+                CreateRegistrationWindow(null, 2025) 
+            ]; 
+        
+        _mockRegistrationPeriodProvider.Setup(x => x.GetRegistrationWindows(It.IsAny<bool>()))
+            .Returns(registrationWindows);
+
+        // Act
+        var applicationYearViewModel = await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation);
+
+        //Assert
+        applicationYearViewModel.Should().NotBeNull();
+        applicationYearViewModel.Count().Should().Be(2);
+        var firstApplication = applicationYearViewModel.First();
+        firstApplication.Year.Should().Be(2026);
+        firstApplication.Applications.Count().Should().Be(2);
+        firstApplication.Applications.Should().AllSatisfy(a => a.RegistrationYear.Should().Be("2026"));
+        var secondApplication = applicationYearViewModel.Last();
+        secondApplication.Year.Should().Be(2025);
+        secondApplication.Applications.Count().Should().Be(1);
+        secondApplication.Applications.Should().AllSatisfy(a => a.RegistrationYear.Should().Be("2025"));
+    }
+ 
+    [Test]
     public async Task ValidateRegistrationYear_ShouldReturnNull_WhenYearIsEmpty_AndParamOptionalIsTrue()
     {
         // Act
@@ -2713,6 +2770,20 @@ public class RegistrationApplicationServiceTests
         };
 
         Assert.DoesNotThrow(() => new RegistrationApplicationService(deps, _dateTimeProvider));
+    }
+
+    private RegistrationWindow CreateRegistrationWindow(
+        RegistrationJourney? journey,
+        int? registrationYear = 2026,
+        DateTime? openingDateOffset = null,
+        DateTime? deadlineDateOffset = null,
+        DateTime? closingDateOffset = null)
+    {
+        var opening = openingDateOffset ?? new DateTime(2026, 6, 1);
+        var deadline = deadlineDateOffset ?? new DateTime(2026, 7, 1);
+        var closing = closingDateOffset ?? new DateTime(2026, 8, 1);
+
+        return new RegistrationWindow(_dateTimeProvider, journey, registrationYear.GetValueOrDefault(2026), opening, deadline, closing);
     }
 
 }
