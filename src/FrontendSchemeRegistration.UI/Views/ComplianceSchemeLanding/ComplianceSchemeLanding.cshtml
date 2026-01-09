@@ -8,7 +8,6 @@
 
 @{
     ViewData["Title"] = Localizer["home"];
-    var submissionPeriods = GlobalVariables?.Value.SubmissionPeriods ?? new List<SubmissionPeriod>();
 
     // this is part of the new packaging data resubmission journey
     var isSubmitted = Model.ResubmissionTaskListViewModel?.IsSubmitted;

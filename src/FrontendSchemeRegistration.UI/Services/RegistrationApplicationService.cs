@@ -433,21 +433,6 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         return await paymentCalculationService.InitiatePayment(request);
     }
 
-    private async Task<string> CreateApplicationReferenceNumber(ISession httpSession, string organisationNumber)
-    {
-        var session = await sessionManager.GetSessionAsync(httpSession);
-        var referenceNumber = organisationNumber;
-        var periodEnd = DateTime.Parse($"30 {session.Period.EndMonth} {session.Period.Year}", new CultureInfo("en-GB"));
-        var periodNumber = DateTime.Today <= periodEnd ? 1 : 2;
-
-        if (session.IsComplianceScheme)
-        {
-            referenceNumber += session.SelectedComplianceScheme.RowNumber.ToString("D3");
-        }
-
-        return $"PEPR{referenceNumber}{periodEnd.Year - 2000}P{periodNumber}";
-    }
-
     public async Task CreateRegistrationApplicationEvent(ISession httpSession, string? comments, string? paymentMethod, SubmissionType submissionType)
     {
         var session = await sessionManager.GetSessionAsync(httpSession);
