@@ -24,6 +24,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Services;
 
 using Application.Options.ReistrationPeriodPatterns;
 using Application.Services;
+using FluentAssertions.Common;
 using Microsoft.Extensions.Time.Testing;
 using UI.Services.RegistrationPeriods;
 
@@ -62,6 +63,7 @@ public class RegistrationApplicationServiceTests
     public void Setup()
     {
         _dateTimeProvider = new FakeTimeProvider();
+        _dateTimeProvider.SetUtcNow(new DateTime(2026, 1, 10));
         _validRegistrationYear = _dateTimeProvider.GetLocalNow().Year;
         _submissionServiceMock = new Mock<ISubmissionService>();
         _paymentCalculationServiceMock = new Mock<IPaymentCalculationService>();
