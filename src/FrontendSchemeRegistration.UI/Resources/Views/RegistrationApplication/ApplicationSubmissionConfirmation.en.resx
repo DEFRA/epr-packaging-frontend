@@ -19,10 +19,10 @@
         <value>Your registration application for {0} has been submitted for approval</value>
     </data>
     <data name="registration_application_submitted_for_approval_small" xml:space="preserve">
-        <value>You have submitted your {0} small producer registration application</value>
+        <value>You have submitted your small producer registration application</value>
     </data>
     <data name="registration_application_submitted_for_approval_large" xml:space="preserve">
-        <value>You have submitted your {0} large producer registration application</value>
+        <value>You have submitted your large producer registration application</value>
     </data>
     <data name="registration_has_been_granted" xml:space="preserve">
         <value>Your registration for {0} has been granted</value>
