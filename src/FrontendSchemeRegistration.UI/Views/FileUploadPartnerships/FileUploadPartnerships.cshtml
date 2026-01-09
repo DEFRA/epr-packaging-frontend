@@ -1,7 +1,14 @@
+@using FrontendSchemeRegistration.UI.ViewModels.Shared
 @model FileUploadViewModel
 
 @{
     ViewData["Title"] = Localizer["upload_partner_details"];
+    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+        Model.ShowRegistrationCaption, 
+        Model.RegistrationJourney, 
+        null,
+        Localizer["upload_your_partner_details_file"],
+        Model.RegistrationYear);
 }
 
 @await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
@@ -15,6 +22,8 @@
                 @await Html.PartialAsync("Partials/Govuk/_ErrorSummary", ViewData.ModelState)
             }
             
+            <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel"/>
+            
             @using (Html.BeginForm(FormMethod.Post, new
             {
                 enctype = "multipart/form-data",
@@ -22,7 +31,6 @@
             }))
             {
                 <div class="govuk-form-group @(ViewData.ModelState.IsValid ? string.Empty : "govuk-form-group--error")">
-                    <h1 class="govuk-heading-l">@Localizer["upload_your_partner_details_file"]</h1>
                     <p class="govuk-caption-m">@Localizer["file_must_be_csv"].</p>
                     @if (!ViewData.ModelState.IsValid)
                     {
