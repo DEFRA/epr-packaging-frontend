@@ -24,7 +24,8 @@ public class RegistrationWindowTests
         var deadlineDate = new DateTime(2026, 7, 1);
         var closingDate = new DateTime(2026, 8, 1);
         
-        var timeProvider = new FakeTimeProvider(new DateTimeOffset(currentDate));
+        var timeProvider = new FakeTimeProvider();
+        timeProvider.SetUtcNow(currentDate);
         var sut = new RegistrationWindow(timeProvider, RegistrationJourney.CsoLargeProducer, 2026, openingDate, deadlineDate, closingDate);
         
         // act

@@ -291,7 +291,7 @@ public class RegistrationPeriodProviderTests
     }
 
     // Helper methods
-    private List<RegistrationPeriodPattern> CreateValidRegistrationPatterns()
+    private static List<RegistrationPeriodPattern> CreateValidRegistrationPatterns()
     {
         return new List<RegistrationPeriodPattern>
         {
@@ -310,7 +310,7 @@ public class RegistrationPeriodProviderTests
         };
     }
 
-    private Window CreateWindow(
+    private static Window CreateWindow(
         WindowType windowType,
         DateTime? openingDateOffset = null,
         DateTime? deadlineDateOffset = null,
