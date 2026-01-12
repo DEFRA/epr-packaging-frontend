@@ -14,6 +14,9 @@ using Newtonsoft.Json;
 
 namespace FrontendSchemeRegistration.UI.Controllers.Prns;
 
+using Application.Extensions;
+using Extensions;
+
 [FeatureGate(FeatureFlags.ShowPrn)]
 [ServiceFilter(typeof(ComplianceSchemeIdHttpContextFilterAttribute))]
 [PrnsObligationActionFilterAttribute]
@@ -25,12 +28,11 @@ public class PrnsObligationController : Controller
     private readonly ExternalUrlOptions _urlOptions;
     private readonly ILogger<PrnsObligationController> _logger;
     private readonly string logPrefix;
+    private readonly int _complianceYear;
 
-    private readonly int _currentYear;
-    private readonly int _currentMonth;
-    private const int January = 1;
-
-    public PrnsObligationController(ISessionManager<FrontendSchemeRegistrationSession> sessionManager, IPrnService prnService, IOptions<GlobalVariables> globalVariables, IOptions<ExternalUrlOptions> urlOptions, ILogger<PrnsObligationController> logger)
+    public PrnsObligationController(ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
+        IPrnService prnService, IOptions<GlobalVariables> globalVariables, IOptions<ExternalUrlOptions> urlOptions,
+        ILogger<PrnsObligationController> logger)
     {
         _sessionManager = sessionManager;
         _prnService = prnService;
@@ -38,8 +40,18 @@ public class PrnsObligationController : Controller
         _urlOptions = urlOptions.Value;
         _logger = logger;
         logPrefix = _globalVariables.Value.LogPrefix;
-        _currentYear = _globalVariables.Value.OverrideCurrentYear ?? DateTime.Now.Year;
-        _currentMonth = _globalVariables.Value.OverrideCurrentMonth ?? DateTime.Now.Month;
+
+        var now = DateTime.UtcNow;
+        var date = new DateTime(
+            _globalVariables.Value.OverrideCurrentYear ?? now.Year,
+            _globalVariables.Value.OverrideCurrentMonth ?? now.Month,
+            now.Day,
+            0,
+            0,
+            0,
+            DateTimeKind.Utc);
+
+        _complianceYear = date.GetComplianceYear();
     }
 
     private const string GlassOrNonGlassResource = "GlassOrNonGlassResource";
@@ -48,11 +60,12 @@ public class PrnsObligationController : Controller
     [Route(PagePaths.Prns.ObligationsHome)]
     public async Task<IActionResult> ObligationsHome()
     {
-        var complianceYear = GetComplianceYear(_currentMonth);
-        var viewModel = await _prnService.GetRecyclingObligationsCalculation(complianceYear);
-        _logger.LogInformation("{LogPrefix}: PrnsObligationController - ObligationsHome: Recycling Obligations returned for year {Year} : {Results}", logPrefix, _currentYear, JsonConvert.SerializeObject(viewModel));
-               
-        await FillViewModelFromSessionAsync(viewModel, _currentYear, _currentMonth);
+        var viewModel = await _prnService.GetRecyclingObligationsCalculation(_complianceYear);
+        _logger.LogInformation(
+            "{LogPrefix}: PrnsObligationController - ObligationsHome: Recycling Obligations returned for year {Year} : {Results}",
+            logPrefix, _complianceYear, JsonConvert.SerializeObject(viewModel));
+
+        await FillViewModelFromSessionAsync(viewModel);
 
         ViewBag.HomeLinkToDisplay = _globalVariables.Value.BasePath;
         return View(viewModel);
@@ -62,44 +75,54 @@ public class PrnsObligationController : Controller
     [Route(PagePaths.Prns.ObligationPerMaterial + "/{material}")]
     public async Task<IActionResult> ObligationPerMaterial(string material)
     {
-        PrnObligationViewModel viewModel = new();        
+        PrnObligationViewModel viewModel = new();
 
-        _logger.LogInformation("{LogPrefix}: PrnsObligationController - ObligationPerMaterial: Get Recycling Obligations Calculation request for year {Year}, material {Material}", logPrefix, _currentYear, material);
+        _logger.LogInformation(
+            "{LogPrefix}: PrnsObligationController - ObligationPerMaterial: Get Recycling Obligations Calculation request for year {Year}, material {Material}",
+            logPrefix, _complianceYear, material);
 
         if (Enum.TryParse(material, true, out MaterialType materialType))
         {
-            var complianceYear = GetComplianceYear(_currentMonth);
-            viewModel = await _prnService.GetRecyclingObligationsCalculation(complianceYear);
-            _logger.LogInformation("{LogPrefix}: PrnsObligationController - ObligationsHome: Recycling Obligations returned for year {Year} : {Results}", logPrefix, _currentYear, JsonConvert.SerializeObject(viewModel));
+            viewModel = await _prnService.GetRecyclingObligationsCalculation(_complianceYear);
+            _logger.LogInformation(
+                "{LogPrefix}: PrnsObligationController - ObligationsHome: Recycling Obligations returned for year {Year} : {Results}",
+                logPrefix, _complianceYear, JsonConvert.SerializeObject(viewModel));
 
-            if (materialType == MaterialType.Glass || materialType == MaterialType.GlassRemelt || materialType == MaterialType.RemainingGlass)
+            if (materialType == MaterialType.Glass || materialType == MaterialType.GlassRemelt ||
+                materialType == MaterialType.RemainingGlass)
             {
                 viewModel.MaterialObligationViewModels.Clear();
-                ViewData[GlassOrNonGlassResource] = PrnMaterialObligationViewModel.MaterialCategoryResource(materialType);
+                ViewData[GlassOrNonGlassResource] =
+                    PrnMaterialObligationViewModel.MaterialCategoryResource(materialType);
             }
             else if (materialType != MaterialType.Totals)
             {
-                viewModel.MaterialObligationViewModels = viewModel.MaterialObligationViewModels.Where(prn => prn.MaterialName == materialType).ToList();
+                viewModel.MaterialObligationViewModels = viewModel.MaterialObligationViewModels
+                    .Where(prn => prn.MaterialName == materialType).ToList();
                 viewModel.GlassMaterialObligationViewModels.Clear();
-                ViewData[GlassOrNonGlassResource] = PrnMaterialObligationViewModel.MaterialCategoryResource(materialType);
+                ViewData[GlassOrNonGlassResource] =
+                    PrnMaterialObligationViewModel.MaterialCategoryResource(materialType);
             }
         }
-        
-        await FillViewModelFromSessionAsync(viewModel, _currentYear, _currentMonth);
+
+        await FillViewModelFromSessionAsync(viewModel);
 
         if (_urlOptions.ProducerResponsibilityObligations is not null)
         {
             ViewBag.ProducerResponsibilityObligationsLink = _urlOptions.ProducerResponsibilityObligations;
         }
-        _logger.LogInformation("{LogPrefix}: PrnsObligationController - ObligationsHome: populated view model : {Results}", logPrefix, JsonConvert.SerializeObject(viewModel));
+
+        _logger.LogInformation(
+            "{LogPrefix}: PrnsObligationController - ObligationsHome: populated view model : {Results}", logPrefix,
+            JsonConvert.SerializeObject(viewModel));
 
         ViewBag.BackLinkToDisplay = Url.Content($"~/{PagePaths.Prns.ObligationsHome}");
 
         return View(viewModel);
-    }  
+    }
 
     [NonAction]
-    public async Task FillViewModelFromSessionAsync(PrnObligationViewModel viewModel, int currentYear, int currentMonth)
+    public async Task FillViewModelFromSessionAsync(PrnObligationViewModel viewModel)
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
 
@@ -107,29 +130,21 @@ public class PrnsObligationController : Controller
 
         if (organisation == null)
         {
-            _logger.LogWarning("{LogPrefix}: PrnsObligationController - FillViewModelFromSessionAsync - No organisation found in session.", logPrefix);
+            _logger.LogWarning(
+                "{LogPrefix}: PrnsObligationController - FillViewModelFromSessionAsync - No organisation found in session.",
+                logPrefix);
             return;
         }
 
         var isDirectProducer = organisation.OrganisationRole == OrganisationRoles.Producer;
 
         viewModel.OrganisationRole = organisation.OrganisationRole;
-        viewModel.OrganisationName = isDirectProducer ? organisation.Name : session.RegistrationSession.SelectedComplianceScheme?.Name;
-        viewModel.NationId = isDirectProducer ? organisation.NationId : session.RegistrationSession.SelectedComplianceScheme?.NationId ?? 0;
-
-        var isJanuary = IsCurrentMonthJanuary(currentMonth);
-        viewModel.ComplianceYear = isJanuary ? currentYear - 1 : currentYear;
-        viewModel.DeadlineYear = isJanuary ? currentYear : currentYear + 1;
-    }
-
-    // This is a temp fix for the compliance window change
-    private int GetComplianceYear(int currentMonth)
-    {
-        return IsCurrentMonthJanuary(currentMonth) ? _currentYear - 1 : _currentYear;
-    }
-
-    private static bool IsCurrentMonthJanuary(int currentMonth)
-    {
-        return currentMonth == January;
+        viewModel.OrganisationName = isDirectProducer
+            ? organisation.Name
+            : session.RegistrationSession.SelectedComplianceScheme?.Name;
+        viewModel.NationId = isDirectProducer
+            ? organisation.NationId
+            : session.RegistrationSession.SelectedComplianceScheme?.NationId ?? 0;
+        viewModel.ComplianceYear = _complianceYear;
     }
 }
