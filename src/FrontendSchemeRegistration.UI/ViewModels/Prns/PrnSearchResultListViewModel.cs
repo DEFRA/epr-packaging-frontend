@@ -13,11 +13,12 @@
         public List<PrnSearchResultViewModel> ActivePageOfResults { get; set; }
 
         public List<string> TypeAhead { get; set; } = [];
-        
+
         public PagingDetail PagingDetail { get; set; } = new();
 
         public string? SelectedFilter { get; set; }
         public string? SelectedSort { get; set; }
+		public int ComplianceYear { get; set; }
 
         public SelectList FilterOptions
         {
