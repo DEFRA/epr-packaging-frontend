@@ -47,7 +47,7 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
             do
             {
                 // this is checking BEFORE going through the windows in the new pattern, so 
-                if (windows.Any(w => w.RegistrationYear == registrationYear)) throw new InvalidOperationException($"Registration year {registrationYear} is configured in multiple RegistrationPeriodPattern items within appsettings. The years between and including the InitialRegistrationYear and the FinalRegistrationYear may only exist in a single pattern.");
+                EnsureRegistrationYearNotDuplicated(windows, registrationYear);
                 
                 foreach (var patternWindow in registrationPeriodPattern.Windows)
                 {
@@ -67,12 +67,8 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
                     if (window.GetRegistrationWindowStatus() != RegistrationWindowStatus.Closed)
                     {
                         windows.Add(window);
-                        
-                        if (closeDate < _nextCloseDate)
-                        {
-                            // store the next close date
-                            _nextCloseDate = closeDate;
-                        }
+
+                        UpdateNextCloseDate(closeDate);
                     }
                 }
 
@@ -155,6 +151,29 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
         }
 
         return finalYear;
+    }
+
+    /// <summary>
+    /// Stores the next close date
+    /// </summary>
+    /// <param name="closeDate"></param>
+    private void UpdateNextCloseDate(DateTime closeDate)
+    {
+        if (closeDate < _nextCloseDate)
+        {
+            _nextCloseDate = closeDate;
+        }
+    }
+
+    /// <summary>
+    /// Ensures that the registration year does not already exist in the list of windows
+    /// </summary>
+    /// <param name="windows"></param>
+    /// <param name="registrationYear"></param>
+    /// <exception cref="InvalidOperationException"></exception>
+    private static void EnsureRegistrationYearNotDuplicated(List<RegistrationWindow> windows, int registrationYear)
+    {
+        if (windows.Any(w => w.RegistrationYear == registrationYear)) throw new InvalidOperationException($"Registration year {registrationYear} is configured in multiple RegistrationPeriodPattern items within appsettings. The years between and including the InitialRegistrationYear and the FinalRegistrationYear may only exist in a single pattern.");
     }
 
     private static RegistrationJourney? MapWindowTypeToRegistrationJourney(WindowType windowType) =>
