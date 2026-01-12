@@ -144,15 +144,23 @@ public class ErrorReportHelpersTests
 
         result.Should().BeEquivalentTo(expected);
     }
-   
-    [Test]
-    public void ToRegistrationErrorReportRows_ConvertsRegistrationValidationErrorsToRegistrationErrorRowsWithMessageAndIndex_WhenCalled()
+
+    [TestCase("en-GB", "73", "Warning", 17, "R", "Turnover for this organisation is recorded as zero. Please verify this is correct before submitting a zero return", TestName = "Test 73")]
+    [TestCase("en-GB", "801", "Error", 0, "A", "Enter the organisation ID", TestName="Test 801")]
+    [TestCase("en-GB", "802", "Error", 10, "K", "Enter the organisation name", TestName = "Test 802")]
+    [TestCase("en-GB", "803", "Error", 30, "AE", "Enter the home nation code", TestName = "Test 803")]
+    [TestCase("en-GB", "804", "Error",  55, "BD", "Home nation code must be one of EN NI SC or WS", TestName = "Test 804")]
+    [TestCase("en-GB", "923", "Error", 44, "AS", "Leaver code must be a 2 digit number between 01 and 21.", TestName = "Test 923")]
+    [TestCase("en-GB", "927", "Error", 6, "G", "Joiner Or Leaver Code Max length not correct.", TestName = "Test 927")]
+    public void ToRegistrationErrorReportRows_ConvertsRegistrationValidationErrorsToRegistrationErrorRowsWithMessageAndIndex_WhenCalled(
+        string culture, string errorCode, string issueType, int columnIndex, string expectedColumnName, string expectedMessage)
     {
         // Arrange
         CultureHelpers.SetCulture("en-GB");
 
         const string organisationId = "123456";
         const string subsidiaryId = "123456";
+
         var validationIssues = new List<RegistrationValidationError>
         {
             new ()
@@ -160,81 +168,17 @@ public class ErrorReportHelpersTests
                 OrganisationId = organisationId,
                 SubsidiaryId = subsidiaryId,
                 RowNumber = 1,
-                IssueType = "Error",
+                IssueType = issueType,
                 ColumnErrors = new List<ColumnValidationError>
                 {
-                    new()
+                    new ()
                     {
-                        ErrorCode = "801",
-                        ColumnIndex = 0,
+                        ErrorCode = errorCode,
+                        ColumnIndex = columnIndex,
                         ColumnName = "testColumnName"
                     }
-                },
-            },
-            new ()
-            {
-                OrganisationId = organisationId,
-                SubsidiaryId = subsidiaryId,
-                RowNumber = 1,
-                IssueType = "Error",
-                ColumnErrors = new List<ColumnValidationError>
-                {
-                    new()
-                    {
-                        ErrorCode = "802",
-                        ColumnIndex = 10,
-                        ColumnName = "testColumnName2"
-                    }
-                },
-            },
-            new ()
-            {
-                OrganisationId = organisationId,
-                SubsidiaryId = subsidiaryId,
-                RowNumber = 1,
-                IssueType = "Error",
-                ColumnErrors = new List<ColumnValidationError>
-                {
-                    new()
-                    {
-                        ErrorCode = "803",
-                        ColumnIndex = 30,
-                        ColumnName = "testColumnName3"
-                    }
-                },
-            },
-            new ()
-            {
-                OrganisationId = organisationId,
-                SubsidiaryId = subsidiaryId,
-                RowNumber = 1,
-                IssueType = "Error",
-                ColumnErrors = new List<ColumnValidationError>
-                {
-                    new()
-                    {
-                        ErrorCode = "804",
-                        ColumnIndex = 55,
-                        ColumnName = "testColumnName4"
-                    }
-                },
-            },
-            new ()
-            {
-                OrganisationId = organisationId,
-                SubsidiaryId = subsidiaryId,
-                RowNumber = 1,
-                IssueType = "Warning",
-                ColumnErrors = new List<ColumnValidationError>
-                {
-                    new()
-                    {
-                        ErrorCode = "73",
-                        ColumnIndex = 17,
-                        ColumnName = "testColumnName5"
-                    }
-                },
-            },
+                }
+            }
         };
 
         // Act
@@ -248,51 +192,11 @@ public class ErrorReportHelpersTests
                 Row = "1",
                 OrganisationId = organisationId,
                 SubsidiaryId = subsidiaryId,
-                Column = "A",
+                Column = expectedColumnName,
                 ColumnName = "testColumnName",
-                IssueType = "Error",
-                Message = "Enter the organisation ID"
-            },
-            new ()
-            {
-                Row = "1",
-                OrganisationId = organisationId,
-                SubsidiaryId = subsidiaryId,
-                Column = "K",
-                ColumnName = "testColumnName2",
-                IssueType = "Error",
-                Message = "Enter the organisation name"
-            },
-            new ()
-            {
-                Row = "1",
-                OrganisationId = organisationId,
-                SubsidiaryId = subsidiaryId,
-                Column = "AE",
-                ColumnName = "testColumnName3",
-                IssueType = "Error",
-                Message = "Enter the home nation code"
-            },
-            new ()
-            {
-                Row = "1",
-                OrganisationId = organisationId,
-                SubsidiaryId = subsidiaryId,
-                Column = "BD",
-                ColumnName = "testColumnName4",
-                IssueType = "Error",
-                Message = "Home nation code must be one of EN NI SC or WS"
-            },
-            new ()
-            {
-                Row = "1",
-                OrganisationId = organisationId,
-                SubsidiaryId = subsidiaryId,
-                Column = "R",
-                ColumnName = "testColumnName5",
-                IssueType = "Warning",
-                Message = "Turnover for this organisation is recorded as zero. Please verify this is correct before submitting a zero return"
-            },
+                IssueType = issueType,
+                Message = expectedMessage
+            }
         };
 
         result.Should().BeEquivalentTo(expected);
