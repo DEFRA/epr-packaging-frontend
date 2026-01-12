@@ -32,9 +32,9 @@
 			        new() { Text = "filter_cancelled", Value = "cancelled-all" },
 			        new() { Text = "filter_rejected", Value = "rejected-all" },
 		        };
-				
+
 		        var selectedValue = SelectedFilter ?? "awaiting_all";
-		        
+
 		        return new SelectList(list, "Value", "Text", selectedValue);
 	        }
 		}
@@ -46,16 +46,16 @@
 		        var list = new List<SelectListItem>
 		        {
 			        new() { Text = "sort_date_issued_desc", Value = "date-issued-desc" },
-			        new() { Text = "sort_date_issued_asc", Value = "date-issued-asc" },					
+			        new() { Text = "sort_date_issued_asc", Value = "date-issued-asc" },
 			        new() { Text = "sort_december_waste", Value = "december-waste-desc" },
 			        new() { Text = "sort_material_asc", Value = "material-asc" },
 			        new() { Text = "sort_material_desc", Value = "material-desc" },
 			        new() { Text = "sort_tonnage_desc", Value = "tonnage-desc" },
 			        new() { Text = "sort_tonnage_asc", Value = "tonnage-asc" }
 		        };
-				
+
 		        var selectedValue = SelectedSort ?? "date-issued-desc";
-				
+
 		        return new SelectList(list, "Value", "Text", selectedValue);
 	        }
         }
