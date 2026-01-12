@@ -41,20 +41,7 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
         {
             // loop from initial registration year to final registration year (or this year, which ever is first), constructing windows
             var registrationYear = registrationPeriodPattern.InitialRegistrationYear;
-            int finalYear;
-            
-            if (registrationPeriodPattern.FinalRegistrationYear.HasValue)
-            {
-                finalYear = registrationPeriodPattern.FinalRegistrationYear.Value;
-            }
-            else
-            {
-                if (_derivedFinalYear.HasValue) throw new InvalidOperationException("You may not have multiple RegistrationPeriodPattern configuration items with a null FinalRegistrationYear value");
-                
-                // we store this so that we know if the year rolls over when GetRegistrationWindows is called
-                _derivedFinalYear = _timeProvider.GetUtcNow().Year;
-                finalYear = _derivedFinalYear.Value;
-            }
+            var finalYear = ParseFinalYear(registrationPeriodPattern);
             
             // loop through the registration years in this pattern
             do
@@ -66,7 +53,7 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
                 {
                     var journey = MapWindowTypeToRegistrationJourney(patternWindow.WindowType);
                     var closeDate = new DateTime(registrationYear + patternWindow.ClosingDate.YearOffset,
-                        patternWindow.ClosingDate.Month, patternWindow.ClosingDate.Day);
+                        patternWindow.ClosingDate.Month, patternWindow.ClosingDate.Day, 0, 0, 0, DateTimeKind.Utc);
                     
                     // don't bother adding windows whose closing date has passed. we will want to change this in future
                     // when we provide a panel for viewing historic submissions
@@ -143,6 +130,31 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
         });
         
         return new ReadOnlyCollection<RegistrationWindow>(windows.ToList());
+    }
+
+    /// <summary>
+    /// Gets the final year for a registration period pattern, validates and stores the derived value
+    /// </summary>
+    /// <param name="registrationPeriodPattern"></param>
+    /// <returns>The final year for a registration period</returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    private int ParseFinalYear(RegistrationPeriodPattern registrationPeriodPattern)
+    {
+        int finalYear;
+        if (registrationPeriodPattern.FinalRegistrationYear.HasValue)
+        {
+            finalYear = registrationPeriodPattern.FinalRegistrationYear.Value;
+        }
+        else
+        {
+            if (_derivedFinalYear.HasValue) throw new InvalidOperationException("You may not have multiple RegistrationPeriodPattern configuration items with a null FinalRegistrationYear value");
+                
+            // we store this so that we know if the year rolls over when GetRegistrationWindows is called
+            _derivedFinalYear = _timeProvider.GetUtcNow().Year;
+            finalYear = _derivedFinalYear.Value;
+        }
+
+        return finalYear;
     }
 
     private static RegistrationJourney? MapWindowTypeToRegistrationJourney(WindowType windowType) =>
