@@ -14,7 +14,8 @@ public class PrnObligationViewModel
     /// Obligation year
     /// </summary>
     public int ComplianceYear { get; set; }
-    public int DeadlineYear { get; set; }
+
+    public int DeadlineYear => ComplianceYear + 1;
     public int NumberOfPrnsAwaitingAcceptance { get; set; }
 
     public ObligationStatus OverallStatus { get; set; }
