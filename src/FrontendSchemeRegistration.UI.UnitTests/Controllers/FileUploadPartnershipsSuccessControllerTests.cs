@@ -39,13 +39,13 @@ public class FileUploadPartnershipsSuccessControllerTests
             {
                 UserData = new UserData
                 {
-                    Organisations = new List<Organisation>
-                    {
-                        new()
+                    Organisations =
+                    [
+                        new Organisation
                         {
                             OrganisationRole = OrganisationRoles.Producer
                         }
-                    }
+                    ]
                 },
                 RegistrationSession = new RegistrationSession
                 {

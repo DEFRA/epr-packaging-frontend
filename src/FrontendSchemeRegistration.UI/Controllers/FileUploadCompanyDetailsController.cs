@@ -56,7 +56,7 @@ public class FileUploadCompanyDetailsController : Controller
         {
             var organisationRole = session.UserData.Organisations.FirstOrDefault()?.OrganisationRole;
 
-            if (organisationRole is not null)
+            if (organisationRole is not null) 
             {
                 if (Guid.TryParse(Request.Query["SubmissionId"], out var submissionId))
                 {
