@@ -528,7 +528,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
                 RegistrationYear = year.ToString(),
                 IsComplianceScheme = registrationApplicationSession.IsComplianceScheme,
                 showLargeProducer = year == 2026,
-                RegisterSmallProducersCS = DateTime.UtcNow.Date >= globalVariables.Value.SmallProducersRegStartTime2026,
+                RegisterSmallProducersCS = _timeProvider.GetUtcNow().Date >= globalVariables.Value.SmallProducersRegStartTime2026,
                 DeadlineDate = registrationApplicationSession.IsComplianceScheme ? globalVariables.Value.LargeProducerLateFeeDeadline2026 : DateTime.MinValue   // this is only displayed for CSOs 
             });
         }
@@ -557,14 +557,14 @@ public class RegistrationApplicationService : IRegistrationApplicationService
                 IsResubmission = registrationApplicationSession.IsResubmission,
                 RegistrationYear = window.RegistrationYear.ToString(),
                 IsComplianceScheme = registrationApplicationSession.IsComplianceScheme,
-                showLargeProducer = window.RegistrationYear == 2026,
-                RegisterSmallProducersCS = DateTime.UtcNow.Date >= globalVariables.Value.SmallProducersRegStartTime2026,
+                showLargeProducer = true,   // we can get rid of this once we delete the old configuration and the BuildRegistrationApplicationPerYearViewModels method
+                RegisterSmallProducersCS = _timeProvider.GetUtcNow().Date >= globalVariables.Value.SmallProducersRegStartTime2026,
                 RegistrationJourney = window.Journey,
                 DeadlineDate = window.DeadlineDate
             });
         }
 
-        return applications.GroupBy(a => a.RegistrationYear).Select(a => new RegistrationYearApplicationsViewModel(int.Parse(a.Key), a)).ToList();
+        return applications.GroupBy(a => a.RegistrationYear).Select(a => new RegistrationYearApplicationsViewModel(int.Parse(a.Key), a)).OrderByDescending(a => a.Year).ToList();
     }
 
     public int? ValidateRegistrationYear(string? registrationYear, bool isParamOptional = false)

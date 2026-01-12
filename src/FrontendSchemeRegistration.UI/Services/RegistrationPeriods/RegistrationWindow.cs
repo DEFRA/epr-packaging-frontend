@@ -31,11 +31,11 @@ public class RegistrationWindow(
         {
             return RegistrationWindowStatus.PriorToOpening;
         }
-        else if (now > openingDate && now < DeadlineDate)
+        else if (now >= openingDate && now < DeadlineDate)
         {
             return RegistrationWindowStatus.OpenAndNotLate;
         }
-        else if (now > DeadlineDate && now < closingDate)
+        else if (now >= DeadlineDate && now < closingDate)
         {
             return RegistrationWindowStatus.OpenAndLate;
         }

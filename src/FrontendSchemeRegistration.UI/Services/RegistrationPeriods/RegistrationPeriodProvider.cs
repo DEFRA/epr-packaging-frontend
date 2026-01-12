@@ -5,6 +5,10 @@ using Application.Enums;
 using Application.Options.ReistrationPeriodPatterns;
 using Microsoft.Extensions.Options;
 
+/// <summary>
+/// This provides access to registration window data. It is registered as a singleton, however, the windows that it
+/// returns are not registered in the DI container because available windows are date dependent.
+/// </summary>
 internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
 {
     private readonly TimeProvider _timeProvider;

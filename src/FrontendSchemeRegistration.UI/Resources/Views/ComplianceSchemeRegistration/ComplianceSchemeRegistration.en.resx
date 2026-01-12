@@ -25,16 +25,4 @@
 	<data name="current_small_producer_registration_title" xml:space="preserve">
 		<value>Small producer {0} registration</value>
 	</data>
-  <data name="small_producer_instructions1.2026" xml:space="preserve">
-		<value>Small producers must apply for registration on or before 1 April 2026.</value>
-	</data>
-  <data name="small_producer_instructions2.2026" xml:space="preserve">
-		<value>Applications made after this date could incur a late fee.</value>
-	</data>
-  <data name="large_producer_instructions1.2026" xml:space="preserve">
-		<value>Large producers needed to apply for registration on or before 1 October 2025.</value>
-	</data>
-  <data name="large_producer_instructions2.2026" xml:space="preserve">
-		<value>Applications made after this date could incur a late fee.</value>
-	</data>
 </root>
