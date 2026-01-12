@@ -65,26 +65,13 @@
             {
                 <h2 class="govuk-heading-m">@Localizer["what_happens_next"]</h2>
 
-                @if (Model.IsResubmission)
-                {
-                    <p class="govuk-body">@Localizer["you_need_to_give_partner_details"]</p>
+                <p class="govuk-body">@Localizer["you_need_to_give_partner_details"]</p>
 
-                    @Html.ActionLink(Localizer["continue"].Value,
-                        "Get",
-                        "FileUploadPartnerships",
-                             new { submissionId = Model.SubmissionId, registrationyear = Model.RegistrationYear },
-                        new { @class = "govuk-button govuk-!-margin-top-5" })
-                }
-                else
-                {
-                    <p class="govuk-body">@Localizer["you_also_need_to_give_information_about_partners"]</p>
-
-                    @Html.ActionLink(Localizer["continue"].Value,
-                             "Get",
-                             "FileUploadPartnerships",
-                             new { submissionId = Model.SubmissionId, registrationyear = Model.RegistrationYear },
-                             new { @class = "govuk-button govuk-!-margin-top-5" })
-                }
+                @Html.ActionLink(Localizer["continue"].Value,
+                            "Get",
+                            "FileUploadPartnerships",
+                            new { submissionId = Model.SubmissionId, registrationyear = Model.RegistrationYear },
+                            new { @class = "govuk-button govuk-!-margin-top-5" })
             }
             else
             {
