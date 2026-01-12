@@ -16,11 +16,14 @@ using Newtonsoft.Json;
 
 namespace FrontendSchemeRegistration.UI.Services;
 
+using Application.Extensions;
+
 public class PrnService : IPrnService
 {
     private readonly IWebApiGatewayClient _webApiGatewayClient;
     private readonly IStringLocalizer<PrnCsvResources> _csvLocalizer;
     private readonly IStringLocalizer<PrnDataResources> _dataLocalizer;
+    private readonly IOptions<GlobalVariables> _globalVariables;
     private readonly ILogger<PrnService> _logger;
     private readonly string logPrefix;
 
@@ -29,6 +32,7 @@ public class PrnService : IPrnService
         _webApiGatewayClient = webApiGatewayClient;
         _csvLocalizer = csvLocalizer;
         _dataLocalizer = dataLocalizer;
+        _globalVariables = globalVariables;
         _logger = logger;
         logPrefix = globalVariables.Value.LogPrefix;
     }
@@ -138,7 +142,8 @@ public class PrnService : IPrnService
             PagingDetail = pagingDetail,
             TypeAhead = prnSearchResults.TypeAhead,
             SelectedFilter = request.FilterBy,
-            SelectedSort = request.SortBy
+            SelectedSort = request.SortBy,
+            ComplianceYear = GetCurrentComplianceYear()
         };
 
         _logger.LogInformation("{Logprefix}: PrnService - GetPrnSearchResultsAsync: Return Prn Search Result List ViewModel - {PrnSearchResultListViewModel}", logPrefix, JsonConvert.SerializeObject(prnSearchResultListViewModel));
@@ -326,5 +331,20 @@ public class PrnService : IPrnService
     {
         var totals = materialObligationViewModels.FirstOrDefault(m => m.MaterialName == MaterialType.Totals);
         return totals?.Status ?? ObligationStatus.NoDataYet;
+    }
+
+    private int GetCurrentComplianceYear()
+    {
+        var now = DateTime.UtcNow;
+        var date = new DateTime(
+            _globalVariables.Value.OverrideCurrentYear ?? now.Year,
+            _globalVariables.Value.OverrideCurrentMonth ?? now.Month,
+            now.Day,
+            0,
+            0,
+            0,
+            DateTimeKind.Utc);
+
+       return date.GetComplianceYear();
     }
 }

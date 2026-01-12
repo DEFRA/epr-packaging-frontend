@@ -22,9 +22,7 @@ using Newtonsoft.Json;
 
 namespace FrontendSchemeRegistration.UI.UnitTests.Services;
 
-using Application.Options.ReistrationPeriodPatterns;
 using Application.Services;
-using FluentAssertions.Common;
 using Microsoft.Extensions.Time.Testing;
 using UI.Services.RegistrationPeriods;
 
@@ -37,7 +35,7 @@ public class RegistrationApplicationServiceTests
     private Mock<IPaymentCalculationService> _paymentCalculationServiceMock;
     private Mock<ISessionManager<RegistrationApplicationSession>> _sessionManagerMock;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _frontEndSessionManagerMock;
-    private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
+
     private Fixture _fixture;
     private RegistrationApplicationService _service;
     private Mock<IFeatureManager> _featureManagerMock;
@@ -46,7 +44,7 @@ public class RegistrationApplicationServiceTests
     private FakeTimeProvider _dateTimeProvider;
     private int _validRegistrationYear;
 
-    private readonly RegistrationApplicationSession _session = new RegistrationApplicationSession
+    private readonly RegistrationApplicationSession _session = new()
     {
         SubmissionId = Guid.NewGuid(),
         LastSubmittedFile = new LastSubmittedFileDetails
@@ -68,7 +66,6 @@ public class RegistrationApplicationServiceTests
         _paymentCalculationServiceMock = new Mock<IPaymentCalculationService>();
         _sessionManagerMock = new Mock<ISessionManager<RegistrationApplicationSession>>();
         _frontEndSessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
-        _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
         _loggerMock = new Mock<ILogger<RegistrationApplicationService>>();
         _featureManagerMock = new Mock<IFeatureManager>();
         _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
@@ -109,7 +106,6 @@ public class RegistrationApplicationServiceTests
             Year = $"{submissionYear}"
         };
         _session.SubmissionPeriod = _session.Period.DataPeriod;
-
     }
 
     [Test]
@@ -588,7 +584,7 @@ public class RegistrationApplicationServiceTests
         // Arrange
         _dateTimeProvider.SetUtcNow(new DateTime(2026, 1, 10));
         var organisationNumber = "123";
-        string expectedApplicationReferenceNumber = $"PEPR{organisationNumber}{_dateTimeProvider.GetUtcNow().Year - 2000}P1";
+        string expectedApplicationReferenceNumber = $"PEPR{organisationNumber}{_dateTimeProvider.GetUtcNow().Year - 2000}P1S";
 
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
             .ReturnsAsync(_session);
@@ -634,7 +630,7 @@ public class RegistrationApplicationServiceTests
         var submissionYear = _dateTimeProvider.GetUtcNow().AddYears(-1).Year;
         _session.Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" };
         
-        var expectedApplicationReferenceNumber = $"PEPR{organisationNumber}{submissionYear - 2000}P2";
+        var expectedApplicationReferenceNumber = $"PEPR{organisationNumber}{submissionYear - 2000}P2S";
         // Act
         await _service.SetRegistrationFileUploadSession(_httpSession, organisationNumber, It.IsAny<int>(), false);
 
@@ -653,7 +649,7 @@ public class RegistrationApplicationServiceTests
         _session.SelectedComplianceScheme = null!;
         var periodEnd = DateTime.Parse("31 December" + _session.Period.Year, new CultureInfo("en-GB"));
         var periodNumber = DateTime.Today <= periodEnd ? 1 : 2;
-        var expectedApplicationReferenceNumber = $"PEPR{organisationNumber}{periodEnd.Year - 2000}P{periodNumber}";
+        var expectedApplicationReferenceNumber = $"PEPR{organisationNumber}{periodEnd.Year - 2000}P{periodNumber}S";
 
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
             .ReturnsAsync(_session);

@@ -261,10 +261,9 @@ public class PrnsObligationControllerTests
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
 
         var viewModel = new PrnObligationViewModel();
-        var currentMonth = 11;
 
         // Act
-        await _controller.FillViewModelFromSessionAsync(viewModel, 2024, currentMonth);
+        await _controller.FillViewModelFromSessionAsync(viewModel);
 
         // Assert
         viewModel.OrganisationRole.Should().BeNullOrEmpty();
@@ -278,10 +277,6 @@ public class PrnsObligationControllerTests
     public async Task FillViewModelFromSessionAsync_Returns_Valid_ViewModelForDirectRegistrant(int nationId)
     {
         // Arrange
-        var currentYear = DateTime.Now.Year;
-        var currentMonth = 1; // January
-        var expectedComplianceYear = currentYear - 1;
-        var expectedDeadlineYear = currentYear;
         var session = new FrontendSchemeRegistrationSession
         {
             UserData = new UserData
@@ -301,15 +296,15 @@ public class PrnsObligationControllerTests
         var viewModel = _fixture.Create<PrnObligationViewModel>();
 
         // Act
-        await _controller.FillViewModelFromSessionAsync(viewModel, currentYear, currentMonth);
+        await _controller.FillViewModelFromSessionAsync(viewModel);
 
         // Assert
         viewModel.OrganisationRole.Should().BeEquivalentTo(OrganisationRoles.Producer);
         viewModel.OrganisationName.Should().BeEquivalentTo("Test Organisation");
         viewModel.NationId.Should().NotBeNull();
         viewModel.NationId.Value.Should().Be(nationId);
-        viewModel.ComplianceYear.Should().Be(expectedComplianceYear);
-        viewModel.DeadlineYear.Should().Be(expectedDeadlineYear);
+        viewModel.ComplianceYear.Should().Be(2026); // Based on SetUp GlobalVariables: OverrideCurrentYear = 2026, OverrideCurrentMonth = 11
+        viewModel.DeadlineYear.Should().Be(2027);
     }
 
     [Theory]
@@ -318,9 +313,6 @@ public class PrnsObligationControllerTests
     public async Task FillViewModelFromSessionAsync_Returns_Valid_ViewModelForComplianceSchemeMember(int nationId)
     {
         // Arrange
-        var currentYear = DateTime.Now.Year;
-        var currentMonth = 2; // Febuary
-        var deadlineYear = currentYear + 1;
         var session = new FrontendSchemeRegistrationSession
         {
             UserData = new UserData
@@ -348,26 +340,21 @@ public class PrnsObligationControllerTests
         var viewModel = _fixture.Create<PrnObligationViewModel>();
 
         // Act
-        await _controller.FillViewModelFromSessionAsync(viewModel, currentYear, currentMonth);
+        await _controller.FillViewModelFromSessionAsync(viewModel);
 
         // Assert
         viewModel.OrganisationRole.Should().BeEquivalentTo(OrganisationRoles.ComplianceScheme);
         viewModel.OrganisationName.Should().BeEquivalentTo("Test Organisation");
         viewModel.NationId.Should().NotBeNull();
         viewModel.NationId.Value.Should().Be(nationId);
-        viewModel.ComplianceYear.Should().Be(currentYear);
-        viewModel.DeadlineYear.Should().Be(deadlineYear);
+        viewModel.ComplianceYear.Should().Be(2026); // Based on SetUp GlobalVariables: OverrideCurrentYear = 2026, OverrideCurrentMonth = 11
+        viewModel.DeadlineYear.Should().Be(2027);
     }
 
     [Test]
     public async Task FillViewModelFromSessionAsync_Returns_ViewModelForComplianceSchemeMember_WhenSelectedCSIsNull()
     {
         // Arrange
-        var currentYear = DateTime.Now.Year;
-        var currentMonth = 1; // January
-        var expectedComplianceYear = currentYear - 1;
-        var expectedDeadlineYear = currentYear;
-
         var session = new FrontendSchemeRegistrationSession
         {
             UserData = new UserData
@@ -390,25 +377,39 @@ public class PrnsObligationControllerTests
         var viewModel = _fixture.Create<PrnObligationViewModel>();
 
         // Act
-        await _controller.FillViewModelFromSessionAsync(viewModel, currentYear, currentMonth);
+        await _controller.FillViewModelFromSessionAsync(viewModel);
 
         // Assert
         viewModel.OrganisationName.Should().BeNull();
         viewModel.NationId.Should().Be(0);
-        viewModel.ComplianceYear.Should().Be(expectedComplianceYear);
-        viewModel.DeadlineYear.Should().Be(expectedDeadlineYear);
+        viewModel.ComplianceYear.Should().Be(2026); // Based on SetUp GlobalVariables: OverrideCurrentYear = 2026, OverrideCurrentMonth = 11
+        viewModel.DeadlineYear.Should().Be(2027);
     }
 
     [Test]
     [Theory]
-    [TestCase(2026, 1, 2025, 2026)]
-    [TestCase(2025, 1, 2024, 2025)]
-    [TestCase(2024, 1, 2023, 2024)]
+    [TestCase(2026, 1, 2025, 2026)] // Special case: January 2026 returns 2025
+    [TestCase(2025, 1, 2025, 2026)] // January 2025 returns 2025 (no special case)
+    [TestCase(2024, 1, 2024, 2025)] // January 2024 returns 2024 (no special case)
     [TestCase(2026, 10, 2026, 2027)]
     [TestCase(2025, 11, 2025, 2026)]
     [TestCase(2024, 9, 2024, 2025)]
     public async Task FillViewModelFromSessionAsync_Returns_ComplianceYear_And_DeadlineYear_AsExpected(int currentYear, int currentMonth, int expectedComplianceYear, int expectedDeadlineYear)
     {
+        // Arrange
+        var globalVariables = Options.Create(new GlobalVariables { BasePath = "BasePath", LogPrefix = "[FrontendSchemaRegistration]", OverrideCurrentYear = currentYear, OverrideCurrentMonth = currentMonth });
+        var controller = new PrnsObligationController(_sessionManagerMock.Object, _prnServiceMock.Object, globalVariables, _urlOptionsMock.Object, _loggerMock.Object)
+        {
+            Url = _urlHelperMock.Object,
+            ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    Session = new Mock<ISession>().Object
+                }
+            }
+        };
+
         var session = new FrontendSchemeRegistrationSession
         {
             UserData = new UserData
@@ -431,7 +432,7 @@ public class PrnsObligationControllerTests
         var viewModel = _fixture.Create<PrnObligationViewModel>();
 
         // Act
-        await _controller.FillViewModelFromSessionAsync(viewModel, currentYear, currentMonth);
+        await controller.FillViewModelFromSessionAsync(viewModel);
 
         // Assert
         viewModel.OrganisationName.Should().BeNull();
@@ -441,7 +442,7 @@ public class PrnsObligationControllerTests
     }
 
     [Test]    
-    [TestCase(1, 2025, 2024)]
+    [TestCase(1, 2026, 2025)] // January 2026 special case returns 2025
     [TestCase(null, null, null)]
     public async Task ObligationPerMaterial_ReturnsView_When_ComplianceMonth_isJanuary(int? currentMonth, int? currentYear, int? expectedComplianceYear)
     {
@@ -464,7 +465,9 @@ public class PrnsObligationControllerTests
 
         if (currentMonth is null && currentYear is null)
         {
-            expectedComplianceYear = DateTime.Now.Month == 1 ? DateTime.Now.Year - 1 : DateTime.Now.Year;
+            // Apply the same GetComplianceYear logic
+            var now = DateTime.Now;
+            expectedComplianceYear = (now.Year == 2026 && now.Month == 1) ? 2025 : now.Year;
         }
 
         _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);

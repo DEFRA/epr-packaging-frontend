@@ -10,7 +10,6 @@ using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Sessions;
-using FrontendSchemeRegistration.UI.ViewModels;
 using FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
 using Microsoft.Extensions.Options;
 using Microsoft.FeatureManagement;
@@ -23,7 +22,7 @@ using ViewModels.Shared;
 
 public class RegistrationApplicationService : IRegistrationApplicationService
 {
-    private readonly ISubmissionService submissionService;
+    private readonly ISubmissionService _submissionService;
     private readonly IPaymentCalculationService paymentCalculationService;
     private readonly ISessionManager<RegistrationApplicationSession> sessionManager;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> frontEndSessionManager;
@@ -39,7 +38,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         _timeProvider = timeProvider;
         ArgumentNullException.ThrowIfNull(dependencies);
         
-        submissionService = dependencies.SubmissionService
+        _submissionService = dependencies.SubmissionService
             ?? throw new InvalidOperationException($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(dependencies.SubmissionService)} cannot be null.");
         paymentCalculationService = dependencies.PaymentCalculationService
             ?? throw new InvalidOperationException($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(dependencies.PaymentCalculationService)} cannot be null.");
@@ -118,7 +117,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         session.Period = new SubmissionPeriod { DataPeriod = $"January to December {registrationYear}", StartMonth = "January", EndMonth = "December", Year = $"{registrationYear}" };
         session.SubmissionPeriod = session.Period.DataPeriod;
 
-        var registrationApplicationDetails = await submissionService.GetRegistrationApplicationDetails(new GetRegistrationApplicationDetailsRequest
+        var registrationApplicationDetails = await _submissionService.GetRegistrationApplicationDetails(new GetRegistrationApplicationDetailsRequest
         {
             OrganisationNumber = int.Parse(organisation.OrganisationNumber),
             OrganisationId = organisation.Id.Value,
@@ -460,7 +459,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             paymentMethod
         );
         
-        await submissionService.CreateRegistrationApplicationEvent(
+        await _submissionService.CreateRegistrationApplicationEvent(
             registrationApplicationData,
             session.ApplicationReferenceNumber,
             session.IsResubmission,
@@ -499,7 +498,8 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             organisationNumber,
             _timeProvider,
             registrationSession.IsComplianceScheme,
-            registrationSession.SelectedComplianceScheme?.RowNumber ?? 0); 
+            registrationSession.SelectedComplianceScheme?.RowNumber ?? 0,
+            registrationSession.RegistrationJourney?.ToString() ?? "X"); 
         
         await frontEndSessionManager.SaveSessionAsync(httpSession, frontEndSession);
     }

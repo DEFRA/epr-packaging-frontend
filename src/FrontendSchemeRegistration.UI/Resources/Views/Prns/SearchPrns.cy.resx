@@ -15,7 +15,7 @@
 		<value>Chwilio PRNs a PERNs</value>
 	</data>
 	<data name="you_can_search_for_prns_and_perns" xml:space="preserve">
-		<value>Gallwch chi chwilio am PRNs a PERNs sydd wedi'u rhoi ar gyfer eich rhwymedigaethau ailgylchu ar gyfer 2025 yn unig. I ddod o hyd i gofnodion y blynyddoedd cynt, defnyddiwch y Gronfa Ddata Gwastraff Pecynwaith Gwladol (NPWD).</value>
+		<value>Gallwch chi chwilio am PRNs a PERNs sydd wedi'u rhoi ar gyfer eich rhwymedigaethau ailgylchu ar gyfer {0} yn unig. I ddod o hyd i gofnodion y blynyddoedd cynt, defnyddiwch y Gronfa Ddata Gwastraff Pecynwaith Gwladol (NPWD).</value>
 	</data>
 	<data name="enter_prn_or_pern_number" xml:space="preserve">
 		<value>Rhowch rif PRN neu PERN, neu enw'r ailbrosesydd neu'r allforiwr.</value>
