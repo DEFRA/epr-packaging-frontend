@@ -19,4 +19,5 @@ public class FileUploadSuccessViewModel : ViewModelWithOrganisationRole
     public bool ShowRegistrationCaption { get; set; } = false;
 
     public RegistrationJourney? RegistrationJourney { get; set; }
+    public string OrganisationName { get; set; }
 }

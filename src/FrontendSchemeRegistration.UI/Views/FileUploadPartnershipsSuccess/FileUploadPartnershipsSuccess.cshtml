@@ -1,7 +1,14 @@
+@using FrontendSchemeRegistration.UI.ViewModels.Shared
 @model FileUploadSuccessViewModel
 
 @{
     ViewData["Title"] = Localizer["page_title"];
+    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+        Model.ShowRegistrationCaption, 
+        Model.RegistrationJourney, 
+        Model.OrganisationName,
+        null,
+        Model.RegistrationYear);
 }
 
 @await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
@@ -31,6 +38,8 @@
                 </div>
             </div>
 
+            <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel"/>
+            
             @if (!Model.IsResubmission)
             {
                 <h3 class="govuk-heading-m">@Localizer["what_happens_next"]</h3>

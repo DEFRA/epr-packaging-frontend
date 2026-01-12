@@ -5,7 +5,8 @@ using Application.DTOs.Submission;
 using Application.Services.Interfaces;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
-using global::FrontendSchemeRegistration.UI.Services;
+using Extensions;
+using Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sessions;
@@ -48,13 +49,17 @@ public class FileUploadPartnershipsSuccessController : Controller
         {
             return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
         }
+        
+        var userData = User.GetUserData();
+        var organisation = userData.Organisations[0];
 
         return View("FileUploadPartnershipsSuccess", new FileUploadSuccessViewModel
         {
             FileName = submission.PartnershipsFileName,
             SubmissionId = submissionId,
             IsResubmission = session.RegistrationSession.IsResubmission,
-            RegistrationYear = registrationYear
+            RegistrationYear = registrationYear,
+            OrganisationName = organisation.Name
         });
     }
 }

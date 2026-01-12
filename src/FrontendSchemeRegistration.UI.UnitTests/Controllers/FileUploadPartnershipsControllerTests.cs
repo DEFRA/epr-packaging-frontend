@@ -31,6 +31,7 @@ public class FileUploadPartnershipsControllerTests
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
     private FileUploadPartnershipsController _systemUnderTest;
     private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
+    private Mock<ISessionManager<RegistrationApplicationSession>> _registrationApplicationSessionMock;
 
     [SetUp]
     public void SetUp()
@@ -38,6 +39,7 @@ public class FileUploadPartnershipsControllerTests
         _submissionServiceMock = new Mock<ISubmissionService>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
+        _registrationApplicationSessionMock = new Mock<ISessionManager<RegistrationApplicationSession>>();
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
@@ -70,12 +72,20 @@ public class FileUploadPartnershipsControllerTests
 
         _fileUploadServiceMock = new Mock<IFileUploadService>();
 
+        _registrationApplicationSessionMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new RegistrationApplicationSession
+            {
+                RegistrationJourney = RegistrationJourney.DirectSmallProducer
+            });
+
         _systemUnderTest = new FileUploadPartnershipsController
-            (_submissionServiceMock.Object, 
-            _fileUploadServiceMock.Object, 
+            (_submissionServiceMock.Object,
+            _fileUploadServiceMock.Object,
             _sessionManagerMock.Object,
             _registrationApplicationServiceMock.Object,
-            Options.Create(new GlobalVariables { FileUploadLimitInBytes = 268435456, SubsidiaryFileUploadLimitInBytes = 61440 }));
+            Options.Create(new GlobalVariables { FileUploadLimitInBytes = 268435456, SubsidiaryFileUploadLimitInBytes = 61440 }),
+            _registrationApplicationSessionMock.Object);
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
@@ -156,6 +166,26 @@ public class FileUploadPartnershipsControllerTests
                 It.IsAny<FileUploadSubmissionDetails>()),
             Times.Once);
         result.ViewName.Should().Be("FileUploadPartnerships");
+    }
+
+    [Test]
+    public async Task Post_WhenModelStateInvalid_SetsRegistrationJourneyOnViewModel()
+    {
+        // Arrange
+        const string contentType = "content-type";
+        _systemUnderTest.ControllerContext.HttpContext.Request.ContentType = contentType;
+        _systemUnderTest.ModelState.AddModelError("file", "Some error");
+
+        // Act
+        var result = await _systemUnderTest.Post(It.IsAny<string>()) as ViewResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        result!.ViewName.Should().Be("FileUploadPartnerships");
+
+        var model = result.Model as FrontendSchemeRegistration.UI.ViewModels.FileUploadViewModel;
+        model.Should().NotBeNull();
+        model!.RegistrationJourney.Should().Be(RegistrationJourney.DirectSmallProducer);
     }
 
     [Test]
