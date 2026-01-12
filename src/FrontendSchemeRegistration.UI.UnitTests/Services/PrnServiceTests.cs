@@ -146,6 +146,7 @@ public class PrnServiceTests
         prnSearchResults.PagingDetail.PageSize.Should().Be(request.PageSize);
         prnSearchResults.PagingDetail.TotalItems.Should().Be(paginatedResposne.TotalItems);
         prnSearchResults.TypeAhead.Should().BeEquivalentTo(paginatedResposne.TypeAhead);
+        prnSearchResults.ComplianceYear.Should().BeGreaterThan(0); // Verify ComplianceYear is set
     }
 
     [Test]
