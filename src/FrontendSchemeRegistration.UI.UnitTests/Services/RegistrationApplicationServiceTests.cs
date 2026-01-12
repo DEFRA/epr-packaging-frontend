@@ -588,7 +588,7 @@ public class RegistrationApplicationServiceTests
         // Arrange
         _dateTimeProvider.SetUtcNow(new DateTime(2026, 1, 10));
         var organisationNumber = "123";
-        string expectedApplicationReferenceNumber = $"PEPR{organisationNumber}{_dateTimeProvider.GetUtcNow().Year - 2000}P1";
+        string expectedApplicationReferenceNumber = $"PEPR{organisationNumber}{_dateTimeProvider.GetUtcNow().Year - 2000}P1S";
 
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
             .ReturnsAsync(_session);
@@ -634,7 +634,7 @@ public class RegistrationApplicationServiceTests
         var submissionYear = _dateTimeProvider.GetUtcNow().AddYears(-1).Year;
         _session.Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" };
         
-        var expectedApplicationReferenceNumber = $"PEPR{organisationNumber}{submissionYear - 2000}P2";
+        var expectedApplicationReferenceNumber = $"PEPR{organisationNumber}{submissionYear - 2000}P2S";
         // Act
         await _service.SetRegistrationFileUploadSession(_httpSession, organisationNumber, It.IsAny<int>(), false);
 
@@ -651,9 +651,10 @@ public class RegistrationApplicationServiceTests
         // Arrange
         var organisationNumber = "123";
         _session.SelectedComplianceScheme = null!;
+        _session.RegistrationJourney = RegistrationJourney.CsoLargeProducer;
         var periodEnd = DateTime.Parse("31 December" + _session.Period.Year, new CultureInfo("en-GB"));
         var periodNumber = DateTime.Today <= periodEnd ? 1 : 2;
-        var expectedApplicationReferenceNumber = $"PEPR{organisationNumber}{periodEnd.Year - 2000}P{periodNumber}";
+        var expectedApplicationReferenceNumber = $"PEPR{organisationNumber}{periodEnd.Year - 2000}P{periodNumber}L";
 
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
             .ReturnsAsync(_session);
