@@ -1,4 +1,4 @@
-﻿using EPR.Common.Authorization.Extensions;
+using EPR.Common.Authorization.Extensions;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services;
@@ -30,17 +30,29 @@ namespace FrontendSchemeRegistration.UI.Extensions;
 
 using Application.Options.ReistrationPeriodPatterns;
 using Services.RegistrationPeriods;
+using System.Security.Claims;
+using System.Web;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Identity.Abstractions;
+using Microsoft.Identity.Web.TokenCacheProviders;
+using Services.StubAuthentication;
 
 [ExcludeFromCodeCoverage]
 public static class ServiceProviderExtension
 {
-    public static IServiceCollection RegisterWebComponents(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection RegisterWebComponents(this IServiceCollection services, IConfiguration configuration, bool isStubAuth)
     {
         ConfigureCookiePolicy(services);
         ConfigureOptions(services, configuration);
         ConfigureLocalization(services);
-        ConfigureAuthentication(services, configuration);
-        ConfigureAuthorization(services, configuration);
+        if (!isStubAuth)
+        {
+            ConfigureAuthentication(services, configuration);    
+        }
+        ConfigureAuthorization(services, configuration, isStubAuth);
         ConfigureSession(services);
         RegisterServices(services);
         RegisterHttpClients(services);
@@ -77,27 +89,38 @@ public static class ServiceProviderExtension
         return services;
     }
 
-    private static void ConfigureAuthorization(IServiceCollection services, IConfiguration configuration)
+    private static void ConfigureAuthorization(IServiceCollection services, IConfiguration configuration, bool isStubAuth)
     {
-        services.ConfigureApplicationCookie(options =>
+
+        if (isStubAuth)
         {
-            options.Cookie.HttpOnly = true;
-
-            var azureB2COptions = services.BuildServiceProvider().GetRequiredService<IOptions<AzureAdB2COptions>>().Value;
-
-            options.LoginPath = azureB2COptions.SignedOutCallbackPath;
-            options.AccessDeniedPath = azureB2COptions.SignedOutCallbackPath;
-
-            options.SlidingExpiration = true;
-            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-        });
-
+            ConfigureStubAuthentication(services, configuration);    
+        }
+        else
+        {
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.Cookie.HttpOnly = true;
+        
+                var azureB2COptions = services.BuildServiceProvider().GetRequiredService<IOptions<AzureAdB2COptions>>().Value;
+        
+                options.LoginPath = azureB2COptions.SignedOutCallbackPath;
+                options.AccessDeniedPath = azureB2COptions.SignedOutCallbackPath;
+        
+                options.SlidingExpiration = true;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            });
+        }
+        
+        
         services.AddAntiforgery(options =>
         {
             options.Cookie.HttpOnly = true;
             options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         });
-
+        
+        services.AddAuthorization();
+        
         services.RegisterPolicy<FrontendSchemeRegistrationSession>(configuration);
         services.AddScoped<ISessionManager<RegistrationApplicationSession>, SessionManager<RegistrationApplicationSession>>();
     }
@@ -272,6 +295,83 @@ public static class ServiceProviderExtension
         });
     }
 
+    private static void ConfigureStubAuthentication(IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddHttpContextAccessor();
+        services.AddTransient<IStubAuthenticationService, StubAuthenticationService>();
+        services.AddTransient<ICustomClaims, CustomClaims>();
+
+        services
+            .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+            {
+                options.LoginPath = "/services/stub-signin";
+                options.ExpireTimeSpan = TimeSpan.FromHours(1);
+                options.Cookie.Name = StubAuthConstants.StubAuthCookieName;
+                options.SlidingExpiration = true;
+                options.Cookie.IsEssential = true;
+                options.Cookie.SameSite = SameSiteMode.None;
+                options.Cookie.Domain = "localhost";
+                options.CookieManager = new ChunkingCookieManager { ChunkSize = 3000 };
+                options.LogoutPath = "/services/stub-signed-out";
+                options.Events.OnSigningOut = c =>
+                {
+                    c.Response.Cookies.Delete(StubAuthConstants.StubAuthCookieName);
+                    c.Response.Redirect("/services/stub-signin");
+                    return Task.CompletedTask;
+                };
+
+                options.Events.OnRedirectToLogin = c =>
+                {
+                    var redirectUri = new Uri(c.RedirectUri);
+
+                    var redirectQuery = HttpUtility.UrlEncode(
+                        $"{redirectUri.Authority}{HttpUtility.UrlDecode(redirectUri.Query.Replace("?ReturnUrl=", ""))}");
+
+                    c.Response.Redirect("/services/account-details?ReturnUrl=" + redirectQuery);
+
+                    return Task.CompletedTask;
+                };
+            });
+        services.AddOptions<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme)
+            .Configure<ICustomClaims?>((options, customClaims) =>
+            {
+                options.Events.OnValidatePrincipal = async (ctx) =>
+                {
+                    var claims = new List<Claim>();
+                    claims.AddRange(ctx.Principal.Claims);
+
+                    if (customClaims != null)
+                    {
+                        var additionalClaims = await customClaims.GetCustomClaims(new TokenValidatedContext(
+                            ctx.HttpContext,
+                            new AuthenticationScheme(CookieAuthenticationDefaults.AuthenticationScheme, "Cookie",
+                                typeof(StubAuthHandler)), new OpenIdConnectOptions(), ctx.Principal,
+                            new AuthenticationProperties()));
+
+                        foreach (var additionalClaim in additionalClaims)
+                        {
+                            if (claims.FirstOrDefault(c => c.Type == additionalClaim.Type) == null)
+                            {
+                                claims.Add(additionalClaim);
+                            }
+                        }
+                    }
+                    
+                    ctx.Principal = new ClaimsPrincipal(new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme));
+                    await ctx.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, ctx.Principal);
+                };
+            });
+        
+        services.AddScoped<ITokenAcquisition, StubTokenAcquisition>();
+        services.AddScoped<IAuthorizationHeaderProvider, StubAuthorizationHeaderProvider>();
+        services.AddScoped<ITokenAcquirerFactory, StubTokenAcquirerFactory>();
+        services.AddScoped<ITokenAcquirer, StubTokenAcquirer>();
+        services.TryAddSingleton<IMsalTokenCacheProvider, StubMsalTokenCacheProvider>();      
+
+        services.ConfigureGraphServiceClient(configuration);
+    }
+
     private static void ConfigureAuthentication(IServiceCollection services, IConfiguration configuration)
     {
         var sp = services.BuildServiceProvider();
@@ -329,6 +429,8 @@ public static class ServiceProviderExtension
         {
             options.HttpOnly = HttpOnlyPolicy.Always;
             options.Secure = CookieSecurePolicy.Always;
+            //TODO check this as - it causes you to have to accept a cookie marked as essential for stub auth
+            //options.CheckConsentNeeded = context => true;
         });
     }
 }

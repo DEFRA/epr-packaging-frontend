@@ -1,4 +1,4 @@
-﻿using FrontendSchemeRegistration.Application.ConfigurationExtensions;
+using FrontendSchemeRegistration.Application.ConfigurationExtensions;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Middleware;
@@ -19,17 +19,23 @@ ThreadPool.SetMinThreads(30, 30);
 
 services.AddFeatureManagement();
 
-services.AddAntiforgery(opts =>
-{
-    var cookieOptions = builderConfig.GetSection(CookieOptions.ConfigSection).Get<CookieOptions>();
+//TODO check this as this is the second usage of this, which is causing issues...
+// services.AddAntiforgery(opts =>
+// {
+//     var cookieOptions = builderConfig.GetSection(CookieOptions.ConfigSection).Get<CookieOptions>();
+//
+//     opts.Cookie.Name = cookieOptions.AntiForgeryCookieName;
+//     opts.Cookie.Path = basePath;
+// });
 
-    opts.Cookie.Name = cookieOptions.AntiForgeryCookieName;
-    opts.Cookie.Path = basePath;
-});
+var isStubAuth = builderConfig.GetValue<bool>("IsStubAuth", false);
+#if !DEBUG
+    isStubAuth = false;
+#endif
 
 services
     .AddHttpContextAccessor()
-    .RegisterWebComponents(builderConfig)
+    .RegisterWebComponents(builderConfig, isStubAuth)
     .ConfigureMsalDistributedTokenOptions();
 
 services
@@ -101,9 +107,10 @@ app.UseCookiePolicy();
 app.UseStatusCodePagesWithReExecute("/error", "?statusCode={0}");
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseAuthentication();
 app.UseRouting();
 app.UseSession();
-app.UseAuthentication();
+
 app.UseAuthorization();
 app.UseMiddleware<UserDataCheckerMiddleware>();
 app.UseMiddleware<JourneyAccessCheckerMiddleware>();
