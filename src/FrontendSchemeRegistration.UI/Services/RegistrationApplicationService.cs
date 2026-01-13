@@ -472,7 +472,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         }
         else
         {
-            session.RegistrationApplicationSubmittedDate = DateTime.Now;
+            session.RegistrationApplicationSubmittedDate = _timeProvider.GetLocalNow().DateTime;
         }
 
         await sessionManager.SaveSessionAsync(httpSession, session);

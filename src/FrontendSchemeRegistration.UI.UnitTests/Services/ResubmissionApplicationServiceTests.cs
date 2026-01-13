@@ -75,10 +75,27 @@ public class ResubmissionApplicationServiceTests
         new SubmissionPeriod
         {
             DataPeriod = "January to June 2025",
-            /* This will be excluded because it is after the latest allowed period ending June 2024 */
             Deadline = DateTime.Parse("2025-10-01"),
             ActiveFrom = DateTime.Parse("2025-07-01"),
             Year = "2025",
+            StartMonth = "January",
+            EndMonth = "June"
+        },
+        new SubmissionPeriod
+        {
+            DataPeriod = "January to June 2026",
+            Deadline = DateTime.Parse("2026-10-01"),
+            ActiveFrom = DateTime.Parse("2026-07-01"),
+            Year = "2026",
+            StartMonth = "January",
+            EndMonth = "June"
+        },
+        new SubmissionPeriod
+        {
+            DataPeriod = "January to June 2027",
+            Deadline = DateTime.Parse("2027-10-01"),
+            ActiveFrom = DateTime.Parse("2027-07-01"),
+            Year = "2027",
             StartMonth = "January",
             EndMonth = "June"
         }
@@ -740,7 +757,7 @@ public class ResubmissionApplicationServiceTests
     public async Task GetActiveSubmissionPeriod_ReturnsCorrectActiveDataPeriod()
     {
         // Arrange
-        var expectedResult = new SubmissionPeriod() { DataPeriod = "January to June 2025" };
+        var expectedResult = new SubmissionPeriod { DataPeriod = "January to June 2026" };
 
         // Act
         var result = await _service.GetActiveSubmissionPeriod(FakeTimeProvider2025);
@@ -754,7 +771,7 @@ public class ResubmissionApplicationServiceTests
     public async Task GetActiveSubmissionPeriod_ReturnsCorrectActiveFrom()
     {
         // Arrange
-        var expectedResult = new SubmissionPeriod() { DataPeriod = "January to June 2025", ActiveFrom = new DateTime(2025, 07, 01) };
+        var expectedResult = new SubmissionPeriod() { DataPeriod = "January to June 2026", ActiveFrom = new DateTime(2026, 07, 01) };
 
         // Act
         var result = await _service.GetActiveSubmissionPeriod(FakeTimeProvider2025);
