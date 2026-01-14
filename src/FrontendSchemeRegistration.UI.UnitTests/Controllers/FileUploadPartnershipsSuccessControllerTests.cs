@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using System.Security.Claims;
 using System.Text.Json;
+using Application.Enums;
 using Moq;
 using UI.Controllers;
 using UI.Sessions;
@@ -101,7 +102,8 @@ public class FileUploadPartnershipsSuccessControllerTests
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
             .ReturnsAsync(new RegistrationSubmission
             {
-                PartnershipsFileName = fileName
+                PartnershipsFileName = fileName,
+                RegistrationJourney = RegistrationJourney.CsoSmallProducer
             });
 
         var userData = new UserData
@@ -125,7 +127,8 @@ public class FileUploadPartnershipsSuccessControllerTests
             FileName = fileName,
             SubmissionId = new Guid(SubmissionId),
             RegistrationYear = DateTime.Now.Year,
-            OrganisationName = "Org A"
+            OrganisationName = "Org A",
+            RegistrationJourney = RegistrationJourney.CsoSmallProducer
         });
 
         _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.Once);
