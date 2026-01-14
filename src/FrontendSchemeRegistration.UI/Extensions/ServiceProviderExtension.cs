@@ -135,7 +135,6 @@ public static class ServiceProviderExtension
 
     private static void RegisterServices(IServiceCollection services)
     {
-        //services.AddSingleton<TimeProvider>(_ => new TimeTravelTestingTimeProvider(DateTime.UtcNow.AddYears(-1)));
         services.AddScoped<ICompaniesHouseService, CompaniesHouseService>();
         services.AddScoped<IComplianceSchemeMemberService, ComplianceSchemeMemberService>();
         services.AddScoped<ICookieService, CookieService>();

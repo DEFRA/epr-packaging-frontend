@@ -79,7 +79,7 @@ public class TimeTravelTestingTimeProviderTests
     }
 
     [Test]
-    public void GIVEN_simulating_the_past_WHEN_GetUtcNow_called_multiple_times_THEN_returns_consistent_results()
+    public Task GIVEN_simulating_the_past_WHEN_GetUtcNow_called_multiple_times_THEN_returns_consistent_results()
     {
         // Arrange
         var targetDateTime = DateTime.UtcNow.AddHours(-3);
@@ -87,11 +87,12 @@ public class TimeTravelTestingTimeProviderTests
 
         // Act
         var firstCall = _timeProvider.GetUtcNow();
-        System.Threading.Thread.Sleep(100);
+        Task.Delay(100);
         var secondCall = _timeProvider.GetUtcNow();
 
         // Assert
         firstCall.Should().BeCloseTo(secondCall, TimeSpan.FromMilliseconds(200));
         firstCall.DateTime.Should().BeCloseTo(targetDateTime, TimeSpan.FromSeconds(1));
+        return Task.CompletedTask;
     }
 }
