@@ -1,17 +1,35 @@
 @model FrontendSchemeRegistration.UI.ViewModels.Shared.Components.NotificationBanner.NotificationBannerViewModel
+@{
+    // Title should always have a resource value
+    var title = Localizer[Model.TitleResource];
 
-<div class="govuk-notification-banner" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+    // These are optional; though one should have a resource value
+    var header = Localizer[Model.HeaderResource];
+    var body = Localizer[Model.BodyResource];
+}
+
+<div class="govuk-notification-banner"
+     role="alert"
+     aria-labelledby="govuk-notification-banner-title"
+     data-module="govuk-notification-banner">
     <div class="govuk-notification-banner__header">
         <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
-            @Localizer[Model.TitleResource]
+            @title
         </h2>
     </div>
+
     <div class="govuk-notification-banner__content">
-        <h3 class="govuk-notification-banner__heading">
-            @Localizer[Model.HeaderResource]
-        </h3>
-        <p class="govuk-body">
-            @Localizer[Model.BodyResource]
-        </p>
+        @if (!header.IsResourceNotFound && !string.IsNullOrWhiteSpace(header.Value))
+        {
+            <h3 class="govuk-notification-banner__heading">
+                @header
+            </h3>
+        }
+        @if (!body.IsResourceNotFound && !string.IsNullOrWhiteSpace(body.Value))
+        {
+            <p class="govuk-body">
+                @body
+            </p>
+        }
     </div>
 </div>
