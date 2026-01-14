@@ -2,14 +2,18 @@ namespace FrontendSchemeRegistration.UI.Services.StubAuthentication;
 
 using System.Security.Claims;
 using System.Text.Encodings.Web;
+using System.Text.Json;
+using Application.Extensions;
+using Application.Services.Interfaces;
+using EPR.Common.Authorization.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 using Microsoft.Identity.Web;
-using Newtonsoft.Json;
 using TokenValidatedContext = Microsoft.AspNetCore.Authentication.OpenIdConnect.TokenValidatedContext;
 
 public interface IStubAuthenticationService
@@ -18,7 +22,7 @@ public interface IStubAuthenticationService
     Task<ClaimsPrincipal> CreateClaimsPrincipal(StubAuthUserDetails model);
 }
 
-public class StubAuthenticationService(IHttpContextAccessor httpContextAccessor, ICustomClaims? customClaims) : IStubAuthenticationService
+public class StubAuthenticationService(IHttpContextAccessor httpContextAccessor, ICustomClaims customClaims) : IStubAuthenticationService
 {
     public void AddStubAuth(IResponseCookies cookies, StubAuthUserDetails model, bool isEssential = false)
     {
@@ -37,7 +41,7 @@ public class StubAuthenticationService(IHttpContextAccessor httpContextAccessor,
             IsEssential = isEssential,
             SameSite = SameSiteMode.None
         };
-        cookies.Append(StubAuthConstants.StubAuthCookieName, JsonConvert.SerializeObject(model), authCookie);
+        cookies.Append(StubAuthConstants.StubAuthCookieName, JsonSerializer.Serialize(model), authCookie);
     }
 
     public async Task<ClaimsPrincipal> CreateClaimsPrincipal(StubAuthUserDetails model)
@@ -84,12 +88,31 @@ public interface ICustomClaims
     Task<IEnumerable<Claim>> GetCustomClaims(TokenValidatedContext context);
 }
 
-public class CustomClaims : ICustomClaims
+public class CustomClaims(IUserAccountService userAccountService) : ICustomClaims
 {
     public async Task<IEnumerable<Claim>> GetCustomClaims(TokenValidatedContext context)
     {
         //use this to get any extra claim data
-        return new List<Claim>();
+        var userAccount = await userAccountService.GetUserAccount();
+
+
+        var userData = new UserData
+        {
+            ServiceRoleId = userAccount.User.ServiceRoleId,
+            FirstName = userAccount.User.FirstName,
+            LastName = userAccount.User.LastName,
+            Email = userAccount.User.Email,
+            Id = userAccount.User.Id,
+            Organisations = userAccount.User.Organisations.Select(x =>
+                new Organisation
+                {
+                    Id = x.Id,
+                    Name = x.OrganisationName,
+                    OrganisationRole = x.OrganisationRole,
+                    OrganisationType = x.OrganisationType
+                }).ToList()
+        };
+        return new List<Claim> { new(ClaimTypes.UserData, JsonSerializer.Serialize(userData)) };
     }
 }
 
@@ -98,7 +121,7 @@ public class StubAuthHandler(
     ILoggerFactory logger,
     UrlEncoder encoder,
     TimeProvider timeProvider,
-    ICustomClaims? customClaims,
+    ICustomClaims customClaims,
     IHttpContextAccessor httpContextAccessor) : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
 {
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -139,7 +162,7 @@ public static class StubAuthConstants
 
 //TODO - tidy this
 
-public class StubTokenAcquisition : ITokenAcquisition
+public class StubTokenAcquisition(IHttpContextAccessor httpContextAccessor) : ITokenAcquisition
 {
     public Task<string> GetAccessTokenForUserAsync(
         IEnumerable<string> scopes,
@@ -149,7 +172,10 @@ public class StubTokenAcquisition : ITokenAcquisition
         ClaimsPrincipal? user = null,
         TokenAcquisitionOptions? tokenAcquisitionOptions = null)
     {
-        return Task.FromResult("stub-access-token");
+        var userId = httpContextAccessor.HttpContext.User.Claims.GetClaim(ClaimTypes.NameIdentifier);
+        //TODO this will get the id of the user from the claims and set as the
+        // bearer token for the stub
+        return Task.FromResult(userId);
     }
 
     public Task<AuthenticationResult> GetAuthenticationResultForUserAsync(

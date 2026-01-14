@@ -63,7 +63,7 @@ public class ServiceProviderExtensionTests
         var services = new ServiceCollection();
 
         // Act
-        services.RegisterWebComponents(_configuration);
+        services.RegisterWebComponents(_configuration, false);
 
         // Assert
         services.Count.Should().BeGreaterThan(0);

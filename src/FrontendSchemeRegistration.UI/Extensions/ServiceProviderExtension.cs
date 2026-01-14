@@ -48,13 +48,13 @@ public static class ServiceProviderExtension
         ConfigureCookiePolicy(services);
         ConfigureOptions(services, configuration);
         ConfigureLocalization(services);
+        RegisterServices(services);
         if (!isStubAuth)
         {
             ConfigureAuthentication(services, configuration);    
         }
         ConfigureAuthorization(services, configuration, isStubAuth);
         ConfigureSession(services);
-        RegisterServices(services);
         RegisterHttpClients(services);
         RegisterPrnTimeProviderServices(services, configuration);
 
@@ -297,10 +297,11 @@ public static class ServiceProviderExtension
 
     private static void ConfigureStubAuthentication(IServiceCollection services, IConfiguration configuration)
     {
+        
         services.AddHttpContextAccessor();
         services.AddTransient<IStubAuthenticationService, StubAuthenticationService>();
         services.AddTransient<ICustomClaims, CustomClaims>();
-
+        
         services
             .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
@@ -334,27 +335,25 @@ public static class ServiceProviderExtension
                 };
             });
         services.AddOptions<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme)
-            .Configure<ICustomClaims?>((options, customClaims) =>
+            .Configure((options) =>
             {
                 options.Events.OnValidatePrincipal = async (ctx) =>
                 {
+                    var customClaims = ctx.HttpContext.RequestServices.GetRequiredService<ICustomClaims>();
                     var claims = new List<Claim>();
                     claims.AddRange(ctx.Principal.Claims);
 
-                    if (customClaims != null)
-                    {
-                        var additionalClaims = await customClaims.GetCustomClaims(new TokenValidatedContext(
-                            ctx.HttpContext,
-                            new AuthenticationScheme(CookieAuthenticationDefaults.AuthenticationScheme, "Cookie",
-                                typeof(StubAuthHandler)), new OpenIdConnectOptions(), ctx.Principal,
-                            new AuthenticationProperties()));
+                    var additionalClaims = await customClaims.GetCustomClaims(new TokenValidatedContext(
+                        ctx.HttpContext,
+                        new AuthenticationScheme(CookieAuthenticationDefaults.AuthenticationScheme, "Cookie",
+                            typeof(StubAuthHandler)), new OpenIdConnectOptions(), ctx.Principal,
+                        new AuthenticationProperties()));
 
-                        foreach (var additionalClaim in additionalClaims)
+                    foreach (var additionalClaim in additionalClaims)
+                    {
+                        if (claims.FirstOrDefault(c => c.Type == additionalClaim.Type) == null)
                         {
-                            if (claims.FirstOrDefault(c => c.Type == additionalClaim.Type) == null)
-                            {
-                                claims.Add(additionalClaim);
-                            }
+                            claims.Add(additionalClaim);
                         }
                     }
                     
