@@ -29,7 +29,7 @@ services.AddAntiforgery(opts =>
 
 services
     .AddHttpContextAccessor()
-    .RegisterWebComponents(builderConfig)
+    .RegisterWebComponents(builderConfig, builder.Environment)
     .ConfigureMsalDistributedTokenOptions();
 
 services

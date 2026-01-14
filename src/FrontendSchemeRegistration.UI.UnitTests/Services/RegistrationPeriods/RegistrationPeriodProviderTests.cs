@@ -28,7 +28,7 @@ public class RegistrationPeriodProviderTests
 
         // act
         var sut = new RegistrationPeriodProvider(options, _timeProvider);
-        var windows = sut.GetRegistrationWindows(isCso: true);
+        var windows = sut.GetActiveRegistrationWindows(isCso: true);
 
         // assert
         windows.Should().NotBeEmpty();
@@ -57,7 +57,7 @@ public class RegistrationPeriodProviderTests
         var sut = new RegistrationPeriodProvider(options, _timeProvider);
 
         // act
-        var windows = sut.GetRegistrationWindows(isCso: true);
+        var windows = sut.GetActiveRegistrationWindows(isCso: true);
 
         // assert
         windows.Should().NotBeEmpty();
@@ -92,7 +92,7 @@ public class RegistrationPeriodProviderTests
         var sut = new RegistrationPeriodProvider(options, _timeProvider);
 
         // act
-        var windows = sut.GetRegistrationWindows(isCso: false);
+        var windows = sut.GetActiveRegistrationWindows(isCso: false);
 
         // assert
         windows.Should().NotBeEmpty();
@@ -125,7 +125,7 @@ public class RegistrationPeriodProviderTests
         var sut = new RegistrationPeriodProvider(options, _timeProvider);
 
         // act
-        var windows = sut.GetRegistrationWindows(isCso: true).ToList();
+        var windows = sut.GetActiveRegistrationWindows(isCso: true).ToList();
 
         // assert
         windows.Should().BeInDescendingOrder(w => w.RegistrationYear);
@@ -158,40 +158,14 @@ public class RegistrationPeriodProviderTests
     }
 
     [Test]
-    public void WHEN_constructor_called_with_multiple_periods_with_null_final_year_THEN_throws_InvalidOperationException()
-    {
-        // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
-        {
-            new()
-            {
-                InitialRegistrationYear = 2024,
-                FinalRegistrationYear = null,
-                Windows = new List<Window> { CreateWindow(WindowType.CsoLargeProducer) }
-            },
-            new()
-            {
-                InitialRegistrationYear = 2025,
-                FinalRegistrationYear = null,
-                Windows = new List<Window> { CreateWindow(WindowType.DirectLargeProducer) }
-            }
-        };
-        var options = Options.Create(registrationPeriodPatterns);
-
-        // act & assert
-        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationPeriodProvider(options, _timeProvider));
-        ex.Message.Should().Contain("null FinalRegistrationYear value");
-    }
-
-    [Test]
     public void WHEN_constructor_called_THEN_excludes_closed_registration_windows()
     {
         // arrange
         // Create a window that closed in the past
-        var closedWindow = CreateWindow(WindowType.CsoLargeProducer, 
-            openingDateOffset: new DateTime(2025, 1, 1), 
-            deadlineDateOffset: new DateTime(2025, 2, 1),
-            closingDateOffset: new DateTime(2025, 3, 1));
+            var closedWindow = CreateWindow(WindowType.CsoLargeProducer,
+            openingDateConfig: new Date { Day = 1, Month = 1 },
+            deadlineDateConfig: new Date { Day = 1, Month = 2 },
+            closingDateConfig: new Date { Day = 1, Month = 3 });
 
         var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
         {
@@ -206,21 +180,22 @@ public class RegistrationPeriodProviderTests
 
         // act
         var sut = new RegistrationPeriodProvider(options, _timeProvider);
-        var windows = sut.GetRegistrationWindows(isCso: true);
+        var windows = sut.GetActiveRegistrationWindows(isCso: true);
 
         // assert
         windows.Should().BeEmpty();
     }
 
     [Test]
-    public void GIVEN_initially_open_window_closes_WHEN_GetRegistrationWindows_called_THEN_excludes_closed_registration_windows()
+    public void
+        GIVEN_initially_open_window_closes_WHEN_GetRegistrationWindows_called_THEN_excludes_closed_registration_windows()
     {
         // arrange
         // Create a window that will close
-        var closingWindow = CreateWindow(WindowType.CsoLargeProducer, 
-            openingDateOffset: new DateTime(2026, 1, 1), 
-            deadlineDateOffset: new DateTime(2026, 2, 1),
-            closingDateOffset: new DateTime(2026, 3, 1));
+        var closingWindow = CreateWindow(WindowType.CsoLargeProducer,
+            openingDateConfig: new Date { Day = 1, Month = 1 },
+            deadlineDateConfig: new Date { Day = 1, Month = 2 },
+            closingDateConfig: new Date { Day = 1, Month = 3 });
 
         var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
         {
@@ -233,12 +208,12 @@ public class RegistrationPeriodProviderTests
         };
         var options = Options.Create(registrationPeriodPatterns);
         var sut = new RegistrationPeriodProvider(options, _timeProvider);
-        var initialWindows = sut.GetRegistrationWindows(isCso: true);
+        var initialWindows = sut.GetActiveRegistrationWindows(isCso: true);
 
         // act
         // move past close date
         _timeProvider.SetUtcNow(new DateTime(2026, 4, 1));
-        var finalWindows = sut.GetRegistrationWindows(isCso: true);
+        var finalWindows = sut.GetActiveRegistrationWindows(isCso: true);
 
         // assert
         initialWindows.Count.Should().Be(2);
@@ -260,11 +235,11 @@ public class RegistrationPeriodProviderTests
         };
         var options = Options.Create(registrationPeriodPatterns);
         var sut = new RegistrationPeriodProvider(options, _timeProvider);
-        var initialWindows = sut.GetRegistrationWindows(isCso: true);
+        var initialWindows = sut.GetActiveRegistrationWindows(isCso: true);
 
         // act
         _timeProvider.SetUtcNow(new DateTime(2027, 1, 1));
-        var finalWindows = sut.GetRegistrationWindows(isCso: true);
+        var finalWindows = sut.GetActiveRegistrationWindows(isCso: true);
 
         // assert
         initialWindows.Should().Contain(w => w.RegistrationYear == 2026);
@@ -289,11 +264,48 @@ public class RegistrationPeriodProviderTests
 
         // act
         var sut = new RegistrationPeriodProvider(options, _timeProvider);
-        var windows = sut.GetRegistrationWindows(isCso: true);
+        var windows = sut.GetActiveRegistrationWindows(isCso: true);
 
         // assert
         windows.Should().Contain(w => w.RegistrationYear == 2026); // 2026 is the current year in _timeProvider
         windows.Should().NotContain(w => w.RegistrationYear > 2026);
+    }
+
+    [Test]
+    public void WHEN_constructor_called_with_null_final_registration_year_and_offset_opening_date_THEN_uses_current_year()
+    {
+        // arrange
+        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        {
+            // 2025 should all be closed, and therefore not returned
+            // 2026 should all be returned
+            // 2027 should be returned because the opening date is in 2026
+            // 2028 should not be returned
+            new()
+            {
+                InitialRegistrationYear = 2025,
+                FinalRegistrationYear = null,  // No final year specified
+                Windows = new List<Window>
+                {
+                    CreateWindow(
+                        WindowType.CsoLargeProducer,
+                        new Date { Day = 1, Month = 1, YearOffset = -1},
+                        new Date { Day = 1, Month = 7 },
+                        new Date { Day = 1, Month = 8 })
+                }
+            }
+        };
+        var options = Options.Create(registrationPeriodPatterns);
+
+        // act
+        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var windows = sut.GetActiveRegistrationWindows(isCso: true);
+
+        // assert
+        windows.Should().NotContain(w => w.RegistrationYear == 2025);
+        windows.Should().Contain(w => w.RegistrationYear == 2026);
+        windows.Should().Contain(w => w.RegistrationYear == 2027);
+        windows.Should().NotContain(w => w.RegistrationYear > 2027);
     }
 
     [Test]
@@ -319,8 +331,8 @@ public class RegistrationPeriodProviderTests
         var sut = new RegistrationPeriodProvider(options, _timeProvider);
 
         // act
-        var csoWindows = sut.GetRegistrationWindows(isCso: true);
-        var directWindows = sut.GetRegistrationWindows(isCso: false);
+        var csoWindows = sut.GetActiveRegistrationWindows(isCso: true);
+        var directWindows = sut.GetActiveRegistrationWindows(isCso: false);
 
         // assert
         csoWindows.Should().HaveCount(2);
@@ -352,8 +364,8 @@ public class RegistrationPeriodProviderTests
         var sut = new RegistrationPeriodProvider(options, _timeProvider);
 
         // act
-        var csoWindows = sut.GetRegistrationWindows(isCso: true);
-        var directWindows = sut.GetRegistrationWindows(isCso: false);
+        var csoWindows = sut.GetActiveRegistrationWindows(isCso: true);
+        var directWindows = sut.GetActiveRegistrationWindows(isCso: false);
 
         // assert
         csoWindows.Should().HaveCount(2);
@@ -371,10 +383,80 @@ public class RegistrationPeriodProviderTests
         var sut = new RegistrationPeriodProvider(options, _timeProvider);
 
         // act
-        var windows = sut.GetRegistrationWindows(isCso: true);
+        var windows = sut.GetActiveRegistrationWindows(isCso: true);
 
         // assert
         windows.Should().BeAssignableTo<IReadOnlyCollection<RegistrationWindow>>();
+    }
+
+    [Test]
+    public void WHEN_GetRegistrationWindows_called_with_multiple_years_THEN_orders_by_registration_year_descending()
+    {
+        // arrange
+        // create windows that stay open for multiple years so that many are active at once
+        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        {
+            new()
+            {
+                InitialRegistrationYear = 2024,
+                FinalRegistrationYear = 2027,
+                Windows = new List<Window>
+                {
+                    CreateWindow(
+                        WindowType.CsoLargeProducer,
+                        openingDateConfig: new Date { Day = 15, Month = 2 },
+                        deadlineDateConfig: new Date { Day = 1, Month = 3 },
+                        closingDateConfig: new Date { Day = 1, Month = 4, YearOffset = 2})
+                }
+            }
+        };
+        var options = Options.Create(registrationPeriodPatterns);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+
+        // act
+        var windows = sut.GetActiveRegistrationWindows(isCso: true).ToList();
+
+        // assert
+        windows.Should().HaveCountGreaterThan(1);
+        windows.Should().BeInDescendingOrder(w => w.RegistrationYear);
+    }
+
+    [Test]
+    public void WHEN_GetRegistrationWindows_called_THEN_filters_out_prior_to_opening_windows()
+    {
+        // arrange
+        // Create windows with opening dates in the future (before current time)
+        var futureWindow = CreateWindow(
+            WindowType.CsoLargeProducer,
+            openingDateConfig: new Date { Day = 15, Month = 2 },  // Opens Feb 15, 2026 (future from Jan 15)
+            deadlineDateConfig: new Date { Day = 1, Month = 3 },
+            closingDateConfig: new Date { Day = 1, Month = 4 });
+
+        var currentWindow = CreateWindow(
+            WindowType.CsoSmallProducer,
+            openingDateConfig: new Date { Day = 1, Month = 1 },   // Opens Jan 1, 2026 (past)
+            deadlineDateConfig: new Date { Day = 1, Month = 7 },
+            closingDateConfig: new Date { Day = 1, Month = 8 });
+
+        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        {
+            new()
+            {
+                InitialRegistrationYear = 2026,
+                FinalRegistrationYear = 2026,
+                Windows = new List<Window> { futureWindow, currentWindow }
+            }
+        };
+        var options = Options.Create(registrationPeriodPatterns);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+
+        // act
+        var windows = sut.GetActiveRegistrationWindows(isCso: true).ToList();
+
+        // assert
+        // Future window should be filtered out, only current/past window should remain
+        windows.Should().NotContain(w => w.Journey == RegistrationJourney.CsoLargeProducer);
+        windows.Should().Contain(w => w.Journey == RegistrationJourney.CsoSmallProducer);
     }
 
     // Creates registration period configuration for 2026 and a number of windows for that period. The windows
@@ -399,26 +481,25 @@ public class RegistrationPeriodProviderTests
     }
 
     /// <summary>
-    /// By default, creates a window configuration item with an opening date of 2026-06-01, a deadline date of 2026-07-01
-    /// and a closing date of 2026-08-01. The window is created relative to the given registration year 
+    /// By default, creates a window configuration item with an opening date of 01/06, a deadline date of 01/07
+    /// and a closing date of 01/08.
     /// </summary>
     private static Window CreateWindow(
         WindowType windowType,
-        DateTime? openingDateOffset = null,
-        DateTime? deadlineDateOffset = null,
-        DateTime? closingDateOffset = null,
-        int registrationYear = RegistrationYear)
+        Date? openingDateConfig = null,
+        Date? deadlineDateConfig = null,
+        Date? closingDateConfig = null)
     {
-        var opening = openingDateOffset ?? new DateTime(2026, 6, 1);
-        var deadline = deadlineDateOffset ?? new DateTime(2026, 7, 1);
-        var closing = closingDateOffset ?? new DateTime(2026, 8, 1);
+        var opening = openingDateConfig ?? new Date { Day = 1, Month = 1 };
+        var deadline = deadlineDateConfig ?? new Date { Day = 1, Month = 7 };
+        var closing = closingDateConfig ?? new Date { Day = 1, Month = 8 };
 
         return new Window
         {
             WindowType = windowType,
-            OpeningDate = new Date { Day = opening.Day, Month = opening.Month, YearOffset = opening.Year - registrationYear },
-            DeadlineDate = new Date { Day = deadline.Day, Month = deadline.Month, YearOffset = deadline.Year - registrationYear },
-            ClosingDate = new Date { Day = closing.Day, Month = closing.Month, YearOffset = closing.Year - registrationYear }
+            OpeningDate = opening,
+            DeadlineDate = deadline,
+            ClosingDate = closing
         };
     }
 }

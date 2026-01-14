@@ -18,6 +18,9 @@ using FrontendSchemeRegistration.UI.Services.Interfaces;
 
 namespace FrontendSchemeRegistration.UI.Controllers.FrontendSchemeRegistration;
 
+[SuppressMessage("Major Code Smell",
+    "S107: A long parameter list can indicate that a new structure should be created to wrap the numerous parameters or that the function is doing too many",
+    Justification = "This is an inherited code base. Reducing the dependency count will be done as part of a major rewrite")]
 public class FrontendSchemeRegistrationController(
     ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
     ILogger<FrontendSchemeRegistrationController> logger,
@@ -25,10 +28,11 @@ public class FrontendSchemeRegistrationController(
     IRegistrationApplicationService registrationApplicationService,
     IResubmissionApplicationService resubmissionApplicationService,
     IAuthorizationService authorizationService,
-    INotificationService notificationService)
+    INotificationService notificationService,
+    TimeProvider timeProvider)
     : Controller
 {
-    private TimeProvider _timeProvider = TimeProvider.System;
+    private TimeProvider _timeProvider = timeProvider;
 
     public void SetTestTimeProvider(TimeProvider testProvider)
     {

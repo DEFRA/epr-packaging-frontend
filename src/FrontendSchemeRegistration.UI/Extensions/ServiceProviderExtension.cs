@@ -28,13 +28,14 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("FrontendSchemeRegistration.UI.UnitTests")]
 namespace FrontendSchemeRegistration.UI.Extensions;
 
+using Application.Helpers;
 using Application.Options.ReistrationPeriodPatterns;
 using Services.RegistrationPeriods;
 
 [ExcludeFromCodeCoverage]
 public static class ServiceProviderExtension
 {
-    public static IServiceCollection RegisterWebComponents(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection RegisterWebComponents(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostingEnvironment)
     {
         ConfigureCookiePolicy(services);
         ConfigureOptions(services, configuration);
@@ -43,6 +44,7 @@ public static class ServiceProviderExtension
         ConfigureAuthorization(services, configuration);
         ConfigureSession(services);
         RegisterServices(services);
+        ConfigureTimeProvider(services, hostingEnvironment);
         RegisterHttpClients(services);
         RegisterPrnTimeProviderServices(services, configuration);
 
@@ -133,7 +135,6 @@ public static class ServiceProviderExtension
 
     private static void RegisterServices(IServiceCollection services)
     {
-        services.AddSingleton(TimeProvider.System);
         services.AddScoped<ICompaniesHouseService, CompaniesHouseService>();
         services.AddScoped<IComplianceSchemeMemberService, ComplianceSchemeMemberService>();
         services.AddScoped<ICookieService, CookieService>();
@@ -271,6 +272,21 @@ public static class ServiceProviderExtension
             options.Cookie.Path = "/";
             options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         });
+    }
+
+    // Allows time-travel testing by registering a test TimeProvider. Does not register the test provider
+    // in a production environment
+    private static void ConfigureTimeProvider(IServiceCollection services, IWebHostEnvironment hostingEnvironment)
+    {
+        if (hostingEnvironment.IsProduction()) return;
+        
+        var sp = services.BuildServiceProvider();
+        var globalVariables = sp.GetRequiredService<IOptions<GlobalVariables>>().Value;
+        
+        if (globalVariables.StartupUtcTimestampOverride.HasValue)
+        {
+            services.AddSingleton(typeof(TimeProvider), _ => new TimeTravelTestingTimeProvider(globalVariables.StartupUtcTimestampOverride.Value));    
+        }
     }
 
     private static void ConfigureAuthentication(IServiceCollection services, IConfiguration configuration)

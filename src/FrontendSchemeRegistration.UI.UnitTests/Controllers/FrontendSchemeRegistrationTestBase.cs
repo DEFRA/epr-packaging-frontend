@@ -152,7 +152,8 @@ public abstract class FrontendSchemeRegistrationTestBase
             RegistrationApplicationService.Object,
             ResubmissionApplicationService.Object,
             AuthorizationService.Object,
-        NotificationService.Object);
+            NotificationService.Object,
+            TimeProvider.System);
         SystemUnderTest.ControllerContext.HttpContext = _httpContextMock.Object;
         SystemUnderTest.TempData = tempDataDictionaryMock.Object;
     }

@@ -540,7 +540,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     {
         var applications = new List<RegistrationApplicationViewModel>();
 
-        var windows = _registrationPeriodProvider.GetRegistrationWindows(organisation.OrganisationRole == OrganisationRoles.ComplianceScheme).OrderByDescending(ra => ra.RegistrationYear);
+        var windows = _registrationPeriodProvider.GetActiveRegistrationWindows(organisation.OrganisationRole == OrganisationRoles.ComplianceScheme);
 
         foreach (var window in windows)
         {

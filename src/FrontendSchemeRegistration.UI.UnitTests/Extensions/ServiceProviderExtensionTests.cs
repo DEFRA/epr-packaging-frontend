@@ -1,6 +1,7 @@
 ﻿namespace FrontendSchemeRegistration.UI.UnitTests.Extensions;
 
 using FluentAssertions;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -61,9 +62,10 @@ public class ServiceProviderExtensionTests
     {
         // Arrange
         var services = new ServiceCollection();
+        var mockEnvironment = new Mock<IWebHostEnvironment>();
 
         // Act
-        services.RegisterWebComponents(_configuration);
+        services.RegisterWebComponents(_configuration, mockEnvironment.Object);
 
         // Assert
         services.Count.Should().BeGreaterThan(0);
