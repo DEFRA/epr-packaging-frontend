@@ -22,15 +22,7 @@
                 </div>
                 <div class="govuk-notification-banner__content">
                     <h3 class="govuk-notification-banner__heading">
-                        @if (Model.IsResubmission)
-                        {
-                            @Localizer["partner_details_uploaded"]
-                        }
-                        else
-                        {
-                            @Localizer["file_uploaded"]
-                        }
-
+                        @Localizer["partner_details_uploaded"]
                     </h3>
                     <p class="govuk-body break-word">
                         @Model.FileName

@@ -59,7 +59,8 @@ public class FileUploadPartnershipsSuccessController : Controller
             SubmissionId = submissionId,
             IsResubmission = session.RegistrationSession.IsResubmission,
             RegistrationYear = registrationYear,
-            OrganisationName = organisation.Name
+            OrganisationName = organisation.Name,
+            RegistrationJourney = submission.RegistrationJourney
         });
     }
 }
