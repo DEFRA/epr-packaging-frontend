@@ -111,18 +111,15 @@ public class ComplianceSchemeRegistrationControllerTests
             .With(cs => cs.NationId, (int)Nation.Scotland)
             .Create();
 
-        var legacyRegistrationApplicationPerYear = _fixture.CreateMany<RegistrationApplicationViewModel>().ToArray();
         var registrationApplicationYears = _fixture.CreateMany<RegistrationYearApplicationsViewModel>().ToArray();
 
         _complianceSchemeService
             .Setup(service => service.GetOperatorComplianceSchemes(It.IsAny<Guid>()))
             .ReturnsAsync([scotlandCso, englandCso]);
-        _registrationApplicationService.Setup(x => x.BuildRegistrationApplicationPerYearViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
-            .ReturnsAsync(legacyRegistrationApplicationPerYear.ToList());
         _registrationApplicationService.Setup(x => x.BuildRegistrationYearApplicationsViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
             .ReturnsAsync(registrationApplicationYears.ToList());
         
-        var expectedViewModel = new ComplianceSchemeRegistrationViewModel(englandCso.Name, nation.ToString(), registrationApplicationYears, legacyRegistrationApplicationPerYear, 2026);
+        var expectedViewModel = new ComplianceSchemeRegistrationViewModel(englandCso.Name, nation.ToString(), registrationApplicationYears);
         
         // Act
         var result = await _sut.ComplianceSchemeRegistration(nation) as ViewResult;
