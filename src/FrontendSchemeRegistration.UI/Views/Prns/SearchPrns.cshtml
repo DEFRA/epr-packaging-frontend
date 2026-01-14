@@ -16,7 +16,7 @@
 				@await Html.PartialAsync("../Shared/Partials/Govuk/_ErrorsViewModelSummary", errorsViewModel)
 			}
 			<h1 class="govuk-heading-xl">@Localizer["search_prns_and_perns"]</h1>
-			<p class="govuk-body">@Localizer["you_can_search_for_prns_and_perns"]</p>
+			<p class="govuk-body">@Localizer["you_can_search_for_prns_and_perns", Model.ComplianceYear]</p>
 			<form id="findprns" name="findprns" method="get" asp-controller="Prns" asp-action="SearchPrns">
 				<div class="govuk-card govuk-card--grey govuk-card--no-border govuk-!-margin-bottom-7">
 					<div class="govuk-card-body">

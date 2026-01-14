@@ -1,4 +1,4 @@
-﻿using EPR.Common.Authorization.Extensions;
+using EPR.Common.Authorization.Extensions;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services;
@@ -120,6 +120,7 @@ public static class ServiceProviderExtension
         services.Configure<RedisOptions>(configuration.GetSection(RedisOptions.ConfigSection));
         services.Configure<ComplianceSchemeMembersPaginationOptions>(configuration.GetSection(ComplianceSchemeMembersPaginationOptions.ConfigSection));
         services.Configure<SessionOptions>(configuration.GetSection(SessionOptions.ConfigSection));
+        services.Configure<NotificationBannerOptions>(configuration.GetSection(NotificationBannerOptions.Section));
     }
 
     private static void RegisterServices(IServiceCollection services)

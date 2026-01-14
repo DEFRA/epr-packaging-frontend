@@ -15,7 +15,7 @@
 		<value>Search PRNs and PERNs</value>
 	</data>
 	<data name="you_can_search_for_prns_and_perns" xml:space="preserve">
-		<value>You can only search for PRNs and PERNs issued to your 2025 recycling obligations. To find records from earlier years, use the National Packaging Waste Database (NPWD).</value>
+		<value>You can only search for PRNs and PERNs issued to your {0} recycling obligations. To find records from earlier years, use the National Packaging Waste Database (NPWD).</value>
 	</data>
 	<data name="enter_prn_or_pern_number" xml:space="preserve">
 		<value>Enter PRN or PERN number, or the name of the reprocessor or exporter.</value>
