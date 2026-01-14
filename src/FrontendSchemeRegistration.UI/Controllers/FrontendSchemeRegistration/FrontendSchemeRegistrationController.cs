@@ -25,10 +25,11 @@ public class FrontendSchemeRegistrationController(
     IRegistrationApplicationService registrationApplicationService,
     IResubmissionApplicationService resubmissionApplicationService,
     IAuthorizationService authorizationService,
-    INotificationService notificationService)
+    INotificationService notificationService,
+    TimeProvider timeProvider)
     : Controller
 {
-    private TimeProvider _timeProvider = TimeProvider.System;
+    private TimeProvider _timeProvider = timeProvider;
 
     public void SetTestTimeProvider(TimeProvider testProvider)
     {

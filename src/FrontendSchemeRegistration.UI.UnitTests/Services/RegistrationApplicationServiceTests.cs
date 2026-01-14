@@ -2351,7 +2351,7 @@ public class RegistrationApplicationServiceTests
                 CreateRegistrationWindow(null, 2025) 
             ]; 
         
-        _mockRegistrationPeriodProvider.Setup(x => x.GetRegistrationWindows(It.IsAny<bool>()))
+        _mockRegistrationPeriodProvider.Setup(x => x.GetActiveRegistrationWindows(It.IsAny<bool>()))
             .Returns(registrationWindows);
 
         // Act

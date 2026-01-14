@@ -42,4 +42,10 @@ public class GlobalVariables
     /// based on a given month, if not provided current month will be used
     /// </summary>
     public int? OverrideCurrentMonth { get; set; }
+    
+    /// <summary>
+    /// If set, this overrides the current system date/time. Should never be used
+    /// in a production environment
+    /// </summary>
+    public DateTime? StartupUtcTimestampOverride { get; set; }
 }

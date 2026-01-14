@@ -15,7 +15,7 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
     private readonly TimeProvider _timeProvider;
     private readonly IEnumerable<RegistrationPeriodPattern> _registrationPeriodPatterns;
     private IReadOnlyCollection<RegistrationWindow> _registrationWindows = [];
-    private int? _derivedFinalYear;
+    private int? _parseYear;    // the year when Parse was last called
     
     // store the next upcoming close date, as we can trigger a rebuild after we pass it
     private DateTime _nextCloseDate;
@@ -33,7 +33,7 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
     /// </summary>
     private void ParsePatterns()
     {
-        _derivedFinalYear = null;
+        _parseYear = _timeProvider.GetUtcNow().Year;
         _nextCloseDate = DateTime.MaxValue;
         var windows = new List<RegistrationWindow>();
         
@@ -85,15 +85,15 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
     /// <param name="isCso"></param>
     /// <returns></returns>
     [SuppressMessage("ReSharper", "InconsistentlySynchronizedField")]
-    public IReadOnlyCollection<RegistrationWindow> GetRegistrationWindows(bool isCso)
+    public IReadOnlyCollection<RegistrationWindow> GetActiveRegistrationWindows(bool isCso)
     {
         // Rebuild the collection if we tick into the next year and we have
         // derived the final year in a pattern (ie, the final year in config is null)
-        if (_timeProvider.GetUtcNow().Year > _derivedFinalYear)
+        if (_timeProvider.GetUtcNow().Year > _parseYear)
         {
             lock (_lock)
             {
-                if (_timeProvider.GetUtcNow().Year > _derivedFinalYear)
+                if (_timeProvider.GetUtcNow().Year > _parseYear)
                 {
                     ParsePatterns();
                 }
@@ -124,12 +124,19 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
                 return w.Journey is RegistrationJourney.DirectLargeProducer or RegistrationJourney.DirectSmallProducer or null;
             }
         });
+
+        var orderedWindows = windows
+            .Where(w => w.GetRegistrationWindowStatus() != RegistrationWindowStatus.PriorToOpening)
+            .OrderByDescending(ra => ra.RegistrationYear);
         
-        return new ReadOnlyCollection<RegistrationWindow>(windows.ToList());
+        return new ReadOnlyCollection<RegistrationWindow>(orderedWindows.ToList());
     }
 
     /// <summary>
-    /// Gets the final year for a registration period pattern, validates and stores the derived value
+    /// Gets the final year for a registration period pattern, validates and stores the derived value.
+    /// If the pattern does not explicitly include a final year, then we derive a value for which we
+    /// generate data, based on the opening date and the current year (ie, if the opening date has a year
+    /// offset of -1, then we need to generate registration window data for next year's registration) 
     /// </summary>
     /// <param name="registrationPeriodPattern"></param>
     /// <returns>The final year for a registration period</returns>
@@ -143,11 +150,12 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
         }
         else
         {
-            if (_derivedFinalYear.HasValue) throw new InvalidOperationException("You may not have multiple RegistrationPeriodPattern configuration items with a null FinalRegistrationYear value");
-                
-            // we store this so that we know if the year rolls over when GetRegistrationWindows is called
-            _derivedFinalYear = _timeProvider.GetUtcNow().Year;
-            finalYear = _derivedFinalYear.Value;
+            // we might want to create entries for a future registration year, in case the start date is the year before
+            // get the largest year offset for all of the windows` start dates
+            var earliestOpeningDateYearOffset = registrationPeriodPattern.Windows.Min(w => w.OpeningDate.YearOffset);
+
+            // eg, if the opening date offset is -1, and this year is 2026, then we need to generate data for 2027 = 2026 - (-1)
+            finalYear = _timeProvider.GetUtcNow().Year - earliestOpeningDateYearOffset;
         }
 
         return finalYear;
