@@ -130,6 +130,7 @@ public static class ServiceProviderExtension
 
         services.AddSingleton<GuidanceLinkOptions>();
         services.Configure<List<RegistrationPeriodPattern>>(configuration.GetSection(RegistrationPeriodPattern.ConfigSection));
+        services.Configure<NotificationBannerOptions>(configuration.GetSection(NotificationBannerOptions.Section));
     }
 
     private static void RegisterServices(IServiceCollection services)
