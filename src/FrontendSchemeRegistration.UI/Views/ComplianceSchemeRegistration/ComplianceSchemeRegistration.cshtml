@@ -33,13 +33,5 @@
                 </li>
             }
         </ol>
-        <h2 class="govuk-heading-m">legacy tiles</h2>
-        <div class="govuk-grid-row box-container">
-            @foreach (var registrationApplication in Model.LegacyRegistrationApplications)
-            {
-                registrationApplication.SummaryCardStyling = true;
-                <partial name="~/Views/FrontendSchemeRegistration/RegistrationApplicationYearBlock.cshtml" model="registrationApplication" />
-            }
-        </div>
     </main>
 </div>

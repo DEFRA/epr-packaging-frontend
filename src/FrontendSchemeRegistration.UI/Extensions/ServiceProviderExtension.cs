@@ -107,7 +107,6 @@ public static class ServiceProviderExtension
     private static void ConfigureOptions(IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<GlobalVariables>(configuration);
-        services.Configure<IEnumerable<RegistrationPeriodPattern>>(configuration.GetSection(RegistrationPeriodPattern.ConfigSection));
         services.Configure<PhaseBannerOptions>(configuration.GetSection(PhaseBannerOptions.Section));
         services.Configure<FrontEndAccountManagementOptions>(configuration.GetSection(FrontEndAccountManagementOptions.ConfigSection));
         services.Configure<FrontEndAccountCreationOptions>(configuration.GetSection(FrontEndAccountCreationOptions.ConfigSection));
