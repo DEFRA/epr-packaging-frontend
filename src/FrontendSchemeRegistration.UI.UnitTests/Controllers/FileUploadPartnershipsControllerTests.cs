@@ -32,6 +32,7 @@ public class FileUploadPartnershipsControllerTests
     private FileUploadPartnershipsController _systemUnderTest;
     private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
     private Mock<ISessionManager<RegistrationApplicationSession>> _registrationApplicationSessionMock;
+    private Mock<IUrlHelper> _urlHelperMock;
 
     [SetUp]
     public void SetUp()
@@ -69,7 +70,8 @@ public class FileUploadPartnershipsControllerTests
                     SubmissionPeriod = _submissionPeriod
                 },
             });
-
+        _urlHelperMock = new Mock<IUrlHelper>();
+        _urlHelperMock.Setup(x => x.Content(It.IsAny<string>())).Returns((string contentPath) => contentPath);
         _fileUploadServiceMock = new Mock<IFileUploadService>();
 
         _registrationApplicationSessionMock
@@ -86,6 +88,7 @@ public class FileUploadPartnershipsControllerTests
             _registrationApplicationServiceMock.Object,
             Options.Create(new GlobalVariables { FileUploadLimitInBytes = 268435456, SubsidiaryFileUploadLimitInBytes = 61440 }),
             _registrationApplicationSessionMock.Object);
+        _systemUnderTest.Url = _urlHelperMock.Object;
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
@@ -122,13 +125,14 @@ public class FileUploadPartnershipsControllerTests
                 }
             });
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
-            .ReturnsAsync(new RegistrationSubmission { RequiresPartnershipsFile = true });
+            .ReturnsAsync(new RegistrationSubmission { RequiresPartnershipsFile = true, RegistrationJourney = RegistrationJourney.CsoLargeProducer});
 
         // Act
         var result = await _systemUnderTest.Get() as ViewResult;
 
         // Assert
         result.ViewName.Should().Be("FileUploadPartnerships");
+        result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.FileUploadSuccess}?registrationjourney=CsoLargeProducer");
     }
 
     [Test]
