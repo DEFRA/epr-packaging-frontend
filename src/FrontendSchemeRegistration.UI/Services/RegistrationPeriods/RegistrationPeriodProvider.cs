@@ -51,11 +51,10 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
                     var journey = MapWindowTypeToRegistrationJourney(patternWindow.WindowType);
                     var closeDate = new DateTime(registrationYear + patternWindow.ClosingDate.YearOffset,
                         patternWindow.ClosingDate.Month, patternWindow.ClosingDate.Day, 0, 0, 0, DateTimeKind.Utc);
-
                     var openingDate = new DateTime(registrationYear + patternWindow.OpeningDate.YearOffset,
-                        patternWindow.OpeningDate.Month, patternWindow.OpeningDate.Day);
+                        patternWindow.OpeningDate.Month, patternWindow.OpeningDate.Day, 0, 0, 0, DateTimeKind.Utc);
                     var deadlineDate = new DateTime(registrationYear + patternWindow.DeadlineDate.YearOffset,
-                        patternWindow.DeadlineDate.Month, patternWindow.DeadlineDate.Day);
+                        patternWindow.DeadlineDate.Month, patternWindow.DeadlineDate.Day, 0, 0, 0, DateTimeKind.Utc);
                     
                     if (journey.RegistrationJourney is null)
                     {
