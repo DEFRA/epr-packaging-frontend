@@ -154,8 +154,7 @@
     <value>Mae gennych chi tan</value>
   </data>
   <data name="enforcement_action_warning" xml:space="preserve">
-    <value>Os collwch chi'r dyddiad cau yma, fe allech chi wynebu camau gorfodi.
-Nifer y PRNs a'r PERNs sy'n aros i gael eu derbyn</value>
+    <value>Os collwch chi'r dyddiad cau yma, fe allech chi wynebu camau gorfodi.</value>
   </data>
   <data name="january" xml:space="preserve">
     <value>31 Ionawr</value>
