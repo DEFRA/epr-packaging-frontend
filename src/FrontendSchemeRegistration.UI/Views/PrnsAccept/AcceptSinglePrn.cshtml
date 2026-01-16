@@ -20,11 +20,14 @@
                 </div>
 
                 <div class="govuk-button-group">
-                    <button class="govuk-button" type="submit" asp-action=@nameof(PrnsAcceptController.ConfirmAcceptSinglePrnPassThrough) asp-controller="PrnsAccept">
-                        @Localizer["YesAcceptButton"]
-                    </button>
+                    @if (Model.IsStatusEditable)
+                    {
+                        <button class="govuk-button" type="submit" asp-action=@nameof(PrnsAcceptController.ConfirmAcceptSinglePrnPassThrough) asp-controller="PrnsAccept">
+                            @Localizer["YesAcceptButton"]
+                        </button>
+                    }
 
-                    @Html.ActionLink(@Localizer["NoBackButton"].Value, nameof(PrnsController.SelectSinglePrn), "Prns", 
+                    @Html.ActionLink(@Localizer["NoBackButton"].Value, nameof(PrnsController.SelectSinglePrn), "Prns",
                         new
                         {
                             id = @Model.ExternalId
