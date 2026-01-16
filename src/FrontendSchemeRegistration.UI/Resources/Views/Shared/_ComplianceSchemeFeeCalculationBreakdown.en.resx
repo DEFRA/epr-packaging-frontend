@@ -133,16 +133,16 @@
     <value>Compliance scheme</value>
   </data>
   <data name="x_small_producers_sentence_text" xml:space="preserve">
-    <value>{0} Small producers</value>
+    <value>{0} small producers</value>
   </data>
   <data name="x_small_producers_sentence_text_singular" xml:space="preserve">
-    <value>{0} Small producer</value>
+    <value>{0} small producer</value>
   </data>
   <data name="x_large_producers_sentence_text" xml:space="preserve">
     <value>{0} large producers</value>
   </data>
   <data name="x_large_producers_sentence_text_singular" xml:space="preserve">
-    <value>{0} Large producer</value>
+    <value>{0} large producer</value>
   </data>
   <data name="x_online_marketplaces_sentence_text" xml:space="preserve">
     <value>{0} are online marketplaces</value>
