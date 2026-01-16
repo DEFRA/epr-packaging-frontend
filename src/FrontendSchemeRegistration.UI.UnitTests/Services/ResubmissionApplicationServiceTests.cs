@@ -90,7 +90,7 @@ public class ResubmissionApplicationServiceTests
     {
         FakeTimeProvider2025.SetUtcNow(new DateTimeOffset(new DateTime(2025, 1, 1)));
         _mockGlobalVariables = new Mock<IOptions<GlobalVariables>>();
-        _mockGlobalVariables.Setup(o => o.Value).Returns(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods, OverrideCurrentMonth = 1, OverrideCurrentYear = 2025 });
+        _mockGlobalVariables.Setup(o => o.Value).Returns(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods});
         _mockFeatureManager = new Mock<IFeatureManager>();
 
         _mockSessionManager = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
