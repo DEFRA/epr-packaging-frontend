@@ -43,12 +43,6 @@ namespace FrontendSchemeRegistration.UI.Services.Interfaces
 
         Task<bool> GetFeatureFlagForProducersFeebreakdown();
 
-        /// <summary>
-        /// Returns current month and year for recycling obligations or default if values are null
-        /// </summary>
-        /// <returns></returns>
-        Task<(int currentMonth, int currentYear)> GetCurrentMonthAndYearForRecyclingObligations(TimeProvider tp);
-
         SubmissionPeriod PackagingResubmissionPeriod(string[] currentYear, DateTime nowDateTime);
     }
 }
