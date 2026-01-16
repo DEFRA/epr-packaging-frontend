@@ -176,7 +176,6 @@ public class ComplianceSchemeLandingControllerTests
             _sessionManagerMock.Object,
             _complianceSchemeServiceMock.Object,
             _notificationServiceMock.Object,
-            _registrationApplicationService.Object,
             _resubmissionApplicationService.Object,
             _nullLogger,
             _testTimeProvider)
