@@ -80,7 +80,7 @@ public class FileUploadPartnershipsController : Controller
                     ModelStateHelpers.AddFileUploadExceptionsToModelState(submission.Errors.Distinct().ToList(), ModelState);
                 }
                 
-                ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadSuccess}").AppendBackLink(session.RegistrationSession.IsResubmission, registrationYear, registrationJourney:submission.RegistrationJourney);
+                ViewBag.BackLinkToDisplay = Url.Content($"~/{PagePaths.FileUploadCompanyDetails}").AppendBackLink(session.RegistrationSession.IsResubmission, registrationYear, registrationJourney:submission.RegistrationJourney);
                 
                 if (submission.RequiresPartnershipsFile)
                 {
