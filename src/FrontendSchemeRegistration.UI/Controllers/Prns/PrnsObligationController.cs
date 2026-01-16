@@ -15,7 +15,6 @@ using Newtonsoft.Json;
 namespace FrontendSchemeRegistration.UI.Controllers.Prns;
 
 using Application.Extensions;
-using Extensions;
 
 [FeatureGate(FeatureFlags.ShowPrn)]
 [ServiceFilter(typeof(ComplianceSchemeIdHttpContextFilterAttribute))]
@@ -27,7 +26,7 @@ public class PrnsObligationController : Controller
     private readonly IOptions<GlobalVariables> _globalVariables;
     private readonly ExternalUrlOptions _urlOptions;
     private readonly ILogger<PrnsObligationController> _logger;
-    private readonly string logPrefix;
+    private readonly string _logPrefix;
     private readonly int _complianceYear;
 
     public PrnsObligationController(ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
@@ -39,7 +38,7 @@ public class PrnsObligationController : Controller
         _globalVariables = globalVariables;
         _urlOptions = urlOptions.Value;
         _logger = logger;
-        logPrefix = _globalVariables.Value.LogPrefix;
+        _logPrefix = _globalVariables.Value.LogPrefix;
 
         var now = DateTime.UtcNow;
         var date = new DateTime(
@@ -63,7 +62,7 @@ public class PrnsObligationController : Controller
         var viewModel = await _prnService.GetRecyclingObligationsCalculation(_complianceYear);
         _logger.LogInformation(
             "{LogPrefix}: PrnsObligationController - ObligationsHome: Recycling Obligations returned for year {Year} : {Results}",
-            logPrefix, _complianceYear, JsonConvert.SerializeObject(viewModel));
+            _logPrefix, _complianceYear, JsonConvert.SerializeObject(viewModel));
 
         await FillViewModelFromSessionAsync(viewModel);
 
@@ -79,14 +78,14 @@ public class PrnsObligationController : Controller
 
         _logger.LogInformation(
             "{LogPrefix}: PrnsObligationController - ObligationPerMaterial: Get Recycling Obligations Calculation request for year {Year}, material {Material}",
-            logPrefix, _complianceYear, material);
+            _logPrefix, _complianceYear, material);
 
         if (Enum.TryParse(material, true, out MaterialType materialType))
         {
             viewModel = await _prnService.GetRecyclingObligationsCalculation(_complianceYear);
             _logger.LogInformation(
                 "{LogPrefix}: PrnsObligationController - ObligationsHome: Recycling Obligations returned for year {Year} : {Results}",
-                logPrefix, _complianceYear, JsonConvert.SerializeObject(viewModel));
+                _logPrefix, _complianceYear, JsonConvert.SerializeObject(viewModel));
 
             if (materialType == MaterialType.Glass || materialType == MaterialType.GlassRemelt ||
                 materialType == MaterialType.RemainingGlass)
@@ -113,7 +112,7 @@ public class PrnsObligationController : Controller
         }
 
         _logger.LogInformation(
-            "{LogPrefix}: PrnsObligationController - ObligationsHome: populated view model : {Results}", logPrefix,
+            "{LogPrefix}: PrnsObligationController - ObligationsHome: populated view model : {Results}", _logPrefix,
             JsonConvert.SerializeObject(viewModel));
 
         ViewBag.BackLinkToDisplay = Url.Content($"~/{PagePaths.Prns.ObligationsHome}");
@@ -132,7 +131,7 @@ public class PrnsObligationController : Controller
         {
             _logger.LogWarning(
                 "{LogPrefix}: PrnsObligationController - FillViewModelFromSessionAsync - No organisation found in session.",
-                logPrefix);
+                _logPrefix);
             return;
         }
 

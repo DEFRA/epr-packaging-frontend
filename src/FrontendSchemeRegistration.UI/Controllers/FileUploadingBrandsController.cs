@@ -5,7 +5,6 @@ using Application.DTOs.Submission;
 using Application.Services.Interfaces;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
-using global::FrontendSchemeRegistration.Application.Extensions;
 using global::FrontendSchemeRegistration.UI.Extensions;
 using global::FrontendSchemeRegistration.UI.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -84,5 +83,4 @@ public class FileUploadingBrandsController : Controller
             RegistrationJourney = registrationApplicationSession.RegistrationJourney
         });
     }
-
 }

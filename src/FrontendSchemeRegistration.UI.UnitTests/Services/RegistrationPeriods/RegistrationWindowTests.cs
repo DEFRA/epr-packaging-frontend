@@ -1,5 +1,4 @@
-﻿using AutoFixture;
-using FrontendSchemeRegistration.Application.Enums;
+﻿using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 using Microsoft.Extensions.Time.Testing;
 
