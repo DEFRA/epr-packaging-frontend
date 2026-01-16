@@ -29,6 +29,7 @@ public class HomePageSelfManagedViewModel
 
     public ResubmissionTaskListViewModel ResubmissionTaskListViewModel { get; set; }
     public List<RegistrationApplicationViewModel> RegistrationApplicationsPerYear { get; set; } = new();
+    public IEnumerable<RegistrationApplicationViewModel> RegistrationApplications { get; set; } = []; 
 
     public SubmissionPeriod PackagingResubmissionPeriod { get; set; }
 }
