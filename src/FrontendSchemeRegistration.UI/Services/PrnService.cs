@@ -17,22 +17,33 @@ using Newtonsoft.Json;
 namespace FrontendSchemeRegistration.UI.Services;
 
 using Application.Extensions;
+using Application.Services;
+using AutoMapper;
 
 public class PrnService : IPrnService
 {
     private readonly IWebApiGatewayClient _webApiGatewayClient;
     private readonly IStringLocalizer<PrnCsvResources> _csvLocalizer;
     private readonly IStringLocalizer<PrnDataResources> _dataLocalizer;
-    private readonly IOptions<GlobalVariables> _globalVariables;
+    private readonly TimeProvider _timeProvider;
+    private readonly IMapper _mapper;
     private readonly ILogger<PrnService> _logger;
     private readonly string logPrefix;
 
-    public PrnService(IWebApiGatewayClient webApiGatewayClient, IStringLocalizer<PrnCsvResources> csvLocalizer, IStringLocalizer<PrnDataResources> dataLocalizer, IOptions<GlobalVariables> globalVariables, ILogger<PrnService> logger)
+    public PrnService(
+        IWebApiGatewayClient webApiGatewayClient,
+        IStringLocalizer<PrnCsvResources> csvLocalizer,
+        IStringLocalizer<PrnDataResources> dataLocalizer,
+        TimeProvider timeProvider,
+        IMapper mapper,
+        IOptions<GlobalVariables> globalVariables,
+        ILogger<PrnService> logger)
     {
         _webApiGatewayClient = webApiGatewayClient;
         _csvLocalizer = csvLocalizer;
         _dataLocalizer = dataLocalizer;
-        _globalVariables = globalVariables;
+        _timeProvider = timeProvider;
+        _mapper = mapper;
         _logger = logger;
         logPrefix = globalVariables.Value.LogPrefix;
     }
@@ -45,7 +56,7 @@ public class PrnService : IPrnService
         List<PrnModel> serverResponse = await _webApiGatewayClient.GetPrnsForLoggedOnUserAsync();
         _logger.LogInformation("{Logprefix}: PrnService - GetAllPrnsAsync: Get all Prns for logged in user prns returned : {Prns}", logPrefix, JsonConvert.SerializeObject(serverResponse));
 
-        List<PrnViewModel> prnViewModels = serverResponse.Select(item => (PrnViewModel)item).ToList();
+        var prnViewModels = _mapper.Map<List<PrnViewModel>>(serverResponse);
         model.Prns = prnViewModels.OrderByDescending(x => x.DateIssued).Take(9).ToList();
         _logger.LogInformation("{Logprefix}: PrnService - GetAllPrnsAsync: Get all Prns for logged in user PrnViewModel returned : {PrnViewModels}", logPrefix, JsonConvert.SerializeObject(prnViewModels));
         return model;
@@ -60,7 +71,7 @@ public class PrnService : IPrnService
         List<PrnModel> serverResponse = await _webApiGatewayClient.GetPrnsForLoggedOnUserAsync();
         _logger.LogInformation("{Logprefix}: PrnService - GetPrnsAwaitingAcceptanceAsync: Get Prns awaiting acceptance for logged in user server response: {Prns}", logPrefix, JsonConvert.SerializeObject(serverResponse));
 
-        List<PrnViewModel> prnViewModels = serverResponse.Select(item => (PrnViewModel)item).ToList();
+        var prnViewModels = _mapper.Map<List<PrnViewModel>>(serverResponse);
         model.Prns = prnViewModels.Where(x => x.ApprovalStatus.EndsWith("ACCEPTANCE")).OrderBy(x => x.Material).ThenByDescending(x => x.DateIssued).ToList();
 
         _logger.LogInformation("{Logprefix}: PrnService - GetPrnsAwaitingAcceptanceAsync: Get Prns awaiting acceptance for logged in user response {Model}", logPrefix, JsonConvert.SerializeObject(model));
@@ -72,7 +83,7 @@ public class PrnService : IPrnService
         _logger.LogInformation("{Logprefix}: PrnService - GetPrnByExternalIdAsync: Get Prn for external Id {ExternalId}", logPrefix, id);
 
         var serverResponse = await _webApiGatewayClient.GetPrnByExternalIdAsync(id);
-        PrnViewModel model = serverResponse;
+        var model = _mapper.Map<PrnViewModel>(serverResponse);
 
         _logger.LogInformation("{Logprefix}: PrnService - GetPrnByExternalIdAsync: Prn returned for external Id {ExternalId} - {Model}", logPrefix, id, JsonConvert.SerializeObject(model));
         return model;
@@ -106,7 +117,7 @@ public class PrnService : IPrnService
         List<PrnModel> serverResponse = await _webApiGatewayClient.GetPrnsForLoggedOnUserAsync();
         _logger.LogInformation("{Logprefix}: PrnService - GetAllAcceptedPrnsAsync: Get all accepted Prns for logged in user server response: {Prns}", logPrefix, JsonConvert.SerializeObject(serverResponse));
 
-        List<PrnViewModel> prnViewModels = serverResponse.Select(item => (PrnViewModel)item).ToList();
+        var prnViewModels = _mapper.Map<List<PrnViewModel>>(serverResponse);
         model.Prns = prnViewModels.Where(x => x.ApprovalStatus.EndsWith("ACCEPTED")).ToList();
 
         _logger.LogInformation("{Logprefix}: PrnService - GetAllAcceptedPrnsAsync: Return all accepted Prns for logged in user - {Model}", logPrefix, JsonConvert.SerializeObject(model));
@@ -138,12 +149,12 @@ public class PrnService : IPrnService
         var prnSearchResultListViewModel = new PrnSearchResultListViewModel
         {
             SearchString = prnSearchResults.SearchTerm,
-            ActivePageOfResults = prnSearchResults.Items.Select(item => (PrnSearchResultViewModel)item).ToList(),
+            ActivePageOfResults = _mapper.Map<List<PrnSearchResultViewModel>>(prnSearchResults.Items),
             PagingDetail = pagingDetail,
             TypeAhead = prnSearchResults.TypeAhead,
             SelectedFilter = request.FilterBy,
             SelectedSort = request.SortBy,
-            ComplianceYear = GetCurrentComplianceYear()
+            ComplianceYear = _timeProvider.GetUtcNow().GetComplianceYear()
         };
 
         _logger.LogInformation("{Logprefix}: PrnService - GetPrnSearchResultsAsync: Return Prn Search Result List ViewModel - {PrnSearchResultListViewModel}", logPrefix, JsonConvert.SerializeObject(prnSearchResultListViewModel));
@@ -168,7 +179,7 @@ public class PrnService : IPrnService
 
         var awaitingAcceptancePrnsViewModel = new AwaitingAcceptancePrnsViewModel
         {
-            Prns = prnSearchResults.Items.Select(item => (AwaitingAcceptanceResultViewModel)item).ToList(),
+            Prns = _mapper.Map<List<AwaitingAcceptanceResultViewModel>>(prnSearchResults.Items),
             PagingDetail = pagingDetail
         };
 
@@ -183,7 +194,7 @@ public class PrnService : IPrnService
         List<PrnModel> prnDtos = await _webApiGatewayClient.GetPrnsForLoggedOnUserAsync();
         _logger.LogInformation("{Logprefix}: PrnService - GetPrnsCsvStreamAsync: Get Prns for logged on user server response: {PrnDtos}", logPrefix, JsonConvert.SerializeObject(prnDtos));
 
-        List<PrnViewModel> prns = new List<PrnViewModel>(prnDtos.Select(x => (PrnViewModel)x));
+        var prns = _mapper.Map<List<PrnViewModel>>(prnDtos);
         var stream = new MemoryStream();
 
         if (prns.Count > 0)
@@ -331,20 +342,5 @@ public class PrnService : IPrnService
     {
         var totals = materialObligationViewModels.FirstOrDefault(m => m.MaterialName == MaterialType.Totals);
         return totals?.Status ?? ObligationStatus.NoDataYet;
-    }
-
-    private int GetCurrentComplianceYear()
-    {
-        var now = DateTime.UtcNow;
-        var date = new DateTime(
-            _globalVariables.Value.OverrideCurrentYear ?? now.Year,
-            _globalVariables.Value.OverrideCurrentMonth ?? now.Month,
-            now.Day,
-            0,
-            0,
-            0,
-            DateTimeKind.Utc);
-
-       return date.GetComplianceYear();
     }
 }

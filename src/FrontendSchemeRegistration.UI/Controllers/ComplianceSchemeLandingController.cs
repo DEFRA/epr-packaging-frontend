@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FrontendSchemeRegistration.UI.Controllers;
 
+using Application.Extensions;
+
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
 [Route(PagePaths.ComplianceSchemeLanding)]
 public class ComplianceSchemeLandingController(
@@ -48,8 +50,6 @@ public class ComplianceSchemeLandingController(
         session.RegistrationSession.SelectedComplianceScheme ??= defaultComplianceScheme;
         session.UserData = userData;
         var currentYear = new[] { nowDateTime.Year.ToString(), (nowDateTime.Year + 1).ToString() };
-        // Note: We are reading desired values using existing service to avoid SonarQube issue for adding 8th parameter in the constructor.
-        var currentPeriod = await resubmissionApplicationService.GetCurrentMonthAndYearForRecyclingObligations(_timeProvider);
         // Note: We are adding a service method here to avoid SonarQube issue for adding 8th parameter in the constructor.
         var packagingResubmissionPeriod = resubmissionApplicationService.PackagingResubmissionPeriod(currentYear, nowDateTime);
         
@@ -72,7 +72,7 @@ public class ComplianceSchemeLandingController(
             ComplianceSchemes = complianceSchemes,
             ResubmissionTaskListViewModel = resubmissionApplicationDetails.ToResubmissionTaskListViewModel(organisation),
             PackagingResubmissionPeriod = packagingResubmissionPeriod,
-            ComplianceYear = currentPeriod.currentMonth == 1 ? (currentPeriod.currentYear - 1).ToString() : currentPeriod.currentYear.ToString() // this is a temp fix for the compliance window change
+            ComplianceYear = _timeProvider.GetUtcNow().GetComplianceYear().ToString()
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id.Value);

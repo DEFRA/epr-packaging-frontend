@@ -90,7 +90,7 @@ public class ResubmissionApplicationServiceTests
     {
         FakeTimeProvider2025.SetUtcNow(new DateTimeOffset(new DateTime(2025, 1, 1)));
         _mockGlobalVariables = new Mock<IOptions<GlobalVariables>>();
-        _mockGlobalVariables.Setup(o => o.Value).Returns(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods, OverrideCurrentMonth = 1, OverrideCurrentYear = 2025 });
+        _mockGlobalVariables.Setup(o => o.Value).Returns(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods});
         _mockFeatureManager = new Mock<IFeatureManager>();
 
         _mockSessionManager = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
@@ -812,32 +812,6 @@ public class ResubmissionApplicationServiceTests
         result.Should().BeFalse();
     }
 
-    [Test]
-    public async Task GetCurrentMonthAndYearForRecyclingObligations_ShouldReturn_Desired_JanMonth_And_2025Year()
-    {
-        
-        var result = await _service.GetCurrentMonthAndYearForRecyclingObligations(FakeTimeProvider2025);
-        
-        result.currentMonth.Should().Be(1);
-        result.currentYear.Should().Be(2025);
-    }
-
-    [Test]
-    public async Task GetCurrentMonthAndYearForRecyclingObligations_ShouldReturn_Default_Month_And_Year()
-    {
-        // Arrange
-        _mockGlobalVariables.Setup(o => o.Value).Returns(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods });
-
-        var service = new ResubmissionApplicationServices(_mockSessionManager.Object, _mockPaymentCalculationService.Object, _mockSubmissionService.Object, _mockGlobalVariables.Object, _mockFeatureManager.Object);
-
-        // Act
-        var result = await service.GetCurrentMonthAndYearForRecyclingObligations(TimeProvider.System);
-
-        // Assert
-        result.currentMonth.Should().Be(DateTime.Now.Month);
-        result.currentYear.Should().Be(DateTime.Now.Year);
-    }
-    
     [Test]
     public async Task GetRegulatorNation()
     {

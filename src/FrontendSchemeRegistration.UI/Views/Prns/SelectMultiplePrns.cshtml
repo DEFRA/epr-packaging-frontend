@@ -99,23 +99,32 @@
 										@Html.HiddenFor(x => x.Prns[i].ExternalId)
 										@Html.HiddenFor(x => x.Prns[i].NoteType)
 										<td class="govuk-table__cell" data-label=@Localizer["prn_or_pern_number"]>
+											@if (Model.Prns[i].IsStatusEditable)
+											{
+												<div class="govuk-checkboxes govuk-checkboxes--small">
+													<div class="govuk-checkboxes__item">
+														@{
+															var checkBoxId = string.Concat("chkBoxSelectPrn_", Model.Prns[i].NoteType, "_", Model.Prns[i].ExternalId);
+														}
+														@Html.CheckBoxFor(x => x.Prns[i].IsSelected, new { @id = checkBoxId, @class = "govuk-checkboxes__input" })
 
-											<div class="govuk-checkboxes govuk-checkboxes--small">
-												<div class="govuk-checkboxes__item">
-													@{
-														var checkBoxId = string.Concat("chkBoxSelectPrn_", Model.Prns[i].NoteType, "_", Model.Prns[i].ExternalId);
-													}
-													@Html.CheckBoxFor(x => x.Prns[i].IsSelected, new { @id = checkBoxId, @class = "govuk-checkboxes__input" })
-
-													<label class="govuk-label govuk-checkboxes__label" for=@checkBoxId>
-														@Html.ActionLink(Model.Prns[i].PrnOrPernNumber, nameof(PrnsController.SelectSinglePrn), "Prns", new { id = Model.Prns[i].ExternalId },
-															new
-															{
-																@class = "govuk-link"
-															})
-													</label>
+														<label class="govuk-label govuk-checkboxes__label" for=@checkBoxId>
+															@Html.ActionLink(Model.Prns[i].PrnOrPernNumber, nameof(PrnsController.SelectSinglePrn), "Prns", new { id = Model.Prns[i].ExternalId },
+																new
+																{
+																	@class = "govuk-link"
+																})
+														</label>
+													</div>
 												</div>
-											</div>
+											}
+											else
+											{
+												<a class="govuk-link" href="@Url.Action(nameof(PrnsController.SelectSinglePrn), "Prns", new { id = Model.Prns[i].ExternalId })" aria-label="@Localizer["prn_or_pern_number"] @Model.Prns[i].PrnOrPernNumber">
+													@Model.Prns[i].PrnOrPernNumber
+													<span class="govuk-visually-hidden">@Localizer["prn_or_pern_number"]</span>
+												</a>
+											}
 										</td>
 										<td class="govuk-table__cell" data-label=@Localizer["material"]>@PrnDataLocalizer[Model.Prns[i].Material]</td>
 										<td class="govuk-table__cell" data-label=@Localizer["date_issued"]>@Model.Prns[i].DateIssuedDisplay</td>
