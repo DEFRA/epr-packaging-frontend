@@ -74,21 +74,21 @@
     <value>Talu’r ffi ailgyflwyno data pecynwaith o</value>
   </data>
   <data name="producer-packaging-data-resubmission" xml:space="preserve">
-    <value>[Welsh]Packaging data resubmission</value>
+    <value>Ailgyflwyno data pecynwaith</value>
   </data>
   <data name="cs-packaging-data-resubmission" xml:space="preserve">
     <value>[Welsh]Packaging data resubmission for {0} members</value>
   </data>
   <data name="total-chargeable-items" xml:space="preserve">
-    <value>[Welsh]Total chargeable items</value>
+    <value>Cyfanswm yr eitemau taladwy</value>
   </data>
   <data name="previous-payments-received" xml:space="preserve">
-    <value>[Welsh]Previous payments received</value>
+    <value>Taliadau blaenorol a ddaeth i law</value>
   </data>
   <data name="previous-payments-received-description" xml:space="preserve">
-    <value>[Welsh]Total previous payments received by the regulator</value>
+    <value>Cyfanswm y taliadau blaenorol a ddaeth i law’r rheoleiddiwr</value>
   </data>
   <data name="total-outstanding" xml:space="preserve">
-    <value>[Welsh]Total outstanding</value>
+    <value>Cyfanswm sy'n ddyledus</value>
   </data>
 </root>

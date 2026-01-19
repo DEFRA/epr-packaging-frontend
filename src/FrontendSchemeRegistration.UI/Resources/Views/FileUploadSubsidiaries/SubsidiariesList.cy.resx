@@ -136,7 +136,7 @@
     <value>Is-gwmnïau</value>
   </data>
   <data name="no_ch_number" xml:space="preserve">
-    <value>[WELSH] No CH Number</value>
+    <value>Dim rhif Tŷ’r Cwmnïau</value>
   </data>
   <data name="no_subsidiaries_added" xml:space="preserve">
     <value>W No subsidiaries added for this organisation.</value>
@@ -199,7 +199,7 @@
     <value>[WELSH]Adding subsidiaries</value>
   </data>
   <data name="upload_a_csv_file" xml:space="preserve">
-    <value>[WELSH]Upload a CSV file</value>
+    <value>Uwchlwytho ffeil CSV </value>
   </data>
   <data name="download_subsidiaries_list" xml:space="preserve">
     <value>Lawrlwytho rhestr is-gwmnïau</value>
@@ -217,22 +217,22 @@
     <value>Wupdating and resubmitting your registration file</value>
   </data>
   <data name="removing_subsidiaries" xml:space="preserve">
-    <value>[WELSH]Removing subsidiaries</value>
+    <value>Tynnu is-gwmni</value>
   </data>
   <data name="update_and_resubmit" xml:space="preserve">
-    <value>[WELSH]update and resubmit your registration file</value>
+    <value>diweddaru ac ailgyflwyno’ch ffeil gofrestru</value>
   </data>
   <data name="to_permanently_remove_subsidiaries" xml:space="preserve">
     <value>[WELSH]To permanently remove subsidiaries, you must</value>
   </data>
   <data name="joined" xml:space="preserve">
-    <value>[WELSH] Joined</value>
+    <value>Wedi ymuno</value>
   </data>
   <data name="within_28_days_of_the_change" xml:space="preserve">
-    <value>[WELSH]within 28 days of the change. You will need to enter the subsidiary IDs to do this.</value>
+    <value>o fewn 28 diwrnod ar ôl y newid. Bydd angen ichi nodi IDs yr is-gwmnïau i wneud hyn.</value>
   </data>
   <data name="reporting" xml:space="preserve">
-    <value>[WELSH] Reporting</value>
+    <value>Rhoi gwybod</value>
   </data>
   <data name="create_subsidiary_ids" xml:space="preserve">
     <value>[WELSH]Create subsidiary IDs</value>
@@ -259,7 +259,7 @@
     <value>Rheoli is-gwmnïau</value>
   </data>
   <data name="producer_label" xml:space="preserve">
-    <value>[WELSH]Producer</value>
+    <value>Cynhyrchydd</value>
   </data>
   <data name="regulator_label" xml:space="preserve">
     <value>Rheoleiddiwr</value>

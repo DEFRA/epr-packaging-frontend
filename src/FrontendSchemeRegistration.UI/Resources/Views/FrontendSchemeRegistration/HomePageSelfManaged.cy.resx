@@ -148,7 +148,7 @@
     <value>Rhoi gwybod am fanylion eich sefydliad</value>
   </data>
   <data name="in_2023_you_need_to_data_for" xml:space="preserve">
-    <value>[WELSH] In 2023 you need to data for</value>
+    <value>Yn 2023 mae arnoch chi angen data ar gyfer</value>
   </data>
   <data name="packaging_data" xml:space="preserve">
     <value>Data pecynwaith</value>
@@ -203,7 +203,7 @@
     <value>gwirio cynnydd eich rhwymedigaethau ailgylchu</value>
   </data>
   <data name="waste_management_and_admin_fees" xml:space="preserve">
-    <value>[WELSH]Waste management and admin fees (opens in a new tab)</value>
+    <value>Ffioedd rheoli gwastraff a ffioedd gweinyddol (yn agor mewn tab newydd)</value>
   </data>
   <data name="sign_into_the_financial_services_system" xml:space="preserve">
     <value>[WELSH]Sign into the financial services system (FSS) to view and manage the fees your organisation needs to pay.</value>
