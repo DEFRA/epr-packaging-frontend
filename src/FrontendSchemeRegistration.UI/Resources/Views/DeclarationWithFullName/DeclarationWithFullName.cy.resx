@@ -30,7 +30,7 @@
         <value>Cyflwyno ffeil</value>
     </data>
 	<data name="update_files" xml:space="preserve">
-        <value>[WELSH] Update files</value>
+        <value>Uwchlwytho ffeiliau</value>
     </data>
     <data name="by_entering_your_name" xml:space="preserve">
         <value>Trwy roi eich enw a chyflwyno’ch ffeil i’r rheoleiddiwr amgylcheddol, rydych chi’n cadarnhau:</value>
@@ -51,9 +51,9 @@
         <value>Rhybudd</value>
     </data>
     <data name="cso_act_on_behalf" xml:space="preserve">
-        <value>[WELSH] you can act on behalf of your organisation</value>
+        <value>gallwch weithredu ar ran eich sefydliad</value>
     </data>
     <data name="cso_enforcement_warning" xml:space="preserve">
-        <value>[WELSH] Your organisation may face enforcement action if the data is inaccurate</value>
+        <value>Gallai’ch sefydliad wynebu camau gorfodi os yw'r data'n anghywir</value>
     </data>
 </root>

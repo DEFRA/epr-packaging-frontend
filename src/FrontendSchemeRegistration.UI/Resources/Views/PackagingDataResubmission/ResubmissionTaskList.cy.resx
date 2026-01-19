@@ -52,9 +52,9 @@
         <value>Mae eich cais am gofrestru wedi'i gyflwyno</value>
     </data>
     <data name="continue_your_packaging_data_resubmission" xml:space="preserve">
-        <value>[WELSH] Continue your packaging data resubmission</value>
+        <value>Parhau â'ch ailgyflwyniad data pecynwaith</value>
     </data>
     <data name="you_have_resubmitted_your_packaging_data" xml:space="preserve">
-        <value>[WELSH]You have resubmitted your packaging data</value>
+        <value>Rydych chi wedi ailgyflwyno’ch data pecynwaith</value>
     </data>
 </root>

@@ -370,16 +370,16 @@
     <value>Rhybudd</value>
   </data>
   <data name="869" xml:space="preserve">
-    <value>[Welsh] Total tonnage must be provided</value>
+    <value>Rhaid darparu cyfanswm y tunelledd</value>
   </data>
   <data name="854" xml:space="preserve">
-    <value>[Welsh] Turnover must be provided</value>
+    <value>Rhaid darparu’r trosiant</value>
   </data>
   <data name="920" xml:space="preserve">
-    <value>[Welsh] Joiner date must be present when leaver code is present.</value>
+    <value>Rhaid i’r dyddiad ymuno fod yn bresennol pan fo’r cod ymadael yn bresennol</value>
   </data>
   <data name="921" xml:space="preserve">
-    <value>[Welsh] Leaver date should not be present.</value>
+    <value>Ni ddylai'r dyddiad ymadael fod yn bresennol</value>
   </data>
   <data name="922" xml:space="preserve">
     <value>Rhaid i'r dyddiad ymuno fod yn bresennol pan fo cod ymadael yn bresennol</value>
@@ -412,9 +412,9 @@
     <value>Mae dyddiad ymadael yn orfodol ar gyfer y cod yma.</value>
   </data>
   <data name="932" xml:space="preserve">
-    <value>[Welsh] This file includes small producer details. Upload a file that contains only large producer details.</value>
+    <value>Mae'r ffeil yma yn cynnwys manylion cynhyrchydd bach. Uwchlwythwch ffeil sy'n cynnwys manylion cynhyrchydd mawr yn unig</value>
   </data>
   <data name="933" xml:space="preserve">
-    <value>[Welsh] This file includes large producer details. Upload a file that contains only small producer details.</value>
+    <value>Mae'r ffeil yma yn cynnwys manylion cynhyrchydd mawr. Uwchlwythwch ffeil sy'n cynnwys manylion cynhyrchydd bach yn unig</value>
   </data>
 </root>

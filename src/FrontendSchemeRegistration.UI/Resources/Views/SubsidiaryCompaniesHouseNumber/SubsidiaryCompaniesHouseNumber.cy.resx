@@ -28,7 +28,7 @@
     <value>Dod o hyd i rif Tŷ'r Cwmnïau (yn agor mewn tab newydd)</value>
   </data>
     <data name="CompaniesHouseNumber.LookupFailed" xml:space="preserve">
-        <value>[WELSH]Companies House lookup failed. Please try again</value>
+        <value>Chwiliad Tŷ'r Cwmnïau wedi methu. Rhowch gynnig arall arni</value>
     </data>
   <data name="CompaniesHouseNumber.NotFoundError" xml:space="preserve">
     <value>Rhif Tŷ'r Cwmnïau heb ei ganfod</value>

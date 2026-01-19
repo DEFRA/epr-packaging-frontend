@@ -168,7 +168,7 @@
     <data name="ConfirmCompanyDetails.Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
-  <data name="producer_link" xml:space="preserve">
-    <value>WView Linked Producer</value>
-  </data>
+    <data name="producer_link" xml:space="preserve">
+        <value>View Linked Producer</value>
+    </data>
 </root>
