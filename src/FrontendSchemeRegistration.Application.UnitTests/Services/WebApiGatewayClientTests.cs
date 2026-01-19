@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Application.Helpers;
 using Application.Services;
 using AutoFixture;
 using DTOs;
@@ -34,6 +35,7 @@ public class WebApiGatewayClientTests
     private HttpClient _httpClient;
     private Mock<IComplianceSchemeMemberService> _complianceSchemeMemberServiceMock;
     private static readonly IFixture _fixture = new Fixture();
+    private readonly TimeTravelTestingTimeProvider _timeProvider = new(new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc));
 
     [SetUp]
     public void SetUp()
@@ -48,7 +50,8 @@ public class WebApiGatewayClientTests
             Options.Create(new HttpClientOptions { UserAgent = "SchemeRegistration/1.0" }),
             Options.Create(new WebApiOptions { DownstreamScope = "https://api.com", BaseEndpoint = "https://example.com/" }),
             _loggerMock.Object,
-            _complianceSchemeMemberServiceMock.Object // Pass the mocked service here
+            _complianceSchemeMemberServiceMock.Object, // Pass the mocked service here
+            _timeProvider
         );
     }
 
@@ -1279,7 +1282,7 @@ public class WebApiGatewayClientTests
 
         body.Should().BeEquivalentTo(new List<UpdatePrnStatus>()
         {
-            new() { PrnId = prnsToUpdate, Status = "ACCEPTED" }
+            new() { PrnId = prnsToUpdate, ObligationYear = "2025", Status = "ACCEPTED" }
         });
     }
 
@@ -1305,7 +1308,7 @@ public class WebApiGatewayClientTests
 
         var body = await expectedRequest.Content.ReadFromJsonAsync<List<UpdatePrnStatus>>();
 
-        body.Should().BeEquivalentTo(prnsToUpdate.Select(x => new UpdatePrnStatus { PrnId = x, Status = "ACCEPTED" }));
+        body.Should().BeEquivalentTo(prnsToUpdate.Select(x => new UpdatePrnStatus { PrnId = x, ObligationYear = "2025", Status = "ACCEPTED" }));
     }
 
     [Test]
