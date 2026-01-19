@@ -273,7 +273,8 @@ public static class ServiceProviderExtension
             .AddMicrosoftIdentityWebApp(
                 options =>
                 {
-                    configuration.GetSection(AzureAdB2COptions.ConfigSection).Bind(options);
+                    var section = configuration.GetSection(AzureAdB2COptions.ConfigSection);
+                    section.Bind(options);
 
                     options.CorrelationCookie.Name = cookieOptions.CorrelationCookieName;
 
@@ -283,6 +284,8 @@ public static class ServiceProviderExtension
                     options.NonceCookie.Name = cookieOptions.OpenIdCookieName;
                     options.ErrorPath = "/error";
                     options.ClaimActions.Add(new CorrelationClaimAction());
+
+                    options.TokenValidationParameters.ValidateLifetime = section.GetValue("ValidateTokenLifetime", true);
                 },
                 options =>
                 {
