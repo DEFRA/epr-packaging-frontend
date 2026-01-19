@@ -17,24 +17,24 @@
         </value>
     </resheader>
     <data name="title" xml:space="preserve">    
-        <value>[WELSH] Register your members</value>
+        <value>Cofrestru’ch aelodau</value>
     </data>
     <data name="current_large_producer_registration_title" xml:space="preserve">
-	    <value>[WELSH] Large producer {0} registration</value>
+	    <value>Cofrestru cynhyrchydd mawr ar gyfer {0} </value>
 	</data>
     <data name="current_small_producer_registration_title" xml:space="preserve">
-		<value>[WELSH] Small producer {0} registration</value>
+		<value>Cofrestru cynhyrchydd bach ar gyfer {0} </value>
 	</data>
     <data name="small_producer_instructions1.2026" xml:space="preserve">
-		<value>[WELSH] Small producers must apply for registration on or before 1 April 2026.</value>
+		<value>Rhaid i gynhyrchwyr bach wneud cais am gofrestru ar neu cyn 1 Ebrill 2026</value>
 	</data>
     <data name="small_producer_instructions2.2026" xml:space="preserve">
-		<value>[WELSH] Applications made after this date could incur a late fee.</value>
+		<value>Gallai ceisiadau a wneir ar ôl y dyddiad hwn arwain at ffi hwyr</value>
 	</data>
     <data name="large_producer_instructions1.2026" xml:space="preserve">
-		<value>[WELSH] Large producers needed to apply for registration on or before 1 October 2025.</value>
+		<value>Roedd angen i gynhyrchwyr mawr wneud cais am gofrestru ar neu cyn 1 Hydref 2025</value>
 	</data>
     <data name="large_producer_instructions2.2026" xml:space="preserve">
-		<value>[WELSH] Applications made after this date could incur a late fee.</value>
+		<value>Gallai ceisiadau a wneir ar ôl y dyddiad hwn arwain at ffi hwyr</value>
 	</data>
 </root>
