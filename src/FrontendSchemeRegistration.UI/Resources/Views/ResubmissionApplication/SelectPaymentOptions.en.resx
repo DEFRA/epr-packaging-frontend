@@ -41,5 +41,8 @@
     </data>
 	<data name="payment_option_payonline_alternate_text" xml:space="preserve">
         <value>Online through GOV.UK</value>
-    </data>	
+    </data>
+	<data name="select_payment_option" xml:space="preserve">
+		<value>Select Payment Option</value>
+	</data>
 </root>

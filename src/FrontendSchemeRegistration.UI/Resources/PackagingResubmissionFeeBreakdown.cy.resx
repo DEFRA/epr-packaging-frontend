@@ -77,7 +77,7 @@
     <value>Ailgyflwyno data pecynwaith</value>
   </data>
   <data name="cs-packaging-data-resubmission" xml:space="preserve">
-    <value>[Welsh]Packaging data resubmission for {0} members</value>
+    <value>Ailgyflwyno data pecynwaith ar gyfer {0} o aelodau</value>
   </data>
   <data name="total-chargeable-items" xml:space="preserve">
     <value>Cyfanswm yr eitemau taladwy</value>

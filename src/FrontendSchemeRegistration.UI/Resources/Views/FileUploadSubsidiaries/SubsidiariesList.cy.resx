@@ -196,7 +196,7 @@
     <value>Bydd is-gwmnïau yn ymddangos yma ar ôl cael eu prosesu.</value>
   </data>
   <data name="adding_subsidiaries" xml:space="preserve">
-    <value>[WELSH]Adding subsidiaries</value>
+    <value>Ychwanegu is-gwmnïau</value>
   </data>
   <data name="upload_a_csv_file" xml:space="preserve">
     <value>Uwchlwytho ffeil CSV </value>
@@ -208,7 +208,7 @@
     <value>Sut i greu'ch ffeil is-gwmni (yn agor mewn tab newydd)</value>
   </data>
   <data name="informing_us_of_a_change" xml:space="preserve">
-    <value>[WELSH]Informing us of a change</value>
+    <value>Rhoi gwybod inni am newid</value>
   </data>
   <data name="if_any_of_your_subsidiaries" xml:space="preserve">
     <value>WIf any of your subsidiaries' organisation details change, you must notify the regulator within 28 days by</value>
@@ -223,7 +223,7 @@
     <value>diweddaru ac ailgyflwyno’ch ffeil gofrestru</value>
   </data>
   <data name="to_permanently_remove_subsidiaries" xml:space="preserve">
-    <value>[WELSH]To permanently remove subsidiaries, you must</value>
+    <value>I dynnu is-gwmnïau’n barhaol, mae’n rhaid ichi</value>
   </data>
   <data name="joined" xml:space="preserve">
     <value>Wedi ymuno</value>
@@ -235,13 +235,13 @@
     <value>Rhoi gwybod</value>
   </data>
   <data name="create_subsidiary_ids" xml:space="preserve">
-    <value>[WELSH]Create subsidiary IDs</value>
+    <value>Creu IDs is-gwmnïau</value>
   </data>
   <data name="upload_subsidiary_file" xml:space="preserve">
     <value>Uwchlwytho ffeil is-gwmni</value>
   </data>
   <data name="before_you_upload" xml:space="preserve">
-    <value>[WELSH]Before you upload your file, make sure you're using the latest version of the</value>
+    <value>Cyn ichi uwchlwytho'ch ffeil, gwnewch yn siŵr eich bod chi'n defnyddio'r fersiwn ddiweddaraf</value>
   </data>
   <data name="subsidiary_file_template" xml:space="preserve">
     <value>Wsubsidiary file template (opens in a new tab)</value>
@@ -253,7 +253,7 @@
     <value>I ychwanegu neu dynnu is-gwmnïau, rhaid ichi</value>
   </data>
   <data name="use_the_file_upload" xml:space="preserve">
-    <value>[WELSH]Use the file upload to create subsidiary IDs - you will need these subsidiary IDs to add subsidiaries to your organisation.</value>
+    <value>Defnyddiwch uwchlwytho ffeil i greu IDs is-gwmnïau - bydd angen IDs yr is-gwmnïau hyn arnoch i ychwanegu is-gwmnïau at eich sefydliad</value>
   </data>
   <data name="manage_subsidiaries" xml:space="preserve">
     <value>Rheoli is-gwmnïau</value>

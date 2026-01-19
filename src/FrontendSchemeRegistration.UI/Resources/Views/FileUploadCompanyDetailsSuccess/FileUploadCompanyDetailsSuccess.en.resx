@@ -87,4 +87,7 @@
     <data name="partner_details" xml:space="preserve">
         <value>partner details</value>
     </data>
+    <data name="return_to_dashboard" xml:space="preserve">
+        <value>Return to the dashboard</value>
+    </data>
 </root>

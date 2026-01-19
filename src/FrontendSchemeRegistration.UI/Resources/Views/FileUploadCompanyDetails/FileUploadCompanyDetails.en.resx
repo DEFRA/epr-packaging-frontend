@@ -165,4 +165,7 @@
   <data name="title_upload_organisation_details_home" xml:space="preserve">
     <value>Upload organisation details home</value>
   </data>
+  <data name="the_file_must_be:" xml:space="preserve">
+    <value>The file must be:</value>
+  </data>
 </root>

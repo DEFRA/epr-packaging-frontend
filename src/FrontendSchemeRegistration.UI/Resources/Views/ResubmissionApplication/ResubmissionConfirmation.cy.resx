@@ -99,7 +99,7 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="resubmission_confirm_title" xml:space="preserve">
-        <value>[WELSH]Resubmission confirmation</value>
+        <value>Cadarnhad ailgyflwyno</value>
     </data>
     <data name="submitted_date_x" xml:space="preserve">
     <value>Wedi’i gyflwyno {0}</value>
