@@ -13,7 +13,7 @@ public class IsPrnStatusEditableResolver(TimeProvider timeProvider)
     ///     Resolves whether the PRN status is considered editable from the User's perspective.
     ///     This is based on its current status, as well as its relation to the current Compliance Year.
     /// </summary>
-    public bool Resolve(PrnModel source, BasePrnViewModel _, bool __, ResolutionContext ___)
+    public bool Resolve(PrnModel source, BasePrnViewModel _, bool __, ResolutionContext context)
     {
         var isAwaiting = MapStatus(source.PrnStatus) == PrnStatus.AwaitingAcceptance;
         var complianceYear = timeProvider.GetUtcNow().GetComplianceYear();
