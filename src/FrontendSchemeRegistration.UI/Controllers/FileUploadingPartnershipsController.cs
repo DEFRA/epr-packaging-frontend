@@ -2,6 +2,7 @@
 
 using Application.Constants;
 using Application.DTOs.Submission;
+using Application.Enums;
 using Application.Services.Interfaces;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
@@ -33,7 +34,7 @@ public class FileUploadingPartnershipsController(ISubmissionService submissionSe
 
         if (session is null)
         {
-            return GetFileUploadingPartnershipsViewResult(submissionId, registrationYear);
+            return GetFileUploadingPartnershipsViewResult(submissionId, registrationYear, submission.RegistrationJourney);
         }
 
         if (!session.RegistrationSession.Journey.Contains<string>(PagePaths.FileUploadPartnerships))
@@ -43,7 +44,7 @@ public class FileUploadingPartnershipsController(ISubmissionService submissionSe
 
         return submission.PartnershipsDataComplete || submission.Errors.Count > 0
             ? GetNextPage(submission.Id, submission.Errors.Count > 0, registrationYear)
-            : GetFileUploadingPartnershipsViewResult(submissionId, registrationYear);
+            : GetFileUploadingPartnershipsViewResult(submissionId, registrationYear, submission.RegistrationJourney);
     }
 
     private RedirectToActionResult GetNextPage(Guid submissionId, bool exceptionErrorOccurred, int? registrationYear)
@@ -54,9 +55,9 @@ public class FileUploadingPartnershipsController(ISubmissionService submissionSe
             : RedirectToAction("Get", "FileUploadPartnershipsSuccess", routeValues);
     }
 
-    private ViewResult GetFileUploadingPartnershipsViewResult(Guid submissionId, int? registrationYear)
+    private ViewResult GetFileUploadingPartnershipsViewResult(Guid submissionId, int? registrationYear, RegistrationJourney? registrationJourney)
     {
-        return View("FileUploadingPartnerships", registrationYear is not null ? new FileUploadingViewModel { SubmissionId = submissionId.ToString(), RegistrationYear = registrationYear } : new FileUploadingViewModel { SubmissionId = submissionId.ToString() });
+        return View("FileUploadingPartnerships", registrationYear is not null ? new FileUploadingViewModel { SubmissionId = submissionId.ToString(), RegistrationYear = registrationYear, RegistrationJourney = registrationJourney} : new FileUploadingViewModel { SubmissionId = submissionId.ToString(), RegistrationJourney = registrationJourney});
 
     }
 }
