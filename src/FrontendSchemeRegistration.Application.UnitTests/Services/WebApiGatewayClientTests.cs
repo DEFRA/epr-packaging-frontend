@@ -19,6 +19,7 @@ using FluentAssertions;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Time.Testing;
 using Microsoft.Identity.Web;
 using Moq;
 using Moq.Protected;
@@ -35,7 +36,7 @@ public class WebApiGatewayClientTests
     private HttpClient _httpClient;
     private Mock<IComplianceSchemeMemberService> _complianceSchemeMemberServiceMock;
     private static readonly IFixture _fixture = new Fixture();
-    private readonly TimeTravelTestingTimeProvider _timeProvider = new(new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+    private readonly FakeTimeProvider _timeProvider = new(new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc));
 
     [SetUp]
     public void SetUp()
