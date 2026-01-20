@@ -1,4 +1,4 @@
-﻿using AutoFixture;
+using AutoFixture;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using EPR.SubmissionMicroservice.API.Contracts.Submissions.Get;
@@ -105,7 +105,7 @@ public class ResubmissionApplicationServiceTests
     public void SetUp()
     {
         _mockGlobalVariables = new Mock<IOptions<GlobalVariables>>();
-        _mockGlobalVariables.Setup(o => o.Value).Returns(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods, OverrideCurrentMonth = 1, OverrideCurrentYear = 2025 });
+        _mockGlobalVariables.Setup(o => o.Value).Returns(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods});
         _mockFeatureManager = new Mock<IFeatureManager>();
 
         _mockSessionManager = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
@@ -859,31 +859,50 @@ public class ResubmissionApplicationServiceTests
     }
 
     [Test]
-    public async Task GetCurrentMonthAndYearForRecyclingObligations_ShouldReturn_Desired_JanMonth_And_2025Year()
+    public async Task GetRegulatorNation()
     {
-        // Arrange       
+        _mockPaymentCalculationService.Setup(pcs => pcs.GetRegulatorNation(It.IsAny<Guid?>()))
+            .ReturnsAsync("bob");
+        var result = await _service.GetRegulatorNation(Guid.NewGuid());
 
-        // Act
-        var result = await _service.GetCurrentMonthAndYearForRecyclingObligations();
-
-        // Assert
-        result.currentMonth.Should().Be(1);
-        result.currentYear.Should().Be(2025);
+        Assert.That(result, Is.EqualTo("bob"));
     }
-
+    
     [Test]
-    public async Task GetCurrentMonthAndYearForRecyclingObligations_ShouldReturn_Default_Month_And_Year()
+    public async Task CreatePackagingDataResubmissionFeePaymentEvent()
     {
-        // Arrange
-        _mockGlobalVariables.Setup(o => o.Value).Returns(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods });
+        var submissionId = Guid.NewGuid();
+        var filedId = Guid.NewGuid();
+        _mockSubmissionService.Setup(ss =>
+                ss.CreatePackagingDataResubmissionFeePaymentEvent(It.IsAny<Guid>(), It.IsAny<Guid>(),
+                    It.IsAny<string>()))
+            .Returns(Task.CompletedTask);
+        await _service.CreatePackagingDataResubmissionFeePaymentEvent(submissionId, filedId, "abc");
 
-        var service = new ResubmissionApplicationServices(_mockSessionManager.Object, _mockPaymentCalculationService.Object, _mockSubmissionService.Object, _mockGlobalVariables.Object, _mockFeatureManager.Object);
+        _mockSubmissionService.Verify(ss => ss.CreatePackagingDataResubmissionFeePaymentEvent(submissionId, filedId, "abc"), Times.Once);
+    }
+    
+    [Test]
+    public async Task CreatePackagingResubmissionApplicationSubmittedCreatedEvent()
+    {
+        var submissionId = Guid.NewGuid();
+        var filedId = Guid.NewGuid();
+        var dt = DateTime.Now;
+        
+        _mockSubmissionService.Setup(ss =>
+                ss.CreatePackagingResubmissionApplicationSubmittedCreatedEvent(It.IsAny<Guid>(), It.IsAny<Guid>(),
+                    It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<string>()))
+            .Returns(Task.CompletedTask);
+        
+        await _service.CreatePackagingResubmissionApplicationSubmittedCreatedEvent(submissionId, filedId, "submittedBy",dt , "comment");
 
-        // Act
-        var result = await service.GetCurrentMonthAndYearForRecyclingObligations();
-
-        // Assert
-        result.currentMonth.Should().Be(DateTime.Now.Month);
-        result.currentYear.Should().Be(DateTime.Now.Year);
+        _mockSubmissionService.Verify(ss => ss.CreatePackagingResubmissionApplicationSubmittedCreatedEvent(submissionId, filedId, "submittedBy", dt, "comment"), Times.Once);
+    }
+    
+    [Test]
+    public async Task PackagingResubmissionPeriod()
+    {
+        var result = _service.PackagingResubmissionPeriod(new[]{"2025"}, new DateTime(2025, 03, 01));
+        Assert.That(result.Year, Is.EqualTo("2025"));
     }
 }

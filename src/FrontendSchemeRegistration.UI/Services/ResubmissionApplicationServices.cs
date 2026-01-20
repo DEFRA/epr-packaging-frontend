@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using EPR.Common.Authorization.Extensions;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
@@ -15,6 +15,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.FeatureManagement;
 
 namespace FrontendSchemeRegistration.UI.Services;
+
+using Application.Extensions;
 
 public class ResubmissionApplicationServices(
     ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
@@ -170,10 +172,10 @@ public class ResubmissionApplicationServices(
         return await featureManager.IsEnabledAsync(nameof(FeatureFlags.IncludeSubsidariesInFeeCalculationsForProducers));
     }
 
-    public Task<(int currentMonth, int currentYear)> GetCurrentMonthAndYearForRecyclingObligations()
+    public SubmissionPeriod PackagingResubmissionPeriod(string[] currentYear, DateTime nowDateTime)
     {
-        return Task.FromResult((
-            globalVariables.Value.OverrideCurrentMonth ?? DateTime.Now.Month,
-            globalVariables.Value.OverrideCurrentYear ?? DateTime.Now.Year));
+        var packagingResubmissionPeriod = globalVariables.Value.SubmissionPeriods
+            .Find(s => currentYear.Contains(s.Year) && s.ActiveFrom.Year == nowDateTime.GetComplianceYear());
+        return packagingResubmissionPeriod;
     }
 }
