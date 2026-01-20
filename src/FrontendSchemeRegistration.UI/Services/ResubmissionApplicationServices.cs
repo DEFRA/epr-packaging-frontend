@@ -171,13 +171,6 @@ public class ResubmissionApplicationServices(
         return await featureManager.IsEnabledAsync(nameof(FeatureFlags.IncludeSubsidariesInFeeCalculationsForProducers));
     }
 
-    public Task<(int currentMonth, int currentYear)> GetCurrentMonthAndYearForRecyclingObligations(TimeProvider tp)
-    {
-        return Task.FromResult((
-            globalVariables.Value.OverrideCurrentMonth ?? tp.GetLocalNow().Month,
-            globalVariables.Value.OverrideCurrentYear ?? tp.GetLocalNow().Year));
-    }
-
     public SubmissionPeriod PackagingResubmissionPeriod(string[] currentYear, DateTime nowDateTime)
     {
         var packagingResubmissionPeriod = globalVariables.Value.SubmissionPeriods.Find(s => currentYear.Contains(s.Year) && s.ActiveFrom.Year == nowDateTime.Year);

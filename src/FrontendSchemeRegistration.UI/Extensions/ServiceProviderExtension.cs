@@ -165,7 +165,10 @@ public static class ServiceProviderExtension
         });
         services.AddScoped<IRegistrationApplicationService, RegistrationApplicationService>();
         services.AddSingleton<IPatchService, PatchService>();
-        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+        services.AddAutoMapper((serviceProvider, automapper) =>
+        {
+            automapper.ConstructServicesUsing(serviceProvider.GetRequiredService);
+        }, AppDomain.CurrentDomain.GetAssemblies());
         services.AddTransient<UserDataCheckerMiddleware>();
         services.AddSingleton<ICorrelationIdProvider, CorrelationIdProvider>();
         services.AddScoped<IPrnService, PrnService>();
