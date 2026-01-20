@@ -16,7 +16,7 @@ public class FileUploadSuccessViewModel : ViewModelWithOrganisationRole
 
     public int? RegistrationYear { get; set; }
 
-    public bool ShowRegistrationCaption { get; set; } = false;
+    public bool ShowRegistrationCaption => RegistrationJourney != null;
 
     public RegistrationJourney? RegistrationJourney { get; set; }
     public string OrganisationName { get; set; }
