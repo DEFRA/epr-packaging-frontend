@@ -20,10 +20,13 @@ using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.TokenCacheProviders.Distributed;
 using StackExchange.Redis;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using CookieOptions = FrontendSchemeRegistration.Application.Options.CookieOptions;
 using SessionOptions = FrontendSchemeRegistration.Application.Options.SessionOptions;
 
+
+[assembly: InternalsVisibleTo("FrontendSchemeRegistration.UI.UnitTests")]
 namespace FrontendSchemeRegistration.UI.Extensions;
 
 [ExcludeFromCodeCoverage]
@@ -155,7 +158,10 @@ public static class ServiceProviderExtension
         services.AddScoped<IRegistrationApplicationService, RegistrationApplicationService>();
         services.AddTransient<IDateTimeProvider, SystemDateTimeProvider>();
         services.AddSingleton<IPatchService, PatchService>();
-        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+        services.AddAutoMapper((serviceProvider, automapper) =>
+        {
+            automapper.ConstructServicesUsing(serviceProvider.GetRequiredService);
+        }, AppDomain.CurrentDomain.GetAssemblies());
         services.AddTransient<UserDataCheckerMiddleware>();
         services.AddSingleton<ICorrelationIdProvider, CorrelationIdProvider>();
         services.AddScoped<IPrnService, PrnService>();
