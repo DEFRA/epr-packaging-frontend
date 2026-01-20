@@ -26,7 +26,9 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
 
         public string DateIssuedDisplay => DateIssued.ToString("dd MMM yyyy");
 
-        public bool IsStatusEditable { get; set; }
+        public HashSet<int> AvailableAcceptanceYears { get; set; } = new();
+
+        public bool IsStatusEditable => AvailableAcceptanceYears.Count > 0 && ApprovalStatus == PrnStatus.AwaitingAcceptance;
 
         public int ObligationYear { get; set; }
 
@@ -43,7 +45,8 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
 	        _ => "grey"
         };
 
-		public static string MapStatus(string oldStatus) => oldStatus switch
+
+        public static string MapStatus(string oldStatus) => oldStatus switch
 		{
 			"AWAITINGACCEPTANCE" => PrnStatus.AwaitingAcceptance,
 			"CANCELED" => PrnStatus.Cancelled,
