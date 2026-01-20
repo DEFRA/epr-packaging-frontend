@@ -1,4 +1,4 @@
-﻿namespace FrontendSchemeRegistration.Application.Options;
+namespace FrontendSchemeRegistration.Application.Options;
 
 using System.Diagnostics.CodeAnalysis;
 using DTOs.Submission;
@@ -27,16 +27,4 @@ public class GlobalVariables
     public DateTime SmallProducersRegStartTime2026 { get; set; }
 
     public string RegistrationYear { get; set; }
-
-    /// <summary>
-    /// Shows appropriate Recycling Obligation compliance year
-    /// based on a given year, if not provided current year will be used
-    /// </summary>
-    public int? OverrideCurrentYear { get; set; }
-
-    /// <summary>
-    /// Shows appropriate Recycling Obligation values compliance year 
-    /// based on a given month, if not provided current month will be used
-    /// </summary>
-    public int? OverrideCurrentMonth { get; set; }
 }
