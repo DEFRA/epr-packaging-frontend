@@ -48,7 +48,7 @@ public class ComplianceSchemeLandingController(
 
         session.RegistrationSession.SelectedComplianceScheme ??= defaultComplianceScheme;
         session.UserData = userData;
-        var currentYear = new[] { now.Year.ToString(), (now.Year + 1).ToString() };
+        var currentYear = new[] {now.GetComplianceYear().ToString(), (now.GetComplianceYear() + 1).ToString() };
         // Note: We are adding a service method here to avoid SonarQube issue for adding 8th parameter in the constructor.
         var packagingResubmissionPeriod = resubmissionApplicationService.PackagingResubmissionPeriod(currentYear, now);
         
