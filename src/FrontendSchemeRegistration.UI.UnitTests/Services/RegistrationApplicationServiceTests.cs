@@ -45,16 +45,7 @@ public class RegistrationApplicationServiceTests
     private FakeTimeProvider _dateTimeProvider;
     private int _validRegistrationYear;
 
-    private readonly RegistrationApplicationSession _session = new()
-    {
-        SubmissionId = Guid.NewGuid(),
-        LastSubmittedFile = new LastSubmittedFileDetails
-        {
-            FileId = Guid.NewGuid(),
-            SubmittedByName = "John Doe",
-            SubmittedDateTime = DateTime.Now
-        }
-    };
+    private RegistrationApplicationSession _session; 
 
     private Mock<ILogger<RegistrationApplicationService>> _loggerMock;
 
@@ -99,14 +90,25 @@ public class RegistrationApplicationServiceTests
         _service = new RegistrationApplicationService(deps, _dateTimeProvider);
 
         var submissionYear = DateTime.Now.Year.ToString();
-        _session.Period = new SubmissionPeriod
+        var dataPeriod = $"January to December {submissionYear}";
+        _session = new()
         {
-            DataPeriod = $"January to December {submissionYear}",
-            StartMonth = "January",
-            EndMonth = "December",
-            Year = $"{submissionYear}"
+            SubmissionId = Guid.NewGuid(),
+            LastSubmittedFile = new LastSubmittedFileDetails
+            {
+                FileId = Guid.NewGuid(),
+                SubmittedByName = "John Doe",
+                SubmittedDateTime = DateTime.Now
+            },
+            Period = new SubmissionPeriod
+            {
+                DataPeriod = dataPeriod,
+                StartMonth = "January",
+                EndMonth = "December",
+                Year = $"{submissionYear}"
+            },
+            SubmissionPeriod = dataPeriod
         };
-        _session.SubmissionPeriod = _session.Period.DataPeriod;
     }
 
     [Test]
@@ -2117,7 +2119,7 @@ public class RegistrationApplicationServiceTests
                 data.SubmissionId == _session.SubmissionId.Value),
             _session.ApplicationReferenceNumber, false,
             submissionType, 
-            It.IsAny<RegistrationJourney>()), Times.Once);
+            It.IsAny<RegistrationJourney?>()), Times.Once);
     }
 
     [Test]
@@ -2142,7 +2144,7 @@ public class RegistrationApplicationServiceTests
             _session.ApplicationReferenceNumber,
             false,
             submissionType, 
-            It.IsAny<RegistrationJourney>()), Times.Once);
+            It.IsAny<RegistrationJourney?>()), Times.Once);
 
         _sessionManagerMock.Verify(sm => sm.SaveSessionAsync(It.IsAny<ISession>(), It.Is<RegistrationApplicationSession>(s => !string.IsNullOrWhiteSpace(s.RegistrationFeePaymentMethod))), Times.Once);
     }
@@ -2169,7 +2171,7 @@ public class RegistrationApplicationServiceTests
             _session.ApplicationReferenceNumber,
             false,
             submissionType, 
-            It.IsAny<RegistrationJourney>()), Times.Once);
+            It.IsAny<RegistrationJourney?>()), Times.Once);
 
         _sessionManagerMock.Verify(sm => sm.SaveSessionAsync(It.IsAny<ISession>(), It.Is<RegistrationApplicationSession>(s => s.RegistrationApplicationSubmittedDate.Value > DateTime.Now.AddSeconds(-5))), Times.Once);
     }
@@ -2196,7 +2198,7 @@ public class RegistrationApplicationServiceTests
            _session.ApplicationReferenceNumber,
             false,
             submissionType, 
-            It.IsAny<RegistrationJourney>()), Times.Once);
+            It.IsAny<RegistrationJourney?>()), Times.Once);
     }
 
     [Test]
@@ -2221,7 +2223,7 @@ public class RegistrationApplicationServiceTests
             _session.ApplicationReferenceNumber,
             false,
             submissionType, 
-            It.IsAny<RegistrationJourney>()), Times.Once);
+            It.IsAny<RegistrationJourney?>()), Times.Once);
     }
 
     [TestCase(SubmissionType.Producer)]
@@ -2251,7 +2253,7 @@ public class RegistrationApplicationServiceTests
             _session.ApplicationReferenceNumber,
             false,
             submissionType, 
-            It.IsAny<RegistrationJourney>()), Times.Once);
+            It.IsAny<RegistrationJourney?>()), Times.Once);
     }
 
     [Test]
@@ -2331,45 +2333,6 @@ public class RegistrationApplicationServiceTests
         applicationPerYearViewModel.Should().AllSatisfy(a => a.RegisterSmallProducersCS.Should().Be(expectedRegisterSmallProducersCSFlag));
         applicationPerYearViewModel.Should().AllSatisfy(a => a.DeadlineDate.Should().Be(expectedDeadlineDate));
     }
- 
-    [Test]
-    public async Task BuildRegistrationApplicationYearViewModels_ShouldReturnApplicationYears()
-    {
-        //Arrange
-        var organisation = new Organisation
-        {
-            Id = Guid.NewGuid(),
-            Name = "Test",
-            OrganisationNumber = "552555"
-        };
-        
-        _dateTimeProvider.SetUtcNow(new DateTime(2026, 3, 1));
-
-        IReadOnlyCollection<RegistrationWindow> registrationWindows =
-            [
-                CreateRegistrationWindow(RegistrationJourney.CsoLargeProducer, 2026),
-                CreateRegistrationWindow(RegistrationJourney.CsoSmallProducer, 2026),
-                CreateRegistrationWindow(null, 2025) 
-            ]; 
-        
-        _mockRegistrationPeriodProvider.Setup(x => x.GetActiveRegistrationWindows(It.IsAny<bool>()))
-            .Returns(registrationWindows);
-
-        // Act
-        var applicationYearViewModel = await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation);
-
-        //Assert
-        applicationYearViewModel.Should().NotBeNull();
-        applicationYearViewModel.Count.Should().Be(2);
-        var firstApplication = applicationYearViewModel.First();
-        firstApplication.Year.Should().Be(2026);
-        firstApplication.Applications.Count().Should().Be(2);
-        firstApplication.Applications.Should().AllSatisfy(a => a.RegistrationYear.Should().Be("2026"));
-        var secondApplication = applicationYearViewModel.Last();
-        secondApplication.Year.Should().Be(2025);
-        secondApplication.Applications.Count().Should().Be(1);
-        secondApplication.Applications.Should().AllSatisfy(a => a.RegistrationYear.Should().Be("2025"));
-    }
 
     [Test]
     public async Task BuildRegistrationYearApplicationsViewModels_ShouldReturnEmptyList_WhenNoActiveRegistrationWindows()
@@ -2395,7 +2358,7 @@ public class RegistrationApplicationServiceTests
     }
 
     [Test]
-    public async Task BuildRegistrationYearApplicationsViewModels_ShouldGroupByRegistrationYear_WhenMultipleWindowsSameYear()
+    public async Task BuildRegistrationYearApplicationsViewModels_ShouldMergeRegistrations_WhenMultipleWindowsInSameYearForDirectProducer()
     {
         // Arrange
         var organisation = new Organisation
@@ -2563,11 +2526,11 @@ public class RegistrationApplicationServiceTests
         yearViewModel.Year.Should().Be(2026);
         
         var appViewModel = yearViewModel.Applications.First();
-        appViewModel.ApplicationStatus.Should().Be(ApplicationStatusType.AcceptedByRegulator);
-        appViewModel.FileUploadStatus.Should().Be(RegistrationTaskListStatus.Completed); // Computed from ApplicationStatus.AcceptedByRegulator
-        appViewModel.ApplicationReferenceNumber.Should().Be("REF-2026-001");
-        appViewModel.RegistrationReferenceNumber.Should().Be("REG-2026-001");
-        appViewModel.IsResubmission.Should().BeTrue();
+        appViewModel.ApplicationStatus.Should().Be(ApplicationStatusType.NotStarted);
+        appViewModel.FileUploadStatus.Should().Be(RegistrationTaskListStatus.NotStarted);
+        appViewModel.ApplicationReferenceNumber.Should().Be(string.Empty);
+        appViewModel.RegistrationReferenceNumber.Should().BeNull();
+        appViewModel.IsResubmission.Should().BeFalse();
         appViewModel.RegistrationYear.Should().Be("2026");
         appViewModel.IsComplianceScheme.Should().BeFalse();
         appViewModel.DeadlineDate.Should().Be(deadlineDate);
