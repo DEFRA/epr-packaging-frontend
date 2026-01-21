@@ -13,6 +13,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FrontendSchemeRegistration.UI.Controllers;
 
+using Application.DTOs.ComplianceScheme;
+using EPR.Common.Authorization.Models;
+
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
 [Route(PagePaths.ComplianceSchemeLanding)]
 public class ComplianceSchemeLandingController(
@@ -35,33 +38,29 @@ public class ComplianceSchemeLandingController(
     [ExcludeFromCodeCoverage]
     public async Task<IActionResult> Get()
     {
-        var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
         var userData = User.GetUserData();
         var nowDateTime = _timeProvider.GetLocalNow().DateTime;
 
         var organisation = userData.Organisations[0];
-
         var complianceSchemes = await complianceSchemeService.GetOperatorComplianceSchemes(organisation.Id.Value);
 
-        var defaultComplianceScheme = complianceSchemes.FirstOrDefault();
+        //build minimal session data to remove any pollution from pervious journeys
+        var session = FrontendSchemeRegistrationSession(complianceSchemes, userData);
+        var taskSave = SaveNewJourney(session);
 
-        session.RegistrationSession.SelectedComplianceScheme ??= defaultComplianceScheme;
-        session.UserData = userData;
         var currentYear = new[] { nowDateTime.Year.ToString(), (nowDateTime.Year + 1).ToString() };
         // Note: We are reading desired values using existing service to avoid SonarQube issue for adding 8th parameter in the constructor.
         var currentPeriod = await resubmissionApplicationService.GetCurrentMonthAndYearForRecyclingObligations(_timeProvider);
         // Note: We are adding a service method here to avoid SonarQube issue for adding 8th parameter in the constructor.
         var packagingResubmissionPeriod = resubmissionApplicationService.PackagingResubmissionPeriod(currentYear, nowDateTime);
         
-        await SaveNewJourney(session);
-
         var currentComplianceSchemeId = session.RegistrationSession.SelectedComplianceScheme.Id;
+        await taskSave;
 
         var currentSummary = await complianceSchemeService.GetComplianceSchemeSummary(organisation.Id.Value, currentComplianceSchemeId);
 
         var resubmissionApplicationDetails = await resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(
             organisation, new List<string> { packagingResubmissionPeriod.DataPeriod }, session.RegistrationSession.SelectedComplianceScheme?.Id);
-
         
         var model = new ComplianceSchemeLandingViewModel
         {
@@ -91,6 +90,16 @@ public class ComplianceSchemeLandingController(
         session.SubsidiarySession.Journey.Clear();
 
         return View("ComplianceSchemeLanding", model);
+    }
+
+    private static FrontendSchemeRegistrationSession FrontendSchemeRegistrationSession(List<ComplianceSchemeDto> complianceSchemes,
+        UserData userData)
+    {
+        var session = new FrontendSchemeRegistrationSession();
+        var defaultComplianceScheme = complianceSchemes.FirstOrDefault();
+        session.RegistrationSession.SelectedComplianceScheme ??= defaultComplianceScheme;
+        session.UserData = userData;
+        return session;
     }
 
     [HttpPost]
