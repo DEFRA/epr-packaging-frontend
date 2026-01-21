@@ -1,5 +1,6 @@
 ﻿namespace FrontendSchemeRegistration.UI.Mappers;
 
+using Application.Constants;
 using Application.DTOs.Prns;
 using AutoMapper;
 using Constants;
@@ -13,8 +14,8 @@ public class PrnModelMapper : Profile
             .ForMember(dest => dest.ObligationYear,
                 opt => opt.MapFrom((src, _) => int.TryParse(src.ObligationYear, out var oYear) ? oYear : 0))
             .ForMember(dest => dest.ApprovalStatus,
-                opt => opt.MapFrom(src => IsPrnStatusEditableResolver.MapStatus(src.PrnStatus)))
-            .ForMember(dest => dest.IsStatusEditable, opt => opt.MapFrom<IsPrnStatusEditableResolver>())
+                opt => opt.MapFrom(src => MapStatus(src.PrnStatus)))
+            .ForMember(dest => dest.AvailableAcceptanceYears, opt => opt.MapFrom<PrnAvailableAcceptanceYearsResolver>())
             .ForMember(dest => dest.PrnOrPernNumber,
                 opt => opt.MapFrom(src => src.PrnNumber))
             .ForMember(dest => dest.Material,
@@ -58,5 +59,15 @@ public class PrnModelMapper : Profile
             .IncludeBase<PrnModel, BasePrnViewModel>()
             .ForMember(dest => dest.IsSelected, opt => opt.Ignore())
             ;
+    }
+
+    private static string MapStatus(string oldStatus)
+    {
+        return oldStatus switch
+        {
+            "AWAITINGACCEPTANCE" => PrnStatus.AwaitingAcceptance,
+            "CANCELED" => PrnStatus.Cancelled,
+            _ => oldStatus
+        };
     }
 }

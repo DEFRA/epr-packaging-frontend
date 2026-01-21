@@ -13,28 +13,24 @@ using UI.ViewModels.Prns;
 public class PrnModelMapperTests
 {
     private IMapper _mapper;
-    private FakeTimeProvider _fakeTimeProvider;
 
     [SetUp]
     public void Setup()
     {
-        _fakeTimeProvider = new FakeTimeProvider();
-        _fakeTimeProvider.SetUtcNow(new DateTimeOffset(2026, 6, 1, 0, 0, 0, TimeSpan.Zero));
-
         var configuration = new MapperConfiguration(cfg =>
         {
             cfg.AddProfile(new PrnModelMapper());
             cfg.ConstructServicesUsing(type =>
             {
-                if (type == typeof(IsPrnStatusEditableResolver))
+                if (type == typeof(PrnAvailableAcceptanceYearsResolver))
                 {
-                    var mock = new Mock<IValueResolver<PrnModel, BasePrnViewModel, bool>>();
+                    var mock = new Mock<IValueResolver<PrnModel, object, int[]>>();
                     mock.Setup(x => x.Resolve(
                             It.IsAny<PrnModel>(),
                             It.IsAny<BasePrnViewModel>(),
-                            It.IsAny<bool>(),
+                            It.IsAny<int[]>(),
                             It.IsAny<ResolutionContext>()))
-                        .Returns(true);
+                        .Returns([2025]);
 
                     return mock.Object;
                 }
