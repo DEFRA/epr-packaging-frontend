@@ -17,8 +17,6 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
     private IReadOnlyCollection<RegistrationWindow> _registrationWindows = [];
     private int? _parseYear;    // the year when Parse was last called
     
-    // store the next upcoming close date, as we can trigger a rebuild after we pass it
-    private DateTime _nextCloseDate;
     private readonly object _lock = new();
 
     public RegistrationPeriodProvider(IOptions<List<RegistrationPeriodPattern>> registrationPeriodPatternOptions, TimeProvider timeProvider)
@@ -34,7 +32,6 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
     private void ParsePatterns()
     {
         _parseYear = _timeProvider.GetUtcNow().Year;
-        _nextCloseDate = DateTime.MaxValue;
         var windows = new List<RegistrationWindow>();
         
         foreach (var registrationPeriodPattern in _registrationPeriodPatterns)
@@ -48,27 +45,24 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
             {
                 // this is checking BEFORE going through the windows in the new pattern, so 
                 EnsureRegistrationYearNotDuplicated(windows, registrationYear);
-                
+
                 foreach (var patternWindow in registrationPeriodPattern.Windows)
                 {
                     var journey = MapWindowTypeToRegistrationJourney(patternWindow.WindowType);
                     var closeDate = new DateTime(registrationYear + patternWindow.ClosingDate.YearOffset,
                         patternWindow.ClosingDate.Month, patternWindow.ClosingDate.Day, 0, 0, 0, DateTimeKind.Utc);
+                    var openingDate = new DateTime(registrationYear + patternWindow.OpeningDate.YearOffset,
+                        patternWindow.OpeningDate.Month, patternWindow.OpeningDate.Day, 0, 0, 0, DateTimeKind.Utc);
+                    var deadlineDate = new DateTime(registrationYear + patternWindow.DeadlineDate.YearOffset,
+                        patternWindow.DeadlineDate.Month, patternWindow.DeadlineDate.Day, 0, 0, 0, DateTimeKind.Utc);
                     
-                    // don't bother adding windows whose closing date has passed. we will want to change this in future
-                    // when we provide a panel for viewing historic submissions
-                    var window = new RegistrationWindow(_timeProvider, journey, registrationYear,
-                            new DateTime(registrationYear + patternWindow.OpeningDate.YearOffset,
-                                patternWindow.OpeningDate.Month, patternWindow.OpeningDate.Day),
-                            new DateTime(registrationYear + patternWindow.DeadlineDate.YearOffset,
-                                patternWindow.DeadlineDate.Month, patternWindow.DeadlineDate.Day),
-                            closeDate);
-
-                    if (window.GetRegistrationWindowStatus() != RegistrationWindowStatus.Closed)
+                    if (journey.RegistrationJourney is null)
                     {
-                        windows.Add(window);
-
-                        UpdateNextCloseDate(closeDate);
+                        windows.Add(new RegistrationWindow(_timeProvider, journey.IsCso, registrationYear, openingDate, deadlineDate, closeDate));    
+                    }
+                    else
+                    {
+                        windows.Add(new RegistrationWindow(_timeProvider, journey.RegistrationJourney.Value, registrationYear, openingDate, deadlineDate, closeDate));
                     }
                 }
 
@@ -80,7 +74,8 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
     }
 
     /// <summary>
-    /// Gets registration windows.
+    /// Gets active registration windows. These include closed windows, as producers may still register
+    /// beyond the closing date
     /// </summary>
     /// <param name="isCso"></param>
     /// <returns></returns>
@@ -100,35 +95,10 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
             }
         }
         
-        // Rebuild the collection if we pass the next stored close date, as we don't want
-        // to return closed windows
-        if (_timeProvider.GetUtcNow() > _nextCloseDate)
-        {
-            lock (_lock)
-            {
-                if (_timeProvider.GetUtcNow() > _nextCloseDate)
-                {
-                    ParsePatterns();
-                }
-            }
-        }
-        
-        var windows = _registrationWindows.Where(w =>
-        {
-            if (isCso)
-            {
-                return w.Journey is RegistrationJourney.CsoLargeProducer or RegistrationJourney.CsoSmallProducer or null;
-            }
-            else
-            {
-                return w.Journey is RegistrationJourney.DirectLargeProducer or RegistrationJourney.DirectSmallProducer or null;
-            }
-        });
-
-        var orderedWindows = windows
-            .Where(w => w.GetRegistrationWindowStatus() != RegistrationWindowStatus.PriorToOpening)
+        var orderedWindows = _registrationWindows
+            .Where(w => w.IsCso == isCso && w.GetRegistrationWindowStatus() != RegistrationWindowStatus.PriorToOpening)
             .OrderByDescending(ra => ra.RegistrationYear);
-        
+
         return new ReadOnlyCollection<RegistrationWindow>(orderedWindows.ToList());
     }
 
@@ -162,18 +132,6 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
     }
 
     /// <summary>
-    /// Stores the next close date
-    /// </summary>
-    /// <param name="closeDate"></param>
-    private void UpdateNextCloseDate(DateTime closeDate)
-    {
-        if (closeDate < _nextCloseDate)
-        {
-            _nextCloseDate = closeDate;
-        }
-    }
-
-    /// <summary>
     /// Ensures that the registration year does not already exist in the list of windows
     /// </summary>
     /// <param name="windows"></param>
@@ -184,13 +142,14 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
         if (windows.Any(w => w.RegistrationYear == registrationYear)) throw new InvalidOperationException($"Registration year {registrationYear} is configured in multiple RegistrationPeriodPattern items within appsettings. The years between and including the InitialRegistrationYear and the FinalRegistrationYear may only exist in a single pattern.");
     }
 
-    private static RegistrationJourney? MapWindowTypeToRegistrationJourney(WindowType windowType) =>
+    private static (RegistrationJourney? RegistrationJourney, bool IsCso) MapWindowTypeToRegistrationJourney(WindowType windowType) =>
         windowType switch
         {
-            WindowType.CsoLargeProducer => RegistrationJourney.CsoLargeProducer,
-            WindowType.CsoSmallProducer => RegistrationJourney.CsoSmallProducer,
-            WindowType.DirectLargeProducer => RegistrationJourney.DirectLargeProducer,
-            WindowType.DirectSmallProducer => RegistrationJourney.DirectSmallProducer,
-            _ => null
+            WindowType.CsoLargeProducer => (RegistrationJourney.CsoLargeProducer, RegistrationWindow.IsRegistrationJourneyForCso(RegistrationJourney.CsoLargeProducer)),
+            WindowType.CsoSmallProducer => (RegistrationJourney.CsoSmallProducer, RegistrationWindow.IsRegistrationJourneyForCso(RegistrationJourney.CsoSmallProducer)),
+            WindowType.DirectLargeProducer => (RegistrationJourney.DirectLargeProducer, RegistrationWindow.IsRegistrationJourneyForCso(RegistrationJourney.DirectLargeProducer)),
+            WindowType.DirectSmallProducer => (RegistrationJourney.DirectSmallProducer, RegistrationWindow.IsRegistrationJourneyForCso(RegistrationJourney.DirectSmallProducer)),
+            WindowType.Cso => (null, true),
+            _ => (null, false)
         };
 }

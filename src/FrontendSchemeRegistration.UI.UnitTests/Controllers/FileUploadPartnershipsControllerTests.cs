@@ -132,7 +132,7 @@ public class FileUploadPartnershipsControllerTests
 
         // Assert
         result.ViewName.Should().Be("FileUploadPartnerships");
-        result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.FileUploadSuccess}?registrationjourney=CsoLargeProducer");
+        result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.FileUploadBrandsSuccess}?registrationjourney=CsoLargeProducer&submissionId={SubmissionId}");
     }
 
     [Test]

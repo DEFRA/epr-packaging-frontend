@@ -154,9 +154,7 @@ public class ComplianceSchemeLandingControllerTests
         globalVariables.Setup(o => o.Value)
             .Returns(new GlobalVariables { 
                 BasePath = "path", 
-                SubmissionPeriods = _submissionPeriods,
-                OverrideCurrentMonth = _overrideCurrentMonth,
-                OverrideCurrentYear = _overrideCurrentYear });
+                SubmissionPeriods = _submissionPeriods });
 
         _userMock.Setup(x => x.Claims).Returns(claims);
         _httpContextMock.Setup(x => x.User).Returns(_userMock.Object);
@@ -164,8 +162,6 @@ public class ComplianceSchemeLandingControllerTests
         _notificationServiceMock.Setup(x => x.GetCurrentUserNotifications(It.IsAny<Guid>(), It.IsAny<Guid>()));
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
 
-        _resubmissionApplicationService.Setup(x => x.GetCurrentMonthAndYearForRecyclingObligations(_testTimeProvider))
-            .Returns(Task.FromResult((1, _overrideCurrentYear)));
         _resubmissionApplicationService.Setup(x => x.PackagingResubmissionPeriod(It.IsAny<string[]>(), It.IsAny<DateTime>()))
             .Returns(_submissionPeriods.FirstOrDefault(sp => sp.Year == _currentYear));
 
@@ -176,7 +172,6 @@ public class ComplianceSchemeLandingControllerTests
             _sessionManagerMock.Object,
             _complianceSchemeServiceMock.Object,
             _notificationServiceMock.Object,
-            _registrationApplicationService.Object,
             _resubmissionApplicationService.Object,
             _nullLogger,
             _testTimeProvider)
@@ -186,56 +181,31 @@ public class ComplianceSchemeLandingControllerTests
     }
 
     [Test]
-    [TestCase(2025, 11, 2026, 1, 2025)]
-    [TestCase(2025, 11, 2026, 4, 2025)]
-    [TestCase(2025, 11, 2027, 1, 2025)]
-    
-    [TestCase(2025, 12, 2026, 1, 2025)]
-    [TestCase(2025, 12, 2026, 5, 2025)]
-    [TestCase(2025, 12, 2027, 1, 2025)]
-    
-    [TestCase(2026,  1, 2026, 1, 2025)]
-    [TestCase(2026,  1, 2026, 6, 2025)]
-    [TestCase(2026,  1, 2027, 1, 2025)]
-    
-    [TestCase(2026,  2, 2026, 1, 2026)]
-    [TestCase(2026,  2, 2027, 1, 2026)]
-    
-    [TestCase(2026,  3, 2026, 1, 2026)]
-    [TestCase(2026,  3, 2027, 1, 2026)]
-    
-    [TestCase(2026,  6, 2026, 1, 2026)]
-    [TestCase(2026,  6, 2027, 1, 2026)]
-    
-    [TestCase(2027,  1, 2026, 1, 2026)]
-    [TestCase(2027,  1, 2027, 1, 2026)]
-    
-    [TestCase(2026,  6, null, null, 2026)]
-    [TestCase(2027,  1, null, null, 2026)]
-    
+    [TestCase(2025, 11, 2025)]
+    [TestCase(2025, 12, 2025)]
+    [TestCase(2026,  1, 2025)]
+    [TestCase(2026,  2, 2026)]
+    [TestCase(2026,  3, 2026)]
+    [TestCase(2026,  6, 2026)]
+    [TestCase(2027,  1, 2027)]
+
     public async Task Get_ReturnsCorrectViewAndModel_WhenSelectedComplianceSchemeDoesNotExistInSession(
-        int year, int month, int? overrideCurrentYearConfigSetting, int? overrideCurrentMonthConfigSetting,
-        int expectedComplianceYear)
+        int year, int month, int expectedComplianceYear)
     {
         //override Setup
         globalVariables.Setup(o => o.Value)
             .Returns(new GlobalVariables { 
                 BasePath = "path", 
-                SubmissionPeriods = _submissionPeriods,
-                OverrideCurrentMonth = overrideCurrentMonthConfigSetting,
-                OverrideCurrentYear = overrideCurrentYearConfigSetting });
+                SubmissionPeriods = _submissionPeriods });
         
         //Time travel setup
         var ftp = new FakeTimeProvider();
-        ftp.SetUtcNow(new DateTimeOffset(new DateTime(year, month, 01)));
+        ftp.SetUtcNow(new DateTimeOffset(year, month, 1,0,0,0,TimeSpan.Zero));
         _complianceSchemeLandingController.SetTestTimeProvider(ftp);
         
-        _resubmissionApplicationService.Setup(x => x.GetCurrentMonthAndYearForRecyclingObligations(ftp))
-            .Returns(Task.FromResult((month, year)));
-        
-        _resubmissionApplicationService.Setup(x => x.PackagingResubmissionPeriod(It.IsAny<string[]>(), It.Is<DateTime>(dt => dt.Month != 1)))
+        _resubmissionApplicationService.Setup(x => x.PackagingResubmissionPeriod(It.IsAny<string[]>(), It.Is<DateTime>(dt => dt.Year != 2026 || dt.Month != 1)))
             .Returns(_submissionPeriods.FirstOrDefault(sp => sp.Year == year.ToString() && sp.ActiveFrom.Year == year));
-        _resubmissionApplicationService.Setup(x => x.PackagingResubmissionPeriod(It.IsAny<string[]>(), It.Is<DateTime>(dt => dt.Month == 1)))
+        _resubmissionApplicationService.Setup(x => x.PackagingResubmissionPeriod(It.IsAny<string[]>(), It.Is<DateTime>(dt => dt.Year == 2026 && dt.Month == 1)))
             .Returns(_submissionPeriods.FirstOrDefault(sp => sp.Year == (year-1).ToString() && sp.ActiveFrom.Year == year-1));
         //End Time travel Setup
         
@@ -378,10 +348,6 @@ public class ComplianceSchemeLandingControllerTests
         _sessionManagerMock.Verify(
             x => x.SaveSessionAsync(
                 It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()), Times.Exactly(1));
-        
-        _resubmissionApplicationService.Verify(
-            x => x.GetCurrentMonthAndYearForRecyclingObligations(
-                It.IsAny<TimeProvider>()), Times.AtLeastOnce);
     }
 
     [Test]
@@ -699,9 +665,6 @@ public class ComplianceSchemeLandingControllerTests
     [Test]
     public async Task Get_ReturnsCorrectViewAndModel_UserHasNominatedNotification()
     {
-        _resubmissionApplicationService.Setup(x => x.GetCurrentMonthAndYearForRecyclingObligations(_testTimeProvider))
-            .Returns(Task.FromResult((_testTimeProvider.GetUtcNow().Month, _testTimeProvider.GetUtcNow().Year)));
-        
         var notificationDtoList = new List<NotificationDto>
         {
             new()

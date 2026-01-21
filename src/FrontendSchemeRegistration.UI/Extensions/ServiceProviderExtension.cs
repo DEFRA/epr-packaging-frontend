@@ -30,6 +30,7 @@ namespace FrontendSchemeRegistration.UI.Extensions;
 
 using Application.Helpers;
 using Application.Options.ReistrationPeriodPatterns;
+using Polly;
 using Services.RegistrationPeriods;
 
 [ExcludeFromCodeCoverage]
@@ -45,7 +46,7 @@ public static class ServiceProviderExtension
         ConfigureSession(services);
         RegisterServices(services);
         ConfigureTimeProvider(services, hostingEnvironment);
-        RegisterHttpClients(services);
+        RegisterAccountAndPaymentApiClients(services);
         RegisterPrnTimeProviderServices(services, configuration);
 
         return services;
@@ -164,7 +165,10 @@ public static class ServiceProviderExtension
         });
         services.AddScoped<IRegistrationApplicationService, RegistrationApplicationService>();
         services.AddSingleton<IPatchService, PatchService>();
-        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+        services.AddAutoMapper((serviceProvider, automapper) =>
+        {
+            automapper.ConstructServicesUsing(serviceProvider.GetRequiredService);
+        }, AppDomain.CurrentDomain.GetAssemblies());
         services.AddTransient<UserDataCheckerMiddleware>();
         services.AddSingleton<ICorrelationIdProvider, CorrelationIdProvider>();
         services.AddScoped<IPrnService, PrnService>();
@@ -189,36 +193,37 @@ public static class ServiceProviderExtension
         }
     }
 
-    private static void RegisterHttpClients(IServiceCollection services)
+    private static void RegisterAccountAndPaymentApiClients(IServiceCollection services)
     {
-        services.AddHttpClient<IAccountServiceApiClient, AccountServiceApiClient>((sp, client) =>
-        {
-            var facadeApiOptions = sp.GetRequiredService<IOptions<AccountsFacadeApiOptions>>().Value;
-            var httpClientOptions = sp.GetRequiredService<IOptions<HttpClientOptions>>().Value;
-
-            client.BaseAddress = new Uri(facadeApiOptions.BaseEndpoint);
-            client.Timeout = TimeSpan.FromSeconds(httpClientOptions.TimeoutSeconds);
-        });
-
-        services.AddHttpClient<IPaymentCalculationServiceApiClient, PaymentCalculationServiceApiClient>((sp, client) =>
-        {
-            var facadeApiOptions = sp.GetRequiredService<IOptions<PaymentFacadeApiOptions>>().Value;
-            var httpClientOptions = sp.GetRequiredService<IOptions<HttpClientOptions>>().Value;
-            var featureManager = sp.GetRequiredService<IFeatureManager>();
-
-            var baseUrl = facadeApiOptions.BaseUrl;
-
-            var useV2 = featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeV2)
-                .GetAwaiter().GetResult();
-
-            if (useV2)
+        var sp = services.BuildServiceProvider();
+        var options = sp.GetRequiredService<IOptions<HttpClientOptions>>().Value;
+        
+        services
+            .AddHttpClient<IAccountServiceApiClient, AccountServiceApiClient>(client =>
             {
-                baseUrl = Regex.Replace(baseUrl, @"/v1(/|$)", "/v2$1", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
-            }
+                client.BaseAddress = new Uri(sp.GetRequiredService<IOptions<AccountsFacadeApiOptions>>().Value.BaseEndpoint);
+                client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
+            })
+            .AddTransientHttpErrorPolicy(builder => builder.WaitAndRetryAsync(
+                options.RetryCount, _ => TimeSpan.FromSeconds(options.RetryDelaySeconds)));
 
-            client.BaseAddress = new Uri(baseUrl);
-            client.Timeout = TimeSpan.FromSeconds(httpClientOptions.TimeoutSeconds);
-        });
+        services
+            .AddHttpClient<IPaymentCalculationServiceApiClient, PaymentCalculationServiceApiClient>(client =>
+            {
+                var featureManager = sp.GetRequiredService<IFeatureManager>();
+                var baseUrl = sp.GetRequiredService<IOptions<PaymentFacadeApiOptions>>().Value.BaseUrl;
+                var useV2 = featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeV2).GetAwaiter().GetResult();
+
+                if (useV2)
+                {
+                    baseUrl = Regex.Replace(baseUrl, @"/v1(/|$)", "/v2$1", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
+                }
+
+                client.BaseAddress = new Uri(baseUrl);
+                client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
+            })
+            .AddTransientHttpErrorPolicy(builder => builder.WaitAndRetryAsync(
+                options.RetryCount, _ => TimeSpan.FromSeconds(options.RetryDelaySeconds)));
     }
 
     private static void ConfigureLocalization(IServiceCollection services)

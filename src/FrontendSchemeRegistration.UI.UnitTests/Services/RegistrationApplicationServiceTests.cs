@@ -3265,13 +3265,18 @@ public class RegistrationApplicationServiceTests
         int? registrationYear = 2026,
         DateTime? openingDateOffset = null,
         DateTime? deadlineDateOffset = null,
-        DateTime? closingDateOffset = null)
+        DateTime? closingDateOffset = null,
+        bool isCso = false)
     {
         var opening = openingDateOffset ?? new DateTime(2026, 6, 1);
         var deadline = deadlineDateOffset ?? new DateTime(2026, 7, 1);
         var closing = closingDateOffset ?? new DateTime(2026, 8, 1);
 
-        return new RegistrationWindow(_dateTimeProvider, journey, registrationYear.GetValueOrDefault(2026), opening, deadline, closing);
+        return journey is null
+            ? new RegistrationWindow(_dateTimeProvider, isCso, registrationYear.GetValueOrDefault(2026), opening,
+                deadline, closing)
+            : new RegistrationWindow(_dateTimeProvider, journey.Value, registrationYear.GetValueOrDefault(2026),
+                opening, deadline, closing);
     }
 
 }

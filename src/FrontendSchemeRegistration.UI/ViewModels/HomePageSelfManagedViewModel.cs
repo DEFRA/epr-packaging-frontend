@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
-using FrontendSchemeRegistration.UI.Sessions;
 
 namespace FrontendSchemeRegistration.UI.ViewModels;
 

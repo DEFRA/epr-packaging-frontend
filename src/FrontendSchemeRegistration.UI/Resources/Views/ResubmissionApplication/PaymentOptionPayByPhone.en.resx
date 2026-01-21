@@ -177,4 +177,7 @@
 <data name="environment_england" xml:space="preserve">
         <value>England</value>
     </data>
+  <data name="pay_registration_fee_of" xml:space="preserve">
+    <value>Pay the registration fee of</value>
+  </data>
 </root>

@@ -32,7 +32,7 @@
     <value>Ffi ar gyfer cynhyrchydd {0}</value>
   </data>
   <data name="late_fee" xml:space="preserve">
-    <value>[WELSH]Late fee</value>
+    <value>Ffi hwyr</value>
   </data>
   <data name="online_marketplace_fee" xml:space="preserve">
     <value>Ffi marchnad ar-lein</value>

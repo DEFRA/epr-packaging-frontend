@@ -26,6 +26,14 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
 
         public string DateIssuedDisplay => DateIssued.ToString("dd MMM yyyy");
 
+        public bool IsStatusEditable { get; set; }
+
+        public int ObligationYear { get; set; }
+
+        public string AdditionalNotes { get; set; }
+
+        public string NoteType { get; set; }
+
         public string ApprovalStatusDisplayCssColour => ApprovalStatus switch
         {
 	        PrnStatus.AwaitingAcceptance => "grey",

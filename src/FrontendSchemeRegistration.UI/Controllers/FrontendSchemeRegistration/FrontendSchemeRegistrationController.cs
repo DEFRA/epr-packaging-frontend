@@ -18,6 +18,8 @@ using FrontendSchemeRegistration.UI.Services.Interfaces;
 
 namespace FrontendSchemeRegistration.UI.Controllers.FrontendSchemeRegistration;
 
+using Application.Extensions;
+
 [SuppressMessage("Major Code Smell",
     "S107: A long parameter list can indicate that a new structure should be created to wrap the numerous parameters or that the function is doing too many",
     Justification = "This is an inherited code base. Reducing the dependency count will be done as part of a major rewrite")]
@@ -438,7 +440,6 @@ public class FrontendSchemeRegistrationController(
         await Task.WhenAll(legacyRegistrationApplicationPerYearViewModelsTask, registrationApplicationYearViewModelsTask, resubmissionApplicationDetailsTask);
 
         // Note: We are reading desired values using existing service to avoid SonarQube issue for adding 8th parameter in the constructor.
-        var currentPeriod = await resubmissionApplicationService.GetCurrentMonthAndYearForRecyclingObligations(_timeProvider);
         var viewModel = new HomePageSelfManagedViewModel
         {
             OrganisationName = organisation.Name!,
@@ -449,7 +450,7 @@ public class FrontendSchemeRegistrationController(
             RegistrationApplicationsPerYear = legacyRegistrationApplicationPerYearViewModelsTask.Result,
             RegistrationApplications = registrationApplicationYearViewModelsTask.Result.SelectMany(ray => ray.Applications),
             PackagingResubmissionPeriod = packagingResubmissionPeriod,
-            ComplianceYear = currentPeriod.currentMonth == 1 ? (currentPeriod.currentYear - 1).ToString() : currentPeriod.currentYear.ToString() // this is a temp fix for the compliance window change
+            ComplianceYear = _timeProvider.GetUtcNow().GetComplianceYear().ToString()
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id!.Value);

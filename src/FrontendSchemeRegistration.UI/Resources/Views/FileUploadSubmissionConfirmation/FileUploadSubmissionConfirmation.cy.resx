@@ -142,9 +142,9 @@
     <value>Fe gewch chi neges ebost am unrhyw gamau nesaf pan fydd y rheoleiddiwr amgylcheddol wedi edrych ar eich cyflwyniad.</value>
   </data>
   <data name="give_feedback" xml:space="preserve">
-    <value>[WELSH]Give feedback</value>
+    <value>Rhoi adborth</value>
   </data>
   <data name="take_an_optional_survey_to_help_us_improve_this_service" xml:space="preserve">
-    <value>[WELSH]Take an optional survey to help us improve this service.</value>
+    <value>Cymryd arolwg dewisol i'n helpu i wella'r gwasanaeth yma</value>
   </data>
 </root>

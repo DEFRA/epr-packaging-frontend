@@ -39,9 +39,9 @@
         <value>Wrthi’n uwchlwytho manylion y sefydliad</value>
     </data>
     <data name="register_company_size_large" xml:space="preserve">
-        <value>Large canllawiau {0} cofrestru</value>
+        <value>Cofrestru cynhyrchydd mawr ar gyfer {0} </value>
     </data>
     <data name="register_company_size_small" xml:space="preserve">
-        <value>Small canllawiau {0} cofrestru</value>
+        <value>Cofrestru cynhyrchydd bach ar gyfer {0} </value>
     </data>
 </root>

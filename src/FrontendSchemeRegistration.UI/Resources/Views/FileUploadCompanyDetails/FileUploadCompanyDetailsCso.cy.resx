@@ -159,9 +159,6 @@
   <data name="file_upload_warning" xml:space="preserve">
     <value>Peidiwch â chau'r ffenestr wrth i'r ffeil uwchlwytho. Gall hyn gymryd ychydig funudau.</value>
   </data>
-  <data name="register_company_size_large" xml:space="preserve">
-    <value>[WELSH] Large canllawiau {0} cofrestru</value>
-  </data>
   <data name="report_your_organisation_detail" xml:space="preserve">
     <value>Rhoi gwybod am fanylion eich sefydliad</value>
   </data>
@@ -172,9 +169,12 @@
     <value>Rhoi gwybod am fanylion eich sefydliad</value>
   </data>
   <data name="register_company_size_small" xml:space="preserve">
-    <value>[WELSH] Small canllawiau {0} cofrestru</value>
+    <value>Cofrestru cynhyrchydd bach ar gyfer {0} </value>
   </data>
   <data name="continue" xml:space="preserve">
     <value>Parhau</value>
+  </data>
+  <data name="register_company_size_large" xml:space="preserve">
+    <value>Cofrestru cynhyrchydd mawr ar gyfer {0} </value>
   </data>
 </root>

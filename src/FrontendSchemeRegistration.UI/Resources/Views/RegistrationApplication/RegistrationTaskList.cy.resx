@@ -76,6 +76,6 @@
         <value>Mae eich cais am gofrestru wedi'i gyflwyno</value>
     </data>
 	<data name="register_company_size_small" xml:space="preserve">
-		<value>Small canllawiau {0} cofrestru</value>
+		<value>Cofrestru cynhyrchydd bach ar gyfer {0} </value>
 	</data>
 </root>

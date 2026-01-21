@@ -6,7 +6,7 @@
         <value>Ble yn y Deyrnas Unedig mae'r is-gwmni wedi'i leoli?</value>
     </data>
     <data name="uk-nation-hint" xml:space="preserve">
-        <value>[WELSH]Choose the nation where the subsidiary is based.</value>
+        <value>Dewiswch y wlad lle mae'r is-gwmni wedi'i leoli</value>
     </data>
 	<data name="uk-nation-england" xml:space="preserve">
         <value>Lloegr</value>
@@ -21,6 +21,6 @@
         <value>Gogledd Iwerddon</value>
     </data>
     <data name="uk-nation-errormessage" xml:space="preserve">
-        <value>[WELSH]Select where in the UK the subsidiary is based</value>
+        <value>Dewiswch ble yn y Deyrnas Unedig mae'r is-gwmni wedi'i leoli</value>
     </data>
 </root>

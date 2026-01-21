@@ -136,7 +136,7 @@ public class FileUploadPartnershipsSuccessControllerTests
         });
 
         _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.Once);
-        result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.FileUploadPartnerships}?registrationyear={DateTime.Now.Year}&registrationjourney=CsoSmallProducer");
+        result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.FileUploadPartnerships}?registrationyear={DateTime.Now.Year}&registrationjourney=CsoSmallProducer&submissionId={SubmissionId}");
     }
 
     [Test]
