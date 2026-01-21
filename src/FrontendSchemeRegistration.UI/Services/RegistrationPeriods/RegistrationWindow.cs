@@ -21,21 +21,23 @@ public class RegistrationWindow(
 {
     public RegistrationJourney? Journey { get; } = journey;
     public int RegistrationYear { get; } = registrationYear;
+    public DateTime OpeningDate { get; } = openingDate;
     public DateTime DeadlineDate { get; } = deadlineDate;
+    public DateTime ClosingDate { get; } = closingDate;
 
     public RegistrationWindowStatus GetRegistrationWindowStatus()
     {
         var now = timeProvider.GetUtcNow(); 
         
-        if (now < openingDate)
+        if (now < OpeningDate)
         {
             return RegistrationWindowStatus.PriorToOpening;
         }
-        else if (now >= openingDate && now < DeadlineDate)
+        else if (now >= OpeningDate && now < DeadlineDate)
         {
             return RegistrationWindowStatus.OpenAndNotLate;
         }
-        else if (now >= DeadlineDate && now < closingDate)
+        else if (now >= DeadlineDate && now < ClosingDate)
         {
             return RegistrationWindowStatus.OpenAndLate;
         }
