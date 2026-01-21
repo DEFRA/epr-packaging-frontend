@@ -11,7 +11,8 @@ public static class DateTimeExtensions
     /// </summary>
     /// <remarks>
     ///     The Compliance Year is based on the UK calendar year; the DateTime will be converted accordingly.
-    ///     Note that the Compliance Year may differ from the actual UK calendar year for certain periods.
+    ///     Note that the Compliance Year will differ from the actual UK calendar year for certain periods -
+    ///     it runs from Feb-Jan rather than Jan-Dec
     /// </remarks>
     public static int GetComplianceYear(this DateTime dateTime)
     {
@@ -29,7 +30,8 @@ public static class DateTimeExtensions
     /// </summary>
     /// <remarks>
     ///     The Compliance Year is based on the UK calendar year; the DateTimeOffset will be converted accordingly.
-    ///     Note that the Compliance Year may differ from the actual UK calendar year for certain periods.
+    ///     Note that the Compliance Year will differ from the actual UK calendar year for certain periods -
+    ///     it runs from Feb-Jan rather than Jan-Dec
     /// </remarks>
     public static int GetComplianceYear(this DateTimeOffset dateTimeOffset)
     {
@@ -39,8 +41,7 @@ public static class DateTimeExtensions
 
     private static int MapToComplianceYear(DateTime ukDateTime)
     {
-        // Special case handling for Jan 2026
-        if (ukDateTime is { Year: 2026, Month: 1 }) return 2025;
+        if (ukDateTime is { Month: 1 }) return ukDateTime.Year - 1;
 
         return ukDateTime.Year;
     }

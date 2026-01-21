@@ -179,7 +179,8 @@ public class ComplianceSchemeLandingControllerTests
     [TestCase(2026,  2, 2026)]
     [TestCase(2026,  3, 2026)]
     [TestCase(2026,  6, 2026)]
-    [TestCase(2027,  1, 2027)]
+    [TestCase(2027,  1, 2026)]
+    [TestCase(2027,  2, 2027)]
 
     public async Task Get_ReturnsCorrectViewAndModel_WhenSelectedComplianceSchemeDoesNotExistInSession(
         int year, int month, int expectedComplianceYear)

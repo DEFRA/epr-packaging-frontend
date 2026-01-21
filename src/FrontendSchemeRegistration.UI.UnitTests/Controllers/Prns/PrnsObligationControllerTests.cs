@@ -1,5 +1,6 @@
 namespace FrontendSchemeRegistration.UI.UnitTests.Controllers.Prns;
 
+using Application.Extensions;
 using AutoFixture;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
@@ -130,7 +131,7 @@ public class PrnsObligationControllerTests
         _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
 
         string material = "Glass";
-        int year = _fakeTimeProvider.GetUtcNow().Year;
+        int year = _fakeTimeProvider.GetUtcNow().GetComplianceYear();
 		PrnObligationViewModel viewModel = _fixture.Create<PrnObligationViewModel>();
         _prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(year)).ReturnsAsync(viewModel);
 
@@ -176,7 +177,7 @@ public class PrnsObligationControllerTests
 
         //_prnServiceMock.Setup(p => p.GetChildOrganisationExternalIdsAsync(organisationId, null)).ReturnsAsync([childOrganisationId]);
 
-        int year = _fakeTimeProvider.GetUtcNow().Year;
+        int year = _fakeTimeProvider.GetUtcNow().GetComplianceYear();
         PrnObligationViewModel viewModel = _fixture.Create<PrnObligationViewModel>();
         foreach (var item in viewModel.MaterialObligationViewModels)
         {
@@ -306,8 +307,8 @@ public class PrnsObligationControllerTests
         viewModel.OrganisationName.Should().BeEquivalentTo("Test Organisation");
         viewModel.NationId.Should().NotBeNull();
         viewModel.NationId.Value.Should().Be(nationId);
-        viewModel.ComplianceYear.Should().Be(_fakeTimeProvider.GetUtcNow().Year);
-        viewModel.DeadlineYear.Should().Be(_fakeTimeProvider.GetUtcNow().Year + 1);
+        viewModel.ComplianceYear.Should().Be(_fakeTimeProvider.GetUtcNow().GetComplianceYear());
+        viewModel.DeadlineYear.Should().Be(_fakeTimeProvider.GetUtcNow().GetComplianceYear() + 1);
     }
 
     [Theory]
@@ -350,8 +351,8 @@ public class PrnsObligationControllerTests
         viewModel.OrganisationName.Should().BeEquivalentTo("Test Organisation");
         viewModel.NationId.Should().NotBeNull();
         viewModel.NationId.Value.Should().Be(nationId);
-        viewModel.ComplianceYear.Should().Be(_fakeTimeProvider.GetUtcNow().Year);
-        viewModel.DeadlineYear.Should().Be(_fakeTimeProvider.GetUtcNow().Year + 1);
+        viewModel.ComplianceYear.Should().Be(_fakeTimeProvider.GetUtcNow().GetComplianceYear());
+        viewModel.DeadlineYear.Should().Be(_fakeTimeProvider.GetUtcNow().GetComplianceYear() + 1);
     }
 
     [Test]
@@ -385,15 +386,15 @@ public class PrnsObligationControllerTests
         // Assert
         viewModel.OrganisationName.Should().BeNull();
         viewModel.NationId.Should().Be(0);
-        viewModel.ComplianceYear.Should().Be(_fakeTimeProvider.GetUtcNow().Year);
-        viewModel.DeadlineYear.Should().Be(_fakeTimeProvider.GetUtcNow().Year + 1);
+        viewModel.ComplianceYear.Should().Be(_fakeTimeProvider.GetUtcNow().GetComplianceYear());
+        viewModel.DeadlineYear.Should().Be(_fakeTimeProvider.GetUtcNow().GetComplianceYear() + 1);
     }
 
     [Test]
     [Theory]
-    [TestCase(2026, 1, 2025, 2026)] // Special case: January 2026 returns 2025
-    [TestCase(2025, 1, 2025, 2026)] // January 2025 returns 2025 (no special case)
-    [TestCase(2024, 1, 2024, 2025)] // January 2024 returns 2024 (no special case)
+    [TestCase(2026, 1, 2025, 2026)]
+    [TestCase(2025, 1, 2024, 2025)]
+    [TestCase(2024, 1, 2023, 2024)]
     [TestCase(2026, 10, 2026, 2027)]
     [TestCase(2025, 11, 2025, 2026)]
     [TestCase(2024, 9, 2024, 2025)]
