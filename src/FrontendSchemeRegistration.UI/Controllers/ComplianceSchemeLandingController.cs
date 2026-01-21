@@ -13,9 +13,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FrontendSchemeRegistration.UI.Controllers;
 
-using Application.DTOs.ComplianceScheme;
-using EPR.Common.Authorization.Models;
-
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
 [Route(PagePaths.ComplianceSchemeLanding)]
 public class ComplianceSchemeLandingController(
@@ -44,9 +41,9 @@ public class ComplianceSchemeLandingController(
         var organisation = userData.Organisations[0];
         var complianceSchemes = await complianceSchemeService.GetOperatorComplianceSchemes(organisation.Id.Value);
 
-        //build minimal session data to remove any pollution from pervious journeys
-        var session = FrontendSchemeRegistrationSession(complianceSchemes, userData);
-        var taskSave = SaveNewJourney(session);
+        //build minimal session data to remove any pollution from previous journeys
+        var session = SetupMinimalSession.FrontendSchemeRegistrationSession(complianceSchemes, userData);
+        var taskSave = sessionManager.SaveSessionAsync(HttpContext.Session, session);
 
         var currentYear = new[] { nowDateTime.Year.ToString(), (nowDateTime.Year + 1).ToString() };
         // Note: We are reading desired values using existing service to avoid SonarQube issue for adding 8th parameter in the constructor.
@@ -92,16 +89,6 @@ public class ComplianceSchemeLandingController(
         return View("ComplianceSchemeLanding", model);
     }
 
-    private static FrontendSchemeRegistrationSession FrontendSchemeRegistrationSession(List<ComplianceSchemeDto> complianceSchemes,
-        UserData userData)
-    {
-        var session = new FrontendSchemeRegistrationSession();
-        var defaultComplianceScheme = complianceSchemes.FirstOrDefault();
-        session.RegistrationSession.SelectedComplianceScheme ??= defaultComplianceScheme;
-        session.UserData = userData;
-        return session;
-    }
-
     [HttpPost]
     public async Task<IActionResult> Post(string selectedComplianceSchemeId)
     {
@@ -118,12 +105,5 @@ public class ComplianceSchemeLandingController(
         }
 
         return RedirectToAction(nameof(Get));
-    }
-
-    private async Task SaveNewJourney(FrontendSchemeRegistrationSession session)
-    {
-        session.SchemeMembershipSession.Journey.Clear();
-
-        await sessionManager.SaveSessionAsync(HttpContext.Session, session);
     }
 }

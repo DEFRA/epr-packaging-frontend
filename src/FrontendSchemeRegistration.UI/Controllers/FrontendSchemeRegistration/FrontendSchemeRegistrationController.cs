@@ -61,12 +61,15 @@ public class FrontendSchemeRegistrationController(
     [ExcludeFromCodeCoverage]
     public async Task<IActionResult> LandingPage()
     {
-        var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
         var userData = User.GetUserData();
 
         var organisation = userData.Organisations.First(x => x.OrganisationRole == OrganisationRoles.Producer);
         var producerComplianceScheme = await complianceSchemeService.GetProducerComplianceScheme(organisation.Id!.Value);
 
+        //build minimal session data to remove any pollution from previous journeys
+        var session = SetupMinimalSession.FrontendSchemeRegistrationSession(producerComplianceScheme, userData);
+        await sessionManager.SaveSessionAsync(HttpContext.Session, session);
+        
         if (producerComplianceScheme is not null && authorizationService.AuthorizeAsync(User, HttpContext, PolicyConstants.EprSelectSchemePolicy).Result.Succeeded)
         {
             session.RegistrationSession.CurrentComplianceScheme = producerComplianceScheme;
@@ -96,7 +99,7 @@ public class FrontendSchemeRegistrationController(
 
         return View(nameof(LandingPage), viewModel);
     }
-
+    
     [HttpPost]
     [Authorize(Policy = PolicyConstants.EprSelectSchemePolicy)]
     [Route(PagePaths.LandingPage)]
