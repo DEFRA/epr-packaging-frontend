@@ -1,4 +1,4 @@
-﻿namespace FrontendSchemeRegistration.Application.Options;
+namespace FrontendSchemeRegistration.Application.Options;
 
 using System.Diagnostics.CodeAnalysis;
 using DTOs.Submission;

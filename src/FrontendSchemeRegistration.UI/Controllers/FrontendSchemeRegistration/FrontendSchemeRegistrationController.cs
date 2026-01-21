@@ -419,7 +419,7 @@ public class FrontendSchemeRegistrationController(
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
         var producerComplianceScheme = await complianceSchemeService.GetProducerComplianceScheme(organisation.Id!.Value);
-        var packagingResubmissionPeriod = await resubmissionApplicationService.GetActiveSubmissionPeriod(_timeProvider);
+        var packagingResubmissionPeriod = await resubmissionApplicationService.GetActiveSubmissionPeriod();
 
         if (producerComplianceScheme is not null && authorizationService.AuthorizeAsync(User, HttpContext, PolicyConstants.EprSelectSchemePolicy).Result.Succeeded)
         {
@@ -445,7 +445,7 @@ public class FrontendSchemeRegistrationController(
             ResubmissionTaskListViewModel = resubmissionApplicationDetails.ToResubmissionTaskListViewModel(organisation),
             RegistrationApplicationsPerYear = registrationApplicationPerYearViewModels,
             PackagingResubmissionPeriod = packagingResubmissionPeriod,
-            ComplianceYear = _timeProvider.GetUtcNow().GetComplianceYear().ToString()
+            ComplianceYear = timeProvider.GetUtcNow().GetComplianceYear().ToString()
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id!.Value);

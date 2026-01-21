@@ -1,4 +1,4 @@
-﻿using EPR.Common.Authorization.Sessions;
+using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Options;
@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 namespace FrontendSchemeRegistration.UI.Controllers.Prns;
 
 using Application.Extensions;
+using Extensions;
 
 [FeatureGate(FeatureFlags.ShowPrn)]
 [ServiceFilter(typeof(ComplianceSchemeIdHttpContextFilterAttribute))]

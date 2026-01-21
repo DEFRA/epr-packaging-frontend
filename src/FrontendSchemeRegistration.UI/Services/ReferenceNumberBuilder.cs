@@ -1,4 +1,4 @@
-﻿namespace FrontendSchemeRegistration.UI.Services;
+namespace FrontendSchemeRegistration.UI.Services;
 
 using System.Globalization;
 using Application.DTOs.Submission;
