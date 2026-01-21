@@ -7,16 +7,15 @@ using FluentAssertions;
 public class DateTimeExtensionsTests
 {
     [Test]
-    [TestCase(2024, 1, 1, 2024)]
-    [TestCase(2025, 1, 1, 2025)]
+    [TestCase(2024, 1, 1, 2023)]
+    [TestCase(2024, 2, 1, 2024)]
+    [TestCase(2024, 12, 31, 2024)]
+    [TestCase(2025, 1, 1, 2024)]
+    [TestCase(2025, 2, 1, 2025)]
     [TestCase(2025, 12, 31, 2025)]
-    [TestCase(2026, 1, 1, 2025)] // Special case: January 2026 should return 2025
-    [TestCase(2026, 1, 31, 2025)] // Special case: January 2026 should return 2025
-    [TestCase(2026, 2, 1, 2026)] // Special case: February 2026 should return 2026
-    [TestCase(2027, 1, 1, 2027)]
-    [TestCase(2028, 1, 1, 2028)]
-    [TestCase(2029, 1, 1, 2029)]
-    [TestCase(2030, 1, 1, 2030)]
+    [TestCase(2026, 1, 1, 2025)]
+    [TestCase(2026, 2, 1, 2026)]
+    [TestCase(2026, 12, 31, 2026)]
     public void DateTime_GetComplianceYear_Returns_CorrectYear(int year, int month, int day, int expectedComplianceYear)
     {
         // Arrange
