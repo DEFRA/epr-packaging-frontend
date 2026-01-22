@@ -696,7 +696,7 @@ public class ComplianceSchemeLandingControllerTests
     }
 
     [Test]
-    public async Task Get_ReturnsCorrectViewAndModel_UserHasNominatedNotification()
+    public async Task Get_ReturnsCorrectViewAndModel_WithPreviouslySelectedComplianceScheme_UserHasNominatedNotification()
     {
         _resubmissionApplicationService.Setup(x => x.GetCurrentMonthAndYearForRecyclingObligations(_testTimeProvider))
             .Returns(Task.FromResult((_testTimeProvider.GetUtcNow().Month, _testTimeProvider.GetUtcNow().Year)));
@@ -797,6 +797,9 @@ public class ComplianceSchemeLandingControllerTests
     [Test]
     public async Task Get_ReturnsCorrectViewAndModel_UserHasPendingApprovalNotification()
     {
+        _resubmissionApplicationService.Setup(x => x.GetCurrentMonthAndYearForRecyclingObligations(_testTimeProvider))
+            .Returns(Task.FromResult((_testTimeProvider.GetUtcNow().Month, _testTimeProvider.GetUtcNow().Year)));
+        
         var notificationDtoList = new List<NotificationDto>
         {
             new()
@@ -887,7 +890,7 @@ public class ComplianceSchemeLandingControllerTests
                     ResubmissionApplicationSubmitted = false
                 },
                 PackagingResubmissionPeriod = globalVariables.Object.Value.SubmissionPeriods.FirstOrDefault(sp => sp.Year == _currentYear),
-                ComplianceYear = (_overrideCurrentYear-1).ToString()
+                ComplianceYear = (_overrideCurrentYear - 1).ToString()
             });
 
         _sessionManagerMock.Verify(

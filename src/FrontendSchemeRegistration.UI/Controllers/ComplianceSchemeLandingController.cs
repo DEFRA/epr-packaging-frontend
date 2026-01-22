@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FrontendSchemeRegistration.UI.Controllers;
 
+using Application.Extensions;
+
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
 [Route(PagePaths.ComplianceSchemeLanding)]
 public class ComplianceSchemeLandingController(
@@ -35,6 +37,9 @@ public class ComplianceSchemeLandingController(
     [ExcludeFromCodeCoverage]
     public async Task<IActionResult> Get()
     {
+        var regSession = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+        Guid? selectedComplianceSchemeId = regSession.RegistrationSession.SelectedComplianceScheme?.Id;
+        
         var userData = User.GetUserData();
         var nowDateTime = _timeProvider.GetLocalNow().DateTime;
 
@@ -42,10 +47,11 @@ public class ComplianceSchemeLandingController(
         var complianceSchemes = await complianceSchemeService.GetOperatorComplianceSchemes(organisation.Id.Value);
 
         //build minimal session data to remove any pollution from previous journeys
-        var session = SetupMinimalSession.FrontendSchemeRegistrationSession(complianceSchemes, userData);
+        var session = SetupMinimalSession.FrontendSchemeRegistrationSession(complianceSchemes, userData, selectedComplianceSchemeId);
         var taskSave = sessionManager.SaveSessionAsync(HttpContext.Session, session);
+        
 
-        var currentYear = new[] { nowDateTime.Year.ToString(), (nowDateTime.Year + 1).ToString() };
+        var currentYear = new[] {nowDateTime.GetComplianceYear().ToString(), (nowDateTime.GetComplianceYear() + 1).ToString() };
         // Note: We are reading desired values using existing service to avoid SonarQube issue for adding 8th parameter in the constructor.
         var currentPeriod = await resubmissionApplicationService.GetCurrentMonthAndYearForRecyclingObligations(_timeProvider);
         // Note: We are adding a service method here to avoid SonarQube issue for adding 8th parameter in the constructor.

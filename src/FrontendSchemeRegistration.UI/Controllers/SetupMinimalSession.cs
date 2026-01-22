@@ -8,10 +8,15 @@ public class SetupMinimalSession
 {
     public static FrontendSchemeRegistrationSession FrontendSchemeRegistrationSession(
         List<ComplianceSchemeDto> complianceSchemes,
-        UserData userData)
+        UserData userData, Guid? selectedComplianceSchemeId)
     {
         var session = NewSession(userData);
         var defaultComplianceScheme = complianceSchemes.FirstOrDefault();
+        if (selectedComplianceSchemeId.HasValue)
+        {
+            defaultComplianceScheme = complianceSchemes.FirstOrDefault(x => x.Id == selectedComplianceSchemeId);
+        }
+       
         session.RegistrationSession.SelectedComplianceScheme ??= defaultComplianceScheme;
         return session;
     }
