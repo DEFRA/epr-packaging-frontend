@@ -71,7 +71,11 @@
         {
             <partial name="RegistrationApplicationYearBlock" model="app"/>
         }
-        <p>legacy panels</p>
+        <div class="govuk-grid-column-one-half box">
+            <p>legacy panels</p>
+        </div>
+        <div class="govuk-grid-column-one-half box">
+        </div>
         @foreach (var app in Model.RegistrationApplicationsPerYear)
         {
             <partial name="RegistrationApplicationYearBlock" model="app"/>
