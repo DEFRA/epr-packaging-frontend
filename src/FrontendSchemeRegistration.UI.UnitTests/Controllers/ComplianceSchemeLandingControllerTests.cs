@@ -642,7 +642,7 @@ public class ComplianceSchemeLandingControllerTests
     }
 
     [Test]
-    public async Task Get_ReturnsCorrectViewAndModel_UserHasNominatedNotification()
+    public async Task Get_ReturnsCorrectViewAndModel_WithPreviouslySelectedComplianceScheme_UserHasNominatedNotification()
     {
         _testTimeProvider.SetUtcNow(new DateTimeOffset(2026, 2, 1,0,0,0,TimeSpan.Zero));
 
