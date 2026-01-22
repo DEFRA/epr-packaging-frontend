@@ -34,12 +34,6 @@ public class FrontendSchemeRegistrationController(
     TimeProvider timeProvider)
     : Controller
 {
-    private TimeProvider _timeProvider = timeProvider;
-
-    public void SetTestTimeProvider(TimeProvider testProvider)
-    {
-        _timeProvider = testProvider;
-    }
 
     [HttpGet]
     [Route(PagePaths.ApprovedPersonCreated)]
