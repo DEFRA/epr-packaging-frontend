@@ -36,7 +36,7 @@ public class RegistrationPeriodProviderTests
     }
 
     [Test]
-    public void WHEN_GetRegistrationWindows_called_for_CSO_THEN_returns_only_CSO_journeys_and_null_journeys()
+    public void GIVEN_mixed_windows_WHEN_GetRegistrationWindows_called_for_CSO_THEN_returns_only_CSO_journeys_and_null_journeys()
     {
         // arrange
         var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
@@ -63,15 +63,15 @@ public class RegistrationPeriodProviderTests
         windows.Should().NotBeEmpty();
         windows.Should().AllSatisfy(w =>
         {
-            var isValid = w.Journey == RegistrationJourney.CsoLargeProducer ||
-                          w.Journey == RegistrationJourney.CsoSmallProducer ||
-                          w.Journey == null;
+            var isValid = w.WindowType == WindowType.CsoLargeProducer ||
+                          w.WindowType == WindowType.CsoSmallProducer ||
+                          w.WindowType == WindowType.Cso;
             isValid.Should().BeTrue();
         });
     }
 
     [Test]
-    public void WHEN_GetRegistrationWindows_called_for_non_CSO_THEN_returns_only_Direct_journeys_and_null_journeys()
+    public void GIVEN_mixed_windows_WHEN_GetRegistrationWindows_called_for_non_CSO_THEN_returns_only_Direct_journeys_and_null_journeys()
     {
         // arrange
         var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
@@ -98,9 +98,9 @@ public class RegistrationPeriodProviderTests
         windows.Should().NotBeEmpty();
         windows.Should().AllSatisfy(w =>
         {
-            var isValid = w.Journey == RegistrationJourney.DirectLargeProducer ||
-                          w.Journey == RegistrationJourney.DirectSmallProducer ||
-                          w.Journey == null;
+            var isValid = w.WindowType == WindowType.DirectLargeProducer ||
+                          w.WindowType == WindowType.DirectSmallProducer ||
+                          w.WindowType == WindowType.Direct;
             isValid.Should().BeTrue();
         });
     }
@@ -308,7 +308,7 @@ public class RegistrationPeriodProviderTests
     }
 
     [Test]
-    public void WHEN_GetRegistrationWindows_called_with_multiple_window_types_THEN_maps_correctly()
+    public void GIVEN_multiple_window_types_WHEN_GetRegistrationWindows_called_THEN_maps_correctly()
     {
         // arrange
         var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
@@ -322,7 +322,9 @@ public class RegistrationPeriodProviderTests
                     CreateWindow(WindowType.CsoLargeProducer),
                     CreateWindow(WindowType.CsoSmallProducer),
                     CreateWindow(WindowType.DirectLargeProducer),
-                    CreateWindow(WindowType.DirectSmallProducer)
+                    CreateWindow(WindowType.DirectSmallProducer),
+                    CreateWindow(WindowType.Cso),
+                    CreateWindow(WindowType.Direct)
                 }
             }
         };
@@ -334,44 +336,15 @@ public class RegistrationPeriodProviderTests
         var directWindows = sut.GetActiveRegistrationWindows(isCso: false);
 
         // assert
-        csoWindows.Should().HaveCount(2);
-        directWindows.Should().HaveCount(2);
-        csoWindows.Should().Contain(w => w.Journey == RegistrationJourney.CsoLargeProducer);
-        csoWindows.Should().Contain(w => w.Journey == RegistrationJourney.CsoSmallProducer);
-        directWindows.Should().Contain(w => w.Journey == RegistrationJourney.DirectLargeProducer);
-        directWindows.Should().Contain(w => w.Journey == RegistrationJourney.DirectSmallProducer);
-    }
-
-    [Test]
-    public void GIVEN_config_windows_which_generate_null_registration_journey_WHEN_GetRegistrationWindows_called_THEN_correct_windows_returned()
-    {
-        // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
-        {
-            new()
-            {
-                InitialRegistrationYear = 2026,
-                FinalRegistrationYear = 2026,
-                Windows = new List<Window>
-                {
-                    CreateWindow(WindowType.Cso),      // null registration journey
-                    CreateWindow(WindowType.Direct)    // null registration journey
-                }
-            }
-        };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
-
-        // act
-        var csoWindows = sut.GetActiveRegistrationWindows(isCso: true);
-        var directWindows = sut.GetActiveRegistrationWindows(isCso: false);
-
-        // assert
-        csoWindows.Should().HaveCount(1);
-        directWindows.Should().HaveCount(1);
-        csoWindows.Should().AllSatisfy(w => w.Journey.Should().BeNull());
+        csoWindows.Should().HaveCount(3);
+        directWindows.Should().HaveCount(3);
+        csoWindows.Should().Contain(w => w.WindowType == WindowType.CsoLargeProducer);
+        csoWindows.Should().Contain(w => w.WindowType == WindowType.CsoSmallProducer);
+        csoWindows.Should().Contain(w => w.WindowType == WindowType.Cso);
         csoWindows.Should().AllSatisfy(w => w.IsCso.Should().BeTrue());
-        directWindows.Should().AllSatisfy(w => w.Journey.Should().BeNull());
+        directWindows.Should().Contain(w => w.WindowType == WindowType.DirectLargeProducer);
+        directWindows.Should().Contain(w => w.WindowType == WindowType.DirectSmallProducer);
+        directWindows.Should().Contain(w => w.WindowType == WindowType.Direct);
         directWindows.Should().AllSatisfy(w => w.IsCso.Should().BeFalse());
     }
 
@@ -456,61 +429,8 @@ public class RegistrationPeriodProviderTests
 
         // assert
         // Future window should be filtered out, only current/past window should remain
-        windows.Should().NotContain(w => w.Journey == RegistrationJourney.CsoLargeProducer);
-        windows.Should().Contain(w => w.Journey == RegistrationJourney.CsoSmallProducer);
-    }
-
-    [TestCase(WindowType.CsoLargeProducer, true)]
-    [TestCase(WindowType.CsoSmallProducer, true)]
-    [TestCase(WindowType.DirectLargeProducer, false)]
-    [TestCase(WindowType.DirectSmallProducer, false)]
-    public void WHEN_RegistrationWindowConstructed_with_journey_THEN_IsCsoParameterIsCorrect(WindowType windowType, bool expectedIsCso)
-    {
-        // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
-        {
-            new()
-            {
-                InitialRegistrationYear = 2026,
-                FinalRegistrationYear = 2026,
-                Windows = new List<Window> { CreateWindow(windowType) }
-            }
-        };
-        var options = Options.Create(registrationPeriodPatterns);
-
-        // act
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
-        var windows = sut.GetActiveRegistrationWindows(isCso: expectedIsCso).ToList();
-
-        // assert
-        windows.Should().HaveCount(1);
-        windows[0].IsCso.Should().Be(expectedIsCso);
-    }
-
-    [TestCase(WindowType.Cso, true)]
-    [TestCase(WindowType.Direct, false)]
-    public void WHEN_RegistrationWindowConstructed_with_null_journey_THEN_IsCsoParameterIsCorrect(WindowType windowType, bool expectedIsCso)
-    {
-        // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
-        {
-            new()
-            {
-                InitialRegistrationYear = 2026,
-                FinalRegistrationYear = 2026,
-                Windows = new List<Window> { CreateWindow(windowType) }
-            }
-        };
-        var options = Options.Create(registrationPeriodPatterns);
-
-        // act
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
-        var windows = sut.GetActiveRegistrationWindows(isCso: expectedIsCso).ToList();
-
-        // assert
-        windows.Should().HaveCount(1);
-        windows[0].IsCso.Should().Be(expectedIsCso);
-        windows[0].Journey.Should().BeNull();
+        windows.Should().NotContain(w => w.WindowType == WindowType.CsoLargeProducer);
+        windows.Should().Contain(w => w.WindowType == WindowType.CsoSmallProducer);
     }
 
     // Creates registration period configuration for 2026 and a number of windows for that period. The windows
