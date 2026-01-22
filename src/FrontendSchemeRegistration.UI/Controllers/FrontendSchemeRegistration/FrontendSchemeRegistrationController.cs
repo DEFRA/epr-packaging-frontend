@@ -34,12 +34,6 @@ public class FrontendSchemeRegistrationController(
     TimeProvider timeProvider)
     : Controller
 {
-    private TimeProvider _timeProvider = timeProvider;
-
-    public void SetTestTimeProvider(TimeProvider testProvider)
-    {
-        _timeProvider = testProvider;
-    }
 
     [HttpGet]
     [Route(PagePaths.ApprovedPersonCreated)]
@@ -63,12 +57,15 @@ public class FrontendSchemeRegistrationController(
     [ExcludeFromCodeCoverage]
     public async Task<IActionResult> LandingPage()
     {
-        var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
         var userData = User.GetUserData();
 
         var organisation = userData.Organisations.First(x => x.OrganisationRole == OrganisationRoles.Producer);
         var producerComplianceScheme = await complianceSchemeService.GetProducerComplianceScheme(organisation.Id!.Value);
 
+        //build minimal session data to remove any pollution from previous journeys
+        var session = SetupMinimalSession.FrontendSchemeRegistrationSession(producerComplianceScheme, userData);
+        await sessionManager.SaveSessionAsync(HttpContext.Session, session);
+        
         if (producerComplianceScheme is not null && authorizationService.AuthorizeAsync(User, HttpContext, PolicyConstants.EprSelectSchemePolicy).Result.Succeeded)
         {
             session.RegistrationSession.CurrentComplianceScheme = producerComplianceScheme;
@@ -98,7 +95,7 @@ public class FrontendSchemeRegistrationController(
 
         return View(nameof(LandingPage), viewModel);
     }
-
+    
     [HttpPost]
     [Authorize(Policy = PolicyConstants.EprSelectSchemePolicy)]
     [Route(PagePaths.LandingPage)]
@@ -419,7 +416,7 @@ public class FrontendSchemeRegistrationController(
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
         var producerComplianceScheme = await complianceSchemeService.GetProducerComplianceScheme(organisation.Id!.Value);
-        var packagingResubmissionPeriod = await resubmissionApplicationService.GetActiveSubmissionPeriod(_timeProvider);
+        var packagingResubmissionPeriod = await resubmissionApplicationService.GetActiveSubmissionPeriod();
 
         if (producerComplianceScheme is not null && authorizationService.AuthorizeAsync(User, HttpContext, PolicyConstants.EprSelectSchemePolicy).Result.Succeeded)
         {
@@ -450,7 +447,7 @@ public class FrontendSchemeRegistrationController(
             RegistrationApplicationsPerYear = legacyRegistrationApplicationPerYearViewModelsTask.Result,
             RegistrationApplications = registrationApplicationYearViewModelsTask.Result.SelectMany(ray => ray.Applications),
             PackagingResubmissionPeriod = packagingResubmissionPeriod,
-            ComplianceYear = _timeProvider.GetUtcNow().GetComplianceYear().ToString()
+            ComplianceYear = timeProvider.GetUtcNow().GetComplianceYear().ToString()
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id!.Value);

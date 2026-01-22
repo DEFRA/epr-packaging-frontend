@@ -5,7 +5,8 @@
 
 @{
     ViewData["Title"] = Localizer[(Model.IsPrn ? "prn_page_title" : "pern_page_title")];
-    var headerText = string.Format(Localizer[(Model.IsPrn ? "prn_heading" : "pern_heading")].Value.ToString(), Model.ObligationYear.ToString());
+    // TODO: Use of .Min() here is hackery to get around the fact that the user hasn't actually chosen a year (won't matter until 2027 Dec Waste PRNs are in the system)
+    var headerText = string.Format(Localizer[(Model.IsPrn ? "prn_heading" : "pern_heading")].Value.ToString(), Model.AvailableAcceptanceYears.Min().ToString());
 }
 <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
     <div class="govuk-grid-row">

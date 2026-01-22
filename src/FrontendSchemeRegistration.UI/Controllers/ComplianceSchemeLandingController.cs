@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
@@ -26,43 +26,35 @@ public class ComplianceSchemeLandingController(
     TimeProvider timeProvider)
     : Controller
 {
-    private TimeProvider _timeProvider = timeProvider;
-
-    public void SetTestTimeProvider(TimeProvider testTimeProvider)
-    {
-        _timeProvider = testTimeProvider;
-    }
-
     [HttpGet]
     [ExcludeFromCodeCoverage]
     public async Task<IActionResult> Get()
     {
-        var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+        var regSession = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+        Guid? selectedComplianceSchemeId = regSession.RegistrationSession.SelectedComplianceScheme?.Id;
+        
         var userData = User.GetUserData();
-        var nowDateTime = _timeProvider.GetLocalNow().DateTime;
+        var now = timeProvider.GetLocalNow().DateTime;
 
         var organisation = userData.Organisations[0];
-
         var complianceSchemes = await complianceSchemeService.GetOperatorComplianceSchemes(organisation.Id.Value);
 
-        var defaultComplianceScheme = complianceSchemes.FirstOrDefault();
+        //build minimal session data to remove any pollution from previous journeys
+        var session = SetupMinimalSession.FrontendSchemeRegistrationSession(complianceSchemes, userData, selectedComplianceSchemeId);
+        var taskSave = sessionManager.SaveSessionAsync(HttpContext.Session, session);
 
-        session.RegistrationSession.SelectedComplianceScheme ??= defaultComplianceScheme;
-        session.UserData = userData;
-        var currentYear = new[] { nowDateTime.Year.ToString(), (nowDateTime.Year + 1).ToString() };
+        var currentYear = new[] {now.GetComplianceYear().ToString(), (now.GetComplianceYear() + 1).ToString() };
         // Note: We are adding a service method here to avoid SonarQube issue for adding 8th parameter in the constructor.
-        var packagingResubmissionPeriod = resubmissionApplicationService.PackagingResubmissionPeriod(currentYear, nowDateTime);
+        var packagingResubmissionPeriod = resubmissionApplicationService.PackagingResubmissionPeriod(currentYear, now);
         
-        await SaveNewJourney(session);
-
         var currentComplianceSchemeId = session.RegistrationSession.SelectedComplianceScheme.Id;
+        await taskSave;
 
         var currentSummary = await complianceSchemeService.GetComplianceSchemeSummary(organisation.Id.Value, currentComplianceSchemeId);
 
         var resubmissionApplicationDetails = await resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(
             organisation, new List<string> { packagingResubmissionPeriod.DataPeriod }, session.RegistrationSession.SelectedComplianceScheme?.Id);
 
-        
         var model = new ComplianceSchemeLandingViewModel
         {
             CurrentComplianceSchemeId = currentComplianceSchemeId,
@@ -72,7 +64,7 @@ public class ComplianceSchemeLandingController(
             ComplianceSchemes = complianceSchemes,
             ResubmissionTaskListViewModel = resubmissionApplicationDetails.ToResubmissionTaskListViewModel(organisation),
             PackagingResubmissionPeriod = packagingResubmissionPeriod,
-            ComplianceYear = _timeProvider.GetUtcNow().GetComplianceYear().ToString()
+            ComplianceYear = now.GetComplianceYear().ToString()
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id.Value);
@@ -109,12 +101,5 @@ public class ComplianceSchemeLandingController(
         }
 
         return RedirectToAction(nameof(Get));
-    }
-
-    private async Task SaveNewJourney(FrontendSchemeRegistrationSession session)
-    {
-        session.SchemeMembershipSession.Journey.Clear();
-
-        await sessionManager.SaveSessionAsync(HttpContext.Session, session);
     }
 }

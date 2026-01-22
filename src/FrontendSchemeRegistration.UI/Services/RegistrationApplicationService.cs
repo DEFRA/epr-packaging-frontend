@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Security.Claims;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
@@ -473,7 +473,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         }
         else
         {
-            session.RegistrationApplicationSubmittedDate = DateTime.Now;
+            session.RegistrationApplicationSubmittedDate = _timeProvider.GetLocalNow().DateTime;
         }
 
         await sessionManager.SaveSessionAsync(httpSession, session);
