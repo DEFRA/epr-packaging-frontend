@@ -1,4 +1,4 @@
-﻿using AutoFixture;
+using AutoFixture;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using EPR.SubmissionMicroservice.API.Contracts.Submissions.Get;
@@ -75,10 +75,27 @@ public class ResubmissionApplicationServiceTests
         new SubmissionPeriod
         {
             DataPeriod = "January to June 2025",
-            /* This will be excluded because it is after the latest allowed period ending June 2024 */
             Deadline = DateTime.Parse("2025-10-01"),
             ActiveFrom = DateTime.Parse("2025-07-01"),
             Year = "2025",
+            StartMonth = "January",
+            EndMonth = "June"
+        },
+        new SubmissionPeriod
+        {
+            DataPeriod = "January to June 2026",
+            Deadline = DateTime.Parse("2026-10-01"),
+            ActiveFrom = DateTime.Parse("2026-07-01"),
+            Year = "2026",
+            StartMonth = "January",
+            EndMonth = "June"
+        },
+        new SubmissionPeriod
+        {
+            DataPeriod = "January to June 2027",
+            Deadline = DateTime.Parse("2027-10-01"),
+            ActiveFrom = DateTime.Parse("2027-07-01"),
+            Year = "2027",
             StartMonth = "January",
             EndMonth = "June"
         }
@@ -88,16 +105,16 @@ public class ResubmissionApplicationServiceTests
     [SetUp]
     public void SetUp()
     {
-        FakeTimeProvider2025.SetUtcNow(new DateTimeOffset(new DateTime(2025, 1, 1)));
+        FakeTimeProvider2025.SetUtcNow(new DateTimeOffset(new DateTime(2026, 2, 1)));
         _mockGlobalVariables = new Mock<IOptions<GlobalVariables>>();
-        _mockGlobalVariables.Setup(o => o.Value).Returns(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods, OverrideCurrentMonth = 1, OverrideCurrentYear = 2025 });
+        _mockGlobalVariables.Setup(o => o.Value).Returns(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods});
         _mockFeatureManager = new Mock<IFeatureManager>();
 
         _mockSessionManager = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _mockSubmissionService = new Mock<ISubmissionService>();
         _mockPaymentCalculationService = new Mock<IPaymentCalculationService>();
         _fixture = new Fixture();
-        _service = new ResubmissionApplicationServices(_mockSessionManager.Object, _mockPaymentCalculationService.Object, _mockSubmissionService.Object, _mockGlobalVariables.Object, _mockFeatureManager.Object);
+        _service = new ResubmissionApplicationServices(_mockSessionManager.Object, _mockPaymentCalculationService.Object, _mockSubmissionService.Object, _mockGlobalVariables.Object, _mockFeatureManager.Object, FakeTimeProvider2025);
     }
 
     [Test]
@@ -740,10 +757,10 @@ public class ResubmissionApplicationServiceTests
     public async Task GetActiveSubmissionPeriod_ReturnsCorrectActiveDataPeriod()
     {
         // Arrange
-        var expectedResult = new SubmissionPeriod() { DataPeriod = "January to June 2025" };
+        var expectedResult = new SubmissionPeriod { DataPeriod = "January to June 2026" };
 
         // Act
-        var result = await _service.GetActiveSubmissionPeriod(FakeTimeProvider2025);
+        var result = await _service.GetActiveSubmissionPeriod();
 
         // Assert
         result.Should().NotBeNull();
@@ -754,10 +771,10 @@ public class ResubmissionApplicationServiceTests
     public async Task GetActiveSubmissionPeriod_ReturnsCorrectActiveFrom()
     {
         // Arrange
-        var expectedResult = new SubmissionPeriod() { DataPeriod = "January to June 2025", ActiveFrom = new DateTime(2025, 07, 01) };
+        var expectedResult = new SubmissionPeriod() { DataPeriod = "January to June 2026", ActiveFrom = new DateTime(2026, 07, 01) };
 
         // Act
-        var result = await _service.GetActiveSubmissionPeriod(FakeTimeProvider2025);
+        var result = await _service.GetActiveSubmissionPeriod();
 
         // Assert
         result.Should().NotBeNull();
@@ -812,32 +829,6 @@ public class ResubmissionApplicationServiceTests
         result.Should().BeFalse();
     }
 
-    [Test]
-    public async Task GetCurrentMonthAndYearForRecyclingObligations_ShouldReturn_Desired_JanMonth_And_2025Year()
-    {
-        
-        var result = await _service.GetCurrentMonthAndYearForRecyclingObligations(FakeTimeProvider2025);
-        
-        result.currentMonth.Should().Be(1);
-        result.currentYear.Should().Be(2025);
-    }
-
-    [Test]
-    public async Task GetCurrentMonthAndYearForRecyclingObligations_ShouldReturn_Default_Month_And_Year()
-    {
-        // Arrange
-        _mockGlobalVariables.Setup(o => o.Value).Returns(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods });
-
-        var service = new ResubmissionApplicationServices(_mockSessionManager.Object, _mockPaymentCalculationService.Object, _mockSubmissionService.Object, _mockGlobalVariables.Object, _mockFeatureManager.Object);
-
-        // Act
-        var result = await service.GetCurrentMonthAndYearForRecyclingObligations(TimeProvider.System);
-
-        // Assert
-        result.currentMonth.Should().Be(DateTime.Now.Month);
-        result.currentYear.Should().Be(DateTime.Now.Year);
-    }
-    
     [Test]
     public async Task GetRegulatorNation()
     {

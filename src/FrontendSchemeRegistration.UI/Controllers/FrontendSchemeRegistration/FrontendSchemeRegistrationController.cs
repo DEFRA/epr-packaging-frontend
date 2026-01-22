@@ -18,6 +18,8 @@ using FrontendSchemeRegistration.UI.Services.Interfaces;
 
 namespace FrontendSchemeRegistration.UI.Controllers.FrontendSchemeRegistration;
 
+using Application.Extensions;
+
 [SuppressMessage("Major Code Smell",
     "S107: A long parameter list can indicate that a new structure should be created to wrap the numerous parameters or that the function is doing too many",
     Justification = "This is an inherited code base. Reducing the dependency count will be done as part of a major rewrite")]
@@ -420,7 +422,7 @@ public class FrontendSchemeRegistrationController(
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
         var producerComplianceScheme = await complianceSchemeService.GetProducerComplianceScheme(organisation.Id!.Value);
-        var packagingResubmissionPeriod = await resubmissionApplicationService.GetActiveSubmissionPeriod(_timeProvider);
+        var packagingResubmissionPeriod = await resubmissionApplicationService.GetActiveSubmissionPeriod();
 
         if (producerComplianceScheme is not null && authorizationService.AuthorizeAsync(User, HttpContext, PolicyConstants.EprSelectSchemePolicy).Result.Succeeded)
         {
@@ -437,7 +439,6 @@ public class FrontendSchemeRegistrationController(
         var resubmissionApplicationDetails = await resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(organisation, new List<string> { packagingResubmissionPeriod?.DataPeriod }, session.RegistrationSession.SelectedComplianceScheme?.Id);
 
         // Note: We are reading desired values using existing service to avoid SonarQube issue for adding 8th parameter in the constructor.
-        var currentPeriod = await resubmissionApplicationService.GetCurrentMonthAndYearForRecyclingObligations(_timeProvider);
         var viewModel = new HomePageSelfManagedViewModel
         {
             OrganisationName = organisation.Name!,
@@ -447,7 +448,7 @@ public class FrontendSchemeRegistrationController(
             ResubmissionTaskListViewModel = resubmissionApplicationDetails.ToResubmissionTaskListViewModel(organisation),
             RegistrationApplicationsPerYear = registrationApplicationPerYearViewModels,
             PackagingResubmissionPeriod = packagingResubmissionPeriod,
-            ComplianceYear = currentPeriod.currentMonth == 1 ? (currentPeriod.currentYear - 1).ToString() : currentPeriod.currentYear.ToString() // this is a temp fix for the compliance window change
+            ComplianceYear = timeProvider.GetUtcNow().GetComplianceYear().ToString()
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id!.Value);

@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
@@ -26,13 +26,6 @@ public class ComplianceSchemeLandingController(
     TimeProvider timeProvider)
     : Controller
 {
-    private TimeProvider _timeProvider = timeProvider;
-
-    public void SetTestTimeProvider(TimeProvider testTimeProvider)
-    {
-        _timeProvider = testTimeProvider;
-    }
-
     [HttpGet]
     [ExcludeFromCodeCoverage]
     public async Task<IActionResult> Get()
@@ -41,7 +34,7 @@ public class ComplianceSchemeLandingController(
         Guid? selectedComplianceSchemeId = regSession.RegistrationSession.SelectedComplianceScheme?.Id;
         
         var userData = User.GetUserData();
-        var nowDateTime = _timeProvider.GetLocalNow().DateTime;
+        var now = timeProvider.GetLocalNow().DateTime;
 
         var organisation = userData.Organisations[0];
         var complianceSchemes = await complianceSchemeService.GetOperatorComplianceSchemes(organisation.Id.Value);
@@ -51,11 +44,11 @@ public class ComplianceSchemeLandingController(
         var taskSave = sessionManager.SaveSessionAsync(HttpContext.Session, session);
         
 
-        var currentYear = new[] {nowDateTime.GetComplianceYear().ToString(), (nowDateTime.GetComplianceYear() + 1).ToString() };
+        var currentYear = new[] {now.GetComplianceYear().ToString(), (now.GetComplianceYear() + 1).ToString() };
         // Note: We are reading desired values using existing service to avoid SonarQube issue for adding 8th parameter in the constructor.
         var currentPeriod = await resubmissionApplicationService.GetCurrentMonthAndYearForRecyclingObligations(_timeProvider);
         // Note: We are adding a service method here to avoid SonarQube issue for adding 8th parameter in the constructor.
-        var packagingResubmissionPeriod = resubmissionApplicationService.PackagingResubmissionPeriod(currentYear, nowDateTime);
+        var packagingResubmissionPeriod = resubmissionApplicationService.PackagingResubmissionPeriod(currentYear, now);
         
         var currentComplianceSchemeId = session.RegistrationSession.SelectedComplianceScheme.Id;
         await taskSave;
@@ -74,7 +67,7 @@ public class ComplianceSchemeLandingController(
             ComplianceSchemes = complianceSchemes,
             ResubmissionTaskListViewModel = resubmissionApplicationDetails.ToResubmissionTaskListViewModel(organisation),
             PackagingResubmissionPeriod = packagingResubmissionPeriod,
-            ComplianceYear = currentPeriod.currentMonth == 1 ? (currentPeriod.currentYear - 1).ToString() : currentPeriod.currentYear.ToString() // this is a temp fix for the compliance window change
+            ComplianceYear = now.GetComplianceYear().ToString()
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id.Value);

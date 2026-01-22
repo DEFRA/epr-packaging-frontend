@@ -13,34 +13,34 @@
 		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
 	</resheader>
 	<data name="page_title_producer" xml:space="preserve">
-		<value>[WELSH] Confirmation that your packaging data have been updated</value>
+		<value>Cadarnhad bod eich data pecynwaith wedi'i ddiweddaru</value>
 	</data>
 	<data name="page_title_compliance" xml:space="preserve">
-		<value>[WELSH] Confirmation that Packaging data have been updated</value>
+		<value>Cadarnhad bod data pecynwaith wedi'i ddiweddaru</value>
 	</data>
 	<data name="packaging_data_updated" xml:space="preserve">
-		<value>[WELSH] Packaging data updated</value>
+		<value>Data pecynwaith wedi'i ddiweddaru</value>
 	</data>
 	<data name="submitted_on_z" xml:space="preserve">
 		<value>Wedi’i gyflwyno {0}</value>
 	</data>
 	<data name="it_may_take_an_hour" xml:space="preserve">
-		<value>[WELSH] It may take up to an hour for our systems to update.</value>
+		<value>Gall gymryd hyd at awr i'n systemau ddiweddaru</value>
 	</data>
 	<data name="what_happens_next" xml:space="preserve">
 		<value>Beth sy'n digwydd nesaf</value>
 	</data>
 	<data name="you_still_need_to" xml:space="preserve">
-		<value>[WELSH]You still need to:</value>
+		<value>Mae angen o hyd ichi:</value>
 	</data>
 	<data name="view_your_updated_fee" xml:space="preserve">
-		<value>[WELSH] view your updated fees and pay if necessary</value>
+		<value>weld eich ffioedd wedi'u diweddaru a thalu os oes angen</value>
 	</data>
 	<data name="submit_to_the_environmental_regulator" xml:space="preserve">
 		<value>Cyflwyno i'r rheoleiddiwr amgylcheddol</value>
 	</data>
 	<data name="continue_resubmitting" xml:space="preserve">
-		<value>[WELSH] Continue resubmitting</value>
+		<value>Parhau i ailgyflwyno</value>
 	</data>
 	<data name="you_can" xml:space="preserve">
 		<value>Gallwch chi </value>
@@ -49,9 +49,9 @@
         <value>argraffu'r dudalen hon neu ei chadw fel PDF</value>
     </data>
 	<data name="give_feedback" xml:space="preserve">
-		<value>[WELSH]Give feedback</value>
+		<value>Rhoi adborth</value>
 	</data>
 	<data name="take_an_optional_survey_to_help_us_improve_this_service" xml:space="preserve">
-		<value>[WELSH]Take an optional survey to help us improve this service.</value>
+		<value>Cymryd arolwg dewisol i'n helpu i wella'r gwasanaeth yma.</value>
 	</data>
 </root>

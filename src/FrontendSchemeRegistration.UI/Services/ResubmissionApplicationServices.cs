@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using EPR.Common.Authorization.Extensions;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
@@ -16,12 +16,15 @@ using Microsoft.FeatureManagement;
 
 namespace FrontendSchemeRegistration.UI.Services;
 
+using Application.Extensions;
+
 public class ResubmissionApplicationServices(
     ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
     IPaymentCalculationService paymentCalculationService,
     ISubmissionService submissionService,
     IOptions<GlobalVariables> globalVariables,
-    IFeatureManager featureManager) : IResubmissionApplicationService
+    IFeatureManager featureManager,
+    TimeProvider timeProvider) : IResubmissionApplicationService
 {
     public async Task<string> CreatePomResubmissionReferenceNumberForProducer(FrontendSchemeRegistrationSession session, SubmissionPeriod submissionPeriod, string organisationNumber, string submittedByName, Guid submissionId, int? historyCount)
     {
@@ -154,9 +157,9 @@ public class ResubmissionApplicationServices(
         return pomResubmissionReferenceNumber;
     }
 
-    public async Task<SubmissionPeriod?> GetActiveSubmissionPeriod(TimeProvider tp)
+    public async Task<SubmissionPeriod?> GetActiveSubmissionPeriod()
     {
-        var nowYear = tp.GetLocalNow().Year;
+        var nowYear = timeProvider.GetLocalNow().Year;
         var currentYear = new[] {nowYear.ToString(), (nowYear + 1).ToString() };
         return globalVariables.Value.SubmissionPeriods.Find(s => currentYear.Contains(s.Year) && s.ActiveFrom.Year == nowYear);
     }
@@ -171,16 +174,10 @@ public class ResubmissionApplicationServices(
         return await featureManager.IsEnabledAsync(nameof(FeatureFlags.IncludeSubsidariesInFeeCalculationsForProducers));
     }
 
-    public Task<(int currentMonth, int currentYear)> GetCurrentMonthAndYearForRecyclingObligations(TimeProvider tp)
-    {
-        return Task.FromResult((
-            globalVariables.Value.OverrideCurrentMonth ?? tp.GetLocalNow().Month,
-            globalVariables.Value.OverrideCurrentYear ?? tp.GetLocalNow().Year));
-    }
-
     public SubmissionPeriod PackagingResubmissionPeriod(string[] currentYear, DateTime nowDateTime)
     {
-        var packagingResubmissionPeriod = globalVariables.Value.SubmissionPeriods.Find(s => currentYear.Contains(s.Year) && s.ActiveFrom.Year == nowDateTime.Year);
+        var packagingResubmissionPeriod = globalVariables.Value.SubmissionPeriods
+            .Find(s => currentYear.Contains(s.Year) && s.ActiveFrom.Year == nowDateTime.GetComplianceYear());
         return packagingResubmissionPeriod;
     }
 }

@@ -37,17 +37,11 @@ namespace FrontendSchemeRegistration.UI.Services.Interfaces
 
         Task<List<SubmissionHistory>> GetSubmissionHistoryAsync(Guid submissionId, DateTime lastSyncTime);
 
-        Task<SubmissionPeriod?> GetActiveSubmissionPeriod(TimeProvider tp);
+        Task<SubmissionPeriod?> GetActiveSubmissionPeriod();
 
         Task<string> GetActualSubmissionPeriod(Guid submissionId, string submissionPeriod);
 
         Task<bool> GetFeatureFlagForProducersFeebreakdown();
-
-        /// <summary>
-        /// Returns current month and year for recycling obligations or default if values are null
-        /// </summary>
-        /// <returns></returns>
-        Task<(int currentMonth, int currentYear)> GetCurrentMonthAndYearForRecyclingObligations(TimeProvider tp);
 
         SubmissionPeriod PackagingResubmissionPeriod(string[] currentYear, DateTime nowDateTime);
     }

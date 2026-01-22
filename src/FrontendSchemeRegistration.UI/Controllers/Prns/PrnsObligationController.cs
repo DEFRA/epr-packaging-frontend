@@ -1,4 +1,4 @@
-﻿using EPR.Common.Authorization.Sessions;
+using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Options;
@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 namespace FrontendSchemeRegistration.UI.Controllers.Prns;
 
 using Application.Extensions;
+using Extensions;
 
 [FeatureGate(FeatureFlags.ShowPrn)]
 [ServiceFilter(typeof(ComplianceSchemeIdHttpContextFilterAttribute))]
@@ -30,7 +31,10 @@ public class PrnsObligationController : Controller
     private readonly int _complianceYear;
 
     public PrnsObligationController(ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
-        IPrnService prnService, IOptions<GlobalVariables> globalVariables, IOptions<ExternalUrlOptions> urlOptions,
+        IPrnService prnService,
+        TimeProvider timeProvider,
+        IOptions<GlobalVariables> globalVariables,
+        IOptions<ExternalUrlOptions> urlOptions,
         ILogger<PrnsObligationController> logger)
     {
         _sessionManager = sessionManager;
@@ -39,18 +43,7 @@ public class PrnsObligationController : Controller
         _urlOptions = urlOptions.Value;
         _logger = logger;
         _logPrefix = _globalVariables.Value.LogPrefix;
-
-        var now = DateTime.UtcNow;
-        var date = new DateTime(
-            _globalVariables.Value.OverrideCurrentYear ?? now.Year,
-            _globalVariables.Value.OverrideCurrentMonth ?? now.Month,
-            now.Day,
-            0,
-            0,
-            0,
-            DateTimeKind.Utc);
-
-        _complianceYear = date.GetComplianceYear();
+        _complianceYear = timeProvider.GetUtcNow().GetComplianceYear();
     }
 
     private const string GlassOrNonGlassResource = "GlassOrNonGlassResource";

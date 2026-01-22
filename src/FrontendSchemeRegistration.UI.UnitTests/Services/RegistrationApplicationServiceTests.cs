@@ -613,7 +613,7 @@ public class RegistrationApplicationServiceTests
     {
         // Arrange
         var organisationNumber = "123";
-
+        
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
             .ReturnsAsync(_session);
 
@@ -2159,6 +2159,7 @@ public class RegistrationApplicationServiceTests
         await _service.CreateRegistrationApplicationEvent(_httpSession, comments, null, submissionType);
 
         // Assert
+        
         _submissionServiceMock.Verify(ss => ss.CreateRegistrationApplicationEvent(
             It.Is<RegistrationApplicationData>(data => 
                 data.ComplianceSchemeId == complianceSchemeId &&
@@ -2168,9 +2169,10 @@ public class RegistrationApplicationServiceTests
             _session.ApplicationReferenceNumber,
             false,
             submissionType, 
-            It.IsAny<RegistrationJourney>()), Times.Once);
+            It.IsAny<RegistrationJourney?>()), Times.Once);
 
-        _sessionManagerMock.Verify(sm => sm.SaveSessionAsync(It.IsAny<ISession>(), It.Is<RegistrationApplicationSession>(s => s.RegistrationApplicationSubmittedDate.Value > DateTime.Now.AddSeconds(-5))), Times.Once);
+        _sessionManagerMock.Verify(sm => sm.SaveSessionAsync(It.IsAny<ISession>(), It.Is<RegistrationApplicationSession>(s => 
+            s.RegistrationApplicationSubmittedDate.Value > _dateTimeProvider.GetUtcNow().AddSeconds(-5))), Times.Once);
     }
 
     [Test]

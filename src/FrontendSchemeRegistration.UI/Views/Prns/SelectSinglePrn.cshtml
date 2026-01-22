@@ -52,7 +52,7 @@
             {
                 <br>
                 <br>
-                @if (Model.ApprovalStatus == PrnStatus.AwaitingAcceptance)
+                @if (Model.IsStatusEditable)
                 {
                     <div class="govuk-button-group">
                         @Html.ActionLink(Localizer[(Model.IsPrn ? "accept_this_prn" : "accept_this_pern")].Value, nameof(PrnsAcceptController.AcceptSinglePrn), "PrnsAccept",

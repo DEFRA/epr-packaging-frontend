@@ -1,5 +1,6 @@
 ﻿namespace FrontendSchemeRegistration.UI.UnitTests.Controllers.Prns;
 
+using Application.Extensions;
 using AutoFixture;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
@@ -16,6 +17,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 using NUnit.Framework;
 
@@ -29,10 +31,13 @@ public class PrnsObligationControllerTests
     private PrnsObligationController _controller;
     private static readonly IFixture _fixture = new Fixture();
     private Mock<ILogger<PrnsObligationController>> _loggerMock;
+    private FakeTimeProvider _fakeTimeProvider;
 
     [SetUp]
     public void SetUp()
     {
+        _fakeTimeProvider = new FakeTimeProvider();
+        _fakeTimeProvider.SetUtcNow(new DateTimeOffset(2024, 01, 01,0,0,0, TimeSpan.Zero));
         _urlHelperMock = new Mock<IUrlHelper>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _prnServiceMock = new Mock<IPrnService>();
@@ -45,10 +50,10 @@ public class PrnsObligationControllerTests
         };
 
         _urlOptionsMock!.Setup(x => x.Value).Returns(externalUrlOptions);
-        var globalVariables = Options.Create(new GlobalVariables { BasePath = "BasePath", LogPrefix = "[FrontendSchemaRegistration]", OverrideCurrentYear = 2026, OverrideCurrentMonth = 11 });
+        var globalVariables = Options.Create(new GlobalVariables { BasePath = "BasePath", LogPrefix = "[FrontendSchemaRegistration]" });
         _loggerMock = new Mock<ILogger<PrnsObligationController>>();
 
-        _controller = new PrnsObligationController(_sessionManagerMock.Object, _prnServiceMock.Object, globalVariables, _urlOptionsMock.Object, _loggerMock.Object)
+        _controller = new PrnsObligationController(_sessionManagerMock.Object, _prnServiceMock.Object, _fakeTimeProvider, globalVariables, _urlOptionsMock.Object, _loggerMock.Object)
         {
             Url = _urlHelperMock.Object
         };
@@ -107,7 +112,6 @@ public class PrnsObligationControllerTests
     {
 		// Arrange
 		var organisationId = Guid.NewGuid();
-		var childOrganisationId = Guid.NewGuid();
 
 		var session = new FrontendSchemeRegistrationSession
         {
@@ -127,7 +131,7 @@ public class PrnsObligationControllerTests
         _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
 
         string material = "Glass";
-		int year = DateTime.Now.Year;
+        int year = _fakeTimeProvider.GetUtcNow().GetComplianceYear();
 		PrnObligationViewModel viewModel = _fixture.Create<PrnObligationViewModel>();
         _prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(year)).ReturnsAsync(viewModel);
 
@@ -173,7 +177,7 @@ public class PrnsObligationControllerTests
 
         //_prnServiceMock.Setup(p => p.GetChildOrganisationExternalIdsAsync(organisationId, null)).ReturnsAsync([childOrganisationId]);
 
-        int year = DateTime.Now.Year;
+        int year = _fakeTimeProvider.GetUtcNow().GetComplianceYear();
         PrnObligationViewModel viewModel = _fixture.Create<PrnObligationViewModel>();
         foreach (var item in viewModel.MaterialObligationViewModels)
         {
@@ -182,9 +186,9 @@ public class PrnsObligationControllerTests
         }
 		_prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(year)).ReturnsAsync(viewModel);
 
-        var globalVariables = Options.Create(new GlobalVariables { BasePath = "BasePath", LogPrefix = "[FrontendSchemaRegistration]", OverrideCurrentYear = year, OverrideCurrentMonth = 3 });
+        var globalVariables = Options.Create(new GlobalVariables { BasePath = "BasePath", LogPrefix = "[FrontendSchemaRegistration]" });
 
-        var controller = new PrnsObligationController(_sessionManagerMock.Object, _prnServiceMock.Object, globalVariables, _urlOptionsMock.Object, _loggerMock.Object)
+        var controller = new PrnsObligationController(_sessionManagerMock.Object, _prnServiceMock.Object, _fakeTimeProvider, globalVariables, _urlOptionsMock.Object, _loggerMock.Object)
         {
             Url = _urlHelperMock.Object,
             ControllerContext = new ControllerContext
@@ -230,7 +234,7 @@ public class PrnsObligationControllerTests
         };
         _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
         string material = "Unknown";
-        int year = DateTime.Now.Year;
+        int year = _fakeTimeProvider.GetUtcNow().Year;
         PrnObligationViewModel viewModel = _fixture.Create<PrnObligationViewModel>();
         _prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(year)).ReturnsAsync(viewModel);
 
@@ -303,8 +307,8 @@ public class PrnsObligationControllerTests
         viewModel.OrganisationName.Should().BeEquivalentTo("Test Organisation");
         viewModel.NationId.Should().NotBeNull();
         viewModel.NationId.Value.Should().Be(nationId);
-        viewModel.ComplianceYear.Should().Be(2026); // Based on SetUp GlobalVariables: OverrideCurrentYear = 2026, OverrideCurrentMonth = 11
-        viewModel.DeadlineYear.Should().Be(2027);
+        viewModel.ComplianceYear.Should().Be(_fakeTimeProvider.GetUtcNow().GetComplianceYear());
+        viewModel.DeadlineYear.Should().Be(_fakeTimeProvider.GetUtcNow().GetComplianceYear() + 1);
     }
 
     [Theory]
@@ -347,8 +351,8 @@ public class PrnsObligationControllerTests
         viewModel.OrganisationName.Should().BeEquivalentTo("Test Organisation");
         viewModel.NationId.Should().NotBeNull();
         viewModel.NationId.Value.Should().Be(nationId);
-        viewModel.ComplianceYear.Should().Be(2026); // Based on SetUp GlobalVariables: OverrideCurrentYear = 2026, OverrideCurrentMonth = 11
-        viewModel.DeadlineYear.Should().Be(2027);
+        viewModel.ComplianceYear.Should().Be(_fakeTimeProvider.GetUtcNow().GetComplianceYear());
+        viewModel.DeadlineYear.Should().Be(_fakeTimeProvider.GetUtcNow().GetComplianceYear() + 1);
     }
 
     [Test]
@@ -382,23 +386,24 @@ public class PrnsObligationControllerTests
         // Assert
         viewModel.OrganisationName.Should().BeNull();
         viewModel.NationId.Should().Be(0);
-        viewModel.ComplianceYear.Should().Be(2026); // Based on SetUp GlobalVariables: OverrideCurrentYear = 2026, OverrideCurrentMonth = 11
-        viewModel.DeadlineYear.Should().Be(2027);
+        viewModel.ComplianceYear.Should().Be(_fakeTimeProvider.GetUtcNow().GetComplianceYear());
+        viewModel.DeadlineYear.Should().Be(_fakeTimeProvider.GetUtcNow().GetComplianceYear() + 1);
     }
 
     [Test]
     [Theory]
-    [TestCase(2026, 1, 2025, 2026)] // Special case: January 2026 returns 2025
-    [TestCase(2025, 1, 2025, 2026)] // January 2025 returns 2025 (no special case)
-    [TestCase(2024, 1, 2024, 2025)] // January 2024 returns 2024 (no special case)
+    [TestCase(2026, 1, 2025, 2026)]
+    [TestCase(2025, 1, 2024, 2025)]
+    [TestCase(2024, 1, 2023, 2024)]
     [TestCase(2026, 10, 2026, 2027)]
     [TestCase(2025, 11, 2025, 2026)]
     [TestCase(2024, 9, 2024, 2025)]
     public async Task FillViewModelFromSessionAsync_Returns_ComplianceYear_And_DeadlineYear_AsExpected(int currentYear, int currentMonth, int expectedComplianceYear, int expectedDeadlineYear)
     {
         // Arrange
-        var globalVariables = Options.Create(new GlobalVariables { BasePath = "BasePath", LogPrefix = "[FrontendSchemaRegistration]", OverrideCurrentYear = currentYear, OverrideCurrentMonth = currentMonth });
-        var controller = new PrnsObligationController(_sessionManagerMock.Object, _prnServiceMock.Object, globalVariables, _urlOptionsMock.Object, _loggerMock.Object)
+        _fakeTimeProvider.SetUtcNow(new DateTimeOffset(currentYear, currentMonth, 1, 0,0,0, TimeSpan.Zero));
+        var globalVariables = Options.Create(new GlobalVariables { BasePath = "BasePath", LogPrefix = "[FrontendSchemaRegistration]" });
+        var controller = new PrnsObligationController(_sessionManagerMock.Object, _prnServiceMock.Object,_fakeTimeProvider, globalVariables, _urlOptionsMock.Object, _loggerMock.Object)
         {
             Url = _urlHelperMock.Object,
             ControllerContext = new ControllerContext
@@ -442,9 +447,9 @@ public class PrnsObligationControllerTests
     }
 
     [Test]    
-    [TestCase(1, 2026, 2025)] // January 2026 special case returns 2025
-    [TestCase(null, null, null)]
-    public async Task ObligationPerMaterial_ReturnsView_When_ComplianceMonth_isJanuary(int? currentMonth, int? currentYear, int? expectedComplianceYear)
+    [TestCase(2026, 1,2025)] // January 2026 special case returns 2025
+    [TestCase(2026, 2,2026)] // January 2026 special case returns 2025
+    public async Task ObligationPerMaterial_ReturnsView_When_ComplianceMonth_isJanuary(int? currentYear, int? currentMonth, int? expectedComplianceYear)
     {
         // Arrange
         var session = new FrontendSchemeRegistrationSession
@@ -463,15 +468,11 @@ public class PrnsObligationControllerTests
             }
         };
 
-        if (currentMonth is null && currentYear is null)
-        {
-            // Apply the same GetComplianceYear logic
-            var now = DateTime.Now;
-            expectedComplianceYear = (now.Year == 2026 && now.Month == 1) ? 2025 : now.Year;
-        }
+        if (currentYear is not null || currentMonth is not null)
+            _fakeTimeProvider.SetUtcNow(new DateTimeOffset(currentYear ?? 2026, currentMonth ?? 6, 1, 0, 0, 0, TimeSpan.Zero));
 
         _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
-        
+
         string material = "Paper";
         PrnObligationViewModel viewModel = _fixture.Create<PrnObligationViewModel>();
         foreach (var item in viewModel.MaterialObligationViewModels)
@@ -481,8 +482,8 @@ public class PrnsObligationControllerTests
         }
         _prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(expectedComplianceYear.Value)).ReturnsAsync(viewModel);
 
-        var globalVariables = Options.Create(new GlobalVariables { BasePath = "BasePath", LogPrefix = "[FrontendSchemaRegistration]", OverrideCurrentMonth = currentMonth, OverrideCurrentYear = currentYear });
-        var controller = new PrnsObligationController(_sessionManagerMock.Object, _prnServiceMock.Object, globalVariables, _urlOptionsMock.Object, _loggerMock.Object)
+        var globalVariables = Options.Create(new GlobalVariables { BasePath = "BasePath", LogPrefix = "[FrontendSchemaRegistration]" });
+        var controller = new PrnsObligationController(_sessionManagerMock.Object, _prnServiceMock.Object, _fakeTimeProvider, globalVariables, _urlOptionsMock.Object, _loggerMock.Object)
         {
             Url = _urlHelperMock.Object,
             ControllerContext = new ControllerContext
