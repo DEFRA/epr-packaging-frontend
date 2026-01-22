@@ -1,4 +1,4 @@
-﻿@using FrontendSchemeRegistration.UI.Controllers.Prns
+@using FrontendSchemeRegistration.UI.Controllers.Prns
 @using FrontendSchemeRegistration.UI.Constants
 @using FrontendSchemeRegistration.UI.ViewModels.Prns
 @inject IStringLocalizer<PrnDataResources> PrnDataLocalizer
@@ -23,7 +23,7 @@
                     </div>
                     <div class="govuk-notification-banner__content">
                         <h3 class="govuk-notification-banner__heading">
-                            @string.Format(Localizer["prn_accepted"].Value, PrnDataLocalizer[Model.NoteType], @Model.IssueYear)
+                            @string.Format(Localizer["prn_accepted"].Value, PrnDataLocalizer[Model.NoteType], Model.EffectiveAcceptanceYear)
                         </h3>
                         <p class="govuk-body">@Localizer["tonnage_credited_towards_your_obligation", Model.Tonnage, @PrnDataLocalizer[Model.Material].Value]</p>
                         <button id="downloadPDFButton" class="govuk-body govuk-link">
