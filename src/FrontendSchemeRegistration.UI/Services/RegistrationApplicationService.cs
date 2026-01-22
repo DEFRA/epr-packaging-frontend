@@ -565,7 +565,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
                 showLargeProducer = true,   // we can get rid of this once we delete the old configuration and the BuildRegistrationApplicationPerYearViewModels method
                 RegisterSmallProducersCS = _timeProvider.GetUtcNow().Date >= globalVariables.Value.SmallProducersRegStartTime2026,
                 RegistrationJourney = window.Journey,
-                DeadlineDate = window.FirstDeadlineDate
+                DeadlineDate = window.RegistrationWindow.DeadlineDate
             });
         }
 
@@ -574,8 +574,8 @@ public class RegistrationApplicationService : IRegistrationApplicationService
 
     /// <summary>
     /// Returns simplified window information for helping to generate the registration application view models.
-    /// Direct producers have multiple windows represented by a single UI panel, hence their key information
-    /// gets merged into a single item here
+    /// Direct producers can have two windows - large and small - represented by a single UI panel (depending on the date),
+    /// hence their key information gets merged into a single item here
     /// </summary>
     /// <param name="isCso"></param>
     /// <param name="activeRegistrationWindows"></param>
@@ -586,7 +586,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         IReadOnlyCollection<RegistrationWindowKeyInformation> windows;
         if (isCso)
         {
-            windows = activeRegistrationWindows.Select(rw => new RegistrationWindowKeyInformation(rw.Journey, rw.DeadlineDate, null, rw.RegistrationYear)).ToImmutableList();
+            windows = activeRegistrationWindows.Select(rw => new RegistrationWindowKeyInformation(rw.WindowType.ToRegistrationJourney(), rw, null, rw.RegistrationYear)).ToImmutableList();
         }
         else
         {
@@ -595,15 +595,16 @@ public class RegistrationApplicationService : IRegistrationApplicationService
                 .GroupBy(w => w.RegistrationYear)
                 .Select(group =>
                 {
-                    var deadlineDates = group
-                        .Select(w => w.DeadlineDate)
-                        .OrderBy(d => d)
+                    var directWindows = group
+                        .Select(w => w)
+                        .OrderBy(w => w.DeadlineDate)
                         .ToList();
 
+                    // take the primary registration window to generate the journey
                     return new RegistrationWindowKeyInformation(
-                        null,
-                        deadlineDates[0],
-                        deadlineDates.Count > 1 ? deadlineDates[1] : null,
+                        directWindows[0].WindowType.ToRegistrationJourney(),
+                        directWindows[0],
+                        directWindows.Count > 1 ? directWindows[1] : null,
                         group.Key);
                 })
                 .ToImmutableList();
@@ -640,8 +641,8 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     }
     
     // this structure provides data for tile representing a CSO reg window AND for the single tile that represents the two Direct registration windows,
-    // hence, the two deadline dates that are displayed on the Direct reg tile
-    private record class RegistrationWindowKeyInformation(RegistrationJourney? Journey, DateTime FirstDeadlineDate, DateTime? SecondDeadlineDate, int RegistrationYear);
+    // hence allowing the two deadline dates to be displayed on the Direct reg tile
+    private record class RegistrationWindowKeyInformation(RegistrationJourney? Journey, RegistrationWindow RegistrationWindow, RegistrationWindow? SecondaryRegistrationWindow, int RegistrationYear);
 }
 
 public interface IRegistrationApplicationService

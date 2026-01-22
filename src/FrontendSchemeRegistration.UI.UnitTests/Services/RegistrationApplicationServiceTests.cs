@@ -23,6 +23,7 @@ using Newtonsoft.Json;
 
 namespace FrontendSchemeRegistration.UI.UnitTests.Services;
 
+using Application.Options.ReistrationPeriodPatterns;
 using Application.Services;
 using Microsoft.Extensions.Time.Testing;
 using UI.Services.RegistrationPeriods;
@@ -2379,8 +2380,8 @@ public class RegistrationApplicationServiceTests
 
         IReadOnlyCollection<RegistrationWindow> registrationWindows =
         [
-            CreateRegistrationWindow(null, 2026, new DateTime(2026, 1, 1), new DateTime(2026, 3, 1), new DateTime(2026, 5, 1)),
-            CreateRegistrationWindow(null, 2026, new DateTime(2026, 6, 1), new DateTime(2026, 8, 1), new DateTime(2026, 10, 1))
+            CreateRegistrationWindow(WindowType.DirectLargeProducer, 2026, new DateTime(2026, 1, 1), new DateTime(2026, 3, 1), new DateTime(2026, 5, 1)),
+            CreateRegistrationWindow(WindowType.DirectLargeProducer, 2026, new DateTime(2026, 6, 1), new DateTime(2026, 8, 1), new DateTime(2026, 10, 1))
         ];
 
         _mockRegistrationPeriodProvider.Setup(x => x.GetActiveRegistrationWindows(It.IsAny<bool>()))
@@ -2416,8 +2417,8 @@ public class RegistrationApplicationServiceTests
 
         IReadOnlyCollection<RegistrationWindow> registrationWindows =
         [
-            CreateRegistrationWindow(RegistrationJourney.CsoLargeProducer, 2026),
-            CreateRegistrationWindow(RegistrationJourney.CsoSmallProducer, 2026)
+            CreateRegistrationWindow(WindowType.CsoLargeProducer, 2026),
+            CreateRegistrationWindow(WindowType.CsoSmallProducer, 2026)
         ];
 
         _mockRegistrationPeriodProvider.Setup(x => x.GetActiveRegistrationWindows(true))
@@ -2453,9 +2454,9 @@ public class RegistrationApplicationServiceTests
 
         IReadOnlyCollection<RegistrationWindow> registrationWindows =
         [
-            CreateRegistrationWindow(null, 2024),
-            CreateRegistrationWindow(null, 2026),
-            CreateRegistrationWindow(null, 2025)
+            CreateRegistrationWindow(WindowType.DirectLargeProducer, 2024),
+            CreateRegistrationWindow(WindowType.DirectLargeProducer, 2026),
+            CreateRegistrationWindow(WindowType.DirectLargeProducer, 2025)
         ];
 
         _mockRegistrationPeriodProvider.Setup(x => x.GetActiveRegistrationWindows(false))
@@ -2494,7 +2495,7 @@ public class RegistrationApplicationServiceTests
 
         IReadOnlyCollection<RegistrationWindow> registrationWindows =
         [
-            CreateRegistrationWindow(null, 2026, new DateTime(2026, 1, 1), deadlineDate, new DateTime(2026, 9, 1))
+            CreateRegistrationWindow(WindowType.DirectLargeProducer, 2026, new DateTime(2026, 1, 1), deadlineDate, new DateTime(2026, 9, 1))
         ];
 
         var registrationApplicationSession = new RegistrationApplicationSession
@@ -2550,7 +2551,7 @@ public class RegistrationApplicationServiceTests
 
         IReadOnlyCollection<RegistrationWindow> registrationWindows =
         [
-            CreateRegistrationWindow(null, 2026)
+            CreateRegistrationWindow(WindowType.DirectLargeProducer, 2026)
         ];
 
         _mockRegistrationPeriodProvider.Setup(x => x.GetActiveRegistrationWindows(false))
@@ -2609,7 +2610,7 @@ public class RegistrationApplicationServiceTests
 
         IReadOnlyCollection<RegistrationWindow> registrationWindows =
         [
-            CreateRegistrationWindow(null, 2026)
+            CreateRegistrationWindow(WindowType.DirectLargeProducer, 2026)
         ];
 
         _mockRegistrationPeriodProvider.Setup(x => x.GetActiveRegistrationWindows(false))
@@ -2670,7 +2671,7 @@ public class RegistrationApplicationServiceTests
 
         IReadOnlyCollection<RegistrationWindow> registrationWindows =
         [
-            CreateRegistrationWindow(null, 2026)
+            CreateRegistrationWindow(WindowType.DirectLargeProducer, 2026)
         ];
 
         _mockRegistrationPeriodProvider.Setup(x => x.GetActiveRegistrationWindows(false))
@@ -2706,7 +2707,7 @@ public class RegistrationApplicationServiceTests
 
         IReadOnlyCollection<RegistrationWindow> registrationWindows =
         [
-            CreateRegistrationWindow(RegistrationJourney.CsoLargeProducer, 2026)
+            CreateRegistrationWindow(WindowType.CsoLargeProducer, 2026)
         ];
 
         _mockRegistrationPeriodProvider.Setup(x => x.GetActiveRegistrationWindows(true))
@@ -2744,7 +2745,7 @@ public class RegistrationApplicationServiceTests
 
         IReadOnlyCollection<RegistrationWindow> registrationWindows =
         [
-            CreateRegistrationWindow(journey, registrationYear)
+            CreateRegistrationWindow(WindowType.DirectLargeProducer, registrationYear)
         ];
 
         _mockRegistrationPeriodProvider.Setup(x => x.GetActiveRegistrationWindows(false))
@@ -3224,21 +3225,16 @@ public class RegistrationApplicationServiceTests
     }
 
     private RegistrationWindow CreateRegistrationWindow(
-        RegistrationJourney? journey,
+        WindowType windowType,
         int? registrationYear = 2026,
         DateTime? openingDateOffset = null,
         DateTime? deadlineDateOffset = null,
-        DateTime? closingDateOffset = null,
-        bool isCso = false)
+        DateTime? closingDateOffset = null)
     {
         var opening = openingDateOffset ?? new DateTime(2026, 6, 1);
         var deadline = deadlineDateOffset ?? new DateTime(2026, 7, 1);
         var closing = closingDateOffset ?? new DateTime(2026, 8, 1);
-
-        return journey is null
-            ? new RegistrationWindow(_dateTimeProvider, isCso, registrationYear.GetValueOrDefault(2026), opening,
-                deadline, closing)
-            : new RegistrationWindow(_dateTimeProvider, journey.Value, registrationYear.GetValueOrDefault(2026),
+        return new RegistrationWindow(_dateTimeProvider, windowType, registrationYear.GetValueOrDefault(2026),
                 opening, deadline, closing);
     }
 
