@@ -4,7 +4,7 @@ using Application.DTOs.ComplianceScheme;
 using EPR.Common.Authorization.Models;
 using Sessions;
 
-public class SetupMinimalSession
+public static class SetupMinimalSession
 {
     public static FrontendSchemeRegistrationSession FrontendSchemeRegistrationSession(
         List<ComplianceSchemeDto> complianceSchemes,
