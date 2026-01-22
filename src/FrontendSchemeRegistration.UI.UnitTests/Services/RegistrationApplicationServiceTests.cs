@@ -613,7 +613,7 @@ public class RegistrationApplicationServiceTests
     {
         // Arrange
         var organisationNumber = "123";
-
+        
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
             .ReturnsAsync(_session);
 
@@ -2159,6 +2159,7 @@ public class RegistrationApplicationServiceTests
         await _service.CreateRegistrationApplicationEvent(_httpSession, comments, null, submissionType);
 
         // Assert
+        
         _submissionServiceMock.Verify(ss => ss.CreateRegistrationApplicationEvent(
             It.Is<RegistrationApplicationData>(data => 
                 data.ComplianceSchemeId == complianceSchemeId &&
@@ -2168,9 +2169,10 @@ public class RegistrationApplicationServiceTests
             _session.ApplicationReferenceNumber,
             false,
             submissionType, 
-            It.IsAny<RegistrationJourney>()), Times.Once);
+            It.IsAny<RegistrationJourney?>()), Times.Once);
 
-        _sessionManagerMock.Verify(sm => sm.SaveSessionAsync(It.IsAny<ISession>(), It.Is<RegistrationApplicationSession>(s => s.RegistrationApplicationSubmittedDate.Value > DateTime.Now.AddSeconds(-5))), Times.Once);
+        _sessionManagerMock.Verify(sm => sm.SaveSessionAsync(It.IsAny<ISession>(), It.Is<RegistrationApplicationSession>(s => 
+            s.RegistrationApplicationSubmittedDate.Value > _dateTimeProvider.GetUtcNow().AddSeconds(-5))), Times.Once);
     }
 
     [Test]
@@ -2351,7 +2353,7 @@ public class RegistrationApplicationServiceTests
                 CreateRegistrationWindow(null, 2025) 
             ]; 
         
-        _mockRegistrationPeriodProvider.Setup(x => x.GetRegistrationWindows(It.IsAny<bool>()))
+        _mockRegistrationPeriodProvider.Setup(x => x.GetActiveRegistrationWindows(It.IsAny<bool>()))
             .Returns(registrationWindows);
 
         // Act
@@ -2782,13 +2784,18 @@ public class RegistrationApplicationServiceTests
         int? registrationYear = 2026,
         DateTime? openingDateOffset = null,
         DateTime? deadlineDateOffset = null,
-        DateTime? closingDateOffset = null)
+        DateTime? closingDateOffset = null,
+        bool isCso = false)
     {
         var opening = openingDateOffset ?? new DateTime(2026, 6, 1);
         var deadline = deadlineDateOffset ?? new DateTime(2026, 7, 1);
         var closing = closingDateOffset ?? new DateTime(2026, 8, 1);
 
-        return new RegistrationWindow(_dateTimeProvider, journey, registrationYear.GetValueOrDefault(2026), opening, deadline, closing);
+        return journey is null
+            ? new RegistrationWindow(_dateTimeProvider, isCso, registrationYear.GetValueOrDefault(2026), opening,
+                deadline, closing)
+            : new RegistrationWindow(_dateTimeProvider, journey.Value, registrationYear.GetValueOrDefault(2026),
+                opening, deadline, closing);
     }
 
 }

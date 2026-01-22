@@ -127,6 +127,6 @@
     <value>Upload your partner details file</value>
   </data>
   <data name="file_must_be_csv" xml:space="preserve">
-    <value>File must be CSV</value>
+    <value>File must be a CSV</value>
   </data>
 </root>

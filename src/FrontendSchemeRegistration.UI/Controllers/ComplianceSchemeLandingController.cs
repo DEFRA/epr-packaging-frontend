@@ -1,11 +1,10 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Extensions;
-using FrontendSchemeRegistration.UI.Services;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
@@ -14,32 +13,26 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FrontendSchemeRegistration.UI.Controllers;
 
+using Application.Extensions;
+
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
 [Route(PagePaths.ComplianceSchemeLanding)]
 public class ComplianceSchemeLandingController(
     ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
     IComplianceSchemeService complianceSchemeService,
     INotificationService notificationService,
-    IRegistrationApplicationService registrationApplicationService,
     IResubmissionApplicationService resubmissionApplicationService,
     ILogger<ComplianceSchemeLandingController> logger,
     TimeProvider timeProvider)
     : Controller
 {
-    private TimeProvider _timeProvider = timeProvider;
-
-    public void SetTestTimeProvider(TimeProvider testTimeProvider)
-    {
-        _timeProvider = testTimeProvider;
-    }
-
     [HttpGet]
     [ExcludeFromCodeCoverage]
     public async Task<IActionResult> Get()
     {
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
         var userData = User.GetUserData();
-        var nowDateTime = _timeProvider.GetLocalNow().DateTime;
+        var now = timeProvider.GetLocalNow().DateTime;
 
         var organisation = userData.Organisations[0];
 
@@ -49,11 +42,9 @@ public class ComplianceSchemeLandingController(
 
         session.RegistrationSession.SelectedComplianceScheme ??= defaultComplianceScheme;
         session.UserData = userData;
-        var currentYear = new[] { nowDateTime.Year.ToString(), (nowDateTime.Year + 1).ToString() };
-        // Note: We are reading desired values using existing service to avoid SonarQube issue for adding 8th parameter in the constructor.
-        var currentPeriod = await resubmissionApplicationService.GetCurrentMonthAndYearForRecyclingObligations(_timeProvider);
+        var currentYear = new[] { now.GetComplianceYear().ToString(), (now.GetComplianceYear() + 1).ToString() };
         // Note: We are adding a service method here to avoid SonarQube issue for adding 8th parameter in the constructor.
-        var packagingResubmissionPeriod = resubmissionApplicationService.PackagingResubmissionPeriod(currentYear, nowDateTime);
+        var packagingResubmissionPeriod = resubmissionApplicationService.PackagingResubmissionPeriod(currentYear, now);
         
         await SaveNewJourney(session);
 
@@ -62,9 +53,8 @@ public class ComplianceSchemeLandingController(
         var currentSummary = await complianceSchemeService.GetComplianceSchemeSummary(organisation.Id.Value, currentComplianceSchemeId);
 
         var resubmissionApplicationDetails = await resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(
-            organisation, new List<string> { packagingResubmissionPeriod?.DataPeriod }, session.RegistrationSession.SelectedComplianceScheme?.Id);
+            organisation, new List<string> { packagingResubmissionPeriod.DataPeriod }, session.RegistrationSession.SelectedComplianceScheme?.Id);
 
-        
         var model = new ComplianceSchemeLandingViewModel
         {
             CurrentComplianceSchemeId = currentComplianceSchemeId,
@@ -74,7 +64,7 @@ public class ComplianceSchemeLandingController(
             ComplianceSchemes = complianceSchemes,
             ResubmissionTaskListViewModel = resubmissionApplicationDetails.ToResubmissionTaskListViewModel(organisation),
             PackagingResubmissionPeriod = packagingResubmissionPeriod,
-            ComplianceYear = currentPeriod.currentMonth == 1 ? (currentPeriod.currentYear - 1).ToString() : currentPeriod.currentYear.ToString() // this is a temp fix for the compliance window change
+            ComplianceYear = now.GetComplianceYear().ToString()
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id.Value);

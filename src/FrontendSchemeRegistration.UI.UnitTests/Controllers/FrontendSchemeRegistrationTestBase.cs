@@ -1,4 +1,4 @@
-﻿using FrontendSchemeRegistration.UI.Services;
+using FrontendSchemeRegistration.UI.Services;
 
 namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
 
@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 using Newtonsoft.Json;
 using UI.Controllers.FrontendSchemeRegistration;
@@ -107,6 +108,7 @@ public abstract class FrontendSchemeRegistrationTestBase
     
     protected Mock<IResubmissionApplicationService> ResubmissionApplicationService { get; set; }
     protected Mock<IOptions<GlobalVariables>> globalVariables { get; set; }
+    protected FakeTimeProvider FakeTimeProvider { get; } = new();
 
     protected static void AssertBackLink(ViewResult viewResult, string expectedBackLink)
     {
@@ -152,7 +154,8 @@ public abstract class FrontendSchemeRegistrationTestBase
             RegistrationApplicationService.Object,
             ResubmissionApplicationService.Object,
             AuthorizationService.Object,
-        NotificationService.Object);
+            NotificationService.Object,
+            FakeTimeProvider);
         SystemUnderTest.ControllerContext.HttpContext = _httpContextMock.Object;
         SystemUnderTest.TempData = tempDataDictionaryMock.Object;
     }

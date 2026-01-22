@@ -1,7 +1,6 @@
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 using WireMock.Server;
-using WireMock.Types;
 
 namespace FrontendSchemeRegistration.MockServer.WebApi;
 

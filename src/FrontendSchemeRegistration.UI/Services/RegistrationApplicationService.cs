@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Security.Claims;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
@@ -472,7 +472,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         }
         else
         {
-            session.RegistrationApplicationSubmittedDate = DateTime.Now;
+            session.RegistrationApplicationSubmittedDate = _timeProvider.GetLocalNow().DateTime;
         }
 
         await sessionManager.SaveSessionAsync(httpSession, session);
@@ -540,7 +540,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     {
         var applications = new List<RegistrationApplicationViewModel>();
 
-        var windows = _registrationPeriodProvider.GetRegistrationWindows(organisation.OrganisationRole == OrganisationRoles.ComplianceScheme).OrderByDescending(ra => ra.RegistrationYear);
+        var windows = _registrationPeriodProvider.GetActiveRegistrationWindows(organisation.OrganisationRole == OrganisationRoles.ComplianceScheme);
 
         foreach (var window in windows)
         {

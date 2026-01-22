@@ -27,6 +27,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
     private readonly ILogger<WebApiGatewayClient> _logger;
     private readonly ITokenAcquisition _tokenAcquisition;
     private readonly IComplianceSchemeMemberService _complianceSchemeSvc;
+    private readonly TimeProvider _timeProvider;
     private readonly List<HttpStatusCode> PassThroughExceptions;
 
     public WebApiGatewayClient(
@@ -35,12 +36,14 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         IOptions<HttpClientOptions> httpClientOptions,
         IOptions<WebApiOptions> webApiOptions,
         ILogger<WebApiGatewayClient> logger,
-        IComplianceSchemeMemberService complianceSchemeSvc)
+        IComplianceSchemeMemberService complianceSchemeSvc,
+        TimeProvider timeProvider)
     {
         _httpClient = httpClient;
         _tokenAcquisition = tokenAcquisition;
         _logger = logger;
         _complianceSchemeSvc = complianceSchemeSvc;
+        _timeProvider = timeProvider;
         _scopes = [webApiOptions.Value.DownstreamScope];
         _httpClient.BaseAddress = new Uri(webApiOptions.Value.BaseEndpoint);
         _httpClient.AddHeaderUserAgent(httpClientOptions.Value.UserAgent);
@@ -365,9 +368,9 @@ public class WebApiGatewayClient : IWebApiGatewayClient
 
         try
         {
-            UpdatePrnStatus prnStatus = new() { PrnId = id, Status = PrnStatus.Accepted };
-            List<UpdatePrnStatus> payload = new() { prnStatus };
-            var response = await _httpClient.PostAsJsonAsync($"/api/v1/prn/status", payload);
+            UpdatePrnStatus prnStatus = ToAcceptedPrnStatus(id);
+            List<UpdatePrnStatus> payload = [prnStatus];
+            var response = await _httpClient.PostAsJsonAsync("/api/v1/prn/status", payload);
 
             response.EnsureSuccessStatusCode();
         }
@@ -384,7 +387,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         await PrepareAuthenticatedClientAsync();
         try
         {
-            var payload = ids.Select(x => new UpdatePrnStatus() { PrnId = x, Status = PrnStatus.Accepted });
+            IEnumerable<UpdatePrnStatus> payload = ids.Select(ToAcceptedPrnStatus);
             var response = await _httpClient.PostAsJsonAsync("/api/v1/prn/status", payload);
 
             response.EnsureSuccessStatusCode();
@@ -394,6 +397,16 @@ public class WebApiGatewayClient : IWebApiGatewayClient
             _logger.LogError(ex, "Error accepting recycling note {Ids}", ids);
             throw;
         }
+    }
+    
+    private UpdatePrnStatus ToAcceptedPrnStatus(Guid id)
+    {
+        return new UpdatePrnStatus
+        {
+            PrnId = id,
+            ObligationYear = _timeProvider.GetUtcNow().GetComplianceYear().ToString(),
+            Status = PrnStatus.Accepted
+        };
     }
 
     public async Task SetPrnApprovalStatusToRejectedAsync(Guid id)

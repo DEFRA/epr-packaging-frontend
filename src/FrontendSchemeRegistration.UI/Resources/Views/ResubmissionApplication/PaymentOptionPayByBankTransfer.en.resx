@@ -255,10 +255,16 @@
   <data name="print_or_save_as_PDF" xml:space="preserve">
     <value>print or save this page as a PDF</value>
   </data>
-  <data name="return_to_dashboard" xml:space="preserve">
-    <value>Return to the dashboard</value>
-  </data>
   <data name="submit_your_application_from_registration_dashboard" xml:space="preserve">
     <value>Submit your data from the packaging data resubmission dashboard.</value>
+  </data>
+  <data name="continue" xml:space="preserve">
+    <value>Continue</value>
+  </data>
+  <data name="pay_registration_fee_of" xml:space="preserve">
+    <value>Pay the registration fee of</value>
+  </data>
+  <data name="return_to_dashboard" xml:space="preserve">
+    <value>Return to the dashboard</value>
   </data>
 </root>

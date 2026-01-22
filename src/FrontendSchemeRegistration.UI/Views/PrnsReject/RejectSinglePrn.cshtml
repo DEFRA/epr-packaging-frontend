@@ -16,10 +16,12 @@
                 <p class="govuk-body-m">@Localizer["this_is_permanent_and_cannot_be_undone"]</p>
 
                 <div class="govuk-button-group">
-
-                    <button class="govuk-button" type="submit" asp-action=@nameof(PrnsRejectController.ConfirmRejectSinglePrnPassThrough) asp-controller="PrnsReject">
-                        @Localizer["yes_reject"]
-                    </button>
+                    @if (Model.IsStatusEditable)
+                    {
+                        <button class="govuk-button" type="submit" asp-action=@nameof(PrnsRejectController.ConfirmRejectSinglePrnPassThrough) asp-controller="PrnsReject">
+                            @Localizer["yes_reject"]
+                        </button>
+                    }
 
                     @Html.ActionLink(@Localizer["no_go_back"].Value, nameof(PrnsController.SelectSinglePrn), "Prns",
                         new

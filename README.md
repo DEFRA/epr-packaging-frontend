@@ -88,6 +88,11 @@ On `src`, execute:
 dotnet test
 ```
 
+### Time-travel testing
+
+The UI can be time-travel tested by setting the `StartupUtcTimestampOverride` to an [RFC-3339](https://www.rfc-editor.org/rfc/rfc3339) compliant date, such as `2025-12-31T23:59:00Z`. This will be used as the initial timestamp when the service starts up. Time will progress as usual. Note that this should **NEVER** be set in production. This setting _will not_ set the system time in downstream services, so is only appropriate for testing UI logic. Note that this behaviour will be overwritten by the `Prn` configuration value if both `OverridePrnCurrentDateForTestingPurposes` and `ShowPrn` are set to `true`, in which case a _static_ value will be set for the current date.
+
+
 ## How To Debug
 Use debugging tools in your chosen IDE.
 

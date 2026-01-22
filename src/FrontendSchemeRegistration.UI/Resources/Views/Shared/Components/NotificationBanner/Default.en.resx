@@ -117,13 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="notification_banner_body" xml:space="preserve">
+  <data name="prn_notification_2026_prns_not_yet_accepted_body" xml:space="preserve">
     <value>PRNs/PERNs accepted at this time will be allocated towards your 2025 recycling obligations only. To use your PRNs/PERNs towards your 2026 recycling obligations, keep them in 'Awaiting Acceptance' until the 2026 obligations calculator becomes available. This message will be updated once the 2026 functionality is released.</value>
   </data>
-  <data name="notification_banner_header" xml:space="preserve">
+  <data name="prn_notification_2026_prns_not_yet_accepted_header" xml:space="preserve">
     <value>DO NOT accept any PRNs/PERNs that you want to use towards your 2026 obligations until the RPD capability to manage your 2026 recycling obligations is released.</value>
   </data>
-  <data name="notification_banner_title" xml:space="preserve">
+  <data name="prn_notification_2026_prns_not_yet_accepted_title" xml:space="preserve">
     <value>Important</value>
+  </data>
+  <data name="prn_notification_2026_prns_now_accepted_title" xml:space="preserve">
+    <value>Important</value>
+  </data>
+  <data name="prn_notification_2026_prns_now_accepted_body" xml:space="preserve">
+    <value>RPD now supports 2026 recycling obligations functionality. From this point onwards, any accepted PRNs/PERNs will be allocated towards your 2026 obligations only.</value>
   </data>
 </root>

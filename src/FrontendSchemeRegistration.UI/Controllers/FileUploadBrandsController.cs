@@ -95,7 +95,6 @@ public class FileUploadBrandsController : Controller
                             OrganisationRole = organisationRole,
                             IsResubmission = session.RegistrationSession.IsResubmission,
                             RegistrationYear = registrationYear,
-                            ShowRegistrationCaption = registrationApplicationSession.ShowRegistrationCaption,
                             RegistrationJourney = registrationApplicationSession.RegistrationJourney
                         });
                 }
@@ -150,7 +149,6 @@ public class FileUploadBrandsController : Controller
                 OrganisationRole = organisationRole,
                 IsResubmission = session.RegistrationSession.IsResubmission,
                 RegistrationYear = registrationYear,
-                ShowRegistrationCaption = registrationApplicationSession.ShowRegistrationCaption,
                 RegistrationJourney = registrationApplicationSession.RegistrationJourney
             });
         }

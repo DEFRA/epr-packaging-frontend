@@ -1,5 +1,4 @@
-﻿using AutoFixture;
-using FrontendSchemeRegistration.Application.Enums;
+﻿using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 using Microsoft.Extensions.Time.Testing;
 
@@ -33,5 +32,42 @@ public class RegistrationWindowTests
         
         // assert
         result.Should().Be(expectedResult);
+    }
+
+    [TestCase(RegistrationJourney.CsoLargeProducer, true)]
+    [TestCase(RegistrationJourney.CsoSmallProducer, true)]
+    [TestCase(RegistrationJourney.DirectLargeProducer, false)]
+    [TestCase(RegistrationJourney.DirectSmallProducer, false)]
+    public void WHEN_RegistrationWindowConstructorWithJourney_called_THEN_IsCsoIsCorrectlySet(RegistrationJourney journey, bool expectedIsCso)
+    {
+        // arrange
+        var timeProvider = new FakeTimeProvider();
+        var openingDate = new DateTime(2026, 6, 1);
+        var deadlineDate = new DateTime(2026, 7, 1);
+        var closingDate = new DateTime(2026, 8, 1);
+
+        // act
+        var sut = new RegistrationWindow(timeProvider, journey, 2026, openingDate, deadlineDate, closingDate);
+
+        // assert
+        sut.IsCso.Should().Be(expectedIsCso);
+    }
+
+    [TestCase(true)]
+    [TestCase(false)]
+    public void WHEN_RegistrationWindowConstructorWithIsCso_called_THEN_IsCsoIsCorrectlySet(bool isCso)
+    {
+        // arrange
+        var timeProvider = new FakeTimeProvider();
+        var openingDate = new DateTime(2026, 6, 1);
+        var deadlineDate = new DateTime(2026, 7, 1);
+        var closingDate = new DateTime(2026, 8, 1);
+
+        // act
+        var sut = new RegistrationWindow(timeProvider, isCso, 2026, openingDate, deadlineDate, closingDate);
+
+        // assert
+        sut.IsCso.Should().Be(isCso);
+        sut.Journey.Should().BeNull();
     }
 }

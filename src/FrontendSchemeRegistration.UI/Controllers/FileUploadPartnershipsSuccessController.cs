@@ -52,6 +52,9 @@ public class FileUploadPartnershipsSuccessController : Controller
         
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
+        
+        ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadPartnerships}")
+            .AppendBackLink(session.RegistrationSession.IsResubmission, registrationYear, registrationJourney:submission.RegistrationJourney, submissionId: submissionId);
 
         return View("FileUploadPartnershipsSuccess", new FileUploadSuccessViewModel
         {
@@ -59,7 +62,8 @@ public class FileUploadPartnershipsSuccessController : Controller
             SubmissionId = submissionId,
             IsResubmission = session.RegistrationSession.IsResubmission,
             RegistrationYear = registrationYear,
-            OrganisationName = organisation.Name
+            OrganisationName = organisation.Name,
+            RegistrationJourney = submission.RegistrationJourney
         });
     }
 }

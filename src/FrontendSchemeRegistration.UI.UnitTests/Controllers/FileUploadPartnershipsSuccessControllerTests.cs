@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using System.Security.Claims;
 using System.Text.Json;
+using Application.Enums;
 using Moq;
 using UI.Controllers;
 using UI.Sessions;
@@ -27,6 +28,7 @@ public class FileUploadPartnershipsSuccessControllerTests
     private Mock<ISubmissionService> _submissionServiceMock;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
     private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
+    private Mock<IUrlHelper> _urlHelperMock;
 
     [SetUp]
     public void SetUp()
@@ -59,8 +61,11 @@ public class FileUploadPartnershipsSuccessControllerTests
                 }
             });
         _registrationApplicationServiceMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(DateTime.Now.Year);
-
+        _urlHelperMock = new Mock<IUrlHelper>();
+        _urlHelperMock.Setup(x => x.Content(It.IsAny<string>())).Returns((string contentPath) => contentPath);
+        
         _systemUnderTest = new FileUploadPartnershipsSuccessController(_submissionServiceMock.Object, _sessionManagerMock.Object, _registrationApplicationServiceMock.Object);
+        _systemUnderTest.Url = _urlHelperMock.Object;
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
@@ -101,7 +106,8 @@ public class FileUploadPartnershipsSuccessControllerTests
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
             .ReturnsAsync(new RegistrationSubmission
             {
-                PartnershipsFileName = fileName
+                PartnershipsFileName = fileName,
+                RegistrationJourney = RegistrationJourney.CsoSmallProducer
             });
 
         var userData = new UserData
@@ -125,10 +131,12 @@ public class FileUploadPartnershipsSuccessControllerTests
             FileName = fileName,
             SubmissionId = new Guid(SubmissionId),
             RegistrationYear = DateTime.Now.Year,
-            OrganisationName = "Org A"
+            OrganisationName = "Org A",
+            RegistrationJourney = RegistrationJourney.CsoSmallProducer
         });
 
         _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.Once);
+        result.ViewData["BackLinkToDisplay"].Should().Be($"~{PagePaths.FileUploadPartnerships}?registrationyear={DateTime.Now.Year}&registrationjourney=CsoSmallProducer&submissionId={SubmissionId}");
     }
 
     [Test]

@@ -35,7 +35,7 @@ var isStubAuth = builderConfig.GetValue<bool>("IsStubAuth", false);
 
 services
     .AddHttpContextAccessor()
-    .RegisterWebComponents(builderConfig, isStubAuth)
+    .RegisterWebComponents(builderConfig, builder.Environment, isStubAuth)
     .ConfigureMsalDistributedTokenOptions();
 
 services
@@ -81,7 +81,7 @@ services.AddHsts(options =>
 
 builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
 
-services.AddAppHttpClient();
+services.AddWebApiGatewayClient();
 
 var app = builder.Build();
 

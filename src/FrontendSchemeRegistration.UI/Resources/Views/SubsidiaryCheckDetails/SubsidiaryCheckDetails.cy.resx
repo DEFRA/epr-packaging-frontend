@@ -1,12 +1,12 @@
 ﻿<root>
 	<data name="detail_name_header" xml:space="preserve">
-		<value>[WELSH]Section</value>
+		<value>Adran</value>
 	</data>
 	<data name="detail_value_header" xml:space="preserve">
-		<value>[WELSH]Value</value>
+		<value>Gwerth</value>
 	</data>
 	<data name="detail_action_header" xml:space="preserve">
-		<value>[WELSH]Action</value>
+		<value>Camau</value>
 	</data>
 	<data name="check-details" xml:space="preserve">
         <value>Gwiriwch eich atebion</value>
@@ -42,6 +42,6 @@
 		<value>Rhybudd</value>
 	</data>
 	<data name="subsidiary-companies-house-number" xml:space="preserve">
-		<value>[WELSH] Companies House number</value>
+		<value>Rhif Tŷ'r Cwmnïau</value>
 	</data>
 </root>

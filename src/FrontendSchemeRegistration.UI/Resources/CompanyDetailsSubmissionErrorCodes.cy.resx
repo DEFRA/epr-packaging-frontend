@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-	<!-- 
+  <!-- 
     Microsoft ResX Schema 
     
     Version 2.0
@@ -59,362 +59,362 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-		<xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-		<xsd:element name="root" msdata:IsDataSet="true">
-			<xsd:complexType>
-				<xsd:choice maxOccurs="unbounded">
-					<xsd:element name="metadata">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" />
-							</xsd:sequence>
-							<xsd:attribute name="name" use="required" type="xsd:string" />
-							<xsd:attribute name="type" type="xsd:string" />
-							<xsd:attribute name="mimetype" type="xsd:string" />
-							<xsd:attribute ref="xml:space" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="assembly">
-						<xsd:complexType>
-							<xsd:attribute name="alias" type="xsd:string" />
-							<xsd:attribute name="name" type="xsd:string" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="data">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-							<xsd:attribute ref="xml:space" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="resheader">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" />
-						</xsd:complexType>
-					</xsd:element>
-				</xsd:choice>
-			</xsd:complexType>
-		</xsd:element>
-	</xsd:schema>
-	<resheader name="resmimetype">
-		<value>text/microsoft-resx</value>
-	</resheader>
-	<resheader name="version">
-		<value>2.0</value>
-	</resheader>
-	<resheader name="reader">
-		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<resheader name="writer">
-		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<data name="80" xml:space="preserve">
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="80" xml:space="preserve">
     <value>Fformat Ffeil Annilys</value>
   </data>
-	<data name="82" xml:space="preserve">
+  <data name="82" xml:space="preserve">
     <value>Ffeil Csv yn Wag</value>
   </data>
-	<data name="83" xml:space="preserve">
+  <data name="83" xml:space="preserve">
     <value>Penynnau Annilys</value>
   </data>
-	<data name="801" xml:space="preserve">
+  <data name="801" xml:space="preserve">
     <value>Rhowch ID y sefydliad</value>
   </data>
-	<data name="802" xml:space="preserve">
+  <data name="802" xml:space="preserve">
     <value>Rhowch enw'r sefydliad</value>
   </data>
-	<data name="803" xml:space="preserve">
+  <data name="803" xml:space="preserve">
     <value>Rhoch god y wlad gartref</value>
   </data>
-	<data name="804" xml:space="preserve">
+  <data name="804" xml:space="preserve">
     <value>Rhaid i god y wlad gartref fod yn un o blith EN NI SC neu WS</value>
   </data>
-	<data name="805" xml:space="preserve">
+  <data name="805" xml:space="preserve">
     <value>Rhowch enw cyntaf y prif gyswllt</value>
   </data>
-	<data name="806" xml:space="preserve">
+  <data name="806" xml:space="preserve">
     <value>Rhowch enw olaf y prif gyswllt</value>
   </data>
-	<data name="807" xml:space="preserve">
+  <data name="807" xml:space="preserve">
     <value>Rhowch ebost y prif gyswllt</value>
   </data>
-	<data name="808" xml:space="preserve">
+  <data name="808" xml:space="preserve">
     <value>Rhowch rif ffôn y prif gyswllt</value>
   </data>
-	<data name="809" xml:space="preserve">
+  <data name="809" xml:space="preserve">
     <value>Rhowch linell gyntaf y cyfeiriad cofrestredig</value>
   </data>
-	<data name="810" xml:space="preserve">
+  <data name="810" xml:space="preserve">
     <value>Rhowch god post y cyfeiriad cofrestredig</value>
   </data>
-	<data name="811" xml:space="preserve">
+  <data name="811" xml:space="preserve">
     <value>Rhowch rif ffôn y cyfeiriad cofrestredig</value>
   </data>
-	<data name="812" xml:space="preserve">
+  <data name="812" xml:space="preserve">
     <value>Os rhowch chi gyfeiriad archwilio, rhaid i'r wlad fod yn un o'r canlynol: EN NI SC WS UK GB Lloegr Gogledd Iwerddon yr Alban Cymru y Deyrnas Unedig neu Brydain Fawr</value>
   </data>
-	<data name="814" xml:space="preserve">
+  <data name="814" xml:space="preserve">
     <value>Os rhowch chi gyfeiriad archwilio rhaid iddo gynnwys llinell gyntaf y cyfeiriad</value>
   </data>
-	<data name="815" xml:space="preserve">
+  <data name="815" xml:space="preserve">
     <value>Os rhowch chi gyfeiriad archwilio rhaid iddo gynnwys y cod post</value>
   </data>
-	<data name="816" xml:space="preserve">
+  <data name="816" xml:space="preserve">
     <value>Rhowch linell gyntaf y prif gyfeiriad</value>
   </data>
-	<data name="817" xml:space="preserve">
+  <data name="817" xml:space="preserve">
     <value>Rhowch god post y prif gyfeiriad</value>
   </data>
-	<data name="818" xml:space="preserve">
+  <data name="818" xml:space="preserve">
     <value>Rhowch rif ffôn y prif gyfeiriad</value>
   </data>
-	<data name="819" xml:space="preserve">
+  <data name="819" xml:space="preserve">
     <value>Methu ailadrodd y cyfuniad o ID sefydliad ac ID is-gwmni</value>
   </data>
-	<data name="820" xml:space="preserve">
+  <data name="820" xml:space="preserve">
     <value>Rhaid i'r cod SIC fod yn rhif â 5 digid - cynhwyswch seroau ar y dechrau os oes eu hangen</value>
   </data>
-	<data name="821" xml:space="preserve">
+  <data name="821" xml:space="preserve">
     <value>Rhaid i sefydliadau fod ag un Gweithgaredd pecynwaith sylfaenol</value>
   </data>
-	<data name="822" xml:space="preserve">
+  <data name="822" xml:space="preserve">
     <value>Ni chaiff sefydliadau fod â mwy nag un Gweithgaredd pecynwaith sylfaenol</value>
   </data>
-	<data name="823" xml:space="preserve">
+  <data name="823" xml:space="preserve">
     <value>Gall y gweithgaredd pecynwaith fod yn Sylfaenol, Eilaidd neu Na yn unig</value>
   </data>
-	<data name="824" xml:space="preserve">
+  <data name="824" xml:space="preserve">
     <value>Rhowch y gweithgaredd pecynwaith - wedi cyflenwi o dan eu brand eu hunain</value>
   </data>
-	<data name="825" xml:space="preserve">
+  <data name="825" xml:space="preserve">
     <value>Rhowch y gweithgaredd pecynwaith - wedi pacio neu wedi llenwi heb frand</value>
   </data>
-	<data name="826" xml:space="preserve">
+  <data name="826" xml:space="preserve">
     <value>Rhowch y gweithgaredd pecynwaith - wedi mewnforio</value>
   </data>
-	<data name="827" xml:space="preserve">
+  <data name="827" xml:space="preserve">
     <value>Rhowch y gweithgaredd pecynwaith - wedi cyflenwi yn wag</value>
   </data>
-	<data name="828" xml:space="preserve">
+  <data name="828" xml:space="preserve">
     <value>Rhowch y gweithgaredd pecynwaith - wedi llogi neu wedi benthyca</value>
   </data>
-	<data name="829" xml:space="preserve">
+  <data name="829" xml:space="preserve">
     <value>Rhowch y gweithgaredd pecynwaith - wedi cyflenwi drwy farchnad ar-lein sy'n perthyn i'r sefydliad</value>
   </data>
-	<data name="830" xml:space="preserve">
+  <data name="830" xml:space="preserve">
     <value>Rhowch y gweithgaredd pecynwaith - gwerthu</value>
   </data>
-	<data name="831" xml:space="preserve">
+  <data name="831" xml:space="preserve">
     <value>Rhowch Ydy neu Nac ydy - ydy'r sefydliad yn gosod pecynwaith ar y farchnad sydd heb enwau brand nodau adnabod neu nodau masnach?</value>
   </data>
-	<data name="840" xml:space="preserve">
+  <data name="840" xml:space="preserve">
     <value>Rhaid i'r enw masnachu fod yn wahanol i enw'r sefydliad</value>
   </data>
-	<data name="845" xml:space="preserve">
+  <data name="845" xml:space="preserve">
     <value>Os rhowch chi gyfeiriad ar gyfer cyflwyno dogfennau rhaid iddo gynnwys llinell gyntaf y cyfeiriad</value>
   </data>
-	<data name="846" xml:space="preserve">
+  <data name="846" xml:space="preserve">
     <value>Os rhowch chi gyfeiriad ar gyfer cyflwyno dogfennau rhaid iddo gynnwys y cod post</value>
   </data>
-	<data name="848" xml:space="preserve">
+  <data name="848" xml:space="preserve">
     <value>Is-fath y sefydliad yw LIC POB FRA - mae hynny'n golygu bod rhaid ichi roi manylion sefydliad arall sydd ag is-fath LFR TEN neu OTH</value>
   </data>
-	<data name="847" xml:space="preserve">
+  <data name="847" xml:space="preserve">
     <value>Os rhowch chi gyfeiriad ar gyfer cyflwyno dogfennau rhaid iddo gynnwys rhif ffôn</value>
   </data>
-	<data name="855" xml:space="preserve">
+  <data name="855" xml:space="preserve">
     <value>Chaiff y trosiant ddim cynnwys coma</value>
   </data>
-	<data name="856" xml:space="preserve">
+  <data name="856" xml:space="preserve">
     <value>Rhaid i'r trosiant fod mewn miliynau hyd at ddau le degol</value>
   </data>
-	<data name="857" xml:space="preserve">
+  <data name="857" xml:space="preserve">
     <value>Rhaid i'r trosiant fod yn fwy na 0</value>
   </data>
-	<data name="858" xml:space="preserve">
+  <data name="858" xml:space="preserve">
     <value>Rhaid i'r trosiant gynnwys rhifau yn unig</value>
   </data>
-	<data name="859" xml:space="preserve">
+  <data name="859" xml:space="preserve">
     <value>Ni chaiff rhif Tŷ'r Cwmnïau fod yn 00000000</value>
   </data>
-	<data name="860" xml:space="preserve">
+  <data name="860" xml:space="preserve">
     <value>Does dim angen rhif Tŷ'r Cwmnïau ar gyfer y math yma o sefydliad</value>
   </data>
-	<data name="861" xml:space="preserve">
+  <data name="861" xml:space="preserve">
     <value>Nid yw rhif Tŷ'r Cwmnïau yn cyfateb i ID y sefydliad yma - gwiriwch y ddau</value>
   </data>
-	<data name="865" xml:space="preserve">
+  <data name="865" xml:space="preserve">
     <value>Rhaid i gyfanswm y tunelledd fod yn fwy na 0</value>
   </data>
-	<data name="867" xml:space="preserve">
+  <data name="867" xml:space="preserve">
     <value>Ni chaiff cyfanswm y tunelledd gynnwys coma</value>
   </data>
-	<data name="868" xml:space="preserve">
+  <data name="868" xml:space="preserve">
     <value>Rhaid i gyfanswm y tunelledd gynnwys rhifau yn unig</value>
   </data>
-	<data name="880" xml:space="preserve">
+  <data name="880" xml:space="preserve">
     <value>Rhowch god y math o sefydliad</value>
   </data>
-	<data name="881" xml:space="preserve">
+  <data name="881" xml:space="preserve">
     <value>Rhaid i god y math o sefydliad fod yn un o blith SOL PAR REG PLC LLP LTD LPA COP CIC OUT OTH</value>
   </data>
-	<data name="882" xml:space="preserve">
+  <data name="882" xml:space="preserve">
     <value>Gwiriwch fod ID y sefydliad yn gywir</value>
   </data>
-	<data name="883" xml:space="preserve">
+  <data name="883" xml:space="preserve">
     <value>Nid yw ID yr is-gwmni'n bodoli. Gwiriwch y ffeil a rhowch gynnig arall arni.</value>
   </data>
-	<data name="884" xml:space="preserve">
+  <data name="884" xml:space="preserve">
     <value>Mae ID yr is-gwmni wedi'i neilltuo i sefydliad arall. Gwiriwch y ffeil a rhowch gynnig arall arni.</value>
   </data>
-	<data name="885" xml:space="preserve">
+  <data name="885" xml:space="preserve">
     <value>Nid yw ID yr is-gwmni yn perthyn i unrhyw sefydliad.</value>
   </data>
-	<data name="886" xml:space="preserve">
+  <data name="886" xml:space="preserve">
     <value>Nid yw rhif Tŷ'r Cwmnïau yn cyfateb i'r ID is-gwmni yma.</value>
   </data>
-	<data name="894" xml:space="preserve">
+  <data name="894" xml:space="preserve">
     <value>Dim ond bach neu fawr y gall maint y sefydliad fod.</value>
   </data>
-	<data name="895" xml:space="preserve">
+  <data name="895" xml:space="preserve">
     <value>Dim ond bach neu fawr y gall maint y sefydliad fod.</value>
   </data>
-	<data name="896" xml:space="preserve">
+  <data name="896" xml:space="preserve">
     <value>I fod yn gymwys fel cynhyrchwr bach, rhaid i'ch trosiant blynyddol diweddaraf fod yn £2 filiwn neu lai, neu rhaid i gyfanswm eich tunelli blynyddol fod yn 50 tunnell neu lai.</value>
   </data>
-	<data name="897" xml:space="preserve">
+  <data name="897" xml:space="preserve">
     <value>I fod yn gymwys fel cynhyrchydd mawr rhaid i'ch trosiant blynyddol mwyaf diweddar fod yn fwy na £2 miliwn a rhaid i gyfanswm eich tunelledd blynyddol fod yn fwy na 50 tunnell.</value>
   </data>
-	<data name="898" xml:space="preserve">
+  <data name="898" xml:space="preserve">
     <value>Rhaid i'r dyddiad ymuno fod ar y ffurf DD/MM/YYYY.</value>
   </data>
-	<data name="899" xml:space="preserve">
+  <data name="899" xml:space="preserve">
     <value>Rhaid ichi roi cod ymadael ar gyfer yr is-gwmni yma.</value>
   </data>
-	<data name="900" xml:space="preserve">
+  <data name="900" xml:space="preserve">
     <value>Rhaid ichi roi dyddiad ymadael ar gyfer yr is-gwmni yma.</value>
   </data>
-	<data name="901" xml:space="preserve">
+  <data name="901" xml:space="preserve">
     <value>Rhaid i'r dyddiad ymuno fod ar y ffurf DD/MM/YYYY.</value>
   </data>
-	<data name="902" xml:space="preserve">
+  <data name="902" xml:space="preserve">
     <value>Rhaid i ddyddiad ymadael yr is-gwmni fod yn hwyrach na dyddiad ymuno'r is-gwmni.</value>
   </data>
-	<data name="903" xml:space="preserve">
+  <data name="903" xml:space="preserve">
     <value>Rhaid i'r rheswm ymadael fod yn bresennol pan fo'r cod ymadael ar gael.</value>
   </data>
-	<data name="904" xml:space="preserve">
+  <data name="904" xml:space="preserve">
     <value>Ni chaiff rheswm dros newid sefydliad gynnwys mwy na 200 o gymeriadau.</value>
   </data>
-	<data name="905" xml:space="preserve">
+  <data name="905" xml:space="preserve">
     <value>Nid yw'r dyddiad ymuno yn cyfateb i'r dyddiad ymuno yn y gronfa ddata.</value>
   </data>
-	<data name="906" xml:space="preserve">
+  <data name="906" xml:space="preserve">
     <value>Rhaid i reswm newid y sefydliad gynnwys rhifau a llythrennau yn unig.</value>
   </data>
-	<data name="907" xml:space="preserve">
+  <data name="907" xml:space="preserve">
     <value>Rhaid i'r cod ymadael fod yn un briflythyren rhwng A ac Q.</value>
   </data>
-	<data name="908" xml:space="preserve">
+  <data name="908" xml:space="preserve">
     <value>Ni chaiff y dyddiad ymadael fod yn y dyfodol.</value>
   </data>
-	<data name="909" xml:space="preserve">
+  <data name="909" xml:space="preserve">
     <value>N chaiff y dyddiad ymuno fod yn y dyfodol.</value>
   </data>
-	<data name="910" xml:space="preserve">
+  <data name="910" xml:space="preserve">
     <value>Rhaid ichi roi cod math cofrestru ar gyfer yr is-gwmni yma.</value>
   </data>
-	<data name="911" xml:space="preserve">
+  <data name="911" xml:space="preserve">
     <value>Rhaid i'r cod math cofrestru fod yn GR (ar gyfer cofrestru grŵp) neu IN (ar gyfer cofrestru unigol).</value>
   </data>
-	<data name="912" xml:space="preserve">
+  <data name="912" xml:space="preserve">
     <value>Rhowch god math cofrestru ar gyfer y sefydliad yma.</value>
   </data>
-	<data name="913" xml:space="preserve">
+  <data name="913" xml:space="preserve">
     <value>Rhowch god ymadael ar gyfer y sefydliad yma.</value>
   </data>
-	<data name="914" xml:space="preserve">
+  <data name="914" xml:space="preserve">
     <value>Rhowch ddyddiad ymadael ar gyfer y sefydliad yma.</value>
   </data>
-	<data name="915" xml:space="preserve">
+  <data name="915" xml:space="preserve">
     <value>Rhaid i ddyddiad ymadael y sefydliad fod yn hwyrach na'i ddyddiad ymuno.</value>
   </data>
-	<data name="916" xml:space="preserve">
+  <data name="916" xml:space="preserve">
     <value>Mae dyddiad ymuno yn orfodol ar gyfer y cod yma.</value>
   </data>
-	<data name="917" xml:space="preserve">
+  <data name="917" xml:space="preserve">
     <value>Rhaid ichi roi dyddiad ymuno ar gyfer y sefydliad yma.</value>
   </data>
-	<data name="918" xml:space="preserve">
+  <data name="918" xml:space="preserve">
     <value>Rydych chi wedi dweud mai cynhyrchydd bach ydych chi. Cofrestrwch rhwng 1 Ionawr a 1 Ebrill.</value>
   </data>
-	<data name="919" xml:space="preserve">
+  <data name="919" xml:space="preserve">
     <value>Rydych chi wedi dweud mai cynhyrchydd bach yw o leiaf un o'ch aelodau. Cofrestrwch yr aelodau yma rhwng 1 Ionawr a 1 Ebrill.</value>
   </data>
-	<data name="73" xml:space="preserve">
+  <data name="73" xml:space="preserve">
     <value>Mae trosiant y sefydliad yma wedi'i gofnodi fel sero. Gwiriwch fod hyn yn gywir cyn ichi gyflwyno ffurflen sy'n dweud sero</value>
   </data>
-	<data name="Error" xml:space="preserve">
+  <data name="Error" xml:space="preserve">
     <value>Gwall</value>
   </data>
-	<data name="Warning" xml:space="preserve">
+  <data name="Warning" xml:space="preserve">
     <value>Rhybudd</value>
   </data>
-	<data name="869" xml:space="preserve">
-    <value>[Welsh] Total tonnage must be provided</value>
+  <data name="869" xml:space="preserve">
+    <value>Rhaid darparu cyfanswm y tunelledd</value>
   </data>
-	<data name="854" xml:space="preserve">
-    <value>[Welsh] Turnover must be provided</value>
+  <data name="854" xml:space="preserve">
+    <value>Rhaid darparu’r trosiant</value>
   </data>
-	<data name="920" xml:space="preserve">
-    <value>[Welsh] Joiner date must be present when leaver code is present.</value>
+  <data name="920" xml:space="preserve">
+    <value>Rhaid i’r dyddiad ymuno fod yn bresennol pan fo’r cod ymadael yn bresennol</value>
   </data>
-	<data name="921" xml:space="preserve">
-    <value>[Welsh] Leaver date should not be present.</value>
+  <data name="921" xml:space="preserve">
+    <value>Ni ddylai'r dyddiad ymadael fod yn bresennol</value>
   </data>
-	<data name="922" xml:space="preserve">
+  <data name="922" xml:space="preserve">
     <value>Rhaid i'r dyddiad ymuno fod yn bresennol pan fo cod ymadael yn bresennol</value>
   </data>
-	<data name="923" xml:space="preserve">
-    <value>Rhaid i'r cod ymadael fod yn rhif 2 ddigid rhwng 01 a 17.</value>
+  <data name="923" xml:space="preserve">
+    <value>Rhaid i'r cod ymadael fod yn rhif 2 ddigid rhwng 01 a 21.</value>
   </data>
-	<data name="924" xml:space="preserve">
+  <data name="924" xml:space="preserve">
     <value>Ni chaniateir dyddiad ymuno pan fo cod ymadael yn bresennol.</value>
   </data>
-	<data name="925" xml:space="preserve">
+  <data name="925" xml:space="preserve">
     <value>Ni ddylai'r cod ymuno neu ymadael fod yn wag.</value>
   </data>
-	<data name="926" xml:space="preserve">
+  <data name="926" xml:space="preserve">
     <value>Nid yw isafswm hyd y cod ymuno neu ymadael yn gywir.</value>
   </data>
-	<data name="927" xml:space="preserve">
+  <data name="927" xml:space="preserve">
     <value>Nid yw uchafswm hyd y cod ymuno neu ymadael yn gywir.</value>
   </data>
-	<data name="928" xml:space="preserve">
+  <data name="928" xml:space="preserve">
     <value>Rhaid i god ymuno fod yn bresennol pan fo dyddiad ymuno yn bresennol.</value>
   </data>
-	<data name="929" xml:space="preserve">
+  <data name="929" xml:space="preserve">
     <value>Dim ond un dyddiad ddylai fod yn bresennol.</value>
   </data>
-	<data name="930" xml:space="preserve">
+  <data name="930" xml:space="preserve">
     <value>Mae  sylw ychwanegol yn orfodol ar gyfer y cod ymadael.</value>
   </data>
-	<data name="931" xml:space="preserve">
+  <data name="931" xml:space="preserve">
     <value>Mae dyddiad ymadael yn orfodol ar gyfer y cod yma.</value>
   </data>
-	<data name="932" xml:space="preserve">
-		<value>[Welsh] This file includes small producer details. Upload a file that contains only large producer details.</value>
-	</data>
-	<data name="933" xml:space="preserve">
-		<value>[Welsh] This file includes large producer details. Upload a file that contains only small producer details.</value>
-	</data>
+  <data name="932" xml:space="preserve">
+    <value>Mae'r ffeil yma yn cynnwys manylion cynhyrchydd bach. Uwchlwythwch ffeil sy'n cynnwys manylion cynhyrchydd mawr yn unig</value>
+  </data>
+  <data name="933" xml:space="preserve">
+    <value>Mae'r ffeil yma yn cynnwys manylion cynhyrchydd mawr. Uwchlwythwch ffeil sy'n cynnwys manylion cynhyrchydd bach yn unig</value>
+  </data>
 </root>

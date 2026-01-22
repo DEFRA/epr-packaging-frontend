@@ -11,7 +11,7 @@ using Services.Interfaces;
 [ExcludeFromCodeCoverage]
 public static class HttpClient
 {
-    public static void AddAppHttpClient(this IServiceCollection services)
+    public static void AddWebApiGatewayClient(this IServiceCollection services)
     {
         var options = services.BuildServiceProvider().GetRequiredService<IOptions<HttpClientOptions>>().Value;
 

@@ -18,9 +18,9 @@
 	<data name="Apply_by_1st_April_x" xml:space="preserve">
     <value>Gwnewch gais erbyn 1 Ebrill, {0}</value>
   </data>
-	<data name="Apply_by_1st_October_x" xml:space="preserve">
-    <value>[Welsh]You must apply for registration for {0} on or before 1 October {1}.</value>
-  </data>
+    <data name="Apply_by_1st_October_x" xml:space="preserve">
+        <value>Rhaid ichi wneud cais am gofrestru ar gyfer {0} ar neu cyn 1 Hydref {1}.</value>
+    </data>
 	<data name="Apply_by_1st_October_compliance_large_x" xml:space="preserve">
     <value>Rhaid ichi wneud cais i gofrestru ar gyfer {0} ar ran cynhyrchwyr mawr ar neu cyn 1 Hydref 2025.</value>
   </data>
@@ -125,4 +125,22 @@
 	<data name="Apply_after_deadline_late_fee_small_producer" xml:space="preserve">
     <value>Rydych chi’n dal yn cael cofrestru ond efallai y bydd ffi hwyr.</value>
   </data>
+    <data name="current_small_producer_registration_title" xml:space="preserve">
+        <value>Cofrestru cynhyrchydd bach ar gyfer {0} </value>
+    </data>
+    <data name="cso_small_producer_instructions2" xml:space="preserve">
+        <value>[Welsh]Applications made after this date could incur a late fee.</value>
+    </data>
+    <data name="cso_small_producer_instructions1" xml:space="preserve">
+        <value>[Welsh]Small producers must apply for registration on or before {0}.</value>
+    </data>
+    <data name="cso_large_producer_instructions1" xml:space="preserve">
+        <value>[Welsh]Large producers needed to apply for registration on or before {0}.</value>
+    </data>
+    <data name="cso_large_producer_instructions2" xml:space="preserve">
+        <value>[Welsh]Applications made after this date could incur a late fee.</value>
+    </data>
+    <data name="current_large_producer_registration_title" xml:space="preserve">
+        <value>Cofrestru cynhyrchydd mawr ar gyfer {0} </value>
+    </data>
 </root>

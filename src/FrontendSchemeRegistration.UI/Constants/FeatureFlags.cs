@@ -1,4 +1,4 @@
-﻿namespace FrontendSchemeRegistration.UI.Constants;
+namespace FrontendSchemeRegistration.UI.Constants;
 
 public static class FeatureFlags
 {
@@ -28,5 +28,7 @@ public static class FeatureFlags
     public const string EnableRegistrationFeeV2 = "EnableRegistrationFeeV2";
 
     public const string IncludeSubsidariesInFeeCalculationsForProducers = "IncludeSubsidariesInFeeCalculationsForProducers";
+    public const string AlwaysShowLargeProducerJourneyMessage = "AlwaysShowLargeProducerJourneyMessage";
     public const string DisplayCsoSmallProducerRegistration = "DisplayCsoSmallProducerRegistration";
+    public const string ShowNotificationBanner = "ShowNotificationBanner";
 }
