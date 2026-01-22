@@ -16,6 +16,7 @@ using Microsoft.FeatureManagement;
 
 namespace FrontendSchemeRegistration.UI.Services;
 
+using System.Collections.Immutable;
 using Application.Services;
 using RegistrationPeriods;
 using ViewModels.Shared;
@@ -540,9 +541,13 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     {
         var applications = new List<RegistrationApplicationViewModel>();
 
-        var windows = _registrationPeriodProvider.GetActiveRegistrationWindows(organisation.OrganisationRole == OrganisationRoles.ComplianceScheme);
+        var isCso = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
 
-        foreach (var window in windows)
+        var activeRegistrationWindows = _registrationPeriodProvider.GetActiveRegistrationWindows(isCso); 
+
+        var windowKeyInformationList = GetRegistrationWindowKeyInformationList(isCso, activeRegistrationWindows);
+
+        foreach (var window in windowKeyInformationList)
         {
             var registrationApplicationSession = await GetRegistrationApplicationSession(httpSession, organisation, window.RegistrationYear, window.Journey);
 
@@ -560,11 +565,52 @@ public class RegistrationApplicationService : IRegistrationApplicationService
                 showLargeProducer = true,   // we can get rid of this once we delete the old configuration and the BuildRegistrationApplicationPerYearViewModels method
                 RegisterSmallProducersCS = _timeProvider.GetUtcNow().Date >= globalVariables.Value.SmallProducersRegStartTime2026,
                 RegistrationJourney = window.Journey,
-                DeadlineDate = window.DeadlineDate
+                DeadlineDate = window.RegistrationWindow.DeadlineDate
             });
         }
 
         return applications.GroupBy(a => a.RegistrationYear).Select(a => new RegistrationYearApplicationsViewModel(int.Parse(a.Key), a)).OrderByDescending(a => a.Year).ToList();
+    }
+
+    /// <summary>
+    /// Returns simplified window information for helping to generate the registration application view models.
+    /// Direct producers can have two windows - large and small - represented by a single UI panel (depending on the date),
+    /// hence their key information gets merged into a single item here
+    /// </summary>
+    /// <param name="isCso"></param>
+    /// <param name="activeRegistrationWindows"></param>
+    /// <returns></returns>
+    private static IReadOnlyCollection<RegistrationWindowKeyInformation> GetRegistrationWindowKeyInformationList(bool isCso,
+        IReadOnlyCollection<RegistrationWindow> activeRegistrationWindows)
+    {
+        IReadOnlyCollection<RegistrationWindowKeyInformation> windows;
+        if (isCso)
+        {
+            windows = activeRegistrationWindows.Select(rw => new RegistrationWindowKeyInformation(rw.WindowType.ToRegistrationJourney(), rw, null, rw.RegistrationYear)).ToImmutableList();
+        }
+        else
+        {
+            // Group direct windows by registration year, merging multiple windows per year
+            windows = activeRegistrationWindows
+                .GroupBy(w => w.RegistrationYear)
+                .Select(group =>
+                {
+                    var directWindows = group
+                        .Select(w => w)
+                        .OrderBy(w => w.DeadlineDate)
+                        .ToList();
+
+                    // take the primary registration window to generate the journey
+                    return new RegistrationWindowKeyInformation(
+                        directWindows[0].WindowType.ToRegistrationJourney(),
+                        directWindows[0],
+                        directWindows.Count > 1 ? directWindows[1] : null,
+                        group.Key);
+                })
+                .ToImmutableList();
+        }
+
+        return windows;
     }
 
     public int? ValidateRegistrationYear(string? registrationYear, bool isParamOptional = false)
@@ -593,6 +639,10 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         var periodEnd = DateTime.Parse($"30 {session.Period.EndMonth} {session.Period.Year}", new CultureInfo("en-GB"));
         return new DateTimeOffset(periodEnd, TimeSpan.Zero);
     }
+    
+    // this structure provides data for tile representing a CSO reg window AND for the single tile that represents the two Direct registration windows,
+    // hence allowing the two deadline dates to be displayed on the Direct reg tile
+    private record class RegistrationWindowKeyInformation(RegistrationJourney? Journey, RegistrationWindow RegistrationWindow, RegistrationWindow? SecondaryRegistrationWindow, int RegistrationYear);
 }
 
 public interface IRegistrationApplicationService

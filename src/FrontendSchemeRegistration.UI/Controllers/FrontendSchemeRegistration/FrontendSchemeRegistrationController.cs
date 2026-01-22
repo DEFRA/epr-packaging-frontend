@@ -429,8 +429,12 @@ public class FrontendSchemeRegistrationController(
         session.UserData = userData;
         await sessionManager.SaveSessionAsync(HttpContext.Session, session);
 
-        var registrationApplicationPerYearViewModels = await registrationApplicationService.BuildRegistrationApplicationPerYearViewModels(HttpContext.Session, organisation);
-        var resubmissionApplicationDetails = await resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(organisation, new List<string> { packagingResubmissionPeriod?.DataPeriod }, session.RegistrationSession.SelectedComplianceScheme?.Id);
+        var legacyRegistrationApplicationPerYearViewModelsTask = registrationApplicationService.BuildRegistrationApplicationPerYearViewModels(HttpContext.Session, organisation);
+        var registrationApplicationYearViewModelsTask = registrationApplicationService.BuildRegistrationYearApplicationsViewModels(HttpContext.Session, organisation);
+        var resubmissionApplicationDetailsTask = resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(organisation,
+            [packagingResubmissionPeriod?.DataPeriod], session.RegistrationSession.SelectedComplianceScheme?.Id);
+        
+        await Task.WhenAll(legacyRegistrationApplicationPerYearViewModelsTask, registrationApplicationYearViewModelsTask, resubmissionApplicationDetailsTask);
 
         // Note: We are reading desired values using existing service to avoid SonarQube issue for adding 8th parameter in the constructor.
         var viewModel = new HomePageSelfManagedViewModel
@@ -439,8 +443,9 @@ public class FrontendSchemeRegistrationController(
             OrganisationNumber = organisation.OrganisationNumber.ToReferenceNumberFormat(),
             CanSelectComplianceScheme = userData.ServiceRole is ServiceRoles.ApprovedPerson or ServiceRoles.DelegatedPerson,
             OrganisationRole = organisation.OrganisationRole!,
-            ResubmissionTaskListViewModel = resubmissionApplicationDetails.ToResubmissionTaskListViewModel(organisation),
-            RegistrationApplicationsPerYear = registrationApplicationPerYearViewModels,
+            ResubmissionTaskListViewModel = resubmissionApplicationDetailsTask.Result.ToResubmissionTaskListViewModel(organisation),
+            RegistrationApplicationsPerYear = legacyRegistrationApplicationPerYearViewModelsTask.Result,
+            RegistrationApplications = registrationApplicationYearViewModelsTask.Result.SelectMany(ray => ray.Applications),
             PackagingResubmissionPeriod = packagingResubmissionPeriod,
             ComplianceYear = timeProvider.GetUtcNow().GetComplianceYear().ToString()
         };
