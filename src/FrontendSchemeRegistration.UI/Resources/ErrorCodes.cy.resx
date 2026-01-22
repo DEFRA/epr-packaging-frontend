@@ -398,21 +398,21 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
     <value>Mae codau ailgylcheddadwyedd yn berthnasol yn unig i fathau o ddeunydd pecynnu HH, PB a HDC-GL ar gyfer cyflwyniadau o 2025 ymlaen ar gyfer sefydliadau mawr (L)</value>
   </data>
   <data name="901" xml:space="preserve">
-    <value>[Welsh]Organisation size must be S.</value>
+    <value>Rhaid i faint y sefydliad fod yn S.</value>
   </data>
   <data name="902" xml:space="preserve">
-    <value>[Welsh]Packaging type must be SP or HDC.</value>
+    <value>Rhaid i'r math o ddeunydd pacio fod yn SP neu HDC.</value>
   </data>
   <data name="903" xml:space="preserve">
-    <value>[Welsh]Packaging class must be P1, P2, P3, P4 or P6.</value>
+    <value>Rhaid i ddosbarth y deunydd pacio fod yn P1, P2, P3, P4 neu P6.</value>
   </data>
   <data name="906" xml:space="preserve">
-    <value>[Welsh]Packaging material weight must have a value greater than 0.</value>
+    <value>Rhaid i bwysau'r deunydd pacio fod yn fwy na 0.</value>
   </data>
   <data name="907" xml:space="preserve">
-    <value>[Welsh]Packaging material quantity must have a value greater than 0.</value>
+    <value>Rhaid i nifer y deunydd pacio fod yn fwy na 0.</value>
   </data>
   <data name="908" xml:space="preserve">
-    <value>[Welsh]Packaging class must be empty.</value>
+    <value>Rhaid i ddosbarth y deunydd pacio fod yn wag.</value>
   </data>
 </root>

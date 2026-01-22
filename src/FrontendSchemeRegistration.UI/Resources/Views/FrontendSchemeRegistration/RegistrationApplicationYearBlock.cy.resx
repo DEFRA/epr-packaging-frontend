@@ -129,16 +129,16 @@
         <value>Cofrestru cynhyrchydd bach ar gyfer {0} </value>
     </data>
     <data name="cso_small_producer_instructions2" xml:space="preserve">
-        <value>[Welsh]Applications made after this date could incur a late fee.</value>
+        <value>Gallai ceisiadau a wneir ar ôl y dyddiad hwn arwain at ffi hwyr.</value>
     </data>
     <data name="cso_small_producer_instructions1" xml:space="preserve">
-        <value>[Welsh]Small producers must apply for registration on or before {0}.</value>
+        <value>Rhaid i gynhyrchwyr bach wneud cais i gofrestru ar neu cyn {0}.</value>
     </data>
     <data name="cso_large_producer_instructions1" xml:space="preserve">
-        <value>[Welsh]Large producers needed to apply for registration on or before {0}.</value>
+        <value>Roedd angen i gynhyrchwyr mawr wneud cais i gofrestru ar neu cyn {0}.</value>
     </data>
     <data name="cso_large_producer_instructions2" xml:space="preserve">
-        <value>[Welsh]Applications made after this date could incur a late fee.</value>
+        <value>Gallai ceisiadau a wneir ar ôl y dyddiad hwn arwain at ffi hwyr.</value>
     </data>
     <data name="current_large_producer_registration_title" xml:space="preserve">
         <value>Cofrestru cynhyrchydd mawr ar gyfer {0} </value>
