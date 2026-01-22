@@ -19,9 +19,11 @@ public class PrnAvailableAcceptanceYearsResolver(TimeProvider timeProvider)
     /// </remarks>
     public int[] Resolve(PrnModel source, object _, int[] __, ResolutionContext context)
     {
+        if (!int.TryParse(source.ObligationYear, out var prnYear))
+            return [];
+
         var now = timeProvider.GetUtcNow();
         var thisComplianceYear = now.GetComplianceYear();
-        var prnYear = source.IssueDate.Year;
 
         // Nonsense case, shouldn't happen. If it does - the current time would eventually catch up and the PRN would then be actionable.
         if (prnYear > thisComplianceYear)
@@ -30,10 +32,6 @@ public class PrnAvailableAcceptanceYearsResolver(TimeProvider timeProvider)
         // Special handling for December Waste
         if (source.DecemberWaste)
         {
-            // Nonsense case, shouldn't happen.
-            if (source.IssueDate.Month != 12)
-                return [];
-
             // Special handling for 2025 December Waste
             // Users do not get to choose between two years for these - effectively should just be the current Compliance Year
             if (prnYear == 2025 && thisComplianceYear is 2025 or 2026)
