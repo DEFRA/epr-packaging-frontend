@@ -1,11 +1,14 @@
+@using System.Globalization
 @using FrontendSchemeRegistration.Application.DTOs.Submission
 @using FrontendSchemeRegistration.Application.Enums
+@using FrontendSchemeRegistration.Application.Options.RegistrationPeriodPatterns
+@using FrontendSchemeRegistration.UI.Services.RegistrationPeriods
 @using FrontendSchemeRegistration.UI.Sessions
 @using FrontendSchemeRegistration.UI.ViewModels.Shared
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @model FrontendSchemeRegistration.UI.ViewModels.Shared.RegistrationApplicationViewModel
 
-<div class="govuk-grid-column-one-half box">
+<div class="registration-application-block govuk-grid-column-one-half box">
     <div class="@GetCardCssClass()">
         <div class="@GetHeaderContainerCssClass()">
             <h2 class="@GetHeaderCssClass()">
@@ -13,7 +16,7 @@
                    asp-action="@Model.RegistrationApplicationLink"
                    asp-route-registrationjourney="@Model.RegistrationJourney"
                    asp-route-registrationyear="@Model.RegistrationYear"
-                   class="govuk-link govuk-link--no-visited-state">
+                   class="registration-application-block__direct-reg-year-title-link govuk-link govuk-link--no-visited-state">
                     @if (Model.RegistrationJourney == RegistrationJourney.CsoLargeProducer)
                     {
                         @Localizer["current_large_producer_registration_title", Model.RegistrationYear]    
@@ -24,7 +27,7 @@
                     }
                     else
                     {
-                        @Localizer["registration_for_year", Model.RegistrationYear]
+                        <span>@Localizer["registration_for_year", Model.RegistrationYear]</span>
                     }
                 </a>
             </h2>
@@ -169,25 +172,33 @@
                 <p class="govuk-body">@Localizer["You_will_then_need_to_pay_your_registration_fee"]</p>
             </div>
         }
-        else
+        else // panel display the org hasn't started registration
         {
-            if (!model.showLargeProducer)
+            // these legacy registration windows are closed
+            if (model.RegistrationWindow.WindowType == WindowType.Cso || model.RegistrationWindow.WindowType == WindowType.Direct) 
             {
-                <p class="govuk-body">@Localizer["you_need_to_register_by_1_April", model.RegistrationYear] @Localizer["Apply_by_1st_April_x", model.RegistrationYear]</p>
+                <p class="govuk-body">@Localizer["legacy_registration_instructions", model.RegistrationYear, model.RegistrationWindow.DeadlineDate.AddDays(-1).ToString("d MMMM yyyy", CultureInfo.CurrentUICulture)]</p>
             }
-            else
+            else if (model.IsComplianceScheme)
             {
-                if (model.IsComplianceScheme)
-                {
-                    <p class="govuk-body">@Localizer[model.RegistrationJourney == RegistrationJourney.CsoSmallProducer ? "cso_small_producer_instructions1" : "cso_large_producer_instructions1", model.DeadlineDate.AddDays(-1).ToString("d MMM yyyy")]</p>
-                    <p class="govuk-body">@Localizer[model.RegistrationJourney == RegistrationJourney.CsoSmallProducer ? "cso_small_producer_instructions2" : "cso_large_producer_instructions2"]</p>
-                }
-                else
-                {
-                    <p class="govuk-body">@Localizer[model.RegisterSmallProducersCS ? "Apply_by_1st_April_producer_small_x" : "you_need_to_register_by_October_x", model.RegistrationYear]</p>
-                    <p class="govuk-body">@Localizer[model.RegisterSmallProducersCS ? "Deadline_for_large_producer" : "you_can_register_after_October"]</p>
-                    <p class="govuk-body">@Localizer[model.RegisterSmallProducersCS ? "Apply_after_deadline_late_fee_small_producer" : ""]</p>
-                }
+                <p class="govuk-body">@Localizer[model.RegistrationJourney == RegistrationJourney.CsoSmallProducer ? "cso_small_producer_instructions1" : "cso_large_producer_instructions1", model.RegistrationWindow.DeadlineDate.AddDays(-1).ToString("d MMMM yyyy", CultureInfo.CurrentUICulture)]</p>
+                <p class="govuk-body">@Localizer[model.RegistrationJourney == RegistrationJourney.CsoSmallProducer ? "cso_small_producer_instructions2" : "cso_large_producer_instructions2"]</p>
+            }
+            else if (model.SecondaryRegistrationWindow is null) // direct, small window has not opened, therefore targeted at large producers
+            {
+                <p class="govuk-body">@Localizer[model.RegistrationWindow.GetRegistrationWindowStatus() == RegistrationWindowStatus.OpenAndNotLate ? "direct_large_producer_open_instructions1" : "direct_large_producer_late_instructions1", model.RegistrationYear, model.RegistrationWindow.DeadlineDate.ToString("d MMMM yyyy", CultureInfo.CurrentUICulture)]</p>
+                <p class="govuk-body">@Localizer[model.RegistrationWindow.GetRegistrationWindowStatus() == RegistrationWindowStatus.OpenAndNotLate ? "direct_large_producer_open_instructions2" : "direct_large_producer_late_instructions2"]</p>
+            }
+            else if (model.SecondaryRegistrationWindow.GetRegistrationWindowStatus() == RegistrationWindowStatus.OpenAndNotLate) // direct, small (Secondary) window open, large window past deadline date
+            {
+                <p class="govuk-body">@Localizer["direct_small_producer_open_instructions1", model.SecondaryRegistrationWindow.DeadlineDate.AddDays(-1).ToString("d MMMM yyyy", CultureInfo.CurrentUICulture)]</p>
+                <p class="govuk-body">@Localizer["direct_small_producer_open_instructions2", model.RegistrationYear, model.RegistrationWindow.DeadlineDate.ToString("d MMMM yyyy", CultureInfo.CurrentUICulture)]</p>
+                <p class="govuk-body">@Localizer["direct_small_producer_open_instructions3"]</p>
+            }
+            else // both (direct) windows are assumed to be late since the 2nd is late and they are ordered by deadline
+            {
+                <p class="govuk-body">@Localizer["direct_small_producer_late_instructions1", model.RegistrationYear, model.SecondaryRegistrationWindow.DeadlineDate.AddDays(-1).ToString("d MMMM yyyy", CultureInfo.CurrentUICulture)]</p>
+                <p class="govuk-body">@Localizer["direct_small_producer_late_instructions2"]</p>
             }
         }
     }

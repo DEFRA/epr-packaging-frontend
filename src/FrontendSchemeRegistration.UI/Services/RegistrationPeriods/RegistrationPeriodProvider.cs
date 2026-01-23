@@ -3,7 +3,7 @@ namespace FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using Application.Enums;
-using Application.Options.ReistrationPeriodPatterns;
+using Application.Options.RegistrationPeriodPatterns;
 using Microsoft.Extensions.Options;
 
 /// <summary>

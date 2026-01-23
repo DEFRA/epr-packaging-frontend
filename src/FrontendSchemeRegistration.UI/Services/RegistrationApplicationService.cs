@@ -505,37 +505,36 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         await frontEndSessionManager.SaveSessionAsync(httpSession, frontEndSession);
     }
 
-    public async Task<List<RegistrationApplicationViewModel>> BuildRegistrationApplicationPerYearViewModels(ISession httpSession, Organisation organisation)
-    {
-        var years = globalVariables.Value.RegistrationYear.Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .Select(y => int.TryParse(y, out var year) ? year : throw new FormatException($"Invalid year: '{y}'"))
-            .OrderByDescending(n => n).ToArray();
-
-        var viewModels = new List<RegistrationApplicationViewModel>();
-
-        foreach (var year in years)
-        {
-            var registrationApplicationSession = await GetRegistrationApplicationSession(httpSession, organisation, year, null);
-
-            viewModels.Add(new RegistrationApplicationViewModel
-            {
-                ApplicationStatus = registrationApplicationSession.ApplicationStatus,
-                FileUploadStatus = registrationApplicationSession.FileUploadStatus,
-                PaymentViewStatus = registrationApplicationSession.PaymentViewStatus,
-                AdditionalDetailsStatus = registrationApplicationSession.AdditionalDetailsStatus,
-                ApplicationReferenceNumber = registrationApplicationSession.ApplicationReferenceNumber,
-                RegistrationReferenceNumber = registrationApplicationSession.RegistrationReferenceNumber,
-                IsResubmission = registrationApplicationSession.IsResubmission,
-                RegistrationYear = year.ToString(),
-                IsComplianceScheme = registrationApplicationSession.IsComplianceScheme,
-                showLargeProducer = year == 2026,
-                RegisterSmallProducersCS = _timeProvider.GetUtcNow().Date >= globalVariables.Value.SmallProducersRegStartTime2026,
-                DeadlineDate = registrationApplicationSession.IsComplianceScheme ? globalVariables.Value.LargeProducerLateFeeDeadline2026 : DateTime.MinValue   // this is only displayed for CSOs 
-            });
-        }
-
-        return viewModels;
-    }
+    // public async Task<List<RegistrationApplicationViewModel>> BuildRegistrationApplicationPerYearViewModels(ISession httpSession, Organisation organisation)
+    // {
+    //     var years = globalVariables.Value.RegistrationYear.Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+    //         .Select(y => int.TryParse(y, out var year) ? year : throw new FormatException($"Invalid year: '{y}'"))
+    //         .OrderByDescending(n => n).ToArray();
+    //
+    //     var viewModels = new List<RegistrationApplicationViewModel>();
+    //
+    //     foreach (var year in years)
+    //     {
+    //         var registrationApplicationSession = await GetRegistrationApplicationSession(httpSession, organisation, year, null);
+    //
+    //         viewModels.Add(new RegistrationApplicationViewModel
+    //         {
+    //             ApplicationStatus = registrationApplicationSession.ApplicationStatus,
+    //             FileUploadStatus = registrationApplicationSession.FileUploadStatus,
+    //             PaymentViewStatus = registrationApplicationSession.PaymentViewStatus,
+    //             AdditionalDetailsStatus = registrationApplicationSession.AdditionalDetailsStatus,
+    //             ApplicationReferenceNumber = registrationApplicationSession.ApplicationReferenceNumber,
+    //             RegistrationReferenceNumber = registrationApplicationSession.RegistrationReferenceNumber,
+    //             IsResubmission = registrationApplicationSession.IsResubmission,
+    //             RegistrationYear = year.ToString(),
+    //             IsComplianceScheme = registrationApplicationSession.IsComplianceScheme,
+    //             showLargeProducer = year == 2026,
+    //             RegisterSmallProducersCS = _timeProvider.GetUtcNow().Date >= globalVariables.Value.SmallProducersRegStartTime2026
+    //         });
+    //     }
+    //
+    //     return viewModels;
+    // }
 
     public async Task<List<RegistrationYearApplicationsViewModel>> BuildRegistrationYearApplicationsViewModels(ISession httpSession, Organisation organisation)
     {
@@ -562,10 +561,9 @@ public class RegistrationApplicationService : IRegistrationApplicationService
                 IsResubmission = registrationApplicationSession.IsResubmission,
                 RegistrationYear = window.RegistrationYear.ToString(),
                 IsComplianceScheme = registrationApplicationSession.IsComplianceScheme,
-                showLargeProducer = true,   // we can get rid of this once we delete the old configuration and the BuildRegistrationApplicationPerYearViewModels method
-                RegisterSmallProducersCS = _timeProvider.GetUtcNow().Date >= globalVariables.Value.SmallProducersRegStartTime2026,
                 RegistrationJourney = window.Journey,
-                DeadlineDate = window.RegistrationWindow.DeadlineDate
+                RegistrationWindow = window.RegistrationWindow,
+                SecondaryRegistrationWindow = window.SecondaryRegistrationWindow
             });
         }
 
@@ -658,8 +656,6 @@ public interface IRegistrationApplicationService
     Task CreateRegistrationApplicationEvent(ISession httpSession, string? comments, string? paymentMethod, SubmissionType submissionType);
 
     Task SetRegistrationFileUploadSession(ISession httpSession, string organisationNumber, int registrationYear, bool? isResubmission);
-
-    Task<List<RegistrationApplicationViewModel>> BuildRegistrationApplicationPerYearViewModels(ISession httpSession, Organisation organisation);
 
     Task<List<RegistrationYearApplicationsViewModel>> BuildRegistrationYearApplicationsViewModels(
         ISession httpSession, Organisation organisation);

@@ -429,12 +429,11 @@ public class FrontendSchemeRegistrationController(
         session.UserData = userData;
         await sessionManager.SaveSessionAsync(HttpContext.Session, session);
 
-        var legacyRegistrationApplicationPerYearViewModelsTask = registrationApplicationService.BuildRegistrationApplicationPerYearViewModels(HttpContext.Session, organisation);
         var registrationApplicationYearViewModelsTask = registrationApplicationService.BuildRegistrationYearApplicationsViewModels(HttpContext.Session, organisation);
         var resubmissionApplicationDetailsTask = resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(organisation,
             [packagingResubmissionPeriod?.DataPeriod], session.RegistrationSession.SelectedComplianceScheme?.Id);
         
-        await Task.WhenAll(legacyRegistrationApplicationPerYearViewModelsTask, registrationApplicationYearViewModelsTask, resubmissionApplicationDetailsTask);
+        await Task.WhenAll(registrationApplicationYearViewModelsTask, resubmissionApplicationDetailsTask);
 
         // Note: We are reading desired values using existing service to avoid SonarQube issue for adding 8th parameter in the constructor.
         var viewModel = new HomePageSelfManagedViewModel
@@ -444,7 +443,6 @@ public class FrontendSchemeRegistrationController(
             CanSelectComplianceScheme = userData.ServiceRole is ServiceRoles.ApprovedPerson or ServiceRoles.DelegatedPerson,
             OrganisationRole = organisation.OrganisationRole!,
             ResubmissionTaskListViewModel = resubmissionApplicationDetailsTask.Result.ToResubmissionTaskListViewModel(organisation),
-            RegistrationApplicationsPerYear = legacyRegistrationApplicationPerYearViewModelsTask.Result,
             RegistrationApplications = registrationApplicationYearViewModelsTask.Result.SelectMany(ray => ray.Applications),
             PackagingResubmissionPeriod = packagingResubmissionPeriod,
             ComplianceYear = timeProvider.GetUtcNow().GetComplianceYear().ToString()

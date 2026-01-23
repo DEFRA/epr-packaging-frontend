@@ -1,6 +1,6 @@
 namespace FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 
-using Application.Options.ReistrationPeriodPatterns;
+using Application.Options.RegistrationPeriodPatterns;
 using FrontendSchemeRegistration.Application.Enums;
 
 public static class WindowTypeExtensions

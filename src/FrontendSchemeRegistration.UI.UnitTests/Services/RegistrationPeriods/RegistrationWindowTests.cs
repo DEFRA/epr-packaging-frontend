@@ -4,7 +4,7 @@ using Microsoft.Extensions.Time.Testing;
 
 namespace FrontendSchemeRegistration.UI.UnitTests.Services.RegistrationPeriods;
 
-using Application.Options.ReistrationPeriodPatterns;
+using Application.Options.RegistrationPeriodPatterns;
 using FluentAssertions;
 
 [TestFixture]

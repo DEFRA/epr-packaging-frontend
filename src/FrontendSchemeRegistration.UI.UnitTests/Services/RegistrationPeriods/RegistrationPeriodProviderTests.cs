@@ -1,5 +1,5 @@
 ﻿using FrontendSchemeRegistration.Application.Enums;
-using FrontendSchemeRegistration.Application.Options.ReistrationPeriodPatterns;
+using FrontendSchemeRegistration.Application.Options.RegistrationPeriodPatterns;
 using FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
