@@ -16,7 +16,7 @@ public class ServicesController(IStubAuthenticationService stubAuthenticationSer
     public IActionResult AccountDetails([FromQuery] string returnUrl)
     {
 #if !DEBUG
-        return Notfound();
+        return NotFound();
 #endif
 
         return View("AccountDetails", new StubAuthenticationViewModel
@@ -31,7 +31,7 @@ public class ServicesController(IStubAuthenticationService stubAuthenticationSer
     public async Task<IActionResult> AccountDetails(StubAuthenticationViewModel model)
     {
 #if !DEBUG
-        return Notfound();
+        return NotFound();
 #endif
         var claims = await stubAuthenticationService.CreateClaimsPrincipal(model);
         
@@ -46,7 +46,7 @@ public class ServicesController(IStubAuthenticationService stubAuthenticationSer
     public IActionResult StubSignedIn([FromQuery] string returnUrl)
     {
 #if !DEBUG
-        return Notfound();
+        return NotFound();
 #endif
         var viewModel = new SignedInAccountViewModel
         {
