@@ -48,7 +48,7 @@ public class StubAuthenticationService(IHttpContextAccessor httpContextAccessor,
     {
         //This is for debug only
 #if !DEBUG
-        return;
+        return new ClaimsPrincipal();
 #endif
         
         var claims = new List<Claim>
