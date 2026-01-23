@@ -27,7 +27,6 @@ public class HomePageSelfManagedViewModel
     public NotificationViewModel Notification { get; set; } = new NotificationViewModel();
 
     public ResubmissionTaskListViewModel ResubmissionTaskListViewModel { get; set; }
-    public List<RegistrationApplicationViewModel> RegistrationApplicationsPerYear { get; set; } = new();
     public IEnumerable<RegistrationApplicationViewModel> RegistrationApplications { get; set; } = []; 
 
     public SubmissionPeriod PackagingResubmissionPeriod { get; set; }

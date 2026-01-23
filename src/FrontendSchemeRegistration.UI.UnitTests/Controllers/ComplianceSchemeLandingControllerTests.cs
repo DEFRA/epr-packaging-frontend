@@ -210,9 +210,6 @@ public class ComplianceSchemeLandingControllerTests
            }
         };
 
-        _registrationApplicationService.Setup(x => x.BuildRegistrationApplicationPerYearViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
-            .ReturnsAsync(registrationApplicationPerYear);
-
         var registrationApplicationDetails = (RegistrationApplicationDetails)null;
         _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
 
@@ -388,9 +385,6 @@ public class ComplianceSchemeLandingControllerTests
         _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<RegistrationJourney?>(), It.IsAny<bool?>()))
             .ReturnsAsync(_registrationApplicationSession);
 
-        _registrationApplicationService.Setup(x => x.BuildRegistrationApplicationPerYearViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
-            .ReturnsAsync(registrationApplicationPerYear);
-
         _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
 
         // Act
@@ -492,9 +486,6 @@ public class ComplianceSchemeLandingControllerTests
             IsResubmission = registrationApplicationSession.IsResubmission
            }
         };
-
-        _registrationApplicationService.Setup(x => x.BuildRegistrationApplicationPerYearViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
-            .ReturnsAsync(registrationApplicationPerYear);
 
         _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
 
@@ -598,9 +589,6 @@ public class ComplianceSchemeLandingControllerTests
            }
         };
 
-        _registrationApplicationService.Setup(x => x.BuildRegistrationApplicationPerYearViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
-            .ReturnsAsync(registrationApplicationPerYear);
-
         _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
 
         // Act
@@ -688,9 +676,6 @@ public class ComplianceSchemeLandingControllerTests
             IsResubmission = _registrationApplicationSession.IsResubmission
            }
         };
-
-        _registrationApplicationService.Setup(x => x.BuildRegistrationApplicationPerYearViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
-            .ReturnsAsync(registrationApplicationPerYear);
 
         var registrationApplicationDetails = (RegistrationApplicationDetails) null;
         _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
@@ -788,9 +773,6 @@ public class ComplianceSchemeLandingControllerTests
             IsResubmission = _registrationApplicationSession.IsResubmission
            }
         };
-
-        _registrationApplicationService.Setup(x => x.BuildRegistrationApplicationPerYearViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
-            .ReturnsAsync(registrationApplicationPerYear);
 
         var registrationApplicationDetails = (RegistrationApplicationDetails)null;
         _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);

@@ -453,4 +453,11 @@ table.cookies-table {
     }
 }
 
+.registration-application-block {
+    &__direct-reg-year-title-link {
+        display: flex;
+        flex-direction: column;
+    }
+}
+
     
