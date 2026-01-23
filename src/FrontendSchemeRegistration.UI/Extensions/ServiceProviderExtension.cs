@@ -329,7 +329,7 @@ public static class ServiceProviderExtension
             .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
             {
-                options.LoginPath = "/services/stub-signin";
+                options.LoginPath = "/services/account-details";
                 options.ExpireTimeSpan = TimeSpan.FromHours(1);
                 options.Cookie.Name = StubAuthConstants.StubAuthCookieName;
                 options.SlidingExpiration = true;

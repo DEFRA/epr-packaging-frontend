@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Logging;
 using CookieOptions = FrontendSchemeRegistration.Application.Options.CookieOptions;
 
 var builder = WebApplication.CreateBuilder(args);
+var isComponentTest = builder.Environment.EnvironmentName.Equals("ComponentTest", StringComparison.OrdinalIgnoreCase);
 var services = builder.Services;
 var builderConfig = builder.Configuration;
 var globalVariables = builderConfig.Get<GlobalVariables>();
@@ -41,7 +42,11 @@ services
 services
     .AddControllersWithViews(options =>
     {
-        options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+        if (!isComponentTest)
+        {
+            options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());    
+        }
+        
     })
     .AddViewLocalization()
     .AddDataAnnotationsLocalization()

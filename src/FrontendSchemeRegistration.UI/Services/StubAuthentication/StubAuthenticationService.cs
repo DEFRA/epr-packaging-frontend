@@ -99,20 +99,30 @@ public class CustomClaims(IUserAccountService userAccountService) : ICustomClaim
         var userData = new UserData
         {
             ServiceRoleId = userAccount.User.ServiceRoleId,
+            ServiceRole = userAccount.User.ServiceRole,
+            Service = userAccount.User.Service,
             FirstName = userAccount.User.FirstName,
             LastName = userAccount.User.LastName,
             Email = userAccount.User.Email,
             Id = userAccount.User.Id,
+            EnrolmentStatus = userAccount.User.EnrolmentStatus,
+            JobTitle = "Director",
+            RoleInOrganisation = userAccount.User.RoleInOrganisation,
             Organisations = userAccount.User.Organisations.Select(x =>
                 new Organisation
                 {
                     Id = x.Id,
                     Name = x.OrganisationName,
                     OrganisationRole = x.OrganisationRole,
-                    OrganisationType = x.OrganisationType
+                    OrganisationType = x.OrganisationType,
+                    OrganisationNumber = x.OrganisationNumber
                 }).ToList()
         };
-        return new List<Claim> { new(ClaimTypes.UserData, JsonSerializer.Serialize(userData)) };
+        return new List<Claim>
+        {
+            new(ClaimTypes.UserData, JsonSerializer.Serialize(userData)),
+            new (ClaimConstants.ObjectId, userAccount.User.Id.ToString())
+        };
     }
 }
 
