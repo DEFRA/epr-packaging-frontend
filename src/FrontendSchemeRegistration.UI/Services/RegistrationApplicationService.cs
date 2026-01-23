@@ -505,37 +505,6 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         await frontEndSessionManager.SaveSessionAsync(httpSession, frontEndSession);
     }
 
-    // public async Task<List<RegistrationApplicationViewModel>> BuildRegistrationApplicationPerYearViewModels(ISession httpSession, Organisation organisation)
-    // {
-    //     var years = globalVariables.Value.RegistrationYear.Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-    //         .Select(y => int.TryParse(y, out var year) ? year : throw new FormatException($"Invalid year: '{y}'"))
-    //         .OrderByDescending(n => n).ToArray();
-    //
-    //     var viewModels = new List<RegistrationApplicationViewModel>();
-    //
-    //     foreach (var year in years)
-    //     {
-    //         var registrationApplicationSession = await GetRegistrationApplicationSession(httpSession, organisation, year, null);
-    //
-    //         viewModels.Add(new RegistrationApplicationViewModel
-    //         {
-    //             ApplicationStatus = registrationApplicationSession.ApplicationStatus,
-    //             FileUploadStatus = registrationApplicationSession.FileUploadStatus,
-    //             PaymentViewStatus = registrationApplicationSession.PaymentViewStatus,
-    //             AdditionalDetailsStatus = registrationApplicationSession.AdditionalDetailsStatus,
-    //             ApplicationReferenceNumber = registrationApplicationSession.ApplicationReferenceNumber,
-    //             RegistrationReferenceNumber = registrationApplicationSession.RegistrationReferenceNumber,
-    //             IsResubmission = registrationApplicationSession.IsResubmission,
-    //             RegistrationYear = year.ToString(),
-    //             IsComplianceScheme = registrationApplicationSession.IsComplianceScheme,
-    //             showLargeProducer = year == 2026,
-    //             RegisterSmallProducersCS = _timeProvider.GetUtcNow().Date >= globalVariables.Value.SmallProducersRegStartTime2026
-    //         });
-    //     }
-    //
-    //     return viewModels;
-    // }
-
     public async Task<List<RegistrationYearApplicationsViewModel>> BuildRegistrationYearApplicationsViewModels(ISession httpSession, Organisation organisation)
     {
         var applications = new List<RegistrationApplicationViewModel>();
