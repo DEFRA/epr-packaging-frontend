@@ -148,9 +148,6 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
         RegistrationApplicationService.Setup(x => x.BuildRegistrationYearApplicationsViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
             .ReturnsAsync(registrationApplicationYears.ToList());
 
-        RegistrationApplicationService.Setup(x => x.BuildRegistrationApplicationPerYearViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
-            .ReturnsAsync(registrationApplicationPerYear);
-
         // Act
         var result = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
         var complianceYear = ((HomePageSelfManagedViewModel)result.Model).ComplianceYear;
@@ -165,14 +162,6 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
             CanSelectComplianceScheme = expectedCanSelectComplianceSchemeValue,
             PackagingResubmissionPeriod = submissionPeriod,
             RegistrationApplications = registrationApplicationYears.SelectMany(ray => ray.Applications),
-            RegistrationApplicationsPerYear = new List<RegistrationApplicationViewModel>()
-            {
-                new RegistrationApplicationViewModel
-                {
-                    ApplicationReferenceNumber = string.Empty,
-                    RegistrationReferenceNumber = string.Empty,
-                }
-            },
             Notification = new NotificationViewModel
             {
                 HasPendingNotification = false,
@@ -334,9 +323,6 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
         RegistrationApplicationService.Setup(x => x.BuildRegistrationYearApplicationsViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
             .ReturnsAsync(registrationApplicationYears.ToList());
 
-        RegistrationApplicationService.Setup(x => x.BuildRegistrationApplicationPerYearViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
-            .ReturnsAsync(registrationApplicationPerYear);
-
         // Act
         var response = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
         var complianceYear = ((HomePageSelfManagedViewModel)response.Model).ComplianceYear;
@@ -351,17 +337,6 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
                 OrganisationName = OrganisationName,
                 OrganisationNumber = "123 456",
                 OrganisationRole = "Producer",
-                RegistrationApplicationsPerYear = new List<RegistrationApplicationViewModel>()
-                {
-                    new RegistrationApplicationViewModel
-                    {
-                        ApplicationReferenceNumber = reference,
-                        FileUploadStatus = RegistrationTaskListStatus.Pending,
-                        PaymentViewStatus = RegistrationTaskListStatus.CanNotStartYet,
-                        AdditionalDetailsStatus = RegistrationTaskListStatus.CanNotStartYet,
-                        ApplicationStatus = ApplicationStatusType.FileUploaded,
-                    }
-                },
                 RegistrationApplications = registrationApplicationYears.SelectMany(ray => ray.Applications),
                 ResubmissionTaskListViewModel = new(),
                 PackagingResubmissionPeriod = submissionPeriod,
@@ -426,9 +401,6 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
         RegistrationApplicationService.Setup(x => x.BuildRegistrationYearApplicationsViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
             .ReturnsAsync(registrationApplicationYears.ToList());
 
-        RegistrationApplicationService.Setup(x => x.BuildRegistrationApplicationPerYearViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
-            .ReturnsAsync(registrationApplicationPerYear);
-
         // Act
         var response = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
         var complianceYear = ((HomePageSelfManagedViewModel)response.Model).ComplianceYear;
@@ -440,18 +412,6 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
             .And
             .BeEquivalentTo(new HomePageSelfManagedViewModel
             {
-                RegistrationApplicationsPerYear = new List<RegistrationApplicationViewModel>()
-                {
-                    new RegistrationApplicationViewModel
-                    {
-                        ApplicationReferenceNumber = reference,
-                        RegistrationReferenceNumber = reference,
-                        FileUploadStatus = RegistrationTaskListStatus.Completed,
-                        PaymentViewStatus = RegistrationTaskListStatus.Completed,
-                        AdditionalDetailsStatus = RegistrationTaskListStatus.NotStarted,
-                        ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
-                    }
-                },
                 OrganisationName = OrganisationName,
                 OrganisationNumber = "123 456",
                 OrganisationRole = "Producer",
@@ -519,9 +479,6 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
         RegistrationApplicationService.Setup(x => x.BuildRegistrationYearApplicationsViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
             .ReturnsAsync(registrationApplicationYears.ToList());
 
-        RegistrationApplicationService.Setup(x => x.BuildRegistrationApplicationPerYearViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
-            .ReturnsAsync(registrationApplicationPerYear);
-
         ResubmissionApplicationService.Setup(x => x.GetActiveSubmissionPeriod()).ReturnsAsync(submissionPeriod);
 
         // Act
@@ -538,18 +495,6 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
                 OrganisationName = OrganisationName,
                 OrganisationNumber = "123 456",
                 OrganisationRole = "Producer",
-                RegistrationApplicationsPerYear = new List<RegistrationApplicationViewModel>()
-                {
-                    new RegistrationApplicationViewModel
-                    {
-                        ApplicationReferenceNumber = reference,
-                        RegistrationReferenceNumber = reference,
-                        FileUploadStatus = RegistrationTaskListStatus.Completed,
-                        PaymentViewStatus = RegistrationTaskListStatus.Completed,
-                        AdditionalDetailsStatus = RegistrationTaskListStatus.Completed,
-                        ApplicationStatus = ApplicationStatusType.SubmittedToRegulator
-                    }
-                },
                 RegistrationApplications = registrationApplicationYears.SelectMany(ray => ray.Applications),
                 ResubmissionTaskListViewModel = new(),
                 PackagingResubmissionPeriod = submissionPeriod,

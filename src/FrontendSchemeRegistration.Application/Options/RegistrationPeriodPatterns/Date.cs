@@ -1,4 +1,4 @@
-namespace FrontendSchemeRegistration.Application.Options.ReistrationPeriodPatterns;
+namespace FrontendSchemeRegistration.Application.Options.RegistrationPeriodPatterns;
 
 public class Date
 {

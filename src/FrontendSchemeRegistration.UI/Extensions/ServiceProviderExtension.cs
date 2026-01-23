@@ -30,7 +30,7 @@ using System.Runtime.CompilerServices;
 namespace FrontendSchemeRegistration.UI.Extensions;
 
 using Application.Helpers;
-using Application.Options.ReistrationPeriodPatterns;
+using Application.Options.RegistrationPeriodPatterns;
 using Polly;
 using Services.RegistrationPeriods;
 using System.Security.Claims;
