@@ -1,6 +1,8 @@
 ﻿namespace FrontendSchemeRegistration.UI.ViewModels;
 
 using System.Diagnostics.CodeAnalysis;
+using EPR.Common.Authorization.Constants;
+using FrontendSchemeRegistration.Application.Enums;
 
 [ExcludeFromCodeCoverage]
 public class ComplianceSchemeMemberLandingViewModel
@@ -15,5 +17,6 @@ public class ComplianceSchemeMemberLandingViewModel
 
     public string ServiceRole { get; set; }
 
+    public bool CanManageComplianceScheme => ServiceRole == ServiceRoles.ApprovedPerson || ServiceRole == ServiceRoles.DelegatedPerson;
     public NotificationViewModel Notification { get; set; } = new NotificationViewModel();
 }
