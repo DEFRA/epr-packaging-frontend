@@ -62,5 +62,15 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
                 }
             }
         }
+
+        /// <summary>
+        ///     What year the PRN/PERN will/has been accepted against.
+        /// </summary>
+        /// <remarks>
+        ///     This implementation is hackery to get around the fact that we should sometimes offer the user a choice of year
+        ///     to accept certain PRNs towards, and record that information - but we currently don't have this functionality.
+        ///     (Shouldn't actually matter until 2026/2027 Dec Waste PRNs are in the system).
+        /// </remarks>
+        public string EffectiveAcceptanceYear => AvailableAcceptanceYears.Length > 0 ? AvailableAcceptanceYears.Min().ToString() : "";
     }
 }
