@@ -67,9 +67,18 @@
     </div>
 
     <div class="govuk-grid-row box-container">
+        @foreach (var app in Model.RegistrationApplications)
+        {
+            <partial name="RegistrationApplicationYearBlock" model="app"/>
+        }
+        <div class="govuk-grid-column-one-half box">
+            <p>legacy panels</p>
+        </div>
+        <div class="govuk-grid-column-one-half box">
+        </div>
         @foreach (var app in Model.RegistrationApplicationsPerYear)
         {
-            <partial name="RegistrationApplicationYearBlock" model="app" />
+            <partial name="RegistrationApplicationYearBlock" model="app"/>
         }
         <div class="govuk-grid-column-one-half box">
             <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
@@ -89,7 +98,7 @@
                 </div>
             </div>
         </div>
- 
+
         <!-- TILE: Packaging data -->
         <div class="govuk-grid-column-one-half box">
             <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
@@ -183,7 +192,7 @@
                 </div>
             </div>
         </feature>
-   
+
         <!-- TILE: Waste Management -->
         <feature name="@FeatureFlags.ShowWasteTile" negate="true">
             <div class="govuk-grid-column-one-half box">

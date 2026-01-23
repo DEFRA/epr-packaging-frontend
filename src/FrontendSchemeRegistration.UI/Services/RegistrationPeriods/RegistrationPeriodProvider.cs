@@ -48,7 +48,6 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
 
                 foreach (var patternWindow in registrationPeriodPattern.Windows)
                 {
-                    var journey = MapWindowTypeToRegistrationJourney(patternWindow.WindowType);
                     var closeDate = new DateTime(registrationYear + patternWindow.ClosingDate.YearOffset,
                         patternWindow.ClosingDate.Month, patternWindow.ClosingDate.Day, 0, 0, 0, DateTimeKind.Utc);
                     var openingDate = new DateTime(registrationYear + patternWindow.OpeningDate.YearOffset,
@@ -56,14 +55,7 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
                     var deadlineDate = new DateTime(registrationYear + patternWindow.DeadlineDate.YearOffset,
                         patternWindow.DeadlineDate.Month, patternWindow.DeadlineDate.Day, 0, 0, 0, DateTimeKind.Utc);
                     
-                    if (journey.RegistrationJourney is null)
-                    {
-                        windows.Add(new RegistrationWindow(_timeProvider, journey.IsCso, registrationYear, openingDate, deadlineDate, closeDate));    
-                    }
-                    else
-                    {
-                        windows.Add(new RegistrationWindow(_timeProvider, journey.RegistrationJourney.Value, registrationYear, openingDate, deadlineDate, closeDate));
-                    }
+                    windows.Add(new RegistrationWindow(_timeProvider, patternWindow.WindowType, registrationYear, openingDate, deadlineDate, closeDate));
                 }
 
                 registrationYear++;
@@ -141,15 +133,4 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
     {
         if (windows.Any(w => w.RegistrationYear == registrationYear)) throw new InvalidOperationException($"Registration year {registrationYear} is configured in multiple RegistrationPeriodPattern items within appsettings. The years between and including the InitialRegistrationYear and the FinalRegistrationYear may only exist in a single pattern.");
     }
-
-    private static (RegistrationJourney? RegistrationJourney, bool IsCso) MapWindowTypeToRegistrationJourney(WindowType windowType) =>
-        windowType switch
-        {
-            WindowType.CsoLargeProducer => (RegistrationJourney.CsoLargeProducer, RegistrationWindow.IsRegistrationJourneyForCso(RegistrationJourney.CsoLargeProducer)),
-            WindowType.CsoSmallProducer => (RegistrationJourney.CsoSmallProducer, RegistrationWindow.IsRegistrationJourneyForCso(RegistrationJourney.CsoSmallProducer)),
-            WindowType.DirectLargeProducer => (RegistrationJourney.DirectLargeProducer, RegistrationWindow.IsRegistrationJourneyForCso(RegistrationJourney.DirectLargeProducer)),
-            WindowType.DirectSmallProducer => (RegistrationJourney.DirectSmallProducer, RegistrationWindow.IsRegistrationJourneyForCso(RegistrationJourney.DirectSmallProducer)),
-            WindowType.Cso => (null, true),
-            _ => (null, false)
-        };
 }

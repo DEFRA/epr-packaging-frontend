@@ -30,25 +30,25 @@ public class ComplianceSchemeLandingController(
     [ExcludeFromCodeCoverage]
     public async Task<IActionResult> Get()
     {
-        var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+        var regSession = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+        Guid? selectedComplianceSchemeId = regSession.RegistrationSession.SelectedComplianceScheme?.Id;
+        
         var userData = User.GetUserData();
         var now = timeProvider.GetLocalNow().DateTime;
 
         var organisation = userData.Organisations[0];
-
         var complianceSchemes = await complianceSchemeService.GetOperatorComplianceSchemes(organisation.Id.Value);
 
-        var defaultComplianceScheme = complianceSchemes.FirstOrDefault();
+        //build minimal session data to remove any pollution from previous journeys
+        var session = SetupMinimalSession.FrontendSchemeRegistrationSession(complianceSchemes, userData, selectedComplianceSchemeId);
+        var taskSave = sessionManager.SaveSessionAsync(HttpContext.Session, session);
 
-        session.RegistrationSession.SelectedComplianceScheme ??= defaultComplianceScheme;
-        session.UserData = userData;
-        var currentYear = new[] { now.GetComplianceYear().ToString(), (now.GetComplianceYear() + 1).ToString() };
+        var currentYear = new[] {now.GetComplianceYear().ToString(), (now.GetComplianceYear() + 1).ToString() };
         // Note: We are adding a service method here to avoid SonarQube issue for adding 8th parameter in the constructor.
         var packagingResubmissionPeriod = resubmissionApplicationService.PackagingResubmissionPeriod(currentYear, now);
         
-        await SaveNewJourney(session);
-
         var currentComplianceSchemeId = session.RegistrationSession.SelectedComplianceScheme.Id;
+        await taskSave;
 
         var currentSummary = await complianceSchemeService.GetComplianceSchemeSummary(organisation.Id.Value, currentComplianceSchemeId);
 
@@ -101,12 +101,5 @@ public class ComplianceSchemeLandingController(
         }
 
         return RedirectToAction(nameof(Get));
-    }
-
-    private async Task SaveNewJourney(FrontendSchemeRegistrationSession session)
-    {
-        session.SchemeMembershipSession.Journey.Clear();
-
-        await sessionManager.SaveSessionAsync(HttpContext.Session, session);
     }
 }
