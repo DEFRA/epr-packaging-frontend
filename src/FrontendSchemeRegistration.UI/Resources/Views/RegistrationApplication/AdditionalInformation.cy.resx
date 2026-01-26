@@ -73,6 +73,6 @@
         <value>Ailgyflwyniad data cofrestru {0}.</value>
     </data>
     <data name="inset_delay_text" xml:space="preserve">
-        <value>Er mwyn osgoi gohirio’r cofrestru, rhowch wybod am eich data pecynwaith {0} cyn gwneud cais i gofrestru ar gyfer {1}</value>
+        <value>Er mwyn osgoi gohirio’r cofrestru, rhowch wybod am eich data pecynwaith {0} cyn gwneud cais i gofrestru ar gyfer {1}.</value>
     </data>
 </root>

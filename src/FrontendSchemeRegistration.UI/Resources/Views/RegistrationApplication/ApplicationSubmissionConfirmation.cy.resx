@@ -121,7 +121,7 @@
     <value>argraffu’r tudalen yma neu ei gadw fel PDF</value>
   </data>
   <data name="registration_application_submitted_for_approval_large" xml:space="preserve">
-    <value>[WELSH] You have submitted your large producer registration application</value>
+    <value>Rydych wedi cyflwyno eich cais cofrestru cynhyrchydd mawr {0}</value>
   </data>
   <data name="registration_application_submitted_for_approval_small" xml:space="preserve">
     <value>Rydych chi wedi cyflwyno'ch cofrestriad cynhyrchwyr bach {0} i</value>
