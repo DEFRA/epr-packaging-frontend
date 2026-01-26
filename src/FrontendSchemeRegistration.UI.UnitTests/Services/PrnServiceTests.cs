@@ -1,6 +1,7 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Text;
 using AutoFixture;
+using AutoMapper;
 using FluentAssertions;
 using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.DTOs.Prns;
@@ -17,6 +18,8 @@ using Moq;
 
 namespace FrontendSchemeRegistration.UI.UnitTests.Services;
 
+using Microsoft.Extensions.Time.Testing;
+
 [TestFixture]
 public class PrnServiceTests
 {
@@ -24,6 +27,8 @@ public class PrnServiceTests
     private PrnService _systemUnderTest;
     private static readonly Fixture Fixture = new();
     private Mock<ILogger<PrnService>> _loggerMock;
+    private FakeTimeProvider _fakeTimeProvider;
+    private Mock<IMapper> _mapperMock;
 
     [SetUp]
     public void SetUp()
@@ -37,10 +42,53 @@ public class PrnServiceTests
 
         _webApiGatewayClientMock = new Mock<IWebApiGatewayClient>();
         _loggerMock = new Mock<ILogger<PrnService>>();
+        _fakeTimeProvider = new FakeTimeProvider();
+        _mapperMock = new Mock<IMapper>();
+
+        // Setup default mapper behavior to return mapped lists
+        _mapperMock.Setup(m => m.Map<List<PrnViewModel>>(It.IsAny<object>()))
+            .Returns<object>(source =>
+            {
+                if (source == null) return new List<PrnViewModel>();
+                if (source is not List<PrnModel> models) return new List<PrnViewModel>();
+                return models.Select(p => new PrnViewModel
+                {
+                    ExternalId = p.ExternalId,
+                    PrnOrPernNumber = p.PrnNumber,
+                    ApprovalStatus = p.PrnStatus,
+                    IssuedBy = p.IssuedByOrg,
+                    NameOfProducerOrComplianceScheme = p.OrganisationName,
+                    AccreditationNumber = p.AccreditationNumber,
+                    DateIssued = p.IssueDate,
+                    IsDecemberWaste = p.DecemberWaste,
+                    Material = p.MaterialName,
+                    RecyclingProcess = p.ProcessToBeUsed,
+                    Tonnage = p.TonnageValue,
+                    NoteType = p.IsExport ? "PERN" : "PRN",
+                    AdditionalNotes = p.IssuerNotes,
+                    StatusUpdatedOn = p.StatusUpdatedOn
+                }).ToList();
+            });
+
+        _mapperMock.Setup(m => m.Map<List<PrnSearchResultViewModel>>(It.IsAny<object>()))
+            .Returns<object>(source =>
+            {
+                if (source == null) return new List<PrnSearchResultViewModel>();
+                if (source is not List<PrnModel> models) return new List<PrnSearchResultViewModel>();
+                return models.Select(p => new PrnSearchResultViewModel()).ToList();
+            });
+
+        _mapperMock.Setup(m => m.Map<List<AwaitingAcceptanceResultViewModel>>(It.IsAny<object>()))
+            .Returns<object>(source =>
+            {
+                if (source == null) return new List<AwaitingAcceptanceResultViewModel>();
+                if (source is not List<PrnModel> models) return new List<AwaitingAcceptanceResultViewModel>();
+                return models.Select(p => new AwaitingAcceptanceResultViewModel()).ToList();
+            });
 
         var globalVariables = Options.Create(new GlobalVariables { LogPrefix = "[FrontendSchemaRegistration]" });
 
-        _systemUnderTest = new PrnService(_webApiGatewayClientMock.Object, localizerCsv, localizerData, globalVariables, _loggerMock.Object);
+        _systemUnderTest = new PrnService(_webApiGatewayClientMock.Object, localizerCsv, localizerData, _fakeTimeProvider, _mapperMock.Object, globalVariables, _loggerMock.Object);
     }
 
     [Test]
@@ -71,6 +119,11 @@ public class PrnServiceTests
         data[0].PrnStatus = data[1].PrnStatus = "ACCEPTED";
         data[0].AccreditationYear = data[1].AccreditationYear = data[2].AccreditationYear = "2024";
 
+        _mapperMock.Setup(x => x.Map<List<PrnViewModel>>(data)).Returns([
+            new PrnViewModel{ApprovalStatus = "ACCEPTED"},
+            new PrnViewModel{ApprovalStatus = "ACCEPTED"}
+        ]);
+
         _webApiGatewayClientMock.Setup(x => x.GetPrnsForLoggedOnUserAsync()).ReturnsAsync(data);
         var model = await _systemUnderTest.GetAllAcceptedPrnsAsync();
         model.Prns.Should().HaveCount(2);
@@ -100,10 +153,20 @@ public class PrnServiceTests
     {
         var model = Fixture.Create<PrnModel>();
         model.AccreditationYear = "2024";
+        var expectedViewModel = new PrnViewModel
+        {
+            ExternalId = model.ExternalId,
+            PrnOrPernNumber = model.PrnNumber,
+            ApprovalStatus = model.PrnStatus
+        };
+        
         _webApiGatewayClientMock.Setup(x => x.GetPrnByExternalIdAsync(model.ExternalId)).ReturnsAsync(model);
+        _mapperMock.Setup(x => x.Map<PrnViewModel>(model)).Returns(expectedViewModel);
+        
         var result = await _systemUnderTest.GetPrnByExternalIdAsync(model.ExternalId);
+        
         _webApiGatewayClientMock.Verify(x => x.GetPrnByExternalIdAsync(model.ExternalId), Times.Once);
-        result.Should().BeEquivalentTo((PrnViewModel)model);
+        result.Should().BeEquivalentTo(expectedViewModel);
     }
 
     [Test]
@@ -146,6 +209,7 @@ public class PrnServiceTests
         prnSearchResults.PagingDetail.PageSize.Should().Be(request.PageSize);
         prnSearchResults.PagingDetail.TotalItems.Should().Be(paginatedResposne.TotalItems);
         prnSearchResults.TypeAhead.Should().BeEquivalentTo(paginatedResposne.TypeAhead);
+        prnSearchResults.ComplianceYear.Should().BeGreaterThan(0); // Verify ComplianceYear is set
     }
 
     [Test]
@@ -223,6 +287,7 @@ public class PrnServiceTests
         data.IsExport = true;
         data.DecemberWaste = true;
         data.PrnStatus = status;
+        data.ObligationYear = "2024";
 
         if (DateTime.TryParseExact(whenAccepted,
             "dd/MM/yyyy",
@@ -267,6 +332,7 @@ public class PrnServiceTests
     {
         var data = Fixture.Create<PrnModel>();
         data.IssuerNotes = notes;
+        data.ObligationYear = "2024";
 
         _webApiGatewayClientMock.Setup(x => x.GetPrnsForLoggedOnUserAsync()).ReturnsAsync([data]);
 

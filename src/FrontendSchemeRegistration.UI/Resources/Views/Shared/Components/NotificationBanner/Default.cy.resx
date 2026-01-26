@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -117,13 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="notification_banner_body" xml:space="preserve">
-    <value>PRNs/PERNs accepted at this time will be allocated towards your 2025 recycling obligations only. To use your PRNs/PERNs towards your 2026 recycling obligations, keep them in 'Awaiting Acceptance' until the 2026 obligations calculator becomes available. This message will be updated once the 2026 functionality is released.</value>
+  <data name="prn_notification_2026_prns_not_yet_accepted_body" xml:space="preserve">
+    <value>Bydd PRNs/PERNs a dderbynnir ar hyn o bryd yn cael eu dyrannu tuag at eich rhwymedigaethau ailgylchu ar gyfer 2025 yn unig. I ddefnyddio’ch PRNs/PERNs tuag at eich rhwymedigaethau ailgylchu ar gyfer 2026, cadwch nhw yn 'Aros i gael eu Derbyn' nes bod cyfrifiannell rhwymedigaethau 2026 ar gael. Bydd y neges yma yn cael ei diweddaru unwaith y bydd swyddogaeth 2026 yn cael ei rhyddhau.</value>
   </data>
-  <data name="notification_banner_header" xml:space="preserve">
-    <value>DO NOT accept any PRNs/PERNs that you want to use towards your 2026 obligations until the RPD capability to manage your 2026 recycling obligations is released.</value>
+  <data name="prn_notification_2026_prns_not_yet_accepted_header" xml:space="preserve">
+    <value>PEIDIWCH â derbyn unrhyw PRNs/PERNs yr hoffech eu defnyddio tuag at rwymedigaethau 2026 nes bod gallu’r RPD i reoli’ch rhwymedigaethau ailgylchu ar gyfer 2026 yn cael ei ryddhau.</value>
   </data>
-  <data name="notification_banner_title" xml:space="preserve">
-    <value>Important</value>
+  <data name="prn_notification_2026_prns_not_yet_accepted_title" xml:space="preserve">
+    <value>Pwysig</value>
+  </data>
+  <data name="prn_notification_2026_prns_now_accepted_title" xml:space="preserve">
+    <value>Pwysig</value>
+  </data>
+  <data name="prn_notification_2026_prns_now_accepted_body" xml:space="preserve">
+    <value>Erbyn hyn mae RPD yn cefnogi swyddogaeth rhwymedigaethau ailgylchu 2026. O hyn ymlaen, bydd unrhyw PRNs/PERNs a dderbynnir yn cael eu dyrannu tuag at eich rhwymedigaethau ar gyfer 2026 yn unig.</value>
   </data>
 </root>

@@ -1,4 +1,4 @@
-﻿using EPR.Common.Authorization.Extensions;
+using EPR.Common.Authorization.Extensions;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services;
@@ -20,10 +20,13 @@ using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.TokenCacheProviders.Distributed;
 using StackExchange.Redis;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using CookieOptions = FrontendSchemeRegistration.Application.Options.CookieOptions;
 using SessionOptions = FrontendSchemeRegistration.Application.Options.SessionOptions;
 
+
+[assembly: InternalsVisibleTo("FrontendSchemeRegistration.UI.UnitTests")]
 namespace FrontendSchemeRegistration.UI.Extensions;
 
 [ExcludeFromCodeCoverage]
@@ -120,6 +123,7 @@ public static class ServiceProviderExtension
         services.Configure<RedisOptions>(configuration.GetSection(RedisOptions.ConfigSection));
         services.Configure<ComplianceSchemeMembersPaginationOptions>(configuration.GetSection(ComplianceSchemeMembersPaginationOptions.ConfigSection));
         services.Configure<SessionOptions>(configuration.GetSection(SessionOptions.ConfigSection));
+        services.Configure<NotificationBannerOptions>(configuration.GetSection(NotificationBannerOptions.Section));
     }
 
     private static void RegisterServices(IServiceCollection services)
@@ -154,7 +158,10 @@ public static class ServiceProviderExtension
         services.AddScoped<IRegistrationApplicationService, RegistrationApplicationService>();
         services.AddTransient<IDateTimeProvider, SystemDateTimeProvider>();
         services.AddSingleton<IPatchService, PatchService>();
-        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+        services.AddAutoMapper((serviceProvider, automapper) =>
+        {
+            automapper.ConstructServicesUsing(serviceProvider.GetRequiredService);
+        }, AppDomain.CurrentDomain.GetAssemblies());
         services.AddTransient<UserDataCheckerMiddleware>();
         services.AddSingleton<ICorrelationIdProvider, CorrelationIdProvider>();
         services.AddScoped<IPrnService, PrnService>();
@@ -272,7 +279,8 @@ public static class ServiceProviderExtension
             .AddMicrosoftIdentityWebApp(
                 options =>
                 {
-                    configuration.GetSection(AzureAdB2COptions.ConfigSection).Bind(options);
+                    var section = configuration.GetSection(AzureAdB2COptions.ConfigSection);
+                    section.Bind(options);
 
                     options.CorrelationCookie.Name = cookieOptions.CorrelationCookieName;
 
@@ -282,6 +290,8 @@ public static class ServiceProviderExtension
                     options.NonceCookie.Name = cookieOptions.OpenIdCookieName;
                     options.ErrorPath = "/error";
                     options.ClaimActions.Add(new CorrelationClaimAction());
+
+                    options.TokenValidationParameters.ValidateLifetime = section.GetValue("ValidateTokenLifetime", true);
                 },
                 options =>
                 {

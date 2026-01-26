@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
@@ -18,6 +18,8 @@ using Microsoft.Extensions.Options;
 
 namespace FrontendSchemeRegistration.UI.Controllers;
 
+using Application.Extensions;
+
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
 [Route(PagePaths.ComplianceSchemeLanding)]
 public class ComplianceSchemeLandingController(
@@ -27,7 +29,7 @@ public class ComplianceSchemeLandingController(
     IRegistrationApplicationService registrationApplicationService,
     IResubmissionApplicationService resubmissionApplicationService,
     ILogger<ComplianceSchemeLandingController> logger,
-    IOptions<GlobalVariables> globalVariables)
+    TimeProvider timeProvider)
     : Controller
 {
     [HttpGet]
@@ -36,6 +38,7 @@ public class ComplianceSchemeLandingController(
     {
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
         var userData = User.GetUserData();
+        var now = timeProvider.GetLocalNow().DateTime;
 
         var organisation = userData.Organisations[0];
 
@@ -45,9 +48,10 @@ public class ComplianceSchemeLandingController(
 
         session.RegistrationSession.SelectedComplianceScheme ??= defaultComplianceScheme;
         session.UserData = userData;
-        var currentYear = new[] { DateTime.Now.Year.ToString(), (DateTime.Now.Year + 1).ToString() };
-        var packagingResubmissionPeriod = globalVariables.Value.SubmissionPeriods.Find(s => currentYear.Contains(s.Year) && s.ActiveFrom.Year == DateTime.Now.Year);
-
+        var currentYear = new[] {now.GetComplianceYear().ToString(), (now.GetComplianceYear() + 1).ToString() };
+        // Note: We are adding a service method here to avoid SonarQube issue for adding 8th parameter in the constructor.
+        var packagingResubmissionPeriod = resubmissionApplicationService.PackagingResubmissionPeriod(currentYear, now);
+        
         await SaveNewJourney(session);
 
         var currentComplianceSchemeId = session.RegistrationSession.SelectedComplianceScheme.Id;
@@ -59,9 +63,6 @@ public class ComplianceSchemeLandingController(
 
         var registrationApplicationPerYearViewModels = await registrationApplicationService.BuildRegistrationApplicationPerYearViewModels(HttpContext.Session, organisation);
 
-        // Note: We are reading desired values using existing service to avoid SonarQube issue for adding 8th parameter in the constructor.
-        var currentPeriod = await resubmissionApplicationService.GetCurrentMonthAndYearForRecyclingObligations();
-        
         var model = new ComplianceSchemeLandingViewModel
         {
             CurrentComplianceSchemeId = currentComplianceSchemeId,
@@ -72,7 +73,7 @@ public class ComplianceSchemeLandingController(
             ResubmissionTaskListViewModel = resubmissionApplicationDetails.ToResubmissionTaskListViewModel(organisation),
             RegistrationApplicationsPerYear = registrationApplicationPerYearViewModels,
             PackagingResubmissionPeriod = packagingResubmissionPeriod,
-            ComplianceYear = currentPeriod.currentMonth == 1 ? (currentPeriod.currentYear - 1).ToString() : currentPeriod.currentYear.ToString() // this is a temp fix for the compliance window change
+            ComplianceYear = now.GetComplianceYear().ToString()
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id.Value);

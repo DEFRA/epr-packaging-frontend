@@ -26,6 +26,21 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
 
         public string DateIssuedDisplay => DateIssued.ToString("dd MMM yyyy");
 
+        /// <summary>
+        ///		Contains any years that the PRN may be accepted against at this moment in time.
+        ///		May be empty - if so, the user should not be able to action any changes against this PRN.
+        /// </summary>
+        public int[] AvailableAcceptanceYears { get; set; } = [];
+
+        public bool IsStatusEditable => ApprovalStatus == PrnStatus.AwaitingAcceptance
+			&& AvailableAcceptanceYears.Length > 0;
+
+        public int ObligationYear { get; set; }
+
+        public string AdditionalNotes { get; set; }
+
+        public string NoteType { get; set; }
+
         public string ApprovalStatusDisplayCssColour => ApprovalStatus switch
         {
 	        PrnStatus.AwaitingAcceptance => "grey",
@@ -35,7 +50,8 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
 	        _ => "grey"
         };
 
-		public static string MapStatus(string oldStatus) => oldStatus switch
+
+        public static string MapStatus(string oldStatus) => oldStatus switch
 		{
 			"AWAITINGACCEPTANCE" => PrnStatus.AwaitingAcceptance,
 			"CANCELED" => PrnStatus.Cancelled,

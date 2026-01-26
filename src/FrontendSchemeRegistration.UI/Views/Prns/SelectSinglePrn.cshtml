@@ -41,7 +41,7 @@
                     <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
                     <strong class="govuk-warning-text__text">
                         <span class="govuk-visually-hidden">@SharedLocalizer["warning"]</span>
-                        @Localizer[(Model.IsPrn ? "this_prn_relates_to_waste_received_for_reprocessing_in_December" : "this_pern_relates_to_waste_exported_for_reprocessing_in_December"), Model.IssueYear]
+                        @Localizer[(Model.IsPrn ? "this_prn_relates_to_waste_received_for_reprocessing_in_December" : "this_pern_relates_to_waste_exported_for_reprocessing_in_December"), Model.ObligationYear]
                     </strong>
                 </div>
             }
@@ -52,7 +52,7 @@
             {
                 <br>
                 <br>
-                @if (Model.ApprovalStatus == PrnStatus.AwaitingAcceptance)
+                @if (Model.IsStatusEditable)
                 {
                     <div class="govuk-button-group">
                         @Html.ActionLink(Localizer[(Model.IsPrn ? "accept_this_prn" : "accept_this_pern")].Value, nameof(PrnsAcceptController.AcceptSinglePrn), "PrnsAccept",

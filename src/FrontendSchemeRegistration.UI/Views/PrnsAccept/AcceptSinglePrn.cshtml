@@ -5,7 +5,7 @@
 
 @{
     ViewData["Title"] = Localizer[(Model.IsPrn ? "prn_page_title" : "pern_page_title")];
-    var headerText = string.Format(Localizer[(Model.IsPrn ? "prn_heading" : "pern_heading")].Value.ToString(), Model.ObligationYear.ToString());
+    var headerText = string.Format(Localizer[(Model.IsPrn ? "prn_heading" : "pern_heading")].Value, Model.EffectiveAcceptanceYear);
 }
 <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
     <div class="govuk-grid-row">
@@ -20,11 +20,14 @@
                 </div>
 
                 <div class="govuk-button-group">
-                    <button class="govuk-button" type="submit" asp-action=@nameof(PrnsAcceptController.ConfirmAcceptSinglePrnPassThrough) asp-controller="PrnsAccept">
-                        @Localizer["YesAcceptButton"]
-                    </button>
+                    @if (Model.IsStatusEditable)
+                    {
+                        <button class="govuk-button" type="submit" asp-action=@nameof(PrnsAcceptController.ConfirmAcceptSinglePrnPassThrough) asp-controller="PrnsAccept">
+                            @Localizer["YesAcceptButton"]
+                        </button>
+                    }
 
-                    @Html.ActionLink(@Localizer["NoBackButton"].Value, nameof(PrnsController.SelectSinglePrn), "Prns", 
+                    @Html.ActionLink(@Localizer["NoBackButton"].Value, nameof(PrnsController.SelectSinglePrn), "Prns",
                         new
                         {
                             id = @Model.ExternalId
