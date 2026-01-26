@@ -15,5 +15,7 @@ public class ComplianceSchemeMemberLandingViewModel
 
     public string ServiceRole { get; set; }
 
+    public bool CanManageComplianceScheme { get; set; }
+
     public NotificationViewModel Notification { get; set; } = new NotificationViewModel();
 }
