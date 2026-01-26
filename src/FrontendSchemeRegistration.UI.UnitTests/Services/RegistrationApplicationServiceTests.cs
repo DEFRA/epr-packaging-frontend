@@ -69,7 +69,6 @@ public class RegistrationApplicationServiceTests
             LateFeeDeadline2025 = new(2025, 4, 1),
             LargeProducerLateFeeDeadline2026 = new(2025, 10, 1),
             SmallProducerLateFeeDeadline2026 = new(2026, 4, 1),
-            SmallProducersRegStartTime2026 = new (2026, 1, 1),
             RegistrationYear = $"{_validRegistrationYear}, {(_validRegistrationYear + 1)}"
         });
 
