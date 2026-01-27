@@ -1,5 +1,6 @@
 namespace FrontendSchemeRegistration.UI.Controllers;
 
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.StubAuthentication;
 
+[ExcludeFromCodeCoverage]
 [Route("")]
 public class ServicesController(IStubAuthenticationService stubAuthenticationService) : Controller
 {
