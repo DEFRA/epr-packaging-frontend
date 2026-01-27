@@ -61,6 +61,7 @@ public class ServicesController(IStubAuthenticationService stubAuthenticationSer
     }
 }
 
+[ExcludeFromCodeCoverage]
 public class SignedInAccountViewModel
 {
     public string Email { get; set; }
@@ -68,11 +69,13 @@ public class SignedInAccountViewModel
     public string ReturnUrl { get; set; }
 }
 
+[ExcludeFromCodeCoverage]
 public class StubAuthenticationViewModel : StubAuthUserDetails
 {
     public string ReturnUrl { get; set; }
 }
 
+[ExcludeFromCodeCoverage]
 public static class StubAuthRouteNames
 {
     public const string SignedIn = "signedin";
