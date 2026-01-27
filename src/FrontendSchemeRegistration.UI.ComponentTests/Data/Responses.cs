@@ -1,5 +1,8 @@
 namespace FrontendSchemeRegistration.UI.ComponentTests.Data;
 
+using System.Diagnostics.CodeAnalysis;
+
+[ExcludeFromCodeCoverage]
 public static class Responses
 {
     public static List<Response> GetResponses()

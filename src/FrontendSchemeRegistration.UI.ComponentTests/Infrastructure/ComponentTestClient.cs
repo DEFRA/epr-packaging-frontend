@@ -1,5 +1,6 @@
 namespace FrontendSchemeRegistration.UI.ComponentTests.Infrastructure;
 
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Net.Http.Headers;
@@ -10,6 +11,7 @@ public interface ITestHttpClient : IDisposable
     Task<HttpResponseMessage> PostAsync(string url, Dictionary<string, string> content);
 }
 
+[ExcludeFromCodeCoverage]
 public class ComponentTestClient(TestServer server, string baseUrl = "https://localhost")
     : ITestHttpClient
 {

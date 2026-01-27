@@ -1,5 +1,6 @@
 namespace FrontendSchemeRegistration.UI.ComponentTests.Infrastructure;
 
+using System.Diagnostics.CodeAnalysis;
 using Controllers.FrontendSchemeRegistration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -7,6 +8,7 @@ using MockServer;
 using Reqnroll;
 using WireMock.Server;
 
+[ExcludeFromCodeCoverage]
 [Binding]
 public class TestEnvironmentManagement(ScenarioContext context)
 {

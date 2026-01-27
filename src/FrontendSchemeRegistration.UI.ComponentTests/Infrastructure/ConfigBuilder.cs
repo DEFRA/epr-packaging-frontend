@@ -1,8 +1,10 @@
 namespace FrontendSchemeRegistration.UI.ComponentTests.Infrastructure;
 
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
 
+[ExcludeFromCodeCoverage]
 public static class ConfigBuilder
 {
     public static IConfigurationRoot GenerateConfiguration()

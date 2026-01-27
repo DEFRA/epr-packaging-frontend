@@ -1,8 +1,10 @@
 namespace FrontendSchemeRegistration.UI.ComponentTests.Extensions;
 
+using System.Diagnostics.CodeAnalysis;
 using Data;
 using Reqnroll;
 
+[ExcludeFromCodeCoverage]
 public static class ScenarioContextExtensions
 {
     public static Pages.Page GetPage(this ScenarioContext context, string pageName)
