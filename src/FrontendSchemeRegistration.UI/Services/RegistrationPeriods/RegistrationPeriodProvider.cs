@@ -2,8 +2,9 @@ namespace FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
-using Application.Enums;
 using Application.Options.RegistrationPeriodPatterns;
+using Constants;
+using Extensions;
 using Microsoft.Extensions.Options;
 
 /// <summary>
@@ -13,15 +14,17 @@ using Microsoft.Extensions.Options;
 internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
 {
     private readonly TimeProvider _timeProvider;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IEnumerable<RegistrationPeriodPattern> _registrationPeriodPatterns;
     private IReadOnlyCollection<RegistrationWindow> _registrationWindows = [];
     private int? _parseYear;    // the year when Parse was last called
     
     private readonly object _lock = new();
 
-    public RegistrationPeriodProvider(IOptions<List<RegistrationPeriodPattern>> registrationPeriodPatternOptions, TimeProvider timeProvider)
+    public RegistrationPeriodProvider(IOptions<List<RegistrationPeriodPattern>> registrationPeriodPatternOptions, TimeProvider timeProvider, IHttpContextAccessor httpContextAccessor)
     {
         _timeProvider = timeProvider;
+        _httpContextAccessor = httpContextAccessor;
         _registrationPeriodPatterns = registrationPeriodPatternOptions.Value;
         ParsePatterns();
     }
@@ -92,6 +95,41 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
             .OrderByDescending(ra => ra.RegistrationYear);
 
         return new ReadOnlyCollection<RegistrationWindow>(orderedWindows.ToList());
+    }
+
+    /// <inheritdoc />
+    public int? ValidateRegistrationYear(string? registrationYear, bool isParamOptional = false)
+    {
+        bool nullRegYear = string.IsNullOrWhiteSpace(registrationYear);
+        
+        switch (nullRegYear)
+        {
+            case true when isParamOptional:
+                return null;
+            case true:
+                throw new ArgumentException("Registration year missing");
+        }
+
+        if (!int.TryParse(registrationYear, out var parsedYear)) throw new ArgumentException("Registration year is not a valid number");
+
+        // is user's org a CSO?
+        var org = _httpContextAccessor.HttpContext.User.GetUserData().Organisations.FirstOrDefault();
+        
+        if (org == null) throw new InvalidOperationException("The user must have an organisation.");
+        
+        var isCso = org.OrganisationRole == OrganisationRoles.ComplianceScheme;
+        
+        // check windows. 
+        var regWindows = GetActiveRegistrationWindows(isCso);
+
+        if (regWindows.Any(w => w.RegistrationYear == parsedYear))
+        {
+            return parsedYear;
+        }
+        else
+        {
+            throw new ArgumentException("Invalid registration year");
+        }
     }
 
     /// <summary>

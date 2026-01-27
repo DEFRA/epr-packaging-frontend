@@ -11,6 +11,7 @@ using Extensions;
 using global::FrontendSchemeRegistration.Application.Options;
 using global::FrontendSchemeRegistration.UI.Services;
 using global::FrontendSchemeRegistration.UI.Services.FileUploadLimits;
+using global::FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 using Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +31,7 @@ public class FileUploadBrandsController : Controller
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
     private readonly ISessionManager<RegistrationApplicationSession> _registrationApplicationSessionManager;
     private readonly IOptions<GlobalVariables> _globalVariables;
-    private readonly IRegistrationApplicationService _registrationApplicationService;
+    private readonly IRegistrationPeriodProvider _registrationPeriodProvider;
 
     public FileUploadBrandsController(
         ISubmissionService submissionService,
@@ -38,14 +39,14 @@ public class FileUploadBrandsController : Controller
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
         ISessionManager<RegistrationApplicationSession> registrationApplicationSessionManager,
         IOptions<GlobalVariables> globalVariables,
-        IRegistrationApplicationService registrationApplicationService)
+        IRegistrationPeriodProvider registrationPeriodProvider)
     {
         _submissionService = submissionService;
         _fileUploadService = fileUploadService;
         _sessionManager = sessionManager;
         _registrationApplicationSessionManager = registrationApplicationSessionManager;
         _globalVariables = globalVariables;
-        _registrationApplicationService = registrationApplicationService;
+        _registrationPeriodProvider = registrationPeriodProvider;
     }
 
     [HttpGet]
@@ -54,7 +55,7 @@ public class FileUploadBrandsController : Controller
     public async Task<IActionResult> Get()
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-        var registrationYear = _registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
+        var registrationYear = _registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
 
         if (session is null)
         {
@@ -114,7 +115,7 @@ public class FileUploadBrandsController : Controller
         Guid? submissionId = Guid.TryParse(Request.Query["submissionId"], out var value) ? value : null;
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         var organisationRole = session.UserData.Organisations.FirstOrDefault()?.OrganisationRole;
-        var registrationYear = _registrationApplicationService.ValidateRegistrationYear(registrationyear, true);
+        var registrationYear = _registrationPeriodProvider.ValidateRegistrationYear(registrationyear, true);
 
         submissionId = await _fileUploadService.ProcessUploadAsync(
             Request.ContentType,

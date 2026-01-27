@@ -7,6 +7,7 @@ using Application.Services.Interfaces;
 using EPR.Common.Authorization.Sessions;
 using Extensions;
 using global::FrontendSchemeRegistration.UI.Services;
+using global::FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 using Microsoft.AspNetCore.Mvc;
 using Resources.Views.FileReUploadConfirmation;
 using Sessions;
@@ -19,18 +20,18 @@ public class FileReUploadCompanyDetailsConfirmationController : Controller
     private readonly ISubmissionService _submissionService;
     private readonly IUserAccountService _accountService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
-    private readonly IRegistrationApplicationService _registrationApplicationService;
+    private readonly IRegistrationPeriodProvider _registrationPeriodProvider;
 
     public FileReUploadCompanyDetailsConfirmationController(
         ISubmissionService submissionService,
         IUserAccountService accountService,
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
-        IRegistrationApplicationService registrationApplicationService)
+        IRegistrationPeriodProvider registrationPeriodProvider)
     {
         _submissionService = submissionService;
         _accountService = accountService;
         _sessionManager = sessionManager;
-        _registrationApplicationService = registrationApplicationService;
+        _registrationPeriodProvider = registrationPeriodProvider;
 
     }
 
@@ -38,7 +39,7 @@ public class FileReUploadCompanyDetailsConfirmationController : Controller
     [SubmissionIdActionFilter(PagePaths.FileUploadCompanyDetailsSubLanding)]
     public async Task<IActionResult> Get()
     {
-        var registrationYear = _registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
+        var registrationYear = _registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         if (session is null)
         {

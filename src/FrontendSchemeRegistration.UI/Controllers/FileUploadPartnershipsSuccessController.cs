@@ -7,6 +7,7 @@ using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using Extensions;
 using Services;
+using global::FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sessions;
@@ -19,16 +20,16 @@ public class FileUploadPartnershipsSuccessController : Controller
 {
     private readonly ISubmissionService _submissionService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
-    private readonly IRegistrationApplicationService _registrationApplicationService;
+    private readonly IRegistrationPeriodProvider _registrationPeriodProvider;
 
     public FileUploadPartnershipsSuccessController(
         ISubmissionService submissionService,
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
-        IRegistrationApplicationService registrationApplicationService)
+        IRegistrationPeriodProvider registrationPeriodProvider)
     {
         _submissionService = submissionService;
         _sessionManager = sessionManager;
-        _registrationApplicationService = registrationApplicationService;
+        _registrationPeriodProvider = registrationPeriodProvider;
     }
 
     [HttpGet]
@@ -38,7 +39,7 @@ public class FileUploadPartnershipsSuccessController : Controller
         var submissionId = Guid.Parse(Request.Query["submissionId"]);
         var submission = await _submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-        var registrationYear = _registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
+        var registrationYear = _registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
 
         if (submission is null)
         {

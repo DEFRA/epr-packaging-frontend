@@ -7,6 +7,7 @@ using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
 using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Services;
+using FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -24,25 +25,25 @@ public class FileUploadCompanyDetailsWarningsController : Controller
     private readonly ISubmissionService _submissionService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
     private readonly ValidationOptions _validationOptions;
-    private readonly IRegistrationApplicationService _registrationApplicationService;
+    private readonly IRegistrationPeriodProvider _registrationPeriodProvider;
 
     public FileUploadCompanyDetailsWarningsController(
         ISubmissionService submissionService,
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
         IOptions<ValidationOptions> validationOptions,
-        IRegistrationApplicationService registrationApplicationService)
+        IRegistrationPeriodProvider registrationPeriodProvider)
     {
         _submissionService = submissionService;
         _sessionManager = sessionManager;
         _validationOptions = validationOptions.Value;
-        _registrationApplicationService = registrationApplicationService;
+        _registrationPeriodProvider = registrationPeriodProvider;
 
     }
 
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var registrationYear = _registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
+        var registrationYear = _registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
         var submissionId = Guid.Parse(Request.Query["submissionId"]);
         var submission = await _submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
 

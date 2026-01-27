@@ -8,6 +8,7 @@ using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using Extensions;
 using global::FrontendSchemeRegistration.UI.Services;
+using global::FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -22,17 +23,17 @@ public class FileUploadBrandsSuccessController : Controller
     private readonly ISubmissionService _submissionService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
     private readonly ISessionManager<RegistrationApplicationSession> _registrationApplicationSessionManager;
-    private readonly IRegistrationApplicationService _registrationApplicationService;
+    private readonly IRegistrationPeriodProvider _registrationPeriodProvider;
 
     public FileUploadBrandsSuccessController(ISubmissionService submissionService, 
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager, 
         ISessionManager<RegistrationApplicationSession> registrationApplicationSessionManager,
-        IRegistrationApplicationService registrationApplicationService)
+        IRegistrationPeriodProvider registrationPeriodProvider)
     {
         _submissionService = submissionService;
         _sessionManager = sessionManager;
         _registrationApplicationSessionManager = registrationApplicationSessionManager;
-        _registrationApplicationService = registrationApplicationService;
+        _registrationPeriodProvider = registrationPeriodProvider;
     }
 
     [HttpGet]
@@ -40,7 +41,7 @@ public class FileUploadBrandsSuccessController : Controller
     public async Task<IActionResult> Get()
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-        var registrationYear = _registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
+        var registrationYear = _registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
 
         if (session is not null)
         {

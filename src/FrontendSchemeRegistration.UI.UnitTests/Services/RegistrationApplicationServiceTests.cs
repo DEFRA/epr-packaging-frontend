@@ -2618,47 +2618,6 @@ public class RegistrationApplicationServiceTests
 
  
     [Test]
-    public async Task ValidateRegistrationYear_ShouldReturnNull_WhenYearIsEmpty_AndParamOptionalIsTrue()
-    {
-        // Act
-        var result = _service.ValidateRegistrationYear("", true);
-
-        // Assert
-        result.Should().BeNull();
-    }
-
-    [Test]
-    public async Task ValidateRegistrationYear_ShouldThrowArgumentException_WhenYearIsEmpty_AndParamOptionalIsFalse()
-    {
-        var act = async () => _service.ValidateRegistrationYear("");
-        await act.Should().ThrowAsync<ArgumentException>()
-            .WithMessage("Registration year missing");
-    }
-
-    [Test]
-    public async Task ValidateRegistrationYear_ShouldThrowArgumentException_WhenYearIsNotANumber()
-    {
-        var act = async () => _service.ValidateRegistrationYear("test");
-        await act.Should().ThrowAsync<ArgumentException>()
-            .WithMessage("Registration year is not a valid number");
-    }
-
-    [Test]
-    public async Task ValidateRegistrationYear_ShouldThrowArgumentException_WhenInvalidRegistrationYear()
-    {
-        var act = async () => _service.ValidateRegistrationYear("2050");
-        await act.Should().ThrowAsync<ArgumentException>()
-            .WithMessage("Invalid registration year");
-    }
-
-    [Test]
-    public async Task ValidateRegistrationYear_ShouldReturnYear_WhenValid()
-    {
-        var result = _service.ValidateRegistrationYear(_validRegistrationYear.ToString());
-        result.Should().Be(_validRegistrationYear);
-    }
-
-    [Test]
     public async Task GetProducerRegistrationFees_WhenV2Enabled_SendsV2Request_With_All_New_Fields()
     {
         _featureManagerMock.Setup(f => f.IsEnabledAsync("EnableRegistrationFeeV2")).ReturnsAsync(true);

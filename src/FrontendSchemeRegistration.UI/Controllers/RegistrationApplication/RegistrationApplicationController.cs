@@ -1,4 +1,4 @@
-using EPR.Common.Authorization.Constants;
+﻿using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
@@ -9,6 +9,7 @@ using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
 using FrontendSchemeRegistration.UI.Controllers.Error;
 using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Services;
+using FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
 using Microsoft.AspNetCore.Authorization;
@@ -20,7 +21,8 @@ namespace FrontendSchemeRegistration.UI.Controllers.RegistrationApplication;
 public class RegistrationApplicationController(
     ISessionManager<RegistrationApplicationSession> sessionManager,
     ILogger<RegistrationApplicationController> logger,
-    IRegistrationApplicationService registrationApplicationService
+    IRegistrationApplicationService registrationApplicationService,
+    IRegistrationPeriodProvider registrationPeriodProvider
 )
     : Controller
 {
@@ -33,7 +35,7 @@ public class RegistrationApplicationController(
         var organisation = userData.Organisations[0];
         var isResubmission = !string.IsNullOrWhiteSpace(HttpContext.Request.Query["IsResubmission"]);
 
-        var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], false);
+        var registrationYear = registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], false);
 
         var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, registrationYear.GetValueOrDefault(), registrationJourney, isResubmission);
 
@@ -70,7 +72,7 @@ public class RegistrationApplicationController(
         var organisation = userData.Organisations[0];
         var isResubmission = !string.IsNullOrWhiteSpace(HttpContext.Request.Query["IsResubmission"]);
 
-        var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], false);
+        var registrationYear = registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], false);
 
         var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, registrationYear.GetValueOrDefault(), registrationJourney, isResubmission);
         session.Journey = [session.IsComplianceScheme ? PagePaths.ComplianceSchemeLanding : PagePaths.HomePageSelfManaged, PagePaths.RegistrationTaskList];
@@ -110,7 +112,7 @@ public class RegistrationApplicationController(
     {
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
-        var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
+        var registrationYear = registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
 
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
         session.Journey = [PagePaths.RegistrationTaskList, PagePaths.RegistrationFeeCalculations];
@@ -160,7 +162,7 @@ public class RegistrationApplicationController(
     {
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
-        var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], false);
+        var registrationYear = registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], false);
 
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
         session.Journey = [PagePaths.RegistrationFeeCalculations, PagePaths.SelectPaymentOptions];
@@ -197,7 +199,7 @@ public class RegistrationApplicationController(
     {
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
-        var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], false);
+        var registrationYear = registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], false);
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
         session.Journey = [PagePaths.RegistrationFeeCalculations, PagePaths.SelectPaymentOptions];
         SetBackLink(session, PagePaths.SelectPaymentOptions, registrationYear);
@@ -232,7 +234,7 @@ public class RegistrationApplicationController(
     [Route(PagePaths.PaymentOptionPayByPhone)]
     public async Task<IActionResult> PayByPhone()
     {
-        var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
+        var registrationYear = registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
         session.Journey = [PagePaths.SelectPaymentOptions, PagePaths.PaymentOptionPayByPhone];
         SetBackLink(session, PagePaths.PaymentOptionPayByPhone, registrationYear);
@@ -264,7 +266,7 @@ public class RegistrationApplicationController(
     [Route(PagePaths.PaymentOptionPayOnline)]
     public async Task<IActionResult> PayOnline()
     {
-        var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
+        var registrationYear = registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
         session.Journey = [PagePaths.SelectPaymentOptions, PagePaths.PaymentOptionPayOnline];
         SetBackLink(session, PagePaths.PaymentOptionPayOnline, registrationYear);
@@ -305,7 +307,7 @@ public class RegistrationApplicationController(
     [Route(PagePaths.PaymentOptionPayByBankTransfer)]
     public async Task<IActionResult> PayByBankTransfer()
     {
-        var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
+        var registrationYear = registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
         session.Journey = [PagePaths.SelectPaymentOptions, PagePaths.PaymentOptionPayByBankTransfer];
 
@@ -351,7 +353,7 @@ public class RegistrationApplicationController(
     {
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
-        var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
+        var registrationYear = registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
 
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
         session.Journey = [PagePaths.RegistrationTaskList, PagePaths.AdditionalInformation];
@@ -393,7 +395,7 @@ public class RegistrationApplicationController(
     [Route(PagePaths.AdditionalInformation)]
     public async Task<IActionResult> AdditionalInformation(AdditionalInformationViewModel model)
     {
-        var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
+        var registrationYear = registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
 
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
 
@@ -458,7 +460,7 @@ public class RegistrationApplicationController(
     [Route(PagePaths.SubmitRegistrationRequest)]
     public async Task<IActionResult> SubmitRegistrationRequest()
     {
-        var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
+        var registrationYear = registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
 
         if (session.AdditionalDetailsStatus == RegistrationTaskListStatus.Completed)
@@ -489,7 +491,7 @@ public class RegistrationApplicationController(
     {
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
-        var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
+        var registrationYear = registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
 
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
         session.Journey = [PagePaths.FileUploadCompanyDetailsSubLanding];
