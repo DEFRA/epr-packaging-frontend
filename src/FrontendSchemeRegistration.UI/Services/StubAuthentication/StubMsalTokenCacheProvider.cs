@@ -3,6 +3,9 @@ using Microsoft.Identity.Web.TokenCacheProviders;
 
 namespace FrontendSchemeRegistration.UI.Services.StubAuthentication;
 
+using System.Diagnostics.CodeAnalysis;
+
+[ExcludeFromCodeCoverage]
 public class StubMsalTokenCacheProvider : IMsalTokenCacheProvider
 {
     public void Initialize(ITokenCache tokenCache)

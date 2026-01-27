@@ -3,6 +3,9 @@ using Microsoft.Identity.Abstractions;
 
 namespace FrontendSchemeRegistration.UI.Services.StubAuthentication;
 
+using System.Diagnostics.CodeAnalysis;
+
+[ExcludeFromCodeCoverage]
 public class StubTokenAcquirerFactory : ITokenAcquirerFactory
 {
     private readonly StubAuthorizationHeaderProvider _provider = new();
@@ -15,25 +18,23 @@ public class StubTokenAcquirerFactory : ITokenAcquirerFactory
 
     public ITokenAcquirer GetTokenAcquirer(IdentityApplicationOptions identityApplicationOptions)
     {
-        // Return a stub token acquirer regardless of options
         return _stubTokenAcquirer;
     }
 
     public ITokenAcquirer GetTokenAcquirer(string optionName = "")
     {
-        // Return a stub token acquirer regardless of option name
         return _stubTokenAcquirer;
     }
 }
 
-// Minimal stub implementation that provides stubbed authorization headers.
+
+[ExcludeFromCodeCoverage]
 internal sealed class StubTokenAcquirer : ITokenAcquirer
 {
     private readonly StubAuthorizationHeaderProvider _provider = new();
 
     private static AcquireTokenResult CreateResult(string token)
     {
-        // Use reflection to be resilient to different package versions
         var type = typeof(AcquireTokenResult);
         var instance = (AcquireTokenResult)Activator.CreateInstance(type, nonPublic: true)!;
         var accessTokenProp = type.GetProperty("AccessToken");

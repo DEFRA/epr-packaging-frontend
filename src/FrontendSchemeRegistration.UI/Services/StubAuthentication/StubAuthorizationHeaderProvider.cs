@@ -4,6 +4,9 @@ using Microsoft.Identity.Abstractions;
 
 namespace FrontendSchemeRegistration.UI.Services.StubAuthentication;
 
+using System.Diagnostics.CodeAnalysis;
+
+[ExcludeFromCodeCoverage]
 public class StubAuthorizationHeaderProvider : IAuthorizationHeaderProvider
 {
     public Task<string> CreateAuthorizationHeaderAsync(
