@@ -154,7 +154,7 @@
     <value>yn cynnwys manylion cynhyrchwyr mawr</value>
   </data>
   <data name="subsidiaries_guidance" xml:space="preserve">
-    <value>yn rhoi gwybod ar ran is-gwmnïau a heb ddefnyddio'r ID is-gwmni a ddarparwyd {Rheoli'ch is-gwmnïau}</value>
+    <value>yn rhoi gwybod ar ran is-gwmnïau a heb ddefnyddio'r ID is-gwmni a ddarparwyd </value>
   </data>
   <data name="file_upload_warning" xml:space="preserve">
     <value>Peidiwch â chau'r ffenestr wrth i'r ffeil uwchlwytho. Gall hyn gymryd ychydig funudau.</value>
