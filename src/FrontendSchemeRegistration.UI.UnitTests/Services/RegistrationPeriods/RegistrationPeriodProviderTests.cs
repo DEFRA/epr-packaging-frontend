@@ -433,6 +433,304 @@ public class RegistrationPeriodProviderTests
         windows.Should().Contain(w => w.WindowType == WindowType.CsoSmallProducer);
     }
 
+    [Test]
+    public void WHEN_GetAllRegistrationWindows_called_THEN_returns_read_only_collection()
+    {
+        // arrange
+        var registrationPeriodPatterns = CreateValidRegistrationPatterns();
+        var options = Options.Create(registrationPeriodPatterns);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+
+        // act
+        var windows = sut.GetAllRegistrationWindows(isCso: true);
+
+        // assert
+        windows.Should().BeAssignableTo<IReadOnlyCollection<RegistrationWindow>>();
+    }
+
+    [Test]
+    public void WHEN_GetAllRegistrationWindows_called_for_CSO_THEN_returns_only_CSO_windows()
+    {
+        // arrange
+        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        {
+            new()
+            {
+                InitialRegistrationYear = 2026,
+                FinalRegistrationYear = 2026,
+                Windows = new List<Window>
+                {
+                    CreateWindow(WindowType.CsoLargeProducer),
+                    CreateWindow(WindowType.DirectLargeProducer),
+                    CreateWindow(WindowType.Cso) // null journey
+                }
+            }
+        };
+        var options = Options.Create(registrationPeriodPatterns);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+
+        // act
+        var windows = sut.GetAllRegistrationWindows(isCso: true);
+
+        // assert
+        windows.Should().NotBeEmpty();
+        windows.Should().AllSatisfy(w =>
+        {
+            var isValid = w.WindowType == WindowType.CsoLargeProducer ||
+                          w.WindowType == WindowType.CsoSmallProducer ||
+                          w.WindowType == WindowType.Cso;
+            isValid.Should().BeTrue();
+        });
+        windows.Should().AllSatisfy(w => w.IsCso.Should().BeTrue());
+    }
+
+    [Test]
+    public void WHEN_GetAllRegistrationWindows_called_for_non_CSO_THEN_returns_only_Direct_windows()
+    {
+        // arrange
+        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        {
+            new()
+            {
+                InitialRegistrationYear = 2026,
+                FinalRegistrationYear = 2026,
+                Windows = new List<Window>
+                {
+                    CreateWindow(WindowType.DirectLargeProducer),
+                    CreateWindow(WindowType.CsoLargeProducer),
+                    CreateWindow(WindowType.Direct) // null journey
+                }
+            }
+        };
+        var options = Options.Create(registrationPeriodPatterns);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+
+        // act
+        var windows = sut.GetAllRegistrationWindows(isCso: false);
+
+        // assert
+        windows.Should().NotBeEmpty();
+        windows.Should().AllSatisfy(w =>
+        {
+            var isValid = w.WindowType == WindowType.DirectLargeProducer ||
+                          w.WindowType == WindowType.DirectSmallProducer ||
+                          w.WindowType == WindowType.Direct;
+            isValid.Should().BeTrue();
+        });
+        windows.Should().AllSatisfy(w => w.IsCso.Should().BeFalse());
+    }
+
+    [Test]
+    public void WHEN_GetAllRegistrationWindows_called_THEN_orders_by_registration_year_descending()
+    {
+        // arrange
+        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        {
+            new()
+            {
+                InitialRegistrationYear = 2024,
+                FinalRegistrationYear = 2026,
+                Windows = new List<Window>
+                {
+                    CreateWindow(WindowType.CsoLargeProducer)
+                }
+            }
+        };
+        var options = Options.Create(registrationPeriodPatterns);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+
+        // act
+        var windows = sut.GetAllRegistrationWindows(isCso: true).ToList();
+
+        // assert
+        windows.Should().BeInDescendingOrder(w => w.RegistrationYear);
+    }
+
+    [Test]
+    public void WHEN_GetAllRegistrationWindows_called_THEN_includes_future_unopened_windows()
+    {
+        // arrange
+        // Create windows with opening dates in the future
+        var futureWindow = CreateWindow(
+            WindowType.CsoLargeProducer,
+            openingDateConfig: new Date { Day = 15, Month = 2 },  // Opens Feb 15, 2026 (future from Jan 15)
+            deadlineDateConfig: new Date { Day = 1, Month = 3 },
+            closingDateConfig: new Date { Day = 1, Month = 4 });
+
+        var currentWindow = CreateWindow(
+            WindowType.CsoSmallProducer,
+            openingDateConfig: new Date { Day = 1, Month = 1 },   // Opens Jan 1, 2026 (past)
+            deadlineDateConfig: new Date { Day = 1, Month = 7 },
+            closingDateConfig: new Date { Day = 1, Month = 8 });
+
+        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        {
+            new()
+            {
+                InitialRegistrationYear = 2026,
+                FinalRegistrationYear = 2026,
+                Windows = new List<Window> { futureWindow, currentWindow }
+            }
+        };
+        var options = Options.Create(registrationPeriodPatterns);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+
+        // act
+        var windows = sut.GetAllRegistrationWindows(isCso: true).ToList();
+
+        // assert
+        // Both future and current windows should be returned
+        windows.Should().Contain(w => w.WindowType == WindowType.CsoLargeProducer);
+        windows.Should().Contain(w => w.WindowType == WindowType.CsoSmallProducer);
+    }
+
+    [Test]
+    public void WHEN_GetAllRegistrationWindows_called_THEN_includes_closed_windows()
+    {
+        // arrange
+        // Create a window that closed in the past
+        var closedWindow = CreateWindow(WindowType.CsoLargeProducer,
+            openingDateConfig: new Date { Day = 1, Month = 1 },
+            deadlineDateConfig: new Date { Day = 1, Month = 2 },
+            closingDateConfig: new Date { Day = 1, Month = 3 });
+
+        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        {
+            new()
+            {
+                InitialRegistrationYear = 2025,
+                FinalRegistrationYear = 2025,
+                Windows = new List<Window> { closedWindow }
+            }
+        };
+        var options = Options.Create(registrationPeriodPatterns);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+
+        // act
+        var windows = sut.GetAllRegistrationWindows(isCso: true);
+
+        // assert
+        windows.Should().NotBeEmpty();
+        windows.Should().Contain(w => w.RegistrationYear == 2025);
+    }
+
+    [Test]
+    public void GIVEN_multiple_window_types_WHEN_GetAllRegistrationWindows_called_THEN_maps_correctly()
+    {
+        // arrange
+        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        {
+            new()
+            {
+                InitialRegistrationYear = 2026,
+                FinalRegistrationYear = 2026,
+                Windows = new List<Window>
+                {
+                    CreateWindow(WindowType.CsoLargeProducer),
+                    CreateWindow(WindowType.CsoSmallProducer),
+                    CreateWindow(WindowType.DirectLargeProducer),
+                    CreateWindow(WindowType.DirectSmallProducer),
+                    CreateWindow(WindowType.Cso),
+                    CreateWindow(WindowType.Direct)
+                }
+            }
+        };
+        var options = Options.Create(registrationPeriodPatterns);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+
+        // act
+        var csoWindows = sut.GetAllRegistrationWindows(isCso: true);
+        var directWindows = sut.GetAllRegistrationWindows(isCso: false);
+
+        // assert
+        csoWindows.Should().HaveCount(3);
+        directWindows.Should().HaveCount(3);
+        csoWindows.Should().Contain(w => w.WindowType == WindowType.CsoLargeProducer);
+        csoWindows.Should().Contain(w => w.WindowType == WindowType.CsoSmallProducer);
+        csoWindows.Should().Contain(w => w.WindowType == WindowType.Cso);
+        directWindows.Should().Contain(w => w.WindowType == WindowType.DirectLargeProducer);
+        directWindows.Should().Contain(w => w.WindowType == WindowType.DirectSmallProducer);
+        directWindows.Should().Contain(w => w.WindowType == WindowType.Direct);
+    }
+
+    [Test]
+    public void WHEN_GetAllRegistrationWindows_called_with_multiple_years_THEN_returns_all_years_ordered_descending()
+    {
+        // arrange
+        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        {
+            new()
+            {
+                InitialRegistrationYear = 2024,
+                FinalRegistrationYear = 2027,
+                Windows = new List<Window>
+                {
+                    CreateWindow(
+                        WindowType.CsoLargeProducer,
+                        openingDateConfig: new Date { Day = 15, Month = 2 },
+                        deadlineDateConfig: new Date { Day = 1, Month = 3 },
+                        closingDateConfig: new Date { Day = 1, Month = 4, YearOffset = 2})
+                }
+            }
+        };
+        var options = Options.Create(registrationPeriodPatterns);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+
+        // act
+        var windows = sut.GetAllRegistrationWindows(isCso: true).ToList();
+
+        // assert
+        windows.Should().HaveCountGreaterThan(1);
+        windows.Should().BeInDescendingOrder(w => w.RegistrationYear);
+        windows.Should().Contain(w => w.RegistrationYear == 2024);
+        windows.Should().Contain(w => w.RegistrationYear == 2027);
+    }
+
+    [Test]
+    public void WHEN_GetAllRegistrationWindows_called_THEN_does_not_filter_by_window_status()
+    {
+        // arrange
+        // Create windows in various states: future, current, and closed
+        var futureWindow = CreateWindow(
+            WindowType.CsoLargeProducer,
+            openingDateConfig: new Date { Day = 15, Month = 2 },  // Opens Feb 15, 2026 (future)
+            deadlineDateConfig: new Date { Day = 1, Month = 3 },
+            closingDateConfig: new Date { Day = 1, Month = 4 });
+
+        var currentWindow = CreateWindow(
+            WindowType.CsoSmallProducer,
+            openingDateConfig: new Date { Day = 1, Month = 1 },   // Opens Jan 1, 2026 (open)
+            deadlineDateConfig: new Date { Day = 1, Month = 7 },
+            closingDateConfig: new Date { Day = 1, Month = 8 });
+
+        var pastWindow = CreateWindow(
+            WindowType.CsoLargeProducer,
+            openingDateConfig: new Date { Day = 1, Month = 1 },
+            deadlineDateConfig: new Date { Day = 1, Month = 2 },
+            closingDateConfig: new Date { Day = 1, Month = 3 });  // Closes March 1, 2025 (past - when using 2025 year)
+
+        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        {
+            new()
+            {
+                InitialRegistrationYear = 2025,
+                FinalRegistrationYear = 2026,
+                Windows = new List<Window> { futureWindow, currentWindow, pastWindow }
+            }
+        };
+        var options = Options.Create(registrationPeriodPatterns);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+
+        // act
+        var allWindows = sut.GetAllRegistrationWindows(isCso: true);
+        var activeWindows = sut.GetActiveRegistrationWindows(isCso: true);
+
+        // assert
+        allWindows.Should().HaveCountGreaterThanOrEqualTo(activeWindows.Count);
+        allWindows.Should().Contain(w => w.RegistrationYear == 2025);
+        allWindows.Should().Contain(w => w.RegistrationYear == 2026);
+    }
+
     // Creates registration period configuration for 2026 and a number of windows for that period. The windows
     // all have an opening date of 2026-06-01, a deadline date of 2026-07-01 and a closing date of 2026-08-01.
     private static List<RegistrationPeriodPattern> CreateValidRegistrationPatterns()
