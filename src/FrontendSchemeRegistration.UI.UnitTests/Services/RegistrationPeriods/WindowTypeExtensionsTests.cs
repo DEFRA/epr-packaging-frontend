@@ -10,8 +10,8 @@ public class WindowTypeExtensionsTests
 {
     [TestCase(WindowType.CsoLargeProducer, RegistrationJourney.CsoLargeProducer)]
     [TestCase(WindowType.CsoSmallProducer, RegistrationJourney.CsoSmallProducer)]
-    [TestCase(WindowType.DirectLargeProducer, RegistrationJourney.DirectLargeProducer)]
-    [TestCase(WindowType.DirectSmallProducer, RegistrationJourney.DirectSmallProducer)]
+    [TestCase(WindowType.DirectLargeProducer, null)]
+    [TestCase(WindowType.DirectSmallProducer, null)]
     [TestCase(WindowType.Cso, null)]
     [TestCase(WindowType.Direct, null)]
     public void WHEN_ToRegistrationJourney_called_with_window_type_THEN_return_correct_registration_journey(

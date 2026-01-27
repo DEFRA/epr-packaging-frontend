@@ -67,9 +67,9 @@
         <value>Cofrestru’ch aelodau</value>
     </data>
     <data name="large_and_small_producers_must_be_registered_separately" xml:space="preserve">
-        <value>[WELSH]Large and small producers must be registered separately.</value>
+        <value>Rhaid cofrestru cynhyrchwyr mawr a bach ar wahân.</value>
     </data>
     <data name="you_can_also_resubmit_registration_details" xml:space="preserve">
-        <value>[WELSH]You can also resubmit registration details.</value>
+        <value>Gallwch hefyd ailgyflwyno manylion cofrestru.</value>
     </data>
 </root>
