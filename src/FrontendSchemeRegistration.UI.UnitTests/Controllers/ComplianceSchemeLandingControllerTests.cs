@@ -23,7 +23,9 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
 
 using Application.Enums;
 using Application.Extensions;
+using Constants;
 using Microsoft.Extensions.Time.Testing;
+using Microsoft.FeatureManagement;
 using UI.ViewModels.Shared;
 
 [TestFixture]
@@ -42,6 +44,7 @@ public class ComplianceSchemeLandingControllerTests
     private readonly Mock<IRegistrationApplicationService> _registrationApplicationService = new();
     private readonly Mock<ISubmissionService> _submissionService = new();
     private readonly Mock<IResubmissionApplicationService> _resubmissionApplicationService = new();
+    private readonly Mock<IFeatureManager> _featureManagerMock = new();
     private FakeTimeProvider _testTimeProvider;
 
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock = new();
@@ -155,6 +158,8 @@ public class ComplianceSchemeLandingControllerTests
         _resubmissionApplicationService.Setup(x => x.PackagingResubmissionPeriod(It.IsAny<string[]>(), It.IsAny<DateTime>()))
             .Returns(() => _submissionPeriods.FirstOrDefault(sp => sp.Year == _testTimeProvider.GetUtcNow().GetComplianceYear().ToString()));
 
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.DisplayCsoSmallProducerRegistration))
+            .ReturnsAsync(false);
         
         _complianceSchemeLandingController = new ComplianceSchemeLandingController(
             _sessionManagerMock.Object,
@@ -162,6 +167,7 @@ public class ComplianceSchemeLandingControllerTests
             _notificationServiceMock.Object,
             _resubmissionApplicationService.Object,
             _nullLogger,
+            _featureManagerMock.Object,
             _testTimeProvider)
         {
             ControllerContext = { HttpContext = _httpContextMock.Object }
@@ -182,7 +188,9 @@ public class ComplianceSchemeLandingControllerTests
     {
         //Time travel setup
         _testTimeProvider.SetUtcNow(new DateTimeOffset(year, month, 1,0,0,0,TimeSpan.Zero));
-
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.DisplayCsoSmallProducerRegistration))
+            .ReturnsAsync(true);
+        
         var complianceSchemes = GetComplianceSchemes();
         _complianceSchemeServiceMock
             .Setup(service => service.GetOperatorComplianceSchemes(It.IsAny<Guid>()))
@@ -195,23 +203,13 @@ public class ComplianceSchemeLandingControllerTests
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(GetSessionWithoutSelectedScheme());
 
-        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<RegistrationJourney?>(), It.IsAny<bool?>()))
+        _registrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(),
+                It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<RegistrationJourney?>(), It.IsAny<bool?>()))
             .ReturnsAsync(_registrationApplicationSession);
-        var registrationApplicationPerYear = new List<RegistrationApplicationViewModel>()
-        {
-            new RegistrationApplicationViewModel {
-            ApplicationStatus = _registrationApplicationSession.ApplicationStatus,
-            FileUploadStatus = _registrationApplicationSession.FileUploadStatus,
-            PaymentViewStatus = _registrationApplicationSession.PaymentViewStatus,
-            AdditionalDetailsStatus = _registrationApplicationSession.AdditionalDetailsStatus,
-            ApplicationReferenceNumber = _registrationApplicationSession.ApplicationReferenceNumber,
-            RegistrationReferenceNumber = _registrationApplicationSession.RegistrationReferenceNumber,
-            IsResubmission = _registrationApplicationSession.IsResubmission,
-           }
-        };
 
-        var registrationApplicationDetails = (RegistrationApplicationDetails)null;
-        _submissionService.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(registrationApplicationDetails);
+        _submissionService
+            .Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync((RegistrationApplicationDetails)null);
 
         // Act
         var response = await _complianceSchemeLandingController.Get() as ViewResult;
@@ -243,7 +241,8 @@ public class ComplianceSchemeLandingControllerTests
                 },
                 PackagingResubmissionPeriod = _submissionPeriods
                     .First(sp => sp.Year == expectedComplianceYear.ToString()),
-                ComplianceYear = expectedComplianceYear.ToString()
+                ComplianceYear = expectedComplianceYear.ToString(),
+                CsoSmallProducerRegistrationEnabled = true
             });
 
         _sessionManagerMock.Verify(
