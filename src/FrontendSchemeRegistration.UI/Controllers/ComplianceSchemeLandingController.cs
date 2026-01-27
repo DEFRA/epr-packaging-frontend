@@ -52,8 +52,8 @@ public class ComplianceSchemeLandingController(
         var currentComplianceSchemeId = session.RegistrationSession.SelectedComplianceScheme.Id;
         await taskSave;
 
-        var csoSmallProducerRegistrationEnabled = await featureManager.IsEnabledAsync(FeatureFlags
-            .DisplayCsoSmallProducerRegistration);
+        var csoRegistrationEnabled = await featureManager.IsEnabledAsync(FeatureFlags
+            .CsoRegistrationEnabled);
         var currentSummary = await complianceSchemeService.GetComplianceSchemeSummary(organisation.Id.Value, currentComplianceSchemeId);
 
         var resubmissionApplicationDetails = await resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(
@@ -69,7 +69,7 @@ public class ComplianceSchemeLandingController(
             ResubmissionTaskListViewModel = resubmissionApplicationDetails.ToResubmissionTaskListViewModel(organisation),
             PackagingResubmissionPeriod = packagingResubmissionPeriod,
             ComplianceYear = now.GetComplianceYear().ToString(),
-            CsoSmallProducerRegistrationEnabled = csoSmallProducerRegistrationEnabled
+            CsoRegistrationEnabled = csoRegistrationEnabled
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id.Value);

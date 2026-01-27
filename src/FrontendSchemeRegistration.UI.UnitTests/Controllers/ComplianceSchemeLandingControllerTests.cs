@@ -158,7 +158,7 @@ public class ComplianceSchemeLandingControllerTests
         _resubmissionApplicationService.Setup(x => x.PackagingResubmissionPeriod(It.IsAny<string[]>(), It.IsAny<DateTime>()))
             .Returns(() => _submissionPeriods.FirstOrDefault(sp => sp.Year == _testTimeProvider.GetUtcNow().GetComplianceYear().ToString()));
 
-        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.DisplayCsoSmallProducerRegistration))
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.CsoRegistrationEnabled))
             .ReturnsAsync(false);
         
         _complianceSchemeLandingController = new ComplianceSchemeLandingController(
@@ -188,7 +188,7 @@ public class ComplianceSchemeLandingControllerTests
     {
         //Time travel setup
         _testTimeProvider.SetUtcNow(new DateTimeOffset(year, month, 1,0,0,0,TimeSpan.Zero));
-        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.DisplayCsoSmallProducerRegistration))
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.CsoRegistrationEnabled))
             .ReturnsAsync(true);
         
         var complianceSchemes = GetComplianceSchemes();
@@ -242,7 +242,7 @@ public class ComplianceSchemeLandingControllerTests
                 PackagingResubmissionPeriod = _submissionPeriods
                     .First(sp => sp.Year == expectedComplianceYear.ToString()),
                 ComplianceYear = expectedComplianceYear.ToString(),
-                CsoSmallProducerRegistrationEnabled = true
+                CsoRegistrationEnabled = true
             });
 
         _sessionManagerMock.Verify(
