@@ -12,7 +12,6 @@ public class StubAuthHandler(
     IOptionsMonitor<AuthenticationSchemeOptions> options,
     ILoggerFactory logger,
     UrlEncoder encoder,
-    TimeProvider timeProvider,
     ICustomClaims customClaims,
     IHttpContextAccessor httpContextAccessor) : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
 {
@@ -28,14 +27,12 @@ public class StubAuthHandler(
         var identity = new ClaimsIdentity(claims, "Epr-stub");
         var principal = new ClaimsPrincipal(identity);
 
-        if (customClaims != null)
-        {
-            var additionalClaims = await customClaims.GetCustomClaims(new TokenValidatedContext(
-                httpContextAccessor.HttpContext, Scheme, new OpenIdConnectOptions(), principal,
-                new AuthenticationProperties()));
-            claims.AddRange(additionalClaims);
-            principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "Epr-stub"));
-        }
+        var additionalClaims = await customClaims.GetCustomClaims(new TokenValidatedContext(
+            httpContextAccessor.HttpContext, Scheme, new OpenIdConnectOptions(), principal,
+            new AuthenticationProperties()));
+        claims.AddRange(additionalClaims);
+        principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "Epr-stub"));
+        
 
         var ticket = new AuthenticationTicket(principal, "Epr-stub");
         
