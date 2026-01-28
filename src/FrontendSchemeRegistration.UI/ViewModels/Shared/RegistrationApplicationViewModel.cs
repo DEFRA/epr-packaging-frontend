@@ -10,6 +10,7 @@ using Sessions;
 public class RegistrationApplicationViewModel
 {
     public bool IsComplianceScheme { get; set; }
+
     public string RegistrationYear { get; set; } = default!;
     public RegistrationTaskListStatus FileUploadStatus { get; set; } = RegistrationTaskListStatus.NotStarted;
     public RegistrationTaskListStatus PaymentViewStatus { get; set; } = RegistrationTaskListStatus.CanNotStartYet;
@@ -24,11 +25,11 @@ public class RegistrationApplicationViewModel
     public RegistrationWindow RegistrationWindow { get; set; }
     
     /// <summary>
-    /// This property is used in direct producer flows as a proxy for whether or not the small direct producer window has opened. It is assumed
-    /// that the direct large producer window's dates are prior to the small producer window's dates, so if we don't have a property here, then
-    /// the direct small producer window has not opened (or this model is being used in the context of a CSO)  
+    /// This property is used for direct producer flows. When the org is not a CSO, then it should not be null
+    /// for the current registration period pattern. It may be null for legacy patterns
     /// </summary>
     public RegistrationWindow? SecondaryRegistrationWindow { get; set; }
+    
     public string RegistrationApplicationLink
         => ApplicationStatus is
                ApplicationStatusType.FileUploaded

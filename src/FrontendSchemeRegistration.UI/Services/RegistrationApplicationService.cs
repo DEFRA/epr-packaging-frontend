@@ -511,9 +511,19 @@ public class RegistrationApplicationService : IRegistrationApplicationService
 
         var isCso = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
 
-        var activeRegistrationWindows = _registrationPeriodProvider.GetActiveRegistrationWindows(isCso); 
+        IReadOnlyCollection<RegistrationWindow> registrationWindows;
 
-        var windowKeyInformationList = GetRegistrationWindowKeyInformationList(isCso, activeRegistrationWindows);
+        if (isCso)
+        {
+            registrationWindows = _registrationPeriodProvider.GetActiveRegistrationWindows(isCso);
+        }
+        else
+        {
+            // we need reg windows that haven't yet opened because the tiles state when the (small producer) window is going to open
+            registrationWindows = _registrationPeriodProvider.GetAllRegistrationWindows(isCso);
+        }
+
+        var windowKeyInformationList = GetRegistrationWindowKeyInformationList(isCso, registrationWindows);
 
         foreach (var window in windowKeyInformationList)
         {
@@ -545,20 +555,21 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     /// hence their key information gets merged into a single item here
     /// </summary>
     /// <param name="isCso"></param>
-    /// <param name="activeRegistrationWindows"></param>
+    /// <param name="registrationWindows"></param>
     /// <returns></returns>
     private static IReadOnlyCollection<RegistrationWindowKeyInformation> GetRegistrationWindowKeyInformationList(bool isCso,
-        IReadOnlyCollection<RegistrationWindow> activeRegistrationWindows)
+        IReadOnlyCollection<RegistrationWindow> registrationWindows)
     {
         IReadOnlyCollection<RegistrationWindowKeyInformation> windows;
         if (isCso)
         {
-            windows = activeRegistrationWindows.Select(rw => new RegistrationWindowKeyInformation(rw.WindowType.ToRegistrationJourney(), rw, null, rw.RegistrationYear)).ToImmutableList();
+            windows = registrationWindows.Select(rw => new RegistrationWindowKeyInformation(rw.WindowType.ToRegistrationJourney(), rw, null, rw.RegistrationYear)).ToImmutableList();
         }
         else
         {
-            // Group direct windows by registration year, merging multiple windows per year
-            windows = activeRegistrationWindows
+            // Group direct windows by registration year, merging multiple windows per year. Filter out any
+            // windows where the primary registration window hasn't yet opened
+            windows = registrationWindows
                 .GroupBy(w => w.RegistrationYear)
                 .Select(group =>
                 {
@@ -574,6 +585,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
                         directWindows.Count > 1 ? directWindows[1] : null,
                         group.Key);
                 })
+                .Where(ki => ki.RegistrationWindow.GetRegistrationWindowStatus() != RegistrationWindowStatus.PriorToOpening)
                 .ToImmutableList();
         }
 

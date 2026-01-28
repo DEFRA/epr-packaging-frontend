@@ -8,7 +8,6 @@ using Application.Options.RegistrationPeriodPatterns;
 public class RegistrationWindow
 {
     private readonly TimeProvider _timeProvider;
-    private readonly DateTime _openingDate;
     private readonly DateTime _closingDate;
 
     /// <summary>
@@ -29,16 +28,17 @@ public class RegistrationWindow
         )
     {
         _timeProvider = timeProvider;
-        _openingDate = openingDate;
         _closingDate = closingDate;
         WindowType = windowType;
         RegistrationYear = registrationYear;
+        OpeningDate = openingDate;
         DeadlineDate = deadlineDate;
         IsCso = IsRegistrationWindowForCso(windowType);
     }
 
     public WindowType WindowType { get; }
     public int RegistrationYear { get; }
+    public DateTime OpeningDate { get; }
     public DateTime DeadlineDate { get; }
     public bool IsCso { get; }
 
@@ -46,11 +46,11 @@ public class RegistrationWindow
     {
         var now = _timeProvider.GetUtcNow(); 
         
-        if (now < _openingDate)
+        if (now < OpeningDate)
         {
             return RegistrationWindowStatus.PriorToOpening;
         }
-        else if (now >= _openingDate && now < DeadlineDate)
+        else if (now >= OpeningDate && now < DeadlineDate)
         {
             return RegistrationWindowStatus.OpenAndNotLate;
         }
