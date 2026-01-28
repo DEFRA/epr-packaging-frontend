@@ -39,13 +39,15 @@
                 <div class="govuk-inset-text">
                     <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-1">@Localizer["organisation_id", Model.OrganisationNumber]</p>
                     <p class="govuk-body govuk-!-margin-bottom-1">@Localizer["compliance_scheme_name", Model.ComplianceSchemeName]</p>
-                    <feature name="ShowWasteTile">
-                        <p class="govuk-body govuk-!-margin-bottom-1">
-                            <a asp-controller="FrontendSchemeRegistration" asp-action="ManageComplianceScheme" class="govuk-link govuk-link--no-visited-state">
-                                @Localizer["change_or_remove_compliance_scheme", Model.OrganisationName]
-                            </a>
-                        </p>
-                    </feature>
+                    @if (Model.CanManageComplianceScheme) {
+                        <feature name="ShowWasteTile">
+                            <p class="govuk-body govuk-!-margin-bottom-1">
+                                <a asp-controller="FrontendSchemeRegistration" asp-action="ManageComplianceScheme" class="govuk-link govuk-link--no-visited-state">
+                                    @Localizer["change_or_remove_compliance_scheme", Model.OrganisationName]
+                                </a>
+                            </p>
+                        </feature>
+                    }
                 </div>
 
                 <h2 class="govuk-heading-m govuk-!-margin-bottom-3">@Localizer["what_they_are_responsible_for", Model.OrganisationName]</h2>

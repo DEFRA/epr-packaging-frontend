@@ -148,7 +148,7 @@
     <value>Rhoi gwybod am fanylion eich sefydliad</value>
   </data>
   <data name="in_2023_you_need_to_data_for" xml:space="preserve">
-    <value />
+    <value>Yn 2023 mae arnoch chi angen data ar gyfer</value>
   </data>
   <data name="packaging_data" xml:space="preserve">
     <value>Data pecynwaith</value>
@@ -203,13 +203,13 @@
     <value>gwirio cynnydd eich rhwymedigaethau ailgylchu</value>
   </data>
   <data name="waste_management_and_admin_fees" xml:space="preserve">
-    <value>WWaste management and admin fees (opens in a new tab)</value>
+    <value>Ffioedd rheoli gwastraff a ffioedd gweinyddol (yn agor mewn tab newydd)</value>
   </data>
   <data name="sign_into_the_financial_services_system" xml:space="preserve">
-    <value>WSign into the financial services system (FSS) to view and manage the fees your organisation needs to pay.</value>
+    <value>Mewngofnodwch i'r system gwasanaethau ariannol (FSS) i weld a rheoli'r ffioedd y mae angen i'ch sefydliad eu talu</value>
   </data>
   <data name="you_still_need_to_view_any_additional_fees" xml:space="preserve">
-    <value>[Welsh]You still need to view any additional fees and submit to the regulator.</value>
+    <value>Mae angen o hyd ichi weld unrhyw ffioedd ychwanegol a'u cyflwyno i'r rheoleiddiwr </value>
   </data>
   <data name="view_and_pay_waste_disposal_fees" xml:space="preserve">
     <value>Gweld a thalu ffioedd gwaredu gwastraff ar gyfer pecynwaith (yn agor mewn tab newydd)</value>
@@ -225,5 +225,11 @@
   </data>
   <data name="learn_more_about_packuk" xml:space="preserve">
     <value>Dysgu mwy am PecynUK (yn agor mewn tab newydd)</value>
+  </data>
+  <data name="you_are_currenlty_resubmitting_data" xml:space="preserve">
+    <value>Rydych chi wrthi'n ail-gyflwyno data ar hyn o bryd.</value>
+  </data>
+  <data name="you_are_currenlty_resubmitting_data_period" xml:space="preserve">
+    <value>Rydych wedi ailgyflwyno data deunydd pacio ar gyfer y cyfnod Gorffennaf i Ragfyr {0}.</value>
   </data>
 </root>

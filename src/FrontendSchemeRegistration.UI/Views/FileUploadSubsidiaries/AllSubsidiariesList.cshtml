@@ -1,5 +1,4 @@
 ﻿@using FrontendSchemeRegistration.Application.Constants
-@using FrontendSchemeRegistration.UI.Constants
 
 @model AllSubsidiaryListViewModel
 
@@ -197,14 +196,14 @@
                             <h2 class="govuk-heading-m">@Localizer["before_you_start"]</h2>
                             <p class="govuk-body">
                                 @Localizer["before_you_upload"]
-                                <a href="@GuidanceLinks.Value.HowToCompleteSubsidiaryFile" class="govuk-link" rel="noreferrer noopener" target="_blank">@Localizer["subsidiary_file_template"]</a>.
+                                <a href="@GuidanceLinks.HowToCompleteSubsidiaryFile" class="govuk-link" rel="noreferrer noopener" target="_blank">@Localizer["subsidiary_file_template"]</a>.
                             </p>
                             <p class="govuk-body">
                                 @Localizer["use_the_file_upload"]
                             </p>
                             <p class="govuk-body">
                                 @Localizer["adding_removing_members_affect_packaging_obligations"]
-                                <a href="@GuidanceLinks.Value.PrnObligation" class="govuk-link" rel="noreferrer noopener" target="_blank">@Localizer["extended_producer_guidelines"]</a>
+                                <a href="@GuidanceLinks.PrnObligation" class="govuk-link" rel="noreferrer noopener" target="_blank">@Localizer["extended_producer_guidelines"]</a>
                             </p>
 
                             <h2 class="govuk-heading-m">@Localizer["upload_a_file"]</h2>
@@ -244,7 +243,7 @@
                             </p>
                             <p class="govuk-body">
                                 @Localizer["before_you_upload"]
-                                <a href="@GuidanceLinks.Value.HowToCompleteSubsidiaryFile" class="govuk-link" rel="noreferrer noopener" target="_blank">@Localizer["subsidiary_file_template"]</a>.
+                                <a href="@GuidanceLinks.HowToCompleteSubsidiaryFile" class="govuk-link" rel="noreferrer noopener" target="_blank">@Localizer["subsidiary_file_template"]</a>.
                             </p>
                         </div>
                     </div>
@@ -297,7 +296,7 @@
 
                                     <p class="govuk-body">
                                         @Localizer["adding_removing_members_affect_packaging_obligations"]
-                                        <a href="@GuidanceLinks.Value.PrnObligation" class="govuk-link" rel="noreferrer noopener" target="_blank">@Localizer["extended_producer_guidelines"]</a>
+                                        <a href="@GuidanceLinks.PrnObligation" class="govuk-link" rel="noreferrer noopener" target="_blank">@Localizer["extended_producer_guidelines"]</a>
                                     </p>
                                 </div>
                             </div>

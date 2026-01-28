@@ -1,15 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-   <resheader name="resmimetype">
-    <value>text/microsoft-resx</value>
-  </resheader>
-  <resheader name="version">
-    <value>2.0</value>
-  </resheader>
-  <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-  <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <data name="title" xml:space="preserve">    
+        <value>Cofrestru’ch aelodau</value>
+    </data>
+    <data name="current_large_producer_registration_title" xml:space="preserve">
+	    <value>Cofrestru cynhyrchydd mawr ar gyfer {0} </value>
+	</data>
+    <data name="current_small_producer_registration_title" xml:space="preserve">
+		<value>Cofrestru cynhyrchydd bach ar gyfer {0} </value>
+	</data>
+    <data name="small_producer_instructions1.2026" xml:space="preserve">
+		<value>Rhaid i gynhyrchwyr bach wneud cais am gofrestru ar neu cyn 1 Ebrill 2026</value>
+	</data>
+    <data name="small_producer_instructions2.2026" xml:space="preserve">
+		<value>Gallai ceisiadau a wneir ar ôl y dyddiad hwn arwain at ffi hwyr</value>
+	</data>
+    <data name="large_producer_instructions1.2026" xml:space="preserve">
+		<value>Roedd angen i gynhyrchwyr mawr wneud cais am gofrestru ar neu cyn 1 Hydref 2025</value>
+	</data>
+    <data name="large_producer_instructions2.2026" xml:space="preserve">
+		<value>Gallai ceisiadau a wneir ar ôl y dyddiad hwn arwain at ffi hwyr</value>
+	</data>
 </root>

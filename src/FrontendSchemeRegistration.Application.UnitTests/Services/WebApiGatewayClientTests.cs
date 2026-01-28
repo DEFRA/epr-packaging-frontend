@@ -80,7 +80,13 @@ public class WebApiGatewayClientTests
             });
 
         // Act
-        Func<Task> action = async () => await _webApiGatewayClient.UploadFileAsync(byteArray, fileName, SubmissionPeriod, submissionId, SubmissionType.Producer);
+        Func<Task> action = async () => await _webApiGatewayClient.UploadFileAsync(
+            byteArray, fileName, new FileUploadSubmissionDetails()
+            {
+                SubmissionPeriod = SubmissionPeriod,
+                SubmissionId = submissionId,
+                SubmissionType = SubmissionType.Producer
+            });
 
         // Assert
         await action.Should().NotThrowAsync();
@@ -108,7 +114,14 @@ public class WebApiGatewayClientTests
 
         // Act
         await _webApiGatewayClient.UploadFileAsync(
-            [], fileName, SubmissionPeriod, submissionId, submissionType, submissionSubType, registrationSetId);
+            [], fileName, new FileUploadSubmissionDetails()
+            {
+                SubmissionPeriod = SubmissionPeriod,
+                SubmissionId = submissionId,
+                SubmissionType = submissionType,
+                SubmissionSubType = submissionSubType,
+                RegistrationSetId = registrationSetId
+            });
 
         // Assert
         headers.GetValues("FileName").Single().Should().Be(fileName);
@@ -137,7 +150,13 @@ public class WebApiGatewayClientTests
             .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.BadRequest });
 
         // Act
-        Func<Task> action = async () => await _webApiGatewayClient.UploadFileAsync(byteArray, fileName, SubmissionPeriod, null, SubmissionType.Producer);
+        Func<Task> action = async () => await _webApiGatewayClient.UploadFileAsync(byteArray, fileName,
+            new FileUploadSubmissionDetails()
+            {
+                SubmissionPeriod = SubmissionPeriod,
+                SubmissionType = SubmissionType.Producer
+            });
+     
 
         // Assert
         await action.Should().ThrowAsync<HttpRequestException>();

@@ -10,6 +10,9 @@ public class GlobalVariables
 
     public int FileUploadLimitInBytes { get; set; }
 
+    /// <summary>
+    /// When bound to appSettings, this represents the POM submission periods - NOT registration periods
+    /// </summary>
     public List<SubmissionPeriod> SubmissionPeriods { get; set; }
 
     public bool UseLocalSession { get; set; }
@@ -24,7 +27,11 @@ public class GlobalVariables
 
     public DateTime SmallProducerLateFeeDeadline2026 { get; set; }
 
-    public DateTime SmallProducersRegStartTime2026 { get; set; }
-
     public string RegistrationYear { get; set; }
+    
+    /// <summary>
+    /// If set, this overrides the current system date/time. Should never be used
+    /// in a production environment
+    /// </summary>
+    public DateTime? StartupUtcTimestampOverride { get; set; }
 }

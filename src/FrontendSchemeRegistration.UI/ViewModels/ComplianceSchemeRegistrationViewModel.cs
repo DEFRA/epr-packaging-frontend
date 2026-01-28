@@ -1,3 +1,11 @@
 namespace FrontendSchemeRegistration.UI.ViewModels;
 
-public record class ComplianceSchemeRegistrationViewModel(string ComplianceSchemeName, string Nation);
+using Shared;
+
+public record class ComplianceSchemeRegistrationViewModel(
+    string ComplianceSchemeName,
+    string Nation,
+    IEnumerable<RegistrationYearApplicationsViewModel> RegistrationApplicationYears)
+{
+    public bool DisplayCsoSmallProducerRegistration { get; set; } = false;
+};

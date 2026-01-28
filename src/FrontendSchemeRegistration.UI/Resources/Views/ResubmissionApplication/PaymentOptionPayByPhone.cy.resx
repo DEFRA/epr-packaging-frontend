@@ -72,4 +72,7 @@
 	<data name="environment_england" xml:space="preserve">
         <value>England</value>
     </data>
+    <data name="pay_resubmission_fee_of" xml:space="preserve">
+        <value>Talu’r ffi ailgyflwyno o</value>
+    </data>
 </root>

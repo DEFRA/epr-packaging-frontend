@@ -1,0 +1,8 @@
+@model FrontendSchemeRegistration.UI.ViewModels.Shared.ComplianceSchemeRegulatorSubTitleViewModel
+
+<dl class="govuk-body-l  cso-regulator-subtitle">
+    <dd class="cso-regulator-subtitle__label">@Localizer["cso-label"]</dd>
+    <dt class="cso-regulator-subtitle__value">@Model.ComplianceSchemeName</dt>
+    <dd class="cso-regulator-subtitle__label">@Localizer["regulator-label"]</dd>
+    <dt class="cso-regulator-subtitle__value">@Localizer[$"{Model.Nation.ToLowerInvariant()}.regulator"]</dt>
+</dl>

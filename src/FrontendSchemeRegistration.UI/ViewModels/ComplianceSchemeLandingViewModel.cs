@@ -29,14 +29,10 @@ public class ComplianceSchemeLandingViewModel
         var yearInt = int.TryParse(complianceYear, out var year) ? year : 0;
         return yearInt;
     }
-
-    
     
     public bool IsApprovedUser { get; set; }
 
     public ResubmissionTaskListViewModel ResubmissionTaskListViewModel { get; set; }
-
-    public List<RegistrationApplicationPerYearViewModel> RegistrationApplicationsPerYear { get; set; } = new();
 
     public SubmissionPeriod PackagingResubmissionPeriod { get; set; }
     

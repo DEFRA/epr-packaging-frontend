@@ -29,7 +29,7 @@ services.AddAntiforgery(opts =>
 
 services
     .AddHttpContextAccessor()
-    .RegisterWebComponents(builderConfig)
+    .RegisterWebComponents(builderConfig, builder.Environment)
     .ConfigureMsalDistributedTokenOptions();
 
 services
@@ -75,7 +75,7 @@ services.AddHsts(options =>
 
 builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
 
-services.AddAppHttpClient();
+services.AddWebApiGatewayClient();
 
 var app = builder.Build();
 

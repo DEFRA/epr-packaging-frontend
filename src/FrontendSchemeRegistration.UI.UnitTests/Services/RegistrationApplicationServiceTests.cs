@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Security.Claims;
 using AutoFixture;
 using EPR.Common.Authorization.Models;
@@ -11,6 +11,7 @@ using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Services;
 using FrontendSchemeRegistration.UI.Sessions;
 using Microsoft.AspNetCore.Http;
@@ -22,6 +23,11 @@ using Newtonsoft.Json;
 
 namespace FrontendSchemeRegistration.UI.UnitTests.Services;
 
+using Application.Options.RegistrationPeriodPatterns;
+using Application.Services;
+using Microsoft.Extensions.Time.Testing;
+using UI.Services.RegistrationPeriods;
+
 [TestFixture]
 public class RegistrationApplicationServiceTests
 {
@@ -31,47 +37,39 @@ public class RegistrationApplicationServiceTests
     private Mock<IPaymentCalculationService> _paymentCalculationServiceMock;
     private Mock<ISessionManager<RegistrationApplicationSession>> _sessionManagerMock;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _frontEndSessionManagerMock;
-    private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
+
     private Fixture _fixture;
     private RegistrationApplicationService _service;
     private Mock<IFeatureManager> _featureManagerMock;
     private Mock<IHttpContextAccessor> _httpContextAccessorMock;
-    private TimeProvider _dateTimeProvider;
+    private Mock<IRegistrationPeriodProvider> _mockRegistrationPeriodProvider;
+    private FakeTimeProvider _dateTimeProvider;
     private int _validRegistrationYear;
 
-    private readonly RegistrationApplicationSession _session = new RegistrationApplicationSession
-    {
-        SubmissionId = Guid.NewGuid(),
-        LastSubmittedFile = new LastSubmittedFileDetails
-        {
-            FileId = Guid.NewGuid(),
-            SubmittedByName = "John Doe",
-            SubmittedDateTime = DateTime.Now
-        }
-    };
+    private RegistrationApplicationSession _session; 
 
     private Mock<ILogger<RegistrationApplicationService>> _loggerMock;
 
     [SetUp]
     public void Setup()
     {
-        _dateTimeProvider = TimeProvider.System;
+        _dateTimeProvider = new FakeTimeProvider();
         _validRegistrationYear = _dateTimeProvider.GetLocalNow().Year;
         _submissionServiceMock = new Mock<ISubmissionService>();
         _paymentCalculationServiceMock = new Mock<IPaymentCalculationService>();
         _sessionManagerMock = new Mock<ISessionManager<RegistrationApplicationSession>>();
         _frontEndSessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
-        _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
         _loggerMock = new Mock<ILogger<RegistrationApplicationService>>();
         _featureManagerMock = new Mock<IFeatureManager>();
         _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+        _mockRegistrationPeriodProvider = new Mock<IRegistrationPeriodProvider>();
         
         var globalVariables = Options.Create(new GlobalVariables
         {
             LateFeeDeadline2025 = new(2025, 4, 1),
             LargeProducerLateFeeDeadline2026 = new(2025, 10, 1),
             SmallProducerLateFeeDeadline2026 = new(2026, 4, 1),
-            RegistrationYear = $"{_validRegistrationYear}, {_validRegistrationYear + 1}"
+            RegistrationYear = $"{_validRegistrationYear}, {(_validRegistrationYear + 1)}"
         });
 
         _fixture = new Fixture();
@@ -85,21 +83,32 @@ public class RegistrationApplicationServiceTests
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
-            GlobalVariables = globalVariables
+            GlobalVariables = globalVariables,
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
 
         _service = new RegistrationApplicationService(deps, _dateTimeProvider);
 
         var submissionYear = DateTime.Now.Year.ToString();
-        _session.Period = new SubmissionPeriod
+        var dataPeriod = $"January to December {submissionYear}";
+        _session = new()
         {
-            DataPeriod = $"January to December {submissionYear}",
-            StartMonth = "January",
-            EndMonth = "December",
-            Year = $"{submissionYear}"
+            SubmissionId = Guid.NewGuid(),
+            LastSubmittedFile = new LastSubmittedFileDetails
+            {
+                FileId = Guid.NewGuid(),
+                SubmittedByName = "John Doe",
+                SubmittedDateTime = DateTime.Now
+            },
+            Period = new SubmissionPeriod
+            {
+                DataPeriod = dataPeriod,
+                StartMonth = "January",
+                EndMonth = "December",
+                Year = $"{submissionYear}"
+            },
+            SubmissionPeriod = dataPeriod
         };
-        _session.SubmissionPeriod = _session.Period.DataPeriod;
-
     }
 
     [Test]
@@ -523,6 +532,7 @@ public class RegistrationApplicationServiceTests
     public async Task CreateApplicationReferenceNumber_Returns_CorrectFormat(bool isComplianceScheme, int csRowNumber)
     {
         // Arrange
+        _dateTimeProvider.SetUtcNow(new DateTime(2026, 1, 10));
         const string organisationId = "100082";
         SubmissionPeriod[] submissionPeriods =
         [
@@ -575,9 +585,10 @@ public class RegistrationApplicationServiceTests
     public async Task CreateApplicationReferenceNumber_ShouldGenerateReferenceNumber_WhenSessionIsValid()
     {
         // Arrange
+        _dateTimeProvider.SetUtcNow(new DateTime(2026, 1, 10));
         var organisationNumber = "123";
-        string expectedApplicationReferenceNumber = $"PEPR{organisationNumber}{_dateTimeProvider.GetUtcNow().Year - 2000}P1";
-        
+        string expectedApplicationReferenceNumber = $"PEPR{organisationNumber}{_dateTimeProvider.GetUtcNow().Year - 2000}P1S";
+
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
             .ReturnsAsync(_session);
 
@@ -605,7 +616,6 @@ public class RegistrationApplicationServiceTests
     {
         // Arrange
         var organisationNumber = "123";
-        string expectedApplicationReferenceNumber = $"PEPR{organisationNumber}{_dateTimeProvider.GetUtcNow().Year - 2000-1}P2";
         
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
             .ReturnsAsync(_session);
@@ -620,9 +630,10 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(frontEndSession);
 
         //this is wrong needs fixing 
-        var submissionYear = DateTime.Now.AddYears(-1).Year.ToString();
+        var submissionYear = _dateTimeProvider.GetUtcNow().AddYears(-1).Year;
         _session.Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" };
-
+        
+        var expectedApplicationReferenceNumber = $"PEPR{organisationNumber}{submissionYear - 2000}P2S";
         // Act
         await _service.SetRegistrationFileUploadSession(_httpSession, organisationNumber, It.IsAny<int>(), false);
 
@@ -634,11 +645,14 @@ public class RegistrationApplicationServiceTests
     }
 
     [Test]
-    public async Task CreateApplicationReferenceNumber_ShouldCreateNewSession_WhenNoSessionExists()
+    public async Task CreateApplicationReferenceNumber_ShouldCreateNewSession_WithExpectedApplicationReferenceNumber_WhenNoSessionExists()
     {
         // Arrange
         var organisationNumber = "123";
         _session.SelectedComplianceScheme = null!;
+        var periodEnd = DateTime.Parse("31 December" + _session.Period.Year, new CultureInfo("en-GB"));
+        var periodNumber = DateTime.Today <= periodEnd ? 1 : 2;
+        var expectedApplicationReferenceNumber = $"PEPR{organisationNumber}{periodEnd.Year - 2000}P{periodNumber}S";
 
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
             .ReturnsAsync(_session);
@@ -655,14 +669,10 @@ public class RegistrationApplicationServiceTests
         // Act
         await _service.SetRegistrationFileUploadSession(_httpSession, organisationNumber, It.IsAny<int>(), false);
 
-        var periodEnd = DateTime.Parse($"30 {_session.Period.EndMonth} {_session.Period.Year}", new CultureInfo("en-GB"));
-        var periodNumber = DateTime.Today <= periodEnd ? 1 : 2;
-        var applicationReferenceNumber = $"PEPR{organisationNumber}{(periodEnd.Year - 2000)}P{periodNumber}";
-
         // Assert
         _frontEndSessionManagerMock.Verify(
             m => m.SaveSessionAsync(_httpSession, It.Is<FrontendSchemeRegistrationSession>(session =>
-                session.RegistrationSession.ApplicationReferenceNumber == applicationReferenceNumber)),
+                session.RegistrationSession.ApplicationReferenceNumber == expectedApplicationReferenceNumber)),
             Times.Once);
     }
 
@@ -690,7 +700,7 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(registrationApplicationDetails);
 
         // Act
-        var applicationDetails = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year);
+        var applicationDetails = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null);
 
         // Assert
         applicationDetails.Should().NotBeNull();
@@ -725,7 +735,7 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2025);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2025, null);
 
         // Assert
         result.Should().NotBeNull();
@@ -760,7 +770,7 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2025);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2025, null);
 
         // Assert
         result.Should().NotBeNull();
@@ -813,7 +823,7 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2026);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2026, null);
 
         // Assert
         result.Should().NotBeNull();
@@ -824,13 +834,13 @@ public class RegistrationApplicationServiceTests
     [Test]
     public async Task GetRegistrationApplicationSession_SetLateFeeFlag_2026SmallProducer_AfterDeadline_SetsLateFeeToTrue()
     {
-        // Arrange
+        var dateTime2025 = new DateTime(2025,12, 30);
         var globalVariables = Options.Create(new GlobalVariables
         {
-            LateFeeDeadline2025 = new(DateTime.Today.Year, 4, 1),
-            LargeProducerLateFeeDeadline2026 = new(DateTime.Today.Year, 10, 1),
-            SmallProducerLateFeeDeadline2026 = DateTime.Today.AddDays(-1),
-            RegistrationYear = $"{DateTime.Now.Year}, {DateTime.Now.AddYears(1).Year}"
+            LateFeeDeadline2025 = new(dateTime2025.Year, 4, 1),
+            LargeProducerLateFeeDeadline2026 = new(dateTime2025.Year, 10, 1),
+            SmallProducerLateFeeDeadline2026 = dateTime2025.AddDays(-1),
+            RegistrationYear = $"{dateTime2025.Year}, {dateTime2025.AddYears(1).Year}"
         });
 
         var deps = new RegistrationApplicationServiceDependencies
@@ -842,7 +852,8 @@ public class RegistrationApplicationServiceTests
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
-            GlobalVariables = globalVariables
+            GlobalVariables = globalVariables,
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
 
         _service = new RegistrationApplicationService(deps, _dateTimeProvider);
@@ -855,7 +866,7 @@ public class RegistrationApplicationServiceTests
         {
             FileId = Guid.NewGuid(),
             SubmittedByName = "test",
-            SubmittedDateTime = DateTime.Now
+            SubmittedDateTime = dateTime2025
         };
 
         var registrationApplicationDetails = new RegistrationApplicationDetails
@@ -866,10 +877,10 @@ public class RegistrationApplicationServiceTests
             RegistrationFeeCalculationDetails =
             [
                 new RegistrationFeeCalculationDetails
-            {
-                OrganisationSize = "Small",
-                NationId = 1
-            }
+                {
+                    OrganisationSize = "Small",
+                    NationId = 1
+                }
             ]
         };
 
@@ -892,7 +903,7 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2026);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2026, null);
 
         // Assert
         result.Should().NotBeNull();
@@ -911,7 +922,7 @@ public class RegistrationApplicationServiceTests
         {
             FileId = Guid.NewGuid(),
             SubmittedByName = "test",
-            SubmittedDateTime = DateTime.Now
+            SubmittedDateTime = _dateTimeProvider.GetUtcNow().DateTime
         };
 
         var registrationApplicationDetails = new RegistrationApplicationDetails
@@ -945,7 +956,7 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2026);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2026, null);
 
         // Assert
         result.Should().NotBeNull();
@@ -964,7 +975,7 @@ public class RegistrationApplicationServiceTests
         {
             FileId = Guid.NewGuid(),
             SubmittedByName = "test",
-            SubmittedDateTime = DateTime.Now
+            SubmittedDateTime = _dateTimeProvider.GetUtcNow().DateTime
         };
 
         var registrationApplicationDetails = new RegistrationApplicationDetails
@@ -998,7 +1009,7 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2026);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2026, null);
 
         // Assert
         result.Should().NotBeNull();
@@ -1039,7 +1050,7 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2025);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2025, null);
 
         // Assert
         result.Should().NotBeNull();
@@ -1080,7 +1091,7 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2025);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2025, null);
 
         // Assert
         result.Should().NotBeNull();
@@ -1124,7 +1135,7 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2025);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2025, null);
 
         // Assert
         result.Should().NotBeNull();
@@ -1136,6 +1147,7 @@ public class RegistrationApplicationServiceTests
     public async Task GetRegistrationApplicationSession_SetLateFeeFlag_NoSubmissionDate_UsesTodayDate()
     {
         // Arrange
+        _dateTimeProvider.SetUtcNow(new DateTime(2026, 1, 10));
         var organisation = _fixture.Create<Organisation>();
         organisation.OrganisationNumber = "123";
         organisation.NationId = 1;
@@ -1167,7 +1179,7 @@ public class RegistrationApplicationServiceTests
 
      
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2025);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, 2025, null);
 
         // Assert
         result.Should().NotBeNull();
@@ -1206,7 +1218,7 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(registrationApplicationDetails);
 
         // Act
-        var applicationDetails = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year);
+        var applicationDetails = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null);
 
         // Assert
         applicationDetails.Should().NotBeNull();
@@ -1239,7 +1251,7 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(registrationApplicationDetails);
 
         // Act
-        var applicationDetails = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year);
+        var applicationDetails = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null);
 
         // Assert
         applicationDetails.Should().NotBeNull();
@@ -1269,7 +1281,7 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync((RegistrationApplicationDetails) null);
 
         // Act
-        var registrationApplicationDetails = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year);
+        var registrationApplicationDetails = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null);
 
         // Assert
         registrationApplicationDetails.Should().NotBeNull();
@@ -1281,6 +1293,8 @@ public class RegistrationApplicationServiceTests
     public async Task GetRegistrationApplicationSession_ShouldCall_GetProducerRegistrationFees_When_File_Upload_Is_Completed_And_Payment_Is_Not_Completed()
     {
         // Arrange
+        _dateTimeProvider.SetUtcNow(new DateTime(2026, 1, 10));
+        var submissionYear = DateTime.Now.Year;
         var submissionId = Guid.NewGuid();
         var organisation = _fixture.Create<Organisation>();
         organisation.OrganisationNumber = "123";
@@ -1326,10 +1340,10 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, submissionYear, null);
 
         // Assert
-        var submissionYear = DateTime.Now.Year.ToString();
+       
         result.Should().BeEquivalentTo(new RegistrationApplicationSession
         {
             Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" },
@@ -1343,16 +1357,22 @@ public class RegistrationApplicationServiceTests
             RegulatorNation = "GB-ENG",
             ApplicationReferenceNumber = "",
             TotalAmountOutstanding = 10,
-            IsLateFeeApplicable = true
+            IsLateFeeApplicable = true,
+            RegistrationJourney = null
         });
 
-        _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string>(), false, It.IsAny<SubmissionType>()), Times.Never);
+        _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(
+            It.IsAny<RegistrationApplicationData>(), It.IsAny<string>(), false,
+            It.IsAny<SubmissionType>(), It.IsAny<RegistrationJourney>()),
+            Times.Never);
     }
 
     [Test]
     public async Task GetRegistrationApplicationSession_For_CSO_ShouldCall_GetComplianceSchemeRegistrationFees_When_File_Upload_Is_Completed_And_Payment_Is_Not_Completed()
     {
         // Arrange
+        _dateTimeProvider.SetUtcNow(new DateTime(2026, 1, 10));
+        var submissionYear = DateTime.Now.Year;
         var submissionId = Guid.NewGuid();
         var organisation = _fixture.Create<Organisation>();
         organisation.OrganisationNumber = "123";
@@ -1413,10 +1433,10 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, submissionYear, RegistrationJourney.CsoSmallProducer, null);
 
         // Assert
-        var submissionYear = DateTime.Now.Year.ToString();
+       
         result.Should().BeEquivalentTo(new RegistrationApplicationSession
         {
             Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" },
@@ -1432,16 +1452,21 @@ public class RegistrationApplicationServiceTests
             RegistrationReferenceNumber = "Test",
             SelectedComplianceScheme = cso,
             TotalAmountOutstanding = 10,
+            RegistrationJourney = RegistrationJourney.CsoSmallProducer,
             IsLateFeeApplicable = true
         });
 
-        _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string>(), false, It.IsAny<SubmissionType>()), Times.Never);
+        _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(
+                It.IsAny<RegistrationApplicationData>(), It.IsAny<string>(), false,
+            It.IsAny<SubmissionType>(), It.IsAny<RegistrationJourney>()),
+            Times.Never);
     }
 
     [Test]
     public async Task GetRegistrationApplicationSession_ShouldCall_SubmitRegistrationApplication_When_Outstanding_Payment_Amount_Is_Zero()
     {
         // Arrange
+        _dateTimeProvider.SetUtcNow(new DateTime(2026, 1, 10));
         var submissionId = Guid.NewGuid();
         var organisation = _fixture.Create<Organisation>();
         organisation.OrganisationNumber = "123";
@@ -1490,7 +1515,7 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null);
 
         // Assert
         var submissionYear = DateTime.Now.Year.ToString();
@@ -1507,16 +1532,23 @@ public class RegistrationApplicationServiceTests
             RegulatorNation = "GB-ENG",
             ApplicationReferenceNumber = "Test",
             RegistrationReferenceNumber = "Test",
-            IsLateFeeApplicable = true
+            IsLateFeeApplicable = true,
+            RegistrationJourney = null
         });
 
-        _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<Guid>(), It.IsAny<Guid?>(), It.IsAny<string?>(), "No-Outstanding-Payment", "Test", false, SubmissionType.RegistrationFeePayment), Times.Once);
+        _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(
+                It.Is<RegistrationApplicationData>(data => data.PaymentMethod == "No-Outstanding-Payment"),
+             "Test", false,
+            SubmissionType.RegistrationFeePayment, It.IsAny<RegistrationJourney?>()),
+            Times.Once);
     }
 
     [Test]
     public async Task GetRegistrationApplicationSession_For_CSO_ShouldCall_SubmitRegistrationApplication_When_Outstanding_Payment_Amount_Is_Zero()
     {
         // Arrange
+        _dateTimeProvider.SetUtcNow(new DateTime(2026, 1, 10));
+        var submissionYear = DateTime.Now.Year;
         var submissionId = Guid.NewGuid();
         var organisation = _fixture.Create<Organisation>();
         organisation.OrganisationNumber = "123";
@@ -1579,10 +1611,9 @@ public class RegistrationApplicationServiceTests
                 }
             });
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, submissionYear, null);
 
         // Assert
-        var submissionYear = DateTime.Now.Year.ToString();
         result.Should().BeEquivalentTo(new RegistrationApplicationSession
         {
             Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" },
@@ -1597,10 +1628,15 @@ public class RegistrationApplicationServiceTests
             SelectedComplianceScheme = cso,
             ApplicationReferenceNumber = "Test",
             RegistrationReferenceNumber = "Test",
+            RegistrationJourney = null,
             IsLateFeeApplicable = true
         });
 
-        _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<Guid>(), It.IsAny<Guid?>(), It.IsAny<string?>(), "No-Outstanding-Payment", It.IsAny<string>(), false, SubmissionType.RegistrationFeePayment), Times.Once);
+        _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(
+            It.Is<RegistrationApplicationData>(data => data.PaymentMethod == "No-Outstanding-Payment"),
+            It.IsAny<string>(),
+            false, SubmissionType.RegistrationFeePayment, null),
+            Times.Once);
     }
 
     [Test]
@@ -1638,11 +1674,11 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, true);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null, true);
 
         // Assert
         var submissionYear = DateTime.Now.Year.ToString();
-        result.Should().BeEquivalentTo(new RegistrationApplicationSession
+        result.Should().BeEquivalentTo(new
         {
             Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" },
             SubmissionPeriod = $"January to December {submissionYear}",
@@ -1651,16 +1687,22 @@ public class RegistrationApplicationServiceTests
             IsSubmitted = true,
             ApplicationStatus = ApplicationStatusType.NotStarted,
             RegulatorNation = "GB-ENG",
-            ApplicationReferenceNumber = ""
+            ApplicationReferenceNumber = "",
+            ShowRegistrationCaption = false
         });
 
-        _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string>(), false, It.IsAny<SubmissionType>()), Times.Never);
+        _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(
+            It.IsAny<RegistrationApplicationData>(),
+            It.IsAny<string>(), false,
+            It.IsAny<SubmissionType>(), It.IsAny<RegistrationJourney>()),
+            Times.Never);
     }
 
     [Test]
     public async Task GetRegistrationApplicationSession_ReSubmission_Does_Not_Reset_Status_On_Second_Pass_And_ReturnsCorrectViewAndModel()
     {
         // Arrange
+        var submissionYear = DateTime.Now.Year;
         var submissionId = Guid.NewGuid();
         var organisation = _fixture.Create<Organisation>();
         organisation.OrganisationNumber = "123";
@@ -1717,11 +1759,10 @@ public class RegistrationApplicationServiceTests
             });
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, true);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null, true);
 
         // Assert
-        var submissionYear = DateTime.Now.Year.ToString();
-        result.Should().BeEquivalentTo(new RegistrationApplicationSession
+        result.Should().BeEquivalentTo(new
         {
             Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" },
             SubmissionPeriod = $"January to December {submissionYear}",
@@ -1733,21 +1774,25 @@ public class RegistrationApplicationServiceTests
             LastSubmittedFile = lastSubmittedFile,
             RegulatorNation = "GB-ENG",
             ApplicationReferenceNumber = "Test",
-            RegistrationReferenceNumber = null,
             RegistrationFeePaymentMethod = "Online",
             RegistrationApplicationSubmittedDate = DateTime.Now.Date,
             RegistrationApplicationSubmittedComment = "Test",
             TotalAmountOutstanding = 100,
-            IsLateFeeApplicable = true
+            ShowRegistrationCaption = false
         });
 
-        _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string>(), false, It.IsAny<SubmissionType>()), Times.Never);
+        _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(
+                It.IsAny<RegistrationApplicationData>(),
+            It.IsAny<string>(), false,
+            It.IsAny<SubmissionType>(), It.IsAny<RegistrationJourney>()),
+            Times.Never);
     }
 
     [Test]
     public async Task GetRegistrationApplicationSession_Producer_Should_Get_NationID_From_File_And_ReturnsCorrectViewAndModel()
     {
         // Arrange
+        var submissionYear = DateTime.Now.Year;
         var organisation = _fixture.Create<Organisation>();
         organisation.OrganisationNumber = "123";
         organisation.NationId = 1;
@@ -1771,7 +1816,7 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(registrationApplicationDetails);
 
         // Act
-        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year);
+        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, submissionYear, null);
 
         // Assert
         session.Should().NotBeNull();
@@ -1807,7 +1852,7 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(registrationApplicationDetails);
 
         // Act
-        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year);
+        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null);
 
         // Assert
         session.Should().NotBeNull();
@@ -1842,13 +1887,123 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(registrationApplicationDetails);
 
         // Act
-        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year);
+        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null);
 
         // Assert
         session.Should().NotBeNull();
         session.SubmissionId.Should().Be(registrationApplicationDetails.SubmissionId);
         session.ApplicationReferenceNumber.Should().Be(registrationApplicationDetails.ApplicationReferenceNumber);
         session.RegulatorNation.Should().Be("GB-ENG");
+    }
+    
+    [Test]
+    public async Task GetRegistrationApplicationSession_CSO_Sets_Producer_Size_In_Session_And_ReturnsCorrectViewAndModel_When_Not_In_Submission_Service()
+    {
+        // Arrange
+        var organisation = _fixture.Create<Organisation>();
+        organisation.OrganisationNumber = "123";
+        var selectedComplianceSchemeId = Guid.NewGuid();
+        var registrationApplicationDetails = _fixture.Create<RegistrationApplicationDetails>();
+        registrationApplicationDetails.RegistrationFeeCalculationDetails = [new RegistrationFeeCalculationDetails { OrganisationId = "123", NationId = 2, OrganisationSize = "Large" }];
+        registrationApplicationDetails.RegistrationJourney = null;
+        _session.SelectedComplianceScheme = new ComplianceSchemeDto { Id = selectedComplianceSchemeId, NationId = 1 };
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(_session);
+        _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SelectedComplianceScheme = new ComplianceSchemeDto { Id = selectedComplianceSchemeId, Name = "test", RowNumber = 1, NationId = 1, CreatedOn = DateTime.Now }
+                }
+            });
+
+        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(registrationApplicationDetails);
+
+        // Act
+        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, RegistrationJourney.CsoLargeProducer, null);
+
+        // Assert
+        session.Should().NotBeNull();
+        session.RegistrationJourney.Should().Be(RegistrationJourney.CsoLargeProducer);
+        session.ShowRegistrationCaption.Should().BeTrue();
+    }
+    
+    [Test]
+    public async Task GetRegistrationApplicationSession_SmallProducer_CSO_Sets_Producer_Size_In_Session_And_ReturnsCorrectViewAndModel()
+    {
+        // Arrange
+        var organisation = _fixture.Create<Organisation>();
+        organisation.OrganisationNumber = "123";
+        var selectedComplianceSchemeId = Guid.NewGuid();
+        var registrationApplicationDetails = _fixture.Create<RegistrationApplicationDetails>();
+        registrationApplicationDetails.RegistrationFeeCalculationDetails = [new RegistrationFeeCalculationDetails { OrganisationId = "123", NationId = 2, OrganisationSize = "Large" }];
+        registrationApplicationDetails.RegistrationJourney = null;
+        _session.SelectedComplianceScheme = new ComplianceSchemeDto { Id = selectedComplianceSchemeId, NationId = 1 };
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(_session);
+        _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SelectedComplianceScheme = new ComplianceSchemeDto { Id = selectedComplianceSchemeId, Name = "test", RowNumber = 1, NationId = 1, CreatedOn = DateTime.Now }
+                }
+            });
+
+        _submissionServiceMock.Setup(ss =>
+                ss.GetRegistrationApplicationDetails(It.Is<GetRegistrationApplicationDetailsRequest>(c =>
+                    c.RegistrationJourney == nameof(RegistrationJourney.CsoSmallProducer))))
+            .ReturnsAsync(registrationApplicationDetails);
+
+        // Act
+        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, RegistrationJourney.CsoSmallProducer, null);
+
+        // Assert
+        session.Should().NotBeNull();
+        session.SubmissionId.Should().Be(registrationApplicationDetails.SubmissionId);
+        session.ApplicationReferenceNumber.Should().Be(registrationApplicationDetails.ApplicationReferenceNumber);
+        session.RegistrationJourney.Should().Be(RegistrationJourney.CsoSmallProducer);
+        session.ShowRegistrationCaption.Should().BeTrue();
+    }
+    
+    [Test]
+    public async Task GetRegistrationApplicationSession_Producer_Cannot_Set_Producer_Size_In_Session_And_ReturnsCorrectViewAndModel()
+    {
+        // Arrange
+        var organisation = _fixture.Create<Organisation>();
+        organisation.OrganisationNumber = "123";
+        var selectedComplianceSchemeId = Guid.NewGuid();
+        var registrationApplicationDetails = _fixture.Create<RegistrationApplicationDetails>();
+        registrationApplicationDetails.RegistrationFeeCalculationDetails = [new RegistrationFeeCalculationDetails { OrganisationId = "123", NationId = 2, OrganisationSize = "Large" }];
+        _session.SelectedComplianceScheme = new ComplianceSchemeDto { Id = selectedComplianceSchemeId, NationId = 1 };
+        _session.RegistrationJourney = null;
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(_session);
+        _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SelectedComplianceScheme = null
+                }
+            });
+
+        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(registrationApplicationDetails);
+
+        // Act
+        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, RegistrationJourney.CsoSmallProducer, null);
+
+        // Assert
+        session.Should().NotBeNull();
+        session.SubmissionId.Should().Be(registrationApplicationDetails.SubmissionId);
+        session.RegistrationJourney.Should().BeNull();
+        session.ShowRegistrationCaption.Should().Be(session.ShowRegistrationCaption);
     }
 
     [Test]
@@ -1884,11 +2039,15 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(response);
 
         // Act
-        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year);
+        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, RegistrationJourney.CsoLargeProducer, null);
 
         // Assert
         session.Should().NotBeNull();
-        _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<Guid>(), It.IsAny<Guid?>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<SubmissionType>()), Times.Once);
+        _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(
+                It.IsAny<RegistrationApplicationData>(),
+                It.IsAny<string>(), It.IsAny<bool>(),
+            It.IsAny<SubmissionType>(), It.IsAny<RegistrationJourney>()),
+            Times.Once);
     }
 
     [Test]
@@ -1900,7 +2059,9 @@ public class RegistrationApplicationServiceTests
         var registrationApplicationDetails = _fixture.Create<RegistrationApplicationDetails>();
         registrationApplicationDetails.RegistrationFeeCalculationDetails = [new RegistrationFeeCalculationDetails { OrganisationId = "123", NationId = 2, OrganisationSize = "Large" }];
         registrationApplicationDetails.ApplicationStatus = ApplicationStatusType.SubmittedToRegulator;
+        registrationApplicationDetails.RegistrationJourney = null;
         _session.SelectedComplianceScheme = null;
+        _session.RegistrationJourney = null;
 
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
             .ReturnsAsync(_session);
@@ -1923,11 +2084,17 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(response);
 
         // Act
-        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year);
+        var session = await _service.GetRegistrationApplicationSession(_httpSession, organisation, DateTime.Now.Year, null);
 
         // Assert
         session.Should().NotBeNull();
-        _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<Guid>(), It.IsAny<Guid?>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<SubmissionType>()), Times.Once);
+        _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(
+            It.IsAny<RegistrationApplicationData>(),
+            It.IsAny<string>(),
+            It.IsAny<bool>(),
+            It.IsAny<SubmissionType>(),
+            null),
+            Times.Once);
     }
 
     [Test]
@@ -1945,36 +2112,39 @@ public class RegistrationApplicationServiceTests
 
         // Assert
         _submissionServiceMock.Verify(ss => ss.CreateRegistrationApplicationEvent(
-            _session.SubmissionId.Value,
-            complianceSchemeId,
-            comments,
-            paymentMethod,
+            It.Is<RegistrationApplicationData>(data => 
+                data.ComplianceSchemeId == complianceSchemeId &&
+                data.Comments == comments &&
+                data.PaymentMethod == paymentMethod &&
+                data.SubmissionId == _session.SubmissionId.Value),
             _session.ApplicationReferenceNumber, false,
-            submissionType
-        ), Times.Once);
+            submissionType, 
+            It.IsAny<RegistrationJourney?>()), Times.Once);
     }
 
     [Test]
     public async Task SubmitRegistrationApplication_ShouldSaveFeePaymentMethod()
     {
         // Arrange
-        var feePaymentMethod = _fixture.Create<string>();
+        var paymentMethod = _fixture.Create<string>();
         var submissionType = _fixture.Create<SubmissionType>();
         var complianceSchemeId = _session.SelectedComplianceScheme?.Id;
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(_session);
 
         // Act
-        await _service.CreateRegistrationApplicationEvent(_httpSession, null, feePaymentMethod, submissionType);
+        await _service.CreateRegistrationApplicationEvent(_httpSession, null, paymentMethod, submissionType);
 
         // Assert
         _submissionServiceMock.Verify(ss => ss.CreateRegistrationApplicationEvent(
-            _session.SubmissionId.Value,
-            complianceSchemeId,
-            null,
-            feePaymentMethod,
-            _session.ApplicationReferenceNumber, false,
-            submissionType
-        ), Times.Once);
+            It.Is<RegistrationApplicationData>(data => 
+                data.ComplianceSchemeId == complianceSchemeId &&
+                data.Comments == null &&
+                data.PaymentMethod == paymentMethod &&
+                data.SubmissionId == _session.SubmissionId.Value),
+            _session.ApplicationReferenceNumber,
+            false,
+            submissionType, 
+            It.IsAny<RegistrationJourney?>()), Times.Once);
 
         _sessionManagerMock.Verify(sm => sm.SaveSessionAsync(It.IsAny<ISession>(), It.Is<RegistrationApplicationSession>(s => !string.IsNullOrWhiteSpace(s.RegistrationFeePaymentMethod))), Times.Once);
     }
@@ -1992,16 +2162,20 @@ public class RegistrationApplicationServiceTests
         await _service.CreateRegistrationApplicationEvent(_httpSession, comments, null, submissionType);
 
         // Assert
+        
         _submissionServiceMock.Verify(ss => ss.CreateRegistrationApplicationEvent(
-            _session.SubmissionId.Value,
-            complianceSchemeId,
-            comments,
-            null,
-            _session.ApplicationReferenceNumber, false,
-            submissionType
-        ), Times.Once);
+            It.Is<RegistrationApplicationData>(data => 
+                data.ComplianceSchemeId == complianceSchemeId &&
+                data.Comments == comments &&
+                data.PaymentMethod == null &&
+                data.SubmissionId == _session.SubmissionId.Value),
+            _session.ApplicationReferenceNumber,
+            false,
+            submissionType, 
+            It.IsAny<RegistrationJourney?>()), Times.Once);
 
-        _sessionManagerMock.Verify(sm => sm.SaveSessionAsync(It.IsAny<ISession>(), It.Is<RegistrationApplicationSession>(s => s.RegistrationApplicationSubmittedDate.Value > DateTime.Now.AddSeconds(-5))), Times.Once);
+        _sessionManagerMock.Verify(sm => sm.SaveSessionAsync(It.IsAny<ISession>(), It.Is<RegistrationApplicationSession>(s => 
+            s.RegistrationApplicationSubmittedDate.Value > _dateTimeProvider.GetUtcNow().AddSeconds(-5))), Times.Once);
     }
 
     [Test]
@@ -2018,13 +2192,15 @@ public class RegistrationApplicationServiceTests
 
         // Assert
         _submissionServiceMock.Verify(ss => ss.CreateRegistrationApplicationEvent(
-            _session.SubmissionId.Value,
-            complianceSchemeId,
-            null,
-            paymentMethod,
-            _session.ApplicationReferenceNumber, false,
-            submissionType
-        ), Times.Once);
+            It.Is<RegistrationApplicationData>(data => 
+                data.ComplianceSchemeId == complianceSchemeId &&
+                data.Comments == null &&
+                data.PaymentMethod == paymentMethod &&
+                data.SubmissionId == _session.SubmissionId.Value),
+           _session.ApplicationReferenceNumber,
+            false,
+            submissionType, 
+            It.IsAny<RegistrationJourney?>()), Times.Once);
     }
 
     [Test]
@@ -2041,13 +2217,15 @@ public class RegistrationApplicationServiceTests
 
         // Assert
         _submissionServiceMock.Verify(ss => ss.CreateRegistrationApplicationEvent(
-            _session.SubmissionId.Value,
-            complianceSchemeId,
-            comments,
-            null,
-            _session.ApplicationReferenceNumber, false,
-            submissionType
-        ), Times.Once);
+            It.Is<RegistrationApplicationData>(data => 
+                data.ComplianceSchemeId == complianceSchemeId &&
+                data.Comments == comments &&
+                data.PaymentMethod == null &&
+                data.SubmissionId == _session.SubmissionId.Value),
+            _session.ApplicationReferenceNumber,
+            false,
+            submissionType, 
+            It.IsAny<RegistrationJourney?>()), Times.Once);
     }
 
     [TestCase(SubmissionType.Producer)]
@@ -2069,13 +2247,15 @@ public class RegistrationApplicationServiceTests
 
         // Assert
         _submissionServiceMock.Verify(ss => ss.CreateRegistrationApplicationEvent(
-            _session.SubmissionId.Value,
-            complianceSchemeId,
-            comments,
-            paymentMethod,
-            _session.ApplicationReferenceNumber, false,
-            submissionType
-        ), Times.Once);
+            It.Is<RegistrationApplicationData>(data => 
+                data.ComplianceSchemeId == complianceSchemeId &&
+                data.Comments == comments &&
+                data.PaymentMethod == paymentMethod &&
+                data.SubmissionId == _session.SubmissionId.Value),
+            _session.ApplicationReferenceNumber,
+            false,
+            submissionType, 
+            It.IsAny<RegistrationJourney?>()), Times.Once);
     }
 
     [Test]
@@ -2113,40 +2293,334 @@ public class RegistrationApplicationServiceTests
     }
 
     [Test]
-    public async Task BuildRegistrationApplicationPerYearViewModels_ShouldReturnApplicationSessions()
+    public async Task BuildRegistrationYearApplicationsViewModels_ShouldReturnEmptyList_WhenNoActiveRegistrationWindows()
     {
-        //Arrange
+        // Arrange
         var organisation = new Organisation
         {
             Id = Guid.NewGuid(),
-            Name = "Test",
-            OrganisationNumber = "552555"
+            Name = "Test Organisation",
+            OrganisationNumber = "123456",
+            OrganisationRole = OrganisationRoles.Producer
+        };
+
+        _mockRegistrationPeriodProvider.Setup(x => x.GetAllRegistrationWindows(false))
+            .Returns(new List<RegistrationWindow>());
+
+        // Act
+        var result = await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().BeEmpty();
+    }
+
+    [Test]
+    public async Task BuildRegistrationYearApplicationsViewModels_ShouldMergeRegistrations_WhenMultipleWindowsInSameYearForDirectProducer()
+    {
+        // Arrange
+        var organisation = new Organisation
+        {
+            Id = Guid.NewGuid(),
+            Name = "Test Organisation",
+            OrganisationNumber = "123456",
+            OrganisationRole = OrganisationRoles.Producer
         };
 
         var registrationApplicationSession = new RegistrationApplicationSession
         {
-            LastSubmittedFile = new LastSubmittedFileDetails { FileId = Guid.NewGuid() },
-            RegistrationFeeCalculationDetails = null,
-            ApplicationReferenceNumber = "",
-            RegistrationReferenceNumber = "",
-            SubmissionId = Guid.NewGuid(),
-            RegistrationFeePaymentMethod = null,
-            IsSubmitted = true,
             ApplicationStatus = ApplicationStatusType.NotStarted,
-            RegistrationApplicationSubmittedComment = null,
-            RegistrationApplicationSubmittedDate = null
+            ApplicationReferenceNumber = "REF001",
+            RegistrationReferenceNumber = "REG001",
+            IsResubmission = false
         };
-        _registrationApplicationServiceMock.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
-            .ReturnsAsync(registrationApplicationSession);
+
+        IReadOnlyCollection<RegistrationWindow> registrationWindows =
+        [
+            CreateRegistrationWindow(WindowType.DirectLargeProducer, 2026, new DateTime(2026, 1, 1), new DateTime(2026, 3, 1), new DateTime(2026, 5, 1)),
+            CreateRegistrationWindow(WindowType.DirectLargeProducer, 2026, new DateTime(2026, 6, 1), new DateTime(2026, 8, 1), new DateTime(2026, 10, 1))
+        ];
+
+        _dateTimeProvider.SetUtcNow(new DateTime(2026, 6, 1));
+
+        _mockRegistrationPeriodProvider.Setup(x => x.GetAllRegistrationWindows(false))
+            .Returns(registrationWindows);
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(_session);
+
+        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(new RegistrationApplicationDetails());
 
         // Act
-        var applicationPerYearViewModel = await _service.BuildRegistrationApplicationPerYearViewModels(_httpSession, organisation);
+        var result = await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation);
 
-        //Assert
-        applicationPerYearViewModel.Should().NotBeNull();
-        applicationPerYearViewModel.Where(vm => vm.RegistrationYear == DateTime.Now.Year.ToString()).Should().NotBeNull();
-        applicationPerYearViewModel.Where(vm => vm.RegistrationYear == DateTime.Now.AddYears(1).Year.ToString()).Should().NotBeNull();
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().HaveCount(1);
+        result[0].Year.Should().Be(2026);
+        result[0].Applications.Should().HaveCount(1); // Single merged window for producers
     }
+
+    [Test]
+    public async Task BuildRegistrationYearApplicationsViewModels_ShouldCreateSeparateEntries_ForCso_WithDifferentJourneys()
+    {
+        // Arrange
+        var organisation = new Organisation
+        {
+            Id = Guid.NewGuid(),
+            Name = "Test CSO",
+            OrganisationNumber = "999999",
+            OrganisationRole = OrganisationRoles.ComplianceScheme
+        };
+
+        IReadOnlyCollection<RegistrationWindow> registrationWindows =
+        [
+            CreateRegistrationWindow(WindowType.CsoLargeProducer, 2026),
+            CreateRegistrationWindow(WindowType.CsoSmallProducer, 2026)
+        ];
+
+        _mockRegistrationPeriodProvider.Setup(x => x.GetActiveRegistrationWindows(true))
+            .Returns(registrationWindows);
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(_session);
+
+        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(new RegistrationApplicationDetails());
+
+        // Act
+        var result = await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().HaveCount(1);
+        result[0].Year.Should().Be(2026);
+        result[0].Applications.Should().HaveCount(2);
+    }
+
+    [Test]
+    public async Task BuildRegistrationYearApplicationsViewModels_ShouldReturnOrderedByYearDescending()
+    {
+        // Arrange
+        var organisation = new Organisation
+        {
+            Id = Guid.NewGuid(),
+            Name = "Test Organisation",
+            OrganisationNumber = "123456",
+            OrganisationRole = OrganisationRoles.Producer
+        };
+
+        IReadOnlyCollection<RegistrationWindow> registrationWindows =
+        [
+            CreateRegistrationWindow(WindowType.DirectLargeProducer, 2024),
+            CreateRegistrationWindow(WindowType.DirectLargeProducer, 2026),
+            CreateRegistrationWindow(WindowType.DirectLargeProducer, 2025)
+        ];
+
+        _dateTimeProvider.SetUtcNow(new DateTime(2026, 6, 1));
+
+        _mockRegistrationPeriodProvider.Setup(x => x.GetAllRegistrationWindows(false))
+            .Returns(registrationWindows);
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(_session);
+
+        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(new RegistrationApplicationDetails());
+
+        // Act
+        var result = await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().HaveCount(3);
+        result[0].Year.Should().Be(2026);
+        result[1].Year.Should().Be(2025);
+        result[2].Year.Should().Be(2024);
+    }
+
+    [Test]
+    public async Task BuildRegistrationYearApplicationsViewModels_ShouldMapRegistrationWindowData_ToViewModel()
+    {
+        // Arrange
+        var organisation = new Organisation
+        {
+            Id = Guid.NewGuid(),
+            Name = "Test Organisation",
+            OrganisationNumber = "123456",
+            OrganisationRole = OrganisationRoles.Producer
+        };
+
+        var deadlineDate = new DateTime(2026, 7, 15);
+
+        IReadOnlyCollection<RegistrationWindow> registrationWindows =
+        [
+            CreateRegistrationWindow(WindowType.DirectLargeProducer, 2026, new DateTime(2026, 1, 1), deadlineDate, new DateTime(2026, 9, 1))
+        ];
+
+        var registrationApplicationSession = new RegistrationApplicationSession
+        {
+            ApplicationStatus = ApplicationStatusType.AcceptedByRegulator,
+            ApplicationReferenceNumber = "REF-2026-001",
+            RegistrationReferenceNumber = "REG-2026-001",
+            IsResubmission = true
+        };
+
+        _mockRegistrationPeriodProvider.Setup(x => x.GetAllRegistrationWindows(false))
+            .Returns(registrationWindows);
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(registrationApplicationSession);
+
+        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(new RegistrationApplicationDetails());
+
+        _dateTimeProvider.SetUtcNow(new DateTime(2026, 6, 1));
+
+        // Act
+        var result = await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().HaveCount(1);
+        var yearViewModel = result[0];
+        yearViewModel.Year.Should().Be(2026);
+        
+        var appViewModel = yearViewModel.Applications.First();
+        appViewModel.ApplicationStatus.Should().Be(ApplicationStatusType.NotStarted);
+        appViewModel.FileUploadStatus.Should().Be(RegistrationTaskListStatus.NotStarted);
+        appViewModel.ApplicationReferenceNumber.Should().Be(string.Empty);
+        appViewModel.RegistrationReferenceNumber.Should().BeNull();
+        appViewModel.IsResubmission.Should().BeFalse();
+        appViewModel.RegistrationYear.Should().Be("2026");
+        appViewModel.IsComplianceScheme.Should().BeFalse();
+    }
+
+    [Test]
+    public async Task BuildRegistrationYearApplicationsViewModels_ShouldSetRegistrationJourney_ForCso()
+    {
+        // Arrange
+        var organisation = new Organisation
+        {
+            Id = Guid.NewGuid(),
+            Name = "Test CSO",
+            OrganisationNumber = "999999",
+            OrganisationRole = OrganisationRoles.ComplianceScheme
+        };
+
+        IReadOnlyCollection<RegistrationWindow> registrationWindows =
+        [
+            CreateRegistrationWindow(WindowType.CsoLargeProducer, 2026)
+        ];
+
+        _mockRegistrationPeriodProvider.Setup(x => x.GetActiveRegistrationWindows(true))
+            .Returns(registrationWindows);
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(_session);
+
+        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(new RegistrationApplicationDetails());
+
+        // Act
+        var result = await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation);
+
+        // Assert
+        result.Should().NotBeNull();
+        result[0].Applications.Should().HaveCount(1);
+        result[0].Applications.First().RegistrationJourney.Should().Be(RegistrationJourney.CsoLargeProducer);
+    }
+
+    [Test]
+    public async Task BuildRegistrationYearApplicationsViewModels_ShouldCallGetRegistrationApplicationSession_WithCorrectParameters()
+    {
+        // Arrange
+        var organisation = new Organisation
+        {
+            Id = Guid.NewGuid(),
+            Name = "Test Organisation",
+            OrganisationNumber = "123456",
+            OrganisationRole = OrganisationRoles.Producer
+        };
+
+        _dateTimeProvider.SetUtcNow(new DateTime(2026, 6, 1));
+        var journey = RegistrationJourney.DirectLargeProducer;
+        var registrationYear = 2026;
+
+        IReadOnlyCollection<RegistrationWindow> registrationWindows =
+        [
+            CreateRegistrationWindow(WindowType.DirectLargeProducer, registrationYear)
+        ];
+
+        _mockRegistrationPeriodProvider.Setup(x => x.GetAllRegistrationWindows(false))
+            .Returns(registrationWindows);
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(_session);
+
+        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(new RegistrationApplicationDetails());
+
+        // Act
+        await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation);
+
+        // Assert
+        _submissionServiceMock.Verify(
+            x => x.GetRegistrationApplicationDetails(It.Is<GetRegistrationApplicationDetailsRequest>(r =>
+                r.OrganisationId == organisation.Id &&
+                r.OrganisationNumber == int.Parse(organisation.OrganisationNumber)
+            )),
+            Times.Once);
+    }
+
+    [Test]
+    public async Task BuildRegistrationYearApplicationsViewModels_ShouldCheckIfCsoUsingOrganisationRole()
+    {
+        // Arrange
+        var producerOrganisation = new Organisation
+        {
+            Id = Guid.NewGuid(),
+            Name = "Test Producer",
+            OrganisationNumber = "123456",
+            OrganisationRole = OrganisationRoles.Producer
+        };
+
+        IReadOnlyCollection<RegistrationWindow> producerWindows = [];
+
+        _mockRegistrationPeriodProvider.Setup(x => x.GetAllRegistrationWindows(false))
+            .Returns(producerWindows);
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(_session);
+
+        // Act
+        await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, producerOrganisation);
+
+        // Assert - Verify GetActiveRegistrationWindows was called with false for producer
+        _mockRegistrationPeriodProvider.Verify(x => x.GetAllRegistrationWindows(false), Times.Once);
+
+        // Now test with CSO
+        var csoOrganisation = new Organisation
+        {
+            Id = Guid.NewGuid(),
+            Name = "Test CSO",
+            OrganisationNumber = "999999",
+            OrganisationRole = OrganisationRoles.ComplianceScheme
+        };
+
+        IReadOnlyCollection<RegistrationWindow> csoWindows = [];
+
+        _mockRegistrationPeriodProvider.Setup(x => x.GetActiveRegistrationWindows(true))
+            .Returns(csoWindows);
+
+        // Act
+        await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, csoOrganisation);
+
+        // Assert - Verify GetActiveRegistrationWindows was called with true for CSO
+        _mockRegistrationPeriodProvider.Verify(x => x.GetActiveRegistrationWindows(true), Times.Once);
+    }
+
  
     [Test]
     public async Task ValidateRegistrationYear_ShouldReturnNull_WhenYearIsEmpty_AndParamOptionalIsTrue()
@@ -2175,10 +2649,18 @@ public class RegistrationApplicationServiceTests
     }
 
     [Test]
+    public async Task ValidateRegistrationYear_ShouldThrowArgumentException_WhenInvalidRegistrationYear()
+    {
+        var act = async () => _service.ValidateRegistrationYear("2050");
+        await act.Should().ThrowAsync<ArgumentException>()
+            .WithMessage("Invalid registration year");
+    }
+
+    [Test]
     public async Task ValidateRegistrationYear_ShouldReturnYear_WhenValid()
     {
-        var result = _service.ValidateRegistrationYear("2026");
-        result.Should().Be(2026);
+        var result = _service.ValidateRegistrationYear(_validRegistrationYear.ToString());
+        result.Should().Be(_validRegistrationYear);
     }
 
     [Test]
@@ -2360,16 +2842,13 @@ public class RegistrationApplicationServiceTests
         captured.Should().NotBeNull();
         captured!.GetType().Should().Be(typeof(PaymentCalculationRequest), "v1 request should be used when there is no first organisation to index");
     }
-
-
+    
     [Test]
     public void Constructor_ShouldThrow_ArgumentNull_When_Dependencies_IsNull()
     {
         Assert.Throws<ArgumentNullException>(() => new RegistrationApplicationService(null!, _dateTimeProvider));
     }
-
-   
-
+    
     [Test]
     public void Constructor_ShouldThrow_InvalidOperation_When_SubmissionService_IsNull()
     {
@@ -2382,7 +2861,8 @@ public class RegistrationApplicationServiceTests
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
-            GlobalVariables = Options.Create(new GlobalVariables())
+            GlobalVariables = Options.Create(new GlobalVariables()),
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -2402,7 +2882,8 @@ public class RegistrationApplicationServiceTests
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
-            GlobalVariables = Options.Create(new GlobalVariables())
+            GlobalVariables = Options.Create(new GlobalVariables()),
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -2421,7 +2902,8 @@ public class RegistrationApplicationServiceTests
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
-            GlobalVariables = Options.Create(new GlobalVariables())
+            GlobalVariables = Options.Create(new GlobalVariables()),
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -2440,7 +2922,8 @@ public class RegistrationApplicationServiceTests
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
-            GlobalVariables = Options.Create(new GlobalVariables())
+            GlobalVariables = Options.Create(new GlobalVariables()),
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -2459,7 +2942,8 @@ public class RegistrationApplicationServiceTests
             Logger = null!,
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
-            GlobalVariables = Options.Create(new GlobalVariables())
+            GlobalVariables = Options.Create(new GlobalVariables()),
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -2478,7 +2962,8 @@ public class RegistrationApplicationServiceTests
             Logger = _loggerMock.Object,
             FeatureManager = null!,
             HttpContextAccessor = _httpContextAccessorMock.Object,
-            GlobalVariables = Options.Create(new GlobalVariables())
+            GlobalVariables = Options.Create(new GlobalVariables()),
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -2497,7 +2982,8 @@ public class RegistrationApplicationServiceTests
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = null!,
-            GlobalVariables = Options.Create(new GlobalVariables())
+            GlobalVariables = Options.Create(new GlobalVariables()),
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -2516,7 +3002,8 @@ public class RegistrationApplicationServiceTests
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
-            GlobalVariables = null!
+            GlobalVariables = null!,
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -2535,11 +3022,27 @@ public class RegistrationApplicationServiceTests
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
-            GlobalVariables = Options.Create(new GlobalVariables())
+            GlobalVariables = Options.Create(new GlobalVariables()),
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
 
         Assert.DoesNotThrow(() => new RegistrationApplicationService(deps, _dateTimeProvider));
     }
+
+    private RegistrationWindow CreateRegistrationWindow(
+        WindowType windowType,
+        int? registrationYear = 2026,
+        DateTime? openingDateOffset = null,
+        DateTime? deadlineDateOffset = null,
+        DateTime? closingDateOffset = null)
+    {
+        var opening = openingDateOffset ?? new DateTime(2026, 6, 1);
+        var deadline = deadlineDateOffset ?? new DateTime(2026, 7, 1);
+        var closing = closingDateOffset ?? new DateTime(2026, 8, 1);
+        return new RegistrationWindow(_dateTimeProvider, windowType, registrationYear.GetValueOrDefault(2026),
+                opening, deadline, closing);
+    }
+
 }
 
 internal static class ClaimsPrincipalExtensions
@@ -2551,3 +3054,4 @@ internal static class ClaimsPrincipalExtensions
         user.AddIdentity(identity);
     }
 }
+

@@ -55,16 +55,18 @@ public class FileUploadServiceTests
         await _fileUploadService.ProcessUploadAsync(
             contentType,
             fileStream,
-            SubmissionPeriod,
             _modelStateDictionary,
-            null,
-            submissionType,
-            new DefaultFileUploadMessages(),
             new DefaultFileUploadLimit(_globalVariables),
-            submissionSubType,
-            registrationSetId,
-            complianceSchemeId,
-            true);
+            new FileUploadSubmissionDetails
+            {
+                SubmissionPeriod = SubmissionPeriod,
+                IsResubmission = true,
+                SubmissionType = submissionType,
+                SubmissionSubType = submissionSubType,
+                RegistrationSetId = registrationSetId,
+                ComplianceSchemeId = complianceSchemeId
+            });
+            
 
         // Assert
         GetModelStateErrors().Should().HaveCount(1).And.Contain("Select a CSV file");
@@ -72,13 +74,13 @@ public class FileUploadServiceTests
             x => x.UploadFileAsync(
                 It.IsAny<byte[]>(),
                 It.IsAny<string>(),
-                SubmissionPeriod,
-                null,
-                submissionType,
-                submissionSubType,
-                registrationSetId,
-                complianceSchemeId,
-                true),
+                It.Is<FileUploadSubmissionDetails>(fusd 
+                    => fusd.SubmissionType == submissionType 
+                       && fusd.IsResubmission == true
+                       && fusd.SubmissionSubType == submissionSubType
+                       && fusd.RegistrationSetId == registrationSetId
+                       && fusd.ComplianceSchemeId == complianceSchemeId
+                       && fusd.SubmissionPeriod == SubmissionPeriod)),
             Times.Never);
     }
 
@@ -101,15 +103,16 @@ public class FileUploadServiceTests
         await _fileUploadService.ProcessUploadAsync(
             contentType,
             stream,
-            SubmissionPeriod,
             _modelStateDictionary,
-            null,
-            submissionType,
-            new DefaultFileUploadMessages(),
             new DefaultFileUploadLimit(_globalVariables),
-            submissionSubType,
-            registrationSetId,
-            complianceSchemeId);
+            new FileUploadSubmissionDetails()
+            {
+                SubmissionPeriod = SubmissionPeriod,
+                SubmissionType = submissionType,
+                SubmissionSubType = submissionSubType,
+                RegistrationSetId = registrationSetId,
+                ComplianceSchemeId = complianceSchemeId
+            });
 
         // Assert
         GetModelStateErrors().Should().HaveCount(1).And.Contain("File upload is invalid - try again");
@@ -117,13 +120,7 @@ public class FileUploadServiceTests
             x => x.UploadFileAsync(
                 It.IsAny<byte[]>(),
                 It.IsAny<string>(),
-                SubmissionPeriod,
-                null,
-                submissionType,
-                submissionSubType,
-                registrationSetId,
-                complianceSchemeId,
-                null),
+                It.IsAny<FileUploadSubmissionDetails>()),
             Times.Never);
     }
 
@@ -146,16 +143,17 @@ public class FileUploadServiceTests
         await _fileUploadService.ProcessUploadAsync(
             contentType,
             stream,
-            SubmissionPeriod,
             _modelStateDictionary,
-            null,
-            submissionType,
-            new DefaultFileUploadMessages(),
             new DefaultFileUploadLimit(_globalVariables),
-            submissionSubType,
-            registrationSetId,
-            complianceSchemeId,
-            false);
+            new FileUploadSubmissionDetails()
+            {
+                SubmissionPeriod = SubmissionPeriod,
+                SubmissionType = submissionType,
+                SubmissionSubType = submissionSubType,
+                RegistrationSetId = registrationSetId,
+                ComplianceSchemeId = complianceSchemeId,
+                IsResubmission = false
+            });
 
         // Assert
         GetModelStateErrors().Should().HaveCount(1).And.Contain("Select a CSV file");
@@ -163,13 +161,7 @@ public class FileUploadServiceTests
             x => x.UploadFileAsync(
                 It.IsAny<byte[]>(),
                 "temp.csv",
-                SubmissionPeriod,
-                null,
-                submissionType,
-                submissionSubType,
-                registrationSetId,
-                complianceSchemeId,
-                false),
+                It.IsAny<FileUploadSubmissionDetails>()),
             Times.Never);
     }
 
@@ -192,15 +184,16 @@ public class FileUploadServiceTests
         await _fileUploadService.ProcessUploadAsync(
             contentType,
             stream,
-            SubmissionPeriod,
             _modelStateDictionary,
-            null,
-            submissionType,
-            new DefaultFileUploadMessages(),
             new DefaultFileUploadLimit(_globalVariables),
-            submissionSubType,
-            registrationSetId,
-            complianceSchemeId);
+            new FileUploadSubmissionDetails()
+            {
+                SubmissionPeriod = SubmissionPeriod,
+                SubmissionType = submissionType,
+                SubmissionSubType = submissionSubType,
+                RegistrationSetId = registrationSetId,
+                ComplianceSchemeId = complianceSchemeId
+            });
 
         // Assert
         GetModelStateErrors().Should().HaveCount(1).And.Contain("The selected file must be a CSV");
@@ -208,19 +201,13 @@ public class FileUploadServiceTests
             x => x.UploadFileAsync(
                 It.IsAny<byte[]>(),
                 It.IsAny<string>(),
-                SubmissionPeriod,
-                null,
-                submissionType,
-                submissionSubType,
-                registrationSetId,
-                complianceSchemeId,
-                It.IsAny<bool?>()),
+                It.IsAny<FileUploadSubmissionDetails?>()),
             Times.Never);
     }
 
     [Test]
     [TestCase(SubmissionType.Producer)]
-    [TestCase(SubmissionType.Producer, null, null, null, true)]
+    [TestCase(SubmissionType.Producer, null, null, null, true,"SomeValue")]
     [TestCase(SubmissionType.Registration, SubmissionSubType.CompanyDetails)]
     [TestCaseSource(typeof(TestCaseHelper), nameof(TestCaseHelper.GenerateRegistrationInformationWithSubId), new object[] { false })]
     [TestCaseSource(typeof(TestCaseHelper), nameof(TestCaseHelper.GenerateRegistrationInformationWithSubId), new object[] { true })]
@@ -229,7 +216,8 @@ public class FileUploadServiceTests
         SubmissionSubType? submissionSubType = null,
         Guid? registrationSetId = null,
         Guid? complianceSchemeId = null,
-        bool withSubmissionId = false)
+        bool withSubmissionId = false,
+        string registrationJourney = null)
     {
         // Arrange
         const string contentType = "multipart/form-data; boundary=----WebKitFormBoundaryaTDX1qGUHmeOnwjh";
@@ -239,21 +227,28 @@ public class FileUploadServiceTests
         Guid? submissionId = withSubmissionId ? Guid.NewGuid() : null;
 
         // Act
-        await _fileUploadService.ProcessUploadAsync(contentType, stream, SubmissionPeriod, _modelStateDictionary, submissionId, submissionType, new DefaultFileUploadMessages(), new DefaultFileUploadLimit(_globalVariables), submissionSubType, registrationSetId, complianceSchemeId);
+        await _fileUploadService.ProcessUploadAsync(
+            contentType, stream, _modelStateDictionary,
+            new DefaultFileUploadLimit(_globalVariables), new FileUploadSubmissionDetails()
+            {
+                SubmissionPeriod = SubmissionPeriod,
+                SubmissionId = submissionId,
+                SubmissionType = submissionType,
+                SubmissionSubType = submissionSubType,
+                RegistrationSetId = registrationSetId,
+                ComplianceSchemeId = complianceSchemeId,
+                IsResubmission = null,
+                RegistrationJourney = registrationJourney
+            });
 
         // Assert
         GetModelStateErrors().Should().BeEmpty();
         _webApiGatewayClientMock.Verify(
             x => x.UploadFileAsync(
                 It.IsAny<byte[]>(),
-                "temp.csv",
-                SubmissionPeriod,
-                submissionId,
-                submissionType,
-                submissionSubType,
-                registrationSetId,
-                complianceSchemeId,
-                It.IsAny<bool?>()),
+                It.IsAny<string>(),
+                It.Is<FileUploadSubmissionDetails>(fud => fud.SubmissionType == submissionType 
+                                                          && fud.SubmissionId == submissionId )),
             Times.Once);
     }
 
@@ -306,15 +301,14 @@ public class FileUploadServiceTests
         await _fileUploadService.ProcessUploadAsync(
             contentType,
             stream,
-            SubmissionPeriod,
-            _modelStateDictionary,
-            null,
-            submissionType, 
-            It.IsAny<IFileUploadMessages>(), 
+            _modelStateDictionary, 
             It.IsAny<IFileUploadSize>(),
-            null,
-            null,
-            complianceSchemeId);
+            new FileUploadSubmissionDetails()
+            {
+                SubmissionPeriod = SubmissionPeriod,
+                SubmissionType = submissionType,
+                ComplianceSchemeId = complianceSchemeId
+            });
 
         // Assert
         GetModelStateErrors().Should().HaveCount(1).And.Contain("File upload is invalid - try again");

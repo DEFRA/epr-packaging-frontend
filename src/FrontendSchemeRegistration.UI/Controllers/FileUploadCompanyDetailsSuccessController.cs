@@ -11,6 +11,7 @@ using Extensions;
 using global::FrontendSchemeRegistration.UI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Sessions;
 using UI.Attributes.ActionFilters;
 using ViewModels;
@@ -46,7 +47,9 @@ public class FileUploadCompanyDetailsSuccessController : Controller
             return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
         }
 
-        var organisationRole = session.UserData.Organisations?.FirstOrDefault()?.OrganisationRole;
+        // assume user has an org
+        var organisation = session.UserData.Organisations[0];
+        var organisationRole = organisation.OrganisationRole;
 
         if (organisationRole is not null)
         {
@@ -61,6 +64,9 @@ public class FileUploadCompanyDetailsSuccessController : Controller
 
             if (submission is not null)
             {
+                var routeValue = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear);
+                ViewBag.BackLinkToDisplay = QueryHelpers.AddQueryString(Url.Content($"~{PagePaths.FileUploadCompanyDetails}"), routeValue.ToDictionary(k => k.Key, k => k.Value.ToString() ?? string.Empty));
+
                 return View(
                     "FileUploadCompanyDetailsSuccess",
                     new FileUploadCompanyDetailsSuccessViewModel
@@ -72,9 +78,11 @@ public class FileUploadCompanyDetailsSuccessController : Controller
                         SubmissionDeadline = session.RegistrationSession.SubmissionDeadline,
                         OrganisationRole = organisationRole,
                         IsApprovedUser = session.UserData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved),
-                        OrganisationMemberCount = organisationRole == OrganisationRoles.ComplianceScheme ? submission.OrganisationMemberCount : null,
+                        IsCso = organisationRole == OrganisationRoles.ComplianceScheme,
+                        OrganisationName = organisation.Name,
                         IsResubmission = session.RegistrationSession.IsResubmission,
-                        RegistrationYear = registrationYear
+                        RegistrationYear = registrationYear,
+                        RegistrationJourney = submission.RegistrationJourney,
                     });
             }
         }

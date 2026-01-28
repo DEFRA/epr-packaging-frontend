@@ -19,15 +19,18 @@ public class FileUploadingBrandsController : Controller
 {
     private readonly ISubmissionService _submissionService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
+    private readonly ISessionManager<RegistrationApplicationSession> _registrationApplicationSessionManager;
     private readonly IRegistrationApplicationService _registrationApplicationService;
 
     public FileUploadingBrandsController(
         ISubmissionService submissionService,
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
+        ISessionManager<RegistrationApplicationSession> registrationApplicationSessionManager,
         IRegistrationApplicationService registrationApplicationService)
     {
         _submissionService = submissionService;
         _sessionManager = sessionManager;
+        _registrationApplicationSessionManager = registrationApplicationSessionManager;
         _registrationApplicationService = registrationApplicationService;
     }
 
@@ -36,6 +39,7 @@ public class FileUploadingBrandsController : Controller
     public async Task<IActionResult> Get()
     {
         var registrationYear = _registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
+
         var submissionId = Guid.Parse(Request.Query["submissionId"]);
         var submission = await _submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
@@ -47,7 +51,7 @@ public class FileUploadingBrandsController : Controller
 
         if (session is null)
         {
-            return GetFileUploadingBrandsViewResult(submissionId, registrationYear);
+            return await GetFileUploadingBrandsViewResult(submissionId, registrationYear);
         }
 
         if (!session.RegistrationSession.Journey.Contains<string>(PagePaths.FileUploadBrands))
@@ -57,7 +61,7 @@ public class FileUploadingBrandsController : Controller
 
         return submission.BrandsDataComplete || submission.Errors.Count > 0
             ? GetNextPage(submission.Id, submission.Errors.Count > 0, registrationYear)
-            : GetFileUploadingBrandsViewResult(submissionId, registrationYear);
+            : await GetFileUploadingBrandsViewResult(submissionId, registrationYear);
     }
 
     private RedirectToActionResult GetNextPage(Guid submissionId, bool exceptionErrorOccurred, int? registrationYear)
@@ -68,9 +72,15 @@ public class FileUploadingBrandsController : Controller
             : RedirectToAction("Get", "FileUploadBrandsSuccess", routeValues);
     }
 
-    private ViewResult GetFileUploadingBrandsViewResult(Guid submissionId, int? registrationYear)
+    private async Task<ViewResult> GetFileUploadingBrandsViewResult(Guid submissionId, int? registrationYear)
     {
-        return View("FileUploadingBrands", registrationYear is not null ? new FileUploadingViewModel { SubmissionId = submissionId.ToString(), RegistrationYear = registrationYear } : new FileUploadingViewModel { SubmissionId = submissionId.ToString() });
-    }
+        var registrationApplicationSession = await _registrationApplicationSessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
 
+        return View("FileUploadingBrands", new FileUploadingViewModel
+        {
+            SubmissionId = submissionId.ToString(),
+            RegistrationYear = registrationYear,
+            RegistrationJourney = registrationApplicationSession.RegistrationJourney
+        });
+    }
 }

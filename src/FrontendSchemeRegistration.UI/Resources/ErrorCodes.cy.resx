@@ -329,7 +329,7 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
     <value>Gwiriwch bwysau'r deunydd pecynwaith ar gyfer pob rhes i'r sefydliad yma. Os yw cyfanswm y flwyddyn adrodd rhwng 25,000kg a 50,000kg, efallai mai dim ond fel sefydliad bach y bydd angen i'r sefydliad yma gofrestru yn y flwyddyn ganlynol.</value>
   </data>
   <data name="90" xml:space="preserve">
-    <value>[Welsh]Transitional Packaging Units Invalid</value>
+    <value>Unedau Pecynwaith Trosiannol yn Annilys</value>
   </data>
   <data name="894" xml:space="preserve">
     <value>Dim ond bach neu fawr y gall maint y sefydliad fod.</value>
@@ -376,6 +376,12 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
   <data name="69" xml:space="preserve">
     <value>Y cyfnod cyflwyno ar gyfer Ionawr i Ragfyr 2025 fydd 2025-P0</value>
   </data>
+  <data name="77" xml:space="preserve">
+    <value>Y cyfnod cyflwyno ar gyfer Ionawr i Fehefin 2026 fydd 2026-H1</value>
+  </data>
+  <data name="78" xml:space="preserve">
+    <value>Y cyfnod cyflwyno ar gyfer Gorffennaf i Ragfyr 2026 fydd 2026-H2</value>
+  </data>
   <data name="61" xml:space="preserve">
     <value>Mae pwysau’r pecynwaith ar gyfer y sefydliad yma wedi'i roi fel sero - gwiriwch fod hyn yn gywir cyn ichi gyflwyno ffurflen sero</value>
   </data>
@@ -390,5 +396,23 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
   </data>
   <data name="109" xml:space="preserve">
     <value>Mae codau ailgylcheddadwyedd yn berthnasol yn unig i fathau o ddeunydd pecynnu HH, PB a HDC-GL ar gyfer cyflwyniadau o 2025 ymlaen ar gyfer sefydliadau mawr (L)</value>
+  </data>
+  <data name="901" xml:space="preserve">
+    <value>Rhaid i faint y sefydliad fod yn S.</value>
+  </data>
+  <data name="902" xml:space="preserve">
+    <value>Rhaid i'r math o ddeunydd pacio fod yn SP neu HDC.</value>
+  </data>
+  <data name="903" xml:space="preserve">
+    <value>Rhaid i ddosbarth y deunydd pacio fod yn P1, P2, P3, P4 neu P6.</value>
+  </data>
+  <data name="906" xml:space="preserve">
+    <value>Rhaid i bwysau'r deunydd pacio fod yn fwy na 0.</value>
+  </data>
+  <data name="907" xml:space="preserve">
+    <value>Rhaid i nifer y deunydd pacio fod yn fwy na 0.</value>
+  </data>
+  <data name="908" xml:space="preserve">
+    <value>Rhaid i ddosbarth y deunydd pacio fod yn wag.</value>
   </data>
 </root>

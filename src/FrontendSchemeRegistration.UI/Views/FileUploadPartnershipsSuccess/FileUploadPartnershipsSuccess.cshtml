@@ -1,7 +1,14 @@
+@using FrontendSchemeRegistration.UI.ViewModels.Shared
 @model FileUploadSuccessViewModel
 
 @{
     ViewData["Title"] = Localizer["page_title"];
+    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+        Model.ShowRegistrationCaption, 
+        Model.RegistrationJourney, 
+        Model.OrganisationName,
+        null,
+        Model.RegistrationYear);
 }
 
 @await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
@@ -15,15 +22,7 @@
                 </div>
                 <div class="govuk-notification-banner__content">
                     <h3 class="govuk-notification-banner__heading">
-                        @if (Model.IsResubmission)
-                        {
-                            @Localizer["partner_details_uploaded"]
-                        }
-                        else
-                        {
-                            @Localizer["file_uploaded"]
-                        }
-
+                        @Localizer["partner_details_uploaded"]
                     </h3>
                     <p class="govuk-body break-word">
                         @Model.FileName
@@ -31,6 +30,8 @@
                 </div>
             </div>
 
+            <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel"/>
+            
             @if (!Model.IsResubmission)
             {
                 <h3 class="govuk-heading-m">@Localizer["what_happens_next"]</h3>

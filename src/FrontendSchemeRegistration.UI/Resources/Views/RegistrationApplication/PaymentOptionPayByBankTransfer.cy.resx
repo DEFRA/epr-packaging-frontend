@@ -123,6 +123,9 @@
     <data name="after_payment_is_made" xml:space="preserve">
         <value>Ar ôl i’r taliad gael ei wneud</value>
     </data>
+    <data name="after_youve_paid" xml:space="preserve">
+        <value>Ar ôl ichi dalu</value>
+    </data>
     <data name="submit_application_from_registration_dashboard" xml:space="preserve">
         <value>1. Cyflwynwch eich cais o'r dangosfwrdd cofrestru pan fydd y taliad wedi'i wneud.</value>
     </data>
@@ -136,7 +139,7 @@
         <value>packaging@daera-ni.gov.uk</value>
     </data>
     <data name="england.for_BACS_remittance_send_details" xml:space="preserve">
-        <value>2. Anfonwch hysbysiad y taliad BACS i </value>
+        <value>1. Anfonwch hysbysiad y taliad BACS i </value>
     </data>
     <data name="england.packaging_producers_EA" xml:space="preserve">
         <value>packagingproducers@environment-agency.gov.uk</value>
@@ -155,5 +158,14 @@
     </data>
     <data name="submit_your_application_from_registration_dashboard" xml:space="preserve">
         <value>Cyflwynwch eich cais o'r dangosfwrdd cofrestru.</value>
+    </data>
+    <data name="continue" xml:space="preserve">
+        <value>Parhau</value>
+    </data>
+    <data name="continue_registration_application" xml:space="preserve">
+        <value>Parhau â'r cais am gofrestru</value>
+    </data>
+    <data name="send_bacs_remittance_to" xml:space="preserve">
+        <value>Anfon hysbysiad talu BACS at </value>
     </data>
 </root>

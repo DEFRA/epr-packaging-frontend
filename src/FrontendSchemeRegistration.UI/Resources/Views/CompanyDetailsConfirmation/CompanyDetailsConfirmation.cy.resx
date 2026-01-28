@@ -45,7 +45,6 @@
   <data name="organisation_details_submitted_registration" xml:space="preserve">
     <value>Manylion y sefydliad wedi'u cyflwyno</value>
   </data>
-	
   <data name="you_still_need_to" xml:space="preserve">
     <value>Mae'n dal yn angenrheidiol ichi:</value>
   </data>
@@ -87,5 +86,14 @@
   </data>
   <data name="submit_to_environmental_regulator" xml:space="preserve">
     <value>cyflwyno i'r rheoleiddiwr amgylcheddol</value>
+  </data>
+  <data name="success" xml:space="preserve">
+    <value>Llwyddiant</value>
+  </data>
+  <data name="producer_registration" xml:space="preserve">
+    <value>Cofrestru {0}</value>
+  </data>
+  <data name="continue" xml:space="preserve">
+    <value>Parhau</value>
   </data>
 </root>

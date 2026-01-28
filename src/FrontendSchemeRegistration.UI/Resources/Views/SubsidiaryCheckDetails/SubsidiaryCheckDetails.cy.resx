@@ -1,13 +1,13 @@
 ﻿<root>
 	<data name="detail_name_header" xml:space="preserve">
-        <value>WSection</value>
-    </data>
+		<value>Adran</value>
+	</data>
 	<data name="detail_value_header" xml:space="preserve">
-        <value>WValue</value>
-    </data>
+		<value>Gwerth</value>
+	</data>
 	<data name="detail_action_header" xml:space="preserve">
-        <value>WAction</value>
-    </data>
+		<value>Camau</value>
+	</data>
 	<data name="check-details" xml:space="preserve">
         <value>Gwiriwch eich atebion</value>
     </data>
@@ -39,6 +39,9 @@
         <value>Datganiad</value>
     </data>
 	<data name="text_assistive.warning" xml:space="preserve">
-        <value>WWarning</value>
+		<value>Rhybudd</value>
+	</data>
+	<data name="subsidiary-companies-house-number" xml:space="preserve">
+		<value>Rhif Tŷ'r Cwmnïau</value>
 	</data>
 </root>

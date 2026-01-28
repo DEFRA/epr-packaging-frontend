@@ -15,38 +15,21 @@
 	<data name="registration_for_year" xml:space="preserve">
     <value>Registration for {0}</value>
   </data>
-	<data name="large_producers_only" xml:space="preserve">
-    <value>(Large producers only)</value>
+  <data name="current_large_producer_registration_title" xml:space="preserve">
+    <value>Large producer {0} registration</value>
   </data>
-	<data name="you_need_to_register_by_1_April" xml:space="preserve">
-    <value>You must register your organisation for {0}.</value>
-  </data>
-	<data name="Apply_by_1st_April_x" xml:space="preserve">
-    <value>Apply by 1st April, {0}</value>
-  </data>
-	<data name="Apply_by_1st_October_x" xml:space="preserve">
-    <value>You must apply for registration for 2026 on or before 1 October {0}.</value>
-  </data>
-	<data name="Apply_by_1st_October_compliance_large_x" xml:space="preserve">
-    <value>You must apply for registration for {0} on behalf of large producers on or before 1 October 2025.</value>
-  </data>
-	<data name="Apply_by_1st_April_compliance_small_x" xml:space="preserve">
-    <value>You must apply for registration on behalf of small producers on or before 1 April 2026.</value>
-  </data>
-	<data name="Apply_after_deadline_late_fee" xml:space="preserve">
-    <value>You may apply after this date, but may incur a late fee.</value>
+  <data name="current_small_producer_registration_title" xml:space="preserve">
+	<value>Small producer {0} registration</value>
   </data>
 	<data name="Your_registration_for_x_has_been_granted" xml:space="preserve">
     <value>Your registration for {0} has been granted by the regulator.</value>
   </data>
-
 	<data name="Your_registration_reference_number_is_x" xml:space="preserve">
     <value>Your producer registration number is &lt;strong&gt;{0}&lt;/strong&gt;.</value>
   </data>
 	<data name="If_anything_changes_you_should_resubmit" xml:space="preserve">
     <value>Changes to your organisation's data must be reported within 28 days.</value>
   </data>
-
 	<data name="Resubmit_your_data_files" xml:space="preserve">
     <value>Resubmit your data files</value>
   </data>
@@ -68,7 +51,6 @@
 	<data name="Contact_your_regulator_if_you_need_advice" xml:space="preserve">
     <value>Contact your regulator if you need advice.</value>
   </data>
-
 	<data name="You_have_submitted_your_registration_data" xml:space="preserve">
     <value>You have submitted your registration data. It may take up to an hour for our systems to update.</value>
   </data>
@@ -111,19 +93,55 @@
 	<data name="Your_resubmitted_data_has_been_accepted" xml:space="preserve">
     <value>Your resubmitted data has been accepted. Report further changes within 28 days of them becoming effective.</value>
   </data>
-	<data name="you_need_to_register_by_October_x" xml:space="preserve">
-    <value>You must apply for registration for {0} on or before 1 October 2025.</value>
+	<data name="legacy_registration_instructions1" xml:space="preserve">
+    <value>All producers must have a {0} registration.</value>
   </data>
-	<data name="you_can_register_after_October" xml:space="preserve">
-    <value>You may apply after this date, but may incur a late fee.</value>
+	<data name="legacy_registration_instructions2" xml:space="preserve">
+    <value>You can still register for {0}, but may incur a late fee.</value>
   </data>
-	<data name="Apply_by_1st_April_producer_small_x" xml:space="preserve">
-  <value>Small producers must apply for registration for {0} on or before 1 April 2026 to avoid a late fee.</value>
-</data>
-	<data name="Deadline_for_large_producer" xml:space="preserve">
-  <value>The deadline for 2026 registrations for large producers was 1 October 2025.</value>
-</data>
-	<data name="Apply_after_deadline_late_fee_small_producer" xml:space="preserve">
-    <value>You can still register but may incur a late fee.</value>
+  <data name="cso_small_producer_instructions1" xml:space="preserve">
+		<value>Small producers must apply for registration on or before {0}.</value>
+	</data>
+  <data name="cso_small_producer_instructions2" xml:space="preserve">
+		<value>Applications made after this date could incur a late fee.</value>
+	</data>
+  <data name="cso_large_producer_instructions1" xml:space="preserve">
+		<value>Large producers needed to apply for registration on or before {0}.</value>
+	</data>
+  <data name="cso_large_producer_instructions2" xml:space="preserve">
+		<value>Applications made after this date could incur a late fee.</value>
+	</data>
+	<data name="direct_large_producer_open_instructions1" xml:space="preserve">
+    <value>Large producers must register by {0} on {1}.</value>
+  </data>
+	<data name="direct_large_producer_open_instructions2" xml:space="preserve">
+    <value>Small producers can register from {0}. The deadline is {1} on {2}.</value>
+  </data>
+	<data name="direct_large_producer_open_instructions3" xml:space="preserve">
+    <value>You can register after these deadlines, but may incur a late fee.</value>
+  </data>
+	<data name="direct_large_producer_late_instructions1" xml:space="preserve">
+    <value>The deadline for large producer registration was {0} on {1}. You can still register, but may incur a late fee.</value>
+  </data>
+	<data name="direct_large_producer_late_instructions2" xml:space="preserve">
+    <value>Small producers can register from {0}. The deadline is {1} on {2}.</value>
+  </data>
+	<data name="direct_small_producer_open_instructions1" xml:space="preserve">
+    <value>Small producers must register by {0} on {1}.</value>
+  </data>
+	<data name="direct_small_producer_open_instructions2" xml:space="preserve">
+    <value>The deadline for large producer registration was {0} on {1}.</value>
+  </data>
+	<data name="direct_small_producer_open_instructions3" xml:space="preserve">
+    <value>Large producers can still register, but may incur a late fee.</value>
+  </data>
+	<data name="direct_small_producer_late_instructions1" xml:space="preserve">
+    <value>The deadline for small producer registration was {0} on {1}.</value>
+  </data>
+	<data name="direct_small_producer_late_instructions2" xml:space="preserve">
+    <value>The deadline for large producer registration was {0} on {1}.</value>
+  </data>
+	<data name="direct_small_producer_late_instructions3" xml:space="preserve">
+    <value>You can register after these deadlines, but may incur a late fee.</value>
   </data>
 </root>

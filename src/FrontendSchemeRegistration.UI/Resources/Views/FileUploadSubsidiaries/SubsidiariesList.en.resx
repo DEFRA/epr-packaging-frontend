@@ -267,4 +267,7 @@
   <data name="add_a_single_subsidiary" xml:space="preserve">
     <value>Add a single subsidiary</value>
   </data>
+  <data name="upload_a_file" xml:space="preserve">
+    <value>Upload a file</value>
+  </data>
 </root>

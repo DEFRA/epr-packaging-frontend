@@ -107,12 +107,12 @@
     <value>Gweld cynnydd eich rhwymedigaethau ailgylchu</value>
   </data>
   <data name="download_prns_and_perns_from_search_page_part_1" xml:space="preserve">
-    <value>[welsh]Download PRNs and PERNs as a PDF from the</value>
+    <value>Lawrlwytho PRNs a PERNs fel PDF o’r </value>
   </data>
   <data name="download_prns_and_perns_from_search_page_part_2" xml:space="preserve">
-    <value>[welsh]search PRNs and PERNs</value>
+    <value>chwilio PRNs a PERNs</value>
   </data>
   <data name="download_prns_and_perns_from_search_page_part_3" xml:space="preserve">
-    <value>[welsh]page.</value>
+    <value>tudalen.</value>
   </data>
 </root>

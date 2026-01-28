@@ -132,17 +132,17 @@
   <data name="resubmission-fee-page-header" xml:space="preserve">
     <value>Packaging data resubmission fee paid</value>
   </data>
-  <data name="resubmission-you-have-no-additional-fee-to-pay" xml:space="preserve">
-    <value>You have no additional fee to pay</value>
-  </data>
   <data name="resubmission-fee-are-calculated-from-information" xml:space="preserve">
     <value>Resubmission fees are calculated from the information you have supplied.</value>
+  </data>
+  <data name="resubmission-you-have-no-additional-fee-to-pay" xml:space="preserve">
+    <value>You have no additional fee to pay</value>
   </data>
   <data name="return_to_resubmission_tasklist" xml:space="preserve">
     <value>Task list</value>
   </data>
   <data name="resubmission-more_about_EPR_fees_and_charges" xml:space="preserve">
-    <value>More about Extended producer responsibility (EPR) fees and charges</value>
+    <value>More about extended producer responsibility (EPR) fees and charges</value>
   </data>
   <data name="resubmission-fee-title" xml:space="preserve">
     <value>Packaging data resubmission fee</value>

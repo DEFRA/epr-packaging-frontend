@@ -4,14 +4,12 @@ using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Options;
-using FrontendSchemeRegistration.Application.Services;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
 using FrontendSchemeRegistration.UI.Controllers.FrontendSchemeRegistration;
 using FrontendSchemeRegistration.UI.Enums;
 using FrontendSchemeRegistration.UI.Extensions;
-using FrontendSchemeRegistration.UI.Resources.Views.FileUpload;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
@@ -19,7 +17,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.FeatureManagement;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace FrontendSchemeRegistration.UI.Controllers;
 
@@ -197,13 +194,10 @@ public class FileUploadSubLandingController(
                 case "Accepted":
                 case "Approved":
                     return SubmissionPeriodStatus.AcceptedByRegulator;
-                    break;
                 case "Rejected":
                     return SubmissionPeriodStatus.RejectedByRegulator;
-                    break;
                 default:
                     return SubmissionPeriodStatus.SubmittedToRegulator;
-                    break;
             }
         }
 

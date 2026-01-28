@@ -24,15 +24,20 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using CookieOptions = FrontendSchemeRegistration.Application.Options.CookieOptions;
 using SessionOptions = FrontendSchemeRegistration.Application.Options.SessionOptions;
-
+using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("FrontendSchemeRegistration.UI.UnitTests")]
 namespace FrontendSchemeRegistration.UI.Extensions;
 
+using Application.Helpers;
+using Application.Options.RegistrationPeriodPatterns;
+using Polly;
+using Services.RegistrationPeriods;
+
 [ExcludeFromCodeCoverage]
 public static class ServiceProviderExtension
 {
-    public static IServiceCollection RegisterWebComponents(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection RegisterWebComponents(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostingEnvironment)
     {
         ConfigureCookiePolicy(services);
         ConfigureOptions(services, configuration);
@@ -41,7 +46,8 @@ public static class ServiceProviderExtension
         ConfigureAuthorization(services, configuration);
         ConfigureSession(services);
         RegisterServices(services);
-        RegisterHttpClients(services);
+        ConfigureTimeProvider(services, hostingEnvironment);
+        RegisterAccountAndPaymentApiClients(services);
         RegisterPrnTimeProviderServices(services, configuration);
 
         return services;
@@ -112,7 +118,6 @@ public static class ServiceProviderExtension
         services.Configure<SiteDateOptions>(configuration.GetSection(SiteDateOptions.ConfigSection));
         services.Configure<CookieOptions>(configuration.GetSection(CookieOptions.ConfigSection));
         services.Configure<GoogleAnalyticsOptions>(configuration.GetSection(GoogleAnalyticsOptions.ConfigSection));
-        services.Configure<GuidanceLinkOptions>(configuration.GetSection(GuidanceLinkOptions.ConfigSection));
         services.Configure<MsalOptions>(configuration.GetSection(MsalOptions.ConfigSection));
         services.Configure<AzureAdB2COptions>(configuration.GetSection(AzureAdB2COptions.ConfigSection));
         services.Configure<HttpClientOptions>(configuration.GetSection(HttpClientOptions.ConfigSection));
@@ -123,6 +128,9 @@ public static class ServiceProviderExtension
         services.Configure<RedisOptions>(configuration.GetSection(RedisOptions.ConfigSection));
         services.Configure<ComplianceSchemeMembersPaginationOptions>(configuration.GetSection(ComplianceSchemeMembersPaginationOptions.ConfigSection));
         services.Configure<SessionOptions>(configuration.GetSection(SessionOptions.ConfigSection));
+
+        services.AddSingleton<GuidanceLinkOptions>();
+        services.Configure<List<RegistrationPeriodPattern>>(configuration.GetSection(RegistrationPeriodPattern.ConfigSection));
         services.Configure<NotificationBannerOptions>(configuration.GetSection(NotificationBannerOptions.Section));
     }
 
@@ -153,10 +161,10 @@ public static class ServiceProviderExtension
             Logger = sp.GetRequiredService<ILogger<RegistrationApplicationService>>(),
             FeatureManager = sp.GetRequiredService<IFeatureManager>(),
             HttpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>(),
-            GlobalVariables = sp.GetRequiredService<IOptions<GlobalVariables>>()
+            GlobalVariables = sp.GetRequiredService<IOptions<GlobalVariables>>(),
+            RegistrationPeriodProvider = sp.GetRequiredService<IRegistrationPeriodProvider>(),
         });
         services.AddScoped<IRegistrationApplicationService, RegistrationApplicationService>();
-        services.AddTransient<IDateTimeProvider, SystemDateTimeProvider>();
         services.AddSingleton<IPatchService, PatchService>();
         services.AddAutoMapper((serviceProvider, automapper) =>
         {
@@ -170,6 +178,7 @@ public static class ServiceProviderExtension
         services.AddScoped<IFileDownloadService, FileDownloadService>();
         services.AddScoped<ComplianceSchemeIdHttpContextFilterAttribute>();
         services.AddScoped<IResubmissionApplicationService, ResubmissionApplicationServices>();
+        services.AddSingleton<IRegistrationPeriodProvider, RegistrationPeriodProvider>();
     }
 
     // When testing PRNs use a configurable date in place of the current date
@@ -185,36 +194,37 @@ public static class ServiceProviderExtension
         }
     }
 
-    private static void RegisterHttpClients(IServiceCollection services)
+    private static void RegisterAccountAndPaymentApiClients(IServiceCollection services)
     {
-        services.AddHttpClient<IAccountServiceApiClient, AccountServiceApiClient>((sp, client) =>
-        {
-            var facadeApiOptions = sp.GetRequiredService<IOptions<AccountsFacadeApiOptions>>().Value;
-            var httpClientOptions = sp.GetRequiredService<IOptions<HttpClientOptions>>().Value;
-
-            client.BaseAddress = new Uri(facadeApiOptions.BaseEndpoint);
-            client.Timeout = TimeSpan.FromSeconds(httpClientOptions.TimeoutSeconds);
-        });
-
-        services.AddHttpClient<IPaymentCalculationServiceApiClient, PaymentCalculationServiceApiClient>((sp, client) =>
-        {
-            var facadeApiOptions = sp.GetRequiredService<IOptions<PaymentFacadeApiOptions>>().Value;
-            var httpClientOptions = sp.GetRequiredService<IOptions<HttpClientOptions>>().Value;
-            var featureManager = sp.GetRequiredService<IFeatureManager>();
-
-            var baseUrl = facadeApiOptions.BaseUrl;
-
-            var useV2 = featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeV2)
-                .GetAwaiter().GetResult();
-
-            if (useV2)
+        var sp = services.BuildServiceProvider();
+        var options = sp.GetRequiredService<IOptions<HttpClientOptions>>().Value;
+        
+        services
+            .AddHttpClient<IAccountServiceApiClient, AccountServiceApiClient>(client =>
             {
-                baseUrl = Regex.Replace(baseUrl, @"/v1(/|$)", "/v2$1", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
-            }
+                client.BaseAddress = new Uri(sp.GetRequiredService<IOptions<AccountsFacadeApiOptions>>().Value.BaseEndpoint);
+                client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
+            })
+            .AddTransientHttpErrorPolicy(builder => builder.WaitAndRetryAsync(
+                options.RetryCount, _ => TimeSpan.FromSeconds(options.RetryDelaySeconds)));
 
-            client.BaseAddress = new Uri(baseUrl);
-            client.Timeout = TimeSpan.FromSeconds(httpClientOptions.TimeoutSeconds);
-        });
+        services
+            .AddHttpClient<IPaymentCalculationServiceApiClient, PaymentCalculationServiceApiClient>(client =>
+            {
+                var featureManager = sp.GetRequiredService<IFeatureManager>();
+                var baseUrl = sp.GetRequiredService<IOptions<PaymentFacadeApiOptions>>().Value.BaseUrl;
+                var useV2 = featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeV2).GetAwaiter().GetResult();
+
+                if (useV2)
+                {
+                    baseUrl = Regex.Replace(baseUrl, @"/v1(/|$)", "/v2$1", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
+                }
+
+                client.BaseAddress = new Uri(baseUrl);
+                client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
+            })
+            .AddTransientHttpErrorPolicy(builder => builder.WaitAndRetryAsync(
+                options.RetryCount, _ => TimeSpan.FromSeconds(options.RetryDelaySeconds)));
     }
 
     private static void ConfigureLocalization(IServiceCollection services)
@@ -267,6 +277,21 @@ public static class ServiceProviderExtension
             options.Cookie.Path = "/";
             options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         });
+    }
+
+    // Allows time-travel testing by registering a test TimeProvider. Does not register the test provider
+    // in a production environment
+    private static void ConfigureTimeProvider(IServiceCollection services, IWebHostEnvironment hostingEnvironment)
+    {
+        if (hostingEnvironment.IsProduction()) return;
+        
+        var sp = services.BuildServiceProvider();
+        var globalVariables = sp.GetRequiredService<IOptions<GlobalVariables>>().Value;
+        
+        if (globalVariables.StartupUtcTimestampOverride.HasValue)
+        {
+            services.AddSingleton(typeof(TimeProvider), _ => new TimeTravelTestingTimeProvider(globalVariables.StartupUtcTimestampOverride.Value));    
+        }
     }
 
     private static void ConfigureAuthentication(IServiceCollection services, IConfiguration configuration)

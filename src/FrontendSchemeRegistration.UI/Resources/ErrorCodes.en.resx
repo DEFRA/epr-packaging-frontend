@@ -406,6 +406,12 @@ Read the guidance about how to create your organisation details file. Once youâ€
   <data name="69" xml:space="preserve">
     <value>Submission period for January to December 2025 will be 2025-P0</value>
   </data>
+  <data name="77" xml:space="preserve">
+    <value>Submission period for January to June 2026 will be 2026-H1</value>
+  </data>
+  <data name="78" xml:space="preserve">
+    <value>Submission period for July to December 2026 will be 2026-H2</value>
+  </data>
   <data name="108" xml:space="preserve">
     <value>Large organisations (L) can enter a recyclability rating for 2025 submission periods onwards from the following options: R (for Red), A (for Amber), G (for Green), R-M (for Red-Medical), A-M (for Amber-Medical) or Green-Medical (G-M)</value>
   </data>

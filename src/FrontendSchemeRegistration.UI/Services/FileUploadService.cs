@@ -16,19 +16,11 @@ public class FileUploadService(IWebApiGatewayClient webApiGatewayClient) : IFile
     private const string UploadFieldName = "file";
     private static readonly FormOptions FormOptions = new ();
 
-    public async Task<Guid> ProcessUploadAsync(
-        string? contentType,
+    public async Task<Guid> ProcessUploadAsync(string? contentType,
         Stream fileStream,
-        string submissionPeriod,
         ModelStateDictionary modelState,
-        Guid? submissionId,
-        SubmissionType submissionType,
-        IFileUploadMessages fileUploadMessages,
         IFileUploadSize fileUploadSize,
-        SubmissionSubType? submissionSubType = null,
-        Guid? registrationSetId = null,
-        Guid? complianceSchemeId = null,
-        bool? isResubmission = null)
+        FileUploadSubmissionDetails submissionDetails)
     {
         var fileValidationResult = await ValidateUploadAsync(contentType, fileStream, modelState);
         if (!modelState.IsValid)
@@ -45,13 +37,7 @@ public class FileUploadService(IWebApiGatewayClient webApiGatewayClient) : IFile
             return await webApiGatewayClient.UploadFileAsync(
                 fileContent,
                 fileName,
-                submissionPeriod,
-                submissionId,
-                submissionType,
-                submissionSubType,
-                registrationSetId,
-                complianceSchemeId,
-                isResubmission);
+                submissionDetails);
         }
 
         return Guid.Empty;

@@ -1,4 +1,4 @@
-﻿namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
+namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
 
 using Application.Constants;
 using Application.DTOs.Submission;
@@ -392,29 +392,50 @@ public class FileUploadCompanyDetailsControllerTests
         _systemUnderTest.ModelState.AddModelError("file", "Some error");
 
         // Act
-        var result = await _systemUnderTest.Post(It.IsAny<string>()) as ViewResult;
+        var result = await _systemUnderTest.Post(It.IsAny<string>(), null) as ViewResult;
 
         // Assert
         _fileUploadServiceMock.Verify(
             x => x.ProcessUploadAsync(
                 contentType,
                 It.IsAny<Stream>(),
-                SubmissionPeriod,
                 It.IsAny<ModelStateDictionary>(),
-                null,
-                SubmissionType.Registration,
-                It.IsAny<IFileUploadMessages>(),
                 It.IsAny<IFileUploadSize>(),
-                SubmissionSubType.CompanyDetails,
-                It.IsAny<Guid?>(),
-                It.IsAny<Guid?>(),
-                It.IsAny<bool?>()),
+                It.IsAny<FileUploadSubmissionDetails>()),
             Times.Once);
         result.ViewName.Should().Be("FileUploadCompanyDetails");
     }
-
+    
     [Test]
-    public async Task Post_RedirectsTo_UploadingOrganisationDetails_WhenTheModelStateIsValid()
+    public async Task Post_ReturnsFileUploadCompanyDetailsCsoView_WhenTheModelStateIsInvalid_And_Has_Producer_Size()
+    {
+        // Arrange
+        const string contentType = "content-type";
+
+        _systemUnderTest.ControllerContext.HttpContext.Request.ContentType = contentType;
+        _systemUnderTest.ControllerContext.HttpContext.Request.Query = new QueryCollection();
+        _systemUnderTest.ModelState.AddModelError("file", "Some error");
+
+        // Act
+        var result = await _systemUnderTest.Post(It.IsAny<string>(), RegistrationJourney.CsoLargeProducer) as ViewResult;
+
+        // Assert
+        _fileUploadServiceMock.Verify(
+            x => x.ProcessUploadAsync(
+                contentType,
+                It.IsAny<Stream>(),
+                It.IsAny<ModelStateDictionary>(),
+                It.IsAny<IFileUploadSize>(),
+                It.IsAny<FileUploadSubmissionDetails>()),
+            Times.Once);
+        result.ViewName.Should().Be("FileUploadCompanyDetailsCso");
+        var actualModel = result.Model as FileUploadCompanyDetailsViewModel;
+        actualModel.RegistrationJounrey.Should().Be(RegistrationJourney.CsoLargeProducer);
+    }
+
+    [TestCase(RegistrationJourney.CsoLargeProducer)]
+    [TestCase(null)]
+    public async Task Post_RedirectsTo_UploadingOrganisationDetails_WhenTheModelStateIsValid(RegistrationJourney? registrationJourney)
     {
         // Arrange
         const string contentType = "content-type";
@@ -426,6 +447,9 @@ public class FileUploadCompanyDetailsControllerTests
             {
                 {
                     "submissionId", submissionId.ToString()
+                },
+                {
+                    "registrationjounrey",registrationJourney.ToString()
                 }
             });
 
@@ -433,23 +457,25 @@ public class FileUploadCompanyDetailsControllerTests
             .Setup(x => x.ProcessUploadAsync(
                 contentType,
                 It.IsAny<Stream>(),
-                SubmissionPeriod,
                 It.IsAny<ModelStateDictionary>(),
-                submissionId,
-                SubmissionType.Registration,
-                It.IsAny<IFileUploadMessages>(),
                 It.IsAny<IFileUploadSize>(),
-                SubmissionSubType.CompanyDetails,
-                It.IsAny<Guid?>(),
-                It.IsAny<Guid?>(),
-                It.IsAny<bool?>()))
+                It.IsAny<FileUploadSubmissionDetails>()))
             .ReturnsAsync(submissionId);
 
         // Act
-        var result = await _systemUnderTest.Post(It.IsAny<string>()) as RedirectToActionResult;
+        var result = await _systemUnderTest.Post(It.IsAny<string>(), registrationJourney) as RedirectToActionResult;
 
         // Assert
         result.ControllerName.Should().Contain("UploadingOrganisationDetails");
         result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(submissionId);
+        if (registrationJourney == null)
+        {
+            result.RouteValues.Should().NotContainKey("registrationjourney");
+        }
+        else
+        {
+            result.RouteValues.Should().ContainKey("registrationjourney").WhoseValue.Should().Be(registrationJourney.ToString());    
+        }
+        
     }
 }

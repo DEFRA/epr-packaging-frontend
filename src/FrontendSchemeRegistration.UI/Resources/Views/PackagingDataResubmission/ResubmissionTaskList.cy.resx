@@ -40,7 +40,7 @@
         <value>HEB DDECHRAU</value>
     </data>
     <data name="pending_status" xml:space="preserve">
-        <value>PENDING</value>
+        <value>YN YR ARFAETH</value>
     </data>
     <data name="completed_status" xml:space="preserve">
         <value>CYFLAWN</value>
@@ -50,5 +50,11 @@
     </data>
 	<data name="resubmission_application_has_been_submitted" xml:space="preserve">
         <value>Mae eich cais am gofrestru wedi'i gyflwyno</value>
+    </data>
+    <data name="continue_your_packaging_data_resubmission" xml:space="preserve">
+        <value>Parhau â'ch ailgyflwyniad data pecynwaith</value>
+    </data>
+    <data name="you_have_resubmitted_your_packaging_data" xml:space="preserve">
+        <value>Rydych chi wedi ailgyflwyno’ch data pecynwaith</value>
     </data>
 </root>

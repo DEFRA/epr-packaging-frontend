@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Security.Claims;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
@@ -10,17 +10,20 @@ using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Sessions;
-using FrontendSchemeRegistration.UI.ViewModels;
 using FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
 using Microsoft.Extensions.Options;
 using Microsoft.FeatureManagement;
 
 namespace FrontendSchemeRegistration.UI.Services;
 
+using System.Collections.Immutable;
+using Application.Services;
+using RegistrationPeriods;
+using ViewModels.Shared;
 
 public class RegistrationApplicationService : IRegistrationApplicationService
 {
-    private readonly ISubmissionService submissionService;
+    private readonly ISubmissionService _submissionService;
     private readonly IPaymentCalculationService paymentCalculationService;
     private readonly ISessionManager<RegistrationApplicationSession> sessionManager;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> frontEndSessionManager;
@@ -29,13 +32,14 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     private readonly IHttpContextAccessor httpContextAccessor;
     private readonly IOptions<GlobalVariables> globalVariables;
     private readonly TimeProvider _timeProvider;
+    private readonly IRegistrationPeriodProvider _registrationPeriodProvider;
 
     public RegistrationApplicationService(RegistrationApplicationServiceDependencies dependencies, TimeProvider timeProvider)
     {
         _timeProvider = timeProvider;
         ArgumentNullException.ThrowIfNull(dependencies);
         
-        submissionService = dependencies.SubmissionService
+        _submissionService = dependencies.SubmissionService
             ?? throw new InvalidOperationException($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(dependencies.SubmissionService)} cannot be null.");
         paymentCalculationService = dependencies.PaymentCalculationService
             ?? throw new InvalidOperationException($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(dependencies.PaymentCalculationService)} cannot be null.");
@@ -51,6 +55,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             ?? throw new InvalidOperationException($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(dependencies.HttpContextAccessor)} cannot be null.");
         globalVariables = dependencies.GlobalVariables
             ?? throw new InvalidOperationException($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(dependencies.GlobalVariables)} cannot be null.");
+        _registrationPeriodProvider = dependencies.RegistrationPeriodProvider;
     }
     private void SetLateFeeFlag(RegistrationApplicationSession session, int registrationYear)
     {
@@ -105,7 +110,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         }
     }
 
-    public async Task<RegistrationApplicationSession> GetRegistrationApplicationSession(ISession httpSession, Organisation organisation, int registrationYear, bool? isResubmission = null)
+    public async Task<RegistrationApplicationSession> GetRegistrationApplicationSession(ISession httpSession, Organisation organisation, int registrationYear, RegistrationJourney? registrationJourney, bool? isResubmission = null)
     {
         var session = await sessionManager.GetSessionAsync(httpSession) ?? new RegistrationApplicationSession();
         var frontEndSession = await frontEndSessionManager.GetSessionAsync(httpSession) ?? new FrontendSchemeRegistrationSession();
@@ -113,12 +118,13 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         session.Period = new SubmissionPeriod { DataPeriod = $"January to December {registrationYear}", StartMonth = "January", EndMonth = "December", Year = $"{registrationYear}" };
         session.SubmissionPeriod = session.Period.DataPeriod;
 
-        var registrationApplicationDetails = await submissionService.GetRegistrationApplicationDetails(new GetRegistrationApplicationDetailsRequest
+        var registrationApplicationDetails = await _submissionService.GetRegistrationApplicationDetails(new GetRegistrationApplicationDetailsRequest
         {
             OrganisationNumber = int.Parse(organisation.OrganisationNumber),
             OrganisationId = organisation.Id.Value,
             ComplianceSchemeId = frontEndSession.RegistrationSession.SelectedComplianceScheme?.Id,
-            SubmissionPeriod = session.Period.DataPeriod
+            SubmissionPeriod = session.Period.DataPeriod,
+            RegistrationJourney = registrationJourney?.ToString()
         }) ?? new RegistrationApplicationDetails();
 
         session.SelectedComplianceScheme = frontEndSession.RegistrationSession.SelectedComplianceScheme;
@@ -138,12 +144,14 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         session.LatestSubmittedEventCreatedDatetime = registrationApplicationDetails.LatestSubmittedEventCreatedDatetime;
         session.FirstApplicationSubmittedEventCreatedDatetime = registrationApplicationDetails.FirstApplicationSubmittedEventCreatedDatetime;
         session.IsResubmission = (registrationApplicationDetails.IsResubmission ?? isResubmission) ?? false;
-
         SetLateFeeFlag(session, registrationYear);
 
         int? nationId;
         if (session.IsComplianceScheme)
+        {
             nationId = session.SelectedComplianceScheme.NationId;
+            session.RegistrationJourney = registrationApplicationDetails.RegistrationJourney ?? registrationJourney;
+        }
         else if (session.FileReachedSynapse)
             nationId = session.RegistrationFeeCalculationDetails[0].NationId;
         else
@@ -350,27 +358,35 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         }
         else
         {
+            var complianceSchemeMembers = feeCalculationDetails.Select(c => new ComplianceSchemePaymentCalculationRequestMember
+            {
+                // Apply late fee to all producers if original submission was late or
+                // not a single submission and current submission is late 
+                // if above two are not satisified that means file are submitted on time its new submission either due to queried
+                // check individual producer is new joiner so late fee applicable on producer level rather than file
+                IsLateFeeApplicable =
+                    session.IsOriginalCsoSubmissionLate
+                    || (session.FirstApplicationSubmittedEventCreatedDatetime is null && session.IsLateFeeApplicable)
+                    || (session.IsLateFeeApplicable && c.IsNewJoiner),
+                IsOnlineMarketplace = c.IsOnlineMarketplace,
+                MemberId = c.OrganisationId,
+                MemberType = c.OrganisationSize,
+                NoOfSubsidiariesOnlineMarketplace = c.NumberOfSubsidiariesBeingOnlineMarketPlace,
+                NumberOfSubsidiaries = c.NumberOfSubsidiaries
+            }).ToList();
+
+            // TODO Temporary logic to exclude registration fee for CSO small (2026)
+            // - currently a CSO registration with only Small Producer journey will incorrectly not be charged registration fee
+            // (it is assumed to have been charged for the Large Producer journey)
+            bool includeRegistrationFee = !(session.RegistrationJourney == RegistrationJourney.CsoSmallProducer);
+
             var v1 = new ComplianceSchemePaymentCalculationRequest
             {
                 Regulator = session.RegulatorNation,
                 ApplicationReferenceNumber = session.ApplicationReferenceNumber,
                 SubmissionDate = session.LastSubmittedFile.SubmittedDateTime!.Value,
-                ComplianceSchemeMembers = feeCalculationDetails.Select(c => new ComplianceSchemePaymentCalculationRequestMember
-                {
-                    // Apply late fee to all producers if original submission was late or
-                    // not a single submission and current submission is late 
-                    // if above two are not satisified that means file are submitted on time its new submission either due to queried
-                    // check individual producer is new joiner so late fee applicable on producer level rather than file
-                    IsLateFeeApplicable =
-                        session.IsOriginalCsoSubmissionLate
-                        || (session.FirstApplicationSubmittedEventCreatedDatetime is null && session.IsLateFeeApplicable)
-                        || (session.IsLateFeeApplicable && c.IsNewJoiner),
-                    IsOnlineMarketplace = c.IsOnlineMarketplace,
-                    MemberId = c.OrganisationId,
-                    MemberType = c.OrganisationSize,
-                    NoOfSubsidiariesOnlineMarketplace = c.NumberOfSubsidiariesBeingOnlineMarketPlace,
-                    NumberOfSubsidiaries = c.NumberOfSubsidiaries
-                }).ToList()
+                ComplianceSchemeMembers = complianceSchemeMembers,
+                IncludeRegistrationFee = includeRegistrationFee
             };
 
             response = await paymentCalculationService.GetComplianceSchemeRegistrationFees(v1);
@@ -437,15 +453,19 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     {
         var session = await sessionManager.GetSessionAsync(httpSession);
 
-        await submissionService.CreateRegistrationApplicationEvent(
+        var registrationApplicationData = new RegistrationApplicationData(
             session.SubmissionId.Value,
             session.SelectedComplianceScheme?.Id,
             comments,
-            paymentMethod,
+            paymentMethod
+        );
+        
+        await _submissionService.CreateRegistrationApplicationEvent(
+            registrationApplicationData,
             session.ApplicationReferenceNumber,
             session.IsResubmission,
-            submissionType
-        );
+            submissionType, 
+            session.RegistrationJourney);
 
         if (!string.IsNullOrWhiteSpace(paymentMethod))
         {
@@ -479,24 +499,37 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             organisationNumber,
             _timeProvider,
             registrationSession.IsComplianceScheme,
-            registrationSession.SelectedComplianceScheme?.RowNumber ?? 0); 
+            registrationSession.SelectedComplianceScheme?.RowNumber ?? 0,
+            registrationSession.RegistrationJourney?.ToString() ?? "X"); 
         
         await frontEndSessionManager.SaveSessionAsync(httpSession, frontEndSession);
     }
 
-    public async Task<List<RegistrationApplicationPerYearViewModel>> BuildRegistrationApplicationPerYearViewModels(ISession httpSession, Organisation organisation)
+    public async Task<List<RegistrationYearApplicationsViewModel>> BuildRegistrationYearApplicationsViewModels(ISession httpSession, Organisation organisation)
     {
-        var years = globalVariables.Value.RegistrationYear.Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .Select(y => int.TryParse(y, out var year) ? year : throw new FormatException($"Invalid year: '{y}'"))
-            .OrderByDescending(n => n).ToArray();
+        var applications = new List<RegistrationApplicationViewModel>();
 
-        var viewModels = new List<RegistrationApplicationPerYearViewModel>();
+        var isCso = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
 
-        foreach (var year in years)
+        IReadOnlyCollection<RegistrationWindow> registrationWindows;
+
+        if (isCso)
         {
-            var registrationApplicationSession = await GetRegistrationApplicationSession(httpSession, organisation, year);
+            registrationWindows = _registrationPeriodProvider.GetActiveRegistrationWindows(isCso);
+        }
+        else
+        {
+            // we need reg windows that haven't yet opened because the tiles state when the (small producer) window is going to open
+            registrationWindows = _registrationPeriodProvider.GetAllRegistrationWindows(isCso);
+        }
 
-            viewModels.Add(new RegistrationApplicationPerYearViewModel
+        var windowKeyInformationList = GetRegistrationWindowKeyInformationList(isCso, registrationWindows);
+
+        foreach (var window in windowKeyInformationList)
+        {
+            var registrationApplicationSession = await GetRegistrationApplicationSession(httpSession, organisation, window.RegistrationYear, window.Journey);
+
+            applications.Add(new RegistrationApplicationViewModel
             {
                 ApplicationStatus = registrationApplicationSession.ApplicationStatus,
                 FileUploadStatus = registrationApplicationSession.FileUploadStatus,
@@ -505,15 +538,58 @@ public class RegistrationApplicationService : IRegistrationApplicationService
                 ApplicationReferenceNumber = registrationApplicationSession.ApplicationReferenceNumber,
                 RegistrationReferenceNumber = registrationApplicationSession.RegistrationReferenceNumber,
                 IsResubmission = registrationApplicationSession.IsResubmission,
-                RegistrationYear = year.ToString(),
+                RegistrationYear = window.RegistrationYear.ToString(),
                 IsComplianceScheme = registrationApplicationSession.IsComplianceScheme,
-                showLargeProducer = year == 2026,
-                feature_AlwaysShowLargeProducerJourneyMessage = await featureManager.IsEnabledAsync(FeatureFlags.AlwaysShowLargeProducerJourneyMessage),
-                RegisterSmallProducersCS = _timeProvider.GetUtcNow().Date >= globalVariables.Value.SmallProducersRegStartTime2026
+                RegistrationJourney = window.Journey,
+                RegistrationWindow = window.RegistrationWindow,
+                SecondaryRegistrationWindow = window.SecondaryRegistrationWindow
             });
         }
 
-        return viewModels;
+        return applications.GroupBy(a => a.RegistrationYear).Select(a => new RegistrationYearApplicationsViewModel(int.Parse(a.Key), a)).OrderByDescending(a => a.Year).ToList();
+    }
+
+    /// <summary>
+    /// Returns simplified window information for helping to generate the registration application view models.
+    /// Direct producers can have two windows - large and small - represented by a single UI panel (depending on the date),
+    /// hence their key information gets merged into a single item here
+    /// </summary>
+    /// <param name="isCso"></param>
+    /// <param name="registrationWindows"></param>
+    /// <returns></returns>
+    private static IReadOnlyCollection<RegistrationWindowKeyInformation> GetRegistrationWindowKeyInformationList(bool isCso,
+        IReadOnlyCollection<RegistrationWindow> registrationWindows)
+    {
+        IReadOnlyCollection<RegistrationWindowKeyInformation> windows;
+        if (isCso)
+        {
+            windows = registrationWindows.Select(rw => new RegistrationWindowKeyInformation(rw.WindowType.ToRegistrationJourney(), rw, null, rw.RegistrationYear)).ToImmutableList();
+        }
+        else
+        {
+            // Group direct windows by registration year, merging multiple windows per year. Filter out any
+            // windows where the primary registration window hasn't yet opened
+            windows = registrationWindows
+                .GroupBy(w => w.RegistrationYear)
+                .Select(group =>
+                {
+                    var directWindows = group
+                        .Select(w => w)
+                        .OrderBy(w => w.DeadlineDate)
+                        .ToList();
+
+                    // take the primary registration window to generate the journey
+                    return new RegistrationWindowKeyInformation(
+                        directWindows[0].WindowType.ToRegistrationJourney(),
+                        directWindows[0],
+                        directWindows.Count > 1 ? directWindows[1] : null,
+                        group.Key);
+                })
+                .Where(ki => ki.RegistrationWindow.GetRegistrationWindowStatus() != RegistrationWindowStatus.PriorToOpening)
+                .ToImmutableList();
+        }
+
+        return windows;
     }
 
     public int? ValidateRegistrationYear(string? registrationYear, bool isParamOptional = false)
@@ -542,11 +618,15 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         var periodEnd = DateTime.Parse($"30 {session.Period.EndMonth} {session.Period.Year}", new CultureInfo("en-GB"));
         return new DateTimeOffset(periodEnd, TimeSpan.Zero);
     }
+    
+    // this structure provides data for tile representing a CSO reg window AND for the single tile that represents the two Direct registration windows,
+    // hence allowing the two deadline dates to be displayed on the Direct reg tile
+    private record class RegistrationWindowKeyInformation(RegistrationJourney? Journey, RegistrationWindow RegistrationWindow, RegistrationWindow? SecondaryRegistrationWindow, int RegistrationYear);
 }
 
 public interface IRegistrationApplicationService
 {
-    Task<RegistrationApplicationSession> GetRegistrationApplicationSession(ISession httpSession, Organisation organisation, int registrationYear, bool? isResubmission = null);
+    Task<RegistrationApplicationSession> GetRegistrationApplicationSession(ISession httpSession, Organisation organisation, int registrationYear, RegistrationJourney? registrationJourney, bool? isResubmission = null);
 
     Task<FeeCalculationBreakdownViewModel?> GetProducerRegistrationFees(ISession httpSession);
 
@@ -558,8 +638,9 @@ public interface IRegistrationApplicationService
 
     Task SetRegistrationFileUploadSession(ISession httpSession, string organisationNumber, int registrationYear, bool? isResubmission);
 
-    Task<List<RegistrationApplicationPerYearViewModel>> BuildRegistrationApplicationPerYearViewModels(ISession httpSession, Organisation organisation);
-
+    Task<List<RegistrationYearApplicationsViewModel>> BuildRegistrationYearApplicationsViewModels(
+        ISession httpSession, Organisation organisation);
+    
     int? ValidateRegistrationYear(string? registrationYear, bool isParamOptional = false);
 }
 
@@ -574,4 +655,5 @@ public sealed class RegistrationApplicationServiceDependencies
     public required IFeatureManager FeatureManager { get; init; }
     public required IHttpContextAccessor HttpContextAccessor { get; init; }
     public required IOptions<GlobalVariables> GlobalVariables { get; init; }
+    public required IRegistrationPeriodProvider RegistrationPeriodProvider { get; init; }
 }

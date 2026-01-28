@@ -19,10 +19,10 @@
   <data name="title" xml:space="preserve">
     <value>Register your members</value>
   </data>
-  <data name="cso-label" xml:space="preserve">
-    <value>Compliance scheme</value>
-  </data>
-  <data name="regulator-label" xml:space="preserve">
-    <value>Regulator</value>
-  </data>
+	<data name="current_large_producer_registration_title" xml:space="preserve">
+		<value>Large producer {0} registration</value>
+	</data>
+	<data name="current_small_producer_registration_title" xml:space="preserve">
+		<value>Small producer {0} registration</value>
+	</data>
 </root>

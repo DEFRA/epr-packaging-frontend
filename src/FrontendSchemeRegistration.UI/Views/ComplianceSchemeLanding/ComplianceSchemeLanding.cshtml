@@ -107,12 +107,8 @@
             </div>
 
             <div class="govuk-grid-row box-container">
+                <partial name="~/Views/FrontendSchemeRegistration/RegisterYourMembersTile.cshtml" model="Model.GetRegisterYourMembersViewModel()"/>
 
-                @foreach (var app in Model.RegistrationApplicationsPerYear)
-                {
-                    <partial name="~/Views/FrontendSchemeRegistration/RegistrationApplicationYearBlock.cshtml" model="app"/>
-                }
-                
                 <div class="govuk-grid-column-one-half box">
                     <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
                         <div class="govuk-card-body">

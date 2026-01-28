@@ -136,7 +136,7 @@
     <value>Is-gwmnïau</value>
   </data>
   <data name="no_ch_number" xml:space="preserve">
-    <value>W No CH Number</value>
+    <value>Dim rhif Tŷ’r Cwmnïau</value>
   </data>
   <data name="no_subsidiaries_added" xml:space="preserve">
     <value>W No subsidiaries added for this organisation.</value>
@@ -175,7 +175,7 @@
     <value>Tynnu</value>
   </data>
   <data name="how_to_complete_file" xml:space="preserve">
-    <value>W How to create your subsidiaries file (opens in a new tab)</value>
+    <value>Sut i greu eich ffeil is-gwmnïau (yn agor mewn tab newydd)</value>
   </data>
   <data name="upload_a_file" xml:space="preserve">
     <value>Uwchlwytho ffeil</value>
@@ -196,10 +196,10 @@
     <value>Bydd is-gwmnïau yn ymddangos yma ar ôl cael eu prosesu.</value>
   </data>
   <data name="adding_subsidiaries" xml:space="preserve">
-    <value>WAdding subsidiaries</value>
+    <value>Ychwanegu is-gwmnïau</value>
   </data>
   <data name="upload_a_csv_file" xml:space="preserve">
-    <value>w_Upload a CSV file</value>
+    <value>Uwchlwytho ffeil CSV </value>
   </data>
   <data name="download_subsidiaries_list" xml:space="preserve">
     <value>Lawrlwytho rhestr is-gwmnïau</value>
@@ -208,7 +208,7 @@
     <value>Sut i greu'ch ffeil is-gwmni (yn agor mewn tab newydd)</value>
   </data>
   <data name="informing_us_of_a_change" xml:space="preserve">
-    <value>WInforming us of a change</value>
+    <value>Rhoi gwybod inni am newid</value>
   </data>
   <data name="if_any_of_your_subsidiaries" xml:space="preserve">
     <value>WIf any of your subsidiaries' organisation details change, you must notify the regulator within 28 days by</value>
@@ -217,31 +217,31 @@
     <value>Wupdating and resubmitting your registration file</value>
   </data>
   <data name="removing_subsidiaries" xml:space="preserve">
-    <value>WRemoving subsidiaries</value>
+    <value>Tynnu is-gwmni</value>
   </data>
   <data name="update_and_resubmit" xml:space="preserve">
-    <value>Wupdate and resubmit your registration file</value>
+    <value>diweddaru ac ailgyflwyno’ch ffeil gofrestru</value>
   </data>
   <data name="to_permanently_remove_subsidiaries" xml:space="preserve">
-    <value>WTo permanently remove subsidiaries, you must</value>
+    <value>I dynnu is-gwmnïau’n barhaol, mae’n rhaid ichi</value>
   </data>
   <data name="joined" xml:space="preserve">
-    <value>W_Joined</value>
+    <value>Wedi ymuno</value>
   </data>
   <data name="within_28_days_of_the_change" xml:space="preserve">
-    <value>Wwithin 28 days of the change</value>
+    <value>o fewn 28 diwrnod ar ôl y newid. Bydd angen ichi nodi IDs yr is-gwmnïau i wneud hyn.</value>
   </data>
   <data name="reporting" xml:space="preserve">
-    <value>W_Reporting</value>
+    <value>Rhoi gwybod</value>
   </data>
   <data name="create_subsidiary_ids" xml:space="preserve">
-    <value>WCreate subsidiary IDs</value>
+    <value>Creu IDs is-gwmnïau</value>
   </data>
   <data name="upload_subsidiary_file" xml:space="preserve">
-    <value>WUpload subsidiary file</value>
+    <value>Uwchlwytho ffeil is-gwmni</value>
   </data>
   <data name="before_you_upload" xml:space="preserve">
-    <value>WBefore you upload your file, make sure you're using the latest version of the</value>
+    <value>Cyn ichi uwchlwytho'ch ffeil, gwnewch yn siŵr eich bod chi'n defnyddio'r fersiwn ddiweddaraf</value>
   </data>
   <data name="subsidiary_file_template" xml:space="preserve">
     <value>Wsubsidiary file template (opens in a new tab)</value>
@@ -250,19 +250,19 @@
     <value>WAdding and removing subsidiaries</value>
   </data>
   <data name="to_add_or_remove" xml:space="preserve">
-    <value>WTo add or remove subsidiaries, you must</value>
+    <value>I ychwanegu neu dynnu is-gwmnïau, rhaid ichi</value>
   </data>
   <data name="use_the_file_upload" xml:space="preserve">
-    <value>WUse the file upload to create subsidiary IDs - you will need these subsidiary IDs to add subsidiaries to your organisation.</value>
+    <value>Defnyddiwch uwchlwytho ffeil i greu IDs is-gwmnïau - bydd angen IDs yr is-gwmnïau hyn arnoch i ychwanegu is-gwmnïau at eich sefydliad</value>
   </data>
   <data name="manage_subsidiaries" xml:space="preserve">
     <value>Rheoli is-gwmnïau</value>
   </data>
   <data name="producer_label" xml:space="preserve">
-    <value>W_producer</value>
+    <value>Cynhyrchydd</value>
   </data>
   <data name="regulator_label" xml:space="preserve">
-    <value>W_regulator</value>
+    <value>Rheoleiddiwr</value>
   </data>
   <data name="subsidiaries_label" xml:space="preserve">
     <value>Is-gwmnïau</value>

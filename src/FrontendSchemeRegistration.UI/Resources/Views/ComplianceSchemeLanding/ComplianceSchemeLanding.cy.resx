@@ -209,6 +209,12 @@ Rydych chi hefyd yn gallu:</value>
     <value>Nawr mae angen ichi gyflwyno i'r rheoleiddiwr.</value>
   </data>
 	<data name="you_still_need_to_view_any_additional_fees" xml:space="preserve">
-    <value>[Welsh]You still need to view any additional fees and submit to the regulator.</value>
+    <value>Mae angen o hyd ichi weld unrhyw ffioedd ychwanegol a'u cyflwyno i'r rheoleiddiwr </value>
+  </data>
+  <data name="you_are_currenlty_resubmitting_data_period" xml:space="preserve">
+    <value>Rydych chi wedi ailgyflwyno data pecynwaith ar gyfer y cyfnod {0}</value>
+  </data>
+  <data name="you_are_currenlty_resubmitting_data" xml:space="preserve">
+    <value>Rydych chi wrthi’n ailgyflwyno data ar hyn o bryd</value>
   </data>
 </root>

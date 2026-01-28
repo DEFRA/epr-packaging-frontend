@@ -14,7 +14,6 @@ using FrontendSchemeRegistration.Application.Extensions;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.RequestModels;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
@@ -55,24 +54,19 @@ public class WebApiGatewayClient : IWebApiGatewayClient
     public async Task<Guid> UploadFileAsync(
         byte[] byteArray,
         string fileName,
-        string submissionPeriod,
-        Guid? submissionId,
-        SubmissionType submissionType,
-        SubmissionSubType? submissionSubType = null,
-        Guid? registrationSetId = null,
-        Guid? complianceSchemeId = null,
-        bool? isResubmission = null)
+        FileUploadSubmissionDetails submissionDetails)
     {
         await PrepareAuthenticatedClientAsync();
 
         _httpClient.AddHeaderFileName(fileName);
-        _httpClient.AddHeaderSubmissionType(submissionType);
-        _httpClient.AddHeaderSubmissionSubTypeIfNotNull(submissionSubType);
-        _httpClient.AddHeaderSubmissionIdIfNotNull(submissionId);
-        _httpClient.AddHeaderSubmissionPeriod(submissionPeriod);
-        _httpClient.AddHeaderRegistrationSetIdIfNotNull(registrationSetId);
-        _httpClient.AddHeaderComplianceSchemeIdIfNotNull(complianceSchemeId);
-        _httpClient.AddHeaderIsResubmissionIfNotNull(isResubmission);
+        _httpClient.AddHeaderSubmissionType(submissionDetails.SubmissionType);
+        _httpClient.AddHeaderSubmissionSubTypeIfNotNull(submissionDetails.SubmissionSubType);
+        _httpClient.AddHeaderSubmissionIdIfNotNull(submissionDetails.SubmissionId);
+        _httpClient.AddHeaderSubmissionPeriod(submissionDetails.SubmissionPeriod);
+        _httpClient.AddHeaderRegistrationSetIdIfNotNull(submissionDetails.RegistrationSetId);
+        _httpClient.AddHeaderComplianceSchemeIdIfNotNull(submissionDetails.ComplianceSchemeId);
+        _httpClient.AddHeaderIsResubmissionIfNotNull(submissionDetails.IsResubmission);
+        _httpClient.AddHeaderRegistrationJourneyIfNotNull(submissionDetails.RegistrationJourney);
 
         var response = await _httpClient.PostAsync("api/v1/file-upload", new ByteArrayContent(byteArray));
 
@@ -505,6 +499,11 @@ public class WebApiGatewayClient : IWebApiGatewayClient
             if (request.ComplianceSchemeId is not null && request.ComplianceSchemeId != Guid.Empty)
             {
                 endpointUrl += $"&ComplianceSchemeId={request.ComplianceSchemeId}";
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.RegistrationJourney))
+            {
+                endpointUrl += $"&RegistrationJourney={request.RegistrationJourney}";
             }
 
             var response = await _httpClient.GetAsync(endpointUrl);

@@ -75,4 +75,7 @@
 	<data name="registration_resubmission_application_has_been_submitted" xml:space="preserve">
         <value>Mae eich cais am gofrestru wedi'i gyflwyno</value>
     </data>
+	<data name="register_company_size_small" xml:space="preserve">
+		<value>Cofrestru cynhyrchydd bach ar gyfer {0} </value>
+	</data>
 </root>

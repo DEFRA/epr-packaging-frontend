@@ -4,7 +4,6 @@ using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
-using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
 using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Services;
 using FrontendSchemeRegistration.UI.Sessions;
@@ -42,9 +41,8 @@ public class ReviewCompanyDetailsController : Controller
 
     [HttpGet]
     [SubmissionIdActionFilter("/error")]
-    public async Task<IActionResult> Get()
+    public async Task<IActionResult> Get([FromQuery] Guid submissionId)
     {
-        var submissionId = Guid.Parse(Request.Query["submissionId"]);
         var userData = User.GetUserData();
         var registrationYear = _registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
 
@@ -66,7 +64,7 @@ public class ReviewCompanyDetailsController : Controller
         var isFileUploadJourneyInvokedViaRegistration = session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration;
         var isResubmission = session.RegistrationSession.IsResubmission;
 
-        this.SetBackLink(isFileUploadJourneyInvokedViaRegistration, isResubmission, registrationYear);
+        this.SetBackLink(isFileUploadJourneyInvokedViaRegistration, isResubmission, registrationYear, submission.RegistrationJourney);
         ViewData["IsFileUploadJourneyInvokedViaRegistration"] = isFileUploadJourneyInvokedViaRegistration;
 
         return View(
@@ -109,29 +107,30 @@ public class ReviewCompanyDetailsController : Controller
                     : string.Empty,
                 SubmissionStatus = submission.GetSubmissionStatus(),
                 IsResubmission = isResubmission,
-                RegistrationYear = registrationYear
+                RegistrationYear = registrationYear,
+                RegistrationJourney = submission.RegistrationJourney
             });
-
-        return RedirectToAction("HandleThrownExceptions", "Error");
     }
 
     [HttpPost]
     public async Task<IActionResult> Post(ReviewCompanyDetailsViewModel model)
     {
+        var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+        var isFileUploadJourneyInvokedViaRegistration = session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration;
+        ViewData["IsFileUploadJourneyInvokedViaRegistration"] = isFileUploadJourneyInvokedViaRegistration;
+        
         if (!ModelState.IsValid)
         {
+            this.SetBackLink(isFileUploadJourneyInvokedViaRegistration, model.IsResubmission, model.RegistrationYear, model.RegistrationJourney);
             return View("ReviewCompanyDetails", model);
         }
 
-        var submissionId = Guid.Parse(Request.Query["submissionId"]);
-
+        var submissionId = model.SubmissionId;
+        
         var userData = User.GetUserData();
 
         ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadCompanyDetailsSubLanding}");
 
-        var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-        var isFileUploadJourneyInvokedViaRegistration = session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration;
-        ViewData["IsFileUploadJourneyInvokedViaRegistration"] = isFileUploadJourneyInvokedViaRegistration;
 
         if (!userData.CanSubmit())
         {
@@ -171,15 +170,6 @@ public class ReviewCompanyDetailsController : Controller
         try
         {
             var routeValue = QueryStringExtensions.BuildRouteValues(submissionId: model.SubmissionId, registrationYear: model.RegistrationYear);
-
-            if (model.IsComplianceScheme)
-            {
-                session.EnsureApplicationReferenceIsPresent();
-
-                await _submissionService.SubmitAsync(submissionId, new Guid(model.OrganisationDetailsFileId), null, session.RegistrationSession.ApplicationReferenceNumber, session.RegistrationSession.IsResubmission);
-
-                return RedirectToAction("Get", "CompanyDetailsConfirmation", routeValue);
-            }
 
             return RedirectToAction("Get", "DeclarationWithFullName", routeValue);
         }

@@ -1,5 +1,4 @@
-﻿@using FrontendSchemeRegistration.UI.Constants
-@model ConfirmationOfRemovalViewModel
+﻿@model ConfirmationOfRemovalViewModel
 @{
     ViewData["Title"] = Localizer["ConfirmationOfRemoval.PageTitle"];
 }
@@ -22,7 +21,7 @@
                     </p>
 
                     <p class="govuk-body">
-                        @Localizer["ConfirmationOfRemoval.AddingOrRemovingMembers"] <a class="govuk-link" rel="noreferrer noopener" target="_blank" href="@GuidanceLinks.Value.PrnObligation">@Localizer["ConfirmationOfRemoval.GuidelinesForExtendedProducer"]</a>
+                        @Localizer["ConfirmationOfRemoval.AddingOrRemovingMembers"] <a class="govuk-link" rel="noreferrer noopener" target="_blank" href="@GuidanceLinks.PrnObligation">@Localizer["ConfirmationOfRemoval.GuidelinesForExtendedProducer"]</a>
                     </p>
 
                     <ul class="govuk-list govuk-list govuk-list--spaced">

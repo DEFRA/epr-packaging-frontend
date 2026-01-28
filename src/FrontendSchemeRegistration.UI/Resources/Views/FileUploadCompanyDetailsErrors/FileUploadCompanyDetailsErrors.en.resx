@@ -31,7 +31,7 @@
         <value>This means the organisation details were not uploaded.</value>
     </data>
     <data name="how_to_fix" xml:space="preserve">
-        <value>How to fix the errors</value>
+        <value>Fix your errors</value>
     </data>
     <data name="download_csv" xml:space="preserve">
         <value>Download your error report (CSV, maximum 5MB)</value>
@@ -71,5 +71,9 @@
     </data>
     <data name="may_get_another_error" xml:space="preserve">
         <value>If there are more errors, you may get another error report.</value>
+    </data>
+    <data name="continue" xml:space="preserve">
+        <value>Continue</value>
+        <comment>continue</comment>
     </data>
 </root>

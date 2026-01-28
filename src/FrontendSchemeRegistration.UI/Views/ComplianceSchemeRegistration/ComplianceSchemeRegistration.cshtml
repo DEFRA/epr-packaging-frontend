@@ -1,20 +1,37 @@
+@using FrontendSchemeRegistration.Application.Enums
+@using FrontendSchemeRegistration.UI.ViewModels.Shared
 @model ComplianceSchemeRegistrationViewModel
 
 @{
     ViewData["Title"] = @Localizer["title"];
 }
 
-
 <div class="govuk-width-container">
     <main class="govuk-main-wrapper" id="main-content" role="main">
 
         <h1 class="govuk-heading-l">@Localizer["title"]</h1>
 
-        <dl class="govuk-body">
-            <dd>@Localizer["cso-label"]:</dd>
-            <dt>@Model.ComplianceSchemeName</dt>
-            <dd>@Localizer["regulator-label"]:</dd>
-            <dt>Environment Agency (@Model.Nation)</dt>
-        </dl>
+        <partial name="Partials/_ComplianceSchemeRegulatorSubtitle" model="new ComplianceSchemeRegulatorSubTitleViewModel(Model.ComplianceSchemeName, Model.Nation)"/>
+
+        <ol class="govuk-list">
+            @foreach (var registrationApplicationYear in Model.RegistrationApplicationYears)
+            {
+                <li>
+                    <h2 class="govuk-heading-m">@registrationApplicationYear.Year</h2>
+                    <ol class="govuk-list govuk-grid-row box-container">
+                        @foreach (var registrationApplication in registrationApplicationYear.Applications.OrderBy(a => a.RegistrationJourney))
+                        {
+                            if ((registrationApplication.RegistrationJourney == RegistrationJourney.CsoSmallProducer && Model.DisplayCsoSmallProducerRegistration) || registrationApplication.RegistrationJourney != RegistrationJourney.CsoSmallProducer)
+                            {
+                                registrationApplication.SummaryCardStyling = true;
+                                <li>
+                                    <partial name="~/Views/FrontendSchemeRegistration/RegistrationApplicationYearBlock.cshtml" model="registrationApplication"/>
+                                </li>
+                            }
+                        }
+                    </ol>
+                </li>
+            }
+        </ol>
     </main>
 </div>

@@ -15,9 +15,6 @@ using Microsoft.Identity.Web;
 using System.Diagnostics.CodeAnalysis;
 using FrontendSchemeRegistration.UI.Services;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
-using EPR.Common.Authorization.Models;
-using FrontendSchemeRegistration.Application.Options;
-using Microsoft.Extensions.Options;
 
 namespace FrontendSchemeRegistration.UI.Controllers.FrontendSchemeRegistration;
 
@@ -37,6 +34,7 @@ public class FrontendSchemeRegistrationController(
     TimeProvider timeProvider)
     : Controller
 {
+
     [HttpGet]
     [Route(PagePaths.ApprovedPersonCreated)]
     [AuthorizeForScopes(ScopeKeySection = "FacadeAPI:DownstreamScope")]
@@ -59,12 +57,15 @@ public class FrontendSchemeRegistrationController(
     [ExcludeFromCodeCoverage]
     public async Task<IActionResult> LandingPage()
     {
-        var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
         var userData = User.GetUserData();
 
         var organisation = userData.Organisations.First(x => x.OrganisationRole == OrganisationRoles.Producer);
         var producerComplianceScheme = await complianceSchemeService.GetProducerComplianceScheme(organisation.Id!.Value);
 
+        //build minimal session data to remove any pollution from previous journeys
+        var session = SetupMinimalSession.FrontendSchemeRegistrationSession(producerComplianceScheme, userData);
+        await sessionManager.SaveSessionAsync(HttpContext.Session, session);
+        
         if (producerComplianceScheme is not null && authorizationService.AuthorizeAsync(User, HttpContext, PolicyConstants.EprSelectSchemePolicy).Result.Succeeded)
         {
             session.RegistrationSession.CurrentComplianceScheme = producerComplianceScheme;
@@ -94,7 +95,7 @@ public class FrontendSchemeRegistrationController(
 
         return View(nameof(LandingPage), viewModel);
     }
-
+    
     [HttpPost]
     [Authorize(Policy = PolicyConstants.EprSelectSchemePolicy)]
     [Route(PagePaths.LandingPage)]
@@ -428,8 +429,11 @@ public class FrontendSchemeRegistrationController(
         session.UserData = userData;
         await sessionManager.SaveSessionAsync(HttpContext.Session, session);
 
-        var registrationApplicationPerYearViewModels = await registrationApplicationService.BuildRegistrationApplicationPerYearViewModels(HttpContext.Session, organisation);
-        var resubmissionApplicationDetails = await resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(organisation, new List<string> { packagingResubmissionPeriod?.DataPeriod }, session.RegistrationSession.SelectedComplianceScheme?.Id);
+        var registrationApplicationYearViewModelsTask = registrationApplicationService.BuildRegistrationYearApplicationsViewModels(HttpContext.Session, organisation);
+        var resubmissionApplicationDetailsTask = resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(organisation,
+            [packagingResubmissionPeriod?.DataPeriod], session.RegistrationSession.SelectedComplianceScheme?.Id);
+        
+        await Task.WhenAll(registrationApplicationYearViewModelsTask, resubmissionApplicationDetailsTask);
 
         // Note: We are reading desired values using existing service to avoid SonarQube issue for adding 8th parameter in the constructor.
         var viewModel = new HomePageSelfManagedViewModel
@@ -438,8 +442,8 @@ public class FrontendSchemeRegistrationController(
             OrganisationNumber = organisation.OrganisationNumber.ToReferenceNumberFormat(),
             CanSelectComplianceScheme = userData.ServiceRole is ServiceRoles.ApprovedPerson or ServiceRoles.DelegatedPerson,
             OrganisationRole = organisation.OrganisationRole!,
-            ResubmissionTaskListViewModel = resubmissionApplicationDetails.ToResubmissionTaskListViewModel(organisation),
-            RegistrationApplicationsPerYear = registrationApplicationPerYearViewModels,
+            ResubmissionTaskListViewModel = resubmissionApplicationDetailsTask.Result.ToResubmissionTaskListViewModel(organisation),
+            RegistrationApplications = registrationApplicationYearViewModelsTask.Result.SelectMany(ray => ray.Applications),
             PackagingResubmissionPeriod = packagingResubmissionPeriod,
             ComplianceYear = timeProvider.GetUtcNow().GetComplianceYear().ToString()
         };

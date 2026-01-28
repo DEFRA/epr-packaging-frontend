@@ -11,7 +11,6 @@ using Extensions;
 using global::FrontendSchemeRegistration.Application.Options;
 using global::FrontendSchemeRegistration.UI.Services;
 using global::FrontendSchemeRegistration.UI.Services.FileUploadLimits;
-using global::FrontendSchemeRegistration.UI.Services.Messages;
 using Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +26,7 @@ public class FileUploadPartnershipsController : Controller
 {
     private readonly IFileUploadService _fileUploadService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
+    private readonly ISessionManager<RegistrationApplicationSession> _registrationApplicationSession;
     private readonly ISubmissionService _submissionService;
     private readonly IOptions<GlobalVariables> _globalVariables;
     private readonly IRegistrationApplicationService _registrationApplicationService;
@@ -36,13 +36,15 @@ public class FileUploadPartnershipsController : Controller
         IFileUploadService fileUploadService,
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
         IRegistrationApplicationService registrationApplicationService,
-        IOptions<GlobalVariables> globalVariables)
+        IOptions<GlobalVariables> globalVariables,
+        ISessionManager<RegistrationApplicationSession> registrationApplicationSession)
     {
         _submissionService = submissionService;
         _fileUploadService = fileUploadService;
         _sessionManager = sessionManager;
         _registrationApplicationService = registrationApplicationService;
         _globalVariables = globalVariables;
+        _registrationApplicationSession = registrationApplicationSession;
     }
 
     [HttpGet]
@@ -57,11 +59,13 @@ public class FileUploadPartnershipsController : Controller
         {
             return RedirectToAction("Get", "FileUploadCompanyDetails", registrationYear is not null ? new { registrationyear = registrationYear.ToString() } : null);
         }
-
+        
         if (!session.RegistrationSession.Journey.Contains<string>(PagePaths.FileUploadBrands))
         {
             return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
         }
+        
+        var registrationApplicationSession = await _registrationApplicationSession.GetSessionAsync(HttpContext.Session);
 
         var organisationRole = session.UserData.Organisations.FirstOrDefault()?.OrganisationRole;
         if (organisationRole is not null)
@@ -75,7 +79,10 @@ public class FileUploadPartnershipsController : Controller
                 {
                     ModelStateHelpers.AddFileUploadExceptionsToModelState(submission.Errors.Distinct().ToList(), ModelState);
                 }
-
+                
+                ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadBrandsSuccess}")
+                    .AppendBackLink(session.RegistrationSession.IsResubmission, registrationYear, registrationJourney:submission.RegistrationJourney, submissionId: submissionId);
+                
                 if (submission.RequiresPartnershipsFile)
                 {
                     return View(
@@ -83,7 +90,8 @@ public class FileUploadPartnershipsController : Controller
                         new FileUploadViewModel
                         {
                             OrganisationRole = organisationRole,
-                            RegistrationYear = registrationYear
+                            RegistrationYear = registrationYear,
+                            RegistrationJourney = registrationApplicationSession.RegistrationJourney
                         });
                 }
             }
@@ -105,29 +113,39 @@ public class FileUploadPartnershipsController : Controller
         submissionId = await _fileUploadService.ProcessUploadAsync(
             Request.ContentType,
             Request.Body,
-            session.RegistrationSession.SubmissionPeriod,
             ModelState,
-            submissionId,
-            SubmissionType.Registration,
-            new DefaultFileUploadMessages(),
             new DefaultFileUploadLimit(_globalVariables),
-            SubmissionSubType.Partnerships,
-            session.RegistrationSession.LatestRegistrationSet[session.RegistrationSession.SubmissionPeriod],
-            null,
-            session.RegistrationSession.IsResubmission);
-
+            new FileUploadSubmissionDetails()
+            {
+                SubmissionPeriod = session.RegistrationSession.SubmissionPeriod,
+                SubmissionId = submissionId,
+                SubmissionType = SubmissionType.Registration,
+                SubmissionSubType = SubmissionSubType.Partnerships,
+                RegistrationSetId =
+                    session.RegistrationSession.LatestRegistrationSet[session.RegistrationSession.SubmissionPeriod],
+                IsResubmission = session.RegistrationSession.IsResubmission,
+                ComplianceSchemeId = null,
+                RegistrationJourney = null
+            });
+            
         session.RegistrationSession.Journey.AddIfNotExists(PagePaths.FileUploadPartnerships);
         await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
-        var routeValues = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear);        
-        return !ModelState.IsValid
-            ? View("FileUploadPartnerships", new FileUploadViewModel
+        var routeValues = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear);
+        
+        if (!ModelState.IsValid)
+        {
+            var registrationApplicationSession = await _registrationApplicationSession.GetSessionAsync(HttpContext.Session);
+            return View("FileUploadPartnerships", new FileUploadViewModel
             {
                 OrganisationRole = organisationRole,
-                RegistrationYear = registrationYear
-            })
-            : RedirectToAction(
-                "Get",
-                "FileUploadingPartnerships",
-                routeValues);
+                RegistrationYear = registrationYear,
+                RegistrationJourney = registrationApplicationSession.RegistrationJourney
+            });    
+        }
+        
+        return RedirectToAction(
+            "Get",
+            "FileUploadingPartnerships",
+            routeValues);
     }
 }

@@ -244,12 +244,12 @@
     <value>Rydych chi wedi edrych ar eich ffi. Nawr mae angen ichi gyflwyno i'r rheoleiddiwr.</value>
   </data>
   <data name="view_your_resubmission" xml:space="preserve">
-    <value>[Welsh]View your resubmission</value>
+    <value>Gweld eich ailgyflwyniad</value>
   </data>
   <data name="you've_uploaded_a_new_file_you_now_need_to_submit_it" xml:space="preserve">
-    <value>WYou've uploaded a new file. You now need to submit it.</value>
+    <value>Rydych chi wedi uwchlwytho ffeil newydd. Nawr mae angen ichi ei chyflwyno </value>
   </data>
   <data name="you've_resubmitted_your_packaging_data_it_may_take_up_to_an_hour_for_our_systems_to_update" xml:space="preserve">
-    <value>WYou've resubmitted your packaging data. It may take up to an hour for our systems to update. You can then view any additional fees and submit to the regulator.</value>
+    <value>Rydych chi wedi ailgyflwyno’ch data pecynwaith. Gall gymryd hyd at awr i'n systemau ddiweddaru. Yna gallwch weld unrhyw ffioedd ychwanegol a'u cyflwyno i'r rheoleiddiwr.</value>
   </data>
 </root>

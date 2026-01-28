@@ -23,7 +23,8 @@ public class ResubmissionApplicationServices(
     IPaymentCalculationService paymentCalculationService,
     ISubmissionService submissionService,
     IOptions<GlobalVariables> globalVariables,
-    IFeatureManager featureManager) : IResubmissionApplicationService
+    IFeatureManager featureManager,
+    TimeProvider timeProvider) : IResubmissionApplicationService
 {
     public async Task<string> CreatePomResubmissionReferenceNumberForProducer(FrontendSchemeRegistrationSession session, SubmissionPeriod submissionPeriod, string organisationNumber, string submittedByName, Guid submissionId, int? historyCount)
     {
@@ -158,8 +159,9 @@ public class ResubmissionApplicationServices(
 
     public async Task<SubmissionPeriod?> GetActiveSubmissionPeriod()
     {
-        var currentYear = new[] { DateTime.Now.Year.ToString(), (DateTime.Now.Year + 1).ToString() };
-        return globalVariables.Value.SubmissionPeriods.Find(s => currentYear.Contains(s.Year) && s.ActiveFrom.Year == DateTime.Now.Year);
+        var nowYear = timeProvider.GetLocalNow().Year;
+        var currentYear = new[] {nowYear.ToString(), (nowYear + 1).ToString() };
+        return globalVariables.Value.SubmissionPeriods.Find(s => currentYear.Contains(s.Year) && s.ActiveFrom.Year == nowYear);
     }
 
     public async Task<string> GetActualSubmissionPeriod(Guid submissionId, string submissionPeriod)

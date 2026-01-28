@@ -1,6 +1,7 @@
 ﻿namespace FrontendSchemeRegistration.Application.DTOs.Submission;
 
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 using Enums;
 
 [ExcludeFromCodeCoverage]
@@ -43,4 +44,7 @@ public class RegistrationSubmission : AbstractSubmission
     public int? RowErrorCount { get; set; }
 
     public int? OrganisationMemberCount { get; set; }
+    
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public RegistrationJourney? RegistrationJourney { get; set; }
 }

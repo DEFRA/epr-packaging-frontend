@@ -7,6 +7,8 @@ using Application.Constants;
 using Application.DTOs.ComplianceScheme;
 using Application.DTOs.Notification;
 using Application.DTOs.Submission;
+using Application.Enums;
+using AutoFixture;
 using Constants;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Models;
@@ -21,6 +23,7 @@ using Moq;
 using UI.Controllers;
 using UI.Controllers.ControllerExtensions;
 using UI.ViewModels;
+using UI.ViewModels.Shared;
 
 [TestFixture]
 public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
@@ -32,6 +35,8 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
     private readonly Guid _organisationId = Guid.NewGuid();
     private readonly Guid _userId = Guid.NewGuid();
     private UserData _userData;
+    private readonly IFixture _fixture = new Fixture();
+
     private readonly RegistrationApplicationSession _registrationApplicationSession = new RegistrationApplicationSession
     {
         LastSubmittedFile = new LastSubmittedFileDetails { FileId = Guid.NewGuid() },
@@ -120,14 +125,14 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
         RegistrationApplicationService
             .Setup(s => s.GetRegistrationApplicationSession(
                 It.IsAny<ISession>(),
-                It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+                It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<RegistrationJourney?>(), It.IsAny<bool?>()))
             .ReturnsAsync(_registrationApplicationSession);
 
         ResubmissionApplicationService.Setup(x => x.GetActiveSubmissionPeriod()).ReturnsAsync(submissionPeriod);
 
-        var registrationApplicationPerYear = new List<RegistrationApplicationPerYearViewModel>()
+        var registrationApplicationPerYear = new List<RegistrationApplicationViewModel>()
         {
-            new RegistrationApplicationPerYearViewModel {
+            new RegistrationApplicationViewModel {
             ApplicationStatus = _registrationApplicationSession.ApplicationStatus,
             FileUploadStatus = _registrationApplicationSession.FileUploadStatus,
             PaymentViewStatus = _registrationApplicationSession.PaymentViewStatus,
@@ -138,8 +143,10 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
            }
         };
 
-        RegistrationApplicationService.Setup(x => x.BuildRegistrationApplicationPerYearViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
-            .ReturnsAsync(registrationApplicationPerYear);
+        var registrationApplicationYears = _fixture.CreateMany<RegistrationYearApplicationsViewModel>().ToArray();
+        
+        RegistrationApplicationService.Setup(x => x.BuildRegistrationYearApplicationsViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+            .ReturnsAsync(registrationApplicationYears.ToList());
 
         // Act
         var result = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
@@ -154,14 +161,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
             OrganisationRole = OrganisationRole,
             CanSelectComplianceScheme = expectedCanSelectComplianceSchemeValue,
             PackagingResubmissionPeriod = submissionPeriod,
-            RegistrationApplicationsPerYear = new List<RegistrationApplicationPerYearViewModel>()
-            {
-                new RegistrationApplicationPerYearViewModel
-                {
-                    ApplicationReferenceNumber = string.Empty,
-                    RegistrationReferenceNumber = string.Empty,
-                }
-            },
+            RegistrationApplications = registrationApplicationYears.SelectMany(ray => ray.Applications),
             Notification = new NotificationViewModel
             {
                 HasPendingNotification = false,
@@ -191,10 +191,15 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
         };
         NotificationService.Setup(x => x.GetCurrentUserNotifications(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(notificationList));
 
+        var registrationApplicationYears = _fixture.CreateMany<RegistrationYearApplicationsViewModel>().ToArray();
+        
+        RegistrationApplicationService.Setup(x => x.BuildRegistrationYearApplicationsViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+            .ReturnsAsync(registrationApplicationYears.ToList());
+
         RegistrationApplicationService
             .Setup(s => s.GetRegistrationApplicationSession(
                 It.IsAny<ISession>(),
-                It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+                It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<RegistrationJourney?>(), It.IsAny<bool?>()))
             .ReturnsAsync(_registrationApplicationSession);
 
         var result = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
@@ -221,10 +226,15 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
         });
         NotificationService.Setup(x => x.GetCurrentUserNotifications(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(notificationList));
 
+        var registrationApplicationYears = _fixture.CreateMany<RegistrationYearApplicationsViewModel>().ToArray();
+        
+        RegistrationApplicationService.Setup(x => x.BuildRegistrationYearApplicationsViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+            .ReturnsAsync(registrationApplicationYears.ToList());
+
         RegistrationApplicationService
             .Setup(s => s.GetRegistrationApplicationSession(
                 It.IsAny<ISession>(),
-                It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+                It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<RegistrationJourney?>(), It.IsAny<bool?>()))
             .ReturnsAsync(_registrationApplicationSession);
 
         var result = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
@@ -290,14 +300,14 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
             EndMonth = "June"
         };
 
-        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<RegistrationJourney?>(), It.IsAny<bool?>()))
             .ReturnsAsync(registrationApplicationSession);
 
         ResubmissionApplicationService.Setup(x => x.GetActiveSubmissionPeriod()).ReturnsAsync(submissionPeriod);
 
-        var registrationApplicationPerYear = new List<RegistrationApplicationPerYearViewModel>()
+        var registrationApplicationPerYear = new List<RegistrationApplicationViewModel>()
         {
-            new RegistrationApplicationPerYearViewModel {
+            new RegistrationApplicationViewModel {
             ApplicationStatus = registrationApplicationSession.ApplicationStatus,
             FileUploadStatus = registrationApplicationSession.FileUploadStatus,
             PaymentViewStatus = registrationApplicationSession.PaymentViewStatus,
@@ -308,8 +318,10 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
            }
         };
 
-        RegistrationApplicationService.Setup(x => x.BuildRegistrationApplicationPerYearViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
-            .ReturnsAsync(registrationApplicationPerYear);
+        var registrationApplicationYears = _fixture.CreateMany<RegistrationYearApplicationsViewModel>().ToArray();
+        
+        RegistrationApplicationService.Setup(x => x.BuildRegistrationYearApplicationsViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+            .ReturnsAsync(registrationApplicationYears.ToList());
 
         // Act
         var response = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
@@ -325,17 +337,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
                 OrganisationName = OrganisationName,
                 OrganisationNumber = "123 456",
                 OrganisationRole = "Producer",
-                RegistrationApplicationsPerYear = new List<RegistrationApplicationPerYearViewModel>()
-                {
-                    new RegistrationApplicationPerYearViewModel
-                    {
-                        ApplicationReferenceNumber = reference,
-                        FileUploadStatus = RegistrationTaskListStatus.Pending,
-                        PaymentViewStatus = RegistrationTaskListStatus.CanNotStartYet,
-                        AdditionalDetailsStatus = RegistrationTaskListStatus.CanNotStartYet,
-                        ApplicationStatus = ApplicationStatusType.FileUploaded,
-                    }
-                },
+                RegistrationApplications = registrationApplicationYears.SelectMany(ray => ray.Applications),
                 ResubmissionTaskListViewModel = new(),
                 PackagingResubmissionPeriod = submissionPeriod,
                 ComplianceYear = complianceYear
@@ -365,7 +367,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
             RegistrationApplicationSubmittedDate = null
         };
 
-        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<RegistrationJourney?>(), It.IsAny<bool?>()))
             .ReturnsAsync(registrationApplicationSession);
 
         var submissionPeriod = new SubmissionPeriod
@@ -381,9 +383,9 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
 
         ResubmissionApplicationService.Setup(x => x.GetActiveSubmissionPeriod()).ReturnsAsync(submissionPeriod);
 
-        var registrationApplicationPerYear = new List<RegistrationApplicationPerYearViewModel>()
+        var registrationApplicationPerYear = new List<RegistrationApplicationViewModel>()
         {
-            new RegistrationApplicationPerYearViewModel {
+            new RegistrationApplicationViewModel {
             ApplicationStatus = registrationApplicationSession.ApplicationStatus,
             FileUploadStatus = registrationApplicationSession.FileUploadStatus,
             PaymentViewStatus = registrationApplicationSession.PaymentViewStatus,
@@ -394,8 +396,10 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
            }
         };
 
-        RegistrationApplicationService.Setup(x => x.BuildRegistrationApplicationPerYearViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
-            .ReturnsAsync(registrationApplicationPerYear);
+        var registrationApplicationYears = _fixture.CreateMany<RegistrationYearApplicationsViewModel>().ToArray();
+        
+        RegistrationApplicationService.Setup(x => x.BuildRegistrationYearApplicationsViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+            .ReturnsAsync(registrationApplicationYears.ToList());
 
         // Act
         var response = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
@@ -408,22 +412,10 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
             .And
             .BeEquivalentTo(new HomePageSelfManagedViewModel
             {
-                RegistrationApplicationsPerYear = new List<RegistrationApplicationPerYearViewModel>()
-                {
-                    new RegistrationApplicationPerYearViewModel
-                    {
-                        ApplicationReferenceNumber = reference,
-                        RegistrationReferenceNumber = reference,
-                        FileUploadStatus = RegistrationTaskListStatus.Completed,
-                        PaymentViewStatus = RegistrationTaskListStatus.Completed,
-                        AdditionalDetailsStatus = RegistrationTaskListStatus.NotStarted,
-                        ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
-                    }
-                },
                 OrganisationName = OrganisationName,
                 OrganisationNumber = "123 456",
                 OrganisationRole = "Producer",
-
+                RegistrationApplications = registrationApplicationYears.SelectMany(ray => ray.Applications),
                 ResubmissionTaskListViewModel = new(),
                 PackagingResubmissionPeriod = submissionPeriod,
                 ComplianceYear = complianceYear
@@ -464,14 +456,14 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
             EndMonth = "June"
         };
 
-        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<bool?>()))
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(),It.IsAny<RegistrationJourney?>(), It.IsAny<bool?>()))
             .ReturnsAsync(registrationApplicationSession);
 
         ResubmissionApplicationService.Setup(x => x.GetActiveSubmissionPeriod()).ReturnsAsync(submissionPeriod);
 
-        var registrationApplicationPerYear = new List<RegistrationApplicationPerYearViewModel>()
+        var registrationApplicationPerYear = new List<RegistrationApplicationViewModel>()
         {
-            new RegistrationApplicationPerYearViewModel {
+            new RegistrationApplicationViewModel {
             ApplicationStatus = registrationApplicationSession.ApplicationStatus,
             FileUploadStatus = registrationApplicationSession.FileUploadStatus,
             PaymentViewStatus = registrationApplicationSession.PaymentViewStatus,
@@ -482,8 +474,10 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
            }
         };
 
-        RegistrationApplicationService.Setup(x => x.BuildRegistrationApplicationPerYearViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
-            .ReturnsAsync(registrationApplicationPerYear);
+        var registrationApplicationYears = _fixture.CreateMany<RegistrationYearApplicationsViewModel>().ToArray();
+        
+        RegistrationApplicationService.Setup(x => x.BuildRegistrationYearApplicationsViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+            .ReturnsAsync(registrationApplicationYears.ToList());
 
         ResubmissionApplicationService.Setup(x => x.GetActiveSubmissionPeriod()).ReturnsAsync(submissionPeriod);
 
@@ -501,18 +495,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
                 OrganisationName = OrganisationName,
                 OrganisationNumber = "123 456",
                 OrganisationRole = "Producer",
-                RegistrationApplicationsPerYear = new List<RegistrationApplicationPerYearViewModel>()
-                {
-                    new RegistrationApplicationPerYearViewModel
-                    {
-                        ApplicationReferenceNumber = reference,
-                        RegistrationReferenceNumber = reference,
-                        FileUploadStatus = RegistrationTaskListStatus.Completed,
-                        PaymentViewStatus = RegistrationTaskListStatus.Completed,
-                        AdditionalDetailsStatus = RegistrationTaskListStatus.Completed,
-                        ApplicationStatus = ApplicationStatusType.SubmittedToRegulator
-                    }
-                },
+                RegistrationApplications = registrationApplicationYears.SelectMany(ray => ray.Applications),
                 ResubmissionTaskListViewModel = new(),
                 PackagingResubmissionPeriod = submissionPeriod,
                 ComplianceYear = complianceYear

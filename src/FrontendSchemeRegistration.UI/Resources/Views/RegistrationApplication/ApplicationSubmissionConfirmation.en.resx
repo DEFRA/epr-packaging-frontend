@@ -18,6 +18,12 @@
     <data name="registration_application_submitted_for_approval" xml:space="preserve">
         <value>Your registration application for {0} has been submitted for approval</value>
     </data>
+    <data name="registration_application_submitted_for_approval_small" xml:space="preserve">
+        <value>You have submitted your small producer registration application</value>
+    </data>
+    <data name="registration_application_submitted_for_approval_large" xml:space="preserve">
+        <value>You have submitted your large producer registration application</value>
+    </data>
     <data name="registration_has_been_granted" xml:space="preserve">
         <value>Your registration for {0} has been granted</value>
     </data>
@@ -107,5 +113,17 @@
     </data>
 	<data name="depending_on_your_browser_it_will_open_in_new_window_or_save_to_folder_resubmission" xml:space="preserve">
         <value>(depending on your browser it will open in a new window or tab, or save to your download folder).</value>
+    </data>
+    <data name="you_have_submitted_small" xml:space="preserve">
+        <value>You have submitted your small producer {0} registration to </value>
+    </data>
+    <data name="you_have_submitted_large" xml:space="preserve">
+        <value>You have submitted your large producer {0} registration to </value>
+    </data>
+    <data name="return_to_your" xml:space="preserve">
+        <value>Return to register your members </value>
+    </data>
+    <data name="you_can_print_or_save" xml:space="preserve">
+        <value>print or save this page as a PDF</value>
     </data>
 </root>

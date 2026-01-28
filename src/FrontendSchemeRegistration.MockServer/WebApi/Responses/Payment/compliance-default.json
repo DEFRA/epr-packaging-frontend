@@ -1,0 +1,38 @@
+{
+  "totalFee": 12000,
+  "complianceSchemeRegistrationFee": 5000,
+  "previousPayment": 0,
+  "outstandingPayment": 12000,
+  "complianceSchemeMembersWithFees": [
+    {
+      "memberId": "154922",
+      "memberRegistrationFee": 3000,
+      "memberOnlineMarketPlaceFee": 200,
+      "memberLateRegistrationFee": 0,
+      "subsidiariesFee": 500,
+      "totalMemberFee": 3700,
+      "subsidiariesFeeBreakdown": {
+        "totalSubsidiariesOMPFees": 0,
+        "countOfOMPSubsidiaries": 0,
+        "unitOMPFees": 0,
+        "feeBreakdowns": [
+          { "bandNumber": 1, "unitCount": 2, "unitPrice": 100, "totalPrice": 200 }
+        ]
+      }
+    },
+    {
+      "memberId": "154923",
+      "memberRegistrationFee": 4000,
+      "memberOnlineMarketPlaceFee": 300,
+      "memberLateRegistrationFee": 0,
+      "subsidiariesFee": 0,
+      "totalMemberFee": 4300,
+      "subsidiariesFeeBreakdown": {
+        "totalSubsidiariesOMPFees": 0,
+        "countOfOMPSubsidiaries": 0,
+        "unitOMPFees": 0,
+        "feeBreakdowns": []
+      }
+    }
+  ]
+}

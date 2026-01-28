@@ -5,23 +5,121 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
 
+using System.Security.Claims;
+using Application.DTOs.ComplianceScheme;
+using Application.DTOs.Submission;
+using Application.Enums;
+using Application.Services.Interfaces;
+using AutoFixture;
+using EPR.Common.Authorization.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.FeatureManagement;
+using Moq;
+using Newtonsoft.Json;
+using UI.Services;
+using UI.ViewModels.Shared;
+
 [TestFixture]
 public class ComplianceSchemeRegistrationControllerTests
 {
     private ComplianceSchemeRegistrationController _sut;
+    private Mock<IComplianceSchemeService> _complianceSchemeService;
+    private Mock<IRegistrationApplicationService> _registrationApplicationService;
+    private Mock<HttpContext> _httpContextMock;
+    private Mock<ClaimsPrincipal> _userMock;
+    private Mock<IFeatureManager> _featureManagerMock;
+    
+    private readonly IFixture _fixture = new Fixture();
+
+    private readonly List<SubmissionPeriod> _submissionPeriods = new()
+    {
+        new SubmissionPeriod
+        {
+            DataPeriod = "Data period 1",
+            ActiveFrom = DateTime.Today,
+            Deadline = DateTime.Parse("2023-12-31"),
+            Year = "2023",
+            StartMonth = "September",
+            EndMonth = "December",
+        },
+        new SubmissionPeriod
+        {
+            DataPeriod = "Data period 2",
+            Deadline = DateTime.Parse("2024-03-31"),
+            ActiveFrom = DateTime.Today.AddDays(5),
+            Year = "2024",
+            StartMonth = "January",
+            EndMonth = "March"
+        },
+        new SubmissionPeriod
+        {
+            DataPeriod = "Data period 3",
+            /* This will be excluded because it is after the latest allowed period ending June 2024 */
+            Deadline = DateTime.Parse("2025-10-01"),
+            ActiveFrom = DateTime.Today.AddDays(10),
+            Year = "2025",
+            StartMonth = "January",
+            EndMonth = "June"
+        }
+    };
 
     [SetUp]
     public void Setup()
     {
-        _sut = new();
+        _complianceSchemeService = new();
+        _registrationApplicationService = new();
+        _httpContextMock = new();
+        _userMock = new();
+        _featureManagerMock = new();
+        
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(It.IsAny<string>())).ReturnsAsync(false);
+        
+        var orgs = _fixture.Build<Organisation>()
+            .With(o => o.OrganisationRole, "ComplianceScheme")
+            .CreateMany(1);
+
+        var userData = _fixture.Build<UserData>()
+            .With(ud => ud.Organisations, orgs.ToList())
+            .With(ud => ud.ServiceRole, "Approved Person")
+            .Create();
+        
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.UserData, JsonConvert.SerializeObject(userData))
+        };
+
+        _userMock.Setup(x => x.Claims).Returns(claims);
+        _httpContextMock.Setup(x => x.User).Returns(_userMock.Object);
+        _httpContextMock.Setup(x => x.Session).Returns(new Mock<ISession>().Object);
+
+        _sut = new(_complianceSchemeService.Object, _registrationApplicationService.Object, _featureManagerMock.Object)
+        {
+            ControllerContext = { HttpContext = _httpContextMock.Object }
+        };
     }
 
     [Test]
     public async Task WHEN_ComplianceSchemeRegistrationCalled_THEN_CorrectViewModelReturned()
     {
-        const string nation = "foobar";
+        // arrange
+        var nation = Nation.England;
         const string expectedViewName = "ComplianceSchemeRegistration";
-        var expectedViewModel = new ComplianceSchemeRegistrationViewModel("foo cso", nation);
+        var englandCso = _fixture.Build<ComplianceSchemeDto>()
+            .With(cs => cs.NationId, (int)Nation.England)
+            .Create();
+        var scotlandCso = _fixture.Build<ComplianceSchemeDto>()
+            .With(cs => cs.NationId, (int)Nation.Scotland)
+            .Create();
+
+        var registrationApplicationYears = _fixture.CreateMany<RegistrationYearApplicationsViewModel>().ToArray();
+
+        _complianceSchemeService
+            .Setup(service => service.GetOperatorComplianceSchemes(It.IsAny<Guid>()))
+            .ReturnsAsync([scotlandCso, englandCso]);
+        _registrationApplicationService.Setup(x => x.BuildRegistrationYearApplicationsViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+            .ReturnsAsync(registrationApplicationYears.ToList());
+        
+        var expectedViewModel = new ComplianceSchemeRegistrationViewModel(englandCso.Name, nation.ToString(), registrationApplicationYears);
         
         // Act
         var result = await _sut.ComplianceSchemeRegistration(nation) as ViewResult;
@@ -31,6 +129,6 @@ public class ComplianceSchemeRegistrationControllerTests
         result.Model.Should()
             .BeOfType<ComplianceSchemeRegistrationViewModel>()
             .And
-            .Be(expectedViewModel);
+            .BeEquivalentTo(expectedViewModel);
     }
 }

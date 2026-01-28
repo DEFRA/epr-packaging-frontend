@@ -1,4 +1,4 @@
-﻿using FrontendSchemeRegistration.UI.Services;
+using FrontendSchemeRegistration.UI.Services;
 
 namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
 

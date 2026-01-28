@@ -1,4 +1,4 @@
-﻿namespace FrontendSchemeRegistration.Application.Extensions;
+namespace FrontendSchemeRegistration.Application.Extensions;
 
 public static class DateTimeExtensions
 {

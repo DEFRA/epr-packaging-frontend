@@ -160,10 +160,10 @@
     <value>ID y sefydliad: {0}</value>
   </data>
   <data name="waste_management_and_admin_fees" xml:space="preserve">
-    <value>WWaste management and admin fees (opens in a new tab)</value>
+    <value>Ffioedd rheoli gwastraff a ffioedd gweinyddol (yn agor mewn tab newydd)</value>
   </data>
   <data name="sign_into_the_financial_services_system" xml:space="preserve">
-    <value>WSign into the financial services system (FSS) to view and manage the fees your organisation needs to pay.</value>
+    <value>Mewngofnodwch i'r system gwasanaethau ariannol (FSS) i weld a rheoli'r ffioedd y mae angen i'ch sefydliad eu talu</value>
   </data>
   <data name="view_and_pay_waste_disposal_fees" xml:space="preserve">
     <value>Gweld a thalu ffioedd gwaredu gwastraff ar gyfer pecynwaith (yn agor mewn tab newydd)</value>

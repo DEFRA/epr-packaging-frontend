@@ -33,4 +33,7 @@
     <data name="return_to_dashboard" xml:space="preserve">
         <value>Yn ôl i’r dangosfwrdd</value>
     </data>
+    <data name="view_registration_steps" xml:space="preserve">
+        <value>Gweld y camau cofrestru</value>
+    </data>
 </root>

@@ -8,14 +8,13 @@
                    asp-action="ComplianceSchemeRegistration"
                    asp-route-nation="@Model.ComplianceSchemeSummary.Nation.ToString()"
                    class="govuk-link govuk-link--no-visited-state">
-                    Register your members
+                    @Localizer["register_your_members"]
                 </a>
             </h2>
             <p class="govuk-body">
-                <!--TODO this will need localisation for Wales -->
-                Large and small producers must be registered separately.
+                @Localizer["large_and_small_producers_must_be_registered_separately"]
                 <br/>
-                You can also resubmit registration details.
+                @Localizer["you_can_also_resubmit_registration_details"]
             </p>
         </div>
     </div>
