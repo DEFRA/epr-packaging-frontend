@@ -93,8 +93,11 @@
 	<data name="Your_resubmitted_data_has_been_accepted" xml:space="preserve">
     <value>Your resubmitted data has been accepted. Report further changes within 28 days of them becoming effective.</value>
   </data>
-	<data name="legacy_registration_instructions" xml:space="preserve">
-    <value>You must register your organisation for {0}. Apply by {1}</value>
+	<data name="legacy_registration_instructions1" xml:space="preserve">
+    <value>All producers must have a {0} registration.</value>
+  </data>
+	<data name="legacy_registration_instructions2" xml:space="preserve">
+    <value>You can still register for {0}, but may incur a late fee.</value>
   </data>
   <data name="cso_small_producer_instructions1" xml:space="preserve">
 		<value>Small producers must apply for registration on or before {0}.</value>
@@ -109,30 +112,36 @@
 		<value>Applications made after this date could incur a late fee.</value>
 	</data>
 	<data name="direct_large_producer_open_instructions1" xml:space="preserve">
-    <value>Large producers must apply for registration for {0} before {1}.</value>
+    <value>Large producers must register by {0} on {1}.</value>
   </data>
 	<data name="direct_large_producer_open_instructions2" xml:space="preserve">
-    <value>You can apply after this date, but may incur a late fee.</value>
+    <value>Small producers can register from {0}. The deadline is {1} on {2}.</value>
+  </data>
+	<data name="direct_large_producer_open_instructions3" xml:space="preserve">
+    <value>You can register after these deadlines, but may incur a late fee.</value>
   </data>
 	<data name="direct_large_producer_late_instructions1" xml:space="preserve">
-    <value>The large producer registration deadline for {0} was {1}.</value>
+    <value>The deadline for large producer registration was {0} on {1}. You can still register, but may incur a late fee.</value>
   </data>
 	<data name="direct_large_producer_late_instructions2" xml:space="preserve">
-    <value>You can still apply after this date, but may incur a late fee.</value>
+    <value>Small producers can register from {0}. The deadline is {1} on {2}.</value>
   </data>
 	<data name="direct_small_producer_open_instructions1" xml:space="preserve">
-    <value>Small producers must apply for registration on or before {0} to avoid a late fee.</value>
+    <value>Small producers must register by {0} on {1}.</value>
   </data>
 	<data name="direct_small_producer_open_instructions2" xml:space="preserve">
-    <value>The large producer registration deadline for {0} was {1}.</value>
+    <value>The deadline for large producer registration was {0} on {1}.</value>
   </data>
 	<data name="direct_small_producer_open_instructions3" xml:space="preserve">
     <value>Large producers can still register, but may incur a late fee.</value>
   </data>
 	<data name="direct_small_producer_late_instructions1" xml:space="preserve">
-    <value>The small producer registration deadline for {0} was {1}.</value>
+    <value>The deadline for small producer registration was {0} on {1}.</value>
   </data>
 	<data name="direct_small_producer_late_instructions2" xml:space="preserve">
-    <value>You can still apply after this date, but may incur a late fee.</value>
+    <value>The deadline for large producer registration was {0} on {1}.</value>
+  </data>
+	<data name="direct_small_producer_late_instructions3" xml:space="preserve">
+    <value>You can register after these deadlines, but may incur a late fee.</value>
   </data>
 </root>
