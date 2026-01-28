@@ -230,6 +230,6 @@
     <value>Rydych chi wrthi'n ail-gyflwyno data ar hyn o bryd.</value>
   </data>
   <data name="you_are_currenlty_resubmitting_data_period" xml:space="preserve">
-    <value>[WELSH] You have resubmitted packaging data for the July to December {0} period.</value>
+    <value>Rydych wedi ailgyflwyno data deunydd pacio ar gyfer y cyfnod Gorffennaf i Ragfyr {0}.</value>
   </data>
 </root>

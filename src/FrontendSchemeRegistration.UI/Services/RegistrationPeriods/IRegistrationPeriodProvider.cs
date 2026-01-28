@@ -18,4 +18,10 @@ public interface IRegistrationPeriodProvider
     /// <param name="isParamOptional"></param>
     /// <returns></returns>
     int? ValidateRegistrationYear(string? registrationYear, bool isParamOptional = false);
+    /// Returns all registration windows, whether they are closed or in the future. Will return
+    /// a future window if that window's opening date is this year
+    /// </summary>
+    /// <param name="isCso"></param>
+    /// <returns>All past, current or future registration windows</returns>
+    IReadOnlyCollection<RegistrationWindow> GetAllRegistrationWindows(bool isCso);
 }

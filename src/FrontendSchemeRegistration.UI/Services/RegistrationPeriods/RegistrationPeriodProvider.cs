@@ -74,11 +74,41 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
     /// </summary>
     /// <param name="isCso"></param>
     /// <returns></returns>
-    [SuppressMessage("ReSharper", "InconsistentlySynchronizedField")]
     public IReadOnlyCollection<RegistrationWindow> GetActiveRegistrationWindows(bool isCso)
     {
-        // Rebuild the collection if we tick into the next year and we have
-        // derived the final year in a pattern (ie, the final year in config is null)
+        CheckWindowsUpToDate();
+
+        var orderedWindows = _registrationWindows
+            .Where(w => w.IsCso == isCso && w.GetRegistrationWindowStatus() != RegistrationWindowStatus.PriorToOpening)
+            .OrderByDescending(ra => ra.RegistrationYear);
+
+        return new ReadOnlyCollection<RegistrationWindow>(orderedWindows.ToList());
+    }
+
+    /// <summary>
+    /// Returns all registration windows, whether they are closed or in the future. Will return
+    /// a future window if that window's opening date is this year
+    /// </summary>
+    /// <param name="isCso"></param>
+    /// <returns>All past, current or future registration windows</returns>
+    public IReadOnlyCollection<RegistrationWindow> GetAllRegistrationWindows(bool isCso)
+    {
+        CheckWindowsUpToDate();
+        
+        var orderedWindows = _registrationWindows
+            .Where(w => w.IsCso == isCso)
+            .OrderByDescending(ra => ra.RegistrationYear);
+
+        return new ReadOnlyCollection<RegistrationWindow>(orderedWindows.ToList());
+    }
+
+    /// <summary>
+    /// Rebuild the collection if we tick into the next year and we have
+    /// derived the final year in a pattern (ie, the final year in config is null)
+    /// </summary>
+    [SuppressMessage("ReSharper", "InconsistentlySynchronizedField")]
+    private void CheckWindowsUpToDate()
+    {
         if (_timeProvider.GetUtcNow().Year > _parseYear)
         {
             lock (_lock)
@@ -89,12 +119,6 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
                 }
             }
         }
-        
-        var orderedWindows = _registrationWindows
-            .Where(w => w.IsCso == isCso && w.GetRegistrationWindowStatus() != RegistrationWindowStatus.PriorToOpening)
-            .OrderByDescending(ra => ra.RegistrationYear);
-
-        return new ReadOnlyCollection<RegistrationWindow>(orderedWindows.ToList());
     }
 
     /// <inheritdoc />

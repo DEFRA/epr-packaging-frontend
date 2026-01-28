@@ -61,7 +61,8 @@ public class ComplianceSchemeMemberLandingController : Controller
             OrganisationName = organisation.Name,
             OrganisationId = organisation.Id.Value,
             OrganisationNumber = organisation.OrganisationNumber.ToReferenceNumberFormat(),
-            ServiceRole = userData.ServiceRole
+            ServiceRole = userData.ServiceRole,
+            CanManageComplianceScheme = userData.ServiceRole == ServiceRoles.ApprovedPerson || userData.ServiceRole == ServiceRoles.DelegatedPerson
         };
 
         var notificationsList =

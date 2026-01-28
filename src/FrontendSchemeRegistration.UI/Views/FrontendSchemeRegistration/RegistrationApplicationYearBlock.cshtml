@@ -177,28 +177,36 @@
             // these legacy registration windows are closed
             if (model.RegistrationWindow.WindowType == WindowType.Cso || model.RegistrationWindow.WindowType == WindowType.Direct) 
             {
-                <p class="govuk-body">@Localizer["legacy_registration_instructions", model.RegistrationYear, model.RegistrationWindow.DeadlineDate.AddDays(-1).ToString("d MMMM yyyy", CultureInfo.CurrentUICulture)]</p>
+                <p class="govuk-body">@Localizer["legacy_registration_instructions1", model.RegistrationYear]</p>
+                <p class="govuk-body">@Localizer["legacy_registration_instructions2", model.RegistrationYear]</p>
             }
             else if (model.IsComplianceScheme)
             {
-                <p class="govuk-body">@Localizer[model.RegistrationJourney == RegistrationJourney.CsoSmallProducer ? "cso_small_producer_instructions1" : "cso_large_producer_instructions1", model.RegistrationWindow.DeadlineDate.AddDays(-1).ToString("d MMMM yyyy", CultureInfo.CurrentUICulture)]</p>
+                <p class="govuk-body">@Localizer[model.RegistrationJourney == RegistrationJourney.CsoSmallProducer ? "cso_small_producer_instructions1" : "cso_large_producer_instructions1", model.RegistrationWindow.DeadlineDate.FormatPreviousDayWithCulture()]</p>
                 <p class="govuk-body">@Localizer[model.RegistrationJourney == RegistrationJourney.CsoSmallProducer ? "cso_small_producer_instructions2" : "cso_large_producer_instructions2"]</p>
             }
-            else if (model.SecondaryRegistrationWindow is null) // direct, small window has not opened, therefore targeted at large producers
+            else if (model.RegistrationWindow.GetRegistrationWindowStatus() == RegistrationWindowStatus.OpenAndNotLate && model.SecondaryRegistrationWindow.GetRegistrationWindowStatus() == RegistrationWindowStatus.PriorToOpening) // direct, small window has not opened, therefore targeted at large producers. Open and not late
             {
-                <p class="govuk-body">@Localizer[model.RegistrationWindow.GetRegistrationWindowStatus() == RegistrationWindowStatus.OpenAndNotLate ? "direct_large_producer_open_instructions1" : "direct_large_producer_late_instructions1", model.RegistrationYear, model.RegistrationWindow.DeadlineDate.ToString("d MMMM yyyy", CultureInfo.CurrentUICulture)]</p>
-                <p class="govuk-body">@Localizer[model.RegistrationWindow.GetRegistrationWindowStatus() == RegistrationWindowStatus.OpenAndNotLate ? "direct_large_producer_open_instructions2" : "direct_large_producer_late_instructions2"]</p>
+                <p class="govuk-body">@Localizer["direct_large_producer_open_instructions1", model.RegistrationWindow.DeadlineDate.PreviousMinuteWithCulture(), model.RegistrationWindow.DeadlineDate.FormatPreviousDayWithCulture()]</p>
+                <p class="govuk-body">@Localizer["direct_large_producer_open_instructions2", model.SecondaryRegistrationWindow.OpeningDate.FormatWithCulture(), model.SecondaryRegistrationWindow.DeadlineDate.PreviousMinuteWithCulture(), model.SecondaryRegistrationWindow.DeadlineDate.FormatPreviousDayWithCulture()]</p>
+                <p class="govuk-body">@Localizer["direct_large_producer_open_instructions3"]</p>
+            }
+            else if (model.RegistrationWindow.GetRegistrationWindowStatus() != RegistrationWindowStatus.OpenAndNotLate && model.SecondaryRegistrationWindow.GetRegistrationWindowStatus() == RegistrationWindowStatus.PriorToOpening) // direct, small window has not opened, therefore targeted at large producers. Past deadline date.
+            {
+                <p class="govuk-body">@Localizer["direct_large_producer_late_instructions1", model.RegistrationWindow.DeadlineDate.PreviousMinuteWithCulture(), model.RegistrationWindow.DeadlineDate.FormatPreviousDayWithCulture()]</p>
+                <p class="govuk-body">@Localizer["direct_large_producer_late_instructions2", model.SecondaryRegistrationWindow.OpeningDate.FormatWithCulture(), model.SecondaryRegistrationWindow.DeadlineDate.PreviousMinuteWithCulture(), model.SecondaryRegistrationWindow.DeadlineDate.FormatPreviousDayWithCulture()]</p>
             }
             else if (model.SecondaryRegistrationWindow.GetRegistrationWindowStatus() == RegistrationWindowStatus.OpenAndNotLate) // direct, small (Secondary) window open, large window past deadline date
             {
-                <p class="govuk-body">@Localizer["direct_small_producer_open_instructions1", model.SecondaryRegistrationWindow.DeadlineDate.AddDays(-1).ToString("d MMMM yyyy", CultureInfo.CurrentUICulture)]</p>
-                <p class="govuk-body">@Localizer["direct_small_producer_open_instructions2", model.RegistrationYear, model.RegistrationWindow.DeadlineDate.ToString("d MMMM yyyy", CultureInfo.CurrentUICulture)]</p>
+                <p class="govuk-body">@Localizer["direct_small_producer_open_instructions1", model.SecondaryRegistrationWindow.DeadlineDate.PreviousMinuteWithCulture(), model.SecondaryRegistrationWindow.DeadlineDate.FormatPreviousDayWithCulture()]</p>
+                <p class="govuk-body">@Localizer["direct_small_producer_open_instructions2", model.RegistrationWindow.DeadlineDate.PreviousMinuteWithCulture(), model.RegistrationWindow.DeadlineDate.FormatPreviousDayWithCulture()]</p>
                 <p class="govuk-body">@Localizer["direct_small_producer_open_instructions3"]</p>
             }
             else // both (direct) windows are assumed to be late since the 2nd is late and they are ordered by deadline
             {
-                <p class="govuk-body">@Localizer["direct_small_producer_late_instructions1", model.RegistrationYear, model.SecondaryRegistrationWindow.DeadlineDate.AddDays(-1).ToString("d MMMM yyyy", CultureInfo.CurrentUICulture)]</p>
-                <p class="govuk-body">@Localizer["direct_small_producer_late_instructions2"]</p>
+                <p class="govuk-body">@Localizer["direct_small_producer_late_instructions1", model.SecondaryRegistrationWindow.DeadlineDate.PreviousMinuteWithCulture(), model.SecondaryRegistrationWindow.DeadlineDate.FormatPreviousDayWithCulture()]</p>
+                <p class="govuk-body">@Localizer["direct_small_producer_late_instructions2", model.RegistrationWindow.DeadlineDate.PreviousMinuteWithCulture(), model.RegistrationWindow.DeadlineDate.FormatPreviousDayWithCulture()]</p>
+                <p class="govuk-body">@Localizer["direct_small_producer_late_instructions3"]</p>
             }
         }
     }
