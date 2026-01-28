@@ -2304,7 +2304,7 @@ public class RegistrationApplicationServiceTests
             OrganisationRole = OrganisationRoles.Producer
         };
 
-        _mockRegistrationPeriodProvider.Setup(x => x.GetActiveRegistrationWindows(It.IsAny<bool>()))
+        _mockRegistrationPeriodProvider.Setup(x => x.GetAllRegistrationWindows(false))
             .Returns(new List<RegistrationWindow>());
 
         // Act
@@ -2341,7 +2341,9 @@ public class RegistrationApplicationServiceTests
             CreateRegistrationWindow(WindowType.DirectLargeProducer, 2026, new DateTime(2026, 6, 1), new DateTime(2026, 8, 1), new DateTime(2026, 10, 1))
         ];
 
-        _mockRegistrationPeriodProvider.Setup(x => x.GetActiveRegistrationWindows(It.IsAny<bool>()))
+        _dateTimeProvider.SetUtcNow(new DateTime(2026, 6, 1));
+
+        _mockRegistrationPeriodProvider.Setup(x => x.GetAllRegistrationWindows(false))
             .Returns(registrationWindows);
 
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
@@ -2416,7 +2418,9 @@ public class RegistrationApplicationServiceTests
             CreateRegistrationWindow(WindowType.DirectLargeProducer, 2025)
         ];
 
-        _mockRegistrationPeriodProvider.Setup(x => x.GetActiveRegistrationWindows(false))
+        _dateTimeProvider.SetUtcNow(new DateTime(2026, 6, 1));
+
+        _mockRegistrationPeriodProvider.Setup(x => x.GetAllRegistrationWindows(false))
             .Returns(registrationWindows);
 
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
@@ -2463,7 +2467,7 @@ public class RegistrationApplicationServiceTests
             IsResubmission = true
         };
 
-        _mockRegistrationPeriodProvider.Setup(x => x.GetActiveRegistrationWindows(false))
+        _mockRegistrationPeriodProvider.Setup(x => x.GetAllRegistrationWindows(false))
             .Returns(registrationWindows);
 
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
@@ -2540,6 +2544,7 @@ public class RegistrationApplicationServiceTests
             OrganisationRole = OrganisationRoles.Producer
         };
 
+        _dateTimeProvider.SetUtcNow(new DateTime(2026, 6, 1));
         var journey = RegistrationJourney.DirectLargeProducer;
         var registrationYear = 2026;
 
@@ -2548,7 +2553,7 @@ public class RegistrationApplicationServiceTests
             CreateRegistrationWindow(WindowType.DirectLargeProducer, registrationYear)
         ];
 
-        _mockRegistrationPeriodProvider.Setup(x => x.GetActiveRegistrationWindows(false))
+        _mockRegistrationPeriodProvider.Setup(x => x.GetAllRegistrationWindows(false))
             .Returns(registrationWindows);
 
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
@@ -2583,7 +2588,7 @@ public class RegistrationApplicationServiceTests
 
         IReadOnlyCollection<RegistrationWindow> producerWindows = [];
 
-        _mockRegistrationPeriodProvider.Setup(x => x.GetActiveRegistrationWindows(false))
+        _mockRegistrationPeriodProvider.Setup(x => x.GetAllRegistrationWindows(false))
             .Returns(producerWindows);
 
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
@@ -2593,7 +2598,7 @@ public class RegistrationApplicationServiceTests
         await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, producerOrganisation);
 
         // Assert - Verify GetActiveRegistrationWindows was called with false for producer
-        _mockRegistrationPeriodProvider.Verify(x => x.GetActiveRegistrationWindows(false), Times.Once);
+        _mockRegistrationPeriodProvider.Verify(x => x.GetAllRegistrationWindows(false), Times.Once);
 
         // Now test with CSO
         var csoOrganisation = new Organisation

@@ -91,50 +91,59 @@
   </data>
   <data name="current_small_producer_registration_title" xml:space="preserve">
         <value>Cofrestru cynhyrchydd bach ar gyfer {0} </value>
-    </data>
-    <data name="cso_small_producer_instructions2" xml:space="preserve">
-        <value>Gallai ceisiadau a wneir ar ôl y dyddiad hwn arwain at ffi hwyr.</value>
-    </data>
-    <data name="cso_small_producer_instructions1" xml:space="preserve">
-        <value>Rhaid i gynhyrchwyr bach wneud cais i gofrestru ar neu cyn {0}.</value>
-    </data>
-    <data name="cso_large_producer_instructions1" xml:space="preserve">
-        <value>Roedd angen i gynhyrchwyr mawr wneud cais i gofrestru ar neu cyn {0}.</value>
-    </data>
-    <data name="cso_large_producer_instructions2" xml:space="preserve">
-        <value>Gallai ceisiadau a wneir ar ôl y dyddiad hwn arwain at ffi hwyr.</value>
-    </data>
-    <data name="current_large_producer_registration_title" xml:space="preserve">
-        <value>Cofrestru cynhyrchydd mawr ar gyfer {0} </value>
-    </data>
-  <data name="direct_large_producer_late_instructions1" xml:space="preserve">
-    <value>[Welsh]The large producer registration deadline for {0} was {1}.</value>
   </data>
-  <data name="direct_large_producer_late_instructions2" xml:space="preserve">
-    <value>[Welsh]You can still apply after this date, but may incur a late fee.</value>
+  <data name="current_large_producer_registration_title" xml:space="preserve">
+      <value>Cofrestru cynhyrchydd mawr ar gyfer {0} </value>
   </data>
-  <data name="direct_large_producer_open_instructions1" xml:space="preserve">
-    <value>[Welsh]Large producers must apply for registration for {0} before {1}.</value>
+	<data name="legacy_registration_instructions1" xml:space="preserve">
+    <value>[Welsh]All producers must have a {0} registration.</value>
   </data>
-  <data name="direct_large_producer_open_instructions2" xml:space="preserve">
-    <value>[Welsh]You can apply after this date, but may incur a late fee.</value>
+	<data name="legacy_registration_instructions2" xml:space="preserve">
+    <value>[Welsh]You can still register for {0}, but may incur a late fee.</value>
   </data>
-  <data name="direct_small_producer_late_instructions1" xml:space="preserve">
-    <value>[Welsh]The small producer registration deadline for {0} was {1}.</value>
+  <data name="cso_small_producer_instructions1" xml:space="preserve">
+      <value>Rhaid i gynhyrchwyr bach wneud cais i gofrestru ar neu cyn {0}.</value>
   </data>
-  <data name="direct_small_producer_late_instructions2" xml:space="preserve">
-    <value>[WelshYou can still apply after this date, but may incur a late fee.</value>
+  <data name="cso_small_producer_instructions2" xml:space="preserve">
+      <value>Gallai ceisiadau a wneir ar ôl y dyddiad hwn arwain at ffi hwyr.</value>
   </data>
-  <data name="direct_small_producer_open_instructions1" xml:space="preserve">
-    <value>[Welsh]Small producers must apply for registration on or before {0} to avoid a late fee.</value>
+  <data name="cso_large_producer_instructions1" xml:space="preserve">
+      <value>Roedd angen i gynhyrchwyr mawr wneud cais i gofrestru ar neu cyn {0}.</value>
   </data>
-  <data name="direct_small_producer_open_instructions2" xml:space="preserve">
-    <value>[Welsh]The large producer registration deadline for {0} was {1}.</value>
+  <data name="cso_large_producer_instructions2" xml:space="preserve">
+      <value>Gallai ceisiadau a wneir ar ôl y dyddiad hwn arwain at ffi hwyr.</value>
   </data>
-  <data name="direct_small_producer_open_instructions3" xml:space="preserve">
+	<data name="direct_large_producer_open_instructions1" xml:space="preserve">
+    <value>[Welsh]Large producers must register by {0} on {1}.</value>
+  </data>
+	<data name="direct_large_producer_open_instructions2" xml:space="preserve">
+    <value>[Welsh]Small producers can register from {0}. The deadline is {1} on {2}.</value>
+  </data>
+	<data name="direct_large_producer_open_instructions3" xml:space="preserve">
+    <value>[Welsh]You can register after these deadlines, but may incur a late fee.</value>
+  </data>
+	<data name="direct_large_producer_late_instructions1" xml:space="preserve">
+    <value>[Welsh]The deadline for large producer registration was {0} on {1}. You can still register, but may incur a late fee.</value>
+  </data>
+	<data name="direct_large_producer_late_instructions2" xml:space="preserve">
+    <value>[Welsh]Small producers can register from {0}. The deadline is {1} on {2}.</value>
+  </data>
+	<data name="direct_small_producer_open_instructions1" xml:space="preserve">
+    <value>[Welsh]Small producers must register by {0} on {1}.</value>
+  </data>
+	<data name="direct_small_producer_open_instructions2" xml:space="preserve">
+    <value>[Welsh]The deadline for large producer registration was {0} on {1}.</value>
+  </data>
+	<data name="direct_small_producer_open_instructions3" xml:space="preserve">
     <value>[Welsh]Large producers can still register, but may incur a late fee.</value>
   </data>
-  <data name="legacy_registration_instructions" xml:space="preserve">
-    <value>[Welsh]You must register your organisation for {0}. Apply by {1}</value>
+	<data name="direct_small_producer_late_instructions1" xml:space="preserve">
+    <value>[Welsh]The deadline for small producer registration was {0} on {1}.</value>
+  </data>
+	<data name="direct_small_producer_late_instructions2" xml:space="preserve">
+    <value>[Welsh]The deadline for large producer registration was {0} on {1}.</value>
+  </data>
+	<data name="direct_small_producer_late_instructions3" xml:space="preserve">
+    <value>[Welsh]You can register after these deadlines, but may incur a late fee.</value>
   </data>
 </root>
