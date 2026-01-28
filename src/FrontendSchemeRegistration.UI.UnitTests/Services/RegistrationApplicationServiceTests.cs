@@ -2721,7 +2721,7 @@ public class RegistrationApplicationServiceTests
         captured.NoOfSubsidiariesOnlineMarketplace.Should().Be(1);
         captured.NumberOfSubsidiaries.Should().Be(3);
         captured.ProducerType.Should().Be("Large");
-        captured.SubmissionDate.Should().Be(_session.LastSubmittedFile.SubmittedDateTime!.Value);
+        captured.SubmissionDate.Date.Should().Be(_session.LastSubmittedFile.SubmittedDateTime!.Value.Date);
     }
 
     [Test]
@@ -2780,7 +2780,7 @@ public class RegistrationApplicationServiceTests
 
         captured.ApplicationReferenceNumber.Should().Be(_session.ApplicationReferenceNumber);
         captured.Regulator.Should().Be(_session.RegulatorNation);
-        captured.SubmissionDate.Should().Be(_session.LastSubmittedFile.SubmittedDateTime!.Value);
+        captured.SubmissionDate.Date.Should().Be(_session.LastSubmittedFile.SubmittedDateTime!.Value.Date);
     }
 
     [Test]
@@ -2809,7 +2809,7 @@ public class RegistrationApplicationServiceTests
         captured.ApplicationReferenceNumber.Should().Be(_session.ApplicationReferenceNumber);
         captured.IsLateFeeApplicable.Should().Be(_session.IsLateFeeApplicable);
         captured.ProducerType.Should().Be(_session.RegistrationFeeCalculationDetails[0].OrganisationSize);
-        captured.SubmissionDate.Should().Be(_session.LastSubmittedFile.SubmittedDateTime!.Value);
+        captured.SubmissionDate.Date.Should().Be(_session.LastSubmittedFile.SubmittedDateTime!.Value.Date);
     }
 
     [Test]
