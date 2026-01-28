@@ -454,8 +454,7 @@ public static class ServiceProviderExtension
         {
             options.HttpOnly = HttpOnlyPolicy.Always;
             options.Secure = CookieSecurePolicy.Always;
-            //TODO check this as - it causes you to have to accept a cookie marked as essential for stub auth
-            //options.CheckConsentNeeded = context => true;
+            options.CheckConsentNeeded = context => true;
         });
     }
 }
