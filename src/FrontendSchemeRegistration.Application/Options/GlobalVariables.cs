@@ -27,8 +27,6 @@ public class GlobalVariables
 
     public DateTime SmallProducerLateFeeDeadline2026 { get; set; }
 
-    public string RegistrationYear { get; set; }
-    
     /// <summary>
     /// If set, this overrides the current system date/time. Should never be used
     /// in a production environment

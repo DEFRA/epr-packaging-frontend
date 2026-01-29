@@ -68,8 +68,7 @@ public class RegistrationApplicationServiceTests
         {
             LateFeeDeadline2025 = new(2025, 4, 1),
             LargeProducerLateFeeDeadline2026 = new(2025, 10, 1),
-            SmallProducerLateFeeDeadline2026 = new(2026, 4, 1),
-            RegistrationYear = $"{_validRegistrationYear}, {(_validRegistrationYear + 1)}"
+            SmallProducerLateFeeDeadline2026 = new(2026, 4, 1)
         });
 
         _fixture = new Fixture();
@@ -839,8 +838,7 @@ public class RegistrationApplicationServiceTests
         {
             LateFeeDeadline2025 = new(dateTime2025.Year, 4, 1),
             LargeProducerLateFeeDeadline2026 = new(dateTime2025.Year, 10, 1),
-            SmallProducerLateFeeDeadline2026 = dateTime2025.AddDays(-1),
-            RegistrationYear = $"{dateTime2025.Year}, {dateTime2025.AddYears(1).Year}"
+            SmallProducerLateFeeDeadline2026 = dateTime2025.AddDays(-1)
         });
 
         var deps = new RegistrationApplicationServiceDependencies
