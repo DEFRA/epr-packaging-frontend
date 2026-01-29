@@ -6,7 +6,6 @@ using Application.Enums;
 using Application.Services.Interfaces;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
-using global::FrontendSchemeRegistration.UI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.RegistrationPeriods;

@@ -11,7 +11,7 @@ using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers;
 using FrontendSchemeRegistration.UI.Extensions;
-using FrontendSchemeRegistration.UI.Services;
+using FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Http;
@@ -36,7 +36,7 @@ public class ReviewCompanyDetailsControllerTests
     private Mock<IUserAccountService> _userAccountServiceMock;
     private Mock<ClaimsPrincipal> _claimsPrincipalMock;
     private Mock<IUrlHelper> _urlHelperMock;
-    private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
+    private Mock<IRegistrationPeriodProvider> _registrationPeriodProviderMock;
 
     [SetUp]
     public void SetUp()
@@ -49,7 +49,7 @@ public class ReviewCompanyDetailsControllerTests
         _userAccountServiceMock = new Mock<IUserAccountService>();
         _claimsPrincipalMock = new Mock<ClaimsPrincipal>();
         _sessionManagerMock = new();
-        _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
+        _registrationPeriodProviderMock = new Mock<IRegistrationPeriodProvider>();
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
@@ -59,13 +59,13 @@ public class ReviewCompanyDetailsControllerTests
                 },
                 UserData = new UserData { Organisations = { new() { OrganisationRole = OrganisationRoles.ComplianceScheme } }, ServiceRole = ServiceRoles.ApprovedPerson }
             });
-        _registrationApplicationServiceMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(DateTime.Now.Year);
+        _registrationPeriodProviderMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(DateTime.Now.Year);
 
         _systemUnderTest = new ReviewCompanyDetailsController(
             _submissionService.Object,
             _userAccountServiceMock.Object,
             _sessionManagerMock.Object,
-            new NullLogger<ReviewCompanyDetailsController>(), _registrationApplicationServiceMock.Object);
+            new NullLogger<ReviewCompanyDetailsController>(), _registrationPeriodProviderMock.Object);
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext

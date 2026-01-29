@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Primitives;
 using Moq;
 using UI.Controllers;
+using UI.Services.RegistrationPeriods;
 using UI.Sessions;
 using UI.ViewModels;
 
@@ -30,7 +31,7 @@ public class FileUploadCompanyDetailsErrorsControllerTests
     private Mock<ISubmissionService> _submissionServiceMock;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
     private FileUploadCompanyDetailsErrorsController _systemUnderTest;
-    private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
+    private Mock<IRegistrationPeriodProvider> _registrationPeriodProviderMock;
     private Mock<IUrlHelper> _urlHelper;
 
     [SetUp]
@@ -39,7 +40,7 @@ public class FileUploadCompanyDetailsErrorsControllerTests
         _urlHelper = new Mock<IUrlHelper>();
         _submissionServiceMock = new Mock<ISubmissionService>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
-        _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
+        _registrationPeriodProviderMock = new ();
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
@@ -67,7 +68,7 @@ public class FileUploadCompanyDetailsErrorsControllerTests
                 }
             });
 
-        _systemUnderTest = new FileUploadCompanyDetailsErrorsController(_submissionServiceMock.Object, _sessionManagerMock.Object, _nullLogger, _registrationApplicationServiceMock.Object);
+        _systemUnderTest = new FileUploadCompanyDetailsErrorsController(_submissionServiceMock.Object, _sessionManagerMock.Object, _nullLogger, _registrationPeriodProviderMock.Object);
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext

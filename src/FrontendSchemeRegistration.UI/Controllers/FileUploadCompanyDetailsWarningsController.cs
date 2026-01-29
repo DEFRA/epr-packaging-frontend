@@ -6,7 +6,6 @@ using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
 using FrontendSchemeRegistration.UI.Extensions;
-using FrontendSchemeRegistration.UI.Services;
 using FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;

@@ -8,10 +8,9 @@ using Constants;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using Extensions;
-using global::FrontendSchemeRegistration.UI.Services;
-using global::FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Services.RegistrationPeriods;
 using Sessions;
 using ViewModels;
 

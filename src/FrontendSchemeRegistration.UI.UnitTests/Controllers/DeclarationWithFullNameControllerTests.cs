@@ -8,7 +8,7 @@ using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers;
-using FrontendSchemeRegistration.UI.Services;
+using FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Http;
@@ -33,7 +33,7 @@ public class DeclarationWithFullNameControllerTests
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
     private Mock<ClaimsPrincipal> _claimsPrincipalMock;
     private DeclarationWithFullNameController _systemUnderTest;
-    private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
+    private Mock<IRegistrationPeriodProvider> _registrationPeriodProviderMock;
 
 
     [SetUp]
@@ -42,14 +42,14 @@ public class DeclarationWithFullNameControllerTests
         _submissionServiceMock = new Mock<ISubmissionService>();
         _claimsPrincipalMock = new Mock<ClaimsPrincipal>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
-        _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
+        _registrationPeriodProviderMock = new Mock<IRegistrationPeriodProvider>();
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
                 RegistrationSession = new RegistrationSession { IsResubmission = true }
             });
 
-        _systemUnderTest = new DeclarationWithFullNameController(_submissionServiceMock.Object, _sessionManagerMock.Object, new NullLogger<DeclarationWithFullNameController>(), _registrationApplicationServiceMock.Object);
+        _systemUnderTest = new DeclarationWithFullNameController(_submissionServiceMock.Object, _sessionManagerMock.Object, new NullLogger<DeclarationWithFullNameController>(), _registrationPeriodProviderMock.Object);
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
@@ -82,7 +82,7 @@ public class DeclarationWithFullNameControllerTests
         // Arrange
         var claims = CreateUserDataClaim(serviceRole, enrolmentStatus, OrganisationRoles.Producer);
         _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
-        _registrationApplicationServiceMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(DateTime.Now.Year);
+        _registrationPeriodProviderMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(DateTime.Now.Year);
 
         // Act
         var result = await _systemUnderTest.Get(_submissionId) as RedirectToActionResult;
@@ -153,7 +153,7 @@ public class DeclarationWithFullNameControllerTests
         };
         var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
         _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
-        _registrationApplicationServiceMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(DateTime.Now.Year);
+        _registrationPeriodProviderMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(DateTime.Now.Year);
 
         // Act
         var result = await _systemUnderTest.Get(_submissionId) as ViewResult;

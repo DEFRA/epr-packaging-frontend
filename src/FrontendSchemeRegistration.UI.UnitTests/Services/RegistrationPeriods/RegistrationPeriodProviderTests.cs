@@ -447,7 +447,7 @@ public class RegistrationPeriodProviderTests
         // arrange
         var registrationPeriodPatterns = CreateValidRegistrationPatterns();
         var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetAllRegistrationWindows(isCso: true);
@@ -475,7 +475,7 @@ public class RegistrationPeriodProviderTests
             }
         };
         var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetAllRegistrationWindows(isCso: true);
@@ -511,7 +511,7 @@ public class RegistrationPeriodProviderTests
             }
         };
         var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetAllRegistrationWindows(isCso: false);
@@ -545,7 +545,7 @@ public class RegistrationPeriodProviderTests
             }
         };
         var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetAllRegistrationWindows(isCso: true).ToList();
@@ -581,7 +581,7 @@ public class RegistrationPeriodProviderTests
             }
         };
         var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetAllRegistrationWindows(isCso: true).ToList();
@@ -612,7 +612,7 @@ public class RegistrationPeriodProviderTests
             }
         };
         var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetAllRegistrationWindows(isCso: true);
@@ -644,7 +644,7 @@ public class RegistrationPeriodProviderTests
             }
         };
         var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
 
         // act
         var csoWindows = sut.GetAllRegistrationWindows(isCso: true);
@@ -682,7 +682,7 @@ public class RegistrationPeriodProviderTests
             }
         };
         var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetAllRegistrationWindows(isCso: true).ToList();
@@ -727,7 +727,7 @@ public class RegistrationPeriodProviderTests
             }
         };
         var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
 
         // act
         var allWindows = sut.GetAllRegistrationWindows(isCso: true);
