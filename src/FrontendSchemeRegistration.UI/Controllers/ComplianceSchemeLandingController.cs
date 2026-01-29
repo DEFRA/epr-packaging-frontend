@@ -3,17 +3,18 @@ using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.Enums;
+using FrontendSchemeRegistration.Application.Extensions;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.FeatureManagement;
 
 namespace FrontendSchemeRegistration.UI.Controllers;
-
-using Application.Extensions;
 
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
 [Route(PagePaths.ComplianceSchemeLanding)]
@@ -23,6 +24,7 @@ public class ComplianceSchemeLandingController(
     INotificationService notificationService,
     IResubmissionApplicationService resubmissionApplicationService,
     ILogger<ComplianceSchemeLandingController> logger,
+    IFeatureManager featureManager,
     TimeProvider timeProvider)
     : Controller
 {
@@ -50,6 +52,8 @@ public class ComplianceSchemeLandingController(
         var currentComplianceSchemeId = session.RegistrationSession.SelectedComplianceScheme.Id;
         await taskSave;
 
+        var csoRegistrationEnabled = await featureManager.IsEnabledAsync(FeatureFlags
+            .CsoRegistrationEnabled);
         var currentSummary = await complianceSchemeService.GetComplianceSchemeSummary(organisation.Id.Value, currentComplianceSchemeId);
 
         var resubmissionApplicationDetails = await resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(
@@ -64,7 +68,8 @@ public class ComplianceSchemeLandingController(
             ComplianceSchemes = complianceSchemes,
             ResubmissionTaskListViewModel = resubmissionApplicationDetails.ToResubmissionTaskListViewModel(organisation),
             PackagingResubmissionPeriod = packagingResubmissionPeriod,
-            ComplianceYear = now.GetComplianceYear().ToString()
+            ComplianceYear = now.GetComplianceYear().ToString(),
+            CsoRegistrationEnabled = csoRegistrationEnabled
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id.Value);
