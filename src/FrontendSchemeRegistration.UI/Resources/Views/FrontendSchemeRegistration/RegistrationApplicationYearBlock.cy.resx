@@ -96,10 +96,10 @@
       <value>Cofrestru cynhyrchydd mawr ar gyfer {0} </value>
   </data>
 	<data name="legacy_registration_instructions1" xml:space="preserve">
-    <value>[Welsh]All producers must have a {0} registration.</value>
+    <value>[Welsh]The deadline for {0} registration has passed.</value>
   </data>
 	<data name="legacy_registration_instructions2" xml:space="preserve">
-    <value>[Welsh]You can still register for {0}, but may incur a late fee.</value>
+    <value>[Welsh]You can still register, but may incur a late fee.</value>
   </data>
   <data name="cso_small_producer_instructions1" xml:space="preserve">
       <value>Rhaid i gynhyrchwyr bach wneud cais i gofrestru ar neu cyn {0}.</value>
