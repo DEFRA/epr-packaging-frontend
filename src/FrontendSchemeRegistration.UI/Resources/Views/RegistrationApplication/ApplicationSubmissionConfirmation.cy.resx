@@ -126,4 +126,7 @@
   <data name="registration_application_submitted_for_approval_small" xml:space="preserve">
     <value>Rydych chi wedi cyflwyno'ch cofrestriad cynhyrchwyr bach {0} i</value>
   </data>
+  <data name="return_to_account_home" xml:space="preserve">
+    <value>Hafan y cyfrif </value>
+  </data>
 </root>

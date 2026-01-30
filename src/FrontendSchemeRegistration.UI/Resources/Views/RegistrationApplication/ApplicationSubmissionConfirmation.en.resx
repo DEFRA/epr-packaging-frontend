@@ -123,6 +123,9 @@
     <data name="return_to_your" xml:space="preserve">
         <value>Return to register your members </value>
     </data>
+    <data name="return_to_account_home" xml:space="preserve">
+        <value>Return to account home </value>
+    </data>
     <data name="you_can_print_or_save" xml:space="preserve">
         <value>print or save this page as a PDF</value>
     </data>
