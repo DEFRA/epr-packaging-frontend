@@ -92,6 +92,27 @@ dotnet test
 
 The UI can be time-travel tested by setting the `StartupUtcTimestampOverride` to an [RFC-3339](https://www.rfc-editor.org/rfc/rfc3339) compliant date, such as `2025-12-31T23:59:00Z`. This will be used as the initial timestamp when the service starts up. Time will progress as usual. Note that this should **NEVER** be set in production. This setting _will not_ set the system time in downstream services, so is only appropriate for testing UI logic. Note that this behaviour will be overwritten by the `Prn` configuration value if both `OverridePrnCurrentDateForTestingPurposes` and `ShowPrn` are set to `true`, in which case a _static_ value will be set for the current date.
 
+### Running the mock server
+
+It is possible to run the application locally against a mock server. This is useful for testing against a real API without having to set up a local instance of the API. The
+mock server is used to replace the following endpoints:
+
+```json
+    
+    "WebAPI:BaseEndpoint": "http://localhost:9091",
+    "PaymentFacadeApi:BaseUrl": "http://localhost:9091",
+    "EprAuthorizationConfig:FacadeBaseUrl": "http://localhost:9091/api/",
+    "AccountsFacadeAPI:BaseEndpoint": "http://localhost:9091/api/
+
+```
+Along with this the authentication can also be stubbed. This removes the requirement to connect to azure b2c. When the stub authentication is enabled, you are presented with 
+a login screen to enter a Id and email address. The Id is then used as part of the token generation for the user when communicating with the API. This means that we can
+serve different responses based on the user that is logged in.
+
+#### Component tests
+
+The component test project is setup in the project that runs the web application and mock server allowing for tests to be run through the full application.
+
 
 ## How To Debug
 Use debugging tools in your chosen IDE.
