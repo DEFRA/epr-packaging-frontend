@@ -54,16 +54,19 @@
 
                 <p class="govuk-body">@Localizer["paying_fees_and_charges_to_the_scheme_administrator"]</p>
 
-                <feature negate="true" name="ShowWasteTile">
-                    <h2 class="govuk-heading-m govuk-!-margin-bottom-3">@Localizer["change_or_remove_compliance_scheme"]</h2>
+                @if (Model.CanManageComplianceScheme) {
+                    <feature negate="true" name="ShowWasteTile">
+                        <h2 class="govuk-heading-m govuk-!-margin-bottom-3">@Localizer["change_or_remove_compliance_scheme"]</h2>
 
-                    <p class="govuk-body">
-                        @Localizer["you_can"]
-                        <a asp-controller="FrontendSchemeRegistration" asp-action="ManageComplianceScheme" class="govuk-link govuk-link--no-visited-state">
-                            @Localizer["change_or_remove_compliance_scheme_link", Model.OrganisationName]
-                        </a>.
-                    </p>
-                </feature>
+                        <p class="govuk-body">
+                            @Localizer["you_can"]
+                            <a asp-controller="FrontendSchemeRegistration" asp-action="ManageComplianceScheme" class="govuk-link govuk-link--no-visited-state">
+                                @Localizer["change_or_remove_compliance_scheme_link", Model.OrganisationName]
+                            </a>.
+                        </p>
+                    </feature>
+                }
+
                 <feature name="@FeatureFlags.ShowWasteTile">
                     <div class="govuk-grid-row box-container">
                         <div class="govuk-grid-column-one-half box">
