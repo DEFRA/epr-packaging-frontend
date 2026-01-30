@@ -143,7 +143,7 @@
                             @Localizer["you_will_be_contacted_about_your_application_within_12_weeks"]
                         </p>
                         <p class="govuk-body">
-                            @if (Model.IsComplianceScheme)
+                            @if (Model.RegistrationJourney is RegistrationJourney.CsoSmallProducer or RegistrationJourney.CsoLargeProducer)
                             {
                                 <a asp-controller="ComplianceSchemeLanding" asp-action="Get" class="govuk-link">@Localizer["return_to_your"]</a>
                             }
