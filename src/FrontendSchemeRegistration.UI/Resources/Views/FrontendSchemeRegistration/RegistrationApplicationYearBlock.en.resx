@@ -13,7 +13,7 @@
 		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
 	</resheader>
 	<data name="registration_for_year" xml:space="preserve">
-    <value>Registration for {0}</value>
+    <value>{0} Registration</value>
   </data>
   <data name="current_large_producer_registration_title" xml:space="preserve">
     <value>Large producer {0} registration</value>
