@@ -10,4 +10,5 @@ public static class ContextKeys
     public const string HttpResponseContent = nameof(HttpResponseContent);
     public const string HttpResponseRedirectContent = nameof(HttpResponseRedirectContent);
     public const string TestServer = nameof(TestServer);
+    public const string Environment = nameof(Environment);
 }

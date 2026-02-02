@@ -2,27 +2,20 @@ namespace FrontendSchemeRegistration.UI.ComponentTests.Infrastructure;
 
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Net.Http.Headers;
 
-public interface ITestHttpClient : IDisposable
-{
-    Task<HttpResponseMessage> GetAsync(string url);
-    Task<HttpResponseMessage> PostAsync(string url, Dictionary<string, string> content);
-}
-
 [ExcludeFromCodeCoverage]
-public class ComponentTestClient(TestServer server, string baseUrl = "https://localhost")
-    : TestClientBase
+public class EnvironmentTestClient(string baseUrl) : TestClientBase
 {
     private CookieContainer CookieContainer { get; } = new();
-    private TestServer Server { get; } = server;
-    private Uri SubstituteBaseUrl { get; } = new(baseUrl);
+    private readonly HttpClient _httpClient = new();
 
     public override async Task<HttpResponseMessage> GetAsync(string url)
     {
-        var response = await BuildRequest(url).GetAsync();
-
+        var request = BuildRequest(url, HttpMethod.Get);
+        
+        var response = await _httpClient.SendAsync(request);
+        //UpdateCookies(url, response);
         return response;
     }
 
@@ -31,50 +24,53 @@ public class ComponentTestClient(TestServer server, string baseUrl = "https://lo
         var getResponse = await GetAsync(url);
         
         var html = await getResponse.Content.ReadAsStringAsync();
-
-        //TODO - investigate why this isnt correctly validating, at the moment the verification is disabled for component tests
         if (!content.ContainsKey("__RequestVerificationToken"))
         {
             var token = ExtractRequestVerificationToken(html);
             content.Add("__RequestVerificationToken", token);
         }
         
-        var response = await BuildRequest(url)
-            .And(req => req.Content = new FormUrlEncodedContent(content)).PostAsync();
-        
-        UpdateCookies(url, response);
+        var response = await _httpClient.SendAsync(BuildRequest(url, HttpMethod.Post, new FormUrlEncodedContent(content)));
+        //UpdateCookies(url, response);
         return response;
     }
-    
-    public override void Dispose()
+
+    private HttpRequestMessage BuildRequest(string url, HttpMethod method, HttpContent? content = null)
     {
-    }
-    
-    private RequestBuilder BuildRequest(string url)
-    {
-        var uri = new Uri(SubstituteBaseUrl, url);
-        var builder = Server.CreateRequest(url);
-        builder.TestServer.BaseAddress = new Uri("https://localhost");
-        
+        var request = new HttpRequestMessage();
+        var uri = new Uri(new Uri(baseUrl), url);
+        request.RequestUri = uri;
+
         var cookieHeader = CookieContainer.GetCookieHeader(uri);
+
         if (!string.IsNullOrWhiteSpace(cookieHeader))
         {
-            builder.AddHeader(HeaderNames.Cookie, cookieHeader);
+            request.Headers.Add(HeaderNames.Cookie, cookieHeader);
+        }
+        request.Method = method;
+        if (content != null)
+        {
+            request.Content = content;
         }
 
-        return builder;
+        return request;
     }
 
     private void UpdateCookies(string url, HttpResponseMessage response)
     {
         if (response.Headers.Contains(HeaderNames.SetCookie))
         {
-            var uri = new Uri(SubstituteBaseUrl, url);
+            var uri = new Uri(new Uri(baseUrl), url);
             var cookies = response.Headers.GetValues(HeaderNames.SetCookie);
             foreach (var cookie in cookies)
             {
                 CookieContainer.SetCookies(uri, cookie);
             }
         }
+    }
+    
+    public override void Dispose()
+    {
+        throw new NotImplementedException();
     }
 }

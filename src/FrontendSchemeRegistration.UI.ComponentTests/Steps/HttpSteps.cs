@@ -15,7 +15,7 @@ public class HttpSteps(ScenarioContext context)
     {
         var page = context.GetPage(pageName);
         
-        var client = context.Get<ComponentTestClient>(ContextKeys.ComponentTestClient);
+        var client = context.Get<ITestHttpClient>(ContextKeys.ComponentTestClient);
         var response = await client.GetAsync(page.Url);
         context.Set(response,ContextKeys.HttpResponse);
         context.Set(await response.Content.ReadAsStringAsync(),ContextKeys.HttpResponseContent);
@@ -24,7 +24,7 @@ public class HttpSteps(ScenarioContext context)
     [When("I browse to the following url: (.*)")]
     public async Task WhenINavigateToTheFollowingUrl(string url)
     {
-        var client = context.Get<ComponentTestClient>(ContextKeys.ComponentTestClient);
+        var client = context.Get<ITestHttpClient>(ContextKeys.ComponentTestClient);
         var response = await client.GetAsync(url);
         context.Set(response,ContextKeys.HttpResponse);
         context.Set(await response.Content.ReadAsStringAsync(),ContextKeys.HttpResponseContent);
@@ -39,7 +39,7 @@ public class HttpSteps(ScenarioContext context)
         var redirectUrl = redirection.Headers.Location.ToString();
         redirectUrl.Should().Contain(page.Url);
         
-        var client = context.Get<ComponentTestClient>(ContextKeys.ComponentTestClient);
+        var client = context.Get<ITestHttpClient>(ContextKeys.ComponentTestClient);
         var response = await client.GetAsync(redirectUrl);
         var responseContent = await response.Content.ReadAsStringAsync();
 
@@ -55,7 +55,7 @@ public class HttpSteps(ScenarioContext context)
         var redirectUrl = redirection.Headers.Location.ToString();
         redirectUrl.Should().Be(url);
         
-        var client = context.Get<ComponentTestClient>(ContextKeys.ComponentTestClient);
+        var client = context.Get<ITestHttpClient>(ContextKeys.ComponentTestClient);
         var response = await client.GetAsync(redirectUrl);
         var responseContent = await response.Content.ReadAsStringAsync();
 
