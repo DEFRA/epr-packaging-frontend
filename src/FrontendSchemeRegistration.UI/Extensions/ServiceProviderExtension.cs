@@ -24,7 +24,6 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using CookieOptions = FrontendSchemeRegistration.Application.Options.CookieOptions;
 using SessionOptions = FrontendSchemeRegistration.Application.Options.SessionOptions;
-using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("FrontendSchemeRegistration.UI.UnitTests")]
 namespace FrontendSchemeRegistration.UI.Extensions;
@@ -48,18 +47,18 @@ public static class ServiceProviderExtension
 {
     public static IServiceCollection RegisterWebComponents(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostingEnvironment, bool isStubAuth)
     {
-        ConfigureCookiePolicy(services);
         ConfigureOptions(services, configuration);
+        var utcTimestampOverride = ConfigureTimeProvider(services, hostingEnvironment);
+        ConfigureCookiePolicy(services);
         ConfigureLocalization(services);
         RegisterServices(services);
         if (!isStubAuth)
         {
-            ConfigureAuthentication(services, configuration);    
+            ConfigureAuthentication(services, configuration, utcTimestampOverride);    
         }
         ConfigureAuthorization(services, configuration, isStubAuth);
         ConfigureSession(services);
         RegisterServices(services);
-        ConfigureTimeProvider(services, hostingEnvironment);
         RegisterAccountAndPaymentApiClients(services);
         RegisterPrnTimeProviderServices(services, configuration);
 
@@ -303,19 +302,24 @@ public static class ServiceProviderExtension
         });
     }
 
-    // Allows time-travel testing by registering a test TimeProvider. Does not register the test provider
-    // in a production environment
-    private static void ConfigureTimeProvider(IServiceCollection services, IWebHostEnvironment hostingEnvironment)
+    /// <summary>
+    /// Allows time-travel testing by registering a test TimeProvider. Does not register the test provider
+    /// in a production environment
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="hostingEnvironment"></param>
+    /// <returns>Returns the startup utc timestamp override value, when it has been enabled</returns>
+    private static DateTime? ConfigureTimeProvider(IServiceCollection services, IWebHostEnvironment hostingEnvironment)
     {
-        if (hostingEnvironment.IsProduction()) return;
+        if (hostingEnvironment.IsProduction()) return null;
         
         var sp = services.BuildServiceProvider();
         var globalVariables = sp.GetRequiredService<IOptions<GlobalVariables>>().Value;
+
+        if (!globalVariables.StartupUtcTimestampOverride.HasValue) return null;
         
-        if (globalVariables.StartupUtcTimestampOverride.HasValue)
-        {
-            services.AddSingleton(typeof(TimeProvider), _ => new TimeTravelTestingTimeProvider(globalVariables.StartupUtcTimestampOverride.Value));    
-        }
+        services.AddSingleton(typeof(TimeProvider), _ => new TimeTravelTestingTimeProvider(globalVariables.StartupUtcTimestampOverride.Value));
+        return globalVariables.StartupUtcTimestampOverride.Value;
     }
 
     private static void ConfigureStubAuthentication(IServiceCollection services, IConfiguration configuration)
@@ -393,12 +397,29 @@ public static class ServiceProviderExtension
 
         services.ConfigureGraphServiceClient(configuration);
     }
-
-    private static void ConfigureAuthentication(IServiceCollection services, IConfiguration configuration)
+    /// <summary>
+    /// Configures OIDC authentication flow. When overriding the system time for time-travel testing, the
+    /// <paramref name="utcTimestampOverride"/> argument should be provided in order that we can
+    /// set various authentication parameters, such as increasing the time limit for completing the
+    /// authentication flow
+    /// </summary>
+    /// <param name="services"></param>
+    /// <param name="configuration"></param>
+    /// <param name="utcTimestampOverride">The overridden system timestamp at service startup</param>
+    private static void ConfigureAuthentication(IServiceCollection services, IConfiguration configuration,
+        DateTime? utcTimestampOverride)
     {
         var sp = services.BuildServiceProvider();
         var cookieOptions = sp.GetRequiredService<IOptions<CookieOptions>>().Value;
         var facadeApiOptions = sp.GetRequiredService<IOptions<AccountsFacadeApiOptions>>().Value;
+        
+        // If we are time-travelling in the past, we must set the remote auth timeout, otherwise we get a correlation error
+        // (the correlation cookie cannot be found)
+        TimeSpan? remoteAuthTimeout = null;
+        if (utcTimestampOverride.HasValue && DateTime.UtcNow > utcTimestampOverride.Value)
+        {
+            remoteAuthTimeout = DateTime.UtcNow - utcTimestampOverride.Value;
+        }
 
         services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
             .AddMicrosoftIdentityWebApp(
@@ -415,8 +436,13 @@ public static class ServiceProviderExtension
                     options.NonceCookie.Name = cookieOptions.OpenIdCookieName;
                     options.ErrorPath = "/error";
                     options.ClaimActions.Add(new CorrelationClaimAction());
-
                     options.TokenValidationParameters.ValidateLifetime = section.GetValue("ValidateTokenLifetime", true);
+
+                    if (remoteAuthTimeout.HasValue)
+                    {
+                        // provide a couple of hours padding in case of clock change
+                        options.RemoteAuthenticationTimeout = remoteAuthTimeout.Value.Add(TimeSpan.FromHours(2));
+                    }
                 },
                 options =>
                 {
@@ -424,7 +450,6 @@ public static class ServiceProviderExtension
                     options.ExpireTimeSpan = TimeSpan.FromMinutes(cookieOptions.AuthenticationExpiryInMinutes);
                     options.SlidingExpiration = true;
                     options.Cookie.Path = "/";
-
                     options.Cookie.HttpOnly = true;
                     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                 })
