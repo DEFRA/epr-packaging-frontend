@@ -22,8 +22,14 @@
 		<value>Ffi gofrestru</value>
 	</data>
 	<data name="registration_fee_due_x" xml:space="preserve">
-		<value>Mae ffi gofrestru o &lt;strong&gt;£{0}&lt;/strong&gt; yn ddyledus.</value>
+		<value>[Welsh] A registration fee of &lt;strong&gt;£{0}&lt;/strong&gt; is due based on current registration charges.</value>
 	</data>
+  <data name="registration_fee_may_change" xml:space="preserve">
+    <value>[Welsh] The final amount depends on when you submit your registration application, as charges may increase each year.</value>
+  </data>
+  <data name="registration_charge_details" xml:space="preserve">
+    <value>[Welsh] View Registration guidance including details of charges</value>
+  </data>
 	<data name="registration_fees_calculated_from_your_information" xml:space="preserve">
 		<value>Mae ffioedd cofrestru’n cael eu cyfrif ar sail yr wybodaeth rydych chi wedi’i darparu.</value>
 	</data>

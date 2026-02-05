@@ -237,7 +237,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
                     NoOfSubsidiariesOnlineMarketplace = feeCalculationDetails.NumberOfSubsidiariesBeingOnlineMarketPlace,
                     NumberOfSubsidiaries = feeCalculationDetails.NumberOfSubsidiaries,
                     ProducerType = feeCalculationDetails.OrganisationSize,
-                    SubmissionDate = session.LastSubmittedFile.SubmittedDateTime!.Value
+                    SubmissionDate = GetSubmissionDateForFeeCalculation(session)
                 };
 
                 response = await paymentCalculationService.GetProducerRegistrationFees(v2);
@@ -253,7 +253,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
                     NoOfSubsidiariesOnlineMarketplace = feeCalculationDetails.NumberOfSubsidiariesBeingOnlineMarketPlace,
                     NumberOfSubsidiaries = feeCalculationDetails.NumberOfSubsidiaries,
                     ProducerType = feeCalculationDetails.OrganisationSize,
-                    SubmissionDate = session.LastSubmittedFile.SubmittedDateTime!.Value
+                    SubmissionDate = GetSubmissionDateForFeeCalculation(session)
                 };
 
                 response = await paymentCalculationService.GetProducerRegistrationFees(v1);
@@ -270,7 +270,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
                 NoOfSubsidiariesOnlineMarketplace = feeCalculationDetails.NumberOfSubsidiariesBeingOnlineMarketPlace,
                 NumberOfSubsidiaries = feeCalculationDetails.NumberOfSubsidiaries,
                 ProducerType = feeCalculationDetails.OrganisationSize,
-                SubmissionDate = session.LastSubmittedFile.SubmittedDateTime!.Value
+                SubmissionDate = GetSubmissionDateForFeeCalculation(session)
             };
 
             response = await paymentCalculationService.GetProducerRegistrationFees(v1);
@@ -334,7 +334,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
 
                 Regulator = session.RegulatorNation,
                 ApplicationReferenceNumber = session.ApplicationReferenceNumber,
-                SubmissionDate = session.LastSubmittedFile.SubmittedDateTime!.Value,
+                SubmissionDate = GetSubmissionDateForFeeCalculation(session),
                 ComplianceSchemeMembers = feeCalculationDetails.Select(c => new ComplianceSchemePaymentCalculationRequestMember
                 {
                     // Apply late fee to all producers if original submission was late or
@@ -384,7 +384,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             {
                 Regulator = session.RegulatorNation,
                 ApplicationReferenceNumber = session.ApplicationReferenceNumber,
-                SubmissionDate = session.LastSubmittedFile.SubmittedDateTime!.Value,
+                SubmissionDate = GetSubmissionDateForFeeCalculation(session),
                 ComplianceSchemeMembers = complianceSchemeMembers,
                 IncludeRegistrationFee = includeRegistrationFee
             };
@@ -596,6 +596,16 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     {
         var periodEnd = DateTime.Parse($"30 {session.Period.EndMonth} {session.Period.Year}", new CultureInfo("en-GB"));
         return new DateTimeOffset(periodEnd, TimeSpan.Zero);
+    }
+
+    /// <summary>
+    /// Gets the submission date to use for fee calculations.
+    /// Use RegistrationApplicationSubmittedDate if it exists (aligns with Regulator portal),
+    /// otherwise use current date (provides accurate current fee value before application is submitted).
+    /// </summary>
+    private static DateTime GetSubmissionDateForFeeCalculation(RegistrationApplicationSession session)
+    {
+        return session.RegistrationApplicationSubmittedDate ?? DateTime.UtcNow;
     }
     
     // this structure provides data for tile representing a CSO reg window AND for the single tile that represents the two Direct registration windows,

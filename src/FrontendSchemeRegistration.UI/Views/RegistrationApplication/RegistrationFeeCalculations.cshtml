@@ -19,6 +19,13 @@
                     @Localizer["registration_fees_calculated_from_your_information"]
                 </p>
                 <p class="govuk-body govuk-!-margin-bottom-4">
+                    @Localizer["registration_fee_may_change"]
+                </p>
+                <p class="govuk-body govuk-!-margin-bottom-4">
+                    <a class="govuk-link" rel="noreferrer noopener" target="_blank"
+                       href="https://www.gov.uk/guidance/extended-producer-responsibility-for-packaging-register-and-pay-the-fee">@Localizer["registration_charge_details"]</a>.
+                </p>
+                <p class="govuk-body govuk-!-margin-bottom-4">
                     <a href="@GuidanceLinks.EPR_IllustrativeFeesAndCharges"
                        class="govuk-link govuk-link--no-visited-state"
                        rel="noreferrer noopener"
@@ -26,7 +33,14 @@
                     </a>
                 </p>
             }
-
+            else
+            {
+                <p class="govuk-body govuk-!-margin-bottom-4">@Localizer["registration_fee_may_change"]</p>
+                <p class="govuk-body govuk-!-margin-bottom-4">
+                    <a class="govuk-link" rel="noreferrer noopener" target="_blank"
+                       href="https://www.gov.uk/guidance/extended-producer-responsibility-for-packaging-register-and-pay-the-fee">@Localizer["registration_charge_details"]</a>.
+                </p>
+            }
             <partial name="_FeeCalculationBreakdown" model="@Model"/>
 
             <p class="govuk-body govuk-!-margin-top-4">
