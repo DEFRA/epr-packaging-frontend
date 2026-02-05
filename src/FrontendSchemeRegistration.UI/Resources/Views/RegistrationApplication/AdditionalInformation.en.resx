@@ -54,6 +54,9 @@
     <data name="use_comment_box_for_additional_info_to_assist_regulator" xml:space="preserve">
         <value>Use the comment box to enter additional information which may assist the regulator. For example, an agreement over a part-payment.</value>
     </data>
+    <data name="registration_charge_based_on_when_you_complete_this_step" xml:space="preserve">
+        <value>The registration charge is based on when you complete this step. Charges may increase each year.</value>
+    </data>
     <data name="submit_registration_application" xml:space="preserve">
         <value>Submit registration application</value>
     </data>
