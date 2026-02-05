@@ -7,7 +7,7 @@ using Constants;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
-using FrontendSchemeRegistration.UI.Services;
+using FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
@@ -23,7 +23,7 @@ public class FileUploadBrandsSuccessControllerTests
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
     private FileUploadBrandsSuccessController _systemUnderTest;
     private Mock<ISubmissionService> _submissionServiceMock;
-    private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
+    private Mock<IRegistrationPeriodProvider> _registrationPeriodProviderMock;
     private Mock<ISessionManager<RegistrationApplicationSession>> _registrationApplicationSessionManagerMock;
 
     [SetUp]
@@ -32,7 +32,7 @@ public class FileUploadBrandsSuccessControllerTests
         _submissionServiceMock = new Mock<ISubmissionService>();
 
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
-        _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
+        _registrationPeriodProviderMock = new Mock<IRegistrationPeriodProvider>();
         _registrationApplicationSessionManagerMock = new Mock<ISessionManager<RegistrationApplicationSession>>();
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
@@ -63,7 +63,7 @@ public class FileUploadBrandsSuccessControllerTests
             _submissionServiceMock.Object,
             _sessionManagerMock.Object,
             _registrationApplicationSessionManagerMock.Object,
-            _registrationApplicationServiceMock.Object);
+            _registrationPeriodProviderMock.Object);
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
@@ -237,7 +237,7 @@ public class FileUploadBrandsSuccessControllerTests
                 RegistrationJourney = FrontendSchemeRegistration.Application.Enums.RegistrationJourney.CsoSmallProducer
             });
 
-        _registrationApplicationServiceMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), true)).Returns(registrationYear);
+        _registrationPeriodProviderMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), true)).Returns(registrationYear);
 
         var urlMock = new Mock<IUrlHelper>();
         urlMock.Setup(x => x.Content($"~{PagePaths.FileUploadBrands}"))

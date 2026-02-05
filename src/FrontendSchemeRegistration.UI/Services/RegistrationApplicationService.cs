@@ -592,27 +592,6 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         return windows;
     }
 
-    public int? ValidateRegistrationYear(string? registrationYear, bool isParamOptional = false)
-    {
-        if (string.IsNullOrWhiteSpace(registrationYear) && isParamOptional)
-            return null;
-
-        var years = globalVariables.Value.RegistrationYear.Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .Select(y => int.TryParse(y, out var year) ? year : throw new FormatException($"Invalid year: '{y}'"))
-            .OrderByDescending(n => n).ToArray();
-
-        if (string.IsNullOrWhiteSpace(registrationYear))
-            throw new ArgumentException("Registration year missing");
-
-        if (!int.TryParse(registrationYear, out int regYear))
-            throw new ArgumentException("Registration year is not a valid number");
-
-        if (!years.Contains(regYear))
-            throw new ArgumentException("Invalid registration year");
-
-        return regYear;
-    }
-
     private static DateTimeOffset GetInvoicePeriodEnd(dynamic session)
     {
         var periodEnd = DateTime.Parse($"30 {session.Period.EndMonth} {session.Period.Year}", new CultureInfo("en-GB"));
@@ -650,8 +629,6 @@ public interface IRegistrationApplicationService
 
     Task<List<RegistrationYearApplicationsViewModel>> BuildRegistrationYearApplicationsViewModels(
         ISession httpSession, Organisation organisation);
-    
-    int? ValidateRegistrationYear(string? registrationYear, bool isParamOptional = false);
 }
 
 

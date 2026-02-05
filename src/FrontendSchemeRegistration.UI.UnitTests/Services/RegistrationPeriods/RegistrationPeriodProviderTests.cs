@@ -1,5 +1,4 @@
-﻿using FrontendSchemeRegistration.Application.Enums;
-using FrontendSchemeRegistration.Application.Options.RegistrationPeriodPatterns;
+﻿using FrontendSchemeRegistration.Application.Options.RegistrationPeriodPatterns;
 using FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
@@ -7,16 +6,25 @@ using Microsoft.Extensions.Time.Testing;
 
 namespace FrontendSchemeRegistration.UI.UnitTests.Services.RegistrationPeriods;
 
+using System.Security.Claims;
+using Constants;
+using EPR.Common.Authorization.Models;
+using Microsoft.AspNetCore.Http;
+using Moq;
+using Newtonsoft.Json;
+
 [TestFixture]
 public class RegistrationPeriodProviderTests
 {
     private FakeTimeProvider _timeProvider;     // starting time for each test is 2026-01-15:12:00:00
+    private Mock<IHttpContextAccessor> _mockHttpContext;
     private const int RegistrationYear = 2026; 
 
     [SetUp]
     public void Setup()
     {
         _timeProvider = new FakeTimeProvider(new DateTimeOffset(2026, 1, 15, 12, 0, 0, TimeSpan.Zero));
+        _mockHttpContext = new ();
     }
 
     [Test]
@@ -27,7 +35,7 @@ public class RegistrationPeriodProviderTests
         var options = Options.Create(registrationPeriodPatterns);
 
         // act
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
         var windows = sut.GetActiveRegistrationWindows(isCso: true);
 
         // assert
@@ -54,7 +62,7 @@ public class RegistrationPeriodProviderTests
             }
         };
         var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetActiveRegistrationWindows(isCso: true);
@@ -89,7 +97,7 @@ public class RegistrationPeriodProviderTests
             }
         };
         var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetActiveRegistrationWindows(isCso: false);
@@ -122,7 +130,7 @@ public class RegistrationPeriodProviderTests
             }
         };
         var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetActiveRegistrationWindows(isCso: true).ToList();
@@ -153,7 +161,7 @@ public class RegistrationPeriodProviderTests
         var options = Options.Create(registrationPeriodPatterns);
 
         // act & assert
-        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationPeriodProvider(options, _timeProvider));
+        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object));
         ex.Message.Should().Contain("configured in multiple RegistrationPeriodPattern");
     }
 
@@ -179,7 +187,7 @@ public class RegistrationPeriodProviderTests
         var options = Options.Create(registrationPeriodPatterns);
 
         // act
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
         var windows = sut.GetActiveRegistrationWindows(isCso: true);
 
         // assert
@@ -206,7 +214,7 @@ public class RegistrationPeriodProviderTests
             }
         };
         var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
         var initialWindows = sut.GetActiveRegistrationWindows(isCso: true);
 
         // act
@@ -233,7 +241,7 @@ public class RegistrationPeriodProviderTests
             }
         };
         var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
         var initialWindows = sut.GetActiveRegistrationWindows(isCso: true);
 
         // act
@@ -262,7 +270,7 @@ public class RegistrationPeriodProviderTests
         var options = Options.Create(registrationPeriodPatterns);
 
         // act
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
         var windows = sut.GetActiveRegistrationWindows(isCso: true);
 
         // assert
@@ -297,7 +305,7 @@ public class RegistrationPeriodProviderTests
         var options = Options.Create(registrationPeriodPatterns);
 
         // act
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
         var windows = sut.GetActiveRegistrationWindows(isCso: true);
 
         // assert
@@ -329,7 +337,7 @@ public class RegistrationPeriodProviderTests
             }
         };
         var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
 
         // act
         var csoWindows = sut.GetActiveRegistrationWindows(isCso: true);
@@ -354,7 +362,7 @@ public class RegistrationPeriodProviderTests
         // arrange
         var registrationPeriodPatterns = CreateValidRegistrationPatterns();
         var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetActiveRegistrationWindows(isCso: true);
@@ -385,7 +393,7 @@ public class RegistrationPeriodProviderTests
             }
         };
         var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetActiveRegistrationWindows(isCso: true).ToList();
@@ -422,7 +430,7 @@ public class RegistrationPeriodProviderTests
             }
         };
         var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetActiveRegistrationWindows(isCso: true).ToList();
@@ -439,7 +447,7 @@ public class RegistrationPeriodProviderTests
         // arrange
         var registrationPeriodPatterns = CreateValidRegistrationPatterns();
         var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetAllRegistrationWindows(isCso: true);
@@ -467,7 +475,7 @@ public class RegistrationPeriodProviderTests
             }
         };
         var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetAllRegistrationWindows(isCso: true);
@@ -503,7 +511,7 @@ public class RegistrationPeriodProviderTests
             }
         };
         var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetAllRegistrationWindows(isCso: false);
@@ -537,7 +545,7 @@ public class RegistrationPeriodProviderTests
             }
         };
         var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetAllRegistrationWindows(isCso: true).ToList();
@@ -573,7 +581,7 @@ public class RegistrationPeriodProviderTests
             }
         };
         var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetAllRegistrationWindows(isCso: true).ToList();
@@ -604,7 +612,7 @@ public class RegistrationPeriodProviderTests
             }
         };
         var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetAllRegistrationWindows(isCso: true);
@@ -636,7 +644,7 @@ public class RegistrationPeriodProviderTests
             }
         };
         var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
 
         // act
         var csoWindows = sut.GetAllRegistrationWindows(isCso: true);
@@ -674,7 +682,7 @@ public class RegistrationPeriodProviderTests
             }
         };
         var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetAllRegistrationWindows(isCso: true).ToList();
@@ -719,7 +727,7 @@ public class RegistrationPeriodProviderTests
             }
         };
         var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
 
         // act
         var allWindows = sut.GetAllRegistrationWindows(isCso: true);
@@ -774,4 +782,236 @@ public class RegistrationPeriodProviderTests
             ClosingDate = closing
         };
     }
+
+    private static Mock<IHttpContextAccessor> CreateMockHttpContextAccessor(UserData userData)
+    {
+        var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+        var mockHttpContext = new Mock<HttpContext>();
+        var mockUser = new Mock<ClaimsPrincipal>();
+
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.UserData, JsonConvert.SerializeObject(userData)),
+        };
+
+        mockUser.Setup(x => x.Claims).Returns(claims);
+        mockHttpContext.Setup(x => x.User).Returns(mockUser.Object);
+        mockHttpContextAccessor.SetupGet(x => x.HttpContext).Returns(mockHttpContext.Object);
+
+        return mockHttpContextAccessor;
+    }
+
+    #region ValidateRegistrationYear Tests
+
+    [Theory]
+    [TestCase(null)]
+    [TestCase("")]
+    [TestCase("   ")]
+    public void GIVEN_null_or_empty_registration_year_and_optional_parameter_WHEN_ValidateRegistrationYear_called_THEN_returns_null(string registrationYear)
+    {
+        // arrange
+        var registrationPeriodPatterns = CreateValidRegistrationPatterns();
+        var options = Options.Create(registrationPeriodPatterns);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+
+        // act
+        var result = sut.ValidateRegistrationYear(registrationYear, isParamOptional: true);
+
+        // assert
+        result.Should().BeNull();
+    }
+
+    [Theory]
+    [TestCase(null)]
+    [TestCase("")]
+    public void GIVEN_null_or_empty_registration_year_and_required_parameter_WHEN_ValidateRegistrationYear_called_THEN_throws_ArgumentException(string registrationYear)
+    {
+        // arrange
+        var registrationPeriodPatterns = CreateValidRegistrationPatterns();
+        var options = Options.Create(registrationPeriodPatterns);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+
+        // act & assert
+        var ex = Assert.Throws<ArgumentException>(() => sut.ValidateRegistrationYear(registrationYear, isParamOptional: false));
+        ex.Message.Should().Contain("Registration year missing");
+    }
+
+    [Theory]
+    [TestCase("abc")]
+    [TestCase("202a")]
+    public void GIVEN_non_numeric_registration_year_WHEN_ValidateRegistrationYear_called_THEN_throws_ArgumentException(string registrationYear)
+    {
+        // arrange
+        var registrationPeriodPatterns = CreateValidRegistrationPatterns();
+        var options = Options.Create(registrationPeriodPatterns);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+
+        // act & assert
+        var ex = Assert.Throws<ArgumentException>(() => sut.ValidateRegistrationYear(registrationYear, isParamOptional: false));
+        ex.Message.Should().Contain("Registration year is not a valid number");
+    }
+
+    [Test]
+    public void GIVEN_valid_registration_year_with_no_user_organisation_WHEN_ValidateRegistrationYear_called_THEN_throws_InvalidOperationException()
+    {
+        // arrange
+        var registrationPeriodPatterns = CreateValidRegistrationPatterns();
+        var options = Options.Create(registrationPeriodPatterns);
+        var mockHttpContextAccessor = CreateMockHttpContextAccessor(new UserData { Organisations = [] });
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, mockHttpContextAccessor.Object);
+
+        // act & assert
+        var ex = Assert.Throws<InvalidOperationException>(() => sut.ValidateRegistrationYear("2026", isParamOptional: false));
+        ex.Message.Should().Contain("The user must have an organisation");
+    }
+
+    [Test]
+    public void GIVEN_valid_registration_year_for_CSO_with_matching_window_WHEN_ValidateRegistrationYear_called_THEN_returns_parsed_year()
+    {
+        // arrange
+        var registrationPeriodPatterns = CreateValidRegistrationPatterns();
+        var options = Options.Create(registrationPeriodPatterns);
+        var userDataDto = new UserData
+        {
+            Organisations = [new Organisation { OrganisationRole = OrganisationRoles.ComplianceScheme }]
+        };
+        var mockHttpContextAccessor = CreateMockHttpContextAccessor(userDataDto);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, mockHttpContextAccessor.Object);
+
+        // act
+        var result = sut.ValidateRegistrationYear("2026", isParamOptional: false);
+
+        // assert
+        result.Should().Be(2026);
+    }
+
+    [Test]
+    public void GIVEN_valid_registration_year_for_non_CSO_with_matching_window_WHEN_ValidateRegistrationYear_called_THEN_returns_parsed_year()
+    {
+        // arrange
+        var registrationPeriodPatterns = CreateValidRegistrationPatterns();
+        var options = Options.Create(registrationPeriodPatterns);
+        var userDataDto = new UserData
+        {
+            Organisations = [new Organisation { OrganisationRole = OrganisationRoles.Producer }]
+        };
+        var mockHttpContextAccessor = CreateMockHttpContextAccessor(userDataDto);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, mockHttpContextAccessor.Object);
+
+        // act
+        var result = sut.ValidateRegistrationYear("2026", isParamOptional: false);
+
+        // assert
+        result.Should().Be(2026);
+    }
+
+    [Test]
+    public void GIVEN_valid_registration_year_but_not_in_active_windows_WHEN_ValidateRegistrationYear_called_THEN_throws_ArgumentException()
+    {
+        // arrange
+        var registrationPeriodPatterns = CreateValidRegistrationPatterns();
+        var options = Options.Create(registrationPeriodPatterns);
+        var userDataDto = new UserData
+        {
+            Organisations = [new Organisation { OrganisationRole = OrganisationRoles.Producer }]
+        };
+        var mockHttpContextAccessor = CreateMockHttpContextAccessor(userDataDto);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, mockHttpContextAccessor.Object);
+
+        // act & assert
+        var ex = Assert.Throws<ArgumentException>(() => sut.ValidateRegistrationYear("2025", isParamOptional: false));
+        ex.Message.Should().Contain("Invalid registration year");
+    }
+
+    [Test]
+    public void GIVEN_valid_registration_year_far_in_future_WHEN_ValidateRegistrationYear_called_THEN_throws_ArgumentException()
+    {
+        // arrange
+        var registrationPeriodPatterns = CreateValidRegistrationPatterns();
+        var options = Options.Create(registrationPeriodPatterns);
+        var userDataDto = new UserData
+        {
+            Organisations = [new Organisation { OrganisationRole = OrganisationRoles.Producer }]
+        };
+        var mockHttpContextAccessor = CreateMockHttpContextAccessor(userDataDto);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, mockHttpContextAccessor.Object);
+
+        // act & assert
+        var ex = Assert.Throws<ArgumentException>(() => sut.ValidateRegistrationYear("2030", isParamOptional: false));
+        ex.Message.Should().Contain("Invalid registration year");
+    }
+
+    [Theory]
+    [TestCase(2024)]
+    [TestCase(2025)]
+    [TestCase(2026)]
+    public void GIVEN_multiple_active_registration_years_WHEN_ValidateRegistrationYear_called_with_valid_year_THEN_returns_correct_year(int year)
+    {
+        // arrange
+        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        {
+            new()
+            {
+                InitialRegistrationYear = 2024,
+                FinalRegistrationYear = 2026,
+                Windows = new List<Window>
+                {
+                    CreateWindow(WindowType.DirectLargeProducer)
+                }
+            }
+        };
+        var options = Options.Create(registrationPeriodPatterns);
+        var userDataDto = new UserData
+        {
+            Organisations = [new Organisation { OrganisationRole = OrganisationRoles.Producer }]
+        };
+        var mockHttpContextAccessor = CreateMockHttpContextAccessor(userDataDto);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, mockHttpContextAccessor.Object);
+
+        // act
+        var result = sut.ValidateRegistrationYear(year.ToString(), isParamOptional: false);
+
+        // assert
+        result.Should().Be(year);
+    }
+
+    [Test]
+    public void GIVEN_registration_year_with_leading_zeros_WHEN_ValidateRegistrationYear_called_THEN_parses_correctly()
+    {
+        // arrange
+        var registrationPeriodPatterns = CreateValidRegistrationPatterns();
+        var options = Options.Create(registrationPeriodPatterns);
+        var userDataDto = new UserData
+        {
+            Organisations = [new Organisation { OrganisationRole = OrganisationRoles.Producer }]
+        };
+        var mockHttpContextAccessor = CreateMockHttpContextAccessor(userDataDto);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, mockHttpContextAccessor.Object);
+
+        // act
+        var result = sut.ValidateRegistrationYear("02026", isParamOptional: false);
+
+        // assert
+        result.Should().Be(2026);
+    }
+
+    [Test]
+    public void GIVEN_negative_registration_year_WHEN_ValidateRegistrationYear_called_THEN_throws_ArgumentException()
+    {
+        // arrange
+        var registrationPeriodPatterns = CreateValidRegistrationPatterns();
+        var options = Options.Create(registrationPeriodPatterns);
+        var userDataDto = new UserData
+        {
+            Organisations = [new Organisation { OrganisationRole = OrganisationRoles.Producer }]
+        };
+        var mockHttpContextAccessor = CreateMockHttpContextAccessor(userDataDto);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, mockHttpContextAccessor.Object);
+
+        // act & assert
+        var ex = Assert.Throws<ArgumentException>(() => sut.ValidateRegistrationYear("-2026", isParamOptional: false));
+        ex.Message.Should().Contain("Invalid registration year");
+    }
+
+    #endregion
 }

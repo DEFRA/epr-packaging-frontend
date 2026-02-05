@@ -68,8 +68,7 @@ public class RegistrationApplicationServiceTests
         {
             LateFeeDeadline2025 = new(2025, 4, 1),
             LargeProducerLateFeeDeadline2026 = new(2025, 10, 1),
-            SmallProducerLateFeeDeadline2026 = new(2026, 4, 1),
-            RegistrationYear = $"{_validRegistrationYear}, {(_validRegistrationYear + 1)}"
+            SmallProducerLateFeeDeadline2026 = new(2026, 4, 1)
         });
 
         _fixture = new Fixture();
@@ -839,8 +838,7 @@ public class RegistrationApplicationServiceTests
         {
             LateFeeDeadline2025 = new(dateTime2025.Year, 4, 1),
             LargeProducerLateFeeDeadline2026 = new(dateTime2025.Year, 10, 1),
-            SmallProducerLateFeeDeadline2026 = dateTime2025.AddDays(-1),
-            RegistrationYear = $"{dateTime2025.Year}, {dateTime2025.AddYears(1).Year}"
+            SmallProducerLateFeeDeadline2026 = dateTime2025.AddDays(-1)
         });
 
         var deps = new RegistrationApplicationServiceDependencies
@@ -2622,47 +2620,6 @@ public class RegistrationApplicationServiceTests
     }
 
  
-    [Test]
-    public async Task ValidateRegistrationYear_ShouldReturnNull_WhenYearIsEmpty_AndParamOptionalIsTrue()
-    {
-        // Act
-        var result = _service.ValidateRegistrationYear("", true);
-
-        // Assert
-        result.Should().BeNull();
-    }
-
-    [Test]
-    public async Task ValidateRegistrationYear_ShouldThrowArgumentException_WhenYearIsEmpty_AndParamOptionalIsFalse()
-    {
-        var act = async () => _service.ValidateRegistrationYear("");
-        await act.Should().ThrowAsync<ArgumentException>()
-            .WithMessage("Registration year missing");
-    }
-
-    [Test]
-    public async Task ValidateRegistrationYear_ShouldThrowArgumentException_WhenYearIsNotANumber()
-    {
-        var act = async () => _service.ValidateRegistrationYear("test");
-        await act.Should().ThrowAsync<ArgumentException>()
-            .WithMessage("Registration year is not a valid number");
-    }
-
-    [Test]
-    public async Task ValidateRegistrationYear_ShouldThrowArgumentException_WhenInvalidRegistrationYear()
-    {
-        var act = async () => _service.ValidateRegistrationYear("2050");
-        await act.Should().ThrowAsync<ArgumentException>()
-            .WithMessage("Invalid registration year");
-    }
-
-    [Test]
-    public async Task ValidateRegistrationYear_ShouldReturnYear_WhenValid()
-    {
-        var result = _service.ValidateRegistrationYear(_validRegistrationYear.ToString());
-        result.Should().Be(_validRegistrationYear);
-    }
-
     [Test]
     public async Task GetProducerRegistrationFees_WhenV2Enabled_SendsV2Request_With_All_New_Fields()
     {

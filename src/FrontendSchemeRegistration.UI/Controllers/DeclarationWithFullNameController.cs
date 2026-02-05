@@ -5,7 +5,7 @@ using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
 using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
 using FrontendSchemeRegistration.UI.Extensions;
-using FrontendSchemeRegistration.UI.Services;
+using FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +20,7 @@ public class DeclarationWithFullNameController(
     ISubmissionService submissionService,
     ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
     ILogger<DeclarationWithFullNameController> logger,
-    IRegistrationApplicationService registrationApplicationService) : Controller
+    IRegistrationPeriodProvider registrationPeriodProvider) : Controller
 {
     private const string ViewName = "DeclarationWithFullName";
     private const string ConfirmationViewName = "CompanyDetailsConfirmation";
@@ -31,7 +31,7 @@ public class DeclarationWithFullNameController(
     public async Task<IActionResult> Get([FromQuery]Guid submissionId)
     {
         var userData = User.GetUserData();
-        var registrationYear = registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
+        var registrationYear = registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
 
         var session = await sessionManager.GetSessionAsync(HttpContext.Session);
 

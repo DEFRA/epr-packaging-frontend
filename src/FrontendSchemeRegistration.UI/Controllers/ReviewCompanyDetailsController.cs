@@ -5,7 +5,7 @@ using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
 using FrontendSchemeRegistration.UI.Extensions;
-using FrontendSchemeRegistration.UI.Services;
+using FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -22,21 +22,21 @@ public class ReviewCompanyDetailsController : Controller
     private readonly IUserAccountService _accountService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
     private readonly ILogger<ReviewCompanyDetailsController> _logger;
-    private readonly IRegistrationApplicationService _registrationApplicationService;
+    private readonly IRegistrationPeriodProvider _registrationPeriodProvider;
 
     public ReviewCompanyDetailsController(
         ISubmissionService submissionService,
         IUserAccountService accountService,
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
         ILogger<ReviewCompanyDetailsController> logger,
-        IRegistrationApplicationService registrationApplicationService)
+        IRegistrationPeriodProvider registrationPeriodProvider)
 
     {
         _submissionService = submissionService;
         _accountService = accountService;
         _sessionManager = sessionManager;
         _logger = logger;
-        _registrationApplicationService = registrationApplicationService;
+        _registrationPeriodProvider = registrationPeriodProvider;
     }
 
     [HttpGet]
@@ -44,7 +44,7 @@ public class ReviewCompanyDetailsController : Controller
     public async Task<IActionResult> Get([FromQuery] Guid submissionId)
     {
         var userData = User.GetUserData();
-        var registrationYear = _registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
+        var registrationYear = _registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
 
         var submission = await _submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
 

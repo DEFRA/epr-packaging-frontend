@@ -3,19 +3,19 @@
 using Application.Constants;
 using Application.DTOs.Submission;
 using Application.Enums;
+using Application.Options;
 using Application.Services.Interfaces;
 using Constants;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using Extensions;
-using global::FrontendSchemeRegistration.Application.Options;
-using global::FrontendSchemeRegistration.UI.Services;
-using global::FrontendSchemeRegistration.UI.Services.FileUploadLimits;
 using Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Services.FileUploadLimits;
 using Services.Interfaces;
+using Services.RegistrationPeriods;
 using Sessions;
 using UI.Attributes.ActionFilters;
 using ViewModels;
@@ -29,20 +29,20 @@ public class FileUploadPartnershipsController : Controller
     private readonly ISessionManager<RegistrationApplicationSession> _registrationApplicationSession;
     private readonly ISubmissionService _submissionService;
     private readonly IOptions<GlobalVariables> _globalVariables;
-    private readonly IRegistrationApplicationService _registrationApplicationService;
+    private readonly IRegistrationPeriodProvider _registrationPeriodProvider;
 
     public FileUploadPartnershipsController(
         ISubmissionService submissionService,
         IFileUploadService fileUploadService,
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
-        IRegistrationApplicationService registrationApplicationService,
+        IRegistrationPeriodProvider registrationPeriodProvider,
         IOptions<GlobalVariables> globalVariables,
         ISessionManager<RegistrationApplicationSession> registrationApplicationSession)
     {
         _submissionService = submissionService;
         _fileUploadService = fileUploadService;
         _sessionManager = sessionManager;
-        _registrationApplicationService = registrationApplicationService;
+        _registrationPeriodProvider = registrationPeriodProvider;
         _globalVariables = globalVariables;
         _registrationApplicationSession = registrationApplicationSession;
     }
@@ -52,7 +52,7 @@ public class FileUploadPartnershipsController : Controller
     [SubmissionPeriodActionFilter(PagePaths.FileUploadCompanyDetailsSubLanding)]
     public async Task<IActionResult> Get()
     {
-        var registrationYear = _registrationApplicationService.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
+        var registrationYear = _registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
         
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         if (session is null)
@@ -108,7 +108,7 @@ public class FileUploadPartnershipsController : Controller
         var submissionId = Guid.Parse(Request.Query["submissionId"]);
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         var organisationRole = session.UserData.Organisations.FirstOrDefault()?.OrganisationRole;
-        var registrationYear = _registrationApplicationService.ValidateRegistrationYear(registrationyear, true);
+        var registrationYear = _registrationPeriodProvider.ValidateRegistrationYear(registrationyear, true);
 
         submissionId = await _fileUploadService.ProcessUploadAsync(
             Request.ContentType,

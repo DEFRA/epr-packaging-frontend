@@ -29,6 +29,8 @@ using Organisation = EPR.Common.Authorization.Models.Organisation;
 
 namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
 
+using UI.Services.RegistrationPeriods;
+
 [TestFixture]
 public class RegistrationApplicationControllerTests
 {
@@ -110,6 +112,7 @@ public class RegistrationApplicationControllerTests
 
     private Mock<IRegistrationApplicationService> RegistrationApplicationService { get; set; }
 
+    private Mock<IRegistrationPeriodProvider> RegistrationPeriodProvider { get; set; }
     private Mock<ILogger<RegistrationApplicationController>> LoggerMock { get; set; }
 
     private RegistrationApplicationSession Session { get; set; }
@@ -126,11 +129,13 @@ public class RegistrationApplicationControllerTests
 
         LoggerMock = new Mock<ILogger<RegistrationApplicationController>>();
         RegistrationApplicationService = new Mock<IRegistrationApplicationService>();
+        RegistrationPeriodProvider = new();
 
         SystemUnderTest = new RegistrationApplicationController(
             SessionManagerMock.Object,
             LoggerMock.Object,
-            RegistrationApplicationService.Object);
+            RegistrationApplicationService.Object,
+            RegistrationPeriodProvider.Object);
         SystemUnderTest.ControllerContext.HttpContext = _httpContextMock.Object;
         SystemUnderTest.ControllerContext.HttpContext.Session = new Mock<ISession>().Object;
         SystemUnderTest.TempData = tempDataDictionaryMock.Object;
@@ -1792,7 +1797,7 @@ public class RegistrationApplicationControllerTests
         SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(Session);
 
         RegistrationApplicationService.Setup(x => x.InitiatePayment(It.IsAny<ClaimsPrincipal>(), It.IsAny<ISession>())).ReturnsAsync(string.Empty);
-        RegistrationApplicationService.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(DateTime.Now.Year);
+        RegistrationPeriodProvider.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(DateTime.Now.Year);
 
 
         // Act
