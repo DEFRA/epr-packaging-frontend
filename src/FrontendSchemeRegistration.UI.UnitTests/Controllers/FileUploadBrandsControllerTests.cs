@@ -8,7 +8,7 @@ using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
 using FrontendSchemeRegistration.Application.Options;
-using FrontendSchemeRegistration.UI.Services;
+using FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -29,7 +29,7 @@ public class FileUploadBrandsControllerTests
     private Mock<IFileUploadService> _fileUploadServiceMock;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
     private FileUploadBrandsController _systemUnderTest;
-    private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
+    private Mock<IRegistrationPeriodProvider> _registrationPeriodProviderMock;
     private Mock<ISessionManager<RegistrationApplicationSession>> _registrationApplicationSessionManagerMock;
 
     [SetUp]
@@ -37,7 +37,7 @@ public class FileUploadBrandsControllerTests
     {
         _submissionServiceMock = new Mock<ISubmissionService>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
-        _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
+        _registrationPeriodProviderMock = new Mock<IRegistrationPeriodProvider>();
         _registrationApplicationSessionManagerMock = new Mock<ISessionManager<RegistrationApplicationSession>>();
 
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
@@ -70,7 +70,7 @@ public class FileUploadBrandsControllerTests
                 }
             });
         _fileUploadServiceMock = new Mock<IFileUploadService>();
-        _registrationApplicationServiceMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(DateTime.Now.Year);
+        _registrationPeriodProviderMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(DateTime.Now.Year);
 
         _systemUnderTest = new FileUploadBrandsController(
             _submissionServiceMock.Object, 
@@ -78,7 +78,7 @@ public class FileUploadBrandsControllerTests
             _sessionManagerMock.Object,
             _registrationApplicationSessionManagerMock.Object,
             Options.Create(new GlobalVariables { FileUploadLimitInBytes = 268435456, SubsidiaryFileUploadLimitInBytes = 61440 }),
-            _registrationApplicationServiceMock.Object);
+            _registrationPeriodProviderMock.Object);
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext

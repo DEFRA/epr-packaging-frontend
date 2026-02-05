@@ -10,6 +10,14 @@ public interface IRegistrationPeriodProvider
     IReadOnlyCollection<RegistrationWindow> GetActiveRegistrationWindows(bool isCso);
 
     /// <summary>
+    /// Returns the parsed registration year if the input parameter is valid and matches the
+    /// configured registration years and that registration year has started (based on whether
+    /// the user's organisation is a CSO or not)
+    /// </summary>
+    /// <param name="registrationYear"></param>
+    /// <param name="isParamOptional"></param>
+    /// <returns></returns>
+    int? ValidateRegistrationYear(string? registrationYear, bool isParamOptional = false);
     /// Returns all registration windows, whether they are closed or in the future. Will return
     /// a future window if that window's opening date is this year
     /// </summary>

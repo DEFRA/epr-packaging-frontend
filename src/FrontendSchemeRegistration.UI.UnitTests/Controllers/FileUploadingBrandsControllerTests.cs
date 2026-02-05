@@ -7,7 +7,7 @@ using Constants;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
-using FrontendSchemeRegistration.UI.Services;
+using FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
@@ -24,7 +24,7 @@ public class FileUploadingBrandsControllerTests
     private Mock<ISubmissionService> _submissionServiceMock;
     private FileUploadingBrandsController _systemUnderTest;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
-    private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
+    private Mock<IRegistrationPeriodProvider> _registrationPeriodProviderMock;
     private Mock<ISessionManager<RegistrationApplicationSession>> _registrationApplicationSessionManagerMock;
 
     [SetUp]
@@ -32,7 +32,7 @@ public class FileUploadingBrandsControllerTests
     {
         _submissionServiceMock = new Mock<ISubmissionService>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
-        _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
+        _registrationPeriodProviderMock = new Mock<IRegistrationPeriodProvider>();
         _registrationApplicationSessionManagerMock = new Mock<ISessionManager<RegistrationApplicationSession>>();
 
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
@@ -59,13 +59,13 @@ public class FileUploadingBrandsControllerTests
                     }
                 }
             });
-        _registrationApplicationServiceMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(DateTime.Now.Year);
+        _registrationPeriodProviderMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(DateTime.Now.Year);
 
         _systemUnderTest = new FileUploadingBrandsController(
             _submissionServiceMock.Object,
             _sessionManagerMock.Object,
             _registrationApplicationSessionManagerMock.Object,
-            _registrationApplicationServiceMock.Object);
+            _registrationPeriodProviderMock.Object);
 
         _systemUnderTest.ControllerContext = new ControllerContext
         {

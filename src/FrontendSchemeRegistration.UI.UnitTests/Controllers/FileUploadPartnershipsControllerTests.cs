@@ -9,7 +9,7 @@ using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
 using FrontendSchemeRegistration.Application.Options;
-using FrontendSchemeRegistration.UI.Services;
+using FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -30,7 +30,7 @@ public class FileUploadPartnershipsControllerTests
     private Mock<IFileUploadService> _fileUploadServiceMock;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
     private FileUploadPartnershipsController _systemUnderTest;
-    private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
+    private Mock<IRegistrationPeriodProvider> _registrationPeriodProviderMock;
     private Mock<ISessionManager<RegistrationApplicationSession>> _registrationApplicationSessionMock;
     private Mock<IUrlHelper> _urlHelperMock;
 
@@ -39,7 +39,7 @@ public class FileUploadPartnershipsControllerTests
     {
         _submissionServiceMock = new Mock<ISubmissionService>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
-        _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
+        _registrationPeriodProviderMock = new Mock<IRegistrationPeriodProvider>();
         _registrationApplicationSessionMock = new Mock<ISessionManager<RegistrationApplicationSession>>();
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
@@ -85,7 +85,7 @@ public class FileUploadPartnershipsControllerTests
             (_submissionServiceMock.Object,
             _fileUploadServiceMock.Object,
             _sessionManagerMock.Object,
-            _registrationApplicationServiceMock.Object,
+            _registrationPeriodProviderMock.Object,
             Options.Create(new GlobalVariables { FileUploadLimitInBytes = 268435456, SubsidiaryFileUploadLimitInBytes = 61440 }),
             _registrationApplicationSessionMock.Object);
         _systemUnderTest.Url = _urlHelperMock.Object;

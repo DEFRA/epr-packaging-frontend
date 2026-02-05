@@ -8,13 +8,14 @@ using Constants;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
-using FrontendSchemeRegistration.UI.Services;
+using FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using Moq;
 using UI.Controllers;
 using UI.Controllers.ControllerExtensions;
+using UI.Services;
 using UI.Sessions;
 using UI.ViewModels;
 
@@ -26,6 +27,7 @@ public class UploadingOrganisationDetailsControllerTests
     private UploadingOrganisationDetailsController _testUploadingOrgDetailsController;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
     private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
+    private Mock<IRegistrationPeriodProvider> _registrationPeriodProviderMock;
 
     [SetUp]
     public void SetUp()
@@ -33,6 +35,7 @@ public class UploadingOrganisationDetailsControllerTests
         _submissionServiceMock = new Mock<ISubmissionService>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
+        _registrationPeriodProviderMock = new Mock<IRegistrationPeriodProvider>();
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
@@ -57,8 +60,8 @@ public class UploadingOrganisationDetailsControllerTests
                     }
                 }
             });
-        _registrationApplicationServiceMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(DateTime.Now.Year);
-        _testUploadingOrgDetailsController = new UploadingOrganisationDetailsController(_submissionServiceMock.Object, _sessionManagerMock.Object, _registrationApplicationServiceMock.Object);
+        _registrationPeriodProviderMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(DateTime.Now.Year);
+        _testUploadingOrgDetailsController = new UploadingOrganisationDetailsController(_submissionServiceMock.Object, _sessionManagerMock.Object, _registrationPeriodProviderMock.Object);
         _testUploadingOrgDetailsController.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
