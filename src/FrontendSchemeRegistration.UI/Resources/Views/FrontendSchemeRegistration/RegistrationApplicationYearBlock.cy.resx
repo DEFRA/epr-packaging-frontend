@@ -67,7 +67,6 @@
 	<data name="Your_registration_application_for_x_has_been_submitted" xml:space="preserve">
     <value>Mae eich cais am gofrestru ar gyfer {0} wedi'i gyflwyno.</value>
   </data>
-
 	<data name="You_have_resubmitted_your_registration_data_for_x" xml:space="preserve">
     <value>Rydych chi wedi ailgyflwyno'ch data cofrestru ar gyfer {0}.</value>
   </data>
@@ -96,10 +95,10 @@
       <value>Cofrestru cynhyrchydd mawr ar gyfer {0} </value>
   </data>
 	<data name="legacy_registration_instructions1" xml:space="preserve">
-    <value>[Welsh]The deadline for {0} registration has passed.</value>
+    <value>Mae'r dyddiad cau i gofrestru ar gyfer {0} wedi mynd heibio.</value>
   </data>
 	<data name="legacy_registration_instructions2" xml:space="preserve">
-    <value>[Welsh]You can still register, but may incur a late fee.</value>
+    <value>Gallwch gofrestru o hyd, ond efallai y byddwch yn wynebu ffi hwyr.</value>
   </data>
   <data name="cso_small_producer_instructions1" xml:space="preserve">
       <value>Rhaid i gynhyrchwyr bach wneud cais i gofrestru ar neu cyn {0}.</value>
@@ -114,36 +113,36 @@
       <value>Gallai ceisiadau a wneir ar ôl y dyddiad hwn arwain at ffi hwyr.</value>
   </data>
 	<data name="direct_large_producer_open_instructions1" xml:space="preserve">
-    <value>[Welsh]Large producers must register by {0} on {1}.</value>
+    <value>Rhaid i gynhyrchwyr mawr gofrestru erbyn {0} ar {1}.</value>
   </data>
 	<data name="direct_large_producer_open_instructions2" xml:space="preserve">
-    <value>[Welsh]Small producers can register from {0}. The deadline is {1} on {2}.</value>
+    <value>Mae cynhyrchwyr bach yn cael cofrestru o {0}. Y dyddiad cau yw {1} ar {2}.</value>
   </data>
 	<data name="direct_large_producer_open_instructions3" xml:space="preserve">
-    <value>[Welsh]You can register after these deadlines, but may incur a late fee.</value>
+    <value>Gallwch gofrestru ar ôl y dyddiadau cau hyn, ond efallai y byddwch yn wynebu ffi hwyr.</value>
   </data>
 	<data name="direct_large_producer_late_instructions1" xml:space="preserve">
-    <value>[Welsh]The deadline for large producer registration was {0} on {1}. You can still register, but may incur a late fee.</value>
+    <value>Y dyddiad cau ar gyfer cofrestru cynhyrchwyr mawr oedd {0} ar {1}. Gallwch gofrestru o hyd, ond efallai y byddwch yn wynebu ffi hwyr.</value>
   </data>
 	<data name="direct_large_producer_late_instructions2" xml:space="preserve">
-    <value>[Welsh]Small producers can register from {0}. The deadline is {1} on {2}.</value>
+    <value>Mae cynhyrchwyr bach yn cael cofrestru o {0}. Y dyddiad cau yw {1} ar {2}.</value>
   </data>
 	<data name="direct_small_producer_open_instructions1" xml:space="preserve">
-    <value>[Welsh]Small producers must register by {0} on {1}.</value>
+    <value>Rhaid i gynhyrchwyr bach gofrestru erbyn {0} ar {1}.</value>
   </data>
 	<data name="direct_small_producer_open_instructions2" xml:space="preserve">
-    <value>[Welsh]The deadline for large producer registration was {0} on {1}.</value>
+    <value>Y dyddiad cau ar gyfer cofrestru cynhyrchwyr mawr oedd {0} ar {1}.</value>
   </data>
 	<data name="direct_small_producer_open_instructions3" xml:space="preserve">
-    <value>[Welsh]Large producers can still register, but may incur a late fee.</value>
+    <value>Mae cynhyrchwyr mawr yn cael cofrestru o hyd, ond efallai y byddan nhw'n wynebu ffi hwyr.</value>
   </data>
 	<data name="direct_small_producer_late_instructions1" xml:space="preserve">
-    <value>[Welsh]The deadline for small producer registration was {0} on {1}.</value>
+    <value>Y dyddiad cau ar gyfer cofrestru cynhyrchwyr bach oedd {0} ar {1}.</value>
   </data>
 	<data name="direct_small_producer_late_instructions2" xml:space="preserve">
-    <value>[Welsh]The deadline for large producer registration was {0} on {1}.</value>
+    <value>Y dyddiad cau ar gyfer cofrestru cynhyrchwyr mawr oedd {0} ar {1}.</value>
   </data>
 	<data name="direct_small_producer_late_instructions3" xml:space="preserve">
-    <value>[Welsh]You can register after these deadlines, but may incur a late fee.</value>
+    <value>Gallwch gofrestru ar ôl y dyddiadau cau hyn, ond efallai y byddwch yn wynebu ffi hwyr.</value>
   </data>
 </root>
