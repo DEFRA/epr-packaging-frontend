@@ -8,6 +8,7 @@ using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
 using FrontendSchemeRegistration.UI.Services;
+using FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
@@ -25,7 +26,7 @@ public class FileUploadCompanyDetailsSuccessControllerTests
     private FileUploadCompanyDetailsSuccessController _systemUnderTest;
     private Mock<ISubmissionService> _submissionServiceMock;
     private Mock<IUrlHelper> _urlHelperMock;
-    private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
+    private Mock<IRegistrationPeriodProvider> _registrationPeriodProviderMock;
 
     [SetUp]
     public void SetUp()
@@ -36,7 +37,7 @@ public class FileUploadCompanyDetailsSuccessControllerTests
         _urlHelperMock.Setup(x => x.Content(It.IsAny<string>())).Returns((string contentPath) => contentPath);
         _submissionServiceMock = new Mock<ISubmissionService>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
-        _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
+        _registrationPeriodProviderMock = new Mock<IRegistrationPeriodProvider>();
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
@@ -62,7 +63,7 @@ public class FileUploadCompanyDetailsSuccessControllerTests
                 }
             });
 
-        _systemUnderTest = new FileUploadCompanyDetailsSuccessController(_submissionServiceMock.Object, _sessionManagerMock.Object, _registrationApplicationServiceMock.Object);
+        _systemUnderTest = new FileUploadCompanyDetailsSuccessController(_submissionServiceMock.Object, _sessionManagerMock.Object, _registrationPeriodProviderMock.Object);
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext

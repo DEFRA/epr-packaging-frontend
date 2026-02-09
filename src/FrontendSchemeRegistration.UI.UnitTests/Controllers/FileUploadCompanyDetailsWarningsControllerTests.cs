@@ -6,7 +6,7 @@ using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Controllers;
 using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
-using FrontendSchemeRegistration.UI.Services;
+using FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Http;
@@ -28,7 +28,7 @@ public class FileUploadCompanyDetailsWarningsControllerTests
     private ValidationOptions _validationOptions;
     private Mock<IUrlHelper> _urlHelperMock;
     private const string SubmissionPeriod = "Jul to Dec 23";
-    private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
+    private Mock<IRegistrationPeriodProvider> _registrationPeriodProviderMock;
     int RegistrationYear = DateTime.Now.Year;
 
     private List<string> _journey = new()
@@ -49,8 +49,8 @@ public class FileUploadCompanyDetailsWarningsControllerTests
         _urlHelperMock.Setup(x => x.Content(It.IsAny<string>())).Returns((string contentPath) => contentPath);
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _validationOptions = new ValidationOptions { MaxIssuesToProcess = 100 };
-        _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
-        _registrationApplicationServiceMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(RegistrationYear);
+        _registrationPeriodProviderMock = new Mock<IRegistrationPeriodProvider>();
+        _registrationPeriodProviderMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(RegistrationYear);
 
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
@@ -66,7 +66,7 @@ public class FileUploadCompanyDetailsWarningsControllerTests
         _systemUnderTest = new FileUploadCompanyDetailsWarningsController(
             _submissionServiceMock.Object,
             _sessionManagerMock.Object,
-            Options.Create(_validationOptions), _registrationApplicationServiceMock.Object);
+            Options.Create(_validationOptions), _registrationPeriodProviderMock.Object);
 
         _systemUnderTest.ControllerContext = new ControllerContext
         {
@@ -95,7 +95,7 @@ public class FileUploadCompanyDetailsWarningsControllerTests
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync((PomSubmission)null);
         if (!hasRegistrationYear)
         {
-            _registrationApplicationServiceMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
+            _registrationPeriodProviderMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns((int?)null);
         }
 
@@ -126,7 +126,7 @@ public class FileUploadCompanyDetailsWarningsControllerTests
         // Arrange
         if (!hasRegistrationYear)
         {
-            _registrationApplicationServiceMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
+            _registrationPeriodProviderMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns((int?)null);
         }
 
@@ -192,7 +192,7 @@ public class FileUploadCompanyDetailsWarningsControllerTests
 
         if (!hasRegistrationYear)
         {
-            _registrationApplicationServiceMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
+            _registrationPeriodProviderMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns((int?)null);
         }
         //~//report-organisation-details?registrationyear=2025
@@ -245,7 +245,7 @@ public class FileUploadCompanyDetailsWarningsControllerTests
 
         if (!hasRegistrationYear)
         {
-            _registrationApplicationServiceMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
+            _registrationPeriodProviderMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns((int?)null);
         }
 
@@ -287,7 +287,7 @@ public class FileUploadCompanyDetailsWarningsControllerTests
 
         if (!hasRegistrationYear)
         {
-            _registrationApplicationServiceMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
+            _registrationPeriodProviderMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns((int?)null);
         }
 
@@ -347,7 +347,7 @@ public class FileUploadCompanyDetailsWarningsControllerTests
 
         if (hasRegistrationYear)
         {
-            _registrationApplicationServiceMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
+            _registrationPeriodProviderMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns((int?)null);
         }
 
