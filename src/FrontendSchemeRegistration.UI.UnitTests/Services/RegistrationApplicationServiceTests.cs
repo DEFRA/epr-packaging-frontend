@@ -2623,6 +2623,8 @@ public class RegistrationApplicationServiceTests
     [Test]
     public async Task GetProducerRegistrationFees_WhenV2Enabled_SendsV2Request_With_All_New_Fields()
     {
+
+        _dateTimeProvider.SetUtcNow(DateTime.UtcNow);
         _featureManagerMock.Setup(f => f.IsEnabledAsync("EnableRegistrationFeeV2")).ReturnsAsync(true);
 
         _session.Period = new SubmissionPeriod { StartMonth = "January", EndMonth = "June", Year = "2025" };

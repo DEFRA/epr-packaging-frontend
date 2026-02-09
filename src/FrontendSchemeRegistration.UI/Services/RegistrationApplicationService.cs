@@ -603,9 +603,9 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     /// Use RegistrationApplicationSubmittedDate if it exists (aligns with Regulator portal),
     /// otherwise use current date (provides accurate current fee value before application is submitted).
     /// </summary>
-    private static DateTime GetSubmissionDateForFeeCalculation(RegistrationApplicationSession session)
+    private DateTime GetSubmissionDateForFeeCalculation(RegistrationApplicationSession session)
     {
-        return session.RegistrationApplicationSubmittedDate ?? DateTime.UtcNow;
+        return session.RegistrationApplicationSubmittedDate ?? _timeProvider.GetLocalNow().UtcDateTime;
     }
     
     // this structure provides data for tile representing a CSO reg window AND for the single tile that represents the two Direct registration windows,
