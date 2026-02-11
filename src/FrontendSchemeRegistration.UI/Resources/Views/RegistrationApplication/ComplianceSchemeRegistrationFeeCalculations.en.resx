@@ -132,6 +132,12 @@
   <data name="registration_fees_calculated_from_your_information" xml:space="preserve">
     <value>Registration fees are calculated from the information you have supplied.</value>
   </data>
+  <data name="registration_fee_may_change" xml:space="preserve">
+    <value>The final amount depends on when you submit your registration application, as charges may increase each year.</value>
+  </data>
+  <data name="registration_charge_details" xml:space="preserve">
+    <value>View Registration guidance including details of charges</value>
+  </data>
   <data name="more_about_EPR_fees_and_charges" xml:space="preserve">
     <value>More about extended producer responsibility (EPR) fees and charges</value>
   </data>
@@ -142,6 +148,6 @@
     <value>Return to the registration steps</value>
   </data>
   <data name="registration_fee_due_x_to_process_application" xml:space="preserve">
-    <value>A registration fee of &lt;strong&gt;£{0}&lt;/strong&gt; is due.</value>
+    <value>A registration fee of &lt;strong&gt;£{0}&lt;/strong&gt; is due based on current registration charges.</value>
   </data>
 </root>
