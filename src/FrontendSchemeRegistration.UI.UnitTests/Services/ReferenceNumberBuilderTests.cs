@@ -64,4 +64,24 @@ public class ReferenceNumberBuilderTests
         
         Assert.That(refNo, Is.EqualTo(expected));
     }
+    
+    [Test]
+    [TestCase(2025, 12, 31, "2025", "January", "December", "PEPROrg25P1", null)]
+    [TestCase(2025, 12, 31, "2025", "January", "December", "PEPROrg25P1", "")]
+    [TestCase(2025, 12, 31, "2025", "January", "December", "PEPROrg25P1", "   ")]
+    public void BuildReferenceNumber_WhenRegistrationJourneyIsNullOrEmpty_DoesNotAppendLOrS(int nowYear, int nowMonth, int nowDay, string subYear, string startMonth, string endMonth, string expected, string? journey)
+    {
+        var tp = new FakeTimeProvider();
+        tp.SetUtcNow(new DateTimeOffset(nowYear, nowMonth, nowDay, 0, 0, 1, TimeSpan.Zero));
+        var sp = new SubmissionPeriod
+        {
+            Year = subYear,
+            EndMonth = endMonth,
+            StartMonth = startMonth
+        };
+        
+        var refNo = ReferenceNumberBuilder.Build(sp, "Org", tp, false, 0, journey);
+        
+        Assert.That(refNo, Is.EqualTo(expected));
+    }
 }
