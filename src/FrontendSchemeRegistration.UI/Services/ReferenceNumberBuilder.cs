@@ -13,9 +13,16 @@ public static class ReferenceNumberBuilder
         int? complianceSchemeRowNumber,
         string? registrationJourney)
     {
-        var regSize = string.IsNullOrWhiteSpace(registrationJourney) 
-            ? string.Empty 
-            : registrationJourney.ToLower().Contains("large") ? "L" : "S";
+        string regSize;
+        if (string.IsNullOrWhiteSpace(registrationJourney))
+        {
+            regSize = string.Empty;
+        }
+        else
+        {
+            regSize = registrationJourney.ToLower().Contains("large") ? "L" : "S";
+        }
+        
         var referenceNumber = organisationNumber;
         var intMonth = DateTime.Parse("20 " + period.EndMonth + " 2000", CultureInfo.InvariantCulture).Month;
         var daysInMonth = DateTime.DaysInMonth(Convert.ToInt32(period.Year), intMonth);
