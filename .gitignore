@@ -409,3 +409,5 @@ FodyWeavers.xsd
 
 **/appsettings.Development*.json
 /src/FrontendSchemeRegistration.UI/libman.json
+
+src/FrontendSchemeRegistration.UI.ComponentTests/Features/*.feature.cs

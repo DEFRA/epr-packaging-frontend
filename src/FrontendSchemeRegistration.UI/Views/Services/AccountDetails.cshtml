@@ -1,0 +1,26 @@
+@using FrontendSchemeRegistration.UI.Controllers
+@model FrontendSchemeRegistration.UI.Controllers.StubAuthenticationViewModel
+
+<div class="govuk-width-container">
+    <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h1 class="govuk-heading-xl">Stub Account details</h1>
+                <form method="POST" asp-route="@StubAuthRouteNames.StubAccountPost">
+                    <input asp-for="ReturnUrl" type="hidden"/>
+                    <div class="govuk-form-group">
+                        <label class="govuk-label" asp-for="UserId">UserId</label>
+                        <input class="govuk-input" asp-for="UserId" type="text">
+                    </div>
+                    <div class="govuk-form-group">
+                        <label class="govuk-label" asp-for="Email">Email</label>
+                        <input class="govuk-input" asp-for="Email" type="email">
+                    </div>
+                    <div class="govuk-button-group">
+                        <button class="govuk-button" data-module="govuk-button" type="submit">Sign In</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>

@@ -65,7 +65,7 @@ public class ServiceProviderExtensionTests
         var mockEnvironment = new Mock<IWebHostEnvironment>();
 
         // Act
-        services.RegisterWebComponents(_configuration, mockEnvironment.Object);
+        services.RegisterWebComponents(_configuration, mockEnvironment.Object, false);
 
         // Assert
         services.Count.Should().BeGreaterThan(0);
