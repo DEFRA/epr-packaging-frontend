@@ -511,8 +511,10 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     }
 
     /// <summary>
-    /// This method resets the session, as it makes multiple calls to <see cref="GetRegistrationApplicationSession"/>
-    /// each of which makes changes to the session, therefore making any stored session data unreliable
+    /// Builds view models for rendering a list of registration tiles for each window that applies to the organisation.
+    /// 
+    /// This method resets the session. It makes multiple calls to <see cref="GetRegistrationApplicationSession"/>
+    /// each of which makes changes to the session based on that particular application, therefore making any stored session data unreliable
     /// </summary>
     /// <param name="httpSession"></param>
     /// <param name="organisation"></param>
