@@ -22,13 +22,13 @@
 		<value>Ffi gofrestru</value>
 	</data>
 	<data name="registration_fee_due_x" xml:space="preserve">
-		<value>[Welsh] A registration fee of &lt;strong&gt;£{0}&lt;/strong&gt; is due based on current registration charges.</value>
+		<value>Mae ffi gofrestru o <strong>£{0}</strong> i'w thalu ar sail y taliadau cofrestru presennol.</value>
 	</data>
   <data name="registration_fee_may_change" xml:space="preserve">
-    <value>[Welsh] The final amount depends on when you submit your registration application, as charges may increase each year.</value>
+    <value>Mae'r swm terfynol yn dibynnu ar ba bryd y byddwch chi'n cyflwyno'ch cais am gofrestru, gan fod y taliadau'n gallu codi bob blwyddyn.</value>
   </data>
   <data name="registration_charge_details" xml:space="preserve">
-    <value>[Welsh] View Registration guidance including details of charges</value>
+    <value>Gweld y canllawiau ar gofrestru a'r taliadau</value>
   </data>
 	<data name="registration_fees_calculated_from_your_information" xml:space="preserve">
 		<value>Mae ffioedd cofrestru’n cael eu cyfrif ar sail yr wybodaeth rydych chi wedi’i darparu.</value>
