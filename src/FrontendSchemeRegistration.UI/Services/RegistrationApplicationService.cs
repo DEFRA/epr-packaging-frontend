@@ -17,7 +17,10 @@ using Microsoft.FeatureManagement;
 namespace FrontendSchemeRegistration.UI.Services;
 
 using System.Collections.Immutable;
+using Application.Constants;
+using Application.DTOs.ComplianceScheme;
 using Application.Services;
+using Controllers;
 using RegistrationPeriods;
 using ViewModels.Shared;
 
@@ -33,6 +36,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     private readonly IOptions<GlobalVariables> globalVariables;
     private readonly TimeProvider _timeProvider;
     private readonly IRegistrationPeriodProvider _registrationPeriodProvider;
+    private readonly IComplianceSchemeService complianceSchemeService;
 
     public RegistrationApplicationService(RegistrationApplicationServiceDependencies dependencies, TimeProvider timeProvider)
     {
@@ -56,6 +60,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         globalVariables = dependencies.GlobalVariables
             ?? throw new InvalidOperationException($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(dependencies.GlobalVariables)} cannot be null.");
         _registrationPeriodProvider = dependencies.RegistrationPeriodProvider;
+        complianceSchemeService = dependencies.ComplianceSchemeService;
     }
     private void SetLateFeeFlag(RegistrationApplicationSession session, int registrationYear)
     {
@@ -505,11 +510,20 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         await frontEndSessionManager.SaveSessionAsync(httpSession, frontEndSession);
     }
 
-    public async Task<List<RegistrationYearApplicationsViewModel>> BuildRegistrationYearApplicationsViewModels(ISession httpSession, Organisation organisation)
+    /// <summary>
+    /// This method resets the session, as it makes multiple calls to <see cref="GetRegistrationApplicationSession"/>
+    /// each of which makes changes to the session, therefore making any stored session data unreliable
+    /// </summary>
+    /// <param name="httpSession"></param>
+    /// <param name="organisation"></param>
+    /// <param name="userData"></param>
+    /// <returns></returns>
+    public async Task<List<RegistrationYearApplicationsViewModel>> BuildRegistrationYearApplicationsViewModels(ISession httpSession, Organisation organisation, UserData userData)
     {
         var applications = new List<RegistrationApplicationViewModel>();
 
         var isCso = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
+        await ResetSession();
 
         IReadOnlyCollection<RegistrationWindow> registrationWindows;
 
@@ -546,7 +560,29 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             });
         }
 
+        await ResetSession();
+
         return applications.GroupBy(a => a.RegistrationYear).Select(a => new RegistrationYearApplicationsViewModel(int.Parse(a.Key), a)).OrderByDescending(a => a.Year).ToList();
+
+        //build minimal session data to remove any pollution from previous journeys
+        async Task ResetSession()
+        {
+            FrontendSchemeRegistrationSession session;
+
+            if (isCso)
+            {
+                var existingSession = await frontEndSessionManager.GetSessionAsync(httpSession);
+                session = SetupMinimalSession.FrontendSchemeRegistrationSession(userData, existingSession.RegistrationSession.SelectedComplianceScheme);
+            }
+            else
+            {
+                var producerComplianceScheme = await complianceSchemeService.GetProducerComplianceScheme(organisation.Id!.Value);
+
+                session = SetupMinimalSession.FrontendSchemeRegistrationSession(producerComplianceScheme, userData);
+            }
+
+            await frontEndSessionManager.SaveSessionAsync(httpSession, session);
+        }
     }
 
     /// <summary>
@@ -628,7 +664,7 @@ public interface IRegistrationApplicationService
     Task SetRegistrationFileUploadSession(ISession httpSession, string organisationNumber, int registrationYear, bool? isResubmission);
 
     Task<List<RegistrationYearApplicationsViewModel>> BuildRegistrationYearApplicationsViewModels(
-        ISession httpSession, Organisation organisation);
+        ISession httpSession, Organisation organisation, UserData userData);
 }
 
 
@@ -643,4 +679,5 @@ public sealed class RegistrationApplicationServiceDependencies
     public required IHttpContextAccessor HttpContextAccessor { get; init; }
     public required IOptions<GlobalVariables> GlobalVariables { get; init; }
     public required IRegistrationPeriodProvider RegistrationPeriodProvider { get; init; }
+    public required IComplianceSchemeService ComplianceSchemeService { get; init; }
 }

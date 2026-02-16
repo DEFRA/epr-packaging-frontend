@@ -43,6 +43,7 @@ public class RegistrationApplicationServiceTests
     private Mock<IFeatureManager> _featureManagerMock;
     private Mock<IHttpContextAccessor> _httpContextAccessorMock;
     private Mock<IRegistrationPeriodProvider> _mockRegistrationPeriodProvider;
+    private Mock<IComplianceSchemeService> _mockComplianceSchemeService;
     private FakeTimeProvider _dateTimeProvider;
     private int _validRegistrationYear;
 
@@ -63,6 +64,7 @@ public class RegistrationApplicationServiceTests
         _featureManagerMock = new Mock<IFeatureManager>();
         _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
         _mockRegistrationPeriodProvider = new Mock<IRegistrationPeriodProvider>();
+        _mockComplianceSchemeService = new Mock<IComplianceSchemeService>();
         
         var globalVariables = Options.Create(new GlobalVariables
         {
@@ -83,7 +85,8 @@ public class RegistrationApplicationServiceTests
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
             GlobalVariables = globalVariables,
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            ComplianceSchemeService = _mockComplianceSchemeService.Object
         };
 
         _service = new RegistrationApplicationService(deps, _dateTimeProvider);
@@ -851,7 +854,8 @@ public class RegistrationApplicationServiceTests
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
             GlobalVariables = globalVariables,
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            ComplianceSchemeService = _mockComplianceSchemeService.Object
         };
 
         _service = new RegistrationApplicationService(deps, _dateTimeProvider);
@@ -2302,11 +2306,21 @@ public class RegistrationApplicationServiceTests
             OrganisationRole = OrganisationRoles.Producer
         };
 
+        var user = _fixture.Create<ClaimsPrincipal>();
+
+        var userData = new UserData
+        {
+            Id = Guid.NewGuid(),
+            Organisations = [new Organisation { Id = Guid.NewGuid() }]
+        };
+
+        user.SetupClaimsPrincipal(userData);
+
         _mockRegistrationPeriodProvider.Setup(x => x.GetAllRegistrationWindows(false))
             .Returns(new List<RegistrationWindow>());
 
         // Act
-        var result = await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation);
+        var result = await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation, userData);
 
         // Assert
         result.Should().NotBeNull();
@@ -2325,6 +2339,12 @@ public class RegistrationApplicationServiceTests
             OrganisationRole = OrganisationRoles.Producer
         };
 
+        var userData = new UserData
+        {
+            Id = Guid.NewGuid(),
+            Organisations = [new Organisation { Id = Guid.NewGuid() }]
+        };
+        
         var registrationApplicationSession = new RegistrationApplicationSession
         {
             ApplicationStatus = ApplicationStatusType.NotStarted,
@@ -2351,7 +2371,7 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(new RegistrationApplicationDetails());
 
         // Act
-        var result = await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation);
+        var result = await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation, userData);
 
         // Assert
         result.Should().NotBeNull();
@@ -2372,6 +2392,12 @@ public class RegistrationApplicationServiceTests
             OrganisationRole = OrganisationRoles.ComplianceScheme
         };
 
+        var userData = new UserData
+        {
+            Id = Guid.NewGuid(),
+            Organisations = [new Organisation { Id = Guid.NewGuid() }]
+        };
+
         IReadOnlyCollection<RegistrationWindow> registrationWindows =
         [
             CreateRegistrationWindow(WindowType.CsoLargeProducer, 2026),
@@ -2384,11 +2410,19 @@ public class RegistrationApplicationServiceTests
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
             .ReturnsAsync(_session);
 
+        var frontEndSession = new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession()
+        };
+
+        _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(frontEndSession);
+
         _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
             .ReturnsAsync(new RegistrationApplicationDetails());
 
         // Act
-        var result = await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation);
+        var result = await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation, userData);
 
         // Assert
         result.Should().NotBeNull();
@@ -2407,6 +2441,12 @@ public class RegistrationApplicationServiceTests
             Name = "Test Organisation",
             OrganisationNumber = "123456",
             OrganisationRole = OrganisationRoles.Producer
+        };
+
+        var userData = new UserData
+        {
+            Id = Guid.NewGuid(),
+            Organisations = [new Organisation { Id = Guid.NewGuid() }]
         };
 
         IReadOnlyCollection<RegistrationWindow> registrationWindows =
@@ -2428,7 +2468,7 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(new RegistrationApplicationDetails());
 
         // Act
-        var result = await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation);
+        var result = await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation, userData);
 
         // Assert
         result.Should().NotBeNull();
@@ -2448,6 +2488,12 @@ public class RegistrationApplicationServiceTests
             Name = "Test Organisation",
             OrganisationNumber = "123456",
             OrganisationRole = OrganisationRoles.Producer
+        };
+
+        var userData = new UserData
+        {
+            Id = Guid.NewGuid(),
+            Organisations = [new Organisation { Id = Guid.NewGuid() }]
         };
 
         var deadlineDate = new DateTime(2026, 7, 15);
@@ -2477,7 +2523,7 @@ public class RegistrationApplicationServiceTests
         _dateTimeProvider.SetUtcNow(new DateTime(2026, 6, 1));
 
         // Act
-        var result = await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation);
+        var result = await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation, userData);
 
         // Assert
         result.Should().NotBeNull();
@@ -2507,6 +2553,12 @@ public class RegistrationApplicationServiceTests
             OrganisationRole = OrganisationRoles.ComplianceScheme
         };
 
+        var userData = new UserData
+        {
+            Id = Guid.NewGuid(),
+            Organisations = [new Organisation { Id = Guid.NewGuid() }]
+        };
+
         IReadOnlyCollection<RegistrationWindow> registrationWindows =
         [
             CreateRegistrationWindow(WindowType.CsoLargeProducer, 2026)
@@ -2518,11 +2570,18 @@ public class RegistrationApplicationServiceTests
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
             .ReturnsAsync(_session);
 
+        var frontEndSession = new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession()
+        };
+
+        _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(frontEndSession);
         _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
             .ReturnsAsync(new RegistrationApplicationDetails());
 
         // Act
-        var result = await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation);
+        var result = await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation, userData);
 
         // Assert
         result.Should().NotBeNull();
@@ -2540,6 +2599,12 @@ public class RegistrationApplicationServiceTests
             Name = "Test Organisation",
             OrganisationNumber = "123456",
             OrganisationRole = OrganisationRoles.Producer
+        };
+
+        var userData = new UserData
+        {
+            Id = Guid.NewGuid(),
+            Organisations = [new Organisation { Id = Guid.NewGuid() }]
         };
 
         _dateTimeProvider.SetUtcNow(new DateTime(2026, 6, 1));
@@ -2561,7 +2626,7 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(new RegistrationApplicationDetails());
 
         // Act
-        await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation);
+        await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation, userData);
 
         // Assert
         _submissionServiceMock.Verify(
@@ -2570,6 +2635,104 @@ public class RegistrationApplicationServiceTests
                 r.OrganisationNumber == int.Parse(organisation.OrganisationNumber)
             )),
             Times.Once);
+    }
+
+    [Test]
+    public async Task BuildRegistrationYearApplicationsViewModels_ShouldResetSessionForDirectProducer()
+    {
+        // Arrange
+        var organisation = new Organisation
+        {
+            Id = Guid.NewGuid(),
+            Name = "Test Organisation",
+            OrganisationNumber = "123456",
+            OrganisationRole = OrganisationRoles.Producer
+        };
+
+        var userData = new UserData
+        {
+            Id = Guid.NewGuid(),
+            Organisations = [new Organisation { Id = Guid.NewGuid() }]
+        };
+
+        _dateTimeProvider.SetUtcNow(new DateTime(2026, 6, 1));
+        var journey = RegistrationJourney.DirectLargeProducer;
+        var registrationYear = 2026;
+
+        IReadOnlyCollection<RegistrationWindow> registrationWindows =
+        [
+            CreateRegistrationWindow(WindowType.DirectLargeProducer, registrationYear)
+        ];
+
+        _mockRegistrationPeriodProvider.Setup(x => x.GetAllRegistrationWindows(false))
+            .Returns(registrationWindows);
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(_session);
+
+        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(new RegistrationApplicationDetails());
+
+        // Act
+        await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation, userData);
+
+        // Assert
+        _mockComplianceSchemeService.Verify(x => x.GetProducerComplianceScheme(organisation.Id.Value)); // returns null
+        _frontEndSessionManagerMock.Verify(
+            x => x.SaveSessionAsync(It.IsAny<ISession>(), It.Is<FrontendSchemeRegistrationSession>(s => s.RegistrationSession.CurrentComplianceScheme == null)),
+            Times.Exactly(2));
+    }
+
+    [Test]
+    public async Task BuildRegistrationYearApplicationsViewModels_ShouldResetSessionForCso()
+    {
+        var organisation = new Organisation
+        {
+            Id = Guid.NewGuid(),
+            Name = "Test CSO",
+            OrganisationNumber = "999999",
+            OrganisationRole = OrganisationRoles.ComplianceScheme
+        };
+
+        var selectedComplianceSchemeId = Guid.NewGuid();
+        _session.SelectedComplianceScheme = new ComplianceSchemeDto { Id = selectedComplianceSchemeId, NationId = 1 };
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(_session);
+
+        var userData = new UserData
+        {
+            Id = Guid.NewGuid(),
+            Organisations = [new Organisation { Id = Guid.NewGuid() }]
+        };
+
+        IReadOnlyCollection<RegistrationWindow> registrationWindows =
+        [
+            CreateRegistrationWindow(WindowType.CsoLargeProducer, 2026)
+        ];
+
+        _mockRegistrationPeriodProvider.Setup(x => x.GetActiveRegistrationWindows(true))
+            .Returns(registrationWindows);
+
+        var frontEndSession = new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession()
+            {
+                SelectedComplianceScheme = new ComplianceSchemeDto { Id = selectedComplianceSchemeId, Name = "test", RowNumber = 1, NationId = 1, CreatedOn = DateTime.Now }
+            }
+        };
+
+        _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(frontEndSession);
+        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(new RegistrationApplicationDetails());
+
+        // Act
+        await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation, userData);
+
+        // Assert
+        _frontEndSessionManagerMock.Verify(
+            x => x.SaveSessionAsync(It.IsAny<ISession>(), It.Is<FrontendSchemeRegistrationSession>(s => s.RegistrationSession.SelectedComplianceScheme.Id == selectedComplianceSchemeId )),
+            Times.Exactly(2));
     }
 
     [Test]
@@ -2584,16 +2747,30 @@ public class RegistrationApplicationServiceTests
             OrganisationRole = OrganisationRoles.Producer
         };
 
+        var userData = new UserData
+        {
+            Id = Guid.NewGuid(),
+            Organisations = [new Organisation { Id = Guid.NewGuid() }]
+        };
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(_session);
+
         IReadOnlyCollection<RegistrationWindow> producerWindows = [];
 
         _mockRegistrationPeriodProvider.Setup(x => x.GetAllRegistrationWindows(false))
             .Returns(producerWindows);
 
-        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
-            .ReturnsAsync(_session);
+        var frontEndSession = new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession()
+        };
+
+        _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(frontEndSession);
 
         // Act
-        await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, producerOrganisation);
+        await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, producerOrganisation, userData);
 
         // Assert - Verify GetActiveRegistrationWindows was called with false for producer
         _mockRegistrationPeriodProvider.Verify(x => x.GetAllRegistrationWindows(false), Times.Once);
@@ -2613,7 +2790,7 @@ public class RegistrationApplicationServiceTests
             .Returns(csoWindows);
 
         // Act
-        await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, csoOrganisation);
+        await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, csoOrganisation, userData);
 
         // Assert - Verify GetActiveRegistrationWindows was called with true for CSO
         _mockRegistrationPeriodProvider.Verify(x => x.GetActiveRegistrationWindows(true), Times.Once);
@@ -2822,7 +2999,8 @@ public class RegistrationApplicationServiceTests
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
             GlobalVariables = Options.Create(new GlobalVariables()),
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            ComplianceSchemeService = _mockComplianceSchemeService.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -2843,7 +3021,8 @@ public class RegistrationApplicationServiceTests
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
             GlobalVariables = Options.Create(new GlobalVariables()),
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            ComplianceSchemeService = _mockComplianceSchemeService.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -2863,7 +3042,8 @@ public class RegistrationApplicationServiceTests
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
             GlobalVariables = Options.Create(new GlobalVariables()),
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            ComplianceSchemeService = _mockComplianceSchemeService.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -2883,7 +3063,8 @@ public class RegistrationApplicationServiceTests
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
             GlobalVariables = Options.Create(new GlobalVariables()),
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            ComplianceSchemeService = _mockComplianceSchemeService.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -2903,7 +3084,8 @@ public class RegistrationApplicationServiceTests
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
             GlobalVariables = Options.Create(new GlobalVariables()),
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            ComplianceSchemeService = _mockComplianceSchemeService.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -2923,7 +3105,8 @@ public class RegistrationApplicationServiceTests
             FeatureManager = null!,
             HttpContextAccessor = _httpContextAccessorMock.Object,
             GlobalVariables = Options.Create(new GlobalVariables()),
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            ComplianceSchemeService = _mockComplianceSchemeService.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -2943,7 +3126,8 @@ public class RegistrationApplicationServiceTests
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = null!,
             GlobalVariables = Options.Create(new GlobalVariables()),
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            ComplianceSchemeService = _mockComplianceSchemeService.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -2963,7 +3147,8 @@ public class RegistrationApplicationServiceTests
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
             GlobalVariables = null!,
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            ComplianceSchemeService = _mockComplianceSchemeService.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -2983,7 +3168,8 @@ public class RegistrationApplicationServiceTests
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
             GlobalVariables = Options.Create(new GlobalVariables()),
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            ComplianceSchemeService = _mockComplianceSchemeService.Object
         };
 
         Assert.DoesNotThrow(() => new RegistrationApplicationService(deps, _dateTimeProvider));

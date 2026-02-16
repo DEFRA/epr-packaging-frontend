@@ -162,6 +162,7 @@ public static class ServiceProviderExtension
             HttpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>(),
             GlobalVariables = sp.GetRequiredService<IOptions<GlobalVariables>>(),
             RegistrationPeriodProvider = sp.GetRequiredService<IRegistrationPeriodProvider>(),
+            ComplianceSchemeService = sp.GetRequiredService<IComplianceSchemeService>()
         });
         services.AddScoped<IRegistrationApplicationService, RegistrationApplicationService>();
         services.AddSingleton<IPatchService, PatchService>();
