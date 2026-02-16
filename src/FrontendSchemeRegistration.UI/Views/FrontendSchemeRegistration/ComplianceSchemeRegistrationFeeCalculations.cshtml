@@ -35,7 +35,7 @@
             }
             else
             {
-                <a asp-action="RegistrationTaskList" asp-route-registrationyear="@Model.RegistrationYear" class="govuk-link govuk-link--no-visited-state">
+                <a asp-action="RegistrationTaskList" asp-route-registrationyear="@Model.RegistrationYear" asp-route-registrationjourney="@Model.RegistrationJourney" class="govuk-link govuk-link--no-visited-state">
                     @Localizer["return_to_registration_steps"]
                 </a>
             }
