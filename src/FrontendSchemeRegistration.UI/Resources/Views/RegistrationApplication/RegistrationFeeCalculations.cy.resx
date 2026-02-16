@@ -22,7 +22,7 @@
 		<value>Ffi gofrestru</value>
 	</data>
 	<data name="registration_fee_due_x" xml:space="preserve">
-		<value>Mae ffi gofrestru o <strong>£{0}</strong> i'w thalu ar sail y taliadau cofrestru presennol.</value>
+		<value>Mae ffi gofrestru o &lt;strong&gt;£{0}&lt;/strong&gt; i'w thalu ar sail y taliadau cofrestru presennol.</value>
 	</data>
   <data name="registration_fee_may_change" xml:space="preserve">
     <value>Mae'r swm terfynol yn dibynnu ar ba bryd y byddwch chi'n cyflwyno'ch cais am gofrestru, gan fod y taliadau'n gallu codi bob blwyddyn.</value>
