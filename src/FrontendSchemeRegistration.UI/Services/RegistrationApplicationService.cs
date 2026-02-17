@@ -494,13 +494,17 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         
         var registrationSession = await registrationSessionTask;
         
-        frontEndSession.RegistrationSession.ApplicationReferenceNumber = ReferenceNumberBuilder.Build(
-            registrationSession.Period,
-            organisationNumber,
-            _timeProvider,
-            registrationSession.IsComplianceScheme,
-            registrationSession.SelectedComplianceScheme?.RowNumber ?? 0,
-            registrationSession.RegistrationJourney?.ToString() ?? "X"); 
+        // Only generate ApplicationReferenceNumber if it doesn't already exist in the session
+        if (string.IsNullOrWhiteSpace(frontEndSession.RegistrationSession.ApplicationReferenceNumber))
+        {
+            frontEndSession.RegistrationSession.ApplicationReferenceNumber = ReferenceNumberBuilder.Build(
+                registrationSession.Period,
+                organisationNumber,
+                _timeProvider,
+                registrationSession.IsComplianceScheme,
+                registrationSession.SelectedComplianceScheme?.RowNumber ?? 0,
+                registrationSession.RegistrationJourney?.ToString());
+        }
         
         await frontEndSessionManager.SaveSessionAsync(httpSession, frontEndSession);
     }
