@@ -7,15 +7,6 @@ using Sessions;
 public static class SetupMinimalSession
 {
     public static FrontendSchemeRegistrationSession FrontendSchemeRegistrationSession(
-        UserData userData, ComplianceSchemeDto complianceScheme)
-    {
-        var session = NewSession(userData);
-       
-        session.RegistrationSession.SelectedComplianceScheme = complianceScheme;
-        return session;
-    }
-
-    public static FrontendSchemeRegistrationSession FrontendSchemeRegistrationSession(
         List<ComplianceSchemeDto> complianceSchemes,
         UserData userData, Guid? selectedComplianceSchemeId)
     {
