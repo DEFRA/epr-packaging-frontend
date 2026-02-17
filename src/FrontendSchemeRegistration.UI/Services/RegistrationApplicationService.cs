@@ -9,6 +9,7 @@ using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Extensions;
+using FrontendSchemeRegistration.UI.Helpers;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
 using Microsoft.Extensions.Options;
@@ -513,8 +514,8 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     /// <summary>
     /// Builds view models for rendering a list of registration tiles for each window that applies to the organisation.
     /// 
-    /// This method resets the session. It makes multiple calls to <see cref="GetRegistrationApplicationSession"/>
-    /// each of which makes changes to the session based on that particular application, therefore making any stored session data unreliable
+    /// This method does not modify session state. It makes direct API calls to get registration application details
+    /// and computes view model properties without persisting session data.
     /// </summary>
     /// <param name="httpSession"></param>
     /// <param name="organisation"></param>
@@ -525,7 +526,14 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         var applications = new List<RegistrationApplicationViewModel>();
 
         var isCso = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
-        await ResetSession();
+
+        // Get compliance scheme info for API calls (read-only, doesn't modify session)
+        ComplianceSchemeDto? selectedComplianceScheme = null;
+        if (isCso)
+        {
+            var existingSession = await frontEndSessionManager.GetSessionAsync(httpSession);
+            selectedComplianceScheme = existingSession?.RegistrationSession.SelectedComplianceScheme;
+        }
 
         IReadOnlyCollection<RegistrationWindow> registrationWindows;
 
@@ -543,48 +551,75 @@ public class RegistrationApplicationService : IRegistrationApplicationService
 
         foreach (var window in windowKeyInformationList)
         {
-            var registrationApplicationSession = await GetRegistrationApplicationSession(httpSession, organisation, window.RegistrationYear, window.Journey);
+            var viewModel = await BuildRegistrationApplicationViewModel(
+                organisation, 
+                window.RegistrationYear, 
+                window.Journey, 
+                selectedComplianceScheme,
+                window.RegistrationWindow,
+                window.SecondaryRegistrationWindow);
 
-            applications.Add(new RegistrationApplicationViewModel
-            {
-                ApplicationStatus = registrationApplicationSession.ApplicationStatus,
-                FileUploadStatus = registrationApplicationSession.FileUploadStatus,
-                PaymentViewStatus = registrationApplicationSession.PaymentViewStatus,
-                AdditionalDetailsStatus = registrationApplicationSession.AdditionalDetailsStatus,
-                ApplicationReferenceNumber = registrationApplicationSession.ApplicationReferenceNumber,
-                RegistrationReferenceNumber = registrationApplicationSession.RegistrationReferenceNumber,
-                IsResubmission = registrationApplicationSession.IsResubmission,
-                RegistrationYear = window.RegistrationYear.ToString(),
-                IsComplianceScheme = registrationApplicationSession.IsComplianceScheme,
-                RegistrationJourney = window.Journey,
-                RegistrationWindow = window.RegistrationWindow,
-                SecondaryRegistrationWindow = window.SecondaryRegistrationWindow
-            });
+            applications.Add(viewModel);
         }
-
-        await ResetSession();
 
         return applications.GroupBy(a => a.RegistrationYear).Select(a => new RegistrationYearApplicationsViewModel(int.Parse(a.Key), a)).OrderByDescending(a => a.Year).ToList();
+    }
 
-        //build minimal session data to remove any pollution from previous journeys
-        async Task ResetSession()
+    /// <summary>
+    /// Builds a registration application view model without modifying session state.
+    /// This is a lightweight method that only fetches data and computes properties.
+    /// </summary>
+    private async Task<RegistrationApplicationViewModel> BuildRegistrationApplicationViewModel(
+        Organisation organisation,
+        int registrationYear,
+        RegistrationJourney? registrationJourney,
+        ComplianceSchemeDto? selectedComplianceScheme,
+        RegistrationWindow registrationWindow,
+        RegistrationWindow? secondaryRegistrationWindow)
+    {
+        var submissionPeriod = $"January to December {registrationYear}";
+
+        var registrationApplicationDetails = await _submissionService.GetRegistrationApplicationDetails(new GetRegistrationApplicationDetailsRequest
         {
-            FrontendSchemeRegistrationSession session;
+            OrganisationNumber = int.Parse(organisation.OrganisationNumber),
+            OrganisationId = organisation.Id.Value,
+            ComplianceSchemeId = selectedComplianceScheme?.Id,
+            SubmissionPeriod = submissionPeriod,
+            RegistrationJourney = registrationJourney?.ToString()
+        }) ?? new RegistrationApplicationDetails();
 
-            if (isCso)
-            {
-                var existingSession = await frontEndSessionManager.GetSessionAsync(httpSession);
-                session = SetupMinimalSession.FrontendSchemeRegistrationSession(userData, existingSession.RegistrationSession.SelectedComplianceScheme);
-            }
-            else
-            {
-                var producerComplianceScheme = await complianceSchemeService.GetProducerComplianceScheme(organisation.Id!.Value);
+        // Handle resubmission logic (same as in GetRegistrationApplicationSession)
+        var applicationStatus = registrationApplicationDetails.ApplicationStatus;
+        var isResubmission = registrationApplicationDetails.IsResubmission ?? false;
 
-                session = SetupMinimalSession.FrontendSchemeRegistrationSession(producerComplianceScheme, userData);
-            }
-
-            await frontEndSessionManager.SaveSessionAsync(httpSession, session);
+        if (applicationStatus is ApplicationStatusType.AcceptedByRegulator or ApplicationStatusType.ApprovedByRegulator
+            && isResubmission)
+        {
+            isResubmission = true;
+            applicationStatus = ApplicationStatusType.NotStarted;
         }
+
+        // Compute status properties using shared calculator (same logic as RegistrationApplicationSession computed properties)
+        var fileUploadStatus = RegistrationApplicationStatusCalculator.CalculateFileUploadStatus(registrationApplicationDetails);
+        var paymentViewStatus = RegistrationApplicationStatusCalculator.CalculatePaymentViewStatus(fileUploadStatus, registrationApplicationDetails);
+        var additionalDetailsStatus = RegistrationApplicationStatusCalculator.CalculateAdditionalDetailsStatus(paymentViewStatus, registrationApplicationDetails);
+        var isComplianceScheme = selectedComplianceScheme is not null;
+
+        return new RegistrationApplicationViewModel
+        {
+            ApplicationStatus = applicationStatus,
+            FileUploadStatus = fileUploadStatus,
+            PaymentViewStatus = paymentViewStatus,
+            AdditionalDetailsStatus = additionalDetailsStatus,
+            ApplicationReferenceNumber = registrationApplicationDetails.ApplicationReferenceNumber,
+            RegistrationReferenceNumber = registrationApplicationDetails.RegistrationReferenceNumber,
+            IsResubmission = isResubmission,
+            RegistrationYear = registrationYear.ToString(),
+            IsComplianceScheme = isComplianceScheme,
+            RegistrationJourney = registrationJourney,
+            RegistrationWindow = registrationWindow,
+            SecondaryRegistrationWindow = secondaryRegistrationWindow
+        };
     }
 
     /// <summary>
