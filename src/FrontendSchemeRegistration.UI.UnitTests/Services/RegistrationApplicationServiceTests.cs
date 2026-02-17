@@ -86,7 +86,6 @@ public class RegistrationApplicationServiceTests
             HttpContextAccessor = _httpContextAccessorMock.Object,
             GlobalVariables = globalVariables,
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            ComplianceSchemeService = _mockComplianceSchemeService.Object
         };
 
         _service = new RegistrationApplicationService(deps, _dateTimeProvider);
@@ -855,7 +854,6 @@ public class RegistrationApplicationServiceTests
             HttpContextAccessor = _httpContextAccessorMock.Object,
             GlobalVariables = globalVariables,
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            ComplianceSchemeService = _mockComplianceSchemeService.Object
         };
 
         _service = new RegistrationApplicationService(deps, _dateTimeProvider);
@@ -2902,7 +2900,6 @@ public class RegistrationApplicationServiceTests
             HttpContextAccessor = _httpContextAccessorMock.Object,
             GlobalVariables = Options.Create(new GlobalVariables()),
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            ComplianceSchemeService = _mockComplianceSchemeService.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -2924,7 +2921,6 @@ public class RegistrationApplicationServiceTests
             HttpContextAccessor = _httpContextAccessorMock.Object,
             GlobalVariables = Options.Create(new GlobalVariables()),
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            ComplianceSchemeService = _mockComplianceSchemeService.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -2945,7 +2941,6 @@ public class RegistrationApplicationServiceTests
             HttpContextAccessor = _httpContextAccessorMock.Object,
             GlobalVariables = Options.Create(new GlobalVariables()),
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            ComplianceSchemeService = _mockComplianceSchemeService.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -2966,7 +2961,6 @@ public class RegistrationApplicationServiceTests
             HttpContextAccessor = _httpContextAccessorMock.Object,
             GlobalVariables = Options.Create(new GlobalVariables()),
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            ComplianceSchemeService = _mockComplianceSchemeService.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -2987,7 +2981,6 @@ public class RegistrationApplicationServiceTests
             HttpContextAccessor = _httpContextAccessorMock.Object,
             GlobalVariables = Options.Create(new GlobalVariables()),
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            ComplianceSchemeService = _mockComplianceSchemeService.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -3008,7 +3001,6 @@ public class RegistrationApplicationServiceTests
             HttpContextAccessor = _httpContextAccessorMock.Object,
             GlobalVariables = Options.Create(new GlobalVariables()),
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            ComplianceSchemeService = _mockComplianceSchemeService.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -3029,7 +3021,6 @@ public class RegistrationApplicationServiceTests
             HttpContextAccessor = null!,
             GlobalVariables = Options.Create(new GlobalVariables()),
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            ComplianceSchemeService = _mockComplianceSchemeService.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -3050,7 +3041,6 @@ public class RegistrationApplicationServiceTests
             HttpContextAccessor = _httpContextAccessorMock.Object,
             GlobalVariables = null!,
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            ComplianceSchemeService = _mockComplianceSchemeService.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -3071,7 +3061,6 @@ public class RegistrationApplicationServiceTests
             HttpContextAccessor = _httpContextAccessorMock.Object,
             GlobalVariables = Options.Create(new GlobalVariables()),
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            ComplianceSchemeService = _mockComplianceSchemeService.Object
         };
 
         Assert.DoesNotThrow(() => new RegistrationApplicationService(deps, _dateTimeProvider));

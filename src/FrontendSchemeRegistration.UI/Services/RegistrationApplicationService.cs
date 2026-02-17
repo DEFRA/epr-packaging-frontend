@@ -37,7 +37,6 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     private readonly IOptions<GlobalVariables> globalVariables;
     private readonly TimeProvider _timeProvider;
     private readonly IRegistrationPeriodProvider _registrationPeriodProvider;
-    private readonly IComplianceSchemeService complianceSchemeService;
 
     public RegistrationApplicationService(RegistrationApplicationServiceDependencies dependencies, TimeProvider timeProvider)
     {
@@ -61,7 +60,6 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         globalVariables = dependencies.GlobalVariables
             ?? throw new InvalidOperationException($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(dependencies.GlobalVariables)} cannot be null.");
         _registrationPeriodProvider = dependencies.RegistrationPeriodProvider;
-        complianceSchemeService = dependencies.ComplianceSchemeService;
     }
     private void SetLateFeeFlag(RegistrationApplicationSession session, int registrationYear)
     {
@@ -716,5 +714,4 @@ public sealed class RegistrationApplicationServiceDependencies
     public required IHttpContextAccessor HttpContextAccessor { get; init; }
     public required IOptions<GlobalVariables> GlobalVariables { get; init; }
     public required IRegistrationPeriodProvider RegistrationPeriodProvider { get; init; }
-    public required IComplianceSchemeService ComplianceSchemeService { get; init; }
 }
