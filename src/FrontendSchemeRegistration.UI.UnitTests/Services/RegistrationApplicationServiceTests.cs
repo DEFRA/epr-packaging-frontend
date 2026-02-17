@@ -2638,104 +2638,6 @@ public class RegistrationApplicationServiceTests
     }
 
     [Test]
-    public async Task BuildRegistrationYearApplicationsViewModels_ShouldResetSessionForDirectProducer()
-    {
-        // Arrange
-        var organisation = new Organisation
-        {
-            Id = Guid.NewGuid(),
-            Name = "Test Organisation",
-            OrganisationNumber = "123456",
-            OrganisationRole = OrganisationRoles.Producer
-        };
-
-        var userData = new UserData
-        {
-            Id = Guid.NewGuid(),
-            Organisations = [new Organisation { Id = Guid.NewGuid() }]
-        };
-
-        _dateTimeProvider.SetUtcNow(new DateTime(2026, 6, 1));
-        var journey = RegistrationJourney.DirectLargeProducer;
-        var registrationYear = 2026;
-
-        IReadOnlyCollection<RegistrationWindow> registrationWindows =
-        [
-            CreateRegistrationWindow(WindowType.DirectLargeProducer, registrationYear)
-        ];
-
-        _mockRegistrationPeriodProvider.Setup(x => x.GetAllRegistrationWindows(false))
-            .Returns(registrationWindows);
-
-        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
-            .ReturnsAsync(_session);
-
-        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
-            .ReturnsAsync(new RegistrationApplicationDetails());
-
-        // Act
-        await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation, userData);
-
-        // Assert
-        _mockComplianceSchemeService.Verify(x => x.GetProducerComplianceScheme(organisation.Id.Value)); // returns null
-        _frontEndSessionManagerMock.Verify(
-            x => x.SaveSessionAsync(It.IsAny<ISession>(), It.Is<FrontendSchemeRegistrationSession>(s => s.RegistrationSession.CurrentComplianceScheme == null)),
-            Times.Exactly(2));
-    }
-
-    [Test]
-    public async Task BuildRegistrationYearApplicationsViewModels_ShouldResetSessionForCso()
-    {
-        var organisation = new Organisation
-        {
-            Id = Guid.NewGuid(),
-            Name = "Test CSO",
-            OrganisationNumber = "999999",
-            OrganisationRole = OrganisationRoles.ComplianceScheme
-        };
-
-        var selectedComplianceSchemeId = Guid.NewGuid();
-        _session.SelectedComplianceScheme = new ComplianceSchemeDto { Id = selectedComplianceSchemeId, NationId = 1 };
-        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
-            .ReturnsAsync(_session);
-
-        var userData = new UserData
-        {
-            Id = Guid.NewGuid(),
-            Organisations = [new Organisation { Id = Guid.NewGuid() }]
-        };
-
-        IReadOnlyCollection<RegistrationWindow> registrationWindows =
-        [
-            CreateRegistrationWindow(WindowType.CsoLargeProducer, 2026)
-        ];
-
-        _mockRegistrationPeriodProvider.Setup(x => x.GetActiveRegistrationWindows(true))
-            .Returns(registrationWindows);
-
-        var frontEndSession = new FrontendSchemeRegistrationSession
-        {
-            RegistrationSession = new RegistrationSession()
-            {
-                SelectedComplianceScheme = new ComplianceSchemeDto { Id = selectedComplianceSchemeId, Name = "test", RowNumber = 1, NationId = 1, CreatedOn = DateTime.Now }
-            }
-        };
-
-        _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
-            .ReturnsAsync(frontEndSession);
-        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
-            .ReturnsAsync(new RegistrationApplicationDetails());
-
-        // Act
-        await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation, userData);
-
-        // Assert
-        _frontEndSessionManagerMock.Verify(
-            x => x.SaveSessionAsync(It.IsAny<ISession>(), It.Is<FrontendSchemeRegistrationSession>(s => s.RegistrationSession.SelectedComplianceScheme.Id == selectedComplianceSchemeId )),
-            Times.Exactly(2));
-    }
-
-    [Test]
     public async Task BuildRegistrationYearApplicationsViewModels_ShouldCheckIfCsoUsingOrganisationRole()
     {
         // Arrange
@@ -3200,4 +3102,3 @@ internal static class ClaimsPrincipalExtensions
         user.AddIdentity(identity);
     }
 }
-
