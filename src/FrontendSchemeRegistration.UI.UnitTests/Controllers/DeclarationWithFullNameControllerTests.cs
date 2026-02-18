@@ -350,7 +350,8 @@ public class DeclarationWithFullNameControllerTests
         var submissionDeclarationRequest = new DeclarationWithFullNameViewModel
         {
             FullName = DeclarationName,
-            OrganisationDetailsFileId = Guid.NewGuid().ToString()
+            OrganisationDetailsFileId = Guid.NewGuid().ToString(),
+            RegistrationJourney = RegistrationJourney.CsoLargeProducer
         };
 
         var claims = CreateUserDataClaim(serviceRole, enrolmentStatus, OrganisationRoles.Producer);

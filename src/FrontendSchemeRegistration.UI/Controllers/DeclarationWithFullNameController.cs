@@ -109,6 +109,8 @@ public class DeclarationWithFullNameController(
 
         try
         {
+            var regJourney = submission.RegistrationJourney ?? model.RegistrationJourney;
+            
             var session = await sessionManager.GetSessionAsync(HttpContext.Session);
 
             session.EnsureApplicationReferenceIsPresent();
@@ -116,9 +118,9 @@ public class DeclarationWithFullNameController(
             await submissionService.SubmitAsync(submissionId, new Guid(model.OrganisationDetailsFileId), model.FullName,
                 session.RegistrationSession.ApplicationReferenceNumber,
                 session.RegistrationSession.IsResubmission,
-                model.RegistrationJourney);
+                regJourney);
 
-            return (model.RegistrationYear.HasValue ? RedirectToAction("Get", ConfirmationViewName, new { submissionId, registrationyear = model.RegistrationYear.ToString(), registrationjourney = model.RegistrationJourney }) : RedirectToAction("Get", ConfirmationViewName, new { submissionId }));
+            return (model.RegistrationYear.HasValue ? RedirectToAction("Get", ConfirmationViewName, new { submissionId, registrationyear = model.RegistrationYear.ToString(), registrationjourney = regJourney }) : RedirectToAction("Get", ConfirmationViewName, new { submissionId }));
         }
         catch (Exception)
         {
