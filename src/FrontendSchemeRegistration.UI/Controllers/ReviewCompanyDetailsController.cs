@@ -14,6 +14,8 @@ using Microsoft.AspNetCore.WebUtilities;
 
 namespace FrontendSchemeRegistration.UI.Controllers;
 
+using Application.Enums;
+
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
 [Route(PagePaths.ReviewOrganisationData)]
 public class ReviewCompanyDetailsController : Controller
@@ -41,7 +43,7 @@ public class ReviewCompanyDetailsController : Controller
 
     [HttpGet]
     [SubmissionIdActionFilter("/error")]
-    public async Task<IActionResult> Get([FromQuery] Guid submissionId)
+    public async Task<IActionResult> Get([FromQuery] Guid submissionId, [FromQuery] RegistrationJourney? registrationJourney = null)
     {
         var userData = User.GetUserData();
         var registrationYear = _registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
@@ -63,8 +65,9 @@ public class ReviewCompanyDetailsController : Controller
 
         var isFileUploadJourneyInvokedViaRegistration = session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration;
         var isResubmission = session.RegistrationSession.IsResubmission;
+        var regJourney = submission.RegistrationJourney ?? registrationJourney;
 
-        this.SetBackLink(isFileUploadJourneyInvokedViaRegistration, isResubmission, registrationYear, submission.RegistrationJourney);
+        this.SetBackLink(isFileUploadJourneyInvokedViaRegistration, isResubmission, registrationYear, regJourney);
         ViewData["IsFileUploadJourneyInvokedViaRegistration"] = isFileUploadJourneyInvokedViaRegistration;
 
         return View(
@@ -108,7 +111,7 @@ public class ReviewCompanyDetailsController : Controller
                 SubmissionStatus = submission.GetSubmissionStatus(),
                 IsResubmission = isResubmission,
                 RegistrationYear = registrationYear,
-                RegistrationJourney = submission.RegistrationJourney
+                RegistrationJourney = regJourney
             });
     }
 
