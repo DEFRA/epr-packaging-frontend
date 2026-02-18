@@ -2696,6 +2696,71 @@ public class RegistrationApplicationServiceTests
         _mockRegistrationPeriodProvider.Verify(x => x.GetActiveRegistrationWindows(true), Times.Once);
     }
 
+    [Test]
+    [TestCase(ApplicationStatusType.CancelledByRegulator)]
+    [TestCase(ApplicationStatusType.QueriedByRegulator)]
+    [TestCase(ApplicationStatusType.RejectedByRegulator)]
+    public async Task BuildRegistrationYearApplicationsViewModels_WhenApplicationStatusIsRegulatorAction_ShouldSetFileUploadStatusToNotStarted(
+        ApplicationStatusType applicationStatus)
+    {
+        // Arrange
+        _dateTimeProvider.SetUtcNow(new DateTime(2026, 7, 1)); // Set date after window opens
+        
+        var organisation = new Organisation
+        {
+            Id = Guid.NewGuid(),
+            Name = "Test Organisation",
+            OrganisationNumber = "123456",
+            OrganisationRole = OrganisationRoles.Producer
+        };
+
+        var userData = new UserData
+        {
+            Id = Guid.NewGuid(),
+            Organisations = [new Organisation { Id = Guid.NewGuid() }]
+        };
+
+        IReadOnlyCollection<RegistrationWindow> registrationWindows =
+        [
+            CreateRegistrationWindow(WindowType.DirectLargeProducer, 2026)
+        ];
+
+        _mockRegistrationPeriodProvider.Setup(x => x.GetAllRegistrationWindows(false))
+            .Returns(registrationWindows);
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(_session);
+
+        var frontEndSession = new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession()
+        };
+
+        _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(frontEndSession);
+
+        var registrationApplicationDetails = new RegistrationApplicationDetails
+        {
+            ApplicationStatus = applicationStatus,
+            RegistrationFeeCalculationDetails = new RegistrationFeeCalculationDetails[]
+            {
+                new RegistrationFeeCalculationDetails()
+            }
+        };
+
+        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(registrationApplicationDetails);
+
+        // Act
+        var result = await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation, userData);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().HaveCountGreaterThan(0);
+        result[0].Applications.Should().HaveCount(1);
+        result[0].Applications.First().FileUploadStatus.Should().Be(RegistrationTaskListStatus.NotStarted);
+    }
+
  
     [Test]
     public async Task GetProducerRegistrationFees_WhenV2Enabled_SendsV2Request_With_All_New_Fields()
