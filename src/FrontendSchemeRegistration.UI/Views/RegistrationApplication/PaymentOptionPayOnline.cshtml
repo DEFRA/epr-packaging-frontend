@@ -29,7 +29,7 @@
                     <a class="govuk-button govuk-body" href="@Model.PaymentLink">@Localizer["pay_online_now"]</a>
                 </p>
                 <p class="govuk-body govuk-!-margin-top-4">
-                    <a asp-controller="RegistrationApplication" asp-action="RegistrationTaskList" asp-route-registrationyear="@Model.RegistrationYear" class="govuk-link">@Localizer["view_registration_steps"]</a>
+                    <a asp-controller="RegistrationApplication" asp-action="RegistrationTaskList" asp-route-registrationyear="@Model.RegistrationYear" asp-route-registrationjourney="@Model.RegistrationJourney" class="govuk-link">@Localizer["view_registration_steps"]</a>
                 </p>
             </div>
         </div>
