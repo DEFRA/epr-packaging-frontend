@@ -157,8 +157,11 @@ public class ReviewCompanyDetailsController : Controller
         if (model.SubmitOrganisationDetailsResponse.HasValue && !model.SubmitOrganisationDetailsResponse.Value)
         {
             if (isFileUploadJourneyInvokedViaRegistration)
-                if (model.RegistrationYear.HasValue)
-                    return Redirect(QueryHelpers.AddQueryString(PagePaths.RegistrationTaskList, "registrationyear", model.RegistrationYear.ToString()));
+                if (model.RegistrationYear.HasValue || model.RegistrationJourney.HasValue)
+                {
+                    var routeValue = QueryStringExtensions.BuildRouteValues(registrationJourney: model.RegistrationJourney, registrationYear: model.RegistrationYear);
+                    return Redirect(QueryHelpers.AddQueryString(PagePaths.RegistrationTaskList, routeValue.ToDictionary(k => k.Key, k => k.Value.ToString() ?? string.Empty)));
+                }
                 else
                     return Redirect(PagePaths.RegistrationTaskList);
 
