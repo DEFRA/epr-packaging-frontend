@@ -594,13 +594,6 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         var applicationStatus = registrationApplicationDetails.ApplicationStatus;
         var isResubmission = registrationApplicationDetails.IsResubmission ?? false;
 
-        if (applicationStatus is ApplicationStatusType.AcceptedByRegulator or ApplicationStatusType.ApprovedByRegulator
-            && isResubmission)
-        {
-            isResubmission = true;
-            applicationStatus = ApplicationStatusType.NotStarted;
-        }
-
         // Compute status properties using shared calculator (same logic as RegistrationApplicationSession computed properties)
         var fileUploadStatus = RegistrationApplicationStatusCalculator.CalculateFileUploadStatus(registrationApplicationDetails);
         var paymentViewStatus = RegistrationApplicationStatusCalculator.CalculatePaymentViewStatus(fileUploadStatus, registrationApplicationDetails);
