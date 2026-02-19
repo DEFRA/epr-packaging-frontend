@@ -35,7 +35,14 @@
             </ul>
             <p class="govuk-body">@Localizer["file_rejected"]</p>
             <ul class="govuk-list govuk-list--bullet">
-                <li>@Localizer["large_producer_detail"]</li>
+                @if (Model.RegistrationJounrey == RegistrationJourney.CsoLargeProducer)
+                {
+                    <li>@Localizer["small_producer_detail"]</li>
+                }
+                else if (Model.RegistrationJounrey == RegistrationJourney.CsoSmallProducer)
+                {
+                    <li>@Localizer["large_producer_detail"]</li>
+                }
                 <li>@Localizer["subsidiaries_guidance"] <a class="govuk-link govuk-link--no-visited-state" asp-controller="FileUploadSubsidiaries" asp-action="SubsidiariesList" >@Localizer["manage_your_subsidiaries"]</a></li>
             </ul>
       

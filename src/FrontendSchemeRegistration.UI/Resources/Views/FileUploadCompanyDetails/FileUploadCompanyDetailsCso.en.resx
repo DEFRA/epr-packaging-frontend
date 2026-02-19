@@ -153,6 +153,9 @@
   <data name="large_producer_detail" xml:space="preserve">
     <value>include large producers' details</value>
   </data>
+  <data name="small_producer_detail" xml:space="preserve">
+    <value>include small producers' details</value>
+  </data>
   <data name="subsidiaries_guidance" xml:space="preserve">
     <value>are reporting for subsidiaries and haven't used the subsidiary ID provided</value>
   </data>
