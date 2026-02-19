@@ -2,6 +2,7 @@
 
 using Application.Constants;
 using Application.DTOs.Submission;
+using Application.Enums;
 using Application.Services.Interfaces;
 using Constants;
 using EPR.Common.Authorization.Models;
@@ -257,5 +258,185 @@ public class FileUploadCompanyDetailsSuccessControllerTests
         });
 
         _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.Once);
+    }
+
+    [Test]
+    public async Task Get_IncludesRegistrationJourneyFromQueryParameter_WhenSubmissionHasNoJourney()
+    {
+        // Arrange
+        var registrationJourney = RegistrationJourney.DirectSmallProducer;
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                UserData = new UserData { ServiceRole = "Basic User", Organisations = { new Organisation { OrganisationRole = OrganisationRoles.Producer, Name = "Test Org" } } },
+                RegistrationSession = new RegistrationSession
+                {
+                    Journey = new List<string>
+                    {
+                        PagePaths.FileUploadCompanyDetailsSubLanding,
+                        PagePaths.FileUploadCompanyDetails,
+                        PagePaths.FileUploadBrands,
+                        PagePaths.FileUploadPartnerships
+                    },
+                    SubmissionDeadline = DateTime.UtcNow.AddDays(7)
+                }
+            });
+
+        const string fileName = "example.csv";
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(new RegistrationSubmission
+            {
+                CompanyDetailsFileName = fileName,
+                CompanyDetailsDataComplete = true,
+                RequiresBrandsFile = true,
+                RequiresPartnershipsFile = true,
+                RegistrationJourney = null
+            });
+        _registrationPeriodProviderMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(DateTime.Now.Year);
+
+        // Act
+        var result = await _systemUnderTest.Get(registrationJourney) as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("FileUploadCompanyDetailsSuccess");
+        var model = result.Model.As<FileUploadCompanyDetailsSuccessViewModel>();
+        model.RegistrationJourney.Should().Be(registrationJourney);
+    }
+
+    [Test]
+    public async Task Get_UsesSubmissionRegistrationJourney_WhenBothParameterAndSubmissionHaveValues()
+    {
+        // Arrange
+        var queryParameterJourney = RegistrationJourney.DirectSmallProducer;
+        var submissionJourney = RegistrationJourney.DirectLargeProducer;
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                UserData = new UserData { ServiceRole = "Basic User", Organisations = { new Organisation { OrganisationRole = OrganisationRoles.Producer, Name = "Test Org" } } },
+                RegistrationSession = new RegistrationSession
+                {
+                    Journey = new List<string>
+                    {
+                        PagePaths.FileUploadCompanyDetailsSubLanding,
+                        PagePaths.FileUploadCompanyDetails,
+                        PagePaths.FileUploadBrands,
+                        PagePaths.FileUploadPartnerships
+                    },
+                    SubmissionDeadline = DateTime.UtcNow.AddDays(7)
+                }
+            });
+
+        const string fileName = "example.csv";
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(new RegistrationSubmission
+            {
+                CompanyDetailsFileName = fileName,
+                CompanyDetailsDataComplete = true,
+                RequiresBrandsFile = true,
+                RequiresPartnershipsFile = true,
+                RegistrationJourney = submissionJourney
+            });
+        _registrationPeriodProviderMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(DateTime.Now.Year);
+
+        // Act
+        var result = await _systemUnderTest.Get(queryParameterJourney) as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("FileUploadCompanyDetailsSuccess");
+        var model = result.Model.As<FileUploadCompanyDetailsSuccessViewModel>();
+        model.RegistrationJourney.Should().Be(submissionJourney);
+    }
+
+    [Test]
+    public async Task Get_IncludesRegistrationJourneyInViewModel_WhenQueryParameterProvided()
+    {
+        // Arrange
+        var registrationJourney = RegistrationJourney.CsoSmallProducer;
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                UserData = new UserData { ServiceRole = "Basic User", Organisations = { new Organisation { OrganisationRole = OrganisationRoles.ComplianceScheme, Name = "Test CSO" } } },
+                RegistrationSession = new RegistrationSession
+                {
+                    Journey = new List<string>
+                    {
+                        PagePaths.FileUploadCompanyDetailsSubLanding,
+                        PagePaths.FileUploadCompanyDetails,
+                        PagePaths.FileUploadBrands,
+                        PagePaths.FileUploadPartnerships
+                    },
+                    SubmissionDeadline = DateTime.UtcNow.AddDays(7),
+                    IsResubmission = false
+                }
+            });
+
+        const string fileName = "example.csv";
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(new RegistrationSubmission
+            {
+                CompanyDetailsFileName = fileName,
+                CompanyDetailsDataComplete = true,
+                RequiresBrandsFile = false,
+                RequiresPartnershipsFile = true,
+                RegistrationJourney = null
+            });
+        _registrationPeriodProviderMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(DateTime.Now.Year);
+
+        // Act
+        var result = await _systemUnderTest.Get(registrationJourney) as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("FileUploadCompanyDetailsSuccess");
+        var model = result.Model.As<FileUploadCompanyDetailsSuccessViewModel>();
+        model.RegistrationJourney.Should().Be(registrationJourney);
+        model.IsCso.Should().BeTrue();
+        model.FileName.Should().Be(fileName);
+    }
+
+    [Test]
+    public async Task Get_IncludesSubmissionRegistrationJourneyInModel_WhenBothParameterAndSubmissionHaveValues()
+    {
+        // Arrange
+        var queryParameterJourney = RegistrationJourney.DirectSmallProducer;
+        var submissionJourney = RegistrationJourney.CsoLargeProducer;
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                UserData = new UserData { ServiceRole = "Basic User", Organisations = { new Organisation { OrganisationRole = OrganisationRoles.Producer, Name = "Test Org" } } },
+                RegistrationSession = new RegistrationSession
+                {
+                    Journey = new List<string>
+                    {
+                        PagePaths.FileUploadCompanyDetailsSubLanding,
+                        PagePaths.FileUploadCompanyDetails,
+                        PagePaths.FileUploadBrands,
+                        PagePaths.FileUploadPartnerships
+                    },
+                    SubmissionDeadline = DateTime.UtcNow.AddDays(7)
+                }
+            });
+
+        const string fileName = "example.csv";
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(new RegistrationSubmission
+            {
+                CompanyDetailsFileName = fileName,
+                CompanyDetailsDataComplete = true,
+                RequiresBrandsFile = true,
+                RequiresPartnershipsFile = true,
+                RegistrationJourney = submissionJourney
+            });
+        _registrationPeriodProviderMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(DateTime.Now.Year);
+
+        // Act
+        var result = await _systemUnderTest.Get(queryParameterJourney) as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("FileUploadCompanyDetailsSuccess");
+        var model = result.Model.As<FileUploadCompanyDetailsSuccessViewModel>();
+        model.RegistrationJourney.Should().Be(submissionJourney);
+        model.FileName.Should().Be(fileName);
+        model.RequiresBrandsFile.Should().BeTrue();
+        model.RequiresPartnershipsFile.Should().BeTrue();
     }
 }

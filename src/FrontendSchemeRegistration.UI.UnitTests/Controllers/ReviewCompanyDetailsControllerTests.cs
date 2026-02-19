@@ -200,6 +200,137 @@ public class ReviewCompanyDetailsControllerTests
     }
 
     [Test]
+    public async Task Get_IncludesRegistrationJourneyFromQueryParameter_WhenSubmissionHasNoJourney()
+    {
+        // Arrange
+        const string firstName = "First Name";
+        const string lastName = "Last Name";
+        var registrationJourney = RegistrationJourney.DirectSmallProducer;
+        var submission = GenerateRegistrationSubmission(registrationJourney: null);
+        
+        _submissionService
+            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(submission.Id))
+            .ReturnsAsync(submission);
+        _userAccountServiceMock.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>()))
+            .ReturnsAsync(new PersonDto
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                ContactEmail = "email@email.com"
+            });
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Get(submission.Id, registrationJourney) as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("ReviewCompanyDetails");
+        var model = result.Model.As<ReviewCompanyDetailsViewModel>();
+        model.RegistrationJourney.Should().Be(registrationJourney);
+    }
+
+    [Test]
+    public async Task Get_UsesSubmissionRegistrationJourney_WhenBothQueryParameterAndSubmissionHaveValues()
+    {
+        // Arrange
+        const string firstName = "First Name";
+        const string lastName = "Last Name";
+        var queryParameterJourney = RegistrationJourney.DirectSmallProducer;
+        var submissionJourney = RegistrationJourney.DirectLargeProducer;
+        var submission = GenerateRegistrationSubmission(registrationJourney: submissionJourney);
+        
+        _submissionService
+            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(submission.Id))
+            .ReturnsAsync(submission);
+        _userAccountServiceMock.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>()))
+            .ReturnsAsync(new PersonDto
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                ContactEmail = "email@email.com"
+            });
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Get(submission.Id, queryParameterJourney) as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("ReviewCompanyDetails");
+        var model = result.Model.As<ReviewCompanyDetailsViewModel>();
+        model.RegistrationJourney.Should().Be(submissionJourney);
+    }
+
+    [Test]
+    public async Task Get_IncludesRegistrationJourneyInBackLink_WhenQueryParameterProvided()
+    {
+        // Arrange
+        const string firstName = "First Name";
+        const string lastName = "Last Name";
+        var registrationJourney = RegistrationJourney.CsoSmallProducer;
+        var submission = GenerateRegistrationSubmission(registrationJourney: null);
+        
+        _submissionService
+            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(submission.Id))
+            .ReturnsAsync(submission);
+        _userAccountServiceMock.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>()))
+            .ReturnsAsync(new PersonDto
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                ContactEmail = "email@email.com"
+            });
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Get(submission.Id, registrationJourney) as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("ReviewCompanyDetails");
+        result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
+        var backLink = result.ViewData["BackLinkToDisplay"] as string;
+        backLink.Should().Contain("registrationjourney");
+        backLink.Should().Contain(registrationJourney.ToString());
+    }
+
+    [Test]
+    public async Task Get_IncludesSubmissionRegistrationJourneyInBackLink_WhenBothParameterAndSubmissionHaveValues()
+    {
+        // Arrange
+        const string firstName = "First Name";
+        const string lastName = "Last Name";
+        var queryParameterJourney = RegistrationJourney.DirectSmallProducer;
+        var submissionJourney = RegistrationJourney.CsoLargeProducer;
+        var submission = GenerateRegistrationSubmission(registrationJourney: submissionJourney);
+        
+        _submissionService
+            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(submission.Id))
+            .ReturnsAsync(submission);
+        _userAccountServiceMock.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>()))
+            .ReturnsAsync(new PersonDto
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                ContactEmail = "email@email.com"
+            });
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Get(submission.Id, queryParameterJourney) as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("ReviewCompanyDetails");
+        result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
+        var backLink = result.ViewData["BackLinkToDisplay"] as string;
+        backLink.Should().Contain("registrationjourney");
+        backLink.Should().Contain(submissionJourney.ToString());
+        backLink.Should().NotContain(queryParameterJourney.ToString());
+    }
+
+    [Test]
     public async Task Get_RedirectsToFileUploadCompanyDetailsSubLandingGet_WhenSubmissionIsNull()
     {
         // Arrange
@@ -484,6 +615,84 @@ public class ReviewCompanyDetailsControllerTests
         // Assert
         result.Should().NotBeNull();
         result.Url.Should().NotContain("registrationyear");
+    }
+
+    [Test]
+    public async Task Post_IncludesRegistrationYearInUrl_WhenSubmitOrganisationDetailsResponseFalseAndModelHasRegistrationYear()
+    {
+        // Arrange
+        var registrationJourney = RegistrationJourney.DirectSmallProducer;
+        var model = new ReviewCompanyDetailsViewModel
+        {
+            IsApprovedUser = true,
+            SubmitOrganisationDetailsResponse = false,
+            RegistrationJourney = registrationJourney,
+            RegistrationYear = 2025
+        };
+
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    IsFileUploadJourneyInvokedViaRegistration = true
+                }
+            });
+
+        _submissionService
+            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(new RegistrationSubmission
+            {
+                HasValidFile = true
+            });
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Post(model) as RedirectResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Url.Should().Contain("registrationyear=2025");
+    }
+
+    [Test]
+    public async Task Post_ReturnsViewWithBackLink_WhenModelStateInvalidAndRegistrationJourneyIsSet()
+    {
+        // Arrange
+        var registrationJourney = RegistrationJourney.CsoLargeProducer;
+        var model = new ReviewCompanyDetailsViewModel
+        {
+            IsApprovedUser = true,
+            RegistrationYear = 2025,
+            RegistrationJourney = registrationJourney
+        };
+
+        _systemUnderTest.ModelState.AddModelError("TestError", "Test error message");
+
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    IsFileUploadJourneyInvokedViaRegistration = false
+                }
+            });
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Post(model) as ViewResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        result.ViewName.Should().Be("ReviewCompanyDetails");
+        result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
+        var backLink = result.ViewData["BackLinkToDisplay"] as string;
+        backLink.Should().Contain("registrationjourney");
+        backLink.Should().Contain(registrationJourney.ToString());
     }
 
     [Test]
