@@ -426,4 +426,287 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
         _userAccountServiceMock.Verify(x => x.GetAllPersonByUserId(It.IsAny<Guid>()), Times.Once);
         _userAccountServiceMock.Verify(x => x.GetPersonByUserId(It.IsAny<Guid>()), Times.Never);
     }
+
+    [Test]
+    public async Task Get_IncludesRegistrationJourney_WhenParameterProvided()
+    {
+        // Arrange
+        const string orgDetailsFileName = "filename.csv";
+        DateTime orgDetailsUploadDate = DateTime.UtcNow;
+        Guid orgDetailsUploadedBy = Guid.NewGuid();
+        var registrationJourney = RegistrationJourney.DirectSmallProducer;
+
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(SubmissionId)).ReturnsAsync(new RegistrationSubmission
+        {
+            Id = SubmissionId,
+            CompanyDetailsFileName = orgDetailsFileName,
+            CompanyDetailsUploadedDate = orgDetailsUploadDate,
+            CompanyDetailsUploadedBy = orgDetailsUploadedBy,
+            HasValidFile = true,
+            RegistrationJourney = null
+        });
+        const string firstName = "first";
+        const string lastName = "last";
+        const string fullName = $"{firstName} {lastName}";
+
+        _userAccountServiceMock.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new PersonDto
+        {
+            FirstName = firstName,
+            LastName = lastName
+        });
+
+        // Act
+        var result = await _systemUnderTest.Get(registrationJourney) as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("FileReUploadCompanyDetailsConfirmation");
+        var model = result.Model as FileReUploadCompanyDetailsConfirmationViewModel;
+        model.RegistrationJourney.Should().Be(registrationJourney);
+    }
+
+    [Test]
+    public async Task Get_UsesSubmissionRegistrationJourney_WhenBothParameterAndSubmissionHaveValues()
+    {
+        // Arrange
+        const string orgDetailsFileName = "filename.csv";
+        DateTime orgDetailsUploadDate = DateTime.UtcNow;
+        Guid orgDetailsUploadedBy = Guid.NewGuid();
+        var parameterJourney = RegistrationJourney.DirectSmallProducer;
+        var submissionJourney = RegistrationJourney.DirectLargeProducer;
+
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(SubmissionId)).ReturnsAsync(new RegistrationSubmission
+        {
+            Id = SubmissionId,
+            CompanyDetailsFileName = orgDetailsFileName,
+            CompanyDetailsUploadedDate = orgDetailsUploadDate,
+            CompanyDetailsUploadedBy = orgDetailsUploadedBy,
+            HasValidFile = true,
+            RegistrationJourney = submissionJourney
+        });
+        const string firstName = "first";
+        const string lastName = "last";
+        const string fullName = $"{firstName} {lastName}";
+
+        _userAccountServiceMock.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new PersonDto
+        {
+            FirstName = firstName,
+            LastName = lastName
+        });
+
+        // Act
+        var result = await _systemUnderTest.Get(parameterJourney) as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("FileReUploadCompanyDetailsConfirmation");
+        var model = result.Model as FileReUploadCompanyDetailsConfirmationViewModel;
+        model.RegistrationJourney.Should().Be(submissionJourney);
+    }
+
+    [Test]
+    public async Task Get_IncludesRegistrationJourneyInViewModel_WhenFileUploaded()
+    {
+        // Arrange
+        const string orgDetailsFileName = "filename.csv";
+        DateTime orgDetailsUploadDate = DateTime.UtcNow;
+        Guid orgDetailsUploadedBy = Guid.NewGuid();
+
+        const string partnersFileName = "partners.csv";
+        DateTime partnersUploadDate = DateTime.UtcNow;
+        Guid partnersUploadedBy = Guid.NewGuid();
+
+        const string brandFileName = "brand.csv";
+        DateTime brandUploadDate = DateTime.UtcNow;
+        Guid brandUploadedBy = Guid.NewGuid();
+
+        var registrationJourney = RegistrationJourney.CsoSmallProducer;
+
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(SubmissionId)).ReturnsAsync(new RegistrationSubmission
+        {
+            Id = SubmissionId,
+            CompanyDetailsFileName = orgDetailsFileName,
+            CompanyDetailsUploadedDate = orgDetailsUploadDate,
+            CompanyDetailsUploadedBy = orgDetailsUploadedBy,
+            PartnershipsFileName = partnersFileName,
+            PartnershipsUploadedDate = partnersUploadDate,
+            PartnershipsUploadedBy = partnersUploadedBy,
+            BrandsFileName = brandFileName,
+            BrandsUploadedDate = brandUploadDate,
+            BrandsUploadedBy = brandUploadedBy,
+            HasValidFile = true,
+            IsSubmitted = false,
+            RegistrationJourney = null,
+            LastUploadedValidFiles = new UploadedRegistrationFilesInformation
+            {
+                CompanyDetailsFileName = orgDetailsFileName,
+                BrandsFileName = brandFileName,
+                PartnershipsFileName = partnersFileName,
+                CompanyDetailsFileId = default(Guid),
+                CompanyDetailsUploadedBy = orgDetailsUploadedBy,
+                CompanyDetailsUploadDatetime = orgDetailsUploadDate,
+                BrandsUploadedBy = brandUploadedBy,
+                BrandsUploadDatetime = brandUploadDate,
+                PartnershipsUploadedBy = partnersUploadedBy,
+                PartnershipsUploadDatetime = partnersUploadDate
+            }
+        });
+        const string firstName = "first";
+        const string lastName = "last";
+        const string fullName = $"{firstName} {lastName}";
+
+        _userAccountServiceMock.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new PersonDto
+        {
+            FirstName = firstName,
+            LastName = lastName
+        });
+
+        // Act
+        var result = await _systemUnderTest.Get(registrationJourney) as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("FileReUploadCompanyDetailsConfirmation");
+        var model = result.Model as FileReUploadCompanyDetailsConfirmationViewModel;
+        model.Should().NotBeNull();
+        model.RegistrationJourney.Should().Be(registrationJourney);
+        model.CompanyDetailsFileName.Should().Be(orgDetailsFileName);
+        model.BrandsFileName.Should().Be(brandFileName);
+        model.PartnersFileName.Should().Be(partnersFileName);
+    }
+
+    [Test]
+    public async Task Get_IncludesRegistrationJourneyInViewModel_WhenSubmittedFile()
+    {
+        // Arrange
+        const string orgDetailsFileName = "filename.csv";
+        DateTime orgDetailsUploadDate = DateTime.UtcNow;
+        Guid orgDetailsUploadedBy = Guid.NewGuid();
+
+        const string partnersFileName = "partners.csv";
+        DateTime partnersUploadDate = DateTime.UtcNow;
+        Guid partnersUploadedBy = Guid.NewGuid();
+
+        const string brandFileName = "brand.csv";
+        DateTime brandUploadDate = DateTime.UtcNow;
+        Guid brandUploadedBy = Guid.NewGuid();
+
+        var submitDate = orgDetailsUploadDate.AddHours(1);
+        var registrationJourney = RegistrationJourney.CsoLargeProducer;
+
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(SubmissionId)).ReturnsAsync(new RegistrationSubmission
+        {
+            Id = SubmissionId,
+            CompanyDetailsFileName = orgDetailsFileName,
+            CompanyDetailsUploadedDate = orgDetailsUploadDate,
+            CompanyDetailsUploadedBy = orgDetailsUploadedBy,
+            PartnershipsFileName = partnersFileName,
+            PartnershipsUploadedDate = partnersUploadDate,
+            PartnershipsUploadedBy = partnersUploadedBy,
+            BrandsFileName = brandFileName,
+            BrandsUploadedDate = brandUploadDate,
+            BrandsUploadedBy = brandUploadedBy,
+            HasValidFile = true,
+            IsSubmitted = true,
+            RegistrationJourney = null,
+            LastUploadedValidFiles = new UploadedRegistrationFilesInformation
+            {
+                CompanyDetailsFileName = orgDetailsFileName,
+                BrandsFileName = brandFileName,
+                PartnershipsFileName = partnersFileName,
+                CompanyDetailsFileId = default(Guid),
+                CompanyDetailsUploadedBy = orgDetailsUploadedBy,
+                CompanyDetailsUploadDatetime = orgDetailsUploadDate,
+                BrandsUploadedBy = brandUploadedBy,
+                BrandsUploadDatetime = brandUploadDate,
+                PartnershipsUploadedBy = partnersUploadedBy,
+                PartnershipsUploadDatetime = partnersUploadDate
+            },
+            LastSubmittedFiles = new SubmittedRegistrationFilesInformation
+            {
+                CompanyDetailsFileName = orgDetailsFileName,
+                BrandsFileName = brandFileName,
+                PartnersFileName = partnersFileName,
+                SubmittedBy = Guid.NewGuid(),
+                SubmittedDateTime = submitDate
+            }
+        });
+        const string firstName = "first";
+        const string lastName = "last";
+        const string fullName = $"{firstName} {lastName}";
+
+        _userAccountServiceMock.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new PersonDto
+        {
+            FirstName = firstName,
+            LastName = lastName
+        });
+
+        // Act
+        var result = await _systemUnderTest.Get(registrationJourney) as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("FileReUploadCompanyDetailsConfirmation");
+        var model = result.Model as FileReUploadCompanyDetailsConfirmationViewModel;
+        model.Should().NotBeNull();
+        model.RegistrationJourney.Should().Be(registrationJourney);
+        model.Status.Should().Be(SubmissionPeriodStatus.SubmittedToRegulator);
+    }
+
+    [Test]
+    public async Task Get_PassesRegistrationJourneyToSetBackLink_WhenParameterProvided()
+    {
+        // Arrange
+        const string orgDetailsFileName = "filename.csv";
+        DateTime orgDetailsUploadDate = DateTime.UtcNow;
+        Guid orgDetailsUploadedBy = Guid.NewGuid();
+        var registrationJourney = RegistrationJourney.DirectLargeProducer;
+
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(SubmissionId)).ReturnsAsync(new RegistrationSubmission
+        {
+            Id = SubmissionId,
+            CompanyDetailsFileName = orgDetailsFileName,
+            CompanyDetailsUploadedDate = orgDetailsUploadDate,
+            CompanyDetailsUploadedBy = orgDetailsUploadedBy,
+            HasValidFile = true,
+            RegistrationJourney = null
+        });
+        const string firstName = "first";
+        const string lastName = "last";
+        const string fullName = $"{firstName} {lastName}";
+
+        _userAccountServiceMock.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new PersonDto
+        {
+            FirstName = firstName,
+            LastName = lastName
+        });
+
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SubmissionDeadline = SubmissionDeadline,
+                    IsFileUploadJourneyInvokedViaRegistration = true,
+                    IsResubmission = false
+                },
+                UserData = new UserData
+                {
+                    ServiceRole = "Basic User",
+                    Organisations = new List<Organisation>
+                    {
+                        new Organisation
+                        {
+                            OrganisationRole = "Producer"
+                        }
+                    }
+                }
+            });
+
+        // Act
+        var result = await _systemUnderTest.Get(registrationJourney) as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("FileReUploadCompanyDetailsConfirmation");
+        result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
+        var backLink = result.ViewData["BackLinkToDisplay"] as string;
+        backLink.Should().Contain(PagePaths.RegistrationTaskList);
+        backLink.Should().Contain("registrationjourney");
+    }
 }

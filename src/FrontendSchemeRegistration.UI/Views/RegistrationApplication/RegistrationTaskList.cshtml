@@ -30,6 +30,7 @@
                              Model.ApplicationStatus is ApplicationStatusType.FileUploaded or ApplicationStatusType.SubmittedAndHasRecentFileUpload)
                         {
                             <a asp-controller="RegistrationApplication" asp-action="RedirectToFileUpload" asp-route-registrationyear="@Model.RegistrationYear"
+                               asp-route-registrationjourney="@Context.Request.Query["registrationjourney"]"
                                class="govuk-link govuk-link--no-visited-state">
                                 @Localizer[Model.FileUploadTask]
                             </a>
@@ -53,6 +54,7 @@
                         @if (canStartViewPayRegistrationFeeStep)
                         {
                             <a asp-controller="RegistrationApplication" asp-action="RegistrationFeeCalculations" asp-route-registrationyear="@Model.RegistrationYear"
+                               asp-route-registrationjourney="@Context.Request.Query["registrationjourney"]" 
                                class="govuk-link govuk-link--no-visited-state">
                                 @Localizer[Model.ViewPaymentTask]
                             </a>
@@ -76,6 +78,7 @@
                         @if (canStartSubmitRegistrationApplicationStep)
                         {
                             <a asp-controller="RegistrationApplication" asp-action="AdditionalInformation" asp-route-registrationyear="@Model.RegistrationYear"
+                               asp-route-registrationjourney="@Context.Request.Query["registrationjourney"]"
                                class="govuk-link govuk-link--no-visited-state">
                                 @Localizer[Model.SubmitRegistrationApplicationTask]
                             </a>

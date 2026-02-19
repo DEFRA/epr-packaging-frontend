@@ -25,7 +25,7 @@
 
             <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel" />
 
-            <form asp-controller="RegistrationApplication" asp-action="SelectPaymentOptions" asp-route-registrationyear="@Model.RegistrationYear" method="post">
+            <form asp-controller="RegistrationApplication" asp-action="SelectPaymentOptions" asp-route-registrationyear="@Model.RegistrationYear" asp-route-registrationjourney="@Context.Request.Query["registrationjourney"]" method="post">
                 <div class="govuk-form-group">
                     <fieldset class="govuk-fieldset js-cookies-page-form-fieldset" id="analytics">
                         <legend></legend>
