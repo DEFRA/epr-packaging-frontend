@@ -418,8 +418,12 @@ public class RegistrationApplicationController(
     [Route(PagePaths.UpdateRegistrationGuidance)]
     public async Task<IActionResult> UpdateRegistrationGuidance()
     {
-        var session = await sessionManager.GetSessionAsync(HttpContext.Session);
-        session.Journey = [session.IsComplianceScheme ? PagePaths.ComplianceSchemeLanding : PagePaths.HomePageSelfManaged, PagePaths.UpdateRegistrationGuidance];
+        var userData = User.GetUserData();
+        var organisation = userData.Organisations[0];
+        var isComplianceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
+        
+        var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
+        session.Journey = [isComplianceScheme ? PagePaths.ComplianceSchemeLanding : PagePaths.HomePageSelfManaged, PagePaths.UpdateRegistrationGuidance];
 
         await SaveSession(session, PagePaths.UpdateRegistrationGuidance, null);
         SetBackLink(session, PagePaths.UpdateRegistrationGuidance);

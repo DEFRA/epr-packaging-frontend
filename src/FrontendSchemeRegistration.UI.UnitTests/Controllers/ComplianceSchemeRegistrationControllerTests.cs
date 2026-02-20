@@ -116,7 +116,7 @@ public class ComplianceSchemeRegistrationControllerTests
         _complianceSchemeService
             .Setup(service => service.GetOperatorComplianceSchemes(It.IsAny<Guid>()))
             .ReturnsAsync([scotlandCso, englandCso]);
-        _registrationApplicationService.Setup(x => x.BuildRegistrationYearApplicationsViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+        _registrationApplicationService.Setup(x => x.BuildRegistrationYearApplicationsViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<UserData>()))
             .ReturnsAsync(registrationApplicationYears.ToList());
         
         var expectedViewModel = new ComplianceSchemeRegistrationViewModel(englandCso.Name, nation.ToString(), registrationApplicationYears);

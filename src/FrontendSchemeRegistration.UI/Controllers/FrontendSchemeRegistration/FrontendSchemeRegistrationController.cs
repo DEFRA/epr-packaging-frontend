@@ -429,7 +429,7 @@ public class FrontendSchemeRegistrationController(
         session.UserData = userData;
         await sessionManager.SaveSessionAsync(HttpContext.Session, session);
 
-        var registrationApplicationYearViewModelsTask = registrationApplicationService.BuildRegistrationYearApplicationsViewModels(HttpContext.Session, organisation);
+        var registrationApplicationYearViewModelsTask = registrationApplicationService.BuildRegistrationYearApplicationsViewModels(HttpContext.Session, organisation, userData);
         var resubmissionApplicationDetailsTask = resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(organisation,
             [packagingResubmissionPeriod?.DataPeriod], session.RegistrationSession.SelectedComplianceScheme?.Id);
         

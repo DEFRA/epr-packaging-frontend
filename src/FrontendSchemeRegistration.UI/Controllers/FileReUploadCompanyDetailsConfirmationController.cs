@@ -36,7 +36,7 @@ public class FileReUploadCompanyDetailsConfirmationController : Controller
 
     [HttpGet]
     [SubmissionIdActionFilter(PagePaths.FileUploadCompanyDetailsSubLanding)]
-    public async Task<IActionResult> Get()
+    public async Task<IActionResult> Get([FromQuery] RegistrationJourney? registrationJourney = null)
     {
         var registrationYear = _registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
@@ -47,7 +47,6 @@ public class FileReUploadCompanyDetailsConfirmationController : Controller
 
         var isFileUploadJourneyInvokedViaRegistration = session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration;
 
-        this.SetBackLink(isFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, registrationYear);
         ViewData["IsFileUploadJourneyInvokedViaRegistration"] = isFileUploadJourneyInvokedViaRegistration;
 
         var organisationRole = session.UserData.Organisations.FirstOrDefault()?.OrganisationRole;
@@ -59,7 +58,11 @@ public class FileReUploadCompanyDetailsConfirmationController : Controller
             return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
         }
 
-        var model = await GetViewModel(submission, session, registrationYear);
+        var regJourney = submission.RegistrationJourney ?? registrationJourney;
+
+        this.SetBackLink(isFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, registrationYear, regJourney);
+
+        var model = await GetViewModel(submission, session, registrationYear, regJourney);
 
         session.RegistrationSession.Journey.AddIfNotExists(PagePaths.FileUploadCompanyDetailsSubLanding);
         await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
@@ -69,7 +72,7 @@ public class FileReUploadCompanyDetailsConfirmationController : Controller
 
     private async Task<FileReUploadCompanyDetailsConfirmationViewModel> GetViewModel(
         RegistrationSubmission submission,
-        FrontendSchemeRegistrationSession session, int? registrationYear = null)
+        FrontendSchemeRegistrationSession session, int? registrationYear = null, RegistrationJourney? registrationJourney = null)
     {
         var model = new FileReUploadCompanyDetailsConfirmationViewModel
         {
@@ -81,7 +84,8 @@ public class FileReUploadCompanyDetailsConfirmationController : Controller
             SubmissionDeadline = session.RegistrationSession.SubmissionDeadline.ToReadableLongMonthDeadlineDate(),
             OrganisationRole = session.UserData.Organisations.FirstOrDefault()?.OrganisationRole,
             HasValidfile = submission.HasValidFile,
-            RegistrationYear = registrationYear
+            RegistrationYear = registrationYear,
+            RegistrationJourney = registrationJourney
         };
 
         if (model.Status.Equals(SubmissionPeriodStatus.NotStarted) && !string.IsNullOrEmpty(submission.CompanyDetailsFileName))

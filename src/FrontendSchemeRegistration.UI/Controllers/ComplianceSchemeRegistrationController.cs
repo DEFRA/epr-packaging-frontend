@@ -26,7 +26,7 @@ public class ComplianceSchemeRegistrationController(
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
         var complianceSchemesTask = complianceSchemeService.GetOperatorComplianceSchemes(organisation.Id.Value);
-        var registrationApplicationYearViewModelsTask = registrationApplicationService.BuildRegistrationYearApplicationsViewModels(HttpContext.Session, organisation);
+        var registrationApplicationYearViewModelsTask = registrationApplicationService.BuildRegistrationYearApplicationsViewModels(HttpContext.Session, organisation, userData);
         await Task.WhenAll(complianceSchemesTask, registrationApplicationYearViewModelsTask);
         var cso = complianceSchemesTask.Result.Single(cs => cs.NationId == (int)nation);
 
