@@ -154,7 +154,7 @@
     <value>yn cynnwys manylion cynhyrchwyr mawr</value>
   </data>
   <data name="small_producer_detail" xml:space="preserve">
-    <value>[Welsh] include small producers' details</value>
+    <value>yn cynnwys manylion cynhyrchwyr bach</value>
   </data>
   <data name="subsidiaries_guidance" xml:space="preserve">
     <value>yn rhoi gwybod ar ran is-gwmnïau a heb ddefnyddio'r ID is-gwmni a ddarparwyd </value>
