@@ -185,7 +185,7 @@ public static class ServiceProviderExtension
             FeatureManager = sp.GetRequiredService<IFeatureManager>(),
             HttpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>(),
             GlobalVariables = sp.GetRequiredService<IOptions<GlobalVariables>>(),
-            RegistrationPeriodProvider = sp.GetRequiredService<IRegistrationPeriodProvider>(),
+            RegistrationPeriodProvider = sp.GetRequiredService<IRegistrationPeriodProvider>()
         });
         services.AddScoped<IRegistrationApplicationService, RegistrationApplicationService>();
         services.AddSingleton<IPatchService, PatchService>();

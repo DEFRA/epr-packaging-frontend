@@ -1,13 +1,20 @@
-﻿@{
+﻿@using FrontendSchemeRegistration.Application.Enums
+@using FrontendSchemeRegistration.UI.ViewModels.Shared
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@{
     ViewData["Title"] = Localizer["update-registration-data"];
-    var registrationYear = Context.Request.Query["registrationyear"];
+    var registrationYear = Context.Request.Query["registrationyear"].FirstOrDefault();
+    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+        true, 
+        Enum.TryParse(Context.Request.Query["registrationjourney"].FirstOrDefault(), out RegistrationJourney registrationJourney) ? registrationJourney : null,
+        null,
+        Localizer["update-registration-data"],
+        int.TryParse(registrationYear, out var regYearInt) ? regYearInt : null);
 }
 <main class="govuk-main-wrapper" id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-three-quarters">
-            <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
-                @Localizer["update-registration-data"]
-            </h1>
+            <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel"/>
             <div class="govuk-inset-text">
                 <p class="govuk-body">@Localizer["your-organisation-reference-number-wont-change"]</p>
             </div>
@@ -23,7 +30,12 @@
                     @Localizer["reporting-organisation-details"]
                 </a> @Localizer["reporting-organisation-details-before-you-start"]
             </p>
-            <a href="@($"{Url.Content($"~/{FrontendSchemeRegistration.Application.Constants.PagePaths.RegistrationTaskList}")}?IsResubmission=true&registrationyear={registrationYear}")" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+            <a asp-controller="RegistrationApplication"
+               asp-action="RegistrationTaskList"
+               asp-route-registrationjourney="@Context.Request.Query["registrationjourney"]"
+               asp-route-registrationyear="@Context.Request.Query["registrationyear"]"
+               asp-route-IsResubmission="true"
+               role="button" draggable="false" class="govuk-button" data-module="govuk-button">
                 @SharedLocalizer["continue"]
             </a>
         </div>

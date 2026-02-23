@@ -145,7 +145,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
 
         var registrationApplicationYears = _fixture.CreateMany<RegistrationYearApplicationsViewModel>().ToArray();
         
-        RegistrationApplicationService.Setup(x => x.BuildRegistrationYearApplicationsViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+        RegistrationApplicationService.Setup(x => x.BuildRegistrationYearApplicationsViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<UserData>()))
             .ReturnsAsync(registrationApplicationYears.ToList());
 
         // Act
@@ -193,7 +193,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
 
         var registrationApplicationYears = _fixture.CreateMany<RegistrationYearApplicationsViewModel>().ToArray();
         
-        RegistrationApplicationService.Setup(x => x.BuildRegistrationYearApplicationsViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+        RegistrationApplicationService.Setup(x => x.BuildRegistrationYearApplicationsViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<UserData>()))
             .ReturnsAsync(registrationApplicationYears.ToList());
 
         RegistrationApplicationService
@@ -228,7 +228,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
 
         var registrationApplicationYears = _fixture.CreateMany<RegistrationYearApplicationsViewModel>().ToArray();
         
-        RegistrationApplicationService.Setup(x => x.BuildRegistrationYearApplicationsViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+        RegistrationApplicationService.Setup(x => x.BuildRegistrationYearApplicationsViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<UserData>()))
             .ReturnsAsync(registrationApplicationYears.ToList());
 
         RegistrationApplicationService
@@ -320,7 +320,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
 
         var registrationApplicationYears = _fixture.CreateMany<RegistrationYearApplicationsViewModel>().ToArray();
         
-        RegistrationApplicationService.Setup(x => x.BuildRegistrationYearApplicationsViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+        RegistrationApplicationService.Setup(x => x.BuildRegistrationYearApplicationsViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<UserData>()))
             .ReturnsAsync(registrationApplicationYears.ToList());
 
         // Act
@@ -398,7 +398,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
 
         var registrationApplicationYears = _fixture.CreateMany<RegistrationYearApplicationsViewModel>().ToArray();
         
-        RegistrationApplicationService.Setup(x => x.BuildRegistrationYearApplicationsViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+        RegistrationApplicationService.Setup(x => x.BuildRegistrationYearApplicationsViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<UserData>()))
             .ReturnsAsync(registrationApplicationYears.ToList());
 
         // Act
@@ -476,7 +476,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
 
         var registrationApplicationYears = _fixture.CreateMany<RegistrationYearApplicationsViewModel>().ToArray();
         
-        RegistrationApplicationService.Setup(x => x.BuildRegistrationYearApplicationsViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>()))
+        RegistrationApplicationService.Setup(x => x.BuildRegistrationYearApplicationsViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<UserData>()))
             .ReturnsAsync(registrationApplicationYears.ToList());
 
         ResubmissionApplicationService.Setup(x => x.GetActiveSubmissionPeriod()).ReturnsAsync(submissionPeriod);

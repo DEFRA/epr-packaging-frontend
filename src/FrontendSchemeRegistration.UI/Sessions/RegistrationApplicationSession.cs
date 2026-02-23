@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using FrontendSchemeRegistration.Application.DTOs.ComplianceScheme;
+using FrontendSchemeRegistration.UI.Helpers;
 
 namespace FrontendSchemeRegistration.UI.Sessions;
 
@@ -24,94 +25,20 @@ public class RegistrationApplicationSession
 
     public ApplicationStatusType ApplicationStatus { get; set; }
 
-    public RegistrationTaskListStatus FileUploadStatus
-    {
-        get
-        {
-            if (ApplicationStatus is
-                ApplicationStatusType.CancelledByRegulator
-                or ApplicationStatusType.QueriedByRegulator
-                or ApplicationStatusType.RejectedByRegulator
-               )
-            {
-                return RegistrationTaskListStatus.NotStarted;
-            }
+    public RegistrationTaskListStatus FileUploadStatus =>
+        RegistrationApplicationStatusCalculator.CalculateFileUploadStatus(ApplicationStatus, FileReachedSynapse);
 
-            if (ApplicationStatus is ApplicationStatusType.SubmittedToRegulator)
-            {
-                return FileReachedSynapse ? RegistrationTaskListStatus.Completed : RegistrationTaskListStatus.Pending;
-            }
+    public RegistrationTaskListStatus PaymentViewStatus =>
+        RegistrationApplicationStatusCalculator.CalculatePaymentViewStatus(FileUploadStatus, IsRegistrationFeePaid);
 
-            if (ApplicationStatus is
-                ApplicationStatusType.AcceptedByRegulator
-                or ApplicationStatusType.ApprovedByRegulator
-               )
-            {
-                return RegistrationTaskListStatus.Completed;
-            }
+    public RegistrationTaskListStatus AdditionalDetailsStatus =>
+        RegistrationApplicationStatusCalculator.CalculateAdditionalDetailsStatus(PaymentViewStatus, RegistrationApplicationSubmitted);
 
-            if (!FileReachedSynapse && ApplicationStatus is
-                    ApplicationStatusType.FileUploaded or
-                    ApplicationStatusType.SubmittedAndHasRecentFileUpload)
-            {
-                return RegistrationTaskListStatus.Pending;
-            }
-
-            return RegistrationTaskListStatus.NotStarted;
-        }
-    }
-
-    public RegistrationTaskListStatus PaymentViewStatus
-    {
-        get
-        {
-            if (FileUploadStatus is RegistrationTaskListStatus.NotStarted or RegistrationTaskListStatus.Pending)
-            {
-                return RegistrationTaskListStatus.CanNotStartYet;
-            }
-
-            if (FileUploadStatus is RegistrationTaskListStatus.Completed && !IsRegistrationFeePaid)
-            {
-                return RegistrationTaskListStatus.NotStarted;
-            }
-
-            if (FileUploadStatus == RegistrationTaskListStatus.Completed && IsRegistrationFeePaid)
-            {
-                return RegistrationTaskListStatus.Completed;
-            }
-
-            return RegistrationTaskListStatus.NotStarted;
-        }
-    }
-
-    public RegistrationTaskListStatus AdditionalDetailsStatus
-    {
-        get
-        {
-            if (PaymentViewStatus is RegistrationTaskListStatus.NotStarted or RegistrationTaskListStatus.Pending)
-            {
-                return RegistrationTaskListStatus.CanNotStartYet;
-            }
-
-            if (PaymentViewStatus is RegistrationTaskListStatus.Completed && !RegistrationApplicationSubmitted)
-            {
-                return RegistrationTaskListStatus.NotStarted;
-            }
-
-            if (PaymentViewStatus == RegistrationTaskListStatus.Completed && RegistrationApplicationSubmitted)
-            {
-                return RegistrationTaskListStatus.Completed;
-            }
-
-            return RegistrationTaskListStatus.CanNotStartYet;
-        }
-    }
-
-    public bool IsRegistrationFeePaid => RegistrationFeePaymentMethod is "PayByPhone" or "PayOnline" or "PayByBankTransfer" or "No-Outstanding-Payment";
+    public bool IsRegistrationFeePaid => RegistrationApplicationStatusCalculator.IsRegistrationFeePaid(RegistrationFeePaymentMethod);
 
     public bool RegistrationApplicationSubmitted => RegistrationApplicationSubmittedDate is not null;
 
-    public bool FileReachedSynapse => RegistrationFeeCalculationDetails is { Length: > 0 };
+    public bool FileReachedSynapse => RegistrationApplicationStatusCalculator.FileReachedSynapse(RegistrationFeeCalculationDetails);
 
     public DateTime? RegistrationApplicationSubmittedDate { get; set; }
 

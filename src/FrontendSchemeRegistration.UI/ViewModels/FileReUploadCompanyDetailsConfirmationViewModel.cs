@@ -43,4 +43,6 @@ public class FileReUploadCompanyDetailsConfirmationViewModel : ViewModelWithOrga
     public SubmissionPeriodStatus Status { get; set; }
 
     public int? RegistrationYear { get; set; }
+    
+    public RegistrationJourney? RegistrationJourney { get; set; }
 }

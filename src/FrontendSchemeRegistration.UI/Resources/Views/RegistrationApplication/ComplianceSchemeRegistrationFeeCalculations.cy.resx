@@ -24,6 +24,12 @@
 	<data name="registration_fee_due_x" xml:space="preserve">
 		<value>Mae ffi gofrestru o &lt;strong&gt;£{0}&lt;/strong&gt; yn ddyledus.</value>
 	</data>
+  <data name="registration_fee_may_change" xml:space="preserve">
+    <value>Mae'r swm terfynol yn dibynnu ar ba bryd y byddwch chi'n cyflwyno'ch cais am gofrestru, gan fod y taliadau'n gallu codi bob blwyddyn.</value>
+  </data>
+  <data name="registration_charge_details" xml:space="preserve">
+    <value>Gweld y canllawiau ar gofrestru a'r taliadau</value>
+  </data>
 	<data name="registration_fees_calculated_from_your_information" xml:space="preserve">
 		<value>Mae ffioedd cofrestru’n cael eu cyfrif ar sail yr wybodaeth rydych chi wedi’i darparu.</value>
 	</data>
@@ -37,6 +43,6 @@
 		<value>Yn ôl i'r camau cofrestru</value>
 	</data>
 	<data name="registration_fee_due_x_to_process_application" xml:space="preserve">
-		<value>Mae ffi gofrestru o &lt;strong&gt;£{0}&lt;/strong&gt; yn ddyledus.</value>
+    <value>Mae ffi gofrestru o &lt;strong&gt;£{0}&lt;/strong&gt; i'w thalu ar sail y taliadau cofrestru presennol.</value>
 	</data>
 </root>

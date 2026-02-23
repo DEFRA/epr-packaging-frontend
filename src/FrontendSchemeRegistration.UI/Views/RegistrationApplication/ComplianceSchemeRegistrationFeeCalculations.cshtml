@@ -23,10 +23,30 @@
                     @Localizer["registration_fee_due_x_to_process_application", ConvertToThousandSeparatedDecimal(Model.TotalAmountOutstanding)]
                 </p>
 
-                <p class="govuk-body govuk-!-margin-bottom-4">@Localizer["registration_fees_calculated_from_your_information"]</p>
+                <p class="govuk-body govuk-!-margin-bottom-4">
+                    @Localizer["registration_fees_calculated_from_your_information"]
+                </p>
+                
+                <p class="govuk-body govuk-!-margin-bottom-4">
+                    @Localizer["registration_fee_may_change"]
+                </p>
+
+                <p class="govuk-body govuk-!-margin-bottom-4">
+                    <a class="govuk-link" rel="noreferrer noopener" target="_blank"
+                       href="https://www.gov.uk/guidance/extended-producer-responsibility-for-packaging-register-and-pay-the-fee">@Localizer["registration_charge_details"]</a>.
+                </p>
+
                 <p class="govuk-body govuk-!-margin-bottom-4">
                     <a class="govuk-link" rel="noreferrer noopener" target="_blank"
                        href="@GuidanceLinks.EPR_IllustrativeFeesAndCharges">@Localizer["more_about_EPR_fees_and_charges"]</a>.
+                </p>
+            }
+            else
+            {
+                <p class="govuk-body govuk-!-margin-bottom-4">@Localizer["registration_fee_may_change"]</p>
+                <p class="govuk-body govuk-!-margin-bottom-4">
+                    <a class="govuk-link" rel="noreferrer noopener" target="_blank"
+                       href="https://www.gov.uk/guidance/extended-producer-responsibility-for-packaging-register-and-pay-the-fee">@Localizer["registration_charge_details"]</a>.
                 </p>
             }
 
@@ -37,13 +57,13 @@
             <p class="govuk-body govuk-!-margin-top-4">
                 @if (Model is { RegistrationApplicationSubmitted: false, TotalAmountOutstanding: > 0 })
                 {
-                    <a asp-action="SelectPaymentOptions" asp-route-registrationyear="@Model.RegistrationYear" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+                    <a asp-action="SelectPaymentOptions" asp-route-registrationyear="@Model.RegistrationYear" asp-route-registrationjourney="@Model.RegistrationJourney" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
                         @SharedLocalizer["continue"]
                     </a>
                 }
                 else
                 {
-                    <a asp-action="RegistrationTaskList" asp-route-registrationyear="@Model.RegistrationYear" class="govuk-link govuk-link--no-visited-state">
+                    <a asp-action="RegistrationTaskList" asp-route-registrationyear="@Model.RegistrationYear" asp-route-registrationjourney="@Model.RegistrationJourney" class="govuk-link govuk-link--no-visited-state">
                         @Localizer["return_to_registration_steps"]
                     </a>
                 }

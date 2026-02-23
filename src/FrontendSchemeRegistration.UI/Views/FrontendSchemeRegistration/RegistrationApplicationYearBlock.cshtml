@@ -34,7 +34,7 @@
         </div>
         <div class="@GetBodyCssClass()">
             @{
-                ShowProgressStatus(Model);
+                await ShowProgressStatus(Model);
             }
         </div>
     </div>
@@ -46,7 +46,7 @@
     string GetHeaderCssClass() => Model.SummaryCardStyling ? "govuk-summary-card__title" : "govuk-heading-m";
     string GetBodyCssClass() => Model.SummaryCardStyling ? "govuk-summary-card__content" : "govuk-body";
 
-    void ShowProgressStatus(RegistrationApplicationViewModel model)
+    async Task ShowProgressStatus(RegistrationApplicationViewModel model)
     {
         var isResubmissionApprovedRejected = model is { IsResubmission: true, ApplicationStatus: ApplicationStatusType.AcceptedByRegulator or ApplicationStatusType.ApprovedByRegulator or ApplicationStatusType.RejectedByRegulator };
         var isResubmissionPending = model is { IsResubmission: true, AdditionalDetailsStatus: RegistrationTaskListStatus.Completed };
@@ -68,7 +68,11 @@
                     }
 
                     <p class="govuk-body">
-                        <a href="@($"{FrontendSchemeRegistration.Application.Constants.PagePaths.UpdateRegistrationGuidance}?registrationyear={model.RegistrationYear}")" class="govuk-link govuk-link--no-visited-state">
+                        <a asp-controller="RegistrationApplication"
+                           asp-action="UpdateRegistrationGuidance"
+                           asp-route-registrationjourney="@Model.RegistrationJourney"
+                           asp-route-registrationyear="@Model.RegistrationYear"
+                           class="govuk-link govuk-link--no-visited-state">
                             <strong>@Localizer["Resubmit_your_data_files"]</strong>
                         </a>
                     </p>
@@ -94,7 +98,11 @@
                 <p class="govuk-body">@Localizer["Your_registration_for_x_has_been_granted", model.RegistrationYear] @Localizer["Your_registration_reference_number_is_x", model.RegistrationReferenceNumber]</p>
                 <p class="govuk-body"><strong>@Localizer["If_anything_changes_you_should_resubmit"]</strong></p>
                 <p class="govuk-body">
-                    <a href="@($"{FrontendSchemeRegistration.Application.Constants.PagePaths.UpdateRegistrationGuidance}?registrationyear={model.RegistrationYear}")" class="govuk-link govuk-link--no-visited-state">
+                    <a asp-controller="RegistrationApplication"
+                       asp-action="UpdateRegistrationGuidance"
+                       asp-route-registrationjourney="@Model.RegistrationJourney"
+                       asp-route-registrationyear="@Model.RegistrationYear"
+                       class="govuk-link govuk-link--no-visited-state">
                         <strong>@Localizer["Resubmit_your_data_files"]</strong>
                     </a>
                 </p>
