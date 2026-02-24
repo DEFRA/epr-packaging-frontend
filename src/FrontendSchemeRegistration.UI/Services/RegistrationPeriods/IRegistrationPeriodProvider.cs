@@ -17,11 +17,22 @@ public interface IRegistrationPeriodProvider
     /// <param name="registrationYear"></param>
     /// <param name="isParamOptional"></param>
     /// <returns></returns>
+    /// 
     int? ValidateRegistrationYear(string? registrationYear, bool isParamOptional = false);
+    
     /// Returns all registration windows, whether they are closed or in the future. Will return
     /// a future window if that window's opening date is this year
     /// </summary>
     /// <param name="isCso"></param>
     /// <returns>All past, current or future registration windows</returns>
     IReadOnlyCollection<RegistrationWindow> GetAllRegistrationWindows(bool isCso);
+
+    /// <summary>
+    /// Retrieves a registration window
+    /// </summary>
+    /// <param name="isCso"></param>
+    /// <param name="isSmallProducer"></param>
+    /// <param name="registrationYear"></param>
+    /// <returns></returns>
+    RegistrationWindow GetRegistrationWindow(bool isCso, bool isSmallProducer, int registrationYear);
 }

@@ -102,6 +102,25 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
         return new ReadOnlyCollection<RegistrationWindow>(orderedWindows.ToList());
     }
 
+    /// <inheritdoc />
+    public RegistrationWindow GetRegistrationWindow(bool isCso, bool isSmallProducer, int registrationYear)
+    {
+        var windows = _registrationWindows.Where(w => w.IsCso == isCso && w.RegistrationYear == registrationYear);
+
+        var count = windows.Count();
+
+        return count switch
+        {
+            // if there are more than one windows, then use the size to filter
+            > 1 => isSmallProducer
+                ? windows.Single(w => w.WindowType is WindowType.CsoSmallProducer or WindowType.DirectSmallProducer)
+                : windows.Single(w => w.WindowType is WindowType.CsoLargeProducer or WindowType.DirectLargeProducer),
+            1 => windows.Single(),
+            _ => throw new InvalidOperationException(
+                $"Cannot find a registration window for arguments isCso: {isCso}, isSmallProducer: {isSmallProducer}, registrationYear: {registrationYear}")
+        };
+    }
+
     /// <summary>
     /// Rebuild the collection if we tick into the next year and we have
     /// derived the final year in a pattern (ie, the final year in config is null)
