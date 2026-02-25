@@ -1014,4 +1014,450 @@ public class RegistrationPeriodProviderTests
     }
 
     #endregion
+
+    #region GetRegistrationWindow Tests
+
+    [Test]
+    public void GIVEN_single_CSO_window_WHEN_GetRegistrationWindow_called_THEN_returns_that_window()
+    {
+        // arrange
+        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        {
+            new()
+            {
+                InitialRegistrationYear = 2026,
+                FinalRegistrationYear = 2026,
+                Windows = new List<Window>
+                {
+                    CreateWindow(WindowType.Cso)
+                }
+            }
+        };
+        var options = Options.Create(registrationPeriodPatterns);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+
+        // act
+        var result = sut.GetRegistrationWindow(isCso: true, isSmallProducer: false, registrationYear: 2026);
+
+        // assert
+        result.Should().NotBeNull();
+        result.WindowType.Should().Be(WindowType.Cso);
+        result.RegistrationYear.Should().Be(2026);
+        result.IsCso.Should().BeTrue();
+    }
+
+    [Test]
+    public void GIVEN_single_Direct_window_WHEN_GetRegistrationWindow_called_THEN_returns_that_window()
+    {
+        // arrange
+        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        {
+            new()
+            {
+                InitialRegistrationYear = 2026,
+                FinalRegistrationYear = 2026,
+                Windows = new List<Window>
+                {
+                    CreateWindow(WindowType.Direct)
+                }
+            }
+        };
+        var options = Options.Create(registrationPeriodPatterns);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+
+        // act
+        var result = sut.GetRegistrationWindow(isCso: false, isSmallProducer: true, registrationYear: 2026);
+
+        // assert
+        result.Should().NotBeNull();
+        result.WindowType.Should().Be(WindowType.Direct);
+        result.RegistrationYear.Should().Be(2026);
+        result.IsCso.Should().BeFalse();
+    }
+
+    [Test]
+    public void GIVEN_multiple_CSO_windows_and_isSmallProducer_true_WHEN_GetRegistrationWindow_called_THEN_returns_small_producer_window()
+    {
+        // arrange
+        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        {
+            new()
+            {
+                InitialRegistrationYear = 2026,
+                FinalRegistrationYear = 2026,
+                Windows = new List<Window>
+                {
+                    CreateWindow(WindowType.CsoLargeProducer),
+                    CreateWindow(WindowType.CsoSmallProducer)
+                }
+            }
+        };
+        var options = Options.Create(registrationPeriodPatterns);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+
+        // act
+        var result = sut.GetRegistrationWindow(isCso: true, isSmallProducer: true, registrationYear: 2026);
+
+        // assert
+        result.Should().NotBeNull();
+        result.WindowType.Should().Be(WindowType.CsoSmallProducer);
+        result.RegistrationYear.Should().Be(2026);
+        result.IsCso.Should().BeTrue();
+    }
+
+    [Test]
+    public void GIVEN_multiple_CSO_windows_and_isSmallProducer_false_WHEN_GetRegistrationWindow_called_THEN_returns_large_producer_window()
+    {
+        // arrange
+        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        {
+            new()
+            {
+                InitialRegistrationYear = 2026,
+                FinalRegistrationYear = 2026,
+                Windows = new List<Window>
+                {
+                    CreateWindow(WindowType.CsoLargeProducer),
+                    CreateWindow(WindowType.CsoSmallProducer)
+                }
+            }
+        };
+        var options = Options.Create(registrationPeriodPatterns);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+
+        // act
+        var result = sut.GetRegistrationWindow(isCso: true, isSmallProducer: false, registrationYear: 2026);
+
+        // assert
+        result.Should().NotBeNull();
+        result.WindowType.Should().Be(WindowType.CsoLargeProducer);
+        result.RegistrationYear.Should().Be(2026);
+        result.IsCso.Should().BeTrue();
+    }
+
+    [Test]
+    public void GIVEN_multiple_Direct_windows_and_isSmallProducer_true_WHEN_GetRegistrationWindow_called_THEN_returns_small_producer_window()
+    {
+        // arrange
+        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        {
+            new()
+            {
+                InitialRegistrationYear = 2026,
+                FinalRegistrationYear = 2026,
+                Windows = new List<Window>
+                {
+                    CreateWindow(WindowType.DirectLargeProducer),
+                    CreateWindow(WindowType.DirectSmallProducer)
+                }
+            }
+        };
+        var options = Options.Create(registrationPeriodPatterns);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+
+        // act
+        var result = sut.GetRegistrationWindow(isCso: false, isSmallProducer: true, registrationYear: 2026);
+
+        // assert
+        result.Should().NotBeNull();
+        result.WindowType.Should().Be(WindowType.DirectSmallProducer);
+        result.RegistrationYear.Should().Be(2026);
+        result.IsCso.Should().BeFalse();
+    }
+
+    [Test]
+    public void GIVEN_multiple_Direct_windows_and_isSmallProducer_false_WHEN_GetRegistrationWindow_called_THEN_returns_large_producer_window()
+    {
+        // arrange
+        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        {
+            new()
+            {
+                InitialRegistrationYear = 2026,
+                FinalRegistrationYear = 2026,
+                Windows = new List<Window>
+                {
+                    CreateWindow(WindowType.DirectLargeProducer),
+                    CreateWindow(WindowType.DirectSmallProducer)
+                }
+            }
+        };
+        var options = Options.Create(registrationPeriodPatterns);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+
+        // act
+        var result = sut.GetRegistrationWindow(isCso: false, isSmallProducer: false, registrationYear: 2026);
+
+        // assert
+        result.Should().NotBeNull();
+        result.WindowType.Should().Be(WindowType.DirectLargeProducer);
+        result.RegistrationYear.Should().Be(2026);
+        result.IsCso.Should().BeFalse();
+    }
+
+    [Test]
+    public void GIVEN_no_matching_windows_for_registration_year_WHEN_GetRegistrationWindow_called_THEN_throws_InvalidOperationException()
+    {
+        // arrange
+        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        {
+            new()
+            {
+                InitialRegistrationYear = 2026,
+                FinalRegistrationYear = 2026,
+                Windows = new List<Window>
+                {
+                    CreateWindow(WindowType.CsoLargeProducer)
+                }
+            }
+        };
+        var options = Options.Create(registrationPeriodPatterns);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+
+        // act & assert
+        var ex = Assert.Throws<InvalidOperationException>(() => 
+            sut.GetRegistrationWindow(isCso: true, isSmallProducer: false, registrationYear: 2025));
+        ex.Message.Should().Contain("Cannot find a registration window")
+            .And.Contain("isCso: True")
+            .And.Contain("isSmallProducer: False")
+            .And.Contain("registrationYear: 2025");
+    }
+
+    [Test]
+    public void GIVEN_no_matching_windows_for_isCso_WHEN_GetRegistrationWindow_called_THEN_throws_InvalidOperationException()
+    {
+        // arrange
+        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        {
+            new()
+            {
+                InitialRegistrationYear = 2026,
+                FinalRegistrationYear = 2026,
+                Windows = new List<Window>
+                {
+                    CreateWindow(WindowType.CsoLargeProducer)
+                }
+            }
+        };
+        var options = Options.Create(registrationPeriodPatterns);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+
+        // act & assert
+        var ex = Assert.Throws<InvalidOperationException>(() => 
+            sut.GetRegistrationWindow(isCso: false, isSmallProducer: false, registrationYear: 2026));
+        ex.Message.Should().Contain("Cannot find a registration window")
+            .And.Contain("isCso: False")
+            .And.Contain("isSmallProducer: False")
+            .And.Contain("registrationYear: 2026");
+    }
+
+    [Test]
+    public void GIVEN_first_of_multiple_CSO_years_WHEN_GetRegistrationWindow_called_THEN_returns_correct_window()
+    {
+        // arrange
+        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        {
+            new()
+            {
+                InitialRegistrationYear = 2024,
+                FinalRegistrationYear = 2026,
+                Windows = new List<Window>
+                {
+                    CreateWindow(WindowType.CsoLargeProducer)
+                }
+            }
+        };
+        var options = Options.Create(registrationPeriodPatterns);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+
+        // act
+        var result = sut.GetRegistrationWindow(isCso: true, isSmallProducer: false, registrationYear: 2024);
+
+        // assert
+        result.Should().NotBeNull();
+        result.WindowType.Should().Be(WindowType.CsoLargeProducer);
+        result.RegistrationYear.Should().Be(2024);
+    }
+
+    [Test]
+    public void GIVEN_middle_of_multiple_CSO_years_WHEN_GetRegistrationWindow_called_THEN_returns_correct_window()
+    {
+        // arrange
+        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        {
+            new()
+            {
+                InitialRegistrationYear = 2024,
+                FinalRegistrationYear = 2026,
+                Windows = new List<Window>
+                {
+                    CreateWindow(WindowType.CsoLargeProducer)
+                }
+            }
+        };
+        var options = Options.Create(registrationPeriodPatterns);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+
+        // act
+        var result = sut.GetRegistrationWindow(isCso: true, isSmallProducer: false, registrationYear: 2025);
+
+        // assert
+        result.Should().NotBeNull();
+        result.WindowType.Should().Be(WindowType.CsoLargeProducer);
+        result.RegistrationYear.Should().Be(2025);
+    }
+
+    [Test]
+    public void GIVEN_last_of_multiple_CSO_years_WHEN_GetRegistrationWindow_called_THEN_returns_correct_window()
+    {
+        // arrange
+        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        {
+            new()
+            {
+                InitialRegistrationYear = 2024,
+                FinalRegistrationYear = 2026,
+                Windows = new List<Window>
+                {
+                    CreateWindow(WindowType.CsoLargeProducer)
+                }
+            }
+        };
+        var options = Options.Create(registrationPeriodPatterns);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+
+        // act
+        var result = sut.GetRegistrationWindow(isCso: true, isSmallProducer: false, registrationYear: 2026);
+
+        // assert
+        result.Should().NotBeNull();
+        result.WindowType.Should().Be(WindowType.CsoLargeProducer);
+        result.RegistrationYear.Should().Be(2026);
+    }
+
+    [Test]
+    public void GIVEN_multiple_CSO_and_Direct_windows_WHEN_GetRegistrationWindow_called_for_CSO_THEN_returns_only_CSO_window()
+    {
+        // arrange
+        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        {
+            new()
+            {
+                InitialRegistrationYear = 2026,
+                FinalRegistrationYear = 2026,
+                Windows = new List<Window>
+                {
+                    CreateWindow(WindowType.CsoLargeProducer),
+                    CreateWindow(WindowType.CsoSmallProducer),
+                    CreateWindow(WindowType.DirectLargeProducer),
+                    CreateWindow(WindowType.DirectSmallProducer)
+                }
+            }
+        };
+        var options = Options.Create(registrationPeriodPatterns);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+
+        // act
+        var result = sut.GetRegistrationWindow(isCso: true, isSmallProducer: true, registrationYear: 2026);
+
+        // assert
+        result.Should().NotBeNull();
+        result.IsCso.Should().BeTrue();
+        result.WindowType.Should().Be(WindowType.CsoSmallProducer);
+    }
+
+    [Test]
+    public void GIVEN_multiple_CSO_and_Direct_windows_WHEN_GetRegistrationWindow_called_for_Direct_THEN_returns_only_Direct_window()
+    {
+        // arrange
+        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        {
+            new()
+            {
+                InitialRegistrationYear = 2026,
+                FinalRegistrationYear = 2026,
+                Windows = new List<Window>
+                {
+                    CreateWindow(WindowType.CsoLargeProducer),
+                    CreateWindow(WindowType.CsoSmallProducer),
+                    CreateWindow(WindowType.DirectLargeProducer),
+                    CreateWindow(WindowType.DirectSmallProducer)
+                }
+            }
+        };
+        var options = Options.Create(registrationPeriodPatterns);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+
+        // act
+        var result = sut.GetRegistrationWindow(isCso: false, isSmallProducer: true, registrationYear: 2026);
+
+        // assert
+        result.Should().NotBeNull();
+        result.IsCso.Should().BeFalse();
+        result.WindowType.Should().Be(WindowType.DirectSmallProducer);
+    }
+
+    [Test]
+    public void GIVEN_single_null_journey_CSO_window_WHEN_GetRegistrationWindow_called_THEN_returns_that_window()
+    {
+        // arrange
+        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        {
+            new()
+            {
+                InitialRegistrationYear = 2026,
+                FinalRegistrationYear = 2026,
+                Windows = new List<Window>
+                {
+                    CreateWindow(WindowType.Cso)
+                }
+            }
+        };
+        var options = Options.Create(registrationPeriodPatterns);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+
+        // act
+        var resultSmall = sut.GetRegistrationWindow(isCso: true, isSmallProducer: true, registrationYear: 2026);
+        var resultLarge = sut.GetRegistrationWindow(isCso: true, isSmallProducer: false, registrationYear: 2026);
+
+        // assert
+        resultSmall.Should().NotBeNull();
+        resultSmall.WindowType.Should().Be(WindowType.Cso);
+        resultLarge.Should().NotBeNull();
+        resultLarge.WindowType.Should().Be(WindowType.Cso);
+        resultSmall.Should().Be(resultLarge);
+    }
+
+    [Test]
+    public void GIVEN_single_null_journey_Direct_window_WHEN_GetRegistrationWindow_called_THEN_returns_that_window()
+    {
+        // arrange
+        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        {
+            new()
+            {
+                InitialRegistrationYear = 2026,
+                FinalRegistrationYear = 2026,
+                Windows = new List<Window>
+                {
+                    CreateWindow(WindowType.Direct)
+                }
+            }
+        };
+        var options = Options.Create(registrationPeriodPatterns);
+        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+
+        // act
+        var resultSmall = sut.GetRegistrationWindow(isCso: false, isSmallProducer: true, registrationYear: 2026);
+        var resultLarge = sut.GetRegistrationWindow(isCso: false, isSmallProducer: false, registrationYear: 2026);
+
+        // assert
+        resultSmall.Should().NotBeNull();
+        resultSmall.WindowType.Should().Be(WindowType.Direct);
+        resultLarge.Should().NotBeNull();
+        resultLarge.WindowType.Should().Be(WindowType.Direct);
+        resultSmall.Should().Be(resultLarge);
+    }
+
+    #endregion
 }
