@@ -54,6 +54,7 @@ public class RegistrationApplicationServiceTests
     public void Setup()
     {
         _dateTimeProvider = new FakeTimeProvider();
+        _dateTimeProvider.SetUtcNow(new DateTime(2026, 1, 1));
         _submissionServiceMock = new Mock<ISubmissionService>();
         _paymentCalculationServiceMock = new Mock<IPaymentCalculationService>();
         _sessionManagerMock = new Mock<ISessionManager<RegistrationApplicationSession>>();
@@ -1122,7 +1123,6 @@ public class RegistrationApplicationServiceTests
     public async Task GetRegistrationApplicationSession_SetLateFeeFlag_NoSubmissionDate_UsesTodayDate()
     {
         // Arrange
-        _dateTimeProvider.SetUtcNow(new DateTime(2025, 7, 2));
         var organisation = _fixture.Create<Organisation>();
         organisation.OrganisationNumber = "123";
         organisation.NationId = 1;
@@ -1152,8 +1152,8 @@ public class RegistrationApplicationServiceTests
                     WindowType.DirectLargeProducer,
                     RegistrationYear,
                     new DateTime(2025, 6, 1),
-                    new DateTime(2025, 7, 1),
-                    new DateTime(2025, 8, 1)));
+                    new DateTime(2025, 12, 31),
+                    new DateTime(2026, 1, 2)));
 
         // Act
         var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, RegistrationYear, null);
