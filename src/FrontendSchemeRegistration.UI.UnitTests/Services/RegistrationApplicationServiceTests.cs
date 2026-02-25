@@ -87,7 +87,7 @@ public class RegistrationApplicationServiceTests
             {
                 FileId = Guid.NewGuid(),
                 SubmittedByName = "John Doe",
-                SubmittedDateTime = DateTime.Now
+                SubmittedDateTime = _dateTimeProvider.GetUtcNow().DateTime,
             },
             Period = new SubmissionPeriod
             {
@@ -415,7 +415,7 @@ public class RegistrationApplicationServiceTests
 
         session.IsLateFeeApplicable = true;
         session.IsOriginalCsoSubmissionLate = false;
-        session.FirstApplicationSubmittedEventCreatedDatetime = DateTime.Now;
+        session.FirstApplicationSubmittedEventCreatedDatetime = _dateTimeProvider.GetUtcNow().DateTime;
 
         session.RegistrationFeeCalculationDetails = _fixture.CreateMany<RegistrationFeeCalculationDetails>(2).ToArray();
         session.RegistrationFeeCalculationDetails[0].IsNewJoiner = true;
@@ -640,7 +640,7 @@ public class RegistrationApplicationServiceTests
         var organisationNumber = "123";
         _session.SelectedComplianceScheme = null!;
         var periodEnd = DateTime.Parse("31 December" + _session.Period.Year, new CultureInfo("en-GB"));
-        var periodNumber = DateTime.Today <= periodEnd ? 1 : 2;
+        var periodNumber = _dateTimeProvider.GetUtcNow().Date <= periodEnd ? 1 : 2;
         var expectedApplicationReferenceNumber = $"PEPR{organisationNumber}{periodEnd.Year - 2000}P{periodNumber}";
 
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
@@ -718,7 +718,7 @@ public class RegistrationApplicationServiceTests
         {
             FileId = Guid.NewGuid(),
             SubmittedByName = "test",
-            SubmittedDateTime = DateTime.Now
+            SubmittedDateTime = _dateTimeProvider.GetUtcNow().DateTime
         };
 
         var registrationApplicationDetails = new RegistrationApplicationDetails
@@ -1435,12 +1435,10 @@ public class RegistrationApplicationServiceTests
     {
         // Arrange
         _dateTimeProvider.SetUtcNow(new DateTime(2026, 1, 10));
-        var regYear = _dateTimeProvider.GetUtcNow().Year;
-        var submissionYear = DateTime.Now.Year;
         var submissionId = Guid.NewGuid();
         var organisation = _fixture.Create<Organisation>();
         organisation.OrganisationNumber = "123";
-        var cso = new ComplianceSchemeDto { Id = Guid.NewGuid(), NationId = 2, Name = "test", RowNumber = 1, CreatedOn = DateTime.Now };
+        var cso = new ComplianceSchemeDto { Id = Guid.NewGuid(), NationId = 2, Name = "test", RowNumber = 1, CreatedOn = _dateTimeProvider.GetUtcNow().DateTime };
         RegistrationFeeCalculationDetails[] feeCalculationDetails =
         [
             new RegistrationFeeCalculationDetails
@@ -1453,7 +1451,7 @@ public class RegistrationApplicationServiceTests
                 IsOnlineMarketplace = false
             }
         ];
-        var lastSubmittedFile = new LastSubmittedFileDetails { SubmittedDateTime = DateTime.Now };
+        var lastSubmittedFile = new LastSubmittedFileDetails { SubmittedDateTime = _dateTimeProvider.GetUtcNow().DateTime };
 
         var registrationApplicationDetails = new RegistrationApplicationDetails
         {
@@ -1497,18 +1495,18 @@ public class RegistrationApplicationServiceTests
             });
 
         _mockRegistrationPeriodProvider
-            .Setup(x => x.GetRegistrationWindow(true, false, regYear))
-            .Returns(CreateRegistrationWindow(WindowType.CsoLargeProducer, regYear, null, _dateTimeProvider.GetUtcNow().AddMonths(-1).Date));
+            .Setup(x => x.GetRegistrationWindow(true, false, RegistrationYear))
+            .Returns(CreateRegistrationWindow(WindowType.CsoLargeProducer, RegistrationYear, null, _dateTimeProvider.GetUtcNow().AddMonths(-1).Date));
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, regYear, RegistrationJourney.CsoLargeProducer, null);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, RegistrationYear, RegistrationJourney.CsoLargeProducer, null);
 
         // Assert
        
         result.Should().BeEquivalentTo(new RegistrationApplicationSession
         {
-            Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" },
-            SubmissionPeriod = $"January to December {submissionYear}",
+            Period = new SubmissionPeriod { DataPeriod = $"January to December {RegistrationYear}", StartMonth = "January", EndMonth = "December", Year = $"{RegistrationYear}" },
+            SubmissionPeriod = $"January to December {RegistrationYear}",
             SubmissionId = submissionId,
             IsSubmitted = true,
             ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
@@ -1596,11 +1594,10 @@ public class RegistrationApplicationServiceTests
         var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, RegistrationYear, null);
 
         // Assert
-        var submissionYear = DateTime.Now.Year.ToString();
         result.Should().BeEquivalentTo(new RegistrationApplicationSession
         {
-            Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" },
-            SubmissionPeriod = $"January to December {submissionYear}",
+            Period = new SubmissionPeriod { DataPeriod = $"January to December {RegistrationYear}", StartMonth = "January", EndMonth = "December", Year = $"{RegistrationYear}" },
+            SubmissionPeriod = $"January to December {RegistrationYear}",
             SubmissionId = submissionId,
             IsSubmitted = true,
             ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
@@ -1627,12 +1624,11 @@ public class RegistrationApplicationServiceTests
         // Arrange
         _dateTimeProvider.SetUtcNow(new DateTime(2026, 1, 10));
         var regYear = _dateTimeProvider.GetUtcNow().Year;
-        var submissionYear = DateTime.Now.Year;
         var submissionId = Guid.NewGuid();
         var organisation = _fixture.Create<Organisation>();
         organisation.OrganisationNumber = "123";
         organisation.OrganisationRole = "Compliance Scheme";
-        var cso = new ComplianceSchemeDto { Id = Guid.NewGuid(), NationId = 2, Name = "test", RowNumber = 1, CreatedOn = DateTime.Now };
+        var cso = new ComplianceSchemeDto { Id = Guid.NewGuid(), NationId = 2, Name = "test", RowNumber = 1, CreatedOn = _dateTimeProvider.GetUtcNow().DateTime };
 
         RegistrationFeeCalculationDetails[] feeCalculationDetails =
         [
@@ -1647,7 +1643,7 @@ public class RegistrationApplicationServiceTests
             }
         ];
 
-        var lastSubmittedFile = new LastSubmittedFileDetails { SubmittedDateTime = DateTime.Now };
+        var lastSubmittedFile = new LastSubmittedFileDetails { SubmittedDateTime = _dateTimeProvider.GetUtcNow().DateTime };
 
         var registrationApplicationDetails = new RegistrationApplicationDetails
         {
@@ -1695,13 +1691,13 @@ public class RegistrationApplicationServiceTests
             .Returns(CreateRegistrationWindow(WindowType.CsoLargeProducer, regYear, null, _dateTimeProvider.GetUtcNow().AddMonths(-1).Date));
 
         // Act
-        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, submissionYear, null);
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, RegistrationYear, null);
 
         // Assert
         result.Should().BeEquivalentTo(new RegistrationApplicationSession
         {
-            Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" },
-            SubmissionPeriod = $"January to December {submissionYear}",
+            Period = new SubmissionPeriod { DataPeriod = $"January to December {RegistrationYear}", StartMonth = "January", EndMonth = "December", Year = $"{RegistrationYear}" },
+            SubmissionPeriod = $"January to December {RegistrationYear}",
             SubmissionId = submissionId,
             IsSubmitted = true,
             ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
@@ -1771,11 +1767,10 @@ public class RegistrationApplicationServiceTests
         var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, RegistrationYear, null, true);
 
         // Assert
-        var submissionYear = DateTime.Now.Year.ToString();
         result.Should().BeEquivalentTo(new
         {
-            Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" },
-            SubmissionPeriod = $"January to December {submissionYear}",
+            Period = new SubmissionPeriod { DataPeriod = $"January to December {RegistrationYear}", StartMonth = "January", EndMonth = "December", Year = $"{RegistrationYear}" },
+            SubmissionPeriod = $"January to December {RegistrationYear}",
             SubmissionId = submissionId,
             IsResubmission = true,
             IsSubmitted = true,
@@ -1813,7 +1808,7 @@ public class RegistrationApplicationServiceTests
             }
         ];
 
-        var lastSubmittedFile = new LastSubmittedFileDetails { SubmittedDateTime = DateTime.Now };
+        var lastSubmittedFile = new LastSubmittedFileDetails { SubmittedDateTime = _dateTimeProvider.GetUtcNow().DateTime };
 
         var registrationApplicationDetails = new RegistrationApplicationDetails
         {
@@ -1825,7 +1820,7 @@ public class RegistrationApplicationServiceTests
             LastSubmittedFile = lastSubmittedFile,
             ApplicationReferenceNumber = "Test",
             RegistrationFeePaymentMethod = "Online",
-            RegistrationApplicationSubmittedDate = DateTime.Now.Date,
+            RegistrationApplicationSubmittedDate = _dateTimeProvider.GetUtcNow().Date,
             RegistrationApplicationSubmittedComment = "Test"
         };
 
@@ -1847,7 +1842,7 @@ public class RegistrationApplicationServiceTests
                 LastSubmittedFile = lastSubmittedFile,
                 ApplicationReferenceNumber = "Test",
                 RegistrationFeePaymentMethod = "Online",
-                RegistrationApplicationSubmittedDate = DateTime.Now.Date,
+                RegistrationApplicationSubmittedDate = _dateTimeProvider.GetUtcNow().Date,
                 RegistrationApplicationSubmittedComment = "Test",
                 IsLateFeeApplicable = false
             });
@@ -1873,7 +1868,7 @@ public class RegistrationApplicationServiceTests
             RegulatorNation = "GB-ENG",
             ApplicationReferenceNumber = "Test",
             RegistrationFeePaymentMethod = "Online",
-            RegistrationApplicationSubmittedDate = DateTime.Now.Date,
+            RegistrationApplicationSubmittedDate = _dateTimeProvider.GetUtcNow().Date,
             RegistrationApplicationSubmittedComment = "Test",
             TotalAmountOutstanding = 100,
             ShowRegistrationCaption = false
@@ -1906,7 +1901,7 @@ public class RegistrationApplicationServiceTests
             {
                 RegistrationSession = new RegistrationSession
                 {
-                    SelectedComplianceScheme = new ComplianceSchemeDto { Id = selectedComplianceSchemeId, Name = "test", RowNumber = 1, NationId = 1, CreatedOn = DateTime.Now }
+                    SelectedComplianceScheme = new ComplianceSchemeDto { Id = selectedComplianceSchemeId, Name = "test", RowNumber = 1, NationId = 1, CreatedOn = _dateTimeProvider.GetUtcNow().DateTime }
                 }
             });
 
@@ -1946,7 +1941,7 @@ public class RegistrationApplicationServiceTests
             {
                 RegistrationSession = new RegistrationSession
                 {
-                    SelectedComplianceScheme = new ComplianceSchemeDto { Id = selectedComplianceSchemeId, Name = "test", RowNumber = 1, NationId = 1, CreatedOn = DateTime.Now }
+                    SelectedComplianceScheme = new ComplianceSchemeDto { Id = selectedComplianceSchemeId, Name = "test", RowNumber = 1, NationId = 1, CreatedOn = _dateTimeProvider.GetUtcNow().DateTime }
                 }
             });
 
@@ -1995,7 +1990,7 @@ public class RegistrationApplicationServiceTests
             {
                 RegistrationSession = new RegistrationSession
                 {
-                    SelectedComplianceScheme = new ComplianceSchemeDto { Id = selectedComplianceSchemeId, Name = "test", RowNumber = 1, NationId = 1, CreatedOn = DateTime.Now }
+                    SelectedComplianceScheme = new ComplianceSchemeDto { Id = selectedComplianceSchemeId, Name = "test", RowNumber = 1, NationId = 1, CreatedOn = _dateTimeProvider.GetUtcNow().DateTime }
                 }
             });
 
@@ -2901,13 +2896,12 @@ public class RegistrationApplicationServiceTests
     [Test]
     public async Task GetProducerRegistrationFees_WhenV2Enabled_SendsV2Request_With_All_New_Fields()
     {
-        _dateTimeProvider.SetUtcNow(DateTime.UtcNow);
         _featureManagerMock.Setup(f => f.IsEnabledAsync("EnableRegistrationFeeV2")).ReturnsAsync(true);
 
         _session.Period = new SubmissionPeriod { StartMonth = "January", EndMonth = "June", Year = "2025" };
         _session.LastSubmittedFile ??= new LastSubmittedFileDetails();
         _session.LastSubmittedFile.FileId = Guid.NewGuid();
-        _session.LastSubmittedFile.SubmittedDateTime = DateTime.UtcNow;
+        _session.LastSubmittedFile.SubmittedDateTime = _dateTimeProvider.GetUtcNow().DateTime;
 
         _session.RegistrationFeeCalculationDetails = _fixture.CreateMany<RegistrationFeeCalculationDetails>(1).ToArray();
         _session.RegistrationFeeCalculationDetails[0].OrganisationSize = "Large";
@@ -2963,13 +2957,12 @@ public class RegistrationApplicationServiceTests
     [Test]
     public async Task GetComplianceSchemeRegistrationFees_WhenV2Enabled_SendsV2Request_With_All_New_Fields()
     {
-        _dateTimeProvider.SetUtcNow(DateTime.UtcNow);
         _featureManagerMock.Setup(f => f.IsEnabledAsync("EnableRegistrationFeeV2")).ReturnsAsync(true);
 
         _session.Period = new SubmissionPeriod { StartMonth = "January", EndMonth = "June", Year = "2025" };
         _session.LastSubmittedFile ??= new LastSubmittedFileDetails();
         _session.LastSubmittedFile.FileId = Guid.NewGuid();
-        _session.LastSubmittedFile.SubmittedDateTime = DateTime.UtcNow;
+        _session.LastSubmittedFile.SubmittedDateTime = _dateTimeProvider.GetUtcNow().DateTime;
 
         _session.SelectedComplianceScheme = new ComplianceSchemeDto
         {
@@ -3023,7 +3016,6 @@ public class RegistrationApplicationServiceTests
     [Test]
     public async Task GetProducerRegistrationFees_WhenV2Disabled_SendsV1Request()
     {
-        _dateTimeProvider.SetUtcNow(DateTime.UtcNow);
         _featureManagerMock.Setup(f => f.IsEnabledAsync("EnableRegistrationFeeV2")).ReturnsAsync(false);
 
         _session.RegistrationFeeCalculationDetails = _fixture.CreateMany<RegistrationFeeCalculationDetails>(1).ToArray();
