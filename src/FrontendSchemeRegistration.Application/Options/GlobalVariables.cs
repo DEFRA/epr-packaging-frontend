@@ -21,12 +21,6 @@ public class GlobalVariables
 
     public string LogPrefix { get; set; }
     
-    public DateTime LateFeeDeadline2025 { get; set; }
-
-    public DateTime LargeProducerLateFeeDeadline2026 { get; set; }
-
-    public DateTime SmallProducerLateFeeDeadline2026 { get; set; }
-
     /// <summary>
     /// If set, this overrides the current system date/time. Should never be used
     /// in a production environment

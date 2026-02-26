@@ -184,7 +184,6 @@ public static class ServiceProviderExtension
             Logger = sp.GetRequiredService<ILogger<RegistrationApplicationService>>(),
             FeatureManager = sp.GetRequiredService<IFeatureManager>(),
             HttpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>(),
-            GlobalVariables = sp.GetRequiredService<IOptions<GlobalVariables>>(),
             RegistrationPeriodProvider = sp.GetRequiredService<IRegistrationPeriodProvider>()
         });
         services.AddScoped<IRegistrationApplicationService, RegistrationApplicationService>();

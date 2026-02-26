@@ -34,7 +34,6 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     private readonly ILogger<RegistrationApplicationService> logger;
     private readonly IFeatureManager featureManager;
     private readonly IHttpContextAccessor httpContextAccessor;
-    private readonly IOptions<GlobalVariables> globalVariables;
     private readonly TimeProvider _timeProvider;
     private readonly IRegistrationPeriodProvider _registrationPeriodProvider;
 
@@ -57,22 +56,20 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             ?? throw new InvalidOperationException($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(dependencies.FeatureManager)} cannot be null.");
         httpContextAccessor = dependencies.HttpContextAccessor
             ?? throw new InvalidOperationException($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(dependencies.HttpContextAccessor)} cannot be null.");
-        globalVariables = dependencies.GlobalVariables
-            ?? throw new InvalidOperationException($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(dependencies.GlobalVariables)} cannot be null.");
         _registrationPeriodProvider = dependencies.RegistrationPeriodProvider;
     }
-    private void SetLateFeeFlag(RegistrationApplicationSession session, int registrationYear)
+    private void SetLateFeeFlag(RegistrationApplicationSession session, int registrationYear)   
     {
-        DateTime lateFeeDeadline;
+        var isSmallProducer = string.Equals(session.RegistrationFeeCalculationDetails?[0].OrganisationSize, "Small",
+            StringComparison.InvariantCultureIgnoreCase);
+        var window = _registrationPeriodProvider.GetRegistrationWindow(session.IsComplianceScheme, isSmallProducer, registrationYear);
 
-        if (registrationYear == 2025)
-            lateFeeDeadline = globalVariables.Value.LateFeeDeadline2025;
-        else if (session.RegistrationFeeCalculationDetails is null)
-            lateFeeDeadline = DateTime.MaxValue;
-        else if (string.Equals(session.RegistrationFeeCalculationDetails?[0].OrganisationSize, "Small", StringComparison.InvariantCultureIgnoreCase))
-            lateFeeDeadline = globalVariables.Value.SmallProducerLateFeeDeadline2026;
-        else
-            lateFeeDeadline = globalVariables.Value.LargeProducerLateFeeDeadline2026;
+        if (window is null)
+        {
+            throw new InvalidOperationException($"There is no registration window for registration year {registrationYear}, IsComplianceScheme: {session.IsComplianceScheme}, isSmallProducer: {isSmallProducer}");
+        }
+
+        var lateFeeDeadline = window.DeadlineDate;
 
         session.IsLateFeeApplicable = false;
         session.IsOriginalCsoSubmissionLate = false;
@@ -82,21 +79,17 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         {
             if (session is { HasAnyApprovedOrQueriedRegulatorDecision: true, IsLatestSubmittedEventAfterFileUpload: true })
             {
-                session.IsLateFeeApplicable = session.LatestSubmittedEventCreatedDatetime.Value.Date > lateFeeDeadline;
+                session.IsLateFeeApplicable = session.LatestSubmittedEventCreatedDatetime.Value.Date >= lateFeeDeadline;
             }
             else if (session.FirstApplicationSubmittedEventCreatedDatetime is not null)
             {
-                session.IsLateFeeApplicable = session.FirstApplicationSubmittedEventCreatedDatetime > lateFeeDeadline;
+                session.IsLateFeeApplicable = session.FirstApplicationSubmittedEventCreatedDatetime >= lateFeeDeadline;
+                session.IsOriginalCsoSubmissionLate = session.FirstApplicationSubmittedEventCreatedDatetime >= lateFeeDeadline;
             }
             else
             {
                 var today = _timeProvider.GetLocalNow().Date;
-                session.IsLateFeeApplicable = today > lateFeeDeadline;
-            }
-
-            if (session.FirstApplicationSubmittedEventCreatedDatetime is not null)
-            {
-                session.IsOriginalCsoSubmissionLate = session.FirstApplicationSubmittedEventCreatedDatetime > lateFeeDeadline;
+                session.IsLateFeeApplicable = today >= lateFeeDeadline;
             }
         }
         else
@@ -104,12 +97,12 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             //Producer Logic
             if (session.FirstApplicationSubmittedEventCreatedDatetime is not null)
             {
-                session.IsLateFeeApplicable = session.FirstApplicationSubmittedEventCreatedDatetime > lateFeeDeadline;
+                session.IsLateFeeApplicable = session.FirstApplicationSubmittedEventCreatedDatetime >= lateFeeDeadline;
             }
             else
             {
                 var today = _timeProvider.GetLocalNow().Date;
-                session.IsLateFeeApplicable = today > lateFeeDeadline;
+                session.IsLateFeeApplicable = today >= lateFeeDeadline;
             }
         }
     }
@@ -709,6 +702,5 @@ public sealed class RegistrationApplicationServiceDependencies
     public required ILogger<RegistrationApplicationService> Logger { get; init; }
     public required IFeatureManager FeatureManager { get; init; }
     public required IHttpContextAccessor HttpContextAccessor { get; init; }
-    public required IOptions<GlobalVariables> GlobalVariables { get; init; }
     public required IRegistrationPeriodProvider RegistrationPeriodProvider { get; init; }
 }
