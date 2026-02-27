@@ -15,8 +15,10 @@ using FrontendSchemeRegistration.UI.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Time.Testing;
 using Microsoft.FeatureManagement;
 using Moq;
+using System;
 using UI.Controllers;
 using UI.Controllers.ControllerExtensions;
 using UI.Sessions;
@@ -30,6 +32,7 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
         {
             DataPeriod = "Data period 1",
             ActiveFrom = DateTime.Today,
+            VisibleFrom = DateTime.Today,
             Deadline = DateTime.Parse("2023-12-31"),
             Year = "2023",
             StartMonth = "September",
@@ -40,6 +43,7 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
             DataPeriod = "Data period 2",
             Deadline = DateTime.Parse("2024-03-31"),
             ActiveFrom = DateTime.Today.AddDays(5),
+            VisibleFrom = DateTime.Today,
             Year = "2024",
             StartMonth = "January",
             EndMonth = "March"
@@ -50,6 +54,7 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
             /* This will be excluded because it is after the latest allowed period ending June 2024 */
             Deadline = DateTime.Parse("2024-12-31"),
             ActiveFrom = DateTime.Today.AddDays(10),
+            VisibleFrom = DateTime.Today,
             Year = "2024",
             StartMonth = "July",
             EndMonth = "December"
@@ -60,6 +65,7 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
     private Mock<ISubmissionService> _submissionServiceMock;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
     private Mock<IFeatureManager> _featureManagerMock;
+    private FakeTimeProvider _timeProvider;
 
     [SetUp]
     public void SetUp()
@@ -93,12 +99,19 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
                 }
             });
         _featureManagerMock = new Mock<IFeatureManager>();
+        _timeProvider = new FakeTimeProvider();
+        _timeProvider.SetUtcNow(DateTime.UtcNow);
+        // Set to today at noon local time to ensure all periods with VisibleFrom <= Today are visible
+        // and periods with ActiveFrom > Today show as "CannotStartYet"
+        var todayAtNoon = new DateTimeOffset(DateTime.Today.AddHours(12), TimeZoneInfo.Local.GetUtcOffset(DateTime.Today));
+        _timeProvider.SetUtcNow(todayAtNoon.ToUniversalTime());
 
         _systemUnderTest = new FileUploadCompanyDetailsSubLandingController(
             _submissionServiceMock.Object,
             _sessionManagerMock.Object,
             Options.Create(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods }),
-            _featureManagerMock.Object);
+            _featureManagerMock.Object,
+            _timeProvider);
 
         _systemUnderTest.ControllerContext = new ControllerContext
         {

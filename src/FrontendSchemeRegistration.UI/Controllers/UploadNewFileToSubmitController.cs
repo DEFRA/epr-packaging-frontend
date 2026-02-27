@@ -37,7 +37,6 @@ public class UploadNewFileToSubmitController : Controller
     [SubmissionIdActionFilter(PagePaths.FileUploadSubLanding)]
     public async Task<IActionResult> Get()
     {
-        bool showPoMResubmission = await _featureManager.IsEnabledAsync(nameof(FeatureFlags.ShowPoMResubmission));
         ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadSubLanding}");
 
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
@@ -70,10 +69,7 @@ public class UploadNewFileToSubmitController : Controller
         var userData = User.GetUserData();
         var decision = new PomDecision();
 
-        if (showPoMResubmission)
-        {
-            decision = await _submissionService.GetDecisionAsync<PomDecision>(null, submission.Id, Application.Enums.SubmissionType.Producer);
-        }
+        decision = await _submissionService.GetDecisionAsync<PomDecision>(null, submission.Id, Application.Enums.SubmissionType.Producer);
 
         var uploadedByGuid = submission.LastUploadedValidFile?.UploadedBy;
         var submittedByGuid = submission.LastSubmittedFile?.SubmittedBy;

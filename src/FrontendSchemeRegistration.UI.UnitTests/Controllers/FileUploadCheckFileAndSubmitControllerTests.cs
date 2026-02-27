@@ -63,10 +63,6 @@ public class FileUploadCheckFileAndSubmitControllerTests
             .ReturnsAsync(personThatLastUploadedValidFile);
 
         _featureManagerMock
-            .Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ShowPoMResubmission)))
-            .ReturnsAsync(true);
-
-        _featureManagerMock
             .Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)))
             .ReturnsAsync(true);
 

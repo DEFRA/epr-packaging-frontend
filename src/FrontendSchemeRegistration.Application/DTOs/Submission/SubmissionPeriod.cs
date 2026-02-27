@@ -23,4 +23,11 @@ public class SubmissionPeriod
     public DateTime Deadline { get; init; }
 
     public DateTime ActiveFrom { get; init; }
+
+    /// <summary>
+    /// The date from which this submission period tile becomes visible in the UI.
+    /// If not specified, defaults to ActiveFrom date.
+    /// This allows future submission periods to be configured but hidden until the specified date.
+    /// </summary>
+    public DateTime? VisibleFrom { get; init; }
 }
