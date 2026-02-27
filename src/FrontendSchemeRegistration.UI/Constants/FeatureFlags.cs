@@ -19,7 +19,6 @@ public static class FeatureFlags
     public const string ShowAllSubsidiaries = "ShowAllSubsidiaries";
     public const string ImplementPackagingDataResubmissionJourney = "ImplementPackagingDataResubmissionJourney";
     public const string ShowSessionTimeoutWarning = "ShowSessionTimeoutWarning";
-    public const string ShowLargeProducerRegistrationWarning = "ShowLargeProducerRegistrationWarning";
     public const string ShowPoMSubmission2025 = "ShowPoMSubmission2025";
     public const string ShowYourFeedbackFooter = "ShowYourFeedbackFooter";
     public const string ShowWasteTile = "ShowWasteTile";
@@ -28,7 +27,6 @@ public static class FeatureFlags
     public const string EnableRegistrationFeeV2 = "EnableRegistrationFeeV2";
 
     public const string IncludeSubsidariesInFeeCalculationsForProducers = "IncludeSubsidariesInFeeCalculationsForProducers";
-    public const string AlwaysShowLargeProducerJourneyMessage = "AlwaysShowLargeProducerJourneyMessage";
     public const string DisplayCsoSmallProducerRegistration = "DisplayCsoSmallProducerRegistration";
     public const string CsoRegistrationEnabled = "CsoRegistrationEnabled";
     public const string ShowNotificationBanner = "ShowNotificationBanner";
