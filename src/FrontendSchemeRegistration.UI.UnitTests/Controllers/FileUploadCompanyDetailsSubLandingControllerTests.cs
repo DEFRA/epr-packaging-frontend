@@ -26,41 +26,7 @@ using UI.ViewModels;
 
 public class FileUploadCompanyDetailsSubLandingControllerTests
 {
-    private readonly List<SubmissionPeriod> _submissionPeriods = new()
-    {
-        new SubmissionPeriod
-        {
-            DataPeriod = "Data period 1",
-            ActiveFrom = DateTime.Today,
-            VisibleFrom = DateTime.Today,
-            Deadline = DateTime.Parse("2023-12-31"),
-            Year = "2023",
-            StartMonth = "September",
-            EndMonth = "December", 
-        },
-        new SubmissionPeriod
-        {
-            DataPeriod = "Data period 2",
-            Deadline = DateTime.Parse("2024-03-31"),
-            ActiveFrom = DateTime.Today.AddDays(5),
-            VisibleFrom = DateTime.Today,
-            Year = "2024",
-            StartMonth = "January",
-            EndMonth = "March"
-        },
-        new SubmissionPeriod
-        {
-            DataPeriod = "Data period 3",
-            /* This will be excluded because it is after the latest allowed period ending June 2024 */
-            Deadline = DateTime.Parse("2024-12-31"),
-            ActiveFrom = DateTime.Today.AddDays(10),
-            VisibleFrom = DateTime.Today,
-            Year = "2024",
-            StartMonth = "July",
-            EndMonth = "December"
-        }
-    };
-
+    private List<SubmissionPeriod> _submissionPeriods;
     private FileUploadCompanyDetailsSubLandingController _systemUnderTest;
     private Mock<ISubmissionService> _submissionServiceMock;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
@@ -70,6 +36,51 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
     [SetUp]
     public void SetUp()
     {
+        // Initialize time provider with a fixed date for deterministic tests.
+        // The date must be:
+        // - On Period 1's ActiveFrom (so it shows as "NotStarted" - active but not yet started)
+        // - Before Period 2's ActiveFrom (today + 5 days) so it shows as "CannotStartYet"
+        // - Before Period 3's ActiveFrom (today + 10 days) so it shows as "CannotStartYet"
+        // Using 2024-01-10 ensures all periods are visible and in the expected states.
+        var fixedDate = new DateTimeOffset(2024, 1, 10, 12, 0, 0, TimeSpan.Zero);
+        _timeProvider = new FakeTimeProvider(fixedDate);
+
+        var today = new DateTime(2024, 1, 10);
+        _submissionPeriods = new List<SubmissionPeriod>
+        {
+            new SubmissionPeriod
+            {
+                DataPeriod = "Data period 1",
+                ActiveFrom = today,
+                VisibleFrom = today,
+                Deadline = DateTime.Parse("2023-12-31"),
+                Year = "2023",
+                StartMonth = "September",
+                EndMonth = "December", 
+            },
+            new SubmissionPeriod
+            {
+                DataPeriod = "Data period 2",
+                Deadline = DateTime.Parse("2024-03-31"),
+                ActiveFrom = today.AddDays(5),
+                VisibleFrom = today,
+                Year = "2024",
+                StartMonth = "January",
+                EndMonth = "March"
+            },
+            new SubmissionPeriod
+            {
+                DataPeriod = "Data period 3",
+                /* This will be excluded because it is after the latest allowed period ending June 2024 */
+                Deadline = DateTime.Parse("2024-12-31"),
+                ActiveFrom = today.AddDays(10),
+                VisibleFrom = today,
+                Year = "2024",
+                StartMonth = "July",
+                EndMonth = "December"
+            }
+        };
+
         _submissionServiceMock = new Mock<ISubmissionService>();
 
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
@@ -99,12 +110,6 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
                 }
             });
         _featureManagerMock = new Mock<IFeatureManager>();
-        _timeProvider = new FakeTimeProvider();
-        _timeProvider.SetUtcNow(DateTime.UtcNow);
-        // Set to today at noon local time to ensure all periods with VisibleFrom <= Today are visible
-        // and periods with ActiveFrom > Today show as "CannotStartYet"
-        var todayAtNoon = new DateTimeOffset(DateTime.Today.AddHours(12), TimeZoneInfo.Local.GetUtcOffset(DateTime.Today));
-        _timeProvider.SetUtcNow(todayAtNoon.ToUniversalTime());
 
         _systemUnderTest = new FileUploadCompanyDetailsSubLandingController(
             _submissionServiceMock.Object,
