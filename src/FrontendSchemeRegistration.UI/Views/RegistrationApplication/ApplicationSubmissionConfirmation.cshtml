@@ -149,7 +149,8 @@
                             }
                             else
                             {
-                                <a asp-controller="FrontendSchemeRegistration" asp-action="VisitHomePageSelfManaged" class="govuk-link">@Localizer["return_to_your"]</a>
+                                @Localizer["visit_your"]
+                                <a asp-controller="FrontendSchemeRegistration" asp-action="VisitHomePageSelfManaged" class="govuk-link">@Localizer["account_home_page"]</a>
                             }
                             @Localizer["check_status_of_your_application"]
                         </p>
