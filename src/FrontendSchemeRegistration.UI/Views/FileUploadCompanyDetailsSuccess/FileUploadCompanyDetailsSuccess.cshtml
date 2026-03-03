@@ -29,7 +29,7 @@
                     <p class="govuk-body break-word">@Model.FileName</p>
                 </div>
             </div>
-            @if (Model.IsCso)
+            @if (Model.IsCso && Model.RegistrationJourney is not null && Model.RegistrationYear is not null)
             {
                 <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="new ComplianceSchemeRegistrationHeadingViewModel(
                     true, 
