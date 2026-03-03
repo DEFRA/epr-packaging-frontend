@@ -84,13 +84,18 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             else if (session.FirstApplicationSubmittedEventCreatedDatetime is not null)
             {
                 session.IsLateFeeApplicable = session.FirstApplicationSubmittedEventCreatedDatetime >= lateFeeDeadline;
-                session.IsOriginalCsoSubmissionLate = session.FirstApplicationSubmittedEventCreatedDatetime >= lateFeeDeadline;
             }
             else
             {
                 var today = _timeProvider.GetLocalNow().Date;
                 session.IsLateFeeApplicable = today >= lateFeeDeadline;
             }
+            
+            if (session.FirstApplicationSubmittedEventCreatedDatetime is not null)
+            {
+                session.IsOriginalCsoSubmissionLate = session.FirstApplicationSubmittedEventCreatedDatetime >= lateFeeDeadline;
+            }
+
         }
         else
         {
