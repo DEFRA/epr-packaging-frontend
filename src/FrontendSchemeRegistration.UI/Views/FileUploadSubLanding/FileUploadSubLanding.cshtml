@@ -14,14 +14,6 @@
 
 @functions
 {
-    private static string GetClass(SubmissionPeriodStatus status) => status switch
-    {
-        CannotStartYet => "govuk-tag--grey",
-        FileUploaded => "govuk-tag--yellow",
-        SubmittedToRegulator => "govuk-tag--yellow",
-        _ => string.Empty
-    };
-
     private static string GetClassFeature(SubmissionPeriodStatus status) => status switch
     {
         CannotStartYet => "govuk-tag--grey",
