@@ -27,7 +27,8 @@ public class FileUploadSubLandingController(
     ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
     IFeatureManager featureManager,
     IOptions<GlobalVariables> globalVariables,
-    IResubmissionApplicationService resubmissionApplicationService)
+    IResubmissionApplicationService resubmissionApplicationService,
+    TimeProvider timeProvider)
     : Controller
 {
     private const int SubmissionsLimit = 1;
@@ -37,10 +38,9 @@ public class FileUploadSubLandingController(
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var showPomDecision = await featureManager.IsEnabledAsync(nameof(FeatureFlags.ShowPoMResubmission));
-
-        var showPomSubmissions2025 = await featureManager.IsEnabledAsync(nameof(FeatureFlags.ShowPoMSubmission2025));
-        _submissionPeriods = _submissionPeriods.Where(p => showPomSubmissions2025 || p.Year != "2025").ToList();
+        _submissionPeriods = _submissionPeriods
+            .FilterVisibleSubmissionPeriods(timeProvider)
+            .ToList();
         var periods = _submissionPeriods.Select(x => x.DataPeriod).ToList();
 
         var session = await sessionManager.GetSessionAsync(HttpContext.Session);
@@ -65,7 +65,7 @@ public class FileUploadSubLandingController(
 
             var decision = new PomDecision();
 
-            if (showPomDecision && submission != null)
+            if (submission != null)
             {
                 decision = await submissionService.GetDecisionAsync<PomDecision>(
                 SubmissionsLimit,
@@ -82,7 +82,7 @@ public class FileUploadSubLandingController(
                 DatePeriodEndMonth = submissionPeriod.LocalisedMonth(MonthType.End),
                 DatePeriodYear = submissionPeriod.Year,
                 Deadline = submissionPeriod.Deadline,
-                Status = GetSubmissionStatus(submission, submissionPeriod, decision, showPomDecision, packagingResubmissionApplicationSession),
+                Status = GetSubmissionStatus(submission, submissionPeriod, decision, true, packagingResubmissionApplicationSession),
                 IsResubmissionRequired = decision.IsResubmissionRequired,
                 Decision = decision.Decision,
                 Comments = decision.Comments,
@@ -167,7 +167,8 @@ public class FileUploadSubLandingController(
         bool showPomDecision,
         PackagingResubmissionApplicationSession session)
     {
-        if (DateTime.Now < submissionPeriod.ActiveFrom)
+        var now = timeProvider.GetLocalNow().DateTime;
+        if (now < submissionPeriod.ActiveFrom)
         {
             return SubmissionPeriodStatus.CannotStartYet;
         }
