@@ -77,8 +77,43 @@ public static class  Accounts
                     MembersLastUpdatedOn = DateTimeOffset.UtcNow.AddDays(-7),
                     MemberCount = 123
                 }));
-        
-        
+
+        // GET /api/compliance-schemes/{orgId}/schemes/{schemeId}/scheme-members (View Members)
+        server.Given(Request.Create()
+                .UsingGet()
+                .WithPath(new RegexMatcher("^/api/compliance-schemes/[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}/schemes/[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}/scheme-members$")))
+            .RespondWith(Response.Create()
+                .WithStatusCode(200)
+                .WithHeader("Content-Type", "application/json")
+                .WithBodyAsJson(new
+                {
+                    pagedResult = new
+                    {
+                        searchTerm = (string?)null,
+                        items = new[]
+                        {
+                            new
+                            {
+                                selectedSchemeOrganisationExternalId = Guid.Parse("b2222222-3333-4444-5555-666666666666"),
+                                selectedSchemeId = Guid.Parse("c3333333-4444-5555-6666-777777777777"),
+                                organisationNumber = "123456",
+                                organisationName = "Mock Member Ltd",
+                                companiesHouseNumber = "12345678",
+                                relationships = Array.Empty<object>()
+                            }
+                        },
+                        currentPage = 1,
+                        totalItems = 1,
+                        pageSize = 50,
+                        searchTerms = Array.Empty<string>(),
+                        typeAhead = Array.Empty<string>()
+                    },
+                    schemeName = "CS_GENERATED_2697892_England",
+                    lastUpdated = DateTimeOffset.UtcNow.AddDays(-1),
+                    linkedOrganisationCount = 1,
+                    subsidiariesCount = 0
+                }));
+
         // GET /api/user-accounts 
         server.Given(Request.Create()
                 .UsingGet()
@@ -96,7 +131,8 @@ public static class  Accounts
                         }
                     }
 
-                    var orgId = string.IsNullOrWhiteSpace(token) ? Guid.NewGuid().ToString() : token;
+                    // Organisation id must be a Guid; do not use the bearer token (JWT) here
+                    var orgId = Guid.Parse("a1111111-2222-3333-4444-555555555555");
 
                     var body = new
                     {
