@@ -90,7 +90,7 @@ public class UploadingOrganisationDetailsController : Controller
 
     public RedirectToActionResult RedirectToFileUploadCompanyDetailsWarnings(Guid submissionId, RegistrationJourney? registrationJourney, int? registrationYear)
     {
-        return RedirectToAction("Get", "FileUploadCompanyDetailsWarnings", registrationYear is not null ? new { submissionId = submissionId.ToString(), registrationyear = registrationYear.ToString() } : new { submissionId = submissionId.ToString() });
+        return RedirectToAction("Get", "FileUploadCompanyDetailsWarnings", registrationYear is not null ? new { submissionId = submissionId.ToString(), registrationyear = registrationYear.ToString(), registrationJourney } : new { submissionId = submissionId.ToString(), registrationJourney });
     }
 
     public RedirectToActionResult RedirectToFileUploadCompanyDetailsErrors(Guid submissionId, RegistrationJourney? registrationJourney, int? registrationYear)

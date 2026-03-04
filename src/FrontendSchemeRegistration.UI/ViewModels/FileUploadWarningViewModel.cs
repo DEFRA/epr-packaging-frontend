@@ -2,6 +2,7 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
+using Application.Enums;
 using Resources;
 
 [ExcludeFromCodeCoverage]
@@ -19,4 +20,10 @@ public class FileUploadWarningViewModel
     public string MaxReportSize { get; set; }
 
     public int? RegistrationYear { get; set; }
+
+    public RegistrationJourney? RegistrationJourney { get; set; }
+
+    public bool IsCso { get; set; }
+
+    public string OrganisationName { get; set; }
 }
