@@ -60,14 +60,7 @@ public class FileUploadCompanyDetailsWarningsControllerTests
             {
                 UserData = new UserData
                 {
-                    Organisations = new List<Organisation>
-                    {
-                        new()
-                        {
-                            Name = "Test Organisation",
-                            OrganisationRole = OrganisationRoles.Producer
-                        }
-                    }
+                    Organisations = [new Organisation { Name = "Test Organisation", OrganisationRole = OrganisationRoles.Producer }]
                 },
                 RegistrationSession = new RegistrationSession
                 {
@@ -226,9 +219,10 @@ public class FileUploadCompanyDetailsWarningsControllerTests
             SubmissionId = SubmissionId,
             MaxWarningsToProcess = 100,
             RegistrationYear = hasRegistrationYear ? RegistrationYear : (int?)null,
+            RegistrationJourney = null,
             OrganisationName = "Test Organisation",
             IsCso = false
-        }, options => options.Excluding(m => m.RegistrationJourney));
+        });
 
         _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.AtLeastOnce);
     }
@@ -253,14 +247,7 @@ public class FileUploadCompanyDetailsWarningsControllerTests
             {
                 UserData = new UserData
                 {
-                    Organisations = new List<Organisation>
-                    {
-                        new()
-                        {
-                            Name = "Test Organisation",
-                            OrganisationRole = OrganisationRoles.Producer
-                        }
-                    }
+                    Organisations = [new Organisation { Name = "Test Organisation", OrganisationRole = OrganisationRoles.Producer }]
                 },
                 RegistrationSession = new RegistrationSession
                 {
@@ -292,9 +279,10 @@ public class FileUploadCompanyDetailsWarningsControllerTests
             SubmissionId = SubmissionId,
             MaxWarningsToProcess = 100,
             RegistrationYear = hasRegistrationYear ? RegistrationYear : (int?)null,
+            RegistrationJourney = null,
             OrganisationName = "Test Organisation",
             IsCso = false
-        }, options => options.Excluding(m => m.RegistrationJourney));
+        });
 
         _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.Once);
         _sessionManagerMock.Verify(x => x.GetSessionAsync(It.IsAny<ISession>()), Times.Once);
@@ -325,14 +313,7 @@ public class FileUploadCompanyDetailsWarningsControllerTests
             {
                 UserData = new UserData
                 {
-                    Organisations = new List<Organisation>
-                    {
-                        new()
-                        {
-                            Name = "Test Organisation",
-                            OrganisationRole = OrganisationRoles.Producer
-                        }
-                    }
+                    Organisations = [new Organisation { Name = "Test Organisation", OrganisationRole = OrganisationRoles.Producer }]
                 },
                 RegistrationSession = new RegistrationSession
                 {
