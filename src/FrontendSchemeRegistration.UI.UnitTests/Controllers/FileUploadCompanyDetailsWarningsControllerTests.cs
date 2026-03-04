@@ -228,7 +228,7 @@ public class FileUploadCompanyDetailsWarningsControllerTests
     }
 
     [Test]
-    //[TestCase(true)]
+    [TestCase(true)]
     [TestCase(false)]
     public async Task Get_ReturnsFileUploadCompanyDetailsWarningsView_When_Session_RegistrationSession_IsFileUploadJourney_Equals_True(bool hasRegistrationYear)
     {
@@ -358,14 +358,7 @@ public class FileUploadCompanyDetailsWarningsControllerTests
            {
                UserData = new UserData
                {
-                   Organisations = new List<Organisation>
-                   {
-                       new()
-                       {
-                           Name = "Test Organisation",
-                           OrganisationRole = OrganisationRoles.Producer
-                       }
-                   }
+                   Organisations = [new Organisation { Name = "Test Organisation", OrganisationRole = OrganisationRoles.Producer }]
                },
                RegistrationSession = new RegistrationSession
                {
@@ -420,14 +413,7 @@ public class FileUploadCompanyDetailsWarningsControllerTests
            {
                UserData = new UserData
                {
-                   Organisations = new List<Organisation>
-                   {
-                       new()
-                       {
-                           Name = "Test Organisation",
-                           OrganisationRole = OrganisationRoles.Producer
-                       }
-                   }
+                   Organisations = [new Organisation { Name = "Test Organisation", OrganisationRole = OrganisationRoles.Producer }]
                },
                RegistrationSession = new RegistrationSession
                {
