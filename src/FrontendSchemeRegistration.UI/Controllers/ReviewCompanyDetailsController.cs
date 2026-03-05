@@ -175,7 +175,7 @@ public class ReviewCompanyDetailsController : Controller
 
         try
         {
-            var routeValue = QueryStringExtensions.BuildRouteValues(submissionId: model.SubmissionId, registrationYear: model.RegistrationYear);
+            var routeValue = QueryStringExtensions.BuildRouteValues(submissionId: model.SubmissionId, registrationYear: model.RegistrationYear, registrationJourney: model.RegistrationJourney);
 
             return RedirectToAction("Get", "DeclarationWithFullName", routeValue);
         }
