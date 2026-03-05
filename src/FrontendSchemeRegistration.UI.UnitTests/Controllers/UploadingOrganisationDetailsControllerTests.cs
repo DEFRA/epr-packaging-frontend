@@ -100,8 +100,9 @@ public class UploadingOrganisationDetailsControllerTests
         // Assert
         result.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("FileUploadCompanyDetailsSuccess");
-        result.RouteValues.Should().HaveCount(2).And.ContainKey("registrationyear");
-        result.RouteValues.Should().HaveCount(2).And.ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId.ToString());
+        result.RouteValues.Should().HaveCount(3).And.ContainKey("registrationyear");
+        result.RouteValues.Should().HaveCount(3).And.ContainKey("registrationjourney");
+        result.RouteValues.Should().HaveCount(3).And.ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId.ToString());
     }
     
     [Test]
@@ -262,6 +263,7 @@ public class UploadingOrganisationDetailsControllerTests
         result.ControllerName.Should().Be("FileUploadCompanyDetailsErrors");
         result.RouteValues.Should().HaveCount(3);
         result.RouteValues.Should().ContainKey("registrationyear");
+        result.RouteValues.Should().HaveCount(3).And.ContainKey("registrationjourney");
         result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId.ToString());
     }
 
@@ -287,8 +289,9 @@ public class UploadingOrganisationDetailsControllerTests
         // Assert
         result.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("FileUploadCompanyDetailsWarnings");
-        result.RouteValues.Should().HaveCount(2).And.ContainKey("registrationyear");
-        result.RouteValues.Should().HaveCount(2).And.ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId.ToString());
+        result.RouteValues.Should().HaveCount(3).And.ContainKey("registrationyear");
+        result.RouteValues.Should().HaveCount(3).And.ContainKey("registrationjourney");
+        result.RouteValues.Should().HaveCount(3).And.ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId.ToString());
     }
 
     [Test]
@@ -363,20 +366,22 @@ public class UploadingOrganisationDetailsControllerTests
     [Test]
     public Task RedirectToFileUploadCompanyDetailsWarnings()
     {
-        var resultForNull =  _testUploadingOrgDetailsController.RedirectToFileUploadCompanyDetailsWarnings(Guid.NewGuid(), null) as RedirectToActionResult;
-        var resultFor2026 =  _testUploadingOrgDetailsController.RedirectToFileUploadCompanyDetailsWarnings(Guid.NewGuid(), 2026) as RedirectToActionResult;
+        var resultForNull =  _testUploadingOrgDetailsController.RedirectToFileUploadCompanyDetailsWarnings(Guid.NewGuid(), null, null) as RedirectToActionResult;
+        var resultFor2026 =  _testUploadingOrgDetailsController.RedirectToFileUploadCompanyDetailsWarnings(Guid.NewGuid(), null, 2026) as RedirectToActionResult;
 
         Assert.That(resultForNull.ActionName, Is.EqualTo("Get"));
         
         Assert.That(resultForNull.ControllerName, Is.EqualTo(nameof(FileUploadCompanyDetailsWarningsController).RemoveControllerFromName()));
         
-        Assert.That(resultForNull.RouteValues.Count, Is.EqualTo(1));
+        Assert.That(resultForNull.RouteValues.Count, Is.EqualTo(2));
         Assert.That(resultForNull.RouteValues.ContainsKey("submissionId"));
-        
+        Assert.That(resultFor2026.RouteValues.ContainsKey("registrationjourney"));
+
         Assert.That(resultFor2026.ActionName, Is.EqualTo("Get"));
         
-        Assert.That(resultFor2026.RouteValues.Count, Is.EqualTo(2));
+        Assert.That(resultFor2026.RouteValues.Count, Is.EqualTo(3));
         Assert.That(resultFor2026.RouteValues.ContainsKey("registrationyear"));
+        Assert.That(resultFor2026.RouteValues.ContainsKey("registrationjourney"));
         Assert.That(resultFor2026.RouteValues.ContainsKey("submissionId"));
         
         Assert.That(resultFor2026.ControllerName, Is.EqualTo(nameof(FileUploadCompanyDetailsWarningsController).RemoveControllerFromName()));
