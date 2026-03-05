@@ -2,9 +2,11 @@
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
+using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 using FrontendSchemeRegistration.UI.Sessions;
@@ -40,7 +42,7 @@ public class FileUploadCompanyDetailsWarningsController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get()
+    public async Task<IActionResult> Get([FromQuery] RegistrationJourney? registrationJourney = null)
     {
         var registrationYear = _registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
         var submissionId = Guid.Parse(Request.Query["submissionId"]);
@@ -63,7 +65,12 @@ public class FileUploadCompanyDetailsWarningsController : Controller
             return RedirectToAction("Get", "FileUploadCompanyDetails", registrationYear is not null ? new { registrationyear = registrationYear.ToString() } : null);
         }
 
-        this.SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, registrationYear);
+        var organisation = session.UserData.Organisations[0];
+        var organisationRole = organisation.OrganisationRole;
+        bool isCso = organisationRole == OrganisationRoles.ComplianceScheme;
+        var regJourney = submission.RegistrationJourney ?? registrationJourney;
+
+        this.SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, registrationYear, regJourney);
 
         return View(
            "FileUploadCompanyDetailsWarnings",
@@ -73,7 +80,10 @@ public class FileUploadCompanyDetailsWarningsController : Controller
                SubmissionId = submissionId,
                MaxWarningsToProcess = _validationOptions.MaxIssuesToProcess,
                MaxReportSize = _validationOptions.MaxIssueReportSize,
-               RegistrationYear = registrationYear
+               RegistrationYear = registrationYear,
+               RegistrationJourney = regJourney,
+               IsCso = isCso,
+               OrganisationName = organisation.Name
            });
     }
 
@@ -82,9 +92,12 @@ public class FileUploadCompanyDetailsWarningsController : Controller
     {
         ModelState.Remove(nameof(model.FileName));
         ModelState.Remove(nameof(model.MaxReportSize));
+        ModelState.Remove(nameof(model.OrganisationName));
+        ModelState.Remove(nameof(model.IsCso));
 
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-        this.SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, model.RegistrationYear);
+        var regJourney = model.RegistrationJourney;
+        this.SetBackLink(session.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, model.RegistrationYear, regJourney);
 
         if (!ModelState.IsValid)
         {
@@ -93,14 +106,11 @@ public class FileUploadCompanyDetailsWarningsController : Controller
 
         if (model.UploadNewFile == true)
         {
-            return RedirectToAction("Get", "FileUploadCompanyDetails", model.RegistrationYear is not null ?
-            new { submissionId = model.SubmissionId.ToString(), registrationyear = model.RegistrationYear.ToString() } :
-            new { submissionId = model.SubmissionId.ToString() });
+            var routeValues = QueryStringExtensions.BuildRouteValues(submissionId: model.SubmissionId, registrationYear: model.RegistrationYear, registrationJourney: model.RegistrationJourney);
+            return RedirectToAction("Get", "FileUploadCompanyDetails", routeValues);
         }
 
-        return RedirectToAction("Get", "FileUploadCompanyDetailsSuccess", 
-            model.RegistrationYear is not null ? 
-            new { submissionId = model.SubmissionId.ToString(), registrationyear = model.RegistrationYear.ToString() } : 
-            new { submissionId = model.SubmissionId.ToString() });
+        var successRouteValues = QueryStringExtensions.BuildRouteValues(submissionId: model.SubmissionId, registrationYear: model.RegistrationYear, registrationJourney: model.RegistrationJourney);
+        return RedirectToAction("Get", "FileUploadCompanyDetailsSuccess", successRouteValues);
     }
 }
