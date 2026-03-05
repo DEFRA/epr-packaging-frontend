@@ -72,25 +72,25 @@ public class UploadingOrganisationDetailsController : Controller
 
         if (HasRowValidationWarnings(submission)) // Add warnings
         {
-            return RedirectToFileUploadCompanyDetailsWarnings(submissionId, registrationYear);
+            return RedirectToFileUploadCompanyDetailsWarnings(submissionId, registrationJourney, registrationYear);
         }
 
-        return RedirectToFileUploadCompanyDetailsSuccess(submissionId, registrationYear);
+        return RedirectToFileUploadCompanyDetailsSuccess(submissionId, registrationJourney, registrationYear);
     }
 
     public RedirectToActionResult RedirectToFileUploadCompanyDetails(Guid submissionId, RegistrationJourney? registrationJourney, int? registrationYear)
     {
-        return RedirectToAction("Get", "FileUploadCompanyDetails", registrationYear is not null ? new { submissionId = submissionId.ToString(), registrationyear = registrationYear.ToString(), registrationJourney} : new { submissionId = submissionId.ToString() });
+        return RedirectToAction("Get", "FileUploadCompanyDetails", registrationYear is not null ? new { submissionId = submissionId.ToString(), registrationyear = registrationYear.ToString(), registrationjourney = registrationJourney } : new { submissionId = submissionId.ToString(), registrationjourney = registrationJourney });
     }
 
-    public RedirectToActionResult RedirectToFileUploadCompanyDetailsSuccess(Guid submissionId, int? registrationYear)
+    public RedirectToActionResult RedirectToFileUploadCompanyDetailsSuccess(Guid submissionId, RegistrationJourney? registrationJourney, int? registrationYear)
     {
-        return RedirectToAction("Get", "FileUploadCompanyDetailsSuccess", registrationYear is not null ? new { submissionId = submissionId.ToString(), registrationyear = registrationYear.ToString() } : new { submissionId = submissionId.ToString() });
+        return RedirectToAction("Get", "FileUploadCompanyDetailsSuccess", registrationYear is not null ? new { submissionId = submissionId.ToString(), registrationyear = registrationYear.ToString(), registrationjourney = registrationJourney } : new { submissionId = submissionId.ToString(), registrationjourney = registrationJourney });
     }
 
-    public RedirectToActionResult RedirectToFileUploadCompanyDetailsWarnings(Guid submissionId, int? registrationYear)
+    public RedirectToActionResult RedirectToFileUploadCompanyDetailsWarnings(Guid submissionId, RegistrationJourney? registrationJourney, int? registrationYear)
     {
-        return RedirectToAction("Get", "FileUploadCompanyDetailsWarnings", registrationYear is not null ? new { submissionId = submissionId.ToString(), registrationyear = registrationYear.ToString() } : new { submissionId = submissionId.ToString() });
+        return RedirectToAction("Get", "FileUploadCompanyDetailsWarnings", registrationYear is not null ? new { submissionId = submissionId.ToString(), registrationyear = registrationYear.ToString(), registrationjourney = registrationJourney } : new { submissionId = submissionId.ToString(), registrationjourney = registrationJourney });
     }
 
     public RedirectToActionResult RedirectToFileUploadCompanyDetailsErrors(Guid submissionId, RegistrationJourney? registrationJourney, int? registrationYear)

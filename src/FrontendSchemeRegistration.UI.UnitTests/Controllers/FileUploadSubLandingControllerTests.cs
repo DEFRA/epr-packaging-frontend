@@ -17,6 +17,7 @@ using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Time.Testing;
 using Microsoft.FeatureManagement;
 using Moq;
 
@@ -50,6 +51,7 @@ public class FileUploadSubLandingControllerTests
     private Mock<ISession> _httpContextSessionMock;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionMock;
     private Mock<IResubmissionApplicationService> _resubmissionApplicationServicMock;
+    private FakeTimeProvider _timeProvider;
 
     [SetUp]
     public void SetUp()
@@ -59,18 +61,19 @@ public class FileUploadSubLandingControllerTests
         _featureManagerMock = new Mock<IFeatureManager>();
         _sessionMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _resubmissionApplicationServicMock = new Mock<IResubmissionApplicationService>();
+        _timeProvider = new FakeTimeProvider();
+        _timeProvider.SetUtcNow(DateTimeOffset.UtcNow);
 
         _resubmissionApplicationServicMock.Setup(x => x.GetPackagingResubmissionApplicationSession(It.IsAny<Organisation>(), It.IsAny<List<string>>(), It.IsAny<Guid>()))
             .ReturnsAsync([new PackagingResubmissionApplicationSession { IsResubmissionFeeViewed = false, FileReachedSynapse = false, IsSubmitted = false }]);
-
-        _featureManagerMock.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ShowPoMSubmission2025))).ReturnsAsync(true);
 
         _systemUnderTest = new FileUploadSubLandingController(
             _submissionServiceMock.Object,
             _sessionMock.Object,
             _featureManagerMock.Object,
             Options.Create(new GlobalVariables { SubmissionPeriods = _submissionPeriods }),
-            _resubmissionApplicationServicMock.Object);
+            _resubmissionApplicationServicMock.Object,
+            _timeProvider);
 
         _systemUnderTest.ControllerContext = new ControllerContext
         {
@@ -165,71 +168,31 @@ public class FileUploadSubLandingControllerTests
     [Test]
     [TestCase(OrganisationRoles.Producer)]
     [TestCase(OrganisationRoles.ComplianceScheme)]
-    public async Task Get_ReturnsCorrectViewModel_WhenShowPoMSubmission2025_Is_False(string organisationRole)
-    {
-        // Arrange
-        //_featureManagerMock.Reset();
-        _featureManagerMock.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ShowPoMSubmission2025))).ReturnsAsync(false);
-
-        var selectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), Name = "Acme Org Ltd" };
-        var submissionId = Guid.NewGuid();
-        var pomSubmission = new PomSubmission
-        {
-            Id = submissionId,
-            HasValidFile = true,
-            SubmissionPeriod = _submissionPeriods[0].DataPeriod
-        };
-        _submissionServiceMock.Setup(x => x.GetSubmissionsAsync<PomSubmission>(
-                It.IsAny<List<string>>(), 2, selectedComplianceScheme.Id))
-            .ReturnsAsync(new List<PomSubmission> { pomSubmission });
-        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(submissionId))
-            .ReturnsAsync(pomSubmission);
-
-        _sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
-            .ReturnsAsync(new FrontendSchemeRegistrationSession
-            {
-                RegistrationSession = new RegistrationSession { SelectedComplianceScheme = selectedComplianceScheme },
-                UserData = new UserData
-                {
-                    Organisations = new List<Organisation> { new() { OrganisationRole = organisationRole } }
-                }
-            });
-
-        // Act
-        var result = await _systemUnderTest.Get() as ViewResult;
-
-        // Assert
-        result.ViewName.Should().Be("FileUploadSubLanding");
-        var model = result.Model as FileUploadSubLandingViewModel;
-        model.Should().NotBeNull();
-        model.SubmissionPeriodDetailGroups.SelectMany(s => s.SubmissionPeriodDetails).Count(s => s.DatePeriodYear == "2025").Should().Be(0);
-    }
-
-    [Test]
-    [TestCase(OrganisationRoles.Producer)]
-    [TestCase(OrganisationRoles.ComplianceScheme)]
     public async Task Get_ShowsCannotStartYetBeforeSubmissionPeriod_WhenCalled(string organisationRole)
     {
         // Arrange
+        var now = _timeProvider.GetLocalNow().DateTime;
         var submissionPeriods = new List<SubmissionPeriod>
         {
             new()
             {
-                DataPeriod = $"Jan to Jun {DateTime.Now.Year + 1}",
-                Deadline = DateTime.Parse($"1/10/{DateTime.Now.Year + 1} 11:59:00 PM"),
-                ActiveFrom = DateTime.Parse($"1/10/{DateTime.Now.Year + 1} 11:59:00 PM"),
-                Year = DateTime.Now.Year.ToString(),
-                StartMonth = DateTime.Now.ToString("MMMM"),
-                EndMonth = DateTime.Now.ToString("MMMM")
+                DataPeriod = $"Jan to Jun {now.Year + 1}",
+                Deadline = DateTime.Parse($"1/10/{now.Year + 1} 11:59:00 PM"),
+                ActiveFrom = DateTime.Parse($"1/10/{now.Year + 1} 11:59:00 PM"),
+                VisibleFrom = now,
+                Year = now.Year.ToString(),
+                StartMonth = now.ToString("MMMM"),
+                EndMonth = now.ToString("MMMM")
             },
             new()
             {
-                DataPeriod = $"Jul to Dec {DateTime.Now.Year + 1}",
-                Deadline = DateTime.Parse($"1/04/{DateTime.Now.Year + 2} 11:59:00 PM"),
-                ActiveFrom = DateTime.Parse($"1/10/{DateTime.Now.Year + 1} 11:59:00 PM"),
-                Year = DateTime.Now.Year.ToString(),
-                StartMonth = DateTime.Now.ToString("MMMM"),
-                EndMonth = DateTime.Now.ToString("MMMM")
+                DataPeriod = $"Jul to Dec {now.Year + 1}",
+                Deadline = DateTime.Parse($"1/04/{now.Year + 2} 11:59:00 PM"),
+                ActiveFrom = DateTime.Parse($"1/10/{now.Year + 1} 11:59:00 PM"),
+                VisibleFrom = now,
+                Year = now.Year.ToString(),
+                StartMonth = now.ToString("MMMM"),
+                EndMonth = now.ToString("MMMM")
             }
         };
 
@@ -238,7 +201,8 @@ public class FileUploadSubLandingControllerTests
             _sessionMock.Object,
             _featureManagerMock.Object,
             Options.Create(new GlobalVariables { SubmissionPeriods = submissionPeriods }),
-            _resubmissionApplicationServicMock.Object);
+            _resubmissionApplicationServicMock.Object,
+            _timeProvider);
 
         _systemUnderTest.ControllerContext = new ControllerContext
         {
@@ -250,7 +214,7 @@ public class FileUploadSubLandingControllerTests
         {
             Id = submissionId,
             HasValidFile = true,
-            SubmissionPeriod = _submissionPeriods[0].DataPeriod
+            SubmissionPeriod = submissionPeriods[0].DataPeriod
         };
         _submissionServiceMock.Setup(x => x.GetSubmissionsAsync<PomSubmission>(
                 It.IsAny<List<string>>(), 2, selectedComplianceScheme.Id))
@@ -774,8 +738,6 @@ public class FileUploadSubLandingControllerTests
             It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<SubmissionType>()))
             .ReturnsAsync(pomDecision);
 
-        _featureManagerMock.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ShowPoMResubmission))).ReturnsAsync(true);
-
         _sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
                     .ReturnsAsync(new FrontendSchemeRegistrationSession
                     {
@@ -864,6 +826,7 @@ public class FileUploadSubLandingControllerTests
                 DataPeriod = "Data period 1",
                 Deadline = DateTime.Today,
                 ActiveFrom = DateTime.Today,
+                VisibleFrom = DateTime.Today,
                 Year = "2023",
                 StartMonth = "January",
                 EndMonth = "June"
@@ -873,6 +836,7 @@ public class FileUploadSubLandingControllerTests
                 DataPeriod = "Data period 2",
                 Deadline = DateTime.Today.AddDays(5),
                 ActiveFrom = DateTime.Today.AddDays(5),
+                VisibleFrom = DateTime.Today,
                 Year = "2024",
                 StartMonth = "July",
                 EndMonth = "December"
@@ -884,7 +848,8 @@ public class FileUploadSubLandingControllerTests
         _sessionMock.Object,
         _featureManagerMock.Object,
         Options.Create(new GlobalVariables { SubmissionPeriods = submissionPeriodsForMultipleYears }),
-        _resubmissionApplicationServicMock.Object);
+        _resubmissionApplicationServicMock.Object,
+        _timeProvider);
 
         _systemUnderTest.ControllerContext = new ControllerContext
         {
@@ -938,6 +903,7 @@ public class FileUploadSubLandingControllerTests
                 DataPeriod = "Data period 1",
                 Deadline = DateTime.Today,
                 ActiveFrom = DateTime.Today,
+                VisibleFrom = DateTime.Today,
                 Year = "2023",
                 StartMonth = "January",
                 EndMonth = "June"
@@ -947,6 +913,7 @@ public class FileUploadSubLandingControllerTests
                 DataPeriod = "Data period 2",
                 Deadline = DateTime.Today.AddDays(5),
                 ActiveFrom = DateTime.Today.AddDays(5),
+                VisibleFrom = DateTime.Today,
                 Year = "2024",
                 StartMonth = "July",
                 EndMonth = "December"
@@ -958,7 +925,8 @@ public class FileUploadSubLandingControllerTests
         _sessionMock.Object,
         _featureManagerMock.Object,
         Options.Create(new GlobalVariables { SubmissionPeriods = submissionPeriodsForMultipleYears }),
-        _resubmissionApplicationServicMock.Object);
+        _resubmissionApplicationServicMock.Object,
+        _timeProvider);
 
         _systemUnderTest.ControllerContext = new ControllerContext
         {

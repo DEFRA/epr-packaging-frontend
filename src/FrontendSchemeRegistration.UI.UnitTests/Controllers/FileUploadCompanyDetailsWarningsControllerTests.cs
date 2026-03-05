@@ -1,9 +1,12 @@
-﻿using EPR.Common.Authorization.Sessions;
+﻿using EPR.Common.Authorization.Models;
+using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers;
 using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
 using FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
@@ -55,6 +58,10 @@ public class FileUploadCompanyDetailsWarningsControllerTests
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
+                UserData = new UserData
+                {
+                    Organisations = [new Organisation { Name = "Test Organisation", OrganisationRole = OrganisationRoles.Producer }]
+                },
                 RegistrationSession = new RegistrationSession
                 {
                     Journey = new List<string> { PagePaths.FileUploadCompanyDetailsSubLanding, PagePaths.FileUploadCompanyDetails, PagePaths.RegistrationTaskList }
@@ -211,7 +218,10 @@ public class FileUploadCompanyDetailsWarningsControllerTests
             FileName = fileName,
             SubmissionId = SubmissionId,
             MaxWarningsToProcess = 100,
-            RegistrationYear = hasRegistrationYear ? RegistrationYear : (int?)null
+            RegistrationYear = hasRegistrationYear ? RegistrationYear : (int?)null,
+            RegistrationJourney = null,
+            OrganisationName = "Test Organisation",
+            IsCso = false
         });
 
         _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.AtLeastOnce);
@@ -235,6 +245,10 @@ public class FileUploadCompanyDetailsWarningsControllerTests
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
+                UserData = new UserData
+                {
+                    Organisations = [new Organisation { Name = "Test Organisation", OrganisationRole = OrganisationRoles.Producer }]
+                },
                 RegistrationSession = new RegistrationSession
                 {
                     SubmissionPeriod = SubmissionPeriod,
@@ -264,7 +278,10 @@ public class FileUploadCompanyDetailsWarningsControllerTests
             FileName = fileName,
             SubmissionId = SubmissionId,
             MaxWarningsToProcess = 100,
-            RegistrationYear = hasRegistrationYear ? RegistrationYear : (int?)null
+            RegistrationYear = hasRegistrationYear ? RegistrationYear : (int?)null,
+            RegistrationJourney = null,
+            OrganisationName = "Test Organisation",
+            IsCso = false
         });
 
         _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.Once);
@@ -294,6 +311,10 @@ public class FileUploadCompanyDetailsWarningsControllerTests
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
+                UserData = new UserData
+                {
+                    Organisations = [new Organisation { Name = "Test Organisation", OrganisationRole = OrganisationRoles.Producer }]
+                },
                 RegistrationSession = new RegistrationSession
                 {
                     Journey = new List<string> { }
@@ -335,6 +356,10 @@ public class FileUploadCompanyDetailsWarningsControllerTests
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
            .ReturnsAsync(new FrontendSchemeRegistrationSession
            {
+               UserData = new UserData
+               {
+                   Organisations = [new Organisation { Name = "Test Organisation", OrganisationRole = OrganisationRoles.Producer }]
+               },
                RegistrationSession = new RegistrationSession
                {
                    SubmissionPeriod = SubmissionPeriod,
@@ -386,6 +411,10 @@ public class FileUploadCompanyDetailsWarningsControllerTests
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
            .ReturnsAsync(new FrontendSchemeRegistrationSession
            {
+               UserData = new UserData
+               {
+                   Organisations = [new Organisation { Name = "Test Organisation", OrganisationRole = OrganisationRoles.Producer }]
+               },
                RegistrationSession = new RegistrationSession
                {
                    SubmissionPeriod = SubmissionPeriod,
@@ -423,8 +452,8 @@ public class FileUploadCompanyDetailsWarningsControllerTests
         // Assert
         result?.ControllerName.Should().Be(nameof(FileUploadCompanyDetailsController).RemoveControllerFromName());
         result?.ActionName.Should().Be(nameof(FileUploadCompanyDetailsController.Get));
-        result.RouteValues["submissionId"].Should().Be(SubmissionId.ToString());
-        result.RouteValues["registrationyear"].Should().Be("2025");
+        result.RouteValues["submissionId"].ToString().Should().Be(SubmissionId.ToString());
+        result.RouteValues["registrationyear"].ToString().Should().Be("2025");
     }
 
     [Test]
@@ -445,8 +474,8 @@ public class FileUploadCompanyDetailsWarningsControllerTests
         result.Should().NotBeNull();
         result?.ControllerName.Should().Be(nameof(FileUploadCompanyDetailsSuccessController).RemoveControllerFromName());
         result?.ActionName.Should().Be(nameof(FileUploadCompanyDetailsSuccessController.Get));
-        result.RouteValues["submissionId"].Should().Be(SubmissionId.ToString());
-        result.RouteValues["registrationyear"].Should().Be("2025");
+        result.RouteValues["submissionId"].ToString().Should().Be(SubmissionId.ToString());
+        result.RouteValues["registrationyear"].ToString().Should().Be("2025");
     }
 
     [Test]

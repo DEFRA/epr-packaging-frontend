@@ -39,11 +39,11 @@
                                 {
                                     if (Model.RegistrationJourney == RegistrationJourney.CsoSmallProducer)
                                     {
-                                        @Localizer["registration_application_submitted_for_approval_small"]
+                                        @Localizer["registration_application_submitted_for_approval_small", Model.RegistrationYear]
                                     }
                                     else if (Model.RegistrationJourney == RegistrationJourney.CsoLargeProducer)
                                     {
-                                        @Localizer["registration_application_submitted_for_approval_large"]
+                                        @Localizer["registration_application_submitted_for_approval_large", Model.RegistrationYear]
                                     }
                                 }
                                 else

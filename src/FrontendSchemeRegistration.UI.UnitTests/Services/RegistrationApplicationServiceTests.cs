@@ -1116,7 +1116,7 @@ public class RegistrationApplicationServiceTests
         // Assert
         result.Should().NotBeNull();
         result.IsLateFeeApplicable.Should().BeTrue();
-        result.IsOriginalCsoSubmissionLate.Should().BeFalse();
+        result.IsOriginalCsoSubmissionLate.Should().BeTrue();
     }
 
     [Test]

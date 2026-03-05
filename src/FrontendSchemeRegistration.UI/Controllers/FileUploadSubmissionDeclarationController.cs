@@ -113,8 +113,7 @@ public class FileUploadSubmissionDeclarationController : Controller
 
         try
         {
-            var resubmissionEnabled = await _featureManager.IsEnabledAsync(nameof(FeatureFlags.ShowPoMResubmission));
-            if (submission.LastSubmittedFile != null && resubmissionEnabled && !session.PomResubmissionSession.IsPomResubmissionJourney)
+            if (submission.LastSubmittedFile != null && !session.PomResubmissionSession.IsPomResubmissionJourney)
             {
                 // The submission period for small producers is stored in Cosmos as July-December, however it's *actually* January-December.
                 // For the email to the regulator, it needs to be the *actual* submission period
