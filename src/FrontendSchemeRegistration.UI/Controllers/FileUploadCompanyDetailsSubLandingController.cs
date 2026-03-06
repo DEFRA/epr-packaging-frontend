@@ -29,6 +29,7 @@ public class FileUploadCompanyDetailsSubLandingController : Controller
     private readonly List<SubmissionPeriod> _submissionPeriods;
     private readonly string _basePath;
     private readonly IFeatureManager _featureManager;
+    private readonly TimeProvider _timeProvider;
 
     private readonly DateOnly _latestAllowedSubmissionPeriodEndDate = DateOnly.Parse("2024-06-30", new CultureInfo("en-GB"));
 
@@ -36,13 +37,15 @@ public class FileUploadCompanyDetailsSubLandingController : Controller
         ISubmissionService submissionService,
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
         IOptions<GlobalVariables> globalVariables,
-        IFeatureManager featureManager)
+        IFeatureManager featureManager,
+        TimeProvider timeProvider)
     {
         _submissionService = submissionService;
         _sessionManager = sessionManager;
         _basePath = globalVariables.Value.BasePath;
         _submissionPeriods = globalVariables.Value.SubmissionPeriods;
         _featureManager = featureManager;
+        _timeProvider = timeProvider;
     }
 
     [HttpGet]
@@ -52,6 +55,7 @@ public class FileUploadCompanyDetailsSubLandingController : Controller
 
         var submissionPeriods = _submissionPeriods
             .FilterToLatestAllowedPeriodEndDate(_latestAllowedSubmissionPeriodEndDate)
+            .FilterVisibleSubmissionPeriods(_timeProvider)
             .ToList();
 
         var periods = submissionPeriods.Select(x => x.DataPeriod).ToList();
@@ -95,7 +99,7 @@ public class FileUploadCompanyDetailsSubLandingController : Controller
                 DatePeriodShortEndMonth = submissionPeriod.LocalisedShortMonth(MonthType.End),
                 DatePeriodYear = submissionPeriod.Year,
                 Deadline = submissionPeriod.Deadline,
-                Status = submission.GetSubmissionStatus(submissionPeriod, decision, showRegistrationResubmission)
+                Status = submission.GetSubmissionStatus(submissionPeriod, decision, showRegistrationResubmission, _timeProvider)
             });
         }
 

@@ -4,10 +4,20 @@ using FluentAssertions;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.UI.Extensions;
+using Microsoft.Extensions.Time.Testing;
 
 [TestFixture]
 public class SubmissionStatusExtensionsTests
 {
+    private FakeTimeProvider _timeProvider;
+
+    [SetUp]
+    public void Setup()
+    {
+        // Set a fixed date for testing: 2025-01-15
+        _timeProvider = new FakeTimeProvider(new DateTimeOffset(2025, 1, 15, 12, 0, 0, TimeSpan.Zero));
+    }
+
     [Test]
     [TestCase(null, "Jan 01 2024", null, false, SubmissionPeriodStatus.NotStarted)]
     [TestCase(null, "July 10 2026", null, false, SubmissionPeriodStatus.CannotStartYet)]
@@ -17,7 +27,7 @@ public class SubmissionStatusExtensionsTests
         bool showRegistrationDecision, SubmissionPeriodStatus expectedResult)
     {
         var submissionPeriod = new SubmissionPeriod { ActiveFrom = DateTime.Parse(dataPeriod) };
-        var result = submission.GetSubmissionStatus(submissionPeriod, decision, showRegistrationDecision);
+        var result = submission.GetSubmissionStatus(submissionPeriod, decision, showRegistrationDecision, _timeProvider);
         result.Should().Be(expectedResult);
     }
 
@@ -44,7 +54,7 @@ public class SubmissionStatusExtensionsTests
             submission.LastSubmittedFiles = new SubmittedRegistrationFilesInformation { SubmittedDateTime = DateTime.Parse("July 10 2024") };
         }
 
-        var result = submission.GetSubmissionStatus(submissionPeriod, registrationDecision, showRegistrationDecision);
+        var result = submission.GetSubmissionStatus(submissionPeriod, registrationDecision, showRegistrationDecision, _timeProvider);
         result.Should().Be(expectedResult);
     }
 }
