@@ -131,9 +131,15 @@ public static class  Accounts
                         }
                     }
 
-                    // Organisation id must be a Guid; do not use the bearer token (JWT) here
+                    // The ID entered when using stub authentication will drive the organisation id.
+                    // With the stub auth handler the bearer token is generated from the user id.
                     var orgId = Guid.Parse("a1111111-2222-3333-4444-555555555555");
-
+                    
+                    if (!Guid.TryParse(token, out var guid))
+                    {
+                        orgId = guid;
+                    }
+                    
                     var body = new
                     {
                         user = new
