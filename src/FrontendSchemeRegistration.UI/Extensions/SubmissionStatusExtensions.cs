@@ -16,9 +16,10 @@ public static class SubmissionStatusExtensions
         return submission.LastUploadedValidFiles != null ? SubmissionPeriodStatus.FileUploaded : SubmissionPeriodStatus.NotStarted;
     }
 
-    public static SubmissionPeriodStatus GetSubmissionStatus(this RegistrationSubmission submission, SubmissionPeriod submissionPeriod, RegistrationDecision decision, bool showRegistrationDecision)
+    public static SubmissionPeriodStatus GetSubmissionStatus(this RegistrationSubmission submission, SubmissionPeriod submissionPeriod, RegistrationDecision decision, bool showRegistrationDecision, TimeProvider timeProvider)
     {
-        if (DateTime.Now < submissionPeriod.ActiveFrom)
+        var now = timeProvider.GetLocalNow().DateTime;
+        if (now < submissionPeriod.ActiveFrom)
         {
             return SubmissionPeriodStatus.CannotStartYet;
         }

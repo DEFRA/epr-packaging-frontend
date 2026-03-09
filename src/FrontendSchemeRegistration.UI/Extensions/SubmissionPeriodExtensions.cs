@@ -81,6 +81,25 @@ public static class SubmissionPeriodExtensions
             .Where(p => p.GetEndDate() <= latestPeriodEndDate);
     }
 
+    /// <summary>
+    /// Filters submission periods to only include those that are visible based on their VisibleFrom date.
+    /// If VisibleFrom is not set, it defaults to ActiveFrom date.
+    /// </summary>
+    /// <param name="submissionPeriods">The list of submission periods to filter</param>
+    /// <param name="timeProvider">The time provider to get the current date/time</param>
+    /// <returns>Filtered list of visible submission periods</returns>
+    public static IEnumerable<SubmissionPeriod> FilterVisibleSubmissionPeriods(
+        this IEnumerable<SubmissionPeriod> submissionPeriods,
+        TimeProvider timeProvider)
+    {
+        var now = timeProvider.GetLocalNow().DateTime;
+        return submissionPeriods.Where(p =>
+        {
+            var visibleFrom = p.VisibleFrom ?? p.ActiveFrom;
+            return now >= visibleFrom;
+        });
+    }
+
     public static bool IsJanuaryToJunePeriodFromYearOrLater(this SubmissionPeriodDetail submissionPeriodDetail)
     {
         if (submissionPeriodDetail == null)

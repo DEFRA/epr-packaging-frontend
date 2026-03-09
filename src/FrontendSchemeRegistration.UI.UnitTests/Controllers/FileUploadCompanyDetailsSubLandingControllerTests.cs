@@ -15,8 +15,10 @@ using FrontendSchemeRegistration.UI.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Time.Testing;
 using Microsoft.FeatureManagement;
 using Moq;
+using System;
 using UI.Controllers;
 using UI.Controllers.ControllerExtensions;
 using UI.Sessions;
@@ -24,46 +26,61 @@ using UI.ViewModels;
 
 public class FileUploadCompanyDetailsSubLandingControllerTests
 {
-    private readonly List<SubmissionPeriod> _submissionPeriods = new()
-    {
-        new SubmissionPeriod
-        {
-            DataPeriod = "Data period 1",
-            ActiveFrom = DateTime.Today,
-            Deadline = DateTime.Parse("2023-12-31"),
-            Year = "2023",
-            StartMonth = "September",
-            EndMonth = "December", 
-        },
-        new SubmissionPeriod
-        {
-            DataPeriod = "Data period 2",
-            Deadline = DateTime.Parse("2024-03-31"),
-            ActiveFrom = DateTime.Today.AddDays(5),
-            Year = "2024",
-            StartMonth = "January",
-            EndMonth = "March"
-        },
-        new SubmissionPeriod
-        {
-            DataPeriod = "Data period 3",
-            /* This will be excluded because it is after the latest allowed period ending June 2024 */
-            Deadline = DateTime.Parse("2024-12-31"),
-            ActiveFrom = DateTime.Today.AddDays(10),
-            Year = "2024",
-            StartMonth = "July",
-            EndMonth = "December"
-        }
-    };
-
+    private List<SubmissionPeriod> _submissionPeriods;
     private FileUploadCompanyDetailsSubLandingController _systemUnderTest;
     private Mock<ISubmissionService> _submissionServiceMock;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
     private Mock<IFeatureManager> _featureManagerMock;
+    private FakeTimeProvider _timeProvider;
 
     [SetUp]
     public void SetUp()
     {
+        // Initialize time provider with a fixed date for deterministic tests.
+        // The date must be:
+        // - On Period 1's ActiveFrom (so it shows as "NotStarted" - active but not yet started)
+        // - Before Period 2's ActiveFrom (today + 5 days) so it shows as "CannotStartYet"
+        // - Before Period 3's ActiveFrom (today + 10 days) so it shows as "CannotStartYet"
+        // Using 2024-01-10 ensures all periods are visible and in the expected states.
+        var fixedDate = new DateTimeOffset(2024, 1, 10, 12, 0, 0, TimeSpan.Zero);
+        _timeProvider = new FakeTimeProvider(fixedDate);
+
+        var today = new DateTime(2024, 1, 10);
+        _submissionPeriods = new List<SubmissionPeriod>
+        {
+            new SubmissionPeriod
+            {
+                DataPeriod = "Data period 1",
+                ActiveFrom = today,
+                VisibleFrom = today,
+                Deadline = DateTime.Parse("2023-12-31"),
+                Year = "2023",
+                StartMonth = "September",
+                EndMonth = "December", 
+            },
+            new SubmissionPeriod
+            {
+                DataPeriod = "Data period 2",
+                Deadline = DateTime.Parse("2024-03-31"),
+                ActiveFrom = today.AddDays(5),
+                VisibleFrom = today,
+                Year = "2024",
+                StartMonth = "January",
+                EndMonth = "March"
+            },
+            new SubmissionPeriod
+            {
+                DataPeriod = "Data period 3",
+                /* This will be excluded because it is after the latest allowed period ending June 2024 */
+                Deadline = DateTime.Parse("2024-12-31"),
+                ActiveFrom = today.AddDays(10),
+                VisibleFrom = today,
+                Year = "2024",
+                StartMonth = "July",
+                EndMonth = "December"
+            }
+        };
+
         _submissionServiceMock = new Mock<ISubmissionService>();
 
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
@@ -98,7 +115,8 @@ public class FileUploadCompanyDetailsSubLandingControllerTests
             _submissionServiceMock.Object,
             _sessionManagerMock.Object,
             Options.Create(new GlobalVariables { BasePath = "path", SubmissionPeriods = _submissionPeriods }),
-            _featureManagerMock.Object);
+            _featureManagerMock.Object,
+            _timeProvider);
 
         _systemUnderTest.ControllerContext = new ControllerContext
         {

@@ -46,10 +46,6 @@ public class FileUploadSubmissionDeclarationControllerTests
         _claimsPrincipalMock = new Mock<ClaimsPrincipal>();
         _featureManagerMock = new Mock<IFeatureManager>();
 
-        _featureManagerMock
-            .Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ShowPoMResubmission)))
-            .ReturnsAsync(true);
-
         _systemUnderTest = new FileUploadSubmissionDeclarationController(
             _submissionServiceMock.Object,
             _sessionManagerMock.Object,
