@@ -47,4 +47,6 @@ public class RegistrationSubmission : AbstractSubmission
     
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public RegistrationJourney? RegistrationJourney { get; set; }
+    
+    public int RegistrationYear { get; set; }
 }

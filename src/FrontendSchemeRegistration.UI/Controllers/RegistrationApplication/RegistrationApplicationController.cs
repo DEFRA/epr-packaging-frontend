@@ -517,7 +517,7 @@ public class RegistrationApplicationController(
                     return RedirectToAction(
                         nameof(FileReUploadCompanyDetailsConfirmationController.Get),
                         nameof(FileReUploadCompanyDetailsConfirmationController).RemoveControllerFromName(),
-                        new RouteValueDictionary { { "submissionId", session.SubmissionId }, { "registrationyear", registrationYear } });
+                        new RouteValueDictionary { { "submissionId", session.SubmissionId } });
                 case ApplicationStatusType.FileUploaded
                     when userData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved):
                 case ApplicationStatusType.SubmittedAndHasRecentFileUpload
