@@ -118,6 +118,7 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
         const string brandFileName = "brand.csv";
         DateTime brandUploadDate = DateTime.UtcNow;
         Guid brandUploadedBy = Guid.NewGuid();
+        const int registrationYear = 2026;
 
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(SubmissionId)).ReturnsAsync(new RegistrationSubmission
         {
@@ -133,6 +134,7 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
             BrandsUploadedBy = brandUploadedBy,
             HasValidFile = true,
             IsSubmitted = false,
+            RegistrationYear = registrationYear,
             LastUploadedValidFiles = new UploadedRegistrationFilesInformation
             {
                 CompanyDetailsFileName = orgDetailsFileName,
@@ -178,7 +180,8 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
             IsSubmitted = false,
             HasValidfile = true,
             Status = SubmissionPeriodStatus.FileUploaded,
-            OrganisationRole = "Producer"
+            OrganisationRole = "Producer",
+            RegistrationYear = registrationYear
         });
 
         _userAccountServiceMock.Verify(x => x.GetAllPersonByUserId(It.IsAny<Guid>()), Times.AtLeastOnce);
@@ -201,6 +204,8 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
         DateTime brandUploadDate = DateTime.UtcNow;
         Guid brandUploadedBy = Guid.NewGuid();
 
+        const int registrationYear = 2026;
+
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(SubmissionId)).ReturnsAsync(new RegistrationSubmission
         {
             Id = SubmissionId,
@@ -215,6 +220,7 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
             BrandsUploadedBy = brandUploadedBy,
             HasValidFile = true,
             IsSubmitted = false,
+            RegistrationYear = registrationYear,
             LastUploadedValidFiles = new UploadedRegistrationFilesInformation
             {
                 CompanyDetailsFileName = orgDetailsFileName,
@@ -267,7 +273,7 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
         result.ViewName.Should().Be("FileReUploadCompanyDetailsConfirmation");
         result.ViewData.Keys.Should().Contain("BackLinkToDisplay");
         result.ViewData.Keys.Should().Contain("IsFileUploadJourneyInvokedViaRegistration");
-        result.ViewData["BackLinkToDisplay"].Should().Be($"~/{PagePaths.RegistrationTaskList}");
+        result.ViewData["BackLinkToDisplay"].Should().Be($"~/{PagePaths.RegistrationTaskList}?registrationyear={registrationYear}");
         result.Model.Should().BeEquivalentTo(new FileReUploadCompanyDetailsConfirmationViewModel
         {
             SubmissionId = SubmissionId,
@@ -284,7 +290,8 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
             IsSubmitted = false,
             HasValidfile = true,
             Status = SubmissionPeriodStatus.FileUploaded,
-            OrganisationRole = "Producer"
+            OrganisationRole = "Producer",
+            RegistrationYear = registrationYear
         });
     }
 
@@ -305,6 +312,7 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
         Guid brandUploadedBy = Guid.NewGuid();
 
         var submitDate = orgDetailsUploadDate.AddHours(1);
+        const int registrationYear = 2026;
 
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(SubmissionId)).ReturnsAsync(new RegistrationSubmission
         {
@@ -320,6 +328,7 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
             BrandsUploadedBy = brandUploadedBy,
             HasValidFile = true,
             IsSubmitted = true,
+            RegistrationYear = registrationYear,
             LastUploadedValidFiles = new UploadedRegistrationFilesInformation
             {
                 CompanyDetailsFileName = orgDetailsFileName,
@@ -373,7 +382,8 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
             IsSubmitted = true,
             HasValidfile = true,
             Status = SubmissionPeriodStatus.SubmittedToRegulator,
-            OrganisationRole = "Producer"
+            OrganisationRole = "Producer",
+            RegistrationYear = registrationYear
         });
 
         _userAccountServiceMock.Verify(x => x.GetAllPersonByUserId(It.IsAny<Guid>()), Times.Once);
@@ -387,6 +397,7 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
         const string orgDetailsFileName = "filename.csv";
         DateTime orgDetailsUploadDate = DateTime.UtcNow;
         Guid orgDetailsUploadedBy = Guid.NewGuid();
+        const int registrationYear = 2026;
 
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(SubmissionId)).ReturnsAsync(new RegistrationSubmission
         {
@@ -395,6 +406,7 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
             CompanyDetailsUploadedDate = orgDetailsUploadDate,
             CompanyDetailsUploadedBy = orgDetailsUploadedBy,
             HasValidFile = true,
+            RegistrationYear = registrationYear
         });
         const string firstName = "first";
         const string lastName = "last";
@@ -420,7 +432,8 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
             SubmissionDeadline = SubmissionDeadline.ToReadableDate(),
             HasValidfile = true,
             Status = SubmissionPeriodStatus.NotStarted,
-            OrganisationRole = "Producer"
+            OrganisationRole = "Producer",
+            RegistrationYear = registrationYear
         });
 
         _userAccountServiceMock.Verify(x => x.GetAllPersonByUserId(It.IsAny<Guid>()), Times.Once);
