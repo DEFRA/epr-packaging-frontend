@@ -25,7 +25,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		stylecop.ruleset = stylecop.ruleset
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrontendSchemeRegistration.UI.ComponentTests", "FrontendSchemeRegistration.UI.ComponentTests\FrontendSchemeRegistration.UI.ComponentTests.csproj", "{FB80FDFA-6FB2-446B-87AE-10B89288EF4F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrontendSchemeRegistration.UI.Component.UnitTests", "FrontendSchemeRegistration.UI.Component.UnitTests\FrontendSchemeRegistration.UI.Component.UnitTests.csproj", "{FB80FDFA-6FB2-446B-87AE-10B89288EF4F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
