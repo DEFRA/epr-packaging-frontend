@@ -1,4 +1,4 @@
-namespace FrontendSchemeRegistration.UI.ComponentTests.Steps;
+namespace FrontendSchemeRegistration.UI.Component.UnitTests.Steps;
 
 using FluentAssertions;
 using Infrastructure;

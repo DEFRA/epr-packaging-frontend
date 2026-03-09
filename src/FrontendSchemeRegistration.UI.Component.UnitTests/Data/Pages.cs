@@ -1,4 +1,4 @@
-namespace FrontendSchemeRegistration.UI.ComponentTests.Data;
+namespace FrontendSchemeRegistration.UI.Component.UnitTests.Data;
 
 using System.Diagnostics.CodeAnalysis;
 

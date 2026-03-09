@@ -1,10 +1,10 @@
-namespace FrontendSchemeRegistration.UI.ComponentTests.Infrastructure;
+namespace FrontendSchemeRegistration.UI.Component.UnitTests.Infrastructure;
 
 using System.Diagnostics.CodeAnalysis;
-using Controllers.FrontendSchemeRegistration;
+using FrontendSchemeRegistration.MockServer;
+using FrontendSchemeRegistration.UI.Controllers.FrontendSchemeRegistration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
-using MockServer;
 using Reqnroll;
 using WireMock.Server;
 

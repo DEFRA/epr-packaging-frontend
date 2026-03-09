@@ -1,13 +1,13 @@
-namespace FrontendSchemeRegistration.UI.ComponentTests.Tests;
+namespace FrontendSchemeRegistration.UI.Component.UnitTests.Tests;
 
 using System.Net;
-using Controllers.FrontendSchemeRegistration;
 using Data;
 using FluentAssertions;
+using FrontendSchemeRegistration.MockServer;
+using FrontendSchemeRegistration.UI.Controllers.FrontendSchemeRegistration;
 using Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
-using MockServer;
 using NUnit.Framework;
 using WireMock.Server;
 
