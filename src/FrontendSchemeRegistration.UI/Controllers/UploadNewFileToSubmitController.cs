@@ -4,7 +4,6 @@ using Application.Constants;
 using Application.DTOs.Submission;
 using Application.Extensions;
 using Application.Services.Interfaces;
-using Constants;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using Extensions;
@@ -22,7 +21,6 @@ public class UploadNewFileToSubmitController : Controller
     private readonly ISubmissionService _submissionService;
     private readonly IUserAccountService _userAccountService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
-    private readonly IFeatureManager _featureManager;
 
     public UploadNewFileToSubmitController(
         ISubmissionService submissionService, IUserAccountService userAccountService, ISessionManager<FrontendSchemeRegistrationSession> sessionManager, IFeatureManager featureManager)
@@ -30,14 +28,12 @@ public class UploadNewFileToSubmitController : Controller
         _submissionService = submissionService;
         _userAccountService = userAccountService;
         _sessionManager = sessionManager;
-        _featureManager = featureManager;
     }
 
     [HttpGet]
     [SubmissionIdActionFilter(PagePaths.FileUploadSubLanding)]
     public async Task<IActionResult> Get()
     {
-        bool showPoMResubmission = await _featureManager.IsEnabledAsync(nameof(FeatureFlags.ShowPoMResubmission));
         ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadSubLanding}");
 
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
@@ -68,12 +64,7 @@ public class UploadNewFileToSubmitController : Controller
         }
 
         var userData = User.GetUserData();
-        var decision = new PomDecision();
-
-        if (showPoMResubmission)
-        {
-            decision = await _submissionService.GetDecisionAsync<PomDecision>(null, submission.Id, Application.Enums.SubmissionType.Producer);
-        }
+        var decision = await _submissionService.GetDecisionAsync<PomDecision>(null, submission.Id, Application.Enums.SubmissionType.Producer);
 
         var uploadedByGuid = submission.LastUploadedValidFile?.UploadedBy;
         var submittedByGuid = submission.LastSubmittedFile?.SubmittedBy;

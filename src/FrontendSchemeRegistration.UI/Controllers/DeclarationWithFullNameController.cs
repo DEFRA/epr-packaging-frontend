@@ -70,7 +70,7 @@ public class DeclarationWithFullNameController(
             IsResubmission = session.RegistrationSession.IsResubmission,
             RegistrationYear = registrationYear,
             RegistrationJourney = regJourney,
-            ShowRegistrationCaption = isCso && submission.RegistrationJourney is not null && registrationYear is not null,
+            ShowRegistrationCaption = isCso && regJourney is not null && registrationYear is not null,
             IsCso = isCso
         });
     }

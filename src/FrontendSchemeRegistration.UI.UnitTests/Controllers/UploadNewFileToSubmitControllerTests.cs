@@ -471,7 +471,6 @@ public class UploadNewFileToSubmitControllerTests
             },
         };
 
-        _featureManager.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ShowPoMResubmission))).ReturnsAsync(false);
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>()))
             .ReturnsAsync(submission);
 
@@ -529,7 +528,7 @@ public class UploadNewFileToSubmitControllerTests
                 FileId = Guid.NewGuid()
             },
         };
-        _featureManager.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ShowPoMResubmission))).ReturnsAsync(true);
+
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>()))
             .ReturnsAsync(submission);
 
