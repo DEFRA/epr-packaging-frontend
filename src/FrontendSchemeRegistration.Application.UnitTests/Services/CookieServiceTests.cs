@@ -1,5 +1,6 @@
 ﻿namespace FrontendSchemeRegistration.Application.UnitTests.Services;
 
+using Application.Options;
 using Application.Services;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
@@ -9,9 +10,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 using Moq;
-using Options;
-
-using CookieOptions = Options.CookieOptions;
+using CookieOptions = Application.Options.CookieOptions;
 
 [TestFixture]
 public class CookieServiceTests

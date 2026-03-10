@@ -3,6 +3,7 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using Application.Options;
 using Application.Services;
 using Application.Services.Interfaces;
 using DTOs.ComplianceScheme;
@@ -12,11 +13,10 @@ using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Extensions;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
 using Moq;
 using Moq.Protected;
-using Options;
+using Options = Microsoft.Extensions.Options.Options;
 
 [TestFixture]
 public class ComplianceSchemeServiceTests : ServiceTestBase<IComplianceSchemeService>
