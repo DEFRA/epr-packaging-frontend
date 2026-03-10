@@ -10,16 +10,17 @@ using Services.StubAuthentication;
 
 [ExcludeFromCodeCoverage]
 [Route("")]
-public class ServicesController(IStubAuthenticationService stubAuthenticationService) : Controller
+public class ServicesController(IStubAuthenticationService stubAuthenticationService, IWebHostEnvironment webHostEnvironment) : Controller
 {
     [HttpGet]
     [Route("services/account-details", Name= StubAuthRouteNames.StubAccountGet)]
     [AllowAnonymous]
     public IActionResult AccountDetails([FromQuery] string returnUrl)
     {
-#if !DEBUG
-        return NotFound();
-#endif
+        if (!webHostEnvironment.EnvironmentName.Equals("ComponentTest", StringComparison.OrdinalIgnoreCase))
+        {
+            return NotFound();
+        }
 
         return View("AccountDetails", new StubAuthenticationViewModel
         {
@@ -32,9 +33,10 @@ public class ServicesController(IStubAuthenticationService stubAuthenticationSer
     [AllowAnonymous]
     public async Task<IActionResult> AccountDetails(StubAuthenticationViewModel model)
     {
-#if !DEBUG
-        return NotFound();
-#endif
+        if (!webHostEnvironment.EnvironmentName.Equals("ComponentTest", StringComparison.OrdinalIgnoreCase))
+        {
+            return NotFound();
+        }
         var claims = await stubAuthenticationService.CreateClaimsPrincipal(model);
         
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claims, new AuthenticationProperties());
@@ -47,9 +49,10 @@ public class ServicesController(IStubAuthenticationService stubAuthenticationSer
     [Route("services/stub-auth", Name = StubAuthRouteNames.SignedIn)]
     public IActionResult StubSignedIn([FromQuery] string returnUrl)
     {
-#if !DEBUG
-        return NotFound();
-#endif
+        if (!webHostEnvironment.EnvironmentName.Equals("ComponentTest", StringComparison.OrdinalIgnoreCase))
+        {
+            return NotFound();
+        }
         var viewModel = new SignedInAccountViewModel
         {
             ReturnUrl = returnUrl,

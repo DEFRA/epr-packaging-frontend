@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Mvc;
 using TokenValidatedContext = Microsoft.AspNetCore.Authentication.OpenIdConnect.TokenValidatedContext;
 
 public interface IStubAuthenticationService
@@ -17,14 +16,14 @@ public interface IStubAuthenticationService
 }
 
 [ExcludeFromCodeCoverage]
-public class StubAuthenticationService(IHttpContextAccessor httpContextAccessor, ICustomClaims customClaims) : IStubAuthenticationService
+public class StubAuthenticationService(IHttpContextAccessor httpContextAccessor, ICustomClaims customClaims, IWebHostEnvironment webHostEnvironment) : IStubAuthenticationService
 {
     public void AddStubAuth(IResponseCookies cookies, StubAuthUserDetails model, bool isEssential = false)
     {
-        //This is for debug only
-#if !DEBUG
-        return;
-#endif
+        if (!webHostEnvironment.EnvironmentName.Equals("ComponentTest", StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
 
         var authCookie = new CookieOptions
         {
@@ -41,10 +40,10 @@ public class StubAuthenticationService(IHttpContextAccessor httpContextAccessor,
 
     public async Task<ClaimsPrincipal> CreateClaimsPrincipal(StubAuthUserDetails model)
     {
-        //This is for debug only
-#if !DEBUG
-        return new ClaimsPrincipal();
-#endif
+        if (!webHostEnvironment.EnvironmentName.Equals("ComponentTest", StringComparison.OrdinalIgnoreCase))
+        {
+            return new ClaimsPrincipal();
+        }
         
         var claims = new List<Claim>
         {

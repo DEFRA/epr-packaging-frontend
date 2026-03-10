@@ -30,9 +30,6 @@ services.AddFeatureManagement();
 // });
 
 var isStubAuth = builderConfig.GetValue<bool>("IsStubAuth", false);
-#if !DEBUG
-    isStubAuth = false;
-#endif
 
 services
     .AddHttpContextAccessor()
