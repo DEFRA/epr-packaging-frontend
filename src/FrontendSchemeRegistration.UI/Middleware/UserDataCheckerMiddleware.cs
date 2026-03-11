@@ -39,7 +39,7 @@ public class UserDataCheckerMiddleware : IMiddleware
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        var anonControllers = new List<string> { "Privacy", "Cookies", "Culture", "Account" };
+        var anonControllers = new List<string> { "Privacy", "Cookies", "Culture", "Account", "Services" };
         var controllerName = GetControllerName(context);
 
         if (!anonControllers.Contains(controllerName) && context.User.Identity is { IsAuthenticated: true } && context.User.TryGetUserData() is null)

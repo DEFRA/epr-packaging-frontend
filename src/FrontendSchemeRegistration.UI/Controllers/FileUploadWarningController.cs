@@ -70,6 +70,7 @@ public class FileUploadWarningController : Controller
     {
         ModelState.Remove(nameof(model.FileName));
         ModelState.Remove(nameof(model.MaxReportSize));
+        ModelState.Remove(nameof(model.IsCso));
 
         ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadSubLanding}");
 
