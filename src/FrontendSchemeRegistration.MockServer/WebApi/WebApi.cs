@@ -106,10 +106,7 @@ public static class WebApi
         server.Given(Request.Create().UsingGet().WithPath("/api/v1/prn/search"))
             .RespondWith(Response.Create().WithStatusCode(200)
                 .WithHeader("Content-Type", "application/json")
-                .WithBodyAsJson(new { items = System.Array.Empty<object>(), pageNumber = 1, pageSize = 50, totalItems = 0, totalPages = 0 }));
-
-        server.Given(Request.Create().UsingGet().WithPath("/api/v1/prn/*"))
-            .RespondWith(Response.Create().WithStatusCode(404));
+                .WithBodyFromFile("WebApi/Responses/WebApi/v1_prn_search.json"));
 
         server.Given(Request.Create().UsingPost().WithPath("/api/v1/prn/status"))
             .RespondWith(Response.Create().WithStatusCode(200));
