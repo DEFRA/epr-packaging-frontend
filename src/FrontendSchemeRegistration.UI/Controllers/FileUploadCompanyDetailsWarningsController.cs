@@ -82,8 +82,7 @@ public class FileUploadCompanyDetailsWarningsController : Controller
                MaxReportSize = _validationOptions.MaxIssueReportSize,
                RegistrationYear = registrationYear,
                RegistrationJourney = regJourney,
-               IsCso = isCso,
-               OrganisationName = organisation.Name
+               IsCso = isCso
            });
     }
 
@@ -92,7 +91,6 @@ public class FileUploadCompanyDetailsWarningsController : Controller
     {
         ModelState.Remove(nameof(model.FileName));
         ModelState.Remove(nameof(model.MaxReportSize));
-        ModelState.Remove(nameof(model.OrganisationName));
         ModelState.Remove(nameof(model.IsCso));
 
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);

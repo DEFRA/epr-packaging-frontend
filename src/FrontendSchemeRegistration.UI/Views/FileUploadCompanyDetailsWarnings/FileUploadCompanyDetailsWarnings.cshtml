@@ -15,17 +15,12 @@
                 @await Html.PartialAsync("Partials/Govuk/_ErrorSummary", ViewData.ModelState)
             }
 
-            @if (Model.IsCso && Model.RegistrationJourney is not null && Model.RegistrationYear is not null)
-            {
-                <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="new ComplianceSchemeRegistrationHeadingViewModel(
-                    true, 
-                    Model.RegistrationJourney, 
-                    Model.OrganisationName,
-                    null,
-                    Model.RegistrationYear.Value)"/>
-            }
-            
-            <h1 class="govuk-heading-l govuk-!-margin-bottom-7">@Localizer["check_the_warnings"]</h1>
+            <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="new ComplianceSchemeRegistrationHeadingViewModel(
+                Model.IsCso && Model.RegistrationJourney is not null && Model.RegistrationYear is not null,
+                Model.RegistrationJourney, 
+                null,
+                @Localizer["check_the_warnings"],
+                Model.RegistrationYear.Value)"/>
 
             <p class="govuk-body">@Localizer["your_data_file_has_been_uploaded"]</p>
 
@@ -73,7 +68,6 @@
                 @Html.HiddenFor(m => m.MaxWarningsToProcess)
                 @Html.HiddenFor(m => m.RegistrationYear)
                 @Html.HiddenFor(m => m.RegistrationJourney)
-                @Html.HiddenFor(m => m.OrganisationName)
                 @Html.HiddenFor(m => m.IsCso)
 
                 <div class="govuk-form-group govuk-!-margin-top-7 @(ViewData.ModelState.IsValid ? string.Empty : "govuk-form-group--error")">

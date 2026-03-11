@@ -20,15 +20,6 @@ ThreadPool.SetMinThreads(30, 30);
 
 services.AddFeatureManagement();
 
-//TODO check this as this is the second usage of this, which is causing issues...
-// services.AddAntiforgery(opts =>
-// {
-//     var cookieOptions = builderConfig.GetSection(CookieOptions.ConfigSection).Get<CookieOptions>();
-//
-//     opts.Cookie.Name = cookieOptions.AntiForgeryCookieName;
-//     opts.Cookie.Path = basePath;
-// });
-
 var isStubAuth = builderConfig.GetValue<bool>("IsStubAuth", false);
 
 services
