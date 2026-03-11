@@ -77,7 +77,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         //CSO logic
         if (session.IsComplianceScheme)
         {
-            if (session is { HasAnyApprovedOrQueriedRegulatorDecision: true, IsLatestSubmittedEventAfterFileUpload: true })
+            if (session is { HasAnyApprovedOrQueriedRegulatorDecision: true, IsLatestSubmittedEventAfterFileUpload: true } && registrationYear >= 2026)
             {
                 session.IsLateFeeApplicable = session.LatestSubmittedEventCreatedDatetime.Value.Date >= lateFeeDeadline;
             }
