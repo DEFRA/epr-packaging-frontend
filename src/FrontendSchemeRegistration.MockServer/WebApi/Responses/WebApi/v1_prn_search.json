@@ -3,22 +3,26 @@
     {
       "prnNumber": "PRN-01",
       "materialName": "Paper/board",
-      "issueDate": "2026-03-01T13:15:15"
+      "issueDate": "2026-03-01T13:15:15",
+      "prnStatus": "AWAITINGACCEPTANCE"
     },
     {
       "prnNumber": "PRN-02",
       "materialName": "Paper/board",
-      "issueDate": "2026-05-01T13:15:15"
+      "issueDate": "2026-05-01T13:15:15",
+      "prnStatus": "AWAITINGACCEPTANCE"
     },
     {
       "prnNumber": "PRN-03",
       "materialName": "Fibre",
-      "issueDate": "2026-03-01T13:15:15"
+      "issueDate": "2026-03-01T13:15:15",
+      "prnStatus": "AWAITINGACCEPTANCE"
     },
     {
       "prnNumber": "PRN-04",
       "materialName": "Fibre",
-      "issueDate": "2026-05-01T13:15:15"
+      "issueDate": "2026-05-01T13:15:15",
+      "prnStatus": "AWAITINGACCEPTANCE"
     }
   ],
   "pageNumber": 1, 

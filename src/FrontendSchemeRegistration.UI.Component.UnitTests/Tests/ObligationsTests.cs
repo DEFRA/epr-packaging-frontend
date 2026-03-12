@@ -16,16 +16,17 @@ public class ObligationsTests
         Context.SetUp();
     }
     
-    [Test]
-    public async Task WhenPrnsArePresent_ShouldLocalizeAsExpected()
+    [TestCase("/report-data/view-awaiting-acceptance-alt")]
+    [TestCase("/report-data/view-awaiting-acceptance")]
+    public async Task WhenPrnsArePresent_ShouldLocalizeAsExpected(string path)
     {
         await Context.Client.AuthenticateDefaultUser();
 
-        var response = await Context.Client.GetAsync("/report-data/view-awaiting-acceptance-alt");
+        var response = await Context.Client.GetAsync(path);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await response.Content.ReadAsStringAsync();
-        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings);
+        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings).UseParameters(path);
     }
 
     [TearDown]
