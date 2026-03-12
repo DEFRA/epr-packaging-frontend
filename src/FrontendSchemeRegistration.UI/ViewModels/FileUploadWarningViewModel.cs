@@ -24,6 +24,4 @@ public class FileUploadWarningViewModel
     public RegistrationJourney? RegistrationJourney { get; set; }
 
     public bool IsCso { get; set; }
-
-    public string OrganisationName { get; set; }
 }

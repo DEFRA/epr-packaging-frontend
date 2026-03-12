@@ -220,7 +220,6 @@ public class FileUploadCompanyDetailsWarningsControllerTests
             MaxWarningsToProcess = 100,
             RegistrationYear = hasRegistrationYear ? RegistrationYear : (int?)null,
             RegistrationJourney = null,
-            OrganisationName = "Test Organisation",
             IsCso = false
         });
 
@@ -280,7 +279,6 @@ public class FileUploadCompanyDetailsWarningsControllerTests
             MaxWarningsToProcess = 100,
             RegistrationYear = hasRegistrationYear ? RegistrationYear : (int?)null,
             RegistrationJourney = null,
-            OrganisationName = "Test Organisation",
             IsCso = false
         });
 
