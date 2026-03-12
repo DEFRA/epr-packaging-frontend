@@ -10,14 +10,8 @@ public class PrnDataResourcesLocalizer(
     IStringLocalizer<PrnDataResourcesPostFibre> prnDataResourcesPostFibre,
     IOptions<FibreOptions> fibreOptions)
 {
-    public LocalizedString Translate(AwaitingAcceptanceResultViewModel prn)
-    {
-        // PRN issue date is UTC stored in DB but offset is lost during
-        // retrieval via PRN API
-        var issueDate = DateTime.SpecifyKind(prn.DateIssued, DateTimeKind.Utc);
-        
-        return issueDate >= fibreOptions.Value.LaunchDateUtc
+    public LocalizedString Translate(AwaitingAcceptanceResultViewModel prn) =>
+        prn.DateIssued >= fibreOptions.Value.LaunchDateUtc
             ? prnDataResourcesPostFibre[prn.Material]
             : prnDataResources[prn.Material];
-    }
 }

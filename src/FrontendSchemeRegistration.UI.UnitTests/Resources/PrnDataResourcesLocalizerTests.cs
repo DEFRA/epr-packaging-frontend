@@ -38,7 +38,7 @@ public class PrnDataResourcesLocalizerTests
         var result = Subject.Translate(new AwaitingAcceptanceResultViewModel
         {
             Material = "Paper/board",
-            DateIssued = new DateTime(2026, 3, 10, 0, 0, 0, DateTimeKind.Utc)
+            DateIssued = new DateTime(2026, 3, 10)
         }).ToString();
 
         result.Should().Be("Paper and board");
@@ -56,7 +56,7 @@ public class PrnDataResourcesLocalizerTests
         var result = Subject.Translate(new AwaitingAcceptanceResultViewModel
         {
             Material = "Paper/board",
-            DateIssued = new DateTime(2026, 3, 10, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(msOffset)
+            DateIssued = new DateTime(2026, 3, 10).AddMilliseconds(msOffset)
         }).ToString();
 
         result.Should().Be(expectedTranslation);
