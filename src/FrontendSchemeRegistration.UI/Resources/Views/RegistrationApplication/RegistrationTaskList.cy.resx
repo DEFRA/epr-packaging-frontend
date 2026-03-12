@@ -30,11 +30,11 @@
 	<data name="update_registration_details" xml:space="preserve">
         <value>Diweddaru manylion cofrestru</value>
     </data>
-	<data name="you_have_submitted_organisation_brand_partner_details" xml:space="preserve">
-        <value>Rydych chi wedi cyflwyno manylion sefydliad, brand a phartneriaid</value>
+  <data name="you_have_submitted_registration_details" xml:space="preserve">
+       <value>Rydych chi wedi cyflwyno eich manylion cofrestru</value>
     </data>
-	<data name="you_have_resubmitted_organisation_brand_partner_details" xml:space="preserve">
-        <value>Rydych chi wedi cyflwyno manylion sefydliad, brand a phartneriaid</value>
+	<data name="you_have_resubmitted_registration_details" xml:space="preserve">
+        <value>Rydych chi wedi ailgyflwyno eich manylion cofrestru</value>
     </data>
 	<data name="view_pay_registration_fee" xml:space="preserve">
         <value>Gweld y ffi gofrestru</value>

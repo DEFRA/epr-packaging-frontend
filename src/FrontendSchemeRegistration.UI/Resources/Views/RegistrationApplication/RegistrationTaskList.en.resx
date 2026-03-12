@@ -33,8 +33,11 @@
     <data name="you_have_submitted_organisation_brand_partner_details" xml:space="preserve">
         <value>You have submitted organisation, brand and partner details</value>
     </data>
-    <data name="you_have_resubmitted_organisation_brand_partner_details" xml:space="preserve">
-        <value>You have resubmitted organisation, brand and partner details</value>
+    <data name="you_have_submitted_registration_details" xml:space="preserve">
+       <value>You have submitted your registration details</value>
+    </data>
+    <data name="you_have_resubmitted_registration_details" xml:space="preserve">
+        <value>You have resubmitted your registration details</value>
     </data>
     <data name="view_pay_registration_fee" xml:space="preserve">
         <value>View registration fee</value>
