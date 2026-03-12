@@ -36,9 +36,8 @@ public class FileReUploadCompanyDetailsConfirmationController : Controller
 
     [HttpGet]
     [SubmissionIdActionFilter(PagePaths.FileUploadCompanyDetailsSubLanding)]
-    public async Task<IActionResult> Get([FromQuery] RegistrationJourney? registrationJourney = null)
+    public async Task<IActionResult> Get()
     {
-        var registrationYear = _registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], true);
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
         if (session is null)
         {
@@ -58,11 +57,9 @@ public class FileReUploadCompanyDetailsConfirmationController : Controller
             return RedirectToAction("Get", "FileUploadCompanyDetailsSubLanding");
         }
 
-        var regJourney = submission.RegistrationJourney ?? registrationJourney;
+        this.SetBackLink(isFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, submission.RegistrationYear, submission.RegistrationJourney);
 
-        this.SetBackLink(isFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, registrationYear, regJourney);
-
-        var model = await GetViewModel(submission, session, registrationYear, regJourney);
+        var model = await GetViewModel(submission, session, submission.RegistrationYear, submission.RegistrationJourney);
 
         session.RegistrationSession.Journey.AddIfNotExists(PagePaths.FileUploadCompanyDetailsSubLanding);
         await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
