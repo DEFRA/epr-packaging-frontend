@@ -14,17 +14,21 @@
     bool isFileUploadJourneyInvokedViaRegistration = (bool)ViewData["IsFileUploadJourneyInvokedViaRegistration"];
     var showHeader = true;
     LocalizedHtmlString? headingTitle = null;
+    ViewMode? viewMode = null;
 
     switch (Model)
     {
         case { IsApprovedUser: false, Status: SubmittedToRegulator or SubmittedAndHasRecentFileUpload }:
             headingTitle = Localizer[Model.IsComplianceScheme ? "re-upload_members_organisation_details" : "are_you_sure_you_want_to_re-upload_your_organisation_details"];
+            viewMode = ViewMode.SubmittedAndNotApprovedUser;
             break;
         case { IsApprovedUser: false, Status: FileUploaded }:
             headingTitle = Localizer[Model.IsComplianceScheme ? "re-upload_members_organisation_details" : "re-upload_organisation_details"];
+            viewMode = ViewMode.UploadedAndNotApprovedUser;
             break;
         case { IsApprovedUser: true, Status: SubmittedToRegulator or SubmittedAndHasRecentFileUpload }:
             headingTitle = Localizer[Model.IsComplianceScheme ? "re-upload_members_organisation_details_to_submit_to_environmental_regulator" : "are_you_sure_you_want_to_re-upload_your_organisation_details"];
+            viewMode = ViewMode.SubmittedAndApprovedUser;
             break;
         default:
             showHeader = false;
@@ -37,11 +41,17 @@
         null,
         headingTitle,
         Model.RegistrationYear);
-
 }
 
 @functions
 {
+    private enum ViewMode
+    {
+        SubmittedAndNotApprovedUser,
+        UploadedAndNotApprovedUser,
+        SubmittedAndApprovedUser
+    }
+
     private static string GetTableHeader(SubmissionPeriodStatus submissionPeriodStatus) => (submissionPeriodStatus) switch
     {
         (SubmittedAndHasRecentFileUpload) => "uploaded",
@@ -60,6 +70,39 @@
                 {
                     <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel"/>
                 }
+                @if (viewMode == ViewMode.SubmittedAndNotApprovedUser)
+                {
+                    <p class="govuk-body">@Localizer[Model.IsComplianceScheme ? "your_organisation_already_submitted" : "If_you_want_to_replace_any_of"]</p>
+                    if (Model.IsComplianceScheme)
+                    {
+                        <p class="govuk-body">@Localizer[isFileUploadJourneyInvokedViaRegistration ? "someone_in_your_team_with_the_right_account_permissions_nonregulator" : "someone_in_your_team_with_the_right_account_permissions"]</p>
+                    }
+                    else
+                    {
+                        <div class="govuk-inset-text">
+                            @Localizer["this_is_to_report_organisation_details", Model.SubmissionDeadline]
+                        </div>
+                    }
+                }
+                else if (viewMode == ViewMode.UploadedAndNotApprovedUser)
+                {
+                    <p class="govuk-body">
+                        @Localizer[Model.IsComplianceScheme ? "you_have_already_uploaded_your_members_organisation_details" : "you_have_already_uploaded_your_organisation_details"]
+                        @Localizer[isFileUploadJourneyInvokedViaRegistration ? "but_they_have_not_been_submitted_nonregulator" : "but_they_have_not_been_submitted"]
+                    </p>
+                    <p class="govuk-body">@Localizer["you_can_upload"]</p>
+                    <p class="govuk-body">@Localizer[isFileUploadJourneyInvokedViaRegistration ? "someone_in_your_team_with_the_right_account_permissions_nonregulator" : "someone_in_your_team_with_the_right_account_permissions"]</p>
+                }
+                else if (viewMode == ViewMode.SubmittedAndApprovedUser)
+                {
+                    <p class="govuk-body">@Localizer[Model.IsComplianceScheme ? "you_already_submitted_your_members_organisation_details" : "If_you_want_to_replace_any_of"]</p>
+                    if (!Model.IsComplianceScheme)
+                    {
+                        <div class="govuk-inset-text">
+                            @Localizer["this_is_to_report_organisation_details", Model.SubmissionDeadline]
+                        </div>
+                    }
+                }
 
                 <div class="govuk-summary-card">
                     <div class="govuk-summary-card__title-wrapper">
@@ -69,52 +112,52 @@
                         <table class="govuk-table govuk-!-margin-bottom-0 responsive-table">
                             <caption class="govuk-visually-hidden">@Localizer[Model.Status == SubmittedToRegulator ? "detail_regarding_the_latest_file_submitted" : "detail_regarding_the_latest_file_uploaded"]</caption>
                             <thead class="govuk-table__head">
-                            <tr class="govuk-table__row">
-                                <th scope="col" class="govuk-table__header">@fileNameHeader</th>
-                                <th scope="col" class="govuk-table__header">@dateHeader</th>
-                                <th scope="col" class="govuk-table__header">@userHeader</th>
-                            </tr>
+                                <tr class="govuk-table__row">
+                                    <th scope="col" class="govuk-table__header">@fileNameHeader</th>
+                                    <th scope="col" class="govuk-table__header">@dateHeader</th>
+                                    <th scope="col" class="govuk-table__header">@userHeader</th>
+                                </tr>
                             </thead>
                             <tbody class="govuk-table__body">
-                            <tr class="govuk-table__row">
-                                <td data-heading="@fileNameHeader" class="govuk-table__cell break-word">@Model.CompanyDetailsFileName</td>
-                                <td data-heading="@dateHeader" class="govuk-table__cell break-word">@Model.CompanyDetailsFileUploadDate</td>
-                                <td data-heading="@userHeader" class="govuk-table__cell break-word">
-                                    @Model.CompanyDetailsFileUploadedBy
-                                    @if (Model.IsCompanyDetailsFileUploadedByDeleted)
-                                    {
-                                        <span>(@SharedLocalizer["no_longer_in_this_organisation"])</span>
-                                    }
-                                </td>
-                            </tr>
-                            @if (!string.IsNullOrWhiteSpace(Model.BrandsFileName))
-                            {
                                 <tr class="govuk-table__row">
-                                    <td data-heading="@fileNameHeader" class="govuk-table__cell break-word">@Model.BrandsFileName</td>
-                                    <td data-heading="@dateHeader" class="govuk-table__cell break-word">@Model.BrandsFileUploadDate</td>
+                                    <td data-heading="@fileNameHeader" class="govuk-table__cell break-word">@Model.CompanyDetailsFileName</td>
+                                    <td data-heading="@dateHeader" class="govuk-table__cell break-word">@Model.CompanyDetailsFileUploadDate</td>
                                     <td data-heading="@userHeader" class="govuk-table__cell break-word">
-                                        @Model.BrandsFileUploadedBy
-                                        @if (Model.IsBrandsFileUploadedByDeleted)
+                                        @Model.CompanyDetailsFileUploadedBy
+                                        @if (Model.IsCompanyDetailsFileUploadedByDeleted)
                                         {
                                             <span>(@SharedLocalizer["no_longer_in_this_organisation"])</span>
                                         }
                                     </td>
                                 </tr>
-                            }
-                            @if (!string.IsNullOrWhiteSpace(Model.PartnersFileName))
-                            {
-                                <tr class="govuk-table__row">
-                                    <td data-heading="@fileNameHeader" class="govuk-table__cell break-word">@Model.PartnersFileName</td>
-                                    <td data-heading="@dateHeader" class="govuk-table__cell break-word">@Model.PartnersFileUploadDate</td>
-                                    <td data-heading="@userHeader" class="govuk-table__cell break-word">
-                                        @Model.PartnersFileUploadedBy
-                                        @if (Model.IsPartnersFileUploadedByDeleted)
-                                        {
-                                            <span>(@SharedLocalizer["no_longer_in_this_organisation"])</span>
-                                        }
-                                    </td>
-                                </tr>
-                            }
+                                @if (!string.IsNullOrWhiteSpace(Model.BrandsFileName))
+                                {
+                                    <tr class="govuk-table__row">
+                                        <td data-heading="@fileNameHeader" class="govuk-table__cell break-word">@Model.BrandsFileName</td>
+                                        <td data-heading="@dateHeader" class="govuk-table__cell break-word">@Model.BrandsFileUploadDate</td>
+                                        <td data-heading="@userHeader" class="govuk-table__cell break-word">
+                                            @Model.BrandsFileUploadedBy
+                                            @if (Model.IsBrandsFileUploadedByDeleted)
+                                            {
+                                                <span>(@SharedLocalizer["no_longer_in_this_organisation"])</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(Model.PartnersFileName))
+                                {
+                                    <tr class="govuk-table__row">
+                                        <td data-heading="@fileNameHeader" class="govuk-table__cell break-word">@Model.PartnersFileName</td>
+                                        <td data-heading="@dateHeader" class="govuk-table__cell break-word">@Model.PartnersFileUploadDate</td>
+                                        <td data-heading="@userHeader" class="govuk-table__cell break-word">
+                                            @Model.PartnersFileUploadedBy
+                                            @if (Model.IsPartnersFileUploadedByDeleted)
+                                            {
+                                                <span>(@SharedLocalizer["no_longer_in_this_organisation"])</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
                             </tbody>
                         </table>
                     </div>
