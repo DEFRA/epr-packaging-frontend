@@ -2,6 +2,7 @@
 
 using System.Net;
 using System.Text.Json;
+using Application.Options;
 using Application.Services;
 using Application.Services.Interfaces;
 using AutoFixture;
@@ -13,10 +14,9 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
 using Moq;
-using Options;
+using Options = Microsoft.Extensions.Options.Options;
 
 [TestFixture]
 public class NotificationServiceTests

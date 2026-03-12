@@ -1,13 +1,12 @@
 namespace FrontendSchemeRegistration.UI.Component.UnitTests.Tests;
 
 using System.Net;
-using Data;
 using Extensions;
 using FluentAssertions;
 using Infrastructure;
 using NUnit.Framework;
 
-public class LandingPageTests
+public class ObligationsTests
 {
     private ComponentTestContext Context { get; } = new();
 
@@ -18,18 +17,15 @@ public class LandingPageTests
     }
     
     [Test]
-    public async Task Then_I_Can_Get_To_The_Landing_Page()
+    public async Task WhenPrnsArePresent_ShouldLocalizeAsExpected()
     {
         await Context.Client.AuthenticateDefaultUser();
 
-        var page = Pages.GetPages().SingleOrDefault(x => x.Name.Equals("Compliance Scheme Landing Page", StringComparison.CurrentCultureIgnoreCase));;
-        
-        var response = await Context.Client.GetAsync(page.Url);
-        
+        var response = await Context.Client.GetAsync("/report-data/view-awaiting-acceptance-alt");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        
+
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("Account home - SUPER TEST LTD");
+        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings);
     }
 
     [TearDown]

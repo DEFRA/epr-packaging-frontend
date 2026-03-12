@@ -1,6 +1,7 @@
 ﻿namespace FrontendSchemeRegistration.Application.UnitTests.Services;
 
 using System.Net;
+using Application.Options;
 using Application.Services;
 using Application.Services.Interfaces;
 using AutoFixture;
@@ -10,13 +11,12 @@ using FluentAssertions;
 using FrontendSchemeRegistration.Application.DTOs.ComplianceScheme;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
 using Moq;
 using Moq.Protected;
-using Options;
 using RequestModels;
 using UI.Extensions;
+using Options = Microsoft.Extensions.Options.Options;
 
 [TestFixture]
 public class ComplianceSchemeMemberServiceTests : ServiceTestBase<IComplianceSchemeMemberService>
