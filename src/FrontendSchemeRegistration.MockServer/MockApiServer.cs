@@ -20,7 +20,8 @@ public static class MockApiServer
 
         var server = StandAloneApp.Start(settings)
             .WithWebApi()
-            .WithPayments();
+            .WithPayments()
+            .WithAccounts();
 
         return server;
     }
