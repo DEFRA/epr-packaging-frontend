@@ -15,7 +15,7 @@
                 @Html.HiddenFor(model => model.ExternalId)
                 <h2 class="govuk-heading-l">@headerText</h2>
                 <div class="govuk-inset-text">
-                    @string.Format(Localizer["Title"].Value, Model.Tonnage, PrnDataLocalizer[Model.Material].Value.ToLower())
+                    @string.Format(Localizer["Title"].Value, Model.Tonnage, PrnDataLocalizer[Model.MaterialGroup].Value.ToLower())
                 </div>
                 <div class="govuk-button-group">
                     @if (Model.IsStatusEditable)
