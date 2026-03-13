@@ -21,7 +21,7 @@
         heading = Localizer["check_files_and_submit"];
     }
     
-    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+    var headingViewModel = new RegistrationHeadingViewModel(
         Model.ShowRegistrationCaption, 
         Model.RegistrationJourney, 
         null,
@@ -42,7 +42,7 @@
             @using (Html.BeginForm("Get", "Landing", null, FormMethod.Get))
             {
                 <div class="govuk-form-group">
-                    <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel"/>
+                    <partial name="Partials/_RegistrationHeading" model="headingViewModel"/>
                     
                     <div class="govuk-summary-card">
                         <div class="govuk-summary-card__title-wrapper">

@@ -3,7 +3,7 @@
 
 @{
     ViewData["Title"] = Localizer["page_title"];
-    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+    var headingViewModel = new RegistrationHeadingViewModel(
         Model.ShowRegistrationCaption, 
         Model.RegistrationJourney, 
         Model.OrganisationName,
@@ -30,7 +30,7 @@
                 </div>
             </div>
 
-            <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel"/>
+            <partial name="Partials/_RegistrationHeading" model="headingViewModel"/>
             
             @if (!Model.IsResubmission)
             {

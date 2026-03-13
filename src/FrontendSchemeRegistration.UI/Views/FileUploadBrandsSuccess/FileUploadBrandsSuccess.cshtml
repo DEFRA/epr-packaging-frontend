@@ -6,7 +6,7 @@
     
     var organisationName = Model.ShowRegistrationCaption ? User.GetUserData().Organisations.FirstOrDefault()?.Name : null;
     
-    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+    var headingViewModel = new RegistrationHeadingViewModel(
         Model.ShowRegistrationCaption,
         Model.RegistrationJourney,
         organisationName,
@@ -38,7 +38,7 @@
                 </div>
             </div>
 
-            <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel" />
+            <partial name="Partials/_RegistrationHeading" model="headingViewModel" />
 
             @if (Model.IsResubmission)
             {

@@ -4,7 +4,7 @@
 @{
     ViewData["Title"] = Localizer["uploading_brands"];
     
-    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+    var headingViewModel = new RegistrationHeadingViewModel(
         Model.ShowRegistrationCaption,
         Model.RegistrationJourney,
         null,
@@ -17,7 +17,7 @@
 <main class="govuk-main-wrapper" id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel" />
+            <partial name="Partials/_RegistrationHeading" model="headingViewModel" />
             <noscript>
                 <p class="govuk-body">
                     @Localizer["to_see_if_the_file_has_finished_uploading"]
