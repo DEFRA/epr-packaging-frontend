@@ -478,7 +478,6 @@ public static class ServiceProviderExtension
         {
             options.HttpOnly = HttpOnlyPolicy.Always;
             options.Secure = CookieSecurePolicy.Always;
-            options.CheckConsentNeeded = context => true;
         });
     }
 }
