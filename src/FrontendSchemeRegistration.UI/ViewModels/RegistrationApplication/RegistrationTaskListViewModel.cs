@@ -35,7 +35,7 @@ public class RegistrationTaskListViewModel
 
     public string FileUploadTask => IsResubmission ? "update_registration_details" : "submit_registration_data";
     
-    public string CompletedFileUploadTask => IsResubmission ? "you_have_resubmitted_organisation_brand_partner_details" : "you_have_submitted_organisation_brand_partner_details";
+    public string CompletedFileUploadTask => IsResubmission ? "you_have_resubmitted_registration_details" : "you_have_submitted_registration_details";
 
     public string ViewPaymentTask => IsResubmission ? "view_pay_fee_if_required" : "view_pay_registration_fee";
     

@@ -126,9 +126,6 @@
 	<data name="submit_resubmission_data" xml:space="preserve">
     <value>Resubmit packaging data</value>
   </data>
-	<data name="you_have_submitted_organisation_brand_partner_details" xml:space="preserve">
-    <value>You have submitted organisation, brand and partner details</value>
-  </data>
 	<data name="view_pay_resubmission_fee" xml:space="preserve">
     <value>View resubmission fee</value>
   </data>
