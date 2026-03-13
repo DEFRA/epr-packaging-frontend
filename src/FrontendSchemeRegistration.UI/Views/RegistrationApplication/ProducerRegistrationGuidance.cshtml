@@ -5,7 +5,7 @@
     ViewData["Title"] = Localizer["producer_registration_guidance_title"];
     var nationName = Model.NationName.ToLower();
 
-    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+    var headingViewModel = new RegistrationHeadingViewModel(
         Model.ShowRegistrationCaption,
         Model.RegistrationJourney,
         Model.IsComplianceScheme ? Localizer["scheme_registration_details"].Value : string.Format(Localizer["register_company"].Value, Model.OrganisationName),
@@ -17,7 +17,7 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
 
-            <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel" />
+            <partial name="Partials/_RegistrationHeading" model="headingViewModel" />
 
             @if (Model.IsComplianceScheme)
             {

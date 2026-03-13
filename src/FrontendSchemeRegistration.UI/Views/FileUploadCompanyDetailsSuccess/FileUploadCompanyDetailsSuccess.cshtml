@@ -31,7 +31,7 @@
             </div>
             @if (Model.IsCso && Model.RegistrationJourney is not null && Model.RegistrationYear is not null)
             {
-                <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="new ComplianceSchemeRegistrationHeadingViewModel(
+                <partial name="Partials/_RegistrationHeading" model="new RegistrationHeadingViewModel(
                     true, 
                     Model.RegistrationJourney, 
                     Model.OrganisationName,
