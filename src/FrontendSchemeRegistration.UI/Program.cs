@@ -19,6 +19,13 @@ string basePath = globalVariables.BasePath;
 ThreadPool.SetMinThreads(30, 30);
 
 services.AddFeatureManagement();
+services.AddAntiforgery(opts =>
+{
+    var cookieOptions = builderConfig.GetSection(CookieOptions.ConfigSection).Get<CookieOptions>();
+
+    opts.Cookie.Name = cookieOptions.AntiForgeryCookieName;
+    opts.Cookie.Path = basePath;
+});
 
 var isStubAuth = builderConfig.GetValue<bool>("IsStubAuth", false);
 
