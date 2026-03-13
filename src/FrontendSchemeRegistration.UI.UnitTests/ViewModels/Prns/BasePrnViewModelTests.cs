@@ -42,5 +42,15 @@ namespace FrontendSchemeRegistration.UI.UnitTests.ViewModels.Prns
             BasePrnViewModel.MapStatus(originalStatus).Should().Be(expectedStatus);
         }
 
+        [TestCase("Fibre", "Paper/board")]
+        [TestCase("Paper/board", "Paper/board")]
+        [TestCase("Glass", "Glass")]
+        [TestCase(null, null)]
+        public void MaterialGroup_AsExpected(string? material, string? expectedMaterialGroup)
+        {
+            var subject = new BasePrnViewModel { Material = material };
+
+            subject.MaterialGroup.Should().Be(expectedMaterialGroup);
+        }
     }
 }
