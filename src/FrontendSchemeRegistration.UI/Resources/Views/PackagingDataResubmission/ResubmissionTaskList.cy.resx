@@ -21,9 +21,6 @@
     <data name="submit_resubmission_data" xml:space="preserve">
         <value>Diweddaru manylion cofrestru</value>
     </data>
-    <data name="you_have_submitted_organisation_brand_partner_details" xml:space="preserve">
-        <value>Rydych chi wedi cyflwyno manylion sefydliad, brand a phartneriaid</value>
-    </data>
     <data name="view_pay_resubmission_fee" xml:space="preserve">
         <value>Gweld y ffi ailgyflwyno</value>
     </data>
