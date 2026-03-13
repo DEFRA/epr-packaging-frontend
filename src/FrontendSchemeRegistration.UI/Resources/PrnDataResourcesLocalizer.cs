@@ -10,7 +10,7 @@ public class PrnDataResourcesLocalizer(
     IStringLocalizer<PrnDataResourcesPostFibre> prnDataResourcesPostFibre,
     IOptions<FibreOptions> fibreOptions)
 {
-    public LocalizedString Translate(AwaitingAcceptanceResultViewModel prn) =>
+    public LocalizedString Translate(BasePrnViewModel prn) =>
         prn.DateIssued >= fibreOptions.Value.LaunchDateUtc
             ? prnDataResourcesPostFibre[prn.Material]
             : prnDataResources[prn.Material];
