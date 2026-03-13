@@ -108,6 +108,36 @@ public static class WebApi
                 .WithHeader("Content-Type", "application/json")
                 .WithBodyFromFile("WebApi/Responses/WebApi/v1_prn_search.json"));
 
+        server.Given(Request.Create().UsingGet().WithPath("/api/v1/prn/00000000-0000-0000-0000-000000000001"))
+            .RespondWith(Response.Create().WithStatusCode(200)
+                .WithHeader("Content-Type", "application/json")
+                .WithBodyAsJson(new
+                {
+                    id = 1,
+                    externalId = "00000000-0000-0000-0000-000000000001",
+                    prnNumber = "PRN-01",
+                    materialName = "Paper/board",
+                    issueDate = "2026-03-01T13:15:15",
+                    prnStatus = "AWAITINGACCEPTANCE",
+                    tonnageValue = 1,
+                    obligationYear = "2026"
+                }));
+
+        server.Given(Request.Create().UsingGet().WithPath("/api/v1/prn/00000000-0000-0000-0000-000000000005"))
+            .RespondWith(Response.Create().WithStatusCode(200)
+                .WithHeader("Content-Type", "application/json")
+                .WithBodyAsJson(new
+                {
+                    id = 5,
+                    externalId = "00000000-0000-0000-0000-000000000005",
+                    prnNumber = "PRN-05",
+                    materialName = "Fibre",
+                    issueDate = "2026-05-01T13:15:15",
+                    prnStatus = "ACCEPTED",
+                    tonnageValue = 1,
+                    obligationYear = "2026"
+                }));
+
         server.Given(Request.Create().UsingPost().WithPath("/api/v1/prn/status"))
             .RespondWith(Response.Create().WithStatusCode(200));
 

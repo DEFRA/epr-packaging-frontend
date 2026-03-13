@@ -18,6 +18,8 @@ public class ObligationsTests
     
     [TestCase("/report-data/view-awaiting-acceptance-alt")]
     [TestCase("/report-data/view-awaiting-acceptance")]
+    [TestCase("/report-data/accept-prn/00000000-0000-0000-0000-000000000001")]
+    [TestCase("/report-data/accepted-prn/00000000-0000-0000-0000-000000000005")]
     public async Task WhenPrnsArePresent_ShouldLocalizeAsExpected(string path)
     {
         await Context.Client.AuthenticateDefaultUser();

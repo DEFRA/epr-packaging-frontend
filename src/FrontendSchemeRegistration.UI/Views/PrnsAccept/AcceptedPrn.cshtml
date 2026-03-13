@@ -24,7 +24,7 @@
                         <h3 class="govuk-notification-banner__heading">
                             @string.Format(Localizer["prn_accepted"].Value, PrnDataLocalizer[Model.NoteType], Model.EffectiveAcceptanceYear)
                         </h3>
-                        <p class="govuk-body">@Localizer["tonnage_credited_towards_your_obligation", Model.Tonnage, @PrnDataLocalizer[Model.Material].Value]</p>
+                        <p class="govuk-body">@Localizer["tonnage_credited_towards_your_obligation", Model.Tonnage, PrnDataLocalizer[Model.Material].Value.ToLower()]</p>
                         <button id="downloadPDFButton" class="govuk-body govuk-link">
                             @string.Format(Localizer["download_this_prn"].Value, PrnDataLocalizer[Model.NoteType])
                         </button>
