@@ -219,18 +219,46 @@ public class WebApiGatewayClient : IWebApiGatewayClient
 
     public async Task SubmitAsync(Guid submissionId, SubmissionPayload payload)
     {
-        await PrepareAuthenticatedClientAsync();
-        var requestPath = $"/api/v1/submissions/{submissionId}/submit";
-        var response = await _httpClient.PostAsJsonAsync(requestPath, payload);
-        response.EnsureSuccessStatusCode();
+        using (_logger.AddScopedData(new Dictionary<string, object>
+               {
+                   ["SubmissionId"] = submissionId,
+                   ["RegistrationJourney"] = payload.RegistrationJourney,
+                   ["FileId"] = payload.FileId,
+                   ["IsResubmission"] = payload.IsResubmission,
+                   ["AppReferenceNumber"] = payload.AppReferenceNumber
+               }))
+        {
+            await PrepareAuthenticatedClientAsync();
+            var requestPath = $"/api/v1/submissions/{submissionId}/submit";
+            
+            _logger.LogInformation("Posting submission to web api gateway");
+            var response = await _httpClient.PostAsJsonAsync(requestPath, payload);
+            response.EnsureSuccessStatusCode();
+        }
     }
 
     public async Task CreateRegistrationApplicationEvent(Guid submissionId, RegistrationApplicationPayload applicationPayload)
     {
-        await PrepareAuthenticatedClientAsync();
-        var requestPath = $"/api/v1/submissions/{submissionId}/submit-registration-application";
-        var response = await _httpClient.PostAsJsonAsync(requestPath, applicationPayload);
-        response.EnsureSuccessStatusCode();
+        using (_logger.AddScopedData(new Dictionary<string, object>
+               {
+                   ["SubmissionId"] = submissionId,
+                   ["RegistrationJourney"] = applicationPayload.RegistrationJourney,
+                   ["IsResubmission"] = applicationPayload.IsResubmission,
+                   ["PaidAmount"] = applicationPayload.PaidAmount,
+                   ["PaymentStatus"] = applicationPayload.PaymentStatus,
+                   ["PaymentMethod"] = applicationPayload.PaymentMethod,
+                   ["SubmissionType"] = applicationPayload.SubmissionType,
+                   ["ComplianceSchemeId"] = applicationPayload.ComplianceSchemeId,
+                   ["AppReferenceNumber"] = applicationPayload.ApplicationReferenceNumber
+               }))
+        {
+            await PrepareAuthenticatedClientAsync();
+            var requestPath = $"/api/v1/submissions/{submissionId}/submit-registration-application";
+            
+            _logger.LogInformation("Posting registration application event to web api gateway");
+            var response = await _httpClient.PostAsJsonAsync(requestPath, applicationPayload);
+            response.EnsureSuccessStatusCode();
+        }
     }
 
     public async Task<T> GetDecisionsAsync<T>(string queryString)
