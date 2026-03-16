@@ -2,7 +2,9 @@
 
 namespace FrontendSchemeRegistration.UI.ViewModels.Prns
 {
-    public class BasePrnViewModel
+	using Constants;
+
+	public class BasePrnViewModel
     {
         public Guid ExternalId { get; set; }
 
@@ -10,6 +12,8 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
 
         // e.g. Wood, Paper and board, etc.
         public string Material { get; set; }
+
+        public string MaterialGroup => Material == PrnConstants.Material.Fibre ? PrnConstants.Material.Paper : Material;
 
         public DateTime DateIssued { get; set; }
 
