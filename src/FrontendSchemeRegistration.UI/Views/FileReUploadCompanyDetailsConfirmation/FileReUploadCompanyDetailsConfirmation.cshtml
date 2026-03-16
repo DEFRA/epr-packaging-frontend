@@ -1,5 +1,7 @@
 @using static FrontendSchemeRegistration.Application.Enums.SubmissionPeriodStatus
 @using FrontendSchemeRegistration.Application.Enums
+@using FrontendSchemeRegistration.UI.ViewModels.Shared
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 
 @model FileReUploadCompanyDetailsConfirmationViewModel
 
@@ -10,10 +12,46 @@
     var dateHeader = Localizer[Model.Status == SubmittedToRegulator ? "date_submitted" : "date_uploaded"];
     var userHeader = Localizer[Model.Status == SubmittedToRegulator ? "submitted_by" : "uploaded_by"];
     bool isFileUploadJourneyInvokedViaRegistration = (bool)ViewData["IsFileUploadJourneyInvokedViaRegistration"];
+    var showHeader = true;
+    LocalizedHtmlString? headingTitle = null;
+    ViewMode? viewMode = null;
+
+    switch (Model)
+    {
+        case { IsApprovedUser: false, Status: SubmittedToRegulator or SubmittedAndHasRecentFileUpload }:
+            headingTitle = Localizer[Model.IsComplianceScheme ? "re-upload_members_organisation_details" : "are_you_sure_you_want_to_re-upload_your_organisation_details"];
+            viewMode = ViewMode.SubmittedAndNotApprovedUser;
+            break;
+        case { IsApprovedUser: false, Status: FileUploaded }:
+            headingTitle = Localizer[Model.IsComplianceScheme ? "re-upload_members_organisation_details" : "re-upload_organisation_details"];
+            viewMode = ViewMode.UploadedAndNotApprovedUser;
+            break;
+        case { IsApprovedUser: true, Status: SubmittedToRegulator or SubmittedAndHasRecentFileUpload }:
+            headingTitle = Localizer[Model.IsComplianceScheme ? "re-upload_members_organisation_details_to_submit_to_environmental_regulator" : "are_you_sure_you_want_to_re-upload_your_organisation_details"];
+            viewMode = ViewMode.SubmittedAndApprovedUser;
+            break;
+        default:
+            showHeader = false;
+            break;
+    }
+
+    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+        Model.IsComplianceScheme, 
+        Model.RegistrationJourney, 
+        null,
+        headingTitle,
+        Model.RegistrationYear);
 }
 
 @functions
 {
+    private enum ViewMode
+    {
+        SubmittedAndNotApprovedUser,
+        UploadedAndNotApprovedUser,
+        SubmittedAndApprovedUser
+    }
+
     private static string GetTableHeader(SubmissionPeriodStatus submissionPeriodStatus) => (submissionPeriodStatus) switch
     {
         (SubmittedAndHasRecentFileUpload) => "uploaded",
@@ -28,11 +66,12 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <div class="govuk-form-group">
-                @if (Model is { IsApprovedUser: false, Status: SubmittedToRegulator or SubmittedAndHasRecentFileUpload })
+                @if (showHeader)
                 {
-                    <h1 class="govuk-heading-l govuk-!-margin-top-4 govuk-!-margin-bottom-7">
-                        @Localizer[Model.IsComplianceScheme ? "re-upload_members_organisation_details" : "are_you_sure_you_want_to_re-upload_your_organisation_details"]
-                    </h1>
+                    <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel"/>
+                }
+                @if (viewMode == ViewMode.SubmittedAndNotApprovedUser)
+                {
                     <p class="govuk-body">@Localizer[Model.IsComplianceScheme ? "your_organisation_already_submitted" : "If_you_want_to_replace_any_of"]</p>
                     if (Model.IsComplianceScheme)
                     {
@@ -45,11 +84,8 @@
                         </div>
                     }
                 }
-                else if (Model is { IsApprovedUser: false, Status: FileUploaded })
+                else if (viewMode == ViewMode.UploadedAndNotApprovedUser)
                 {
-                    <h1 class="govuk-heading-l govuk-!-margin-top-4 govuk-!-margin-bottom-7">
-                        @Localizer[Model.IsComplianceScheme ? "re-upload_members_organisation_details" : "re-upload_organisation_details"]
-                    </h1>
                     <p class="govuk-body">
                         @Localizer[Model.IsComplianceScheme ? "you_have_already_uploaded_your_members_organisation_details" : "you_have_already_uploaded_your_organisation_details"]
                         @Localizer[isFileUploadJourneyInvokedViaRegistration ? "but_they_have_not_been_submitted_nonregulator" : "but_they_have_not_been_submitted"]
@@ -57,11 +93,8 @@
                     <p class="govuk-body">@Localizer["you_can_upload"]</p>
                     <p class="govuk-body">@Localizer[isFileUploadJourneyInvokedViaRegistration ? "someone_in_your_team_with_the_right_account_permissions_nonregulator" : "someone_in_your_team_with_the_right_account_permissions"]</p>
                 }
-                else if (Model is { IsApprovedUser: true, Status: SubmittedToRegulator or SubmittedAndHasRecentFileUpload })
+                else if (viewMode == ViewMode.SubmittedAndApprovedUser)
                 {
-                    <h1 class="govuk-heading-l govuk-!-margin-top-4 govuk-!-margin-bottom-7">
-                        @Localizer[Model.IsComplianceScheme ? "re-upload_members_organisation_details_to_submit_to_environmental_regulator" : "are_you_sure_you_want_to_re-upload_your_organisation_details"]
-                    </h1>
                     <p class="govuk-body">@Localizer[Model.IsComplianceScheme ? "you_already_submitted_your_members_organisation_details" : "If_you_want_to_replace_any_of"]</p>
                     if (!Model.IsComplianceScheme)
                     {
@@ -70,7 +103,6 @@
                         </div>
                     }
                 }
-
 
                 <div class="govuk-summary-card">
                     <div class="govuk-summary-card__title-wrapper">
