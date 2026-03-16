@@ -222,10 +222,10 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         using (_logger.AddScopedData(new Dictionary<string, object>
                {
                    ["SubmissionId"] = submissionId,
-                   ["RegistrationJourney"] = payload.RegistrationJourney,
-                   ["FileId"] = payload.FileId,
-                   ["IsResubmission"] = payload.IsResubmission,
-                   ["AppReferenceNumber"] = payload.AppReferenceNumber
+                   ["RegistrationJourney"] = payload?.RegistrationJourney,
+                   ["FileId"] = payload?.FileId,
+                   ["IsResubmission"] = payload?.IsResubmission,
+                   ["AppReferenceNumber"] = payload?.AppReferenceNumber
                }))
         {
             await PrepareAuthenticatedClientAsync();
@@ -242,14 +242,14 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         using (_logger.AddScopedData(new Dictionary<string, object>
                {
                    ["SubmissionId"] = submissionId,
-                   ["RegistrationJourney"] = applicationPayload.RegistrationJourney,
-                   ["IsResubmission"] = applicationPayload.IsResubmission,
-                   ["PaidAmount"] = applicationPayload.PaidAmount,
-                   ["PaymentStatus"] = applicationPayload.PaymentStatus,
-                   ["PaymentMethod"] = applicationPayload.PaymentMethod,
-                   ["SubmissionType"] = applicationPayload.SubmissionType,
-                   ["ComplianceSchemeId"] = applicationPayload.ComplianceSchemeId,
-                   ["AppReferenceNumber"] = applicationPayload.ApplicationReferenceNumber
+                   ["RegistrationJourney"] = applicationPayload?.RegistrationJourney,
+                   ["IsResubmission"] = applicationPayload?.IsResubmission,
+                   ["PaidAmount"] = applicationPayload?.PaidAmount,
+                   ["PaymentStatus"] = applicationPayload?.PaymentStatus,
+                   ["PaymentMethod"] = applicationPayload?.PaymentMethod,
+                   ["SubmissionType"] = applicationPayload?.SubmissionType,
+                   ["ComplianceSchemeId"] = applicationPayload?.ComplianceSchemeId,
+                   ["AppReferenceNumber"] = applicationPayload?.ApplicationReferenceNumber
                }))
         {
             await PrepareAuthenticatedClientAsync();
