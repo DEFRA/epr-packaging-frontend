@@ -1,4 +1,4 @@
-﻿using EPR.Common.Authorization.Sessions;
+using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
@@ -130,8 +130,12 @@ public class DeclarationWithFullNameController(
                 var regJourney = submission.RegistrationJourney ?? model.RegistrationJourney;
 
                 var session = await sessionManager.GetSessionAsync(HttpContext.Session);
+                if (session?.RegistrationSession is null)
+                {
+                    throw new InvalidOperationException("RegistrationSession is required for registration submission.");
+                }
 
-                session.EnsureApplicationReferenceIsPresent();
+                ArgumentException.ThrowIfNullOrWhiteSpace(session.RegistrationSession.ApplicationReferenceNumber);
 
                 await submissionService.SubmitAsync(submissionId, new Guid(model.OrganisationDetailsFileId),
                     model.FullName,
