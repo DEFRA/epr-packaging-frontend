@@ -35,7 +35,7 @@ public class PrnDataResourcesLocalizerTests
         ConfigureTranslation(MockPrnDataResources, "Paper/board", "Paper and board");
         ConfigureTranslation(MockPrnDataResourcesPostFibre, "Paper/board", "New paper and board");
         
-        var result = Subject.Translate(new BasePrnViewModel
+        var result = Subject.Material(new BasePrnViewModel
         {
             Material = "Paper/board",
             DateIssued = new DateTime(2026, 3, 10)
@@ -53,7 +53,7 @@ public class PrnDataResourcesLocalizerTests
         ConfigureTranslation(MockPrnDataResources, "Paper/board", "Paper and board");
         ConfigureTranslation(MockPrnDataResourcesPostFibre, "Paper/board", "New paper and board");
 
-        var result = Subject.Translate(new BasePrnViewModel
+        var result = Subject.Material(new BasePrnViewModel
         {
             Material = "Paper/board",
             DateIssued = new DateTime(2026, 3, 10).AddMilliseconds(msOffset)

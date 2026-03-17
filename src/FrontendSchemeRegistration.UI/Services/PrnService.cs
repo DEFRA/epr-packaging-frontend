@@ -229,7 +229,7 @@ public class PrnService : IPrnService
                     await writer.WriteCsvCellAsync(prn.AccreditationNumber);
                     await writer.WriteCsvCellAsync(prn.DateIssued.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture));
                     await writer.WriteCsvCellAsync(_csvLocalizer[prn.DecemberWasteDisplay]);
-                    await writer.WriteCsvCellAsync(_prnDataResourcesLocalizer.Translate(prn));
+                    await writer.WriteCsvCellAsync(_prnDataResourcesLocalizer.Material(prn));
                     await writer.WriteCsvCellAsync(prn.RecyclingProcess);
                     await writer.WriteCsvCellAsync(prn.Tonnage.ToString());
                     await writer.WriteCsvCellAsync(prn.ApprovalStatus == PrnStatus.Accepted ? prn.StatusUpdatedOn?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) : _csvLocalizer["not_accepted"]);

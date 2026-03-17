@@ -7,7 +7,7 @@ using ViewModels.Prns;
 
 public interface IPrnDataResourcesLocalizer
 {
-    LocalizedString Translate(BasePrnViewModel prn);
+    LocalizedString Material(BasePrnViewModel prn);
 }
 
 public class PrnDataResourcesLocalizer(
@@ -15,7 +15,7 @@ public class PrnDataResourcesLocalizer(
     IStringLocalizer<PrnDataResourcesPostFibre> prnDataResourcesPostFibre,
     IOptions<FibreOptions> fibreOptions) : IPrnDataResourcesLocalizer
 {
-    public LocalizedString Translate(BasePrnViewModel prn) =>
+    public LocalizedString Material(BasePrnViewModel prn) =>
         prn.DateIssued >= fibreOptions.Value.LaunchDateUtc
             ? prnDataResourcesPostFibre[prn.Material]
             : prnDataResources[prn.Material];

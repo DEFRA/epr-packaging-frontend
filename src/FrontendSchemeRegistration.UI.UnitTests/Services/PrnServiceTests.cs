@@ -41,7 +41,7 @@ public class PrnServiceTests
         var localizerCsv = new StringLocalizer<PrnCsvResources>(factory);
         var localizerData = new StringLocalizer<PrnDataResources>(factory);
         var prnDataResourcesLocalizer = new Mock<IPrnDataResourcesLocalizer>();
-        prnDataResourcesLocalizer.Setup(x => x.Translate(It.IsAny<BasePrnViewModel>()))
+        prnDataResourcesLocalizer.Setup(x => x.Material(It.IsAny<BasePrnViewModel>()))
             .Returns((BasePrnViewModel input) => new LocalizedString("key", input.MaterialGroup));
 
         _webApiGatewayClientMock = new Mock<IWebApiGatewayClient>();
