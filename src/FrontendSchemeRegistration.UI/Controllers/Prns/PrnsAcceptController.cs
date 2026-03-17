@@ -188,7 +188,7 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
                 ObligationYears = obligationYearsCsv,
                 Count = justUpdatedPrns.Count,
                 Details = justUpdatedPrns
-                            .GroupBy(x => x.Material)
+                            .GroupBy(x => x.MaterialGroup)
                             .Select(x => new AcceptedDetails(x.Key, x.Sum(t => t.Tonnage)))
                             .ToList()
             };

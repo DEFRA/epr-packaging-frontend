@@ -2,7 +2,9 @@ namespace FrontendSchemeRegistration.UI.Component.UnitTests.Infrastructure;
 
 using Controllers.FrontendSchemeRegistration;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Session;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using MockServer;
 using WireMock.Server;
 
@@ -13,16 +15,27 @@ public class ComponentTestContext : IDisposable
     
     public ComponentTestClient Client { get; private set; }
 
-    public void SetUp()
+    public void SetUp(bool overrideSession = false)
     {
         _staticMockApiServer = MockApiServer.Start();
-        var webApp = new CustomWebApplicationFactory<FrontendSchemeRegistrationController>()
+        
+        var factory = new CustomWebApplicationFactory<FrontendSchemeRegistrationController>();
+        factory.ConfigureTestServices = services =>
+        {
+            if (overrideSession)
+                services.AddSingleton<ISessionStore, SessionStore>();
+        };
+        var webApp = factory
             .WithWebHostBuilder(c =>
-                c.UseEnvironment("ComponentTest").UseConfiguration(ConfigBuilder.GenerateConfiguration()));
+                c.UseEnvironment("ComponentTest")
+                    .UseConfiguration(ConfigBuilder.GenerateConfiguration())
+            );
         _server = webApp.Server;
         
         Client = new ComponentTestClient(_server);
     }
+    
+    public SessionStore GetSessionStore() => _server.Services.GetRequiredService<ISessionStore>() as SessionStore;
 
     public void Dispose()
     {
