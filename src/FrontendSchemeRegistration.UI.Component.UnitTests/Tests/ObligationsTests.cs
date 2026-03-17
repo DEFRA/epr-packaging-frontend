@@ -57,6 +57,7 @@ public class ObligationsTests
     [TestCase("/report-data/accepted-prn/00000000-0000-0000-0000-000000000005")]
     [TestCase("/report-data/accept-bulk")]
     [TestCase("/report-data/accepted-prns")]
+    [TestCase("/report-data/download-prns-csv")]
     public async Task WhenPrnsArePresent_ShouldLocalizeAsExpected(string path)
     {
         await Context.Client.AuthenticateDefaultUser();
@@ -68,7 +69,10 @@ public class ObligationsTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await response.Content.ReadAsStringAsync();
-        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings).UseParameters(path);
+        if (path.EndsWith("csv"))
+            await Verify(content, VerifyCsv.Extension).UseParameters(path).DontScrubDateTimes();
+        else
+            await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings).UseParameters(path);
     }
 
     [TearDown]

@@ -262,7 +262,7 @@ public static class ServiceProviderExtension
                 options.RequestCultureProviders = [new SessionRequestCultureProvider()];
             });
 
-        services.AddTransient<PrnDataResourcesLocalizer>();
+        services.AddTransient<IPrnDataResourcesLocalizer, PrnDataResourcesLocalizer>();
     }
 
     private static void ConfigureSession(IServiceCollection services)
