@@ -44,6 +44,12 @@ public class UserDataCheckerMiddleware : IMiddleware
 
         if (!anonControllers.Contains(controllerName) && context.User.Identity is { IsAuthenticated: true } && context.User.TryGetUserData() is null)
         {
+            // Clear session on new login (when UserData is null, it means this is a fresh authentication)
+            if (context.Session.IsAvailable)
+            {
+                context.Session.Clear();
+            }
+
             var userAccount = await _userAccountService.GetUserAccount();
 
             if (userAccount is null)

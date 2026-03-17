@@ -293,7 +293,8 @@ public static class ServiceProviderExtension
             var sessionOptions = sp.GetRequiredService<IOptions<SessionOptions>>().Value;
 
             options.Cookie.Name = cookieOptions.SessionCookieName;
-            options.IdleTimeout = TimeSpan.FromMinutes(sessionOptions.IdleTimeoutMinutes);
+            var sessionTimeoutMinutes = Math.Max(sessionOptions.IdleTimeoutMinutes, cookieOptions.AuthenticationExpiryInMinutes);
+            options.IdleTimeout = TimeSpan.FromMinutes(sessionTimeoutMinutes);
             options.Cookie.IsEssential = true;
             options.Cookie.HttpOnly = true;
             options.Cookie.Path = "/";

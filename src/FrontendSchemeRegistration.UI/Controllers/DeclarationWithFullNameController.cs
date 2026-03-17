@@ -113,7 +113,7 @@ public class DeclarationWithFullNameController(
             
             var session = await sessionManager.GetSessionAsync(HttpContext.Session);
 
-            session.EnsureApplicationReferenceIsPresent();
+            ArgumentException.ThrowIfNullOrWhiteSpace(session.RegistrationSession.ApplicationReferenceNumber);
 
             await submissionService.SubmitAsync(submissionId, new Guid(model.OrganisationDetailsFileId), model.FullName,
                 session.RegistrationSession.ApplicationReferenceNumber,

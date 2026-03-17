@@ -99,6 +99,7 @@ app.UseStaticFiles();
 app.UseAuthentication();
 app.UseRouting();
 app.UseSession();
+app.UseMiddleware<SessionRefreshMiddleware>();
 
 app.UseAuthorization();
 app.UseMiddleware<UserDataCheckerMiddleware>();
