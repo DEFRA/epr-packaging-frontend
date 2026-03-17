@@ -123,6 +123,21 @@ public static class WebApi
                     tonnageValue = 1,
                     obligationYear = "2026"
                 }));
+        
+        server.Given(Request.Create().UsingGet().WithPath("/api/v1/prn/00000000-0000-0000-0000-000000000002"))
+            .RespondWith(Response.Create().WithStatusCode(200)
+                .WithHeader("Content-Type", "application/json")
+                .WithBodyAsJson(new
+                {
+                    id = 1,
+                    externalId = "00000000-0000-0000-0000-000000000001",
+                    prnNumber = "PRN-02",
+                    materialName = "Paper/board",
+                    issueDate = "2026-05-01T13:15:15",
+                    prnStatus = "AWAITINGACCEPTANCE",
+                    tonnageValue = 1,
+                    obligationYear = "2026"
+                }));
 
         server.Given(Request.Create().UsingGet().WithPath("/api/v1/prn/00000000-0000-0000-0000-000000000003"))
             .RespondWith(Response.Create().WithStatusCode(200)
