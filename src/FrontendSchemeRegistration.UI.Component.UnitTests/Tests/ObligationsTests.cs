@@ -58,6 +58,8 @@ public class ObligationsTests
     [TestCase("/report-data/accept-bulk")]
     [TestCase("/report-data/accepted-prns")]
     [TestCase("/report-data/download-prns-csv")]
+    [TestCase("/report-data/selected-prn/00000000-0000-0000-0000-000000000001")]
+    [TestCase("/report-data/selected-prn/00000000-0000-0000-0000-000000000002")]
     public async Task WhenPrnsArePresent_ShouldLocalizeAsExpected(string path)
     {
         await Context.Client.AuthenticateDefaultUser();
