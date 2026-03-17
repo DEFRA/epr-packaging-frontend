@@ -1,0 +1,7 @@
+﻿PRN or PERN number,PRN or PERN,Status,Issued by,Issued to,Accreditation number,Date issued,December waste,Material,Recycling process,Tonnes,Date accepted,Date cancelled,Issuer note
+PRN-01,PRN,Awaiting acceptance,,,,01/03/2026,N,"Paper, board or fibre-based composite material",,0,not accepted,not cancelled,not provided
+PRN-02,PRN,Awaiting acceptance,,,,01/05/2026,N,Paper and board,,0,not accepted,not cancelled,not provided
+PRN-03,PRN,Awaiting acceptance,,,,01/03/2026,N,Fibre-based composite material,,0,not accepted,not cancelled,not provided
+PRN-04,PRN,Awaiting acceptance,,,,01/05/2026,N,Fibre-based composite material,,0,not accepted,not cancelled,not provided
+PRN-05,PRN,Accepted,,,,01/05/2026,N,Fibre-based composite material,,1,,not cancelled,not provided
+PRN-06,PRN,Accepted,,,,01/03/2026,N,"Paper, board or fibre-based composite material",,2,,not cancelled,not provided

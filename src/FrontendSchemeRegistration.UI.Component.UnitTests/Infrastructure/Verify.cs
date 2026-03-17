@@ -25,6 +25,14 @@ public static class VerifyHtml
     }
 }
 
+public static class VerifyCsv
+{
+    [ModuleInitializer]
+    public static void Init() => VerifyCsvHelper.Initialize();
+
+    public const string Extension = "csv";
+}
+
 public class VerifyCheckTests
 {
     [Test]

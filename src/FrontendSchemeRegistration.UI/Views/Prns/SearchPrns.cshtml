@@ -1,7 +1,7 @@
 ﻿@using FrontendSchemeRegistration.UI.Controllers.Prns
 @using FrontendSchemeRegistration.UI.ViewModels.Prns
 @inject IStringLocalizer<PrnDataResources> PrnDataLocalizer
-@inject FrontendSchemeRegistration.UI.Resources.PrnDataResourcesLocalizer PrnDataResourcesLocalizer
+@inject FrontendSchemeRegistration.UI.Resources.IPrnDataResourcesLocalizer PrnDataResourcesLocalizer
 @model PrnSearchResultListViewModel
 @{
 	ViewData["Title"] = Localizer["search_prns_and_perns"];

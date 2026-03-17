@@ -17,8 +17,8 @@ using Newtonsoft.Json;
 namespace FrontendSchemeRegistration.UI.Services;
 
 using Application.Extensions;
-using Application.Services;
 using AutoMapper;
+using Resources;
 
 public class PrnService : IPrnService
 {
@@ -28,6 +28,7 @@ public class PrnService : IPrnService
     private readonly TimeProvider _timeProvider;
     private readonly IMapper _mapper;
     private readonly ILogger<PrnService> _logger;
+    private readonly IPrnDataResourcesLocalizer _prnDataResourcesLocalizer;
     private readonly string logPrefix;
 
     public PrnService(
@@ -37,7 +38,8 @@ public class PrnService : IPrnService
         TimeProvider timeProvider,
         IMapper mapper,
         IOptions<GlobalVariables> globalVariables,
-        ILogger<PrnService> logger)
+        ILogger<PrnService> logger,
+        IPrnDataResourcesLocalizer prnDataResourcesLocalizer)
     {
         _webApiGatewayClient = webApiGatewayClient;
         _csvLocalizer = csvLocalizer;
@@ -45,6 +47,7 @@ public class PrnService : IPrnService
         _timeProvider = timeProvider;
         _mapper = mapper;
         _logger = logger;
+        _prnDataResourcesLocalizer = prnDataResourcesLocalizer;
         logPrefix = globalVariables.Value.LogPrefix;
     }
 
@@ -226,7 +229,7 @@ public class PrnService : IPrnService
                     await writer.WriteCsvCellAsync(prn.AccreditationNumber);
                     await writer.WriteCsvCellAsync(prn.DateIssued.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture));
                     await writer.WriteCsvCellAsync(_csvLocalizer[prn.DecemberWasteDisplay]);
-                    await writer.WriteCsvCellAsync(_dataLocalizer[prn.Material]);
+                    await writer.WriteCsvCellAsync(_prnDataResourcesLocalizer.Translate(prn));
                     await writer.WriteCsvCellAsync(prn.RecyclingProcess);
                     await writer.WriteCsvCellAsync(prn.Tonnage.ToString());
                     await writer.WriteCsvCellAsync(prn.ApprovalStatus == PrnStatus.Accepted ? prn.StatusUpdatedOn?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) : _csvLocalizer["not_accepted"]);
