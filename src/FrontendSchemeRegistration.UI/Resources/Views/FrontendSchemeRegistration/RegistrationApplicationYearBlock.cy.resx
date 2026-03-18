@@ -100,16 +100,28 @@
 	<data name="legacy_registration_instructions2" xml:space="preserve">
     <value>Gallwch gofrestru o hyd, ond efallai y byddwch yn wynebu ffi hwyr.</value>
   </data>
-  <data name="cso_small_producer_instructions1" xml:space="preserve">
+  <data name="cso_small_producer_open_instructions1" xml:space="preserve">
       <value>Rhaid i gynhyrchwyr bach wneud cais i gofrestru ar neu cyn {0}.</value>
   </data>
-  <data name="cso_small_producer_instructions2" xml:space="preserve">
+  <data name="cso_small_producer_open_instructions2" xml:space="preserve">
       <value>Gallai ceisiadau a wneir ar ôl y dyddiad hwn arwain at ffi hwyr.</value>
   </data>
-  <data name="cso_large_producer_instructions1" xml:space="preserve">
+  <data name="cso_small_producer_late_instructions1" xml:space="preserve">
+      <value>Roedd angen i gynhyrchwyr bach wneud cais i gofrestru ar neu cyn {0}.</value>
+  </data>
+  <data name="cso_small_producer_late_instructions2" xml:space="preserve">
+      <value>Gallai ceisiadau a wneir ar ôl y dyddiad hwn arwain at ffi hwyr.</value>
+  </data>
+  <data name="cso_large_producer_open_instructions1" xml:space="preserve">
+      <value>Rhaid i gynhyrchwyr mawr wneud cais i gofrestru ar neu cyn {0}.</value>
+  </data>
+  <data name="cso_large_producer_open_instructions2" xml:space="preserve">
+      <value>Gallai ceisiadau a wneir ar ôl y dyddiad hwn arwain at ffi hwyr.</value>
+  </data>
+  <data name="cso_large_producer_late_instructions1" xml:space="preserve">
       <value>Roedd angen i gynhyrchwyr mawr wneud cais i gofrestru ar neu cyn {0}.</value>
   </data>
-  <data name="cso_large_producer_instructions2" xml:space="preserve">
+  <data name="cso_large_producer_late_instructions2" xml:space="preserve">
       <value>Gallai ceisiadau a wneir ar ôl y dyddiad hwn arwain at ffi hwyr.</value>
   </data>
 	<data name="direct_large_producer_open_instructions1" xml:space="preserve">
