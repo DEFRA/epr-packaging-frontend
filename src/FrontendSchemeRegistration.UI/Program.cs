@@ -2,11 +2,13 @@ using FrontendSchemeRegistration.Application.ConfigurationExtensions;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Middleware;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement;
 using Microsoft.IdentityModel.Logging;
 using Serilog;
+using Serilog.Sinks.ApplicationInsights.TelemetryConverters;
 using CookieOptions = FrontendSchemeRegistration.Application.Options.CookieOptions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,14 +24,21 @@ string? gitSha = builder.Configuration.GetValue<string>("GIT_SHA");
 
 ThreadPool.SetMinThreads(30, 30);
 
+// Register Application Insights early so Serilog can reuse the same TelemetryConfiguration.
+services.AddApplicationInsightsTelemetry();
+
 builder.Logging.ClearProviders();
-builder.Host.UseSerilog((context, _, config) =>
+builder.Host.UseSerilog((context, serviceProvider, config) =>
 {
     config.ReadFrom.Configuration(context.Configuration);
     config.Enrich.WithProperty("Application", context.HostingEnvironment.ApplicationName);
     config.Enrich.WithProperty("ContainerImage", containerImage ?? "NOT_SET");
     config.Enrich.WithProperty("BuildNumber", buildNumber ?? "NOT_SET");
     config.Enrich.WithProperty("GitSha", gitSha ?? "NOT_SET");
+
+    // Ensure Serilog traces go to the same Application Insights resource as request telemetry.
+    var telemetryConfiguration = serviceProvider.GetRequiredService<TelemetryConfiguration>();
+    config.WriteTo.ApplicationInsights(telemetryConfiguration, new TraceTelemetryConverter());
 });
 
 services.AddFeatureManagement();
@@ -79,8 +88,6 @@ services.Configure<ForwardedHeadersOptions>(options =>
 });
 
 services.AddHealthChecks();
-
-services.AddApplicationInsightsTelemetry();
 
 services.AddHsts(options =>
 {
