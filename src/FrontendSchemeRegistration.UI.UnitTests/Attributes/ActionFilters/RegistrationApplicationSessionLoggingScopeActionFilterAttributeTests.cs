@@ -98,6 +98,91 @@ public class RegistrationApplicationSessionLoggingScopeActionFilterAttributeTest
         loggerMock.VerifyLogContains(LogLevel.Information, "OnActionEntry: RegistrationSession found", Times.Once());
     }
 
+    [Test]
+    public async Task OnActionExecutionAsync_CallsNext_AndLogsFoundMessage_WhenFrontendSchemeRegistrationSessionIsNull_AndDisplayNameIsNull()
+    {
+        // Arrange
+        var logger = CreateLoggerMock(out var loggerMock);
+
+        var regAppSessionManager = new Mock<ISessionManager<RegistrationApplicationSession>>();
+        regAppSessionManager
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new RegistrationApplicationSession
+            {
+                SubmissionId = Guid.NewGuid(),
+                ApplicationReferenceNumber = "APP-REF-123",
+                SubmissionPeriod = "January to December 2026",
+            });
+
+        var frontEndSessionManager = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
+        frontEndSessionManager
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync((FrontendSchemeRegistrationSession?)null);
+
+        var httpContext = BuildHttpContext(logger, regAppSessionManager.Object, frontEndSessionManager.Object);
+        var executingContext = BuildActionExecutingContext(httpContext, displayName: null);
+
+        var nextCalled = false;
+        ActionExecutionDelegate next = () =>
+        {
+            nextCalled = true;
+            return Task.FromResult(new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), new object()));
+        };
+
+        var sut = new RegistrationApplicationSessionLoggingScopeActionFilterAttribute();
+
+        // Act
+        await sut.OnActionExecutionAsync(executingContext, next);
+
+        // Assert
+        nextCalled.Should().BeTrue();
+        loggerMock.VerifyLogContains(LogLevel.Information, "OnActionEntry: RegistrationSession found", Times.Once());
+    }
+
+    [Test]
+    public async Task OnActionExecutionAsync_CallsNext_AndLogsFoundMessage_WhenFrontendSchemeRegistrationSessionRegistrationSessionIsNull()
+    {
+        // Arrange
+        var logger = CreateLoggerMock(out var loggerMock);
+
+        var regAppSessionManager = new Mock<ISessionManager<RegistrationApplicationSession>>();
+        regAppSessionManager
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new RegistrationApplicationSession
+            {
+                SubmissionId = Guid.NewGuid(),
+                ApplicationReferenceNumber = "APP-REF-123",
+                SubmissionPeriod = "January to December 2026",
+            });
+
+        var frontEndSessionManager = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
+        frontEndSessionManager
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = null!
+            });
+
+        var httpContext = BuildHttpContext(logger, regAppSessionManager.Object, frontEndSessionManager.Object);
+        var executingContext = BuildActionExecutingContext(httpContext);
+
+        var nextCalled = false;
+        ActionExecutionDelegate next = () =>
+        {
+            nextCalled = true;
+            return Task.FromResult(new ActionExecutedContext(executingContext, new List<IFilterMetadata>(), new object()));
+        };
+
+        var sut = new RegistrationApplicationSessionLoggingScopeActionFilterAttribute();
+
+        // Act
+        await sut.OnActionExecutionAsync(executingContext, next);
+
+        // Assert
+        nextCalled.Should().BeTrue();
+        loggerMock.VerifyLogContains(LogLevel.Information, "OnActionEntry: RegistrationSession found", Times.Once());
+    }
+
     private static DefaultHttpContext BuildHttpContext(
         ILogger<RegistrationApplicationSessionLoggingScopeActionFilterAttribute> logger,
         ISessionManager<RegistrationApplicationSession> regAppSessionManager,
@@ -119,12 +204,12 @@ public class RegistrationApplicationSessionLoggingScopeActionFilterAttributeTest
         return httpContext;
     }
 
-    private static ActionExecutingContext BuildActionExecutingContext(HttpContext httpContext)
+    private static ActionExecutingContext BuildActionExecutingContext(HttpContext httpContext, string? displayName = "RegistrationApplicationController.SomeAction (Test)")
     {
         var actionContext = new ActionContext(
             httpContext,
             new RouteData(),
-            new ActionDescriptor { DisplayName = "RegistrationApplicationController.SomeAction (Test)" },
+            new ActionDescriptor { DisplayName = displayName },
             new ModelStateDictionary());
 
         return new ActionExecutingContext(
