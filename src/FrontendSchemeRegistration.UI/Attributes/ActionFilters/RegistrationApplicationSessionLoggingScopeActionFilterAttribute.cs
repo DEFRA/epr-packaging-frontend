@@ -40,9 +40,9 @@ public sealed class RegistrationApplicationSessionLoggingScopeActionFilterAttrib
             using (logger.AddScopedData(new Dictionary<string, object>
             {
                 ["RegistrationApplicationSession.SubmissionId"] = registrationApplicationSession.SubmissionId,
-                ["RegistrationApplicationSession.RegistrationJourney"] = registrationApplicationSession?.RegistrationJourney,
-                ["RegistrationApplicationSession.SubmissionPeriod"] = registrationApplicationSession?.SubmissionPeriod,
-                ["RegistrationApplicationSession.ApplicationReferenceNumber"] = registrationApplicationSession?.ApplicationReferenceNumber,
+                ["RegistrationApplicationSession.RegistrationJourney"] = registrationApplicationSession.RegistrationJourney,
+                ["RegistrationApplicationSession.SubmissionPeriod"] = registrationApplicationSession.SubmissionPeriod,
+                ["RegistrationApplicationSession.ApplicationReferenceNumber"] = registrationApplicationSession.ApplicationReferenceNumber,
                 ["FrontendSchemeRegistrationSession.ApplicationReferenceNumber"] = frontendSchemeRegistrationSession?.RegistrationSession?.ApplicationReferenceNumber,
                 ["FrontendSchemeRegistrationSession.IsResubmission"] = frontendSchemeRegistrationSession?.RegistrationSession?.IsResubmission
             }))
