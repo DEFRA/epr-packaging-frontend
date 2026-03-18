@@ -11,8 +11,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace FrontendSchemeRegistration.UI.Controllers;
 
 using Constants;
+using global::FrontendSchemeRegistration.UI.Attributes.ActionFilters;
 using Microsoft.FeatureManagement;
 
+[RegistrationApplicationSessionLoggingScopeActionFilter]
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
 [Route(PagePaths.CsoRegistration)]
 public class ComplianceSchemeRegistrationController(
