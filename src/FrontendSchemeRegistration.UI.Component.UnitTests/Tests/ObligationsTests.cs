@@ -2,6 +2,7 @@ namespace FrontendSchemeRegistration.UI.Component.UnitTests.Tests;
 
 using System.Net;
 using System.Text;
+using Constants;
 using Extensions;
 using FluentAssertions;
 using Infrastructure;
@@ -50,31 +51,43 @@ public class ObligationsTests
         });
     }
     
-    [TestCase("/report-data/view-awaiting-acceptance-alt")]
-    [TestCase("/report-data/view-awaiting-acceptance")]
-    [TestCase("/report-data/accept-prn/00000000-0000-0000-0000-000000000001")]
-    [TestCase("/report-data/accept-prn/00000000-0000-0000-0000-000000000003")]
-    [TestCase("/report-data/accepted-prn/00000000-0000-0000-0000-000000000005")]
-    [TestCase("/report-data/accept-bulk")]
-    [TestCase("/report-data/accepted-prns")]
-    [TestCase("/report-data/download-prns-csv")]
-    [TestCase("/report-data/selected-prn/00000000-0000-0000-0000-000000000001")]
-    [TestCase("/report-data/selected-prn/00000000-0000-0000-0000-000000000002")]
-    public async Task WhenPrnsArePresent_ShouldLocalizeAsExpected(string path)
+    [TestCase("/report-data/view-awaiting-acceptance-alt", Language.English)]
+    [TestCase("/report-data/view-awaiting-acceptance-alt", Language.Welsh)]
+    [TestCase("/report-data/view-awaiting-acceptance", Language.English)]
+    [TestCase("/report-data/view-awaiting-acceptance", Language.Welsh)]
+    [TestCase("/report-data/accept-prn/00000000-0000-0000-0000-000000000001", Language.English)]
+    [TestCase("/report-data/accept-prn/00000000-0000-0000-0000-000000000001", Language.Welsh)]
+    [TestCase("/report-data/accept-prn/00000000-0000-0000-0000-000000000003", Language.English)]
+    [TestCase("/report-data/accept-prn/00000000-0000-0000-0000-000000000003", Language.Welsh)]
+    [TestCase("/report-data/accepted-prn/00000000-0000-0000-0000-000000000005", Language.English)]
+    [TestCase("/report-data/accepted-prn/00000000-0000-0000-0000-000000000005", Language.Welsh)]
+    [TestCase("/report-data/accept-bulk", Language.English)]
+    [TestCase("/report-data/accept-bulk", Language.Welsh)]
+    [TestCase("/report-data/accepted-prns", Language.English)]
+    [TestCase("/report-data/accepted-prns", Language.Welsh)]
+    [TestCase("/report-data/download-prns-csv", Language.English)]
+    [TestCase("/report-data/download-prns-csv", Language.Welsh)]
+    [TestCase("/report-data/selected-prn/00000000-0000-0000-0000-000000000001", Language.English)]
+    [TestCase("/report-data/selected-prn/00000000-0000-0000-0000-000000000001", Language.Welsh)]
+    [TestCase("/report-data/selected-prn/00000000-0000-0000-0000-000000000002", Language.English)]
+    [TestCase("/report-data/selected-prn/00000000-0000-0000-0000-000000000002", Language.Welsh)]
+    public async Task WhenPrnsArePresent_ShouldLocalizeAsExpected(string path, string language)
     {
         await Context.Client.AuthenticateDefaultUser();
 
+        var sessionStore = Context.GetSessionStore();
         if (Session.TryGetValue(path, out var value))
-            value(Context.GetSessionStore());
+            value(sessionStore);
+        sessionStore.Session.Set(Language.SessionLanguageKey, Encoding.UTF8.GetBytes(language));
 
         var response = await Context.Client.GetAsync(path);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await response.Content.ReadAsStringAsync();
         if (path.EndsWith("csv"))
-            await Verify(content, VerifyCsv.Extension).UseParameters(path).DontScrubDateTimes();
+            await Verify(content, VerifyCsv.Extension).UseParameters(path, language).DontScrubDateTimes();
         else
-            await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings).UseParameters(path);
+            await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings).UseParameters(path, language);
     }
 
     [TearDown]
