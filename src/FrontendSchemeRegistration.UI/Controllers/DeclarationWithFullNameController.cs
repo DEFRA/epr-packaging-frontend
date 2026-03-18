@@ -29,6 +29,7 @@ public class DeclarationWithFullNameController(
     private const string SubmissionErrorViewName = "OrganisationDetailsSubmissionFailed";
 
     [HttpGet]
+    [RegistrationApplicationSessionLoggingScopeActionFilter]
     [SubmissionIdActionFilter(PagePaths.FileUploadCompanyDetailsSubLanding)]
     public async Task<IActionResult> Get([FromQuery]Guid submissionId, [FromQuery] RegistrationJourney? registrationJourney = null)
     {
