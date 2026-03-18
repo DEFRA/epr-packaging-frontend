@@ -24,7 +24,6 @@ public class PrnService : IPrnService
 {
     private readonly IWebApiGatewayClient _webApiGatewayClient;
     private readonly IStringLocalizer<PrnCsvResources> _csvLocalizer;
-    private readonly IStringLocalizer<PrnDataResources> _dataLocalizer;
     private readonly TimeProvider _timeProvider;
     private readonly IMapper _mapper;
     private readonly ILogger<PrnService> _logger;
@@ -34,7 +33,6 @@ public class PrnService : IPrnService
     public PrnService(
         IWebApiGatewayClient webApiGatewayClient,
         IStringLocalizer<PrnCsvResources> csvLocalizer,
-        IStringLocalizer<PrnDataResources> dataLocalizer,
         TimeProvider timeProvider,
         IMapper mapper,
         IOptions<GlobalVariables> globalVariables,
@@ -43,7 +41,6 @@ public class PrnService : IPrnService
     {
         _webApiGatewayClient = webApiGatewayClient;
         _csvLocalizer = csvLocalizer;
-        _dataLocalizer = dataLocalizer;
         _timeProvider = timeProvider;
         _mapper = mapper;
         _logger = logger;
