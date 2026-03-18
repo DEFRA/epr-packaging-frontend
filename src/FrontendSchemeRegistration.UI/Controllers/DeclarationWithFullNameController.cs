@@ -3,7 +3,6 @@ using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
-using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
 using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 using FrontendSchemeRegistration.UI.Sessions;
