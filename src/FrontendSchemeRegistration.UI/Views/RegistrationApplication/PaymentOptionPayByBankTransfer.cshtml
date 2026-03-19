@@ -8,7 +8,7 @@
     var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
     var nationNameToLowercase = Model.NationName.ToLower();
 
-    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+    var headingViewModel = new RegistrationHeadingViewModel(
         Model.IsComplianceScheme, 
         Model.RegistrationJourney, 
         null,
@@ -19,7 +19,7 @@
 <main class="govuk-main-wrapper" id="main-content" role="main" xmlns="http://www.w3.org/1999/html">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-three-quarters">
-            <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel"/>
+            <partial name="Partials/_RegistrationHeading" model="headingViewModel"/>
             <p class="govuk-body">
                 @Localizer["pay_registration_fee_of"] <strong>£@ConvertToThousandSeparatedDecimal(Model.TotalAmountOutstanding)</strong> @Localizer["by_bank_transfer"]
             </p>

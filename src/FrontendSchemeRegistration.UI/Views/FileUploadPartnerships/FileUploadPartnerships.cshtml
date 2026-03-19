@@ -3,7 +3,7 @@
 
 @{
     ViewData["Title"] = Localizer["upload_partner_details"];
-    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+    var headingViewModel = new RegistrationHeadingViewModel(
         Model.ShowRegistrationCaption, 
         Model.RegistrationJourney, 
         null,
@@ -22,7 +22,7 @@
                 @await Html.PartialAsync("Partials/Govuk/_ErrorSummary", ViewData.ModelState)
             }
             
-            <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel"/>
+            <partial name="Partials/_RegistrationHeading" model="headingViewModel"/>
             
             @using (Html.BeginForm(FormMethod.Post, new
             {

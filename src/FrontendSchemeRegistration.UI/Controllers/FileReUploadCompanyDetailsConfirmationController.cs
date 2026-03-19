@@ -19,18 +19,15 @@ public class FileReUploadCompanyDetailsConfirmationController : Controller
     private readonly ISubmissionService _submissionService;
     private readonly IUserAccountService _accountService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
-    private readonly IRegistrationPeriodProvider _registrationPeriodProvider;
 
     public FileReUploadCompanyDetailsConfirmationController(
         ISubmissionService submissionService,
         IUserAccountService accountService,
-        ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
-        IRegistrationPeriodProvider registrationPeriodProvider)
+        ISessionManager<FrontendSchemeRegistrationSession> sessionManager)
     {
         _submissionService = submissionService;
         _accountService = accountService;
         _sessionManager = sessionManager;
-        _registrationPeriodProvider = registrationPeriodProvider;
 
     }
 
