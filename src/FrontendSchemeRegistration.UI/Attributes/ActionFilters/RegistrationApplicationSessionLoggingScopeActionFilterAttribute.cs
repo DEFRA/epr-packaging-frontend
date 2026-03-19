@@ -31,7 +31,7 @@ public sealed class RegistrationApplicationSessionLoggingScopeActionFilterAttrib
         {
             if (registrationApplicationSession is null)
             {
-                logger.LogInformation("OnActionEntry: RegistrationSession is null");
+                logger.LogInformation("OnActionEntry: {Action}: RegistrationSession is null", actionName);
                 await next();
 
                 return;
