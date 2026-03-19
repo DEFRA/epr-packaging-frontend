@@ -133,13 +133,13 @@ public class DeclarationWithFullNameController(
                 if (session?.RegistrationSession is null)
                 {
                     logger.LogError("RegistrationSession not found for submission ID {SubmissionId}", submissionId);
-                    throw new InvalidOperationException();
+                    throw new InvalidOperationException($"RegistrationSession not found for submission ID {submissionId}");
                 }
 
                 if (string.IsNullOrWhiteSpace(session.RegistrationSession.ApplicationReferenceNumber))
                 {
                     logger.LogError("Application reference number is missing for submission ID {SubmissionId}", submissionId);
-                    throw new ArgumentException();
+                    throw new ArgumentException($"Application reference number is missing for submission ID {submissionId}");
                 }
 
                 logger.LogInformation("Calling submission service to submit registration for submission ID {SubmissionId}", submissionId);
