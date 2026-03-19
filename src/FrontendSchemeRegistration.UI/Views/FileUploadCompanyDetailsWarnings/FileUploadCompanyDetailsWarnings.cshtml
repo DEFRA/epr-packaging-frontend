@@ -15,7 +15,7 @@
                 @await Html.PartialAsync("Partials/Govuk/_ErrorSummary", ViewData.ModelState)
             }
 
-            <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="new ComplianceSchemeRegistrationHeadingViewModel(
+            <partial name="Partials/_RegistrationHeading" model="new RegistrationHeadingViewModel(
                 Model.IsCso && Model.RegistrationJourney is not null && Model.RegistrationYear is not null,
                 Model.RegistrationJourney, 
                 null,

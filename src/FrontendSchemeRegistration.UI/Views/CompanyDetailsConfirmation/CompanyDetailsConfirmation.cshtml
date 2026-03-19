@@ -7,7 +7,7 @@
     bool isFileUploadJourneyInvokedViaRegistration = (bool)ViewData["IsFileUploadJourneyInvokedViaRegistration"];
     var heading = Model.IsComplianceScheme ? Model.OrganisationName : null ;
     var localHeading = !Model.IsComplianceScheme ? Localizer["producer_registration", Model.OrganisationName] : null;
-    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+    var headingViewModel = new RegistrationHeadingViewModel(
         Model.ShowRegistrationCaption, 
         Model.RegistrationJourney, 
         heading,
@@ -37,7 +37,7 @@
                     </div>
                 </div>
 
-                <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel"/>
+                <partial name="Partials/_RegistrationHeading" model="headingViewModel"/>
 
                 <p class="govuk-body">
                     @Localizer["you_can"]<button id="printButton" class="govuk-link govuk-link--no-visited-state govuk-body-m js-show">@Localizer["print_or_save_as_PDF"]</button>

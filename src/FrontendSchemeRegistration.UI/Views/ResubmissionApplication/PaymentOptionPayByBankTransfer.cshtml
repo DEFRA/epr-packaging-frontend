@@ -9,7 +9,7 @@
     var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
     var nationNameToLowercase = Model.NationName.ToLower();
     
-    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+    var headingViewModel = new RegistrationHeadingViewModel(
         Model.IsComplianceScheme, 
         Model.RegistrationJourney, 
         null,
