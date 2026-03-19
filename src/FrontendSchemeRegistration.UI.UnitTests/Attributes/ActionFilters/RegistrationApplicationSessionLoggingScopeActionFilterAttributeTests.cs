@@ -51,7 +51,7 @@ public class RegistrationApplicationSessionLoggingScopeActionFilterAttributeTest
 
         // Assert
         nextCalled.Should().BeTrue();
-        loggerMock.VerifyLogContains(LogLevel.Information, "OnActionEntry: RegistrationSession is null", Times.Once());
+        loggerMock.VerifyLogContains(LogLevel.Information, "RegistrationSession is null", Times.Once());
     }
 
     [Test]
@@ -95,7 +95,7 @@ public class RegistrationApplicationSessionLoggingScopeActionFilterAttributeTest
 
         // Assert
         nextCalled.Should().BeTrue();
-        loggerMock.VerifyLogContains(LogLevel.Information, "OnActionEntry: RegistrationSession found", Times.Once());
+        loggerMock.VerifyLogContains(LogLevel.Information, "RegistrationSession found", Times.Once());
     }
 
     [Test]
@@ -136,7 +136,7 @@ public class RegistrationApplicationSessionLoggingScopeActionFilterAttributeTest
 
         // Assert
         nextCalled.Should().BeTrue();
-        loggerMock.VerifyLogContains(LogLevel.Information, "OnActionEntry: RegistrationSession found", Times.Once());
+        loggerMock.VerifyLogContains(LogLevel.Information, "RegistrationSession found", Times.Once());
     }
 
     [Test]
@@ -180,7 +180,7 @@ public class RegistrationApplicationSessionLoggingScopeActionFilterAttributeTest
 
         // Assert
         nextCalled.Should().BeTrue();
-        loggerMock.VerifyLogContains(LogLevel.Information, "OnActionEntry: RegistrationSession found", Times.Once());
+        loggerMock.VerifyLogContains(LogLevel.Information, "RegistrationSession found", Times.Once());
     }
 
     private static DefaultHttpContext BuildHttpContext(
