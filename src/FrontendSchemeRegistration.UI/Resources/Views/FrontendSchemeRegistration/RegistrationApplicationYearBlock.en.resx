@@ -99,16 +99,28 @@
 	<data name="legacy_registration_instructions2" xml:space="preserve">
     <value>You can still register, but may incur a late fee.</value>
   </data>
-  <data name="cso_small_producer_instructions1" xml:space="preserve">
+  <data name="cso_small_producer_open_instructions1" xml:space="preserve">
 		<value>Small producers must apply for registration on or before {0}.</value>
 	</data>
-  <data name="cso_small_producer_instructions2" xml:space="preserve">
+  <data name="cso_small_producer_open_instructions2" xml:space="preserve">
 		<value>Applications made after this date could incur a late fee.</value>
 	</data>
-  <data name="cso_large_producer_instructions1" xml:space="preserve">
+  <data name="cso_small_producer_late_instructions1" xml:space="preserve">
+		<value>Small producers needed to apply for registration on or before {0}.</value>
+	</data>
+  <data name="cso_small_producer_late_instructions2" xml:space="preserve">
+		<value>Applications made after this date could incur a late fee.</value>
+	</data>
+  <data name="cso_large_producer_open_instructions1" xml:space="preserve">
+		<value>Large producers must apply for registration on or before {0}.</value>
+	</data>
+  <data name="cso_large_producer_open_instructions2" xml:space="preserve">
+		<value>Applications made after this date could incur a late fee.</value>
+	</data>
+  <data name="cso_large_producer_late_instructions1" xml:space="preserve">
 		<value>Large producers needed to apply for registration on or before {0}.</value>
 	</data>
-  <data name="cso_large_producer_instructions2" xml:space="preserve">
+  <data name="cso_large_producer_late_instructions2" xml:space="preserve">
 		<value>Applications made after this date could incur a late fee.</value>
 	</data>
 	<data name="direct_large_producer_open_instructions1" xml:space="preserve">

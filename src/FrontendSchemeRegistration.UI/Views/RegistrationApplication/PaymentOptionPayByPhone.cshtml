@@ -5,7 +5,7 @@
     ViewData["Title"] = Localizer["pay_by_phone_title"];
     var scriptNonce = (string?) Context.Items[ContextKeys.ScriptNonceKey];
 
-    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+    var headingViewModel = new RegistrationHeadingViewModel(
         Model.IsComplianceScheme,
         Model.RegistrationJourney,
         null,
@@ -18,7 +18,7 @@
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
 
-                <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel" />
+                <partial name="Partials/_RegistrationHeading" model="headingViewModel" />
 
                 <p class="govuk-body">
                     @Localizer["pay_registration_fee_of"]<b>£@Model.TotalAmount</b>
