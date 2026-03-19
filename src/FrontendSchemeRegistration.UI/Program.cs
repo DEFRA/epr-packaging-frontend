@@ -35,10 +35,6 @@ builder.Host.UseSerilog((context, serviceProvider, config) =>
     config.Enrich.WithProperty("ContainerImage", containerImage ?? "NOT_SET");
     config.Enrich.WithProperty("BuildNumber", buildNumber ?? "NOT_SET");
     config.Enrich.WithProperty("GitSha", gitSha ?? "NOT_SET");
-
-    // Ensure Serilog traces go to the same Application Insights resource as request telemetry.
-    var telemetryConfiguration = serviceProvider.GetRequiredService<TelemetryConfiguration>();
-    config.WriteTo.ApplicationInsights(telemetryConfiguration, new TraceTelemetryConverter());
 });
 
 services.AddFeatureManagement();
