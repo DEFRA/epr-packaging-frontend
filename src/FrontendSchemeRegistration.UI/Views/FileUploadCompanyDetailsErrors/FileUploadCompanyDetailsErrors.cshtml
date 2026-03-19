@@ -4,7 +4,7 @@
 @{
     ViewData["Title"] = Localizer["upload_organisation_details_error"];
     
-    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+    var headingViewModel = new RegistrationHeadingViewModel(
         Model.ShowRegistrationCaption, 
         Model.RegistrationJourney, 
         null,
@@ -23,7 +23,7 @@
                 <partial name="Partials/Govuk/_ErrorSummary" mode="ViewData.ModelState"/>    
             }
             
-            <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel"/>
+            <partial name="Partials/_RegistrationHeading" model="headingViewModel"/>
 
                 @if (Model.ErrorCount == 1)
                  {

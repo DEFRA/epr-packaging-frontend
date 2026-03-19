@@ -6,7 +6,7 @@
     ViewData["Title"] = Localizer["select_payment_option"];
     var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer);
     
-    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+    var headingViewModel = new RegistrationHeadingViewModel(
         Model.ShowRegistrationCaption,
         Model.RegistrationJourney,
         null,
@@ -23,7 +23,7 @@
                 @await Html.PartialAsync("Partials/Govuk/_ErrorSummary", ViewData.ModelState)
             }
 
-            <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel" />
+            <partial name="Partials/_RegistrationHeading" model="headingViewModel" />
 
             <form asp-controller="RegistrationApplication" asp-action="SelectPaymentOptions" asp-route-registrationyear="@Model.RegistrationYear" asp-route-registrationjourney="@Context.Request.Query["registrationjourney"]" method="post">
                 <div class="govuk-form-group">

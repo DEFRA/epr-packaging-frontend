@@ -8,7 +8,7 @@
 
     var canStartViewPayRegistrationFeeStep = Model.PaymentViewStatus is RegistrationTaskListStatus.NotStarted or RegistrationTaskListStatus.Completed;
     var canStartSubmitRegistrationApplicationStep = Model.AdditionalDetailsStatus is RegistrationTaskListStatus.NotStarted or RegistrationTaskListStatus.Completed;
-    var headingViewModel = new ComplianceSchemeRegistrationHeadingViewModel(
+    var headingViewModel = new RegistrationHeadingViewModel(
         Model.ShowRegistrationCaption, 
         Model.RegistrationJourney, 
         Model.ShowRegistrationCaption ? Model.OrganisationName : null,
@@ -19,7 +19,7 @@
 <main class="govuk-main-wrapper" id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-three-quarters">
-            <partial name="Partials/_ComplianceSchemeRegistrationHeading" model="headingViewModel"/>
+            <partial name="Partials/_RegistrationHeading" model="headingViewModel"/>
 
             <dl class="govuk-summary-list">
                 <div class="govuk-summary-list__row">

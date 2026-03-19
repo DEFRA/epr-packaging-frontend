@@ -1,4 +1,3 @@
-@using System.Globalization
 @using FrontendSchemeRegistration.Application.DTOs.Submission
 @using FrontendSchemeRegistration.Application.Enums
 @using FrontendSchemeRegistration.Application.Options.RegistrationPeriodPatterns
@@ -190,8 +189,16 @@
             }
             else if (model.IsComplianceScheme)
             {
-                <p class="govuk-body">@Localizer[model.RegistrationJourney == RegistrationJourney.CsoSmallProducer ? "cso_small_producer_instructions1" : "cso_large_producer_instructions1", model.RegistrationWindow.DeadlineDate.FormatPreviousDayWithCulture()]</p>
-                <p class="govuk-body">@Localizer[model.RegistrationJourney == RegistrationJourney.CsoSmallProducer ? "cso_small_producer_instructions2" : "cso_large_producer_instructions2"]</p>
+                if (model.RegistrationWindow.GetRegistrationWindowStatus() == RegistrationWindowStatus.OpenAndNotLate)
+                {
+                    <p class="govuk-body">@Localizer[model.RegistrationJourney == RegistrationJourney.CsoSmallProducer ? "cso_small_producer_open_instructions1" : "cso_large_producer_open_instructions1", model.RegistrationWindow.DeadlineDate.FormatPreviousDayWithCulture()]</p>
+                    <p class="govuk-body">@Localizer[model.RegistrationJourney == RegistrationJourney.CsoSmallProducer ? "cso_small_producer_open_instructions2" : "cso_large_producer_open_instructions2"]</p>
+                }
+                else  // when the model is generated, CSOs windows that have not yet opened are NOT retrieved, so else only includes those that are late or closed
+                {
+                    <p class="govuk-body">@Localizer[model.RegistrationJourney == RegistrationJourney.CsoSmallProducer ? "cso_small_producer_late_instructions1" : "cso_large_producer_late_instructions1", model.RegistrationWindow.DeadlineDate.FormatPreviousDayWithCulture()]</p>
+                    <p class="govuk-body">@Localizer[model.RegistrationJourney == RegistrationJourney.CsoSmallProducer ? "cso_small_producer_late_instructions2" : "cso_large_producer_late_instructions2"]</p>
+                }
             }
             else if (model.RegistrationWindow.GetRegistrationWindowStatus() == RegistrationWindowStatus.OpenAndNotLate && model.SecondaryRegistrationWindow.GetRegistrationWindowStatus() == RegistrationWindowStatus.PriorToOpening) // direct, small window has not opened, therefore targeted at large producers. Open and not late
             {

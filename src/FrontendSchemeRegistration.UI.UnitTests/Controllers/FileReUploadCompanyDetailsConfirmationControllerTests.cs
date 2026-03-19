@@ -30,14 +30,11 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
     private Mock<IUserAccountService> _userAccountServiceMock;
     private FileReUploadCompanyDetailsConfirmationController _systemUnderTest;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
-    private Mock<IRegistrationPeriodProvider> _registrationPeriodProviderMock;
-
 
     [SetUp]
     public void SetUp()
     {
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
-        _registrationPeriodProviderMock = new Mock<IRegistrationPeriodProvider>();
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
@@ -64,7 +61,7 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
         _systemUnderTest =
             new FileReUploadCompanyDetailsConfirmationController(
                 _submissionServiceMock.Object,
-                _userAccountServiceMock.Object, _sessionManagerMock.Object, _registrationPeriodProviderMock.Object);
+                _userAccountServiceMock.Object, _sessionManagerMock.Object);
 
         _systemUnderTest.ControllerContext = new ControllerContext
         {
