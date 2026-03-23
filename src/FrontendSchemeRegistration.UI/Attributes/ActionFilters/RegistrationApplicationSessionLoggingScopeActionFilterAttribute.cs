@@ -1,5 +1,6 @@
 namespace FrontendSchemeRegistration.UI.Attributes.ActionFilters;
 
+using System.Diagnostics.CodeAnalysis;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Extensions;
 using FrontendSchemeRegistration.UI.Sessions;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Logging;
 /// Adds a structured logging scope for the Registration Application session (if present).
 /// </summary>
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+[ExcludeFromCodeCoverage]
 public sealed class RegistrationApplicationSessionLoggingScopeActionFilterAttribute : Attribute, IAsyncActionFilter
 {
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
