@@ -417,4 +417,7 @@
   <data name="933" xml:space="preserve">
     <value>This file includes large producer details. Upload a file that contains only small producer details.</value>
   </data>
+  <data name="934" xml:space="preserve">
+    <value>Enter Yes or No for closed loop registration.</value>
+  </data>
 </root>
