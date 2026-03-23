@@ -76,6 +76,7 @@ public class DeclarationWithFullNameController(
         });
     }
 
+    [RegistrationApplicationSessionLoggingScopeActionFilter]
     [HttpPost]
     public async Task<IActionResult> Post([FromQuery]Guid submissionId, DeclarationWithFullNameViewModel model)
     {
