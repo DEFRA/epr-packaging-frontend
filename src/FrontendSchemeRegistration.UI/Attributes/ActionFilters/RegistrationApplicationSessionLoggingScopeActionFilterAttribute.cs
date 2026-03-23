@@ -3,6 +3,7 @@ namespace FrontendSchemeRegistration.UI.Attributes.ActionFilters;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Extensions;
 using FrontendSchemeRegistration.UI.Sessions;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 
@@ -23,33 +24,32 @@ public sealed class RegistrationApplicationSessionLoggingScopeActionFilterAttrib
         var frontendSchemeRegistrationSessionManager = context.HttpContext.RequestServices
             .GetRequiredService<ISessionManager<FrontendSchemeRegistrationSession>>();
 
-        var actionName = context.ActionDescriptor.DisplayName ?? "UnknownAction";
+        var controllerActionDescriptor = context.ActionDescriptor as ControllerActionDescriptor;
+        var actionName = controllerActionDescriptor is null ? "Unknown action" : $"{controllerActionDescriptor.ControllerName}.{controllerActionDescriptor.ActionName}" ;
         var registrationApplicationSession = await registrationApplicationSessionManager.GetSessionAsync(context.HttpContext.Session);
         var frontendSchemeRegistrationSession = await frontendSchemeRegistrationSessionManager.GetSessionAsync(context.HttpContext.Session);
 
-        using (logger.BeginScope("RegistrationApplication action invoked: {Action}", actionName))
+        using (logger.BeginScope("OnActionEntry: {Action}", actionName))
+        using (logger.AddScopedData(new Dictionary<string, object>
+               {
+                   ["RegistrationApplicationSession.SubmissionId"] = registrationApplicationSession?.SubmissionId,
+                   ["RegistrationApplicationSession.RegistrationJourney"] =
+                       registrationApplicationSession?.RegistrationJourney,
+                   ["RegistrationApplicationSession.SubmissionPeriod"] =
+                       registrationApplicationSession?.SubmissionPeriod,
+                   ["RegistrationApplicationSession.ApplicationReferenceNumber"] =
+                       registrationApplicationSession?.ApplicationReferenceNumber,
+                   ["FrontendSchemeRegistrationSession.ApplicationReferenceNumber"] = frontendSchemeRegistrationSession
+                       ?.RegistrationSession?.ApplicationReferenceNumber,
+                   ["FrontendSchemeRegistrationSession.IsResubmission"] =
+                       frontendSchemeRegistrationSession?.RegistrationSession?.IsResubmission
+               }))
         {
-            if (registrationApplicationSession is null)
-            {
-                logger.LogInformation("OnActionEntry: {Action}: RegistrationSession is null", actionName);
-                await next();
-
-                return;
-            }
-
-            using (logger.AddScopedData(new Dictionary<string, object>
-            {
-                ["RegistrationApplicationSession.SubmissionId"] = registrationApplicationSession.SubmissionId,
-                ["RegistrationApplicationSession.RegistrationJourney"] = registrationApplicationSession.RegistrationJourney,
-                ["RegistrationApplicationSession.SubmissionPeriod"] = registrationApplicationSession.SubmissionPeriod,
-                ["RegistrationApplicationSession.ApplicationReferenceNumber"] = registrationApplicationSession.ApplicationReferenceNumber,
-                ["FrontendSchemeRegistrationSession.ApplicationReferenceNumber"] = frontendSchemeRegistrationSession?.RegistrationSession?.ApplicationReferenceNumber,
-                ["FrontendSchemeRegistrationSession.IsResubmission"] = frontendSchemeRegistrationSession?.RegistrationSession?.IsResubmission
-            }))
-            {
-                logger.LogInformation("OnActionEntry: RegistrationSession found");
-                await next();
-            }
+            logger.LogInformation("RegistrationSession found: {RegistrationSessionFound}",
+                registrationApplicationSession is not null);
+            logger.LogInformation("FrontEndRegistrationSession found: {FrontEbdRegistrationSessionFound}",
+                frontendSchemeRegistrationSession is not null);
+            await next();
         }
     }
 }
