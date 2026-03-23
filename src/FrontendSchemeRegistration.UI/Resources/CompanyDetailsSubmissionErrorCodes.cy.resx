@@ -417,4 +417,7 @@
   <data name="933" xml:space="preserve">
     <value>Mae'r ffeil yma yn cynnwys manylion cynhyrchydd mawr. Uwchlwythwch ffeil sy'n cynnwys manylion cynhyrchydd bach yn unig</value>
   </data>
+  <data name="934" xml:space="preserve">
+    <value>Rhowch Ie neu Na ar gyfer cofrestru dolen gaeedig.</value>
+  </data>
 </root>
