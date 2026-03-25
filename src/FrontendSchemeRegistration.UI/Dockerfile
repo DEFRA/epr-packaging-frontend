@@ -51,7 +51,14 @@ USER root
 RUN apk add --no-cache icu-libs icu-data-full libintl
  
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=0
+
 FROM base AS final
+
+# pass build info through from docker build args to env for running app
+ARG BUILD_NUMBER
+ARG GIT_SHA
+ENV BUILD_NUMBER=$BUILD_NUMBER
+ENV GIT_SHA=$GIT_SHA
  
 USER dotnet
  

@@ -1,9 +1,10 @@
-﻿using EPR.Common.Authorization.Constants;
+using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Extensions;
+using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
 using FrontendSchemeRegistration.UI.Controllers.Error;
@@ -18,6 +19,7 @@ using Microsoft.AspNetCore.WebUtilities;
 
 namespace FrontendSchemeRegistration.UI.Controllers.RegistrationApplication;
 
+[RegistrationApplicationSessionLoggingScopeActionFilter]
 public class RegistrationApplicationController(
     ISessionManager<RegistrationApplicationSession> sessionManager,
     ILogger<RegistrationApplicationController> logger,
@@ -355,7 +357,8 @@ public class RegistrationApplicationController(
         var organisation = userData.Organisations[0];
         var registrationYear = registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
 
-        var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
+        var session = await sessionManager.GetSessionAsync(HttpContext.Session);
+        
         session.Journey = [PagePaths.RegistrationTaskList, PagePaths.AdditionalInformation];
         SetBackLink(session, PagePaths.AdditionalInformation, registrationYear, session.RegistrationJourney);
 
