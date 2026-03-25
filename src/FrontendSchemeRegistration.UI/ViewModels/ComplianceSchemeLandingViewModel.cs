@@ -36,6 +36,10 @@ public class ComplianceSchemeLandingViewModel
 
     public SubmissionPeriod PackagingResubmissionPeriod { get; set; }
     public bool CsoRegistrationEnabled { get; set; }
-    
+    public bool CsocEnabled { get; set; }
+    public bool IsDirectProducer { get; set; }
+    public bool IsComplianceScheme { get; set; }
+    public DateTime CsocDate { get; set; }
+
     public RegisterYourMembersViewModel GetRegisterYourMembersViewModel() => new() {ComplianceSchemeSummary = CurrentTabSummary};
 }

@@ -59,6 +59,11 @@ public class ComplianceSchemeLandingController(
         var resubmissionApplicationDetails = await resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(
             organisation, new List<string> { packagingResubmissionPeriod.DataPeriod }, session.RegistrationSession.SelectedComplianceScheme?.Id);
 
+        var csocEnabled = await featureManager.IsEnabledAsync(FeatureFlags.CsocEnabled);
+        var isDirectProducer = organisation.OrganisationRole == OrganisationRoles.Producer;
+        var isComplianceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
+        var csocDate = DetermineCsocDate();
+        
         var model = new ComplianceSchemeLandingViewModel
         {
             CurrentComplianceSchemeId = currentComplianceSchemeId,
@@ -69,7 +74,11 @@ public class ComplianceSchemeLandingController(
             ResubmissionTaskListViewModel = resubmissionApplicationDetails.ToResubmissionTaskListViewModel(organisation),
             PackagingResubmissionPeriod = packagingResubmissionPeriod,
             ComplianceYear = now.GetComplianceYear().ToString(),
-            CsoRegistrationEnabled = csoRegistrationEnabled
+            CsoRegistrationEnabled = csoRegistrationEnabled,
+            CsocEnabled = csocEnabled,
+            IsDirectProducer = isDirectProducer,
+            IsComplianceScheme = isComplianceScheme,
+            CsocDate = csocDate
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id.Value);
@@ -88,6 +97,15 @@ public class ComplianceSchemeLandingController(
         session.SubsidiarySession.Journey.Clear();
 
         return View("ComplianceSchemeLanding", model);
+
+        DateTime DetermineCsocDate()
+        {
+            var csocYear = now > new DateTime(now.Year, 1, 31, 0, 0, 0, DateTimeKind.Unspecified)
+                ? now.Year + 1
+                : now.Year;
+
+            return csocEnabled ? new DateTime(csocYear, 1, 31, 0, 0, 0, DateTimeKind.Unspecified) : DateTime.MinValue;
+        }
     }
 
     [HttpPost]
