@@ -10,4 +10,6 @@ public class ValidationOptions
     public int MaxIssuesToProcess { get; set; }
 
     public string MaxIssueReportSize { get; set; }
+
+    public int ClosedLoopRegistrationFromYear { get; set; }
 }

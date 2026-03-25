@@ -304,6 +304,9 @@ Read the guidance about how to create your organisation details file. Once youâ€
   <data name="813" xml:space="preserve">
     <value>All fields must contain 4000 characters or less</value>
   </data>
+  <data name="935" xml:space="preserve">
+    <value>[Welsh] Closed loop registration cannot be submitted through this service for registration years before {0}. Remove column 79 from your file and resubmit, or contact your regulator if you need to register for a previous year.</value>
+  </data>
   <data name="890" xml:space="preserve">
     <value>The Organisation ID list in this file does not match the Organisation ID list in your organisation file</value>
   </data>
