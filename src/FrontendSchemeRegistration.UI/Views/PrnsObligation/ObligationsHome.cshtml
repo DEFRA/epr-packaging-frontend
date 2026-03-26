@@ -72,6 +72,7 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-one-half">
             @await Html.PartialAsync("Partials/Prns/_reviewPRNsAndPERNs")
+            @await Html.PartialAsync("Partials/Csoc/_ObligationsHomeSubmit", Model.CsocViewModel)
         </div>
     </div>
 </main>
