@@ -130,16 +130,19 @@
     <value>Gwydr aildoddi</value>
   </data>
   <data name="Paper, board or fibre-based composite material" xml:space="preserve">
-    <value>Papur a bwrdd</value>
+    <value>Papur neu fwrdd</value>
   </data>
   <data name="Paper and board" xml:space="preserve">
-    <value>Papur a bwrdd</value>
+    <value>Papur neu fwrdd</value>
+  </data>
+  <data name="Paper or board" xml:space="preserve">
+    <value>Papur neu fwrdd</value>
   </data>
   <data name="Paper/board" xml:space="preserve">
-    <value>Papur a bwrdd</value>
+    <value>Papur neu fwrdd</value>
   </data>
   <data name="Paper" xml:space="preserve">
-    <value>Papur a bwrdd</value>
+    <value>Papur neu fwrdd</value>
   </data> 
   <data name="Plastic" xml:space="preserve">
     <value>Plastig</value>

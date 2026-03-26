@@ -32,8 +32,8 @@ public class PrnDataResourcesLocalizerTests
     public void WhenLaunchDateIsNotSet_ShouldLocalizeFromOriginalResources()
     {
         FibreOptions.LaunchDate = null;
-        ConfigureTranslation(MockPrnDataResources, "Paper/board", "Paper and board");
-        ConfigureTranslation(MockPrnDataResourcesPostFibre, "Paper/board", "New paper and board");
+        ConfigureTranslation(MockPrnDataResources, "Paper/board", "Paper or board");
+        ConfigureTranslation(MockPrnDataResourcesPostFibre, "Paper/board", "New paper or board");
         
         var result = Subject.Material(new BasePrnViewModel
         {
@@ -41,17 +41,17 @@ public class PrnDataResourcesLocalizerTests
             DateIssued = new DateTime(2026, 3, 10)
         }).ToString();
 
-        result.Should().Be("Paper and board");
+        result.Should().Be("Paper or board");
     }
     
-    [TestCase("2026-03-10", 0, "New paper and board")]
-    [TestCase("2026-03-10", 1, "New paper and board")]
-    [TestCase("2026-03-10", -1, "Paper and board")]
+    [TestCase("2026-03-10", 0, "New paper or board")]
+    [TestCase("2026-03-10", 1, "New paper or board")]
+    [TestCase("2026-03-10", -1, "Paper or board")]
     public void WhenLaunchDateAsSpecified_ShouldLocalizeAsExpected(string launchDate, int msOffset, string expectedTranslation)
     {
         FibreOptions.LaunchDate = launchDate;
-        ConfigureTranslation(MockPrnDataResources, "Paper/board", "Paper and board");
-        ConfigureTranslation(MockPrnDataResourcesPostFibre, "Paper/board", "New paper and board");
+        ConfigureTranslation(MockPrnDataResources, "Paper/board", "Paper or board");
+        ConfigureTranslation(MockPrnDataResourcesPostFibre, "Paper/board", "New paper or board");
 
         var result = Subject.Material(new BasePrnViewModel
         {

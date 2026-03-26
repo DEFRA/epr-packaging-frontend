@@ -50,7 +50,7 @@ public class PrnModelMapperTests
         {
             ExternalId = Guid.NewGuid(),
             PrnNumber = "PRN12345",
-            MaterialName = "Paper and board",
+            MaterialName = "Paper or board",
             IssueDate = issueDate,
             DecemberWaste = true,
             IssuedByOrg = "Test Org",
@@ -67,7 +67,7 @@ public class PrnModelMapperTests
         // Assert
         result.ExternalId.Should().Be(prnModel.ExternalId);
         result.PrnOrPernNumber.Should().Be("PRN12345");
-        result.Material.Should().Be("Paper and board");
+        result.Material.Should().Be("Paper or board");
         result.DateIssued.Should().Be(issueDate);
         result.IsDecemberWaste.Should().BeTrue();
         result.IssuedBy.Should().Be("Test Org");
@@ -294,7 +294,7 @@ public class PrnModelMapperTests
         {
             ExternalId = Guid.NewGuid(),
             PrnNumber = "PRN44444",
-            MaterialName = "Paper and board",
+            MaterialName = "Paper or board",
             IssueDate = new DateTime(2025, 12, 15, 0, 0, 0, DateTimeKind.Utc),
             DecemberWaste = true,
             IssuedByOrg = "Awaiting Test Org",
@@ -311,7 +311,7 @@ public class PrnModelMapperTests
         // Assert
         result.ExternalId.Should().Be(prnModel.ExternalId);
         result.PrnOrPernNumber.Should().Be("PRN44444");
-        result.Material.Should().Be("Paper and board");
+        result.Material.Should().Be("Paper or board");
         result.DateIssued.Should().Be(new DateTime(2025, 12, 15, 0, 0, 0, DateTimeKind.Utc));
         result.IsDecemberWaste.Should().BeTrue();
         result.IssuedBy.Should().Be("Awaiting Test Org");
