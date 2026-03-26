@@ -130,16 +130,19 @@
     <value>Glass re-melt</value>
   </data>
   <data name="Paper, board or fibre-based composite material" xml:space="preserve">
-    <value>Paper and board</value>
+    <value>Paper or board</value>
   </data>
   <data name="Paper and board" xml:space="preserve">
-    <value>Paper and board</value>
+    <value>Paper or board</value>
+  </data>
+  <data name="Paper or board" xml:space="preserve">
+    <value>Paper or board</value>
   </data>
   <data name="Paper/board" xml:space="preserve">
-    <value>Paper and board</value>
+    <value>Paper or board</value>
   </data>
   <data name="Paper" xml:space="preserve">
-    <value>Paper and board</value>
+    <value>Paper or board</value>
   </data>
   <data name="Plastic" xml:space="preserve">
     <value>Plastic</value>

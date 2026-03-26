@@ -75,7 +75,7 @@ docker run -d --name epr-producers- -p 6379:6379 -p 8001:8001 redis/redis-stack:
 To view the keys in Redis cache, open browser and point at: http://localhost:8001/redis-stack/browser
 
 ## MaxIssuesToProcess and MaxIssueReportSize app settings
-This is currently set to 1000 in the app settings. Basic calculations/tests for this limit means the maximum error/warning report size will never be greater than 5MB. 
+This is currently set to 1000 in the app settings. Basic calculations/tests for this limit means the maximum error/warning report size will never be greater than 5MB.
 If this issue limit increases the MaxIssueReportSize setting will also need changed to reflect this.
 
 # How To Test
@@ -88,6 +88,8 @@ On `src`, execute:
 dotnet test
 ```
 
+Some tests use [Verify](https://github.com/verifytests/verify) for snapshots to prevent the need for granular assertions. Plugins exist for IDEs such as Rider that allow group acceptance of changed snapshots.
+
 ### Time-travel testing
 
 The UI can be time-travel tested by setting the `StartupUtcTimestampOverride` to an [RFC-3339](https://www.rfc-editor.org/rfc/rfc3339) compliant date, such as `2025-12-31T23:59:00Z`. This will be used as the initial timestamp when the service starts up. Time will progress as usual. Note that this should **NEVER** be set in production. This setting _will not_ set the system time in downstream services, so is only appropriate for testing UI logic. Note that this behaviour will be overwritten by the `Prn` configuration value if both `OverridePrnCurrentDateForTestingPurposes` and `ShowPrn` are set to `true`, in which case a _static_ value will be set for the current date.
@@ -98,14 +100,14 @@ It is possible to run the application locally against a mock server. This is use
 mock server is used to replace the following endpoints:
 
 ```json
-    
+
     "WebAPI:BaseEndpoint": "http://localhost:9091",
     "PaymentFacadeApi:BaseUrl": "http://localhost:9091",
     "EprAuthorizationConfig:FacadeBaseUrl": "http://localhost:9091/api/",
     "AccountsFacadeAPI:BaseEndpoint": "http://localhost:9091/api/
 
 ```
-Along with this the authentication can also be stubbed. This removes the requirement to connect to azure b2c. When the stub authentication is enabled, you are presented with 
+Along with this the authentication can also be stubbed. This removes the requirement to connect to azure b2c. When the stub authentication is enabled, you are presented with
 a login screen to enter a Id and email address. The Id is then used as part of the token generation for the user when communicating with the API. This means that we can
 serve different responses based on the user that is logged in.
 
@@ -176,7 +178,7 @@ The structure of the appsettings can be found in the repository. Example configu
 | PhaseBanner__Enabled                                       | Display phase banner                                                                                             |
 | EprAuthorizationConfig__FacadeBaseUrl                      | URL to the account facade (Don't rename variable name, it's used in EPR.Common)                                  |
 | EprAuthorizationConfig__FacadeUserAccountEndpoint          | Endpoint in the account facade for users (Don't rename variable name, it's used in EPR.Common)                   |
-| EprAuthorizationConfig__FacadeDownStreamScope              | B2C scope for account facade (Don't rename variable name, it's used in EPR.Common)                               | 
+| EprAuthorizationConfig__FacadeDownStreamScope              | B2C scope for account facade (Don't rename variable name, it's used in EPR.Common)                               |
 | EmailAddresses__DataProtection                             | Email address for data protection queries                                                                        |
 | EmailAddresses__DefraGroupProtectionOfficer                | Email address for the DEFRA group protection officer                                                             |
 | SiteDates__PrivacyLastUpdated                              | Last time the privacy policy was updated                                                                         |

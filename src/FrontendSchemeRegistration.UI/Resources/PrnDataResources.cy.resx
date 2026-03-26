@@ -135,6 +135,9 @@
   <data name="Paper and board" xml:space="preserve">
     <value>Papur, bwrdd neu ddeunydd cyfansawdd sy'n seiliedig ar ffeibrau</value>
   </data>
+  <data name="Paper or board" xml:space="preserve">
+    <value>Papur, bwrdd neu ddeunydd cyfansawdd sy'n seiliedig ar ffeibrau</value>
+  </data>
   <data name="Paper/board" xml:space="preserve">
     <value>Papur, bwrdd neu ddeunydd cyfansawdd sy'n seiliedig ar ffeibrau</value>
   </data>
