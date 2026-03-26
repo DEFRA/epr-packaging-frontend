@@ -232,27 +232,9 @@
                                 <ul class="govuk-list govuk-list--bullet">
                                     <li>@Localizer["prn_unordered_list_point_1"]</li>
                                     <li>@Localizer["prn_unordered_list_point_2"]</li>
-                                    @if (Model is { CsocEnabled: true, IsApprovedUser: true, IsDirectProducer: true })
-                                    {
-                                        <li>@Localizer["prn_unordered_list_point_csoc_direct_producer"]</li>
-                                    }
-                                    @if (Model is { CsocEnabled: true, IsApprovedUser: true, IsComplianceScheme: true })
-                                    {
-                                        <li>@Localizer["prn_unordered_list_point_csoc_compliance_scheme"]</li>
-                                    }
+                                    @await Html.PartialAsync("Partials/Csoc/_LandingBullet", Model.CsocViewModel)
                                 </ul>
-                                @if (Model is { CsocEnabled: true, IsDirectProducer: true })
-                                {
-                                    <p class="govuk-body">
-                                        @string.Format(Localizer["prn_paragraph_csoc_direct_producer"].Value, Model.CsocDate)
-                                    </p>
-                                }
-                                @if (Model is { CsocEnabled: true, IsComplianceScheme: true })
-                                {
-                                    <p class="govuk-body">
-                                        @string.Format(Localizer["prn_paragraph_csoc_compliance_scheme"].Value, Model.CsocDate)
-                                    </p>
-                                }
+                                @await Html.PartialAsync("Partials/Csoc/_LandingParagraph", Model.CsocViewModel)
                             </div>
                         </div>
                     </div>

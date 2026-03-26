@@ -59,15 +59,12 @@ public class ComplianceSchemeLandingController(
         var resubmissionApplicationDetails = await resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(
             organisation, new List<string> { packagingResubmissionPeriod.DataPeriod }, session.RegistrationSession.SelectedComplianceScheme?.Id);
 
-        var csocEnabled = await featureManager.IsEnabledAsync(FeatureFlags.CsocEnabled);
-        var isDirectProducer = organisation.OrganisationRole == OrganisationRoles.Producer;
-        var isComplianceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
-        var csocDate = DetermineCsocDate();
+        var isApprovedUser = userData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved);
         
         var model = new ComplianceSchemeLandingViewModel
         {
             CurrentComplianceSchemeId = currentComplianceSchemeId,
-            IsApprovedUser = userData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved),
+            IsApprovedUser = isApprovedUser,
             CurrentTabSummary = currentSummary,
             OrganisationName = organisation.Name,
             ComplianceSchemes = complianceSchemes,
@@ -75,10 +72,7 @@ public class ComplianceSchemeLandingController(
             PackagingResubmissionPeriod = packagingResubmissionPeriod,
             ComplianceYear = now.GetComplianceYear().ToString(),
             CsoRegistrationEnabled = csoRegistrationEnabled,
-            CsocEnabled = csocEnabled,
-            IsDirectProducer = isDirectProducer,
-            IsComplianceScheme = isComplianceScheme,
-            CsocDate = csocDate
+            CsocViewModel = await DetermineCsocViewModel()
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id.Value);
@@ -98,13 +92,18 @@ public class ComplianceSchemeLandingController(
 
         return View("ComplianceSchemeLanding", model);
 
-        DateTime DetermineCsocDate()
+        async Task<CsocViewModel?> DetermineCsocViewModel()
         {
-            var csocYear = now > new DateTime(now.Year, 1, 31, 0, 0, 0, DateTimeKind.Unspecified)
-                ? now.Year + 1
-                : now.Year;
+            var enabled = await featureManager.IsEnabledAsync(FeatureFlags.CsocEnabled);
+            if (!enabled) return null;
 
-            return csocEnabled ? new DateTime(csocYear, 1, 31, 0, 0, 0, DateTimeKind.Unspecified) : DateTime.MinValue;
+            return new CsocViewModel
+            {
+                IsApprovedUser = isApprovedUser,
+                IsDirectProducer = organisation.IsDirectProducer(),
+                IsComplianceScheme = organisation.IsComplianceScheme(),
+                SubmissionDeadline = now.GetCsocSubmissionDeadline()
+            };
         }
     }
 

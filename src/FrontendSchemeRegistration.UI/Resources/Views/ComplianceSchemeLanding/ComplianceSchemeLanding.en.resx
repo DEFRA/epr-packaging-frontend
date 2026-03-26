@@ -221,16 +221,4 @@ You can also:</value>
   <data name="you_still_need_to_view_any_additional_fees" xml:space="preserve">
     <value>You still need to view any additional fees and submit to the regulator.</value>
   </data>
-  <data name="prn_unordered_list_point_csoc_direct_producer" xml:space="preserve">
-    <value>submit your certificate of compliance</value>
-  </data>
-  <data name="prn_unordered_list_point_csoc_compliance_scheme" xml:space="preserve">
-    <value>submit your statement of compliance</value>
-  </data>
-  <data name="prn_paragraph_csoc_direct_producer" xml:space="preserve">
-    <value>An approved person must submit your certificate of compliance no later than {0:d MMMM yyyy}.</value>
-  </data>
-  <data name="prn_paragraph_csoc_compliance_scheme" xml:space="preserve">
-    <value>An approved person must submit your statement of compliance no later than {0:d MMMM yyyy}.</value>
-  </data>
 </root>
