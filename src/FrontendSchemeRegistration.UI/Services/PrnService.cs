@@ -17,34 +17,34 @@ using Newtonsoft.Json;
 namespace FrontendSchemeRegistration.UI.Services;
 
 using Application.Extensions;
-using Application.Services;
 using AutoMapper;
+using Resources;
 
 public class PrnService : IPrnService
 {
     private readonly IWebApiGatewayClient _webApiGatewayClient;
     private readonly IStringLocalizer<PrnCsvResources> _csvLocalizer;
-    private readonly IStringLocalizer<PrnDataResources> _dataLocalizer;
     private readonly TimeProvider _timeProvider;
     private readonly IMapper _mapper;
     private readonly ILogger<PrnService> _logger;
+    private readonly IPrnDataResourcesLocalizer _prnDataResourcesLocalizer;
     private readonly string logPrefix;
 
     public PrnService(
         IWebApiGatewayClient webApiGatewayClient,
         IStringLocalizer<PrnCsvResources> csvLocalizer,
-        IStringLocalizer<PrnDataResources> dataLocalizer,
         TimeProvider timeProvider,
         IMapper mapper,
         IOptions<GlobalVariables> globalVariables,
-        ILogger<PrnService> logger)
+        ILogger<PrnService> logger,
+        IPrnDataResourcesLocalizer prnDataResourcesLocalizer)
     {
         _webApiGatewayClient = webApiGatewayClient;
         _csvLocalizer = csvLocalizer;
-        _dataLocalizer = dataLocalizer;
         _timeProvider = timeProvider;
         _mapper = mapper;
         _logger = logger;
+        _prnDataResourcesLocalizer = prnDataResourcesLocalizer;
         logPrefix = globalVariables.Value.LogPrefix;
     }
 
@@ -226,7 +226,7 @@ public class PrnService : IPrnService
                     await writer.WriteCsvCellAsync(prn.AccreditationNumber);
                     await writer.WriteCsvCellAsync(prn.DateIssued.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture));
                     await writer.WriteCsvCellAsync(_csvLocalizer[prn.DecemberWasteDisplay]);
-                    await writer.WriteCsvCellAsync(_dataLocalizer[prn.Material]);
+                    await writer.WriteCsvCellAsync(_prnDataResourcesLocalizer.Material(prn));
                     await writer.WriteCsvCellAsync(prn.RecyclingProcess);
                     await writer.WriteCsvCellAsync(prn.Tonnage.ToString());
                     await writer.WriteCsvCellAsync(prn.ApprovalStatus == PrnStatus.Accepted ? prn.StatusUpdatedOn?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) : _csvLocalizer["not_accepted"]);

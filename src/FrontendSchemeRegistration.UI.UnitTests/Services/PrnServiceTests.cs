@@ -19,6 +19,7 @@ using Moq;
 namespace FrontendSchemeRegistration.UI.UnitTests.Services;
 
 using Microsoft.Extensions.Time.Testing;
+using UI.Resources;
 
 [TestFixture]
 public class PrnServiceTests
@@ -38,7 +39,9 @@ public class PrnServiceTests
         var options = Options.Create(new LocalizationOptions { ResourcesPath = "Resources_not_found" });
         var factory = new ResourceManagerStringLocalizerFactory(options, NullLoggerFactory.Instance);
         var localizerCsv = new StringLocalizer<PrnCsvResources>(factory);
-        var localizerData = new StringLocalizer<PrnDataResources>(factory);
+        var prnDataResourcesLocalizer = new Mock<IPrnDataResourcesLocalizer>();
+        prnDataResourcesLocalizer.Setup(x => x.Material(It.IsAny<BasePrnViewModel>()))
+            .Returns((BasePrnViewModel input) => new LocalizedString("key", input.MaterialGroup));
 
         _webApiGatewayClientMock = new Mock<IWebApiGatewayClient>();
         _loggerMock = new Mock<ILogger<PrnService>>();
@@ -88,7 +91,7 @@ public class PrnServiceTests
 
         var globalVariables = Options.Create(new GlobalVariables { LogPrefix = "[FrontendSchemaRegistration]" });
 
-        _systemUnderTest = new PrnService(_webApiGatewayClientMock.Object, localizerCsv, localizerData, _fakeTimeProvider, _mapperMock.Object, globalVariables, _loggerMock.Object);
+        _systemUnderTest = new PrnService(_webApiGatewayClientMock.Object, localizerCsv, _fakeTimeProvider, _mapperMock.Object, globalVariables, _loggerMock.Object, prnDataResourcesLocalizer.Object);
     }
 
     [Test]

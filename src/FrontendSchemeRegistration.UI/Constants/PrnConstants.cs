@@ -17,8 +17,8 @@ namespace FrontendSchemeRegistration.UI.Constants
 
         public static class Material
         {
-            public const string PaperBoardFibreBased = "Paper, board and fibre-based composite material";
-            public const string PaperBoard = "Paper and board";
+            public const string Paper = "Paper/board";
+            public const string Fibre = "Fibre";
         }
 
         public static class Filters
