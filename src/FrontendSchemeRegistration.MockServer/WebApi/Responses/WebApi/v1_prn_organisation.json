@@ -1,0 +1,54 @@
+[
+  {
+    "id": 1,
+    "externalId": "00000000-0000-0000-0000-000000000001",
+    "prnNumber": "PRN-01",
+    "materialName": "Paper/board",
+    "issueDate": "2026-03-01T13:15:15",
+    "prnStatus": "AWAITINGACCEPTANCE"
+  },
+  {
+    "id": 2,
+    "externalId": "00000000-0000-0000-0000-000000000002",
+    "prnNumber": "PRN-02",
+    "materialName": "Paper/board",
+    "issueDate": "2026-05-01T13:15:15",
+    "prnStatus": "AWAITINGACCEPTANCE"
+  },
+  {
+    "id": 3,
+    "externalId": "00000000-0000-0000-0000-000000000003",
+    "prnNumber": "PRN-03",
+    "materialName": "Fibre",
+    "issueDate": "2026-03-01T13:15:15",
+    "prnStatus": "AWAITINGACCEPTANCE"
+  },
+  {
+    "id": 4,
+    "externalId": "00000000-0000-0000-0000-000000000004",
+    "prnNumber": "PRN-04",
+    "materialName": "Fibre",
+    "issueDate": "2026-05-01T13:15:15",
+    "prnStatus": "AWAITINGACCEPTANCE"
+  },
+  {
+    "id": 5,
+    "externalId": "00000000-0000-0000-0000-000000000005",
+    "prnNumber": "PRN-05",
+    "materialName": "Fibre",
+    "issueDate": "2026-05-01T13:15:15",
+    "prnStatus": "ACCEPTED",
+    "obligationYear": "2026",
+    "tonnageValue": 1
+  },
+  {
+    "id": 6,
+    "externalId": "00000000-0000-0000-0000-000000000006",
+    "prnNumber": "PRN-06",
+    "materialName": "Paper/board",
+    "issueDate": "2026-03-01T13:15:15",
+    "prnStatus": "ACCEPTED",
+    "obligationYear": "2026",
+    "tonnageValue": 2
+  }
+]

@@ -1,6 +1,6 @@
 ﻿@using FrontendSchemeRegistration.UI.Controllers.Prns
 @using FrontendSchemeRegistration.UI.ViewModels.Prns
-@inject IStringLocalizer<PrnDataResources> PrnDataLocalizer
+@inject FrontendSchemeRegistration.UI.Resources.IPrnDataResourcesLocalizer PrnDataResourcesLocalizer
 @model AwaitingAcceptancePrnsViewModel
 
 @{
@@ -126,7 +126,7 @@
 												</a>
 											}
 										</td>
-										<td class="govuk-table__cell" data-label=@Localizer["material"]>@PrnDataLocalizer[Model.Prns[i].Material]</td>
+										<td class="govuk-table__cell" data-label=@Localizer["material"]>@PrnDataResourcesLocalizer.Material(Model.Prns[i])</td>
 										<td class="govuk-table__cell" data-label=@Localizer["date_issued"]>@Model.Prns[i].DateIssuedDisplay</td>
 										<td class="govuk-table__cell" data-label=@Localizer["december_waste"]>@SharedLocalizer[Model.Prns[i].DecemberWasteDisplay]</td>
 										<td class="govuk-table__cell" data-label=@Localizer["issued_by"]>@Model.Prns[i].IssuedBy</td>

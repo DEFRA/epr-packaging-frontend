@@ -41,7 +41,7 @@
                        @{
                             int counter = 0;
                         }
-                        @foreach (var group in Model.Prns.GroupBy(p => p.Material))
+                        @foreach (var group in Model.Prns.GroupBy(p => p.MaterialGroup))
                         {
                             var prnsPerMaterial = group.ToList();
                             string h2HeaderText = @PrnDataLocalizer[group.Key].Value;

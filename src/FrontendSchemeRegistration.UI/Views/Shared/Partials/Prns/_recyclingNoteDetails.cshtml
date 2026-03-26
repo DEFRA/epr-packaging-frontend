@@ -1,5 +1,6 @@
 ﻿@using FrontendSchemeRegistration.UI.ViewModels.Prns
 @inject IStringLocalizer<PrnDataResources> PrnDataLocalizer
+@inject FrontendSchemeRegistration.UI.Resources.IPrnDataResourcesLocalizer PrnDataResourcesLocalizer
 @model PrnViewModel
 @{
     string twoLetterISOLanguageName = System.Threading.Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName;
@@ -37,18 +38,7 @@
         </div>
         <div class="govuk-grid-column-one-half">
             <div class="govuk-label" id="material">
-                <strong>
-                    @if (isPdf && (PrnDataLocalizer[Model.Material].Value.ToLowerInvariant() == "paper, board or fibre-based composite material"
-                    || PrnDataLocalizer[Model.Material].Value.ToLowerInvariant() == "papur, bwrdd neu ddeunydd cyfansawdd sy'n seiliedig ar ffeibrau"))
-                    {
-                        @* special case, match the material type on the NPWD version of the PDF *@
-                        @Localizer["paper_and_board_pdf"]
-                    }
-                    else
-                    {
-                        @PrnDataLocalizer[Model.Material]
-                    }
-                </strong>
+                <strong>@PrnDataResourcesLocalizer.Material(Model)</strong>
              </div>
         </div>
     </div>

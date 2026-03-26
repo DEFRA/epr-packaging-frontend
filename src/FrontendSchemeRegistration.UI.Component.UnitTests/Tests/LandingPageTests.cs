@@ -2,42 +2,29 @@ namespace FrontendSchemeRegistration.UI.Component.UnitTests.Tests;
 
 using System.Net;
 using Data;
+using Extensions;
 using FluentAssertions;
-using FrontendSchemeRegistration.MockServer;
-using FrontendSchemeRegistration.UI.Controllers.FrontendSchemeRegistration;
 using Infrastructure;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
 using NUnit.Framework;
-using WireMock.Server;
 
 public class LandingPageTests
 {
-    private IWireMockServer _staticMockApiServer;
-    private TestServer _server;
-    private ComponentTestClient _componentTestClient
-        ;
+    private ComponentTestContext Context { get; } = new();
 
     [SetUp]
-    public void Arrange()
+    public void SetUp()
     {
-        _staticMockApiServer = MockApiServer.Start();
-        var webApp = new CustomWebApplicationFactory<FrontendSchemeRegistrationController>()
-            .WithWebHostBuilder(c =>
-                c.UseEnvironment("ComponentTest").UseConfiguration(ConfigBuilder.GenerateConfiguration()));
-        _server = webApp.Server;
-        
-        _componentTestClient = new ComponentTestClient(_server);
+        Context.SetUp();
     }
     
     [Test]
     public async Task Then_I_Can_Get_To_The_Landing_Page()
     {
-        await AuthenticateUser();
+        await Context.Client.AuthenticateDefaultUser();
 
         var page = Pages.GetPages().SingleOrDefault(x => x.Name.Equals("Compliance Scheme Landing Page", StringComparison.CurrentCultureIgnoreCase));;
         
-        var response = await _componentTestClient.GetAsync(page.Url);
+        var response = await Context.Client.GetAsync(page.Url);
         
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         
@@ -45,18 +32,9 @@ public class LandingPageTests
         content.Should().Contain("Account home - SUPER TEST LTD");
     }
 
-    private async Task AuthenticateUser()
-    {
-        var formData = new Dictionary<string, string> { { "Email", "test@test.com" }, { "UserId", "9e4da0ed-cdff-44a1-8ae0-cef7f22b914b" }, {"ReturnUrl","/home"} };
-        await _componentTestClient.PostAsync("/services/account-details", formData);
-    }
-
     [TearDown]
     public void TearDown()
     {
-        _server.Dispose();
-        _staticMockApiServer.Stop();
-        _staticMockApiServer.Dispose();
-        _componentTestClient.Dispose();
+        Context.Dispose();
     }
 }
