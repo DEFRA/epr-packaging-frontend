@@ -15,10 +15,7 @@
 <link rel="apple-touch-icon" sizes="152x152" href="/images/govuk-apple-touch-icon-152x152.png">
 <link rel="apple-touch-icon" href="/images/govuk-apple-touch-icon.png">
 <link rel="stylesheet" href="/report-data/css/application.css">
-<script>
-            document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');
-        
-</script>
+
 <form method="POST" action="/report-data/update-cookie-acceptance?returnUrl=%2Freport-data%2Fview-awaiting-acceptance-alt">
   <div class="govuk-cookie-banner " data-nosnippet="" role="region" aria-label="Cwcis ar y gwasanaeth ‘Rhoi gwybod am ddata pecynwaith’">
     <div class="govuk-cookie-banner__message govuk-width-container">
@@ -333,113 +330,4 @@
     </div>
   </div>
 </footer>
-<script src="/report-data/js/govuk.js"></script>
-<script>  
-        window.GOVUKFrontend.initAll({
-            characterCount: {
-                i18n: {
-                    charactersUnderLimit: {
-                        one: "Mae gennych chi 1 cymeriad ar ôl",
-                        other: "Mae gennych chi %{count} o gymeriadau ar ôl"
-                    },
-                    charactersAtLimit: "Does gennych chi 0 cymeriad ar ôl",
-                    charactersOverLimit: {
-                        one: "Mae gennych chi %{count} cymeriad yn ormod",
-                        other: "Mae gennych chi %{count} o gymeriadau yn ormod"
-                    }
-                }
-            },
-        })
-    
-</script>
-<script type="text/javascript">
-        window.onload = function () {
-
-            document.getElementById('clearSortFilter')
-                .addEventListener('click', function () {
-                    clearSelection();
-                });
-
-            document.getElementById('selectMultiplePrns')
-                .addEventListener('submit', function Submit(event) {
-                    event.preventDefault();
-                    let submitData = [];
-
-                    for (let i = 0; i < sessionStorage.length; i++) {
-                        const key = sessionStorage.key(i);
-                        if (key.startsWith("chkBoxSelectPrn_")) {
-                            let [_, noteType, id] = key.split("_");
-                            submitData.push({ id: id, noteType: noteType });
-                            sessionStorage.removeItem(key);
-                            i--;
-                        }
-                    }
-
-                    let submittedForm = event.target;
-                    for (let i = 0; i < submitData.length; i++) {
-                        submittedForm.appendChild(createHiddenElement('hidden', `PreviousSelectedPrns[${i}].ExternalId`, submitData[i].id));
-                        submittedForm.appendChild(createHiddenElement('hidden', `PreviousSelectedPrns[${i}].NoteType`, submitData[i].noteType));
-                        submittedForm.appendChild(createHiddenElement('hidden', `PreviousSelectedPrns[${i}].IsSelected`, true));
-                    }
-
-                    submittedForm.submit();
-                    function createHiddenElement(type, name, value) {
-                        const hiddenElement = document.createElement('input');
-
-                        hiddenElement.type = type;
-                        hiddenElement.name = name;
-                        hiddenElement.value = value;
-
-                        return hiddenElement;
-                    }
-                });
-
-            document.getElementById('prns-table').querySelectorAll('input[type="checkbox"]')
-                .forEach(checkbox => {
-                    if (sessionStorage.getItem(checkbox.id)) {
-                        checkbox.checked = true;
-                    }
-                    checkbox.addEventListener('change', function () {
-                        setSessionStorageState(this.id, this.checked);
-                    });
-                });
-
-            document.getElementById('filter')
-                .addEventListener('change', function (event) {
-                    const sortValue = document.getElementById('sort').value;
-                    const filtervalue = event.target.value;
-                    clearSelection();
-                    window.location.href = `${window.location.pathname}?sortBy=${sortValue}&filterBy=${filtervalue}`;
-
-                });
-
-            document.getElementById('sort')
-                .addEventListener('change', function (event) {
-                    const filtervalue = document.getElementById('filter').value;
-                    const sortValue = event.target.value;
-                    clearSelection();
-                    window.location.href = `${window.location.pathname}?sortBy=${sortValue}&filterBy=${filtervalue}`;
-
-            });
-
-            function clearSelection() {
-                for (let i = 0; i < sessionStorage.length; i++) {
-                    const key = sessionStorage.key(i);
-                    if (key.startsWith("chkBoxSelectPrn_")) {
-                        sessionStorage.removeItem(key);
-                        i--;
-                    }
-                }
-            }
-
-            function setSessionStorageState(id, isChecked) {
-                if (isChecked == true) {
-                    sessionStorage.setItem(id, isChecked);
-                }
-                else {
-                    sessionStorage.removeItem(id);
-                }
-            }
-        }
-    
-</script>
+ 

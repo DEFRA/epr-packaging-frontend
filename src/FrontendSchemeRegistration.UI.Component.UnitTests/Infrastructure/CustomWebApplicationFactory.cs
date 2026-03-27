@@ -11,11 +11,14 @@ using Microsoft.Extensions.DependencyInjection;
 public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
 {
     public Action<IServiceCollection> ConfigureTestServices { get; set; } = _ => { };
+    public new Dictionary<string, string?> AdditionalConfig { get; set; } = new();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.ConfigureAppConfiguration(configurationBuilder =>
-            configurationBuilder.AddConfiguration(ConfigBuilder.GenerateConfiguration()));
+            configurationBuilder
+                .AddConfiguration(ConfigBuilder.GenerateConfiguration())
+                .AddInMemoryCollection(AdditionalConfig));
         
         builder.ConfigureTestServices(ConfigureTestServices);
     }

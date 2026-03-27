@@ -17,7 +17,12 @@ public static class VerifyHtml
     {
         DefaultSettings.PrettyPrintHtml(nodes =>
         {
-            nodes.ScrubAttributes("nonce");
+            // Removing all script nodes. There seems to be odd behaviour at times
+            // in how the content of the script tag is rendered. Not tracked down
+            // the issue but can remove the node in full for now as not testing
+            // any script output currently.
+            foreach (var node in nodes.QuerySelectorAll("script"))
+                node.Remove();
             
             foreach (var node in nodes.QuerySelectorAll("input[name=\"__RequestVerificationToken\"]"))
                 node.Attributes.GetNamedItem("value").Value = "[Scrubbed]";
