@@ -1,7 +1,6 @@
 namespace FrontendSchemeRegistration.MockServer.WebApi;
 
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 using WireMock.Server;
@@ -20,30 +19,20 @@ public static class Accounts
         server.Given(Request.Create()
                 .UsingGet()
                 .WithPath("/api/compliance-schemes/get-for-operator/"))
-            //TODO match operator organisation id for different responses. or do from auth bearer sub
             .RespondWith(Response.Create().WithCallback(req =>
                 {
-                    string? token = null;
-                    if (req.Headers != null && req.Headers.TryGetValue("Authorization", out var header))
-                    {
-                        var authHeader = header.FirstOrDefault();
-                        if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-                        {
-                            token = authHeader["Bearer ".Length..].Trim();
-                        }
-                    }
+                    var userId = StubToken.ExtractUserId(req);
+                    var orgId = string.IsNullOrWhiteSpace(userId) ? Guid.NewGuid().ToString() : userId;
+                    var nation = StubToken.ResolveNation(req);
 
-                    var orgId = string.IsNullOrWhiteSpace(token) ? Guid.NewGuid().ToString() : token;
-
-                    // Return List<ComplianceSchemeDto>
                     var body = new[]
                     {
                         new
                         {
-                            Id = ComplianceSchemeId,
-                            Name = "CS_GENERATED_2697892_England",
+                            Id = Guid.NewGuid(),
+                            Name = $"Compliance Scheme Ltd {nation.Country}",
                             CreatedOn = DateTimeOffset.UtcNow.AddYears(-3),
-                            NationId = 1,
+                            NationId = nation.NationId,
                             RowNumber = 999,
                         }
                     };
@@ -67,18 +56,32 @@ public static class Accounts
         server.Given(Request.Create()
                 .UsingGet()
                 .WithPath(new RegexMatcher("^/api/compliance-schemes/[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}/summary$")))
-            .RespondWith(Response.Create()
-                .WithStatusCode(200)
-                .WithHeader("Content-Type", "application/json")
-                .WithBodyAsJson(new
+            .RespondWith(Response.Create().WithCallback(req =>
+            {
+                var nation = StubToken.ResolveNation(req);
+                var body = new
                 {
-                    // ComplianceSchemeSummary
-                    Name = "CS_GENERATED_2697892_England",
-                    Nation = "England",
+                    Name = $"Compliance Scheme Ltd {nation.Country}",
+                    Nation = nation.NationName,
                     CreatedOn = DateTimeOffset.UtcNow.AddYears(-3),
                     MembersLastUpdatedOn = DateTimeOffset.UtcNow.AddDays(-7),
                     MemberCount = 123
-                }));
+                };
+
+                return new WireMock.ResponseMessage
+                {
+                    StatusCode = 200,
+                    Headers = new Dictionary<string, WireMockList<string>>
+                    {
+                        { "Content-Type", new WireMockList<string>("application/json") }
+                    },
+                    BodyData = new BodyData
+                    {
+                        BodyAsJson = body,
+                        DetectedBodyType = BodyType.Json
+                    }
+                };
+            }));
 
         // GET /api/compliance-schemes/{orgId}/schemes/{schemeId}/scheme-members (View Members)
         server.Given(Request.Create()
@@ -110,45 +113,108 @@ public static class Accounts
                         searchTerms = Array.Empty<string>(),
                         typeAhead = Array.Empty<string>()
                     },
-                    schemeName = "CS_GENERATED_2697892_England",
+                    schemeName = "Compliance Scheme Ltd",
                     lastUpdated = DateTimeOffset.UtcNow.AddDays(-1),
                     linkedOrganisationCount = 1,
                     subsidiariesCount = 0
                 }));
 
-        // GET /api/user-accounts 
+        // POST /api/compliance-schemes/remove/ (stop/remove a compliance scheme for a producer)
+        server.Given(Request.Create()
+                .UsingPost()
+                .WithPath("/api/compliance-schemes/remove/"))
+            .RespondWith(Response.Create()
+                .WithStatusCode(200));
+
+        // GET /api/compliance-schemes/get-for-producer/
+        // Returns 204 for self-managed producers (no CS link) or a ProducerComplianceSchemeDto for CS-managed producers.
+        server.Given(Request.Create()
+                .UsingGet()
+                .WithPath("/api/compliance-schemes/get-for-producer/"))
+            .RespondWith(Response.Create().WithCallback(req =>
+            {
+                var userType = StubToken.ResolveUserType(req);
+                var isCsMember = userType == StubToken.UserType.CsMemberProducer;
+
+                if (!isCsMember)
+                {
+                    return new WireMock.ResponseMessage { StatusCode = 204 };
+                }
+
+                var body = new
+                {
+                    selectedSchemeId = Guid.Parse("d4444444-5555-6666-7777-888888888888"),
+                    complianceSchemeId = Guid.Parse("e5555555-6666-7777-8888-999999999999"),
+                    complianceSchemeName = "Mock Compliance Scheme Ltd",
+                    complianceSchemeOperatorName = "COMPLIANCE SCHEME LTD",
+                    complianceSchemeOperatorId = Guid.Parse("a1111111-2222-3333-4444-555555555555")
+                };
+
+                return new WireMock.ResponseMessage
+                {
+                    StatusCode = 200,
+                    Headers = new Dictionary<string, WireMockList<string>>
+                    {
+                        { "Content-Type", new WireMockList<string>("application/json") }
+                    },
+                    BodyData = new BodyData
+                    {
+                        BodyAsJson = body,
+                        DetectedBodyType = BodyType.Json
+                    }
+                };
+            }));
+
+        // GET /api/user-accounts
         server.Given(Request.Create()
                 .UsingGet()
                 .WithPath("/api/user-accounts"))
             .RespondWith(Response.Create()
                 .WithCallback(req =>
                 {
-                    string? token = null;
-                    if (req.Headers != null && req.Headers.TryGetValue("Authorization", out var header))
+                    var userId = StubToken.ExtractUserId(req);
+                    var userType = StubToken.ResolveUserType(req);
+                    var nation = StubToken.ResolveNation(req);
+
+                    Guid orgId;
+                    string orgName;
+                    string orgRole;
+                    string orgNumber;
+                    string companiesHouseNumber;
+
+                    switch (userType)
                     {
-                        var authHeader = header.FirstOrDefault();
-                        if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-                        {
-                            token = authHeader["Bearer ".Length..].Trim();
-                        }
+                        case StubToken.UserType.DirectProducer:
+                            orgId = Guid.Parse("b2222222-3333-4444-5555-666666666666");
+                            orgName = "DIRECT PRODUCER LTD";
+                            orgRole = "Producer";
+                            orgNumber = "100001";
+                            companiesHouseNumber = "PRD_GENERATED_100001";
+                            break;
+                        case StubToken.UserType.CsMemberProducer:
+                            orgId = Guid.Parse("c3333333-4444-5555-6666-777777777777");
+                            orgName = "CS MEMBER PRODUCER LTD";
+                            orgRole = "Producer";
+                            orgNumber = "200002";
+                            companiesHouseNumber = "PRD_GENERATED_200002";
+                            break;
+                        default:
+                            orgId = Guid.Parse("a1111111-2222-3333-4444-555555555555");
+                            orgName = "COMPLIANCE SCHEME LTD";
+                            orgRole = "Compliance Scheme";
+                            orgNumber = "154977";
+                            companiesHouseNumber = "CS_GENERATED_3603716";
+                            break;
                     }
 
-                    // The ID entered when using stub authentication will drive the organisation id.
-                    // With the stub auth handler the bearer token is generated from the user id.
-                    var orgId = Guid.Parse("a1111111-2222-3333-4444-555555555555");
-                    
-                    if (!Guid.TryParse(token, out var guid))
-                    {
-                        orgId = guid;
-                    }
-                    
                     var body = new
                     {
                         user = new
                         {
-                            id = "579c319d-d552-47a2-bf4c-5a125a3183bc",
+                            id = userId ?? Guid.NewGuid().ToString(),
                             firstName = "Test",
-                            lastName = "User",
+                            lastName = userType == StubToken.UserType.DirectProducer ? "Producer" :
+                                       userType == StubToken.UserType.CsMemberProducer ? "Member" : "User",
                             email = "test+17122025143216@user.com",
                             roleInOrganisation = "Admin",
                             enrolmentStatus = "Approved",
@@ -164,25 +230,25 @@ public static class Accounts
                                 new
                                 {
                                     id = orgId,
-                                    name = "SUPER TEST LTD",
+                                    name = orgName,
                                     tradingName = (string?)null,
-                                    organisationRole = "Compliance Scheme",
+                                    organisationRole = orgRole,
                                     organisationType = "Companies House Company",
-                                    OrganisationNumber = "154977",
-                                    companiesHouseNumber = "CS_GENERATED_3603716",
+                                    OrganisationNumber = orgNumber,
+                                    companiesHouseNumber = companiesHouseNumber,
                                     subBuildingName = (string?)null,
                                     buildingName = (string?)null,
                                     buildingNumber = "4",
                                     street = "Address 1",
                                     locality = "Some Road",
                                     dependentLocality = (string?)null,
-                                    town = "London",
+                                    town = nation.Country,
                                     county = (string?)null,
-                                    country = "England",
+                                    country = nation.Country,
                                     postcode = "NW1 1HG",
                                     organisationAddress = (string?)null,
                                     jobTitle = (string?)null,
-                                    nationId = 1,
+                                    nationId = nation.NationId,
                                     personRoleInOrganisation = (string?)null,
                                     isChangeRequestPending = false,
                                     enrolments = (object?)null
@@ -238,6 +304,16 @@ public static class Accounts
                     isDeleted = false
                 }));
 
+        // GET /api/notifications
+        server.Given(Request.Create()
+                .UsingGet()
+                .WithPath("/api/notifications"))
+            .RespondWith(Response.Create()
+                .WithStatusCode(200)
+                .WithHeader("Content-Type", "application/json")
+                .WithBodyAsJson(new { notifications = Array.Empty<object>() }));
+
         return server;
     }
+
 }

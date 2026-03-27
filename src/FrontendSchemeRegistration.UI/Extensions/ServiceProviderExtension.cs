@@ -356,10 +356,10 @@ public static class ServiceProviderExtension
                 {
                     var redirectUri = new Uri(c.RedirectUri);
 
-                    var redirectQuery = HttpUtility.UrlEncode(
-                        $"{redirectUri.Authority}{HttpUtility.UrlDecode(redirectUri.Query.Replace("?ReturnUrl=", ""))}");
+                    var returnPath = HttpUtility.UrlDecode(
+                        redirectUri.Query.Replace("?ReturnUrl=", string.Empty));
 
-                    c.Response.Redirect("/services/account-details?ReturnUrl=" + redirectQuery);
+                    c.Response.Redirect("/services/account-details?ReturnUrl=" + HttpUtility.UrlEncode(returnPath));
 
                     return Task.CompletedTask;
                 };
