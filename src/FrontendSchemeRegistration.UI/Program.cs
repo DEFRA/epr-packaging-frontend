@@ -2,13 +2,11 @@ using FrontendSchemeRegistration.Application.ConfigurationExtensions;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Middleware;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement;
 using Microsoft.IdentityModel.Logging;
 using Serilog;
-using Serilog.Sinks.ApplicationInsights.TelemetryConverters;
 using CookieOptions = FrontendSchemeRegistration.Application.Options.CookieOptions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,15 +25,22 @@ ThreadPool.SetMinThreads(30, 30);
 // Register Application Insights early so Serilog can reuse the same TelemetryConfiguration.
 services.AddApplicationInsightsTelemetry();
 
-builder.Logging.ClearProviders();
-builder.Host.UseSerilog((context, serviceProvider, config) =>
+if (isComponentTest)
 {
-    config.ReadFrom.Configuration(context.Configuration);
-    config.Enrich.WithProperty("Application", context.HostingEnvironment.ApplicationName);
-    config.Enrich.WithProperty("ContainerImage", containerImage ?? "NOT_SET");
-    config.Enrich.WithProperty("BuildNumber", buildNumber ?? "NOT_SET");
-    config.Enrich.WithProperty("GitSha", gitSha ?? "NOT_SET");
-});
+    services.AddLogging();
+}
+else
+{
+    builder.Logging.ClearProviders();
+    builder.Host.UseSerilog((context, serviceProvider, config) =>
+    {
+        config.ReadFrom.Configuration(context.Configuration);
+        config.Enrich.WithProperty("Application", context.HostingEnvironment.ApplicationName);
+        config.Enrich.WithProperty("ContainerImage", containerImage ?? "NOT_SET");
+        config.Enrich.WithProperty("BuildNumber", buildNumber ?? "NOT_SET");
+        config.Enrich.WithProperty("GitSha", gitSha ?? "NOT_SET");
+    });
+}
 
 services.AddFeatureManagement();
 services.AddAntiforgery(opts =>
@@ -113,9 +118,11 @@ else
 }
 
 app.UseForwardedHeaders();
-
 app.UseStaticFiles();
-app.UseSerilogRequestLogging(); // after `UseStaticFiles()` to prevent logging of requests to css/js/png etc.
+
+if (!isComponentTest)
+    app.UseSerilogRequestLogging(); // after `UseStaticFiles()` to prevent logging of requests to css/js/png etc.
+
 app.UseMiddleware<SecurityHeaderMiddleware>();
 app.UseCookiePolicy();
 app.UseStatusCodePagesWithReExecute("/error", "?statusCode={0}");
@@ -123,7 +130,6 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseRouting();
 app.UseSession();
-
 app.UseAuthorization();
 app.UseMiddleware<UserDataCheckerMiddleware>();
 app.UseMiddleware<JourneyAccessCheckerMiddleware>();

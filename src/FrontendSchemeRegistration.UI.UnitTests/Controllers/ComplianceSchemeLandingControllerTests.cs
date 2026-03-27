@@ -23,7 +23,9 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
 
 using Application.Enums;
 using Application.Extensions;
+using Application.Options;
 using Constants;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Time.Testing;
 using Microsoft.FeatureManagement;
 using UI.ViewModels.Shared;
@@ -168,7 +170,8 @@ public class ComplianceSchemeLandingControllerTests
             _resubmissionApplicationService.Object,
             _nullLogger,
             _featureManagerMock.Object,
-            _testTimeProvider)
+            _testTimeProvider,
+            new OptionsWrapper<CsocOptions>(new CsocOptions()))
         {
             ControllerContext = { HttpContext = _httpContextMock.Object }
         };

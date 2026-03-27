@@ -15,7 +15,7 @@ public class ComponentTestContext : IDisposable
     
     public ComponentTestClient Client { get; private set; }
 
-    public void SetUp(bool overrideSession = false)
+    public void SetUp(bool overrideSession = false, Dictionary<string, string?>? additionalConfig = null)
     {
         _staticMockApiServer = MockApiServer.Start();
         
@@ -25,6 +25,9 @@ public class ComponentTestContext : IDisposable
             if (overrideSession)
                 services.AddSingleton<ISessionStore, SessionStore>();
         };
+        if (additionalConfig is not null)
+            factory.AdditionalConfig = additionalConfig;
+        
         var webApp = factory
             .WithWebHostBuilder(c =>
                 c.UseEnvironment("ComponentTest")

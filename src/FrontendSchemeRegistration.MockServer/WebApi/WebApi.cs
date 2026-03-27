@@ -171,6 +171,12 @@ public static class WebApi
 
         server.Given(Request.Create().UsingPost().WithPath("/api/v1/prn/status"))
             .RespondWith(Response.Create().WithStatusCode(200));
+        
+        server.Given(Request.Create().UsingGet().WithPath("/api/v1/prn/obligationcalculation/*"))
+            .RespondWith(Response.Create()
+                .WithStatusCode(200)
+                .WithHeader("Content-Type", "application/json")
+                .WithBodyFromFile("WebApi/Responses/WebApi/v1_prn_obligationcalculation.json"));
 
         // Subsidiary (returning empty/default object)
         server.Given(Request.Create().UsingGet().WithPath("/api/v1/subsidiary/*/*"))

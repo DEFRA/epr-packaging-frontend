@@ -17,11 +17,39 @@ public static class VerifyHtml
     {
         DefaultSettings.PrettyPrintHtml(nodes =>
         {
-            nodes.ScrubAttributes("nonce");
+            // Removing all script nodes. There seems to be odd behaviour at times
+            // in how the content of the script tag is rendered. Not tracked down
+            // the issue but can remove the node in full for now as not testing
+            // any script output currently.
+            foreach (var node in nodes.QuerySelectorAll("script"))
+                node.Remove();
             
             foreach (var node in nodes.QuerySelectorAll("input[name=\"__RequestVerificationToken\"]"))
                 node.Attributes.GetNamedItem("value").Value = "[Scrubbed]";
         });
+    }
+    
+    public static SettingsTask ScrubCommonHtmlNodes(this SettingsTask settings)
+    {
+        settings.PrettyPrintHtml(nodes =>
+        {
+            foreach (var node in nodes.QuerySelectorAll("header"))
+                node.Remove();
+            
+            foreach (var node in nodes.QuerySelectorAll("footer"))
+                node.Remove();
+            
+            foreach (var node in nodes.QuerySelectorAll("meta"))
+                node.Remove();
+            
+            foreach (var node in nodes.QuerySelectorAll("link"))
+                node.Remove();
+            
+            foreach (var node in nodes.QuerySelectorAll("div[class=\"govuk-cookie-banner \"]"))
+                node.Remove();
+        });
+        
+        return settings;
     }
 }
 

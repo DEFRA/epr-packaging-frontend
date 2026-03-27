@@ -4,15 +4,13 @@
 {
     var key = Model switch
     {
-        { IsComplianceScheme: true } => "paragraph_compliance_scheme",
-        { IsDirectProducer: true } => "paragraph_direct_producer",
+        { IsComplianceScheme: true } => "compliance_scheme",
+        { IsDirectProducer: true } => "direct_producer",
         _ => null
     };
 
     if (key is not null)
     {
-        <p class="govuk-body">
-            @string.Format(Localizer[key].Value, Model.SubmissionDeadline)
-        </p>
+        <p class="govuk-body">@Localizer[$"paragraph_{key}", Model.SubmissionDeadline]</p>
     }
 }

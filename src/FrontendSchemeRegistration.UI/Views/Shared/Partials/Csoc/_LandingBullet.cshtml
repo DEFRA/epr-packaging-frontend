@@ -4,13 +4,13 @@
 {
     var key = Model switch
     {
-        { IsComplianceScheme: true } => "bullet_compliance_scheme",
-        { IsDirectProducer: true } => "bullet_direct_producer",
+        { IsComplianceScheme: true } => "compliance_scheme",
+        { IsDirectProducer: true } => "direct_producer",
         _ => null
     };
     
     if (key is not null)
     {
-        <li>@Localizer[key]</li>
+        <li>@Localizer[$"bullet_{key}"]</li>
     }
 }

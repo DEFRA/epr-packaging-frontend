@@ -14,9 +14,14 @@ using Newtonsoft.Json;
 
 namespace FrontendSchemeRegistration.UI.Controllers.Prns;
 
+using System.Diagnostics.CodeAnalysis;
 using Application.Extensions;
+using EPR.Common.Authorization.Models;
 using Extensions;
+using Helpers;
+using Microsoft.FeatureManagement;
 
+[SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters", Justification = "Required for dependency injection")]
 [FeatureGate(FeatureFlags.ShowPrn)]
 [ServiceFilter(typeof(ComplianceSchemeIdHttpContextFilterAttribute))]
 [PrnsObligationActionFilterAttribute]
@@ -24,9 +29,12 @@ public class PrnsObligationController : Controller
 {
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
     private readonly IPrnService _prnService;
+    private readonly TimeProvider _timeProvider;
     private readonly IOptions<GlobalVariables> _globalVariables;
     private readonly ExternalUrlOptions _urlOptions;
     private readonly ILogger<PrnsObligationController> _logger;
+    private readonly IFeatureManager _featureManager;
+    private readonly IOptions<CsocOptions> _csocOptions;
     private readonly string _logPrefix;
     private readonly int _complianceYear;
 
@@ -35,13 +43,18 @@ public class PrnsObligationController : Controller
         TimeProvider timeProvider,
         IOptions<GlobalVariables> globalVariables,
         IOptions<ExternalUrlOptions> urlOptions,
-        ILogger<PrnsObligationController> logger)
+        ILogger<PrnsObligationController> logger,
+        IFeatureManager featureManager,
+        IOptions<CsocOptions> csocOptions)
     {
         _sessionManager = sessionManager;
         _prnService = prnService;
+        _timeProvider = timeProvider;
         _globalVariables = globalVariables;
         _urlOptions = urlOptions.Value;
         _logger = logger;
+        _featureManager = featureManager;
+        _csocOptions = csocOptions;
         _logPrefix = _globalVariables.Value.LogPrefix;
         _complianceYear = timeProvider.GetUtcNow().GetComplianceYear();
     }
@@ -53,13 +66,25 @@ public class PrnsObligationController : Controller
     public async Task<IActionResult> ObligationsHome()
     {
         var viewModel = await _prnService.GetRecyclingObligationsCalculation(_complianceYear);
+        
         _logger.LogInformation(
             "{LogPrefix}: PrnsObligationController - ObligationsHome: Recycling Obligations returned for year {Year} : {Results}",
             _logPrefix, _complianceYear, JsonConvert.SerializeObject(viewModel));
 
-        await FillViewModelFromSessionAsync(viewModel);
+        var userData = await FillViewModelFromSessionAsync(viewModel);
 
         ViewBag.HomeLinkToDisplay = _globalVariables.Value.BasePath;
+
+        var isApprovedUser = userData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved);
+        var organisation = userData.Organisations[0];
+        
+        viewModel.CsocViewModel = await CsocHelper.CreateViewModel(
+            _featureManager, 
+            isApprovedUser, 
+            organisation,
+            _timeProvider.GetLocalNow().DateTime,
+            _csocOptions.Value);
+        
         return View(viewModel);
     }
 
@@ -114,7 +139,7 @@ public class PrnsObligationController : Controller
     }
 
     [NonAction]
-    public async Task FillViewModelFromSessionAsync(PrnObligationViewModel viewModel)
+    public async Task<UserData> FillViewModelFromSessionAsync(PrnObligationViewModel viewModel)
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
 
@@ -125,7 +150,7 @@ public class PrnsObligationController : Controller
             _logger.LogWarning(
                 "{LogPrefix}: PrnsObligationController - FillViewModelFromSessionAsync - No organisation found in session.",
                 _logPrefix);
-            return;
+            return session.UserData;
         }
 
         var isDirectProducer = organisation.OrganisationRole == OrganisationRoles.Producer;
@@ -138,5 +163,7 @@ public class PrnsObligationController : Controller
             ? organisation.NationId
             : session.RegistrationSession.SelectedComplianceScheme?.NationId ?? 0;
         viewModel.ComplianceYear = _complianceYear;
+        
+        return session.UserData;
     }
 }
