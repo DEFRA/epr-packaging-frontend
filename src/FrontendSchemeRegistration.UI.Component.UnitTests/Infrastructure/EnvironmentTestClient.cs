@@ -19,6 +19,9 @@ public class EnvironmentTestClient(string baseUrl) : TestClientBase
         return response;
     }
 
+    public override Task<HttpResponseMessage> PostWithFileAsync(string url, byte[] fileContent, string fileName, Dictionary<string, string>? additionalFormData = null) =>
+        throw new NotImplementedException("File upload not supported for RunOnDev tests");
+
     public override async Task<HttpResponseMessage> PostAsync(string url, Dictionary<string, string> content)
     {
         var getResponse = await GetAsync(url);

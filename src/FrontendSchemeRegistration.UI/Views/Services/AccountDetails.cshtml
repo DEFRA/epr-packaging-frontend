@@ -9,13 +9,41 @@
                 <form method="POST" asp-route="@StubAuthRouteNames.StubAccountPost">
                     <input asp-for="ReturnUrl" type="hidden"/>
                     <div class="govuk-form-group">
-                        <label class="govuk-label" asp-for="UserId">UserId</label>
-                        <input class="govuk-input" asp-for="UserId" type="text">
-                    </div>
-                    <div class="govuk-form-group">
                         <label class="govuk-label" asp-for="Email">Email</label>
-                        <input class="govuk-input" asp-for="Email" type="email">
+                        <div id="email-hint" class="govuk-hint">
+                            Use keywords in the email to control the user type, nation, and registration state.
+                            For example: producer.scotland.fees&#64;test.com
+                        </div>
+                        <input class="govuk-input" asp-for="Email" type="email" aria-describedby="email-hint">
                     </div>
+                    <details class="govuk-details">
+                        <summary class="govuk-details__summary">
+                            <span class="govuk-details__summary-text">Email keyword reference</span>
+                        </summary>
+                        <div class="govuk-details__text">
+                            <p class="govuk-body"><strong>User type</strong> (default: Compliance Scheme)</p>
+                            <ul class="govuk-list govuk-list--bullet">
+                                <li><code>producer</code> &ndash; Direct Producer</li>
+                                <li><code>csmember</code> &ndash; CS-managed Producer</li>
+                            </ul>
+                            <p class="govuk-body"><strong>Nation</strong> (default: England)</p>
+                            <ul class="govuk-list govuk-list--bullet">
+                                <li><code>scotland</code>, <code>wales</code>, <code>northernireland</code></li>
+                            </ul>
+                            <p class="govuk-body"><strong>Registration state</strong> (default: uploaded)</p>
+                            <ul class="govuk-list govuk-list--bullet">
+                                <li><code>notstarted</code>, <code>fees</code>, <code>paid</code>, <code>completed</code>, <code>accepted</code>, <code>rejected</code>, <code>queried</code></li>
+                            </ul>
+                            <p class="govuk-body"><strong>Packaging data (POM) sub-landing status</strong> (use <code>pom.</code> prefix)</p>
+                            <ul class="govuk-list govuk-list--bullet">
+                                <li><code>pom.accepted</code> &ndash; Accepted by Regulator</li>
+                                <li><code>pom.rejected</code> &ndash; Rejected by Regulator</li>
+                                <li><code>pom.resubfees.pending</code> &ndash; Resubmission in progress, memberCount=1, fee £2,500 outstanding</li>
+                                <li><code>pom.resubfees.viewed</code> &ndash; Resubmission in progress, memberCount=1, fee paid (zero outstanding)</li>
+                                <li><code>pom.resubfees.nomembers</code> &ndash; Resubmission in progress, memberCount=0, no additional fee to pay</li>
+                            </ul>
+                        </div>
+                    </details>
                     <div class="govuk-button-group">
                         <button class="govuk-button" data-module="govuk-button" type="submit">Sign In</button>
                     </div>

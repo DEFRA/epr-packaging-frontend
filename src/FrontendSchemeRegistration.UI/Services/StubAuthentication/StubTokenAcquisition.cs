@@ -18,10 +18,7 @@ public class StubTokenAcquisition(IHttpContextAccessor httpContextAccessor) : IT
         ClaimsPrincipal? user = null,
         TokenAcquisitionOptions? tokenAcquisitionOptions = null)
     {
-        //This gets the id of the user from the claims and set as the
-        // bearer token for the stub - this is then pulled out in the mock server to build requests
-        var userId = httpContextAccessor.HttpContext.User.Claims.GetClaim(ClaimTypes.NameIdentifier);
-        return Task.FromResult(userId);
+        return Task.FromResult(BuildStubToken());
     }
 
     public Task<AuthenticationResult> GetAuthenticationResultForUserAsync(
@@ -41,8 +38,17 @@ public class StubTokenAcquisition(IHttpContextAccessor httpContextAccessor) : IT
         string? tenant = null,
         TokenAcquisitionOptions? tokenAcquisitionOptions = null)
     {
-        var userId = httpContextAccessor.HttpContext.User.Claims.GetClaim(ClaimTypes.NameIdentifier);
-        return Task.FromResult(userId);
+        return Task.FromResult(BuildStubToken());
+    }
+
+    // Encodes both the UserId and Email into the bearer token so the mock
+    // server can use email keywords to vary its responses.  Format: {userId}::{email}
+    private string BuildStubToken()
+    {
+        var claims = httpContextAccessor.HttpContext.User.Claims;
+        var userId = claims.GetClaim(ClaimTypes.NameIdentifier);
+        var email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+        return string.IsNullOrEmpty(email) ? userId : $"{userId}::{email}";
     }
 
     public Task<AuthenticationResult> GetAuthenticationResultForAppAsync(

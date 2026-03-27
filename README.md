@@ -100,20 +100,237 @@ It is possible to run the application locally against a mock server. This is use
 mock server is used to replace the following endpoints:
 
 ```json
-
     "WebAPI:BaseEndpoint": "http://localhost:9091",
     "PaymentFacadeApi:BaseUrl": "http://localhost:9091",
     "EprAuthorizationConfig:FacadeBaseUrl": "http://localhost:9091/api/",
-    "AccountsFacadeAPI:BaseEndpoint": "http://localhost:9091/api/
-
+    "AccountsFacadeAPI:BaseEndpoint": "http://localhost:9091/api/"
 ```
+
 Along with this the authentication can also be stubbed. This removes the requirement to connect to azure b2c. When the stub authentication is enabled, you are presented with
 a login screen to enter a Id and email address. The Id is then used as part of the token generation for the user when communicating with the API. This means that we can
 serve different responses based on the user that is logged in.
 
-#### Component tests
+#### Running the mock server standalone (for manual testing)
 
-The component test project is setup in the project that runs the web application and mock server allowing for tests to be run through the full application.
+Start the WireMock mock server in one terminal:
+
+```bash
+cd src
+dotnet run --project FrontendSchemeRegistration.MockServer
+```
+
+Then start the UI application pointing at the mock server in another terminal. The environment **must** be `ComponentTest` for the stub login page to work (it returns 404 in any other environment). Use the `ComponentTest` launch profile:
+
+```bash
+cd src
+dotnet run --project FrontendSchemeRegistration.UI --launch-profile ComponentTest \
+  -- \
+  --IsStubAuth=true \
+  --UseLocalSession=true \
+  --WebAPI:BaseEndpoint=http://localhost:9091 \
+  --PaymentFacadeApi:BaseUrl=http://localhost:9091 \
+  --EprAuthorizationConfig:FacadeBaseUrl=http://localhost:9091/api/ \
+  --AccountsFacadeAPI:BaseEndpoint=http://localhost:9091/api/
+```
+
+Alternatively, skip the launch profile entirely and set the environment variable directly:
+
+```bash
+cd src
+dotnet run --project FrontendSchemeRegistration.UI --no-launch-profile \
+  --urls "https://localhost:7084;http://localhost:5145" \
+  -- \
+  --environment ComponentTest \
+  --IsStubAuth=true \
+  --UseLocalSession=true \
+  --WebAPI:BaseEndpoint=http://localhost:9091 \
+  --PaymentFacadeApi:BaseUrl=http://localhost:9091 \
+  --EprAuthorizationConfig:FacadeBaseUrl=http://localhost:9091/api/ \
+  --AccountsFacadeAPI:BaseEndpoint=http://localhost:9091/api/
+```
+
+You can then browse to `https://localhost:7084/report-data` and use the stub login screen. The port is defined in `Properties/launchSettings.json` (HTTPS: 7084, HTTP: 5145).
+
+#### Component tests (WireMock integration tests)
+
+The component test project (`FrontendSchemeRegistration.UI.Component.UnitTests`) runs the web application in-process using `WebApplicationFactory` with WireMock providing all external API responses. Tests are written as Reqnroll (BDD) feature files. Allure Report is configured for HTML test reports with support for attachments (e.g. screenshots, HTML dumps).
+
+##### Running component tests locally
+
+Run all WireMock-backed component tests:
+
+```bash
+cd src
+dotnet test FrontendSchemeRegistration.UI.Component.UnitTests \
+  --filter "Category=WireMockServer" \
+  --logger "console;verbosity=detailed"
+```
+
+Run a specific feature file by scenario name:
+
+```bash
+cd src
+dotnet test FrontendSchemeRegistration.UI.Component.UnitTests \
+  --filter "Category=WireMockServer&Name~Producer" \
+  --logger "console;verbosity=detailed"
+```
+
+##### Allure Report (HTML reports with attachments)
+
+Component tests use [Allure.Reqnroll](https://allurereport.org/docs/reqnroll/) for HTML reporting. Test results are written to `allure-results/` at the repository root.
+
+**Prerequisites:** [Allure Report CLI](https://allurereport.org/docs/v2/install/) (requires Java to be installed).
+
+Run tests, then generate and view the report:
+
+```bash
+cd src
+dotnet test FrontendSchemeRegistration.UI.Component.UnitTests \
+  --filter "Category=WireMockServer" \
+  --logger "console;verbosity=detailed"
+```
+
+From the repository root:
+
+```bash
+allure serve allure-results
+```
+
+This generates the report and opens it in your browser. Alternatively:
+
+```bash
+allure generate allure-results -o allure-report --clean
+allure open allure-report
+```
+
+You can attach screenshots and other files from step definitions using `AllureApi.AddAttachment()` — see [Allure Reqnroll docs](https://allurereport.org/docs/reqnroll/).
+
+##### Running component tests in CI/CD
+
+A dedicated pipeline is available at `pipelines/component_test_pipeline.yaml`. To run from the command line in a CI environment:
+
+```bash
+dotnet test src/FrontendSchemeRegistration.UI.Component.UnitTests \
+  --configuration Release \
+  --filter "Category=WireMockServer" \
+  --results-directory ./test-results \
+  --logger "trx;LogFileName=component-tests.trx"
+```
+
+The test results will be output as a `.trx` file suitable for Azure DevOps test result publishing. For Allure reports in CI, ensure the `allure-results` directory is preserved as an artifact; then run `allure generate` in a subsequent job if needed.
+
+##### Email-driven stub authentication
+
+The stub login page has a single field: **Email**. The email address controls everything — user type, UK nation, and registration state. A `UserId` is auto-generated from the email (a deterministic SHA-256-based GUID) so each email address consistently maps to the same identity.
+
+The `StubTokenAcquisition` encodes both the UserId and Email into the bearer token (format: `{userId}::{email}`). The mock server parses the email and checks for **keywords** (case-insensitive) to select different response variants.
+
+###### User type keywords
+
+Include a keyword in the email to set the user type. If no keyword matches, the default is **Compliance Scheme**.
+
+| Keyword | User Type | Org Role | Homepage | Org Name |
+|---------|-----------|----------|----------|----------|
+| `producer` | Direct Producer | `Producer` | `/report-data/home-self-managed` | DIRECT PRODUCER LTD |
+| `csmember` | CS-managed Producer | `Producer` | `/report-data/manage-compliance-scheme` | CS MEMBER PRODUCER LTD |
+| *(default)* | Compliance Scheme | `Compliance Scheme` | `/report-data/home-compliance-scheme` | COMPLIANCE SCHEME LTD |
+
+The routing is determined by two data points:
+1. `organisationRole` in the `/api/user-accounts` response (`"Compliance Scheme"` vs `"Producer"`)
+2. The `/api/compliance-schemes/get-for-producer/` response (204 = self-managed, 200 with data = CS-managed)
+
+Three Reqnroll tags are still available as shortcuts for common scenarios:
+
+| Tag | Email used |
+|-----|-----------|
+| `@AuthenticateComplianceSchemeUser` | `cs@test.com` |
+| `@AuthenticateDirectProducerUser` | `producer@test.com` |
+| `@AuthenticateDirectProducerNotStarted` | `producer.notstarted@test.com` (Not Started registration state; use for first-time file upload) |
+| `@AuthenticateCsMemberProducerUser` | `csmember@test.com` |
+
+For custom scenarios (e.g. specific nation + registration state), use the `Given I am logged in with email ...` step directly.
+
+###### Registration state keywords
+
+Include a keyword in the email to change the registration task list state:
+
+| Email keyword | Task list state | Description |
+|---------------|----------------|-------------|
+| `notstarted` | Not Started | No file uploaded, all tasks locked |
+| `uploaded` | File Uploaded (default) | File uploaded, awaiting processing |
+| `fees` | Ready for Payment | File processed, fees calculated, payment not yet made |
+| `paid` | Payment Complete | Fees paid, application not yet submitted |
+| `completed` | Fully Submitted | Application submitted to regulator |
+| `accepted` | Accepted | Accepted by regulator |
+| `rejected` | Rejected | Rejected by regulator (file upload resets) |
+| `queried` | Queried | Queried by regulator (file upload resets) |
+
+**Examples:**
+
+- `completed@test.com` → Compliance Scheme, England, fully submitted task list
+- `producer.scotland.fees@test.com` → Direct Producer, Scotland, fees stage
+- `csmember.wales@test.com` → CS-managed Producer, Wales, default state
+- `cs.rejected@test.com` → Compliance Scheme, England, rejected registration
+- `test@test.com` → Compliance Scheme (default), England (default), uploaded state (default)
+
+If no keyword is matched, the default response files are used (`SmallProducerRegistrationApplicationDetails.json` / `LargeProducerRegistrationApplicationDetails.json`).
+
+The response files are located in `FrontendSchemeRegistration.MockServer/WebApi/Responses/RegistrationTaskList/` and follow the naming convention `{SmallProducer|LargeProducer}{Suffix}.json`.
+
+To extend this pattern to other endpoints, use `StubToken.ExtractEmail(req)` in the mock server's `WithCallback` handlers and check for keywords.
+
+###### Packaging data (POM) sub-landing status keywords
+
+The **File Upload Sub Landing** page (`/report-data/file-upload-sub-landing`) shows a status tag on each submission period card. Include one of the following prefixed keywords in the email to drive a specific POM status for the `January to June 2025` period:
+
+| Email keyword | POM status shown | Description |
+|---------------|-----------------|-------------|
+| `pom.accepted` | Accepted by Regulator (green) | Submission accepted; warning banner shown |
+| `pom.rejected` | Rejected by Regulator (red) | Submission rejected; resubmit link shown |
+| `pom.resubfees.pending` | In Progress | Resubmission underway — fees **not yet viewed**; fee page shows £2,500 outstanding |
+| `pom.resubfees.viewed` | In Progress | Resubmission underway — fees **viewed**; fee page shows zero outstanding (fee paid) |
+|| `pom.resubfees.nomembers` | In Progress | Resubmission underway — **memberCount=0**; fee page shows “no additional fee to pay” |
+
+**Examples:**
+
+- `pom.accepted@test.com` → Compliance Scheme user, packaging data accepted
+- `pom.rejected@test.com` → Compliance Scheme user, packaging data rejected
+- `pom.resubfees.pending@test.com` → Compliance Scheme user, resubmission in progress; £2,500 fee due on fee page
+- `pom.resubfees.viewed@test.com` → Compliance Scheme user, resubmission in progress; zero fee outstanding on fee page
+- `pom.resubfees.nomembers@test.com` → Compliance Scheme user, resubmission in progress; memberCount=0, no additional fee to pay
+
+> **Note:** The `pom.` prefix is required to distinguish these keywords from the registration state keywords above (e.g. `accepted@test.com` drives the registration state, not POM status).
+
+For the `pom.resubfees.*` emails the full resubmission fee journey is supported end-to-end:
+
+1. Sub-landing page (`/report-data/file-upload-sub-landing`) — shows **In Progress** for January to June 2025.
+2. Continuing from the sub-landing redirects to the **Resubmission Task List** (`/report-data/resubmission-task-list`).
+3. The **Resubmission Fee Calculations** page (`/report-data/resubmission-fee-calculations`) shows:
+   - `pom.resubfees.pending` → **"Packaging data resubmission fee due"** — £2,500.00 outstanding
+   - `pom.resubfees.viewed` → **"Packaging data resubmission fee paid"** — zero outstanding
+   - `pom.resubfees.nomembers` → **"You have no additional fee to pay"** — memberCount=0 (CS with no chargeable members)
+
+##### Nation-driven mock responses
+
+The email address also controls the **UK nation** returned by the mock server. This affects the organisation's `nationId`, the compliance scheme's `NationId`, and the CS summary's `Nation` field, which in turn determines the environmental regulator displayed on the CS homepage.
+
+| Email keyword | Nation | Regulator shown on CS homepage |
+|---------------|--------|-------------------------------|
+| `england` (default) | England | the Environment Agency |
+| `scotland` | Scotland | the Scottish Environment Protection Agency |
+| `wales` | Wales | Natural Resources Wales |
+| `northernireland` | Northern Ireland | the Northern Ireland Environment Agency |
+
+If no nation keyword is found in the email, the default nation is **England**. Nation keywords can be combined with registration task list keywords, e.g. `completed.scotland@test.com` returns a completed task list for a Scottish organisation.
+
+##### Adding new tests
+
+1. Add new page URLs to `Data/Pages.cs` if testing a new route
+2. Add new WireMock stubs to `FrontendSchemeRegistration.MockServer/WebApi/` if the page calls APIs not yet mocked
+3. Create a new `.feature` file in `Features/` using existing step definitions from `Steps/HttpSteps.cs` and `Steps/ContentSteps.cs`
+4. Tag scenarios with `@WireMockServer` (required) and either:
+   - Use an auth tag (`@AuthenticateComplianceSchemeUser`, `@AuthenticateDirectProducerUser`, or `@AuthenticateCsMemberProducerUser`) for default scenarios, or
+   - Use `Given I am logged in with email <email>` for fine-grained control over user type, nation, and registration state
 
 ### Running against the epr-local-environment
 
@@ -285,6 +502,8 @@ A health check can be found at ```{BASE_URL}/admin/health```
 - `FrontendSchemeRegistration/FrontendSchemeRegistration.PactTests` - .NET Pact tests
 - `FrontendSchemeRegistration/FrontendSchemeRegistration.UI` - UI .NET unit source files
 - `FrontendSchemeRegistration/FrontendSchemeRegistration.UI.UnitTests` - UI .NET unit test files
+- `FrontendSchemeRegistration/FrontendSchemeRegistration.UI.Component.UnitTests` - WireMock component/integration tests (Reqnroll BDD)
+- `FrontendSchemeRegistration/FrontendSchemeRegistration.MockServer` - WireMock mock server for local development and testing
 
 ## Contributing to this project
 
