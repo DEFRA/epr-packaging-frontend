@@ -59,17 +59,20 @@ public class ComplianceSchemeLandingController(
         var resubmissionApplicationDetails = await resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(
             organisation, new List<string> { packagingResubmissionPeriod.DataPeriod }, session.RegistrationSession.SelectedComplianceScheme?.Id);
 
+        var isApprovedUser = userData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved);
+        
         var model = new ComplianceSchemeLandingViewModel
         {
             CurrentComplianceSchemeId = currentComplianceSchemeId,
-            IsApprovedUser = userData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved),
+            IsApprovedUser = isApprovedUser,
             CurrentTabSummary = currentSummary,
             OrganisationName = organisation.Name,
             ComplianceSchemes = complianceSchemes,
             ResubmissionTaskListViewModel = resubmissionApplicationDetails.ToResubmissionTaskListViewModel(organisation),
             PackagingResubmissionPeriod = packagingResubmissionPeriod,
             ComplianceYear = now.GetComplianceYear().ToString(),
-            CsoRegistrationEnabled = csoRegistrationEnabled
+            CsoRegistrationEnabled = csoRegistrationEnabled,
+            CsocViewModel = await DetermineCsocViewModel()
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id.Value);
@@ -88,6 +91,20 @@ public class ComplianceSchemeLandingController(
         session.SubsidiarySession.Journey.Clear();
 
         return View("ComplianceSchemeLanding", model);
+
+        async Task<CsocViewModel?> DetermineCsocViewModel()
+        {
+            var enabled = await featureManager.IsEnabledAsync(FeatureFlags.CsocEnabled);
+            if (!enabled) return null;
+
+            return new CsocViewModel
+            {
+                IsApprovedUser = isApprovedUser,
+                IsDirectProducer = organisation.IsDirectProducer(),
+                IsComplianceScheme = organisation.IsComplianceScheme(),
+                SubmissionDeadline = now.GetCsocSubmissionDeadline()
+            };
+        }
     }
 
     [HttpPost]

@@ -1,5 +1,8 @@
 namespace FrontendSchemeRegistration.UI.Constants;
 
+using System.Diagnostics.CodeAnalysis;
+
+[ExcludeFromCodeCoverage]
 public static class FeatureFlags
 {
     public const string ShowLanguageSwitcher = "ShowLanguageSwitcher";
@@ -29,4 +32,5 @@ public static class FeatureFlags
     public const string DisplayCsoSmallProducerRegistration = "DisplayCsoSmallProducerRegistration";
     public const string CsoRegistrationEnabled = "CsoRegistrationEnabled";
     public const string ShowNotificationBanner = "ShowNotificationBanner";
+    public const string CsocEnabled = nameof(CsocEnabled);
 }

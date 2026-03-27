@@ -37,5 +37,7 @@ public class ComplianceSchemeLandingViewModel
     public SubmissionPeriod PackagingResubmissionPeriod { get; set; }
     public bool CsoRegistrationEnabled { get; set; }
     
+    public CsocViewModel? CsocViewModel { get; set; }
+
     public RegisterYourMembersViewModel GetRegisterYourMembersViewModel() => new() {ComplianceSchemeSummary = CurrentTabSummary};
 }

@@ -64,4 +64,14 @@ public class DateTimeExtensionsTests
         // Assert
         result.Should().Be(expectedComplianceYear);
     }
+
+    [TestCase(0, 2026)]
+    [TestCase(-1, 2026)]
+    [TestCase(1, 2027)]
+    public void GetCsocSubmissionDeadline_WhenNow_ShouldBeExpected(int offset, int expectedYear)
+    {
+        var now = new DateTime(2026, 1, 31, 0,0,0, DateTimeKind.Unspecified).AddMilliseconds(offset);
+
+        now.GetCsocSubmissionDeadline().Should().Be(new DateTime(expectedYear, 1, 31, 0,0,0, DateTimeKind.Unspecified));
+    }
 }
