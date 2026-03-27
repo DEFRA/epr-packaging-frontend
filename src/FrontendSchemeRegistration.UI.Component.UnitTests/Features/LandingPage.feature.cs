@@ -105,17 +105,17 @@ namespace FrontendSchemeRegistration.UI.Component.UnitTests.Features
         
         private static global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages InitializeCucumberMessages()
         {
-            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Features/LandingPage.feature.ndjson", 5);
+            return new global::Reqnroll.Formatters.RuntimeSupport.FeatureLevelCucumberMessages("Features/LandingPage.feature.ndjson", 6);
         }
         
         [global::NUnit.Framework.TestAttribute()]
         [global::NUnit.Framework.DescriptionAttribute("Navigate to home page as authenticated user shows landing page")]
-        [global::NUnit.Framework.CategoryAttribute("AuthenticateUser")]
+        [global::NUnit.Framework.CategoryAttribute("AuthenticateComplianceSchemeUser")]
         [global::NUnit.Framework.CategoryAttribute("WireMockServer")]
         public async global::System.Threading.Tasks.Task NavigateToHomePageAsAuthenticatedUserShowsLandingPage()
         {
             string[] tagsOfScenario = new string[] {
-                    "AuthenticateUser",
+                    "AuthenticateComplianceSchemeUser",
                     "WireMockServer"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "0";
@@ -139,24 +139,24 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
     await testRunner.ThenAsync("the page is successfully returned", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
 #line 10
-    await testRunner.AndAsync("the page content includes the following: Account home - SUPER TEST LTD", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+    await testRunner.AndAsync("the page content includes the following: Account home - COMPLIANCE SCHEME LTD", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
         }
         
         [global::NUnit.Framework.TestAttribute()]
-        [global::NUnit.Framework.DescriptionAttribute("Navigate to home page as authenticated user redirected to landing page")]
-        [global::NUnit.Framework.CategoryAttribute("AuthenticateUser")]
+        [global::NUnit.Framework.DescriptionAttribute("Compliance scheme home page displays correct tiles with links")]
+        [global::NUnit.Framework.CategoryAttribute("AuthenticateComplianceSchemeUser")]
         [global::NUnit.Framework.CategoryAttribute("WireMockServer")]
-        public async global::System.Threading.Tasks.Task NavigateToHomePageAsAuthenticatedUserRedirectedToLandingPage()
+        public async global::System.Threading.Tasks.Task ComplianceSchemeHomePageDisplaysCorrectTilesWithLinks()
         {
             string[] tagsOfScenario = new string[] {
-                    "AuthenticateUser",
+                    "AuthenticateComplianceSchemeUser",
                     "WireMockServer"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "1";
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Navigate to home page as authenticated user redirected to landing page", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Compliance scheme home page displays correct tiles with links", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
 #line 14
@@ -170,13 +170,76 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
             {
                 await this.ScenarioStartAsync();
 #line 15
-    await testRunner.WhenAsync("I navigate to the Report Data Page", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+    await testRunner.WhenAsync("I navigate to the Compliance Scheme Landing Page", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
 #line 16
-    await testRunner.ThenAsync("I am redirected to the: Compliance Scheme Landing Page", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+    await testRunner.ThenAsync("the page is successfully returned", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
 #line 17
-    await testRunner.AndAsync("the page redirect content includes the following: Account home - SUPER TEST LTD", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+    await testRunner.AndAsync("the page content includes the following: Register your members", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 18
+    await testRunner.AndAsync("the page content includes the following: Members\' organisation details", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 19
+    await testRunner.AndAsync("the page content includes the following: Members\' packaging data", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 20
+    await testRunner.AndAsync("the page content includes the following: Subsidiaries", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 21
+    await testRunner.AndAsync("the page content contains a link titled Register your members to /report-data/cso" +
+                        "-registration", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 22
+    await testRunner.AndAsync("the page content contains a link titled Members\' organisation details to /report-" +
+                        "data/report-organisation-details", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 23
+    await testRunner.AndAsync("the page content contains a link titled Members\' packaging data to /report-data/f" +
+                        "ile-upload-sub-landing", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+#line 24
+    await testRunner.AndAsync("the page content contains a link titled Subsidiaries to /report-data/subsidiaries" +
+                        "-list", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
+#line hidden
+            }
+            await this.ScenarioCleanupAsync();
+        }
+        
+        [global::NUnit.Framework.TestAttribute()]
+        [global::NUnit.Framework.DescriptionAttribute("Navigate to home page as authenticated user redirected to landing page")]
+        [global::NUnit.Framework.CategoryAttribute("AuthenticateComplianceSchemeUser")]
+        [global::NUnit.Framework.CategoryAttribute("WireMockServer")]
+        public async global::System.Threading.Tasks.Task NavigateToHomePageAsAuthenticatedUserRedirectedToLandingPage()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "AuthenticateComplianceSchemeUser",
+                    "WireMockServer"};
+            global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
+            string pickleIndex = "2";
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Navigate to home page as authenticated user redirected to landing page", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
+            string[] tagsOfRule = ((string[])(null));
+            global::Reqnroll.RuleInfo ruleInfo = null;
+#line 28
+this.ScenarioInitialize(scenarioInfo, ruleInfo);
+#line hidden
+            if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                await testRunner.SkipScenarioAsync();
+            }
+            else
+            {
+                await this.ScenarioStartAsync();
+#line 29
+    await testRunner.WhenAsync("I navigate to the Report Data Page", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
+#line hidden
+#line 30
+    await testRunner.ThenAsync("I am redirected to the: Compliance Scheme Landing Page", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
+#line hidden
+#line 31
+    await testRunner.AndAsync("the page redirect content includes the following: Account home - COMPLIANCE SCHEM" +
+                        "E LTD", ((string)(null)), ((global::Reqnroll.Table)(null)), "And ");
 #line hidden
             }
             await this.ScenarioCleanupAsync();
@@ -190,11 +253,11 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
             string[] tagsOfScenario = new string[] {
                     "WireMockServer"};
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
-            string pickleIndex = "2";
+            string pickleIndex = "3";
             global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Navigate to home page as unauthenticated user redirected to login page", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;
-#line 20
+#line 34
 this.ScenarioInitialize(scenarioInfo, ruleInfo);
 #line hidden
             if ((global::Reqnroll.TagHelper.ContainsIgnoreTag(scenarioInfo.CombinedTags) || global::Reqnroll.TagHelper.ContainsIgnoreTag(featureTags)))
@@ -204,10 +267,10 @@ this.ScenarioInitialize(scenarioInfo, ruleInfo);
             else
             {
                 await this.ScenarioStartAsync();
-#line 21
+#line 35
     await testRunner.WhenAsync("I navigate to the Report Data Page", ((string)(null)), ((global::Reqnroll.Table)(null)), "When ");
 #line hidden
-#line 22
+#line 36
     await testRunner.ThenAsync("I am redirected to the: Login Page", ((string)(null)), ((global::Reqnroll.Table)(null)), "Then ");
 #line hidden
             }

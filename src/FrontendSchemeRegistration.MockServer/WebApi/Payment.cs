@@ -16,6 +16,11 @@ public static class Payment
         MapInitiatePaymentEndpoint(server, "/v1/online-payments", "WebApi/Responses/payment/online-payments.html");
         MapInitiatePaymentEndpoint(server, "/v2/online-payments", "WebApi/Responses/payment/online-payments.html");
 
+        // Producer registration fee
+        MapFeeEndpoint(server, "/producer/registration-fee", "WebApi/Responses/payment/producer-default.json", "WebApi/Responses/payment/producer-default.json");
+        MapFeeEndpoint(server, "/v1/producer/registration-fee", "WebApi/Responses/payment/producer-default.json", "WebApi/Responses/payment/producer-default.json");
+        MapFeeEndpoint(server, "/v2/producer/registration-fee", "WebApi/Responses/payment/producer-default.json", "WebApi/Responses/payment/producer-default.json");
+
         // Compliance scheme registration fee (default + scenario switching)
         MapFeeEndpoint(server, "/compliance-scheme/registration-fee", "WebApi/Responses/payment/compliance-default.json", "WebApi/Responses/payment/compliance-latefee.json");
         MapFeeEndpoint(server, "/v1/compliance-scheme/registration-fee", "WebApi/Responses/payment/compliance-default.json", "WebApi/Responses/payment/compliance-latefee.json");

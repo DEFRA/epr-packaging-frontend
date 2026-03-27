@@ -1,4 +1,4 @@
-﻿{
+{
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
@@ -16,6 +16,17 @@
       "launchUrl": "https://localhost:7084/report-data",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
+        "ConnectionStrings__REDIS_CONNECTION": "localhost:6379"
+      }
+    },
+    "ComponentTest": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "applicationUrl": "https://localhost:7084;http://localhost:5145",
+      "launchUrl": "https://localhost:7084/report-data",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "ComponentTest",
         "ConnectionStrings__REDIS_CONNECTION": "localhost:6379"
       }
     },

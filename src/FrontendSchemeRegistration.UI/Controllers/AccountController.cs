@@ -1,4 +1,4 @@
-﻿namespace FrontendSchemeRegistration.UI.Controllers;
+namespace FrontendSchemeRegistration.UI.Controllers;
 
 using ControllerExtensions;
 using Microsoft.AspNetCore.Authentication;
@@ -13,8 +13,9 @@ using System.Diagnostics.CodeAnalysis;
 /// Controller used in web apps to manage accounts.
 /// </summary>
 [Route("[controller]/[action]")]
-public class AccountController : Controller
+public class AccountController(IConfiguration configuration) : Controller
 {
+    private bool IsStubAuth => configuration.GetValue<bool>("IsStubAuth", false);
     /// <summary>
     /// Handles user sign in.
     /// </summary>
@@ -63,6 +64,13 @@ public class AccountController : Controller
             return Ok();
         }
 
+        if (IsStubAuth)
+        {
+            return SignOut(
+                new AuthenticationProperties { RedirectUri = "/services/account-details" },
+                CookieAuthenticationDefaults.AuthenticationScheme);
+        }
+
         scheme ??= OpenIdConnectDefaults.AuthenticationScheme;
         var callbackUrl = Url.Action(action: "SignedOut", controller: nameof(HomeController).RemoveControllerFromName(), values: null, protocol: Request.Scheme);
 
@@ -93,6 +101,13 @@ public class AccountController : Controller
             }
 
             return Ok();
+        }
+
+        if (IsStubAuth)
+        {
+            return SignOut(
+                new AuthenticationProperties { RedirectUri = "/services/account-details" },
+                CookieAuthenticationDefaults.AuthenticationScheme);
         }
 
         scheme ??= OpenIdConnectDefaults.AuthenticationScheme;
