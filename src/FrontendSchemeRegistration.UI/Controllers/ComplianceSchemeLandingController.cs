@@ -20,6 +20,7 @@ using Application.Options;
 using Helpers;
 using Microsoft.Extensions.Options;
 
+[SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters", Justification = "Required for dependency injection")]
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
 [Route(PagePaths.ComplianceSchemeLanding)]
 public class ComplianceSchemeLandingController(

@@ -14,12 +14,14 @@ using Newtonsoft.Json;
 
 namespace FrontendSchemeRegistration.UI.Controllers.Prns;
 
+using System.Diagnostics.CodeAnalysis;
 using Application.Extensions;
 using EPR.Common.Authorization.Models;
 using Extensions;
 using Helpers;
 using Microsoft.FeatureManagement;
 
+[SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters", Justification = "Required for dependency injection")]
 [FeatureGate(FeatureFlags.ShowPrn)]
 [ServiceFilter(typeof(ComplianceSchemeIdHttpContextFilterAttribute))]
 [PrnsObligationActionFilterAttribute]
