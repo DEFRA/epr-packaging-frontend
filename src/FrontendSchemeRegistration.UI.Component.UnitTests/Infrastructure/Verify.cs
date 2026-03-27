@@ -28,6 +28,29 @@ public static class VerifyHtml
                 node.Attributes.GetNamedItem("value").Value = "[Scrubbed]";
         });
     }
+    
+    public static SettingsTask ScrubCommonHtmlNodes(this SettingsTask settings)
+    {
+        settings.PrettyPrintHtml(nodes =>
+        {
+            foreach (var node in nodes.QuerySelectorAll("header"))
+                node.Remove();
+            
+            foreach (var node in nodes.QuerySelectorAll("footer"))
+                node.Remove();
+            
+            foreach (var node in nodes.QuerySelectorAll("meta"))
+                node.Remove();
+            
+            foreach (var node in nodes.QuerySelectorAll("link"))
+                node.Remove();
+            
+            foreach (var node in nodes.QuerySelectorAll("div[class=\"govuk-cookie-banner \"]"))
+                node.Remove();
+        });
+        
+        return settings;
+    }
 }
 
 public static class VerifyCsv

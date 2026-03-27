@@ -69,6 +69,7 @@ public class CsocTests
                 foreach (var node in nodes.QuerySelectorAll("button[name=\"selectedComplianceSchemeId\"]"))
                     node.Attributes.GetNamedItem("value").Value = "[Scrubbed]";
             })
+            .ScrubCommonHtmlNodes()
             .UseParameters(path, language, csocEnabled);
     }
 
