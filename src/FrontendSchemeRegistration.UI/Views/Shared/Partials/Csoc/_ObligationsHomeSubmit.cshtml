@@ -15,7 +15,7 @@
             <div class="govuk-card-body">
                 <h2 class="govuk-heading-m">@Localizer[$"heading_{key}"]</h2>
                 <p class="govuk-body">@string.Format(Localizer[$"paragraph_{key}"].Value, Model.ComplianceYear, Model.SubmissionDeadline)</p>
-                @if (Model.UnderstandingObligationsEndpoint is not null)
+                @if (Model.IsApprovedUser && Model.UnderstandingObligationsEndpoint is not null)
                 {
                     <div class="govuk-button-group">
                         <a class="govuk-button govuk-button--secondary" href="@Model.UnderstandingObligationsEndpoint"
