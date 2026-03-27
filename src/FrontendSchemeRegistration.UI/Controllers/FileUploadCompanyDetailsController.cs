@@ -31,19 +31,22 @@ public class FileUploadCompanyDetailsController : Controller
     private readonly ISubmissionService _submissionService;
     private readonly IOptions<GlobalVariables> _globalVariables;
     private readonly IRegistrationPeriodProvider _registrationPeriodProvider;
+    private readonly ValidationOptions _validationOptions;
 
     public FileUploadCompanyDetailsController(
         ISubmissionService submissionService,
         IFileUploadService fileUploadService,
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
         IOptions<GlobalVariables> globalVariables,
-        IRegistrationPeriodProvider registrationPeriodProvider)
+        IRegistrationPeriodProvider registrationPeriodProvider,
+        IOptions<ValidationOptions> validationOptions)
     {
         _submissionService = submissionService;
         _fileUploadService = fileUploadService;
         _sessionManager = sessionManager;
         _globalVariables = globalVariables;
         _registrationPeriodProvider = registrationPeriodProvider;
+        _validationOptions = validationOptions.Value;
     }
 
     [HttpGet]
@@ -63,7 +66,7 @@ public class FileUploadCompanyDetailsController : Controller
                     var submission = await _submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
                     if (submission != null && submission.Errors.Count > 0)
                     {
-                        ModelStateHelpers.AddFileUploadExceptionsToModelState(submission.Errors.Distinct().ToList(), ModelState);
+                        ModelStateHelpers.AddFileUploadExceptionsToModelState(submission.Errors.Distinct().ToList(), ModelState, _validationOptions.ClosedLoopRegistrationFromYear);
                     }
                 }
 

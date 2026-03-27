@@ -298,6 +298,9 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
   <data name="813" xml:space="preserve">
     <value>Rhaid i bob maes gynnwys 4000 o gymeriadau neu lai</value>
   </data>
+  <data name="935" xml:space="preserve">
+    <value>[Welsh] Closed loop registration cannot be submitted through this service for registration years before {0}. Remove column 79 from your file and resubmit, or contact your regulator if you need to register for a previous year.</value>
+  </data>
   <data name="890" xml:space="preserve">
     <value>Nid yw'r rhestr o IDs Sefydliadau yn y ffeil yma yn cyd-fynd â'r rhestr o IDs Sefydliadau yn eich ffeil sefydliadau</value>
   </data>

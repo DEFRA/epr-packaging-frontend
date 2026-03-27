@@ -1,4 +1,4 @@
-﻿namespace FrontendSchemeRegistration.UI.Controllers;
+namespace FrontendSchemeRegistration.UI.Controllers;
 
 using Application.Constants;
 using Application.DTOs.Submission;
