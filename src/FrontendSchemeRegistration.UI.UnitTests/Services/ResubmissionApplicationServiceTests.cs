@@ -438,7 +438,8 @@ public class ResubmissionApplicationServiceTests
             r.OrganisationId == userData.Organisations.First().Id.Value &&
             r.Reference == _session.PomResubmissionSession.PackagingResubmissionApplicationSession.ApplicationReferenceNumber &&
             r.Amount == _session.PomResubmissionSession.FeeBreakdownDetails.TotalAmountOutstanding &&
-            r.Regulator == _session.PomResubmissionSession.RegulatorNation
+            r.Regulator == _session.PomResubmissionSession.RegulatorNation &&
+            r.FileId == _session.PomResubmissionSession.PackagingResubmissionApplicationSession.LastSubmittedFile.FileId
         )), Times.Once);
     }
 

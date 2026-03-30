@@ -445,7 +445,8 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             Reference = session.ApplicationReferenceNumber!,
             Description = "Registration fee",
             Regulator = session.RegulatorNation,
-            Amount = session.TotalAmountOutstanding
+            Amount = session.TotalAmountOutstanding,
+            FileId = session.LastSubmittedFile.FileId
         };
 
         return await paymentCalculationService.InitiatePayment(request);

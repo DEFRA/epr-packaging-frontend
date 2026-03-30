@@ -42,7 +42,8 @@ public class PaymentCalculationServiceTests
         OrganisationId = Guid.NewGuid(),
         Reference = "222019EFGH",
         Regulator = "GB-ENG",
-        Amount = 2045600
+        Amount = 2045600,
+        FileId = Guid.NewGuid()
     };
 
     private static readonly ComplianceSchemePaymentCalculationResponse _complianceSchemeCalculationResponse = new()
@@ -201,7 +202,7 @@ public class PaymentCalculationServiceTests
         };
 
         _paymentServiceApiClientMock.Setup(x =>
-            x.SendPostRequest(It.IsAny<string>(), It.IsAny<PaymentInitiationRequest>())).ReturnsAsync(response);
+            x.SendPostRequest(It.IsAny<string>(), It.Is<PaymentInitiationRequest>(r => r.FileId == PaymentRequest.FileId))).ReturnsAsync(response);
 
         // Act
         var result = await _systemUnderTest.InitiatePayment(PaymentRequest);
@@ -221,7 +222,7 @@ public class PaymentCalculationServiceTests
         };
 
         _paymentServiceApiClientMock.Setup(x =>
-            x.SendPostRequest(It.IsAny<string>(), It.IsAny<PaymentInitiationRequest>())).ReturnsAsync(response);
+            x.SendPostRequest(It.IsAny<string>(), It.Is<PaymentInitiationRequest>(r => r.FileId == PaymentRequest.FileId))).ReturnsAsync(response);
 
         // Act
         var result = await _systemUnderTest.InitiatePayment(PaymentRequest);
@@ -237,7 +238,7 @@ public class PaymentCalculationServiceTests
         var response = new HttpResponseMessage(HttpStatusCode.NotFound);
 
         _paymentServiceApiClientMock.Setup(x =>
-            x.SendPostRequest(It.IsAny<string>(), It.IsAny<PaymentInitiationRequest>())).ReturnsAsync(response);
+            x.SendPostRequest(It.IsAny<string>(), It.Is<PaymentInitiationRequest>(r => r.FileId == PaymentRequest.FileId))).ReturnsAsync(response);
 
         // Act
         var result = await _systemUnderTest.InitiatePayment(PaymentRequest);
@@ -564,7 +565,7 @@ public class PaymentCalculationServiceTests
     {
         // Arrange
         _paymentServiceApiClientMock
-            .Setup(x => x.SendPostRequest(It.IsAny<string>(), It.IsAny<PaymentInitiationRequest>()))
+            .Setup(x => x.SendPostRequest(It.IsAny<string>(), It.Is<PaymentInitiationRequest>(r => r.FileId == PaymentRequest.FileId)))
             .ThrowsAsync(new Exception("error"));
 
         // Act
