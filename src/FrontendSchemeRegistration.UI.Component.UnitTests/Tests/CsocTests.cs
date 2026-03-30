@@ -19,10 +19,12 @@ public class CsocTests
     private ComponentTestContext Context { get; } = new();
     
     [TestCase("/report-data/home-compliance-scheme", Language.English, true, ServiceRoleConstants.Approved)]
+    [TestCase("/report-data/home-compliance-scheme", Language.English, true, ServiceRoleConstants.Delegated)]
     [TestCase("/report-data/home-compliance-scheme", Language.Welsh, true, ServiceRoleConstants.Approved)]
     [TestCase("/report-data/home-compliance-scheme", Language.English, false, ServiceRoleConstants.Approved)]
     [TestCase("/report-data/home-compliance-scheme", Language.Welsh, false, ServiceRoleConstants.Approved)]
     [TestCase("/report-data/manage-your-recycling-obligations", Language.English, true, ServiceRoleConstants.Approved)]
+    [TestCase("/report-data/manage-your-recycling-obligations", Language.English, true, ServiceRoleConstants.Delegated)]
     [TestCase("/report-data/manage-your-recycling-obligations", Language.Welsh, true, ServiceRoleConstants.Approved)]
     [TestCase("/report-data/manage-your-recycling-obligations", Language.English, false, ServiceRoleConstants.Approved)]
     [TestCase("/report-data/manage-your-recycling-obligations", Language.Welsh, false, ServiceRoleConstants.Approved)]
