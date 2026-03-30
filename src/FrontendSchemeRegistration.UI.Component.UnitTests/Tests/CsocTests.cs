@@ -4,6 +4,7 @@ using System.Net;
 using System.Text;
 using AngleSharp.Dom;
 using Application.DTOs.ComplianceScheme;
+using Application.Enums;
 using Constants;
 using EPR.Common.Authorization.Models;
 using Extensions;
@@ -17,22 +18,22 @@ public class CsocTests
 {
     private ComponentTestContext Context { get; } = new();
     
-    [TestCase("/report-data/home-compliance-scheme", Language.English, true)]
-    [TestCase("/report-data/home-compliance-scheme", Language.Welsh, true)]
-    [TestCase("/report-data/home-compliance-scheme", Language.English, false)]
-    [TestCase("/report-data/home-compliance-scheme", Language.Welsh, false)]
-    [TestCase("/report-data/manage-your-recycling-obligations", Language.English, true)]
-    [TestCase("/report-data/manage-your-recycling-obligations", Language.Welsh, true)]
-    [TestCase("/report-data/manage-your-recycling-obligations", Language.English, false)]
-    [TestCase("/report-data/manage-your-recycling-obligations", Language.Welsh, false)]
-    public async Task WhenCsocEnabledOrDisabled_ShouldLocalizeAsExpected(string path, string language, bool csocEnabled)
+    [TestCase("/report-data/home-compliance-scheme", Language.English, true, ServiceRoleConstants.Approved)]
+    [TestCase("/report-data/home-compliance-scheme", Language.Welsh, true, ServiceRoleConstants.Approved)]
+    [TestCase("/report-data/home-compliance-scheme", Language.English, false, ServiceRoleConstants.Approved)]
+    [TestCase("/report-data/home-compliance-scheme", Language.Welsh, false, ServiceRoleConstants.Approved)]
+    [TestCase("/report-data/manage-your-recycling-obligations", Language.English, true, ServiceRoleConstants.Approved)]
+    [TestCase("/report-data/manage-your-recycling-obligations", Language.Welsh, true, ServiceRoleConstants.Approved)]
+    [TestCase("/report-data/manage-your-recycling-obligations", Language.English, false, ServiceRoleConstants.Approved)]
+    [TestCase("/report-data/manage-your-recycling-obligations", Language.Welsh, false, ServiceRoleConstants.Approved)]
+    public async Task WhenCsocEnabledOrDisabled_ShouldLocalizeAsExpected(string path, string language, bool csocEnabled, string serviceRole)
     {
         SetUp(csocEnabled);
         await Context.Client.AuthenticateDefaultUser();
 
         var sessionStore = Context.GetSessionStore();
         sessionStore.Session.Set(Language.SessionLanguageKey, Encoding.UTF8.GetBytes(language));
-        SetSession(sessionStore, "Approved Person");
+        SetSession(sessionStore, serviceRole);
         
         var response = await Context.Client.GetAsync(path);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -41,7 +42,7 @@ public class CsocTests
         await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
             .ScrubComplianceSchemeId()
             .ScrubCommonHtmlNodes()
-            .UseParameters(path, language, csocEnabled);
+            .UseParameters(path, language, csocEnabled, serviceRole.Replace(" ", ""));
     }
     
     [TestCase("/report-data/home-compliance-scheme")]
@@ -52,7 +53,7 @@ public class CsocTests
         await Context.Client.AuthenticateDefaultUser();
 
         var sessionStore = Context.GetSessionStore();
-        SetSession(sessionStore, "Basic User");
+        SetSession(sessionStore, ServiceRoleConstants.Basic);
         
         var response = await Context.Client.GetAsync(path);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
