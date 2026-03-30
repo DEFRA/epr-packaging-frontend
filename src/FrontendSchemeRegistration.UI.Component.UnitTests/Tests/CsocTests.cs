@@ -4,6 +4,7 @@ using System.Net;
 using System.Text;
 using AngleSharp.Dom;
 using Application.DTOs.ComplianceScheme;
+using Application.Enums;
 using Constants;
 using EPR.Common.Authorization.Models;
 using Extensions;
@@ -17,31 +18,77 @@ public class CsocTests
 {
     private ComponentTestContext Context { get; } = new();
     
-    [TestCase("/report-data/home-compliance-scheme", Language.English, true)]
-    [TestCase("/report-data/home-compliance-scheme", Language.Welsh, true)]
-    [TestCase("/report-data/home-compliance-scheme", Language.English, false)]
-    [TestCase("/report-data/home-compliance-scheme", Language.Welsh, false)]
-    [TestCase("/report-data/manage-your-recycling-obligations", Language.English, true)]
-    [TestCase("/report-data/manage-your-recycling-obligations", Language.Welsh, true)]
-    [TestCase("/report-data/manage-your-recycling-obligations", Language.English, false)]
-    [TestCase("/report-data/manage-your-recycling-obligations", Language.Welsh, false)]
-    public async Task WhenCsocEnabledOrDisabled_ShouldLocalizeAsExpected(string path, string language, bool csocEnabled)
+    [TestCase("/report-data/home-compliance-scheme", Language.English, true, ServiceRoleConstants.Approved)]
+    [TestCase("/report-data/home-compliance-scheme", Language.English, true, ServiceRoleConstants.Delegated)]
+    [TestCase("/report-data/home-compliance-scheme", Language.Welsh, true, ServiceRoleConstants.Approved)]
+    [TestCase("/report-data/home-compliance-scheme", Language.English, false, ServiceRoleConstants.Approved)]
+    [TestCase("/report-data/home-compliance-scheme", Language.Welsh, false, ServiceRoleConstants.Approved)]
+    [TestCase("/report-data/manage-your-recycling-obligations", Language.English, true, ServiceRoleConstants.Approved)]
+    [TestCase("/report-data/manage-your-recycling-obligations", Language.English, true, ServiceRoleConstants.Delegated)]
+    [TestCase("/report-data/manage-your-recycling-obligations", Language.Welsh, true, ServiceRoleConstants.Approved)]
+    [TestCase("/report-data/manage-your-recycling-obligations", Language.English, false, ServiceRoleConstants.Approved)]
+    [TestCase("/report-data/manage-your-recycling-obligations", Language.Welsh, false, ServiceRoleConstants.Approved)]
+    public async Task WhenCsocEnabledOrDisabled_ShouldLocalizeAsExpected(string path, string language, bool csocEnabled, string serviceRole)
+    {
+        SetUp(csocEnabled);
+        await Context.Client.AuthenticateDefaultUser();
+
+        var sessionStore = Context.GetSessionStore();
+        sessionStore.Session.Set(Language.SessionLanguageKey, Encoding.UTF8.GetBytes(language));
+        SetSession(sessionStore, serviceRole);
+        
+        var response = await Context.Client.GetAsync(path);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
+            .ScrubComplianceSchemeId()
+            .ScrubCommonHtmlNodes()
+            .UseParameters(path, language, csocEnabled, serviceRole.Replace(" ", ""));
+    }
+    
+    [TestCase("/report-data/home-compliance-scheme")]
+    [TestCase("/report-data/manage-your-recycling-obligations")]
+    public async Task WhenBasicUser_ShouldHidePrivilegedContent(string path)
+    {
+        SetUp(csocEnabled: true);
+        await Context.Client.AuthenticateDefaultUser();
+
+        var sessionStore = Context.GetSessionStore();
+        SetSession(sessionStore, ServiceRoleConstants.Basic);
+        
+        var response = await Context.Client.GetAsync(path);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
+            .ScrubComplianceSchemeId()
+            .ScrubCommonHtmlNodes()
+            .UseParameters(path);
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        Context.Dispose();
+    }
+
+    private void SetUp(bool csocEnabled)
     {
         Context.SetUp(overrideSession: true, additionalConfig: new Dictionary<string, string?>
         {
             { "FeatureManagement:CsocEnabled", csocEnabled.ToString().ToLower() }
         });
-        
-        await Context.Client.AuthenticateDefaultUser();
+    }
 
-        var sessionStore = Context.GetSessionStore();
-        sessionStore.Session.Set(Language.SessionLanguageKey, Encoding.UTF8.GetBytes(language));
+    private static void SetSession(SessionStore sessionStore, string serviceRole)
+    {
         sessionStore.Session.Set(nameof(FrontendSchemeRegistrationSession),
             Encoding.UTF8.GetBytes(System.Text.Json.JsonSerializer.Serialize(new FrontendSchemeRegistrationSession
             {
                 UserData = new UserData
                 {
-                    ServiceRole = "Approved Person",
+                    ServiceRole = serviceRole,
                     Organisations =
                     [
                         new Organisation
@@ -58,24 +105,19 @@ public class CsocTests
                     }
                 }
             })));
-        
-        var response = await Context.Client.GetAsync(path);
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var content = await response.Content.ReadAsStringAsync();
-        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
-            .PrettyPrintHtml(nodes =>
-            {
-                foreach (var node in nodes.QuerySelectorAll("button[name=\"selectedComplianceSchemeId\"]"))
-                    node.Attributes.GetNamedItem("value").Value = "[Scrubbed]";
-            })
-            .ScrubCommonHtmlNodes()
-            .UseParameters(path, language, csocEnabled);
     }
+}
 
-    [TearDown]
-    public void TearDown()
+public static class CsocTestsExtensions
+{
+    public static SettingsTask ScrubComplianceSchemeId(this SettingsTask settings)
     {
-        Context.Dispose();
+        settings.PrettyPrintHtml(nodes =>
+        {
+            foreach (var node in nodes.QuerySelectorAll("button[name=\"selectedComplianceSchemeId\"]"))
+                node.Attributes.GetNamedItem("value").Value = "[Scrubbed]";
+        });
+        
+        return settings;
     }
 }
