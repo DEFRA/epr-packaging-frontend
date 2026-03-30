@@ -1,0 +1,221 @@
+﻿
+<title>Accept or reject PRNs and PERNs - Report packaging data - GOV.UK</title>
+
+<form method="POST" action="/report-data/update-cookie-acceptance?returnUrl=%2Freport-data%2Fview-awaiting-acceptance-alt">
+  <input name="__RequestVerificationToken" type="hidden" value="[Scrubbed]">
+</form>
+<a b-a7jj0nrtu1="" id="main-content" href="#main-content" class="govuk-skip-link" data-module="govuk-skip-link">Skip to main content</a>
+<div b-a7jj0nrtu1="" class="govuk-width-container">
+  <div b-a7jj0nrtu1="" class="govuk-grid-row">
+    <div b-a7jj0nrtu1="" class="govuk-grid-column-full">
+      <div class="govuk-phase-banner govuk-width-container">
+        <p class="govuk-phase-banner__content">
+          <strong class="govuk-tag govuk-phase-banner__content__tag">
+            beta
+          </strong>
+          <span class="govuk-phase-banner__text">
+            This is a new service - your
+            <a class="govuk-link" rel="noreferrer noopener" target="_blank" href="https://defragroup.eu.qualtrics.com/jfe/form/SV_a2Bm7vw3cht5B6C">feedback</a>
+            will help us to improve it.
+          </span>
+        </p>
+      </div>
+      <ul class="language-toggle">
+        <li class="language-toggle__option">
+          English
+        </li>
+        <li class="language-toggle__option">
+          <span aria-labelledby="Cymraeg">
+            <a id="Cymraeg" class="govuk-link govuk-link--no-visited-state" href="/report-data/culture?culture=cy&amp;returnUrl=~%2Fview-awaiting-acceptance-alt">Cymraeg</a>
+          </span>
+        </li>
+      </ul>
+      <div class="language-toggle govuk-!-padding-bottom-8"></div>
+      <span aria-labelledby="Back">
+        <a href="/report-data/manage-your-recycling-obligations" class="govuk-back-link" id="Back">Back</a>
+      </span>
+    </div>
+  </div>
+</div>
+<div b-a7jj0nrtu1="" class="govuk-width-container">
+  <main class="govuk-main-wrapper govuk-!-padding-top-4" id="select-multiple-prns">
+    <div class="govuk-notification-banner" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+      <div class="govuk-notification-banner__header">
+        <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+          Important
+        </h2>
+      </div>
+      <div class="govuk-notification-banner__content">
+        <p class="govuk-body">
+          RPD now supports 2026 recycling obligations functionality. From this point onwards, any accepted PRNs/PERNs will be allocated towards your 2026 obligations only.
+        </p>
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h1 class="govuk-heading-xl">Accept or reject PRNs and PERNs</h1>
+        <p class="govuk-body">Select the PRNs and PERNs you want to accept. You can also review each one by opening it and selecting 'accept' or 'reject'.</p>
+        <hr class="govuk-section-break govuk-section-break--xl govuk-section-break--visible">
+        <form class="form" id="selectMultiplePrns" method="POST" action="/report-data/accept-bulk-passthrough">
+          <div class="prn-sort-filter-clear">
+            <div class="govuk-!-margin-bottom-6">
+              <label class="govuk-label" for="sort" id="lblSort">Sort by</label>
+              <select class="govuk-select" id="sort" name="SortBy" aria-labelledby="lblSort">
+                <option value="date-issued-desc" selected="selected">Date issued (newest first)</option>
+                <option value="date-issued-asc">Date issued (oldest first)</option>
+                <option value="december-waste-desc">December waste (yes to no)</option>
+                <option value="issued-by-asc">Issued by (A to Z)</option>
+                <option value="issued-by-desc">Issued by (Z to A)</option>
+                <option value="tonnage-desc">Tonnage: (heaviest first)</option>
+                <option value="tonnage-asc">Tonnage: (lightest first)</option>
+              </select>
+            </div>
+            <div class="govuk-!-margin-bottom-6">
+              <label class="govuk-label" for="filter" id="lblFilter">Filter by</label>
+              <select class="govuk-select" id="filter" name="FilterBy" aria-labelledby="lblFilter">
+                <option value="awaiting-all" selected="selected">All materials</option>
+                <option value="awaiting-aluminium">Aluminium</option>
+                <option value="awaiting-glassother">Glass other</option>
+                <option value="awaiting-glassremelt">Glass re-melt</option>
+                <option value="awaiting-paperfiber">Paper, board or fibre-based composite material</option>
+                <option value="awaiting-plastic">Plastic</option>
+                <option value="awaiting-steel">Steel</option>
+                <option value="awaiting-wood">Wood</option>
+              </select>
+            </div>
+            <noscript>
+              <div class="govuk-!-margin-bottom-6">
+                <button type="submit" formaction="/report-data/view-awaiting-acceptance-alt">apply_filter</button>
+              </div>
+            </noscript>
+            <div class="govuk-!-margin-bottom-6">
+              <a class="govuk-link" href="/report-data/view-awaiting-acceptance-alt" id="clearSortFilter">Clear all</a>
+            </div>
+          </div>
+          <div class="govuk-form-group">
+            <fieldset class="govuk-fieldset" aria-describedby="checkboxes-hint">
+              <legend class="govuk-fieldset__legend"></legend>
+              <div class="govuk-table-container">
+                <div id="checkboxes-hint" class="govuk-hint govuk-visually-hidden">select_all_that_apply</div>
+                <table class="govuk-table prn-responsive-table" id="prns-table">
+                  <caption class="govuk-table__caption govuk-table__caption--m govuk-visually-hidden">A list of PRNs and PERNs to select from.</caption>
+                  <thead class="govuk-table__head">
+                    <tr class="govuk-table__row">
+                      <th scope="col" class="govuk-table__header">PRN or PERN number</th>
+                      <th scope="col" class="govuk-table__header">Material</th>
+                      <th scope="col" class="govuk-table__header">Date issued</th>
+                      <th scope="col" class="govuk-table__header">December waste</th>
+                      <th scope="col" class="govuk-table__header">Issued by</th>
+                      <th scope="col" class="govuk-table__header">Tonnage</th>
+                      <th scope="col" class="govuk-table__header">Issuer note</th>
+                    </tr>
+                  </thead>
+                  <tbody class="govuk-table__body">
+                    <tr class="govuk-table__row">
+                      <input data-val="true" data-val-required="The ExternalId field is required." id="Prns_0__ExternalId" name="Prns[0].ExternalId" type="hidden" value="00000000-0000-0000-0000-000000000001">
+                      <input data-val="true" data-val-required="The NoteType field is required." id="Prns_0__NoteType" name="Prns[0].NoteType" type="hidden" value="PRN">
+                      <td class="govuk-table__cell" data-label="PRN" or="" pern="" number="">
+                        <a class="govuk-link" href="/report-data/selected-prn/00000000-0000-0000-0000-000000000001" aria-label="PRN or PERN number PRN-01">
+                          PRN-01
+                          <span class="govuk-visually-hidden">PRN or PERN number</span>
+                        </a>
+                      </td>
+                      <td class="govuk-table__cell" data-label="Material">Paper, board or fibre-based composite material</td>
+                      <td class="govuk-table__cell" data-label="Date" issued="">01 Mar 2026</td>
+                      <td class="govuk-table__cell" data-label="December" waste="">No</td>
+                      <td class="govuk-table__cell" data-label="Issued" by=""></td>
+                      <td class="govuk-table__cell govuk-table__cell--numeric" data-label="Tonnage">0</td>
+                      <td class="govuk-table__cell" data-label="Issuer" note="">
+                        Not provided
+                      </td>
+                    </tr>
+                    <tr class="govuk-table__row">
+                      <input data-val="true" data-val-required="The ExternalId field is required." id="Prns_1__ExternalId" name="Prns[1].ExternalId" type="hidden" value="00000000-0000-0000-0000-000000000002">
+                      <input data-val="true" data-val-required="The NoteType field is required." id="Prns_1__NoteType" name="Prns[1].NoteType" type="hidden" value="PRN">
+                      <td class="govuk-table__cell" data-label="PRN" or="" pern="" number="">
+                        <a class="govuk-link" href="/report-data/selected-prn/00000000-0000-0000-0000-000000000002" aria-label="PRN or PERN number PRN-02">
+                          PRN-02
+                          <span class="govuk-visually-hidden">PRN or PERN number</span>
+                        </a>
+                      </td>
+                      <td class="govuk-table__cell" data-label="Material">Paper or board</td>
+                      <td class="govuk-table__cell" data-label="Date" issued="">01 May 2026</td>
+                      <td class="govuk-table__cell" data-label="December" waste="">No</td>
+                      <td class="govuk-table__cell" data-label="Issued" by=""></td>
+                      <td class="govuk-table__cell govuk-table__cell--numeric" data-label="Tonnage">0</td>
+                      <td class="govuk-table__cell" data-label="Issuer" note="">
+                        Not provided
+                      </td>
+                    </tr>
+                    <tr class="govuk-table__row">
+                      <input data-val="true" data-val-required="The ExternalId field is required." id="Prns_2__ExternalId" name="Prns[2].ExternalId" type="hidden" value="00000000-0000-0000-0000-000000000003">
+                      <input data-val="true" data-val-required="The NoteType field is required." id="Prns_2__NoteType" name="Prns[2].NoteType" type="hidden" value="PRN">
+                      <td class="govuk-table__cell" data-label="PRN" or="" pern="" number="">
+                        <a class="govuk-link" href="/report-data/selected-prn/00000000-0000-0000-0000-000000000003" aria-label="PRN or PERN number PRN-03">
+                          PRN-03
+                          <span class="govuk-visually-hidden">PRN or PERN number</span>
+                        </a>
+                      </td>
+                      <td class="govuk-table__cell" data-label="Material">Fibre-based composite material</td>
+                      <td class="govuk-table__cell" data-label="Date" issued="">01 Mar 2026</td>
+                      <td class="govuk-table__cell" data-label="December" waste="">No</td>
+                      <td class="govuk-table__cell" data-label="Issued" by=""></td>
+                      <td class="govuk-table__cell govuk-table__cell--numeric" data-label="Tonnage">0</td>
+                      <td class="govuk-table__cell" data-label="Issuer" note="">
+                        Not provided
+                      </td>
+                    </tr>
+                    <tr class="govuk-table__row">
+                      <input data-val="true" data-val-required="The ExternalId field is required." id="Prns_3__ExternalId" name="Prns[3].ExternalId" type="hidden" value="00000000-0000-0000-0000-000000000004">
+                      <input data-val="true" data-val-required="The NoteType field is required." id="Prns_3__NoteType" name="Prns[3].NoteType" type="hidden" value="PRN">
+                      <td class="govuk-table__cell" data-label="PRN" or="" pern="" number="">
+                        <a class="govuk-link" href="/report-data/selected-prn/00000000-0000-0000-0000-000000000004" aria-label="PRN or PERN number PRN-04">
+                          PRN-04
+                          <span class="govuk-visually-hidden">PRN or PERN number</span>
+                        </a>
+                      </td>
+                      <td class="govuk-table__cell" data-label="Material">Fibre-based composite material</td>
+                      <td class="govuk-table__cell" data-label="Date" issued="">01 May 2026</td>
+                      <td class="govuk-table__cell" data-label="December" waste="">No</td>
+                      <td class="govuk-table__cell" data-label="Issued" by=""></td>
+                      <td class="govuk-table__cell govuk-table__cell--numeric" data-label="Tonnage">0</td>
+                      <td class="govuk-table__cell" data-label="Issuer" note="">
+                        Not provided
+                      </td>
+                    </tr>
+                    <tr class="govuk-table__row">
+                      <input data-val="true" data-val-required="The ExternalId field is required." id="Prns_4__ExternalId" name="Prns[4].ExternalId" type="hidden" value="00000000-0000-0000-0000-000000000005">
+                      <input data-val="true" data-val-required="The NoteType field is required." id="Prns_4__NoteType" name="Prns[4].NoteType" type="hidden" value="PRN">
+                      <td class="govuk-table__cell" data-label="PRN" or="" pern="" number="">
+                        <a class="govuk-link" href="/report-data/selected-prn/00000000-0000-0000-0000-000000000005" aria-label="PRN or PERN number PRN-05">
+                          PRN-05
+                          <span class="govuk-visually-hidden">PRN or PERN number</span>
+                        </a>
+                      </td>
+                      <td class="govuk-table__cell" data-label="Material">Fibre-based composite material</td>
+                      <td class="govuk-table__cell" data-label="Date" issued="">01 May 2026</td>
+                      <td class="govuk-table__cell" data-label="December" waste="">No</td>
+                      <td class="govuk-table__cell" data-label="Issued" by=""></td>
+                      <td class="govuk-table__cell govuk-table__cell--numeric" data-label="Tonnage">0</td>
+                      <td class="govuk-table__cell" data-label="Issuer" note="">
+                        Not provided
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <hr class="govuk-section-break govuk-section-break--l govuk-section-break--xl">
+              <div class="govuk-button-group">
+                <button class="govuk-button" type="submit">
+                  Accept selected PRNs and PERNs
+                </button>
+              </div>
+            </fieldset>
+          </div>
+          <input name="__RequestVerificationToken" type="hidden" value="[Scrubbed]">
+        </form>
+      </div>
+    </div>
+  </main>
+</div>
+ 

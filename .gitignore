@@ -405,6 +405,10 @@ FodyWeavers.xsd
 # Mac OS Files
 *.DS_Store
 
+# Verify
+*.received.*
+*.received/
+
 **/obj
 
 **/appsettings.Development*.json

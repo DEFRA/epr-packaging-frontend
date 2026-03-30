@@ -45,4 +45,13 @@ public static class DateTimeExtensions
 
         return ukDateTime.Year;
     }
+
+    public static DateTime GetCsocSubmissionDeadline(this DateTime now)
+    {
+        var year = now > new DateTime(now.Year, 1, 31, 0, 0, 0, DateTimeKind.Unspecified)
+            ? now.Year + 1
+            : now.Year;
+
+        return new DateTime(year, 1, 31, 0, 0, 0, DateTimeKind.Unspecified);
+    }
 }

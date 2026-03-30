@@ -31,6 +31,7 @@ namespace FrontendSchemeRegistration.UI.Extensions;
 using Application.Helpers;
 using Application.Options.RegistrationPeriodPatterns;
 using Polly;
+using Resources;
 using Services.RegistrationPeriods;
 using System.Security.Claims;
 using System.Web;
@@ -151,10 +152,11 @@ public static class ServiceProviderExtension
         services.Configure<RedisOptions>(configuration.GetSection(RedisOptions.ConfigSection));
         services.Configure<ComplianceSchemeMembersPaginationOptions>(configuration.GetSection(ComplianceSchemeMembersPaginationOptions.ConfigSection));
         services.Configure<SessionOptions>(configuration.GetSection(SessionOptions.ConfigSection));
-
         services.AddSingleton<GuidanceLinkOptions>();
         services.Configure<List<RegistrationPeriodPattern>>(configuration.GetSection(RegistrationPeriodPattern.ConfigSection));
         services.Configure<NotificationBannerOptions>(configuration.GetSection(NotificationBannerOptions.Section));
+        services.Configure<FibreOptions>(configuration.GetSection(FibreOptions.ConfigSection));
+        services.Configure<CsocOptions>(configuration.GetSection(CsocOptions.ConfigSection));
     }
 
     private static void RegisterServices(IServiceCollection services)
@@ -260,6 +262,8 @@ public static class ServiceProviderExtension
                 options.AddSupportedUICultures(cultureList);
                 options.RequestCultureProviders = [new SessionRequestCultureProvider()];
             });
+
+        services.AddTransient<IPrnDataResourcesLocalizer, PrnDataResourcesLocalizer>();
     }
 
     private static void ConfigureSession(IServiceCollection services)

@@ -1,0 +1,228 @@
+﻿
+<title>Chwilio PRNs a PERNs - Rhoi gwybod am ddata pecynwaith - GOV.UK</title>
+
+<form method="POST" action="/report-data/update-cookie-acceptance?returnUrl=%2Freport-data%2Fview-awaiting-acceptance">
+  <input name="__RequestVerificationToken" type="hidden" value="[Scrubbed]">
+</form>
+<a b-a7jj0nrtu1="" id="main-content" href="#main-content" class="govuk-skip-link" data-module="govuk-skip-link">Neidio i’r prif gynnwys</a>
+<div b-a7jj0nrtu1="" class="govuk-width-container">
+  <div b-a7jj0nrtu1="" class="govuk-grid-row">
+    <div b-a7jj0nrtu1="" class="govuk-grid-column-full">
+      <div class="govuk-phase-banner govuk-width-container">
+        <p class="govuk-phase-banner__content">
+          <strong class="govuk-tag govuk-phase-banner__content__tag">
+            beta
+          </strong>
+          <span class="govuk-phase-banner__text">
+            Mae hwn yn wasanaeth newydd – bydd eich
+            <a class="govuk-link" rel="noreferrer noopener" target="_blank" href="https://defragroup.eu.qualtrics.com/jfe/form/SV_a2Bm7vw3cht5B6C">adborth</a>
+            yn ein helpu i’w wella.
+          </span>
+        </p>
+      </div>
+      <ul class="language-toggle">
+        <li class="language-toggle__option">
+          <span aria-labelledby="English">
+            <a id="English" class="govuk-link govuk-link--no-visited-state" href="/report-data/culture?culture=en&amp;returnUrl=~%2Fview-awaiting-acceptance">English</a>
+          </span>
+        </li>
+        <li class="language-toggle__option">
+          Cymraeg
+        </li>
+      </ul>
+      <div class="language-toggle govuk-!-padding-bottom-8"></div>
+      <span aria-labelledby="Yn" &#xf4;l="">
+        <a href="/report-data/manage-your-recycling-obligations" class="govuk-back-link" id="Yn ôl">Yn ôl</a>
+      </span>
+    </div>
+  </div>
+</div>
+<div b-a7jj0nrtu1="" class="govuk-width-container">
+  <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h1 class="govuk-heading-xl">Chwilio PRNs a PERNs</h1>
+        <p class="govuk-body">Gallwch chi chwilio am PRNs a PERNs sydd wedi'u rhoi ar gyfer eich rhwymedigaethau ailgylchu ar gyfer 2026 yn unig. I ddod o hyd i gofnodion y blynyddoedd cynt, defnyddiwch y Gronfa Ddata Gwastraff Pecynwaith Gwladol (NPWD).</p>
+        <form id="findprns" name="findprns" method="get" action="/report-data/view-awaiting-acceptance">
+          <div class="govuk-card govuk-card--grey govuk-card--no-border govuk-!-margin-bottom-7">
+            <div class="govuk-card-body">
+              <div class="govuk-form-group">
+                <label id="search-hint" for="search" class="govuk-body govuk-!-margin-bottom-2">
+                  Rhowch rif PRN neu PERN, neu enw'r ailbrosesydd neu'r allforiwr.
+                </label>
+                <input type="text" class="govuk-input" id="search" name="search" aria-describedby="search-hint" list="search_values" autocomplete="off">
+                <datalist id="search_values">
+                </datalist>
+                <input type="hidden" id="source" name="source" value="">
+              </div>
+              <button type="submit" class="govuk-button">
+                Chwilio
+              </button>
+            </div>
+          </div>
+          <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+          
+          <!--Filter and sorting starts-->
+          <div class="prn-sort-filter-clear">
+            <div class="govuk-!-margin-bottom-6">
+              <label class="govuk-label" for="sortBy" id="lblSort">Didoli yn ol</label>
+              <select class="govuk-select" id="sortBy" name="sortBy" aria-labelledby="lblSort">
+                <option value="date-issued-desc" selected="selected">Dyddiad rhoi (hynaf yn gyntaf)</option>
+                <option value="date-issued-asc">Dyddiad rhoi (diweddaraf yn gyntaf)</option>
+                <option value="december-waste-desc">Gwastraff Rhagfyr (ie i nage)</option>
+                <option value="material-asc">Deunydd (A i Z)</option>
+                <option value="material-desc">Deunydd (Z i A)</option>
+                <option value="tonnage-desc">Tunelli (trymaf yn gyntaf)</option>
+                <option value="tonnage-asc">Tunelli (ysgafnaf yn gyntaf)</option>
+              </select>
+            </div>
+            <div class="govuk-!-margin-bottom-6">
+              <label class="govuk-label" for="filterBy" id="lblFilter">Hidlo yn ol</label>
+              <select class="govuk-select" id="filterBy" name="filterBy" aria-labelledby="lblFilter">
+                <option value="">Pob statws</option>
+                <option value="accepted-all">Wedi'i dderbyn</option>
+                <option value="awaiting-all">Yn aros i gael ei dderbyn</option>
+                <option value="cancelled-all">Wedi'i ganslo</option>
+                <option value="rejected-all">Wedi'i wrthod</option>
+              </select>
+            </div>
+            <div class="govuk-!-margin-bottom-6">
+              <a class="govuk-link" href="/report-data/view-awaiting-acceptance">Clirio'r cyfan</a>
+            </div>
+          </div>
+          
+          <!--Filter and sorting end-->
+        </form>
+        <div class="govuk-grid-row">
+          <br>
+          <br>
+        </div>
+        <table class="govuk-table prn-responsive-table">
+          <caption class="govuk-table__caption govuk-table__caption--m govuk-visually-hidden">view_and_select_prns_table_description</caption>
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th class="govuk-table__header">Rhif PRN neu PERN</th>
+              <th class="govuk-table__header">Deunydd</th>
+              <th class="govuk-table__header">Dyddiad rhoi</th>
+              <th class="govuk-table__header">Gwastraff Rhagfyr</th>
+              <th class="govuk-table__header">Wedi'i roi gan</th>
+              <th class="govuk-table__header">Tunelli</th>
+              <th class="govuk-table__header">Statws</th>
+            </tr>
+          </thead>
+          <tbody class="govuk-table__body">
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell">
+                <a class="govuk-link" href="/report-data/selected-prn/00000000-0000-0000-0000-000000000001" aria-label="Rhif PRN neu PERN PRN-01">
+                  PRN-01
+                  <span class="govuk-visually-hidden">Rhif PRN neu PERN</span>
+                </a>
+              </td>
+              <td class="govuk-table__cell" data-label="Deunydd">Papur, bwrdd neu ddeunydd cyfansawdd sy'n seiliedig ar ffeibrau</td>
+              <td class="govuk-table__cell" data-label="Dyddiad" rhoi="">01 Maw 2026</td>
+              <td class="govuk-table__cell" data-label="Gwastraff" rhagfyr="">No</td>
+              <td class="govuk-table__cell" data-label="Wedi'i" roi="" gan=""></td>
+              <td class="govuk-table__cell govuk-table__cell--numeric" data-label="Tunelli">0</td>
+              <td class="govuk-table__cell">
+                <div class="govuk-table__cell--numeric">
+                  <span class="govuk-tag govuk-tag--grey">
+                    YN AROS I GAEL EI DDERBYN
+                  </span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+          <tbody class="govuk-table__body">
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell">
+                <a class="govuk-link" href="/report-data/selected-prn/00000000-0000-0000-0000-000000000002" aria-label="Rhif PRN neu PERN PRN-02">
+                  PRN-02
+                  <span class="govuk-visually-hidden">Rhif PRN neu PERN</span>
+                </a>
+              </td>
+              <td class="govuk-table__cell" data-label="Deunydd">Papur neu fwrdd</td>
+              <td class="govuk-table__cell" data-label="Dyddiad" rhoi="">01 Mai 2026</td>
+              <td class="govuk-table__cell" data-label="Gwastraff" rhagfyr="">No</td>
+              <td class="govuk-table__cell" data-label="Wedi'i" roi="" gan=""></td>
+              <td class="govuk-table__cell govuk-table__cell--numeric" data-label="Tunelli">0</td>
+              <td class="govuk-table__cell">
+                <div class="govuk-table__cell--numeric">
+                  <span class="govuk-tag govuk-tag--grey">
+                    YN AROS I GAEL EI DDERBYN
+                  </span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+          <tbody class="govuk-table__body">
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell">
+                <a class="govuk-link" href="/report-data/selected-prn/00000000-0000-0000-0000-000000000003" aria-label="Rhif PRN neu PERN PRN-03">
+                  PRN-03
+                  <span class="govuk-visually-hidden">Rhif PRN neu PERN</span>
+                </a>
+              </td>
+              <td class="govuk-table__cell" data-label="Deunydd">Deunydd cyfansawdd sy'n seiliedig ar ffibr</td>
+              <td class="govuk-table__cell" data-label="Dyddiad" rhoi="">01 Maw 2026</td>
+              <td class="govuk-table__cell" data-label="Gwastraff" rhagfyr="">No</td>
+              <td class="govuk-table__cell" data-label="Wedi'i" roi="" gan=""></td>
+              <td class="govuk-table__cell govuk-table__cell--numeric" data-label="Tunelli">0</td>
+              <td class="govuk-table__cell">
+                <div class="govuk-table__cell--numeric">
+                  <span class="govuk-tag govuk-tag--grey">
+                    YN AROS I GAEL EI DDERBYN
+                  </span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+          <tbody class="govuk-table__body">
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell">
+                <a class="govuk-link" href="/report-data/selected-prn/00000000-0000-0000-0000-000000000004" aria-label="Rhif PRN neu PERN PRN-04">
+                  PRN-04
+                  <span class="govuk-visually-hidden">Rhif PRN neu PERN</span>
+                </a>
+              </td>
+              <td class="govuk-table__cell" data-label="Deunydd">Deunydd cyfansawdd sy’n seiliedig ar ffibr</td>
+              <td class="govuk-table__cell" data-label="Dyddiad" rhoi="">01 Mai 2026</td>
+              <td class="govuk-table__cell" data-label="Gwastraff" rhagfyr="">No</td>
+              <td class="govuk-table__cell" data-label="Wedi'i" roi="" gan=""></td>
+              <td class="govuk-table__cell govuk-table__cell--numeric" data-label="Tunelli">0</td>
+              <td class="govuk-table__cell">
+                <div class="govuk-table__cell--numeric">
+                  <span class="govuk-tag govuk-tag--grey">
+                    YN AROS I GAEL EI DDERBYN
+                  </span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+          <tbody class="govuk-table__body">
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell">
+                <a class="govuk-link" href="/report-data/selected-prn/00000000-0000-0000-0000-000000000005" aria-label="Rhif PRN neu PERN PRN-05">
+                  PRN-05
+                  <span class="govuk-visually-hidden">Rhif PRN neu PERN</span>
+                </a>
+              </td>
+              <td class="govuk-table__cell" data-label="Deunydd">Deunydd cyfansawdd sy’n seiliedig ar ffibr</td>
+              <td class="govuk-table__cell" data-label="Dyddiad" rhoi="">01 Mai 2026</td>
+              <td class="govuk-table__cell" data-label="Gwastraff" rhagfyr="">No</td>
+              <td class="govuk-table__cell" data-label="Wedi'i" roi="" gan=""></td>
+              <td class="govuk-table__cell govuk-table__cell--numeric" data-label="Tunelli">0</td>
+              <td class="govuk-table__cell">
+                <div class="govuk-table__cell--numeric">
+                  <span class="govuk-tag govuk-tag--green">
+                    WEDI'I DDERBYN
+                  </span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+ 

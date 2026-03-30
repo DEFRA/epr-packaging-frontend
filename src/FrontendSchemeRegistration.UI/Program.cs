@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement;
 using Microsoft.IdentityModel.Logging;
-
+using Serilog;
 using CookieOptions = FrontendSchemeRegistration.Application.Options.CookieOptions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,7 +16,31 @@ var builderConfig = builder.Configuration;
 var globalVariables = builderConfig.Get<GlobalVariables>();
 string basePath = globalVariables.BasePath;
 
+string? containerImage = builder.Configuration.GetValue<string>("DOCKER_CUSTOM_IMAGE_NAME");
+string? buildNumber = builder.Configuration.GetValue<string>("BUILD_NUMBER");
+string? gitSha = builder.Configuration.GetValue<string>("GIT_SHA");
+
 ThreadPool.SetMinThreads(30, 30);
+
+// Register Application Insights early so Serilog can reuse the same TelemetryConfiguration.
+services.AddApplicationInsightsTelemetry();
+
+if (isComponentTest)
+{
+    services.AddLogging();
+}
+else
+{
+    builder.Logging.ClearProviders();
+    builder.Host.UseSerilog((context, serviceProvider, config) =>
+    {
+        config.ReadFrom.Configuration(context.Configuration);
+        config.Enrich.WithProperty("Application", context.HostingEnvironment.ApplicationName);
+        config.Enrich.WithProperty("ContainerImage", containerImage ?? "NOT_SET");
+        config.Enrich.WithProperty("BuildNumber", buildNumber ?? "NOT_SET");
+        config.Enrich.WithProperty("GitSha", gitSha ?? "NOT_SET");
+    });
+}
 
 services.AddFeatureManagement();
 services.AddAntiforgery(opts =>
@@ -66,9 +90,6 @@ services.Configure<ForwardedHeadersOptions>(options =>
 
 services.AddHealthChecks();
 
-services.AddApplicationInsightsTelemetry()
-        .AddLogging();
-
 services.AddHsts(options =>
 {
     options.IncludeSubDomains = true;
@@ -97,16 +118,18 @@ else
 }
 
 app.UseForwardedHeaders();
+app.UseStaticFiles();
+
+if (!isComponentTest)
+    app.UseSerilogRequestLogging(); // after `UseStaticFiles()` to prevent logging of requests to css/js/png etc.
 
 app.UseMiddleware<SecurityHeaderMiddleware>();
 app.UseCookiePolicy();
 app.UseStatusCodePagesWithReExecute("/error", "?statusCode={0}");
 app.UseHttpsRedirection();
-app.UseStaticFiles();
 app.UseAuthentication();
 app.UseRouting();
 app.UseSession();
-
 app.UseAuthorization();
 app.UseMiddleware<UserDataCheckerMiddleware>();
 app.UseMiddleware<JourneyAccessCheckerMiddleware>();

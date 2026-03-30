@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
-using Application.Helpers;
+using Application.Options;
 using Application.Services;
 using AutoFixture;
 using DTOs;
@@ -18,12 +18,11 @@ using EPR.SubmissionMicroservice.Data.Entities.SubmissionEvent;
 using FluentAssertions;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Time.Testing;
 using Microsoft.Identity.Web;
 using Moq;
 using Moq.Protected;
-using Options;
+using Options = Microsoft.Extensions.Options.Options;
 
 [TestFixture]
 public class WebApiGatewayClientTests

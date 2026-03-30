@@ -14,7 +14,7 @@ public static class MockApiServer
     {
         var settings = new WireMockServerSettings
         {
-            Port =9091, 
+            Port = 9091,
             Logger = new WireMockConsoleLogger()
         };
 

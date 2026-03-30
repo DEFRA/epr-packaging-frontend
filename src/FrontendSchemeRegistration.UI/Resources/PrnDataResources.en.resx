@@ -135,6 +135,9 @@
   <data name="Paper and board" xml:space="preserve">
     <value>Paper, board or fibre-based composite material</value>
   </data>
+  <data name="Paper or board" xml:space="preserve">
+    <value>Paper, board or fibre-based composite material</value>
+  </data>
   <data name="Paper/board" xml:space="preserve">
     <value>Paper, board or fibre-based composite material</value>
   </data>

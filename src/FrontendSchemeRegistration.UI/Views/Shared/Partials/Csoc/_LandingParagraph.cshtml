@@ -1,0 +1,16 @@
+@model CsocViewModel?
+
+@if (Model is not null)
+{
+    var key = Model switch
+    {
+        { IsComplianceScheme: true } => "compliance_scheme",
+        { IsDirectProducer: true } => "direct_producer",
+        _ => null
+    };
+
+    if (key is not null)
+    {
+        <p class="govuk-body">@Localizer[$"paragraph_{key}", Model.SubmissionDeadline]</p>
+    }
+}

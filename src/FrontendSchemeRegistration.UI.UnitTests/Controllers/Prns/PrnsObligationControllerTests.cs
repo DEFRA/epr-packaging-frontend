@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Time.Testing;
+using Microsoft.FeatureManagement;
 using Moq;
 using NUnit.Framework;
 
@@ -32,6 +33,7 @@ public class PrnsObligationControllerTests
     private static readonly IFixture _fixture = new Fixture();
     private Mock<ILogger<PrnsObligationController>> _loggerMock;
     private FakeTimeProvider _fakeTimeProvider;
+    private Mock<IFeatureManager> _featureManagerMock;
 
     [SetUp]
     public void SetUp()
@@ -53,7 +55,17 @@ public class PrnsObligationControllerTests
         var globalVariables = Options.Create(new GlobalVariables { BasePath = "BasePath", LogPrefix = "[FrontendSchemaRegistration]" });
         _loggerMock = new Mock<ILogger<PrnsObligationController>>();
 
-        _controller = new PrnsObligationController(_sessionManagerMock.Object, _prnServiceMock.Object, _fakeTimeProvider, globalVariables, _urlOptionsMock.Object, _loggerMock.Object)
+        _featureManagerMock = new Mock<IFeatureManager>();
+
+        _controller = new PrnsObligationController(
+            _sessionManagerMock.Object, 
+            _prnServiceMock.Object, 
+            _fakeTimeProvider, 
+            globalVariables, 
+            _urlOptionsMock.Object, 
+            _loggerMock.Object,
+            _featureManagerMock.Object,
+            new OptionsWrapper<CsocOptions>(new CsocOptions()))
         {
             Url = _urlHelperMock.Object
         };
@@ -86,7 +98,8 @@ public class PrnsObligationControllerTests
                         Name = "Test Organisation",
                         NationId = 1
                     }
-                }
+                },
+                ServiceRole = "Basic User"
             }
         };
         _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
@@ -188,7 +201,15 @@ public class PrnsObligationControllerTests
 
         var globalVariables = Options.Create(new GlobalVariables { BasePath = "BasePath", LogPrefix = "[FrontendSchemaRegistration]" });
 
-        var controller = new PrnsObligationController(_sessionManagerMock.Object, _prnServiceMock.Object, _fakeTimeProvider, globalVariables, _urlOptionsMock.Object, _loggerMock.Object)
+        var controller = new PrnsObligationController(
+            _sessionManagerMock.Object, 
+            _prnServiceMock.Object, 
+            _fakeTimeProvider, 
+            globalVariables, 
+            _urlOptionsMock.Object, 
+            _loggerMock.Object,
+            _featureManagerMock.Object,
+            new OptionsWrapper<CsocOptions>(new CsocOptions()))
         {
             Url = _urlHelperMock.Object,
             ControllerContext = new ControllerContext
@@ -403,7 +424,15 @@ public class PrnsObligationControllerTests
         // Arrange
         _fakeTimeProvider.SetUtcNow(new DateTimeOffset(currentYear, currentMonth, 1, 0,0,0, TimeSpan.Zero));
         var globalVariables = Options.Create(new GlobalVariables { BasePath = "BasePath", LogPrefix = "[FrontendSchemaRegistration]" });
-        var controller = new PrnsObligationController(_sessionManagerMock.Object, _prnServiceMock.Object,_fakeTimeProvider, globalVariables, _urlOptionsMock.Object, _loggerMock.Object)
+        var controller = new PrnsObligationController(
+            _sessionManagerMock.Object, 
+            _prnServiceMock.Object,
+            _fakeTimeProvider, 
+            globalVariables, 
+            _urlOptionsMock.Object, 
+            _loggerMock.Object,
+            _featureManagerMock.Object,
+            new OptionsWrapper<CsocOptions>(new CsocOptions()))
         {
             Url = _urlHelperMock.Object,
             ControllerContext = new ControllerContext
@@ -483,7 +512,15 @@ public class PrnsObligationControllerTests
         _prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(expectedComplianceYear.Value)).ReturnsAsync(viewModel);
 
         var globalVariables = Options.Create(new GlobalVariables { BasePath = "BasePath", LogPrefix = "[FrontendSchemaRegistration]" });
-        var controller = new PrnsObligationController(_sessionManagerMock.Object, _prnServiceMock.Object, _fakeTimeProvider, globalVariables, _urlOptionsMock.Object, _loggerMock.Object)
+        var controller = new PrnsObligationController(
+            _sessionManagerMock.Object, 
+            _prnServiceMock.Object, 
+            _fakeTimeProvider,
+            globalVariables, 
+            _urlOptionsMock.Object, 
+            _loggerMock.Object,
+            _featureManagerMock.Object,
+            new OptionsWrapper<CsocOptions>(new CsocOptions()))
         {
             Url = _urlHelperMock.Object,
             ControllerContext = new ControllerContext
