@@ -11,17 +11,18 @@ So that I know my submission has been received
     When I select a submission period and start the POM file upload
     And I upload a valid POM CSV file
     And I confirm and submit the packaging data
-    Then the page is successfully returned
+    Then I am on the POM Submission Confirmation Page
     And the page content includes the following: Packaging data submitted to the environmental regulator
 
   @WireMockServer
   @AuthenticateDirectProducerNotStarted
   @RegistrationUploadSuccess
+  # Verifies the "Success" notification banner heading is shown after a successful upload.
+  # The URL check and "Organisation details uploaded" content are covered by RegistrationFileUpload.feature.
   Scenario: Successful registration file upload displays success notification banner
     Given I have navigated to the Registration Guidance Page
     When I continue to the Registration Task List
     And I start the file upload step
     And I upload a valid CSV file
-    Then the page is successfully returned
+    Then I am on the Company Details Success Page
     And the page content includes the following: Success
-    And the page content includes the following: Organisation details uploaded
