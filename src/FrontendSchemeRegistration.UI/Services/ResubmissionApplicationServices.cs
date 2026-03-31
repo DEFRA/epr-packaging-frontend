@@ -169,11 +169,6 @@ public class ResubmissionApplicationServices(
         return await submissionService.GetActualSubmissionPeriod(submissionId, submissionPeriod);
     }
 
-    public async Task<bool> GetFeatureFlagForProducersFeebreakdown()
-    {
-        return await featureManager.IsEnabledAsync(nameof(FeatureFlags.IncludeSubsidariesInFeeCalculationsForProducers));
-    }
-
     public SubmissionPeriod PackagingResubmissionPeriod(string[] currentYear, DateTime nowDateTime)
     {
         var packagingResubmissionPeriod = globalVariables.Value.SubmissionPeriods

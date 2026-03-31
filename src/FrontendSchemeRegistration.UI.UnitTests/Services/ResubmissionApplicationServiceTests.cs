@@ -802,34 +802,6 @@ public class ResubmissionApplicationServiceTests
     }
 
     [Test]
-    public async Task GetFeatureFlagForProducersFeebreakdown_ShouldReturnTrueIfFeatureIsEnabled()
-    {
-        // Arrange
-        _mockFeatureManager.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.IncludeSubsidariesInFeeCalculationsForProducers))).ReturnsAsync(true);
-        var expectedResult = true;
-
-        // Act
-        var result = await _service.GetFeatureFlagForProducersFeebreakdown();
-
-        // Assert
-        result.Should().BeTrue();
-    }
-
-    [Test]
-    public async Task GetFeatureFlagForProducersFeebreakdown_ShouldReturnFalseIfFeatureIsDisabled()
-    {
-        // Arrange
-        _mockFeatureManager.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.IncludeSubsidariesInFeeCalculationsForProducers))).ReturnsAsync(false);
-        var expectedResult = true;
-
-        // Act
-        var result = await _service.GetFeatureFlagForProducersFeebreakdown();
-
-        // Assert
-        result.Should().BeFalse();
-    }
-
-    [Test]
     public async Task GetRegulatorNation()
     {
         _mockPaymentCalculationService.Setup(pcs => pcs.GetRegulatorNation(It.IsAny<Guid?>()))
