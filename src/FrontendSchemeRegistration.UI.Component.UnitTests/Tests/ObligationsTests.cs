@@ -87,7 +87,9 @@ public class ObligationsTests
         if (path.EndsWith("csv"))
             await Verify(content, VerifyCsv.Extension).UseParameters(path, language).DontScrubDateTimes();
         else
-            await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings).UseParameters(path, language);
+            await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
+                .ScrubCommonHtmlNodes()
+                .UseParameters(path, language);
     }
 
     [TearDown]

@@ -16,4 +16,6 @@ public class PaymentInitiationRequest
     public string Regulator { get; set; }
 
     public int Amount { get; set; }
+
+    public Guid? FileId { get; set; }
 }

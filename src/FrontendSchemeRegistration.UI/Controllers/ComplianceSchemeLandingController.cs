@@ -16,6 +16,11 @@ using Microsoft.FeatureManagement;
 
 namespace FrontendSchemeRegistration.UI.Controllers;
 
+using Application.Options;
+using Helpers;
+using Microsoft.Extensions.Options;
+
+[SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters", Justification = "Required for dependency injection")]
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
 [Route(PagePaths.ComplianceSchemeLanding)]
 public class ComplianceSchemeLandingController(
@@ -25,7 +30,8 @@ public class ComplianceSchemeLandingController(
     IResubmissionApplicationService resubmissionApplicationService,
     ILogger<ComplianceSchemeLandingController> logger,
     IFeatureManager featureManager,
-    TimeProvider timeProvider)
+    TimeProvider timeProvider,
+    IOptions<CsocOptions> csocOptions)
     : Controller
 {
     [HttpGet]
@@ -45,7 +51,8 @@ public class ComplianceSchemeLandingController(
         var session = SetupMinimalSession.FrontendSchemeRegistrationSession(complianceSchemes, userData, selectedComplianceSchemeId);
         var taskSave = sessionManager.SaveSessionAsync(HttpContext.Session, session);
 
-        var currentYear = new[] {now.GetComplianceYear().ToString(), (now.GetComplianceYear() + 1).ToString() };
+        var complianceYear = now.GetComplianceYear();
+        var currentYear = new[] { complianceYear.ToString(), (complianceYear + 1).ToString() };
         // Note: We are adding a service method here to avoid SonarQube issue for adding 8th parameter in the constructor.
         var packagingResubmissionPeriod = resubmissionApplicationService.PackagingResubmissionPeriod(currentYear, now);
         
@@ -70,9 +77,9 @@ public class ComplianceSchemeLandingController(
             ComplianceSchemes = complianceSchemes,
             ResubmissionTaskListViewModel = resubmissionApplicationDetails.ToResubmissionTaskListViewModel(organisation),
             PackagingResubmissionPeriod = packagingResubmissionPeriod,
-            ComplianceYear = now.GetComplianceYear().ToString(),
+            ComplianceYear = complianceYear.ToString(),
             CsoRegistrationEnabled = csoRegistrationEnabled,
-            CsocViewModel = await DetermineCsocViewModel()
+            CsocViewModel = await CsocHelper.CreateViewModel(featureManager, isApprovedUser, organisation, now, csocOptions.Value)
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id.Value);
@@ -91,20 +98,6 @@ public class ComplianceSchemeLandingController(
         session.SubsidiarySession.Journey.Clear();
 
         return View("ComplianceSchemeLanding", model);
-
-        async Task<CsocViewModel?> DetermineCsocViewModel()
-        {
-            var enabled = await featureManager.IsEnabledAsync(FeatureFlags.CsocEnabled);
-            if (!enabled) return null;
-
-            return new CsocViewModel
-            {
-                IsApprovedUser = isApprovedUser,
-                IsDirectProducer = organisation.IsDirectProducer(),
-                IsComplianceScheme = organisation.IsComplianceScheme(),
-                SubmissionDeadline = now.GetCsocSubmissionDeadline()
-            };
-        }
     }
 
     [HttpPost]

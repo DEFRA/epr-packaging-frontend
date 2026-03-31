@@ -156,6 +156,7 @@ public static class ServiceProviderExtension
         services.Configure<List<RegistrationPeriodPattern>>(configuration.GetSection(RegistrationPeriodPattern.ConfigSection));
         services.Configure<NotificationBannerOptions>(configuration.GetSection(NotificationBannerOptions.Section));
         services.Configure<FibreOptions>(configuration.GetSection(FibreOptions.ConfigSection));
+        services.Configure<CsocOptions>(configuration.GetSection(CsocOptions.ConfigSection));
     }
 
     private static void RegisterServices(IServiceCollection services)

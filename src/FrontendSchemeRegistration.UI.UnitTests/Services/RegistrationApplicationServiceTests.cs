@@ -470,7 +470,8 @@ public class RegistrationApplicationServiceTests
             r.OrganisationId == userData.Organisations.First().Id.Value &&
             r.Reference == _session.ApplicationReferenceNumber &&
             r.Amount == _session.TotalAmountOutstanding &&
-            r.Regulator == _session.RegulatorNation
+            r.Regulator == _session.RegulatorNation &&
+            r.FileId == _session.LastSubmittedFile.FileId
         )), Times.Once);
     }
 

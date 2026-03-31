@@ -21,10 +21,13 @@ public static class ConfigBuilder
                 new KeyValuePair<string,string>("PaymentFacadeApi:Endpoints:ComplianceSchemeResubmissionFeesEndpoint", "compliance-scheme/resubmission-fee"),
                 new KeyValuePair<string,string>("EprAuthorizationConfig:FacadeBaseUrl", "http://localhost:9091/api/"),
                 new KeyValuePair<string,string>("AccountsFacadeAPI:BaseEndpoint", "http://localhost:9091/api/"),
-                new KeyValuePair<string,string>("Validation:ClosedLoopRegistrationFromYear", "2027")
+                new KeyValuePair<string,string>("Validation:ClosedLoopRegistrationFromYear", "2027"),
+                new KeyValuePair<string,string>("StartupUtcTimestampOverride", "2026-03-27T08:58:00Z")
             ]
         };
+        
         var provider = new MemoryConfigurationProvider(configSource);
+        
         return new ConfigurationRoot(new List<IConfigurationProvider> { provider });
     }
 }

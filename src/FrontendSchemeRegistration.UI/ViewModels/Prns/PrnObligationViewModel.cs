@@ -23,4 +23,6 @@ public class PrnObligationViewModel
     public List<PrnMaterialObligationViewModel> MaterialObligationViewModels { get; set; }
 
     public List<PrnMaterialObligationViewModel> GlassMaterialObligationViewModels { get; set; }
+    
+    public CsocViewModel? CsocViewModel { get; set; }
 }

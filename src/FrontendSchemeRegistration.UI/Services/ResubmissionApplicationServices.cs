@@ -89,7 +89,8 @@ public class ResubmissionApplicationServices(
             Reference = session.PomResubmissionSession.PackagingResubmissionApplicationSession.ApplicationReferenceNumber,
             Description = "Packaging data resubmission fee",
             Regulator = session.PomResubmissionSession.RegulatorNation,
-            Amount = Convert.ToInt32(session.PomResubmissionSession.FeeBreakdownDetails.TotalAmountOutstanding)
+            Amount = Convert.ToInt32(session.PomResubmissionSession.FeeBreakdownDetails.TotalAmountOutstanding),
+            FileId = session.PomResubmissionSession.PackagingResubmissionApplicationSession.LastSubmittedFile.FileId
         };
 
         return await paymentCalculationService.InitiatePayment(request);
