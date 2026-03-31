@@ -786,23 +786,8 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
         result?.ActionName.Should().Be(nameof(PackagingDataResubmissionController.ResubmissionTaskList));
     }
 
-
     [Test]
-    public async Task GetMemberCount_ReturnsOneForProducers_WhenFeatureFlagIsOff()
-    {
-        // Arrange
-        var submissionId = Guid.NewGuid();
-        var iscomplianceScheme = false;
-
-        // Act
-        var result = await SystemUnderTest.GetMemberCount(submissionId, iscomplianceScheme, It.IsAny<Guid?>());
-
-        // Assert
-        result.Should().Be(1);
-    }
-
-    [Test]
-    public async Task GetMemberCount_ReturnsMemberCountForProducers_WhenFeatureFlagIsOn()
+    public async Task GetMemberCount_ReturnsMemberCountForProducers()
     {
         // Arrange
         var submissionId = Guid.NewGuid();
@@ -810,7 +795,6 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
         var iscomplianceScheme = false;
 
         ResubmissionApplicationService.Setup(x => x.GetPackagingResubmissionMemberDetails(It.IsAny<PackagingResubmissionMemberRequest>())).ReturnsAsync(new PackagingResubmissionMemberDetails() { MemberCount = memberCount });
-        ResubmissionApplicationService.Setup(x => x.GetFeatureFlagForProducersFeebreakdown()).ReturnsAsync(true);
 
         // Act
         var result = await SystemUnderTest.GetMemberCount(submissionId, iscomplianceScheme, It.IsAny<Guid?>());
