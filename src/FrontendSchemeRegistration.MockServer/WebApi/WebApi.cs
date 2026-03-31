@@ -22,7 +22,7 @@ public static class WebApi
     private static readonly (string Keyword, string Suffix)[] EmailKeywords =
     [
         ("notstarted", "NotStarted"),
-        ("uploaded", "RegistrationApplicationDetails"),
+        ("uploaded", "Uploaded"),
         ("fees", "Fees"),
         ("paid", "Paid"),
         ("completed", "Completed"),

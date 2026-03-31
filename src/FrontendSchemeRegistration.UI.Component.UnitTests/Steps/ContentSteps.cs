@@ -84,13 +84,23 @@ public class ContentSteps(ScenarioContext context)
     private static void AssertLinkWithTextExists(string content, string linkText, string path)
     {
         var normalizedPath = path.StartsWith("/") ? path : $"/report-data/{path}";
-        var normalizedContent = NormalizeForContentComparison(content);
         var normalizedLinkText = NormalizeApostrophes(linkText);
-        normalizedContent.Should().Contain(normalizedLinkText,
-            "page should contain link text '{0}'", linkText);
-        var linkPattern = new Regex($@"href\s*=\s*[""'][^""']*{Regex.Escape(normalizedPath)}[^""']*[""']", RegexOptions.IgnoreCase);
-        linkPattern.IsMatch(content).Should().BeTrue(
-            "page should contain a link to {0} with text '{1}'", normalizedPath, linkText);
+
+        // Match <a> tags whose href contains the expected path, capturing inner HTML.
+        // Using Singleline so '.' matches newlines (link text may span lines).
+        var anchorPattern = new Regex(
+            $@"<a\s[^>]*href\s*=\s*[""'][^""']*{Regex.Escape(normalizedPath)}[^""']*[""'][^>]*>(.*?)</a>",
+            RegexOptions.IgnoreCase | RegexOptions.Singleline);
+
+        var matches = anchorPattern.Matches(content);
+        matches.Should().NotBeEmpty(
+            "page should contain a link pointing to '{0}'", normalizedPath);
+
+        var anyMatchContainsText = matches.Cast<Match>().Any(m =>
+            NormalizeForContentComparison(m.Groups[1].Value).Contains(normalizedLinkText));
+
+        anyMatchContainsText.Should().BeTrue(
+            "the link to '{0}' should contain the text '{1}'", normalizedPath, linkText);
     }
 
     /// <summary>

@@ -12,15 +12,15 @@ Scenario: Not started - registration tile shows deadline instructions
     And the page content includes the following: Applications made after this date could incur a late fee
 
 @WireMockServer
-Scenario: Uploaded - registration tile shows data submitted for year
+Scenario: Uploaded - registration tile shows data submitted, awaiting fee calculation
     Given I am logged in with email uploaded@test.com
     When I navigate to the CSO Registration Page
     Then the page is successfully returned
-    And the page content includes the following: You have submitted your registration data for 2026
-    And the page content includes the following: View your registration fees and payment methods
+    And the page content includes the following: You have submitted your registration data
+    And the page content includes the following: You will then need to pay your registration fee
 
 @WireMockServer
-Scenario: Fees - registration tile shows data submitted with fees available
+Scenario: Fees - registration tile shows data submitted with fees ready to view
     Given I am logged in with email fees@test.com
     When I navigate to the CSO Registration Page
     Then the page is successfully returned

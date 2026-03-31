@@ -9,13 +9,16 @@ Scenario: Navigate to file upload sub landing page shows packaging data page
     When I navigate to the File Upload Sub Landing Page
     Then the page is successfully returned
     And the page content includes the following: Report packaging data
+    And the page content includes the following: Before you start
+    And the page content includes the following: what packaging data you need to collect
 
 @AuthenticateComplianceSchemeUser
 @WireMockServer
 Scenario: Navigate to company details sub landing page shows organisation details page
     When I navigate to the Company Details Sub Landing Page
     Then the page is successfully returned
-    And the page content includes the following: organisation details
+    And the page content includes the following: Report your members' organisation details
+    And the page content includes the following: Before you start
 
 @WireMockServer
 Scenario: Navigate to file upload sub landing page as unauthenticated user redirected to login

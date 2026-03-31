@@ -34,3 +34,11 @@ So that I can understand my current submission status at a glance
     Then the page is successfully returned
     And the page content includes the following: In Progress
     And the page content includes the following: You now need to submit to the regulator
+
+  @WireMockServer
+  Scenario: View resubmission fees - no members incurring a fee, fee viewed, awaiting submission
+    Given I am logged in with email pom.resubfees.nomembers@test.com
+    When I navigate to the File Upload Sub Landing Page
+    Then the page is successfully returned
+    And the page content includes the following: In Progress
+    And the page content includes the following: You now need to submit to the regulator

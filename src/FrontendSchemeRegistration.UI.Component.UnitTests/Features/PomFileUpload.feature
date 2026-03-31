@@ -11,6 +11,8 @@ So that I can submit my packaging data for the relevant submission period
     When I select a submission period and start the POM file upload
     And I upload a valid POM CSV file
     Then I am on the POM File Upload Success Page
+    And the page content includes the following: Packaging data uploaded – check and submit
+    And the page content includes the following: Your file has saved and you can submit it to the environmental regulator.
 
   @WireMockServer
   @AuthenticateDirectProducerUser
@@ -20,6 +22,8 @@ So that I can submit my packaging data for the relevant submission period
     When I select a submission period and start the POM file upload
     And I upload a valid POM CSV file
     Then I am on the POM File Upload Warnings Page
+    And the page content includes the following: Packaging data uploaded – check the warnings
+    And the page content includes the following: There are some warnings.
 
   @WireMockServer
   @AuthenticateDirectProducerUser
@@ -29,3 +33,5 @@ So that I can submit my packaging data for the relevant submission period
     When I select a submission period and start the POM file upload
     And I upload a valid POM CSV file
     Then I am on the POM File Upload Errors Page
+    And the page content includes the following: Packaging data not uploaded – fix the errors and try again
+    And the page content includes the following: Your data file has not been uploaded to your organisation's account.
