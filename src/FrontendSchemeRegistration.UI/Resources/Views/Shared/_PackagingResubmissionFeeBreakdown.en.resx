@@ -137,10 +137,7 @@
   <data name="table-content-item-packaging-data-resubmission-fee" xml:space="preserve">
     <value>Packaging data resubmission fee</value>
   </data>
-	<data name="table-content-packaging-data-resubmission" xml:space="preserve">
-    <value>Packaging data resubmission</value>
-  </data>
-	<data name="table-content-packaging-data-resubmission-fee-cs" xml:space="preserve">
+  <data name="table-content-packaging-data-resubmission-fee-cs" xml:space="preserve">
     <value>Packaging data resubmission for {0} members</value>
   </data>
 
