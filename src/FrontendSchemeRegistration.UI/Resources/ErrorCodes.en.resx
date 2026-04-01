@@ -377,7 +377,7 @@ Read the guidance about how to create your organisation details file. Once youâ€
     <value>Closed-loop packaging data can only be provided for Large producers</value>
   </data>
   <data name="912" xml:space="preserve">
-    <value>Packaging with a packaging type code of CLR (closed loop packaging data) can only be provided for the material type plastic.</value>
+    <value>Packaging type CLR (closed-loop packaging data) can only be used with material type PL (plastic).</value>
   </data>
   <data name="73" xml:space="preserve">
     <value>Turnover for this organisation is recorded as zero. Please verify this is correct before submitting a zero return</value>
