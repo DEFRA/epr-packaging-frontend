@@ -10,13 +10,13 @@
     "submittedByName" : "Auto test",
     "submittedDateTime" : "2025-12-16T17:38:37.4309743Z"
   },
-  "registrationFeePaymentMethod" : "PayByBankTransfer",
+  "registrationFeePaymentMethod" : null,
   "hasAnyApprovedOrQueriedRegulatorDecision" : false,
   "isLatestSubmittedEventAfterFileUpload" : true,
   "latestSubmittedEventCreatedDatetime" : "2025-12-16T17:38:37.4309743Z",
   "firstApplicationSubmittedEventCreatedDatetime" : "2025-12-17T00:00:00Z",
-  "registrationApplicationSubmittedDate" : "2025-12-17T12:29:23.9041378Z",
-  "registrationApplicationSubmittedComment" : "Auto test",
+  "registrationApplicationSubmittedDate" : null,
+  "registrationApplicationSubmittedComment" : null,
   "registrationApplicationSubmitted" : true,
   "applicationStatus" : 3,
   "registrationFeeCalculationDetails" : [ {

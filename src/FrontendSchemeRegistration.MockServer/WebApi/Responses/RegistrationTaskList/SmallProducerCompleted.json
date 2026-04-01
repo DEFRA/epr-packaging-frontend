@@ -1,0 +1,31 @@
+{
+  "registrationJourney" : "CsoSmallProducer",
+  "submissionId" : "a0eedd38-cc58-4cb1-bfa4-617914219e92",
+  "isSubmitted" : true,
+  "isResubmission" : false,
+  "applicationReferenceNumber" : "cba7a138-34a6-4d83-a380-5210d210d528",
+  "registrationReferenceNumber" : null,
+  "lastSubmittedFile" : {
+    "fileId" : "d3e3a99e-5e90-4dc5-8e5e-e66294d3fb8e",
+    "submittedByName" : "Test User",
+    "submittedDateTime" : "2025-12-16T17:38:37.4309743Z"
+  },
+  "registrationFeePaymentMethod" : "PayByBankTransfer",
+  "hasAnyApprovedOrQueriedRegulatorDecision" : false,
+  "isLatestSubmittedEventAfterFileUpload" : true,
+  "latestSubmittedEventCreatedDatetime" : "2025-12-16T17:38:37.4309743Z",
+  "firstApplicationSubmittedEventCreatedDatetime" : "2025-12-17T00:00:00Z",
+  "registrationApplicationSubmittedDate" : "2025-12-17T12:29:23.9041378Z",
+  "registrationApplicationSubmittedComment" : "Application submitted",
+  "registrationApplicationSubmitted" : true,
+  "applicationStatus" : 3,
+  "registrationFeeCalculationDetails" : [ {
+    "organisationId" : "154922",
+    "numberOfSubsidiaries" : 0,
+    "numberOfSubsidiariesBeingOnlineMarketPlace" : 0,
+    "organisationSize" : "Small",
+    "isOnlineMarketplace" : false,
+    "isNewJoiner" : false,
+    "nationId" : 1
+  } ]
+}
