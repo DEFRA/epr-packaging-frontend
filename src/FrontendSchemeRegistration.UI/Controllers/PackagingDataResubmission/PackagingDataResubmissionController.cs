@@ -231,11 +231,6 @@ public class PackagingDataResubmissionController : Controller
 
     public async Task<int> GetMemberCount(Guid? submissionId, bool isComplianceScheme, Guid? complianceSchemeId)
     {
-        if (!isComplianceScheme && !await _resubmissionApplicationService.GetFeatureFlagForProducersFeebreakdown())
-        {
-            return 1;
-        }
-
         var response = await _resubmissionApplicationService.GetPackagingResubmissionMemberDetails(new PackagingResubmissionMemberRequest()
         {
             SubmissionId = submissionId,
