@@ -5,5 +5,14 @@ using System.Diagnostics.CodeAnalysis;
 [ExcludeFromCodeCoverage]
 public class WebApiOptions
 {
-    public string PrnObligationCalculationResponseFile { get; set; } = "v1_prn_obligationcalculation.json";
+    public ObligationDataType ObligationData { get; set; }
+
+    public string PrnObligationCalculationResponseFile =>
+        $"v1_prn_obligationcalculation_{ObligationData.ToString().ToLower()}.json";
+
+    public enum ObligationDataType
+    {
+        Mixed,
+        NoDataYet
+    }
 }
