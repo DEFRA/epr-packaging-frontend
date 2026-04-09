@@ -77,7 +77,9 @@ public class CsocTests
     {
         Context.SetUp(overrideSession: true, additionalConfig: new Dictionary<string, string?>
         {
-            { "FeatureManagement:CsocEnabled", csocEnabled.ToString().ToLower() }
+            { "FeatureManagement:CsocEnabled", csocEnabled.ToString().ToLower() },
+            // Snapshots assume the compact tab strip without member-management panel markup.
+            { "FeatureManagement:ShowComplianceSchemeMemberManagement", "false" }
         });
     }
 

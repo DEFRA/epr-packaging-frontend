@@ -44,6 +44,7 @@ public class HttpSteps(ScenarioContext context)
         context.Set(await response.Content.ReadAsStringAsync(),ContextKeys.HttpResponseContent);
     }
 
+    [Given("I browse to the following url following redirects: (.*)")]
     [When("I browse to the following url following redirects: (.*)")]
     public async Task WhenINavigateToTheFollowingUrlFollowingRedirects(string url)
     {
