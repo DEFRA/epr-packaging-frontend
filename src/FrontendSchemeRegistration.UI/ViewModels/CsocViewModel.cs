@@ -11,4 +11,5 @@ public class CsocViewModel
     public DateTime SubmissionDeadline { get; set; }
     public int ComplianceYear { get; set; }
     public string? UnderstandingObligationsEndpoint { get; set; }
+    public bool IsObligationDataSubmitted { get; set; }
 }
