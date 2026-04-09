@@ -130,7 +130,7 @@
     <value>When packaging activity is entered, it must be one of the codes SO, PF, IM, SE, HL or OM</value>
   </data>
   <data name="03" xml:space="preserve">
-    <value>Packaging type must be one of the codes HH, NH, CW, OW, PB, RU, HDC, NDC or SP</value>
+    <value>Packaging type must be one of the codes HH, NH, CW, OW, PB, RU, HDC, NDC, SP or CLR</value>
   </data>
   <data name="04" xml:space="preserve">
     <value>When packaging class is entered, it must be one of the codes P1, P2, P3, P4, P5, P6, O1, O2 or B1</value>

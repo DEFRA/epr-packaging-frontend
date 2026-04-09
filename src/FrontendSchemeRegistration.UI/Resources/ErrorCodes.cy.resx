@@ -130,7 +130,7 @@
     <value>Wrth roi gweithgaredd pecynnu, rhaid ichi roi un o'r codau SO, PF, IM, SE, HL neu OM</value>
   </data>
   <data name="03" xml:space="preserve">
-    <value>Rhaid i'r math o ddeunydd pecynwaith fod yn un o'r codau HH, NH, CW, OW, PB, RU, HDC, NDC neu SP</value>
+    <value>Rhaid i'r math o ddeunydd pecynwaith fod yn un o'r codau HH, NH, CW, OW, PB, RU, HDC, NDC, SP neu CLR</value>
   </data>
   <data name="04" xml:space="preserve">
     <value>Wrth roi'r dosbarth pecynwaith, rhaid ichi roi un o'r codau P1, P2, P3, P4, P5, P6, O1, O2 neu B1</value>
