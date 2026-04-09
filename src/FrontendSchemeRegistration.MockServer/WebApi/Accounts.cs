@@ -11,7 +11,7 @@ using WireMock.Matchers;
 [ExcludeFromCodeCoverage]
 public static class Accounts
 {
-    public static Guid ComplianceSchemeId { get; } = Guid.NewGuid();
+    public static Guid ComplianceSchemeId { get; } = Guid.Parse("cccccccc-cccc-4ccc-8ccc-cccccccccccc");
     
     public static WireMockServer WithAccounts(this WireMockServer server)
     {
@@ -29,7 +29,7 @@ public static class Accounts
                     {
                         new
                         {
-                            Id = Guid.NewGuid(),
+                            Id = ComplianceSchemeId,
                             Name = $"Compliance Scheme Ltd {nation.Country}",
                             CreatedOn = DateTimeOffset.UtcNow.AddYears(-3),
                             NationId = nation.NationId,

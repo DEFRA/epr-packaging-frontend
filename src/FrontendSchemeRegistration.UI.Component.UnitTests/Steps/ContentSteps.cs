@@ -16,6 +16,13 @@ public class ContentSteps(ScenarioContext context)
         AssertContentIncludes(response, expectedContent);
     }
 
+    [Then("the page content does not include the following: (.*)")]
+    public void ThenThePageContentDoesNotIncludeTheFollowing(string unexpectedContent)
+    {
+        var response = context.Get<string>(ContextKeys.HttpResponseContent);
+        AssertContentDoesNotInclude(response, unexpectedContent);
+    }
+
     [Then("the page redirect content includes the following: (.*)")]
     public void ThenThePageRedirectContentIncludesTheFollowing(string expectedContent)
     {
@@ -71,6 +78,14 @@ public class ContentSteps(ScenarioContext context)
         var normalizedExpected = NormalizeApostrophes(expectedContent);
         normalizedContent.Should().Contain(normalizedExpected,
             "page should contain '{0}'", expectedContent);
+    }
+
+    private static void AssertContentDoesNotInclude(string htmlContent, string unexpectedContent)
+    {
+        var normalizedContent = NormalizeForContentComparison(htmlContent);
+        var normalizedUnexpected = NormalizeApostrophes(unexpectedContent);
+        normalizedContent.Should().NotContain(normalizedUnexpected,
+            "page should not contain '{0}'", unexpectedContent);
     }
 
     private static void AssertLinkExists(string content, string path)

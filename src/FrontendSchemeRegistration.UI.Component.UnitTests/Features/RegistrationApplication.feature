@@ -41,11 +41,11 @@ Scenario Outline: Resubmitting for a Compliance Scheme - <expectedPageHeader>
       | CsoLargeProducer   | Large producer 2026 registration         | COMPLIANCE SCHEME LTD               | registration-task-list?registrationjourney=CsoLargeProducer&registrationyear=2026                     |
       | CsoLargeProducer   | Large producer 2026 registration         | Check files and submit              | review-organisation-data?submissionId=__SUBMISSION_ID__&registrationyear=2026&registrationjourney=CsoLargeProducer |
       | CsoLargeProducer   | Large producer 2026 registration         | Declaration                         | declaration-enter-full-name?submissionId=__SUBMISSION_ID__&registrationyear=2026&registrationjourney=CsoLargeProducer |
-    #   | CsoLargeProducer   | Large producer 2026 registration         | Large producer 2026 registration    | file-upload-company-details/confirm-upload?submissionId=__SUBMISSION_ID__&registrationyear=2026&registrationjourney=CsoLargeProducer |
+      | CsoLargeProducer   | Large producer 2026 registration         | Re-upload members’ organisation details to submit to environmental regulator    | file-upload-company-details/confirm-upload?submissionId=__SUBMISSION_ID__&registrationyear=2026&registrationjourney=CsoLargeProducer |
       | CsoSmallProducer   | Small producer 2026 registration         | COMPLIANCE SCHEME LTD               | registration-task-list?registrationjourney=CsoSmallProducer&registrationyear=2026                     |
       | CsoSmallProducer   | Small producer 2026 registration         | Check files and submit              | review-organisation-data?submissionId=__SUBMISSION_ID__&registrationyear=2026&registrationjourney=CsoSmallProducer |
       | CsoSmallProducer   | Small producer 2026 registration         | Declaration                         | declaration-enter-full-name?submissionId=__SUBMISSION_ID__&registrationyear=2026&registrationjourney=CsoSmallProducer |
-    #   | CsoSmallProducer   | Small producer 2026 registration         | Small producer 2026 registration    | file-upload-company-details/confirm-upload?submissionId=__SUBMISSION_ID__&registrationyear=2026&registrationjourney=CsoSmallProducer |
+      | CsoSmallProducer   | Small producer 2026 registration         | Re-upload members’ organisation details to submit to environmental regulator     | file-upload-company-details/confirm-upload?submissionId=__SUBMISSION_ID__&registrationyear=2026&registrationjourney=CsoSmallProducer |
 
 
 @WireMockServer
