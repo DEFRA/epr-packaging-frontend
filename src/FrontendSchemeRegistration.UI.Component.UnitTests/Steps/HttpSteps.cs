@@ -2,15 +2,26 @@ namespace FrontendSchemeRegistration.UI.Component.UnitTests.Steps;
 
 using System.Net;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.WebUtilities;
 using Extensions;
 using FluentAssertions;
 using Infrastructure;
 using NUnit.Framework;
 using Reqnroll;
+using FrontendSchemeRegistration.Application.Enums;
 
 [Binding]
 public class HttpSteps(ScenarioContext context)
 {
+    private const string KnownLargeJourneySubmissionId = "e4749e86-54d7-4904-997d-24aa536ab40d";
+    private const string KnownSmallJourneySubmissionId = "f4749e86-54d7-4904-997d-24aa536ab40d";
+
+    [Given("I use registration journey (.*)")]
+    public void GivenIUseRegistrationJourney(string registrationJourney)
+    {
+        context.Set(registrationJourney, ContextKeys.RegistrationJourney);
+    }
+
     [Given("I have navigated to the (.*)")]
     [When("I navigate to the (.*)")]
     public async Task WhenINavigateToThePage(string pageName)
@@ -27,9 +38,31 @@ public class HttpSteps(ScenarioContext context)
     public async Task WhenINavigateToTheFollowingUrl(string url)
     {
         var client = context.Get<ITestHttpClient>(ContextKeys.ComponentTestClient);
-        var response = await client.GetAsync(url);
+        var resolvedUrl = ResolveDynamicPlaceholders(url);
+        var response = await client.GetAsync(resolvedUrl);
         context.Set(response,ContextKeys.HttpResponse);
         context.Set(await response.Content.ReadAsStringAsync(),ContextKeys.HttpResponseContent);
+    }
+
+    [When("I browse to the following url following redirects: (.*)")]
+    public async Task WhenINavigateToTheFollowingUrlFollowingRedirects(string url)
+    {
+        var client = context.Get<ITestHttpClient>(ContextKeys.ComponentTestClient);
+        var resolvedUrl = ResolveDynamicPlaceholders(url);
+
+        var response = await client.GetAsync(resolvedUrl);
+
+        while (response.StatusCode == HttpStatusCode.Redirect && response.Headers.Location != null)
+        {
+            var redirectUrl = response.Headers.Location.ToString();
+            var redirectPath = redirectUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                ? new Uri(redirectUrl).PathAndQuery
+                : redirectUrl;
+            response = await client.GetAsync(redirectPath);
+        }
+
+        context.Set(response, ContextKeys.HttpResponse);
+        context.Set(await response.Content.ReadAsStringAsync(), ContextKeys.HttpResponseContent);
     }
 
     [Then("I am redirected to the: (.*)")]
@@ -170,6 +203,12 @@ public class HttpSteps(ScenarioContext context)
             response = await client.GetAsync(pathAndQuery);
         }
 
+        var submissionId = ExtractSubmissionId(response.RequestMessage?.RequestUri);
+        if (!string.IsNullOrWhiteSpace(submissionId))
+        {
+            context.Set(submissionId, ContextKeys.GeneratedSubmissionId);
+        }
+
         context.Set(response, ContextKeys.HttpResponse);
         context.Set(await response.Content.ReadAsStringAsync(), ContextKeys.HttpResponseContent);
     }
@@ -199,6 +238,206 @@ public class HttpSteps(ScenarioContext context)
 
         context.Set(response, ContextKeys.HttpResponse);
         context.Set(await response.Content.ReadAsStringAsync(), ContextKeys.HttpResponseContent);
+    }
+
+    [Given("I have completed company details upload for submission id (.*)")]
+    public async Task GivenIHaveCompletedCompanyDetailsUploadForSubmissionId(string submissionId)
+    {
+        await CompleteCompanyDetailsUpload(submissionId);
+    }
+
+    [Given("I have completed company details upload for a compliance scheme")]
+    public async Task GivenIHaveCompletedCompanyDetailsUploadForComplianceScheme()
+    {
+        var registrationJourney = GetRegistrationJourney();
+        await CompleteCompanyDetailsUpload(GetDefaultSubmissionId(registrationJourney));
+    }
+
+    private async Task CompleteCompanyDetailsUpload(string submissionId)
+    {
+        var client = context.Get<ITestHttpClient>(ContextKeys.ComponentTestClient);
+        string? discoveredSubmissionId = null;
+        var registrationJourney = GetRegistrationJourney();
+
+        // Initialise registration file-upload session via the same route used by the UI task list.
+        var response = await client.GetAsync($"/report-data/redirect-upload-organisation-details?registrationyear=2026&registrationjourney={registrationJourney}");
+
+        while (response.StatusCode == HttpStatusCode.Redirect && response.Headers.Location != null)
+        {
+            var redirectUrl = response.Headers.Location.ToString();
+            discoveredSubmissionId ??= ExtractSubmissionIdFromUrl(redirectUrl);
+
+            var pathAndQuery = redirectUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                ? new Uri(redirectUrl).PathAndQuery
+                : redirectUrl;
+            response = await client.GetAsync(pathAndQuery);
+        }
+
+        discoveredSubmissionId ??= ExtractSubmissionId(response.RequestMessage?.RequestUri);
+
+        var effectiveSubmissionId = Guid.TryParse(submissionId, out _)
+            ? submissionId
+            : ExtractSubmissionId(response.RequestMessage?.RequestUri)
+              ?? discoveredSubmissionId
+              ?? GetDefaultSubmissionId(registrationJourney);
+        context.Set(effectiveSubmissionId, ContextKeys.GeneratedSubmissionId);
+
+        // Ensure FileUploadCompanyDetails is present in journey state for guarded pages.
+        var uploadUrl =
+            $"/report-data/upload-organisation-details?submissionId={effectiveSubmissionId}&registrationyear=2026&registrationjourney={registrationJourney}";
+        var csvContent = "organisation_id,organisation_name\n123456,Test Org Ltd\n";
+        var fileBytes = System.Text.Encoding.UTF8.GetBytes(csvContent);
+        var formData = new Dictionary<string, string> { { "registrationyear", "2026" } };
+        response = await client.PostWithFileAsync(uploadUrl, fileBytes, "organisation-details.csv", formData);
+
+        while (response.StatusCode == HttpStatusCode.Redirect && response.Headers.Location != null)
+        {
+            var redirectUrl = response.Headers.Location.ToString();
+            var pathAndQuery = redirectUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                ? new Uri(redirectUrl).PathAndQuery
+                : redirectUrl;
+            response = await client.GetAsync(pathAndQuery);
+        }
+
+        context.Set(response, ContextKeys.HttpResponse);
+        context.Set(await response.Content.ReadAsStringAsync(), ContextKeys.HttpResponseContent);
+    }
+
+    [When("I upload a valid brands CSV file")]
+    public async Task WhenIUploadAValidBrandsCsvFile()
+    {
+        context.TryGetValue<string>(ContextKeys.GeneratedSubmissionId, out var submissionId)
+            .Should().BeTrue("a submission id should exist before uploading brands");
+        var registrationJourney = GetRegistrationJourney();
+
+        var client = context.Get<ITestHttpClient>(ContextKeys.ComponentTestClient);
+        var uploadUrl =
+            $"/report-data/upload-brand-details?submissionId={submissionId}&registrationyear=2026&registrationjourney={registrationJourney}";
+
+        var csvContent = "organisation_id,brand_name\n123456,Test Brand\n";
+        var fileBytes = System.Text.Encoding.UTF8.GetBytes(csvContent);
+        var formData = new Dictionary<string, string> { { "registrationyear", "2026" } };
+
+        var response = await client.PostWithFileAsync(uploadUrl, fileBytes, "brands.csv", formData);
+        while (response.StatusCode == HttpStatusCode.Redirect && response.Headers.Location != null)
+        {
+            var redirectUrl = response.Headers.Location.ToString();
+            var pathAndQuery = redirectUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                ? new Uri(redirectUrl).PathAndQuery
+                : redirectUrl;
+            response = await client.GetAsync(pathAndQuery);
+        }
+
+        context.Set(response, ContextKeys.HttpResponse);
+        context.Set(await response.Content.ReadAsStringAsync(), ContextKeys.HttpResponseContent);
+    }
+
+    [When("I upload a valid partnerships CSV file")]
+    public async Task WhenIUploadAValidPartnershipsCsvFile()
+    {
+        context.TryGetValue<string>(ContextKeys.GeneratedSubmissionId, out var submissionId)
+            .Should().BeTrue("a submission id should exist before uploading partnerships");
+        var registrationJourney = GetRegistrationJourney();
+
+        var client = context.Get<ITestHttpClient>(ContextKeys.ComponentTestClient);
+        var uploadUrl =
+            $"/report-data/upload-partner-details?submissionId={submissionId}&registrationyear=2026&registrationjourney={registrationJourney}";
+
+        var csvContent = "organisation_id,organisation_name,partnership_type\n123456,Test Org Ltd,LLP\n";
+        var fileBytes = System.Text.Encoding.UTF8.GetBytes(csvContent);
+        var formData = new Dictionary<string, string> { { "registrationyear", "2026" } };
+
+        var response = await client.PostWithFileAsync(uploadUrl, fileBytes, "partnerships.csv", formData);
+        while (response.StatusCode == HttpStatusCode.Redirect && response.Headers.Location != null)
+        {
+            var redirectUrl = response.Headers.Location.ToString();
+            var pathAndQuery = redirectUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                ? new Uri(redirectUrl).PathAndQuery
+                : redirectUrl;
+            response = await client.GetAsync(pathAndQuery);
+        }
+
+        context.Set(response, ContextKeys.HttpResponse);
+        context.Set(await response.Content.ReadAsStringAsync(), ContextKeys.HttpResponseContent);
+    }
+
+    private string ResolveDynamicPlaceholders(string url)
+    {
+        if (!url.Contains("__SUBMISSION_ID__", StringComparison.Ordinal))
+        {
+            return url;
+        }
+
+        if (!context.TryGetValue<string>(ContextKeys.GeneratedSubmissionId, out var generatedSubmissionId) ||
+            string.IsNullOrWhiteSpace(generatedSubmissionId))
+        {
+            generatedSubmissionId = GetDefaultSubmissionId(GetRegistrationJourney());
+            context.Set(generatedSubmissionId, ContextKeys.GeneratedSubmissionId);
+        }
+
+        return url.Replace("__SUBMISSION_ID__", generatedSubmissionId!, StringComparison.Ordinal);
+    }
+
+    private string GetRegistrationJourney()
+    {
+        if (!context.TryGetValue<string>(ContextKeys.RegistrationJourney, out var registrationJourney) ||
+            string.IsNullOrWhiteSpace(registrationJourney))
+        {
+            registrationJourney = RegistrationJourney.CsoLargeProducer.ToString();
+            context.Set(registrationJourney, ContextKeys.RegistrationJourney);
+        }
+
+        return registrationJourney!;
+    }
+
+    private static string GetDefaultSubmissionId(string registrationJourney) =>
+        string.Equals(registrationJourney, RegistrationJourney.CsoSmallProducer.ToString(), StringComparison.OrdinalIgnoreCase)
+            ? KnownSmallJourneySubmissionId
+            : KnownLargeJourneySubmissionId;
+
+    private static string? ExtractSubmissionId(Uri? requestUri)
+    {
+        if (requestUri is null)
+        {
+            return null;
+        }
+
+        var query = QueryHelpers.ParseQuery(requestUri.Query);
+        if (!query.TryGetValue("submissionId", out var value))
+        {
+            return null;
+        }
+
+        var submissionId = value.ToString();
+        return Guid.TryParse(submissionId, out _) ? submissionId : null;
+    }
+
+    private static string? ExtractSubmissionIdFromUrl(string url)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+        {
+            return null;
+        }
+
+        if (url.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+        {
+            return ExtractSubmissionId(new Uri(url));
+        }
+
+        var separator = url.IndexOf('?', StringComparison.Ordinal);
+        if (separator < 0 || separator == url.Length - 1)
+        {
+            return null;
+        }
+
+        var query = QueryHelpers.ParseQuery(url[(separator + 1)..]);
+        if (!query.TryGetValue("submissionId", out var value))
+        {
+            return null;
+        }
+
+        var submissionId = value.ToString();
+        return Guid.TryParse(submissionId, out _) ? submissionId : null;
     }
 
     [When("I confirm and submit the packaging data")]
