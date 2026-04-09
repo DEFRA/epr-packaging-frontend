@@ -14,6 +14,8 @@ using WireMock.Matchers;
 [ExcludeFromCodeCoverage]
 public static class WebApi
 {
+    private const string ExtendedJourneyLargeSubmissionId = "e4749e86-54d7-4904-997d-24aa536ab40d";
+    private const string ExtendedJourneySmallSubmissionId = "f4749e86-54d7-4904-997d-24aa536ab40d";
     /// <summary>
     /// Supported email keywords that drive registration task-list state.
     /// The mock inspects the email portion of the bearer token (case-insensitive)
@@ -428,6 +430,10 @@ public static class WebApi
     {
         var path = req.Path;
         var id = path.Split('/').LastOrDefault() ?? Guid.NewGuid().ToString();
+        var isExtendedJourneyLargeSubmission = id.Equals(ExtendedJourneyLargeSubmissionId, StringComparison.OrdinalIgnoreCase);
+        var isExtendedJourneySmallSubmission = id.Equals(ExtendedJourneySmallSubmissionId, StringComparison.OrdinalIgnoreCase);
+        var isExtendedJourneySubmission = isExtendedJourneyLargeSubmission || isExtendedJourneySmallSubmission;
+        var registrationJourney = isExtendedJourneySmallSubmission ? "CsoSmallProducer" : "CsoLargeProducer";
 
         // Route to POM response if this submission ID was created by a POM file upload,
         // OR if a POM hook has set a scenario without an explicit ID (test-only path).
@@ -456,12 +462,12 @@ public static class WebApi
             companyDetailsFileName = "organisation-details.csv",
             companyDetailsUploadedBy,
             companyDetailsUploadDatetime = DateTime.UtcNow.ToString("o"),
-            brandsFileName = (string?)null,
-            brandsUploadedBy = (string?)null,
-            brandsUploadDatetime = (string?)null,
-            partnershipsFileName = (string?)null,
-            partnershipsUploadedBy = (string?)null,
-            partnershipsUploadDatetime = (string?)null
+            brandsFileName = isExtendedJourneySubmission ? "brands.csv" : (string?)null,
+            brandsUploadedBy = isExtendedJourneySubmission ? companyDetailsUploadedBy : (string?)null,
+            brandsUploadDatetime = isExtendedJourneySubmission ? DateTime.UtcNow.ToString("o") : (string?)null,
+            partnershipsFileName = isExtendedJourneySubmission ? "partnerships.csv" : (string?)null,
+            partnershipsUploadedBy = isExtendedJourneySubmission ? companyDetailsUploadedBy : (string?)null,
+            partnershipsUploadDatetime = isExtendedJourneySubmission ? DateTime.UtcNow.ToString("o") : (string?)null
         };
 
         // lastSubmittedFiles is needed by CompanyDetailsConfirmationController after the
@@ -470,8 +476,8 @@ public static class WebApi
         {
             companyDetailsFileId,
             companyDetailsFileName = "organisation-details.csv",
-            brandsFileName = (string?)null,
-            partnersFileName = (string?)null,
+            brandsFileName = isExtendedJourneySubmission ? "brands.csv" : (string?)null,
+            partnersFileName = isExtendedJourneySubmission ? "partnerships.csv" : (string?)null,
             submittedDateTime = DateTime.UtcNow.ToString("o"),
             submittedBy = companyDetailsUploadedBy
         };
@@ -482,6 +488,7 @@ public static class WebApi
             {
                 id,
                 type = "Registration",
+                registrationJourney = isExtendedJourneySubmission ? registrationJourney : null,
                 submissionPeriod = "January to December 2026",
                 companyDetailsDataComplete = true,
                 validationPass = true,
@@ -490,8 +497,8 @@ public static class WebApi
                 isSubmitted = true,
                 errors = Array.Empty<string>(),
                 companyDetailsFileName = "organisation-details.csv",
-                requiresBrandsFile = false,
-                requiresPartnershipsFile = false,
+                requiresBrandsFile = isExtendedJourneySubmission,
+                requiresPartnershipsFile = isExtendedJourneySubmission,
                 brandsDataComplete = true,
                 partnershipsDataComplete = true,
                 lastUploadedValidFiles,
@@ -501,6 +508,7 @@ public static class WebApi
             {
                 id,
                 type = "Registration",
+                registrationJourney = isExtendedJourneySubmission ? registrationJourney : null,
                 submissionPeriod = "January to December 2026",
                 companyDetailsDataComplete = true,
                 validationPass = true,
@@ -509,8 +517,8 @@ public static class WebApi
                 isSubmitted = true,
                 errors = Array.Empty<string>(),
                 companyDetailsFileName = "organisation-details.csv",
-                requiresBrandsFile = false,
-                requiresPartnershipsFile = false,
+                requiresBrandsFile = isExtendedJourneySubmission,
+                requiresPartnershipsFile = isExtendedJourneySubmission,
                 brandsDataComplete = true,
                 partnershipsDataComplete = true,
                 lastUploadedValidFiles,
@@ -520,6 +528,7 @@ public static class WebApi
             {
                 id,
                 type = "Registration",
+                registrationJourney = isExtendedJourneySubmission ? registrationJourney : null,
                 submissionPeriod = "January to December 2026",
                 companyDetailsDataComplete = true,
                 validationPass = false,
@@ -540,6 +549,7 @@ public static class WebApi
             {
                 id,
                 type = "Registration",
+                registrationJourney = isExtendedJourneySubmission ? registrationJourney : null,
                 submissionPeriod = "January to December 2026",
                 companyDetailsDataComplete = true,
                 validationPass = false,
