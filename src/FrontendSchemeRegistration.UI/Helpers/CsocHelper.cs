@@ -12,7 +12,8 @@ using ViewModels.Prns;
 
 public static class CsocHelper
 {
-    public static async Task<CsocViewModel?> CreateViewModel(IFeatureManager featureManager,
+    public static async Task<CsocViewModel?> CreateViewModel(
+        IFeatureManager featureManager,
         bool isApprovedUser,
         Organisation organisation,
         DateTime now,
@@ -30,7 +31,8 @@ public static class CsocHelper
             SubmissionDeadline = now.GetCsocSubmissionDeadline(),
             ComplianceYear = now.GetComplianceYear(),
             UnderstandingObligationsEndpoint = options.UnderstandingObligationsEndpoint,
-            IsObligationDataSubmitted = prnObligationViewModel is not null && prnObligationViewModel.OverallStatus != ObligationStatus.NoDataYet
+            IsObligationDataSubmitted = prnObligationViewModel is not null &&
+                                        prnObligationViewModel.OverallStatus != ObligationStatus.NoDataYet
         };
     }
 }
