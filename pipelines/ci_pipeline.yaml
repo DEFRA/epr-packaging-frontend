@@ -44,6 +44,9 @@ variables:
     value: true
   - name: dotnetVersion
     value: dotnetVersion8
+  # Common template does not accept buildConfiguration as a template parameter; set a variable so dotnet steps can use $(buildConfiguration).
+  - name: buildConfiguration
+    value: ${{ parameters.buildConfiguration }}
 
 resources:
   repositories:
@@ -70,4 +73,3 @@ extends:
     serviceName: $(serviceName)
     dotnetVersion: ${{ variables.dotnetVersion }}
     sonarqubeInstance: ${{ parameters.sonarqubeInstance }}
-    buildConfiguration: ${{ parameters.buildConfiguration }}
