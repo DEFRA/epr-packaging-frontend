@@ -15,6 +15,13 @@ parameters:
     values:
     - 'SonarQube'
     # - 'SonarQubeLatest'
+  - name: buildConfiguration
+    displayName: 'Select build configuration'
+    type: string
+    default: 'Debug'
+    values:
+    - 'Release'
+    - 'Debug'
 
 
 pool: DEFRA-COMMON-ubuntu2004-SSV3
@@ -63,3 +70,4 @@ extends:
     serviceName: $(serviceName)
     dotnetVersion: ${{ variables.dotnetVersion }}
     sonarqubeInstance: ${{ parameters.sonarqubeInstance }}
+    buildConfiguration: ${{ parameters.buildConfiguration }}
