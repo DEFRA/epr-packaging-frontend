@@ -12,19 +12,19 @@ public static class Payment
     public static WireMockServer WithPayments(this WireMockServer server)
     {
         // Initiate online payment (HTML redirect)
-        MapInitiatePaymentEndpoint(server, "/online-payments", "WebApi/Responses/payment/online-payments.html");
-        MapInitiatePaymentEndpoint(server, "/v1/online-payments", "WebApi/Responses/payment/online-payments.html");
-        MapInitiatePaymentEndpoint(server, "/v2/online-payments", "WebApi/Responses/payment/online-payments.html");
+        MapInitiatePaymentEndpoint(server, "/online-payments", "WebApi/Responses/Payment/online-payments.html");
+        MapInitiatePaymentEndpoint(server, "/v1/online-payments", "WebApi/Responses/Payment/online-payments.html");
+        MapInitiatePaymentEndpoint(server, "/v2/online-payments", "WebApi/Responses/Payment/online-payments.html");
 
         // Producer registration fee
-        MapFeeEndpoint(server, "/producer/registration-fee", "WebApi/Responses/payment/producer-default.json", "WebApi/Responses/payment/producer-default.json");
-        MapFeeEndpoint(server, "/v1/producer/registration-fee", "WebApi/Responses/payment/producer-default.json", "WebApi/Responses/payment/producer-default.json");
-        MapFeeEndpoint(server, "/v2/producer/registration-fee", "WebApi/Responses/payment/producer-default.json", "WebApi/Responses/payment/producer-default.json");
+        MapFeeEndpoint(server, "/producer/registration-fee", "WebApi/Responses/Payment/producer-default.json", "WebApi/Responses/Payment/producer-default.json");
+        MapFeeEndpoint(server, "/v1/producer/registration-fee", "WebApi/Responses/Payment/producer-default.json", "WebApi/Responses/Payment/producer-default.json");
+        MapFeeEndpoint(server, "/v2/producer/registration-fee", "WebApi/Responses/Payment/producer-default.json", "WebApi/Responses/Payment/producer-default.json");
 
         // Compliance scheme registration fee (default + scenario switching)
-        MapFeeEndpoint(server, "/compliance-scheme/registration-fee", "WebApi/Responses/payment/compliance-default.json", "WebApi/Responses/payment/compliance-latefee.json");
-        MapFeeEndpoint(server, "/v1/compliance-scheme/registration-fee", "WebApi/Responses/payment/compliance-default.json", "WebApi/Responses/payment/compliance-latefee.json");
-        MapFeeEndpoint(server, "/v2/compliance-scheme/registration-fee", "WebApi/Responses/payment/compliance-default.json", "WebApi/Responses/payment/compliance-latefee.json");
+        MapFeeEndpoint(server, "/compliance-scheme/registration-fee", "WebApi/Responses/Payment/compliance-default.json", "WebApi/Responses/Payment/compliance-latefee.json");
+        MapFeeEndpoint(server, "/v1/compliance-scheme/registration-fee", "WebApi/Responses/Payment/compliance-default.json", "WebApi/Responses/Payment/compliance-latefee.json");
+        MapFeeEndpoint(server, "/v2/compliance-scheme/registration-fee", "WebApi/Responses/Payment/compliance-default.json", "WebApi/Responses/Payment/compliance-latefee.json");
 
         return server;
     }
