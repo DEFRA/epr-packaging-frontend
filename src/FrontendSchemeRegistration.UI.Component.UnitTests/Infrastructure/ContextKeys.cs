@@ -11,4 +11,7 @@ public static class ContextKeys
     public const string HttpResponseRedirectContent = nameof(HttpResponseRedirectContent);
     public const string TestServer = nameof(TestServer);
     public const string Environment = nameof(Environment);
+    public const string UploadPageUrl = nameof(UploadPageUrl);
+    public const string GeneratedSubmissionId = nameof(GeneratedSubmissionId);
+    public const string RegistrationJourney = nameof(RegistrationJourney);
 }

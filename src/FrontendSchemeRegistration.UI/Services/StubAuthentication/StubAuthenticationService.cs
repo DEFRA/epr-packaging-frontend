@@ -44,15 +44,23 @@ public class StubAuthenticationService(IHttpContextAccessor httpContextAccessor,
         {
             return new ClaimsPrincipal();
         }
-        
+
+        var userId = string.IsNullOrWhiteSpace(model.UserId)
+            ? GenerateStableId(model.Email)
+            : model.UserId;
+
         var claims = new List<Claim>
         {
-            new(ClaimTypes.NameIdentifier, model.UserId.ToString()),
+            new(ClaimTypes.NameIdentifier, userId),
             new(ClaimTypes.Email, model.Email),
-            new("sub", model.UserId.ToString())
+            new("sub", userId)
         };
         var identity = new ClaimsIdentity(claims, JwtBearerDefaults.AuthenticationScheme);
         var principal =  new ClaimsPrincipal(identity);
+
+        // Set the new principal on HttpContext so that StubTokenAcquisition reads the
+        // new UserId (as the bearer token) when fetching user data from the API.
+        httpContextAccessor.HttpContext.User = principal;
 
         if (customClaims != null)
         {
@@ -68,5 +76,12 @@ public class StubAuthenticationService(IHttpContextAccessor httpContextAccessor,
         }
         
         return principal;
+    }
+
+    private static string GenerateStableId(string email)
+    {
+        var hash = System.Security.Cryptography.SHA256.HashData(
+            System.Text.Encoding.UTF8.GetBytes(email.ToLowerInvariant()));
+        return new Guid(hash.AsSpan(0, 16)).ToString();
     }
 }

@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using WireMock.Net.StandAlone;
 using WireMock.Server;
 using WireMock.Settings;
@@ -12,6 +13,11 @@ public static class MockApiServer
 {
     public static IWireMockServer Start()
     {
+        // WithBodyFromFile resolves relative to CWD, so set it to the
+        // assembly output directory where response files are copied.
+        var assemblyDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
+        Directory.SetCurrentDirectory(assemblyDir);
+
         var settings = new WireMockServerSettings
         {
             Port = 9091,

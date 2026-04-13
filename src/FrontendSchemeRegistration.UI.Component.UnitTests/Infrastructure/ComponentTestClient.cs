@@ -2,6 +2,7 @@ namespace FrontendSchemeRegistration.UI.Component.UnitTests.Infrastructure;
 
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using System.Net.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Net.Http.Headers;
 
@@ -9,6 +10,7 @@ public interface ITestHttpClient : IDisposable
 {
     Task<HttpResponseMessage> GetAsync(string url);
     Task<HttpResponseMessage> PostAsync(string url, Dictionary<string, string> content);
+    Task<HttpResponseMessage> PostWithFileAsync(string url, byte[] fileContent, string fileName, Dictionary<string, string>? additionalFormData = null);
 }
 
 [ExcludeFromCodeCoverage]
@@ -22,6 +24,7 @@ public class ComponentTestClient(TestServer server, string baseUrl = "https://lo
     public override async Task<HttpResponseMessage> GetAsync(string url)
     {
         var response = await BuildRequest(url).GetAsync();
+        UpdateCookies(url, response);
 
         return response;
     }
@@ -42,6 +45,31 @@ public class ComponentTestClient(TestServer server, string baseUrl = "https://lo
         var response = await BuildRequest(url)
             .And(req => req.Content = new FormUrlEncodedContent(content)).PostAsync();
         
+        UpdateCookies(url, response);
+        return response;
+    }
+
+    public override async Task<HttpResponseMessage> PostWithFileAsync(string url, byte[] fileContent, string fileName, Dictionary<string, string>? additionalFormData = null)
+    {
+        var getResponse = await GetAsync(url);
+        var html = await getResponse.Content.ReadAsStringAsync();
+
+        var multipart = new MultipartFormDataContent();
+        multipart.Add(new ByteArrayContent(fileContent), "file", fileName);
+        multipart.Add(new StringContent(TestClientBase.ExtractRequestVerificationToken(html)), "__RequestVerificationToken");
+        if (additionalFormData != null)
+        {
+            foreach (var kv in additionalFormData)
+            {
+                if (kv.Key != "__RequestVerificationToken")
+                    multipart.Add(new StringContent(kv.Value), kv.Key);
+            }
+        }
+
+        var response = await BuildRequest(url)
+            .And(req => req.Content = multipart)
+            .PostAsync();
+
         UpdateCookies(url, response);
         return response;
     }

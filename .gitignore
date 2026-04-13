@@ -49,6 +49,10 @@ Generated\ Files/
 TestResult.xml
 nunit-*.xml
 
+# Allure Report
+allure-results/
+allure-report/
+
 # Build Results of an ATL Project
 [Dd]ebugPS/
 [Rr]eleasePS/
@@ -414,4 +418,6 @@ FodyWeavers.xsd
 **/appsettings.Development*.json
 /src/FrontendSchemeRegistration.UI/libman.json
 
-src/FrontendSchemeRegistration.UI.ComponentTests/Features/*.feature.cs
+# Component test results
+src/FrontendSchemeRegistration.UI.Component.UnitTests/Features/*.feature.cs
+test-results/
