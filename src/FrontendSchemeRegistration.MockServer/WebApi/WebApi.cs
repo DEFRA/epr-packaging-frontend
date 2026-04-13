@@ -509,6 +509,7 @@ public static class WebApi
             {
                 id,
                 type = "Registration",
+                registrationYear = 2026,
                 registrationJourney = isExtendedJourneySubmission ? registrationJourney : null,
                 submissionPeriod = "January to December 2026",
                 companyDetailsDataComplete = true,
@@ -529,6 +530,7 @@ public static class WebApi
             {
                 id,
                 type = "Registration",
+                registrationYear = 2026,
                 registrationJourney = isExtendedJourneySubmission ? registrationJourney : null,
                 submissionPeriod = "January to December 2026",
                 companyDetailsDataComplete = true,
@@ -549,6 +551,7 @@ public static class WebApi
             {
                 id,
                 type = "Registration",
+                registrationYear = 2026,
                 registrationJourney = isExtendedJourneySubmission ? registrationJourney : null,
                 submissionPeriod = "January to December 2026",
                 companyDetailsDataComplete = true,
@@ -570,6 +573,7 @@ public static class WebApi
             {
                 id,
                 type = "Registration",
+                registrationYear = 2026,
                 registrationJourney = isExtendedJourneySubmission ? registrationJourney : null,
                 submissionPeriod = "January to December 2026",
                 companyDetailsDataComplete = true,
