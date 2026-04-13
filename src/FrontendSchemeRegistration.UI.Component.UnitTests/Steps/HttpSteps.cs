@@ -260,6 +260,20 @@ public class HttpSteps(ScenarioContext context)
         string? discoveredSubmissionId = null;
         var registrationJourney = GetRegistrationJourney();
 
+        // Load registration task list first so GetRegistrationApplicationSession runs and persists
+        // RegistrationApplicationSession.Period. Redirect-upload + SetRegistrationFileUploadSession
+        // requires Period when generating ApplicationReferenceNumber.
+        var primeResponse = await client.GetAsync(
+            $"/report-data/registration-task-list?registrationjourney={registrationJourney}&registrationyear=2026");
+        while (primeResponse.StatusCode == HttpStatusCode.Redirect && primeResponse.Headers.Location != null)
+        {
+            var redirectUrl = primeResponse.Headers.Location.ToString();
+            var pathAndQuery = redirectUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                ? new Uri(redirectUrl).PathAndQuery
+                : redirectUrl;
+            primeResponse = await client.GetAsync(pathAndQuery);
+        }
+
         // Initialise registration file-upload session via the same route used by the UI task list.
         var response = await client.GetAsync($"/report-data/redirect-upload-organisation-details?registrationyear=2026&registrationjourney={registrationJourney}");
 
