@@ -19,10 +19,10 @@
     <value>Certificate of compliance</value>
   </data>
   <data name="paragraph_compliance_scheme" xml:space="preserve">
-    <value>An approved person must submit your {0} statement of compliance no later than {1:d MMMM yyyy}</value>
+    <value>An approved or delegated person must submit your {0} statement of compliance before or on {1:d MMMM yyyy}</value>
   </data>
   <data name="paragraph_direct_producer" xml:space="preserve">
-    <value>An approved person must submit your {0} certificate of compliance no later than {1:d MMMM yyyy}</value>
+    <value>An approved or delegated person must submit your {0} certificate of compliance before or on {1:d MMMM yyyy}</value>
   </data>
   <data name="button_compliance_scheme" xml:space="preserve">
     <value>Submit statement</value>
