@@ -352,6 +352,12 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
   <data name="912" xml:space="preserve">
     <value>[Welsh] Packaging type CLR (closed-loop packaging data) can only be used with material type PL (plastic).</value>
   </data>
+  <data name="914" xml:space="preserve">
+    <value>[Welsh] Packaging activity is not needed for this packaging type.</value>
+  </data>
+  <data name="915" xml:space="preserve">
+    <value>[Welsh] Only packaging class O1 can be provided for closed loop packaging data.</value>
+  </data>
   <data name="100" xml:space="preserve">
     <value>Rhaid i sefydliadau mawr (L) sy'n cyflwyno math pecynwaith cartrefi (HH) roi cod ailgylchadwyedd yn y golofn yma ar gyfer cyfnodau cyflwyno 2025ymlaen – rhowch un o'r canlynol: R ar gyfer Coch, A ar gyfer Melyn, G ar gyfer Gwyrdd, R-M ar gyfer Coch-Meddygol, A-M ar gyfer Melyn-Meddygol neu G-M ar gyfer Gwyrdd-Meddygol</value>
   </data>
