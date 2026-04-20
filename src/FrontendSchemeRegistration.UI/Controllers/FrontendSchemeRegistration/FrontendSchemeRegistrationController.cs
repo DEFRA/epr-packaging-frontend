@@ -18,7 +18,12 @@ using FrontendSchemeRegistration.UI.Services.Interfaces;
 
 namespace FrontendSchemeRegistration.UI.Controllers.FrontendSchemeRegistration;
 
+using Application.Enums;
 using Application.Extensions;
+using Application.Options;
+using Helpers;
+using Microsoft.Extensions.Options;
+using Microsoft.FeatureManagement;
 
 [SuppressMessage("Major Code Smell",
     "S107: A long parameter list can indicate that a new structure should be created to wrap the numerous parameters or that the function is doing too many",
@@ -31,7 +36,9 @@ public class FrontendSchemeRegistrationController(
     IResubmissionApplicationService resubmissionApplicationService,
     IAuthorizationService authorizationService,
     INotificationService notificationService,
-    TimeProvider timeProvider)
+    TimeProvider timeProvider,
+    IFeatureManager featureManager,
+    IOptions<CsocOptions> csocOptions)
     : Controller
 {
 
@@ -434,6 +441,9 @@ public class FrontendSchemeRegistrationController(
             [packagingResubmissionPeriod?.DataPeriod], session.RegistrationSession.SelectedComplianceScheme?.Id);
         
         await Task.WhenAll(registrationApplicationYearViewModelsTask, resubmissionApplicationDetailsTask);
+        
+        var isApprovedUser = userData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved);
+        var now = timeProvider.GetLocalNow().DateTime;
 
         // Note: We are reading desired values using existing service to avoid SonarQube issue for adding 8th parameter in the constructor.
         var viewModel = new HomePageSelfManagedViewModel
@@ -445,7 +455,8 @@ public class FrontendSchemeRegistrationController(
             ResubmissionTaskListViewModel = resubmissionApplicationDetailsTask.Result.ToResubmissionTaskListViewModel(organisation),
             RegistrationApplications = registrationApplicationYearViewModelsTask.Result.SelectMany(ray => ray.Applications),
             PackagingResubmissionPeriod = packagingResubmissionPeriod,
-            ComplianceYear = timeProvider.GetUtcNow().GetComplianceYear().ToString()
+            ComplianceYear = timeProvider.GetUtcNow().GetComplianceYear().ToString(),
+            CsocViewModel = await CsocHelper.CreateViewModel(featureManager, isApprovedUser, organisation, now, csocOptions.Value)
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id!.Value);
