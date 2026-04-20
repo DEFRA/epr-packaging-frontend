@@ -30,6 +30,8 @@ public class HomePageSelfManagedViewModel
     public IEnumerable<RegistrationApplicationViewModel> RegistrationApplications { get; set; } = []; 
 
     public SubmissionPeriod PackagingResubmissionPeriod { get; set; }
+    
+    public CsocViewModel? CsocViewModel { get; set; }
 }
 
 [ExcludeFromCodeCoverage]

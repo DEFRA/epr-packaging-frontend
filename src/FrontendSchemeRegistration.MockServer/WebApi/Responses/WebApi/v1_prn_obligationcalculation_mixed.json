@@ -1,0 +1,13 @@
+{
+  "numberOfPrnsAwaitingAcceptance": 10,
+  "obligationData": [
+    {
+      "materialName": "Paper",
+      "status": "NotMet"
+    },
+    {
+      "materialName": "Glass",
+      "status": "NoDataYet"
+    }
+  ]
+}

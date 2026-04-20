@@ -136,10 +136,7 @@
 	<data name="table-content-item-packaging-data-resubmission-fee" xml:space="preserve">
     <value>Ffi ailgyflwyno data pecynwaith</value>
   </data>
-	<data name="table-content-packaging-data-resubmission" xml:space="preserve">
-    <value>Ailgyflwyniad data pecynwaith</value>
-  </data>
-	<data name="table-content-packaging-data-resubmission-fee-cs" xml:space="preserve">
+  <data name="table-content-packaging-data-resubmission-fee-cs" xml:space="preserve">
     <value>Ailgyflwyno data pecynnu ar ran {0} o aelodau</value>
   </data>
 

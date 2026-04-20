@@ -1,6 +1,6 @@
 @model CsocViewModel?
 
-@if (Model is not null)
+@if (Model is not null && Model.IsObligationDataSubmitted)
 {
     var key = Model switch
     {

@@ -83,7 +83,8 @@ public class PrnsObligationController : Controller
             isApprovedUser, 
             organisation,
             _timeProvider.GetLocalNow().DateTime,
-            _csocOptions.Value);
+            _csocOptions.Value,
+            viewModel);
         
         return View(viewModel);
     }
