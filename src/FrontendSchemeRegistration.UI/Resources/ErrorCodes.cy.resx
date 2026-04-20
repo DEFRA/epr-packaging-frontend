@@ -130,7 +130,7 @@
     <value>Wrth roi gweithgaredd pecynnu, rhaid ichi roi un o'r codau SO, PF, IM, SE, HL neu OM</value>
   </data>
   <data name="03" xml:space="preserve">
-    <value>Rhaid i'r math o ddeunydd pecynwaith fod yn un o'r codau HH, NH, CW, OW, PB, RU, HDC, NDC neu SP</value>
+    <value>Rhaid i'r math o becynwaith fod yn un o'r codau HH, NH, CW, OW, PB, RU, HDC, NDC, SP neu CLR</value>
   </data>
   <data name="04" xml:space="preserve">
     <value>Wrth roi'r dosbarth pecynwaith, rhaid ichi roi un o'r codau P1, P2, P3, P4, P5, P6, O1, O2 neu B1</value>
@@ -299,7 +299,7 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
     <value>Rhaid i bob maes gynnwys 4000 o gymeriadau neu lai</value>
   </data>
   <data name="935" xml:space="preserve">
-    <value>[Welsh] Closed loop registration cannot be submitted through this service for registration years before {0}. Remove column 79 from your file and resubmit, or contact your regulator if you need to register for a previous year.</value>
+    <value>Does dim modd cyflwyno cofrestriad dolen gaeedig drwy'r gwasanaeth yma ar gyfer blynyddoedd cofrestru cyn 2027. Tynnwch golofn 79 o'ch ffeil a'i hailgyflwyno, neu cysylltwch â'ch rheoleiddiwr os oes angen ichi gofrestru ar gyfer blwyddyn flaenorol.</value>
   </data>
   <data name="890" xml:space="preserve">
     <value>Nid yw'r rhestr o IDs Sefydliadau yn y ffeil yma yn cyd-fynd â'r rhestr o IDs Sefydliadau yn eich ffeil sefydliadau</value>
@@ -347,22 +347,25 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
     <value>Gall cynhyrchwyr bach ond uwchlwytho data pecynnu am gyfnod P0.</value>
   </data>
   <data name="911" xml:space="preserve">
-    <value>[Welsh] Closed-loop packaging data can only be provided for Large producers</value>
+    <value>Dim ond ar gyfer cynhyrchwyr mawr y gellir darparu data pecynwaith dolen gaeedig</value>
   </data>
   <data name="912" xml:space="preserve">
-    <value>[Welsh] Packaging type CLR (closed-loop packaging data) can only be used with material type PL (plastic).</value>
+    <value>Dim ond gyda math deunydd PL (plastig) y gellir defnyddio math pecynwaith CLR (data pecynwaith dolen gaeedig).</value>
   </data>
   <data name="914" xml:space="preserve">
-    <value>[Welsh] Packaging activity is not needed for this packaging type.</value>
+    <value>Does dim angen gweithgaredd pecynwaith ar gyfer y math yma o becynwaith.</value>
   </data>
   <data name="915" xml:space="preserve">
-    <value>[Welsh] Only packaging class O1 can be provided for closed loop packaging data.</value>
+    <value>Dim ond dosbarth pecynwaith O1 a all gael ei ddarparu ar gyfer data pecynwaith dolen gaeedig.</value>
   </data>
   <data name="916" xml:space="preserve">
-    <value>[Welsh] From country information is not required for closed-loop packaging data.</value>
+    <value>Does dim angen gwybodaeth am y wlad y mae’n tarddu ohoni ar gyfer data pecynwaith dolen gaeedig.</value>
   </data>
   <data name="917" xml:space="preserve">
-    <value>[Welsh] To country information is not required for closed-loop packaging data.</value>
+    <value>Does dim angen gwybodaeth am y wlad y mae'n cael ei anfon iddi ar gyfer data pecynwaith dolen gaeedig.</value>
+  </data>
+  <data name="918" xml:space="preserve">
+    <value>Does dim angen sgôr asesu ailgylchadwyedd ar gyfer data pecynwaith dolen gaeedig.</value>
   </data>
   <data name="100" xml:space="preserve">
     <value>Rhaid i sefydliadau mawr (L) sy'n cyflwyno math pecynwaith cartrefi (HH) roi cod ailgylchadwyedd yn y golofn yma ar gyfer cyfnodau cyflwyno 2025ymlaen – rhowch un o'r canlynol: R ar gyfer Coch, A ar gyfer Melyn, G ar gyfer Gwyrdd, R-M ar gyfer Coch-Meddygol, A-M ar gyfer Melyn-Meddygol neu G-M ar gyfer Gwyrdd-Meddygol</value>
