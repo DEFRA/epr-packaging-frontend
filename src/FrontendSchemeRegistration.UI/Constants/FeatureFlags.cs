@@ -28,7 +28,6 @@ public static class FeatureFlags
     public const string UseGraphApiForExtendedUserClaims = "UseGraphApiForExtendedUserClaims";
     public const string EnableRegistrationFeeV2 = "EnableRegistrationFeeV2";
 
-    public const string IncludeSubsidariesInFeeCalculationsForProducers = "IncludeSubsidariesInFeeCalculationsForProducers";
     public const string DisplayCsoSmallProducerRegistration = "DisplayCsoSmallProducerRegistration";
     public const string CsoRegistrationEnabled = "CsoRegistrationEnabled";
     public const string ShowNotificationBanner = "ShowNotificationBanner";
