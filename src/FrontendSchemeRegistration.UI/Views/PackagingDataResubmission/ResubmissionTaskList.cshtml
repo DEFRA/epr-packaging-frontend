@@ -6,11 +6,20 @@
 	ViewData["Title"] = Localizer["resubmission_task_title"];
 
 	var canStartFileUploadStep = (Model.FileUploadStatus is ResubmissionTaskListStatus.NotStarted or ResubmissionTaskListStatus.CanNotStartYet) ||
-								  Model.ApplicationStatus == ApplicationStatusType.FileUploaded; 
-	var canStartViewPayResubmissionFeeStep = Model.FileUploadStatus is ResubmissionTaskListStatus.Completed;
+								  Model.ApplicationStatus == ApplicationStatusType.FileUploaded;
+	
+	//SUB-39: Don't enable the "View resubmission fee" link until the overall resubmission sync (file and data) has completed
+	var canStartViewPayResubmissionFeeStep = Model.FileUploadStatus is ResubmissionTaskListStatus.Completed & Model.HasSubmissionSyncCompleted;
+	
 	var canStartSubmitResubmissionApplicationStep = Model.PaymentViewStatus is ResubmissionTaskListStatus.Completed;
 	var isResubmissionInProgress = Model.IsResubmissionInProgress ?? false;
 	var isResubmissionApplicationSubmitted = Model.ResubmissionApplicationSubmitted;
+	
+	//SUB-39: added to reflect that although the FileUpload may have completed, the related data may not have been processed by Synapse and the status should remain as "Pending"
+	//to reflect that. If not, just use the FileUploadStatus as before.
+	var resubmissionSyncStatus = Model.FileUploadStatus is ResubmissionTaskListStatus.Completed
+		? Model.HasSubmissionSyncCompleted ? ResubmissionTaskListStatus.Completed : ResubmissionTaskListStatus.Pending
+		: Model.FileUploadStatus; 
 }
 
 <main class="govuk-main-wrapper" id="main-content" role="main">
@@ -42,7 +51,7 @@
 						{
 							@Localizer["submit_resubmission_data"]
 						}
-						@if (Model.FileUploadStatus == ResubmissionTaskListStatus.Completed)
+						@if (Model.FileUploadStatus == ResubmissionTaskListStatus.Completed & Model.HasSubmissionSyncCompleted)
 						{
 							<br />
 							@Localizer["you_have_resubmitted_your_packaging_data"]
@@ -50,7 +59,7 @@
 					</dt>
 					<dd class="govuk-summary-list__actions">
 						@{
-							ShowProgressStatus(Model.FileUploadStatus);
+							ShowProgressStatus(resubmissionSyncStatus);
 						}
 					</dd>
 				</div>
