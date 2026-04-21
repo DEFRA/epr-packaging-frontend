@@ -1469,6 +1469,60 @@ public class WebApiGatewayClientTests
     }
 
     [Test]
+    public async Task GetComplianceDeclarationStatus_ReturnsLatestStatus_WhenResponseContainsDeclarations()
+    {
+        var organisationId = Guid.NewGuid();
+        var year = 2026;
+
+        HttpRequestMessage capturedRequest = null!;
+        var response = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = JsonContent.Create(new OrganisationComplianceDeclarationsModel
+            {
+                ComplianceDeclarations =
+                [
+                    new ComplianceDeclarationModel { Status = ComplianceDeclarationStatus.Cancelled }
+                ]
+            })
+        };
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .Callback<HttpRequestMessage, CancellationToken>((request, _) => capturedRequest = request)
+            .ReturnsAsync(response);
+
+        var result = await _webApiGatewayClient.GetComplianceDeclarationStatus(organisationId, year);
+
+        result.Should().Be(ComplianceDeclarationStatus.Cancelled);
+        capturedRequest.RequestUri.Should().Be($"https://example.com/api/v1/organisations/{organisationId}/compliance-declarations?obligationYear={year}");
+    }
+
+    [Test]
+    public async Task GetComplianceDeclarationStatus_ReturnsNull_WhenNoDeclarationsReturned()
+    {
+        var response = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = JsonContent.Create(new OrganisationComplianceDeclarationsModel())
+        };
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(response);
+
+        var result = await _webApiGatewayClient.GetComplianceDeclarationStatus(Guid.NewGuid(), 2026);
+
+        result.Should().BeNull();
+    }
+
+    [Test]
     public async Task GetSubsidiaryUploadStatus_ReturnsDto_WhenResponseIsSuccessful()
     {
         // Arrange

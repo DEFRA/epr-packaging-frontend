@@ -253,6 +253,19 @@ public class PrnService : IPrnService
         if (prnObligationModel != null)
         {
             prnObligationViewModel.NumberOfPrnsAwaitingAcceptance = prnObligationModel.NumberOfPrnsAwaitingAcceptance;
+            var organisationId = prnObligationModel.ObligationData?.FirstOrDefault()?.OrganisationId;
+            if (organisationId.HasValue && organisationId.Value != Guid.Empty)
+            {
+                try
+                {
+                    prnObligationViewModel.ComplianceDeclarationStatus = await _webApiGatewayClient.GetComplianceDeclarationStatus(organisationId.Value, year);
+                }
+                catch
+                {
+                    // Do not fail the obligation journey if declaration status cannot be fetched.
+                    prnObligationViewModel.ComplianceDeclarationStatus = null;
+                }
+            }
 
             var prnMaterialObligationViewModels = prnObligationModel.ObligationData?.Select(item => (PrnMaterialObligationViewModel)item).ToList();
             if (prnMaterialObligationViewModels?.Count > 0)
