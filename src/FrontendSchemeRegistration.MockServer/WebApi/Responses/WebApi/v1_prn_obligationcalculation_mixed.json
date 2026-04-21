@@ -2,10 +2,12 @@
   "numberOfPrnsAwaitingAcceptance": 10,
   "obligationData": [
     {
+      "organisationId": "00000000-0000-0000-0000-000000000001",
       "materialName": "Paper",
       "status": "NotMet"
     },
     {
+      "organisationId": "00000000-0000-0000-0000-000000000001",
       "materialName": "Glass",
       "status": "NoDataYet"
     }

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="submit_heading_compliance_scheme" xml:space="preserve">
+    <value>Submit your statement of compliance</value>
+  </data>
+  <data name="submit_heading_direct_producer" xml:space="preserve">
+    <value>Submit your certificate of compliance</value>
+  </data>
+  <data name="submit_paragraph_compliance_scheme" xml:space="preserve">
+    <value>An approved or delegated person must submit your {0} statement of compliance before or on {1:d MMMM yyyy}</value>
+  </data>
+  <data name="submit_paragraph_direct_producer" xml:space="preserve">
+    <value>An approved or delegated person must submit your {0} certificate of compliance before or on {1:d MMMM yyyy}</value>
+  </data>
+  <data name="submit_button_compliance_scheme" xml:space="preserve">
+    <value>Submit statement</value>
+  </data>
+  <data name="submit_button_direct_producer" xml:space="preserve">
+    <value>Submit certificate</value>
+  </data>
+  <data name="submitted_heading_compliance_scheme" xml:space="preserve">
+    <value>View your statement of compliance</value>
+  </data>
+  <data name="submitted_heading_direct_producer" xml:space="preserve">
+    <value>View your certificate of compliance</value>
+  </data>
+  <data name="submitted_paragraph_compliance_scheme" xml:space="preserve">
+    <value>Your {0} statement of compliance has been submitted.</value>
+  </data>
+  <data name="submitted_paragraph_direct_producer" xml:space="preserve">
+    <value>Your {0} certificate of compliance has been submitted.</value>
+  </data>
+  <data name="submitted_button_compliance_scheme" xml:space="preserve">
+    <value>View your statement of compliance</value>
+  </data>
+  <data name="submitted_button_direct_producer" xml:space="preserve">
+    <value>View your certificate of compliance</value>
+  </data>
+  <data name="cancelled_heading_compliance_scheme" xml:space="preserve">
+    <value>Resubmit your statement of compliance</value>
+  </data>
+  <data name="cancelled_heading_direct_producer" xml:space="preserve">
+    <value>Resubmit your certificate of compliance</value>
+  </data>
+  <data name="cancelled_paragraph_compliance_scheme" xml:space="preserve">
+    <value>The environmental regulator cancelled your {0} statement of compliance. An approved or delegated person must resubmit your statement before or on {1:d MMMM yyyy}</value>
+  </data>
+  <data name="cancelled_paragraph_direct_producer" xml:space="preserve">
+    <value>The environmental regulator cancelled your {0} certificate of compliance. An approved or delegated person must resubmit your certificate before or on {1:d MMMM yyyy}</value>
+  </data>
+  <data name="cancelled_button_compliance_scheme" xml:space="preserve">
+    <value>Resubmit statement</value>
+  </data>
+  <data name="cancelled_button_direct_producer" xml:space="preserve">
+    <value>Resubmit certificate</value>
+  </data>
+</root>
