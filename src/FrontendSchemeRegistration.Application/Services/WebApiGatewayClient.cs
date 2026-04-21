@@ -525,9 +525,14 @@ public class WebApiGatewayClient : IWebApiGatewayClient
             var declarations = await response.Content.ReadFromJsonAsync<OrganisationComplianceDeclarationsModel>();
             return declarations?.ComplianceDeclarations.FirstOrDefault()?.Status;
         }
-        catch (Exception ex)
+        catch (HttpRequestException ex)
         {
             _logger.LogError(ex, "Error getting compliance declaration status for organisation {OrganisationId} and obligation year {ObligationYear}", organisationId, obligationYear);
+            throw;
+        }
+        catch (System.Text.Json.JsonException ex)
+        {
+            _logger.LogError(ex, "Error deserializing compliance declaration status for organisation {OrganisationId} and obligation year {ObligationYear}", organisationId, obligationYear);
             throw;
         }
     }
