@@ -543,14 +543,18 @@ public class PrnServiceTests
         var year = 2024;
         _webApiGatewayClientMock.Setup(x => x.GetRecyclingObligationsCalculation(year))
             .ReturnsAsync(new PrnObligationModel());
+        _webApiGatewayClientMock.Setup(x => x.GetComplianceDeclarationStatus(year))
+            .ReturnsAsync(ComplianceDeclarationStatus.Cancelled);
 
         // Act
         var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year);
 
         // Assert
         result.Should().NotBeNull();
+        result.ComplianceDeclarationStatus.Should().Be(ComplianceDeclarationStatus.Cancelled);
         result.MaterialObligationViewModels.Should().BeNullOrEmpty();
         result.GlassMaterialObligationViewModels.Should().BeNullOrEmpty();
+        _webApiGatewayClientMock.Verify(x => x.GetComplianceDeclarationStatus(year), Times.Once);
     }
 
     [Test]
@@ -634,6 +638,46 @@ public class PrnServiceTests
     }
 
     [Test]
+    public async Task GetRecyclingObligationsCalculation_WhenStatusPayloadInvalid_ShouldContinueWithNullStatus()
+    {
+        var year = 2026;
+        _webApiGatewayClientMock
+            .Setup(x => x.GetRecyclingObligationsCalculation(year))
+            .ReturnsAsync(new PrnObligationModel
+            {
+                NumberOfPrnsAwaitingAcceptance = 1,
+                ObligationData =
+                [
+                    new PrnMaterialObligationModel
+                    {
+                        OrganisationId = Guid.NewGuid(),
+                        MaterialName = "Paper",
+                        Status = ObligationStatus.Met.ToString()
+                    },
+                    new PrnMaterialObligationModel
+                    {
+                        OrganisationId = Guid.NewGuid(),
+                        MaterialName = "Glass",
+                        Status = ObligationStatus.Met.ToString()
+                    },
+                    new PrnMaterialObligationModel
+                    {
+                        OrganisationId = Guid.NewGuid(),
+                        MaterialName = "GlassRemelt",
+                        Status = ObligationStatus.Met.ToString()
+                    }
+                ]
+            });
+        _webApiGatewayClientMock
+            .Setup(x => x.GetComplianceDeclarationStatus(year))
+            .ThrowsAsync(new System.Text.Json.JsonException("invalid payload"));
+
+        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year);
+
+        result.ComplianceDeclarationStatus.Should().BeNull();
+    }
+
+    [Test]
     public async Task GetRecyclingObligationsCalculation_WhenOrganisationIdMissing_ShouldStillFetchComplianceDeclarationStatus()
     {
         var year = 2026;
@@ -686,6 +730,7 @@ public class PrnServiceTests
         result.Should().NotBeNull();
         result.MaterialObligationViewModels.Should().BeNullOrEmpty();
         result.GlassMaterialObligationViewModels.Should().BeNullOrEmpty();
+        _webApiGatewayClientMock.Verify(x => x.GetComplianceDeclarationStatus(It.IsAny<int>()), Times.Never);
     }
 
     [Test]

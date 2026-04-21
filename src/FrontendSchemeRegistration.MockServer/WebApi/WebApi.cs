@@ -184,20 +184,14 @@ public static class WebApi
         {
             WebApiOptions.ComplianceDeclarationStatusType.Submitted => new
             {
-                complianceDeclarations = new[] { new { status = 0 } }
+                complianceDeclarations = new[] { new { created = "2026-04-27T14:00:00+00:00", status = "Submitted" } }
             },
             WebApiOptions.ComplianceDeclarationStatusType.Cancelled => new
             {
-                complianceDeclarations = new[] { new { status = 1 } }
+                complianceDeclarations = new[] { new { created = "2026-04-27T14:00:00+00:00", status = "Cancelled" } }
             },
             _ => new { complianceDeclarations = Array.Empty<object>() }
         };
-
-        server.Given(Request.Create().UsingGet().WithPath("/api/v1/organisations/*/compliance-declarations"))
-            .RespondWith(Response.Create()
-                .WithStatusCode(200)
-                .WithHeader("Content-Type", "application/json")
-                .WithBodyAsJson(complianceDeclarationsResponse));
 
         server.Given(Request.Create().UsingGet().WithPath("/api/v1/prn/compliance-declarations"))
             .RespondWith(Response.Create()

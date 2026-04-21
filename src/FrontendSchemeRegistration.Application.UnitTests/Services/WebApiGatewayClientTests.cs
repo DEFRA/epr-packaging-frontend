@@ -1549,6 +1549,66 @@ public class WebApiGatewayClientTests
     }
 
     [Test]
+    public async Task GetComplianceDeclarationStatus_ParsesStringStatusAndReturnsLatestByCreated()
+    {
+        var content = new StringContent(
+            """
+            {
+              "complianceDeclarations": [
+                {
+                  "created": "2026-04-26T14:00:00+00:00",
+                  "status": "Cancelled"
+                },
+                {
+                  "created": "2026-04-27T14:00:00+00:00",
+                  "status": "Submitted"
+                }
+              ]
+            }
+            """);
+        content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+        var response = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = content
+        };
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(response);
+
+        var result = await _webApiGatewayClient.GetComplianceDeclarationStatus(2026);
+
+        result.Should().Be(ComplianceDeclarationStatus.Submitted);
+    }
+
+    [Test]
+    public void GetComplianceDeclarationStatus_ThrowsJsonException_WhenPayloadInvalid()
+    {
+        var content = new StringContent("{\"complianceDeclarations\":[{\"created\":\"not-a-date\",\"status\":\"Submitted\"}]}");
+        content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+        var response = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = content
+        };
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(response);
+
+        Assert.ThrowsAsync<JsonException>(() => _webApiGatewayClient.GetComplianceDeclarationStatus(2026));
+    }
+
+    [Test]
     public async Task GetSubsidiaryUploadStatus_ReturnsDto_WhenResponseIsSuccessful()
     {
         // Arrange

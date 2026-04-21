@@ -263,6 +263,12 @@ public class PrnService : IPrnService
                 _logger.LogWarning(ex, "{Logprefix}: PrnService - GetRecyclingObligationsCalculation: Failed to fetch compliance declaration status for year {Year}", logPrefix, year);
                 prnObligationViewModel.ComplianceDeclarationStatus = null;
             }
+            catch (System.Text.Json.JsonException ex)
+            {
+                // Do not fail the obligation journey if declaration status payload cannot be parsed.
+                _logger.LogWarning(ex, "{Logprefix}: PrnService - GetRecyclingObligationsCalculation: Failed to parse compliance declaration status for year {Year}", logPrefix, year);
+                prnObligationViewModel.ComplianceDeclarationStatus = null;
+            }
 
             var prnMaterialObligationViewModels = prnObligationModel.ObligationData?.Select(item => (PrnMaterialObligationViewModel)item).ToList();
             if (prnMaterialObligationViewModels?.Count > 0)
