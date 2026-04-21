@@ -180,11 +180,24 @@ public static class WebApi
                 .WithHeader("Content-Type", "application/json")
                 .WithBodyFromFile($"WebApi/Responses/WebApi/{options.PrnObligationCalculationResponseFile}"));
 
+        object complianceDeclarationsResponse = options.ComplianceDeclarationStatus switch
+        {
+            WebApiOptions.ComplianceDeclarationStatusType.Submitted => new
+            {
+                complianceDeclarations = new[] { new { status = 0 } }
+            },
+            WebApiOptions.ComplianceDeclarationStatusType.Cancelled => new
+            {
+                complianceDeclarations = new[] { new { status = 1 } }
+            },
+            _ => new { complianceDeclarations = Array.Empty<object>() }
+        };
+
         server.Given(Request.Create().UsingGet().WithPath("/api/v1/organisations/*/compliance-declarations"))
             .RespondWith(Response.Create()
                 .WithStatusCode(200)
                 .WithHeader("Content-Type", "application/json")
-                .WithBodyAsJson(new { complianceDeclarations = Array.Empty<object>() }));
+                .WithBodyAsJson(complianceDeclarationsResponse));
 
         // Subsidiary (returning empty/default object)
         server.Given(Request.Create().UsingGet().WithPath("/api/v1/subsidiary/*/*"))
