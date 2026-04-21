@@ -72,7 +72,19 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-one-half">
             @await Html.PartialAsync("Partials/Prns/_reviewPRNsAndPERNs")
-            @await Html.PartialAsync("Partials/Csoc/_ObligationsHomeSubmit", Model.CsocViewModel)
+
+            @if (Model.ComplianceDeclarationStatus == ComplianceDeclarationStatus.Submitted)
+            {
+                @await Html.PartialAsync("Partials/Csoc/_ObligationsHomeSubmitted", Model.CsocViewModel)
+            }
+            else if (Model.ComplianceDeclarationStatus == ComplianceDeclarationStatus.Cancelled)
+            {
+                @await Html.PartialAsync("Partials/Csoc/_ObligationsHomeCancelled", Model.CsocViewModel)
+            }
+            else
+            {
+                @await Html.PartialAsync("Partials/Csoc/_ObligationsHomeSubmit", Model.CsocViewModel)
+            }
         </div>
     </div>
 </main>

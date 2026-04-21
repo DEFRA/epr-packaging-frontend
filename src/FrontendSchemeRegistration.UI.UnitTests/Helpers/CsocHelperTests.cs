@@ -14,11 +14,19 @@ using UI.ViewModels.Prns;
 [TestFixture]
 public class CsocHelperTests
 {
-    private Mock<IFeatureManager> MockFeatureManager { get; set; } = new();
+    private Mock<IFeatureManager> MockFeatureManager { get; set; } = null!;
+
+    [SetUp]
+    public void SetUp()
+    {
+        MockFeatureManager = new Mock<IFeatureManager>();
+    }
     
     [Test]
     public async Task CreateViewModel_WhenDisabled_ShouldBeNull()
     {
+        MockFeatureManager.Setup(x => x.IsEnabledAsync(FeatureFlags.CsocEnabled)).ReturnsAsync(false);
+
         var result = await CsocHelper.CreateViewModel(
             MockFeatureManager.Object, 
             isApprovedUser: false, 
@@ -79,5 +87,45 @@ public class CsocHelperTests
 
         result.Should().NotBeNull();
         result?.IsObligationDataSubmitted.Should().Be(expectedSubmissionState);
+    }
+
+    [TestCase(ComplianceDeclarationStatus.Submitted)]
+    [TestCase(ComplianceDeclarationStatus.Cancelled)]
+    public async Task CreateViewModel_WhenDeclarationStatusSet_ShouldMapComplianceDeclarationStatus(
+        ComplianceDeclarationStatus complianceDeclarationStatus)
+    {
+        MockFeatureManager.Setup(x => x.IsEnabledAsync(FeatureFlags.CsocEnabled)).ReturnsAsync(true);
+
+        var result = await CsocHelper.CreateViewModel(
+            MockFeatureManager.Object,
+            isApprovedUser: true,
+            new Organisation(),
+            DateTime.Now,
+            new CsocOptions(),
+            new PrnObligationViewModel
+            {
+                OverallStatus = ObligationStatus.Met,
+                ComplianceDeclarationStatus = complianceDeclarationStatus
+            });
+
+        result.Should().NotBeNull();
+        result?.ComplianceDeclarationStatus.Should().Be(complianceDeclarationStatus);
+    }
+
+    [Test]
+    public async Task CreateViewModel_WhenPrnObligationViewModelIsNull_ShouldHaveNullComplianceDeclarationStatus()
+    {
+        MockFeatureManager.Setup(x => x.IsEnabledAsync(FeatureFlags.CsocEnabled)).ReturnsAsync(true);
+
+        var result = await CsocHelper.CreateViewModel(
+            MockFeatureManager.Object,
+            isApprovedUser: true,
+            new Organisation(),
+            DateTime.Now,
+            new CsocOptions(),
+            null);
+
+        result.Should().NotBeNull();
+        result?.ComplianceDeclarationStatus.Should().BeNull();
     }
 }
