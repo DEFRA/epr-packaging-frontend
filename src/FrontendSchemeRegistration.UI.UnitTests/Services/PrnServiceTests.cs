@@ -44,6 +44,9 @@ public class PrnServiceTests
             .Returns((BasePrnViewModel input) => new LocalizedString("key", input.MaterialGroup));
 
         _webApiGatewayClientMock = new Mock<IWebApiGatewayClient>();
+        _webApiGatewayClientMock
+            .Setup(x => x.GetComplianceDeclarationStatus(It.IsAny<Guid>(), It.IsAny<int>()))
+            .ReturnsAsync((ComplianceDeclarationStatus?)null);
         _loggerMock = new Mock<ILogger<PrnService>>();
         _fakeTimeProvider = new FakeTimeProvider();
         _mapperMock = new Mock<IMapper>();
@@ -548,6 +551,88 @@ public class PrnServiceTests
         result.Should().NotBeNull();
         result.MaterialObligationViewModels.Should().BeNullOrEmpty();
         result.GlassMaterialObligationViewModels.Should().BeNullOrEmpty();
+    }
+
+    [Test]
+    public async Task GetRecyclingObligationsCalculation_WhenStatusReturned_ShouldMapComplianceDeclarationStatus()
+    {
+        var year = 2026;
+        var organisationId = Guid.NewGuid();
+        _webApiGatewayClientMock
+            .Setup(x => x.GetRecyclingObligationsCalculation(year))
+            .ReturnsAsync(new PrnObligationModel
+            {
+                NumberOfPrnsAwaitingAcceptance = 1,
+                ObligationData =
+                [
+                    new PrnMaterialObligationModel
+                    {
+                        OrganisationId = organisationId,
+                        MaterialName = "Paper",
+                        Status = ObligationStatus.Met.ToString()
+                    },
+                    new PrnMaterialObligationModel
+                    {
+                        OrganisationId = organisationId,
+                        MaterialName = "Glass",
+                        Status = ObligationStatus.Met.ToString()
+                    },
+                    new PrnMaterialObligationModel
+                    {
+                        OrganisationId = organisationId,
+                        MaterialName = "GlassRemelt",
+                        Status = ObligationStatus.Met.ToString()
+                    }
+                ]
+            });
+        _webApiGatewayClientMock
+            .Setup(x => x.GetComplianceDeclarationStatus(organisationId, year))
+            .ReturnsAsync(ComplianceDeclarationStatus.Submitted);
+
+        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year);
+
+        result.ComplianceDeclarationStatus.Should().Be(ComplianceDeclarationStatus.Submitted);
+    }
+
+    [Test]
+    public async Task GetRecyclingObligationsCalculation_WhenStatusCallFails_ShouldContinueWithNullStatus()
+    {
+        var year = 2026;
+        var organisationId = Guid.NewGuid();
+        _webApiGatewayClientMock
+            .Setup(x => x.GetRecyclingObligationsCalculation(year))
+            .ReturnsAsync(new PrnObligationModel
+            {
+                NumberOfPrnsAwaitingAcceptance = 1,
+                ObligationData =
+                [
+                    new PrnMaterialObligationModel
+                    {
+                        OrganisationId = organisationId,
+                        MaterialName = "Paper",
+                        Status = ObligationStatus.Met.ToString()
+                    },
+                    new PrnMaterialObligationModel
+                    {
+                        OrganisationId = organisationId,
+                        MaterialName = "Glass",
+                        Status = ObligationStatus.Met.ToString()
+                    },
+                    new PrnMaterialObligationModel
+                    {
+                        OrganisationId = organisationId,
+                        MaterialName = "GlassRemelt",
+                        Status = ObligationStatus.Met.ToString()
+                    }
+                ]
+            });
+        _webApiGatewayClientMock
+            .Setup(x => x.GetComplianceDeclarationStatus(organisationId, year))
+            .ThrowsAsync(new HttpRequestException("upstream error"));
+
+        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year);
+
+        result.ComplianceDeclarationStatus.Should().BeNull();
     }
 
     [Test]
