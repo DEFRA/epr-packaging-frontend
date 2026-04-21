@@ -260,9 +260,10 @@ public class PrnService : IPrnService
                 {
                     prnObligationViewModel.ComplianceDeclarationStatus = await _webApiGatewayClient.GetComplianceDeclarationStatus(organisationId.Value, year);
                 }
-                catch
+                catch (HttpRequestException ex)
                 {
                     // Do not fail the obligation journey if declaration status cannot be fetched.
+                    _logger.LogWarning(ex, "{Logprefix}: PrnService - GetRecyclingObligationsCalculation: Failed to fetch compliance declaration status for organisation {OrganisationId} and year {Year}", logPrefix, organisationId.Value, year);
                     prnObligationViewModel.ComplianceDeclarationStatus = null;
                 }
             }

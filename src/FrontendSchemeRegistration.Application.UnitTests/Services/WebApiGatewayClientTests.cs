@@ -1523,6 +1523,24 @@ public class WebApiGatewayClientTests
     }
 
     [Test]
+    public void GetComplianceDeclarationStatus_ThrowsException_WhenResponseIsUnsuccessful()
+    {
+        var response = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.InternalServerError
+        };
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(response);
+
+        Assert.ThrowsAsync<HttpRequestException>(() => _webApiGatewayClient.GetComplianceDeclarationStatus(Guid.NewGuid(), 2026));
+    }
+
+    [Test]
     public async Task GetSubsidiaryUploadStatus_ReturnsDto_WhenResponseIsSuccessful()
     {
         // Arrange
