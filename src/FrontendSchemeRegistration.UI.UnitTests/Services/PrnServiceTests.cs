@@ -45,7 +45,7 @@ public class PrnServiceTests
 
         _webApiGatewayClientMock = new Mock<IWebApiGatewayClient>();
         _webApiGatewayClientMock
-            .Setup(x => x.GetComplianceDeclarationStatus(It.IsAny<Guid>(), It.IsAny<int>()))
+            .Setup(x => x.GetComplianceDeclarationStatus(It.IsAny<int>()))
             .ReturnsAsync((ComplianceDeclarationStatus?)null);
         _loggerMock = new Mock<ILogger<PrnService>>();
         _fakeTimeProvider = new FakeTimeProvider();
@@ -557,7 +557,6 @@ public class PrnServiceTests
     public async Task GetRecyclingObligationsCalculation_WhenStatusReturned_ShouldMapComplianceDeclarationStatus()
     {
         var year = 2026;
-        var organisationId = Guid.NewGuid();
         _webApiGatewayClientMock
             .Setup(x => x.GetRecyclingObligationsCalculation(year))
             .ReturnsAsync(new PrnObligationModel
@@ -567,26 +566,26 @@ public class PrnServiceTests
                 [
                     new PrnMaterialObligationModel
                     {
-                        OrganisationId = organisationId,
+                        OrganisationId = Guid.NewGuid(),
                         MaterialName = "Paper",
                         Status = ObligationStatus.Met.ToString()
                     },
                     new PrnMaterialObligationModel
                     {
-                        OrganisationId = organisationId,
+                        OrganisationId = Guid.NewGuid(),
                         MaterialName = "Glass",
                         Status = ObligationStatus.Met.ToString()
                     },
                     new PrnMaterialObligationModel
                     {
-                        OrganisationId = organisationId,
+                        OrganisationId = Guid.NewGuid(),
                         MaterialName = "GlassRemelt",
                         Status = ObligationStatus.Met.ToString()
                     }
                 ]
             });
         _webApiGatewayClientMock
-            .Setup(x => x.GetComplianceDeclarationStatus(organisationId, year))
+            .Setup(x => x.GetComplianceDeclarationStatus(year))
             .ReturnsAsync(ComplianceDeclarationStatus.Submitted);
 
         var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year);
@@ -598,7 +597,6 @@ public class PrnServiceTests
     public async Task GetRecyclingObligationsCalculation_WhenStatusCallFails_ShouldContinueWithNullStatus()
     {
         var year = 2026;
-        var organisationId = Guid.NewGuid();
         _webApiGatewayClientMock
             .Setup(x => x.GetRecyclingObligationsCalculation(year))
             .ReturnsAsync(new PrnObligationModel
@@ -608,26 +606,26 @@ public class PrnServiceTests
                 [
                     new PrnMaterialObligationModel
                     {
-                        OrganisationId = organisationId,
+                        OrganisationId = Guid.NewGuid(),
                         MaterialName = "Paper",
                         Status = ObligationStatus.Met.ToString()
                     },
                     new PrnMaterialObligationModel
                     {
-                        OrganisationId = organisationId,
+                        OrganisationId = Guid.NewGuid(),
                         MaterialName = "Glass",
                         Status = ObligationStatus.Met.ToString()
                     },
                     new PrnMaterialObligationModel
                     {
-                        OrganisationId = organisationId,
+                        OrganisationId = Guid.NewGuid(),
                         MaterialName = "GlassRemelt",
                         Status = ObligationStatus.Met.ToString()
                     }
                 ]
             });
         _webApiGatewayClientMock
-            .Setup(x => x.GetComplianceDeclarationStatus(organisationId, year))
+            .Setup(x => x.GetComplianceDeclarationStatus(year))
             .ThrowsAsync(new HttpRequestException("upstream error"));
 
         var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year);
@@ -636,7 +634,7 @@ public class PrnServiceTests
     }
 
     [Test]
-    public async Task GetRecyclingObligationsCalculation_WhenOrganisationIdMissing_ShouldNotFetchComplianceDeclarationStatus()
+    public async Task GetRecyclingObligationsCalculation_WhenOrganisationIdMissing_ShouldStillFetchComplianceDeclarationStatus()
     {
         var year = 2026;
         _webApiGatewayClientMock
@@ -670,7 +668,7 @@ public class PrnServiceTests
         var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year);
 
         result.ComplianceDeclarationStatus.Should().BeNull();
-        _webApiGatewayClientMock.Verify(x => x.GetComplianceDeclarationStatus(It.IsAny<Guid>(), It.IsAny<int>()), Times.Never);
+        _webApiGatewayClientMock.Verify(x => x.GetComplianceDeclarationStatus(year), Times.Once);
     }
 
     [Test]
