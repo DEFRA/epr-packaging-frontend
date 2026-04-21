@@ -199,6 +199,12 @@ public static class WebApi
                 .WithHeader("Content-Type", "application/json")
                 .WithBodyAsJson(complianceDeclarationsResponse));
 
+        server.Given(Request.Create().UsingGet().WithPath("/api/v1/prn/compliance-declarations"))
+            .RespondWith(Response.Create()
+                .WithStatusCode(200)
+                .WithHeader("Content-Type", "application/json")
+                .WithBodyAsJson(complianceDeclarationsResponse));
+
         // Subsidiary (returning empty/default object)
         server.Given(Request.Create().UsingGet().WithPath("/api/v1/subsidiary/*/*"))
             .RespondWith(Response.Create().WithStatusCode(200)

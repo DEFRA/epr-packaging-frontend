@@ -123,6 +123,25 @@ public class CsocTests
         content.Should().Contain("Resubmit your certificate of compliance");
     }
 
+    [Test]
+    public async Task WhenDeclarationStatusNotPresent_ShouldShowSubmitTileHeading()
+    {
+        SetUp(
+            csocEnabled: true,
+            obligationData: WebApiOptions.ObligationDataType.Mixed,
+            complianceDeclarationStatus: WebApiOptions.ComplianceDeclarationStatusType.None);
+        await Context.Client.AuthenticateDefaultUser();
+
+        var sessionStore = Context.GetSessionStore();
+        SetSession(sessionStore, ServiceRoleConstants.Approved);
+
+        var response = await Context.Client.GetAsync("/report-data/manage-your-recycling-obligations");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        content.Should().Contain("Submit your certificate of compliance");
+    }
+
     [TearDown]
     public void TearDown()
     {

@@ -253,19 +253,15 @@ public class PrnService : IPrnService
         if (prnObligationModel != null)
         {
             prnObligationViewModel.NumberOfPrnsAwaitingAcceptance = prnObligationModel.NumberOfPrnsAwaitingAcceptance;
-            var organisationId = prnObligationModel.ObligationData?.FirstOrDefault()?.OrganisationId;
-            if (organisationId.HasValue && organisationId.Value != Guid.Empty)
+            try
             {
-                try
-                {
-                    prnObligationViewModel.ComplianceDeclarationStatus = await _webApiGatewayClient.GetComplianceDeclarationStatus(organisationId.Value, year);
-                }
-                catch (HttpRequestException ex)
-                {
-                    // Do not fail the obligation journey if declaration status cannot be fetched.
-                    _logger.LogWarning(ex, "{Logprefix}: PrnService - GetRecyclingObligationsCalculation: Failed to fetch compliance declaration status for organisation {OrganisationId} and year {Year}", logPrefix, organisationId.Value, year);
-                    prnObligationViewModel.ComplianceDeclarationStatus = null;
-                }
+                prnObligationViewModel.ComplianceDeclarationStatus = await _webApiGatewayClient.GetComplianceDeclarationStatus(year);
+            }
+            catch (HttpRequestException ex)
+            {
+                // Do not fail the obligation journey if declaration status cannot be fetched.
+                _logger.LogWarning(ex, "{Logprefix}: PrnService - GetRecyclingObligationsCalculation: Failed to fetch compliance declaration status for year {Year}", logPrefix, year);
+                prnObligationViewModel.ComplianceDeclarationStatus = null;
             }
 
             var prnMaterialObligationViewModels = prnObligationModel.ObligationData?.Select(item => (PrnMaterialObligationViewModel)item).ToList();

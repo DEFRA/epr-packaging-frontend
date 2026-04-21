@@ -513,26 +513,29 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         }
     }
 
-    public async Task<ComplianceDeclarationStatus?> GetComplianceDeclarationStatus(Guid organisationId, int obligationYear)
+    public async Task<ComplianceDeclarationStatus?> GetComplianceDeclarationStatus(int obligationYear)
     {
         await PrepareAuthenticatedClientAsync();
 
         try
         {
-            var response = await _httpClient.GetAsync($"/api/v1/organisations/{organisationId}/compliance-declarations?obligationYear={obligationYear}");
+            var response = await _httpClient.GetAsync($"/api/v1/prn/compliance-declarations?obligationYear={obligationYear}");
             response.EnsureSuccessStatusCode();
 
             var declarations = await response.Content.ReadFromJsonAsync<OrganisationComplianceDeclarationsModel>();
-            return declarations?.ComplianceDeclarations.FirstOrDefault()?.Status;
+            return declarations?.ComplianceDeclarations
+                .OrderByDescending(x => x.Created)
+                .FirstOrDefault()
+                ?.Status;
         }
         catch (HttpRequestException ex)
         {
-            _logger.LogError(ex, "Error getting compliance declaration status for organisation {OrganisationId} and obligation year {ObligationYear}", organisationId, obligationYear);
+            _logger.LogError(ex, "Error getting compliance declaration status for obligation year {ObligationYear}", obligationYear);
             throw;
         }
         catch (System.Text.Json.JsonException ex)
         {
-            _logger.LogError(ex, "Error deserializing compliance declaration status for organisation {OrganisationId} and obligation year {ObligationYear}", organisationId, obligationYear);
+            _logger.LogError(ex, "Error deserializing compliance declaration status for obligation year {ObligationYear}", obligationYear);
             throw;
         }
     }

@@ -1471,7 +1471,6 @@ public class WebApiGatewayClientTests
     [Test]
     public async Task GetComplianceDeclarationStatus_ReturnsLatestStatus_WhenResponseContainsDeclarations()
     {
-        var organisationId = Guid.NewGuid();
         var year = 2026;
 
         HttpRequestMessage capturedRequest = null!;
@@ -1482,7 +1481,16 @@ public class WebApiGatewayClientTests
             {
                 ComplianceDeclarations =
                 [
-                    new ComplianceDeclarationModel { Status = ComplianceDeclarationStatus.Cancelled }
+                    new ComplianceDeclarationModel
+                    {
+                        Created = new DateTimeOffset(2026, 4, 26, 14, 0, 0, TimeSpan.Zero),
+                        Status = ComplianceDeclarationStatus.Cancelled
+                    },
+                    new ComplianceDeclarationModel
+                    {
+                        Created = new DateTimeOffset(2026, 4, 27, 14, 0, 0, TimeSpan.Zero),
+                        Status = ComplianceDeclarationStatus.Submitted
+                    }
                 ]
             })
         };
@@ -1495,10 +1503,10 @@ public class WebApiGatewayClientTests
             .Callback<HttpRequestMessage, CancellationToken>((request, _) => capturedRequest = request)
             .ReturnsAsync(response);
 
-        var result = await _webApiGatewayClient.GetComplianceDeclarationStatus(organisationId, year);
+        var result = await _webApiGatewayClient.GetComplianceDeclarationStatus(year);
 
-        result.Should().Be(ComplianceDeclarationStatus.Cancelled);
-        capturedRequest.RequestUri.Should().Be($"https://example.com/api/v1/organisations/{organisationId}/compliance-declarations?obligationYear={year}");
+        result.Should().Be(ComplianceDeclarationStatus.Submitted);
+        capturedRequest.RequestUri.Should().Be($"https://example.com/api/v1/prn/compliance-declarations?obligationYear={year}");
     }
 
     [Test]
@@ -1517,7 +1525,7 @@ public class WebApiGatewayClientTests
                 ItExpr.IsAny<CancellationToken>())
             .ReturnsAsync(response);
 
-        var result = await _webApiGatewayClient.GetComplianceDeclarationStatus(Guid.NewGuid(), 2026);
+        var result = await _webApiGatewayClient.GetComplianceDeclarationStatus(2026);
 
         result.Should().BeNull();
     }
@@ -1537,7 +1545,7 @@ public class WebApiGatewayClientTests
                 ItExpr.IsAny<CancellationToken>())
             .ReturnsAsync(response);
 
-        Assert.ThrowsAsync<HttpRequestException>(() => _webApiGatewayClient.GetComplianceDeclarationStatus(Guid.NewGuid(), 2026));
+        Assert.ThrowsAsync<HttpRequestException>(() => _webApiGatewayClient.GetComplianceDeclarationStatus(2026));
     }
 
     [Test]
