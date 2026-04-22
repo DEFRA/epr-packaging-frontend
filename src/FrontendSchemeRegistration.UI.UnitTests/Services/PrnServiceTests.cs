@@ -391,7 +391,7 @@ public class PrnServiceTests
             .ReturnsAsync(prnObligationModel);
 
         // Act
-        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year);
+        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year, includeComplianceDeclarationStatus: true);
 
         // Assert
         result.Should().NotBeNull();
@@ -483,7 +483,7 @@ public class PrnServiceTests
         _webApiGatewayClientMock.Setup(x => x.GetRecyclingObligationsCalculation(year)).ReturnsAsync(prnObligationModel);
 
         // Act
-        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year);
+        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year, includeComplianceDeclarationStatus: true);
 
         // Assert
         result.MaterialObligationViewModels.Find(x => x.MaterialName == MaterialType.Totals).Status.Should().Be(expectedMaterialTableStatus);
@@ -524,7 +524,7 @@ public class PrnServiceTests
         _webApiGatewayClientMock.Setup(x => x.GetRecyclingObligationsCalculation(year)).ReturnsAsync(prnObligationModel);
 
         // Act
-        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year);
+        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year, includeComplianceDeclarationStatus: true);
 
         // Assert
         result.OverallStatus.Should().Be(ObligationStatus.NoDataYet);
@@ -547,7 +547,7 @@ public class PrnServiceTests
             .ReturnsAsync(ComplianceDeclarationStatus.Cancelled);
 
         // Act
-        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year);
+        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year, includeComplianceDeclarationStatus: true);
 
         // Assert
         result.Should().NotBeNull();
@@ -592,7 +592,7 @@ public class PrnServiceTests
             .Setup(x => x.GetComplianceDeclarationStatus(year))
             .ReturnsAsync(ComplianceDeclarationStatus.Submitted);
 
-        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year);
+        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year, includeComplianceDeclarationStatus: true);
 
         result.ComplianceDeclarationStatus.Should().Be(ComplianceDeclarationStatus.Submitted);
     }
@@ -632,7 +632,7 @@ public class PrnServiceTests
             .Setup(x => x.GetComplianceDeclarationStatus(year))
             .ThrowsAsync(new HttpRequestException("upstream error"));
 
-        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year);
+        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year, includeComplianceDeclarationStatus: true);
 
         result.ComplianceDeclarationStatus.Should().BeNull();
     }
@@ -672,7 +672,7 @@ public class PrnServiceTests
             .Setup(x => x.GetComplianceDeclarationStatus(year))
             .ThrowsAsync(new System.Text.Json.JsonException("invalid payload"));
 
-        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year);
+        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year, includeComplianceDeclarationStatus: true);
 
         result.ComplianceDeclarationStatus.Should().BeNull();
     }
@@ -709,10 +709,48 @@ public class PrnServiceTests
                 ]
             });
 
-        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year);
+        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year, includeComplianceDeclarationStatus: true);
 
         result.ComplianceDeclarationStatus.Should().BeNull();
         _webApiGatewayClientMock.Verify(x => x.GetComplianceDeclarationStatus(year), Times.Once);
+    }
+
+    [Test]
+    public async Task GetRecyclingObligationsCalculation_WhenIncludeComplianceDeclarationStatusIsFalse_ShouldNotCallStatusEndpoint()
+    {
+        var year = 2026;
+        _webApiGatewayClientMock
+            .Setup(x => x.GetRecyclingObligationsCalculation(year))
+            .ReturnsAsync(new PrnObligationModel
+            {
+                NumberOfPrnsAwaitingAcceptance = 1,
+                ObligationData =
+                [
+                    new PrnMaterialObligationModel
+                    {
+                        OrganisationId = Guid.NewGuid(),
+                        MaterialName = "Paper",
+                        Status = ObligationStatus.Met.ToString()
+                    },
+                    new PrnMaterialObligationModel
+                    {
+                        OrganisationId = Guid.NewGuid(),
+                        MaterialName = "Glass",
+                        Status = ObligationStatus.Met.ToString()
+                    },
+                    new PrnMaterialObligationModel
+                    {
+                        OrganisationId = Guid.NewGuid(),
+                        MaterialName = "GlassRemelt",
+                        Status = ObligationStatus.Met.ToString()
+                    }
+                ]
+            });
+
+        var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year, includeComplianceDeclarationStatus: false);
+
+        result.ComplianceDeclarationStatus.Should().BeNull();
+        _webApiGatewayClientMock.Verify(x => x.GetComplianceDeclarationStatus(It.IsAny<int>()), Times.Never);
     }
 
     [Test]
