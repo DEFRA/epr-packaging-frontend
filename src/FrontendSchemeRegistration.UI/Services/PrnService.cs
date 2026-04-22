@@ -250,67 +250,75 @@ public class PrnService : IPrnService
         var prnObligationModel = await _webApiGatewayClient.GetRecyclingObligationsCalculation(year);
         _logger.LogInformation("{Logprefix}: PrnService - GetRecyclingObligationsCalculation: Get obligations for given year {Year} server response {PrnObligationModel}", logPrefix, year, JsonConvert.SerializeObject(prnObligationModel));
 
-        if (prnObligationModel != null)
+        if (prnObligationModel == null)
         {
-            prnObligationViewModel.NumberOfPrnsAwaitingAcceptance = prnObligationModel.NumberOfPrnsAwaitingAcceptance;
-            try
-            {
-                prnObligationViewModel.ComplianceDeclarationStatus = await _webApiGatewayClient.GetComplianceDeclarationStatus(year);
-            }
-            catch (HttpRequestException ex)
-            {
-                // Do not fail the obligation journey if declaration status cannot be fetched.
-                _logger.LogWarning(ex, "{Logprefix}: PrnService - GetRecyclingObligationsCalculation: Failed to fetch compliance declaration status for year {Year}", logPrefix, year);
-                prnObligationViewModel.ComplianceDeclarationStatus = null;
-            }
-            catch (System.Text.Json.JsonException ex)
-            {
-                // Do not fail the obligation journey if declaration status payload cannot be parsed.
-                _logger.LogWarning(ex, "{Logprefix}: PrnService - GetRecyclingObligationsCalculation: Failed to parse compliance declaration status for year {Year}", logPrefix, year);
-                prnObligationViewModel.ComplianceDeclarationStatus = null;
-            }
-
-            var prnMaterialObligationViewModels = prnObligationModel.ObligationData?.Select(item => (PrnMaterialObligationViewModel)item).ToList();
-            if (prnMaterialObligationViewModels?.Count > 0)
-            {
-                // Find and update the material "Glass" to "RemainingGlass"
-                var glassItem = prnMaterialObligationViewModels.Find(r => r.MaterialName == MaterialType.Glass);
-                if (glassItem != null)
-                {
-                    glassItem.MaterialName = MaterialType.RemainingGlass;
-                }
-
-                // Add Glass summary row
-                prnMaterialObligationViewModels.Add(AddGlassRow(prnMaterialObligationViewModels));
-
-                // Split obligations into non-glass and glass collections
-                var materialObligationViewModels = prnMaterialObligationViewModels
-                    .Where(r => r.MaterialName != MaterialType.GlassRemelt && r.MaterialName != MaterialType.RemainingGlass)
-                    .OrderBy(r => r.MaterialName.ToString());
-
-                var glassMaterialObligationViewModels = prnMaterialObligationViewModels
-                    .Where(r => r.MaterialName == MaterialType.GlassRemelt || r.MaterialName == MaterialType.RemainingGlass)
-                    .OrderBy(r => r.MaterialName.ToString());
-
-                // Add rows and calculate totals for material table
-                if (materialObligationViewModels.Any())
-                {
-                    prnObligationViewModel.MaterialObligationViewModels = [.. materialObligationViewModels];
-                    prnObligationViewModel.MaterialObligationViewModels.Add(GetTotalRow(materialObligationViewModels));
-                    prnObligationViewModel.OverallStatus = GetFinalStatus(prnObligationViewModel.MaterialObligationViewModels);
-                }
-
-                // Add rows and calculate totals for glass table
-                if (glassMaterialObligationViewModels.Any())
-                {
-                    prnObligationViewModel.GlassMaterialObligationViewModels = [.. glassMaterialObligationViewModels];
-                    prnObligationViewModel.GlassMaterialObligationViewModels.Add(GetTotalRow(glassMaterialObligationViewModels));
-                }
-            }
+            _logger.LogInformation("{Logprefix}: PrnService - GetRecyclingObligationsCalculation: Return Recycling Obligations Calculation - {PrnObligationViewModel}", logPrefix, JsonConvert.SerializeObject(prnObligationViewModel));
+            return prnObligationViewModel;
         }
+
+        prnObligationViewModel.NumberOfPrnsAwaitingAcceptance = prnObligationModel.NumberOfPrnsAwaitingAcceptance;
+        await SetComplianceDeclarationStatusAsync(prnObligationViewModel, year);
+
+        var prnMaterialObligationViewModels = prnObligationModel.ObligationData?.Select(item => (PrnMaterialObligationViewModel)item).ToList();
+        PopulateObligationTables(prnObligationViewModel, prnMaterialObligationViewModels);
 
         _logger.LogInformation("{Logprefix}: PrnService - GetRecyclingObligationsCalculation: Return Recycling Obligations Calculation - {PrnObligationViewModel}", logPrefix, JsonConvert.SerializeObject(prnObligationViewModel));
         return prnObligationViewModel;
+    }
+
+    private async Task SetComplianceDeclarationStatusAsync(PrnObligationViewModel prnObligationViewModel, int year)
+    {
+        try
+        {
+            prnObligationViewModel.ComplianceDeclarationStatus = await _webApiGatewayClient.GetComplianceDeclarationStatus(year);
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogWarning(ex, "{Logprefix}: PrnService - GetRecyclingObligationsCalculation: Failed to fetch compliance declaration status for year {Year}", logPrefix, year);
+            prnObligationViewModel.ComplianceDeclarationStatus = null;
+        }
+        catch (System.Text.Json.JsonException ex)
+        {
+            _logger.LogWarning(ex, "{Logprefix}: PrnService - GetRecyclingObligationsCalculation: Failed to parse compliance declaration status for year {Year}", logPrefix, year);
+            prnObligationViewModel.ComplianceDeclarationStatus = null;
+        }
+    }
+
+    private static void PopulateObligationTables(PrnObligationViewModel prnObligationViewModel, List<PrnMaterialObligationViewModel>? prnMaterialObligationViewModels)
+    {
+        if (prnMaterialObligationViewModels == null || prnMaterialObligationViewModels.Count == 0)
+        {
+            return;
+        }
+
+        var glassItem = prnMaterialObligationViewModels.Find(r => r.MaterialName == MaterialType.Glass);
+        if (glassItem != null)
+        {
+            glassItem.MaterialName = MaterialType.RemainingGlass;
+        }
+
+        prnMaterialObligationViewModels.Add(AddGlassRow(prnMaterialObligationViewModels));
+
+        var materialObligationViewModels = prnMaterialObligationViewModels
+            .Where(r => r.MaterialName != MaterialType.GlassRemelt && r.MaterialName != MaterialType.RemainingGlass)
+            .OrderBy(r => r.MaterialName.ToString());
+
+        var glassMaterialObligationViewModels = prnMaterialObligationViewModels
+            .Where(r => r.MaterialName == MaterialType.GlassRemelt || r.MaterialName == MaterialType.RemainingGlass)
+            .OrderBy(r => r.MaterialName.ToString());
+
+        if (materialObligationViewModels.Any())
+        {
+            prnObligationViewModel.MaterialObligationViewModels = [.. materialObligationViewModels];
+            prnObligationViewModel.MaterialObligationViewModels.Add(GetTotalRow(materialObligationViewModels));
+            prnObligationViewModel.OverallStatus = GetFinalStatus(prnObligationViewModel.MaterialObligationViewModels);
+        }
+
+        if (glassMaterialObligationViewModels.Any())
+        {
+            prnObligationViewModel.GlassMaterialObligationViewModels = [.. glassMaterialObligationViewModels];
+            prnObligationViewModel.GlassMaterialObligationViewModels.Add(GetTotalRow(glassMaterialObligationViewModels));
+        }
     }
 
     private static PrnMaterialObligationViewModel CalculateRow(MaterialType materialName, IEnumerable<PrnMaterialObligationViewModel> obligations)
