@@ -54,7 +54,7 @@ public class ErrorReportHelpersTests
     [TestCase("en-GB", "57", "Organisation ID must be the same as the identification number assigned to this organisation when they created their account. Check the organisation ID for all rows for this organisation.")]
     [TestCase("en-GB", "58", "Organisation ID is not linked to your compliance scheme. Check the organisation ID for all rows for this organisation.")]
     [TestCase("en-GB", "59", "Packaging material weight is less than 100. Check all packaging weights are in kg and not tonnes.")]
-    [TestCase("en-GB", "60", "Check the packaging material weight for all rows for this organisation. If the total for the reporting year is between 25,000kg and 50,000kg, this organisation may only need to register as a small organisation in the following year.")]
+    [TestCase("en-GB", "60", "The total packaging weight reported appears to be below 25,000kg, which is the threshold for a small producer. Check the packaging material weight for all rows for this organisation. You can still submit if the figure is correct.")]
     [TestCase("en-GB", "62", "Only one packaging material reported for this organisation. Check you have entered all packaging materials. All must be reported separately.")]
     [TestCase("en-GB", "63", "For self-managed consumer waste (CW), you may not be able to offset your own packaging against aluminium (AL), glass (GL), paper or card (PC), or steel (ST). To check what packaging materials you can offset, you'll need to contact your nation's environmental regulator.")]    
     [TestCase("en-GB", "ErrorIssue", "Error")]
