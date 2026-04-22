@@ -1,10 +1,4 @@
-@using Microsoft.FeatureManagement
 @model ResubmissionFeeViewModel
-@inject IFeatureManager _featureManager
-
-@{
-    var isFeatureFlagEnabledForIncludingSubsidariesInFeeCalculation = _featureManager.IsEnabledAsync(nameof(FeatureFlags.IncludeSubsidariesInFeeCalculationsForProducers)).Result;
-}
 
 <dl class="govuk-summary-list">
 
@@ -33,14 +27,7 @@
             @Localizer["table-content-item-packaging-data-resubmission-fee"]
         </dt>
         <dt class="govuk-summary-list__value">
-            @if (@Model.IsComplianceScheme || isFeatureFlagEnabledForIncludingSubsidariesInFeeCalculation)
-            {
-                @Localizer["table-content-packaging-data-resubmission-fee-cs", Model.MemberCount]
-            }
-            else
-            {
-                @Localizer["table-content-packaging-data-resubmission"]
-            } 
+            @Localizer["table-content-packaging-data-resubmission-fee-cs", Model.MemberCount]
         </dt>
         <dd class="govuk-summary-list__actions">
             &pound;@ConvertToThousandSeparatedDecimal(Model.ResubmissionFee)

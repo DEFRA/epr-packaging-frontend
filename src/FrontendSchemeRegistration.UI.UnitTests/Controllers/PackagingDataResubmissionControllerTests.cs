@@ -224,7 +224,8 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
             ApplicationStatus = ApplicationStatusType.NotStarted,
             SynapseResponse = new SynapseResponse
             {
-                IsFileSynced = true
+                IsFileSynced = true,
+                IsResubmissionDataSynced = false
             }
         };
         var resubmissionApplicationDetailsCollection = new List<PackagingResubmissionApplicationDetails> { resubmissionApplicationDetails };
@@ -262,7 +263,62 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
             AdditionalDetailsStatus = ResubmissionTaskListStatus.CanNotStartYet,
             FileReachedSynapse = false,
             ApplicationStatus = ApplicationStatusType.NotStarted,
-            IsResubmissionInProgress = false
+            IsResubmissionInProgress = false,
+            HasSubmissionSyncCompleted = false
+        });
+    }
+    
+    [Test]
+    public async Task ResubmissionTaskList_WhenResubmissionSyncCompleted_ReturnsCorrectViewAndModel()
+    {
+        // Arrange
+        var resubmissionApplicationDetails = new PackagingResubmissionApplicationDetails
+        {
+            IsSubmitted = false,
+            ApplicationStatus = ApplicationStatusType.NotStarted,
+            SynapseResponse = new SynapseResponse
+            {
+                IsFileSynced = true,
+                IsResubmissionDataSynced = true
+            }
+        };
+        var resubmissionApplicationDetailsCollection = new List<PackagingResubmissionApplicationDetails> { resubmissionApplicationDetails };
+
+        var submissionPeriodId = new SubmissionPeriodId
+        {
+            SubmissionId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"),
+            Year = DateTime.Now.Year,
+        };
+        var submissionPeriodIds = new List<SubmissionPeriodId> { submissionPeriodId };
+        var submissionHistories = new List<SubmissionHistory>();
+
+        SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
+            .Returns(Task.FromResult(new FrontendSchemeRegistrationSession { PomResubmissionSession = new PackagingReSubmissionSession { PomSubmissions = new List<PomSubmission> { new PomSubmission { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b") } }, PomSubmission = new PomSubmission() { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), LastSubmittedFile = new SubmittedFileInformation { FileId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), SubmittedDateTime = DateTime.Now.AddDays(-2) } } } }));
+        UserAccountService.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
+        ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(It.IsAny<Organisation>(), It.IsAny<List<string>>(), It.IsAny<Guid?>())).ReturnsAsync(resubmissionApplicationDetailsCollection);
+        ResubmissionApplicationService.Setup(x => x.GetRegulatorNation(It.IsAny<Guid>())).ReturnsAsync("England");
+        PaymentCalculationService.Setup(x => x.GetRegulatorNation(It.IsAny<Guid>())).ReturnsAsync("England");
+        ResubmissionApplicationService.Setup(x => x.GetSubmissionIdsAsync(It.IsAny<Guid>(), SubmissionType.Producer, It.IsAny<Guid?>(), It.IsAny<int?>())).ReturnsAsync(submissionPeriodIds);
+        ResubmissionApplicationService.Setup(x => x.GetSubmissionHistoryAsync(It.IsAny<Guid>(), It.IsAny<DateTime>())).ReturnsAsync(submissionHistories);
+
+        // Act
+        var result = await SystemUnderTest.ResubmissionTaskList() as ViewResult;
+        var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
+
+        // Assert
+        result.Model.Should().BeOfType<ResubmissionTaskListViewModel>();
+
+        result.Model.As<ResubmissionTaskListViewModel>().Should().BeEquivalentTo(new ResubmissionTaskListViewModel
+        {
+            OrganisationName = _userData.Organisations[0].Name,
+            OrganisationNumber = _userData.Organisations[0].OrganisationNumber.ToReferenceNumberFormat(),
+            FileUploadStatus = ResubmissionTaskListStatus.NotStarted,
+            PaymentViewStatus = ResubmissionTaskListStatus.CanNotStartYet,
+            AdditionalDetailsStatus = ResubmissionTaskListStatus.CanNotStartYet,
+            FileReachedSynapse = false,
+            ApplicationStatus = ApplicationStatusType.NotStarted,
+            IsResubmissionInProgress = false,
+            HasSubmissionSyncCompleted = true
         });
     }
 
@@ -335,7 +391,8 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
             AdditionalDetailsStatus = ResubmissionTaskListStatus.CanNotStartYet,
             FileReachedSynapse = false,
             ApplicationStatus = ApplicationStatusType.NotStarted,
-            IsResubmissionInProgress = false
+            IsResubmissionInProgress = false,
+            HasSubmissionSyncCompleted = false
         });
     }
 
@@ -407,7 +464,8 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
             AdditionalDetailsStatus = ResubmissionTaskListStatus.CanNotStartYet,
             FileReachedSynapse = false,
             ApplicationStatus = ApplicationStatusType.NotStarted,
-            IsResubmissionInProgress = false
+            IsResubmissionInProgress = false,
+            HasSubmissionSyncCompleted = false
         });
     }
 
@@ -482,6 +540,7 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
             FileReachedSynapse = false,
             ApplicationStatus = ApplicationStatusType.NotStarted,
             IsResubmissionInProgress = false,
+            HasSubmissionSyncCompleted = false
         });
     }
 
@@ -786,23 +845,8 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
         result?.ActionName.Should().Be(nameof(PackagingDataResubmissionController.ResubmissionTaskList));
     }
 
-
     [Test]
-    public async Task GetMemberCount_ReturnsOneForProducers_WhenFeatureFlagIsOff()
-    {
-        // Arrange
-        var submissionId = Guid.NewGuid();
-        var iscomplianceScheme = false;
-
-        // Act
-        var result = await SystemUnderTest.GetMemberCount(submissionId, iscomplianceScheme, It.IsAny<Guid?>());
-
-        // Assert
-        result.Should().Be(1);
-    }
-
-    [Test]
-    public async Task GetMemberCount_ReturnsMemberCountForProducers_WhenFeatureFlagIsOn()
+    public async Task GetMemberCount_ReturnsMemberCountForProducers()
     {
         // Arrange
         var submissionId = Guid.NewGuid();
@@ -810,7 +854,6 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
         var iscomplianceScheme = false;
 
         ResubmissionApplicationService.Setup(x => x.GetPackagingResubmissionMemberDetails(It.IsAny<PackagingResubmissionMemberRequest>())).ReturnsAsync(new PackagingResubmissionMemberDetails() { MemberCount = memberCount });
-        ResubmissionApplicationService.Setup(x => x.GetFeatureFlagForProducersFeebreakdown()).ReturnsAsync(true);
 
         // Act
         var result = await SystemUnderTest.GetMemberCount(submissionId, iscomplianceScheme, It.IsAny<Guid?>());

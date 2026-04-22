@@ -66,6 +66,24 @@ public class CsocTests
             .ScrubCommonHtmlNodes()
             .UseParameters(path);
     }
+    
+    [Test]
+    public async Task WhenNoObligationData_ShouldHideSubmissionTile()
+    {
+        SetUp(csocEnabled: true, obligationData: WebApiOptions.ObligationDataType.NoDataYet);
+        await Context.Client.AuthenticateDefaultUser();
+
+        var sessionStore = Context.GetSessionStore();
+        SetSession(sessionStore, ServiceRoleConstants.Basic);
+        
+        var response = await Context.Client.GetAsync("/report-data/manage-your-recycling-obligations");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
+            .ScrubComplianceSchemeId()
+            .ScrubCommonHtmlNodes();
+    }
 
     [TearDown]
     public void TearDown()
@@ -73,12 +91,18 @@ public class CsocTests
         Context.Dispose();
     }
 
-    private void SetUp(bool csocEnabled)
+    private void SetUp(
+        bool csocEnabled, 
+        WebApiOptions.ObligationDataType obligationData = WebApiOptions.ObligationDataType.Mixed)
     {
         Context.SetUp(overrideSession: true, additionalConfig: new Dictionary<string, string?>
-        {
-            { "FeatureManagement:CsocEnabled", csocEnabled.ToString().ToLower() }
-        });
+            {
+                { "FeatureManagement:CsocEnabled", csocEnabled.ToString().ToLower() }
+            },
+            new WebApiOptions
+            {
+                ObligationData = obligationData
+            });
     }
 
     private static void SetSession(SessionStore sessionStore, string serviceRole)
