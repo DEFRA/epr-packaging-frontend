@@ -242,7 +242,7 @@ public class PrnService : IPrnService
         return stream;
     }
 
-    public async Task<PrnObligationViewModel> GetRecyclingObligationsCalculation(int year)
+    public async Task<PrnObligationViewModel> GetRecyclingObligationsCalculation(int year, bool includeComplianceDeclarationStatus = false)
     {
         _logger.LogInformation("{Logprefix}: PrnService - GetRecyclingObligationsCalculation: Get Recycling Obligations Calculation for given year {Year}", logPrefix, year);
 
@@ -257,7 +257,10 @@ public class PrnService : IPrnService
         }
 
         prnObligationViewModel.NumberOfPrnsAwaitingAcceptance = prnObligationModel.NumberOfPrnsAwaitingAcceptance;
-        await SetComplianceDeclarationStatusAsync(prnObligationViewModel, year);
+        if (includeComplianceDeclarationStatus)
+        {
+            await SetComplianceDeclarationStatusAsync(prnObligationViewModel, year);
+        }
 
         var prnMaterialObligationViewModels = prnObligationModel.ObligationData?.Select(item => (PrnMaterialObligationViewModel)item).ToList();
         PopulateObligationTables(prnObligationViewModel, prnMaterialObligationViewModels);
