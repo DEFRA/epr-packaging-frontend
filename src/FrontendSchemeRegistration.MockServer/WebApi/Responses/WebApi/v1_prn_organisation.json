@@ -50,5 +50,17 @@
     "prnStatus": "ACCEPTED",
     "obligationYear": "2026",
     "tonnageValue": 2
+  },
+  {
+    "id": 7,
+    "externalId": "00000000-0000-0000-0000-000000000007",
+    "prnNumber": "CONTRACT-PRN-007",
+    "materialName": "Aluminium",
+    "issueDate": "2025-06-15T10:30:00",
+    "prnStatus": "AWAITINGACCEPTANCE",
+    "obligationYear": "2025",
+    "tonnageValue": 999,
+    "issuedByOrg": "Acme Reprocessors Ltd",
+    "isExport": false
   }
 ]

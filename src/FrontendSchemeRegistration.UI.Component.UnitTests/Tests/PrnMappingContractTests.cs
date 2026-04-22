@@ -1,77 +1,45 @@
-namespace FrontendSchemeRegistration.UI.IntegrationTests.Tests;
+namespace FrontendSchemeRegistration.UI.Component.UnitTests.Tests;
 
 using System.Net;
+using Extensions;
 using FluentAssertions;
+using Infrastructure;
+using NUnit.Framework;
 
-[TestClass]
-public class PrnMappingContractTests : TestBase
+/// <summary>
+/// Contract tests for PrnModelMapper — verify that fields are renamed and values translated
+/// correctly from the backend API response through to the rendered HTML and CSV output.
+/// These tests guard against regressions when the mapping implementation changes.
+/// </summary>
+public class PrnMappingContractTests
 {
     private const string FullyPopulatedPrnId = "00000000-0000-0000-0000-000000000007";
     private const string PernId              = "00000000-0000-0000-0000-000000000008";
-    private const string CanceledPrnId       = "00000000-0000-0000-0000-000000000009";
+    private const string CancelledPrnId      = "00000000-0000-0000-0000-000000000009";
 
-    private static object FullyPopulatedPrn => new
-    {
-        id = 7,
-        externalId = FullyPopulatedPrnId,
-        prnNumber = "CONTRACT-PRN-007",
-        materialName = "Aluminium",
-        issueDate = "2025-06-15T10:30:00",
-        prnStatus = "AWAITINGACCEPTANCE",
-        tonnageValue = 999,
-        obligationYear = "2025",
-        issuedByOrg = "Acme Reprocessors Ltd",
-        issuerNotes = "Important note about this PRN",
-        prnSignatory = "Jane Smith",
-        prnSignatoryPosition = "Director",
-        reprocessingSite = "42 Factory Road, Manchester",
-        organisationName = "Test Producer Ltd",
-        isExport = false,
-        decemberWaste = false
-    };
+    private ComponentTestContext Context { get; } = new();
 
-    private static object PernPrn => new
+    [SetUp]
+    public async Task SetUp()
     {
-        id = 8,
-        externalId = PernId,
-        prnNumber = "CONTRACT-PERN-008",
-        materialName = "Glass remelt",
-        issueDate = "2025-06-15T10:30:00",
-        prnStatus = "AWAITINGACCEPTANCE",
-        tonnageValue = 500,
-        obligationYear = "2025",
-        isExport = true
-    };
+        Context.SetUp();
+        await Context.Client.AuthenticateDefaultUser();
+    }
 
-    private static object CanceledPrn => new
-    {
-        id = 9,
-        externalId = CanceledPrnId,
-        prnNumber = "CONTRACT-PRN-009",
-        materialName = "Fibre",
-        issueDate = "2025-06-15T10:30:00",
-        prnStatus = "CANCELED",
-        tonnageValue = 1,
-        obligationYear = "2025",
-        isExport = false,
-        prnSignatoryPosition = (string?)null,
-        processToBeUsed = (string?)null
-    };
+    [TearDown]
+    public void TearDown() => Context.Dispose();
 
     // prnNumber → PrnOrPernNumber
     // issuedByOrg → IssuedBy
     // prnSignatory → AuthorisedBy
     // prnSignatoryPosition → Position
     // reprocessingSite → ReproccessingSiteAddress
-    [TestMethod]
-    [TestProperty("Category", "IntegrationTest")]
+    [Test]
     public async Task SelectedPrn_ReturnsOk_WithAllRenamedFields_WhenAllSourceFieldsArePopulated()
     {
-        SetupPrnById(FullyPopulatedPrnId, FullyPopulatedPrn);
+        var response = await Context.Client.GetAsync($"/report-data/selected-prn/{FullyPopulatedPrnId}");
 
-        var response = await Client.GetAsync($"/report-data/selected-prn/{FullyPopulatedPrnId}");
-
-        response.Should().HaveStatusCode(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
         var content = await response.Content.ReadAsStringAsync();
 
         content.Should().Contain("CONTRACT-PRN-007",           because: "prnNumber should map to PrnOrPernNumber");
@@ -82,45 +50,35 @@ public class PrnMappingContractTests : TestBase
     }
 
     // obligationYear string "2025" → int 2025 → rendered as year on page
-    [TestMethod]
-    [TestProperty("Category", "IntegrationTest")]
+    [Test]
     public async Task SelectedPrn_ReturnsOk_WithObligationYear_WhenObligationYearIsAValidString()
     {
-        SetupPrnById(FullyPopulatedPrnId, FullyPopulatedPrn);
+        var response = await Context.Client.GetAsync($"/report-data/selected-prn/{FullyPopulatedPrnId}");
 
-        var response = await Client.GetAsync($"/report-data/selected-prn/{FullyPopulatedPrnId}");
-
-        response.Should().HaveStatusCode(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
         var content = await response.Content.ReadAsStringAsync();
         content.Should().Contain("2025", because: "obligationYear '2025' should parse to int and render as the year of issue");
     }
 
     // prnStatus "AWAITINGACCEPTANCE" → PrnStatus.AwaitingAcceptance ("AWAITING ACCEPTANCE")
-    [TestMethod]
-    [TestProperty("Category", "IntegrationTest")]
+    [Test]
     public async Task SelectedPrn_ReturnsOk_WithTranslatedStatus_WhenStatusIsAwaitingAcceptance()
     {
-        SetupPrnById(FullyPopulatedPrnId, FullyPopulatedPrn);
+        var response = await Context.Client.GetAsync($"/report-data/selected-prn/{FullyPopulatedPrnId}");
 
-        var response = await Client.GetAsync($"/report-data/selected-prn/{FullyPopulatedPrnId}");
-
-        response.Should().HaveStatusCode(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
         var content = await response.Content.ReadAsStringAsync();
         content.Should().Contain("AWAITING ACCEPTANCE",
             because: "AWAITINGACCEPTANCE (API value) should be translated to AWAITING ACCEPTANCE (display value)");
     }
 
-    // prnStatus "CANCELED" → PrnStatus.Cancelled ("CANCELLED")
-    // Note: the source API sends "CANCELED" (one L); the mapped display value is "CANCELLED" (two L).
-    [TestMethod]
-    [TestProperty("Category", "IntegrationTest")]
+    // prnStatus "CANCELED" (one L) → PrnStatus.Cancelled → "CANCELLED" (two L)
+    [Test]
     public async Task SelectedPrn_ReturnsOk_WithTranslatedStatus_WhenStatusIsCanceled()
     {
-        SetupPrnById(CanceledPrnId, CanceledPrn);
+        var response = await Context.Client.GetAsync($"/report-data/selected-prn/{CancelledPrnId}");
 
-        var response = await Client.GetAsync($"/report-data/selected-prn/{CanceledPrnId}");
-
-        response.Should().HaveStatusCode(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
         var content = await response.Content.ReadAsStringAsync();
         content.Should().Contain("CANCELLED",
             because: "CANCELED (API value, one L) should be translated to CANCELLED (display value, two L)");
@@ -128,16 +86,13 @@ public class PrnMappingContractTests : TestBase
             because: "the raw un-translated API value should not leak into the UI");
     }
 
-    // isExport false → NoteType "PRN" → IsPrn=true → "Packaging Waste Recycling Note" heading and "PRN number:" label
-    [TestMethod]
-    [TestProperty("Category", "IntegrationTest")]
+    // isExport false → NoteType "PRN" → "Packaging Waste Recycling Note" heading and "PRN number:" label
+    [Test]
     public async Task SelectedPrn_ReturnsOk_WithPrnHeadingAndLabel_WhenIsExportIsFalse()
     {
-        SetupPrnById(FullyPopulatedPrnId, FullyPopulatedPrn);
+        var response = await Context.Client.GetAsync($"/report-data/selected-prn/{FullyPopulatedPrnId}");
 
-        var response = await Client.GetAsync($"/report-data/selected-prn/{FullyPopulatedPrnId}");
-
-        response.Should().HaveStatusCode(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
         var content = await response.Content.ReadAsStringAsync();
         content.Should().Contain("Packaging Waste Recycling Note",
             because: "isExport=false should map NoteType to PRN, rendering the PRN-specific heading");
@@ -145,16 +100,13 @@ public class PrnMappingContractTests : TestBase
             because: "isExport=false should map NoteType to PRN, rendering the PRN number label");
     }
 
-    // isExport true → NoteType "PERN" → IsPrn=false → "PERN number:" label
-    [TestMethod]
-    [TestProperty("Category", "IntegrationTest")]
+    // isExport true → NoteType "PERN" → "PERN number:" label, no PRN heading
+    [Test]
     public async Task SelectedPrn_ReturnsOk_WithPernLabel_WhenIsExportIsTrue()
     {
-        SetupPrnById(PernId, PernPrn);
+        var response = await Context.Client.GetAsync($"/report-data/selected-prn/{PernId}");
 
-        var response = await Client.GetAsync($"/report-data/selected-prn/{PernId}");
-
-        response.Should().HaveStatusCode(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
         var content = await response.Content.ReadAsStringAsync();
         content.Should().Contain("CONTRACT-PERN-008",
             because: "prnNumber should appear as PrnOrPernNumber on the PERN detail page");
@@ -164,30 +116,23 @@ public class PrnMappingContractTests : TestBase
             because: "the PRN-specific heading should not appear for a PERN");
     }
 
-    // null PrnSignatoryPosition → Position maps to "" not null → page renders without exception
-    // null ProcessToBeUsed → RecyclingProcess maps to "" not null → page renders without exception
-    [TestMethod]
-    [TestProperty("Category", "IntegrationTest")]
+    // null PrnSignatoryPosition and ProcessToBeUsed should map to empty string, not throw
+    [Test]
     public async Task SelectedPrn_ReturnsOk_WithoutException_WhenOptionalFieldsAreNull()
     {
-        SetupPrnById(CanceledPrnId, CanceledPrn);
+        var response = await Context.Client.GetAsync($"/report-data/selected-prn/{CancelledPrnId}");
 
-        var response = await Client.GetAsync($"/report-data/selected-prn/{CanceledPrnId}");
-
-        response.Should().HaveStatusCode(HttpStatusCode.OK,
+        response.StatusCode.Should().Be(HttpStatusCode.OK,
             because: "null PrnSignatoryPosition and ProcessToBeUsed should map to empty string, not throw");
     }
 
     // CSV column headers: all renamed fields should appear under their mapped names
-    [TestMethod]
-    [TestProperty("Category", "IntegrationTest")]
+    [Test]
     public async Task CsvDownload_ReturnsOk_WithCorrectColumnHeaders()
     {
-        SetupPrnOrganisationList([FullyPopulatedPrn]);
+        var response = await Context.Client.GetAsync("/report-data/download-prns-csv");
 
-        var response = await Client.GetAsync("/report-data/download-prns-csv");
-
-        response.Should().HaveStatusCode(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
         var content = await response.Content.ReadAsStringAsync();
         var headerRow = content.Split('\n')[0].TrimEnd('\r');
 
@@ -196,19 +141,13 @@ public class PrnMappingContractTests : TestBase
             because: "all renamed fields should appear under their mapped display names in the CSV header");
     }
 
-    // CSV data row: verify field renames appear in the correct column positions
-    //   prnNumber    → column 1  (PRN or PERN number)
-    //   isExport     → column 2  (PRN or PERN: "PRN" when false, "PERN" when true)
-    //   tonnageValue → column 11 (Tonnes)
-    [TestMethod]
-    [TestProperty("Category", "IntegrationTest")]
+    // CSV data row: prnNumber → col 1, isExport → col 2, tonnageValue → col 11
+    [Test]
     public async Task CsvDownload_ReturnsOk_WithFieldsMappedToCorrectColumnPositions()
     {
-        SetupPrnOrganisationList([FullyPopulatedPrn]);
+        var response = await Context.Client.GetAsync("/report-data/download-prns-csv");
 
-        var response = await Client.GetAsync("/report-data/download-prns-csv");
-
-        response.Should().HaveStatusCode(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
         var content = await response.Content.ReadAsStringAsync();
         var dataRow = content.Split('\n')
             .Select(r => r.TrimEnd('\r'))

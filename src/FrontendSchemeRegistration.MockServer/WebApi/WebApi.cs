@@ -171,6 +171,64 @@ public static class WebApi
                     obligationYear = "2026"
                 }));
 
+        // PRN contract test fixtures (fully-populated PRN, PERN, cancelled PRN)
+        server.Given(Request.Create().UsingGet().WithPath("/api/v1/prn/00000000-0000-0000-0000-000000000007"))
+            .RespondWith(Response.Create().WithStatusCode(200)
+                .WithHeader("Content-Type", "application/json")
+                .WithBodyAsJson(new
+                {
+                    id = 7,
+                    externalId = "00000000-0000-0000-0000-000000000007",
+                    prnNumber = "CONTRACT-PRN-007",
+                    materialName = "Aluminium",
+                    issueDate = "2025-06-15T10:30:00",
+                    prnStatus = "AWAITINGACCEPTANCE",
+                    tonnageValue = 999,
+                    obligationYear = "2025",
+                    issuedByOrg = "Acme Reprocessors Ltd",
+                    issuerNotes = "Important note about this PRN",
+                    prnSignatory = "Jane Smith",
+                    prnSignatoryPosition = "Director",
+                    reprocessingSite = "42 Factory Road, Manchester",
+                    organisationName = "Test Producer Ltd",
+                    isExport = false,
+                    decemberWaste = false
+                }));
+
+        server.Given(Request.Create().UsingGet().WithPath("/api/v1/prn/00000000-0000-0000-0000-000000000008"))
+            .RespondWith(Response.Create().WithStatusCode(200)
+                .WithHeader("Content-Type", "application/json")
+                .WithBodyAsJson(new
+                {
+                    id = 8,
+                    externalId = "00000000-0000-0000-0000-000000000008",
+                    prnNumber = "CONTRACT-PERN-008",
+                    materialName = "Glass remelt",
+                    issueDate = "2025-06-15T10:30:00",
+                    prnStatus = "AWAITINGACCEPTANCE",
+                    tonnageValue = 500,
+                    obligationYear = "2025",
+                    isExport = true
+                }));
+
+        server.Given(Request.Create().UsingGet().WithPath("/api/v1/prn/00000000-0000-0000-0000-000000000009"))
+            .RespondWith(Response.Create().WithStatusCode(200)
+                .WithHeader("Content-Type", "application/json")
+                .WithBodyAsJson(new
+                {
+                    id = 9,
+                    externalId = "00000000-0000-0000-0000-000000000009",
+                    prnNumber = "CONTRACT-PRN-009",
+                    materialName = "Fibre",
+                    issueDate = "2025-06-15T10:30:00",
+                    prnStatus = "CANCELED",
+                    tonnageValue = 1,
+                    obligationYear = "2025",
+                    isExport = false,
+                    prnSignatoryPosition = (string?)null,
+                    processToBeUsed = (string?)null
+                }));
+
         server.Given(Request.Create().UsingPost().WithPath("/api/v1/prn/status"))
             .RespondWith(Response.Create().WithStatusCode(200));
         
