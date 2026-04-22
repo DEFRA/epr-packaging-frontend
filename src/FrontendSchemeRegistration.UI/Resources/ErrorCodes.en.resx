@@ -373,6 +373,24 @@ Read the guidance about how to create your organisation details file. Once youâ€
   <data name="910" xml:space="preserve">
     <value>Small producers can only upload packaging data for period P0.</value>
   </data>
+  <data name="911" xml:space="preserve">
+    <value>Closed-loop packaging data can only be provided for Large producers</value>
+  </data>
+  <data name="912" xml:space="preserve">
+    <value>Packaging type CLR (closed-loop packaging data) can only be used with material type PL (plastic).</value>
+  </data>
+  <data name="914" xml:space="preserve">
+    <value>Packaging activity is not needed for this packaging type.</value>
+  </data>
+  <data name="915" xml:space="preserve">
+    <value>Only packaging class O1 can be provided for closed loop packaging data.</value>
+  </data>
+  <data name="916" xml:space="preserve">
+    <value>From country information is not required for closed-loop packaging data.</value>
+  </data>
+  <data name="917" xml:space="preserve">
+    <value>To country information is not required for closed-loop packaging data.</value>
+  </data>
   <data name="73" xml:space="preserve">
     <value>Turnover for this organisation is recorded as zero. Please verify this is correct before submitting a zero return</value>
   </data>

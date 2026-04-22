@@ -10,7 +10,7 @@ namespace FrontendSchemeRegistration.MockServer;
 [ExcludeFromCodeCoverage]
 public static class MockApiServer
 {
-    public static IWireMockServer Start()
+    public static IWireMockServer Start(WebApiOptions? webApiOptions = null)
     {
         var settings = new WireMockServerSettings
         {
@@ -19,7 +19,7 @@ public static class MockApiServer
         };
 
         var server = StandAloneApp.Start(settings)
-            .WithWebApi()
+            .WithWebApi(webApiOptions)
             .WithPayments()
             .WithAccounts();
 
