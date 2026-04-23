@@ -13,9 +13,8 @@ parameters:
     type: string
     default: 'SonarQube'
     values:
-    - 'SonarQube'
-    # - 'SonarQubeLatest'
-
+      - 'SonarQube'
+      - 'SonarQubeTest'
 
 pool: DEFRA-COMMON-ubuntu2004-SSV3
 
@@ -58,7 +57,8 @@ extends:
     azureSubscription: $(azureSubscription)
     acrAzureContainerRegistryName: $(acr.azureContainerRegistryName)
     acrRepositoryName: $(acr.repositoryName)
-    branchName: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), '/', '_') }}
+    branchName: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/',
+      ''), '/', '_') }}
     runNugetTasks: ${{ variables.runNugetTasks }}
     serviceName: $(serviceName)
     dotnetVersion: ${{ variables.dotnetVersion }}
