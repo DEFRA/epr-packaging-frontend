@@ -9,12 +9,12 @@ trigger:
 parameters:
 
   - name: sonarqubeInstance
-    displayName: 'SonarQube service connection / endpoint'
+    displayName: 'Select SonarQube version'
     type: string
-    default: 'https://vss-sonarqube-test.azure.defra.cloud/'
+    default: 'SonarQube'
     values:
-    - 'https://vss-sonarqube-test.azure.defra.cloud/'
-
+      - 'SonarQube'
+      - 'SonarQubeTest'
 
 pool: DEFRA-COMMON-ubuntu2004-SSV3
 
@@ -57,7 +57,8 @@ extends:
     azureSubscription: $(azureSubscription)
     acrAzureContainerRegistryName: $(acr.azureContainerRegistryName)
     acrRepositoryName: $(acr.repositoryName)
-    branchName: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), '/', '_') }}
+    branchName: ${{ replace(replace(variables['Build.SourceBranch'], 'refs/heads/',
+      ''), '/', '_') }}
     runNugetTasks: ${{ variables.runNugetTasks }}
     serviceName: $(serviceName)
     dotnetVersion: ${{ variables.dotnetVersion }}
