@@ -16,7 +16,7 @@ public abstract class TestBase
     private WebApplicationFactory<FrontendSchemeRegistrationController> _factory = null!;
     protected HttpClient Client { get; private set; } = null!;
 
-    [TestInitialize]
+    [SetUp]
     public async Task InitializeAsync()
     {
         _mockApiServer = WireMockServer.Start();
@@ -35,7 +35,7 @@ public abstract class TestBase
         await AuthenticateAsync();
     }
 
-    [TestCleanup]
+    [TearDown]
     public void Cleanup()
     {
         Client.Dispose();

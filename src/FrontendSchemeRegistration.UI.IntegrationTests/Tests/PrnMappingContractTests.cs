@@ -3,7 +3,7 @@ namespace FrontendSchemeRegistration.UI.IntegrationTests.Tests;
 using System.Net;
 using FluentAssertions;
 
-[TestClass]
+[TestFixture]
 public class PrnMappingContractTests : TestBase
 {
     private const string FullyPopulatedPrnId = "00000000-0000-0000-0000-000000000007";
@@ -63,8 +63,8 @@ public class PrnMappingContractTests : TestBase
     // prnSignatory → AuthorisedBy
     // prnSignatoryPosition → Position
     // reprocessingSite → ReproccessingSiteAddress
-    [TestMethod]
-    [TestProperty("Category", "IntegrationTest")]
+    [Test]
+    [Category("IntegrationTest")]
     public async Task SelectedPrn_ReturnsOk_WithAllRenamedFields_WhenAllSourceFieldsArePopulated()
     {
         SetupPrnById(FullyPopulatedPrnId, FullyPopulatedPrn);
@@ -82,8 +82,8 @@ public class PrnMappingContractTests : TestBase
     }
 
     // obligationYear string "2025" → int 2025 → rendered as year on page
-    [TestMethod]
-    [TestProperty("Category", "IntegrationTest")]
+    [Test]
+    [Category("IntegrationTest")]
     public async Task SelectedPrn_ReturnsOk_WithObligationYear_WhenObligationYearIsAValidString()
     {
         SetupPrnById(FullyPopulatedPrnId, FullyPopulatedPrn);
@@ -96,8 +96,8 @@ public class PrnMappingContractTests : TestBase
     }
 
     // prnStatus "AWAITINGACCEPTANCE" → PrnStatus.AwaitingAcceptance ("AWAITING ACCEPTANCE")
-    [TestMethod]
-    [TestProperty("Category", "IntegrationTest")]
+    [Test]
+    [Category("IntegrationTest")]
     public async Task SelectedPrn_ReturnsOk_WithTranslatedStatus_WhenStatusIsAwaitingAcceptance()
     {
         SetupPrnById(FullyPopulatedPrnId, FullyPopulatedPrn);
@@ -112,8 +112,8 @@ public class PrnMappingContractTests : TestBase
 
     // prnStatus "CANCELED" → PrnStatus.Cancelled ("CANCELLED")
     // Note: the source API sends "CANCELED" (one L); the mapped display value is "CANCELLED" (two L).
-    [TestMethod]
-    [TestProperty("Category", "IntegrationTest")]
+    [Test]
+    [Category("IntegrationTest")]
     public async Task SelectedPrn_ReturnsOk_WithTranslatedStatus_WhenStatusIsCanceled()
     {
         SetupPrnById(CanceledPrnId, CanceledPrn);
@@ -129,8 +129,8 @@ public class PrnMappingContractTests : TestBase
     }
 
     // isExport false → NoteType "PRN" → IsPrn=true → "Packaging Waste Recycling Note" heading and "PRN number:" label
-    [TestMethod]
-    [TestProperty("Category", "IntegrationTest")]
+    [Test]
+    [Category("IntegrationTest")]
     public async Task SelectedPrn_ReturnsOk_WithPrnHeadingAndLabel_WhenIsExportIsFalse()
     {
         SetupPrnById(FullyPopulatedPrnId, FullyPopulatedPrn);
@@ -146,8 +146,8 @@ public class PrnMappingContractTests : TestBase
     }
 
     // isExport true → NoteType "PERN" → IsPrn=false → "PERN number:" label
-    [TestMethod]
-    [TestProperty("Category", "IntegrationTest")]
+    [Test]
+    [Category("IntegrationTest")]
     public async Task SelectedPrn_ReturnsOk_WithPernLabel_WhenIsExportIsTrue()
     {
         SetupPrnById(PernId, PernPrn);
@@ -166,8 +166,8 @@ public class PrnMappingContractTests : TestBase
 
     // null PrnSignatoryPosition → Position maps to "" not null → page renders without exception
     // null ProcessToBeUsed → RecyclingProcess maps to "" not null → page renders without exception
-    [TestMethod]
-    [TestProperty("Category", "IntegrationTest")]
+    [Test]
+    [Category("IntegrationTest")]
     public async Task SelectedPrn_ReturnsOk_WithoutException_WhenOptionalFieldsAreNull()
     {
         SetupPrnById(CanceledPrnId, CanceledPrn);
@@ -179,8 +179,8 @@ public class PrnMappingContractTests : TestBase
     }
 
     // CSV column headers: all renamed fields should appear under their mapped names
-    [TestMethod]
-    [TestProperty("Category", "IntegrationTest")]
+    [Test]
+    [Category("IntegrationTest")]
     public async Task CsvDownload_ReturnsOk_WithCorrectColumnHeaders()
     {
         SetupPrnOrganisationList([FullyPopulatedPrn]);
@@ -200,8 +200,8 @@ public class PrnMappingContractTests : TestBase
     //   prnNumber    → column 1  (PRN or PERN number)
     //   isExport     → column 2  (PRN or PERN: "PRN" when false, "PERN" when true)
     //   tonnageValue → column 11 (Tonnes)
-    [TestMethod]
-    [TestProperty("Category", "IntegrationTest")]
+    [Test]
+    [Category("IntegrationTest")]
     public async Task CsvDownload_ReturnsOk_WithFieldsMappedToCorrectColumnPositions()
     {
         SetupPrnOrganisationList([FullyPopulatedPrn]);
