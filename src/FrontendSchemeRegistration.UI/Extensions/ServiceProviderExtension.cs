@@ -6,6 +6,7 @@ using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Helpers;
+using FrontendSchemeRegistration.UI.Mappers;
 using FrontendSchemeRegistration.UI.Middleware;
 using FrontendSchemeRegistration.UI.Services;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
@@ -193,7 +194,7 @@ public static class ServiceProviderExtension
         services.AddAutoMapper((serviceProvider, automapper) =>
         {
             automapper.ConstructServicesUsing(serviceProvider.GetRequiredService);
-        }, AppDomain.CurrentDomain.GetAssemblies());
+        }, typeof(PrnModelMapper).Assembly);
         services.AddTransient<UserDataCheckerMiddleware>();
         services.AddSingleton<ICorrelationIdProvider, CorrelationIdProvider>();
         services.AddScoped<IPrnService, PrnService>();
