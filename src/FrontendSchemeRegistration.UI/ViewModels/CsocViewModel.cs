@@ -1,5 +1,6 @@
 namespace FrontendSchemeRegistration.UI.ViewModels;
 
+using Application.Enums;
 using System.Diagnostics.CodeAnalysis;
 
 [ExcludeFromCodeCoverage]
@@ -12,4 +13,5 @@ public class CsocViewModel
     public int ComplianceYear { get; set; }
     public string? UnderstandingObligationsEndpoint { get; set; }
     public bool IsObligationDataSubmitted { get; set; }
+    public ComplianceDeclarationStatus? ComplianceDeclarationStatus { get; set; }
 }

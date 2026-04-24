@@ -1469,6 +1469,146 @@ public class WebApiGatewayClientTests
     }
 
     [Test]
+    public async Task GetComplianceDeclarationStatus_ReturnsLatestStatus_WhenResponseContainsDeclarations()
+    {
+        var year = 2026;
+
+        HttpRequestMessage capturedRequest = null!;
+        var response = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = JsonContent.Create(new OrganisationComplianceDeclarationsModel
+            {
+                ComplianceDeclarations =
+                [
+                    new ComplianceDeclarationModel
+                    {
+                        Created = new DateTimeOffset(2026, 4, 26, 14, 0, 0, TimeSpan.Zero),
+                        Status = ComplianceDeclarationStatus.Cancelled
+                    },
+                    new ComplianceDeclarationModel
+                    {
+                        Created = new DateTimeOffset(2026, 4, 27, 14, 0, 0, TimeSpan.Zero),
+                        Status = ComplianceDeclarationStatus.Submitted
+                    }
+                ]
+            })
+        };
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .Callback<HttpRequestMessage, CancellationToken>((request, _) => capturedRequest = request)
+            .ReturnsAsync(response);
+
+        var result = await _webApiGatewayClient.GetComplianceDeclarationStatus(year);
+
+        result.Should().Be(ComplianceDeclarationStatus.Submitted);
+        capturedRequest.RequestUri.Should().Be($"https://example.com/api/v1/prn/compliance-declarations?obligationYear={year}");
+    }
+
+    [Test]
+    public async Task GetComplianceDeclarationStatus_ReturnsNull_WhenNoDeclarationsReturned()
+    {
+        var response = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = JsonContent.Create(new OrganisationComplianceDeclarationsModel())
+        };
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(response);
+
+        var result = await _webApiGatewayClient.GetComplianceDeclarationStatus(2026);
+
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public void GetComplianceDeclarationStatus_ThrowsException_WhenResponseIsUnsuccessful()
+    {
+        var response = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.InternalServerError
+        };
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(response);
+
+        Assert.ThrowsAsync<HttpRequestException>(() => _webApiGatewayClient.GetComplianceDeclarationStatus(2026));
+    }
+
+    [Test]
+    public async Task GetComplianceDeclarationStatus_ParsesStringStatusAndReturnsLatestByCreated()
+    {
+        var content = new StringContent(
+            """
+            {
+              "complianceDeclarations": [
+                {
+                  "created": "2026-04-26T14:00:00+00:00",
+                  "status": "Cancelled"
+                },
+                {
+                  "created": "2026-04-27T14:00:00+00:00",
+                  "status": "Submitted"
+                }
+              ]
+            }
+            """);
+        content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+        var response = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = content
+        };
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(response);
+
+        var result = await _webApiGatewayClient.GetComplianceDeclarationStatus(2026);
+
+        result.Should().Be(ComplianceDeclarationStatus.Submitted);
+    }
+
+    [Test]
+    public void GetComplianceDeclarationStatus_ThrowsJsonException_WhenPayloadInvalid()
+    {
+        var content = new StringContent("{\"complianceDeclarations\":[{\"created\":\"not-a-date\",\"status\":\"Submitted\"}]}");
+        content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+        var response = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = content
+        };
+
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(response);
+
+        Assert.ThrowsAsync<JsonException>(() => _webApiGatewayClient.GetComplianceDeclarationStatus(2026));
+    }
+
+    [Test]
     public async Task GetSubsidiaryUploadStatus_ReturnsDto_WhenResponseIsSuccessful()
     {
         // Arrange

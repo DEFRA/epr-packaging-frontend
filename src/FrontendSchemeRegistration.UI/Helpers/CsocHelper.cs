@@ -32,7 +32,8 @@ public static class CsocHelper
             ComplianceYear = now.GetComplianceYear(),
             UnderstandingObligationsEndpoint = options.UnderstandingObligationsEndpoint,
             IsObligationDataSubmitted = prnObligationViewModel is not null &&
-                                        prnObligationViewModel.OverallStatus != ObligationStatus.NoDataYet
+                                        prnObligationViewModel.OverallStatus != ObligationStatus.NoDataYet,
+            ComplianceDeclarationStatus = prnObligationViewModel?.ComplianceDeclarationStatus
         };
     }
 }

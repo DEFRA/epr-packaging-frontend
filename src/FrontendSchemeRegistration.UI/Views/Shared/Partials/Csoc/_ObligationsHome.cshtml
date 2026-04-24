@@ -1,25 +1,33 @@
+@using FrontendSchemeRegistration.Application.Enums
 @model CsocViewModel?
 
 @if (Model is not null && Model.IsObligationDataSubmitted)
 {
-    var key = Model switch
+    var actorKey = Model switch
     {
         { IsComplianceScheme: true } => "compliance_scheme",
         { IsDirectProducer: true } => "direct_producer",
         _ => null
     };
 
-    if (key is not null)
+    var statusKey = Model.ComplianceDeclarationStatus switch
+    {
+        ComplianceDeclarationStatus.Submitted => "submitted",
+        ComplianceDeclarationStatus.Cancelled => "cancelled",
+        _ => "submit"
+    };
+
+    if (actorKey is not null)
     {
         <div class="govuk-card govuk-!-margin-bottom-6">
             <div class="govuk-card-body">
-                <h2 class="govuk-heading-m">@Localizer[$"heading_{key}"]</h2>
-                <p class="govuk-body">@string.Format(Localizer[$"paragraph_{key}"].Value, Model.ComplianceYear, Model.SubmissionDeadline)</p>
+                <h2 class="govuk-heading-m">@Localizer[$"{statusKey}_heading_{actorKey}"]</h2>
+                <p class="govuk-body">@string.Format(Localizer[$"{statusKey}_paragraph_{actorKey}"].Value, Model.ComplianceYear, Model.SubmissionDeadline)</p>
                 @if (Model.IsApprovedUser && Model.UnderstandingObligationsEndpoint is not null)
                 {
                     <div class="govuk-button-group">
                         <a class="govuk-button govuk-button--secondary" href="@Model.UnderstandingObligationsEndpoint"
-                           role="button" data-module="govuk-button">@Localizer[$"button_{key}"]</a>
+                           role="button" data-module="govuk-button">@Localizer[$"{statusKey}_button_{actorKey}"]</a>
                     </div>
                 }
             </div>
