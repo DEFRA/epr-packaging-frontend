@@ -3,7 +3,6 @@
 using CsvHelper.Configuration;
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public sealed class ExportOrganisationAllSubsidiariesRowMap : ClassMap<DTOs.Subsidiary.OrganisationSubsidiaryList.RelationshipResponseModel>
 {
     public ExportOrganisationAllSubsidiariesRowMap()

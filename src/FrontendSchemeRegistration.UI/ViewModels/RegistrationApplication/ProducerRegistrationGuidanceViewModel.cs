@@ -3,7 +3,6 @@ using FrontendSchemeRegistration.Application.Enums;
 
 namespace FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
 
-[ExcludeFromCodeCoverage]
 public class ProducerRegistrationGuidanceViewModel : OrganisationNationViewModel
 {
     public bool IsComplianceScheme { get; set; } = false;

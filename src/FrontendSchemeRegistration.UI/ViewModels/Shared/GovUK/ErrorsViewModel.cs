@@ -4,7 +4,6 @@ using Microsoft.Extensions.Localization;
 
 namespace FrontendSchemeRegistration.UI.ViewModels.Shared.GovUK;
 
-[ExcludeFromCodeCoverage]
 public class ErrorsViewModel
 {
     public ErrorsViewModel(List<(string Key, List<ErrorViewModel> Errors)> errors, IStringLocalizer<SharedResources> localizer)

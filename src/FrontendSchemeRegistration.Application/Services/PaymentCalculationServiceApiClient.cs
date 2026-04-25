@@ -9,7 +9,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
 using Options;
 
-[ExcludeFromCodeCoverage]
 public class PaymentCalculationServiceApiClient : IPaymentCalculationServiceApiClient
 {
     private readonly HttpClient _httpClient;

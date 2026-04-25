@@ -2,7 +2,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public record AcceptNominationRequest
 {
     public string Telephone { get; set; }

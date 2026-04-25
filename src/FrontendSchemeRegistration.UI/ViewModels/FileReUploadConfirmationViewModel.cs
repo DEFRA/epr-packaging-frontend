@@ -2,7 +2,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class FileReUploadConfirmationViewModel
 {
     public Guid SubmissionId { get; set; }

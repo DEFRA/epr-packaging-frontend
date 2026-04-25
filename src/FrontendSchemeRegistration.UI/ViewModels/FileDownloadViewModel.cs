@@ -4,7 +4,6 @@ using FrontendSchemeRegistration.UI.Constants;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class FileDownloadViewModel
 {
     [Required]

@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.PaymentCalculations;
 
-[ExcludeFromCodeCoverage]
 public class ComplianceSchemePaymentCalculationResponse
 {
     public int TotalFee { get; set; }

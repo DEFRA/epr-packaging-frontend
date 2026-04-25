@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs;
 
-[ExcludeFromCodeCoverage]
 public class RegistrationValidationError
 {
     public List<ColumnValidationError> ColumnErrors { get; set; }

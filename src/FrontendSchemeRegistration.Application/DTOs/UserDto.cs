@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs;
 
-[ExcludeFromCodeCoverage]
 public class UserDto
 {
     public Guid CustomerId { get; set; }

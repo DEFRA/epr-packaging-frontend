@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 using CsvHelper.Configuration;
 using DTOs;
 
-[ExcludeFromCodeCoverage]
 public class ErrorReportRowMap : ClassMap<ErrorReportRow>
 {
     public ErrorReportRowMap(List<string> optionalHeaders)

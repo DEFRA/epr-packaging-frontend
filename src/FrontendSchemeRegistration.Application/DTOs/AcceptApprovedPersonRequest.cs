@@ -2,8 +2,7 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs
 {
-    [ExcludeFromCodeCoverage]
-    public class AcceptApprovedPersonRequest
+        public class AcceptApprovedPersonRequest
     {
         public string Telephone { get; set; }
 

@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.UI.ViewModels.Privacy;
 
-[ExcludeFromCodeCoverage]
 public class PrivacyViewModel
 {
     public string DataProtectionPublicRegisterUrl { get; set; }

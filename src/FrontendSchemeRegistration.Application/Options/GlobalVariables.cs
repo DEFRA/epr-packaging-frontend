@@ -3,7 +3,6 @@ namespace FrontendSchemeRegistration.Application.Options;
 using System.Diagnostics.CodeAnalysis;
 using DTOs.Submission;
 
-[ExcludeFromCodeCoverage]
 public class GlobalVariables
 {
     public string BasePath { get; set; }

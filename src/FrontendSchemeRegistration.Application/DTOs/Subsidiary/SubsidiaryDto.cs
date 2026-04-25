@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.Subsidiary;
 
-[ExcludeFromCodeCoverage]
 public class SubsidiaryDto
 {
     public OrganisationModel Subsidiary { get; init; }

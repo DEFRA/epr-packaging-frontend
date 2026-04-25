@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 using Application.Enums;
 using Newtonsoft.Json;
 
-[ExcludeFromCodeCoverage]
 public class FileUploadCompanyDetailsSuccessViewModel : ViewModelWithOrganisationRole
 {
     public Guid SubmissionId { get; set; }

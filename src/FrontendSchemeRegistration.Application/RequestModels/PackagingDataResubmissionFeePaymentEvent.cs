@@ -3,8 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace FrontendSchemeRegistration.Application.RequestModels
 {
-    [ExcludeFromCodeCoverage]
-    public class PackagingDataResubmissionFeePaymentEvent   {        
+        public class PackagingDataResubmissionFeePaymentEvent   {        
 
         public Guid? FileId { get; set; }
 

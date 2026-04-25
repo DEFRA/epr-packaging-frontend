@@ -6,7 +6,6 @@ using Application.Enums;
 using Services.RegistrationPeriods;
 using Sessions;
 
-[ExcludeFromCodeCoverage]
 public class RegistrationApplicationViewModel
 {
     public bool IsComplianceScheme { get; set; }

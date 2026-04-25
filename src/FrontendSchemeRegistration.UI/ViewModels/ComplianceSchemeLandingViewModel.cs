@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 using Application.DTOs.ComplianceScheme;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 
-[ExcludeFromCodeCoverage]
 public class ComplianceSchemeLandingViewModel
 {
     public Guid CurrentComplianceSchemeId { get; set; }

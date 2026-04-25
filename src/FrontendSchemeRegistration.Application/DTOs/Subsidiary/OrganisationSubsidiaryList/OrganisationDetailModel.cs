@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.Subsidiary.OrganisationSubsidiaryList;
 
-[ExcludeFromCodeCoverage]
 public class OrganisationDetailModel
 {
     public Guid Id { get; set; }

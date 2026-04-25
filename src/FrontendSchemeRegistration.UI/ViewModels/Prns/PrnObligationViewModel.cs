@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace FrontendSchemeRegistration.UI.ViewModels.Prns;
 
-[ExcludeFromCodeCoverage]
 public class PrnObligationViewModel
 {
     public string OrganisationRole { get; set; }

@@ -2,7 +2,6 @@ namespace FrontendSchemeRegistration.UI.Constants;
 
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public static class FeatureFlags
 {
     public const string ShowLanguageSwitcher = "ShowLanguageSwitcher";

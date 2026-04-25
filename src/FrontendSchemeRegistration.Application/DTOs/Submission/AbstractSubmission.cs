@@ -3,7 +3,6 @@ using FrontendSchemeRegistration.Application.Enums;
 
 namespace FrontendSchemeRegistration.Application.DTOs.Submission;
 
-[ExcludeFromCodeCoverage]
 public abstract class AbstractSubmission
 {
     public Guid Id { get; set; }

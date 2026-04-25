@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.UI.ViewModels;
 
-[ExcludeFromCodeCoverage]
 public class SubsidiaryViewModel
 {
     public SubsidiaryViewModel(string id, string name, string companiesHouseNumber, DateTime? joinerDate)

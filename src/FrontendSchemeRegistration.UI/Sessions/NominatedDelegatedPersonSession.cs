@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.UI.Sessions;
 
-[ExcludeFromCodeCoverage]
 public class NominatedDelegatedPersonSession
 {
     public List<string> Journey { get; set; } = new();

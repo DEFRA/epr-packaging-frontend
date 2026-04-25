@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 
 namespace FrontendSchemeRegistration.Application.DTOs.UserAccount;
 
-[ExcludeFromCodeCoverage]
 public class Organisation
 {
     public Guid Id { get; set; }

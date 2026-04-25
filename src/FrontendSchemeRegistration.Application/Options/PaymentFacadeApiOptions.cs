@@ -2,7 +2,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class PaymentFacadeApiOptions
 {
     public const string ConfigSection = "PaymentFacadeApi";

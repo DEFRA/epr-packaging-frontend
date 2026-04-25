@@ -4,7 +4,6 @@ namespace FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
 
 using Application.Enums;
 
-[ExcludeFromCodeCoverage]
 public class AdditionalInformationViewModel : OrganisationNationViewModel
 {
     public bool IsComplianceScheme { get; set; } = false;

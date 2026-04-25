@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.CompaniesHouse;
 
-[ExcludeFromCodeCoverage]
 public record Organisation
 {
     public string? Name { get; init; }

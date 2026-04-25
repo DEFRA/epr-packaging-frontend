@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.UI.ViewModels;
 
-[ExcludeFromCodeCoverage]
 public class SubsidiaryOrganisationViewModel
 {
     public string Id { get; set; }

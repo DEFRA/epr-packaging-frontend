@@ -8,7 +8,6 @@ using Application.DTOs;
 using Application.DTOs.Submission;
 using Application.Enums;
 
-[ExcludeFromCodeCoverage]
 public class RegistrationApplicationSession
 {
     public string? SubmissionPeriod { get; set; }

@@ -3,7 +3,6 @@ using FrontendSchemeRegistration.Application.Enums;
 
 namespace FrontendSchemeRegistration.Application.DTOs.Submission;
 
-[ExcludeFromCodeCoverage]
 public class SubmissionPeriodDetail
 {
     public string DataPeriod { get; set; }

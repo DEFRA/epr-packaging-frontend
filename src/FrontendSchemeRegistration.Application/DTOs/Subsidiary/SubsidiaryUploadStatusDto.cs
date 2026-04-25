@@ -2,7 +2,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class SubsidiaryUploadStatusDto
 {
     public string Status { get; set; }

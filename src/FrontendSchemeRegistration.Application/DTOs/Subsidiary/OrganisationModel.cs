@@ -4,7 +4,6 @@ using FrontendSchemeRegistration.Application.Enums;
 
 namespace FrontendSchemeRegistration.Application.DTOs.Subsidiary;
 
-[ExcludeFromCodeCoverage]
 public class OrganisationModel
 {
     public OrganisationType OrganisationType { get; set; }

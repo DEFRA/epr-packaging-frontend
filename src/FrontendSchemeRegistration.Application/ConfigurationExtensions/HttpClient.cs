@@ -8,7 +8,6 @@ using Polly;
 using Services;
 using Services.Interfaces;
 
-[ExcludeFromCodeCoverage]
 public static class HttpClient
 {
     public static void AddWebApiGatewayClient(this IServiceCollection services)

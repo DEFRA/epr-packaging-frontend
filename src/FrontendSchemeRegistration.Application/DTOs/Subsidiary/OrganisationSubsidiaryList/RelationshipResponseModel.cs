@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.Subsidiary.OrganisationSubsidiaryList;
 
-[ExcludeFromCodeCoverage]
 public class RelationshipResponseModel
 {
     public Guid? ParentOrganisationExternalId { get; set; }

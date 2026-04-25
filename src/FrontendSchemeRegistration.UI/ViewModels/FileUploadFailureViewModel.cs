@@ -2,7 +2,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class FileUploadFailureViewModel
 {
     public string FileName { get; set; }

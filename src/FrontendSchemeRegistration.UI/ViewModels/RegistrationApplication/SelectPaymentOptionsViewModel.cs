@@ -6,8 +6,7 @@ using FrontendSchemeRegistration.UI.Resources;
 
 namespace FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication
 {
-    [ExcludeFromCodeCoverage]
-    public class SelectPaymentOptionsViewModel
+        public class SelectPaymentOptionsViewModel
     {
         [Required(ErrorMessageResourceName = "please_select_payment_method", ErrorMessageResourceType = typeof(ErrorMessages))]
         public int? PaymentOption { get; set; }

@@ -3,8 +3,7 @@
 	using Microsoft.AspNetCore.Mvc.Rendering;
 	using System.Diagnostics.CodeAnalysis;
 
-	[ExcludeFromCodeCoverage]
-    public class PrnSearchResultListViewModel
+	    public class PrnSearchResultListViewModel
     {
         public string? SearchString { get; set; }
 

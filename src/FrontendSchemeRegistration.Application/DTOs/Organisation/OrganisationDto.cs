@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.Organisation;
 
-[ExcludeFromCodeCoverage]
 public class OrganisationDto
 {
     public int Id { get; set; }

@@ -4,7 +4,6 @@ using FrontendSchemeRegistration.UI.Enums;
 
 namespace FrontendSchemeRegistration.UI.Sessions;
 
-[ExcludeFromCodeCoverage]
 public class RegistrationSession
 {
     public List<string> Journey { get; set; } = new();

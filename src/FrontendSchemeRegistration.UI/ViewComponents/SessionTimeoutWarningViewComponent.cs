@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement;
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class SessionTimeoutWarningViewComponent : ViewComponent
 {
     private readonly IFeatureManager _featureManager;

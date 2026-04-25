@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.CompaniesHouse;
 
-[ExcludeFromCodeCoverage]
 public record CompaniesHouseCompany
 {
     public Organisation? Organisation { get; init; }

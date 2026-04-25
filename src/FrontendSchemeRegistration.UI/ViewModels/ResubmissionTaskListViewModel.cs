@@ -5,7 +5,6 @@ namespace FrontendSchemeRegistration.UI.ViewModels;
 using Application.DTOs.Submission;
 using FrontendSchemeRegistration.UI.Sessions;
 
-[ExcludeFromCodeCoverage]
 public class ResubmissionTaskListViewModel
 {
     public string OrganisationName { get; set; } = string.Empty;

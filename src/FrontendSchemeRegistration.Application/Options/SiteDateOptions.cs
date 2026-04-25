@@ -2,7 +2,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class SiteDateOptions
 {
     public const string ConfigSection = "SiteDates";

@@ -3,7 +3,6 @@ using FrontendSchemeRegistration.Application.Enums;
 
 namespace FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
 
-[ExcludeFromCodeCoverage]
 public class PaymentOptionPayByPhoneViewModel
 {
     public int TotalAmountOutstanding { get; set; }

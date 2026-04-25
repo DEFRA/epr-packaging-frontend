@@ -2,7 +2,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace FrontendSchemeRegistration.Application.DTOs.PaymentCalculations;
 
-[ExcludeFromCodeCoverage]
 public class PaymentInitiationRequest
 {
     public Guid UserId { get; set; }

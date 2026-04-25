@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace FrontendSchemeRegistration.UI.ViewModels;
 
-[ExcludeFromCodeCoverage]
 public class SubsidiaryCompaniesHouseNumberViewModel
 {
     [Required(ErrorMessage = "CompaniesHouseNumber.ErrorMessage")]

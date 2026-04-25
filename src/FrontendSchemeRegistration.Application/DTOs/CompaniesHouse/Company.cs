@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.CompaniesHouse;
 
-[ExcludeFromCodeCoverage]
 public class Company
 {
     public Company()

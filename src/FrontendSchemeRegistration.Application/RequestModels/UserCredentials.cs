@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.RequestModels;
 
-[ExcludeFromCodeCoverage]
 public class UserCredentials
 {
     public UserCredentials(string username, string password)

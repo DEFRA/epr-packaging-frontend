@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.Submission;
 
-[ExcludeFromCodeCoverage]
 public class SynapseResponse
 {
     public bool IsFileSynced { get; set; }

@@ -4,7 +4,6 @@ namespace FrontendSchemeRegistration.Application.DTOs.Submission;
 
 using Enums;
 
-[ExcludeFromCodeCoverage]
 public class RegistrationApplicationPayload
 {
     public string? ApplicationReferenceNumber { get; set; }

@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.RequestModels;
 
-[ExcludeFromCodeCoverage]
 public class ReasonForRemovalRequestModel
 {
     public string Code { get; set; }
