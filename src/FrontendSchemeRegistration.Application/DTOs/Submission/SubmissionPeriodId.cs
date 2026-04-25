@@ -2,8 +2,7 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.Submission
 {
-    [ExcludeFromCodeCoverage]
-    public class SubmissionPeriodId
+        public class SubmissionPeriodId
     {
         public Guid SubmissionId { get; set; }
 

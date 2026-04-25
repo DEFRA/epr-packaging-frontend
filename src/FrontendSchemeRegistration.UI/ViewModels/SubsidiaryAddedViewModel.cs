@@ -2,7 +2,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class SubsidiaryAddedViewModel
 {
     public string OrganisationId { get; set; }

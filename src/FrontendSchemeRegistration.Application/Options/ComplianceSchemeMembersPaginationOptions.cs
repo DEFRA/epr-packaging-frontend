@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.Options;
 
-[ExcludeFromCodeCoverage]
 public class ComplianceSchemeMembersPaginationOptions
 {
     public const string ConfigSection = "ComplianceSchemeMembersPagination";

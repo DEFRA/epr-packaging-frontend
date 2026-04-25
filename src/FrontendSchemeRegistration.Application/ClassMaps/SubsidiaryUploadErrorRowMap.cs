@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace FrontendSchemeRegistration.Application.ClassMaps;
 
-[ExcludeFromCodeCoverage]
 public class SubsidiaryUploadErrorRowMap : ClassMap<SubsidiaryUploadErrorRow>
 {
     public SubsidiaryUploadErrorRowMap()

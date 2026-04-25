@@ -6,7 +6,6 @@ namespace FrontendSchemeRegistration.UI.ViewModels;
 using Application.DTOs.ComplianceScheme;
 using Shared;
 
-[ExcludeFromCodeCoverage]
 public class HomePageSelfManagedViewModel
 {
     public string OrganisationName { get; set; } = string.Empty;
@@ -34,7 +33,6 @@ public class HomePageSelfManagedViewModel
     public CsocViewModel? CsocViewModel { get; set; }
 }
 
-[ExcludeFromCodeCoverage]
 public class RegisterYourMembersViewModel
 {
     public string RegisterYourMembersLink = "MembersRegistrationSubmissionPeriodSelection";

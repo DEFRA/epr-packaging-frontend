@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs;
 
-[ExcludeFromCodeCoverage]
 public class RegistrationErrorReportRow
 {
     public string Row { get; set; }

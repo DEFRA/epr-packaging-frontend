@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.Options;
 
-[ExcludeFromCodeCoverage]
 public class CachingOptions
 {
     public const string ConfigSection = "Caching";

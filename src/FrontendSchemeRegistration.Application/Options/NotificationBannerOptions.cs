@@ -2,7 +2,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public sealed record NotificationBannerOptions
 {
     public const string Section = "FeatureOptions:NotificationBanner";

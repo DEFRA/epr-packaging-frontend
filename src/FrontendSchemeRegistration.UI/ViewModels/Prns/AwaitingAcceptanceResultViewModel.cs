@@ -2,8 +2,7 @@
 
 namespace FrontendSchemeRegistration.UI.ViewModels.Prns
 {
-    [ExcludeFromCodeCoverage]
-    public class AwaitingAcceptanceResultViewModel : BasePrnViewModel
+        public class AwaitingAcceptanceResultViewModel : BasePrnViewModel
     {
         public bool IsSelected { get; set; }
     }

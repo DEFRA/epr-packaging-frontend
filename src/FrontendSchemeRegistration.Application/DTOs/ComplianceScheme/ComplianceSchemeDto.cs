@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.ComplianceScheme;
 
-[ExcludeFromCodeCoverage]
 public class ComplianceSchemeDto
 {
     public int RowNumber { get; set; }

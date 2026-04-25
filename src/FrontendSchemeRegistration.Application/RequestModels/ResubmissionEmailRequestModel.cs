@@ -3,8 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace FrontendSchemeRegistration.Application.RequestModels
 {
-    [ExcludeFromCodeCoverage]
-    public class ResubmissionEmailRequestModel
+        public class ResubmissionEmailRequestModel
     {
         [Required]
         public int NationId { get; set; }

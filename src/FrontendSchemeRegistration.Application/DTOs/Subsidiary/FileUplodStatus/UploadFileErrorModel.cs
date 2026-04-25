@@ -2,8 +2,7 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.Subsidiary.FileUploadStatus
 {
-    [ExcludeFromCodeCoverage]
-    public class UploadFileErrorModel
+        public class UploadFileErrorModel
     {
         public int FileLineNumber { get; set; }
 

@@ -2,8 +2,7 @@
 
 namespace FrontendSchemeRegistration.UI
 {
-    [ExcludeFromCodeCoverage]
-    public class PrnDataResources
+        public class PrnDataResources
     {
     }
     
@@ -11,8 +10,7 @@ namespace FrontendSchemeRegistration.UI
     /// Fibre has a launch date after which point translations should change,
     /// yet the name/key being translated remains the same. Please see usages.
     /// </summary>
-    [ExcludeFromCodeCoverage]
-    public class PrnDataResourcesPostFibre
+        public class PrnDataResourcesPostFibre
     {
     }
 }

@@ -2,7 +2,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class CookieDetailViewModel
 {
     public bool CookiesAccepted { get; set; }

@@ -2,8 +2,7 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.Subsidiary.FileUploadStatus
 {
-    [ExcludeFromCodeCoverage]
-    public class UploadFileErrorResponse
+        public class UploadFileErrorResponse
     {
         public string Status { get; set; }
         public int? RowsAdded { get; set; }

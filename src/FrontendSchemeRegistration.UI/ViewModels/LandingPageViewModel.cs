@@ -2,7 +2,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class LandingPageViewModel
 {
     public Guid OrganisationId { get; set; }

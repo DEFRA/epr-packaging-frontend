@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.UI.ViewModels.Shared;
 
-[ExcludeFromCodeCoverage]
 public class NavigationModel
 {
     public string LocalizerKey { get; set; }

@@ -61,8 +61,7 @@ public class FrontendSchemeRegistrationController(
     [HttpGet]
     [Route(PagePaths.LandingPage)]
     [AuthorizeForScopes(ScopeKeySection = "FacadeAPI:DownstreamScope")]
-    [ExcludeFromCodeCoverage]
-    public async Task<IActionResult> LandingPage()
+        public async Task<IActionResult> LandingPage()
     {
         var userData = User.GetUserData();
 
@@ -106,8 +105,7 @@ public class FrontendSchemeRegistrationController(
     [HttpPost]
     [Authorize(Policy = PolicyConstants.EprSelectSchemePolicy)]
     [Route(PagePaths.LandingPage)]
-    [ExcludeFromCodeCoverage]
-    public async Task<IActionResult> LandingPage(LandingPageViewModel model)
+        public async Task<IActionResult> LandingPage(LandingPageViewModel model)
     {
         if (!ModelState.IsValid)
         {
@@ -255,8 +253,7 @@ public class FrontendSchemeRegistrationController(
     [HttpPost]
     [Authorize(Policy = PolicyConstants.EprSelectSchemePolicy)]
     [Route(PagePaths.ComplianceSchemeSelectionConfirmation)]
-    [ExcludeFromCodeCoverage]
-    public async Task<IActionResult> ConfirmComplianceScheme(ComplianceSchemeConfirmationViewModel model)
+        public async Task<IActionResult> ConfirmComplianceScheme(ComplianceSchemeConfirmationViewModel model)
     {
         var session = await sessionManager.GetSessionAsync(HttpContext.Session);
         var userData = User.GetUserData();
@@ -417,8 +414,7 @@ public class FrontendSchemeRegistrationController(
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
     [Route(PagePaths.HomePageSelfManaged)]
-    [ExcludeFromCodeCoverage]
-    public async Task<IActionResult> VisitHomePageSelfManaged()
+        public async Task<IActionResult> VisitHomePageSelfManaged()
     {
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];

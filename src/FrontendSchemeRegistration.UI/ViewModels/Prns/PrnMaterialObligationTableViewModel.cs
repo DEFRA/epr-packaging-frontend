@@ -3,7 +3,6 @@
 namespace FrontendSchemeRegistration.UI.ViewModels.Prns;
 
 // for rendering partial view Views\Shared\Partials\Prns\_prnMaterialTable.cshtml
-[ExcludeFromCodeCoverage]
 public class PrnMaterialObligationTableViewModel
 {
     public string TableCaption { get; set; }

@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.RequestModels;
 
-[ExcludeFromCodeCoverage]
 public class RemoveComplianceSchemeRequestModel
 {
     public Guid SelectedSchemeId { get; set; }

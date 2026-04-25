@@ -2,7 +2,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class WebApiOptions
 {
     public const string ConfigSection = "WebAPI";

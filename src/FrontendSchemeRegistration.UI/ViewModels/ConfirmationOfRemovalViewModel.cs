@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.UI.ViewModels;
 
-[ExcludeFromCodeCoverage]
 public class ConfirmationOfRemovalViewModel
 {
     public string OrganisationName { get; set; }

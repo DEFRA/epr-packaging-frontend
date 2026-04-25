@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using Resources;
 
-[ExcludeFromCodeCoverage]
 public class ConfirmRemovalViewModel
 {
     public string OrganisationName { get; set; }

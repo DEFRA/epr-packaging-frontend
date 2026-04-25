@@ -2,7 +2,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class ValidationOptions
 {
     public const string ConfigSection = "Validation";

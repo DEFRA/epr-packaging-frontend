@@ -2,8 +2,7 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.ComplianceSchemeMember
 {
-    [ExcludeFromCodeCoverage]
-    public record ComplianceSchemeMemberDetails
+        public record ComplianceSchemeMemberDetails
     {
         public string OrganisationName { get; set; }
 

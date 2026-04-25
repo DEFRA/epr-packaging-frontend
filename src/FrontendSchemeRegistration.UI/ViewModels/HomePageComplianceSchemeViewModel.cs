@@ -2,7 +2,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class HomePageComplianceSchemeViewModel
 {
     public string ComplianceSchemeName { get; set; }

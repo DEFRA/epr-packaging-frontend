@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.CompaniesHouse;
 
-[ExcludeFromCodeCoverage]
 public record OrganisationData
 {
     public DateTime? DateOfCreation { get; init; }

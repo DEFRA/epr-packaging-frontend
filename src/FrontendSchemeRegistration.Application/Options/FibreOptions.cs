@@ -3,7 +3,6 @@ namespace FrontendSchemeRegistration.Application.Options;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
-[ExcludeFromCodeCoverage]
 public class FibreOptions
 {
     public const string ConfigSection = "Fibre";

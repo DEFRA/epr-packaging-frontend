@@ -7,8 +7,7 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
     /// Collection of PRNs and PERNs, typically associated with a single
     /// Packaging Producer or Compliance Scheme.
     /// </summary>
-    [ExcludeFromCodeCoverage]
-    public class PrnListViewModel
+        public class PrnListViewModel
     {
         public string FilterBy { get; set; }
 

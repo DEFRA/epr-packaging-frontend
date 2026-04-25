@@ -35,8 +35,7 @@ public class ComplianceSchemeLandingController(
     : Controller
 {
     [HttpGet]
-    [ExcludeFromCodeCoverage]
-    public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get()
     {
         var regSession = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
         Guid? selectedComplianceSchemeId = regSession.RegistrationSession.SelectedComplianceScheme?.Id;

@@ -2,7 +2,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class RedisOptions
 {
     public const string ConfigSection = "Redis";

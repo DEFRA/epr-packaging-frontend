@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace FrontendSchemeRegistration.Application.DTOs.Subsidiary;
 
-[ExcludeFromCodeCoverage]
 public class AddressModel
 {
     [MaxLength(100)]

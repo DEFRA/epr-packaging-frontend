@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.Submission;
 
-[ExcludeFromCodeCoverage]
 public class PomDecision : AbstractDecision
 {
     public string Comments { get; set; } = string.Empty;

@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using Application.Enums;
 using Resources;
 
-[ExcludeFromCodeCoverage]
 public class FileUploadWarningViewModel
 {
     public string FileName { get; set; }

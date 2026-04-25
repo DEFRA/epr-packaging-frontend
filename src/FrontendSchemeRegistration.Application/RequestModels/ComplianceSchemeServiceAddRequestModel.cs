@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.RequestModels;
 
-[ExcludeFromCodeCoverage]
 public class ComplianceSchemeServiceAddRequestModel
 {
     public Guid OrganisationId { get; set; }

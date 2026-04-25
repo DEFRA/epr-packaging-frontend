@@ -2,7 +2,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class InviteChangePermissionsViewModel
 {
     public Guid Id { get; set; }

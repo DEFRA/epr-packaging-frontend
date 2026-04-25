@@ -2,7 +2,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class PhaseBannerOptions
 {
     public const string Section = "PhaseBanner";

@@ -2,7 +2,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class SubsidiaryUploadErrorRow
 {
     public string OrganisationId { get; set; }

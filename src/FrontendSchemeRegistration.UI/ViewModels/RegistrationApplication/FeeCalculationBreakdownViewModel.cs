@@ -3,7 +3,6 @@ using FrontendSchemeRegistration.Application.DTOs.Submission;
 
 namespace FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
 
-[ExcludeFromCodeCoverage]
 public class FeeCalculationBreakdownViewModel
 {
     public string OrganisationSize { get; set; } = "large";

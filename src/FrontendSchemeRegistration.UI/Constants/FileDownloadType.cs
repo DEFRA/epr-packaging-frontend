@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.UI.Constants;
 
-[ExcludeFromCodeCoverage]
 public static class FileDownloadType
 {
     public const string Upload = "upload";

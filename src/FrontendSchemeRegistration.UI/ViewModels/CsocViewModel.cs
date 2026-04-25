@@ -2,7 +2,6 @@ namespace FrontendSchemeRegistration.UI.ViewModels;
 
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class CsocViewModel
 {
     public bool IsApprovedUser { get; set; }

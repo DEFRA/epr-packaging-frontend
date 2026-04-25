@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.StubAuthentication;
 
-[ExcludeFromCodeCoverage]
 [Route("")]
 public class ServicesController(IStubAuthenticationService stubAuthenticationService, IWebHostEnvironment webHostEnvironment) : Controller
 {
@@ -64,7 +63,6 @@ public class ServicesController(IStubAuthenticationService stubAuthenticationSer
     }
 }
 
-[ExcludeFromCodeCoverage]
 public class SignedInAccountViewModel
 {
     public string Email { get; set; }
@@ -72,13 +70,11 @@ public class SignedInAccountViewModel
     public string ReturnUrl { get; set; }
 }
 
-[ExcludeFromCodeCoverage]
 public class StubAuthenticationViewModel : StubAuthUserDetails
 {
     public string ReturnUrl { get; set; }
 }
 
-[ExcludeFromCodeCoverage]
 public static class StubAuthRouteNames
 {
     public const string SignedIn = "signedin";

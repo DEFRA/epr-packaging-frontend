@@ -2,7 +2,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class HttpClientOptions
 {
     public const string ConfigSection = "HttpClient";

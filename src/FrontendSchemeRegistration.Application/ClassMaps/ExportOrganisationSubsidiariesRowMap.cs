@@ -4,7 +4,6 @@ using CsvHelper.Configuration;
 using DTOs.Subsidiary;
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public sealed class ExportOrganisationSubsidiariesRowMap : ClassMap<ExportOrganisationSubsidiariesResponseModel>
 {
     public ExportOrganisationSubsidiariesRowMap(bool includeSubsidiaryJoinerAndLeaverColumns)

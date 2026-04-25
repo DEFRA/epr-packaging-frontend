@@ -9,7 +9,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
 using Options;
 
-[ExcludeFromCodeCoverage]
 public class AccountServiceApiClient : IAccountServiceApiClient
 {
     private const string EprOrganisationHeader = "X-EPR-Organisation";

@@ -7,7 +7,6 @@ using EPR.Common.Authorization.Extensions;
 using EPR.Common.Authorization.Models;
 using Microsoft.AspNetCore.Http;
 
-[ExcludeFromCodeCoverage]
 public static class HttpContextExtensions
 {
     public const string DefraIdentityName = "Defra.Identity";

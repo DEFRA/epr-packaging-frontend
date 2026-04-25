@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.PaymentCalculations;
 
-[ExcludeFromCodeCoverage]
 public class ComplianceSchemePaymentCalculationResponseMember
 {
     public string MemberId { get; set; }

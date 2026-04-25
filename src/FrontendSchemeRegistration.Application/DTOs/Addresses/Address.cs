@@ -3,7 +3,6 @@ using FrontendSchemeRegistration.Application.DTOs.CompaniesHouse;
 
 namespace FrontendSchemeRegistration.Application.DTOs.Addresses;
 
-[ExcludeFromCodeCoverage]
 public class Address
 {
     public Address()

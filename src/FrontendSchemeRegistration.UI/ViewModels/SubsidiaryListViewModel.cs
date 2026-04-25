@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.UI.ViewModels;
 
-[ExcludeFromCodeCoverage]
 public class SubsidiaryListViewModel
 {
     public List<SubsidiaryOrganisationViewModel> Organisations { get; set; }

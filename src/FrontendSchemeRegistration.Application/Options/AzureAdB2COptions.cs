@@ -2,7 +2,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class AzureAdB2COptions
 {
     public const string ConfigSection = "AzureAdB2C";

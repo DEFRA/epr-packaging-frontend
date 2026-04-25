@@ -3,7 +3,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class NominationAcceptanceModel
 {
     public Guid? EnrolmentId { get; set; }

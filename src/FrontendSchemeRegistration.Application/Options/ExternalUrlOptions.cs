@@ -2,7 +2,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class ExternalUrlOptions
 {
     public const string ConfigSection = "ExternalUrls";

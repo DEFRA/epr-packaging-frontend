@@ -2,7 +2,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class MsalOptions
 {
     public const string ConfigSection = "MSAL";

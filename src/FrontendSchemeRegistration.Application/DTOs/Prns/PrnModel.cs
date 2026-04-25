@@ -2,8 +2,7 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.Prns
 {
-    [ExcludeFromCodeCoverage]
-    public class PrnModel
+        public class PrnModel
     {
         public int Id { get; set; }
 

@@ -2,7 +2,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class ComplianceSchemeMemberLandingViewModel
 {
     public string ComplianceSchemeName { get; set; }

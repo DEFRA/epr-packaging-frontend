@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs;
 
-[ExcludeFromCodeCoverage]
 public class DelegatedPersonNominatorDto
 {
     public string FirstName { get; set; }

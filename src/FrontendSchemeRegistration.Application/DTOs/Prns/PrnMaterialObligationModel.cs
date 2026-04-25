@@ -2,8 +2,7 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.Prns
 {
-	[ExcludeFromCodeCoverage]
-	public class PrnMaterialObligationModel
+		public class PrnMaterialObligationModel
 	{
 		public Guid OrganisationId { get; set; }
 

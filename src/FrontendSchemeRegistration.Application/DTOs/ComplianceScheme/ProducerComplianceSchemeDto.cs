@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.ComplianceScheme;
 
-[ExcludeFromCodeCoverage]
 public class ProducerComplianceSchemeDto
 {
     public Guid SelectedSchemeId { get; set; }
