@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace FrontendSchemeRegistration.UI.ViewModels.Prns
 {
-        public class SearchPrnsViewModel
+    public class SearchPrnsViewModel
     {
         public int Page
         {

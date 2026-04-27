@@ -3,7 +3,7 @@ using FrontendSchemeRegistration.Application.DTOs.Submission;
 
 namespace FrontendSchemeRegistration.UI.ViewModels
 {
-        public class FileUploadSubmissionHistoryPeriodViewModel
+    public class FileUploadSubmissionHistoryPeriodViewModel
     {
         public string SubmissionPeriod { get; set; }
 

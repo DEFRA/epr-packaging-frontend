@@ -2,7 +2,7 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.PaymentCalculations
 {
-        public class ProducerPaymentCalculationV2Request : PaymentCalculationRequest
+    public class ProducerPaymentCalculationV2Request : PaymentCalculationRequest
     {
         public Guid FileId { get; set; }
         public Guid ExternalId { get; set; }

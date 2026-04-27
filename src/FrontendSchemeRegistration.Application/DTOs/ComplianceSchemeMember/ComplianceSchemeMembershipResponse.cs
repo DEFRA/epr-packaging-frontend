@@ -2,7 +2,7 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.ComplianceSchemeMember
 {
-        public class ComplianceSchemeMembershipResponse
+    public class ComplianceSchemeMembershipResponse
     {
         public PaginatedResponse<ComplianceSchemeMemberDto> PagedResult { get; set; }
 

@@ -2,7 +2,7 @@
 
 namespace FrontendSchemeRegistration.UI.ViewModels
 {
-        public class SubFileUploadingViewModel
+    public class SubFileUploadingViewModel
     {
         public string? SubmissionId { get; set; }
 

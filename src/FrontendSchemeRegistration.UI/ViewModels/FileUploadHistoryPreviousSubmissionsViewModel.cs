@@ -2,7 +2,7 @@
 
 namespace FrontendSchemeRegistration.UI.ViewModels
 {
-        public class FileUploadHistoryPreviousSubmissionsViewModel
+    public class FileUploadHistoryPreviousSubmissionsViewModel
     {
         public List<int> Years { get; set; }
 

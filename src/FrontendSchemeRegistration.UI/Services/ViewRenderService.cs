@@ -9,7 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace FrontendSchemeRegistration.UI.Services
 {
-        public class ViewRenderService : IViewRenderService
+    public class ViewRenderService : IViewRenderService
     {
         private readonly IRazorViewEngine _viewEngine;
         private readonly IHttpContextAccessor _httpContextAccessor;

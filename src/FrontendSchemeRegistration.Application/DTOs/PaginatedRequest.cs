@@ -2,7 +2,7 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs
 {
-        public class PaginatedRequest
+    public class PaginatedRequest
     {
         public int Page { get; set; } = 1;
 

@@ -2,7 +2,7 @@
 
 namespace FrontendSchemeRegistration.UI.ViewModels
 {
-        public class SchemeMembersModel
+    public class SchemeMembersModel
     {
         public Guid Id { get; set; }
 

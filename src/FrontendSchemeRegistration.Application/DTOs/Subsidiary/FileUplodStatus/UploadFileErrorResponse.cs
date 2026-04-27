@@ -2,7 +2,7 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.Subsidiary.FileUploadStatus
 {
-        public class UploadFileErrorResponse
+    public class UploadFileErrorResponse
     {
         public string Status { get; set; }
         public int? RowsAdded { get; set; }

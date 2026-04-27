@@ -2,7 +2,7 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.PaymentCalculations
 {
-        public class PaymentCalculationRequest
+    public class PaymentCalculationRequest
     {
         public string ProducerType { get; set; }
 

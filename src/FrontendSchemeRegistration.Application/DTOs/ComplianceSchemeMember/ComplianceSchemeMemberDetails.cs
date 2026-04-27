@@ -2,7 +2,7 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.ComplianceSchemeMember
 {
-        public record ComplianceSchemeMemberDetails
+    public record ComplianceSchemeMemberDetails
     {
         public string OrganisationName { get; set; }
 

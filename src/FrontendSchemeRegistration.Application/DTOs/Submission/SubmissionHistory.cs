@@ -2,7 +2,7 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.Submission
 {
-        public class SubmissionHistory
+    public class SubmissionHistory
     {
         public Guid SubmissionId { get; set; }
 

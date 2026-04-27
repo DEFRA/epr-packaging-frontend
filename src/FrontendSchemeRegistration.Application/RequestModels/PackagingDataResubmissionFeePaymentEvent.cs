@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace FrontendSchemeRegistration.Application.RequestModels
 {
-        public class PackagingDataResubmissionFeePaymentEvent   {        
+    public class PackagingDataResubmissionFeePaymentEvent   {
 
         public Guid? FileId { get; set; }
 

@@ -2,7 +2,7 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.Prns
 {
-        public class PrnModel
+    public class PrnModel
     {
         public int Id { get; set; }
 

@@ -9,9 +9,9 @@ trigger:
 parameters:
 
   - name: sonarqubeInstance
-    displayName: 'SonarQube service connection / endpoint'
+    displayName: 'Select SonarQube version'
     type: string
-    default: 'https://vss-sonarqube-test.azure.defra.cloud/'
+    default: 'SonarQube'
     values:
       - 'SonarQube'
       - 'SonarQubeTest'

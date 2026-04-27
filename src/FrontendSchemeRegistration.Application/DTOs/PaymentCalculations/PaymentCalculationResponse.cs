@@ -4,7 +4,7 @@ namespace FrontendSchemeRegistration.Application.DTOs.PaymentCalculations
 {
     using System.Text.Json.Serialization;
 
-        public class PaymentCalculationResponse
+    public class PaymentCalculationResponse
     {
         public int ProducerRegistrationFee { get; set; }
         public int ProducerOnlineMarketPlaceFee { get; set; }
@@ -16,7 +16,7 @@ namespace FrontendSchemeRegistration.Application.DTOs.PaymentCalculations
         public SubsidiariesFeeBreakdown SubsidiariesFeeBreakdown { get; set; }
     }
 
-        public class SubsidiariesFeeBreakdown
+    public class SubsidiariesFeeBreakdown
     {
         [JsonPropertyName("totalSubsidiariesOMPFees")]
         public int TotalSubsidiariesOnlineMarketplaceFee { get; set; }
@@ -30,7 +30,7 @@ namespace FrontendSchemeRegistration.Application.DTOs.PaymentCalculations
         public FeeBreakdown[] FeeBreakdowns { get; set; }
     }
 
-        public class FeeBreakdown
+    public class FeeBreakdown
     {
         public int BandNumber { get; set; }
         public int UnitCount { get; set; }

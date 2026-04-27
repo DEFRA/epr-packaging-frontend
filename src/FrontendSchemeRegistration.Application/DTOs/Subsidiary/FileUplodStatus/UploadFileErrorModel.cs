@@ -2,7 +2,7 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.Subsidiary.FileUploadStatus
 {
-        public class UploadFileErrorModel
+    public class UploadFileErrorModel
     {
         public int FileLineNumber { get; set; }
 

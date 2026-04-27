@@ -2,7 +2,7 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs
 {
-        public class AcceptApprovedPersonRequest
+    public class AcceptApprovedPersonRequest
     {
         public string Telephone { get; set; }
 

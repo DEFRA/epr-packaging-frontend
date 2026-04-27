@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace FrontendSchemeRegistration.Application.RequestModels
 {
-        public class ResubmissionEmailRequestModel
+    public class ResubmissionEmailRequestModel
     {
         [Required]
         public int NationId { get; set; }

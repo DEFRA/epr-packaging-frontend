@@ -2,7 +2,7 @@
 
 namespace FrontendSchemeRegistration.UI
 {
-        public class PrnCsvResources
+    public class PrnCsvResources
     {
     }
 }

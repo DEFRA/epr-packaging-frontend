@@ -2,7 +2,7 @@
 
 namespace FrontendSchemeRegistration.UI.ViewModels
 {
-        public class SubsidiaryFileUploadSuccessViewModel
+    public class SubsidiaryFileUploadSuccessViewModel
     {
         public int RecordsAdded { get; set; }
 

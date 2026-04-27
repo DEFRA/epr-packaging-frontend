@@ -2,7 +2,7 @@
 
 namespace FrontendSchemeRegistration.UI.ViewModels.GovUk
 {
-        public class ErrorViewModel
+    public class ErrorViewModel
     {
         public string Key { get; set; }
 

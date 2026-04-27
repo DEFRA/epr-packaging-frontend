@@ -3,7 +3,7 @@ using FrontendSchemeRegistration.Application.Enums;
 
 namespace FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication
 {
-        public class PaymentOptionPayByBankTransferViewModel : OrganisationNationViewModel
+    public class PaymentOptionPayByBankTransferViewModel : OrganisationNationViewModel
     {
         public bool IsComplianceScheme { get; set; } = false;
 

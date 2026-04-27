@@ -5,7 +5,7 @@ namespace FrontendSchemeRegistration.Application.Options
     /// <summary>
     /// Allows the current date to be set to facilitate tesing of PRNs.
     /// </summary>
-        public class PrnOptions
+    public class PrnOptions
     {
         public int Year { get; set; }
 

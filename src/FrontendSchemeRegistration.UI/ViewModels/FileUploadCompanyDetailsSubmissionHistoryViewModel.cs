@@ -2,7 +2,7 @@
 
 namespace FrontendSchemeRegistration.UI.ViewModels
 {
-        public class FileUploadCompanyDetailsSubmissionHistoryViewModel
+    public class FileUploadCompanyDetailsSubmissionHistoryViewModel
     {
         public bool PreviousSubmissionHistoryExists { get; set; }
 

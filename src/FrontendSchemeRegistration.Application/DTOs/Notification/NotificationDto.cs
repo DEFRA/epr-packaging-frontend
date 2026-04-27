@@ -2,7 +2,7 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.Notification
 {
-        public class NotificationDto
+    public class NotificationDto
     {
         public string Type { get; set; }
 

@@ -2,7 +2,7 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.Notification
 {
-        public class NotificationsResponse
+    public class NotificationsResponse
     {
         public List<NotificationDto> Notifications { get; set; }
     }

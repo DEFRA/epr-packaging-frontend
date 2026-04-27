@@ -3,7 +3,7 @@ using FrontendSchemeRegistration.Application.DTOs.Subsidiary.OrganisationSubsidi
 
 namespace FrontendSchemeRegistration.Application.DTOs.ComplianceSchemeMember
 {
-        public class ComplianceSchemeMemberDto
+    public class ComplianceSchemeMemberDto
     {
         public Guid SelectedSchemeOrganisationExternalId { get; set; }
 
