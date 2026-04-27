@@ -287,7 +287,7 @@ Read the guidance about how to create your organisation details file. Once youâ€
     <value>Organisation ID is not linked to your compliance scheme. Check the organisation ID for all rows for this organisation.</value>
   </data>
   <data name="60" xml:space="preserve">
-    <value>Check the packaging material weight for all rows for this organisation. If the total for the reporting year is between 25,000kg and 50,000kg, this organisation may only need to register as a small organisation in the following year.</value>
+    <value>The total packaging weight reported appears to be below 25,000kg, which is the threshold for a small producer. Check the packaging material weight for all rows for this organisation. You can still submit if the figure is correct.</value>
   </data>
   <data name="61" xml:space="preserve">
     <value>Packaging weight for this organisation has been entered as zero - please check this is correct before submitting a zero return</value>
