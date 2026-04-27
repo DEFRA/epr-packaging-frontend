@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.PaymentCalculations;
 
-[ExcludeFromCodeCoverage]
 public class ComplianceSchemePaymentCalculationRequest
 {
     public string Regulator { get; set; }

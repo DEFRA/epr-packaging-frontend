@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 using CsvHelper.Configuration;
 using DTOs;
 
-[ExcludeFromCodeCoverage]
 public class RegistrationErrorReportRowMap : ClassMap<RegistrationErrorReportRow>
 {
     public RegistrationErrorReportRowMap()

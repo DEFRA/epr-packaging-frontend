@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.CompaniesHouse;
 
-[ExcludeFromCodeCoverage]
 public record RegisteredOfficeAddress
 {
     public string? SubBuildingName { get; init; }

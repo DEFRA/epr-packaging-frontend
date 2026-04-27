@@ -6,7 +6,6 @@ namespace FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
 
 using Application.Enums;
 
-[ExcludeFromCodeCoverage]
 public class RegistrationTaskListViewModel
 {
     public bool IsResubmission { get; set; }

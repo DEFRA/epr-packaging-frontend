@@ -3,7 +3,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Application.Enums;
 
-[ExcludeFromCodeCoverage]
 public class FileUploadErrorsViewModel
 {
     public int ErrorCount { get; set; }

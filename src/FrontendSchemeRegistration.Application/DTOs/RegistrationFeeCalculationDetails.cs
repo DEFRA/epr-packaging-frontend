@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs;
 
-[ExcludeFromCodeCoverage]
 public class RegistrationFeeCalculationDetails
 {
     public string OrganisationId { get; set; }

@@ -5,7 +5,6 @@ using System.Security.Claims;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authentication.OAuth.Claims;
 
-[ExcludeFromCodeCoverage]
 public class CorrelationClaimAction : ClaimAction
 {
     public const string CorrelationClaimType = "correlationId";

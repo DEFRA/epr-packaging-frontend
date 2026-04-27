@@ -3,7 +3,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Application.DTOs.Submission;
 
-[ExcludeFromCodeCoverage]
 public class UploadNewFileToSubmitViewModel : ViewModelWithOrganisationRole
 {
     public Status Status { get; set; }

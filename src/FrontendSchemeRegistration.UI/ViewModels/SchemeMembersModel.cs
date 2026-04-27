@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.UI.ViewModels
 {
-    [ExcludeFromCodeCoverage]
     public class SchemeMembersModel
     {
         public Guid Id { get; set; }

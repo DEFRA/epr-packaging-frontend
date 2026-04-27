@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace FrontendSchemeRegistration.UI.ViewModels
 {
-    [ExcludeFromCodeCoverage]
     public class SubsidiaryConfirmRemovalViewModel
     {
         [Required(ErrorMessageResourceName = "select_yes_to_remove_this_subsidiary", ErrorMessageResourceType = typeof(ErrorMessages))]

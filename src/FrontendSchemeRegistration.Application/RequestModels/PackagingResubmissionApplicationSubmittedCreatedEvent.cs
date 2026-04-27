@@ -2,9 +2,8 @@
 
 namespace FrontendSchemeRegistration.Application.RequestModels
 {
-    [ExcludeFromCodeCoverage]
-    public class PackagingResubmissionApplicationSubmittedCreatedEvent  
-    { 
+    public class PackagingResubmissionApplicationSubmittedCreatedEvent
+    {
         public Guid? FileId { get; set; }
 
         public bool? IsResubmitted { get; set; }

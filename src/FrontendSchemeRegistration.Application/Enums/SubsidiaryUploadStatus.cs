@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.Enums;
 
-[ExcludeFromCodeCoverage]
 public static class SubsidiaryUploadStatus
 {
     public const string Uploading = "Uploading";

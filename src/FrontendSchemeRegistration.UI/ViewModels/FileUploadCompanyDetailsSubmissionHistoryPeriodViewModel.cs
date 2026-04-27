@@ -3,7 +3,6 @@ using FrontendSchemeRegistration.Application.DTOs.Submission;
 
 namespace FrontendSchemeRegistration.UI.ViewModels
 {
-    [ExcludeFromCodeCoverage]
     public class FileUploadCompanyDetailsSubmissionHistoryPeriodViewModel
     {
         public string SubmissionPeriod { get; set; }

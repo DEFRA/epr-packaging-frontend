@@ -2,7 +2,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class AccountsFacadeApiOptions
 {
     public const string ConfigSection = "AccountsFacadeAPI";

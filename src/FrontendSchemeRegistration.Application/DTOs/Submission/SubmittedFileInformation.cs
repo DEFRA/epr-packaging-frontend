@@ -2,7 +2,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class SubmittedFileInformation
 {
     public Guid FileId { get; set; }

@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.Attributes;
 
-[ExcludeFromCodeCoverage]
 [AttributeUsage(AttributeTargets.Field)]
 public class LocalizedNameAttribute : Attribute
 {

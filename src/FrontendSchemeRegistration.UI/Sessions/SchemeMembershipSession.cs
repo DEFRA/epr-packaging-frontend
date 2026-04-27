@@ -3,7 +3,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class SchemeMembershipSession
 {
     public List<string> Journey { get; set; } = new();

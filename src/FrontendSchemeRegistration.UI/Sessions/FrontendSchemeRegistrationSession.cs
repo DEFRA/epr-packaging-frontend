@@ -4,7 +4,6 @@ using EPR.Common.Authorization.Models;
 
 namespace FrontendSchemeRegistration.UI.Sessions;
 
-[ExcludeFromCodeCoverage]
 public class FrontendSchemeRegistrationSession : IHasUserData
 {
     public UserData UserData { get; set; } = new();

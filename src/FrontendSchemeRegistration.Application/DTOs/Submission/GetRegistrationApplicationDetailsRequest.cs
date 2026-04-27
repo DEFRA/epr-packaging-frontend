@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.Submission;
 
-[ExcludeFromCodeCoverage]
 public class GetRegistrationApplicationDetailsRequest
 { 
     public Guid OrganisationId { get; set; }

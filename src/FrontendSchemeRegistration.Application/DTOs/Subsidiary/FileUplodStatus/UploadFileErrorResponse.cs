@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.Subsidiary.FileUploadStatus
 {
-    [ExcludeFromCodeCoverage]
     public class UploadFileErrorResponse
     {
         public string Status { get; set; }

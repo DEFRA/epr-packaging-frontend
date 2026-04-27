@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.Prns
 {
-    [ExcludeFromCodeCoverage]
     public class PrnObligationModel
     {
         public int NumberOfPrnsAwaitingAcceptance { get; set; }

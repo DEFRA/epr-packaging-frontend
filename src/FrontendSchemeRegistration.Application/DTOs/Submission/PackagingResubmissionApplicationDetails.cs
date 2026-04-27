@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 namespace FrontendSchemeRegistration.Application.DTOs.Submission;
 
-[ExcludeFromCodeCoverage]
 public class PackagingResubmissionApplicationDetails
 {
     public Guid? SubmissionId { get; set; }

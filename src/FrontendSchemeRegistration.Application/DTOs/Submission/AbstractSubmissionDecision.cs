@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.Submission;
 
-[ExcludeFromCodeCoverage]
 public abstract class AbstractSubmissionDecision : AbstractSubmission
 {
     public string Decision { get; set; } = string.Empty;

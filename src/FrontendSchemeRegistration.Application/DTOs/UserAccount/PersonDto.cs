@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.UserAccount;
 
-[ExcludeFromCodeCoverage]
 public class PersonDto
 {
     public string FirstName { get; set; }

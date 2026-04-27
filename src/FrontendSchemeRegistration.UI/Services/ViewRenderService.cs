@@ -9,7 +9,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace FrontendSchemeRegistration.UI.Services
 {
-    [ExcludeFromCodeCoverage]
     public class ViewRenderService : IViewRenderService
     {
         private readonly IRazorViewEngine _viewEngine;

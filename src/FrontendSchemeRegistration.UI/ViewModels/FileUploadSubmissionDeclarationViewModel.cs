@@ -2,7 +2,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class FileUploadSubmissionDeclarationViewModel
 {
     public string OrganisationName { get; set; }

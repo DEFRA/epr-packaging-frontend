@@ -4,7 +4,6 @@ namespace FrontendSchemeRegistration.Application.DTOs.Submission;
 
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class SubsidiarySubmission : AbstractSubmission
 {
     public override SubmissionType Type => SubmissionType.Subsidiary;

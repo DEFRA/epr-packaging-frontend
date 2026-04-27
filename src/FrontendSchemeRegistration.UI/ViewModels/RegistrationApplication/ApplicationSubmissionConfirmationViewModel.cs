@@ -5,7 +5,6 @@ namespace FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
 
 using Application.Enums;
 
-[ExcludeFromCodeCoverage]
 public class ApplicationSubmissionConfirmationViewModel : OrganisationNationViewModel
 {
     public string ApplicationReferenceNumber { get; set; } = string.Empty;

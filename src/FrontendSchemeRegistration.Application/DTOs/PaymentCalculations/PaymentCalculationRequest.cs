@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.PaymentCalculations
 {
-    [ExcludeFromCodeCoverage]
     public class PaymentCalculationRequest
     {
         public string ProducerType { get; set; }

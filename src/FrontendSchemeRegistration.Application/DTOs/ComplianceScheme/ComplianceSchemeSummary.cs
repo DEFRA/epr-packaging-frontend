@@ -4,7 +4,6 @@ using FrontendSchemeRegistration.Application.Enums;
 
 namespace FrontendSchemeRegistration.Application.DTOs.ComplianceScheme;
 
-[ExcludeFromCodeCoverage]
 public record ComplianceSchemeSummary
 {
     public string Name { get; init; }

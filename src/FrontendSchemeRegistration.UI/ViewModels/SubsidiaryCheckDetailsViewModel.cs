@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.UI.ViewModels;
 
-[ExcludeFromCodeCoverage]
 public class SubsidiaryCheckDetailsViewModel
 {
     public string CompanyName { get; set; }

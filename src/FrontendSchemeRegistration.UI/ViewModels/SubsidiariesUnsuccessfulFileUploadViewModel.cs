@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.UI.ViewModels
 {
-    [ExcludeFromCodeCoverage]
     public class SubsidiariesUnsuccessfulFileUploadViewModel
     {
         public bool PartialSuccess { get; set; }

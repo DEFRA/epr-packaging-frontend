@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.PaymentCalculations;
 
-[ExcludeFromCodeCoverage]
 public class ComplianceSchemePaymentCalculationV2Request : ComplianceSchemePaymentCalculationRequest
 {
     public Guid FileId { get; set; }

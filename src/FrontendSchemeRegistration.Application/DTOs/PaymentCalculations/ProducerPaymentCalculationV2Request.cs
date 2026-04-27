@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.PaymentCalculations
 {
-    [ExcludeFromCodeCoverage]
     public class ProducerPaymentCalculationV2Request : PaymentCalculationRequest
     {
         public Guid FileId { get; set; }

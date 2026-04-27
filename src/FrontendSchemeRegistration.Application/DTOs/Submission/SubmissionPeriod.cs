@@ -9,7 +9,6 @@ namespace FrontendSchemeRegistration.Application.DTOs.Submission;
 /// it can also represent a registration submission period.
 /// TODO - use two DTOs to represent the two different types of submission periods
 /// </summary>
-[ExcludeFromCodeCoverage]
 public class SubmissionPeriod
 {
     public string DataPeriod { get; init; }

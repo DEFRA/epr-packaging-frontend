@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.Notification
 {
-    [ExcludeFromCodeCoverage]
     public class NotificationDto
     {
         public string Type { get; set; }

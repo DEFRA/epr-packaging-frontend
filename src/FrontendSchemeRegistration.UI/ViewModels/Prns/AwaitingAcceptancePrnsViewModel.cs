@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace FrontendSchemeRegistration.UI.ViewModels.Prns
 {
-    [ExcludeFromCodeCoverage]
     public class AwaitingAcceptancePrnsViewModel
     {
         public List<AwaitingAcceptanceResultViewModel> Prns { get; set; }

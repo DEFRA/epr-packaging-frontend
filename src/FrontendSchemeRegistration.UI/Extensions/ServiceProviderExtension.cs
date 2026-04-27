@@ -43,7 +43,6 @@ using Microsoft.Identity.Abstractions;
 using Microsoft.Identity.Web.TokenCacheProviders;
 using Services.StubAuthentication;
 
-[ExcludeFromCodeCoverage]
 public static class ServiceProviderExtension
 {
     public static IServiceCollection RegisterWebComponents(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment hostingEnvironment, bool isStubAuth)

@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.UI
 {
-    [ExcludeFromCodeCoverage]
     public class PrnCsvResources
     {
     }

@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.ComplianceSchemeMember
 {
-    [ExcludeFromCodeCoverage]
     public class ComplianceSchemeMembershipResponse
     {
         public PaginatedResponse<ComplianceSchemeMemberDto> PagedResult { get; set; }

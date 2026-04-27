@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using Application.DTOs.ComplianceScheme;
 using Resources;
 
-[ExcludeFromCodeCoverage]
 public class SelectComplianceSchemeViewModel
 {
     public List<ComplianceSchemeDto> ComplianceSchemes { get; set; } = new();

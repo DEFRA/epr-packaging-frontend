@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs
 {
-    [ExcludeFromCodeCoverage]
     public class PaginatedRequest
     {
         public int Page { get; set; } = 1;

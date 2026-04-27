@@ -2,7 +2,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class CookieOptions
 {
     public const string ConfigSection = "Cookie";

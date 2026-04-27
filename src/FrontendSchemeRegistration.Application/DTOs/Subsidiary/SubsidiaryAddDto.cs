@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.Subsidiary;
 
-[ExcludeFromCodeCoverage]
 public class SubsidiaryAddDto
 {
     public Guid? ParentOrganisationId { get; init; }

@@ -89,8 +89,7 @@ public class PrnService : IPrnService
         return model;
     }
 
-    [ExcludeFromCodeCoverage]
-    public async Task<PrnViewModel> GetPrnForPdfByExternalIdAsync(Guid id)
+        public async Task<PrnViewModel> GetPrnForPdfByExternalIdAsync(Guid id)
     {
         // This method will add PDF specific exceptions 
         return await GetPrnByExternalIdAsync(id);

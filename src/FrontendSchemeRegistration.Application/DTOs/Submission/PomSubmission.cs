@@ -3,7 +3,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Enums;
 
-[ExcludeFromCodeCoverage]
 public class PomSubmission : AbstractSubmission
 {
     public override SubmissionType Type => SubmissionType.Producer;

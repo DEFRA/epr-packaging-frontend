@@ -2,8 +2,7 @@
 
 namespace FrontendSchemeRegistration.UI.Constants
 {
-    [ExcludeFromCodeCoverage]
-    public static class PrnConstants
+        public static class PrnConstants
     {
         public static string PrnText => "PRN";
 

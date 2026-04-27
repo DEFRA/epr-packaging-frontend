@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.UI.ViewModels.Shared;
 
-[ExcludeFromCodeCoverage]
 public class PhaseBannerModel
 {
     public string Status { get; set; } = string.Empty;

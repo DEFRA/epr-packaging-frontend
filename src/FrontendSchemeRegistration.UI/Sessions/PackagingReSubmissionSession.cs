@@ -4,7 +4,6 @@ namespace FrontendSchemeRegistration.UI.Sessions;
 
 using Application.DTOs.Submission;
 
-[ExcludeFromCodeCoverage]
 public class PackagingReSubmissionSession
 {
     public List<string> Journey { get; set; } = new();

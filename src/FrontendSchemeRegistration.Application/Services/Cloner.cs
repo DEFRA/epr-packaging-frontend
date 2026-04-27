@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using Interfaces;
 
-[ExcludeFromCodeCoverage]
 public class Cloner : ICloner
 {
     public T Clone<T>(T source)

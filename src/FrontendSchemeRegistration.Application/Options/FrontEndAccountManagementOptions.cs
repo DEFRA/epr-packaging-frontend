@@ -2,7 +2,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[ExcludeFromCodeCoverage]
 public class FrontEndAccountManagementOptions
 {
     public const string ConfigSection = "FrontEndAccountManagement";

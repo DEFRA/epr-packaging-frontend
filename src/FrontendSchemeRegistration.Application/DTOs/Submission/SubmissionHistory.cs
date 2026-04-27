@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.Submission
 {
-    [ExcludeFromCodeCoverage]
     public class SubmissionHistory
     {
         public Guid SubmissionId { get; set; }

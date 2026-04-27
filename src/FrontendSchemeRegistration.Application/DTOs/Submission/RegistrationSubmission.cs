@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 using Enums;
 
-[ExcludeFromCodeCoverage]
 public class RegistrationSubmission : AbstractSubmission
 {
     public override SubmissionType Type => SubmissionType.Registration;

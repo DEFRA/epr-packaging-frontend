@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.Application.DTOs.Submission;
 
-[ExcludeFromCodeCoverage]
 public class UploadedRegistrationFilesInformation
 {
     public Guid CompanyDetailsFileId { get; set; }

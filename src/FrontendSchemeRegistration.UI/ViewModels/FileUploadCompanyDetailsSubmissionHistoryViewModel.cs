@@ -2,7 +2,6 @@
 
 namespace FrontendSchemeRegistration.UI.ViewModels
 {
-    [ExcludeFromCodeCoverage]
     public class FileUploadCompanyDetailsSubmissionHistoryViewModel
     {
         public bool PreviousSubmissionHistoryExists { get; set; }

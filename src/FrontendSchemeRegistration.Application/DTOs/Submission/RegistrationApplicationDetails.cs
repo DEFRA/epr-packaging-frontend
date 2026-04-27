@@ -6,7 +6,6 @@ namespace FrontendSchemeRegistration.Application.DTOs.Submission;
 using System.Text.Json.Serialization;
 using Enums;
 
-[ExcludeFromCodeCoverage]
 public class RegistrationApplicationDetails
 {
     public ApplicationStatusType ApplicationStatus { get; set; }

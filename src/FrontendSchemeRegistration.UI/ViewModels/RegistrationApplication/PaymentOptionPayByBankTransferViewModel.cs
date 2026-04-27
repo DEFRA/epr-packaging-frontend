@@ -3,7 +3,6 @@ using FrontendSchemeRegistration.Application.Enums;
 
 namespace FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication
 {
-    [ExcludeFromCodeCoverage]
     public class PaymentOptionPayByBankTransferViewModel : OrganisationNationViewModel
     {
         public bool IsComplianceScheme { get; set; } = false;

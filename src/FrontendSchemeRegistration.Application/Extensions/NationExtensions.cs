@@ -3,8 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace FrontendSchemeRegistration.Application.Extensions
 {
-    [ExcludeFromCodeCoverage]
-    public static class NationExtensions
+        public static class NationExtensions
     {
         public static string GetNationName(string nationcode) => nationcode switch
         {

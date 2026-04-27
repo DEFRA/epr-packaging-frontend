@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using Resources;
 
-[ExcludeFromCodeCoverage]
 public class UsingComplianceSchemeViewModel
 {
     [Required(ErrorMessageResourceName = "using_compliance_scheme_selection_error", ErrorMessageResourceType = typeof(ErrorMessages))]

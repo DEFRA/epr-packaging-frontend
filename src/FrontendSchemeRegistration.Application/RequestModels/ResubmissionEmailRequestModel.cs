@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace FrontendSchemeRegistration.Application.RequestModels
 {
-    [ExcludeFromCodeCoverage]
     public class ResubmissionEmailRequestModel
     {
         [Required]

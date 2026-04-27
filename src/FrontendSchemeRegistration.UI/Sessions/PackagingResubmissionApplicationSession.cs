@@ -5,7 +5,6 @@ using FrontendSchemeRegistration.Application.Enums;
 
 namespace FrontendSchemeRegistration.UI.Sessions;
 
-[ExcludeFromCodeCoverage]
 public class PackagingResubmissionApplicationSession
 {
     public ResubmissionTaskListStatus FileUploadStatus

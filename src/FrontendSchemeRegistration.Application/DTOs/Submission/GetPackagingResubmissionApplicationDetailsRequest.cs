@@ -2,7 +2,6 @@
 
 namespace EPR.SubmissionMicroservice.API.Contracts.Submissions.Get;
 
-[ExcludeFromCodeCoverage]
 public class GetPackagingResubmissionApplicationDetailsRequest
 {
     public Guid OrganisationId { get; set; }
