@@ -56,6 +56,9 @@ public class PrnsObligationControllerTests
         _loggerMock = new Mock<ILogger<PrnsObligationController>>();
 
         _featureManagerMock = new Mock<IFeatureManager>();
+        _featureManagerMock
+            .Setup(x => x.IsEnabledAsync(It.IsAny<string>()))
+            .ReturnsAsync(false);
 
         _controller = new PrnsObligationController(
             _sessionManagerMock.Object, 
@@ -105,7 +108,7 @@ public class PrnsObligationControllerTests
         _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
 
 		var viewModel = _fixture.Create<PrnObligationViewModel>();
-        _prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(It.IsAny<int>())).ReturnsAsync(viewModel);
+        _prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(It.IsAny<int>(), It.IsAny<bool>())).ReturnsAsync(viewModel);
 
         // Act
         var result = await _controller.ObligationsHome() as ViewResult;
@@ -118,6 +121,72 @@ public class PrnsObligationControllerTests
         model.MaterialObligationViewModels.Count.Should().BeGreaterThan(1);
         model.GlassMaterialObligationViewModels.Count.Should().BeGreaterThan(1);
         _controller.ViewData.Should().ContainKey("HomeLinkToDisplay");
+    }
+
+    [Test]
+    public async Task ObligationsHome_WhenCsocDisabled_DoesNotRequestComplianceDeclarationStatus()
+    {
+        var session = new FrontendSchemeRegistrationSession
+        {
+            UserData = new UserData
+            {
+                Organisations =
+                [
+                    new Organisation
+                    {
+                        Id = Guid.NewGuid(),
+                        OrganisationRole = OrganisationRoles.Producer,
+                        Name = "Test Organisation",
+                        NationId = 1
+                    }
+                ],
+                ServiceRole = "Basic User"
+            }
+        };
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.CsocEnabled)).ReturnsAsync(false);
+        _prnServiceMock
+            .Setup(x => x.GetRecyclingObligationsCalculation(It.IsAny<int>(), false))
+            .ReturnsAsync(_fixture.Create<PrnObligationViewModel>());
+
+        var result = await _controller.ObligationsHome() as ViewResult;
+
+        _prnServiceMock.Verify(x => x.GetRecyclingObligationsCalculation(It.IsAny<int>(), false), Times.Once);
+        result.Should().NotBeNull();
+        (result!.Model as PrnObligationViewModel)!.CsocViewModel.Should().BeNull();
+    }
+
+    [Test]
+    public async Task ObligationsHome_WhenCsocEnabled_RequestsComplianceDeclarationStatus()
+    {
+        var session = new FrontendSchemeRegistrationSession
+        {
+            UserData = new UserData
+            {
+                Organisations =
+                [
+                    new Organisation
+                    {
+                        Id = Guid.NewGuid(),
+                        OrganisationRole = OrganisationRoles.Producer,
+                        Name = "Test Organisation",
+                        NationId = 1
+                    }
+                ],
+                ServiceRole = "Basic User"
+            }
+        };
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.CsocEnabled)).ReturnsAsync(true);
+        _prnServiceMock
+            .Setup(x => x.GetRecyclingObligationsCalculation(It.IsAny<int>(), true))
+            .ReturnsAsync(_fixture.Create<PrnObligationViewModel>());
+
+        var result = await _controller.ObligationsHome() as ViewResult;
+
+        _prnServiceMock.Verify(x => x.GetRecyclingObligationsCalculation(It.IsAny<int>(), true), Times.Once);
+        result.Should().NotBeNull();
+        (result!.Model as PrnObligationViewModel)!.CsocViewModel.Should().NotBeNull();
     }
 
     [Test]
@@ -146,7 +215,7 @@ public class PrnsObligationControllerTests
         string material = "Glass";
         int year = _fakeTimeProvider.GetUtcNow().GetComplianceYear();
 		PrnObligationViewModel viewModel = _fixture.Create<PrnObligationViewModel>();
-        _prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(year)).ReturnsAsync(viewModel);
+        _prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(year, false)).ReturnsAsync(viewModel);
 
         // Act
         var response = await _controller.ObligationPerMaterial(material);
@@ -157,6 +226,7 @@ public class PrnsObligationControllerTests
         viewModel.MaterialObligationViewModels.Count.Should().Be(0);
         _controller.ViewData["GlassOrNonGlassResource"].Should().Be("glass");
         _controller.ViewData.Should().ContainKey("BackLinkToDisplay");
+        _prnServiceMock.Verify(x => x.GetRecyclingObligationsCalculation(year, false), Times.Once);
     }
 
     [Theory]
@@ -197,7 +267,7 @@ public class PrnsObligationControllerTests
             item.MaterialName = Enum.Parse<MaterialType>(material);
             break;
         }
-		_prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(year)).ReturnsAsync(viewModel);
+		_prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(year, false)).ReturnsAsync(viewModel);
 
         var globalVariables = Options.Create(new GlobalVariables { BasePath = "BasePath", LogPrefix = "[FrontendSchemaRegistration]" });
 
@@ -231,7 +301,7 @@ public class PrnsObligationControllerTests
         viewModel.MaterialObligationViewModels.Count.Should().BeGreaterThan(0);
         controller.ViewData["GlassOrNonGlassResource"].Should().Be(resource);
         controller.ViewData.Should().ContainKey("BackLinkToDisplay");
-        _prnServiceMock.Verify(x => x.GetRecyclingObligationsCalculation(year), Times.Once);
+        _prnServiceMock.Verify(x => x.GetRecyclingObligationsCalculation(year, false), Times.Once);
     }
 
     [Test]
@@ -257,14 +327,14 @@ public class PrnsObligationControllerTests
         string material = "Unknown";
         int year = _fakeTimeProvider.GetUtcNow().Year;
         PrnObligationViewModel viewModel = _fixture.Create<PrnObligationViewModel>();
-        _prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(year)).ReturnsAsync(viewModel);
+        _prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(year, false)).ReturnsAsync(viewModel);
 
         // Act
         var response = await _controller.ObligationPerMaterial(material);
 
         var view = response.Should().BeOfType<ViewResult>().Which;
         view.ViewName.Should().BeNull();
-        _prnServiceMock.Verify(x => x.GetRecyclingObligationsCalculation(It.IsAny<int>()), Times.Never());
+        _prnServiceMock.Verify(x => x.GetRecyclingObligationsCalculation(It.IsAny<int>(), It.IsAny<bool>()), Times.Never());
         _controller.ViewData.Should().NotContainKey("GlassOrNonGlassResource");
         _controller.ViewData.Should().ContainKey("BackLinkToDisplay");
         _controller.ViewData.Should().ContainKey("ProducerResponsibilityObligationsLink");
@@ -509,7 +579,7 @@ public class PrnsObligationControllerTests
             item.MaterialName = Enum.Parse<MaterialType>(material);
             break;
         }
-        _prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(expectedComplianceYear.Value)).ReturnsAsync(viewModel);
+        _prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(expectedComplianceYear.Value, false)).ReturnsAsync(viewModel);
 
         var globalVariables = Options.Create(new GlobalVariables { BasePath = "BasePath", LogPrefix = "[FrontendSchemaRegistration]" });
         var controller = new PrnsObligationController(
@@ -537,7 +607,7 @@ public class PrnsObligationControllerTests
 
         var view = response.Should().BeOfType<ViewResult>().Which;
         view.ViewName.Should().BeNull();
-        _prnServiceMock.Verify(x => x.GetRecyclingObligationsCalculation(It.IsAny<int>()), Times.Once());
+        _prnServiceMock.Verify(x => x.GetRecyclingObligationsCalculation(It.IsAny<int>(), false), Times.Once());
         controller.ViewData.Should().ContainKey("GlassOrNonGlassResource");
         controller.ViewData.Should().ContainKey("BackLinkToDisplay");
         controller.ViewData.Should().ContainKey("ProducerResponsibilityObligationsLink");

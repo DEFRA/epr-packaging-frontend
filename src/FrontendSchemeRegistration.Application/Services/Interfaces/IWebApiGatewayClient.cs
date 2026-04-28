@@ -62,6 +62,8 @@ public interface IWebApiGatewayClient
     Task<SubsidiaryUploadStatusDto> GetSubsidiaryUploadStatus(Guid userId, Guid organisationId);
 
     Task<PrnObligationModel> GetRecyclingObligationsCalculation(int year);
+    
+    Task<ComplianceDeclarationStatus?> GetComplianceDeclarationStatus(int obligationYear);
 
     Task<RegistrationApplicationDetails?> GetRegistrationApplicationDetails(GetRegistrationApplicationDetailsRequest request);
 
