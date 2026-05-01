@@ -19,7 +19,10 @@ public static class ConfigBuilder
                 new KeyValuePair<string,string>("PaymentFacadeApi:BaseUrl", "http://localhost:9091"),
                 new KeyValuePair<string,string>("EprAuthorizationConfig:FacadeBaseUrl", "http://localhost:9091/api/"),
                 new KeyValuePair<string,string>("AccountsFacadeAPI:BaseEndpoint", "http://localhost:9091/api/"),
-                new KeyValuePair<string,string>("StartupUtcTimestampOverride", "2026-03-27T08:58:00Z")
+                new KeyValuePair<string,string>("StartupUtcTimestampOverride", "2026-03-27T08:58:00Z"),
+                new KeyValuePair<string,string>(
+                    "Csoc:UnderstandingObligationsEndpoint",
+                    "https://understanding-obligations")
             ]
         };
         
