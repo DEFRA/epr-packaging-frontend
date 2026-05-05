@@ -8,6 +8,8 @@ using EPR.Common.Authorization.Models;
 using FluentAssertions;
 using Microsoft.FeatureManagement;
 using Moq;
+using System;
+using UI.Constants;
 using UI.Helpers;
 using UI.ViewModels.Prns;
 
@@ -42,24 +44,30 @@ public class CsocHelperTests
     {
         MockFeatureManager.Setup(x => x.IsEnabledAsync(FeatureFlags.CsocEnabled)).ReturnsAsync(true);
         var now = DateTime.Now;
+        var organisationId = Guid.NewGuid();
         
         var result = await CsocHelper.CreateViewModel(
             MockFeatureManager.Object, 
             isApprovedUser: true, 
-            new Organisation(), 
+            new Organisation
+            {
+                Id = organisationId,
+                OrganisationRole = OrganisationRoles.Producer
+            }, 
             now,
             new CsocOptions
             {
-                UnderstandingObligationsEndpoint = "href"
+                WasteObligationsBaseAddress = "href"
             });
 
         result.Should().NotBeNull();
         result?.IsApprovedUser.Should().BeTrue();
         result?.IsComplianceScheme.Should().BeFalse();
-        result?.IsDirectProducer.Should().BeFalse();
+        result?.IsDirectProducer.Should().BeTrue();
         result?.SubmissionDeadline.Should().BeAfter(now);
         result?.ComplianceYear.Should().Be(now.GetComplianceYear());
-        result?.UnderstandingObligationsEndpoint.Should().Be("href");
+        result?.WasteObligationsBaseAddress.Should()
+            .Be($"href/compliance/{organisationId}/certificate?year={now.GetComplianceYear()}");
     }
     
     [TestCase(null, false)]
@@ -78,7 +86,7 @@ public class CsocHelperTests
             now,
             new CsocOptions
             {
-                UnderstandingObligationsEndpoint = "href"
+                WasteObligationsBaseAddress = "href"
             },
             overallStatus is null ? null : new PrnObligationViewModel
             {
@@ -127,5 +135,60 @@ public class CsocHelperTests
 
         result.Should().NotBeNull();
         result?.ComplianceDeclarationStatus.Should().BeNull();
+    }
+
+    [Test]
+    public async Task CreateViewModel_WhenOrganisationIsComplianceScheme_ShouldUseStatementWasteObligationsBaseAddress()
+    {
+        MockFeatureManager.Setup(x => x.IsEnabledAsync(FeatureFlags.CsocEnabled)).ReturnsAsync(true);
+        var organisationId = Guid.NewGuid();
+        var now = DateTime.Now;
+
+        var result = await CsocHelper.CreateViewModel(
+            MockFeatureManager.Object,
+            isApprovedUser: true,
+            new Organisation
+            {
+                Id = organisationId,
+                OrganisationRole = OrganisationRoles.ComplianceScheme
+            },
+            now,
+            new CsocOptions
+            {
+                WasteObligationsBaseAddress = "https://understanding-obligations"
+            },
+            new PrnObligationViewModel
+            {
+                OverallStatus = ObligationStatus.Met,
+                ComplianceDeclarationStatus = ComplianceDeclarationStatus.Cancelled
+            });
+
+        result.Should().NotBeNull();
+        result?.WasteObligationsBaseAddress.Should()
+            .Be($"https://understanding-obligations/compliance/{organisationId}/statement?year={now.GetComplianceYear()}");
+    }
+
+    [Test]
+    public async Task CreateViewModel_WhenOrganisationIsNeitherDirectProducerNorComplianceScheme_ShouldUseBaseAddress()
+    {
+        MockFeatureManager.Setup(x => x.IsEnabledAsync(FeatureFlags.CsocEnabled)).ReturnsAsync(true);
+        var organisationId = Guid.NewGuid();
+        var now = DateTime.Now;
+
+        var result = await CsocHelper.CreateViewModel(
+            MockFeatureManager.Object,
+            isApprovedUser: true,
+            new Organisation
+            {
+                Id = organisationId
+            },
+            now,
+            new CsocOptions
+            {
+                WasteObligationsBaseAddress = "https://understanding-obligations"
+            });
+
+        result.Should().NotBeNull();
+        result?.WasteObligationsBaseAddress.Should().Be("https://understanding-obligations");
     }
 }
