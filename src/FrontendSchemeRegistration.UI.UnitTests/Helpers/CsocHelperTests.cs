@@ -57,7 +57,7 @@ public class CsocHelperTests
             now,
             new CsocOptions
             {
-                UnderstandingObligationsEndpoint = "href"
+                WasteObligationsBaseAddress = "href"
             });
 
         result.Should().NotBeNull();
@@ -66,7 +66,7 @@ public class CsocHelperTests
         result?.IsDirectProducer.Should().BeTrue();
         result?.SubmissionDeadline.Should().BeAfter(now);
         result?.ComplianceYear.Should().Be(now.GetComplianceYear());
-        result?.UnderstandingObligationsEndpoint.Should()
+        result?.WasteObligationsBaseAddress.Should()
             .Be($"href/compliance/{organisationId}/certificate?year={now.GetComplianceYear()}");
     }
     
@@ -86,7 +86,7 @@ public class CsocHelperTests
             now,
             new CsocOptions
             {
-                UnderstandingObligationsEndpoint = "href"
+                WasteObligationsBaseAddress = "href"
             },
             overallStatus is null ? null : new PrnObligationViewModel
             {
@@ -138,7 +138,7 @@ public class CsocHelperTests
     }
 
     [Test]
-    public async Task CreateViewModel_WhenOrganisationIsComplianceScheme_ShouldUseStatementUnderstandingObligationsEndpoint()
+    public async Task CreateViewModel_WhenOrganisationIsComplianceScheme_ShouldUseStatementWasteObligationsBaseAddress()
     {
         MockFeatureManager.Setup(x => x.IsEnabledAsync(FeatureFlags.CsocEnabled)).ReturnsAsync(true);
         var organisationId = Guid.NewGuid();
@@ -155,7 +155,7 @@ public class CsocHelperTests
             now,
             new CsocOptions
             {
-                UnderstandingObligationsEndpoint = "https://understanding-obligations"
+                WasteObligationsBaseAddress = "https://understanding-obligations"
             },
             new PrnObligationViewModel
             {
@@ -164,7 +164,7 @@ public class CsocHelperTests
             });
 
         result.Should().NotBeNull();
-        result?.UnderstandingObligationsEndpoint.Should()
+        result?.WasteObligationsBaseAddress.Should()
             .Be($"https://understanding-obligations/compliance/{organisationId}/statement?year={now.GetComplianceYear()}");
     }
 }

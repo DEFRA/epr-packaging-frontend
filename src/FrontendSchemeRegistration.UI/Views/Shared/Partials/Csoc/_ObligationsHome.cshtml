@@ -23,10 +23,10 @@
             <div class="govuk-card-body">
                 <h2 class="govuk-heading-m">@Localizer[$"{statusKey}_heading_{actorKey}"]</h2>
                 <p class="govuk-body">@string.Format(Localizer[$"{statusKey}_paragraph_{actorKey}"].Value, Model.ComplianceYear, Model.SubmissionDeadline)</p>
-                @if (Model.IsApprovedUser && Model.UnderstandingObligationsEndpoint is not null)
+                @if (Model.IsApprovedUser && Model.WasteObligationsBaseAddress is not null)
                 {
                     <div class="govuk-button-group">
-                        <a class="govuk-button govuk-button--secondary" href="@Model.UnderstandingObligationsEndpoint"
+                        <a class="govuk-button govuk-button--secondary" href="@Model.WasteObligationsBaseAddress"
                            role="button" data-module="govuk-button">@Localizer[$"{statusKey}_button_{actorKey}"]</a>
                     </div>
                 }

@@ -33,8 +33,8 @@ public static class CsocHelper
             IsComplianceScheme = organisation.IsComplianceScheme(),
             SubmissionDeadline = now.GetCsocSubmissionDeadline(),
             ComplianceYear = complianceYear,
-            UnderstandingObligationsEndpoint = GetUnderstandingObligationsEndpoint(
-                options.UnderstandingObligationsEndpoint,
+            WasteObligationsBaseAddress = GetWasteObligationsBaseAddress(
+                options.WasteObligationsBaseAddress,
                 organisation.Id,
                 organisation.IsComplianceScheme(),
                 organisation.IsDirectProducer(),
@@ -45,7 +45,7 @@ public static class CsocHelper
         };
     }
 
-    private static string? GetUnderstandingObligationsEndpoint(
+    private static string? GetWasteObligationsBaseAddress(
         string? baseEndpoint,
         Guid? organisationId,
         bool isComplianceScheme,
