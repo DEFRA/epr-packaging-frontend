@@ -58,11 +58,15 @@ public static class CsocHelper
             return baseEndpoint;
         }
 
-        var documentType = isComplianceScheme
-            ? "statement"
-            : isDirectProducer
-                ? "certificate"
-                : null;
+        string? documentType = null;
+        if (isComplianceScheme)
+        {
+            documentType = "statement";
+        }
+        else if (isDirectProducer)
+        {
+            documentType = "certificate";
+        }
 
         if (documentType is null)
         {

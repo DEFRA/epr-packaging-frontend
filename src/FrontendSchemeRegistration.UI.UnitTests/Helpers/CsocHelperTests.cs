@@ -167,4 +167,28 @@ public class CsocHelperTests
         result?.WasteObligationsBaseAddress.Should()
             .Be($"https://understanding-obligations/compliance/{organisationId}/statement?year={now.GetComplianceYear()}");
     }
+
+    [Test]
+    public async Task CreateViewModel_WhenOrganisationIsNeitherDirectProducerNorComplianceScheme_ShouldUseBaseAddress()
+    {
+        MockFeatureManager.Setup(x => x.IsEnabledAsync(FeatureFlags.CsocEnabled)).ReturnsAsync(true);
+        var organisationId = Guid.NewGuid();
+        var now = DateTime.Now;
+
+        var result = await CsocHelper.CreateViewModel(
+            MockFeatureManager.Object,
+            isApprovedUser: true,
+            new Organisation
+            {
+                Id = organisationId
+            },
+            now,
+            new CsocOptions
+            {
+                WasteObligationsBaseAddress = "https://understanding-obligations"
+            });
+
+        result.Should().NotBeNull();
+        result?.WasteObligationsBaseAddress.Should().Be("https://understanding-obligations");
+    }
 }
