@@ -329,7 +329,7 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
     <value>Nid yw ID Atodol yn perthyn i unrhyw sefydliad.</value>
   </data>
   <data name="60" xml:space="preserve">
-    <value>Gwiriwch bwysau'r deunydd pecynwaith ar gyfer pob rhes i'r sefydliad yma. Os yw cyfanswm y flwyddyn adrodd rhwng 25,000kg a 50,000kg, efallai mai dim ond fel sefydliad bach y bydd angen i'r sefydliad yma gofrestru yn y flwyddyn ganlynol.</value>
+    <value>Mae'n ymddangos bod cyfanswm pwysau’r pecynwaith y rhoddwyd gwybod amdano yn is na 25,000kg, sef y trothwy ar gyfer cynhyrchydd bach. Gwiriwch bwysau'r deunydd pecynwaith ar gyfer pob rhes ar gyfer y sefydliad yma. Os yw'r ffigur yn gywir, rydych chi'n dal yn cael ei gyflwyno.</value>
   </data>
   <data name="90" xml:space="preserve">
     <value>Unedau Pecynwaith Trosiannol yn Annilys</value>
