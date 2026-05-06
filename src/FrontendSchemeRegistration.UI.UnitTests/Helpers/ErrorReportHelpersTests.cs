@@ -56,7 +56,8 @@ public class ErrorReportHelpersTests
     [TestCase("en-GB", "59", "Packaging material weight is less than 100. Check all packaging weights are in kg and not tonnes.")]
     [TestCase("en-GB", "60", "The total packaging weight reported appears to be below 25,000kg, which is the threshold for a small producer. Check the packaging material weight for all rows for this organisation. You can still submit if the figure is correct.")]
     [TestCase("en-GB", "62", "Only one packaging material reported for this organisation. Check you have entered all packaging materials. All must be reported separately.")]
-    [TestCase("en-GB", "63", "For self-managed consumer waste (CW), you may not be able to offset your own packaging against aluminium (AL), glass (GL), paper or card (PC), or steel (ST). To check what packaging materials you can offset, you'll need to contact your nation's environmental regulator.")]    
+    [TestCase("en-GB", "63", "For self-managed consumer waste (CW), you may not be able to offset your own packaging against aluminium (AL), glass (GL), paper or card (PC), or steel (ST). To check what packaging materials you can offset, you'll need to contact your nation's environmental regulator.")]
+    [TestCase("en-GB", "74", "Closed loop weight cannot exceed the total weight reported for this packaging material.")]
     [TestCase("en-GB", "ErrorIssue", "Error")]
     [TestCase("en-GB", "WarningIssue", "Warning")]
 

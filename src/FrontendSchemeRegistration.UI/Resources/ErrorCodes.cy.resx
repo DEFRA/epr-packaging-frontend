@@ -439,4 +439,7 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
   <data name="908" xml:space="preserve">
     <value>Rhaid i ddosbarth y deunydd pacio fod yn wag.</value>
   </data>
+  <data name="74" xml:space="preserve">
+    <value>Ni chaiff pwysau dolen gaeedig fod yn fwy na chyfanswm y pwysau y rhoddwyd gwybod amdano ar gyfer y deunydd pecynwaith yma.</value>
+  </data>
 </root>
