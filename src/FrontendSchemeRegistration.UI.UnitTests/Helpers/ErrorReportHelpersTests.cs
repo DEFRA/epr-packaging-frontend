@@ -62,8 +62,9 @@ public class ErrorReportHelpersTests
     [TestCase("en-GB", "WarningIssue", "Warning")]
 
     // Welsh
-    [TestCase("cy-GB", "60", "Gwiriwch bwysau'r deunydd pecynwaith ar gyfer pob rhes i'r sefydliad yma. Os yw cyfanswm y flwyddyn adrodd rhwng 25,000kg a 50,000kg, efallai mai dim ond fel sefydliad bach y bydd angen i'r sefydliad yma gofrestru yn y flwyddyn ganlynol.")]
-    [TestCase("cy-GB", "63", "Yn achos gwastraff defnyddwyr hunan-reoledig (CW), mae'n bosibl na fyddwch chi'n gallu gwrthbwyso'ch pecynwaith eich hunan yn erbyn alwminiwm (AL), gwydr (GL), papur neu gerdyn (PC), neu ddur (ST). I wirio pa ddeunyddiau pecynwaith y gallwch eu gwrthbwyso, bydd angen ichi gysylltu â rheoleiddiwr amgylcheddol eich gwlad.")]    
+    [TestCase("cy-GB", "60", "Mae'n ymddangos bod cyfanswm pwysau’r pecynwaith y rhoddwyd gwybod amdano yn is na 25,000kg, sef y trothwy ar gyfer cynhyrchydd bach. Gwiriwch bwysau'r deunydd pecynwaith ar gyfer pob rhes ar gyfer y sefydliad yma. Os yw'r ffigur yn gywir, rydych chi'n dal yn cael ei gyflwyno.")]
+    [TestCase("cy-GB", "63", "Yn achos gwastraff defnyddwyr hunan-reoledig (CW), mae'n bosibl na fyddwch chi'n gallu gwrthbwyso'ch pecynwaith eich hunan yn erbyn alwminiwm (AL), gwydr (GL), papur neu gerdyn (PC), neu ddur (ST). I wirio pa ddeunyddiau pecynwaith y gallwch eu gwrthbwyso, bydd angen ichi gysylltu â rheoleiddiwr amgylcheddol eich gwlad.")]
+    [TestCase("cy-GB", "74", "Ni chaiff pwysau dolen gaeedig fod yn fwy na chyfanswm y pwysau y rhoddwyd gwybod amdano ar gyfer y deunydd pecynwaith yma.")]
 
     public void ToErrorReportRows_ConvertsValidationErrorsToErrorRowsWithMessage_WhenCalled(
         string culture, string errorCode, string expectedMessage)
