@@ -25,7 +25,7 @@
         <value>{0} data resubmission</value>
     </data>
     <data name="submit_registration_data" xml:space="preserve">
-        <value>Submit registration data</value>
+        <value>Upload registration data</value>
     </data>
     <data name="update_registration_details" xml:space="preserve">
         <value>Update registration details</value>
