@@ -15,6 +15,13 @@ parameters:
     values:
     - 'SonarQube'
     # - 'SonarQubeLatest'
+  - name: buildConfiguration
+    displayName: 'Select build configuration'
+    type: string
+    default: 'Debug'
+    values:
+    - 'Release'
+    - 'Debug'
 
   - name: runIntegrationTests
     displayName: 'Run integration tests'
@@ -42,6 +49,9 @@ variables:
     value: true
   - name: dotnetVersion
     value: dotnetVersion8
+  # Common template does not accept buildConfiguration as a template parameter; set a variable so dotnet steps can use $(buildConfiguration).
+  - name: buildConfiguration
+    value: ${{ parameters.buildConfiguration }}
 
 resources:
   repositories:
