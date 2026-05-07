@@ -451,6 +451,18 @@ public static class WebApi
     {
         var path = req.Path;
         var id = path.Split('/').LastOrDefault() ?? Guid.NewGuid().ToString();
+        var pomStatusKeyword = GetPomStatusKeyword(req);
+        if (pomStatusKeyword is not null && id.Equals(GetPomStatusSubmissionId(pomStatusKeyword), StringComparison.OrdinalIgnoreCase))
+        {
+            var submission = CreatePomStatusSubmission(pomStatusKeyword, id);
+            return new WireMock.ResponseMessage
+            {
+                StatusCode = 200,
+                Headers = new Dictionary<string, WireMockList<string>> { { "Content-Type", new WireMockList<string>("application/json") } },
+                BodyData = new BodyData { BodyAsJson = submission, DetectedBodyType = BodyType.Json }
+            };
+        }
+
         var isExtendedJourneyLargeSubmission = id.Equals(ExtendedJourneyLargeSubmissionId, StringComparison.OrdinalIgnoreCase);
         var isExtendedJourneySmallSubmission = id.Equals(ExtendedJourneySmallSubmissionId, StringComparison.OrdinalIgnoreCase);
         var isExtendedJourneySubmission = isExtendedJourneyLargeSubmission || isExtendedJourneySmallSubmission;
@@ -616,6 +628,10 @@ public static class WebApi
     /// Extracts the POM status keyword from the bearer token email.
     /// Supported keywords (matched with "pom." prefix to avoid collisions with registration emails):
     ///   pom.accepted, pom.rejected,
+    ///   pom.noprevious.noupload – no existing POM submission for current period
+    ///   pom.noprevious.uploaded – unsubmitted POM exists with a valid uploaded file
+    ///   pom.rejected.noupload  – rejected submission, no newer valid upload exists
+    ///   pom.rejected.uploaded  – rejected submission, newer valid upload exists
     ///   pom.resubfees.pending   – resubmission in progress, memberCount=1, fee £2,500 outstanding
     ///   pom.resubfees.viewed    – resubmission in progress, memberCount=1, fee paid (zero outstanding)
     ///   pom.resubfees.nomembers – resubmission in progress, memberCount=0, no additional fee to pay
@@ -629,6 +645,10 @@ public static class WebApi
         if (email.Contains("pom.resubfees.nomembers", StringComparison.OrdinalIgnoreCase)) return "resubfees.nomembers";
         if (email.Contains("pom.resubfees.viewed",    StringComparison.OrdinalIgnoreCase)) return "resubfees.viewed";
         if (email.Contains("pom.resubfees.pending",   StringComparison.OrdinalIgnoreCase)) return "resubfees.pending";
+        if (email.Contains("pom.noprevious.noupload", StringComparison.OrdinalIgnoreCase)) return "noprevious.noupload";
+        if (email.Contains("pom.noprevious.uploaded", StringComparison.OrdinalIgnoreCase)) return "noprevious.uploaded";
+        if (email.Contains("pom.rejected.noupload",   StringComparison.OrdinalIgnoreCase)) return "rejected.noupload";
+        if (email.Contains("pom.rejected.uploaded",   StringComparison.OrdinalIgnoreCase)) return "rejected.uploaded";
         if (email.Contains("pom.accepted",            StringComparison.OrdinalIgnoreCase)) return "accepted";
         if (email.Contains("pom.rejected",            StringComparison.OrdinalIgnoreCase)) return "rejected";
         return null;
@@ -638,6 +658,10 @@ public static class WebApi
     {
         "accepted"            => "aaaa0001-0000-0000-0000-000000000000",
         "rejected"            => "aaaa0002-0000-0000-0000-000000000000",
+        "noprevious.noupload" => "aaaa0008-0000-0000-0000-000000000000",
+        "noprevious.uploaded" => "aaaa0009-0000-0000-0000-000000000000",
+        "rejected.noupload"   => "aaaa0006-0000-0000-0000-000000000000",
+        "rejected.uploaded"   => "aaaa0007-0000-0000-0000-000000000000",
         "resubfees.pending"   => "aaaa0003-0000-0000-0000-000000000000",
         "resubfees.viewed"    => "aaaa0004-0000-0000-0000-000000000000",
         "resubfees.nomembers" => "aaaa0005-0000-0000-0000-000000000000",
@@ -658,34 +682,18 @@ public static class WebApi
             };
         }
 
-        var submissionId = GetPomStatusSubmissionId(keyword);
-
-        var submission = new
+        if (keyword == "noprevious.noupload")
         {
-            id                  = submissionId,
-            type                = "Producer",
-            submissionPeriod    = PomStatusSubmissionPeriod,
-            pomDataComplete     = true,
-            validationPass      = true,
-            hasWarnings         = false,
-            hasValidFile        = true,
-            isSubmitted         = true,
-            errors              = Array.Empty<string>(),
-            lastUploadedValidFile = new
+            return new WireMock.ResponseMessage
             {
-                fileId              = PomStatusUploadedFileId,
-                fileName            = "packaging-data.csv",
-                fileUploadDateTime  = "2025-10-01T10:00:00Z",
-                uploadedBy          = PomStatusUploaderUserId
-            },
-            lastSubmittedFile = new
-            {
-                fileId             = PomStatusSubmittedFileId,
-                fileName           = "packaging-data.csv",
-                submittedDateTime  = "2025-10-01T10:00:00Z",
-                submittedBy        = new Guid(PomStatusUploaderUserId)
-            }
-        };
+                StatusCode = 200,
+                Headers = new Dictionary<string, WireMockList<string>> { { "Content-Type", new WireMockList<string>("application/json") } },
+                BodyData = new BodyData { BodyAsString = "[]", DetectedBodyType = BodyType.String }
+            };
+        }
+
+        var submissionId = GetPomStatusSubmissionId(keyword);
+        var submission = CreatePomStatusSubmission(keyword, submissionId);
 
         return new WireMock.ResponseMessage
         {
@@ -699,13 +707,51 @@ public static class WebApi
         };
     }
 
+    private static object CreatePomStatusSubmission(string keyword, string submissionId)
+    {
+        var hasNoPreviousSubmission = keyword == "noprevious.noupload";
+        var hasUploadedButNotSubmitted = keyword == "noprevious.uploaded";
+        var hasNewValidUploadAfterSubmission = keyword is "rejected" or "rejected.uploaded";
+        var hasSubmittedFile = hasNewValidUploadAfterSubmission || keyword == "rejected.noupload" || keyword == "accepted";
+        var lastSubmittedFileId = hasNewValidUploadAfterSubmission ? PomStatusSubmittedFileId : PomStatusUploadedFileId;
+
+        return new
+        {
+            id = submissionId,
+            type = "Producer",
+            submissionPeriod = PomStatusSubmissionPeriod,
+            pomDataComplete = true,
+            validationPass = true,
+            hasWarnings = false,
+            hasValidFile = !hasNoPreviousSubmission,
+            isSubmitted = hasSubmittedFile,
+            errors = Array.Empty<string>(),
+            lastUploadedValidFile = new
+            {
+                fileId = PomStatusUploadedFileId,
+                fileName = "packaging-data.csv",
+                fileUploadDateTime = "2025-10-01T10:00:00Z",
+                uploadedBy = PomStatusUploaderUserId
+            },
+            lastSubmittedFile = hasUploadedButNotSubmitted
+                ? null
+                : new
+                {
+                    fileId = lastSubmittedFileId,
+                    fileName = "packaging-data.csv",
+                    submittedDateTime = "2025-10-01T10:00:00Z",
+                    submittedBy = new Guid(PomStatusUploaderUserId)
+                }
+        };
+    }
+
     private static WireMock.ResponseMessage BuildPomDecisionResponse(WireMock.IRequestMessage req)
     {
         var keyword = GetPomStatusKeyword(req);
 
         var decisionValue = keyword switch
         {
-            "rejected"                                                   => "Rejected",
+            "rejected" or "rejected.noupload" or "rejected.uploaded"     => "Rejected",
             "accepted" or "resubfees.pending"
                         or "resubfees.viewed" or "resubfees.nomembers"  => "Accepted",
             _                                                            => (string?)null
@@ -741,7 +787,8 @@ public static class WebApi
         var isResubmissionFeeViewed = keyword is "resubfees.viewed" or "resubfees.nomembers";
 
         // applicationStatus 4 = AcceptedByRegulator (enum ordinal).
-        // FileReachedSynapse = true → FileUploadStatus = Completed → IsResubmissionInProgress = true
+        // FileReachedSynapse = true and IsResubmissionDataSynced = true
+        //   → FileUploadStatus = Completed and task-list row is not kept at Pending by SUB-39 gating.
         // isResubmissionFeeViewed drives InProgressSubmissionPeriodStatus:
         //   false → InProgress_Resubmission_FileInSynapse_FeesNotViewed_NotSubmitted
         //   true  → InProgress_Resubmission_FeesViewed_NotSubmitted
@@ -750,7 +797,7 @@ public static class WebApi
             submissionId,
             isSubmitted             = true,
             applicationStatus       = 4,
-            synapseResponse         = new { isFileSynced = true, organisationId = "" },
+            synapseResponse         = new { isFileSynced = true, isResubmissionDataSynced = true, organisationId = "" },
             isResubmissionFeeViewed,
             resubmissionApplicationSubmittedDate = (DateTime?)null,
             lastSubmittedFile = new
@@ -946,17 +993,19 @@ public static class WebApi
     }
 
     // Returns a PackagingPaymentResponse for the payment-facade resubmission-fee endpoints.
-    //   pom.resubfees.pending → fee of £2,500 outstanding (totalResubmissionFee / outstandingPayment in pence)
-    //   pom.resubfees.viewed  → zero outstanding (fee has been settled / was zero)
+    //   pom.resubfees.pending   → pending fees ready to view, £2,500 outstanding (pence)
+    //   pom.resubfees.viewed    → fees already viewed, still non-zero (£2,500 outstanding in pence)
+    //   pom.resubfees.nomembers → pending resubmission with zero fee to pay
     // All other emails return 200 with zero values to avoid 5xx that would bubble up as exceptions.
     private static WireMock.ResponseMessage BuildResubmissionFeeResponse(WireMock.IRequestMessage req)
     {
         var keyword = GetPomStatusKeyword(req);
         object feeBody = keyword switch
         {
-            "resubfees.pending" => new { totalResubmissionFee = 250000, previousPayments = 0, outstandingPayment = 250000, memberCount = 1 },
-            "resubfees.zero" => new { totalResubmissionFee = 0, previousPayments = 0, outstandingPayment = 0, memberCount = 1 },
-            _                   => new { totalResubmissionFee = 0,       previousPayments = 0, outstandingPayment = 0,       memberCount = 1 }
+            "resubfees.pending"   => new { totalResubmissionFee = 250000, previousPayments = 0, outstandingPayment = 250000, memberCount = 1 },
+            "resubfees.viewed"    => new { totalResubmissionFee = 250000, previousPayments = 0, outstandingPayment = 250000, memberCount = 1 },
+            "resubfees.nomembers" => new { totalResubmissionFee = 0,      previousPayments = 0, outstandingPayment = 0,      memberCount = 0 },
+            _                     => new { totalResubmissionFee = 0,      previousPayments = 0, outstandingPayment = 0,      memberCount = 1 }
         };
 
         return new WireMock.ResponseMessage

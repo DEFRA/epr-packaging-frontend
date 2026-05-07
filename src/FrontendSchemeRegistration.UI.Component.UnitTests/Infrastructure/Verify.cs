@@ -44,8 +44,11 @@ public static class VerifyHtml
             
             foreach (var node in nodes.QuerySelectorAll("link"))
                 node.Remove();
-            
+
             foreach (var node in nodes.QuerySelectorAll("div[class=\"govuk-cookie-banner \"]"))
+                node.Remove();
+                
+            foreach (var node in nodes.QuerySelectorAll("div[class=\"last-updated-date\"]"))
                 node.Remove();
         });
         
