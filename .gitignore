@@ -415,3 +415,4 @@ FodyWeavers.xsd
 /src/FrontendSchemeRegistration.UI/libman.json
 
 src/FrontendSchemeRegistration.UI.ComponentTests/Features/*.feature.cs
+src/FrontendSchemeRegistration.UI.Component.UnitTests/Features/*.feature.cs
