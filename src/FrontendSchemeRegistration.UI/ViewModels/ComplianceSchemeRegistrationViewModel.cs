@@ -7,5 +7,4 @@ public record class ComplianceSchemeRegistrationViewModel(
     string Nation,
     IEnumerable<RegistrationYearApplicationsViewModel> RegistrationApplicationYears)
 {
-    public bool DisplayCsoSmallProducerRegistration { get; set; } = false;
 };
