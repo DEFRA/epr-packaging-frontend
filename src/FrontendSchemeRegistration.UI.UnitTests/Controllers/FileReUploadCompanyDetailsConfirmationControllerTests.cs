@@ -26,7 +26,6 @@ using Microsoft.Extensions.Time.Testing;
 [TestFixture]
 public class FileReUploadCompanyDetailsConfirmationControllerTests
 {
-    private static readonly DateTime SubmissionDeadline = DateTime.UtcNow;
     private static readonly Guid SubmissionId = Guid.NewGuid();
     private Mock<ISubmissionService> _submissionServiceMock;
     private Mock<IUserAccountService> _userAccountServiceMock;
@@ -35,17 +34,20 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
     private Mock<IRegistrationPeriodProvider> _registrationPeriodProviderMock;
     private FakeTimeProvider _dateTimeProvider;
     private const int RegistrationYear = 2026;
-
+    
     [SetUp]
     public void SetUp()
     {
+        _dateTimeProvider = new FakeTimeProvider();
+        _dateTimeProvider.SetUtcNow(new DateTime(2026, 1, 1));
+        
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
                 RegistrationSession = new RegistrationSession
                 {
-                    SubmissionDeadline = SubmissionDeadline
+                    SubmissionDeadline = _dateTimeProvider.GetUtcNow().DateTime
                 },
                 UserData = new UserData
                 {
@@ -64,8 +66,6 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
         _userAccountServiceMock = new Mock<IUserAccountService>();
         _registrationPeriodProviderMock = new Mock<IRegistrationPeriodProvider>();
         
-        _dateTimeProvider = new FakeTimeProvider();
-        _dateTimeProvider.SetUtcNow(new DateTime(2026, 1, 1));
         _registrationPeriodProviderMock.Setup(x => x.GetAllRegistrationWindows(It.IsAny<bool>())).Returns(
             CreateRegistrationWindows(WindowType.DirectSmallProducer, RegistrationYear, null, null, null));
 
@@ -184,7 +184,7 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
             PartnersFileName = partnersFileName,
             PartnersFileUploadDate = partnersUploadDate.ToReadableDate(),
             PartnersFileUploadedBy = fullName,
-            SubmissionDeadline = SubmissionDeadline.ToReadableDate(),
+            SubmissionDeadline = _dateTimeProvider.GetUtcNow().DateTime.ToReadableLongMonthDeadlineDate(),
             IsSubmitted = false,
             HasValidfile = true,
             Status = SubmissionPeriodStatus.FileUploaded,
@@ -258,7 +258,7 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
             {
                 RegistrationSession = new RegistrationSession
                 {
-                    SubmissionDeadline = SubmissionDeadline,
+                    SubmissionDeadline = _dateTimeProvider.GetUtcNow().DateTime,
                     IsFileUploadJourneyInvokedViaRegistration = true
                 },
                 UserData = new UserData
@@ -294,7 +294,7 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
             PartnersFileName = partnersFileName,
             PartnersFileUploadDate = partnersUploadDate.ToReadableDate(),
             PartnersFileUploadedBy = fullName,
-            SubmissionDeadline = SubmissionDeadline.ToReadableDate(),
+            SubmissionDeadline = _dateTimeProvider.GetUtcNow().DateTime.ToReadableLongMonthDeadlineDate(),
             IsSubmitted = false,
             HasValidfile = true,
             Status = SubmissionPeriodStatus.FileUploaded,
@@ -386,7 +386,7 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
             PartnersFileName = partnersFileName,
             PartnersFileUploadDate = submitDate.ToReadableDate(),
             PartnersFileUploadedBy = fullName,
-            SubmissionDeadline = SubmissionDeadline.ToReadableDate(),
+            SubmissionDeadline = _dateTimeProvider.GetUtcNow().DateTime.ToReadableLongMonthDeadlineDate(),
             IsSubmitted = true,
             HasValidfile = true,
             Status = SubmissionPeriodStatus.SubmittedToRegulator,
@@ -437,7 +437,7 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
             CompanyDetailsFileName = orgDetailsFileName,
             CompanyDetailsFileUploadDate = orgDetailsUploadDate.ToReadableDate(),
             CompanyDetailsFileUploadedBy = fullName,
-            SubmissionDeadline = SubmissionDeadline.ToReadableDate(),
+            SubmissionDeadline = _dateTimeProvider.GetUtcNow().DateTime.ToReadableLongMonthDeadlineDate(),
             HasValidfile = true,
             Status = SubmissionPeriodStatus.NotStarted,
             OrganisationRole = "Producer",
@@ -556,7 +556,7 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
             {
                 RegistrationSession = new RegistrationSession
                 {
-                    SubmissionDeadline = SubmissionDeadline,
+                    SubmissionDeadline = _dateTimeProvider.GetUtcNow().DateTime,
                     IsFileUploadJourneyInvokedViaRegistration = true,
                     IsResubmission = false
                 },
@@ -588,7 +588,7 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
     private IReadOnlyCollection<RegistrationWindow> CreateRegistrationWindows(WindowType windowType, int? registrationYear = RegistrationYear, DateTime? openingDateOffset = null,
         DateTime? deadlineDateOffset = null, DateTime? closingDateOffset = null)
     {
-        var today = DateTime.UtcNow;
+        var today = _dateTimeProvider.GetUtcNow().DateTime;
         var opening = openingDateOffset ?? new DateTime(RegistrationYear, today.AddDays(-1).Month, today.AddDays(-1).Day);
         var deadline = deadlineDateOffset ?? new DateTime(RegistrationYear, today.Month, today.Day);
         var closing = closingDateOffset ?? new DateTime(RegistrationYear, today.AddDays(1).Month, today.AddDays(1).Day);
