@@ -19,16 +19,18 @@ public class FileReUploadCompanyDetailsConfirmationController : Controller
     private readonly ISubmissionService _submissionService;
     private readonly IUserAccountService _accountService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
+    private readonly IRegistrationPeriodProvider _registrationPeriodProvider;
 
     public FileReUploadCompanyDetailsConfirmationController(
         ISubmissionService submissionService,
         IUserAccountService accountService,
-        ISessionManager<FrontendSchemeRegistrationSession> sessionManager)
+        ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
+        IRegistrationPeriodProvider registrationPeriodProvider)
     {
         _submissionService = submissionService;
         _accountService = accountService;
         _sessionManager = sessionManager;
-
+        _registrationPeriodProvider = registrationPeriodProvider;
     }
 
     [HttpGet]
@@ -82,6 +84,14 @@ public class FileReUploadCompanyDetailsConfirmationController : Controller
             RegistrationJourney = registrationJourney
         };
 
+        var activeRegistrationWindows = _registrationPeriodProvider.GetAllRegistrationWindows(
+                session.RegistrationSession.UsingAComplianceScheme.GetValueOrDefault(false));
+        var currentWindow = activeRegistrationWindows.FirstOrDefault(x => x.RegistrationYear == registrationYear);
+        if (currentWindow != null)
+        {
+            model.SubmissionDeadline = currentWindow.DeadlineDate.ToReadableLongMonthDeadlineDate();
+        }
+        
         if (model.Status.Equals(SubmissionPeriodStatus.NotStarted) && !string.IsNullOrEmpty(submission.CompanyDetailsFileName))
         {
             var companyDetailsUploadedBy = await GetUsersName(submission.CompanyDetailsUploadedBy);
