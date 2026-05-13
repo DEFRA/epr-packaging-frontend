@@ -1,10 +1,12 @@
 ﻿namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
 
+using System.Collections.ObjectModel;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
 using Application.DTOs.Submission;
 using Application.DTOs.UserAccount;
+using Application.Options.RegistrationPeriodPatterns;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Controllers;
@@ -19,7 +21,7 @@ using Microsoft.Extensions.Primitives;
 using Moq;
 using Organisation = EPR.Common.Authorization.Models.Organisation;
 using FrontendSchemeRegistration.Application.Constants;
-using FrontendSchemeRegistration.UI.Services;
+using Microsoft.Extensions.Time.Testing;
 
 [TestFixture]
 public class FileReUploadCompanyDetailsConfirmationControllerTests
@@ -30,6 +32,9 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
     private Mock<IUserAccountService> _userAccountServiceMock;
     private FileReUploadCompanyDetailsConfirmationController _systemUnderTest;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
+    private Mock<IRegistrationPeriodProvider> _registrationPeriodProviderMock;
+    private FakeTimeProvider _dateTimeProvider;
+    private const int RegistrationYear = 2026;
 
     [SetUp]
     public void SetUp()
@@ -57,11 +62,17 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
 
         _submissionServiceMock = new Mock<ISubmissionService>();
         _userAccountServiceMock = new Mock<IUserAccountService>();
+        _registrationPeriodProviderMock = new Mock<IRegistrationPeriodProvider>();
+        
+        _dateTimeProvider = new FakeTimeProvider();
+        _dateTimeProvider.SetUtcNow(new DateTime(2026, 1, 1));
+        _registrationPeriodProviderMock.Setup(x => x.GetAllRegistrationWindows(It.IsAny<bool>())).Returns(
+            CreateRegistrationWindows(WindowType.DirectSmallProducer, RegistrationYear, null, null, null));
 
         _systemUnderTest =
             new FileReUploadCompanyDetailsConfirmationController(
                 _submissionServiceMock.Object,
-                _userAccountServiceMock.Object, _sessionManagerMock.Object);
+                _userAccountServiceMock.Object, _sessionManagerMock.Object, _registrationPeriodProviderMock.Object);
 
         _systemUnderTest.ControllerContext = new ControllerContext
         {
@@ -572,5 +583,21 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
         backLink.Should().Contain(PagePaths.RegistrationTaskList);
         backLink.Should().Contain("registrationjourney");
         backLink.Should().Contain("registrationyear");
+    }
+    
+    private IReadOnlyCollection<RegistrationWindow> CreateRegistrationWindows(WindowType windowType, int? registrationYear = RegistrationYear, DateTime? openingDateOffset = null,
+        DateTime? deadlineDateOffset = null, DateTime? closingDateOffset = null)
+    {
+        var today = DateTime.UtcNow;
+        var opening = openingDateOffset ?? new DateTime(RegistrationYear, today.AddDays(-1).Month, today.AddDays(-1).Day);
+        var deadline = deadlineDateOffset ?? new DateTime(RegistrationYear, today.Month, today.Day);
+        var closing = closingDateOffset ?? new DateTime(RegistrationYear, today.AddDays(1).Month, today.AddDays(1).Day);
+
+        var registrationWindows = new List<RegistrationWindow>
+        {
+            new(_dateTimeProvider, windowType, registrationYear.GetValueOrDefault(RegistrationYear), opening, deadline, closing)
+        };
+        
+        return new ReadOnlyCollection<RegistrationWindow>(registrationWindows);
     }
 }
