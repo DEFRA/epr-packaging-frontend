@@ -21,13 +21,10 @@
                     <ol class="govuk-list govuk-grid-row box-container">
                         @foreach (var registrationApplication in registrationApplicationYear.Applications.OrderBy(a => a.RegistrationJourney))
                         {
-                            if ((registrationApplication.RegistrationJourney == RegistrationJourney.CsoSmallProducer && Model.DisplayCsoSmallProducerRegistration) || registrationApplication.RegistrationJourney != RegistrationJourney.CsoSmallProducer)
-                            {
-                                registrationApplication.SummaryCardStyling = true;
-                                <li>
-                                    <partial name="~/Views/FrontendSchemeRegistration/RegistrationApplicationYearBlock.cshtml" model="registrationApplication"/>
-                                </li>
-                            }
+                            registrationApplication.SummaryCardStyling = true;
+                            <li>
+                                <partial name="~/Views/FrontendSchemeRegistration/RegistrationApplicationYearBlock.cshtml" model="registrationApplication"/>
+                            </li>
                         }
                     </ol>
                 </li>
