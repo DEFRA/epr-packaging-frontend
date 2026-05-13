@@ -1,6 +1,7 @@
 ﻿namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
 
 using System.Collections.ObjectModel;
+using Application.DTOs;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
@@ -31,9 +32,9 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
     private Mock<IUserAccountService> _userAccountServiceMock;
     private FileReUploadCompanyDetailsConfirmationController _systemUnderTest;
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock;
+    private Mock<ISessionManager<RegistrationApplicationSession>> _registrationSessionManagerMock;
     private Mock<IRegistrationPeriodProvider> _registrationPeriodProviderMock;
     private FakeTimeProvider _dateTimeProvider;
-    private const int RegistrationYear = 2026;
     
     [SetUp]
     public void SetUp()
@@ -61,18 +62,35 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
                     }
                 }
             });
+        
+        _registrationSessionManagerMock = new  Mock<ISessionManager<RegistrationApplicationSession>>();
+        _registrationSessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new RegistrationApplicationSession
+            {
+                RegistrationFeeCalculationDetails =
+                [
+                    new RegistrationFeeCalculationDetails
+                    {
+                        OrganisationSize = "Small",
+                        IsOnlineMarketplace = true,
+                        NumberOfSubsidiaries = 0,
+                        NumberOfSubsidiariesBeingOnlineMarketPlace = 0
+                    }
+                ]
+            });
 
         _submissionServiceMock = new Mock<ISubmissionService>();
         _userAccountServiceMock = new Mock<IUserAccountService>();
         _registrationPeriodProviderMock = new Mock<IRegistrationPeriodProvider>();
         
-        _registrationPeriodProviderMock.Setup(x => x.GetAllRegistrationWindows(It.IsAny<bool>())).Returns(
-            CreateRegistrationWindows(WindowType.DirectSmallProducer, RegistrationYear, null, null, null));
+        _registrationPeriodProviderMock.Setup(x => x.GetRegistrationWindow(It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<int>())).Returns(
+            CreateRegistrationWindow(WindowType.DirectSmallProducer, null, null, null));
 
         _systemUnderTest =
             new FileReUploadCompanyDetailsConfirmationController(
-                _submissionServiceMock.Object,
-                _userAccountServiceMock.Object, _sessionManagerMock.Object, _registrationPeriodProviderMock.Object);
+                _submissionServiceMock.Object, _userAccountServiceMock.Object, 
+                _sessionManagerMock.Object, _registrationSessionManagerMock.Object, 
+                _registrationPeriodProviderMock.Object);
 
         _systemUnderTest.ControllerContext = new ControllerContext
         {
@@ -585,19 +603,14 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
         backLink.Should().Contain("registrationyear");
     }
     
-    private IReadOnlyCollection<RegistrationWindow> CreateRegistrationWindows(WindowType windowType, int? registrationYear = RegistrationYear, DateTime? openingDateOffset = null,
+    private RegistrationWindow CreateRegistrationWindow(WindowType windowType, DateTime? openingDateOffset = null,
         DateTime? deadlineDateOffset = null, DateTime? closingDateOffset = null)
     {
         var today = _dateTimeProvider.GetUtcNow().DateTime;
-        var opening = openingDateOffset ?? new DateTime(RegistrationYear, today.AddDays(-1).Month, today.AddDays(-1).Day);
-        var deadline = deadlineDateOffset ?? new DateTime(RegistrationYear, today.Month, today.Day);
-        var closing = closingDateOffset ?? new DateTime(RegistrationYear, today.AddDays(1).Month, today.AddDays(1).Day);
-
-        var registrationWindows = new List<RegistrationWindow>
-        {
-            new(_dateTimeProvider, windowType, registrationYear.GetValueOrDefault(RegistrationYear), opening, deadline, closing)
-        };
+        var opening = openingDateOffset ?? new DateTime(today.AddDays(-1).Year, today.AddDays(-1).Month, today.AddDays(-1).Day);
+        var deadline = deadlineDateOffset ?? new DateTime(today.Year, today.Month, today.Day);
+        var closing = closingDateOffset ?? new DateTime(today.AddDays(1).Year, today.AddDays(1).Month, today.AddDays(1).Day);
         
-        return new ReadOnlyCollection<RegistrationWindow>(registrationWindows);
+        return new RegistrationWindow(_dateTimeProvider, windowType, today.Year, opening, deadline, closing);
     }
 }
