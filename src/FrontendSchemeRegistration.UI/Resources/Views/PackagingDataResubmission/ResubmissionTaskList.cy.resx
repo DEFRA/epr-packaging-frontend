@@ -19,7 +19,7 @@
         <value>{0} Ailgyflwyno data pecynwaith Acme Limited</value>
     </data>
     <data name="submit_resubmission_data" xml:space="preserve">
-        <value>Diweddaru manylion cofrestru</value>
+        <value>Llwythwch i fyny data pecynnu</value>
     </data>
     <data name="view_pay_resubmission_fee" xml:space="preserve">
         <value>Gweld y ffi ailgyflwyno</value>
