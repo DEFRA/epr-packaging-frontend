@@ -28,7 +28,7 @@
         <value>Rydych chi wedi gweld y ffi gofrestru ac wedi dewis dull talu</value>
     </data>
     <data name="submit_resubmission_application" xml:space="preserve">
-        <value>Cyflwyno i'r rheoleiddiwr amgylcheddol</value>
+        <value>Cyflwyno i'r rheolydd</value>
     </data>
     <data name="can_not_start_yet_status" xml:space="preserve">
         <value>METHU DECHRAU ETO</value>
