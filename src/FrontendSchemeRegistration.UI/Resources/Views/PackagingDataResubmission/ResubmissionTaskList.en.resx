@@ -124,7 +124,7 @@
     <value>{0} packaging data resubmission</value>
   </data>
 	<data name="submit_resubmission_data" xml:space="preserve">
-    <value>Resubmit packaging data</value>
+    <value>Upload packaging data</value>
   </data>
 	<data name="view_pay_resubmission_fee" xml:space="preserve">
     <value>View resubmission fee</value>
@@ -133,7 +133,7 @@
     <value>You have viewed the resubmission fee and selected a payment method</value>
   </data>
 	<data name="submit_resubmission_application" xml:space="preserve">
-    <value>Submit to environment regulator</value>
+    <value>Submit to the regulator</value>
   </data>
 	<data name="can_not_start_yet_status" xml:space="preserve">
     <value>CANNOT START YET</value>
