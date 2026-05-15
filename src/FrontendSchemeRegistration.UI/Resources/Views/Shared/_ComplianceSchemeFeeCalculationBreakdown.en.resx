@@ -150,6 +150,12 @@
   <data name="x_online_marketplaces_sentence_text_singular" xml:space="preserve">
     <value>{0} is an online marketplace</value>
   </data>
+  <data name="x_closed_loop_recyclers_sentence_text" xml:space="preserve">
+    <value>{0} are closed loop recyclers</value>
+  </data>
+  <data name="x_closed_loop_recyclers_sentence_text_singular" xml:space="preserve">
+    <value>{0} is a closed loop recycler</value>
+  </data>
   <data name="x_subsidiary_companies_sentence_text" xml:space="preserve">
     <value>{0} subsidiary companies</value>
   </data>

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.9.34728.123
+# Visual Studio Version 18
+VisualStudioVersion = 18.4.11626.88 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FrontendSchemeRegistration.UI", "FrontendSchemeRegistration.UI\FrontendSchemeRegistration.UI.csproj", "{FFD5EAA2-1F8C-4DF0-8116-FCF5BB81E960}"
 EndProject
@@ -63,8 +63,15 @@ Global
 		{FB80FDFA-6FB2-446B-87AE-10B89288EF4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FB80FDFA-6FB2-446B-87AE-10B89288EF4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FB80FDFA-6FB2-446B-87AE-10B89288EF4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E6CC406-65ED-4E2F-8E24-98F496126533}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E6CC406-65ED-4E2F-8E24-98F496126533}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E6CC406-65ED-4E2F-8E24-98F496126533}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E6CC406-65ED-4E2F-8E24-98F496126533}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {70DCB292-1D66-431D-808C-86CA0A5E2E3F}
 	EndGlobalSection
 EndGlobal

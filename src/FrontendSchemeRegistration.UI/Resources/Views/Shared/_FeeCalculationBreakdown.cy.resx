@@ -37,6 +37,9 @@
   <data name="online_marketplace_fee" xml:space="preserve">
     <value>Ffi marchnad ar-lein</value>
   </data>
+  <data name="closed_loop_recycling_fee" xml:space="preserve">
+    <value>[Welsh] Closed loop recycling fee</value>
+  </data>
   <data name="subsidiary_fee" xml:space="preserve">
     <value>Ffi is-gwmni</value>
   </data>
@@ -66,6 +69,12 @@
   </data>
   <data name="y_online_marketplace_singular" xml:space="preserve">
     <value>{0} is on online marketplace Mae {0} ar y farchnad ar-lein</value>
+  </data>
+  <data name="y_closed_loop_recycling" xml:space="preserve">
+    <value>[Welsh] {0} are closed loop recyclers</value>
+  </data>
+  <data name="y_closed_loop_recycling_singular" xml:space="preserve">
+    <value>[Welsh] {0} is a closed loop recycler</value>
   </data>
   <data name="total_outstanding" xml:space="preserve">
     <value>Y cyfanswm sydd heb ei dalu</value>

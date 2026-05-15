@@ -37,6 +37,9 @@
   <data name="online_marketplace_fee" xml:space="preserve">
     <value>Online marketplace fee</value>
   </data>
+  <data name="closed_loop_recycling_fee" xml:space="preserve">
+    <value>Self-managed disposal</value>
+  </data>
   <data name="subsidiary_fee" xml:space="preserve">
     <value>Subsidiary fee</value>
   </data>
@@ -66,6 +69,12 @@
   </data>
   <data name="y_online_marketplace_singular" xml:space="preserve">
     <value>{0} is on online marketplace</value>
+  </data>
+  <data name="y_closed_loop_recycling" xml:space="preserve">
+    <value>{0} are closed loop recyclers</value>
+  </data>
+  <data name="y_closed_loop_recycling_singular" xml:space="preserve">
+    <value>{0} is a closed loop recycler</value>
   </data>
   <data name="total_outstanding" xml:space="preserve">
     <value>Total outstanding</value>

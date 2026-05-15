@@ -9,6 +9,7 @@ namespace FrontendSchemeRegistration.Application.DTOs.PaymentCalculations
     {
         public int ProducerRegistrationFee { get; set; }
         public int ProducerOnlineMarketPlaceFee { get; set; }
+        public int ProducerClosedLoopRecyclingFee { get; set; }
         public int ProducerLateRegistrationFee { get; set; }
         public int SubsidiariesFee { get; set; }
         public int TotalFee { get; set; }
@@ -28,6 +29,15 @@ namespace FrontendSchemeRegistration.Application.DTOs.PaymentCalculations
 
         [JsonPropertyName("unitOMPFees")]
         public int UnitOnlineMarketplaceFee { get; set; }
+
+        [JsonPropertyName("totalSubsidiariesClosedLoopRecyclingFees")]
+        public int TotalSubsidiariesClosedLoopRecyclingFee { get; set; }
+
+        [JsonPropertyName("countOfClosedLoopRecyclingSubsidiaries")]
+        public int CountOfClosedLoopRecyclingSubsidiaries { get; set; }
+
+        [JsonPropertyName("unitClosedLoopRecyclingFees")]
+        public int UnitClosedLoopRecyclingFee { get; set; }
 
         public FeeBreakdown[] FeeBreakdowns { get; set; }
     }

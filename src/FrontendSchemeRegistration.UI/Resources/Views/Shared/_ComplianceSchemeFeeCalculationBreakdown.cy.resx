@@ -150,6 +150,12 @@
   <data name="x_online_marketplaces_sentence_text_singular" xml:space="preserve">
     <value>Mae {0} yn farchnad ar-lein</value>
   </data>
+  <data name="x_closed_loop_recyclers_sentence_text" xml:space="preserve">
+    <value>[Welsh] {0} are closed loop recyclers</value>
+  </data>
+  <data name="x_closed_loop_recyclers_sentence_text_singular" xml:space="preserve">
+    <value>[Welsh] {0} is a closed loop recycler</value>
+  </data>
   <data name="x_subsidiary_companies_sentence_text" xml:space="preserve">
     <value>{0} o is-gwmnïau</value>
   </data>
