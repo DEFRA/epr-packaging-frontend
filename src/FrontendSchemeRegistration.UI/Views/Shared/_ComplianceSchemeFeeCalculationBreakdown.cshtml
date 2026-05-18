@@ -1,107 +1,105 @@
 @model FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication.ComplianceSchemeFeeCalculationBreakdownViewModel
 
-<dl class="govuk-summary-list">
-    <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-            @Localizer["item"]
-        </dt>
-        <dt class="govuk-summary-list__key">
-            @Localizer["description"]
-        </dt>
-        <dt class="govuk-summary-list__actions">
-            <b>@Localizer["amount"]</b>
-        </dt>
-    </div>
-    <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-            @Localizer["application_fee"]
-        </dt>
-        <dt class="govuk-summary-list__value">
-            @Localizer["compliance_scheme"]
-        </dt>
-        <dd class="govuk-summary-list__actions">
-            &pound;@ConvertToThousandSeparatedDecimal(Model.RegistrationFee)
-        </dd>
-    </div>
+<table class="govuk-table govuk-table--small-text-until-tablet govuk-!-margin-top-6">
+    <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">@Localizer["item"]</th>
+            <th scope="col" class="govuk-table__header govuk-!-padding-left-2">@Localizer["description"]</th>
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric">@Localizer["amount"]</th>
+        </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">@Localizer["compliance_scheme"]</th>
+            <td class="govuk-table__cell govuk-!-padding-left-2">1</td>
+            <td class="govuk-table__cell govuk-table__header--numeric">&pound;@ConvertToThousandSeparatedDecimal(Model.RegistrationFee)</td>
+        </tr>
 
-    @{
-        bool showTitle = true;
-
-        var schemeMemberTypes = new[]
+        @if (Model.SmallProducersCount > 0)
         {
-            new { Name = Localizer[$"x_small_producers_sentence_text{(Model.SmallProducersCount == 1 ? "_singular" : "")}", Model.SmallProducersCount], Count = Model.SmallProducersCount, Fee = Model.SmallProducersFee },
-            new { Name = Localizer[$"x_large_producers_sentence_text{(Model.LargeProducersCount == 1 ? "_singular" : "")}", Model.LargeProducersCount], Count = Model.LargeProducersCount, Fee = Model.LargeProducersFee },
-            new { Name = Localizer[$"x_online_marketplaces_sentence_text{(Model.OnlineMarketplaceCount == 1 ? "_singular" : "")}", Model.OnlineMarketplaceCount], Count = Model.OnlineMarketplaceCount, Fee = Model.OnlineMarketplaceFee },
-            new { Name = Localizer[$"x_closed_loop_recyclers_sentence_text{(Model.ClosedLoopRecyclingCount == 1 ? "_singular" : "")}", Model.ClosedLoopRecyclingCount], Count = Model.ClosedLoopRecyclingCount, Fee = Model.ClosedLoopRecyclingFee },
-            new { Name = Localizer[$"x_subsidiary_companies_sentence_text{(Model.SubsidiaryCompanyCount == 1 ? "_singular" : "")}", Model.SubsidiaryCompanyCount], Count = Model.SubsidiaryCompanyCount, Fee = Model.SubsidiaryCompanyFee },
-            new { Name = Localizer[$"x_late_producer_fees_text{(Model.LateProducersCount == 1 ? "_singular" : "")}", Model.LateProducersCount], Count = Model.LateProducersCount, Fee = Model.LateProducerFee }
-        };
-
-        foreach (var memberType in schemeMemberTypes.Where(mt => mt.Count > 0))
-        {
-            <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">
-                    @if (showTitle)
-                    {
-                        <text>@Localizer["scheme_members"]</text>
-                        showTitle = false;
-                    }
-                    else
-                    {
-                        <text>&nbsp;</text>
-                    }
-                </dt>
-                <dt class="govuk-summary-list__value">
-                    <text>@(memberType.Name)</text>
-                </dt>
-                <dd class="govuk-summary-list__actions">
-                    <text>&pound;@ConvertToThousandSeparatedDecimal(memberType.Fee)</text>
-                </dd>
-            </div>
+            <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">@Localizer["epr_small_producer"]</th>
+                <td class="govuk-table__cell govuk-!-padding-left-2">@Model.SmallProducersCount</td>
+                <td class="govuk-table__cell govuk-table__header--numeric">&pound;@ConvertToThousandSeparatedDecimal(Model.SmallProducersFee)</td>
+            </tr>
         }
-    }
 
-    <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-            @Localizer["sub_total_amount"]
-        </dt>
-        <dt class="govuk-summary-list__value">
-            &nbsp;
-        </dt>
-        <dd class="govuk-summary-list__actions">
-            &pound;@ConvertToThousandSeparatedDecimal(Model.TotalFeeAmount)
-        </dd>
-    </div>
+        @if (Model.LargeProducersCount > 0)
+        {
+            <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">@Localizer["epr_large_producer"]</th>
+                <td class="govuk-table__cell govuk-!-padding-left-2">@Model.LargeProducersCount</td>
+                <td class="govuk-table__cell govuk-table__header--numeric">&pound;@ConvertToThousandSeparatedDecimal(Model.LargeProducersFee)</td>
+            </tr>
+        }
 
-    @if (Model.TotalPreviousPayments != 0)
-    {
-        <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">
-                @Localizer["previous_payments"]
-            </dt>
-            <dt class="govuk-summary-list__value">
-                @Localizer["total_previous_payments_received"]
-            </dt>
-            <dd class="govuk-summary-list__actions">
-                &pound;@ConvertToThousandSeparatedDecimal(Model.TotalPreviousPayments)
-            </dd>
-        </div>
-    }
+        @if (Model.OnlineMarketplaceCount > 0)
+        {
+            <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">@Localizer["online_marketplaces"]</th>
+                <td class="govuk-table__cell govuk-!-padding-left-2">@Model.OnlineMarketplaceCount</td>
+                <td class="govuk-table__cell govuk-table__header--numeric">&pound;@ConvertToThousandSeparatedDecimal(Model.OnlineMarketplaceFee)</td>
+            </tr>
+        }
 
-    <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-            @Localizer["total_outstanding"]
-        </dt>
-        <dt class="govuk-summary-list__value">
-            &nbsp;
-        </dt>
-        <dd class="govuk-summary-list__actions">
-            &pound;@ConvertToThousandSeparatedDecimal(Model.TotalAmountOutstanding)
-        </dd>
-    </div>
+        @if (Model.ClosedLoopRecyclingCount > 0)
+        {
+            <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">@Localizer["closed_loop_packaging_waste"]</th>
+                <td class="govuk-table__cell govuk-!-padding-left-2">@Model.ClosedLoopRecyclingCount</td>
+                <td class="govuk-table__cell govuk-table__header--numeric">&pound;@ConvertToThousandSeparatedDecimal(Model.ClosedLoopRecyclingFee)</td>
+            </tr>
+        }
 
-    @functions
-    {
-        private static string ConvertToThousandSeparatedDecimal(int number) => (number / 100).ToString("#,##0.00");
-    }
-</dl>
+        @if (Model.LateProducersCount > 0)
+        {
+            <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">@Localizer["late_submissions"]</th>
+                <td class="govuk-table__cell govuk-!-padding-left-2">@Model.LateProducersCount</td>
+                <td class="govuk-table__cell govuk-table__header--numeric">&pound;@ConvertToThousandSeparatedDecimal(Model.LateProducerFee)</td>
+            </tr>
+        }
+
+        @if (Model.SubsidiaryCompanyCount > 0)
+        {
+            <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">
+                    @Localizer["subsidiaries"]
+                    <p class="govuk-!-font-weight-regular">@Localizer["subsidiaries_amount_explanation"]</p>
+                    <ul class="govuk-list govuk-list--bullet govuk-!-font-weight-regular">
+                        <li>@Localizer["closed_loop_packaging_waste_bullet"]</li>
+                        <li>@Localizer["online_marketplaces_bullet"]</li>
+                    </ul>
+                </th>
+                <td class="govuk-table__cell govuk-!-padding-left-2">@Model.SubsidiaryCompanyCount</td>
+                <td class="govuk-table__cell govuk-table__header--numeric">&pound;@ConvertToThousandSeparatedDecimal(Model.SubsidiaryCompanyFee)</td>
+            </tr>
+        }
+
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">@Localizer["sub_total_amount"]</th>
+            <td class="govuk-table__cell govuk-!-padding-left-2"></td>
+            <td class="govuk-table__cell govuk-table__header--numeric">&pound;@ConvertToThousandSeparatedDecimal(Model.TotalFeeAmount)</td>
+        </tr>
+
+        @if (Model.TotalPreviousPayments != 0)
+        {
+            <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">@Localizer["previous_payments"]</th>
+                <td class="govuk-table__cell govuk-!-padding-left-2"></td>
+                <td class="govuk-table__cell govuk-table__header--numeric">&pound;@ConvertToThousandSeparatedDecimal(Model.TotalPreviousPayments)</td>
+            </tr>
+        }
+
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">@Localizer["total_outstanding"]</th>
+            <td class="govuk-table__cell"></td>
+            <td class="govuk-table__header govuk-table__header--numeric">&pound;@ConvertToThousandSeparatedDecimal(Model.TotalAmountOutstanding)</td>
+        </tr>
+    </tbody>
+</table>
+
+@functions
+{
+    private static string ConvertToThousandSeparatedDecimal(int number) => (number / 100).ToString("#,##0.00");
+}
