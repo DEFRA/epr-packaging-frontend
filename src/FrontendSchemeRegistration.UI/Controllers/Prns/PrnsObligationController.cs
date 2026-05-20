@@ -65,7 +65,8 @@ public class PrnsObligationController : Controller
     [Route(PagePaths.Prns.ObligationsHome)]
     public async Task<IActionResult> ObligationsHome()
     {
-        var viewModel = await _prnService.GetRecyclingObligationsCalculation(_complianceYear);
+        var isCsocEnabled = await _featureManager.IsEnabledAsync(FeatureFlags.CsocEnabled);
+        var viewModel = await _prnService.GetRecyclingObligationsCalculation(_complianceYear, includeComplianceDeclarationStatus: isCsocEnabled);
         
         _logger.LogInformation(
             "{LogPrefix}: PrnsObligationController - ObligationsHome: Recycling Obligations returned for year {Year} : {Results}",
@@ -78,13 +79,15 @@ public class PrnsObligationController : Controller
         var isApprovedUser = userData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved);
         var organisation = userData.Organisations[0];
         
-        viewModel.CsocViewModel = await CsocHelper.CreateViewModel(
-            _featureManager, 
-            isApprovedUser, 
-            organisation,
-            _timeProvider.GetLocalNow().DateTime,
-            _csocOptions.Value,
-            viewModel);
+        viewModel.CsocViewModel = isCsocEnabled
+            ? await CsocHelper.CreateViewModel(
+                _featureManager,
+                isApprovedUser,
+                organisation,
+                _timeProvider.GetLocalNow().DateTime,
+                _csocOptions.Value,
+                viewModel)
+            : null;
         
         return View(viewModel);
     }
@@ -101,7 +104,7 @@ public class PrnsObligationController : Controller
 
         if (Enum.TryParse(material, true, out MaterialType materialType))
         {
-            viewModel = await _prnService.GetRecyclingObligationsCalculation(_complianceYear);
+            viewModel = await _prnService.GetRecyclingObligationsCalculation(_complianceYear, includeComplianceDeclarationStatus: false);
             _logger.LogInformation(
                 "{LogPrefix}: PrnsObligationController - ObligationsHome: Recycling Obligations returned for year {Year} : {Results}",
                 _logPrefix, _complianceYear, JsonConvert.SerializeObject(viewModel));

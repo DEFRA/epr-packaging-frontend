@@ -445,4 +445,7 @@ Read the guidance about how to create your organisation details file. Once youâ€
   <data name="109" xml:space="preserve">
     <value>Recyclability codes are applicable only for HH, PB and HDC-GL packaging material types for 2025 onwards submissions for large organisations (L)</value>
   </data>
+  <data name="74" xml:space="preserve">
+    <value>Closed loop weight cannot exceed the total weight reported for this packaging material.</value>
+  </data>
 </root>

@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 public class WebApiOptions
 {
     public ObligationDataType ObligationData { get; set; }
+    public ComplianceDeclarationStatusType ComplianceDeclarationStatus { get; set; }
 
     public string PrnObligationCalculationResponseFile =>
         $"v1_prn_obligationcalculation_{ObligationData.ToString().ToLower()}.json";
@@ -14,5 +15,12 @@ public class WebApiOptions
     {
         Mixed,
         NoDataYet
+    }
+
+    public enum ComplianceDeclarationStatusType
+    {
+        None,
+        Submitted,
+        Cancelled
     }
 }

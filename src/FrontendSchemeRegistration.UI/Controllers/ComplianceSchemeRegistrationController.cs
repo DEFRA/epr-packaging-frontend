@@ -10,17 +10,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FrontendSchemeRegistration.UI.Controllers;
 
-using Constants;
 using global::FrontendSchemeRegistration.UI.Attributes.ActionFilters;
-using Microsoft.FeatureManagement;
 
 [RegistrationApplicationSessionLoggingScopeActionFilter]
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
 [Route(PagePaths.CsoRegistration)]
 public class ComplianceSchemeRegistrationController(
     IComplianceSchemeService complianceSchemeService,
-    IRegistrationApplicationService registrationApplicationService,
-    IFeatureManager featureManager) : Controller
+    IRegistrationApplicationService registrationApplicationService) : Controller
 {
     [HttpGet]
     public async Task<IActionResult> ComplianceSchemeRegistration([FromQuery]Nation nation)
@@ -35,8 +32,6 @@ public class ComplianceSchemeRegistrationController(
         ViewBag.BackLinkToDisplay = PagePaths.ComplianceSchemeLanding;
 
         var csoRegViewModel = new ComplianceSchemeRegistrationViewModel(cso.Name, nation.ToString(), registrationApplicationYearViewModelsTask.Result);
-        csoRegViewModel.DisplayCsoSmallProducerRegistration = await featureManager.IsEnabledAsync(FeatureFlags.DisplayCsoSmallProducerRegistration);
-        
         return View(csoRegViewModel);
     }
 }
