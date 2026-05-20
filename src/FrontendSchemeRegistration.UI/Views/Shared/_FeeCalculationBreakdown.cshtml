@@ -1,159 +1,96 @@
 @model FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication.FeeCalculationBreakdownViewModel
 
-<dl class="govuk-summary-list">
-    <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-            @Localizer["item"]
-        </dt>
-        <dt class="govuk-summary-list__key">
-            @Localizer["description"]
-        </dt>
-        <dt class="govuk-summary-list__actions">
-            <b>@Localizer["amount"]</b>
-        </dt>
-    </div>
-    <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-            @Localizer["application_fee"]
-        </dt>
-        <dt class="govuk-summary-list__value">
-            @Localizer["fee_for_producer_size", Model.OrganisationSize]
-        </dt>
-        <dd class="govuk-summary-list__actions">
-            &pound;@ConvertToThousandSeparatedDecimal(Model.BaseFee)
-        </dd>
-    </div>
-    @if (Model.ProducerLateRegistrationFee > 0)
-    {
-        <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">
-                <br/>
-            </dt>
-            <dt class="govuk-summary-list__value">
-                @Localizer["late_fee"]
-            </dt>
-            <dd class="govuk-summary-list__actions">
-                &pound;@ConvertToThousandSeparatedDecimal(Model.ProducerLateRegistrationFee)
-            </dd>
-        </div>
-    }
-    @if (Model.IsOnlineMarketplace)
-    {
-        <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">
-                <br />
-            </dt>
-            <dt class="govuk-summary-list__value">
-                @Localizer["online_marketplace_fee"]
-            </dt>
-            <dd class="govuk-summary-list__actions">
-                &pound;@ConvertToThousandSeparatedDecimal(Model.OnlineMarketplaceFee)
-            </dd>
-        </div>
-    }
-    @if (Model.IsClosedLoopRecycling)
-    {
-        <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">
-                <br />
-            </dt>
-            <dt class="govuk-summary-list__value">
-                @Localizer["closed_loop_recycling_fee"]
-            </dt>
-            <dd class="govuk-summary-list__actions">
-                &pound;@ConvertToThousandSeparatedDecimal(Model.ClosedLoopRecyclingFee)
-            </dd>
-        </div>
-    }
-    @if (Model.NumberOfSubsidiaries > 0)
-    {
-        <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">
-                @Localizer["subsidiary_fee"]
-            </dt>
-            <dt class="govuk-summary-list__value">
-                @(Model.NumberOfSubsidiaries > 1 ?
-                Localizer["x_subsidiaries", Model.NumberOfSubsidiaries]
-                : Localizer["x_subsidiaries_singular", Model.NumberOfSubsidiaries])
-            </dt>
-            <dd class="govuk-summary-list__actions">
-                &pound;@ConvertToThousandSeparatedDecimal(Model.TotalSubsidiaryFee)
-            </dd>
-        </div>
-        @if (Model.NumberOfSubsidiariesBeingOnlineMarketplace > 0)
+<table class="govuk-table govuk-table--small-text-until-tablet govuk-!-margin-top-6">
+    <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+            <th scope="col" class="govuk-table__header">@Localizer["item"]</th>
+            <th scope="col" class="govuk-table__header govuk-!-padding-left-2">@Localizer["description"]</th>
+            <th scope="col" class="govuk-table__header govuk-table__header--numeric">@Localizer["amount"]</th>
+        </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">@Localizer[string.Equals(Model.OrganisationSize, "Small", StringComparison.OrdinalIgnoreCase) ? "epr_small_producer" : "epr_large_producer"]</th>
+            <td class="govuk-table__cell govuk-!-padding-left-2">1</td>
+            <td class="govuk-table__cell govuk-table__header--numeric">&pound;@ConvertToThousandSeparatedDecimal(Model.BaseFee)</td>
+        </tr>
+
+        @if (Model.IsOnlineMarketplace)
         {
-            <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">
-                    <br />
-                </dt>
-                <dt class="govuk-summary-list__value">
-                    @(Model.NumberOfSubsidiariesBeingOnlineMarketplace > 1
-                    ? Localizer["y_online_marketplace", Model.NumberOfSubsidiariesBeingOnlineMarketplace]
-                    : Localizer["y_online_marketplace_singular", Model.NumberOfSubsidiariesBeingOnlineMarketplace])
-                </dt>
-                <dd class="govuk-summary-list__actions">
-                    &pound;@ConvertToThousandSeparatedDecimal(Model.TotalSubsidiaryOnlineMarketplaceFee)
-                </dd>
-            </div>
+            <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">@Localizer["online_marketplaces"]</th>
+                <td class="govuk-table__cell govuk-!-padding-left-2">1</td>
+                <td class="govuk-table__cell govuk-table__header--numeric">&pound;@ConvertToThousandSeparatedDecimal(Model.OnlineMarketplaceFee)</td>
+            </tr>
         }
-        @if (Model.NumberOfSubsidiariesBeingClosedLoopRecycling > 0)
+
+        @if (Model.IsClosedLoopRecycling)
         {
-            <div class="govuk-summary-list__row">
-                <dt class="govuk-summary-list__key">
-                    <br />
-                </dt>
-                <dt class="govuk-summary-list__value">
-                    @(Model.NumberOfSubsidiariesBeingClosedLoopRecycling > 1
-                    ? Localizer["y_closed_loop_recycling", Model.NumberOfSubsidiariesBeingClosedLoopRecycling]
-                    : Localizer["y_closed_loop_recycling_singular", Model.NumberOfSubsidiariesBeingClosedLoopRecycling])
-                </dt>
-                <dd class="govuk-summary-list__actions">
-                    &pound;@ConvertToThousandSeparatedDecimal(Model.TotalSubsidiaryClosedLoopRecyclingFee)
-                </dd>
-            </div>
+            <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">@Localizer["closed_loop_packaging_waste"]</th>
+                <td class="govuk-table__cell govuk-!-padding-left-2">1</td>
+                <td class="govuk-table__cell govuk-table__header--numeric">&pound;@ConvertToThousandSeparatedDecimal(Model.ClosedLoopRecyclingFee)</td>
+            </tr>
         }
-    }
-    <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-            @Localizer["sub_total_amount"]
-        </dt>
-        <dt class="govuk-summary-list__value">
-        </dt>
-        <dd class="govuk-summary-list__actions">
-            <b>&pound;@ConvertToThousandSeparatedDecimal(Model.TotalFeeAmount)</b>
-        </dd>
-    </div>
-    @if (Model.TotalPreviousPayments > 0)
-    {
-        <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__value">
-                <br>
-            </dt>
-        </div>
-        <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">
-                @Localizer["previous_payments"]
-            </dt>
-            <dt class="govuk-summary-list__value">
-                @Localizer["total_previous_payments_received"]
-            </dt>
-            <dd class="govuk-summary-list__actions">
-                <b>&pound;@ConvertToThousandSeparatedDecimal(Model.TotalPreviousPayments)</b>
-            </dd>
-        </div>
-    }
-    
-    <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-            @Localizer["total_outstanding"]
-        </dt>
-        <dt class="govuk-summary-list__value">
-        </dt>
-        <dd class="govuk-summary-list__actions">
-            <b>&pound;@ConvertToThousandSeparatedDecimal(Model.TotalAmountOutstanding)</b>
-        </dd>
-    </div>
-</dl>
+
+        @if (Model.ProducerLateRegistrationFee > 0)
+        {
+            <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">@Localizer["late_submissions"]</th>
+                <td class="govuk-table__cell govuk-!-padding-left-2">1</td>
+                <td class="govuk-table__cell govuk-table__header--numeric">&pound;@ConvertToThousandSeparatedDecimal(Model.ProducerLateRegistrationFee)</td>
+            </tr>
+        }
+
+        @if (Model.NumberOfSubsidiaries > 0)
+        {
+            <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">@Localizer["subsidiaries"]</th>
+                <td class="govuk-table__cell govuk-!-padding-left-2">@Model.NumberOfSubsidiaries</td>
+                <td class="govuk-table__cell govuk-table__header--numeric">&pound;@ConvertToThousandSeparatedDecimal(Model.TotalSubsidiaryFee)</td>
+            </tr>
+            
+            @if (Model.NumberOfSubsidiariesBeingClosedLoopRecycling > 0)
+            {
+                <tr class="govuk-table__row">
+                    <th scope="row" class="govuk-table__header">@Localizer["subsidiaries_as_closed_loop"]</th>
+                    <td class="govuk-table__cell govuk-!-padding-left-2">@Model.NumberOfSubsidiariesBeingClosedLoopRecycling</td>
+                    <td class="govuk-table__cell govuk-table__header--numeric">&pound;@ConvertToThousandSeparatedDecimal(Model.TotalSubsidiaryClosedLoopRecyclingFee)</td>
+                </tr>
+            }
+
+            @if (Model.NumberOfSubsidiariesBeingOnlineMarketplace > 0)
+            {
+                <tr class="govuk-table__row">
+                    <th scope="row" class="govuk-table__header">@Localizer["subsidiaries_as_online_marketplace"]</th>
+                    <td class="govuk-table__cell govuk-!-padding-left-2">@Model.NumberOfSubsidiariesBeingOnlineMarketplace</td>
+                    <td class="govuk-table__cell govuk-table__header--numeric">&pound;@ConvertToThousandSeparatedDecimal(Model.TotalSubsidiaryOnlineMarketplaceFee)</td>
+                </tr>
+            }
+        }
+
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">@Localizer["sub_total_amount"]</th>
+            <td class="govuk-table__cell govuk-!-padding-left-2"></td>
+            <td class="govuk-table__cell govuk-table__header--numeric">&pound;@ConvertToThousandSeparatedDecimal(Model.TotalFeeAmount)</td>
+        </tr>
+
+        @if (Model.TotalPreviousPayments > 0)
+        {
+            <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">@Localizer["previous_payments"]</th>
+                <td class="govuk-table__cell govuk-!-padding-left-2"></td>
+                <td class="govuk-table__cell govuk-table__header--numeric">&pound;@ConvertToThousandSeparatedDecimal(Model.TotalPreviousPayments)</td>
+            </tr>
+        }
+
+        <tr class="govuk-table__row">
+            <th scope="row" class="govuk-table__header">@Localizer["total_outstanding"]</th>
+            <td class="govuk-table__cell"></td>
+            <td class="govuk-table__header govuk-table__header--numeric">&pound;@ConvertToThousandSeparatedDecimal(Model.TotalAmountOutstanding)</td>
+        </tr>
+    </tbody>
+</table>
 
 @functions
 {

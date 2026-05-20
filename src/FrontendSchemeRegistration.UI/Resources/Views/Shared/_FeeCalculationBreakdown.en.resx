@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:element name="root" msdata:IsDataSet="true">
@@ -17,64 +17,43 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="item" xml:space="preserve">
-    <value>Items</value>
+    <value>Annual registrations</value>
   </data>
   <data name="description" xml:space="preserve">
-    <value>Description</value>
+    <value>Units</value>
   </data>
   <data name="amount" xml:space="preserve">
     <value>Amount</value>
   </data>
-  <data name="application_fee" xml:space="preserve">
-    <value>Application fee</value>
+  <data name="epr_small_producer" xml:space="preserve">
+    <value>EPR small producer</value>
   </data>
-  <data name="fee_for_producer_size" xml:space="preserve">
-    <value>{0} organisation registration fee</value>
+  <data name="epr_large_producer" xml:space="preserve">
+    <value>EPR large producer</value>
   </data>
-  <data name="late_fee" xml:space="preserve">
-    <value>Late fee</value>
+  <data name="online_marketplaces" xml:space="preserve">
+    <value>Online marketplaces</value>
   </data>
-  <data name="online_marketplace_fee" xml:space="preserve">
-    <value>Online marketplace fee</value>
+  <data name="closed_loop_packaging_waste" xml:space="preserve">
+    <value>Closed loop packaging waste</value>
   </data>
-  <data name="closed_loop_recycling_fee" xml:space="preserve">
-    <value>Self-managed disposal</value>
+  <data name="late_submissions" xml:space="preserve">
+    <value>Late submissions</value>
   </data>
-  <data name="subsidiary_fee" xml:space="preserve">
-    <value>Subsidiary fee</value>
+  <data name="subsidiaries" xml:space="preserve">
+    <value>Subsidiaries</value>
   </data>
-  <data name="x_subsidiaries" xml:space="preserve">
-    <value>{0} subsidiaries</value>
+  <data name="subsidiaries_as_online_marketplace" xml:space="preserve">
+    <value>Subsidiaries online marketplaces</value>
   </data>
-  <data name="y_online_marketplace" xml:space="preserve">
-    <value>{0} are online marketplaces</value>
-  </data>
-  <data name="subsidiaries_with_online_marketplace_fee" xml:space="preserve">
-    <value>Subsidiaries with online marketplace fee</value>
-  </data>
-  <data name="fee_for_subsidiaries_being_online_marketlace" xml:space="preserve">
-    <value>{0} subsidiaries being an online marketplace at £2,579 each</value>
+  <data name="subsidiaries_as_closed_loop" xml:space="preserve">
+    <value>Subsidiary closed loop packaging waste</value>
   </data>
   <data name="sub_total_amount" xml:space="preserve">
     <value>Sub-total</value>
   </data>
   <data name="previous_payments" xml:space="preserve">
     <value>Previous payments</value>
-  </data>
-  <data name="total_previous_payments_received" xml:space="preserve">
-    <value>Total payments received</value>
-  </data>
-  <data name="x_subsidiaries_singular" xml:space="preserve">
-    <value>{0} subsidiary</value>
-  </data>
-  <data name="y_online_marketplace_singular" xml:space="preserve">
-    <value>{0} is on online marketplace</value>
-  </data>
-  <data name="y_closed_loop_recycling" xml:space="preserve">
-    <value>{0} are closed loop recyclers</value>
-  </data>
-  <data name="y_closed_loop_recycling_singular" xml:space="preserve">
-    <value>{0} is a closed loop recycler</value>
   </data>
   <data name="total_outstanding" xml:space="preserve">
     <value>Total outstanding</value>
