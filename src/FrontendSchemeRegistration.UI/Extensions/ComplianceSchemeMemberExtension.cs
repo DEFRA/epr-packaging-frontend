@@ -46,6 +46,9 @@ namespace FrontendSchemeRegistration.UI.Extensions
         internal static IList<int> GetOnlineMarketPlaces(this List<ComplianceSchemePaymentCalculationResponseMember> complianceSchemeMembers) =>
             complianceSchemeMembers.Where(r => r.MemberOnlineMarketPlaceFee > 0).Select(r => r.MemberOnlineMarketPlaceFee).ToList();
 
+        internal static IList<int> GetClosedLoopRecyclers(this List<ComplianceSchemePaymentCalculationResponseMember> complianceSchemeMembers) =>
+            complianceSchemeMembers.Where(r => r.MemberClosedLoopRecyclingFee > 0).Select(r => r.MemberClosedLoopRecyclingFee).ToList();
+
         internal static IList<int> GetSubsidiariesCompanies(this List<ComplianceSchemePaymentCalculationResponseMember> complianceSchemeMembers) =>
             complianceSchemeMembers.Where(r => r.SubsidiariesFee > 0).Select(r => r.SubsidiariesFee).ToList();
     }

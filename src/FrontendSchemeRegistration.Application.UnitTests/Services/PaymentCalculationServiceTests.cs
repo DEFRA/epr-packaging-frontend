@@ -24,6 +24,7 @@ public class PaymentCalculationServiceTests
     {
         ProducerRegistrationFee = 262000,
         ProducerOnlineMarketPlaceFee = 257900,
+        ProducerClosedLoopRecyclingFee = 100000,
         ProducerLateRegistrationFee = 33200,
         SubsidiariesFee = 9071100,
         TotalFee = 9591000,
@@ -33,6 +34,9 @@ public class PaymentCalculationServiceTests
             TotalSubsidiariesOnlineMarketplaceFee = 7479100,
             CountOfOnlineMarketplaceSubsidiaries = 29,
             UnitOnlineMarketplaceFee = 257900,
+            TotalSubsidiariesClosedLoopRecyclingFee = 50000,
+            CountOfClosedLoopRecyclingSubsidiaries = 5,
+            UnitClosedLoopRecyclingFee = 10000,
         }
     };
 
@@ -140,6 +144,68 @@ public class PaymentCalculationServiceTests
 
         // Assert
         result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetProducerRegistrationFees_PassesClosedLoopFieldsOnRequest_AndDeserializesClosedLoopResponseFields()
+    {
+        // Arrange
+        var request = new PaymentCalculationRequest
+        {
+            ApplicationReferenceNumber = "CLR-1",
+            IsProducerOnlineMarketplace = true,
+            NoOfSubsidiariesOnlineMarketplace = 2,
+            IsClosedLoopRecycling = true,
+            NoOfSubsidiariesClosedLoopRecycling = 3
+        };
+
+        PaymentCalculationRequest? captured = null;
+        var response = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = CalculationResponse.ToJsonContent(_jsonOptions)
+        };
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendPostRequest(It.IsAny<string>(), It.IsAny<PaymentCalculationRequest>()))
+            .Callback<string, PaymentCalculationRequest>((_, r) => captured = r)
+            .ReturnsAsync(response);
+
+        // Act
+        var result = await _systemUnderTest.GetProducerRegistrationFees(request);
+
+        // Assert
+        captured.Should().NotBeNull();
+        captured!.IsClosedLoopRecycling.Should().BeTrue();
+        captured.NoOfSubsidiariesClosedLoopRecycling.Should().Be(3);
+        captured.IsProducerOnlineMarketplace.Should().BeTrue();
+        captured.NoOfSubsidiariesOnlineMarketplace.Should().Be(2);
+
+        result.Should().NotBeNull();
+        result!.ProducerClosedLoopRecyclingFee.Should().Be(100000);
+        result.SubsidiariesFeeBreakdown.TotalSubsidiariesClosedLoopRecyclingFee.Should().Be(50000);
+        result.SubsidiariesFeeBreakdown.CountOfClosedLoopRecyclingSubsidiaries.Should().Be(5);
+        result.SubsidiariesFeeBreakdown.UnitClosedLoopRecyclingFee.Should().Be(10000);
+    }
+
+    [Test]
+    public void SubsidiariesFeeBreakdown_DeserializesUsingExternalJsonNames_ForClosedLoopRecycling()
+    {
+        // Arrange - mirrors payment-service contract field names.
+        const string json = """
+        {
+          "totalSubsidiariesClosedLoopRecyclingFees": 1234,
+          "countOfClosedLoopRecyclingSubsidiaries": 6,
+          "unitClosedLoopRecyclingFees": 200
+        }
+        """;
+
+        // Act
+        var dto = JsonSerializer.Deserialize<SubsidiariesFeeBreakdown>(json, _jsonOptions);
+
+        // Assert
+        dto.Should().NotBeNull();
+        dto!.TotalSubsidiariesClosedLoopRecyclingFee.Should().Be(1234);
+        dto.CountOfClosedLoopRecyclingSubsidiaries.Should().Be(6);
+        dto.UnitClosedLoopRecyclingFee.Should().Be(200);
     }
 
 	[Test]

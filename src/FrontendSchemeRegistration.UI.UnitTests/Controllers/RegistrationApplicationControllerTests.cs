@@ -43,8 +43,10 @@ public class RegistrationApplicationControllerTests
         {
             OrganisationSize = "Large",
             IsOnlineMarketplace = true,
+            IsClosedLoopRecycling = true,
             NumberOfSubsidiaries = 54,
-            NumberOfSubsidiariesBeingOnlineMarketPlace = 29
+            NumberOfSubsidiariesBeingOnlineMarketPlace = 29,
+            NumberOfSubsidiariesBeingClosedLoopRecycling = 7
         }
     ];
 
@@ -52,6 +54,7 @@ public class RegistrationApplicationControllerTests
     {
         ProducerRegistrationFee = 262000,
         ProducerOnlineMarketPlaceFee = 257900,
+        ProducerClosedLoopRecyclingFee = 100000,
         ProducerLateRegistrationFee = 33200,
         SubsidiariesFee = 9071100,
         TotalFee = 9591000,
@@ -60,7 +63,10 @@ public class RegistrationApplicationControllerTests
         {
             TotalSubsidiariesOnlineMarketplaceFee = 7479100,
             CountOfOnlineMarketplaceSubsidiaries = 29,
-            UnitOnlineMarketplaceFee = 257900
+            UnitOnlineMarketplaceFee = 257900,
+            TotalSubsidiariesClosedLoopRecyclingFee = 50000,
+            CountOfClosedLoopRecyclingSubsidiaries = 5,
+            UnitClosedLoopRecyclingFee = 10000
         }
     };
 
@@ -73,6 +79,7 @@ public class RegistrationApplicationControllerTests
                 MemberId = "123",
                 MemberLateRegistrationFee = 5000,
                 MemberOnlineMarketPlaceFee = 7000,
+                MemberClosedLoopRecyclingFee = 4000,
                 MemberRegistrationFee = 9000,
                 SubsidiariesFee = 11000,
                 SubsidiariesFeeBreakdown = new SubsidiariesFeeBreakdown
@@ -633,13 +640,19 @@ public class RegistrationApplicationControllerTests
             {
                 OrganisationSize = _feeCalculationDetails[0].OrganisationSize,
                 IsOnlineMarketplace = _feeCalculationDetails[0].IsOnlineMarketplace,
+                IsClosedLoopRecycling = _feeCalculationDetails[0].IsClosedLoopRecycling,
                 NumberOfSubsidiaries = _feeCalculationDetails[0].NumberOfSubsidiaries,
                 NumberOfSubsidiariesBeingOnlineMarketplace = _feeCalculationDetails[0].NumberOfSubsidiariesBeingOnlineMarketPlace,
+                NumberOfSubsidiariesBeingClosedLoopRecycling = _feeCalculationDetails[0].NumberOfSubsidiariesBeingClosedLoopRecycling,
                 IsLateFeeApplicable = Session.IsLateFeeApplicable,
                 BaseFee = CalculationResponse.ProducerRegistrationFee,
                 OnlineMarketplaceFee = CalculationResponse.ProducerOnlineMarketPlaceFee,
-                TotalSubsidiaryFee = CalculationResponse.SubsidiariesFee - CalculationResponse.SubsidiariesFeeBreakdown.TotalSubsidiariesOnlineMarketplaceFee,
+                ClosedLoopRecyclingFee = CalculationResponse.ProducerClosedLoopRecyclingFee,
+                TotalSubsidiaryFee = CalculationResponse.SubsidiariesFee
+                                     - CalculationResponse.SubsidiariesFeeBreakdown.TotalSubsidiariesOnlineMarketplaceFee
+                                     - CalculationResponse.SubsidiariesFeeBreakdown.TotalSubsidiariesClosedLoopRecyclingFee,
                 TotalSubsidiaryOnlineMarketplaceFee = CalculationResponse.SubsidiariesFeeBreakdown.TotalSubsidiariesOnlineMarketplaceFee,
+                TotalSubsidiaryClosedLoopRecyclingFee = CalculationResponse.SubsidiariesFeeBreakdown.TotalSubsidiariesClosedLoopRecyclingFee,
                 TotalPreviousPayments = CalculationResponse.PreviousPayment,
                 TotalFeeAmount = CalculationResponse.TotalFee,
                 IsRegistrationFeePaid = Session.IsRegistrationFeePaid,
@@ -655,16 +668,22 @@ public class RegistrationApplicationControllerTests
         {
             OrganisationSize = _feeCalculationDetails[0].OrganisationSize,
             IsOnlineMarketplace = _feeCalculationDetails[0].IsOnlineMarketplace,
+            IsClosedLoopRecycling = _feeCalculationDetails[0].IsClosedLoopRecycling,
             ProducerLateRegistrationFee = CalculationResponse.ProducerLateRegistrationFee,
             NumberOfSubsidiaries = _feeCalculationDetails[0].NumberOfSubsidiaries,
             NumberOfSubsidiariesBeingOnlineMarketplace = _feeCalculationDetails[0].NumberOfSubsidiariesBeingOnlineMarketPlace,
+            NumberOfSubsidiariesBeingClosedLoopRecycling = _feeCalculationDetails[0].NumberOfSubsidiariesBeingClosedLoopRecycling,
             BaseFee = CalculationResponse.ProducerRegistrationFee,
             OnlineMarketplaceFee = CalculationResponse.ProducerOnlineMarketPlaceFee,
-            TotalSubsidiaryFee = CalculationResponse.SubsidiariesFee - CalculationResponse.SubsidiariesFeeBreakdown.TotalSubsidiariesOnlineMarketplaceFee,
+            ClosedLoopRecyclingFee = CalculationResponse.ProducerClosedLoopRecyclingFee,
+            TotalSubsidiaryFee = CalculationResponse.SubsidiariesFee
+                                 - CalculationResponse.SubsidiariesFeeBreakdown.TotalSubsidiariesOnlineMarketplaceFee
+                                 - CalculationResponse.SubsidiariesFeeBreakdown.TotalSubsidiariesClosedLoopRecyclingFee,
             TotalPreviousPayments = CalculationResponse.PreviousPayment,
             TotalFeeAmount = CalculationResponse.TotalFee,
             IsRegistrationFeePaid = Session.IsRegistrationFeePaid,
-            TotalSubsidiaryOnlineMarketplaceFee = CalculationResponse.SubsidiariesFeeBreakdown.TotalSubsidiariesOnlineMarketplaceFee
+            TotalSubsidiaryOnlineMarketplaceFee = CalculationResponse.SubsidiariesFeeBreakdown.TotalSubsidiariesOnlineMarketplaceFee,
+            TotalSubsidiaryClosedLoopRecyclingFee = CalculationResponse.SubsidiariesFeeBreakdown.TotalSubsidiariesClosedLoopRecyclingFee
         });
     }
 
@@ -1937,6 +1956,8 @@ public class RegistrationApplicationControllerTests
             LargeProducersCount = 1,
             OnlineMarketplaceFee = 7000,
             OnlineMarketplaceCount = 1,
+            ClosedLoopRecyclingFee = 4000,
+            ClosedLoopRecyclingCount = 1,
             SubsidiaryCompanyFee = 11000,
             SubsidiaryCompanyCount = 2,
             TotalPreviousPayments = _complianceSchemeCalculationResponse.PreviousPayment,
@@ -1955,6 +1976,8 @@ public class RegistrationApplicationControllerTests
             LargeProducersFee = 9000,
             OnlineMarketplaceCount = 1,
             OnlineMarketplaceFee = 7000,
+            ClosedLoopRecyclingFee = 4000,
+            ClosedLoopRecyclingCount = 1,
             RegistrationFee = 20000,
             IsRegistrationFeePaid = false,
             SmallProducersCount = 0,

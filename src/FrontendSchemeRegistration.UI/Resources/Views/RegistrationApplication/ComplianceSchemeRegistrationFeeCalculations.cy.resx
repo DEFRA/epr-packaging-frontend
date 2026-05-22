@@ -16,7 +16,7 @@
 		<value>Cyfrifiadau ffioedd cofrestru</value>
 	</data>
 	<data name="registration_fee_due" xml:space="preserve">
-		<value>Y ffi gofrestru sy’n ddyledus</value>
+		<value>[Welsh] Registration fees</value>
 	</data>
 	<data name="registration_fee" xml:space="preserve">
 		<value>Ffi gofrestru</value>
