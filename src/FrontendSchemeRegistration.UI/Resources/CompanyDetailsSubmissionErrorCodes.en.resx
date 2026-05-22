@@ -420,4 +420,7 @@
   <data name="934" xml:space="preserve">
     <value>Enter Yes or No for closed loop registration.</value>
   </data>
+  <data name="936" xml:space="preserve">
+    <value>Small producers cannot register for closed loop packaging waste</value>
+  </data>
 </root>
