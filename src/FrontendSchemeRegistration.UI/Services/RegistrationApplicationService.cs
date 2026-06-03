@@ -141,6 +141,18 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         session.RegistrationApplicationSubmittedDate = registrationApplicationDetails.RegistrationApplicationSubmittedDate;
         session.RegistrationApplicationSubmittedComment = registrationApplicationDetails.RegistrationApplicationSubmittedComment;
         session.RegistrationFeeCalculationDetails = registrationApplicationDetails.RegistrationFeeCalculationDetails;
+
+        if (session.SubmissionId.HasValue
+            && session.SubmissionId.Value != Guid.Empty
+            && await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationSubmissionDataHandler))
+        {
+            var snapshotDetails = await paymentCalculationService.GetRegistrationFeeCalculationDetails(session.SubmissionId.Value);
+            if (snapshotDetails is not null)
+            {
+                session.RegistrationFeeCalculationDetails = snapshotDetails;
+            }
+        }
+
         session.HasAnyApprovedOrQueriedRegulatorDecision = registrationApplicationDetails.HasAnyApprovedOrQueriedRegulatorDecision;
         session.IsLatestSubmittedEventAfterFileUpload = registrationApplicationDetails.IsLatestSubmittedEventAfterFileUpload;
         session.LatestSubmittedEventCreatedDatetime = registrationApplicationDetails.LatestSubmittedEventCreatedDatetime;

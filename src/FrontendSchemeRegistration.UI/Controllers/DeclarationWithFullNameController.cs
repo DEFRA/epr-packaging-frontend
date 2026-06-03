@@ -1,5 +1,6 @@
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
+using FrontendSchemeRegistration.Application.DTOs.RegistrationSubmission;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
@@ -9,6 +10,7 @@ using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.FeatureManagement;
 
 namespace FrontendSchemeRegistration.UI.Controllers;
 
@@ -21,7 +23,9 @@ public class DeclarationWithFullNameController(
     ISubmissionService submissionService,
     ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
     ILogger<DeclarationWithFullNameController> logger,
-    IRegistrationPeriodProvider registrationPeriodProvider) : Controller
+    IRegistrationPeriodProvider registrationPeriodProvider,
+    IFeatureManager featureManager,
+    IRegistrationSubmissionDataService registrationSubmissionDataService) : Controller
 {
     private const string ViewName = "DeclarationWithFullName";
     private const string ConfirmationViewName = "CompanyDetailsConfirmation";
@@ -145,11 +149,26 @@ public class DeclarationWithFullNameController(
 
                 logger.LogInformation("Calling submission service to submit registration for submission ID {SubmissionId}", submissionId);
 
-                await submissionService.SubmitAsync(submissionId, new Guid(model.OrganisationDetailsFileId),
+                var organisationDetailsFileId = new Guid(model.OrganisationDetailsFileId);
+
+                await submissionService.SubmitAsync(submissionId, organisationDetailsFileId,
                     model.FullName,
                     session.RegistrationSession.ApplicationReferenceNumber,
                     session.RegistrationSession.IsResubmission,
                     regJourney);
+
+                if (await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationSubmissionDataHandler))
+                {
+                    await registrationSubmissionDataService.NotifyAsync(new CreateRegistrationSubmissionDataRequest
+                    {
+                        SubmissionId = submissionId,
+                        FileId = organisationDetailsFileId,
+                        RegistrationBlobName = submission.LastUploadedValidFiles.CompanyDetailsBlobName,
+                        ComplianceSchemeId = session.RegistrationSession.SelectedComplianceScheme?.Id,
+                        SubmissionPeriod = submission.SubmissionPeriod,
+                        SubmissionDate = DateTime.UtcNow,
+                    });
+                }
 
                 return (model.RegistrationYear.HasValue
                     ? RedirectToAction("Get", ConfirmationViewName,

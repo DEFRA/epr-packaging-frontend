@@ -4,6 +4,7 @@ using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
+using FrontendSchemeRegistration.Application.DTOs.RegistrationSubmission;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Constants;
@@ -14,6 +15,7 @@ using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.FeatureManagement;
 using Moq;
 
 namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
@@ -34,6 +36,8 @@ public class DeclarationWithFullNameControllerTests
     private Mock<ClaimsPrincipal> _claimsPrincipalMock;
     private DeclarationWithFullNameController _systemUnderTest;
     private Mock<IRegistrationPeriodProvider> _registrationPeriodProviderMock;
+    private Mock<IFeatureManager> _featureManagerMock;
+    private Mock<IRegistrationSubmissionDataService> _registrationSubmissionDataServiceMock;
 
 
     [SetUp]
@@ -43,13 +47,15 @@ public class DeclarationWithFullNameControllerTests
         _claimsPrincipalMock = new Mock<ClaimsPrincipal>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _registrationPeriodProviderMock = new Mock<IRegistrationPeriodProvider>();
+        _featureManagerMock = new Mock<IFeatureManager>();
+        _registrationSubmissionDataServiceMock = new Mock<IRegistrationSubmissionDataService>();
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
                 RegistrationSession = new RegistrationSession { IsResubmission = true }
             });
 
-        _systemUnderTest = new DeclarationWithFullNameController(_submissionServiceMock.Object, _sessionManagerMock.Object, new NullLogger<DeclarationWithFullNameController>(), _registrationPeriodProviderMock.Object);
+        _systemUnderTest = new DeclarationWithFullNameController(_submissionServiceMock.Object, _sessionManagerMock.Object, new NullLogger<DeclarationWithFullNameController>(), _registrationPeriodProviderMock.Object, _featureManagerMock.Object, _registrationSubmissionDataServiceMock.Object);
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
@@ -836,5 +842,146 @@ public class DeclarationWithFullNameControllerTests
         {
             new(ClaimTypes.UserData, JsonSerializer.Serialize(userData))
         };
+    }
+
+    [Test]
+    public async Task Post_FeatureFlagOn_NotifiesRegistrationSubmissionDataService()
+    {
+        // Arrange
+        var fileId = Guid.NewGuid();
+        var complianceSchemeId = Guid.NewGuid();
+        const string blobName = "av-blob-name";
+        var submission = new RegistrationSubmission
+        {
+            Id = Guid.NewGuid(),
+            IsSubmitted = false,
+            SubmissionPeriod = "January to December 2026",
+            LastUploadedValidFiles = new UploadedRegistrationFilesInformation
+            {
+                CompanyDetailsFileName = "FileName",
+                CompanyDetailsUploadDatetime = DateTime.Now,
+                CompanyDetailsUploadedBy = Guid.NewGuid(),
+                CompanyDetailsFileId = fileId,
+                CompanyDetailsBlobName = blobName,
+            },
+            HasValidFile = true,
+        };
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession
+            {
+                ApplicationReferenceNumber = "test",
+                SelectedComplianceScheme = new() { Id = complianceSchemeId },
+            },
+        });
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationSubmissionDataHandler)).ReturnsAsync(true);
+
+        var request = new DeclarationWithFullNameViewModel
+        {
+            FullName = DeclarationName,
+            OrganisationDetailsFileId = fileId.ToString(),
+        };
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer));
+
+        // Act
+        await _systemUnderTest.Post(submission.Id, request);
+
+        // Assert
+        _registrationSubmissionDataServiceMock.Verify(s => s.NotifyAsync(It.Is<CreateRegistrationSubmissionDataRequest>(r =>
+            r.SubmissionId == submission.Id &&
+            r.FileId == fileId &&
+            r.RegistrationBlobName == blobName &&
+            r.ComplianceSchemeId == complianceSchemeId &&
+            r.SubmissionPeriod == "January to December 2026")), Times.Once);
+    }
+
+    [Test]
+    public async Task Post_FeatureFlagOff_DoesNotNotify()
+    {
+        // Arrange
+        var submission = new RegistrationSubmission
+        {
+            Id = Guid.NewGuid(),
+            IsSubmitted = false,
+            SubmissionPeriod = "January to December 2026",
+            LastUploadedValidFiles = new UploadedRegistrationFilesInformation
+            {
+                CompanyDetailsFileName = "FileName",
+                CompanyDetailsUploadDatetime = DateTime.Now,
+                CompanyDetailsUploadedBy = Guid.NewGuid(),
+                CompanyDetailsFileId = Guid.NewGuid(),
+            },
+            HasValidFile = true,
+        };
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession { ApplicationReferenceNumber = "test" },
+        });
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationSubmissionDataHandler)).ReturnsAsync(false);
+
+        var request = new DeclarationWithFullNameViewModel
+        {
+            FullName = DeclarationName,
+            OrganisationDetailsFileId = Guid.NewGuid().ToString(),
+        };
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer));
+
+        // Act
+        await _systemUnderTest.Post(submission.Id, request);
+
+        // Assert
+        _registrationSubmissionDataServiceMock.Verify(s => s.NotifyAsync(It.IsAny<CreateRegistrationSubmissionDataRequest>()), Times.Never);
+    }
+
+    [Test]
+    public async Task Post_DirectProducer_NotifiesWithNullComplianceSchemeId()
+    {
+        // Arrange
+        var fileId = Guid.NewGuid();
+        const string blobName = "av-blob-name";
+        var submission = new RegistrationSubmission
+        {
+            Id = Guid.NewGuid(),
+            IsSubmitted = false,
+            SubmissionPeriod = "January to December 2026",
+            LastUploadedValidFiles = new UploadedRegistrationFilesInformation
+            {
+                CompanyDetailsFileName = "FileName",
+                CompanyDetailsUploadDatetime = DateTime.Now,
+                CompanyDetailsUploadedBy = Guid.NewGuid(),
+                CompanyDetailsFileId = fileId,
+                CompanyDetailsBlobName = blobName,
+            },
+            HasValidFile = true,
+        };
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession
+            {
+                ApplicationReferenceNumber = "test",
+                SelectedComplianceScheme = null,
+            },
+        });
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationSubmissionDataHandler)).ReturnsAsync(true);
+
+        var request = new DeclarationWithFullNameViewModel
+        {
+            FullName = DeclarationName,
+            OrganisationDetailsFileId = fileId.ToString(),
+        };
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer));
+
+        // Act
+        await _systemUnderTest.Post(submission.Id, request);
+
+        // Assert
+        _registrationSubmissionDataServiceMock.Verify(s => s.NotifyAsync(It.Is<CreateRegistrationSubmissionDataRequest>(r =>
+            r.SubmissionId == submission.Id &&
+            r.FileId == fileId &&
+            r.RegistrationBlobName == blobName &&
+            r.ComplianceSchemeId == null)), Times.Once);
     }
 }

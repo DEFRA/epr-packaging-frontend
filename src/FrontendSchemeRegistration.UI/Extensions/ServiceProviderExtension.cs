@@ -177,6 +177,7 @@ public static class ServiceProviderExtension
         services.AddScoped<ISubmissionService, SubmissionService>();
         services.AddScoped<ISubsidiaryService, SubsidiaryService>();
         services.AddScoped<IPaymentCalculationService, PaymentCalculationService>();
+        services.AddScoped<IRegistrationSubmissionDataService, RegistrationSubmissionDataService>();
         services.AddScoped<ISubsidiaryUtilityService, SubsidiaryUtilityService>();
         services.AddScoped<RegistrationApplicationServiceDependencies>(sp => new RegistrationApplicationServiceDependencies
         {

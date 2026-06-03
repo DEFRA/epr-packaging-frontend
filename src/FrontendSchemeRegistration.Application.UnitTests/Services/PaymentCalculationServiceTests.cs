@@ -94,7 +94,7 @@ public class PaymentCalculationServiceTests
 		_accountServiceApiClientMock = new Mock<IAccountServiceApiClient>();
 		_paymentServiceApiClientMock = new Mock<IPaymentCalculationServiceApiClient>();
 		_webApiGatewayClientMock = new Mock<IWebApiGatewayClient>();
-		var facadeOptions = Microsoft.Extensions.Options.Options.Create(new PaymentFacadeApiOptions { DownstreamScope = "https://mock/test", Endpoints = new PaymentFacadeApiEndpoints { OnlinePaymentsEndpoint = "online-payments" } });
+		var facadeOptions = Microsoft.Extensions.Options.Options.Create(new PaymentFacadeApiOptions { DownstreamScope = "https://mock/test", Endpoints = new PaymentFacadeApiEndpoints { OnlinePaymentsEndpoint = "online-payments", RegistrationFeeCalculationDetailsEndpoint = "registration-submission-data/{submissionId}/fee-calculation-details" } });
 		_systemUnderTest = new PaymentCalculationService(_accountServiceApiClientMock.Object, _paymentServiceApiClientMock.Object, new NullLogger<PaymentCalculationService>(), facadeOptions);
 	}
 
@@ -721,4 +721,73 @@ public class PaymentCalculationServiceTests
         result.Should().BeEmpty();
     }
 
+    [Test]
+    public async Task GetRegistrationFeeCalculationDetails_Ok_ReturnsArrayFromBody()
+    {
+        var submissionId = Guid.NewGuid();
+        var payload = new[]
+        {
+            new FrontendSchemeRegistration.Application.DTOs.RegistrationFeeCalculationDetails
+            {
+                OrganisationId = "ORG-1",
+                OrganisationSize = "Large",
+                NationId = 1,
+                NumberOfSubsidiaries = 3,
+                NumberOfSubsidiariesBeingOnlineMarketPlace = 1,
+                NumberOfSubsidiariesBeingClosedLoopRecycling = 2,
+                IsOnlineMarketplace = true,
+                IsClosedLoopRecycling = true,
+                IsNewJoiner = false,
+            },
+        };
+        var response = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent(JsonSerializer.Serialize(payload, _jsonOptions), Encoding.UTF8, "application/json"),
+        };
+        _paymentServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>())).ReturnsAsync(response);
+
+        var result = await _systemUnderTest.GetRegistrationFeeCalculationDetails(submissionId);
+
+        result.Should().NotBeNull();
+        result!.Should().BeEquivalentTo(payload);
+        _paymentServiceApiClientMock.Verify(
+            x => x.SendGetRequest($"registration-submission-data/{submissionId}/fee-calculation-details"),
+            Times.Once);
+    }
+
+    [Test]
+    public async Task GetRegistrationFeeCalculationDetails_NotFound_ReturnsNull()
+    {
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.NotFound));
+
+        var result = await _systemUnderTest.GetRegistrationFeeCalculationDetails(Guid.NewGuid());
+
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetRegistrationFeeCalculationDetails_ClientThrows_ReturnsNull()
+    {
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .ThrowsAsync(new Exception("boom"));
+
+        var result = await _systemUnderTest.GetRegistrationFeeCalculationDetails(Guid.NewGuid());
+
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetRegistrationFeeCalculationDetails_ServerError_ReturnsNull()
+    {
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.InternalServerError));
+
+        var result = await _systemUnderTest.GetRegistrationFeeCalculationDetails(Guid.NewGuid());
+
+        result.Should().BeNull();
+    }
 }
