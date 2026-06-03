@@ -171,6 +171,9 @@
     <data name="subsidiary_id" xml:space="preserve">
     <value>Subsidiary ID</value>
   </data>
+    <data name="parent_id" xml:space="preserve">
+    <value>Parent ID</value>
+  </data>
     <data name="subsidiary_name" xml:space="preserve">
     <value>Subsidiary name</value>
   </data>
