@@ -10,8 +10,10 @@ using System.Diagnostics.CodeAnalysis;
 [ExcludeFromCodeCoverage]
 public static class WebApi
 {
-    public static WireMockServer WithWebApi(this WireMockServer server)
+    public static WireMockServer WithWebApi(this WireMockServer server, WebApiOptions? options = null)
     {
+        options ??= new WebApiOptions();
+        
         // Actual submission period
         server.Given(Request.Create()
                 .UsingGet()
@@ -176,7 +178,26 @@ public static class WebApi
             .RespondWith(Response.Create()
                 .WithStatusCode(200)
                 .WithHeader("Content-Type", "application/json")
-                .WithBodyFromFile("WebApi/Responses/WebApi/v1_prn_obligationcalculation.json"));
+                .WithBodyFromFile($"WebApi/Responses/WebApi/{options.PrnObligationCalculationResponseFile}"));
+
+        object complianceDeclarationsResponse = options.ComplianceDeclarationStatus switch
+        {
+            WebApiOptions.ComplianceDeclarationStatusType.Submitted => new
+            {
+                complianceDeclarations = new[] { new { created = "2026-04-27T14:00:00+00:00", status = "Submitted" } }
+            },
+            WebApiOptions.ComplianceDeclarationStatusType.Cancelled => new
+            {
+                complianceDeclarations = new[] { new { created = "2026-04-27T14:00:00+00:00", status = "Cancelled" } }
+            },
+            _ => new { complianceDeclarations = Array.Empty<object>() }
+        };
+
+        server.Given(Request.Create().UsingGet().WithPath("/api/v1/prn/compliance-declarations"))
+            .RespondWith(Response.Create()
+                .WithStatusCode(200)
+                .WithHeader("Content-Type", "application/json")
+                .WithBodyAsJson(complianceDeclarationsResponse));
 
         // Subsidiary (returning empty/default object)
         server.Given(Request.Create().UsingGet().WithPath("/api/v1/subsidiary/*/*"))

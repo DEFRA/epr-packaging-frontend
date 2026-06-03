@@ -280,6 +280,11 @@ public class FileUploadSubLandingController(
 
         if (!isAnySubmissionAcceptedForDataPeriod)
         {
+            if (HasNewValidUploadAfterSubmission(submission))
+            {
+                return HandleSubmittedSubmission(submission);
+            }
+
             return RedirectToAction(
                 nameof(FileUploadController.Get),
                 nameof(FileUploadController).RemoveControllerFromName(),
@@ -313,6 +318,14 @@ public class FileUploadSubLandingController(
     {
         return submission.LastSubmittedFile.FileId != submission.LastUploadedValidFile.FileId &&
                submission.HasWarnings && submission.ValidationPass;
+    }
+
+    private static bool HasNewValidUploadAfterSubmission(PomSubmission submission)
+    {
+        return submission.HasValidFile &&
+               submission.LastSubmittedFile?.FileId != null &&
+               submission.LastUploadedValidFile?.FileId != null &&
+               submission.LastSubmittedFile.FileId != submission.LastUploadedValidFile.FileId;
     }
 
     private RedirectToActionResult RedirectToAppropriateFileController(PomSubmission submission, RouteValueDictionary routeValueDictionary)

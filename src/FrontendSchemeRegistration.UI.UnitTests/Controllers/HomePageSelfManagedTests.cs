@@ -57,6 +57,7 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
         _userData = new UserData
         {
             Id = _userId,
+            ServiceRole = "Basic User",
             Organisations =
             [
                 new Organisation

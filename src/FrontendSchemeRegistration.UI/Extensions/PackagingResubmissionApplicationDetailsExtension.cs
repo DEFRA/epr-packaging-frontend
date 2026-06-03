@@ -27,7 +27,8 @@ namespace FrontendSchemeRegistration.UI.Extensions
                 ApplicationStatus = item.ApplicationStatus,
                 FileReachedSynapse = item.SynapseResponse.IsFileSynced,
                 Organisation = organisation,
-                IsResubmissionFeeViewed = item.IsResubmissionFeeViewed
+                IsResubmissionFeeViewed = item.IsResubmissionFeeViewed,
+                HasSubmissionSyncCompleted = item.SynapseResponse.IsResubmissionDataSynced,
             };
 
             return packagingResubmissionApplicationDetails;

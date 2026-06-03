@@ -1,0 +1,36 @@
+@using FrontendSchemeRegistration.Application.Enums
+@model CsocViewModel?
+
+@if (Model is not null && Model.IsObligationDataSubmitted)
+{
+    var actorKey = Model switch
+    {
+        { IsComplianceScheme: true } => "compliance_scheme",
+        { IsDirectProducer: true } => "direct_producer",
+        _ => null
+    };
+
+    var statusKey = Model.ComplianceDeclarationStatus switch
+    {
+        ComplianceDeclarationStatus.Submitted => "submitted",
+        ComplianceDeclarationStatus.Cancelled => "cancelled",
+        _ => "submit"
+    };
+
+    if (actorKey is not null)
+    {
+        <div class="govuk-card govuk-!-margin-bottom-6">
+            <div class="govuk-card-body">
+                <h2 class="govuk-heading-m">@Localizer[$"{statusKey}_heading_{actorKey}"]</h2>
+                <p class="govuk-body">@string.Format(Localizer[$"{statusKey}_paragraph_{actorKey}"].Value, Model.ComplianceYear, Model.SubmissionDeadline)</p>
+                @if (Model.IsApprovedUser && Model.WasteObligationsBaseAddress is not null)
+                {
+                    <div class="govuk-button-group">
+                        <a class="govuk-button govuk-button--secondary" href="@Model.WasteObligationsBaseAddress"
+                           role="button" data-module="govuk-button">@Localizer[$"{statusKey}_button_{actorKey}"]</a>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+}

@@ -135,4 +135,6 @@ public class PackagingResubmissionApplicationSession
     public bool IsResubmissionComplete => (AdditionalDetailsStatus == ResubmissionTaskListStatus.Completed);
 
     public Organisation Organisation { get; set; } = new Organisation();
+    
+    public bool HasSubmissionSyncCompleted { get; set; }
 }

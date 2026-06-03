@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Session;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using MockServer;
+using MockServer.WebApi;
 using WireMock.Server;
 
 public class ComponentTestContext : IDisposable
@@ -15,9 +16,12 @@ public class ComponentTestContext : IDisposable
     
     public ComponentTestClient Client { get; private set; }
 
-    public void SetUp(bool overrideSession = false, Dictionary<string, string?>? additionalConfig = null)
+    public void SetUp(
+        bool overrideSession = false, 
+        Dictionary<string, string?>? additionalConfig = null, 
+        WebApiOptions? webApiOptions = null)
     {
-        _staticMockApiServer = MockApiServer.Start();
+        _staticMockApiServer = MockApiServer.Start(webApiOptions);
         
         var factory = new CustomWebApplicationFactory<FrontendSchemeRegistrationController>();
         factory.ConfigureTestServices = services =>

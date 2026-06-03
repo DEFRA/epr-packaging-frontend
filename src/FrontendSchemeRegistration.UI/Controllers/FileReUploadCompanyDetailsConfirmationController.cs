@@ -19,16 +19,21 @@ public class FileReUploadCompanyDetailsConfirmationController : Controller
     private readonly ISubmissionService _submissionService;
     private readonly IUserAccountService _accountService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
+    private readonly ISessionManager<RegistrationApplicationSession> _registrationSessionManager;
+    private readonly IRegistrationPeriodProvider _registrationPeriodProvider;
 
     public FileReUploadCompanyDetailsConfirmationController(
         ISubmissionService submissionService,
         IUserAccountService accountService,
-        ISessionManager<FrontendSchemeRegistrationSession> sessionManager)
+        ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
+        ISessionManager<RegistrationApplicationSession> registrationSessionManager,
+        IRegistrationPeriodProvider registrationPeriodProvider)
     {
         _submissionService = submissionService;
         _accountService = accountService;
         _sessionManager = sessionManager;
-
+        _registrationSessionManager = registrationSessionManager;
+        _registrationPeriodProvider = registrationPeriodProvider;
     }
 
     [HttpGet]
@@ -66,7 +71,7 @@ public class FileReUploadCompanyDetailsConfirmationController : Controller
 
     private async Task<FileReUploadCompanyDetailsConfirmationViewModel> GetViewModel(
         RegistrationSubmission submission,
-        FrontendSchemeRegistrationSession session, int? registrationYear = null, RegistrationJourney? registrationJourney = null)
+        FrontendSchemeRegistrationSession session, int registrationYear, RegistrationJourney? registrationJourney = null)
     {
         var model = new FileReUploadCompanyDetailsConfirmationViewModel
         {
@@ -81,6 +86,18 @@ public class FileReUploadCompanyDetailsConfirmationController : Controller
             RegistrationYear = registrationYear,
             RegistrationJourney = registrationJourney
         };
+        
+        var registrationSession = await _registrationSessionManager.GetSessionAsync(HttpContext.Session);
+        if (registrationSession != null)
+        {
+            var isSmallProducer = string.Equals(registrationSession.RegistrationFeeCalculationDetails?[0].OrganisationSize, "Small",
+                StringComparison.InvariantCultureIgnoreCase);
+
+            var currentRegistrationWindow = _registrationPeriodProvider.GetRegistrationWindow(session.RegistrationSession.UsingAComplianceScheme.GetValueOrDefault(false),
+                isSmallProducer, registrationYear);
+
+            model.SubmissionDeadline = currentRegistrationWindow.DeadlineDate.ToReadableLongMonthDeadlineDate();
+        }
 
         if (model.Status.Equals(SubmissionPeriodStatus.NotStarted) && !string.IsNullOrEmpty(submission.CompanyDetailsFileName))
         {

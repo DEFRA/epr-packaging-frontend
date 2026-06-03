@@ -40,9 +40,7 @@ namespace FrontendSchemeRegistration.UI.Services.Interfaces
         Task<SubmissionPeriod?> GetActiveSubmissionPeriod();
 
         Task<string> GetActualSubmissionPeriod(Guid submissionId, string submissionPeriod);
-
-        Task<bool> GetFeatureFlagForProducersFeebreakdown();
-
+        
         SubmissionPeriod PackagingResubmissionPeriod(string[] currentYear, DateTime nowDateTime);
     }
 }

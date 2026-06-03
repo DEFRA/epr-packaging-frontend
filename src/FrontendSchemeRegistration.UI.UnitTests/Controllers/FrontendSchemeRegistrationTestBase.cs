@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Time.Testing;
+using Microsoft.FeatureManagement;
 using Moq;
 using Newtonsoft.Json;
 using UI.Controllers.FrontendSchemeRegistration;
@@ -155,7 +156,9 @@ public abstract class FrontendSchemeRegistrationTestBase
             ResubmissionApplicationService.Object,
             AuthorizationService.Object,
             NotificationService.Object,
-            FakeTimeProvider);
+            FakeTimeProvider,
+            new Mock<IFeatureManager>().Object,
+            new OptionsWrapper<CsocOptions>(new CsocOptions()));
         SystemUnderTest.ControllerContext.HttpContext = _httpContextMock.Object;
         SystemUnderTest.TempData = tempDataDictionaryMock.Object;
     }

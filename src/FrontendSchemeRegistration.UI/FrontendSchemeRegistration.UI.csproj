@@ -109,8 +109,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoMapper" Version="13.0.1" />
         <PackageReference Include="CsvHelper" Version="33.0.1" />
+        <PackageReference Include="MagicMapper" Version="14.0.1" />
         <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="8.0.7" />
         <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
         <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" Version="8.8.0" />

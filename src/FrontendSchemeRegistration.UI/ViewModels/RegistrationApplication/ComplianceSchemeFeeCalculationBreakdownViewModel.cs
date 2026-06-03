@@ -16,6 +16,8 @@ namespace FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication
         public int LargeProducersCount { get; set; }
 
         public int OnlineMarketplaceFee { get; set; }
+        public int ClosedLoopRecyclingFee { get; set; }
+        public int ClosedLoopRecyclingCount { get; set; }
         public int SubsidiaryCompanyFee { get; set; }
         public int SubsidiaryCompanyCount { get; set; }
 

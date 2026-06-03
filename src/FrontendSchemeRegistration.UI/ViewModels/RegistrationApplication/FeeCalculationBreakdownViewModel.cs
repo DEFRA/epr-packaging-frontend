@@ -10,18 +10,25 @@ public class FeeCalculationBreakdownViewModel
 
     public bool IsOnlineMarketplace { get; set; }
 
+    public bool IsClosedLoopRecycling { get; set; }
+
     public int NumberOfSubsidiaries { get; set; }
 
     public int NumberOfSubsidiariesBeingOnlineMarketplace { get; set; }
+
+    public int NumberOfSubsidiariesBeingClosedLoopRecycling { get; set; }
 
     public int BaseFee { get; set; }
 
     public int OnlineMarketplaceFee { get; set; }
 
+    public int ClosedLoopRecyclingFee { get; set; }
+
     public int ProducerLateRegistrationFee { get; set; }
 
     public int TotalSubsidiaryFee { get; set; }
     public int TotalSubsidiaryOnlineMarketplaceFee { get; set; }
+    public int TotalSubsidiaryClosedLoopRecyclingFee { get; set; }
 
     public int TotalPreviousPayments { get; set; }
 

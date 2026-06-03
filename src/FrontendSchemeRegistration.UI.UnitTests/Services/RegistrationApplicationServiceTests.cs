@@ -3020,6 +3020,10 @@ public class RegistrationApplicationServiceTests
         _featureManagerMock.Setup(f => f.IsEnabledAsync("EnableRegistrationFeeV2")).ReturnsAsync(false);
 
         _session.RegistrationFeeCalculationDetails = _fixture.CreateMany<RegistrationFeeCalculationDetails>(1).ToArray();
+        _session.RegistrationFeeCalculationDetails[0].IsOnlineMarketplace = true;
+        _session.RegistrationFeeCalculationDetails[0].NumberOfSubsidiariesBeingOnlineMarketPlace = 4;
+        _session.RegistrationFeeCalculationDetails[0].IsClosedLoopRecycling = true;
+        _session.RegistrationFeeCalculationDetails[0].NumberOfSubsidiariesBeingClosedLoopRecycling = 7;
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(_session);
 
         PaymentCalculationRequest? captured = null;
@@ -3041,6 +3045,71 @@ public class RegistrationApplicationServiceTests
         captured.IsLateFeeApplicable.Should().Be(_session.IsLateFeeApplicable);
         captured.ProducerType.Should().Be(_session.RegistrationFeeCalculationDetails[0].OrganisationSize);
         captured.SubmissionDate.Date.Should().Be(_session.LastSubmittedFile.SubmittedDateTime!.Value.Date);
+        captured.IsProducerOnlineMarketplace.Should().BeTrue();
+        captured.NoOfSubsidiariesOnlineMarketplace.Should().Be(4);
+        captured.IsClosedLoopRecycling.Should().BeTrue();
+        captured.NoOfSubsidiariesClosedLoopRecycling.Should().Be(7);
+    }
+
+    [Test]
+    public async Task GetProducerRegistrationFees_V1_WhenClosedLoopRecyclingFalseAndCountZero_SendsZeros()
+    {
+        _featureManagerMock.Setup(f => f.IsEnabledAsync("EnableRegistrationFeeV2")).ReturnsAsync(false);
+
+        _session.RegistrationFeeCalculationDetails = _fixture.CreateMany<RegistrationFeeCalculationDetails>(1).ToArray();
+        _session.RegistrationFeeCalculationDetails[0].IsClosedLoopRecycling = false;
+        _session.RegistrationFeeCalculationDetails[0].NumberOfSubsidiariesBeingClosedLoopRecycling = 0;
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(_session);
+
+        PaymentCalculationRequest? captured = null;
+        _paymentCalculationServiceMock
+            .Setup(p => p.GetProducerRegistrationFees(It.IsAny<PaymentCalculationRequest>()))
+            .Callback<PaymentCalculationRequest>(r => captured = r)
+            .ReturnsAsync(_fixture.Build<PaymentCalculationResponse>()
+                .With(x => x.SubsidiariesFeeBreakdown, new SubsidiariesFeeBreakdown())
+                .Create());
+
+        await _service.GetProducerRegistrationFees(_httpSession);
+
+        captured.Should().NotBeNull();
+        captured!.IsClosedLoopRecycling.Should().BeFalse();
+        captured.NoOfSubsidiariesClosedLoopRecycling.Should().Be(0);
+    }
+
+    [Test]
+    public async Task GetProducerRegistrationFees_V1_MapsClosedLoopRecyclingResponseToViewModel()
+    {
+        _featureManagerMock.Setup(f => f.IsEnabledAsync("EnableRegistrationFeeV2")).ReturnsAsync(false);
+
+        _session.RegistrationFeeCalculationDetails = _fixture.CreateMany<RegistrationFeeCalculationDetails>(1).ToArray();
+        _session.RegistrationFeeCalculationDetails[0].IsClosedLoopRecycling = true;
+        _session.RegistrationFeeCalculationDetails[0].NumberOfSubsidiariesBeingClosedLoopRecycling = 9;
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(_session);
+
+        var response = _fixture.Build<PaymentCalculationResponse>()
+            .With(x => x.ProducerClosedLoopRecyclingFee, 555)
+            .With(x => x.SubsidiariesFeeBreakdown, new SubsidiariesFeeBreakdown
+            {
+                TotalSubsidiariesOnlineMarketplaceFee = 100,
+                TotalSubsidiariesClosedLoopRecyclingFee = 250
+            })
+            .With(x => x.SubsidiariesFee, 1000)
+            .Create();
+
+        _paymentCalculationServiceMock
+            .Setup(p => p.GetProducerRegistrationFees(It.IsAny<PaymentCalculationRequest>()))
+            .ReturnsAsync(response);
+
+        var result = await _service.GetProducerRegistrationFees(_httpSession);
+
+        result.Should().NotBeNull();
+        result!.IsClosedLoopRecycling.Should().BeTrue();
+        result.NumberOfSubsidiariesBeingClosedLoopRecycling.Should().Be(9);
+        result.ClosedLoopRecyclingFee.Should().Be(555);
+        result.TotalSubsidiaryClosedLoopRecyclingFee.Should().Be(250);
+        // TotalSubsidiaryFee should subtract BOTH OMP and closed-loop subsidiary fees from SubsidiariesFee.
+        result.TotalSubsidiaryFee.Should().Be(1000 - 100 - 250);
+        result.TotalSubsidiaryOnlineMarketplaceFee.Should().Be(100);
     }
 
     [Test]
@@ -3073,7 +3142,74 @@ public class RegistrationApplicationServiceTests
         captured.Should().NotBeNull();
         captured!.GetType().Should().Be(typeof(PaymentCalculationRequest), "v1 request should be used when there is no first organisation to index");
     }
-    
+
+    [Test]
+    public async Task GetComplianceSchemeRegistrationFees_V1_PopulatesClosedLoopFieldsPerMember()
+    {
+        _featureManagerMock.Setup(f => f.IsEnabledAsync("EnableRegistrationFeeV2")).ReturnsAsync(false);
+
+        var session = _fixture.Build<RegistrationApplicationSession>().Create();
+        session.RegistrationFeeCalculationDetails = _fixture.CreateMany<RegistrationFeeCalculationDetails>(2).ToArray();
+        session.RegistrationFeeCalculationDetails[0].IsClosedLoopRecycling = true;
+        session.RegistrationFeeCalculationDetails[0].NumberOfSubsidiariesBeingClosedLoopRecycling = 3;
+        session.RegistrationFeeCalculationDetails[1].IsClosedLoopRecycling = false;
+        session.RegistrationFeeCalculationDetails[1].NumberOfSubsidiariesBeingClosedLoopRecycling = 0;
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(session);
+
+        ComplianceSchemePaymentCalculationRequest? captured = null;
+        _paymentCalculationServiceMock
+            .Setup(p => p.GetComplianceSchemeRegistrationFees(It.IsAny<ComplianceSchemePaymentCalculationRequest>()))
+            .Callback<ComplianceSchemePaymentCalculationRequest>(r => captured = r)
+            .ReturnsAsync(_fixture.Create<ComplianceSchemePaymentCalculationResponse>());
+
+        var result = await _service.GetComplianceSchemeRegistrationFees(_httpSession);
+
+        result.Should().NotBeNull();
+        captured.Should().NotBeNull();
+        captured!.ComplianceSchemeMembers[0].IsClosedLoopRecycling.Should().BeTrue();
+        captured.ComplianceSchemeMembers[0].NoOfSubsidiariesClosedLoopRecycling.Should().Be(3);
+        captured.ComplianceSchemeMembers[1].IsClosedLoopRecycling.Should().BeFalse();
+        captured.ComplianceSchemeMembers[1].NoOfSubsidiariesClosedLoopRecycling.Should().Be(0);
+    }
+
+    [Test]
+    public async Task GetComplianceSchemeRegistrationFees_AggregatesClosedLoopRecyclingFromMembers()
+    {
+        _featureManagerMock.Setup(f => f.IsEnabledAsync("EnableRegistrationFeeV2")).ReturnsAsync(false);
+
+        var session = _fixture.Build<RegistrationApplicationSession>().Create();
+        session.RegistrationFeeCalculationDetails = _fixture.CreateMany<RegistrationFeeCalculationDetails>(3).ToArray();
+        session.RegistrationFeeCalculationDetails[0].OrganisationSize = "Large";
+        session.RegistrationFeeCalculationDetails[1].OrganisationSize = "Large";
+        session.RegistrationFeeCalculationDetails[2].OrganisationSize = "Small";
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(session);
+
+        var response = new ComplianceSchemePaymentCalculationResponse
+        {
+            TotalFee = 0,
+            PreviousPayment = 0,
+            OutstandingPayment = 0,
+            ComplianceSchemeRegistrationFee = 0,
+            ComplianceSchemeMembersWithFees = new List<ComplianceSchemePaymentCalculationResponseMember>
+            {
+                new ComplianceSchemePaymentCalculationResponseMember { MemberId = session.RegistrationFeeCalculationDetails[0].OrganisationId, MemberRegistrationFee = 100, MemberClosedLoopRecyclingFee = 200, MemberOnlineMarketPlaceFee = 0, SubsidiariesFee = 0, MemberLateRegistrationFee = 0, TotalMemberFee = 0, SubsidiariesFeeBreakdown = new SubsidiariesFeeBreakdown() },
+                new ComplianceSchemePaymentCalculationResponseMember { MemberId = session.RegistrationFeeCalculationDetails[1].OrganisationId, MemberRegistrationFee = 100, MemberClosedLoopRecyclingFee = 50, MemberOnlineMarketPlaceFee = 0, SubsidiariesFee = 0, MemberLateRegistrationFee = 0, TotalMemberFee = 0, SubsidiariesFeeBreakdown = new SubsidiariesFeeBreakdown() },
+                new ComplianceSchemePaymentCalculationResponseMember { MemberId = session.RegistrationFeeCalculationDetails[2].OrganisationId, MemberRegistrationFee = 50,  MemberClosedLoopRecyclingFee = 0,   MemberOnlineMarketPlaceFee = 0, SubsidiariesFee = 0, MemberLateRegistrationFee = 0, TotalMemberFee = 0, SubsidiariesFeeBreakdown = new SubsidiariesFeeBreakdown() }
+            }
+        };
+
+        _paymentCalculationServiceMock
+            .Setup(p => p.GetComplianceSchemeRegistrationFees(It.IsAny<ComplianceSchemePaymentCalculationRequest>()))
+            .ReturnsAsync(response);
+
+        var result = await _service.GetComplianceSchemeRegistrationFees(_httpSession);
+
+        result.Should().NotBeNull();
+        result!.ClosedLoopRecyclingFee.Should().Be(250);
+        result.ClosedLoopRecyclingCount.Should().Be(2);
+    }
+
     [Test]
     public void Constructor_ShouldThrow_ArgumentNull_When_Dependencies_IsNull()
     {

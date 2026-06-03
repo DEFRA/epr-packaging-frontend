@@ -7,5 +7,5 @@ public class CsocOptions
 {
     public const string ConfigSection = "Csoc";
     
-    public string? UnderstandingObligationsEndpoint { get; set; }
+    public string? WasteObligationsBaseAddress { get; set; }
 }
