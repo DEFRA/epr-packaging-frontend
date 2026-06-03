@@ -196,7 +196,7 @@
     <value>within 28 days of the change. You will need to enter the subsidiary IDs to do this.</value>
   </data>
     <data name="search_for_a_subsidiary_by" xml:space="preserve">
-    <value>Search for a Subsidiary by name, ID or Companies House number</value>
+    <value>Search for a Subsidiary by name, ID, parent ID or Companies House number</value>
   </data>
     <data name="clear_and_reset" xml:space="preserve">
     <value>Clear and reset</value>
@@ -205,7 +205,7 @@
     <value>Search</value>
   </data>
     <data name="subsidiary_not_found_message" xml:space="preserve">
-    <value>Make sure you entered the correct subsidiary name, ID or Companies House number. If you need to add a subsidiary to&lt;br /&gt;this parent company, use the file upload to create a subsidiary ID and then update and resubmit your registration file.</value>
+    <value>Make sure you entered the correct subsidiary name, ID, parent ID or Companies House number. If you need to add a subsidiary to&lt;br /&gt;this parent company, use the file upload to create a subsidiary ID and then update and resubmit your registration file.</value>
   </data>
     <data name="subsidiary_not_found_resubmit_warning_text" xml:space="preserve">
     <value>If you need to add a subsidiary to this parent company, click on add a single subsidiary button below or use the file upload to create a subsidiary ID and then update and resubmit your registration file.</value>
