@@ -353,7 +353,7 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
     <value>Dim ond gyda math deunydd PL (plastig) y gellir defnyddio math pecynwaith CLR (data pecynwaith dolen gaeedig).</value>
   </data>
   <data name="913" xml:space="preserve">
-    <value>[Welsh] CLR is not a valid packaging type for registration years before 2027. Remove the CLR entry and resubmit, or contact your regulator if you need to report closed loop packaging waste data for a previous year.</value>
+    <value>Nid yw CLR yn fath o ddeunydd pacio dilys ar gyfer blynyddoedd cofrestru cyn 2027. Tynnwch y cofnod CLR ac ailgyflwynwch, neu cysylltwch â'ch rheoleiddiwr os oes angen i chi adrodd data gwastraff deunydd pacio dolen gaeedig ar gyfer blwyddyn flaenorol.</value>
   </data>
   <data name="914" xml:space="preserve">
     <value>Does dim angen gweithgaredd pecynwaith ar gyfer y math yma o becynwaith.</value>

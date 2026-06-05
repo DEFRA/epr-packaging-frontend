@@ -17,37 +17,37 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="item" xml:space="preserve">
-    <value>[Welsh] Annual registrations</value>
+    <value>Cofrestriadau blynyddol</value>
   </data>
   <data name="description" xml:space="preserve">
-    <value>[Welsh] Units</value>
+    <value>Unedau</value>
   </data>
   <data name="amount" xml:space="preserve">
     <value>Swm</value>
   </data>
   <data name="epr_small_producer" xml:space="preserve">
-    <value>[Welsh] EPR small producer</value>
+    <value>EPR cynhyrchydd bach</value>
   </data>
   <data name="epr_large_producer" xml:space="preserve">
-    <value>[Welsh] EPR large producer</value>
+    <value>EPR cynhyrchydd mawr</value>
   </data>
   <data name="online_marketplaces" xml:space="preserve">
-    <value>[Welsh] Online marketplaces</value>
+    <value>Marchnadoedd ar-lein</value>
   </data>
   <data name="closed_loop_packaging_waste" xml:space="preserve">
-    <value>[Welsh] Closed loop packaging waste</value>
+    <value>gwastraff pecynnu dolen gaeedig</value>
   </data>
   <data name="late_submissions" xml:space="preserve">
-    <value>[Welsh] Late submissions</value>
+    <value>Cyflwyniadau hwyr</value>
   </data>
   <data name="subsidiaries" xml:space="preserve">
-    <value>[Welsh] Subsidiaries</value>
+    <value>Is-gwmnïau</value>
   </data>
   <data name="subsidiaries_as_online_marketplace" xml:space="preserve">
-    <value>[Welsh] Subsidiaries online marketplaces</value>
+    <value>Marchnadoedd ar-lein is-gwmni</value>
   </data>
   <data name="subsidiaries_as_closed_loop" xml:space="preserve">
-    <value>[Welsh] Subsidiary closed loop packaging waste</value>
+    <value>Gwastraff pecynnu dolen gaeedig is-gwmni</value>
   </data>
   <data name="sub_total_amount" xml:space="preserve">
     <value>Is-gyfanswm</value>
