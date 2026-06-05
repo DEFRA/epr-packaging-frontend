@@ -353,7 +353,7 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
     <value>Dim ond gyda math deunydd PL (plastig) y gellir defnyddio math pecynwaith CLR (data pecynwaith dolen gaeedig).</value>
   </data>
   <data name="913" xml:space="preserve">
-    <value>Does dim modd cyflwyno cofrestriad dolen gaeedig drwy’r gwasanaeth yma ar gyfer blynyddoedd cofrestru cyn 2027. Tynnwch golofn 79 o’ch ffeil a’i hailgyflwyno, neu cysylltwch â’ch rheoleiddiwr os oes angen ichi gofrestru ar gyfer blwyddyn flaenorol.</value>
+    <value>Nid yw CLR yn fath o ddeunydd pacio dilys ar gyfer blynyddoedd cofrestru cyn 2027. Tynnwch y cofnod CLR ac ailgyflwynwch, neu cysylltwch â'ch rheoleiddiwr os oes angen i chi adrodd data gwastraff deunydd pacio dolen gaeedig ar gyfer blwyddyn flaenorol.</value>
   </data>
   <data name="914" xml:space="preserve">
     <value>Does dim angen gweithgaredd pecynwaith ar gyfer y math yma o becynwaith.</value>
