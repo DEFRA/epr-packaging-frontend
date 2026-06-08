@@ -10,7 +10,7 @@ public class ErrorReportHelpersTests
 {
     [TestCase("en-GB", "01", "Organisation ID must be a 6 digit number - for example, 100123")]
     [TestCase("en-GB", "02", "When packaging activity is entered, it must be one of the codes SO, PF, IM, SE, HL or OM")]
-    [TestCase("en-GB", "03", "Packaging type must be one of the codes HH, NH, CW, OW, PB, RU, HDC, NDC or SP")]
+    [TestCase("en-GB", "03", "Packaging type must be one of the codes HH, NH, CW, OW, PB, RU, HDC, NDC, SP or CLR")]
     [TestCase("en-GB", "04", "When packaging class is entered, it must be one of the codes P1, P2, P3, P4, P5, P6, O1, O2 or B1")]
     [TestCase("en-GB", "05", "Packaging material must be one of the codes AL, FC, GL, PC, PL, ST, WD or OT")]
     [TestCase("en-GB", "07", "When packaging type is self-managed waste (CW or OW), from country must be one of England (EN), Northern Ireland (NI), Scotland (SC) or Wales (WS)")]
