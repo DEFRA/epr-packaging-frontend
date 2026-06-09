@@ -401,7 +401,7 @@ Read the guidance about how to create your organisation details file. Once youâ€
     <value>Turnover for this organisation is recorded as zero. Please verify this is correct before submitting a zero return</value>
   </data>
   <data name="100" xml:space="preserve">
-    <value>Large organisations (L) submitting HH, HDC-Glass and PB packaging type for plastic (PL) must enter a recyclability code in this column for 2025-H2 submission periods onwards â€“ enter one of the following: R for Red, A for Amber, G for Green, R-M for Red-Medical, A-M for Amber-Medical or G-M for Green-Medical. Please check there are no leading or trailing spaces in the recyclability column.</value>
+    <value>Large organisations (L) submitting HH, HDC-Glass and PB packaging type for plastic (PL) must enter a recyclability code in this column for 2025-H2 submission periods onwards. Enter one of the following: R for Red, A for Amber, G for Green, R-M for Red-Medical, A-M for Amber-Medical or G-M for Green-Medical. Please check there are no leading or trailing spaces in the recyclability column.</value>
   </data>
   <data name="101" xml:space="preserve">
     <value>Large organisations (L) submitting HH and PB packaging type for plastic (PL) packaging material must enter the material subtype breakdown as Flexible or Rigid for 2025 submission periods onwards</value>

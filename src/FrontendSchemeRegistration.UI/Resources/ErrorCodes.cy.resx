@@ -371,7 +371,7 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
     <value>Does dim angen sgôr asesu ailgylchadwyedd ar gyfer data pecynwaith dolen gaeedig.</value>
   </data>
   <data name="100" xml:space="preserve">
-    <value>Rhaid i sefydliadau mawr (L) sy'n cyflwyno math pecynwaith cartrefi (HH), (HDC-Glass), a PB ar gyfer deunydd pacio plastig (PL) roi cod ailgylchadwyedd yn y golofn yma ar gyfer cyfnodau cyflwyno 2025ymlaen – rhowch un o'r canlynol: R ar gyfer Coch, A ar gyfer Melyn, G ar gyfer Gwyrdd, R-M ar gyfer Coch-Meddygol, A-M ar gyfer Melyn-Meddygol neu G-M ar gyfer Gwyrdd-Meddygol. Gwiriwch nad oes unrhyw fylchau blaenllaw nac ôl-ddyfodiad yn y golofn ailgylchadwyedd.</value>
+    <value>Rhaid i sefydliadau mawr (L) sy'n cyflwyno math pecynwaith cartrefi (HH), (HDC-Glass), a PB ar gyfer deunydd pacio plastig (PL) roi cod ailgylchadwyedd yn y golofn yma ar gyfer cyfnodau cyflwyno 2025ymlaen. Rhowch un o'r canlynol: R ar gyfer Coch, A ar gyfer Melyn, G ar gyfer Gwyrdd, R-M ar gyfer Coch-Meddygol, A-M ar gyfer Melyn-Meddygol neu G-M ar gyfer Gwyrdd-Meddygol. Gwiriwch nad oes unrhyw fylchau blaenllaw nac ôl-ddyfodiad yn y golofn ailgylchadwyedd.</value>
   </data>
   <data name="101" xml:space="preserve">
     <value>Rhaid i sefydliadau mawr (L) sy'n cyflwyno math pecynwaith HH a PB ar gyfer deunydd pacio plastig (PL) roi'r dadansoddiad o isdeipiau'r deunyddiau fel Hyblyg neu Anhyblyg ar gyfer cyfnodau cyflwyno 2025 ymlaen</value>
