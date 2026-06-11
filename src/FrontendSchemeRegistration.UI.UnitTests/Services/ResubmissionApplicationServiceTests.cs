@@ -114,7 +114,7 @@ public class ResubmissionApplicationServiceTests
         _mockSubmissionService = new Mock<ISubmissionService>();
         _mockPaymentCalculationService = new Mock<IPaymentCalculationService>();
         _fixture = new Fixture();
-        _service = new ResubmissionApplicationServices(_mockSessionManager.Object, _mockPaymentCalculationService.Object, _mockSubmissionService.Object, _mockGlobalVariables.Object, _mockFeatureManager.Object, FakeTimeProvider2025);
+        _service = new ResubmissionApplicationServices(_mockSessionManager.Object, _mockPaymentCalculationService.Object, _mockSubmissionService.Object, _mockGlobalVariables.Object, FakeTimeProvider2025);
     }
 
     [Test]

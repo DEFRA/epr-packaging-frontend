@@ -2,13 +2,17 @@ namespace FrontendSchemeRegistration.UI.IntegrationTests;
 
 using System.Net.Http;
 using Controllers.FrontendSchemeRegistration;
+using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.MockServer.WebApi;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
 using WireMock.Server;
+using CookieOptions = FrontendSchemeRegistration.Application.Options.CookieOptions;
 
 public abstract class TestBase
 {
@@ -107,6 +111,11 @@ public abstract class TestBase
                 .Build();
 
             builder.UseConfiguration(testConfig);
+
+            builder.ConfigureTestServices(services =>
+            {
+                services.PostConfigure<CookieOptions>(options => options.JsEnabledCookieName = string.Empty);
+            });
         }
     }
 }
