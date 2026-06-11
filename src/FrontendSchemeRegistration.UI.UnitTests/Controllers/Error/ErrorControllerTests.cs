@@ -22,10 +22,10 @@ public class ErrorControllerTests
     }
 
     [Test]
-    public async Task HandleThrownExceptions_ReturnsProblemWithServiceErrorView()
+    public void HandleThrownExceptions_ReturnsProblemWithServiceErrorView()
     {
         // Act
-        var result = await _controller.HandleThrownExceptions();
+        var result = _controller.HandleThrownExceptions();
 
         // Assert
         result.Should().BeOfType<ViewResult>()
@@ -33,10 +33,10 @@ public class ErrorControllerTests
     }
 
     [Test]
-    public async Task HandleThrownSubmissionException_ReturnsProblemWithSubmissionErrorView()
+    public void HandleThrownSubmissionException_ReturnsProblemWithSubmissionErrorView()
     {
         // Act
-        var result = await _controller.HandleThrownSubmissionException();
+        var result = _controller.HandleThrownSubmissionException();
 
         // Assert
         result.Should().BeOfType<ViewResult>()
