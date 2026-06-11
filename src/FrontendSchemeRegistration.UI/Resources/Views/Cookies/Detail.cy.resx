@@ -247,7 +247,7 @@
     <value>Yn cadarnhau bod JavaScript wedi’i alluogi yn eich porwr fel y gall y gwasanaeth lwytho’r tudalennau mewngofnodi.</value>
   </data>
   <data name="Detail.JsEnabledCookieExpires" xml:space="preserve">
-    <value>30 diwrnod</value>
+    <value>Pan fyddwch yn cau eich porwr</value>
   </data>
   <data name="Details.Title" xml:space="preserve">
     <value>Cwcis</value>

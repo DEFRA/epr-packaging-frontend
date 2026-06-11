@@ -247,7 +247,7 @@
     <value>Confirms that your browser has JavaScript enabled so the service can load the sign-in pages.</value>
   </data>
   <data name="Detail.JsEnabledCookieExpires" xml:space="preserve">
-    <value>30 days</value>
+    <value>When you close your browser</value>
   </data>
   <data name="Details.Title" xml:space="preserve">
     <value>Cookies</value>
