@@ -48,16 +48,13 @@ public class JavaScriptDetectionMiddleware
 
     private static bool IsBypassPath(PathString path, string? signedOutCallbackPath)
     {
-        foreach (var bypass in BypassPaths)
+        if (BypassPaths.Any(bypass => path.StartsWithSegments(bypass, StringComparison.OrdinalIgnoreCase)))
         {
-            if (path.StartsWithSegments(bypass, StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
+            return true;
         }
 
         return !string.IsNullOrEmpty(signedOutCallbackPath)
-            && path.StartsWithSegments(new PathString(signedOutCallbackPath), StringComparison.OrdinalIgnoreCase);
+               && path.StartsWithSegments(new PathString(signedOutCallbackPath), StringComparison.OrdinalIgnoreCase);
     }
 
     private static async Task WriteGatePageAsync(HttpContext httpContext, string cookieName)
@@ -81,7 +78,7 @@ public class JavaScriptDetectionMiddleware
             .Append("(function(){")
             .Append("if(!navigator.cookieEnabled){")
             .Append($"window.location.replace({JsString(noScriptUrl)});return;")
-            .Append("}")
+            .Append('}')
             .Append($"document.cookie={JsString(cookieAttributes)};")
             .Append("window.location.replace(window.location.href);")
             .Append("})();")

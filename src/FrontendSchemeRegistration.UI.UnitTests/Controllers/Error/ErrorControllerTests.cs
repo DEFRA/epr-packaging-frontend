@@ -42,4 +42,15 @@ public class ErrorControllerTests
         result.Should().BeOfType<ViewResult>()
             .Which.ViewName.Should().Be("ProblemWithSubmissionError");
     }
+
+    [Test]
+    public void JavaScriptRequired_ReturnsJavaScriptRequiredView()
+    {
+        // Act
+        var result = _controller.JavaScriptRequired();
+
+        // Assert
+        result.Should().BeOfType<ViewResult>()
+            .Which.ViewName.Should().Be("JavaScriptRequired");
+    }
 }

@@ -10,7 +10,8 @@
     var dockerImageString = "not_set";
     if (!string.IsNullOrWhiteSpace(dockerImage))
     {
-        dockerImageString = dockerImage.Split(":").Last();
+        var parts = dockerImage.Split(":");
+        dockerImageString = parts[^1];
     }
 }
 
