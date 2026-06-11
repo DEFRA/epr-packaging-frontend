@@ -1,0 +1,55 @@
+@using System.Reflection
+
+@inject IOptions<ExternalUrlOptions> ExternalUrlOptions;
+
+@{
+    var dockerImage = Environment.GetEnvironmentVariable("DOCKER_CUSTOM_IMAGE_NAME");
+    var dockerImageString = "not_set";
+    if (!string.IsNullOrWhiteSpace(dockerImage))
+    {
+        dockerImageString = dockerImage.Split(":").Last();
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en" class="govuk-template">
+    <head>
+        <meta charset="utf-8">
+        <title>@ViewData["Title"] - @SharedLocalizer["application_title"] - GOV.UK</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+        <meta name="theme-color" content="#0b0c0c">
+
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="application-name" content="Report Packaging Data" data-version="@Assembly.GetExecutingAssembly().GetName().Version.ToString()">
+        <meta name="govuk:app-image-name" content="@dockerImageString">
+        <meta name="govuk:app-image-build-number" content="@Environment.GetEnvironmentVariable("BUILD_NUMBER")">
+        <meta name="govuk:app-image-git-sha" content="@Environment.GetEnvironmentVariable("GIT_SHA")">
+
+        <link rel="shortcut icon" sizes="16x16 32x32 48x48" href="/images/favicon.ico" type="image/x-icon">
+        <link rel="mask-icon" href="/images/govuk-mask-icon.svg" color="#0b0c0c">
+        <link rel="apple-touch-icon" sizes="180x180" href="/images/govuk-apple-touch-icon-180x180.png">
+        <link rel="apple-touch-icon" sizes="167x167" href="/images/govuk-apple-touch-icon-167x167.png">
+        <link rel="apple-touch-icon" sizes="152x152" href="/images/govuk-apple-touch-icon-152x152.png">
+        <link rel="apple-touch-icon" href="/images/govuk-apple-touch-icon.png">
+        <link rel="stylesheet" href="~/css/application.css">
+    </head>
+    <body class="govuk-template__body">
+        <a id="main-content" href="#main-content" class="govuk-skip-link">@SharedLocalizer["skip_to_main_content_text"]</a>
+
+        @await Html.PartialAsync("Partials/Govuk/_Header", ExternalUrlOptions.Value)
+
+        <div class="govuk-width-container">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-full">
+                    @await Component.InvokeAsync("PhaseBanner")
+                </div>
+            </div>
+        </div>
+
+        <div class="govuk-width-container">
+            @RenderBody()
+        </div>
+
+        @await Html.PartialAsync("Partials/Govuk/_Footer")
+    </body>
+</html>

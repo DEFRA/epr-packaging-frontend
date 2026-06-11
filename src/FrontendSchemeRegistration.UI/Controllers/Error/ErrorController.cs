@@ -19,4 +19,12 @@ public class ErrorController : Controller
     {
         return View(nameof(ProblemWithSubmissionError));
     }
+
+    [HttpGet]
+    [Route("javascript-required")]
+    [AllowAnonymous]
+    public IActionResult JavaScriptRequired()
+    {
+        return View(nameof(JavaScriptRequired));
+    }
 }

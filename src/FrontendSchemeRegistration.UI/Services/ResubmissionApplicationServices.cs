@@ -23,7 +23,6 @@ public class ResubmissionApplicationServices(
     IPaymentCalculationService paymentCalculationService,
     ISubmissionService submissionService,
     IOptions<GlobalVariables> globalVariables,
-    IFeatureManager featureManager,
     TimeProvider timeProvider) : IResubmissionApplicationService
 {
     public async Task<string> CreatePomResubmissionReferenceNumberForProducer(FrontendSchemeRegistrationSession session, SubmissionPeriod submissionPeriod, string organisationNumber, string submittedByName, Guid submissionId, int? historyCount)
