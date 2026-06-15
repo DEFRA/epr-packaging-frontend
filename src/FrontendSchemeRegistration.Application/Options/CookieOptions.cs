@@ -29,4 +29,6 @@ public class CookieOptions
     public int AuthenticationExpiryInMinutes { get; set; }
 
     public string TempDataCookie { get; set; }
+
+    public string JsEnabledCookieName { get; set; }
 }

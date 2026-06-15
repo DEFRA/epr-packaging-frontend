@@ -9,14 +9,22 @@ public class ErrorController : Controller
 {
     [Route("error")]
     [AllowAnonymous]
-    public async Task<IActionResult> HandleThrownExceptions()
+    public IActionResult HandleThrownExceptions()
     {
         return View(nameof(ProblemWithServiceError), new ErrorViewModel());
     }
 
     [Route("submission-error")]
-    public async Task<IActionResult> HandleThrownSubmissionException()
+    public IActionResult HandleThrownSubmissionException()
     {
         return View(nameof(ProblemWithSubmissionError));
+    }
+
+    [HttpGet]
+    [Route("javascript-required")]
+    [AllowAnonymous]
+    public IActionResult JavaScriptRequired()
+    {
+        return View(nameof(JavaScriptRequired));
     }
 }

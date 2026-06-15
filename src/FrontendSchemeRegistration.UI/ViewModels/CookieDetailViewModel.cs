@@ -27,6 +27,8 @@ public class CookieDetailViewModel
 
     public string OpenIdCookieName { get; set; }
 
+    public string JsEnabledCookieName { get; set; }
+
     public string GoogleAnalyticsDefaultCookieName { get; set; }
 
     public string GoogleAnalyticsAdditionalCookieName { get; set; }

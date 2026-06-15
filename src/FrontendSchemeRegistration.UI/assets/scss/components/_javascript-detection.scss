@@ -1,0 +1,35 @@
+.js-detection-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: govuk-spacing(4);
+    text-align: center;
+}
+
+.js-detection-spinner {
+    width: 48px;
+    height: 48px;
+    border: 6px solid govuk-colour("mid-grey");
+    border-top-color: govuk-colour("blue");
+    border-radius: 50%;
+    animation: js-detection-spin 1s linear infinite;
+    margin-bottom: govuk-spacing(3);
+}
+
+.js-detection-label {
+    @include govuk-font($size: 19);
+    margin: 0;
+}
+
+@keyframes js-detection-spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .js-detection-spinner {
+        animation: none;
+        border-top-color: govuk-colour("mid-grey");
+    }
+}

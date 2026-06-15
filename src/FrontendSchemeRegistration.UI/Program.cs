@@ -124,6 +124,7 @@ if (!isComponentTest)
     app.UseSerilogRequestLogging(); // after `UseStaticFiles()` to prevent logging of requests to css/js/png etc.
 
 app.UseMiddleware<SecurityHeaderMiddleware>();
+app.UseMiddleware<JavaScriptDetectionMiddleware>();
 app.UseCookiePolicy();
 app.UseStatusCodePagesWithReExecute("/error", "?statusCode={0}");
 app.UseHttpsRedirection();
