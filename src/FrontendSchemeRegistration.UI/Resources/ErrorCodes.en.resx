@@ -130,7 +130,7 @@
     <value>When packaging activity is entered, it must be one of the codes SO, PF, IM, SE, HL or OM</value>
   </data>
   <data name="03" xml:space="preserve">
-    <value>Packaging type must be one of the codes HH, NH, CW, OW, PB, RU, HDC, NDC or SP</value>
+    <value>Packaging type must be one of the codes HH, NH, CW, OW, PB, RU, HDC, NDC, SP or CLR</value>
   </data>
   <data name="04" xml:space="preserve">
     <value>When packaging class is entered, it must be one of the codes P1, P2, P3, P4, P5, P6, O1, O2 or B1</value>
@@ -379,6 +379,9 @@ Read the guidance about how to create your organisation details file. Once youâ€
   <data name="912" xml:space="preserve">
     <value>Packaging type CLR (closed-loop packaging data) can only be used with material type PL (plastic).</value>
   </data>
+  <data name="913" xml:space="preserve">
+    <value>CLR is not a valid packaging type for registration years before 2027. Remove the CLR entry and resubmit, or contact your regulator if you need to report closed loop packaging waste data for a previous year.</value>
+  </data>
   <data name="914" xml:space="preserve">
     <value>Packaging activity is not needed for this packaging type.</value>
   </data>
@@ -398,7 +401,7 @@ Read the guidance about how to create your organisation details file. Once youâ€
     <value>Turnover for this organisation is recorded as zero. Please verify this is correct before submitting a zero return</value>
   </data>
   <data name="100" xml:space="preserve">
-    <value>Large organisations (L) submitting HH, HDC-Glass and PB packaging type must enter a recyclability code in this column for 2025 submission periods onwards â€“ enter one of the following: R for Red, A for Amber, G for Green, R-M for Red-Medical, A-M for Amber-Medical or G-M for Green-Medical</value>
+    <value>Large organisations (L) submitting HH, HDC-Glass and PB packaging type for plastic (PL) must enter a recyclability code in this column for 2025-H2 submission periods onwards. Enter one of the following: R for Red, A for Amber, G for Green, R-M for Red-Medical, A-M for Amber-Medical or G-M for Green-Medical. Please check there are no leading or trailing spaces in the recyclability column.</value>
   </data>
   <data name="101" xml:space="preserve">
     <value>Large organisations (L) submitting HH and PB packaging type for plastic (PL) packaging material must enter the material subtype breakdown as Flexible or Rigid for 2025 submission periods onwards</value>
@@ -435,9 +438,6 @@ Read the guidance about how to create your organisation details file. Once youâ€
   </data>
   <data name="78" xml:space="preserve">
     <value>Submission period for July to December 2026 will be 2026-H2</value>
-  </data>
-  <data name="108" xml:space="preserve">
-    <value>Large organisations (L) can enter a recyclability rating for 2025 submission periods onwards from the following options: R (for Red), A (for Amber), G (for Green), R-M (for Red-Medical), A-M (for Amber-Medical) or Green-Medical (G-M)</value>
   </data>
   <data name="91" xml:space="preserve">
     <value>Do not submit transitional packaging units for this period.</value>

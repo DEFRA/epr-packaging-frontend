@@ -352,6 +352,9 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
   <data name="912" xml:space="preserve">
     <value>Dim ond gyda math deunydd PL (plastig) y gellir defnyddio math pecynwaith CLR (data pecynwaith dolen gaeedig).</value>
   </data>
+  <data name="913" xml:space="preserve">
+    <value>Nid yw CLR yn fath o ddeunydd pacio dilys ar gyfer blynyddoedd cofrestru cyn 2027. Tynnwch y cofnod CLR ac ailgyflwynwch, neu cysylltwch â'ch rheoleiddiwr os oes angen i chi adrodd data gwastraff deunydd pacio dolen gaeedig ar gyfer blwyddyn flaenorol.</value>
+  </data>
   <data name="914" xml:space="preserve">
     <value>Does dim angen gweithgaredd pecynwaith ar gyfer y math yma o becynwaith.</value>
   </data>
@@ -368,7 +371,7 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
     <value>Does dim angen sgôr asesu ailgylchadwyedd ar gyfer data pecynwaith dolen gaeedig.</value>
   </data>
   <data name="100" xml:space="preserve">
-    <value>Rhaid i sefydliadau mawr (L) sy'n cyflwyno math pecynwaith cartrefi (HH) roi cod ailgylchadwyedd yn y golofn yma ar gyfer cyfnodau cyflwyno 2025ymlaen – rhowch un o'r canlynol: R ar gyfer Coch, A ar gyfer Melyn, G ar gyfer Gwyrdd, R-M ar gyfer Coch-Meddygol, A-M ar gyfer Melyn-Meddygol neu G-M ar gyfer Gwyrdd-Meddygol</value>
+    <value>Rhaid i sefydliadau mawr (L) sy'n cyflwyno math pecynwaith cartrefi (HH), (HDC-Glass), a PB ar gyfer deunydd pacio plastig (PL) roi cod ailgylchadwyedd yn y golofn yma ar gyfer cyfnodau cyflwyno 2025ymlaen. Rhowch un o'r canlynol: R ar gyfer Coch, A ar gyfer Melyn, G ar gyfer Gwyrdd, R-M ar gyfer Coch-Meddygol, A-M ar gyfer Melyn-Meddygol neu G-M ar gyfer Gwyrdd-Meddygol. Gwiriwch nad oes unrhyw fylchau blaenllaw nac ôl-ddyfodiad yn y golofn ailgylchadwyedd.</value>
   </data>
   <data name="101" xml:space="preserve">
     <value>Rhaid i sefydliadau mawr (L) sy'n cyflwyno math pecynwaith HH a PB ar gyfer deunydd pacio plastig (PL) roi'r dadansoddiad o isdeipiau'r deunyddiau fel Hyblyg neu Anhyblyg ar gyfer cyfnodau cyflwyno 2025 ymlaen</value>
@@ -411,9 +414,6 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
   </data>
   <data name="73" xml:space="preserve">
     <value>Mae trosiant y sefydliad yma wedi'i gofnodi fel sero. Gwiriwch fod hyn yn gywir cyn ichi gyflwyno ffurflen sy'n dweud sero</value>
-  </data>
-  <data name="108" xml:space="preserve">
-    <value>Gall sefydliadau mawr (L) nodi gradd ailgylchadwyedd ar gyfer cyfnodau cyflwyno 2025 ymlaen o blith yr opsiynau canlynol: R (ar gyfer Coch), A (ar gyfer Melyn), G (ar gyfer Gwyrdd), R-M (ar gyfer Coch-Meddygol), A-M (ar gyfer Melyn-Meddygol) neu G-M (ar gyfer Gwyrdd-Meddygol)</value>
   </data>
   <data name="91" xml:space="preserve">
     <value>Peidiwch â chyflwyno unedau pecynwaith trosiannol am y cyfnod yma.</value>

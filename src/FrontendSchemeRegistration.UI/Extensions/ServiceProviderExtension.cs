@@ -448,6 +448,22 @@ public static class ServiceProviderExtension
                         // provide a couple of hours padding in case of clock change
                         options.RemoteAuthenticationTimeout = remoteAuthTimeout.Value.Add(TimeSpan.FromHours(2));
                     }
+
+                    var existingOnRemoteFailure = options.Events.OnRemoteFailure;
+                    options.Events.OnRemoteFailure = async context =>
+                    {
+                        var message = context.Failure?.Message;
+                        if (message is not null &&
+                            (message.Contains("JavaScript", StringComparison.OrdinalIgnoreCase) ||
+                             message.Contains("AADB2C90157", StringComparison.OrdinalIgnoreCase)))
+                        {
+                            context.HandleResponse();
+                            context.Response.Redirect("/error");
+                            return;
+                        }
+
+                        await existingOnRemoteFailure(context);
+                    };
                 },
                 options =>
                 {

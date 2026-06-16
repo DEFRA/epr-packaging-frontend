@@ -243,6 +243,12 @@
   <data name="Detail.OpenIdCookiePurpose" xml:space="preserve">
     <value>As part of the create account and log in process, the nonce cookie is used by Microsoft's OpenIDConnect to mitigate replay attacks (where a hacker intercepts a message and replays it to the intended receiver).</value>
   </data>
+  <data name="Detail.JsEnabledCookiePurpose" xml:space="preserve">
+    <value>Confirms that your browser has JavaScript enabled so the service can load the sign-in pages.</value>
+  </data>
+  <data name="Detail.JsEnabledCookieExpires" xml:space="preserve">
+    <value>When you close your browser</value>
+  </data>
   <data name="Details.Title" xml:space="preserve">
     <value>Cookies</value>
   </data>

@@ -7,6 +7,7 @@
 
     var subsidiaryNameHeader = Localizer["subsidiary_name"];
     var subsidiaryIdHeader = Localizer["subsidiary_id"];
+    var parentIdHeader = Localizer["parent_id"];
     var companiesHouseNumberHeader = Localizer["companies_house_number"];
     var joinedHeader = Localizer["joined"];
     var reportingHeader = Localizer["reporting"];
@@ -125,6 +126,7 @@
                                     <tr class="govuk-table__row">
                                         <th scope="col" class="govuk-table__header">@subsidiaryNameHeader</th>
                                         <th scope="col" class="govuk-table__header no-wrap-text">@subsidiaryIdHeader</th>
+                                        <th scope="col" class="govuk-table__header no-wrap-text">@parentIdHeader</th>
                                         <th scope="col" class="govuk-table__header no-wrap-text">@companiesHouseNumberHeader</th>
                                         <feature name="@FeatureFlags.ShowSubsidiaryJoinerAndLeaverColumns">
                                             <th scope="col" class="govuk-table__header no-wrap-text govuk-!-padding-right-5">@joinedHeader</th>
@@ -141,6 +143,7 @@
                                         <tr class="govuk-table__row">
                                             <td class="govuk-table__cell break-word" data-heading="@subsidiaryNameHeader">@subsidiaryViewModel.OrganisationName</td>
                                             <td class="govuk-table__cell break-word" data-heading="@subsidiaryIdHeader">@subsidiaryViewModel.OrganisationNumber</td>
+                                            <td class="govuk-table__cell break-word" data-heading="@parentIdHeader">@subsidiaryViewModel.ParentOrganisationNumber</td>
                                             <td class="govuk-table__cell break-word" data-heading="@companiesHouseNumberHeader">
                                                 @(!string.IsNullOrWhiteSpace(subsidiaryViewModel.CompaniesHouseNumber) ? subsidiaryViewModel.CompaniesHouseNumber : Localizer["no_ch_number"])
                                             </td>

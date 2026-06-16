@@ -10,6 +10,7 @@ public sealed class ExportOrganisationAllSubsidiariesRowMap : ClassMap<DTOs.Subs
     {
         Map(m => m.OrganisationName).Name("subsidiary_name");
         Map(m => m.OrganisationNumber).Name("subsidiary_id");
+        Map(m => m.ParentOrganisationNumber).Name("parent_id");
         Map(m => m.CompaniesHouseNumber).Name("companies_house_number");
     }
 }
