@@ -194,13 +194,13 @@
     <value>Rheoli'ch rhwymedigaethau ailgylchu ar gyfer {0}</value>
   </data>
   <data name="prn_paragraph_1" xml:space="preserve">
-    <value>Adolygu'ch cyfrifiadau ar gyfer eich rhwymedigaethau ailgylchu a derbyn PRNs neu PERNs i fodloni'r rhain.</value>
+    <value>Review your recycling obligations and accept PRNs or PERNs to meet them.</value>
   </data>
   <data name="prn_unordered_list_point_1" xml:space="preserve">
-    <value>gweld rhwymedigaethau ailgylchu fesul deunydd</value>
+    <value>see how your recycling obligations were calculated</value>
   </data>
   <data name="prn_unordered_list_point_2" xml:space="preserve">
-    <value>gwirio cynnydd eich rhwymedigaethau ailgylchu</value>
+    <value>check your recycling obligations progress</value>
   </data>
   <data name="waste_management_and_admin_fees" xml:space="preserve">
     <value>Ffioedd rheoli gwastraff a ffioedd gweinyddol (yn agor mewn tab newydd)</value>
