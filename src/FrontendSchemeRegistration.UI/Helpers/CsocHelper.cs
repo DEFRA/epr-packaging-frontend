@@ -38,19 +38,20 @@ public static class CsocHelper
                 organisation.Id,
                 organisation.IsComplianceScheme(),
                 organisation.IsDirectProducer(),
-                complianceYear),
+                complianceYear,
+                complianceDeclarationStatus),
             IsObligationDataSubmitted = prnObligationViewModel is not null &&
                                         prnObligationViewModel.OverallStatus != ObligationStatus.NoDataYet,
             ComplianceDeclarationStatus = complianceDeclarationStatus
         };
     }
 
-    private static string? GetWasteObligationsBaseAddress(
-        string? baseEndpoint,
+    private static string? GetWasteObligationsBaseAddress(string? baseEndpoint,
         Guid? organisationId,
         bool isComplianceScheme,
         bool isDirectProducer,
-        int complianceYear)
+        int complianceYear, 
+        ComplianceDeclarationStatus? complianceDeclarationStatus)
     {
         if (string.IsNullOrWhiteSpace(baseEndpoint) ||
             !organisationId.HasValue)
@@ -59,6 +60,7 @@ public static class CsocHelper
         }
 
         string? documentType = null;
+        
         if (isComplianceScheme)
         {
             documentType = "statement";
@@ -74,6 +76,8 @@ public static class CsocHelper
         }
 
         var normalizedBaseEndpoint = baseEndpoint.TrimEnd('/');
-        return $"{normalizedBaseEndpoint}/compliance/{organisationId.Value}/{documentType}?year={complianceYear}";
+        var view = complianceDeclarationStatus is ComplianceDeclarationStatus.Submitted ? "/view" : null;
+        
+        return $"{normalizedBaseEndpoint}/compliance/{organisationId.Value}/{documentType}{view}?year={complianceYear}";
     }
 }
