@@ -22,7 +22,16 @@
         <div class="govuk-card govuk-!-margin-bottom-6">
             <div class="govuk-card-body">
                 <h2 class="govuk-heading-m">@Localizer[$"{statusKey}_heading_{actorKey}"]</h2>
-                <p class="govuk-body">@string.Format(Localizer[$"{statusKey}_paragraph_{actorKey}"].Value, Model.ComplianceYear, Model.SubmissionDeadline)</p>
+                <p class="govuk-body">
+                    @if (statusKey is "submit" or "cancelled")
+                    {
+                        @Localizer[$"{statusKey}_paragraph_{actorKey}", Model.ComplianceYear, Model.SubmissionDeadline]
+                    }
+                    else
+                    {
+                        @Localizer[$"{statusKey}_paragraph_{actorKey}", Model.ComplianceYear]
+                    }
+                </p>
                 @if (Model.IsApprovedUser && Model.WasteObligationsBaseAddress is not null)
                 {
                     <div class="govuk-button-group">
