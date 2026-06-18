@@ -98,6 +98,7 @@ public class CsocHelperTests
     }
 
     [TestCase(ComplianceDeclarationStatus.Submitted)]
+    [TestCase(ComplianceDeclarationStatus.Accepted)]
     [TestCase(ComplianceDeclarationStatus.Cancelled)]
     public async Task CreateViewModel_WhenDeclarationStatusSet_ShouldMapComplianceDeclarationStatus(
         ComplianceDeclarationStatus complianceDeclarationStatus)
@@ -166,6 +167,101 @@ public class CsocHelperTests
         result.Should().NotBeNull();
         result?.WasteObligationsBaseAddress.Should()
             .Be($"https://understanding-obligations/compliance/{organisationId}/statement?year={now.GetComplianceYear()}");
+    }
+
+    [TestCase(ComplianceDeclarationStatus.Submitted)]
+    [TestCase(ComplianceDeclarationStatus.Accepted)]
+    public async Task CreateViewModel_WhenOrganisationIsComplianceScheme_AndCanBeViewed_ShouldUseStatementWasteObligationsBaseAddress(ComplianceDeclarationStatus status)
+    {
+        MockFeatureManager.Setup(x => x.IsEnabledAsync(FeatureFlags.CsocEnabled)).ReturnsAsync(true);
+        var organisationId = Guid.NewGuid();
+        var now = DateTime.Now;
+
+        var result = await CsocHelper.CreateViewModel(
+            MockFeatureManager.Object,
+            isApprovedUser: true,
+            new Organisation
+            {
+                Id = organisationId,
+                OrganisationRole = OrganisationRoles.ComplianceScheme
+            },
+            now,
+            new CsocOptions
+            {
+                WasteObligationsBaseAddress = "https://understanding-obligations"
+            },
+            new PrnObligationViewModel
+            {
+                OverallStatus = ObligationStatus.Met,
+                ComplianceDeclarationStatus = status
+            });
+
+        result.Should().NotBeNull();
+        result?.WasteObligationsBaseAddress.Should()
+            .Be($"https://understanding-obligations/compliance/{organisationId}/statement/view?year={now.GetComplianceYear()}");
+    }
+
+    [Test]
+    public async Task CreateViewModel_WhenOrganisationIsDirectProducer_ShouldUseCertificateWasteObligationsBaseAddress()
+    {
+        MockFeatureManager.Setup(x => x.IsEnabledAsync(FeatureFlags.CsocEnabled)).ReturnsAsync(true);
+        var organisationId = Guid.NewGuid();
+        var now = DateTime.Now;
+
+        var result = await CsocHelper.CreateViewModel(
+            MockFeatureManager.Object,
+            isApprovedUser: true,
+            new Organisation
+            {
+                Id = organisationId,
+                OrganisationRole = OrganisationRoles.Producer
+            },
+            now,
+            new CsocOptions
+            {
+                WasteObligationsBaseAddress = "https://understanding-obligations"
+            },
+            new PrnObligationViewModel
+            {
+                OverallStatus = ObligationStatus.Met,
+                ComplianceDeclarationStatus = ComplianceDeclarationStatus.Cancelled
+            });
+
+        result.Should().NotBeNull();
+        result?.WasteObligationsBaseAddress.Should()
+            .Be($"https://understanding-obligations/compliance/{organisationId}/certificate?year={now.GetComplianceYear()}");
+    }
+
+    [TestCase(ComplianceDeclarationStatus.Submitted)]
+    [TestCase(ComplianceDeclarationStatus.Accepted)]
+    public async Task CreateViewModel_WhenOrganisationIsDirectProducer_AndCanBeViewed_ShouldUseStatementWasteObligationsBaseAddress(ComplianceDeclarationStatus status)
+    {
+        MockFeatureManager.Setup(x => x.IsEnabledAsync(FeatureFlags.CsocEnabled)).ReturnsAsync(true);
+        var organisationId = Guid.NewGuid();
+        var now = DateTime.Now;
+
+        var result = await CsocHelper.CreateViewModel(
+            MockFeatureManager.Object,
+            isApprovedUser: true,
+            new Organisation
+            {
+                Id = organisationId,
+                OrganisationRole = OrganisationRoles.Producer
+            },
+            now,
+            new CsocOptions
+            {
+                WasteObligationsBaseAddress = "https://understanding-obligations"
+            },
+            new PrnObligationViewModel
+            {
+                OverallStatus = ObligationStatus.Met,
+                ComplianceDeclarationStatus = status
+            });
+
+        result.Should().NotBeNull();
+        result?.WasteObligationsBaseAddress.Should()
+            .Be($"https://understanding-obligations/compliance/{organisationId}/certificate/view?year={now.GetComplianceYear()}");
     }
 
     [Test]

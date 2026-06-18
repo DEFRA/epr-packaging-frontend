@@ -19,16 +19,16 @@
     <value>Submit your certificate of compliance</value>
   </data>
   <data name="submit_paragraph_compliance_scheme" xml:space="preserve">
-    <value>An approved or delegated person must submit your {0} statement of compliance before or on &lt;strong&gt;{1:d MMMM yyyy}&lt;/strong&gt;</value>
+    <value>An approved or delegated person must submit your {1} statement of compliance before or on &lt;strong&gt;{2:d MMMM yyyy}&lt;/strong&gt;</value>
   </data>
   <data name="submit_paragraph_direct_producer" xml:space="preserve">
-    <value>An approved or delegated person must submit your {0} certificate of compliance before or on &lt;strong&gt;{1:d MMMM yyyy}&lt;/strong&gt;</value>
+    <value>An approved or delegated person must submit your {1} certificate of compliance before or on &lt;strong&gt;{2:d MMMM yyyy}&lt;/strong&gt;</value>
   </data>
   <data name="submit_button_compliance_scheme" xml:space="preserve">
-    <value>Submit statement</value>
+    <value>Submit your statement</value>
   </data>
   <data name="submit_button_direct_producer" xml:space="preserve">
-    <value>Submit certificate</value>
+    <value>Submit your certificate</value>
   </data>
   <data name="submitted_heading_compliance_scheme" xml:space="preserve">
     <value>View your statement of compliance</value>
@@ -37,10 +37,10 @@
     <value>View your certificate of compliance</value>
   </data>
   <data name="submitted_paragraph_compliance_scheme" xml:space="preserve">
-    <value>Your {0} statement of compliance has been submitted.</value>
+    <value>Your {1} statement of compliance has been submitted.</value>
   </data>
   <data name="submitted_paragraph_direct_producer" xml:space="preserve">
-    <value>Your {0} certificate of compliance has been submitted.</value>
+    <value>Your {1} certificate of compliance has been submitted.</value>
   </data>
   <data name="submitted_button_compliance_scheme" xml:space="preserve">
     <value>View your statement of compliance</value>
@@ -55,15 +55,30 @@
     <value>Resubmit your certificate of compliance</value>
   </data>
   <data name="cancelled_paragraph_compliance_scheme" xml:space="preserve">
-    <value>The environmental regulator cancelled your {0} statement of compliance. An approved or delegated person must resubmit your statement before or on &lt;strong&gt;{1:d MMMM yyyy}&lt;/strong&gt;</value>
+    <value>The {0} cancelled your {1} statement of compliance. An approved or delegated person must resubmit your statement before or on &lt;strong&gt;{2:d MMMM yyyy}&lt;/strong&gt;</value>
   </data>
   <data name="cancelled_paragraph_direct_producer" xml:space="preserve">
-    <value>The environmental regulator cancelled your {0} certificate of compliance. An approved or delegated person must resubmit your certificate before or on &lt;strong&gt;{1:d MMMM yyyy}&lt;/strong&gt;</value>
+    <value>The {0} cancelled your {1} certificate of compliance. An approved or delegated person must resubmit your certificate before or on &lt;strong&gt;{2:d MMMM yyyy}&lt;/strong&gt;</value>
   </data>
   <data name="cancelled_button_compliance_scheme" xml:space="preserve">
-    <value>Resubmit statement</value>
+    <value>Resubmit your statement</value>
   </data>
   <data name="cancelled_button_direct_producer" xml:space="preserve">
-    <value>Resubmit certificate</value>
+    <value>Resubmit your certificate</value>
+  </data>
+  <data name="regulator" xml:space="preserve">
+    <value>Regulator</value>
+  </data>
+  <data name="regulator_england" xml:space="preserve">
+    <value>Environment Agency (England)</value>
+  </data>
+    <data name="regulator_northern_ireland" xml:space="preserve">
+    <value>Environment Agency (Northern Ireland)</value>
+  </data>
+    <data name="regulator_scotland" xml:space="preserve">
+    <value>Environment Agency (Scotland)</value>
+  </data>
+    <data name="regulator_wales" xml:space="preserve">
+    <value>Environment Agency (Wales)</value>
   </data>
 </root>
