@@ -7,18 +7,19 @@ using Constants;
 using EPR.Common.Authorization.Models;
 using Extensions;
 using Microsoft.FeatureManagement;
+using Sessions;
 using ViewModels;
 using ViewModels.Prns;
 
 public static class CsocHelper
 {
-    public static async Task<CsocViewModel?> CreateViewModel(
-        IFeatureManager featureManager,
+    public static async Task<CsocViewModel?> CreateViewModel(IFeatureManager featureManager,
         bool isApprovedUser,
         Organisation organisation,
         DateTime now,
-        CsocOptions options, 
-        PrnObligationViewModel? prnObligationViewModel = null)
+        CsocOptions options,
+        PrnObligationViewModel? prnObligationViewModel = null,
+        RegistrationSession? registrationSession = null)
     {
         var enabled = await featureManager.IsEnabledAsync(FeatureFlags.CsocEnabled);
         if (!enabled) return null;
@@ -39,7 +40,8 @@ public static class CsocHelper
                 organisation.IsComplianceScheme(),
                 organisation.IsDirectProducer(),
                 complianceYear,
-                complianceDeclarationStatus),
+                complianceDeclarationStatus,
+                registrationSession),
             IsObligationDataSubmitted = prnObligationViewModel is not null &&
                                         prnObligationViewModel.OverallStatus != ObligationStatus.NoDataYet,
             ComplianceDeclarationStatus = complianceDeclarationStatus,
@@ -51,8 +53,9 @@ public static class CsocHelper
         Guid? organisationId,
         bool isComplianceScheme,
         bool isDirectProducer,
-        int complianceYear, 
-        ComplianceDeclarationStatus? complianceDeclarationStatus)
+        int complianceYear,
+        ComplianceDeclarationStatus? complianceDeclarationStatus, 
+        RegistrationSession? registrationSession)
     {
         if (string.IsNullOrWhiteSpace(baseEndpoint) ||
             !organisationId.HasValue)
@@ -81,7 +84,11 @@ public static class CsocHelper
             or ComplianceDeclarationStatus.Accepted
             ? "/view"
             : null;
+
+        var id = isComplianceScheme && registrationSession?.SelectedComplianceScheme != null
+            ? registrationSession.SelectedComplianceScheme.Id
+            : organisationId.Value;
         
-        return $"{normalizedBaseEndpoint}/compliance/{organisationId.Value}/{documentType}{view}?year={complianceYear}";
+        return $"{normalizedBaseEndpoint}/compliance/{id}/{documentType}{view}?year={complianceYear}";
     }
 }
