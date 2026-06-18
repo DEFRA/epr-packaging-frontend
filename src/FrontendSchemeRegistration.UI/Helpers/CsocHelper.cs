@@ -42,7 +42,8 @@ public static class CsocHelper
                 complianceDeclarationStatus),
             IsObligationDataSubmitted = prnObligationViewModel is not null &&
                                         prnObligationViewModel.OverallStatus != ObligationStatus.NoDataYet,
-            ComplianceDeclarationStatus = complianceDeclarationStatus
+            ComplianceDeclarationStatus = complianceDeclarationStatus,
+            NationId = prnObligationViewModel?.NationId
         };
     }
 

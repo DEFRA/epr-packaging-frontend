@@ -17,21 +17,21 @@
         _ => "submit"
     };
 
+    var regulator = Localizer[Model.NationId switch
+    {
+        (int)Nation.England => "regulator_england",
+        (int)Nation.Scotland => "regulator_scotland",
+        (int)Nation.Wales => "regulator_wales",
+        (int)Nation.NorthernIreland => "regulator_northern_ireland",
+        _ => "regulator"
+    }];
+
     if (actorKey is not null)
     {
         <div class="govuk-card govuk-!-margin-bottom-6">
             <div class="govuk-card-body">
                 <h2 class="govuk-heading-m">@Localizer[$"{statusKey}_heading_{actorKey}"]</h2>
-                <p class="govuk-body">
-                    @if (statusKey is "submit" or "cancelled")
-                    {
-                        @Localizer[$"{statusKey}_paragraph_{actorKey}", Model.ComplianceYear, Model.SubmissionDeadline]
-                    }
-                    else
-                    {
-                        @Localizer[$"{statusKey}_paragraph_{actorKey}", Model.ComplianceYear]
-                    }
-                </p>
+                <p class="govuk-body">@Localizer[$"{statusKey}_paragraph_{actorKey}", regulator.Value, Model.ComplianceYear, Model.SubmissionDeadline]</p>
                 @if (Model.IsApprovedUser && Model.WasteObligationsBaseAddress is not null)
                 {
                     <div class="govuk-button-group">
