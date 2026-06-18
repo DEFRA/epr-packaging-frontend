@@ -12,7 +12,7 @@
 
     var statusKey = Model.ComplianceDeclarationStatus switch
     {
-        ComplianceDeclarationStatus.Submitted => "submitted",
+        ComplianceDeclarationStatus.Submitted or ComplianceDeclarationStatus.Accepted => "submitted",
         ComplianceDeclarationStatus.Cancelled => "cancelled",
         _ => "submit"
     };

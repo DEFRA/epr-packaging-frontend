@@ -77,7 +77,10 @@ public static class CsocHelper
         }
 
         var normalizedBaseEndpoint = baseEndpoint.TrimEnd('/');
-        var view = complianceDeclarationStatus is ComplianceDeclarationStatus.Submitted ? "/view" : null;
+        var view = complianceDeclarationStatus is ComplianceDeclarationStatus.Submitted
+            or ComplianceDeclarationStatus.Accepted
+            ? "/view"
+            : null;
         
         return $"{normalizedBaseEndpoint}/compliance/{organisationId.Value}/{documentType}{view}?year={complianceYear}";
     }

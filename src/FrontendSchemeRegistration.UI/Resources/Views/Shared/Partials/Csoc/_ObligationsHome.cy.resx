@@ -25,10 +25,10 @@
     <value>An approved or delegated person must submit your {1} certificate of compliance before or on &lt;strong&gt;{2:d MMMM yyyy}&lt;/strong&gt;</value>
   </data>
   <data name="submit_button_compliance_scheme" xml:space="preserve">
-    <value>Submit statement</value>
+    <value>Submit your statement</value>
   </data>
   <data name="submit_button_direct_producer" xml:space="preserve">
-    <value>Submit certificate</value>
+    <value>Submit your certificate</value>
   </data>
   <data name="submitted_heading_compliance_scheme" xml:space="preserve">
     <value>View your statement of compliance</value>
@@ -37,10 +37,10 @@
     <value>View your certificate of compliance</value>
   </data>
   <data name="submitted_paragraph_compliance_scheme" xml:space="preserve">
-    <value>Your {0} statement of compliance has been submitted.</value>
+    <value>Your {1} statement of compliance has been submitted.</value>
   </data>
   <data name="submitted_paragraph_direct_producer" xml:space="preserve">
-    <value>Your {0} certificate of compliance has been submitted.</value>
+    <value>Your {1} certificate of compliance has been submitted.</value>
   </data>
   <data name="submitted_button_compliance_scheme" xml:space="preserve">
     <value>View your statement of compliance</value>

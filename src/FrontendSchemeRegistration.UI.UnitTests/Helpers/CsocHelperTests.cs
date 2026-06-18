@@ -98,6 +98,7 @@ public class CsocHelperTests
     }
 
     [TestCase(ComplianceDeclarationStatus.Submitted)]
+    [TestCase(ComplianceDeclarationStatus.Accepted)]
     [TestCase(ComplianceDeclarationStatus.Cancelled)]
     public async Task CreateViewModel_WhenDeclarationStatusSet_ShouldMapComplianceDeclarationStatus(
         ComplianceDeclarationStatus complianceDeclarationStatus)
@@ -168,8 +169,9 @@ public class CsocHelperTests
             .Be($"https://understanding-obligations/compliance/{organisationId}/statement?year={now.GetComplianceYear()}");
     }
 
-    [Test]
-    public async Task CreateViewModel_WhenOrganisationIsComplianceScheme_AndSubmitted_ShouldUseStatementWasteObligationsBaseAddress()
+    [TestCase(ComplianceDeclarationStatus.Submitted)]
+    [TestCase(ComplianceDeclarationStatus.Accepted)]
+    public async Task CreateViewModel_WhenOrganisationIsComplianceScheme_AndCanBeViewed_ShouldUseStatementWasteObligationsBaseAddress(ComplianceDeclarationStatus status)
     {
         MockFeatureManager.Setup(x => x.IsEnabledAsync(FeatureFlags.CsocEnabled)).ReturnsAsync(true);
         var organisationId = Guid.NewGuid();
@@ -191,7 +193,7 @@ public class CsocHelperTests
             new PrnObligationViewModel
             {
                 OverallStatus = ObligationStatus.Met,
-                ComplianceDeclarationStatus = ComplianceDeclarationStatus.Submitted
+                ComplianceDeclarationStatus = status
             });
 
         result.Should().NotBeNull();
@@ -230,8 +232,9 @@ public class CsocHelperTests
             .Be($"https://understanding-obligations/compliance/{organisationId}/certificate?year={now.GetComplianceYear()}");
     }
 
-    [Test]
-    public async Task CreateViewModel_WhenOrganisationIsDirectProducer_AndSubmitted_ShouldUseStatementWasteObligationsBaseAddress()
+    [TestCase(ComplianceDeclarationStatus.Submitted)]
+    [TestCase(ComplianceDeclarationStatus.Accepted)]
+    public async Task CreateViewModel_WhenOrganisationIsDirectProducer_AndCanBeViewed_ShouldUseStatementWasteObligationsBaseAddress(ComplianceDeclarationStatus status)
     {
         MockFeatureManager.Setup(x => x.IsEnabledAsync(FeatureFlags.CsocEnabled)).ReturnsAsync(true);
         var organisationId = Guid.NewGuid();
@@ -253,7 +256,7 @@ public class CsocHelperTests
             new PrnObligationViewModel
             {
                 OverallStatus = ObligationStatus.Met,
-                ComplianceDeclarationStatus = ComplianceDeclarationStatus.Submitted
+                ComplianceDeclarationStatus = status
             });
 
         result.Should().NotBeNull();
