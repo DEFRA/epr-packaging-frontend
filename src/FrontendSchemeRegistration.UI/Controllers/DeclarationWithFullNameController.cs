@@ -1,10 +1,10 @@
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
-using FrontendSchemeRegistration.Application.DTOs.RegistrationSubmission;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
 using FrontendSchemeRegistration.UI.Extensions;
+using FrontendSchemeRegistration.UI.Services;
 using FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
@@ -25,7 +25,7 @@ public class DeclarationWithFullNameController(
     ILogger<DeclarationWithFullNameController> logger,
     IRegistrationPeriodProvider registrationPeriodProvider,
     IFeatureManager featureManager,
-    IRegistrationSubmissionDataService registrationSubmissionDataService) : Controller
+    IRegistrationApplicationService registrationApplicationService) : Controller
 {
     private const string ViewName = "DeclarationWithFullName";
     private const string ConfirmationViewName = "CompanyDetailsConfirmation";
@@ -157,17 +157,9 @@ public class DeclarationWithFullNameController(
                     session.RegistrationSession.IsResubmission,
                     regJourney);
 
-                if (await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationSubmissionDataHandler))
+                if (await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService))
                 {
-                    await registrationSubmissionDataService.NotifyAsync(new CreateRegistrationSubmissionDataRequest
-                    {
-                        SubmissionId = submissionId,
-                        FileId = organisationDetailsFileId,
-                        RegistrationBlobName = submission.LastUploadedValidFiles.CompanyDetailsBlobName,
-                        ComplianceSchemeId = session.RegistrationSession.SelectedComplianceScheme?.Id,
-                        SubmissionPeriod = submission.SubmissionPeriod,
-                        SubmissionDate = DateTime.UtcNow,
-                    });
+                    await registrationApplicationService.WaitForRegistrationFeeSnapshotAsync(HttpContext.Session, submissionId, HttpContext.RequestAborted);
                 }
 
                 return (model.RegistrationYear.HasValue
@@ -195,4 +187,5 @@ public class DeclarationWithFullNameController(
         var routeValue = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear, registrationJourney: regJourney);
         ViewBag.BackLinkToDisplay = QueryHelpers.AddQueryString(Url.Content($"~{reviewOrganisationDataPath}"), routeValue.ToDictionary(k => k.Key, k => k.Value.ToString() ?? string.Empty));
     }
+
 }

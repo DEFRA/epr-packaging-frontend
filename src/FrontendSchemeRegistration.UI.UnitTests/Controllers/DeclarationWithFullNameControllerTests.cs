@@ -4,8 +4,8 @@ using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
-using FrontendSchemeRegistration.Application.DTOs.RegistrationSubmission;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers;
@@ -15,6 +15,7 @@ using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using Microsoft.FeatureManagement;
 using Moq;
 
@@ -37,8 +38,8 @@ public class DeclarationWithFullNameControllerTests
     private DeclarationWithFullNameController _systemUnderTest;
     private Mock<IRegistrationPeriodProvider> _registrationPeriodProviderMock;
     private Mock<IFeatureManager> _featureManagerMock;
-    private Mock<IRegistrationSubmissionDataService> _registrationSubmissionDataServiceMock;
-
+    private Mock<IPaymentCalculationService> _paymentCalculationServiceMock;
+    private IOptions<RegistrationFeeSnapshotPollingOptions> _snapshotPollingOptions;
 
     [SetUp]
     public void SetUp()
@@ -48,14 +49,16 @@ public class DeclarationWithFullNameControllerTests
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _registrationPeriodProviderMock = new Mock<IRegistrationPeriodProvider>();
         _featureManagerMock = new Mock<IFeatureManager>();
-        _registrationSubmissionDataServiceMock = new Mock<IRegistrationSubmissionDataService>();
+        _paymentCalculationServiceMock = new Mock<IPaymentCalculationService>();
+        // Tight polling settings keep timeout-path tests under a second.
+        _snapshotPollingOptions = Options.Create(new RegistrationFeeSnapshotPollingOptions { TimeoutSeconds = 1, IntervalSeconds = 0 });
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
                 RegistrationSession = new RegistrationSession { IsResubmission = true }
             });
 
-        _systemUnderTest = new DeclarationWithFullNameController(_submissionServiceMock.Object, _sessionManagerMock.Object, new NullLogger<DeclarationWithFullNameController>(), _registrationPeriodProviderMock.Object, _featureManagerMock.Object, _registrationSubmissionDataServiceMock.Object);
+        _systemUnderTest = new DeclarationWithFullNameController(_submissionServiceMock.Object, _sessionManagerMock.Object, new NullLogger<DeclarationWithFullNameController>(), _registrationPeriodProviderMock.Object, _featureManagerMock.Object, _paymentCalculationServiceMock.Object, _snapshotPollingOptions);
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
@@ -845,59 +848,7 @@ public class DeclarationWithFullNameControllerTests
     }
 
     [Test]
-    public async Task Post_FeatureFlagOn_NotifiesRegistrationSubmissionDataService()
-    {
-        // Arrange
-        var fileId = Guid.NewGuid();
-        var complianceSchemeId = Guid.NewGuid();
-        const string blobName = "av-blob-name";
-        var submission = new RegistrationSubmission
-        {
-            Id = Guid.NewGuid(),
-            IsSubmitted = false,
-            SubmissionPeriod = "January to December 2026",
-            LastUploadedValidFiles = new UploadedRegistrationFilesInformation
-            {
-                CompanyDetailsFileName = "FileName",
-                CompanyDetailsUploadDatetime = DateTime.Now,
-                CompanyDetailsUploadedBy = Guid.NewGuid(),
-                CompanyDetailsFileId = fileId,
-                CompanyDetailsBlobName = blobName,
-            },
-            HasValidFile = true,
-        };
-        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
-        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
-        {
-            RegistrationSession = new RegistrationSession
-            {
-                ApplicationReferenceNumber = "test",
-                SelectedComplianceScheme = new() { Id = complianceSchemeId },
-            },
-        });
-        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationSubmissionDataHandler)).ReturnsAsync(true);
-
-        var request = new DeclarationWithFullNameViewModel
-        {
-            FullName = DeclarationName,
-            OrganisationDetailsFileId = fileId.ToString(),
-        };
-        _claimsPrincipalMock.Setup(x => x.Claims).Returns(CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer));
-
-        // Act
-        await _systemUnderTest.Post(submission.Id, request);
-
-        // Assert
-        _registrationSubmissionDataServiceMock.Verify(s => s.NotifyAsync(It.Is<CreateRegistrationSubmissionDataRequest>(r =>
-            r.SubmissionId == submission.Id &&
-            r.FileId == fileId &&
-            r.RegistrationBlobName == blobName &&
-            r.ComplianceSchemeId == complianceSchemeId &&
-            r.SubmissionPeriod == "January to December 2026")), Times.Once);
-    }
-
-    [Test]
-    public async Task Post_FeatureFlagOff_DoesNotNotify()
+    public async Task Post_FeatureFlagOff_DoesNotCallPaymentFacade()
     {
         // Arrange
         var submission = new RegistrationSubmission
@@ -919,7 +870,7 @@ public class DeclarationWithFullNameControllerTests
         {
             RegistrationSession = new RegistrationSession { ApplicationReferenceNumber = "test" },
         });
-        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationSubmissionDataHandler)).ReturnsAsync(false);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService)).ReturnsAsync(false);
 
         var request = new DeclarationWithFullNameViewModel
         {
@@ -932,15 +883,13 @@ public class DeclarationWithFullNameControllerTests
         await _systemUnderTest.Post(submission.Id, request);
 
         // Assert
-        _registrationSubmissionDataServiceMock.Verify(s => s.NotifyAsync(It.IsAny<CreateRegistrationSubmissionDataRequest>()), Times.Never);
+        _paymentCalculationServiceMock.Verify(s => s.GetRegistrationFeeCalculationDetails(It.IsAny<Guid>()), Times.Never);
     }
 
     [Test]
-    public async Task Post_DirectProducer_NotifiesWithNullComplianceSchemeId()
+    public async Task Post_FeatureFlagOn_WaitsUntilSnapshotReadyThenRedirectsToConfirmation()
     {
         // Arrange
-        var fileId = Guid.NewGuid();
-        const string blobName = "av-blob-name";
         var submission = new RegistrationSubmission
         {
             Id = Guid.NewGuid(),
@@ -951,37 +900,77 @@ public class DeclarationWithFullNameControllerTests
                 CompanyDetailsFileName = "FileName",
                 CompanyDetailsUploadDatetime = DateTime.Now,
                 CompanyDetailsUploadedBy = Guid.NewGuid(),
-                CompanyDetailsFileId = fileId,
-                CompanyDetailsBlobName = blobName,
+                CompanyDetailsFileId = Guid.NewGuid(),
             },
             HasValidFile = true,
         };
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
         {
-            RegistrationSession = new RegistrationSession
-            {
-                ApplicationReferenceNumber = "test",
-                SelectedComplianceScheme = null,
-            },
+            RegistrationSession = new RegistrationSession { ApplicationReferenceNumber = "test" },
         });
-        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationSubmissionDataHandler)).ReturnsAsync(true);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService)).ReturnsAsync(true);
+        _paymentCalculationServiceMock
+            .Setup(s => s.GetRegistrationFeeCalculationDetails(submission.Id))
+            .ReturnsAsync(new Application.DTOs.RegistrationFeeCalculationDetails[] { new() });
 
         var request = new DeclarationWithFullNameViewModel
         {
             FullName = DeclarationName,
-            OrganisationDetailsFileId = fileId.ToString(),
+            OrganisationDetailsFileId = Guid.NewGuid().ToString(),
         };
         _claimsPrincipalMock.Setup(x => x.Claims).Returns(CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer));
 
         // Act
-        await _systemUnderTest.Post(submission.Id, request);
+        var result = await _systemUnderTest.Post(submission.Id, request);
 
         // Assert
-        _registrationSubmissionDataServiceMock.Verify(s => s.NotifyAsync(It.Is<CreateRegistrationSubmissionDataRequest>(r =>
-            r.SubmissionId == submission.Id &&
-            r.FileId == fileId &&
-            r.RegistrationBlobName == blobName &&
-            r.ComplianceSchemeId == null)), Times.Once);
+        _paymentCalculationServiceMock.Verify(s => s.GetRegistrationFeeCalculationDetails(submission.Id), Times.Once);
+        result.Should().BeOfType<RedirectToActionResult>()
+            .Which.ActionName.Should().Be("Get");
+        ((RedirectToActionResult)result).ControllerName.Should().Be("CompanyDetailsConfirmation");
+    }
+
+    [Test]
+    public async Task Post_FeatureFlagOn_TimeoutFires_StillRedirectsToConfirmation()
+    {
+        // Arrange
+        var submission = new RegistrationSubmission
+        {
+            Id = Guid.NewGuid(),
+            IsSubmitted = false,
+            SubmissionPeriod = "January to December 2026",
+            LastUploadedValidFiles = new UploadedRegistrationFilesInformation
+            {
+                CompanyDetailsFileName = "FileName",
+                CompanyDetailsUploadDatetime = DateTime.Now,
+                CompanyDetailsUploadedBy = Guid.NewGuid(),
+                CompanyDetailsFileId = Guid.NewGuid(),
+            },
+            HasValidFile = true,
+        };
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession { ApplicationReferenceNumber = "test" },
+        });
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService)).ReturnsAsync(true);
+        _paymentCalculationServiceMock
+            .Setup(s => s.GetRegistrationFeeCalculationDetails(submission.Id))
+            .ReturnsAsync((Application.DTOs.RegistrationFeeCalculationDetails[]?)null);
+
+        var request = new DeclarationWithFullNameViewModel
+        {
+            FullName = DeclarationName,
+            OrganisationDetailsFileId = Guid.NewGuid().ToString(),
+        };
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer));
+
+        // Act
+        var result = await _systemUnderTest.Post(submission.Id, request);
+
+        // Assert — facade was polled at least once, the timeout was hit, redirect happens regardless
+        _paymentCalculationServiceMock.Verify(s => s.GetRegistrationFeeCalculationDetails(submission.Id), Times.AtLeastOnce);
+        result.Should().BeOfType<RedirectToActionResult>();
     }
 }

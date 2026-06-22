@@ -123,7 +123,13 @@
   <data name="SpinnerHeader" xml:space="preserve">
     <value />
   </data>
+  <data name="SpinnerHeaderSubmittingFile" xml:space="preserve">
+    <value />
+  </data>
   <data name="SpinnerJsParagraph1" xml:space="preserve">
+    <value />
+  </data>
+  <data name="SpinnerJsParagraph1SubmittingFile" xml:space="preserve">
     <value />
   </data>
   <data name="SpinnerJsParagraph2" xml:space="preserve">
@@ -133,6 +139,9 @@
     <value />
   </data>
   <data name="SpinnerNoscriptParagraph1" xml:space="preserve">
+    <value />
+  </data>
+  <data name="SpinnerNoscriptParagraph1SubmittingFile" xml:space="preserve">
     <value />
   </data>
   <data name="SpinnerNoscriptParagraph2" xml:space="preserve">

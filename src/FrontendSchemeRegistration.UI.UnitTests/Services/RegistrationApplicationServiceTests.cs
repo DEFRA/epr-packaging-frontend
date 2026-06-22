@@ -726,7 +726,7 @@ public class RegistrationApplicationServiceTests
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(_session);
         _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(new FrontendSchemeRegistrationSession { RegistrationSession = new RegistrationSession() });
         _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(existingDetails);
-        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationSubmissionDataHandler)).ReturnsAsync(true);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService)).ReturnsAsync(true);
         _paymentCalculationServiceMock.Setup(p => p.GetRegistrationFeeCalculationDetails(submissionId)).ReturnsAsync(snapshotDetails);
         _mockRegistrationPeriodProvider
             .Setup(x => x.GetRegistrationWindow(It.IsAny<bool>(), It.IsAny<bool>(), RegistrationYear))
@@ -754,7 +754,7 @@ public class RegistrationApplicationServiceTests
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(_session);
         _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(new FrontendSchemeRegistrationSession { RegistrationSession = new RegistrationSession() });
         _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(existingDetails);
-        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationSubmissionDataHandler)).ReturnsAsync(true);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService)).ReturnsAsync(true);
         _paymentCalculationServiceMock.Setup(p => p.GetRegistrationFeeCalculationDetails(submissionId)).ReturnsAsync((FrontendSchemeRegistration.Application.DTOs.RegistrationFeeCalculationDetails[]?)null);
         _mockRegistrationPeriodProvider
             .Setup(x => x.GetRegistrationWindow(It.IsAny<bool>(), It.IsAny<bool>(), RegistrationYear))
@@ -781,7 +781,7 @@ public class RegistrationApplicationServiceTests
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(_session);
         _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(new FrontendSchemeRegistrationSession { RegistrationSession = new RegistrationSession() });
         _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(existingDetails);
-        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationSubmissionDataHandler)).ReturnsAsync(false);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService)).ReturnsAsync(false);
         _mockRegistrationPeriodProvider
             .Setup(x => x.GetRegistrationWindow(It.IsAny<bool>(), It.IsAny<bool>(), RegistrationYear))
             .Returns(CreateRegistrationWindow(WindowType.DirectLargeProducer, RegistrationYear, new DateTime(2025, 6, 1), new DateTime(2025, 7, 1), new DateTime(2025, 8, 1)));

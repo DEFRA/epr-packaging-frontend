@@ -148,6 +148,7 @@ public static class ServiceProviderExtension
         services.Configure<HttpClientOptions>(configuration.GetSection(HttpClientOptions.ConfigSection));
         services.Configure<AccountsFacadeApiOptions>(configuration.GetSection(AccountsFacadeApiOptions.ConfigSection));
         services.Configure<PaymentFacadeApiOptions>(configuration.GetSection(PaymentFacadeApiOptions.ConfigSection));
+        services.Configure<RegistrationFeeSnapshotPollingOptions>(configuration.GetSection(RegistrationFeeSnapshotPollingOptions.ConfigSection));
         services.Configure<WebApiOptions>(configuration.GetSection(WebApiOptions.ConfigSection));
         services.Configure<ValidationOptions>(configuration.GetSection(ValidationOptions.ConfigSection));
         services.Configure<RedisOptions>(configuration.GetSection(RedisOptions.ConfigSection));
@@ -177,7 +178,6 @@ public static class ServiceProviderExtension
         services.AddScoped<ISubmissionService, SubmissionService>();
         services.AddScoped<ISubsidiaryService, SubsidiaryService>();
         services.AddScoped<IPaymentCalculationService, PaymentCalculationService>();
-        services.AddScoped<IRegistrationSubmissionDataService, RegistrationSubmissionDataService>();
         services.AddScoped<ISubsidiaryUtilityService, SubsidiaryUtilityService>();
         services.AddScoped<RegistrationApplicationServiceDependencies>(sp => new RegistrationApplicationServiceDependencies
         {
@@ -188,7 +188,8 @@ public static class ServiceProviderExtension
             Logger = sp.GetRequiredService<ILogger<RegistrationApplicationService>>(),
             FeatureManager = sp.GetRequiredService<IFeatureManager>(),
             HttpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>(),
-            RegistrationPeriodProvider = sp.GetRequiredService<IRegistrationPeriodProvider>()
+            RegistrationPeriodProvider = sp.GetRequiredService<IRegistrationPeriodProvider>(),
+            SnapshotPollingOptions = sp.GetRequiredService<IOptions<RegistrationFeeSnapshotPollingOptions>>()
         });
         services.AddScoped<IRegistrationApplicationService, RegistrationApplicationService>();
         services.AddSingleton<IPatchService, PatchService>();

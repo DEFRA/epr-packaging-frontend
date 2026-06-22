@@ -1,4 +1,5 @@
-﻿@model ConfirmRemovalViewModel
+﻿@using FrontendSchemeRegistration.UI.ViewModels.Shared
+@model ConfirmRemovalViewModel
 @{
     var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer, nameof(Model.SelectedConfirmRemoval));
     var currentPagePath = ViewBag.CurrentPagePath;
@@ -66,7 +67,7 @@
             </div>
     </div>
 
-        @await Html.PartialAsync("Partials/_Spinner", $"{currentPagePath}")
+        @await Html.PartialAsync("Partials/_Spinner", new SpinnerViewModel($"{currentPagePath}"))
 </main>
 </div>
 
