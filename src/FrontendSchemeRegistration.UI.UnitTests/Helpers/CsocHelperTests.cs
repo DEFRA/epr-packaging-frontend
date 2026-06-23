@@ -68,7 +68,7 @@ public class CsocHelperTests
         result?.SubmissionDeadline.Should().BeAfter(now);
         result?.ComplianceYear.Should().Be(now.GetComplianceYear());
         result?.WasteObligationsBaseAddress.Should()
-            .Be($"href/compliance/{organisationId}/certificate?year={now.GetComplianceYear()}");
+            .Be($"href/compliance/producer/{organisationId}/certificate?year={now.GetComplianceYear()}");
     }
     
     [TestCase(null, false)]
@@ -176,7 +176,7 @@ public class CsocHelperTests
 
         result.Should().NotBeNull();
         result?.WasteObligationsBaseAddress.Should()
-            .Be($"https://understanding-obligations/compliance/{complianceSchemeId}/statement?year={now.GetComplianceYear()}");
+            .Be($"https://understanding-obligations/compliance/cso/{complianceSchemeId}/statement?year={now.GetComplianceYear()}");
     }
 
     [TestCase(ComplianceDeclarationStatus.Submitted)]
@@ -217,7 +217,7 @@ public class CsocHelperTests
 
         result.Should().NotBeNull();
         result?.WasteObligationsBaseAddress.Should()
-            .Be($"https://understanding-obligations/compliance/{complianceSchemeId}/statement/view?year={now.GetComplianceYear()}");
+            .Be($"https://understanding-obligations/compliance/cso/{complianceSchemeId}/statement?year={now.GetComplianceYear()}");
     }
 
     [Test]
@@ -248,12 +248,46 @@ public class CsocHelperTests
 
         result.Should().NotBeNull();
         result?.WasteObligationsBaseAddress.Should()
-            .Be($"https://understanding-obligations/compliance/{organisationId}/certificate?year={now.GetComplianceYear()}");
+            .Be($"https://understanding-obligations/compliance/producer/{organisationId}/certificate?year={now.GetComplianceYear()}");
     }
 
     [TestCase(ComplianceDeclarationStatus.Submitted)]
     [TestCase(ComplianceDeclarationStatus.Accepted)]
-    public async Task CreateViewModel_WhenOrganisationIsDirectProducer_AndCanBeViewed_ShouldUseStatementWasteObligationsBaseAddress(ComplianceDeclarationStatus status)
+    public async Task CreateViewModel_WhenOrganisationIsDirectProducer_AndCanBeViewed_ShouldUseCertificateWasteObligationsBaseAddress(ComplianceDeclarationStatus status)
+    {
+        MockFeatureManager.Setup(x => x.IsEnabledAsync(FeatureFlags.CsocEnabled)).ReturnsAsync(true);
+        var organisationId = Guid.NewGuid();
+        var complianceDeclarationId = "6830b9d4c7e21f5a8d3e64b2";
+        var now = DateTime.Now;
+
+        var result = await CsocHelper.CreateViewModel(
+            MockFeatureManager.Object,
+            isApprovedUser: true,
+            new Organisation
+            {
+                Id = organisationId,
+                OrganisationRole = OrganisationRoles.Producer
+            },
+            now,
+            new CsocOptions
+            {
+                WasteObligationsBaseAddress = "https://understanding-obligations"
+            },
+            new PrnObligationViewModel
+            {
+                OverallStatus = ObligationStatus.Met,
+                ComplianceDeclarationStatus = status,
+                ComplianceDeclarationId = complianceDeclarationId
+            });
+
+        result.Should().NotBeNull();
+        result?.WasteObligationsBaseAddress.Should()
+            .Be($"https://understanding-obligations/compliance/producer/{organisationId}/certificate/{complianceDeclarationId}");
+    }
+
+    [TestCase(ComplianceDeclarationStatus.Submitted)]
+    [TestCase(ComplianceDeclarationStatus.Accepted)]
+    public async Task CreateViewModel_WhenOrganisationIsDirectProducer_AndCanBeViewedWithoutDeclarationId_ShouldUseLegacyCertificateViewUrl(ComplianceDeclarationStatus status)
     {
         MockFeatureManager.Setup(x => x.IsEnabledAsync(FeatureFlags.CsocEnabled)).ReturnsAsync(true);
         var organisationId = Guid.NewGuid();
@@ -280,7 +314,7 @@ public class CsocHelperTests
 
         result.Should().NotBeNull();
         result?.WasteObligationsBaseAddress.Should()
-            .Be($"https://understanding-obligations/compliance/{organisationId}/certificate/view?year={now.GetComplianceYear()}");
+            .Be($"https://understanding-obligations/compliance/producer/{organisationId}/certificate?year={now.GetComplianceYear()}");
     }
 
     [Test]

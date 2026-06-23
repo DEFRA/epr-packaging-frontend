@@ -13,6 +13,9 @@ using ViewModels.Prns;
 
 public static class CsocHelper
 {
+    private const string ProducerCompliancePathPrefix = "/compliance/producer";
+    private const string CsoCompliancePathPrefix = "/compliance/cso";
+
     public static async Task<CsocViewModel?> CreateViewModel(IFeatureManager featureManager,
         bool isApprovedUser,
         Organisation organisation,
@@ -41,6 +44,7 @@ public static class CsocHelper
                 organisation.IsDirectProducer(),
                 complianceYear,
                 complianceDeclarationStatus,
+                prnObligationViewModel?.ComplianceDeclarationId,
                 registrationSession),
             IsObligationDataSubmitted = prnObligationViewModel is not null &&
                                         prnObligationViewModel.OverallStatus != ObligationStatus.NoDataYet,
@@ -54,7 +58,8 @@ public static class CsocHelper
         bool isComplianceScheme,
         bool isDirectProducer,
         int complianceYear,
-        ComplianceDeclarationStatus? complianceDeclarationStatus, 
+        ComplianceDeclarationStatus? complianceDeclarationStatus,
+        string? complianceDeclarationId,
         RegistrationSession? registrationSession)
     {
         if (string.IsNullOrWhiteSpace(baseEndpoint) ||
@@ -80,15 +85,31 @@ public static class CsocHelper
         }
 
         var normalizedBaseEndpoint = baseEndpoint.TrimEnd('/');
-        var view = complianceDeclarationStatus is ComplianceDeclarationStatus.Submitted
-            or ComplianceDeclarationStatus.Accepted
-            ? "/view"
-            : null;
+        var canView = complianceDeclarationStatus is ComplianceDeclarationStatus.Submitted
+            or ComplianceDeclarationStatus.Accepted;
 
-        var id = isComplianceScheme && registrationSession?.SelectedComplianceScheme != null
-            ? registrationSession.SelectedComplianceScheme.Id
-            : organisationId.Value;
-        
-        return $"{normalizedBaseEndpoint}/compliance/{id}/{documentType}{view}?year={complianceYear}";
+        if (isDirectProducer)
+        {
+            if (canView && !string.IsNullOrWhiteSpace(complianceDeclarationId))
+            {
+                return $"{normalizedBaseEndpoint}{ProducerCompliancePathPrefix}/{organisationId.Value}/certificate/{complianceDeclarationId}";
+            }
+
+            return $"{normalizedBaseEndpoint}{ProducerCompliancePathPrefix}/{organisationId.Value}/certificate?year={complianceYear}";
+        }
+
+        if (isComplianceScheme)
+        {
+            var schemeId = registrationSession?.SelectedComplianceScheme?.Id ?? organisationId.Value;
+
+            if (canView && !string.IsNullOrWhiteSpace(complianceDeclarationId))
+            {
+                return $"{normalizedBaseEndpoint}{CsoCompliancePathPrefix}/{schemeId}/statement/{complianceDeclarationId}";
+            }
+
+            return $"{normalizedBaseEndpoint}{CsoCompliancePathPrefix}/{schemeId}/statement?year={complianceYear}";
+        }
+
+        return $"{normalizedBaseEndpoint}/compliance/{organisationId.Value}/certificate?year={complianceYear}";
     }
 }
