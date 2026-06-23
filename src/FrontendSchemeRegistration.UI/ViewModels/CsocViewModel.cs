@@ -14,4 +14,5 @@ public class CsocViewModel
     public string? WasteObligationsBaseAddress { get; set; }
     public bool IsObligationDataSubmitted { get; set; }
     public ComplianceDeclarationStatus? ComplianceDeclarationStatus { get; set; }
+    public int? NationId { get; set; }
 }

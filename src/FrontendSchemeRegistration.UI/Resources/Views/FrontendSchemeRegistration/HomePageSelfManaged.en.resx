@@ -193,10 +193,10 @@
     <value>Manage your {0} recycling obligations</value>
   </data>
   <data name="prn_paragraph_1" xml:space="preserve">
-    <value>Review your recycling obligations calculations and accept PRNs or PERNs to meet them.</value>
+    <value>Review your recycling obligations and accept PRNs or PERNs to meet them. You can also:</value>
   </data>
   <data name="prn_unordered_list_point_1" xml:space="preserve">
-    <value>view recycling obligations by material</value>
+    <value>see how your recycling obligations were calculated</value>
   </data>
   <data name="prn_unordered_list_point_2" xml:space="preserve">
     <value>check your recycling obligations progress</value>

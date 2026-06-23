@@ -72,7 +72,8 @@ public class PrnsObligationController : Controller
             "{LogPrefix}: PrnsObligationController - ObligationsHome: Recycling Obligations returned for year {Year} : {Results}",
             _logPrefix, _complianceYear, JsonConvert.SerializeObject(viewModel));
 
-        var userData = await FillViewModelFromSessionAsync(viewModel);
+        var session = await FillViewModelFromSessionAsync(viewModel);
+        var userData = session.UserData;
 
         ViewBag.HomeLinkToDisplay = _globalVariables.Value.BasePath;
 
@@ -86,7 +87,8 @@ public class PrnsObligationController : Controller
                 organisation,
                 _timeProvider.GetLocalNow().DateTime,
                 _csocOptions.Value,
-                viewModel)
+                viewModel,
+                session.RegistrationSession)
             : null;
         
         return View(viewModel);
@@ -143,7 +145,7 @@ public class PrnsObligationController : Controller
     }
 
     [NonAction]
-    public async Task<UserData> FillViewModelFromSessionAsync(PrnObligationViewModel viewModel)
+    public async Task<FrontendSchemeRegistrationSession> FillViewModelFromSessionAsync(PrnObligationViewModel viewModel)
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
 
@@ -154,7 +156,7 @@ public class PrnsObligationController : Controller
             _logger.LogWarning(
                 "{LogPrefix}: PrnsObligationController - FillViewModelFromSessionAsync - No organisation found in session.",
                 _logPrefix);
-            return session.UserData;
+            return session;
         }
 
         var isDirectProducer = organisation.OrganisationRole == OrganisationRoles.Producer;
@@ -168,6 +170,6 @@ public class PrnsObligationController : Controller
             : session.RegistrationSession.SelectedComplianceScheme?.NationId ?? 0;
         viewModel.ComplianceYear = _complianceYear;
         
-        return session.UserData;
+        return session;
     }
 }
