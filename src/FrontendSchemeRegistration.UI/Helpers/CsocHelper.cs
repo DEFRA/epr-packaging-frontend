@@ -65,8 +65,7 @@ public static class CsocHelper
             return baseEndpoint;
         }
 
-        var documentType = organisation.IsComplianceScheme() ? "statement"
-            : organisation.IsDirectProducer() ? "certificate" : null;
+        var documentType = GetDocumentType(organisation);
 
         if (documentType is null)
         {
@@ -90,6 +89,21 @@ public static class CsocHelper
                 $"{normalizedBaseEndpoint}{CsoCompliancePathPrefix}/{GetSchemeId(organisationId, registrationSession)}/statement?year={complianceYear}",
             _ => baseEndpoint
         };
+    }
+
+    private static string? GetDocumentType(Organisation organisation)
+    {
+        if (organisation.IsComplianceScheme())
+        {
+            return "statement";
+        }
+
+        if (organisation.IsDirectProducer())
+        {
+            return "certificate";
+        }
+
+        return null;
     }
 
     private static Guid GetSchemeId(Guid organisationId, RegistrationSession? registrationSession) =>
