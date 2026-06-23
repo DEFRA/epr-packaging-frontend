@@ -110,6 +110,6 @@ public static class CsocHelper
             return $"{normalizedBaseEndpoint}{CsoCompliancePathPrefix}/{schemeId}/statement?year={complianceYear}";
         }
 
-        return $"{normalizedBaseEndpoint}/compliance/{organisationId.Value}/certificate?year={complianceYear}";
+        return normalizedBaseEndpoint;
     }
 }
