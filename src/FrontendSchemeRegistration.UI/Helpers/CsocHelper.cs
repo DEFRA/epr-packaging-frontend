@@ -39,9 +39,7 @@ public static class CsocHelper
             ComplianceYear = complianceYear,
             WasteObligationsBaseAddress = GetWasteObligationsBaseAddress(
                 options.WasteObligationsBaseAddress,
-                organisation.Id,
-                organisation.IsComplianceScheme(),
-                organisation.IsDirectProducer(),
+                organisation,
                 complianceYear,
                 complianceDeclarationStatus,
                 prnObligationViewModel?.ComplianceDeclarationId,
@@ -53,31 +51,22 @@ public static class CsocHelper
         };
     }
 
-    private static string? GetWasteObligationsBaseAddress(string? baseEndpoint,
-        Guid? organisationId,
-        bool isComplianceScheme,
-        bool isDirectProducer,
+    private static string? GetWasteObligationsBaseAddress(
+        string? baseEndpoint,
+        Organisation organisation,
         int complianceYear,
         ComplianceDeclarationStatus? complianceDeclarationStatus,
         string? complianceDeclarationId,
         RegistrationSession? registrationSession)
     {
         if (string.IsNullOrWhiteSpace(baseEndpoint) ||
-            !organisationId.HasValue)
+            !organisation.Id.HasValue)
         {
             return baseEndpoint;
         }
 
-        string? documentType = null;
-        
-        if (isComplianceScheme)
-        {
-            documentType = "statement";
-        }
-        else if (isDirectProducer)
-        {
-            documentType = "certificate";
-        }
+        var documentType = organisation.IsComplianceScheme() ? "statement"
+            : organisation.IsDirectProducer() ? "certificate" : null;
 
         if (documentType is null)
         {
@@ -85,31 +74,24 @@ public static class CsocHelper
         }
 
         var normalizedBaseEndpoint = baseEndpoint.TrimEnd('/');
+        var organisationId = organisation.Id.Value;
         var canView = complianceDeclarationStatus is ComplianceDeclarationStatus.Submitted
             or ComplianceDeclarationStatus.Accepted;
 
-        if (isDirectProducer)
+        return documentType switch
         {
-            if (canView && !string.IsNullOrWhiteSpace(complianceDeclarationId))
-            {
-                return $"{normalizedBaseEndpoint}{ProducerCompliancePathPrefix}/{organisationId.Value}/certificate/{complianceDeclarationId}";
-            }
-
-            return $"{normalizedBaseEndpoint}{ProducerCompliancePathPrefix}/{organisationId.Value}/certificate?year={complianceYear}";
-        }
-
-        if (isComplianceScheme)
-        {
-            var schemeId = registrationSession?.SelectedComplianceScheme?.Id ?? organisationId.Value;
-
-            if (canView && !string.IsNullOrWhiteSpace(complianceDeclarationId))
-            {
-                return $"{normalizedBaseEndpoint}{CsoCompliancePathPrefix}/{schemeId}/statement/{complianceDeclarationId}";
-            }
-
-            return $"{normalizedBaseEndpoint}{CsoCompliancePathPrefix}/{schemeId}/statement?year={complianceYear}";
-        }
-
-        return normalizedBaseEndpoint;
+            "certificate" when canView && !string.IsNullOrWhiteSpace(complianceDeclarationId) =>
+                $"{normalizedBaseEndpoint}{ProducerCompliancePathPrefix}/{organisationId}/certificate/{complianceDeclarationId}",
+            "certificate" =>
+                $"{normalizedBaseEndpoint}{ProducerCompliancePathPrefix}/{organisationId}/certificate?year={complianceYear}",
+            "statement" when canView && !string.IsNullOrWhiteSpace(complianceDeclarationId) =>
+                $"{normalizedBaseEndpoint}{CsoCompliancePathPrefix}/{GetSchemeId(organisationId, registrationSession)}/statement/{complianceDeclarationId}",
+            "statement" =>
+                $"{normalizedBaseEndpoint}{CsoCompliancePathPrefix}/{GetSchemeId(organisationId, registrationSession)}/statement?year={complianceYear}",
+            _ => baseEndpoint
+        };
     }
+
+    private static Guid GetSchemeId(Guid organisationId, RegistrationSession? registrationSession) =>
+        registrationSession?.SelectedComplianceScheme?.Id ?? organisationId;
 }
