@@ -13,6 +13,9 @@ using ViewModels.Prns;
 
 public static class CsocHelper
 {
+    private const string ProducerCompliancePathPrefix = "/compliance/producer";
+    private const string CsoCompliancePathPrefix = "/compliance/cso";
+
     public static async Task<CsocViewModel?> CreateViewModel(IFeatureManager featureManager,
         bool isApprovedUser,
         Organisation organisation,
@@ -36,11 +39,10 @@ public static class CsocHelper
             ComplianceYear = complianceYear,
             WasteObligationsBaseAddress = GetWasteObligationsBaseAddress(
                 options.WasteObligationsBaseAddress,
-                organisation.Id,
-                organisation.IsComplianceScheme(),
-                organisation.IsDirectProducer(),
+                organisation,
                 complianceYear,
                 complianceDeclarationStatus,
+                prnObligationViewModel?.ComplianceDeclarationId,
                 registrationSession),
             IsObligationDataSubmitted = prnObligationViewModel is not null &&
                                         prnObligationViewModel.OverallStatus != ObligationStatus.NoDataYet,
@@ -49,30 +51,21 @@ public static class CsocHelper
         };
     }
 
-    private static string? GetWasteObligationsBaseAddress(string? baseEndpoint,
-        Guid? organisationId,
-        bool isComplianceScheme,
-        bool isDirectProducer,
+    private static string? GetWasteObligationsBaseAddress(
+        string? baseEndpoint,
+        Organisation organisation,
         int complianceYear,
-        ComplianceDeclarationStatus? complianceDeclarationStatus, 
+        ComplianceDeclarationStatus? complianceDeclarationStatus,
+        string? complianceDeclarationId,
         RegistrationSession? registrationSession)
     {
         if (string.IsNullOrWhiteSpace(baseEndpoint) ||
-            !organisationId.HasValue)
+            !organisation.Id.HasValue)
         {
             return baseEndpoint;
         }
 
-        string? documentType = null;
-        
-        if (isComplianceScheme)
-        {
-            documentType = "statement";
-        }
-        else if (isDirectProducer)
-        {
-            documentType = "certificate";
-        }
+        var documentType = GetDocumentType(organisation);
 
         if (documentType is null)
         {
@@ -80,15 +73,39 @@ public static class CsocHelper
         }
 
         var normalizedBaseEndpoint = baseEndpoint.TrimEnd('/');
-        var view = complianceDeclarationStatus is ComplianceDeclarationStatus.Submitted
-            or ComplianceDeclarationStatus.Accepted
-            ? "/view"
-            : null;
+        var organisationId = organisation.Id.Value;
+        var canView = complianceDeclarationStatus is ComplianceDeclarationStatus.Submitted
+            or ComplianceDeclarationStatus.Accepted;
 
-        var id = isComplianceScheme && registrationSession?.SelectedComplianceScheme != null
-            ? registrationSession.SelectedComplianceScheme.Id
-            : organisationId.Value;
-        
-        return $"{normalizedBaseEndpoint}/compliance/{id}/{documentType}{view}?year={complianceYear}";
+        return documentType switch
+        {
+            "certificate" when canView && !string.IsNullOrWhiteSpace(complianceDeclarationId) =>
+                $"{normalizedBaseEndpoint}{ProducerCompliancePathPrefix}/{organisationId}/certificate/{complianceDeclarationId}",
+            "certificate" =>
+                $"{normalizedBaseEndpoint}{ProducerCompliancePathPrefix}/{organisationId}/certificate?year={complianceYear}",
+            "statement" when canView && !string.IsNullOrWhiteSpace(complianceDeclarationId) =>
+                $"{normalizedBaseEndpoint}{CsoCompliancePathPrefix}/{GetSchemeId(organisationId, registrationSession)}/statement/{complianceDeclarationId}",
+            "statement" =>
+                $"{normalizedBaseEndpoint}{CsoCompliancePathPrefix}/{GetSchemeId(organisationId, registrationSession)}/statement?year={complianceYear}",
+            _ => baseEndpoint
+        };
     }
+
+    private static string? GetDocumentType(Organisation organisation)
+    {
+        if (organisation.IsComplianceScheme())
+        {
+            return "statement";
+        }
+
+        if (organisation.IsDirectProducer())
+        {
+            return "certificate";
+        }
+
+        return null;
+    }
+
+    private static Guid GetSchemeId(Guid organisationId, RegistrationSession? registrationSession) =>
+        registrationSession?.SelectedComplianceScheme?.Id ?? organisationId;
 }

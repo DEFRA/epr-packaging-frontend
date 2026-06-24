@@ -259,7 +259,7 @@ public class PrnService : IPrnService
         prnObligationViewModel.NumberOfPrnsAwaitingAcceptance = prnObligationModel.NumberOfPrnsAwaitingAcceptance;
         if (includeComplianceDeclarationStatus)
         {
-            await SetComplianceDeclarationStatusAsync(prnObligationViewModel, year);
+            await SetComplianceDeclarationAsync(prnObligationViewModel, year);
         }
 
         var prnMaterialObligationViewModels = prnObligationModel.ObligationData?.Select(item => (PrnMaterialObligationViewModel)item).ToList();
@@ -269,21 +269,25 @@ public class PrnService : IPrnService
         return prnObligationViewModel;
     }
 
-    private async Task SetComplianceDeclarationStatusAsync(PrnObligationViewModel prnObligationViewModel, int year)
+    private async Task SetComplianceDeclarationAsync(PrnObligationViewModel prnObligationViewModel, int year)
     {
         try
         {
-            prnObligationViewModel.ComplianceDeclarationStatus = await _webApiGatewayClient.GetComplianceDeclarationStatus(year);
+            var declaration = await _webApiGatewayClient.GetLatestComplianceDeclaration(year);
+            prnObligationViewModel.ComplianceDeclarationStatus = declaration?.Status;
+            prnObligationViewModel.ComplianceDeclarationId = declaration?.Id;
         }
         catch (HttpRequestException ex)
         {
-            _logger.LogWarning(ex, "{Logprefix}: PrnService - GetRecyclingObligationsCalculation: Failed to fetch compliance declaration status for year {Year}", logPrefix, year);
+            _logger.LogWarning(ex, "{Logprefix}: PrnService - GetRecyclingObligationsCalculation: Failed to fetch compliance declaration for year {Year}", logPrefix, year);
             prnObligationViewModel.ComplianceDeclarationStatus = null;
+            prnObligationViewModel.ComplianceDeclarationId = null;
         }
         catch (System.Text.Json.JsonException ex)
         {
-            _logger.LogWarning(ex, "{Logprefix}: PrnService - GetRecyclingObligationsCalculation: Failed to parse compliance declaration status for year {Year}", logPrefix, year);
+            _logger.LogWarning(ex, "{Logprefix}: PrnService - GetRecyclingObligationsCalculation: Failed to parse compliance declaration for year {Year}", logPrefix, year);
             prnObligationViewModel.ComplianceDeclarationStatus = null;
+            prnObligationViewModel.ComplianceDeclarationId = null;
         }
     }
 

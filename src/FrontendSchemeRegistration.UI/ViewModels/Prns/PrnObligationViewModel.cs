@@ -20,6 +20,7 @@ public class PrnObligationViewModel
 
     public ObligationStatus OverallStatus { get; set; }
     public ComplianceDeclarationStatus? ComplianceDeclarationStatus { get; set; }
+    public string? ComplianceDeclarationId { get; set; }
 
     public List<PrnMaterialObligationViewModel> MaterialObligationViewModels { get; set; }
 
