@@ -23,9 +23,23 @@ public static class VerifyHtml
             // any script output currently.
             foreach (var node in nodes.QuerySelectorAll("script"))
                 node.Remove();
-            
+
             foreach (var node in nodes.QuerySelectorAll("input[name=\"__RequestVerificationToken\"]"))
                 node.Attributes.GetNamedItem("value").Value = "[Scrubbed]";
+
+            // Razor's CSS-isolation scope-id (b-XXXXXXXXXX) hash is OS-sensitive
+            // in net10 — Windows and Linux produce different hashes for the same
+            // component, breaking snapshots across platforms. Strip the attribute
+            // so snapshots compare on content only.
+            foreach (var element in nodes.QuerySelectorAll("*"))
+            {
+                var scopeAttrs = element.Attributes
+                    .Where(a => a.Name.StartsWith("b-", StringComparison.Ordinal))
+                    .Select(a => a.Name)
+                    .ToList();
+                foreach (var name in scopeAttrs)
+                    element.RemoveAttribute(name);
+            }
         });
     }
     
