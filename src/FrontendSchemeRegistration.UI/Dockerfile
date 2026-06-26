@@ -1,4 +1,4 @@
-FROM defradigital/dotnetcore-development:dotnet8.0 AS base
+FROM defradigital/dotnetcore-development:dotnet10.0 AS base
 USER root
  
 # Expose the app on a defined port, configurable via a build argument
@@ -6,7 +6,7 @@ ARG PORT=3000
 ENV ASPNETCORE_URLS=http://*:${PORT}
 EXPOSE ${PORT}
 
-FROM defradigital/dotnetcore-development:dotnet8.0 AS build
+FROM defradigital/dotnetcore-development:dotnet10.0 AS build
 USER root
 WORKDIR /src
 COPY ["FrontendSchemeRegistration.UI/FrontendSchemeRegistration.UI.csproj", "FrontendSchemeRegistration.UI/"]
@@ -39,7 +39,7 @@ RUN dotnet publish "FrontendSchemeRegistration.UI.csproj" -c Release -o /app/pub
 RUN dotnet publish -c Release -o out
 
 # Build runtime image
-FROM defradigital/dotnetcore:dotnet8.0
+FROM defradigital/dotnetcore:dotnet10.0
 COPY --from=build-env /home/dotnet/FrontendSchemeRegistration.UI/out .
 
 # Install tzdata

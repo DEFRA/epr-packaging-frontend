@@ -10,6 +10,8 @@ public class OrganisationComplianceDeclarationsModel
 
 public class ComplianceDeclarationModel
 {
+    public string Id { get; init; } = string.Empty;
+
     public DateTimeOffset Created { get; init; }
 
     [JsonConverter(typeof(JsonStringEnumConverter))]

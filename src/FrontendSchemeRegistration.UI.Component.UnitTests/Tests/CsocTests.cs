@@ -16,8 +16,11 @@ using VerifyTests.AngleSharp;
 
 public class CsocTests
 {
+    internal static readonly Guid TestOrganisationId =
+        Guid.Parse("b6f76437-65b6-4ed2-a7d5-c50e9af76201");
+
     private ComponentTestContext Context { get; } = new();
-    
+
     [TestCase("/report-data/home-compliance-scheme", Language.English, true, ServiceRoleConstants.Approved)]
     [TestCase("/report-data/home-compliance-scheme", Language.English, true, ServiceRoleConstants.Delegated)]
     [TestCase("/report-data/home-compliance-scheme", Language.Welsh, true, ServiceRoleConstants.Approved)]
@@ -36,17 +39,18 @@ public class CsocTests
         var sessionStore = Context.GetSessionStore();
         sessionStore.Session.Set(Language.SessionLanguageKey, Encoding.UTF8.GetBytes(language));
         SetSession(sessionStore, serviceRole);
-        
+
         var response = await Context.Client.GetAsync(path);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await response.Content.ReadAsStringAsync();
         await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
             .ScrubComplianceSchemeId()
+            .ScrubWasteObligationsUrls()
             .ScrubCommonHtmlNodes()
             .UseParameters(path, language, csocEnabled, serviceRole.Replace(" ", ""));
     }
-    
+
     [TestCase("/report-data/home-compliance-scheme")]
     [TestCase("/report-data/manage-your-recycling-obligations")]
     public async Task WhenBasicUser_ShouldHidePrivilegedContent(string path)
@@ -56,17 +60,18 @@ public class CsocTests
 
         var sessionStore = Context.GetSessionStore();
         SetSession(sessionStore, ServiceRoleConstants.Basic);
-        
+
         var response = await Context.Client.GetAsync(path);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await response.Content.ReadAsStringAsync();
         await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
             .ScrubComplianceSchemeId()
+            .ScrubWasteObligationsUrls()
             .ScrubCommonHtmlNodes()
             .UseParameters(path);
     }
-    
+
     [Test]
     public async Task WhenNoObligationData_ShouldHideSubmissionTile()
     {
@@ -75,13 +80,14 @@ public class CsocTests
 
         var sessionStore = Context.GetSessionStore();
         SetSession(sessionStore, ServiceRoleConstants.Basic);
-        
+
         var response = await Context.Client.GetAsync("/report-data/manage-your-recycling-obligations");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await response.Content.ReadAsStringAsync();
         await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
             .ScrubComplianceSchemeId()
+            .ScrubWasteObligationsUrls()
             .ScrubCommonHtmlNodes();
     }
 
@@ -149,7 +155,7 @@ public class CsocTests
     }
 
     private void SetUp(
-        bool csocEnabled, 
+        bool csocEnabled,
         WebApiOptions.ObligationDataType obligationData = WebApiOptions.ObligationDataType.Mixed,
         WebApiOptions.ComplianceDeclarationStatusType complianceDeclarationStatus = WebApiOptions.ComplianceDeclarationStatusType.None)
     {
@@ -176,6 +182,7 @@ public class CsocTests
                     [
                         new Organisation
                         {
+                            Id = TestOrganisationId,
                             OrganisationRole = "Producer"
                         }
                     ]
@@ -193,6 +200,27 @@ public class CsocTests
 
 public static class CsocTestsExtensions
 {
+    public static SettingsTask ScrubWasteObligationsUrls(this SettingsTask settings)
+    {
+        settings.PrettyPrintHtml(nodes =>
+        {
+            foreach (var node in nodes.QuerySelectorAll("a[href*='understanding-obligations/compliance/']"))
+            {
+                var href = node.GetAttribute("href");
+                if (string.IsNullOrEmpty(href))
+                    continue;
+
+                node.SetAttribute(
+                    "href",
+                    href
+                        .Replace(CsocTests.TestOrganisationId.ToString(), "[ScrubbedOrganisationId]")
+                        .Replace(Accounts.ComplianceSchemeId.ToString(), "[ScrubbedSchemeId]"));
+            }
+        });
+
+        return settings;
+    }
+
     public static SettingsTask ScrubComplianceSchemeId(this SettingsTask settings)
     {
         settings.PrettyPrintHtml(nodes =>
@@ -200,7 +228,7 @@ public static class CsocTestsExtensions
             foreach (var node in nodes.QuerySelectorAll("button[name=\"selectedComplianceSchemeId\"]"))
                 node.Attributes.GetNamedItem("value").Value = "[Scrubbed]";
         });
-        
+
         return settings;
     }
 }

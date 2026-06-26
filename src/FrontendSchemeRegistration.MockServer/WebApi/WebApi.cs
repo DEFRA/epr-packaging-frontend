@@ -184,11 +184,11 @@ public static class WebApi
         {
             WebApiOptions.ComplianceDeclarationStatusType.Submitted => new
             {
-                complianceDeclarations = new[] { new { created = "2026-04-27T14:00:00+00:00", status = "Submitted" } }
+                complianceDeclarations = new[] { new { id = "6830b9d4c7e21f5a8d3e64b2", created = "2026-04-27T14:00:00+00:00", status = "Submitted" } }
             },
             WebApiOptions.ComplianceDeclarationStatusType.Cancelled => new
             {
-                complianceDeclarations = new[] { new { created = "2026-04-27T14:00:00+00:00", status = "Cancelled" } }
+                complianceDeclarations = new[] { new { id = "6830b9d4c7e21f5a8d3e64b2", created = "2026-04-27T14:00:00+00:00", status = "Cancelled" } }
             },
             _ => new { complianceDeclarations = Array.Empty<object>() }
         };

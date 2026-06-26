@@ -124,17 +124,16 @@
     <value>Ychwanegu un is-gwmni</value>
   </data>
   <data name="prn_heading_text" xml:space="preserve">
-    <value>Rheoli'ch rhwymedigaethau ailgylchu ar gyfer {0}</value>
+    <value>Manage your {0} recycling obligations</value>
   </data>
   <data name="prn_paragraph_1" xml:space="preserve">
-    <value>Adolygu'ch cyfrifiadau ar gyfer eich rhwymedigaethau ailgylchu a derbyn PRNs neu PERNs i fodloni'r rhain.
-Rydych chi hefyd yn gallu:</value>
+    <value>Review your recycling obligations and accept PRNs or PERNs to meet them. You can also:</value>
   </data>
   <data name="prn_unordered_list_point_1" xml:space="preserve">
-    <value>gweld rhwymedigaethau ailgylchu fesul deunydd</value>
+    <value>see how your recycling obligations were calculated</value>
   </data>
   <data name="prn_unordered_list_point_2" xml:space="preserve">
-    <value>gwirio cynnydd eich rhwymedigaethau ailgylchu</value>
+    <value>check your recycling obligations progress</value>
   </data>
   <data name="registration" xml:space="preserve">
     <value>Cofrestriad</value>

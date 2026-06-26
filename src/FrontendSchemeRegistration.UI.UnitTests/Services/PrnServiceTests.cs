@@ -45,8 +45,8 @@ public class PrnServiceTests
 
         _webApiGatewayClientMock = new Mock<IWebApiGatewayClient>();
         _webApiGatewayClientMock
-            .Setup(x => x.GetComplianceDeclarationStatus(It.IsAny<int>()))
-            .ReturnsAsync((ComplianceDeclarationStatus?)null);
+            .Setup(x => x.GetLatestComplianceDeclaration(It.IsAny<int>()))
+            .ReturnsAsync((ComplianceDeclarationModel?)null);
         _loggerMock = new Mock<ILogger<PrnService>>();
         _fakeTimeProvider = new FakeTimeProvider();
         _mapperMock = new Mock<IMapper>();
@@ -543,8 +543,13 @@ public class PrnServiceTests
         var year = 2024;
         _webApiGatewayClientMock.Setup(x => x.GetRecyclingObligationsCalculation(year))
             .ReturnsAsync(new PrnObligationModel());
-        _webApiGatewayClientMock.Setup(x => x.GetComplianceDeclarationStatus(year))
-            .ReturnsAsync(ComplianceDeclarationStatus.Cancelled);
+        _webApiGatewayClientMock.Setup(x => x.GetLatestComplianceDeclaration(year))
+            .ReturnsAsync(new ComplianceDeclarationModel
+            {
+                Id = "6830b9d4c7e21f5a8d3e64b2",
+                Status = ComplianceDeclarationStatus.Cancelled,
+                Created = new DateTimeOffset(2026, 4, 27, 14, 0, 0, TimeSpan.Zero)
+            });
 
         // Act
         var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year, includeComplianceDeclarationStatus: true);
@@ -552,9 +557,10 @@ public class PrnServiceTests
         // Assert
         result.Should().NotBeNull();
         result.ComplianceDeclarationStatus.Should().Be(ComplianceDeclarationStatus.Cancelled);
+        result.ComplianceDeclarationId.Should().Be("6830b9d4c7e21f5a8d3e64b2");
         result.MaterialObligationViewModels.Should().BeNullOrEmpty();
         result.GlassMaterialObligationViewModels.Should().BeNullOrEmpty();
-        _webApiGatewayClientMock.Verify(x => x.GetComplianceDeclarationStatus(year), Times.Once);
+        _webApiGatewayClientMock.Verify(x => x.GetLatestComplianceDeclaration(year), Times.Once);
     }
 
     [Test]
@@ -589,12 +595,18 @@ public class PrnServiceTests
                 ]
             });
         _webApiGatewayClientMock
-            .Setup(x => x.GetComplianceDeclarationStatus(year))
-            .ReturnsAsync(ComplianceDeclarationStatus.Submitted);
+            .Setup(x => x.GetLatestComplianceDeclaration(year))
+            .ReturnsAsync(new ComplianceDeclarationModel
+            {
+                Id = "6830b9d4c7e21f5a8d3e64b2",
+                Status = ComplianceDeclarationStatus.Submitted,
+                Created = new DateTimeOffset(2026, 4, 27, 14, 0, 0, TimeSpan.Zero)
+            });
 
         var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year, includeComplianceDeclarationStatus: true);
 
         result.ComplianceDeclarationStatus.Should().Be(ComplianceDeclarationStatus.Submitted);
+        result.ComplianceDeclarationId.Should().Be("6830b9d4c7e21f5a8d3e64b2");
     }
 
     [Test]
@@ -629,12 +641,13 @@ public class PrnServiceTests
                 ]
             });
         _webApiGatewayClientMock
-            .Setup(x => x.GetComplianceDeclarationStatus(year))
+            .Setup(x => x.GetLatestComplianceDeclaration(year))
             .ThrowsAsync(new HttpRequestException("upstream error"));
 
         var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year, includeComplianceDeclarationStatus: true);
 
         result.ComplianceDeclarationStatus.Should().BeNull();
+        result.ComplianceDeclarationId.Should().BeNull();
     }
 
     [Test]
@@ -669,12 +682,13 @@ public class PrnServiceTests
                 ]
             });
         _webApiGatewayClientMock
-            .Setup(x => x.GetComplianceDeclarationStatus(year))
+            .Setup(x => x.GetLatestComplianceDeclaration(year))
             .ThrowsAsync(new System.Text.Json.JsonException("invalid payload"));
 
         var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year, includeComplianceDeclarationStatus: true);
 
         result.ComplianceDeclarationStatus.Should().BeNull();
+        result.ComplianceDeclarationId.Should().BeNull();
     }
 
     [Test]
@@ -712,7 +726,7 @@ public class PrnServiceTests
         var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year, includeComplianceDeclarationStatus: true);
 
         result.ComplianceDeclarationStatus.Should().BeNull();
-        _webApiGatewayClientMock.Verify(x => x.GetComplianceDeclarationStatus(year), Times.Once);
+        _webApiGatewayClientMock.Verify(x => x.GetLatestComplianceDeclaration(year), Times.Once);
     }
 
     [Test]
@@ -750,7 +764,7 @@ public class PrnServiceTests
         var result = await _systemUnderTest.GetRecyclingObligationsCalculation(year, includeComplianceDeclarationStatus: false);
 
         result.ComplianceDeclarationStatus.Should().BeNull();
-        _webApiGatewayClientMock.Verify(x => x.GetComplianceDeclarationStatus(It.IsAny<int>()), Times.Never);
+        _webApiGatewayClientMock.Verify(x => x.GetLatestComplianceDeclaration(It.IsAny<int>()), Times.Never);
     }
 
     [Test]
@@ -768,7 +782,7 @@ public class PrnServiceTests
         result.Should().NotBeNull();
         result.MaterialObligationViewModels.Should().BeNullOrEmpty();
         result.GlassMaterialObligationViewModels.Should().BeNullOrEmpty();
-        _webApiGatewayClientMock.Verify(x => x.GetComplianceDeclarationStatus(It.IsAny<int>()), Times.Never);
+        _webApiGatewayClientMock.Verify(x => x.GetLatestComplianceDeclaration(It.IsAny<int>()), Times.Never);
     }
 
     [Test]

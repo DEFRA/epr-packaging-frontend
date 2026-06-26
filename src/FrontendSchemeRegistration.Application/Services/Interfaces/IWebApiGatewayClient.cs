@@ -63,7 +63,7 @@ public interface IWebApiGatewayClient
 
     Task<PrnObligationModel> GetRecyclingObligationsCalculation(int year);
     
-    Task<ComplianceDeclarationStatus?> GetComplianceDeclarationStatus(int obligationYear);
+    Task<ComplianceDeclarationModel?> GetLatestComplianceDeclaration(int obligationYear);
 
     Task<RegistrationApplicationDetails?> GetRegistrationApplicationDetails(GetRegistrationApplicationDetailsRequest request);
 
