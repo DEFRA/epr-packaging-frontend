@@ -9,6 +9,7 @@ using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers;
+using FrontendSchemeRegistration.UI.Services;
 using FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
@@ -39,6 +40,7 @@ public class DeclarationWithFullNameControllerTests
     private Mock<IRegistrationPeriodProvider> _registrationPeriodProviderMock;
     private Mock<IFeatureManager> _featureManagerMock;
     private Mock<IPaymentCalculationService> _paymentCalculationServiceMock;
+    private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
     private IOptions<RegistrationFeeSnapshotPollingOptions> _snapshotPollingOptions;
 
     [SetUp]
@@ -50,6 +52,7 @@ public class DeclarationWithFullNameControllerTests
         _registrationPeriodProviderMock = new Mock<IRegistrationPeriodProvider>();
         _featureManagerMock = new Mock<IFeatureManager>();
         _paymentCalculationServiceMock = new Mock<IPaymentCalculationService>();
+        _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
         // Tight polling settings keep timeout-path tests under a second.
         _snapshotPollingOptions = Options.Create(new RegistrationFeeSnapshotPollingOptions { TimeoutSeconds = 1, IntervalSeconds = 0 });
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
@@ -58,7 +61,7 @@ public class DeclarationWithFullNameControllerTests
                 RegistrationSession = new RegistrationSession { IsResubmission = true }
             });
 
-        _systemUnderTest = new DeclarationWithFullNameController(_submissionServiceMock.Object, _sessionManagerMock.Object, new NullLogger<DeclarationWithFullNameController>(), _registrationPeriodProviderMock.Object, _featureManagerMock.Object, _paymentCalculationServiceMock.Object, _snapshotPollingOptions);
+        _systemUnderTest = new DeclarationWithFullNameController(_submissionServiceMock.Object, _sessionManagerMock.Object, new NullLogger<DeclarationWithFullNameController>(), _registrationPeriodProviderMock.Object, _featureManagerMock.Object, _registrationApplicationServiceMock.Object);
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
