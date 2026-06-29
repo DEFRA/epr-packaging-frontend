@@ -913,9 +913,9 @@ public class DeclarationWithFullNameControllerTests
             RegistrationSession = new RegistrationSession { ApplicationReferenceNumber = "test" },
         });
         _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService)).ReturnsAsync(true);
-        _paymentCalculationServiceMock
-            .Setup(s => s.GetRegistrationFeeCalculationDetails(submission.Id))
-            .ReturnsAsync(new Application.DTOs.RegistrationFeeCalculationDetails[] { new() });
+        _registrationApplicationServiceMock
+            .Setup(s => s.WaitForRegistrationFeeSnapshotAsync(It.IsAny<ISession>(), submission.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
 
         var request = new DeclarationWithFullNameViewModel
         {
@@ -928,7 +928,7 @@ public class DeclarationWithFullNameControllerTests
         var result = await _systemUnderTest.Post(submission.Id, request);
 
         // Assert
-        _paymentCalculationServiceMock.Verify(s => s.GetRegistrationFeeCalculationDetails(submission.Id), Times.Once);
+        _registrationApplicationServiceMock.Verify(s => s.WaitForRegistrationFeeSnapshotAsync(It.IsAny<ISession>(), submission.Id, It.IsAny<CancellationToken>()), Times.Once);
         result.Should().BeOfType<RedirectToActionResult>()
             .Which.ActionName.Should().Be("Get");
         ((RedirectToActionResult)result).ControllerName.Should().Be("CompanyDetailsConfirmation");
@@ -958,9 +958,9 @@ public class DeclarationWithFullNameControllerTests
             RegistrationSession = new RegistrationSession { ApplicationReferenceNumber = "test" },
         });
         _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService)).ReturnsAsync(true);
-        _paymentCalculationServiceMock
-            .Setup(s => s.GetRegistrationFeeCalculationDetails(submission.Id))
-            .ReturnsAsync((Application.DTOs.RegistrationFeeCalculationDetails[]?)null);
+        _registrationApplicationServiceMock
+            .Setup(s => s.WaitForRegistrationFeeSnapshotAsync(It.IsAny<ISession>(), submission.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
 
         var request = new DeclarationWithFullNameViewModel
         {
@@ -972,8 +972,8 @@ public class DeclarationWithFullNameControllerTests
         // Act
         var result = await _systemUnderTest.Post(submission.Id, request);
 
-        // Assert — facade was polled at least once, the timeout was hit, redirect happens regardless
-        _paymentCalculationServiceMock.Verify(s => s.GetRegistrationFeeCalculationDetails(submission.Id), Times.AtLeastOnce);
+        // Assert — wait wrapper was invoked, returned false (timeout-internal), controller still redirects
+        _registrationApplicationServiceMock.Verify(s => s.WaitForRegistrationFeeSnapshotAsync(It.IsAny<ISession>(), submission.Id, It.IsAny<CancellationToken>()), Times.Once);
         result.Should().BeOfType<RedirectToActionResult>();
     }
 }
