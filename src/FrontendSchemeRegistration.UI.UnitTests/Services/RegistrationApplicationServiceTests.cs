@@ -43,6 +43,7 @@ public class RegistrationApplicationServiceTests
     private Mock<IFeatureManager> _featureManagerMock;
     private Mock<IHttpContextAccessor> _httpContextAccessorMock;
     private Mock<IRegistrationPeriodProvider> _mockRegistrationPeriodProvider;
+    private IOptions<RegistrationFeeSnapshotPollingOptions> _snapshotPollingOptions;
     private FakeTimeProvider _dateTimeProvider;
     private const int RegistrationYear = 2026;
 
@@ -63,7 +64,8 @@ public class RegistrationApplicationServiceTests
         _featureManagerMock = new Mock<IFeatureManager>();
         _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
         _mockRegistrationPeriodProvider = new Mock<IRegistrationPeriodProvider>();
-        
+        _snapshotPollingOptions = Options.Create(new RegistrationFeeSnapshotPollingOptions());
+
         _fixture = new Fixture();
 
         var deps = new RegistrationApplicationServiceDependencies
@@ -76,6 +78,7 @@ public class RegistrationApplicationServiceTests
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            SnapshotPollingOptions = _snapshotPollingOptions,
         };
 
         _service = new RegistrationApplicationService(deps, _dateTimeProvider);
@@ -3313,6 +3316,7 @@ public class RegistrationApplicationServiceTests
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            SnapshotPollingOptions = _snapshotPollingOptions,
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -3333,6 +3337,7 @@ public class RegistrationApplicationServiceTests
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            SnapshotPollingOptions = _snapshotPollingOptions,
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -3352,6 +3357,7 @@ public class RegistrationApplicationServiceTests
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            SnapshotPollingOptions = _snapshotPollingOptions,
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -3371,6 +3377,7 @@ public class RegistrationApplicationServiceTests
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            SnapshotPollingOptions = _snapshotPollingOptions,
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -3390,6 +3397,7 @@ public class RegistrationApplicationServiceTests
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            SnapshotPollingOptions = _snapshotPollingOptions,
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -3409,6 +3417,7 @@ public class RegistrationApplicationServiceTests
             FeatureManager = null!,
             HttpContextAccessor = _httpContextAccessorMock.Object,
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            SnapshotPollingOptions = _snapshotPollingOptions,
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -3428,6 +3437,7 @@ public class RegistrationApplicationServiceTests
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = null!,
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            SnapshotPollingOptions = _snapshotPollingOptions,
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -3447,6 +3457,7 @@ public class RegistrationApplicationServiceTests
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            SnapshotPollingOptions = _snapshotPollingOptions,
         };
 
         Assert.DoesNotThrow(() => new RegistrationApplicationService(deps, _dateTimeProvider));
