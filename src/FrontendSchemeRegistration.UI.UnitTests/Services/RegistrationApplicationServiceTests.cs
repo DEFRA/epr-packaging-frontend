@@ -3463,6 +3463,70 @@ public class RegistrationApplicationServiceTests
         Assert.DoesNotThrow(() => new RegistrationApplicationService(deps, _dateTimeProvider));
     }
 
+    [Test]
+    public async Task WaitForRegistrationFeeSnapshotAsync_SnapshotImmediatelyAvailable_PopulatesSessionAndReturnsTrue()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var snapshot = new[] { new RegistrationFeeCalculationDetails() };
+        var existingSession = new RegistrationApplicationSession();
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(existingSession);
+        _paymentCalculationServiceMock
+            .Setup(s => s.GetRegistrationFeeCalculationDetails(submissionId))
+            .ReturnsAsync(snapshot);
+
+        var service = CreateServiceWithPollingOptions(timeoutSeconds: 10, intervalSeconds: 0);
+
+        // Act
+        var result = await service.WaitForRegistrationFeeSnapshotAsync(_httpSession, submissionId, CancellationToken.None);
+
+        // Assert
+        result.Should().BeTrue();
+        existingSession.RegistrationFeeCalculationDetails.Should().BeSameAs(snapshot);
+        _sessionManagerMock.Verify(sm => sm.SaveSessionAsync(_httpSession, existingSession), Times.Once);
+    }
+
+    [Test]
+    public async Task WaitForRegistrationFeeSnapshotAsync_TimeoutImmediate_ReturnsFalseAndDoesNotPoll()
+    {
+        // Arrange — TimeoutSeconds=0 makes deadline = now; the while-check fails on entry
+        var submissionId = Guid.NewGuid();
+        var service = CreateServiceWithPollingOptions(timeoutSeconds: 0, intervalSeconds: 0);
+
+        // Act
+        var result = await service.WaitForRegistrationFeeSnapshotAsync(_httpSession, submissionId, CancellationToken.None);
+
+        // Assert
+        result.Should().BeFalse();
+        _paymentCalculationServiceMock.Verify(s => s.GetRegistrationFeeCalculationDetails(It.IsAny<Guid>()), Times.Never);
+    }
+
+    [Test]
+    public async Task WaitForRegistrationFeeSnapshotAsync_CancellationDuringDelay_ReturnsFalse()
+    {
+        // Arrange — first poll returns null AND cancels the token; the subsequent
+        // Task.Delay(non-zero, alreadyCancelledToken) throws TaskCanceledException immediately.
+        var submissionId = Guid.NewGuid();
+        using var cts = new CancellationTokenSource();
+        _paymentCalculationServiceMock
+            .Setup(s => s.GetRegistrationFeeCalculationDetails(submissionId))
+            .ReturnsAsync(() =>
+            {
+                cts.Cancel();
+                return (RegistrationFeeCalculationDetails[]?)null;
+            });
+
+        var service = CreateServiceWithPollingOptions(timeoutSeconds: 60, intervalSeconds: 10);
+
+        // Act
+        var result = await service.WaitForRegistrationFeeSnapshotAsync(_httpSession, submissionId, cts.Token);
+
+        // Assert
+        result.Should().BeFalse();
+        _paymentCalculationServiceMock.Verify(s => s.GetRegistrationFeeCalculationDetails(submissionId), Times.Once);
+    }
+
     private RegistrationWindow CreateRegistrationWindow(
         WindowType windowType,
         int? registrationYear = RegistrationYear,
@@ -3475,6 +3539,28 @@ public class RegistrationApplicationServiceTests
         var closing = closingDateOffset ?? new DateTime(RegistrationYear, 8, 1);
         return new RegistrationWindow(_dateTimeProvider, windowType, registrationYear.GetValueOrDefault(RegistrationYear),
                 opening, deadline, closing);
+    }
+
+    private RegistrationApplicationService CreateServiceWithPollingOptions(int timeoutSeconds, int intervalSeconds)
+    {
+        var options = Options.Create(new RegistrationFeeSnapshotPollingOptions
+        {
+            TimeoutSeconds = timeoutSeconds,
+            IntervalSeconds = intervalSeconds,
+        });
+        var deps = new RegistrationApplicationServiceDependencies
+        {
+            SubmissionService = _submissionServiceMock.Object,
+            PaymentCalculationService = _paymentCalculationServiceMock.Object,
+            RegistrationSessionManager = _sessionManagerMock.Object,
+            FrontendSessionManager = _frontEndSessionManagerMock.Object,
+            Logger = _loggerMock.Object,
+            FeatureManager = _featureManagerMock.Object,
+            HttpContextAccessor = _httpContextAccessorMock.Object,
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            SnapshotPollingOptions = options,
+        };
+        return new RegistrationApplicationService(deps, _dateTimeProvider);
     }
 
 }
