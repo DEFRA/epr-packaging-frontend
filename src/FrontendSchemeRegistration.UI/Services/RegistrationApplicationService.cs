@@ -61,7 +61,23 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         snapshotPollingOptions = dependencies.SnapshotPollingOptions
             ?? throw new InvalidOperationException($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(dependencies.SnapshotPollingOptions)} cannot be null.");
     }
-    private void SetLateFeeFlag(RegistrationApplicationSession session, int registrationYear)   
+    private async Task TryHydrateRegistrationFeeFromSnapshot(RegistrationApplicationSession session)
+    {
+        if (!session.SubmissionId.HasValue
+            || session.SubmissionId.Value == Guid.Empty
+            || !await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService))
+        {
+            return;
+        }
+
+        var snapshotDetails = await paymentCalculationService.GetRegistrationFeeCalculationDetails(session.SubmissionId.Value);
+        if (snapshotDetails is not null)
+        {
+            session.RegistrationFeeCalculationDetails = snapshotDetails;
+        }
+    }
+
+    private void SetLateFeeFlag(RegistrationApplicationSession session, int registrationYear)
     {
         var isSmallProducer = string.Equals(session.RegistrationFeeCalculationDetails?[0].OrganisationSize, "Small",
             StringComparison.InvariantCultureIgnoreCase);
@@ -145,16 +161,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         session.RegistrationApplicationSubmittedComment = registrationApplicationDetails.RegistrationApplicationSubmittedComment;
         session.RegistrationFeeCalculationDetails = registrationApplicationDetails.RegistrationFeeCalculationDetails;
 
-        if (session.SubmissionId.HasValue
-            && session.SubmissionId.Value != Guid.Empty
-            && await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService))
-        {
-            var snapshotDetails = await paymentCalculationService.GetRegistrationFeeCalculationDetails(session.SubmissionId.Value);
-            if (snapshotDetails is not null)
-            {
-                session.RegistrationFeeCalculationDetails = snapshotDetails;
-            }
-        }
+        await TryHydrateRegistrationFeeFromSnapshot(session);
 
         session.HasAnyApprovedOrQueriedRegulatorDecision = registrationApplicationDetails.HasAnyApprovedOrQueriedRegulatorDecision;
         session.IsLatestSubmittedEventAfterFileUpload = registrationApplicationDetails.IsLatestSubmittedEventAfterFileUpload;
