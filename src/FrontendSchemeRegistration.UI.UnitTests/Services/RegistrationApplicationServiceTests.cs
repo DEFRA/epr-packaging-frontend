@@ -41,7 +41,6 @@ public class RegistrationApplicationServiceTests
     private Fixture _fixture;
     private RegistrationApplicationService _service;
     private Mock<IFeatureManager> _featureManagerMock;
-    private Mock<IHttpContextAccessor> _httpContextAccessorMock;
     private Mock<IRegistrationPeriodProvider> _mockRegistrationPeriodProvider;
     private IOptions<RegistrationFeeSnapshotPollingOptions> _snapshotPollingOptions;
     private FakeTimeProvider _dateTimeProvider;
@@ -62,7 +61,6 @@ public class RegistrationApplicationServiceTests
         _frontEndSessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _loggerMock = new Mock<ILogger<RegistrationApplicationService>>();
         _featureManagerMock = new Mock<IFeatureManager>();
-        _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
         _mockRegistrationPeriodProvider = new Mock<IRegistrationPeriodProvider>();
         _snapshotPollingOptions = Options.Create(new RegistrationFeeSnapshotPollingOptions());
 
@@ -76,7 +74,6 @@ public class RegistrationApplicationServiceTests
             FrontendSessionManager = _frontEndSessionManagerMock.Object,
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
-            HttpContextAccessor = _httpContextAccessorMock.Object,
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
             SnapshotPollingOptions = _snapshotPollingOptions,
         };
@@ -2980,132 +2977,10 @@ public class RegistrationApplicationServiceTests
         result[0].Applications.First().FileUploadStatus.Should().Be(RegistrationTaskListStatus.NotStarted);
     }
 
- 
-    [Test]
-    public async Task GetProducerRegistrationFees_WhenV2Enabled_SendsV2Request_With_All_New_Fields()
-    {
-        _featureManagerMock.Setup(f => f.IsEnabledAsync("EnableRegistrationFeeV2")).ReturnsAsync(true);
-
-        _session.Period = new SubmissionPeriod { StartMonth = "January", EndMonth = "June", Year = "2025" };
-        _session.LastSubmittedFile ??= new LastSubmittedFileDetails();
-        _session.LastSubmittedFile.FileId = Guid.NewGuid();
-        _session.LastSubmittedFile.SubmittedDateTime = _dateTimeProvider.GetUtcNow().DateTime;
-
-        _session.RegistrationFeeCalculationDetails = _fixture.CreateMany<RegistrationFeeCalculationDetails>(1).ToArray();
-        _session.RegistrationFeeCalculationDetails[0].OrganisationSize = "Large";
-        _session.RegistrationFeeCalculationDetails[0].NumberOfSubsidiaries = 3;
-        _session.RegistrationFeeCalculationDetails[0].NumberOfSubsidiariesBeingOnlineMarketPlace = 1;
-        _session.RegistrationFeeCalculationDetails[0].IsOnlineMarketplace = true;
-
-        var userData = new UserData
-        {
-            Id = Guid.NewGuid(),
-            Organisations = new List<Organisation> { new Organisation { Id = Guid.NewGuid(), OrganisationNumber = "222" } }
-        };
-        var principal = new ClaimsPrincipal();
-        principal.SetupClaimsPrincipal(userData);
-        var httpContext = new DefaultHttpContext { User = principal };
-        _httpContextAccessorMock.SetupGet(x => x.HttpContext).Returns(httpContext);
-
-        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(_session);
-
-        ProducerPaymentCalculationV2Request? captured = null;
-        _paymentCalculationServiceMock
-            .Setup(p => p.GetProducerRegistrationFees(It.IsAny<ProducerPaymentCalculationV2Request>()))
-            .Callback<ProducerPaymentCalculationV2Request>(r => captured = r)
-            .ReturnsAsync(_fixture.Build<PaymentCalculationResponse>()
-                .With(x => x.SubsidiariesFeeBreakdown, new SubsidiariesFeeBreakdown())
-                .Create());
-
-        // Act
-        var result = await _service.GetProducerRegistrationFees(_httpSession);
-
-        // Assert
-        result.Should().NotBeNull("V2 call still returns mapped breakdown");
-
-        captured.Should().NotBeNull();
-        captured!.FileId.Should().Be(_session.LastSubmittedFile.FileId!.Value);
-        captured.ExternalId.Should().Be(userData.Organisations.First().Id!.Value);
-        captured.PayerId.Should().Be(222);
-        captured.PayerTypeId.Should().Be(1);
-
-        var expectedEarliest = new DateTimeOffset(new DateTime(int.Parse(_session.Period.Year), 06, 30), TimeSpan.Zero);
-        captured.InvoicePeriod.Should().BeOnOrAfter(expectedEarliest);
-
-        captured.Regulator.Should().Be(_session.RegulatorNation);
-        captured.ApplicationReferenceNumber.Should().Be(_session.ApplicationReferenceNumber);
-        captured.IsLateFeeApplicable.Should().Be(_session.IsLateFeeApplicable);
-        captured.IsProducerOnlineMarketplace.Should().BeTrue();
-        captured.NoOfSubsidiariesOnlineMarketplace.Should().Be(1);
-        captured.NumberOfSubsidiaries.Should().Be(3);
-        captured.ProducerType.Should().Be("Large");
-        captured.SubmissionDate.Date.Should().Be(_session.LastSubmittedFile.SubmittedDateTime!.Value.Date);
-    }
 
     [Test]
-    public async Task GetComplianceSchemeRegistrationFees_WhenV2Enabled_SendsV2Request_With_All_New_Fields()
+    public async Task GetProducerRegistrationFees_SendsRequest()
     {
-        _featureManagerMock.Setup(f => f.IsEnabledAsync("EnableRegistrationFeeV2")).ReturnsAsync(true);
-
-        _session.Period = new SubmissionPeriod { StartMonth = "January", EndMonth = "June", Year = "2025" };
-        _session.LastSubmittedFile ??= new LastSubmittedFileDetails();
-        _session.LastSubmittedFile.FileId = Guid.NewGuid();
-        _session.LastSubmittedFile.SubmittedDateTime = _dateTimeProvider.GetUtcNow().DateTime;
-
-        _session.SelectedComplianceScheme = new ComplianceSchemeDto
-        {
-            Id = Guid.NewGuid(),
-            NationId = 2,
-            Name = "Test CS",
-            RowNumber = 123
-        };
-        _session.RegistrationFeeCalculationDetails = _fixture.CreateMany<RegistrationFeeCalculationDetails>(2).ToArray();
-
-        var userData = new UserData
-        {
-            Id = Guid.NewGuid(),
-            Organisations = new List<Organisation> { new Organisation { Id = Guid.NewGuid(), OrganisationNumber = "123" } }
-        };
-        var principal = new ClaimsPrincipal();
-        principal.SetupClaimsPrincipal(userData);
-        var httpContext = new DefaultHttpContext { User = principal };
-        _httpContextAccessorMock.SetupGet(x => x.HttpContext).Returns(httpContext);
-
-        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(_session);
-
-        ComplianceSchemePaymentCalculationV2Request? captured = null;
-        _paymentCalculationServiceMock
-            .Setup(p => p.GetComplianceSchemeRegistrationFees(It.IsAny<ComplianceSchemePaymentCalculationV2Request>()))
-            .Callback<ComplianceSchemePaymentCalculationV2Request>(r => captured = r)
-            .ReturnsAsync(_fixture.Build<ComplianceSchemePaymentCalculationResponse>()
-                .With(x => x.ComplianceSchemeMembersWithFees, new List<ComplianceSchemePaymentCalculationResponseMember>())
-                .Create());
-
-        // Act
-        var result = await _service.GetComplianceSchemeRegistrationFees(_httpSession);
-
-        // Assert
-        result.Should().NotBeNull("V2 call still returns mapped breakdown");
-
-        captured.Should().NotBeNull();
-        captured!.FileId.Should().Be(_session.LastSubmittedFile.FileId!.Value);
-        captured.ExternalId.Should().Be(_session.SelectedComplianceScheme.Id!);
-        captured.PayerTypeId.Should().Be(2);
-        captured.PayerId.Should().Be(123);
-
-        var expectedEarliest = new DateTimeOffset(new DateTime(int.Parse(_session.Period.Year), 06, 30), TimeSpan.Zero);
-        captured.InvoicePeriod.Should().BeOnOrAfter(expectedEarliest);
-
-        captured.ApplicationReferenceNumber.Should().Be(_session.ApplicationReferenceNumber);
-        captured.Regulator.Should().Be(_session.RegulatorNation);
-        captured.SubmissionDate.Date.Should().Be(_session.LastSubmittedFile.SubmittedDateTime!.Value.Date);
-    }
-
-    [Test]
-    public async Task GetProducerRegistrationFees_WhenV2Disabled_SendsV1Request()
-    {
-        _featureManagerMock.Setup(f => f.IsEnabledAsync("EnableRegistrationFeeV2")).ReturnsAsync(false);
-
         _session.RegistrationFeeCalculationDetails = _fixture.CreateMany<RegistrationFeeCalculationDetails>(1).ToArray();
         _session.RegistrationFeeCalculationDetails[0].IsOnlineMarketplace = true;
         _session.RegistrationFeeCalculationDetails[0].NumberOfSubsidiariesBeingOnlineMarketPlace = 4;
@@ -3139,10 +3014,8 @@ public class RegistrationApplicationServiceTests
     }
 
     [Test]
-    public async Task GetProducerRegistrationFees_V1_WhenClosedLoopRecyclingFalseAndCountZero_SendsZeros()
+    public async Task GetProducerRegistrationFees_WhenClosedLoopRecyclingFalseAndCountZero_SendsZeros()
     {
-        _featureManagerMock.Setup(f => f.IsEnabledAsync("EnableRegistrationFeeV2")).ReturnsAsync(false);
-
         _session.RegistrationFeeCalculationDetails = _fixture.CreateMany<RegistrationFeeCalculationDetails>(1).ToArray();
         _session.RegistrationFeeCalculationDetails[0].IsClosedLoopRecycling = false;
         _session.RegistrationFeeCalculationDetails[0].NumberOfSubsidiariesBeingClosedLoopRecycling = 0;
@@ -3164,10 +3037,8 @@ public class RegistrationApplicationServiceTests
     }
 
     [Test]
-    public async Task GetProducerRegistrationFees_V1_MapsClosedLoopRecyclingResponseToViewModel()
+    public async Task GetProducerRegistrationFees_MapsClosedLoopRecyclingResponseToViewModel()
     {
-        _featureManagerMock.Setup(f => f.IsEnabledAsync("EnableRegistrationFeeV2")).ReturnsAsync(false);
-
         _session.RegistrationFeeCalculationDetails = _fixture.CreateMany<RegistrationFeeCalculationDetails>(1).ToArray();
         _session.RegistrationFeeCalculationDetails[0].IsClosedLoopRecycling = true;
         _session.RegistrationFeeCalculationDetails[0].NumberOfSubsidiariesBeingClosedLoopRecycling = 9;
@@ -3200,41 +3071,8 @@ public class RegistrationApplicationServiceTests
     }
 
     [Test]
-    public async Task GetProducerRegistrationFees_WhenV2Enabled_ButNoOrganisations_FallsBackToV1()
+    public async Task GetComplianceSchemeRegistrationFees_PopulatesClosedLoopFieldsPerMember()
     {
-        _featureManagerMock.Setup(f => f.IsEnabledAsync("EnableRegistrationFeeV2")).ReturnsAsync(true);
-
-        _session.RegistrationFeeCalculationDetails = _fixture.CreateMany<RegistrationFeeCalculationDetails>(1).ToArray();
-        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(_session);
-
-        var userData = new UserData { Id = Guid.NewGuid(), Organisations = new List<Organisation>() };
-        var principal = new ClaimsPrincipal();
-        principal.SetupClaimsPrincipal(userData);
-        var httpContext = new DefaultHttpContext { User = principal };
-        _httpContextAccessorMock.SetupGet(x => x.HttpContext).Returns(httpContext);
-
-        PaymentCalculationRequest? captured = null;
-        _paymentCalculationServiceMock
-            .Setup(p => p.GetProducerRegistrationFees(It.IsAny<PaymentCalculationRequest>()))
-            .Callback<PaymentCalculationRequest>(r => captured = r)
-            .ReturnsAsync(_fixture.Build<PaymentCalculationResponse>()
-                .With(x => x.SubsidiariesFeeBreakdown, new SubsidiariesFeeBreakdown())
-                .Create());
-
-        // Act
-        var result = await _service.GetProducerRegistrationFees(_httpSession);
-
-        // Assert
-        result.Should().NotBeNull("we still compute using v1 when no org is available for v2");
-        captured.Should().NotBeNull();
-        captured!.GetType().Should().Be(typeof(PaymentCalculationRequest), "v1 request should be used when there is no first organisation to index");
-    }
-
-    [Test]
-    public async Task GetComplianceSchemeRegistrationFees_V1_PopulatesClosedLoopFieldsPerMember()
-    {
-        _featureManagerMock.Setup(f => f.IsEnabledAsync("EnableRegistrationFeeV2")).ReturnsAsync(false);
-
         var session = _fixture.Build<RegistrationApplicationSession>().Create();
         session.RegistrationFeeCalculationDetails = _fixture.CreateMany<RegistrationFeeCalculationDetails>(2).ToArray();
         session.RegistrationFeeCalculationDetails[0].IsClosedLoopRecycling = true;
@@ -3263,8 +3101,6 @@ public class RegistrationApplicationServiceTests
     [Test]
     public async Task GetComplianceSchemeRegistrationFees_AggregatesClosedLoopRecyclingFromMembers()
     {
-        _featureManagerMock.Setup(f => f.IsEnabledAsync("EnableRegistrationFeeV2")).ReturnsAsync(false);
-
         var session = _fixture.Build<RegistrationApplicationSession>().Create();
         session.RegistrationFeeCalculationDetails = _fixture.CreateMany<RegistrationFeeCalculationDetails>(3).ToArray();
         session.RegistrationFeeCalculationDetails[0].OrganisationSize = "Large";
@@ -3314,7 +3150,6 @@ public class RegistrationApplicationServiceTests
             FrontendSessionManager = _frontEndSessionManagerMock.Object,
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
-            HttpContextAccessor = _httpContextAccessorMock.Object,
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
             SnapshotPollingOptions = _snapshotPollingOptions,
         };
@@ -3335,7 +3170,6 @@ public class RegistrationApplicationServiceTests
             FrontendSessionManager = _frontEndSessionManagerMock.Object,
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
-            HttpContextAccessor = _httpContextAccessorMock.Object,
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
             SnapshotPollingOptions = _snapshotPollingOptions,
         };
@@ -3355,7 +3189,6 @@ public class RegistrationApplicationServiceTests
             FrontendSessionManager = _frontEndSessionManagerMock.Object,
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
-            HttpContextAccessor = _httpContextAccessorMock.Object,
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
             SnapshotPollingOptions = _snapshotPollingOptions,
         };
@@ -3375,7 +3208,6 @@ public class RegistrationApplicationServiceTests
             FrontendSessionManager = null!,
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
-            HttpContextAccessor = _httpContextAccessorMock.Object,
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
             SnapshotPollingOptions = _snapshotPollingOptions,
         };
@@ -3395,7 +3227,6 @@ public class RegistrationApplicationServiceTests
             FrontendSessionManager = _frontEndSessionManagerMock.Object,
             Logger = null!,
             FeatureManager = _featureManagerMock.Object,
-            HttpContextAccessor = _httpContextAccessorMock.Object,
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
             SnapshotPollingOptions = _snapshotPollingOptions,
         };
@@ -3415,7 +3246,6 @@ public class RegistrationApplicationServiceTests
             FrontendSessionManager = _frontEndSessionManagerMock.Object,
             Logger = _loggerMock.Object,
             FeatureManager = null!,
-            HttpContextAccessor = _httpContextAccessorMock.Object,
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
             SnapshotPollingOptions = _snapshotPollingOptions,
         };
@@ -3423,27 +3253,6 @@ public class RegistrationApplicationServiceTests
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
         ex.Message.Should().Be($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.FeatureManager)} cannot be null.");
     }
-
-    [Test]
-    public void Constructor_ShouldThrow_InvalidOperation_When_HttpContextAccessor_IsNull()
-    {
-        var deps = new RegistrationApplicationServiceDependencies
-        {
-            SubmissionService = _submissionServiceMock.Object,
-            PaymentCalculationService = _paymentCalculationServiceMock.Object,
-            RegistrationSessionManager = _sessionManagerMock.Object,
-            FrontendSessionManager = _frontEndSessionManagerMock.Object,
-            Logger = _loggerMock.Object,
-            FeatureManager = _featureManagerMock.Object,
-            HttpContextAccessor = null!,
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            SnapshotPollingOptions = _snapshotPollingOptions,
-        };
-
-        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
-        ex.Message.Should().Be($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.HttpContextAccessor)} cannot be null.");
-    }
-
     [Test]
     public void Constructor_Should_NotThrow_When_All_Dependencies_Are_Provided()
     {
@@ -3455,7 +3264,6 @@ public class RegistrationApplicationServiceTests
             FrontendSessionManager = _frontEndSessionManagerMock.Object,
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
-            HttpContextAccessor = _httpContextAccessorMock.Object,
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
             SnapshotPollingOptions = _snapshotPollingOptions,
         };
@@ -3556,7 +3364,6 @@ public class RegistrationApplicationServiceTests
             FrontendSessionManager = _frontEndSessionManagerMock.Object,
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
-            HttpContextAccessor = _httpContextAccessorMock.Object,
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
             SnapshotPollingOptions = options,
         };
