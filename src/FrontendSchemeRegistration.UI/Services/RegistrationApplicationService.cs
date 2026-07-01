@@ -7,21 +7,19 @@ using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
-using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Helpers;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
 using Microsoft.Extensions.Options;
-using Microsoft.FeatureManagement;
 
 namespace FrontendSchemeRegistration.UI.Services;
 
 using System.Collections.Immutable;
-using Application.Constants;
 using Application.DTOs.ComplianceScheme;
 using Application.Services;
-using Controllers;
+using Constants;
+using Microsoft.FeatureManagement;
 using RegistrationPeriods;
 using ViewModels.Shared;
 
@@ -33,7 +31,6 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     private readonly ISessionManager<FrontendSchemeRegistrationSession> frontEndSessionManager;
     private readonly ILogger<RegistrationApplicationService> logger;
     private readonly IFeatureManager featureManager;
-    private readonly IHttpContextAccessor httpContextAccessor;
     private readonly TimeProvider _timeProvider;
     private readonly IRegistrationPeriodProvider _registrationPeriodProvider;
     private readonly IOptions<RegistrationFeeSnapshotPollingOptions> snapshotPollingOptions;
@@ -54,9 +51,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         logger = dependencies.Logger
             ?? throw new InvalidOperationException($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(dependencies.Logger)} cannot be null.");
         featureManager = dependencies.FeatureManager
-            ?? throw new InvalidOperationException($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(dependencies.FeatureManager)} cannot be null.");
-        httpContextAccessor = dependencies.HttpContextAccessor
-            ?? throw new InvalidOperationException($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(dependencies.HttpContextAccessor)} cannot be null.");
+                         ?? throw new InvalidOperationException($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(dependencies.FeatureManager)} cannot be null.");
         _registrationPeriodProvider = dependencies.RegistrationPeriodProvider;
         snapshotPollingOptions = dependencies.SnapshotPollingOptions
             ?? throw new InvalidOperationException($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(dependencies.SnapshotPollingOptions)} cannot be null.");
@@ -235,72 +230,19 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         }
 
         var feeCalculationDetails = session.RegistrationFeeCalculationDetails[0];
-        var useV2Flag = await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeV2);
-
-        PaymentCalculationResponse? response;
-
-        if (useV2Flag)
+        var response = await paymentCalculationService.GetProducerRegistrationFees(new PaymentCalculationRequest
         {
-            var org = httpContextAccessor.HttpContext?.User.GetUserData()?.Organisations?.FirstOrDefault();
-            if (org?.Id is Guid extId &&
-                !string.IsNullOrWhiteSpace(org.OrganisationNumber) &&
-                int.TryParse(org.OrganisationNumber, out var payerId))
-            {
-                var v2 = new ProducerPaymentCalculationV2Request
-                {
-                    FileId = session.LastSubmittedFile.FileId!.Value,
-                    ExternalId = extId,
-                    InvoicePeriod = GetInvoicePeriodEnd(session),
-                    PayerTypeId = 1,
-                    PayerId = payerId,
-
-                    Regulator = session.RegulatorNation,
-                    ApplicationReferenceNumber = session.ApplicationReferenceNumber,
-                    IsLateFeeApplicable = session.IsLateFeeApplicable,
-                    IsProducerOnlineMarketplace = feeCalculationDetails.IsOnlineMarketplace,
-                    NoOfSubsidiariesOnlineMarketplace = feeCalculationDetails.NumberOfSubsidiariesBeingOnlineMarketPlace,
-                    NumberOfSubsidiaries = feeCalculationDetails.NumberOfSubsidiaries,
-                    ProducerType = feeCalculationDetails.OrganisationSize,
-                    SubmissionDate = GetSubmissionDateForFeeCalculation(session)
-                };
-
-                response = await paymentCalculationService.GetProducerRegistrationFees(v2);
-            }
-            else
-            {
-                var v1 = new PaymentCalculationRequest
-                {
-                    Regulator = session.RegulatorNation,
-                    ApplicationReferenceNumber = session.ApplicationReferenceNumber,
-                    IsLateFeeApplicable = session.IsLateFeeApplicable,
-                    IsProducerOnlineMarketplace = feeCalculationDetails.IsOnlineMarketplace,
-                    NoOfSubsidiariesOnlineMarketplace = feeCalculationDetails.NumberOfSubsidiariesBeingOnlineMarketPlace,
-                    NumberOfSubsidiaries = feeCalculationDetails.NumberOfSubsidiaries,
-                    ProducerType = feeCalculationDetails.OrganisationSize,
-                    SubmissionDate = GetSubmissionDateForFeeCalculation(session)
-                };
-
-                response = await paymentCalculationService.GetProducerRegistrationFees(v1);
-            }
-        }
-        else
-        {
-            var v1 = new PaymentCalculationRequest
-            {
-                Regulator = session.RegulatorNation,
-                ApplicationReferenceNumber = session.ApplicationReferenceNumber,
-                IsLateFeeApplicable = session.IsLateFeeApplicable,
-                IsProducerOnlineMarketplace = feeCalculationDetails.IsOnlineMarketplace,
-                IsClosedLoopRecycling = feeCalculationDetails.IsClosedLoopRecycling,
-                NoOfSubsidiariesOnlineMarketplace = feeCalculationDetails.NumberOfSubsidiariesBeingOnlineMarketPlace,
-                NoOfSubsidiariesClosedLoopRecycling = feeCalculationDetails.NumberOfSubsidiariesBeingClosedLoopRecycling,
-                NumberOfSubsidiaries = feeCalculationDetails.NumberOfSubsidiaries,
-                ProducerType = feeCalculationDetails.OrganisationSize,
-                SubmissionDate = GetSubmissionDateForFeeCalculation(session)
-            };
-
-            response = await paymentCalculationService.GetProducerRegistrationFees(v1);
-        }
+            Regulator = session.RegulatorNation,
+            ApplicationReferenceNumber = session.ApplicationReferenceNumber,
+            IsLateFeeApplicable = session.IsLateFeeApplicable,
+            IsProducerOnlineMarketplace = feeCalculationDetails.IsOnlineMarketplace,
+            IsClosedLoopRecycling = feeCalculationDetails.IsClosedLoopRecycling,
+            NoOfSubsidiariesOnlineMarketplace = feeCalculationDetails.NumberOfSubsidiariesBeingOnlineMarketPlace,
+            NoOfSubsidiariesClosedLoopRecycling = feeCalculationDetails.NumberOfSubsidiariesBeingClosedLoopRecycling,
+            NumberOfSubsidiaries = feeCalculationDetails.NumberOfSubsidiaries,
+            ProducerType = feeCalculationDetails.OrganisationSize,
+            SubmissionDate = GetSubmissionDateForFeeCalculation(session)
+        });
 
         if (response is null)
         {
@@ -348,83 +290,39 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         }
 
         var feeCalculationDetails = session.RegistrationFeeCalculationDetails;
-        var useV2 = await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeV2);
 
-        ComplianceSchemePaymentCalculationResponse? response;
-
-        if (useV2)
+        var complianceSchemeMembers = feeCalculationDetails.Select(c => new ComplianceSchemePaymentCalculationRequestMember
         {
-            var cs = session.SelectedComplianceScheme!;
-           
-            var v2 = new ComplianceSchemePaymentCalculationV2Request
-            {
-                FileId = session.LastSubmittedFile.FileId!.Value,
-                ExternalId = cs.Id,
-                InvoicePeriod = GetInvoicePeriodEnd(session),
-                PayerTypeId = 2,
-                PayerId = cs.RowNumber,
+            // Apply late fee to all producers if original submission was late or
+            // not a single submission and current submission is late
+            // if above two are not satisified that means file are submitted on time its new submission either due to queried
+            // check individual producer is new joiner so late fee applicable on producer level rather than file
+            IsLateFeeApplicable =
+                session.IsOriginalCsoSubmissionLate
+                || (session.FirstApplicationSubmittedEventCreatedDatetime is null && session.IsLateFeeApplicable)
+                || (session.IsLateFeeApplicable && c.IsNewJoiner),
+            IsOnlineMarketplace = c.IsOnlineMarketplace,
+            IsClosedLoopRecycling = c.IsClosedLoopRecycling,
+            MemberId = c.OrganisationId,
+            MemberType = c.OrganisationSize,
+            NoOfSubsidiariesOnlineMarketplace = c.NumberOfSubsidiariesBeingOnlineMarketPlace,
+            NoOfSubsidiariesClosedLoopRecycling = c.NumberOfSubsidiariesBeingClosedLoopRecycling,
+            NumberOfSubsidiaries = c.NumberOfSubsidiaries
+        }).ToList();
 
-                Regulator = session.RegulatorNation,
-                ApplicationReferenceNumber = session.ApplicationReferenceNumber,
-                SubmissionDate = GetSubmissionDateForFeeCalculation(session),
-                ComplianceSchemeMembers = feeCalculationDetails.Select(c => new ComplianceSchemePaymentCalculationRequestMember
-                {
-                    // Apply late fee to all producers if original submission was late or
-                    // not a single submission and current submission is late 
-                    // if above two are not satisified that means file are submitted on time its new submission either due to queried
-                    // check individual producer is new joiner so late fee applicable on producer level rather than file
-                    IsLateFeeApplicable =
-                        session.IsOriginalCsoSubmissionLate
-                        || (session.FirstApplicationSubmittedEventCreatedDatetime is null && session.IsLateFeeApplicable)
-                        || (session.IsLateFeeApplicable && c.IsNewJoiner),
-                    IsOnlineMarketplace = c.IsOnlineMarketplace,
-                    MemberId = c.OrganisationId,
-                    MemberType = c.OrganisationSize,
-                    NoOfSubsidiariesOnlineMarketplace = c.NumberOfSubsidiariesBeingOnlineMarketPlace,
-                    NumberOfSubsidiaries = c.NumberOfSubsidiaries
-                    
-                }).ToList()
-            };
+        // TODO Temporary logic to exclude registration fee for CSO small (2026)
+        // - currently a CSO registration with only Small Producer journey will incorrectly not be charged registration fee
+        // (it is assumed to have been charged for the Large Producer journey)
+        bool includeRegistrationFee = !(session.RegistrationJourney == RegistrationJourney.CsoSmallProducer);
 
-            response = await paymentCalculationService.GetComplianceSchemeRegistrationFees(v2);
-        }
-        else
+        var response = await paymentCalculationService.GetComplianceSchemeRegistrationFees(new ComplianceSchemePaymentCalculationRequest
         {
-            var complianceSchemeMembers = feeCalculationDetails.Select(c => new ComplianceSchemePaymentCalculationRequestMember
-            {
-                // Apply late fee to all producers if original submission was late or
-                // not a single submission and current submission is late 
-                // if above two are not satisified that means file are submitted on time its new submission either due to queried
-                // check individual producer is new joiner so late fee applicable on producer level rather than file
-                IsLateFeeApplicable =
-                    session.IsOriginalCsoSubmissionLate
-                    || (session.FirstApplicationSubmittedEventCreatedDatetime is null && session.IsLateFeeApplicable)
-                    || (session.IsLateFeeApplicable && c.IsNewJoiner),
-                IsOnlineMarketplace = c.IsOnlineMarketplace,
-                IsClosedLoopRecycling = c.IsClosedLoopRecycling,
-                MemberId = c.OrganisationId,
-                MemberType = c.OrganisationSize,
-                NoOfSubsidiariesOnlineMarketplace = c.NumberOfSubsidiariesBeingOnlineMarketPlace,
-                NoOfSubsidiariesClosedLoopRecycling = c.NumberOfSubsidiariesBeingClosedLoopRecycling,
-                NumberOfSubsidiaries = c.NumberOfSubsidiaries
-            }).ToList();
-
-            // TODO Temporary logic to exclude registration fee for CSO small (2026)
-            // - currently a CSO registration with only Small Producer journey will incorrectly not be charged registration fee
-            // (it is assumed to have been charged for the Large Producer journey)
-            bool includeRegistrationFee = !(session.RegistrationJourney == RegistrationJourney.CsoSmallProducer);
-
-            var v1 = new ComplianceSchemePaymentCalculationRequest
-            {
-                Regulator = session.RegulatorNation,
-                ApplicationReferenceNumber = session.ApplicationReferenceNumber,
-                SubmissionDate = GetSubmissionDateForFeeCalculation(session),
-                ComplianceSchemeMembers = complianceSchemeMembers,
-                IncludeRegistrationFee = includeRegistrationFee
-            };
-
-            response = await paymentCalculationService.GetComplianceSchemeRegistrationFees(v1);
-        }
+            Regulator = session.RegulatorNation,
+            ApplicationReferenceNumber = session.ApplicationReferenceNumber,
+            SubmissionDate = GetSubmissionDateForFeeCalculation(session),
+            ComplianceSchemeMembers = complianceSchemeMembers,
+            IncludeRegistrationFee = includeRegistrationFee
+        });
 
         if (response is null)
         {
@@ -778,7 +676,6 @@ public sealed class RegistrationApplicationServiceDependencies
     public required ISessionManager<FrontendSchemeRegistrationSession> FrontendSessionManager { get; init; }
     public required ILogger<RegistrationApplicationService> Logger { get; init; }
     public required IFeatureManager FeatureManager { get; init; }
-    public required IHttpContextAccessor HttpContextAccessor { get; init; }
     public required IRegistrationPeriodProvider RegistrationPeriodProvider { get; init; }
     public required IOptions<RegistrationFeeSnapshotPollingOptions> SnapshotPollingOptions { get; init; }
 }
