@@ -43,9 +43,11 @@
                     @Localizer["you_can"]<button id="printButton" class="govuk-link govuk-link--no-visited-state govuk-body-m js-show">@Localizer["print_or_save_as_PDF"]</button>
                 </p>
 
-                <div class="govuk-inset-text">
-                    <p class="govuk-body">@Localizer["it_may_take_an_hour"]</p>
-                </div>
+                <feature name="@FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService" negate="true">
+                    <div class="govuk-inset-text">
+                        <p class="govuk-body">@Localizer["it_may_take_an_hour"]</p>
+                    </div>
+                </feature>
 
                 <h3 class="govuk-heading-m">@Localizer["what_happens_next"]</h3>
                 <p class="govuk-body">@Localizer["you_still_need_to"]</p>

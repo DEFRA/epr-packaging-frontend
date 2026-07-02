@@ -34,4 +34,13 @@ public class PaymentCalculationServiceApiClient : IPaymentCalculationServiceApiC
 
         return response;
     }
+
+    public async Task<HttpResponseMessage> SendGetRequest(string endpoint)
+    {
+        var accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(_scopes);
+        _httpClient.AddHeaderAcceptJson();
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(Constants.Bearer, accessToken);
+
+        return await _httpClient.GetAsync(endpoint);
+    }
 }

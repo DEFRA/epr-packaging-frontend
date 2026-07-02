@@ -1,3 +1,4 @@
+using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.DTOs.PaymentCalculations;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -140,6 +141,30 @@ public class PaymentCalculationService(
         {
             logger.LogError(ex, "Failed to retrieve regulator's nation for {OrganisationId}", organisationId);
             return string.Empty;
+        }
+    }
+
+    public async Task<RegistrationFeeCalculationDetails[]?> GetRegistrationFeeCalculationDetails(Guid submissionId)
+    {
+        var endpoint = options.Value.Endpoints.RegistrationFeeCalculationDetailsEndpoint.Replace("{submissionId}", submissionId.ToString());
+
+        try
+        {
+            var result = await paymentCalculationServiceApiClient.SendGetRequest(endpoint);
+
+            if (result.StatusCode == HttpStatusCode.NotFound)
+            {
+                return null;
+            }
+
+            result.EnsureSuccessStatusCode();
+
+            return await result.Content.ReadFromJsonAsync<RegistrationFeeCalculationDetails[]>();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to retrieve registration fee calculation details for {SubmissionId}", submissionId);
+            return null;
         }
     }
 

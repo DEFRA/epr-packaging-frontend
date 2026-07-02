@@ -5,19 +5,31 @@
     ViewData["Title"] = Localizer["declaration"];
     var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer);
     var headingViewModel = new RegistrationHeadingViewModel(
-        Model.ShowRegistrationCaption, 
-        Model.RegistrationJourney, 
+        Model.ShowRegistrationCaption,
+        Model.RegistrationJourney,
         null,
         Localizer["declaration"],
         Model.RegistrationYear ?? 0);
+    var currentPagePath = ViewBag.CurrentPagePath;
+    var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
 }
 
 @await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
 
 <main class="govuk-main-wrapper" id="main-content" role="main">
     <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            @using (Html.BeginRouteForm("DeclarationDirectProducers", FormMethod.Post))
+        <div class="govuk-grid-column-two-thirds" id="declaration-fullname-wrapper">
+            @{
+                var formAttributes = new Dictionary<string, object> { ["id"] = "declaration-fullname-form" };
+                if (!string.IsNullOrEmpty(Model.FeePollingStatusUrl) && !string.IsNullOrEmpty(Model.FeePollingFallbackUrl))
+                {
+                    formAttributes["data-status-url"] = Model.FeePollingStatusUrl;
+                    formAttributes["data-fallback-url"] = Model.FeePollingFallbackUrl;
+                    formAttributes["data-interval-ms"] = Model.FeePollingIntervalMs;
+                    formAttributes["data-timeout-ms"] = Model.FeePollingTimeoutMs;
+                }
+            }
+            @using (Html.BeginRouteForm("DeclarationDirectProducers", FormMethod.Post, formAttributes))
             {
                 @Html.HiddenFor(model => model.SubmissionId)
                 @Html.HiddenFor(model => model.OrganisationDetailsFileId)
@@ -103,4 +115,18 @@
             }
         </div>
     </div>
+
+    @await Html.PartialAsync("Partials/_Spinner", new SpinnerViewModel($"{currentPagePath}", "SubmittingFile"))
 </main>
+
+@section Scripts
+{
+    <script src="~/js/loadingspinner.js"></script>
+    <script nonce="@scriptNonce">
+        document.addEventListener("DOMContentLoaded", InitSpinner("declaration-fullname-wrapper", "declaration-fullname-form"));
+    </script>
+    @if (!string.IsNullOrEmpty(Model.FeePollingStatusUrl))
+    {
+        <script src="~/js/fee-status-refresh.js"></script>
+    }
+}
