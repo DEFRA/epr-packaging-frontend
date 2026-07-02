@@ -24,7 +24,7 @@ The first profile is `csoc`:
 dotnet run --project tools/translations -- export --profile csoc
 ```
 
-By default this writes one workbook per CSoC page to:
+By default this writes one workbook per CSoC page with translation entries to:
 
 ```text
 translations/welsh-translations/csoc
@@ -38,7 +38,12 @@ The current CSoC profile covers:
 
 - `/report-data/home-compliance-scheme` via `ComplianceSchemeLandingController`, where `FeatureManagement:ShowPrn` and `FeatureManagement:CsocEnabled` allow the CSoC bullet and paragraph in the PRN tile.
 - `/report-data/manage-your-recycling-obligations` via `PrnsObligationController`, where `FeatureManagement:ShowPrn` and `FeatureManagement:CsocEnabled` allow the CSoC status card.
+- `/report-data/home-self-managed` via `FrontendSchemeRegistrationController`, where `FeatureManagement:ShowPrn` and `FeatureManagement:CsocEnabled` allow the same shared CSoC bullet and paragraph in the PRN tile.
 - `Csoc:WasteObligationsBaseAddress`, which is used by `CsocHelper` to build statement and certificate links.
+
+Shared content is exported only once. If a profiled page only reuses entries
+already included by an earlier page, export logs that there is nothing to
+include for that page and does not generate an empty workbook.
 
 To import translated workbooks:
 
@@ -63,7 +68,7 @@ Add or update JSON under `tools/translations/profiles`. A page entry should incl
 - `appSettings`: settings that influence the rendered content or links.
 - `resources`: source `.en.resx` files plus optional `keys` or `keyPrefixes`.
 
-If `keys` and `keyPrefixes` are omitted for a resource, all string entries from that RESX file are exported. Shared content is exported only once; later pages get a translator note naming the workbook that owns it.
+If `keys` and `keyPrefixes` are omitted for a resource, all string entries from that RESX file are exported. Shared content is exported only once; later pages get a translator note naming the workbook that owns it. If no rows remain for a later page, no workbook is generated for that page.
 
 ## Refreshing a profile after UI changes
 
@@ -72,57 +77,73 @@ profile is the source of truth for which pages and RESX files belong in a
 translation export. When CSoC or another profiled journey changes, re-audit the
 profile before exporting.
 
-For the `csoc` profile:
+For the `csoc` profile, use discovery paths rather than only checking the
+files currently named in the profile:
 
 1. Find current CSoC entry points:
 
    ```bash
-   rg -n "Csoc|CSoC|CsocEnabled|CsocViewModel|Partials/Csoc" src/FrontendSchemeRegistration.UI -g '!bin/**' -g '!obj/**' -g '!node_modules/**'
+   rg -n "Csoc|CSoC|CsocEnabled|CsocViewModel|Partials/Csoc|ComplianceDeclarationStatus|certificate of compliance|statement of compliance" src/FrontendSchemeRegistration.UI src/FrontendSchemeRegistration.Application -g '!bin/**' -g '!obj/**' -g '!node_modules/**'
    ```
 
-2. Trace each matching controller endpoint to its Razor view and route. For
-   CSoC this currently starts with:
+2. For each hit, trace from the controller action or helper back to the route,
+   feature gates and app settings. Check route constants in
+   `src/FrontendSchemeRegistration.Application/Constants/PagePaths.cs`, action
+   attributes such as `[Route(...)]` and `[FeatureGate(...)]`, and any calls to
+   `CsocHelper.CreateViewModel` or `IFeatureManager.IsEnabledAsync`.
+
+3. Trace each matching controller endpoint to its Razor view. For CSoC this
+   currently starts with:
 
    - `ComplianceSchemeLandingController` / `/report-data/home-compliance-scheme`
+   - `FrontendSchemeRegistrationController` / `/report-data/home-self-managed`
    - `PrnsObligationController` / `/report-data/manage-your-recycling-obligations`
 
-3. In those views, follow every CSoC partial or component call, such as:
+4. In those views, follow every CSoC partial, view component or localizer call,
+   such as:
 
    - `Partials/Csoc/_LandingBullet`
    - `Partials/Csoc/_LandingParagraph`
    - `Partials/Csoc/_ObligationsHome`
 
-4. For each view or partial, find the matching English RESX file under
-   `src/FrontendSchemeRegistration.UI/Resources`. CSoC partial resources are
-   currently under:
+5. For each view or partial, find the matching English RESX file under
+   `src/FrontendSchemeRegistration.UI/Resources`. Use the MVC resource path
+   convention first, then confirm by searching for the resource keys used by
+   the Razor file. Shared CSoC partial resources are currently under:
 
    ```text
    src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Csoc
    ```
 
-5. Add any new `.en.resx` file to `tools/translations/profiles/csoc.json`.
+6. Add any new `.en.resx` file to `tools/translations/profiles/csoc.json`.
    If only some entries in the file are CSoC-specific, add `keys` or
    `keyPrefixes` to the resource entry. If the whole file belongs to the page,
    omit both and the exporter will include every string entry.
 
-6. Record the feature flags and app settings that control visibility. For CSoC,
+7. Keep a page in the profile even if it only renders shared CSoC resources
+   already owned by another page. The exporter will log that there is nothing
+   to include and skip the empty workbook, while the profile still records that
+   the route was audited.
+
+8. Record the feature flags and app settings that control visibility. For CSoC,
    check `FeatureManagement:CsocEnabled`, `FeatureManagement:ShowPrn`, and
    `Csoc:WasteObligationsBaseAddress`.
 
-7. Export to a scratch directory and inspect the row counts:
+9. Export to a scratch directory and inspect the row counts and skipped-page
+   logs:
 
    ```bash
    dotnet run --project tools/translations -- export --profile csoc --output /tmp/epr-packaging-csoc-translations
    ```
 
-8. Import from the scratch export to prove the hidden translation keys still map
+10. Import from the scratch export to prove the hidden translation keys still map
    back to real source and Welsh RESX files:
 
    ```bash
    dotnet run --project tools/translations -- import --profile csoc --input /tmp/epr-packaging-csoc-translations
    ```
 
-9. Once the profile is correct, regenerate the default workbooks:
+11. Once the profile is correct, regenerate the default workbooks:
 
    ```bash
    dotnet run --project tools/translations -- export --profile csoc

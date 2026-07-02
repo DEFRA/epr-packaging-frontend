@@ -17,11 +17,26 @@ internal sealed class ExportService
         Directory.CreateDirectory(resolvedOutputPath);
 
         var groups = BuildPageTranslationGroups(projectRoot, profile);
+        var createdWorkbookCount = 0;
+        var skippedPageCount = 0;
         var totalRows = 0;
 
         foreach (var group in groups)
         {
             var workbookPath = Path.Combine(resolvedOutputPath, group.FileName);
+
+            if (group.Rows.Count == 0)
+            {
+                if (File.Exists(workbookPath))
+                {
+                    File.Delete(workbookPath);
+                }
+
+                skippedPageCount++;
+                Console.WriteLine($"Skipped {group.Id}: no translation entries to include in this page; no workbook generated.");
+                continue;
+            }
+
             var instructions = DefaultTranslatorInstructions
                 .Concat(profile.TranslatorInstructions)
                 .Concat(group.TranslatorNotes)
@@ -29,11 +44,13 @@ internal sealed class ExportService
                 .ToArray();
 
             await XlsxWorkbookWriter.WriteAsync(workbookPath, group, instructions);
+            createdWorkbookCount++;
             totalRows += group.Rows.Count;
             Console.WriteLine($"Created {workbookPath} ({group.Rows.Count} row{Plural(group.Rows.Count)})");
         }
 
-        Console.WriteLine($"Created {groups.Count} translation workbook{Plural(groups.Count)}");
+        Console.WriteLine($"Created {createdWorkbookCount} translation workbook{Plural(createdWorkbookCount)}");
+        Console.WriteLine($"Skipped {skippedPageCount} page{Plural(skippedPageCount)} with no translation entries");
         Console.WriteLine($"Included {totalRows} translation row{Plural(totalRows)}");
         return 0;
     }
