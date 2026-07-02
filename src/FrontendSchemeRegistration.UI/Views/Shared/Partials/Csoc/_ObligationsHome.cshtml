@@ -32,7 +32,11 @@
             <div class="govuk-card-body">
                 <h2 class="govuk-heading-m">@Localizer[$"{statusKey}_heading_{actorKey}"]</h2>
                 <p class="govuk-body">@Localizer[$"{statusKey}_paragraph_{actorKey}", regulator.Value, Model.ComplianceYear, Model.SubmissionDeadline]</p>
-                @if (Model.IsApprovedUser && Model.WasteObligationsBaseAddress is not null)
+                @{
+                    var showActionButton = Model.WasteObligationsBaseAddress is not null
+                        && (statusKey == "submitted" || Model.IsApprovedUser);
+                }
+                @if (showActionButton)
                 {
                     <div class="govuk-button-group">
                         <a class="govuk-button govuk-button--secondary" href="@Model.WasteObligationsBaseAddress"
