@@ -33,15 +33,24 @@
                 <h2 class="govuk-heading-m">@Localizer[$"{statusKey}_heading_{actorKey}"]</h2>
                 <p class="govuk-body">@Localizer[$"{statusKey}_paragraph_{actorKey}", regulator.Value, Model.ComplianceYear, Model.SubmissionDeadline]</p>
                 @{
-                    var showActionButton = Model.WasteObligationsBaseAddress is not null
+                    var showAction = Model.WasteObligationsBaseAddress is not null
                         && (statusKey == "submitted" || Model.IsApprovedUser);
                 }
-                @if (showActionButton)
+                @if (showAction)
                 {
-                    <div class="govuk-button-group">
-                        <a class="govuk-button govuk-button--secondary" href="@Model.WasteObligationsBaseAddress"
-                           role="button" data-module="govuk-button">@Localizer[$"{statusKey}_button_{actorKey}"]</a>
-                    </div>
+                    if (statusKey == "submitted")
+                    {
+                        <p class="govuk-body">
+                            <a class="govuk-link govuk-link--no-visited-state" href="@Model.WasteObligationsBaseAddress">@Localizer[$"{statusKey}_button_{actorKey}"]</a>
+                        </p>
+                    }
+                    else
+                    {
+                        <div class="govuk-button-group">
+                            <a class="govuk-button govuk-button--secondary" href="@Model.WasteObligationsBaseAddress"
+                               role="button" data-module="govuk-button">@Localizer[$"{statusKey}_button_{actorKey}"]</a>
+                        </div>
+                    }
                 }
             </div>
         </div>

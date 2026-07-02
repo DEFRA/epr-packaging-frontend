@@ -111,7 +111,7 @@ public class CsocTests
     }
 
     [Test]
-    public async Task WhenDeclarationSubmitted_BasicUser_ShouldShowViewButton()
+    public async Task WhenDeclarationSubmitted_BasicUser_ShouldShowViewLink()
     {
         SetUp(
             csocEnabled: true,
@@ -127,7 +127,8 @@ public class CsocTests
 
         var content = await response.Content.ReadAsStringAsync();
         content.Should().Contain("View your certificate of compliance");
-        content.Should().Contain("govuk-button");
+        content.Should().MatchRegex(
+            """<a class="govuk-link govuk-link--no-visited-state" href="[^"]+">View your certificate of compliance</a>""");
     }
 
     [Test]
