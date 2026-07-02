@@ -11,7 +11,7 @@ dotnet test tools/translations/translations.slnx
 
 The solution lives in `tools/translations`. The CLI project is in
 `tools/translations/cli/cli.csproj`, and the test project is in
-`tools/translations/tests/translations.Tests.csproj`.
+`tools/translations/Translations.UnitTests/Translations.UnitTests.csproj`.
 
 The profile is the page matrix. It maps each workbook to a route, Razor view, feature flags, app settings, and the RESX files that render the content. Each workbook row has a hidden translation key in the format:
 

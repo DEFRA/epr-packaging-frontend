@@ -4,7 +4,7 @@ using Translations.Configuration;
 using Translations.Models;
 using Translations.Services;
 
-namespace Translations.Tests;
+namespace Translations.UnitTests;
 
 [TestFixture]
 [NonParallelizable]
