@@ -35,11 +35,11 @@ internal static class ResxResourceFile
             ?? new Dictionary<string, string>(StringComparer.Ordinal);
     }
 
-    public static bool UpdateValues(string path, IReadOnlyDictionary<string, string> updates)
+    public static int UpdateValues(string path, IReadOnlyDictionary<string, string> updates)
     {
         if (updates.Count == 0)
         {
-            return false;
+            return 0;
         }
 
         var document = File.Exists(path)
@@ -47,7 +47,7 @@ internal static class ResxResourceFile
             : CreateEmptyDocument();
 
         var root = document.Root ?? throw new InvalidOperationException($"RESX file \"{path}\" does not contain a root element.");
-        var changed = false;
+        var changedValueCount = 0;
 
         foreach (var (key, value) in updates.OrderBy(update => update.Key, StringComparer.Ordinal))
         {
@@ -63,7 +63,7 @@ internal static class ResxResourceFile
                     new XAttribute(XNamespace.Xml + "space", "preserve"),
                     new XElement("value", value));
                 root.Add(dataElement);
-                changed = true;
+                changedValueCount++;
                 continue;
             }
 
@@ -71,31 +71,31 @@ internal static class ResxResourceFile
             if (valueElement is null)
             {
                 dataElement.Add(new XElement("value", value));
-                changed = true;
+                changedValueCount++;
                 continue;
             }
 
             if (!string.Equals(valueElement.Value, value, StringComparison.Ordinal))
             {
                 valueElement.Value = value;
-                changed = true;
+                changedValueCount++;
             }
         }
 
-        if (!changed)
+        if (changedValueCount == 0)
         {
-            return false;
+            return 0;
         }
 
         Directory.CreateDirectory(Path.GetDirectoryName(path) ?? ".");
         using var writer = XmlWriter.Create(path, new XmlWriterSettings
         {
-            Encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
+            Encoding = GetOutputEncoding(path),
             Indent = true,
             NewLineChars = "\n"
         });
         document.Save(writer);
-        return true;
+        return changedValueCount;
     }
 
     private static bool IsStringDataElement(XElement element)
@@ -104,6 +104,23 @@ internal static class ResxResourceFile
                element.Attribute("type") is null &&
                element.Attribute("mimetype") is null &&
                element.Element("value") is not null;
+    }
+
+    private static Encoding GetOutputEncoding(string path)
+    {
+        return File.Exists(path) && HasUtf8ByteOrderMark(path)
+            ? new UTF8Encoding(encoderShouldEmitUTF8Identifier: true)
+            : new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+    }
+
+    private static bool HasUtf8ByteOrderMark(string path)
+    {
+        Span<byte> buffer = stackalloc byte[3];
+        using var stream = File.OpenRead(path);
+        return stream.Read(buffer) == 3 &&
+               buffer[0] == 0xEF &&
+               buffer[1] == 0xBB &&
+               buffer[2] == 0xBF;
     }
 
     private static XDocument CreateEmptyDocument()

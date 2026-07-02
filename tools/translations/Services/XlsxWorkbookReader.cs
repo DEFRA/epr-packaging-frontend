@@ -22,7 +22,7 @@ internal static class XlsxWorkbookReader
         return rows
             .Where(row => row.RowNumber > header.RowNumber)
             .Select(row => new TranslatedWorkbookRow(
-                row.Cells.GetValueOrDefault(header.TranslationKeyColumn) ?? string.Empty,
+                (row.Cells.GetValueOrDefault(header.TranslationKeyColumn) ?? string.Empty).Trim(),
                 row.Cells.GetValueOrDefault(header.WelshColumn) ?? string.Empty))
             .Where(row => !string.IsNullOrWhiteSpace(row.TranslationKey))
             .ToArray();
@@ -114,8 +114,8 @@ internal static class XlsxWorkbookReader
     {
         foreach (var row in rows)
         {
-            var translationKeyColumn = row.Cells.FirstOrDefault(cell => cell.Value == "Translation key").Key;
-            var welshColumn = row.Cells.FirstOrDefault(cell => cell.Value == "Welsh").Key;
+            var translationKeyColumn = row.Cells.FirstOrDefault(cell => cell.Value.Trim() == "Translation key").Key;
+            var welshColumn = row.Cells.FirstOrDefault(cell => cell.Value.Trim() == "Welsh").Key;
 
             if (translationKeyColumn != 0 && welshColumn != 0)
             {
@@ -136,7 +136,6 @@ internal static class XlsxWorkbookReader
                 .Element(SpreadsheetNamespace + "is")?
                 .Descendants(SpreadsheetNamespace + "t")
                 .Aggregate(string.Empty, (current, text) => current + text.Value)
-                .Trim()
                 ?? string.Empty;
         }
 
@@ -145,11 +144,11 @@ internal static class XlsxWorkbookReader
         if (cellType == "s" && int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var sharedStringIndex))
         {
             return sharedStringIndex >= 0 && sharedStringIndex < sharedStrings.Count
-                ? sharedStrings[sharedStringIndex].Trim()
+                ? sharedStrings[sharedStringIndex]
                 : string.Empty;
         }
 
-        return value.Trim();
+        return value;
     }
 
     private static string ReadSharedStringItem(XElement item)

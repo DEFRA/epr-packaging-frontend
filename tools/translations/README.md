@@ -30,6 +30,10 @@ By default this writes one workbook per CSoC page to:
 translations/welsh-translations/csoc
 ```
 
+Export fails if a selected English RESX value starts or ends with whitespace.
+Move spacing into the Razor view or layout instead of preserving it in
+translator-owned strings.
+
 The current CSoC profile covers:
 
 - `/report-data/home-compliance-scheme` via `ComplianceSchemeLandingController`, where `FeatureManagement:ShowPrn` and `FeatureManagement:CsocEnabled` allow the CSoC bullet and paragraph in the PRN tile.
@@ -43,6 +47,11 @@ dotnet run --project tools/translations -- import --profile csoc
 ```
 
 Blank Welsh cells preserve the existing Welsh RESX value. Conflicting non-blank translations for the same hidden translation key fail the import.
+
+Import also validates that translated values preserve source placeholders and
+markup, and that translated values do not start or end with whitespace. Use
+decoded tags such as `<strong>` in workbooks, not RESX/XML entities such as
+`&lt;strong&gt;`; the import process writes the correct RESX encoding.
 
 ## Adding profiles or pages
 

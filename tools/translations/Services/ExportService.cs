@@ -42,6 +42,7 @@ internal sealed class ExportService
     {
         var owners = new Dictionary<string, PageProfile>(StringComparer.OrdinalIgnoreCase);
         var groups = new List<PageTranslationGroup>();
+        var invalidEnglishValues = new SortedSet<string>(StringComparer.Ordinal);
 
         foreach (var page in profile.Pages)
         {
@@ -59,6 +60,7 @@ internal sealed class ExportService
                 var sourceEntries = ResxResourceFile.Read(sourceResourceFullPath);
                 var targetEntries = ResxResourceFile.ReadIfExists(targetResourceFullPath);
                 var selectedKeys = SelectKeys(sourceEntries, resource).ToArray();
+                AddInvalidExportValues(invalidEnglishValues, sourceResourcePath, sourceEntries, selectedKeys);
 
                 foreach (var key in selectedKeys)
                 {
@@ -106,6 +108,12 @@ internal sealed class ExportService
                 rows));
         }
 
+        if (invalidEnglishValues.Count > 0)
+        {
+            throw new InvalidOperationException(
+                $"English translation values must not include leading or trailing whitespace. Move spacing into the layout before exporting translations:{Environment.NewLine}- {string.Join($"{Environment.NewLine}- ", invalidEnglishValues)}");
+        }
+
         return groups;
     }
 
@@ -134,6 +142,22 @@ internal sealed class ExportService
         }
 
         return entries.Keys.Where(selected.Contains);
+    }
+
+    private static void AddInvalidExportValues(
+        ISet<string> invalidEnglishValues,
+        string sourceResourcePath,
+        IReadOnlyDictionary<string, string> sourceEntries,
+        IEnumerable<string> selectedKeys)
+    {
+        foreach (var key in selectedKeys)
+        {
+            var value = sourceEntries[key];
+            if (!string.Equals(value.Trim(), value, StringComparison.Ordinal))
+            {
+                invalidEnglishValues.Add($"{sourceResourcePath}::{key}");
+            }
+        }
     }
 
     private static string BuildContext(PageProfile page, ResourceSelection resource)

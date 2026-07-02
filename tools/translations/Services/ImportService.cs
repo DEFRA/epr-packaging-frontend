@@ -15,17 +15,21 @@ internal sealed class ImportService
 
         var updatesByTargetFile = BuildUpdatesByTargetFile(projectRoot, profile, nonBlankRows);
         var updatedFileCount = 0;
+        var importedValueCount = 0;
 
         foreach (var (targetFile, updates) in updatesByTargetFile.OrderBy(item => item.Key, StringComparer.OrdinalIgnoreCase))
         {
-            if (ResxResourceFile.UpdateValues(targetFile, updates))
+            var changedValueCount = ResxResourceFile.UpdateValues(targetFile, updates);
+            if (changedValueCount > 0)
             {
                 updatedFileCount++;
-                Console.WriteLine($"Updated {targetFile} ({updates.Count} value{Plural(updates.Count)})");
+                importedValueCount += changedValueCount;
+                Console.WriteLine($"Updated {targetFile} ({changedValueCount} value{Plural(changedValueCount)})");
             }
         }
 
-        Console.WriteLine($"Imported {nonBlankRows.Length} translated value{Plural(nonBlankRows.Length)}");
+        Console.WriteLine($"Read {nonBlankRows.Length} translated value{Plural(nonBlankRows.Length)} from workbook input");
+        Console.WriteLine($"Imported {importedValueCount} changed value{Plural(importedValueCount)}");
         Console.WriteLine($"Updated {updatedFileCount} resource file{Plural(updatedFileCount)}");
         return 0;
     }
@@ -68,6 +72,7 @@ internal sealed class ImportService
         IReadOnlyList<TranslatedWorkbookRow> translatedRows)
     {
         var updatesByTargetFile = new Dictionary<string, Dictionary<string, string>>(StringComparer.OrdinalIgnoreCase);
+        var validationErrors = new List<string>();
 
         foreach (var row in translatedRows)
         {
@@ -86,6 +91,8 @@ internal sealed class ImportService
                 throw new InvalidOperationException($"Source RESX file \"{sourceResourcePath}\" does not contain key \"{resourceKey.Key}\".");
             }
 
+            validationErrors.AddRange(TranslationValueValidator.Validate(row.TranslationKey, sourceEntries[resourceKey.Key], row.Welsh));
+
             var targetResourcePath = PathHelpers.ToTargetCulturePath(sourceResourcePath, profile.SourceCulture, profile.TargetCulture);
             var targetResourceFullPath = PathHelpers.ResolvePath(projectRoot, targetResourcePath);
 
@@ -96,6 +103,12 @@ internal sealed class ImportService
             }
 
             updates[resourceKey.Key] = row.Welsh;
+        }
+
+        if (validationErrors.Count > 0)
+        {
+            throw new InvalidOperationException(
+                $"Translation import validation failed:{Environment.NewLine}- {string.Join($"{Environment.NewLine}- ", validationErrors)}");
         }
 
         return updatesByTargetFile;
