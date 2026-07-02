@@ -111,6 +111,27 @@ public class CsocTests
     }
 
     [Test]
+    public async Task WhenDeclarationSubmitted_BasicUser_ShouldShowViewLink()
+    {
+        SetUp(
+            csocEnabled: true,
+            obligationData: WebApiOptions.ObligationDataType.Mixed,
+            complianceDeclarationStatus: WebApiOptions.ComplianceDeclarationStatusType.Submitted);
+        await Context.Client.AuthenticateDefaultUser();
+
+        var sessionStore = Context.GetSessionStore();
+        SetSession(sessionStore, ServiceRoleConstants.Basic);
+
+        var response = await Context.Client.GetAsync("/report-data/manage-your-recycling-obligations");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        content.Should().Contain("View your certificate of compliance");
+        content.Should().MatchRegex(
+            """<a class="govuk-link govuk-link--no-visited-state" href="[^"]+">View your certificate of compliance</a>""");
+    }
+
+    [Test]
     public async Task WhenDeclarationCancelled_ShouldShowCancelledTileHeading()
     {
         SetUp(
