@@ -188,8 +188,7 @@ public static class ServiceProviderExtension
             Logger = sp.GetRequiredService<ILogger<RegistrationApplicationService>>(),
             FeatureManager = sp.GetRequiredService<IFeatureManager>(),
             HttpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>(),
-            RegistrationPeriodProvider = sp.GetRequiredService<IRegistrationPeriodProvider>(),
-            SnapshotPollingOptions = sp.GetRequiredService<IOptions<RegistrationFeeSnapshotPollingOptions>>()
+            RegistrationPeriodProvider = sp.GetRequiredService<IRegistrationPeriodProvider>()
         });
         services.AddScoped<IRegistrationApplicationService, RegistrationApplicationService>();
         services.AddSingleton<IPatchService, PatchService>();

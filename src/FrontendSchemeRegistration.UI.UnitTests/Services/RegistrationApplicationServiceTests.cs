@@ -43,7 +43,6 @@ public class RegistrationApplicationServiceTests
     private Mock<IFeatureManager> _featureManagerMock;
     private Mock<IHttpContextAccessor> _httpContextAccessorMock;
     private Mock<IRegistrationPeriodProvider> _mockRegistrationPeriodProvider;
-    private IOptions<RegistrationFeeSnapshotPollingOptions> _snapshotPollingOptions;
     private FakeTimeProvider _dateTimeProvider;
     private const int RegistrationYear = 2026;
 
@@ -64,7 +63,6 @@ public class RegistrationApplicationServiceTests
         _featureManagerMock = new Mock<IFeatureManager>();
         _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
         _mockRegistrationPeriodProvider = new Mock<IRegistrationPeriodProvider>();
-        _snapshotPollingOptions = Options.Create(new RegistrationFeeSnapshotPollingOptions());
 
         _fixture = new Fixture();
 
@@ -78,7 +76,6 @@ public class RegistrationApplicationServiceTests
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            SnapshotPollingOptions = _snapshotPollingOptions,
         };
 
         _service = new RegistrationApplicationService(deps, _dateTimeProvider);
@@ -3316,7 +3313,6 @@ public class RegistrationApplicationServiceTests
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            SnapshotPollingOptions = _snapshotPollingOptions,
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -3337,7 +3333,6 @@ public class RegistrationApplicationServiceTests
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            SnapshotPollingOptions = _snapshotPollingOptions,
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -3357,7 +3352,6 @@ public class RegistrationApplicationServiceTests
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            SnapshotPollingOptions = _snapshotPollingOptions,
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -3377,7 +3371,6 @@ public class RegistrationApplicationServiceTests
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            SnapshotPollingOptions = _snapshotPollingOptions,
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -3397,7 +3390,6 @@ public class RegistrationApplicationServiceTests
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            SnapshotPollingOptions = _snapshotPollingOptions,
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -3417,7 +3409,6 @@ public class RegistrationApplicationServiceTests
             FeatureManager = null!,
             HttpContextAccessor = _httpContextAccessorMock.Object,
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            SnapshotPollingOptions = _snapshotPollingOptions,
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -3437,7 +3428,6 @@ public class RegistrationApplicationServiceTests
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = null!,
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            SnapshotPollingOptions = _snapshotPollingOptions,
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -3457,14 +3447,13 @@ public class RegistrationApplicationServiceTests
             FeatureManager = _featureManagerMock.Object,
             HttpContextAccessor = _httpContextAccessorMock.Object,
             RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            SnapshotPollingOptions = _snapshotPollingOptions,
         };
 
         Assert.DoesNotThrow(() => new RegistrationApplicationService(deps, _dateTimeProvider));
     }
 
     [Test]
-    public async Task WaitForRegistrationFeeSnapshotAsync_SnapshotImmediatelyAvailable_PopulatesSessionAndReturnsTrue()
+    public async Task TryPopulateRegistrationFeeSnapshotAsync_SnapshotAvailable_PopulatesSessionAndReturnsTrue()
     {
         // Arrange
         var submissionId = Guid.NewGuid();
@@ -3476,10 +3465,8 @@ public class RegistrationApplicationServiceTests
             .Setup(s => s.GetRegistrationFeeCalculationDetails(submissionId))
             .ReturnsAsync(snapshot);
 
-        var service = CreateServiceWithPollingOptions(timeoutSeconds: 10, intervalSeconds: 0);
-
         // Act
-        var result = await service.WaitForRegistrationFeeSnapshotAsync(_httpSession, submissionId, CancellationToken.None);
+        var result = await _service.TryPopulateRegistrationFeeSnapshotAsync(_httpSession, submissionId, CancellationToken.None);
 
         // Assert
         result.Should().BeTrue();
@@ -3488,43 +3475,36 @@ public class RegistrationApplicationServiceTests
     }
 
     [Test]
-    public async Task WaitForRegistrationFeeSnapshotAsync_TimeoutImmediate_ReturnsFalseAndDoesNotPoll()
+    public async Task TryPopulateRegistrationFeeSnapshotAsync_SnapshotNull_ReturnsFalseAndLeavesSessionUntouched()
     {
-        // Arrange — TimeoutSeconds=0 makes deadline = now; the while-check fails on entry
+        // Arrange
         var submissionId = Guid.NewGuid();
-        var service = CreateServiceWithPollingOptions(timeoutSeconds: 0, intervalSeconds: 0);
+        _paymentCalculationServiceMock
+            .Setup(s => s.GetRegistrationFeeCalculationDetails(submissionId))
+            .ReturnsAsync((RegistrationFeeCalculationDetails[]?)null);
 
         // Act
-        var result = await service.WaitForRegistrationFeeSnapshotAsync(_httpSession, submissionId, CancellationToken.None);
+        var result = await _service.TryPopulateRegistrationFeeSnapshotAsync(_httpSession, submissionId, CancellationToken.None);
 
         // Assert
         result.Should().BeFalse();
-        _paymentCalculationServiceMock.Verify(s => s.GetRegistrationFeeCalculationDetails(It.IsAny<Guid>()), Times.Never);
+        _sessionManagerMock.Verify(sm => sm.SaveSessionAsync(_httpSession, It.IsAny<RegistrationApplicationSession>()), Times.Never);
     }
 
     [Test]
-    public async Task WaitForRegistrationFeeSnapshotAsync_CancellationDuringDelay_ReturnsFalse()
+    public void TryPopulateRegistrationFeeSnapshotAsync_CancellationRequested_Throws()
     {
-        // Arrange — first poll returns null AND cancels the token; the subsequent
-        // Task.Delay(non-zero, alreadyCancelledToken) throws TaskCanceledException immediately.
+        // Arrange
         var submissionId = Guid.NewGuid();
         using var cts = new CancellationTokenSource();
-        _paymentCalculationServiceMock
-            .Setup(s => s.GetRegistrationFeeCalculationDetails(submissionId))
-            .ReturnsAsync(() =>
-            {
-                cts.Cancel();
-                return (RegistrationFeeCalculationDetails[]?)null;
-            });
-
-        var service = CreateServiceWithPollingOptions(timeoutSeconds: 60, intervalSeconds: 10);
+        cts.Cancel();
 
         // Act
-        var result = await service.WaitForRegistrationFeeSnapshotAsync(_httpSession, submissionId, cts.Token);
+        Func<Task> act = () => _service.TryPopulateRegistrationFeeSnapshotAsync(_httpSession, submissionId, cts.Token);
 
         // Assert
-        result.Should().BeFalse();
-        _paymentCalculationServiceMock.Verify(s => s.GetRegistrationFeeCalculationDetails(submissionId), Times.Once);
+        act.Should().ThrowAsync<OperationCanceledException>();
+        _paymentCalculationServiceMock.Verify(s => s.GetRegistrationFeeCalculationDetails(It.IsAny<Guid>()), Times.Never);
     }
 
     private RegistrationWindow CreateRegistrationWindow(
@@ -3539,28 +3519,6 @@ public class RegistrationApplicationServiceTests
         var closing = closingDateOffset ?? new DateTime(RegistrationYear, 8, 1);
         return new RegistrationWindow(_dateTimeProvider, windowType, registrationYear.GetValueOrDefault(RegistrationYear),
                 opening, deadline, closing);
-    }
-
-    private RegistrationApplicationService CreateServiceWithPollingOptions(int timeoutSeconds, int intervalSeconds)
-    {
-        var options = Options.Create(new RegistrationFeeSnapshotPollingOptions
-        {
-            TimeoutSeconds = timeoutSeconds,
-            IntervalSeconds = intervalSeconds,
-        });
-        var deps = new RegistrationApplicationServiceDependencies
-        {
-            SubmissionService = _submissionServiceMock.Object,
-            PaymentCalculationService = _paymentCalculationServiceMock.Object,
-            RegistrationSessionManager = _sessionManagerMock.Object,
-            FrontendSessionManager = _frontEndSessionManagerMock.Object,
-            Logger = _loggerMock.Object,
-            FeatureManager = _featureManagerMock.Object,
-            HttpContextAccessor = _httpContextAccessorMock.Object,
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            SnapshotPollingOptions = options,
-        };
-        return new RegistrationApplicationService(deps, _dateTimeProvider);
     }
 
 }

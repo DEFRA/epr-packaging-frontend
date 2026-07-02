@@ -36,7 +36,6 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     private readonly IHttpContextAccessor httpContextAccessor;
     private readonly TimeProvider _timeProvider;
     private readonly IRegistrationPeriodProvider _registrationPeriodProvider;
-    private readonly IOptions<RegistrationFeeSnapshotPollingOptions> snapshotPollingOptions;
 
     public RegistrationApplicationService(RegistrationApplicationServiceDependencies dependencies, TimeProvider timeProvider)
     {
@@ -58,8 +57,6 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         httpContextAccessor = dependencies.HttpContextAccessor
             ?? throw new InvalidOperationException($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(dependencies.HttpContextAccessor)} cannot be null.");
         _registrationPeriodProvider = dependencies.RegistrationPeriodProvider;
-        snapshotPollingOptions = dependencies.SnapshotPollingOptions
-            ?? throw new InvalidOperationException($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(dependencies.SnapshotPollingOptions)} cannot be null.");
     }
     private async Task TryHydrateRegistrationFeeFromSnapshot(RegistrationApplicationSession session)
     {
@@ -517,38 +514,20 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         await sessionManager.SaveSessionAsync(httpSession, session);
     }
 
-    public async Task<bool> WaitForRegistrationFeeSnapshotAsync(ISession httpSession, Guid submissionId, CancellationToken cancellationToken)
+    public async Task<bool> TryPopulateRegistrationFeeSnapshotAsync(ISession httpSession, Guid submissionId, CancellationToken cancellationToken)
     {
-        var options = snapshotPollingOptions.Value;
-        var deadline = DateTime.UtcNow.AddSeconds(options.TimeoutSeconds);
-        var interval = TimeSpan.FromSeconds(options.IntervalSeconds);
+        cancellationToken.ThrowIfCancellationRequested();
 
-        while (DateTime.UtcNow < deadline && !cancellationToken.IsCancellationRequested)
+        var snapshot = await paymentCalculationService.GetRegistrationFeeCalculationDetails(submissionId);
+        if (snapshot is null)
         {
-            var snapshot = await paymentCalculationService.GetRegistrationFeeCalculationDetails(submissionId);
-            if (snapshot is not null)
-            {
-                var session = await sessionManager.GetSessionAsync(httpSession) ?? new RegistrationApplicationSession();
-                session.RegistrationFeeCalculationDetails = snapshot;
-                await sessionManager.SaveSessionAsync(httpSession, session);
-                return true;
-            }
-
-            try
-            {
-                await Task.Delay(interval, cancellationToken);
-            }
-            catch (TaskCanceledException)
-            {
-                return false;
-            }
+            return false;
         }
 
-        logger.LogWarning(
-            "Registration fee snapshot was not available within {TimeoutSeconds}s for submission {SubmissionId}; proceeding to confirmation",
-            options.TimeoutSeconds,
-            submissionId);
-        return false;
+        var session = await sessionManager.GetSessionAsync(httpSession) ?? new RegistrationApplicationSession();
+        session.RegistrationFeeCalculationDetails = snapshot;
+        await sessionManager.SaveSessionAsync(httpSession, session);
+        return true;
     }
 
     public async Task SetRegistrationFileUploadSession(ISession httpSession, string organisationNumber, int registrationYear, bool? isResubmission)
@@ -766,7 +745,7 @@ public interface IRegistrationApplicationService
     Task<List<RegistrationYearApplicationsViewModel>> BuildRegistrationYearApplicationsViewModels(
         ISession httpSession, Organisation organisation, UserData userData);
 
-    Task<bool> WaitForRegistrationFeeSnapshotAsync(ISession httpSession, Guid submissionId, CancellationToken cancellationToken);
+    Task<bool> TryPopulateRegistrationFeeSnapshotAsync(ISession httpSession, Guid submissionId, CancellationToken cancellationToken);
 }
 
 
@@ -780,5 +759,4 @@ public sealed class RegistrationApplicationServiceDependencies
     public required IFeatureManager FeatureManager { get; init; }
     public required IHttpContextAccessor HttpContextAccessor { get; init; }
     public required IRegistrationPeriodProvider RegistrationPeriodProvider { get; init; }
-    public required IOptions<RegistrationFeeSnapshotPollingOptions> SnapshotPollingOptions { get; init; }
 }

@@ -23,6 +23,14 @@ public class DeclarationWithFullNameViewModel : IValidatableObject
     
     public bool IsCso  { get; set; }
 
+    public string? FeePollingStatusUrl { get; set; }
+
+    public string? FeePollingFallbackUrl { get; set; }
+
+    public int FeePollingIntervalMs { get; set; }
+
+    public int FeePollingTimeoutMs { get; set; }
+
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
         return ValidateFullName();
