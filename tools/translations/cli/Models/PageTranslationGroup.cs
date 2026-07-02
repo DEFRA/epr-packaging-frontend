@@ -5,6 +5,6 @@ internal sealed record PageTranslationGroup(
     string FileName,
     string Route,
     string Notes,
-    string FigmaUrl,
+    string? FigmaUrl,
     IReadOnlyList<string> TranslatorNotes,
     IReadOnlyList<TranslationRow> Rows);

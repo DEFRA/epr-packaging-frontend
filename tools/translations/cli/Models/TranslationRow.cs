@@ -7,5 +7,5 @@ internal sealed record TranslationRow(
     string Section,
     string English,
     string Welsh,
-    string FigmaUrl,
+    string? FigmaUrl,
     string Context);

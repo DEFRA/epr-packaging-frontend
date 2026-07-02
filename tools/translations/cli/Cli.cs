@@ -46,8 +46,8 @@ internal static class Cli
         Console.WriteLine("Translation workbook export/import tool");
         Console.WriteLine();
         Console.WriteLine("Usage:");
-        Console.WriteLine("  dotnet run --project tools/translations -- export --profile csoc [--output translations/welsh-translations/csoc]");
-        Console.WriteLine("  dotnet run --project tools/translations -- import --profile csoc [--input translations/welsh-translations/csoc]");
+        Console.WriteLine("  dotnet run --project tools/translations/cli/cli.csproj -- export --profile csoc [--output translations/welsh-translations/csoc]");
+        Console.WriteLine("  dotnet run --project tools/translations/cli/cli.csproj -- import --profile csoc [--input translations/welsh-translations/csoc]");
         Console.WriteLine();
         Console.WriteLine("Options:");
         Console.WriteLine("  --profile       Profile name or profile JSON path. Defaults to csoc.");

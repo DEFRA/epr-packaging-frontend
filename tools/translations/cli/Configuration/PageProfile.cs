@@ -12,7 +12,7 @@ internal sealed class PageProfile
 
     public string Notes { get; init; } = string.Empty;
 
-    public string FigmaUrl { get; init; } = string.Empty;
+    public string? FigmaUrl { get; init; }
 
     public IReadOnlyList<string> FeatureFlags { get; init; } = [];
 

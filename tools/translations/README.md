@@ -6,7 +6,12 @@ It targets .NET 10 and uses the `.slnx` solution format:
 
 ```bash
 dotnet build tools/translations/translations.slnx
+dotnet test tools/translations/translations.slnx
 ```
+
+The solution lives in `tools/translations`. The CLI project is in
+`tools/translations/cli/cli.csproj`, and the test project is in
+`tools/translations/tests/translations.Tests.csproj`.
 
 The profile is the page matrix. It maps each workbook to a route, Razor view, feature flags, app settings, and the RESX files that render the content. Each workbook row has a hidden translation key in the format:
 
@@ -21,7 +26,7 @@ That lets import update the matching Welsh file and key, for example `SomeResour
 The first profile is `csoc`:
 
 ```bash
-dotnet run --project tools/translations -- export --profile csoc
+dotnet run --project tools/translations/cli/cli.csproj -- export --profile csoc
 ```
 
 By default this writes one workbook per CSoC page with translation entries to:
@@ -48,7 +53,7 @@ include for that page and does not generate an empty workbook.
 To import translated workbooks:
 
 ```bash
-dotnet run --project tools/translations -- import --profile csoc
+dotnet run --project tools/translations/cli/cli.csproj -- import --profile csoc
 ```
 
 Blank Welsh cells preserve the existing Welsh RESX value. Conflicting non-blank translations for the same hidden translation key fail the import.
@@ -133,20 +138,20 @@ files currently named in the profile:
    logs:
 
    ```bash
-   dotnet run --project tools/translations -- export --profile csoc --output /tmp/epr-packaging-csoc-translations
+   dotnet run --project tools/translations/cli/cli.csproj -- export --profile csoc --output /tmp/epr-packaging-csoc-translations
    ```
 
 10. Import from the scratch export to prove the hidden translation keys still map
    back to real source and Welsh RESX files:
 
    ```bash
-   dotnet run --project tools/translations -- import --profile csoc --input /tmp/epr-packaging-csoc-translations
+   dotnet run --project tools/translations/cli/cli.csproj -- import --profile csoc --input /tmp/epr-packaging-csoc-translations
    ```
 
 11. Once the profile is correct, regenerate the default workbooks:
 
    ```bash
-   dotnet run --project tools/translations -- export --profile csoc
+   dotnet run --project tools/translations/cli/cli.csproj -- export --profile csoc
    ```
 
 Do not create Welsh translations manually. Only import or copy Welsh text from

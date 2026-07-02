@@ -19,8 +19,8 @@ that there is nothing to include for those pages and skips the empty workbook.
 Verify profile changes with:
 
 ```bash
-dotnet run --project tools/translations -- export --profile csoc --output /tmp/epr-packaging-csoc-translations
-dotnet run --project tools/translations -- import --profile csoc --input /tmp/epr-packaging-csoc-translations
+dotnet run --project tools/translations/cli/cli.csproj -- export --profile csoc --output /tmp/epr-packaging-csoc-translations
+dotnet run --project tools/translations/cli/cli.csproj -- import --profile csoc --input /tmp/epr-packaging-csoc-translations
 ```
 
 Do not create Welsh translations manually. Only import or copy Welsh text from

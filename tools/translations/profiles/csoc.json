@@ -10,6 +10,7 @@
       "fileName": "01-csoc-account-home.xlsx",
       "route": "/report-data/home-compliance-scheme",
       "view": "src/FrontendSchemeRegistration.UI/Views/ComplianceSchemeLanding/ComplianceSchemeLanding.cshtml",
+      "figmaUrl": null,
       "notes": "Compliance scheme account home page: CSoC content in the PRN tile.",
       "featureFlags": [
         "ShowPrn",
@@ -34,6 +35,7 @@
       "fileName": "02-csoc-prn-obligations-home.xlsx",
       "route": "/report-data/manage-your-recycling-obligations",
       "view": "src/FrontendSchemeRegistration.UI/Views/PrnsObligation/ObligationsHome.cshtml",
+      "figmaUrl": null,
       "notes": "Manage recycling obligations page: CSoC status card.",
       "featureFlags": [
         "ShowPrn",
@@ -46,6 +48,31 @@
         {
           "source": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Csoc/_ObligationsHome.en.resx",
           "section": "Status card headings, body text, regulator names and action buttons."
+        }
+      ]
+    },
+    {
+      "id": "csoc-producer-account-home",
+      "fileName": "03-csoc-producer-account-home.xlsx",
+      "route": "/report-data/home-self-managed",
+      "view": "src/FrontendSchemeRegistration.UI/Views/FrontendSchemeRegistration/HomePageSelfManaged.cshtml",
+      "figmaUrl": null,
+      "notes": "Direct producer account home page: CSoC content in the PRN tile.",
+      "featureFlags": [
+        "ShowPrn",
+        "CsocEnabled"
+      ],
+      "appSettings": {
+        "Csoc:WasteObligationsBaseAddress": "Base address used by CsocHelper to build certificate or statement links."
+      },
+      "resources": [
+        {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Csoc/_LandingBullet.en.resx",
+          "section": "Additional PRN tile bullet shown to approved users."
+        },
+        {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Csoc/_LandingParagraph.en.resx",
+          "section": "Deadline paragraph shown below the PRN tile bullets."
         }
       ]
     }
