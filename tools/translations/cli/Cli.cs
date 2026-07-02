@@ -22,8 +22,8 @@ internal static class Cli
         {
             return command switch
             {
-                "export" => await new ExportService().ExportAsync(projectRoot, profile, options.Output),
-                "import" => await new ImportService().ImportAsync(projectRoot, profile, options.Input),
+                "export" => await ExportService.ExportAsync(projectRoot, profile, options.Output),
+                "import" => await ImportService.ImportAsync(projectRoot, profile, options.Input),
                 _ => UnknownCommand(command)
             };
         }

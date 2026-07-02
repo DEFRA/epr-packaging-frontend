@@ -38,7 +38,7 @@ internal static partial class TranslationValueValidator
     }
 
     private static void AddTokenErrors(
-        ICollection<string> errors,
+        List<string> errors,
         string translationKey,
         string tokenType,
         string guidance,
@@ -77,7 +77,7 @@ internal static partial class TranslationValueValidator
         return counts;
     }
 
-    private static IReadOnlyDictionary<string, int> GetTokenDifferences(
+    private static Dictionary<string, int> GetTokenDifferences(
         IReadOnlyDictionary<string, int> left,
         IReadOnlyDictionary<string, int> right)
     {

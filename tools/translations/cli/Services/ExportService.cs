@@ -3,7 +3,7 @@ using Translations.Models;
 
 namespace Translations.Services;
 
-internal sealed class ExportService
+internal static class ExportService
 {
     private static readonly string[] DefaultTranslatorInstructions =
     [
@@ -11,7 +11,7 @@ internal sealed class ExportService
         "Preserve inline HTML tags such as <strong>...</strong> where they appear."
     ];
 
-    public async Task<int> ExportAsync(string projectRoot, TranslationProfile profile, string? outputPath)
+    public static async Task<int> ExportAsync(string projectRoot, TranslationProfile profile, string? outputPath)
     {
         var resolvedOutputPath = PathHelpers.ResolvePath(projectRoot, outputPath ?? profile.DefaultOutputPath);
         Directory.CreateDirectory(resolvedOutputPath);
@@ -55,74 +55,16 @@ internal sealed class ExportService
         return 0;
     }
 
-    private static IReadOnlyList<PageTranslationGroup> BuildPageTranslationGroups(string projectRoot, TranslationProfile profile)
+    private static List<PageTranslationGroup> BuildPageTranslationGroups(string projectRoot, TranslationProfile profile)
     {
         var owners = new Dictionary<string, PageProfile>(StringComparer.OrdinalIgnoreCase);
         var groups = new List<PageTranslationGroup>();
         var invalidEnglishValues = new SortedSet<string>(StringComparer.Ordinal);
+        var context = new ExportBuildContext(projectRoot, profile, owners, invalidEnglishValues);
 
         foreach (var page in profile.Pages)
         {
-            var rows = new List<TranslationRow>();
-            var reusedOwners = new Dictionary<string, PageProfile>(StringComparer.OrdinalIgnoreCase);
-
-            foreach (var resource in page.Resources)
-            {
-                var sourceResourcePath = PathHelpers.Normalize(resource.Source);
-                var sourceResourceFullPath = PathHelpers.ResolvePath(projectRoot, sourceResourcePath);
-                var targetResourceFullPath = PathHelpers.ResolvePath(
-                    projectRoot,
-                    PathHelpers.ToTargetCulturePath(sourceResourcePath, profile.SourceCulture, profile.TargetCulture));
-
-                var sourceEntries = ResxResourceFile.Read(sourceResourceFullPath);
-                var targetEntries = ResxResourceFile.ReadIfExists(targetResourceFullPath);
-                var selectedKeys = SelectKeys(sourceEntries, resource).ToArray();
-                AddInvalidExportValues(invalidEnglishValues, sourceResourcePath, sourceEntries, selectedKeys);
-
-                foreach (var key in selectedKeys)
-                {
-                    var resourceKey = new ResourceKey(sourceResourcePath, key);
-                    if (owners.TryGetValue(resourceKey.TranslationKey, out var owner))
-                    {
-                        if (!string.Equals(owner.Id, page.Id, StringComparison.Ordinal))
-                        {
-                            reusedOwners[owner.Id] = owner;
-                        }
-
-                        continue;
-                    }
-
-                    owners[resourceKey.TranslationKey] = page;
-                    var english = sourceEntries[key];
-                    var existingWelsh = targetEntries.GetValueOrDefault(key);
-                    var welsh = !string.IsNullOrWhiteSpace(existingWelsh) && !string.Equals(existingWelsh, english, StringComparison.Ordinal)
-                        ? existingWelsh
-                        : string.Empty;
-
-                    rows.Add(new TranslationRow(
-                        resourceKey,
-                        page.Id,
-                        page.Route,
-                        string.IsNullOrWhiteSpace(resource.Section) ? page.Notes : resource.Section,
-                        english,
-                        welsh,
-                        page.FigmaUrl,
-                        BuildContext(page, resource)));
-                }
-            }
-
-            var translatorNotes = page.TranslatorNotes
-                .Concat(BuildReusedContentTranslatorNotes(reusedOwners.Values))
-                .ToArray();
-
-            groups.Add(new PageTranslationGroup(
-                page.Id,
-                string.IsNullOrWhiteSpace(page.FileName) ? $"{page.Id}.xlsx" : page.FileName,
-                page.Route,
-                page.Notes,
-                page.FigmaUrl,
-                translatorNotes,
-                rows));
+            groups.Add(BuildPageTranslationGroup(context, page));
         }
 
         if (invalidEnglishValues.Count > 0)
@@ -132,6 +74,116 @@ internal sealed class ExportService
         }
 
         return groups;
+    }
+
+    private static PageTranslationGroup BuildPageTranslationGroup(ExportBuildContext context, PageProfile page)
+    {
+        var pageContext = new PageBuildContext(
+            page,
+            new Dictionary<string, PageProfile>(StringComparer.OrdinalIgnoreCase),
+            []);
+
+        foreach (var resource in page.Resources)
+        {
+            AddResourceRows(context, pageContext, resource);
+        }
+
+        var translatorNotes = page.TranslatorNotes
+            .Concat(BuildReusedContentTranslatorNotes(pageContext.ReusedOwners.Values))
+            .ToArray();
+
+        return new PageTranslationGroup(
+            page.Id,
+            string.IsNullOrWhiteSpace(page.FileName) ? $"{page.Id}.xlsx" : page.FileName,
+            page.Route,
+            page.Notes,
+            page.FigmaUrl,
+            translatorNotes,
+            pageContext.Rows);
+    }
+
+    private static void AddResourceRows(ExportBuildContext context, PageBuildContext pageContext, ResourceSelection resource)
+    {
+        var resourceEntries = ReadResourceEntries(context, resource);
+        var selectedKeys = SelectKeys(resourceEntries.SourceEntries, resource).ToArray();
+        AddInvalidExportValues(
+            context.InvalidEnglishValues,
+            resourceEntries.SourceResourcePath,
+            resourceEntries.SourceEntries,
+            selectedKeys);
+
+        foreach (var key in selectedKeys)
+        {
+            AddResourceRow(context, pageContext, resource, resourceEntries, key);
+        }
+    }
+
+    private static ResourceEntries ReadResourceEntries(ExportBuildContext context, ResourceSelection resource)
+    {
+        var sourceResourcePath = PathHelpers.Normalize(resource.Source);
+        var sourceResourceFullPath = PathHelpers.ResolvePath(context.ProjectRoot, sourceResourcePath);
+        var targetResourceFullPath = PathHelpers.ResolvePath(
+            context.ProjectRoot,
+            PathHelpers.ToTargetCulturePath(sourceResourcePath, context.Profile.SourceCulture, context.Profile.TargetCulture));
+
+        return new ResourceEntries(
+            sourceResourcePath,
+            ResxResourceFile.Read(sourceResourceFullPath),
+            ResxResourceFile.ReadIfExists(targetResourceFullPath));
+    }
+
+    private static void AddResourceRow(
+        ExportBuildContext context,
+        PageBuildContext pageContext,
+        ResourceSelection resource,
+        ResourceEntries resourceEntries,
+        string key)
+    {
+        var page = pageContext.Page;
+        var resourceKey = new ResourceKey(resourceEntries.SourceResourcePath, key);
+        if (IsOwnedByEarlierPage(resourceKey, pageContext, context.Owners))
+        {
+            return;
+        }
+
+        context.Owners[resourceKey.TranslationKey] = page;
+        var english = resourceEntries.SourceEntries[key];
+
+        pageContext.Rows.Add(new TranslationRow(
+            resourceKey,
+            page.Id,
+            page.Route,
+            string.IsNullOrWhiteSpace(resource.Section) ? page.Notes : resource.Section,
+            english,
+            GetExistingWelshValue(resourceEntries.TargetEntries, key, english),
+            page.FigmaUrl,
+            BuildContext(page, resource)));
+    }
+
+    private static bool IsOwnedByEarlierPage(
+        ResourceKey resourceKey,
+        PageBuildContext pageContext,
+        Dictionary<string, PageProfile> owners)
+    {
+        if (!owners.TryGetValue(resourceKey.TranslationKey, out var owner))
+        {
+            return false;
+        }
+
+        if (!string.Equals(owner.Id, pageContext.Page.Id, StringComparison.Ordinal))
+        {
+            pageContext.ReusedOwners[owner.Id] = owner;
+        }
+
+        return true;
+    }
+
+    private static string GetExistingWelshValue(IReadOnlyDictionary<string, string> targetEntries, string key, string english)
+    {
+        var existingWelsh = targetEntries.GetValueOrDefault(key);
+        return !string.IsNullOrWhiteSpace(existingWelsh) && !string.Equals(existingWelsh, english, StringComparison.Ordinal)
+            ? existingWelsh
+            : string.Empty;
     }
 
     private static IEnumerable<string> SelectKeys(IReadOnlyDictionary<string, string> entries, ResourceSelection resource)
@@ -162,7 +214,7 @@ internal sealed class ExportService
     }
 
     private static void AddInvalidExportValues(
-        ISet<string> invalidEnglishValues,
+        SortedSet<string> invalidEnglishValues,
         string sourceResourcePath,
         IReadOnlyDictionary<string, string> sourceEntries,
         IEnumerable<string> selectedKeys)
@@ -216,4 +268,20 @@ internal sealed class ExportService
     }
 
     private static string Plural(int count) => count == 1 ? string.Empty : "s";
+
+    private sealed record ExportBuildContext(
+        string ProjectRoot,
+        TranslationProfile Profile,
+        Dictionary<string, PageProfile> Owners,
+        SortedSet<string> InvalidEnglishValues);
+
+    private sealed record PageBuildContext(
+        PageProfile Page,
+        Dictionary<string, PageProfile> ReusedOwners,
+        List<TranslationRow> Rows);
+
+    private sealed record ResourceEntries(
+        string SourceResourcePath,
+        IReadOnlyDictionary<string, string> SourceEntries,
+        IReadOnlyDictionary<string, string> TargetEntries);
 }

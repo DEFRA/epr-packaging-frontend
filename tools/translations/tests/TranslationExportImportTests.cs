@@ -10,6 +10,12 @@ namespace Translations.Tests;
 [NonParallelizable]
 public sealed class TranslationExportImportTests
 {
+    private static readonly string[] SharedResourceTranslationKeys =
+    [
+        "Resources/Shared.en.resx::heading",
+        "Resources/Shared.en.resx::body"
+    ];
+
     private string _projectRoot = string.Empty;
 
     [SetUp]
@@ -46,7 +52,7 @@ public sealed class TranslationExportImportTests
             CreatePage("second-page", "02-second.xlsx", resourcePath));
 
         var consoleOutput = await CaptureConsoleOutputAsync(() =>
-            new ExportService().ExportAsync(_projectRoot, profile, "exports"));
+            ExportService.ExportAsync(_projectRoot, profile, "exports"));
 
         var firstWorkbook = Path.Combine(_projectRoot, "exports", "01-first.xlsx");
         var secondWorkbook = Path.Combine(_projectRoot, "exports", "02-second.xlsx");
@@ -56,11 +62,7 @@ public sealed class TranslationExportImportTests
 
         var rows = await XlsxWorkbookReader.ReadTranslatedRowsAsync(firstWorkbook);
         Assert.That(rows, Has.Count.EqualTo(2));
-        Assert.That(rows.Select(row => row.TranslationKey), Is.EquivalentTo(new[]
-        {
-            "Resources/Shared.en.resx::heading",
-            "Resources/Shared.en.resx::body"
-        }));
+        Assert.That(rows.Select(row => row.TranslationKey), Is.EquivalentTo(SharedResourceTranslationKeys));
         Assert.That(rows.Single(row => row.TranslationKey.EndsWith("::heading", StringComparison.Ordinal)).Welsh, Is.EqualTo("Cyflwyno <strong>{0}</strong>"));
         Assert.That(rows.Single(row => row.TranslationKey.EndsWith("::body", StringComparison.Ordinal)).Welsh, Is.Empty);
     }
@@ -81,7 +83,7 @@ public sealed class TranslationExportImportTests
 
         var profile = CreateProfile(CreatePage("page", "input.xlsx", resourcePath));
         var consoleOutput = await CaptureConsoleOutputAsync(() =>
-            new ImportService().ImportAsync(_projectRoot, profile, workbookPath));
+            ImportService.ImportAsync(_projectRoot, profile, workbookPath));
 
         var targetPath = Path.Combine(_projectRoot, "Resources", "Page.cy.resx");
         var values = ResxResourceFile.Read(targetPath);
@@ -107,7 +109,7 @@ public sealed class TranslationExportImportTests
 
         var profile = CreateProfile(CreatePage("page", "input.xlsx", resourcePath));
         var exception = Assert.ThrowsAsync<InvalidOperationException>(() =>
-            new ImportService().ImportAsync(_projectRoot, profile, workbookPath));
+            ImportService.ImportAsync(_projectRoot, profile, workbookPath));
 
         Assert.That(exception!.Message, Does.Contain("missing placeholder {0}"));
         Assert.That(exception.Message, Does.Contain("missing markup tags <strong>, </strong>"));
@@ -122,14 +124,14 @@ public sealed class TranslationExportImportTests
 
         var profile = CreateProfile(CreatePage("page", "page.xlsx", resourcePath));
         var exception = Assert.ThrowsAsync<InvalidOperationException>(() =>
-            new ExportService().ExportAsync(_projectRoot, profile, "exports"));
+            ExportService.ExportAsync(_projectRoot, profile, "exports"));
 
         Assert.That(exception!.Message, Does.Contain("English translation values must not include leading or trailing whitespace"));
         Assert.That(exception.Message, Does.Contain("Resources/Page.en.resx::message"));
         Assert.That(File.Exists(Path.Combine(_projectRoot, "exports", "page.xlsx")), Is.False);
     }
 
-    private TranslationProfile CreateProfile(params PageProfile[] pages)
+    private static TranslationProfile CreateProfile(params PageProfile[] pages)
     {
         return new TranslationProfile
         {
@@ -162,7 +164,7 @@ public sealed class TranslationExportImportTests
         };
     }
 
-    private async Task WriteWorkbookAsync(
+    private static async Task WriteWorkbookAsync(
         string workbookPath,
         string resourcePath,
         string resourceKey,

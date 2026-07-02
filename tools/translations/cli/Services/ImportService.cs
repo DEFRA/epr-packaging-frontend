@@ -3,9 +3,9 @@ using Translations.Models;
 
 namespace Translations.Services;
 
-internal sealed class ImportService
+internal static class ImportService
 {
-    public async Task<int> ImportAsync(string projectRoot, TranslationProfile profile, string? inputPath)
+    public static async Task<int> ImportAsync(string projectRoot, TranslationProfile profile, string? inputPath)
     {
         var resolvedInputPath = PathHelpers.ResolvePath(projectRoot, inputPath ?? profile.DefaultOutputPath);
         var translatedRows = await GetTranslatedRowsAsync(resolvedInputPath);
@@ -48,7 +48,7 @@ internal sealed class ImportService
         return rows;
     }
 
-    private static IReadOnlyList<string> GetWorkbookPaths(string inputPath)
+    private static string[] GetWorkbookPaths(string inputPath)
     {
         if (File.Exists(inputPath))
         {

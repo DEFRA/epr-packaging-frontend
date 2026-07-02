@@ -106,7 +106,7 @@ internal static class ResxResourceFile
                element.Element("value") is not null;
     }
 
-    private static Encoding GetOutputEncoding(string path)
+    private static UTF8Encoding GetOutputEncoding(string path)
     {
         return File.Exists(path) && HasUtf8ByteOrderMark(path)
             ? new UTF8Encoding(encoderShouldEmitUTF8Identifier: true)

@@ -96,7 +96,7 @@ internal static class XlsxWorkbookReader
         return PathHelpers.Normalize(Path.Combine("xl", target));
     }
 
-    private static IReadOnlyList<WorksheetRow> ReadRows(XDocument worksheet, IReadOnlyList<string> sharedStrings)
+    private static WorksheetRow[] ReadRows(XDocument worksheet, IReadOnlyList<string> sharedStrings)
     {
         return worksheet
             .Descendants(SpreadsheetNamespace + "row")
