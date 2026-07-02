@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.IO.Compression;
 using System.Text;
 using Translations.Models;
@@ -7,6 +8,14 @@ namespace Translations.Services;
 internal static class XlsxWorkbookWriter
 {
     private const string SheetName = "Welsh translations";
+    private const double TitleRowHeight = 24;
+    private const double StandardRowHeight = 48;
+    private const double LineHeight = 15;
+    private const double RowPadding = 6;
+    private const double MaxExcelRowHeight = 409;
+    private const int EnglishColumnWidth = 70;
+    private const int WelshColumnWidth = 70;
+    private const int FigmaColumnWidth = 45;
     private const string ContentTypesXml = """
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
@@ -98,18 +107,22 @@ internal static class XlsxWorkbookWriter
         var rows = new StringBuilder();
         var mergeCells = new StringBuilder();
 
-        rows.Append(Row(1, Cell("F", 1, "Translator notes", style: 2)));
+        rows.Append(Row(1, TitleRowHeight, Cell("F", 1, "Translator notes", style: 2)));
         mergeCells.Append("""<mergeCell ref="F1:H1"/>""");
 
         for (var index = 0; index < translatorInstructions.Count; index++)
         {
             var instructionRowNumber = index + 2;
-            rows.Append(Row(instructionRowNumber, Cell("F", instructionRowNumber, translatorInstructions[index])));
+            rows.Append(Row(
+                instructionRowNumber,
+                CalculateWrappedRowHeight((translatorInstructions[index], FigmaColumnWidth)),
+                Cell("F", instructionRowNumber, translatorInstructions[index])));
             mergeCells.Append($"""<mergeCell ref="F{instructionRowNumber}:H{instructionRowNumber}"/>""");
         }
 
         rows.Append(Row(
             headerRowNumber,
+            StandardRowHeight,
             Cell("A", headerRowNumber, "Translation key", style: 1),
             Cell("B", headerRowNumber, "Resource file", style: 1),
             Cell("C", headerRowNumber, "Resource key", style: 1),
@@ -125,6 +138,7 @@ internal static class XlsxWorkbookWriter
             rowNumber++;
             rows.Append(Row(
                 rowNumber,
+                CalculateTranslationRowHeight(row),
                 Cell("A", rowNumber, row.ResourceKey.TranslationKey),
                 Cell("B", rowNumber, row.ResourceKey.ResourceFile),
                 Cell("C", rowNumber, row.ResourceKey.Key),
@@ -165,9 +179,42 @@ internal static class XlsxWorkbookWriter
 """;
     }
 
-    private static string Row(int rowNumber, params string[] cells)
+    private static string Row(int rowNumber, double height, params string[] cells)
     {
-        return $"""    <row r="{rowNumber}" ht="{(rowNumber == 1 ? 24 : 48)}" customHeight="1">{string.Concat(cells)}</row>""" + Environment.NewLine;
+        return $"""    <row r="{rowNumber}" ht="{height.ToString("0.##", CultureInfo.InvariantCulture)}" customHeight="1">{string.Concat(cells)}</row>""" + Environment.NewLine;
+    }
+
+    private static double CalculateTranslationRowHeight(TranslationRow row)
+    {
+        return CalculateWrappedRowHeight(
+            (row.English, EnglishColumnWidth),
+            (row.Welsh, WelshColumnWidth),
+            (row.FigmaUrl, FigmaColumnWidth));
+    }
+
+    private static double CalculateWrappedRowHeight(params (string? Value, int ColumnWidth)[] values)
+    {
+        var lineCount = values
+            .Select(value => CountWrappedLines(value.Value, value.ColumnWidth))
+            .DefaultIfEmpty(1)
+            .Max();
+
+        return Math.Clamp(lineCount * LineHeight + RowPadding, StandardRowHeight, MaxExcelRowHeight);
+    }
+
+    private static int CountWrappedLines(string? value, int columnWidth)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return 1;
+        }
+
+        var lines = value
+            .Replace("\r\n", "\n", StringComparison.Ordinal)
+            .Replace('\r', '\n')
+            .Split('\n');
+
+        return lines.Sum(line => Math.Max(1, (int)Math.Ceiling((double)line.Length / columnWidth)));
     }
 
     private static string Cell(string column, int row, string? value, int style = 0)

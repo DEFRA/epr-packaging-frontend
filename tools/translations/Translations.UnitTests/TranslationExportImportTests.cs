@@ -1,3 +1,5 @@
+using System.Globalization;
+using System.IO.Compression;
 using System.Xml.Linq;
 using NUnit.Framework;
 using Translations.Configuration;
@@ -129,6 +131,34 @@ public sealed class TranslationExportImportTests
         Assert.That(exception!.Message, Does.Contain("English translation values must not include leading or trailing whitespace"));
         Assert.That(exception.Message, Does.Contain("Resources/Page.en.resx::message"));
         Assert.That(File.Exists(Path.Combine(_projectRoot, "exports", "page.xlsx")), Is.False);
+    }
+
+    [Test]
+    public async Task WriteAsync_WhenTranslationTextIsLong_IncreasesDataRowHeight()
+    {
+        var workbookPath = Path.Combine(_projectRoot, "long-text.xlsx");
+        var longEnglish = string.Join(
+            " ",
+            Enumerable.Repeat("This sentence should wrap inside the English translation column.", 8));
+
+        await WriteWorkbookAsync(
+            workbookPath,
+            "Resources/Page.en.resx",
+            "message",
+            longEnglish,
+            string.Empty);
+
+        using var archive = ZipFile.OpenRead(workbookPath);
+        var worksheetEntry = archive.GetEntry("xl/worksheets/sheet1.xml")!;
+        using var worksheetStream = worksheetEntry.Open();
+        var worksheet = XDocument.Load(worksheetStream);
+        XNamespace spreadsheetNamespace = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        var dataRow = worksheet
+            .Descendants(spreadsheetNamespace + "row")
+            .Single(row => row.Attribute("r")?.Value == "4");
+
+        var rowHeight = double.Parse(dataRow.Attribute("ht")!.Value, CultureInfo.InvariantCulture);
+        Assert.That(rowHeight, Is.GreaterThan(48));
     }
 
     private static TranslationProfile CreateProfile(params PageProfile[] pages)
