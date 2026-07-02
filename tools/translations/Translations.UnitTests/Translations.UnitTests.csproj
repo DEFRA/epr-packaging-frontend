@@ -6,6 +6,7 @@
     <IsPackable>false</IsPackable>
     <AssemblyName>Translations.UnitTests</AssemblyName>
     <RootNamespace>Translations.UnitTests</RootNamespace>
+    <ExcludeByFile>**/System.Text.RegularExpressions.Generator/**/*.cs</ExcludeByFile>
   </PropertyGroup>
 
   <ItemGroup>
