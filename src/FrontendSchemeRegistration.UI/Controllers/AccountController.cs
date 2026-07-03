@@ -1,11 +1,13 @@
 ﻿namespace FrontendSchemeRegistration.UI.Controllers;
 
+using Application.Options;
 using ControllerExtensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
 using System.Diagnostics.CodeAnalysis;
 
@@ -15,6 +17,13 @@ using System.Diagnostics.CodeAnalysis;
 [Route("[controller]/[action]")]
 public class AccountController : Controller
 {
+    private readonly CsocOptions _csocOptions;
+
+    public AccountController(IOptions<CsocOptions> csocOptions)
+    {
+        _csocOptions = csocOptions.Value;
+    }
+
     /// <summary>
     /// Handles user sign in.
     /// </summary>
@@ -44,6 +53,22 @@ public class AccountController : Controller
     }
 
     /// <summary>
+    /// Clears the local Azure session cookies without triggering Azure AD B2C logout.
+    /// Used when signing out from a linked CDP child app.
+    /// </summary>
+    /// <returns>Redirect to sign in.</returns>
+    [ExcludeFromCodeCoverage(Justification = "Unable to mock authentication")]
+    [HttpGet]
+    [AllowAnonymous]
+    public async Task<IActionResult> ClearSession()
+    {
+        HttpContext.Session.Clear();
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+        return Redirect(Url.Action(nameof(SignIn), nameof(AccountController).RemoveControllerFromName())!);
+    }
+
+    /// <summary>
     /// Handles the user sign-out.
     /// </summary>
     /// <param name="scheme">Authentication scheme.</param>
@@ -64,7 +89,12 @@ public class AccountController : Controller
         }
 
         scheme ??= OpenIdConnectDefaults.AuthenticationScheme;
-        var callbackUrl = Url.Action(action: "SignedOut", controller: nameof(HomeController).RemoveControllerFromName(), values: null, protocol: Request.Scheme);
+        var callbackUrl = GetWasteObligationsClearSessionUrl()
+            ?? Url.Action(
+                action: "SignedOut",
+                controller: nameof(HomeController).RemoveControllerFromName(),
+                values: null,
+                protocol: Request.Scheme);
 
         return SignOut(
             new AuthenticationProperties
@@ -115,5 +145,11 @@ public class AccountController : Controller
         // Refresh session by interacting with it
         HttpContext.Session.SetString("LastPing", DateTime.UtcNow.ToString());
         return Ok(new { message = "Session extended" });
+    }
+
+    private string? GetWasteObligationsClearSessionUrl()
+    {
+        var baseAddress = _csocOptions.WasteObligationsBaseAddress?.TrimEnd('/');
+        return string.IsNullOrEmpty(baseAddress) ? null : $"{baseAddress}/clear-session";
     }
 }
