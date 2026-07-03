@@ -60,10 +60,24 @@ internal static class ImportService
             throw new DirectoryNotFoundException($"Input path \"{inputPath}\" does not exist.");
         }
 
+        var workbookDirectory = GetWorkbookDirectory(inputPath);
+
         return Directory
-            .EnumerateFiles(inputPath, "*.xlsx", SearchOption.TopDirectoryOnly)
+            .EnumerateFiles(workbookDirectory, "*.xlsx", SearchOption.TopDirectoryOnly)
             .OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
             .ToArray();
+    }
+
+    private static string GetWorkbookDirectory(string inputPath)
+    {
+        var workbookDirectory = Path.Combine(inputPath, "xlsx");
+        if (Directory.Exists(workbookDirectory) &&
+            Directory.EnumerateFiles(workbookDirectory, "*.xlsx", SearchOption.TopDirectoryOnly).Any())
+        {
+            return workbookDirectory;
+        }
+
+        return inputPath;
     }
 
     private static Dictionary<string, Dictionary<string, string>> BuildUpdatesByTargetFile(

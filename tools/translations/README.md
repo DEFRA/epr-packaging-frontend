@@ -32,8 +32,20 @@ dotnet run --project tools/translations/cli/cli.csproj -- export --profile csoc
 By default this writes one workbook per CSoC page with translation entries to:
 
 ```text
-translations/welsh-translations/csoc
+translations/welsh-translations/csoc/xlsx
 ```
+
+It also writes matching deterministic review JSON files to:
+
+```text
+translations/welsh-translations/csoc/json
+```
+
+Existing workbooks and JSON files are only overwritten when their translator
+notes or translation rows have changed, so repeated exports do not create Git
+diffs from workbook metadata alone. Treat the JSON files as generated review
+artifacts; the Excel workbooks remain the translator-facing files, and the
+profile and RESX files remain the source inputs.
 
 Export fails if a selected English RESX value starts or ends with whitespace.
 Move spacing into the Razor view or layout instead of preserving it in
@@ -55,6 +67,11 @@ To import translated workbooks:
 ```bash
 dotnet run --project tools/translations/cli/cli.csproj -- import --profile csoc
 ```
+
+By default import reads from `translations/welsh-translations/csoc/xlsx`. If
+you pass an export root directory, such as `translations/welsh-translations/csoc`
+or `/tmp/epr-packaging-csoc-translations`, import reads from its `xlsx`
+subdirectory.
 
 Blank Welsh cells preserve the existing Welsh RESX value. Conflicting non-blank translations for the same hidden translation key fail the import.
 

@@ -28,6 +28,32 @@ internal static class XlsxWorkbookReader
             .ToArray();
     }
 
+    public static async Task<WorkbookExportData> ReadExportDataAsync(string workbookPath)
+    {
+        using var archive = ZipFile.OpenRead(workbookPath);
+        var sharedStrings = await ReadSharedStringsAsync(archive);
+        var worksheet = await ReadFirstWorksheetAsync(archive);
+        var rows = ReadRows(worksheet, sharedStrings);
+        var header = FindHeader(rows, workbookPath);
+        var columns = BuildHeaderColumns(header);
+
+        return new WorkbookExportData(
+            ReadTranslatorNotes(rows, header),
+            rows
+                .Where(row => row.RowNumber > header.RowNumber)
+                .Select(row => new WorkbookExportRow(
+                    CellValue(row, columns, "Translation key").Trim(),
+                    CellValue(row, columns, "Resource file").Trim(),
+                    CellValue(row, columns, "Resource key").Trim(),
+                    CellValue(row, columns, "Page id").Trim(),
+                    CellValue(row, columns, "Route").Trim(),
+                    CellValue(row, columns, "English"),
+                    CellValue(row, columns, "Welsh"),
+                    CellValue(row, columns, "Figma link")))
+                .Where(row => !string.IsNullOrWhiteSpace(row.TranslationKey))
+                .ToArray());
+    }
+
     private static async Task<IReadOnlyList<string>> ReadSharedStringsAsync(ZipArchive archive)
     {
         var entry = archive.GetEntry("xl/sharedStrings.xml");
@@ -119,11 +145,37 @@ internal static class XlsxWorkbookReader
 
             if (translationKeyColumn != 0 && welshColumn != 0)
             {
-                return new HeaderColumns(row.RowNumber, translationKeyColumn, welshColumn);
+                return new HeaderColumns(row.RowNumber, translationKeyColumn, welshColumn, row.Cells);
             }
         }
 
         throw new InvalidOperationException($"Workbook \"{workbookPath}\" is missing required Translation key and Welsh columns.");
+    }
+
+    private static IReadOnlyDictionary<string, int> BuildHeaderColumns(HeaderColumns header)
+    {
+        return header.Cells.ToDictionary(
+            cell => cell.Value.Trim(),
+            cell => cell.Key,
+            StringComparer.Ordinal);
+    }
+
+    private static IReadOnlyList<string> ReadTranslatorNotes(IReadOnlyList<WorksheetRow> rows, HeaderColumns header)
+    {
+        return rows
+            .Where(row => row.RowNumber < header.RowNumber)
+            .SelectMany(row => row.Cells.OrderBy(cell => cell.Key).Select(cell => cell.Value))
+            .Select(value => value.Trim())
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .Where(value => !string.Equals(value, "Translator notes", StringComparison.Ordinal))
+            .ToArray();
+    }
+
+    private static string CellValue(WorksheetRow row, IReadOnlyDictionary<string, int> columns, string heading)
+    {
+        return columns.TryGetValue(heading, out var column)
+            ? row.Cells.GetValueOrDefault(column) ?? string.Empty
+            : string.Empty;
     }
 
     private static string ReadCellValue(XElement cell, IReadOnlyList<string> sharedStrings)
@@ -181,5 +233,9 @@ internal static class XlsxWorkbookReader
 
     private sealed record WorksheetRow(int RowNumber, IReadOnlyDictionary<int, string> Cells);
 
-    private sealed record HeaderColumns(int RowNumber, int TranslationKeyColumn, int WelshColumn);
+    private sealed record HeaderColumns(
+        int RowNumber,
+        int TranslationKeyColumn,
+        int WelshColumn,
+        IReadOnlyDictionary<int, string> Cells);
 }

@@ -15,6 +15,8 @@ then trace controller routes, feature gates, Razor views, partials and matching
 RESX resources before updating `tools/translations/profiles/csoc.json`.
 Profile pages that only reuse shared rows should still be recorded; export logs
 that there is nothing to include for those pages and skips the empty workbook.
+Exports write workbooks to an `xlsx` subdirectory and matching deterministic
+review JSON sidecars to a `json` subdirectory.
 
 Verify profile changes with:
 
