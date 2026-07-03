@@ -1,0 +1,56 @@
+{
+  "translatorNotes": [
+    "Preserve placeholders such as {0}, {1}, and format suffixes such as {2:d MMMM yyyy}.",
+    "Preserve inline HTML tags such as <strong>...</strong> where they appear."
+  ],
+  "rows": [
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Csoc/_LandingBullet.en.resx::bullet_compliance_scheme",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Csoc/_LandingBullet.en.resx",
+      "resourceKey": "bullet_compliance_scheme",
+      "pageId": "csoc-account-home",
+      "route": "/report-data/home-compliance-scheme",
+      "section": "Additional PRN tile bullet shown to approved users.",
+      "english": "submit your statement of compliance",
+      "welsh": "",
+      "figmaUrl": "",
+      "context": "Compliance scheme account home page: CSoC content in the PRN tile.\nAdditional PRN tile bullet shown to approved users.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Csoc/_LandingBullet.en.resx::bullet_direct_producer",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Csoc/_LandingBullet.en.resx",
+      "resourceKey": "bullet_direct_producer",
+      "pageId": "csoc-account-home",
+      "route": "/report-data/home-compliance-scheme",
+      "section": "Additional PRN tile bullet shown to approved users.",
+      "english": "submit your certificate of compliance",
+      "welsh": "",
+      "figmaUrl": "",
+      "context": "Compliance scheme account home page: CSoC content in the PRN tile.\nAdditional PRN tile bullet shown to approved users.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Csoc/_LandingParagraph.en.resx::paragraph_compliance_scheme",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Csoc/_LandingParagraph.en.resx",
+      "resourceKey": "paragraph_compliance_scheme",
+      "pageId": "csoc-account-home",
+      "route": "/report-data/home-compliance-scheme",
+      "section": "Deadline paragraph shown below the PRN tile bullets.",
+      "english": "An approved or delegated person must submit your statement of compliance before or on <strong>{0:d MMMM yyyy}</strong>.",
+      "welsh": "",
+      "figmaUrl": "",
+      "context": "Compliance scheme account home page: CSoC content in the PRN tile.\nDeadline paragraph shown below the PRN tile bullets.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Csoc/_LandingParagraph.en.resx::paragraph_direct_producer",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Csoc/_LandingParagraph.en.resx",
+      "resourceKey": "paragraph_direct_producer",
+      "pageId": "csoc-account-home",
+      "route": "/report-data/home-compliance-scheme",
+      "section": "Deadline paragraph shown below the PRN tile bullets.",
+      "english": "An approved or delegated person must submit your certificate of compliance before or on <strong>{0:d MMMM yyyy}</strong>.",
+      "welsh": "",
+      "figmaUrl": "",
+      "context": "Compliance scheme account home page: CSoC content in the PRN tile.\nDeadline paragraph shown below the PRN tile bullets.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
+    }
+  ]
+}
