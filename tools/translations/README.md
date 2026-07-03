@@ -21,6 +21,12 @@ src/FrontendSchemeRegistration.UI/Resources/.../SomeResource.en.resx::resource_k
 
 That lets import update the matching Welsh file and key, for example `SomeResource.cy.resx`.
 
+Set each page entry's `figmaUrl` to the exact Figma frame, prototype or design
+URL that matches the page being translated. The exporter writes this to the
+visible `Figma link` column so translators can check layout, component context
+and nearby content. Use `null` only when no design URL is available yet, and fill
+it in before sending the workbook for translation whenever possible.
+
 ## CSoC profile
 
 The first profile is `csoc`:
@@ -86,6 +92,8 @@ Add or update JSON under `tools/translations/profiles`. A page entry should incl
 
 - `route`: the public route or a short process label.
 - `view`: the Razor view that renders the page.
+- `figmaUrl`: the exact Figma frame, prototype or design URL for the page, or
+  `null` if the design URL is not yet available.
 - `featureFlags`: flags that affect whether the content is shown.
 - `appSettings`: settings that influence the rendered content or links.
 - `resources`: source `.en.resx` files plus optional `keys` or `keyPrefixes`.
@@ -173,3 +181,9 @@ files currently named in the profile:
 
 Do not create Welsh translations manually. Only import or copy Welsh text from
 an approved source when the English string and UI placement match.
+
+## Email translations
+
+Page translations are covered by this workflow. A similar export/import process
+for email content is expected, and the details will be added once that process is
+defined.
