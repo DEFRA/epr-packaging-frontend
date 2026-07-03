@@ -1,0 +1,21 @@
+@using FrontendSchemeRegistration.UI.ViewModels.Shared
+@model DeclarationProcessingViewModel
+
+@{
+    ViewData["Title"] = SharedLocalizer["Registration"].Value;
+}
+
+@await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
+
+<main class="govuk-main-wrapper" role="main">
+    <div id="fee-status-refresh"
+         data-status-url="@Model.StatusUrl"
+         data-fallback-url="@Model.FallbackUrl"
+         data-interval-ms="@Model.PollingIntervalMs"
+         data-timeout-ms="@Model.PollingTimeoutMs">
+        @await Html.PartialAsync("Partials/_Spinner", new SpinnerViewModel(Model.FallbackUrl, "SubmittingFile"))
+    </div>
+</main>
+
+<script src="~/js/jquery-3.7.1.min.js"></script>
+<script src="~/js/fee-status-refresh.js"></script>

@@ -67,6 +67,7 @@ public static class PagePaths
     public const string ConfirmDetailsAP = "/confirm-details-ap";
     public const string DeclarationWithFullName = "/declaration-enter-full-name";
     public const string DeclarationWithFullNameAP = "/declaration-enter-full-name-ap";
+    public const string DeclarationProcessing = "/declaration-processing";
     public const string DeclarationProcessingStatus = "/declaration-processing-status";
     public const string OrganisationDetailsSubmissionFailed = "/organisation-details-submission-failed";
     public const string FileUploadCheckFileAndSubmit = "/file-upload-check-file-and-submit";

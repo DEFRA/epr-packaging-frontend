@@ -19,17 +19,7 @@
 <main class="govuk-main-wrapper" id="main-content" role="main">
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds" id="declaration-fullname-wrapper">
-            @{
-                var formAttributes = new Dictionary<string, object> { ["id"] = "declaration-fullname-form" };
-                if (!string.IsNullOrEmpty(Model.FeePollingStatusUrl) && !string.IsNullOrEmpty(Model.FeePollingFallbackUrl))
-                {
-                    formAttributes["data-status-url"] = Model.FeePollingStatusUrl;
-                    formAttributes["data-fallback-url"] = Model.FeePollingFallbackUrl;
-                    formAttributes["data-interval-ms"] = Model.FeePollingIntervalMs;
-                    formAttributes["data-timeout-ms"] = Model.FeePollingTimeoutMs;
-                }
-            }
-            @using (Html.BeginRouteForm("DeclarationDirectProducers", FormMethod.Post, formAttributes))
+            @using (Html.BeginRouteForm("DeclarationDirectProducers", FormMethod.Post, new { id = "declaration-fullname-form" }))
             {
                 @Html.HiddenFor(model => model.SubmissionId)
                 @Html.HiddenFor(model => model.OrganisationDetailsFileId)
@@ -125,8 +115,4 @@
     <script nonce="@scriptNonce">
         document.addEventListener("DOMContentLoaded", InitSpinner("declaration-fullname-wrapper", "declaration-fullname-form"));
     </script>
-    @if (!string.IsNullOrEmpty(Model.FeePollingStatusUrl))
-    {
-        <script src="~/js/fee-status-refresh.js"></script>
-    }
 }

@@ -1,7 +1,6 @@
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
-using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
 using FrontendSchemeRegistration.UI.Extensions;
@@ -11,7 +10,6 @@ using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Options;
 using Microsoft.FeatureManagement;
 
 namespace FrontendSchemeRegistration.UI.Controllers;
@@ -26,12 +24,11 @@ public class DeclarationWithFullNameController(
     ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
     ILogger<DeclarationWithFullNameController> logger,
     IRegistrationPeriodProvider registrationPeriodProvider,
-    IFeatureManager featureManager,
-    IRegistrationApplicationService registrationApplicationService,
-    IOptions<RegistrationFeeSnapshotPollingOptions> feePollingOptions) : Controller
+    IFeatureManager featureManager) : Controller
 {
     private const string ViewName = "DeclarationWithFullName";
     private const string ConfirmationViewName = "CompanyDetailsConfirmation";
+    private const string ProcessingViewName = "DeclarationProcessing";
     private const string SubmissionErrorViewName = "OrganisationDetailsSubmissionFailed";
 
     [HttpGet]
@@ -70,7 +67,7 @@ public class DeclarationWithFullNameController(
 
         SetBackLink(submissionId, registrationYear, regJourney);
 
-        var viewModel = new DeclarationWithFullNameViewModel
+        return View(ViewName, new DeclarationWithFullNameViewModel
         {
             OrganisationName = organisation.Name,
             OrganisationDetailsFileId = submission.LastUploadedValidFiles.CompanyDetailsFileId.ToString(),
@@ -80,19 +77,7 @@ public class DeclarationWithFullNameController(
             RegistrationJourney = regJourney,
             ShowRegistrationCaption = isCso && regJourney is not null && registrationYear is not null,
             IsCso = isCso
-        };
-
-        if (await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService))
-        {
-            var routeValues = new { submissionId, registrationyear = registrationYear, registrationjourney = regJourney };
-            var pollingOptions = feePollingOptions.Value;
-            viewModel.FeePollingStatusUrl = Url.Action(nameof(Status), routeValues);
-            viewModel.FeePollingFallbackUrl = Url.Action("Get", ConfirmationViewName, routeValues);
-            viewModel.FeePollingIntervalMs = pollingOptions.IntervalSeconds * 1000;
-            viewModel.FeePollingTimeoutMs = pollingOptions.TimeoutSeconds * 1000;
-        }
-
-        return View(ViewName, viewModel);
+        });
     }
 
     [RegistrationApplicationSessionLoggingScopeActionFilter]
@@ -172,31 +157,18 @@ public class DeclarationWithFullNameController(
                     session.RegistrationSession.IsResubmission,
                     regJourney);
 
-                var confirmationRouteValues = model.RegistrationYear.HasValue
-                    ? new { submissionId, registrationyear = model.RegistrationYear.ToString(), registrationjourney = regJourney }
-                    : new { submissionId, registrationyear = (string?)null, registrationjourney = (RegistrationJourney?)null };
-
-                if (IsAjaxRequest())
-                {
-                    var snapshotReady = await registrationApplicationService.TryPopulateRegistrationFeeSnapshotAsync(
-                        HttpContext.Session, submissionId, HttpContext.RequestAborted);
-
-                    if (snapshotReady)
-                    {
-                        return Json(new { redirectUrl = Url.Action("Get", ConfirmationViewName, confirmationRouteValues) });
-                    }
-
-                    return Json(new { isFeeCalculationInProgress = true });
-                }
+                var postSubmitController = await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService)
+                    ? ProcessingViewName
+                    : ConfirmationViewName;
 
                 return (model.RegistrationYear.HasValue
-                    ? RedirectToAction("Get", ConfirmationViewName,
+                    ? RedirectToAction("Get", postSubmitController,
                         new
                         {
                             submissionId, registrationyear = model.RegistrationYear.ToString(),
                             registrationjourney = regJourney
                         })
-                    : RedirectToAction("Get", ConfirmationViewName, new { submissionId }));
+                    : RedirectToAction("Get", postSubmitController, new { submissionId }));
             }
             catch (Exception ex)
             {
@@ -204,32 +176,6 @@ public class DeclarationWithFullNameController(
                 return RedirectToAction("Get", SubmissionErrorViewName, new { submissionId });
             }
         }
-    }
-
-    [HttpGet]
-    [Route("~" + PagePaths.DeclarationProcessingStatus)]
-    public async Task<JsonResult> Status(
-        [FromQuery] Guid submissionId,
-        [FromQuery] int? registrationYear = null,
-        [FromQuery] RegistrationJourney? registrationJourney = null)
-    {
-        var populated = await registrationApplicationService.TryPopulateRegistrationFeeSnapshotAsync(
-            HttpContext.Session,
-            submissionId,
-            HttpContext.RequestAborted);
-
-        if (populated)
-        {
-            var routeValues = new { submissionId, registrationyear = registrationYear, registrationjourney = registrationJourney };
-            return Json(new { redirectUrl = Url.Action("Get", ConfirmationViewName, routeValues) });
-        }
-
-        return Json(new { isFeeCalculationInProgress = true });
-    }
-
-    private bool IsAjaxRequest()
-    {
-        return string.Equals(Request.Headers["X-Requested-With"], "XMLHttpRequest", StringComparison.OrdinalIgnoreCase);
     }
 
     private void SetBackLink(Guid submissionId, int? registrationYear, RegistrationJourney? regJourney)
