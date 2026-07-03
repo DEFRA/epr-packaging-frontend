@@ -42,11 +42,6 @@ public class ComplianceSchemeLandingController(
         Guid? selectedComplianceSchemeId = regSession.RegistrationSession.SelectedComplianceScheme?.Id;
         
         var userData = User.GetUserData();
-        if (!string.IsNullOrWhiteSpace(regSession.UserData?.ServiceRole))
-        {
-            userData.ServiceRole = regSession.UserData.ServiceRole;
-        }
-
         var now = timeProvider.GetLocalNow().DateTime;
 
         var organisation = userData.Organisations[0];
@@ -69,7 +64,7 @@ public class ComplianceSchemeLandingController(
         var resubmissionApplicationDetails = await resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(
             organisation, new List<string> { packagingResubmissionPeriod.DataPeriod }, session.RegistrationSession.SelectedComplianceScheme?.Id);
 
-        var isApprovedUser = session.UserData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved);
+        var isApprovedUser = userData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved);
         
         var model = new ComplianceSchemeLandingViewModel
         {
