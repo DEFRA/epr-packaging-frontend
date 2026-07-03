@@ -14,8 +14,9 @@ public static class Accounts
 {
     public static Guid ComplianceSchemeId { get; } = Guid.NewGuid();
     
-    public static WireMockServer WithAccounts(this WireMockServer server)
+    public static WireMockServer WithAccounts(this WireMockServer server, WebApiOptions? options = null)
     {
+        options ??= new WebApiOptions();
         // GET /api/compliance-schemes/get-for-operator/?operatorOrganisationId={id}
         server.Given(Request.Create()
                 .UsingGet()
@@ -152,7 +153,7 @@ public static class Accounts
                             email = "test+17122025143216@user.com",
                             roleInOrganisation = "Admin",
                             enrolmentStatus = "Approved",
-                            serviceRole = "Approved Person",
+                            serviceRole = options.ServiceRole,
                             service = "EPR Packaging",
                             serviceRoleId = 1,
                             telephone = "07774455666",
