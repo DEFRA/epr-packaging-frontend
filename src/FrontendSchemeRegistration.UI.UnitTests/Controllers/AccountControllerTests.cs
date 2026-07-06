@@ -1,8 +1,12 @@
 ﻿namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
 
+using Application.Options;
 using AutoFixture;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Extensions.Options;
+using Microsoft.FeatureManagement;
 using Moq;
 using UI.Controllers;
 
@@ -15,10 +19,18 @@ public class AccountControllerTests
     [SetUp]
     public void SetUp()
     {
-        _accountController = new AccountController();
+        _accountController = new AccountController(
+            Options.Create(new CsocOptions
+            {
+                WasteObligationsBaseAddress = "http://localhost:3000"
+            }),
+            new Mock<IFeatureManager>().Object);
         _fixture = new Fixture();
         var mockUrlHelper = new Mock<IUrlHelper>();
         mockUrlHelper.Setup(x => x.IsLocalUrl(It.IsAny<string>())).Returns<string>(url => !string.IsNullOrEmpty(url));
+        mockUrlHelper
+            .Setup(x => x.Action(It.IsAny<UrlActionContext>()))
+            .Returns<UrlActionContext>(context => $"/{context.Action}/{context.Controller}");
         _accountController.Url = mockUrlHelper.Object;
     }
 
