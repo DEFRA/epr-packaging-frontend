@@ -21,6 +21,12 @@ src/FrontendSchemeRegistration.UI/Resources/.../SomeResource.en.resx::resource_k
 
 That lets import update the matching Welsh file and key, for example `SomeResource.cy.resx`.
 
+Set each page entry's `figmaUrl` to the exact Figma frame, prototype or design
+URL that matches the page being translated. The exporter writes this to the
+visible `Figma link` column so translators can check layout, component context
+and nearby content. Use `null` only when no design URL is available yet, and fill
+it in before sending the workbook for translation whenever possible.
+
 ## CSoC profile
 
 The first profile is `csoc`:
@@ -32,8 +38,20 @@ dotnet run --project tools/translations/cli/cli.csproj -- export --profile csoc
 By default this writes one workbook per CSoC page with translation entries to:
 
 ```text
-translations/welsh-translations/csoc
+translations/welsh-translations/csoc/xlsx
 ```
+
+It also writes matching deterministic review JSON files to:
+
+```text
+translations/welsh-translations/csoc/json
+```
+
+Existing workbooks and JSON files are only overwritten when their translator
+notes or translation rows have changed, so repeated exports do not create Git
+diffs from workbook metadata alone. Treat the JSON files as generated review
+artifacts; the Excel workbooks remain the translator-facing files, and the
+profile and RESX files remain the source inputs.
 
 Export fails if a selected English RESX value starts or ends with whitespace.
 Move spacing into the Razor view or layout instead of preserving it in
@@ -56,6 +74,11 @@ To import translated workbooks:
 dotnet run --project tools/translations/cli/cli.csproj -- import --profile csoc
 ```
 
+By default import reads from `translations/welsh-translations/csoc/xlsx`. If
+you pass an export root directory, such as `translations/welsh-translations/csoc`
+or `/tmp/epr-packaging-csoc-translations`, import reads from its `xlsx`
+subdirectory.
+
 Blank Welsh cells preserve the existing Welsh RESX value. Conflicting non-blank translations for the same hidden translation key fail the import.
 
 Import also validates that translated values preserve source placeholders and
@@ -69,6 +92,8 @@ Add or update JSON under `tools/translations/profiles`. A page entry should incl
 
 - `route`: the public route or a short process label.
 - `view`: the Razor view that renders the page.
+- `figmaUrl`: the exact Figma frame, prototype or design URL for the page, or
+  `null` if the design URL is not yet available.
 - `featureFlags`: flags that affect whether the content is shown.
 - `appSettings`: settings that influence the rendered content or links.
 - `resources`: source `.en.resx` files plus optional `keys` or `keyPrefixes`.
@@ -156,3 +181,9 @@ files currently named in the profile:
 
 Do not create Welsh translations manually. Only import or copy Welsh text from
 an approved source when the English string and UI placement match.
+
+## Email translations
+
+Page translations are covered by this workflow. A similar export/import process
+for email content is expected, and the details will be added once that process is
+defined.

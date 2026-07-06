@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.IO.Compression;
+using System.Text.Json;
 using System.Xml.Linq;
 using Translations;
 using NUnit.Framework;
@@ -53,17 +54,24 @@ public sealed class TranslationExportImportTests
         var profile = CreateProfile(
             CreatePage("first-page", "01-first.xlsx", resourcePath),
             CreatePage("second-page", "02-second.xlsx", resourcePath));
-        var staleSecondWorkbook = Path.Combine(_projectRoot, "exports", "02-second.xlsx");
+        var staleSecondWorkbook = Path.Combine(_projectRoot, "exports", "xlsx", "02-second.xlsx");
+        var staleSecondTextExport = Path.Combine(_projectRoot, "exports", "json", "02-second.json");
         Directory.CreateDirectory(Path.GetDirectoryName(staleSecondWorkbook)!);
+        Directory.CreateDirectory(Path.GetDirectoryName(staleSecondTextExport)!);
         File.WriteAllText(staleSecondWorkbook, "stale workbook");
+        File.WriteAllText(staleSecondTextExport, "stale text export");
 
         var consoleOutput = await CaptureConsoleOutputAsync(() =>
             ExportService.ExportAsync(_projectRoot, profile, "exports"));
 
-        var firstWorkbook = Path.Combine(_projectRoot, "exports", "01-first.xlsx");
-        var secondWorkbook = Path.Combine(_projectRoot, "exports", "02-second.xlsx");
+        var firstWorkbook = Path.Combine(_projectRoot, "exports", "xlsx", "01-first.xlsx");
+        var firstTextExport = Path.Combine(_projectRoot, "exports", "json", "01-first.json");
+        var secondWorkbook = Path.Combine(_projectRoot, "exports", "xlsx", "02-second.xlsx");
+        var secondTextExport = Path.Combine(_projectRoot, "exports", "json", "02-second.json");
         Assert.That(File.Exists(firstWorkbook), Is.True);
+        Assert.That(File.Exists(firstTextExport), Is.True);
         Assert.That(File.Exists(secondWorkbook), Is.False);
+        Assert.That(File.Exists(secondTextExport), Is.False);
         Assert.That(consoleOutput, Does.Contain("Skipped second-page: no translation entries to include in this page"));
 
         var rows = await XlsxWorkbookReader.ReadTranslatedRowsAsync(firstWorkbook);
@@ -71,6 +79,73 @@ public sealed class TranslationExportImportTests
         Assert.That(rows.Select(row => row.TranslationKey), Is.EquivalentTo(SharedResourceTranslationKeys));
         Assert.That(rows.Single(row => row.TranslationKey.EndsWith("::heading", StringComparison.Ordinal)).Welsh, Is.EqualTo("Cyflwyno <strong>{0}</strong>"));
         Assert.That(rows.Single(row => row.TranslationKey.EndsWith("::body", StringComparison.Ordinal)).Welsh, Is.Empty);
+    }
+
+    [Test]
+    public async Task ExportAsync_WhenExportedContentIsUnchanged_DoesNotRewriteWorkbookOrTextExport()
+    {
+        var resourcePath = "Resources/Page.en.resx";
+        WriteResx(resourcePath, ("message", "Submit"));
+        WriteResx("Resources/Page.cy.resx", ("message", "Cyflwyno"));
+
+        var profile = CreateProfile(CreatePage("page", "page.xlsx", resourcePath));
+        await ExportService.ExportAsync(_projectRoot, profile, "exports");
+
+        var workbookPath = Path.Combine(_projectRoot, "exports", "xlsx", "page.xlsx");
+        var textExportPath = Path.Combine(_projectRoot, "exports", "json", "page.json");
+        var originalWorkbook = await File.ReadAllBytesAsync(workbookPath);
+        var originalTextExport = await File.ReadAllTextAsync(textExportPath);
+        var preservedWriteTime = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        File.SetLastWriteTimeUtc(workbookPath, preservedWriteTime);
+        File.SetLastWriteTimeUtc(textExportPath, preservedWriteTime);
+
+        var consoleOutput = await CaptureConsoleOutputAsync(() =>
+            ExportService.ExportAsync(_projectRoot, profile, "exports"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(File.GetLastWriteTimeUtc(workbookPath), Is.EqualTo(preservedWriteTime));
+            Assert.That(File.GetLastWriteTimeUtc(textExportPath), Is.EqualTo(preservedWriteTime));
+            Assert.That(File.ReadAllBytes(workbookPath), Is.EqualTo(originalWorkbook));
+            Assert.That(File.ReadAllText(textExportPath), Is.EqualTo(originalTextExport));
+            Assert.That(consoleOutput, Does.Contain("workbook: unchanged; JSON: unchanged"));
+            Assert.That(consoleOutput, Does.Contain("Workbooks: created 0, updated 0, unchanged 1"));
+            Assert.That(consoleOutput, Does.Contain("JSON sidecars: created 0, updated 0, unchanged 1"));
+        });
+    }
+
+    [Test]
+    public async Task ExportAsync_WhenTextExportIsMissing_CreatesItWithoutRewritingMatchingWorkbook()
+    {
+        var resourcePath = "Resources/Page.en.resx";
+        WriteResx(resourcePath, ("message", "Submit"));
+        WriteResx("Resources/Page.cy.resx", ("message", "Cyflwyno"));
+
+        var profile = CreateProfile(CreatePage("page", "page.xlsx", resourcePath));
+        await ExportService.ExportAsync(_projectRoot, profile, "exports");
+
+        var workbookPath = Path.Combine(_projectRoot, "exports", "xlsx", "page.xlsx");
+        var textExportPath = Path.Combine(_projectRoot, "exports", "json", "page.json");
+        File.Delete(textExportPath);
+        var preservedWriteTime = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        File.SetLastWriteTimeUtc(workbookPath, preservedWriteTime);
+
+        var consoleOutput = await CaptureConsoleOutputAsync(() =>
+            ExportService.ExportAsync(_projectRoot, profile, "exports"));
+
+        using var textExport = JsonDocument.Parse(await File.ReadAllTextAsync(textExportPath));
+        var row = textExport.RootElement.GetProperty("rows")[0];
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(File.GetLastWriteTimeUtc(workbookPath), Is.EqualTo(preservedWriteTime));
+            Assert.That(consoleOutput, Does.Contain("workbook: unchanged; JSON: created"));
+            Assert.That(textExport.RootElement.GetProperty("translatorNotes").GetArrayLength(), Is.GreaterThan(0));
+            Assert.That(row.GetProperty("translationKey").GetString(), Is.EqualTo("Resources/Page.en.resx::message"));
+            Assert.That(row.GetProperty("section").GetString(), Is.EqualTo("page section"));
+            Assert.That(row.GetProperty("english").GetString(), Is.EqualTo("Submit"));
+            Assert.That(row.GetProperty("welsh").GetString(), Is.EqualTo("Cyflwyno"));
+        });
     }
 
     [Test]
@@ -97,6 +172,54 @@ public sealed class TranslationExportImportTests
         Assert.That(File.ReadAllText(targetPath), Does.Contain("&lt;strong&gt;{0}&lt;/strong&gt;"));
         Assert.That(consoleOutput, Does.Contain("Imported 1 changed value"));
         Assert.That(consoleOutput, Does.Contain("Updated 1 resource file"));
+    }
+
+    [Test]
+    public async Task ImportAsync_WhenGivenExportRootDirectory_ReadsWorkbooksFromXlsxSubdirectory()
+    {
+        var resourcePath = "Resources/Page.en.resx";
+        WriteResx(resourcePath, ("message", "Submit"));
+
+        var inputDirectory = Path.Combine(_projectRoot, "imports");
+        var workbookDirectory = Path.Combine(inputDirectory, "xlsx");
+        var workbookPath = Path.Combine(workbookDirectory, "page.xlsx");
+        await WriteWorkbookAsync(
+            workbookPath,
+            resourcePath,
+            "message",
+            "Submit",
+            "Cyflwyno");
+
+        var profile = CreateProfile(CreatePage("page", "page.xlsx", resourcePath));
+        await ImportService.ImportAsync(_projectRoot, profile, inputDirectory);
+
+        Assert.That(ResxResourceFile.Read(Path.Combine(_projectRoot, "Resources", "Page.cy.resx"))["message"], Is.EqualTo("Cyflwyno"));
+    }
+
+    [Test]
+    public async Task ImportAsync_WhenExportRootAlsoContainsLegacyWorkbooks_PrefersXlsxSubdirectory()
+    {
+        var resourcePath = "Resources/Page.en.resx";
+        WriteResx(resourcePath, ("message", "Submit"));
+
+        var inputDirectory = Path.Combine(_projectRoot, "imports");
+        await WriteWorkbookAsync(
+            Path.Combine(inputDirectory, "legacy-page.xlsx"),
+            resourcePath,
+            "message",
+            "Submit",
+            "Hen werth");
+        await WriteWorkbookAsync(
+            Path.Combine(inputDirectory, "xlsx", "page.xlsx"),
+            resourcePath,
+            "message",
+            "Submit",
+            "Cyflwyno");
+
+        var profile = CreateProfile(CreatePage("page", "page.xlsx", resourcePath));
+        await ImportService.ImportAsync(_projectRoot, profile, inputDirectory);
+
+        Assert.That(ResxResourceFile.Read(Path.Combine(_projectRoot, "Resources", "Page.cy.resx"))["message"], Is.EqualTo("Cyflwyno"));
     }
 
     [Test]
@@ -134,7 +257,7 @@ public sealed class TranslationExportImportTests
 
         Assert.That(exception!.Message, Does.Contain("English translation values must not include leading or trailing whitespace"));
         Assert.That(exception.Message, Does.Contain("Resources/Page.en.resx::message"));
-        Assert.That(File.Exists(Path.Combine(_projectRoot, "exports", "page.xlsx")), Is.False);
+        Assert.That(File.Exists(Path.Combine(_projectRoot, "exports", "xlsx", "page.xlsx")), Is.False);
     }
 
     [Test]
@@ -375,7 +498,7 @@ public sealed class TranslationExportImportTests
 
         await ExportService.ExportAsync(_projectRoot, profile, "exports");
 
-        var rows = await XlsxWorkbookReader.ReadTranslatedRowsAsync(Path.Combine(_projectRoot, "exports", "page.xlsx"));
+        var rows = await XlsxWorkbookReader.ReadTranslatedRowsAsync(Path.Combine(_projectRoot, "exports", "xlsx", "page.xlsx"));
         Assert.That(
             rows.Select(row => row.TranslationKey),
             Is.EqualTo(new[]
@@ -594,8 +717,9 @@ public sealed class TranslationExportImportTests
         Assert.Multiple(() =>
         {
             Assert.That(console.ExitCode, Is.Zero);
-            Assert.That(File.Exists(Path.Combine(_projectRoot, "cli-exports", "page.xlsx")), Is.True);
-            Assert.That(console.Out, Does.Contain("Created 1 translation workbook"));
+            Assert.That(File.Exists(Path.Combine(_projectRoot, "cli-exports", "xlsx", "page.xlsx")), Is.True);
+            Assert.That(File.Exists(Path.Combine(_projectRoot, "cli-exports", "json", "page.json")), Is.True);
+            Assert.That(console.Out, Does.Contain("Workbooks: created 1"));
             Assert.That(console.Error, Is.Empty);
         });
     }
@@ -800,6 +924,7 @@ public sealed class TranslationExportImportTests
         string english,
         string welsh)
     {
+        Directory.CreateDirectory(Path.GetDirectoryName(workbookPath)!);
         var rowResourceKey = new ResourceKey(resourcePath, resourceKey);
         var group = new PageTranslationGroup(
             "page",

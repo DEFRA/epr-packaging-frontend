@@ -1,3 +1,5 @@
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using Translations.Configuration;
 using Translations.Models;
 
@@ -5,31 +7,52 @@ namespace Translations.Services;
 
 internal static class ExportService
 {
+    private const string WorkbookOutputDirectoryName = "xlsx";
+    private const string TextExportOutputDirectoryName = "json";
+
     private static readonly string[] DefaultTranslatorInstructions =
     [
         "Preserve placeholders such as {0}, {1}, and format suffixes such as {2:d MMMM yyyy}.",
         "Preserve inline HTML tags such as <strong>...</strong> where they appear."
     ];
 
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        WriteIndented = true
+    };
+
     public static async Task<int> ExportAsync(string projectRoot, TranslationProfile profile, string? outputPath)
     {
         var resolvedOutputPath = PathHelpers.ResolvePath(projectRoot, outputPath ?? profile.DefaultOutputPath);
         Directory.CreateDirectory(resolvedOutputPath);
+        var workbookOutputDirectory = Path.Combine(resolvedOutputPath, WorkbookOutputDirectoryName);
+        var textExportOutputDirectory = Path.Combine(resolvedOutputPath, TextExportOutputDirectoryName);
+        Directory.CreateDirectory(workbookOutputDirectory);
+        Directory.CreateDirectory(textExportOutputDirectory);
 
         var groups = BuildPageTranslationGroups(projectRoot, profile);
-        var createdWorkbookCount = 0;
+        var workbookCounts = new ExportStatusCounts();
+        var textExportCounts = new ExportStatusCounts();
         var skippedPageCount = 0;
         var totalRows = 0;
 
         foreach (var group in groups)
         {
-            var workbookPath = Path.Combine(resolvedOutputPath, group.FileName);
+            var workbookPath = Path.Combine(workbookOutputDirectory, group.FileName);
+            var textExportPath = Path.Combine(textExportOutputDirectory, GetTextExportFileName(group.FileName));
 
             if (group.Rows.Count == 0)
             {
                 if (File.Exists(workbookPath))
                 {
                     File.Delete(workbookPath);
+                }
+
+                if (File.Exists(textExportPath))
+                {
+                    File.Delete(textExportPath);
                 }
 
                 skippedPageCount++;
@@ -43,16 +66,114 @@ internal static class ExportService
                 .Distinct(StringComparer.Ordinal)
                 .ToArray();
 
-            await XlsxWorkbookWriter.WriteAsync(workbookPath, group, instructions);
-            createdWorkbookCount++;
+            var workbookExportData = BuildWorkbookExportData(group, instructions);
+            var textExport = BuildTextExport(group, instructions);
+            var workbookStatus = await WriteWorkbookIfChangedAsync(workbookPath, group, instructions, workbookExportData);
+            var textExportStatus = await WriteTextExportIfChangedAsync(textExportPath, textExport);
+
+            workbookCounts.Add(workbookStatus);
+            textExportCounts.Add(textExportStatus);
             totalRows += group.Rows.Count;
-            Console.WriteLine($"Created {workbookPath} ({group.Rows.Count} row{Plural(group.Rows.Count)})");
+            Console.WriteLine($"Processed {workbookPath} ({group.Rows.Count} row{Plural(group.Rows.Count)}; workbook: {workbookStatus}; JSON: {textExportStatus})");
         }
 
-        Console.WriteLine($"Created {createdWorkbookCount} translation workbook{Plural(createdWorkbookCount)}");
+        Console.WriteLine($"Workbooks: {workbookCounts}");
+        Console.WriteLine($"JSON sidecars: {textExportCounts}");
         Console.WriteLine($"Skipped {skippedPageCount} page{Plural(skippedPageCount)} with no translation entries");
         Console.WriteLine($"Included {totalRows} translation row{Plural(totalRows)}");
         return 0;
+    }
+
+    private static async Task<string> WriteWorkbookIfChangedAsync(
+        string workbookPath,
+        PageTranslationGroup group,
+        IReadOnlyList<string> instructions,
+        WorkbookExportData expectedExportData)
+    {
+        var outputExists = File.Exists(workbookPath);
+        if (outputExists && await WorkbookMatchesExportDataAsync(workbookPath, expectedExportData))
+        {
+            return ExportStatus.Unchanged;
+        }
+
+        Directory.CreateDirectory(Path.GetDirectoryName(workbookPath)!);
+        await XlsxWorkbookWriter.WriteAsync(workbookPath, group, instructions);
+        return outputExists ? ExportStatus.Updated : ExportStatus.Created;
+    }
+
+    private static async Task<bool> WorkbookMatchesExportDataAsync(string workbookPath, WorkbookExportData expectedExportData)
+    {
+        try
+        {
+            var actualExportData = await XlsxWorkbookReader.ReadExportDataAsync(workbookPath);
+            return ExportDataEquals(actualExportData, expectedExportData);
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private static bool ExportDataEquals(WorkbookExportData actual, WorkbookExportData expected)
+    {
+        return actual.TranslatorNotes.SequenceEqual(expected.TranslatorNotes, StringComparer.Ordinal) &&
+               actual.Rows.SequenceEqual(expected.Rows);
+    }
+
+    private static async Task<string> WriteTextExportIfChangedAsync(string textExportPath, TextExport textExport)
+    {
+        var outputExists = File.Exists(textExportPath);
+        var content = $"{JsonSerializer.Serialize(textExport, JsonOptions)}\n";
+
+        if (outputExists && string.Equals(await File.ReadAllTextAsync(textExportPath), content, StringComparison.Ordinal))
+        {
+            return ExportStatus.Unchanged;
+        }
+
+        Directory.CreateDirectory(Path.GetDirectoryName(textExportPath)!);
+        await File.WriteAllTextAsync(textExportPath, content);
+        return outputExists ? ExportStatus.Updated : ExportStatus.Created;
+    }
+
+    private static WorkbookExportData BuildWorkbookExportData(PageTranslationGroup group, IReadOnlyList<string> instructions)
+    {
+        return new WorkbookExportData(
+            instructions,
+            group.Rows
+                .Select(row => new WorkbookExportRow(
+                    row.ResourceKey.TranslationKey,
+                    row.ResourceKey.ResourceFile,
+                    row.ResourceKey.Key,
+                    row.PageId,
+                    row.Route,
+                    row.English,
+                    row.Welsh,
+                    row.FigmaUrl ?? string.Empty))
+                .ToArray());
+    }
+
+    private static TextExport BuildTextExport(PageTranslationGroup group, IReadOnlyList<string> instructions)
+    {
+        return new TextExport(
+            instructions,
+            group.Rows
+                .Select(row => new TextExportRow(
+                    row.ResourceKey.TranslationKey,
+                    row.ResourceKey.ResourceFile,
+                    row.ResourceKey.Key,
+                    row.PageId,
+                    row.Route,
+                    row.Section,
+                    row.English,
+                    row.Welsh,
+                    row.FigmaUrl ?? string.Empty,
+                    row.Context))
+                .ToArray());
+    }
+
+    private static string GetTextExportFileName(string workbookFileName)
+    {
+        return $"{Path.GetFileNameWithoutExtension(workbookFileName)}.json";
     }
 
     private static List<PageTranslationGroup> BuildPageTranslationGroups(string projectRoot, TranslationProfile profile)
@@ -268,6 +389,61 @@ internal static class ExportService
     }
 
     private static string Plural(int count) => count == 1 ? string.Empty : "s";
+
+    private static class ExportStatus
+    {
+        public const string Created = "created";
+        public const string Updated = "updated";
+        public const string Unchanged = "unchanged";
+    }
+
+    private sealed class ExportStatusCounts
+    {
+        private int Created { get; set; }
+
+        private int Updated { get; set; }
+
+        private int Unchanged { get; set; }
+
+        public void Add(string status)
+        {
+            switch (status)
+            {
+                case ExportStatus.Created:
+                    Created++;
+                    break;
+                case ExportStatus.Updated:
+                    Updated++;
+                    break;
+                case ExportStatus.Unchanged:
+                    Unchanged++;
+                    break;
+                default:
+                    throw new InvalidOperationException($"Unknown export status \"{status}\".");
+            }
+        }
+
+        public override string ToString()
+        {
+            return $"created {Created}, updated {Updated}, unchanged {Unchanged}";
+        }
+    }
+
+    private sealed record TextExport(
+        IReadOnlyList<string> TranslatorNotes,
+        IReadOnlyList<TextExportRow> Rows);
+
+    private sealed record TextExportRow(
+        string TranslationKey,
+        string ResourceFile,
+        string ResourceKey,
+        string PageId,
+        string Route,
+        string Section,
+        string English,
+        string Welsh,
+        string FigmaUrl,
+        string Context);
 
     private sealed record ExportBuildContext(
         string ProjectRoot,

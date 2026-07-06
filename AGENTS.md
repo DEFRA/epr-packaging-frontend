@@ -8,6 +8,9 @@ The translation export/import workflow is documented in
 Use `tools/translations/profiles/*.json` as the page matrix for translation
 exports. When a profiled journey changes, re-audit its controller endpoints,
 views, partials and RESX files before regenerating workbooks.
+Set each profile page's `figmaUrl` to the exact Figma frame, prototype or design
+link when one is known. Leave it as `null` only when the design URL is not yet
+available, because the exporter includes this link in the translator workbook.
 
 For CSoC, follow the refresh process in the translation tool README to find new
 resources and keys. Start with a broad search across UI and application code,
@@ -15,6 +18,8 @@ then trace controller routes, feature gates, Razor views, partials and matching
 RESX resources before updating `tools/translations/profiles/csoc.json`.
 Profile pages that only reuse shared rows should still be recorded; export logs
 that there is nothing to include for those pages and skips the empty workbook.
+Exports write workbooks to an `xlsx` subdirectory and matching deterministic
+review JSON sidecars to a `json` subdirectory.
 
 Verify profile changes with:
 
