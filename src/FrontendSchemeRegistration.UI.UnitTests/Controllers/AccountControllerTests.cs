@@ -6,6 +6,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Options;
+using Microsoft.FeatureManagement;
 using Moq;
 using UI.Controllers;
 
@@ -22,7 +23,8 @@ public class AccountControllerTests
             Options.Create(new CsocOptions
             {
                 WasteObligationsBaseAddress = "http://localhost:3000"
-            }));
+            }),
+            new Mock<IFeatureManager>().Object);
         _fixture = new Fixture();
         var mockUrlHelper = new Mock<IUrlHelper>();
         mockUrlHelper.Setup(x => x.IsLocalUrl(It.IsAny<string>())).Returns<string>(url => !string.IsNullOrEmpty(url));

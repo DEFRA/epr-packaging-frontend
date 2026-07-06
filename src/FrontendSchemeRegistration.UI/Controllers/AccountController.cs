@@ -1,6 +1,7 @@
 ﻿namespace FrontendSchemeRegistration.UI.Controllers;
 
 using Application.Options;
+using Constants;
 using ControllerExtensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Microsoft.FeatureManagement;
 using Microsoft.Identity.Web;
 using System.Diagnostics.CodeAnalysis;
 
@@ -18,10 +20,12 @@ using System.Diagnostics.CodeAnalysis;
 public class AccountController : Controller
 {
     private readonly CsocOptions _csocOptions;
+    private readonly IFeatureManager _featureManager;
 
-    public AccountController(IOptions<CsocOptions> csocOptions)
+    public AccountController(IOptions<CsocOptions> csocOptions, IFeatureManager featureManager)
     {
         _csocOptions = csocOptions.Value;
+        _featureManager = featureManager;
     }
 
     /// <summary>
@@ -86,7 +90,7 @@ public class AccountController : Controller
     /// <returns>Sign out result.</returns>
     [ExcludeFromCodeCoverage(Justification = "Unable to mock authentication")]
     [HttpGet("{scheme?}")]
-    public IActionResult SignOut(
+    public async Task<IActionResult> SignOut(
         [FromRoute] string? scheme)
     {
         if (AppServicesAuthenticationInformation.IsAppServicesAadAuthenticationEnabled)
@@ -100,12 +104,16 @@ public class AccountController : Controller
         }
 
         scheme ??= OpenIdConnectDefaults.AuthenticationScheme;
-        var callbackUrl = GetWasteObligationsClearSessionUrl()
-            ?? Url.Action(
-                action: "SignedOut",
-                controller: nameof(HomeController).RemoveControllerFromName(),
-                values: null,
-                protocol: Request.Scheme);
+        var callbackUrl = Url.Action(
+            action: "SignedOut",
+            controller: nameof(HomeController).RemoveControllerFromName(),
+            values: null,
+            protocol: Request.Scheme);
+
+        if (await _featureManager.IsEnabledAsync(FeatureFlags.CsocEnabled))
+        {
+            callbackUrl = GetWasteObligationsClearSessionUrl() ?? callbackUrl;
+        }
 
         return SignOut(
             new AuthenticationProperties
