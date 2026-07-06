@@ -53,19 +53,30 @@ public class AccountController : Controller
     }
 
     /// <summary>
-    /// Clears the local Azure session cookies without triggering Azure AD B2C logout.
+    /// Clears local session state and signs the user out of Azure AD B2C.
     /// Used when signing out from a linked CDP child app.
     /// </summary>
-    /// <returns>Redirect to sign in.</returns>
+    /// <returns>Sign out result.</returns>
     [ExcludeFromCodeCoverage(Justification = "Unable to mock authentication")]
     [HttpGet]
     [AllowAnonymous]
-    public async Task<IActionResult> ClearSession()
+    public IActionResult ClearSession()
     {
         HttpContext.Session.Clear();
-        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-        return Redirect(Url.Action(nameof(SignIn), nameof(AccountController).RemoveControllerFromName())!);
+        var callbackUrl = Url.Action(
+            action: nameof(HomeController.SignedOut),
+            controller: nameof(HomeController).RemoveControllerFromName(),
+            values: null,
+            protocol: Request.Scheme);
+
+        return SignOut(
+            new AuthenticationProperties
+            {
+                RedirectUri = callbackUrl,
+            },
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            OpenIdConnectDefaults.AuthenticationScheme);
     }
 
     /// <summary>
