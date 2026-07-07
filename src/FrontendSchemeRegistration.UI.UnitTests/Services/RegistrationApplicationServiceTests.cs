@@ -134,7 +134,7 @@ public class RegistrationApplicationServiceTests
 
         // Assert
         result.Should().BeNull();
-        _loggerMock.VerifyLog(l => l.LogWarning("Unable to GetProducerRegistrationFees Details, session.FileReachedSynapse is null"));
+        _loggerMock.VerifyLog(l => l.LogWarning("Unable to GetProducerRegistrationFees Details, session.ReadyToCalculateFees is null"));
     }
 
     [Test]
@@ -213,7 +213,7 @@ public class RegistrationApplicationServiceTests
 
         // Assert
         result.Should().BeNull();
-        _loggerMock.VerifyLog(l => l.LogWarning("Unable to GetComplianceSchemeRegistrationFees Details, session.FileReachedSynapse is null"));
+        _loggerMock.VerifyLog(l => l.LogWarning("Unable to GetComplianceSchemeRegistrationFees Details, session.ReadyToCalculateFees is null"));
     }
 
     [Test]
