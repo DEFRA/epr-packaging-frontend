@@ -301,4 +301,45 @@ public class CsocHelperTests
         result.Should().NotBeNull();
         result?.WasteObligationsBaseAddress.Should().Be("https://understanding-obligations");
     }
+
+    [TestCase(null, null)]
+    [TestCase("", null)]
+    [TestCase("https://waste-obligations.example", "https://waste-obligations.example/clear-session")]
+    [TestCase("https://waste-obligations.example/", "https://waste-obligations.example/clear-session")]
+    public void GetWasteObligationsClearSessionUrl_ReturnsExpectedUrl(
+        string? baseAddress,
+        string? expectedUrl)
+    {
+        CsocHelper.GetWasteObligationsClearSessionUrl(baseAddress).Should().Be(expectedUrl);
+    }
+
+    [Test]
+    public void ResolveSignOutCallbackUrl_WhenCsocDisabled_ReturnsSignedOutUrl()
+    {
+        CsocHelper.ResolveSignOutCallbackUrl(
+                "/signed-out",
+                csocEnabled: false,
+                "https://waste-obligations.example")
+            .Should().Be("/signed-out");
+    }
+
+    [Test]
+    public void ResolveSignOutCallbackUrl_WhenCsocEnabled_ReturnsObligationsClearSessionUrl()
+    {
+        CsocHelper.ResolveSignOutCallbackUrl(
+                "/signed-out",
+                csocEnabled: true,
+                "https://waste-obligations.example")
+            .Should().Be("https://waste-obligations.example/clear-session");
+    }
+
+    [Test]
+    public void ResolveSignOutCallbackUrl_WhenCsocEnabledButObligationsNotConfigured_ReturnsSignedOutUrl()
+    {
+        CsocHelper.ResolveSignOutCallbackUrl(
+                "/signed-out",
+                csocEnabled: true,
+                wasteObligationsBaseAddress: null)
+            .Should().Be("/signed-out");
+    }
 }
