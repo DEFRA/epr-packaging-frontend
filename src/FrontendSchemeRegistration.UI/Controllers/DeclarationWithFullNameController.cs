@@ -4,11 +4,13 @@ using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
 using FrontendSchemeRegistration.UI.Extensions;
+using FrontendSchemeRegistration.UI.Services;
 using FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.FeatureManagement;
 
 namespace FrontendSchemeRegistration.UI.Controllers;
 
@@ -21,10 +23,12 @@ public class DeclarationWithFullNameController(
     ISubmissionService submissionService,
     ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
     ILogger<DeclarationWithFullNameController> logger,
-    IRegistrationPeriodProvider registrationPeriodProvider) : Controller
+    IRegistrationPeriodProvider registrationPeriodProvider,
+    IFeatureManager featureManager) : Controller
 {
     private const string ViewName = "DeclarationWithFullName";
     private const string ConfirmationViewName = "CompanyDetailsConfirmation";
+    private const string ProcessingViewName = "DeclarationProcessing";
     private const string SubmissionErrorViewName = "OrganisationDetailsSubmissionFailed";
 
     [HttpGet]
@@ -145,20 +149,26 @@ public class DeclarationWithFullNameController(
 
                 logger.LogInformation("Calling submission service to submit registration for submission ID {SubmissionId}", submissionId);
 
-                await submissionService.SubmitAsync(submissionId, new Guid(model.OrganisationDetailsFileId),
+                var organisationDetailsFileId = new Guid(model.OrganisationDetailsFileId);
+
+                await submissionService.SubmitAsync(submissionId, organisationDetailsFileId,
                     model.FullName,
                     session.RegistrationSession.ApplicationReferenceNumber,
                     session.RegistrationSession.IsResubmission,
                     regJourney);
 
+                var postSubmitController = await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService)
+                    ? ProcessingViewName
+                    : ConfirmationViewName;
+
                 return (model.RegistrationYear.HasValue
-                    ? RedirectToAction("Get", ConfirmationViewName,
+                    ? RedirectToAction("Get", postSubmitController,
                         new
                         {
                             submissionId, registrationyear = model.RegistrationYear.ToString(),
                             registrationjourney = regJourney
                         })
-                    : RedirectToAction("Get", ConfirmationViewName, new { submissionId }));
+                    : RedirectToAction("Get", postSubmitController, new { submissionId }));
             }
             catch (Exception ex)
             {
@@ -176,4 +186,5 @@ public class DeclarationWithFullNameController(
         var routeValue = QueryStringExtensions.BuildRouteValues(submissionId: submissionId, registrationYear: registrationYear, registrationJourney: regJourney);
         ViewBag.BackLinkToDisplay = QueryHelpers.AddQueryString(Url.Content($"~{reviewOrganisationDataPath}"), routeValue.ToDictionary(k => k.Key, k => k.Value.ToString() ?? string.Empty));
     }
+
 }

@@ -63,7 +63,7 @@ public class RegistrationApplicationServiceTests
         _featureManagerMock = new Mock<IFeatureManager>();
         _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
         _mockRegistrationPeriodProvider = new Mock<IRegistrationPeriodProvider>();
-        
+
         _fixture = new Fixture();
 
         var deps = new RegistrationApplicationServiceDependencies
@@ -707,6 +707,90 @@ public class RegistrationApplicationServiceTests
         applicationDetails.Should().NotBeNull();
         applicationDetails.SubmissionId.Should().Be(registrationApplicationDetails.SubmissionId);
         applicationDetails.ApplicationReferenceNumber.Should().Be(registrationApplicationDetails.ApplicationReferenceNumber);
+    }
+
+    [Test]
+    public async Task GetRegistrationApplicationSession_FlagOn_OverridesFeeDetailsFromSnapshot_WhenAvailable()
+    {
+        // Arrange
+        var organisation = _fixture.Create<Organisation>();
+        organisation.OrganisationNumber = "123";
+        var existingDetails = _fixture.Create<RegistrationApplicationDetails>();
+        var submissionId = Guid.NewGuid();
+        existingDetails.SubmissionId = submissionId;
+        var snapshotDetails = new[]
+        {
+            new FrontendSchemeRegistration.Application.DTOs.RegistrationFeeCalculationDetails { OrganisationId = "ORG-S", OrganisationSize = "Large", NationId = 1 },
+        };
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(_session);
+        _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(new FrontendSchemeRegistrationSession { RegistrationSession = new RegistrationSession() });
+        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(existingDetails);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService)).ReturnsAsync(true);
+        _paymentCalculationServiceMock.Setup(p => p.GetRegistrationFeeCalculationDetails(submissionId)).ReturnsAsync(snapshotDetails);
+        _mockRegistrationPeriodProvider
+            .Setup(x => x.GetRegistrationWindow(It.IsAny<bool>(), It.IsAny<bool>(), RegistrationYear))
+            .Returns(CreateRegistrationWindow(WindowType.DirectLargeProducer, RegistrationYear, new DateTime(2025, 6, 1), new DateTime(2025, 7, 1), new DateTime(2025, 8, 1)));
+
+        // Act
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, RegistrationYear, null);
+
+        // Assert
+        result.RegistrationFeeCalculationDetails.Should().BeEquivalentTo(snapshotDetails);
+        _paymentCalculationServiceMock.Verify(p => p.GetRegistrationFeeCalculationDetails(submissionId), Times.Once);
+    }
+
+    [Test]
+    public async Task GetRegistrationApplicationSession_FlagOn_SnapshotReturnsNull_KeepsExistingFeeDetails()
+    {
+        // Arrange
+        var organisation = _fixture.Create<Organisation>();
+        organisation.OrganisationNumber = "123";
+        var existingDetails = _fixture.Create<RegistrationApplicationDetails>();
+        var submissionId = Guid.NewGuid();
+        existingDetails.SubmissionId = submissionId;
+        var originalFeeDetails = existingDetails.RegistrationFeeCalculationDetails;
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(_session);
+        _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(new FrontendSchemeRegistrationSession { RegistrationSession = new RegistrationSession() });
+        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(existingDetails);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService)).ReturnsAsync(true);
+        _paymentCalculationServiceMock.Setup(p => p.GetRegistrationFeeCalculationDetails(submissionId)).ReturnsAsync((FrontendSchemeRegistration.Application.DTOs.RegistrationFeeCalculationDetails[]?)null);
+        _mockRegistrationPeriodProvider
+            .Setup(x => x.GetRegistrationWindow(It.IsAny<bool>(), It.IsAny<bool>(), RegistrationYear))
+            .Returns(CreateRegistrationWindow(WindowType.DirectLargeProducer, RegistrationYear, new DateTime(2025, 6, 1), new DateTime(2025, 7, 1), new DateTime(2025, 8, 1)));
+
+        // Act
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, RegistrationYear, null);
+
+        // Assert
+        result.RegistrationFeeCalculationDetails.Should().BeEquivalentTo(originalFeeDetails);
+        _paymentCalculationServiceMock.Verify(p => p.GetRegistrationFeeCalculationDetails(submissionId), Times.Once);
+    }
+
+    [Test]
+    public async Task GetRegistrationApplicationSession_FlagOff_DoesNotCallSnapshotEndpoint()
+    {
+        // Arrange
+        var organisation = _fixture.Create<Organisation>();
+        organisation.OrganisationNumber = "123";
+        var existingDetails = _fixture.Create<RegistrationApplicationDetails>();
+        var submissionId = Guid.NewGuid();
+        existingDetails.SubmissionId = submissionId;
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(_session);
+        _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(new FrontendSchemeRegistrationSession { RegistrationSession = new RegistrationSession() });
+        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(existingDetails);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService)).ReturnsAsync(false);
+        _mockRegistrationPeriodProvider
+            .Setup(x => x.GetRegistrationWindow(It.IsAny<bool>(), It.IsAny<bool>(), RegistrationYear))
+            .Returns(CreateRegistrationWindow(WindowType.DirectLargeProducer, RegistrationYear, new DateTime(2025, 6, 1), new DateTime(2025, 7, 1), new DateTime(2025, 8, 1)));
+
+        // Act
+        await _service.GetRegistrationApplicationSession(_httpSession, organisation, RegistrationYear, null);
+
+        // Assert
+        _paymentCalculationServiceMock.Verify(p => p.GetRegistrationFeeCalculationDetails(It.IsAny<Guid>()), Times.Never);
     }
 
     [Test]
@@ -3366,6 +3450,61 @@ public class RegistrationApplicationServiceTests
         };
 
         Assert.DoesNotThrow(() => new RegistrationApplicationService(deps, _dateTimeProvider));
+    }
+
+    [Test]
+    public async Task TryPopulateRegistrationFeeSnapshotAsync_SnapshotAvailable_PopulatesSessionAndReturnsTrue()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var snapshot = new[] { new RegistrationFeeCalculationDetails() };
+        var existingSession = new RegistrationApplicationSession();
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(existingSession);
+        _paymentCalculationServiceMock
+            .Setup(s => s.GetRegistrationFeeCalculationDetails(submissionId))
+            .ReturnsAsync(snapshot);
+
+        // Act
+        var result = await _service.TryPopulateRegistrationFeeSnapshotAsync(_httpSession, submissionId, CancellationToken.None);
+
+        // Assert
+        result.Should().BeTrue();
+        existingSession.RegistrationFeeCalculationDetails.Should().BeSameAs(snapshot);
+        _sessionManagerMock.Verify(sm => sm.SaveSessionAsync(_httpSession, existingSession), Times.Once);
+    }
+
+    [Test]
+    public async Task TryPopulateRegistrationFeeSnapshotAsync_SnapshotNull_ReturnsFalseAndLeavesSessionUntouched()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        _paymentCalculationServiceMock
+            .Setup(s => s.GetRegistrationFeeCalculationDetails(submissionId))
+            .ReturnsAsync((RegistrationFeeCalculationDetails[]?)null);
+
+        // Act
+        var result = await _service.TryPopulateRegistrationFeeSnapshotAsync(_httpSession, submissionId, CancellationToken.None);
+
+        // Assert
+        result.Should().BeFalse();
+        _sessionManagerMock.Verify(sm => sm.SaveSessionAsync(_httpSession, It.IsAny<RegistrationApplicationSession>()), Times.Never);
+    }
+
+    [Test]
+    public void TryPopulateRegistrationFeeSnapshotAsync_CancellationRequested_Throws()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        using var cts = new CancellationTokenSource();
+        cts.Cancel();
+
+        // Act
+        Func<Task> act = () => _service.TryPopulateRegistrationFeeSnapshotAsync(_httpSession, submissionId, cts.Token);
+
+        // Assert
+        act.Should().ThrowAsync<OperationCanceledException>();
+        _paymentCalculationServiceMock.Verify(s => s.GetRegistrationFeeCalculationDetails(It.IsAny<Guid>()), Times.Never);
     }
 
     private RegistrationWindow CreateRegistrationWindow(

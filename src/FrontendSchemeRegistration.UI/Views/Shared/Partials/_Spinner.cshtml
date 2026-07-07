@@ -1,16 +1,29 @@
-﻿@model string
+@using FrontendSchemeRegistration.UI.ViewModels.Shared
+@using Microsoft.AspNetCore.Mvc.Localization
+@model SpinnerViewModel
 
 @{
-    var refreshUrl = Model;
+    var refreshUrl = Model.RefreshUrl;
+
+    LocalizedHtmlString Resolve(string baseKey)
+    {
+        if (string.IsNullOrEmpty(Model.Variant))
+        {
+            return Localizer[baseKey];
+        }
+
+        var variant = Localizer[$"{baseKey}{Model.Variant}"];
+        return variant.IsResourceNotFound ? Localizer[baseKey] : variant;
+    }
 }
 
 <div class="govuk-grid-row spinner-overlay" id="global-spinner" aria-live="polite" aria-busy="true" role="alert">
     <div class="govuk-grid-column-two-thirds">
         <div class="govuk-grid-column-full">
-            <h1 class="govuk-heading-l">@Localizer["SpinnerHeader"]</h1>
+            <h1 class="govuk-heading-l">@Resolve("SpinnerHeader")</h1>
 
             <noscript>
-                <p class="govuk-body">@Localizer["SpinnerNoscriptParagraph1"]</p>
+                <p class="govuk-body">@Resolve("SpinnerNoscriptParagraph1")</p>
                 <p class="govuk-body">
                     @Localizer["SpinnerNoscriptParagraph2"]
                     <a class="govuk-link" href="@refreshUrl">@Localizer["SpinnerNoscriptLinkText"]</a>.
@@ -20,11 +33,10 @@
             </noscript>
 
             <div class="js-on">
-                <p class="govuk-body">@Localizer["SpinnerJsParagraph1"]</p>
+                <p class="govuk-body">@Resolve("SpinnerJsParagraph1")</p>
                 <p class="govuk-body">@Localizer["SpinnerJsParagraph2"]</p>
                 <img src="~/images/spinner.gif" width="50" height="50" alt="spinner_alt_text" runat="server">
             </div>
         </div>
     </div>
 </div>
-

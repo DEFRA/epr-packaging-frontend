@@ -120,17 +120,26 @@
   <data name="SpinnerHeader" xml:space="preserve">
     <value>Wrthi'n prosesu eich cais</value>
   </data>
+  <data name="SpinnerHeaderSubmittingFile" xml:space="preserve">
+    <value>Cyflwyno'ch ffeil</value>
+  </data>
   <data name="SpinnerJsParagraph1" xml:space="preserve">
     <value>Gall hyn gymryd ychydig eiliadau. Aroswch wrth i ni brosesu eich cais.</value>
   </data>
+  <data name="SpinnerJsParagraph1SubmittingFile" xml:space="preserve">
+    <value>Gall hyn gymryd hyd at funud.</value>
+  </data>
   <data name="SpinnerJsParagraph2" xml:space="preserve">
-    <value>Peidiwch â chau nac adnewyddu'r dudalen.</value>
+    <value>Peidiwch â chau na adnewyddu'r dudalen hon.</value>
   </data>
   <data name="SpinnerNoscriptLinkText" xml:space="preserve">
     <value>ail-lwythwch y dudalen hon</value>
   </data>
   <data name="SpinnerNoscriptParagraph1" xml:space="preserve">
     <value>Gall hyn gymryd ychydig eiliadau.</value>
+  </data>
+  <data name="SpinnerNoscriptParagraph1SubmittingFile" xml:space="preserve">
+    <value>[Welsh] This may take up to a minute.</value>
   </data>
   <data name="SpinnerNoscriptParagraph2" xml:space="preserve">
     <value>Os nad yw'r broses yn cwblhau,</value>

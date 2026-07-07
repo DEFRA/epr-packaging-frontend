@@ -58,7 +58,23 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             ?? throw new InvalidOperationException($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(dependencies.HttpContextAccessor)} cannot be null.");
         _registrationPeriodProvider = dependencies.RegistrationPeriodProvider;
     }
-    private void SetLateFeeFlag(RegistrationApplicationSession session, int registrationYear)   
+    private async Task TryHydrateRegistrationFeeFromSnapshot(RegistrationApplicationSession session)
+    {
+        if (!session.SubmissionId.HasValue
+            || session.SubmissionId.Value == Guid.Empty
+            || !await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService))
+        {
+            return;
+        }
+
+        var snapshotDetails = await paymentCalculationService.GetRegistrationFeeCalculationDetails(session.SubmissionId.Value);
+        if (snapshotDetails is not null)
+        {
+            session.RegistrationFeeCalculationDetails = snapshotDetails;
+        }
+    }
+
+    private void SetLateFeeFlag(RegistrationApplicationSession session, int registrationYear)
     {
         var isSmallProducer = string.Equals(session.RegistrationFeeCalculationDetails?[0].OrganisationSize, "Small",
             StringComparison.InvariantCultureIgnoreCase);
@@ -141,6 +157,9 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         session.RegistrationApplicationSubmittedDate = registrationApplicationDetails.RegistrationApplicationSubmittedDate;
         session.RegistrationApplicationSubmittedComment = registrationApplicationDetails.RegistrationApplicationSubmittedComment;
         session.RegistrationFeeCalculationDetails = registrationApplicationDetails.RegistrationFeeCalculationDetails;
+
+        await TryHydrateRegistrationFeeFromSnapshot(session);
+
         session.HasAnyApprovedOrQueriedRegulatorDecision = registrationApplicationDetails.HasAnyApprovedOrQueriedRegulatorDecision;
         session.IsLatestSubmittedEventAfterFileUpload = registrationApplicationDetails.IsLatestSubmittedEventAfterFileUpload;
         session.LatestSubmittedEventCreatedDatetime = registrationApplicationDetails.LatestSubmittedEventCreatedDatetime;
@@ -495,6 +514,22 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         await sessionManager.SaveSessionAsync(httpSession, session);
     }
 
+    public async Task<bool> TryPopulateRegistrationFeeSnapshotAsync(ISession httpSession, Guid submissionId, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var snapshot = await paymentCalculationService.GetRegistrationFeeCalculationDetails(submissionId);
+        if (snapshot is null)
+        {
+            return false;
+        }
+
+        var session = await sessionManager.GetSessionAsync(httpSession) ?? new RegistrationApplicationSession();
+        session.RegistrationFeeCalculationDetails = snapshot;
+        await sessionManager.SaveSessionAsync(httpSession, session);
+        return true;
+    }
+
     public async Task SetRegistrationFileUploadSession(ISession httpSession, string organisationNumber, int registrationYear, bool? isResubmission)
     {
         var registrationSessionTask = sessionManager.GetSessionAsync(httpSession);
@@ -709,6 +744,8 @@ public interface IRegistrationApplicationService
 
     Task<List<RegistrationYearApplicationsViewModel>> BuildRegistrationYearApplicationsViewModels(
         ISession httpSession, Organisation organisation, UserData userData);
+
+    Task<bool> TryPopulateRegistrationFeeSnapshotAsync(ISession httpSession, Guid submissionId, CancellationToken cancellationToken);
 }
 
 

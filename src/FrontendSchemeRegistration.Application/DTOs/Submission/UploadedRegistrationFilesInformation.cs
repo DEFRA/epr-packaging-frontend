@@ -7,6 +7,8 @@ public class UploadedRegistrationFilesInformation
 {
     public Guid CompanyDetailsFileId { get; set; }
 
+    public string CompanyDetailsBlobName { get; set; } = string.Empty;
+
     public string CompanyDetailsFileName { get; set; } = string.Empty;
 
     public Guid CompanyDetailsUploadedBy { get; set; }

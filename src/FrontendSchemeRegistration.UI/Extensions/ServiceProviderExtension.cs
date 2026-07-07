@@ -148,6 +148,7 @@ public static class ServiceProviderExtension
         services.Configure<HttpClientOptions>(configuration.GetSection(HttpClientOptions.ConfigSection));
         services.Configure<AccountsFacadeApiOptions>(configuration.GetSection(AccountsFacadeApiOptions.ConfigSection));
         services.Configure<PaymentFacadeApiOptions>(configuration.GetSection(PaymentFacadeApiOptions.ConfigSection));
+        services.Configure<RegistrationFeeSnapshotPollingOptions>(configuration.GetSection(RegistrationFeeSnapshotPollingOptions.ConfigSection));
         services.Configure<WebApiOptions>(configuration.GetSection(WebApiOptions.ConfigSection));
         services.Configure<ValidationOptions>(configuration.GetSection(ValidationOptions.ConfigSection));
         services.Configure<RedisOptions>(configuration.GetSection(RedisOptions.ConfigSection));
