@@ -191,6 +191,7 @@ public static class ServiceProviderExtension
             RegistrationPeriodProvider = sp.GetRequiredService<IRegistrationPeriodProvider>()
         });
         services.AddScoped<IRegistrationApplicationService, RegistrationApplicationService>();
+        services.AddScoped<IRegistrationFactory, RegistrationFactory>();
         services.AddSingleton<IPatchService, PatchService>();
         services.AddAutoMapper((serviceProvider, automapper) =>
         {

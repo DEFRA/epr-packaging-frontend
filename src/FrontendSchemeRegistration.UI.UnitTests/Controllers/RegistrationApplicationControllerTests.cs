@@ -9,6 +9,7 @@ using FrontendSchemeRegistration.Application.DTOs.ComplianceScheme;
 using FrontendSchemeRegistration.Application.DTOs.PaymentCalculations;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
+using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers;
 using FrontendSchemeRegistration.UI.Controllers.Error;
@@ -23,6 +24,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
+using Microsoft.FeatureManagement;
 using Moq;
 using Newtonsoft.Json;
 using Organisation = EPR.Common.Authorization.Models.Organisation;
@@ -121,6 +123,9 @@ public class RegistrationApplicationControllerTests
 
     private Mock<IRegistrationPeriodProvider> RegistrationPeriodProvider { get; set; }
     private Mock<ILogger<RegistrationApplicationController>> LoggerMock { get; set; }
+    private Mock<IFeatureManager> FeatureManagerMock { get; set; }
+    private Mock<IRegistrationFactory> RegistrationFactoryMock { get; set; }
+    private Mock<IPaymentCalculationService> PaymentCalculationServiceMock { get; set; }
 
     private RegistrationApplicationSession Session { get; set; }
 
@@ -137,12 +142,19 @@ public class RegistrationApplicationControllerTests
         LoggerMock = new Mock<ILogger<RegistrationApplicationController>>();
         RegistrationApplicationService = new Mock<IRegistrationApplicationService>();
         RegistrationPeriodProvider = new();
+        FeatureManagerMock = new Mock<IFeatureManager>();
+        FeatureManagerMock.Setup(f => f.IsEnabledAsync(It.IsAny<string>())).ReturnsAsync(false);
+        RegistrationFactoryMock = new Mock<IRegistrationFactory>();
+        PaymentCalculationServiceMock = new Mock<IPaymentCalculationService>();
 
         SystemUnderTest = new RegistrationApplicationController(
             SessionManagerMock.Object,
             LoggerMock.Object,
             RegistrationApplicationService.Object,
-            RegistrationPeriodProvider.Object);
+            RegistrationPeriodProvider.Object,
+            FeatureManagerMock.Object,
+            RegistrationFactoryMock.Object,
+            PaymentCalculationServiceMock.Object);
         SystemUnderTest.ControllerContext.HttpContext = _httpContextMock.Object;
         SystemUnderTest.ControllerContext.HttpContext.Session = new Mock<ISession>().Object;
         SystemUnderTest.TempData = tempDataDictionaryMock.Object;

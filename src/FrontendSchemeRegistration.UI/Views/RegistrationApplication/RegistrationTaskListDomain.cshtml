@@ -1,0 +1,133 @@
+@using FrontendSchemeRegistration.UI.Sessions
+@using FrontendSchemeRegistration.UI.ViewModels.Shared
+@model FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication.RegistrationTaskListDomainViewModel
+
+@{
+    ViewData["Title"] = Localizer[Model.PageTitle];
+
+    var headingViewModel = new RegistrationHeadingViewModel(
+        Model.ShowRegistrationCaption,
+        Model.RegistrationJourney,
+        Model.ShowRegistrationCaption ? Model.OrganisationName : null,
+        !Model.ShowRegistrationCaption ? Localizer[Model.PageHeading, Model.OrganisationName] : null,
+        Model.RegistrationYear);
+}
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-three-quarters">
+            <partial name="Partials/_RegistrationHeading" model="headingViewModel"/>
+
+            <dl class="govuk-summary-list">
+                <div class="govuk-summary-list__row">
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__value">
+                        @if (Model.ShowFileUploadLink)
+                        {
+                            <a asp-controller="RegistrationApplication" asp-action="RedirectToFileUpload" asp-route-registrationyear="@Model.RegistrationYear"
+                               asp-route-registrationjourney="@Context.Request.Query["registrationjourney"]"
+                               class="govuk-link govuk-link--no-visited-state">
+                                @Localizer[Model.FileUploadTask]
+                            </a>
+                        }
+                        else
+                        {
+                            @Localizer[Model.FileUploadTask]
+                        }
+                        @if (Model.FileUploadCompleted)
+                        {
+                            <br/>
+                            @Localizer[Model.CompletedFileUploadTask]
+                        }
+                    </dt>
+                    <dd class="govuk-summary-list__actions">
+                        @{ ShowProgressStatus(Model.FileUploadStatus); }
+                    </dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__value">
+                        @if (Model.CanStartPaymentStep)
+                        {
+                            <a asp-controller="RegistrationApplication" asp-action="RegistrationFeeCalculations" asp-route-registrationyear="@Model.RegistrationYear"
+                               asp-route-registrationjourney="@Context.Request.Query["registrationjourney"]"
+                               class="govuk-link govuk-link--no-visited-state">
+                                @Localizer[Model.ViewPaymentTask]
+                            </a>
+                        }
+                        else
+                        {
+                            @Localizer[Model.ViewPaymentTask]
+                        }
+                        @if (Model.PaymentCompleted)
+                        {
+                            <br/>
+                            @Localizer[Model.CompletedViewPaymentTask]
+                        }
+                    </dt>
+                    <dd class="govuk-summary-list__actions">
+                        @{ ShowProgressStatus(Model.PaymentViewStatus); }
+                    </dd>
+                </div>
+                <div class="govuk-summary-list__row">
+                    <dt class="govuk-summary-list__value">
+                        @if (Model.CanStartSubmitStep)
+                        {
+                            <a asp-controller="RegistrationApplication" asp-action="AdditionalInformation" asp-route-registrationyear="@Model.RegistrationYear"
+                               asp-route-registrationjourney="@Context.Request.Query["registrationjourney"]"
+                               class="govuk-link govuk-link--no-visited-state">
+                                @Localizer[Model.SubmitRegistrationApplicationTask]
+                            </a>
+                        }
+                        else
+                        {
+                            @Localizer[Model.SubmitRegistrationApplicationTask]
+                        }
+                        @if (Model.SubmitApplicationCompleted)
+                        {
+                            <br/>
+                            @Localizer[Model.CompletedSubmitRegistrationApplicationTask]
+                        }
+                    </dt>
+                    <dd class="govuk-summary-list__actions">
+                        @{ ShowProgressStatus(Model.AdditionalDetailsStatus); }
+                    </dd>
+                </div>
+            </dl>
+            @if (Model.IsComplianceScheme)
+            {
+                <p class="govuk-body govuk-!-margin-top-4">
+                    <a asp-controller="ComplianceSchemeLanding" asp-action="Get" class="govuk-link">@Localizer["return_to_dashboard"]</a>
+                </p>
+            }
+            else
+            {
+                <p class="govuk-body govuk-!-margin-top-4">
+                    <a asp-controller="FrontendSchemeRegistration" asp-action="HomePageSelfManaged" class="govuk-link">@Localizer["return_to_dashboard"]</a>
+                </p>
+            }
+        </div>
+    </div>
+</main>
+
+@{
+    void ShowProgressStatus(RegistrationTaskListStatus status)
+    {
+        if (status == RegistrationTaskListStatus.CanNotStartYet)
+        {
+            <strong class="govuk-tag govuk-tag--grey">@Localizer["can_not_start_yet_status"]</strong>
+        }
+        else if (status == RegistrationTaskListStatus.NotStarted)
+        {
+            <strong class="govuk-tag govuk-tag--grey">@Localizer["not_started_status"]</strong>
+        }
+        else if (status == RegistrationTaskListStatus.Pending)
+        {
+            <strong class="govuk-tag govuk-tag--yellow">@Localizer["pending_status"]</strong>
+        }
+        else if (status == RegistrationTaskListStatus.Completed)
+        {
+            <strong class="govuk-tag govuk-tag--blue">@Localizer["completed_status"]</strong>
+        }
+    }
+}

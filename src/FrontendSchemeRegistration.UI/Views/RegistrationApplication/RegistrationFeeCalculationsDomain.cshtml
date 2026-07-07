@@ -1,0 +1,67 @@
+@model FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication.ProducerFeeCalculationDomainViewModel
+
+@{
+    ViewData["Title"] = Localizer["registration_fee_calculations"];
+}
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-three-quarters">
+            <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+                @Localizer[!Model.IsRegistrationFeePaid ? "registration_fee_due" : "registration_fee"]
+            </h1>
+            @if (!Model.IsRegistrationFeePaid)
+            {
+                <p class="govuk-body">
+                    @Localizer["registration_fee_due_x", ConvertToThousandSeparatedDecimal(Model.TotalAmountOutstanding)]
+                </p>
+                <p class="govuk-body govuk-!-margin-bottom-4">
+                    @Localizer["registration_fees_calculated_from_your_information"]
+                </p>
+                <p class="govuk-body govuk-!-margin-bottom-4">
+                    @Localizer["registration_fee_may_change"]
+                </p>
+                <p class="govuk-body govuk-!-margin-bottom-4">
+                    <a class="govuk-link" rel="noreferrer noopener" target="_blank"
+                       href="https://www.gov.uk/guidance/extended-producer-responsibility-for-packaging-register-and-pay-the-fee">@Localizer["registration_charge_details"]</a>.
+                </p>
+                <p class="govuk-body govuk-!-margin-bottom-4">
+                    <a href="@GuidanceLinks.EPR_IllustrativeFeesAndCharges"
+                       class="govuk-link govuk-link--no-visited-state"
+                       rel="noreferrer noopener"
+                       target="_blank">@Localizer["more_about_EPR_fees_and_charges"]
+                    </a>
+                </p>
+            }
+            else
+            {
+                <p class="govuk-body govuk-!-margin-bottom-4">@Localizer["registration_fee_may_change"]</p>
+                <p class="govuk-body govuk-!-margin-bottom-4">
+                    <a class="govuk-link" rel="noreferrer noopener" target="_blank"
+                       href="https://www.gov.uk/guidance/extended-producer-responsibility-for-packaging-register-and-pay-the-fee">@Localizer["registration_charge_details"]</a>.
+                </p>
+            }
+            <partial name="_FeeCalculationBreakdown" model="@Model"/>
+
+            <p class="govuk-body govuk-!-margin-top-4">
+                @if (Model.ShowPaymentButton)
+                {
+                    <a asp-action="SelectPaymentOptions" asp-route-registrationyear="@Model.RegistrationYear" asp-route-registrationjourney="@Context.Request.Query["registrationjourney"]" role="button" draggable="false" class="govuk-button" data-module="govuk-button">
+                        @SharedLocalizer["continue"]
+                    </a>
+                }
+                else
+                {
+                    <a asp-action="RegistrationTaskList" asp-route-registrationyear="@Model.RegistrationYear" asp-route-registrationjourney="@Context.Request.Query["registrationjourney"]" class="govuk-link govuk-link--no-visited-state">
+                        @Localizer["return_to_registration_steps"]
+                    </a>
+                }
+            </p>
+        </div>
+    </div>
+</main>
+
+@functions
+{
+    private static string ConvertToThousandSeparatedDecimal(int number) => (number / 100).ToString("#,##0.00");
+}

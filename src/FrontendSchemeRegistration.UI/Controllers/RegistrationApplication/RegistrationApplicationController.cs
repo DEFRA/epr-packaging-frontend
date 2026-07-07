@@ -4,10 +4,12 @@ using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Extensions;
+using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
 using FrontendSchemeRegistration.UI.Controllers.Error;
+using FrontendSchemeRegistration.UI.Domain;
 using FrontendSchemeRegistration.UI.Extensions;
 using FrontendSchemeRegistration.UI.Services;
 using FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
@@ -16,6 +18,7 @@ using FrontendSchemeRegistration.UI.ViewModels.RegistrationApplication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.FeatureManagement;
 
 namespace FrontendSchemeRegistration.UI.Controllers.RegistrationApplication;
 
@@ -24,7 +27,10 @@ public class RegistrationApplicationController(
     ISessionManager<RegistrationApplicationSession> sessionManager,
     ILogger<RegistrationApplicationController> logger,
     IRegistrationApplicationService registrationApplicationService,
-    IRegistrationPeriodProvider registrationPeriodProvider
+    IRegistrationPeriodProvider registrationPeriodProvider,
+    IFeatureManager featureManager,
+    IRegistrationFactory registrationFactory,
+    IPaymentCalculationService paymentCalculationService
 )
     : Controller
 {
@@ -76,34 +82,45 @@ public class RegistrationApplicationController(
 
         var registrationYear = registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"], false);
 
-        var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, registrationYear.GetValueOrDefault(), registrationJourney, isResubmission);
-        session.Journey = [session.IsComplianceScheme ? PagePaths.ComplianceSchemeLanding : PagePaths.HomePageSelfManaged, PagePaths.RegistrationTaskList];
-
-        if (session.SkipProducerRegistrationGuidance)
+        if (await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationDomainModel))
         {
-            session.Journey = [session.IsComplianceScheme ? PagePaths.CsoRegistration : PagePaths.HomePageSelfManaged, PagePaths.RegistrationTaskList];
-            var nation = NationExtensions.GetNationName(session.RegulatorNation);
-            SetBackLink(session, PagePaths.RegistrationTaskList, null, null, session.IsComplianceScheme ? nation : null);
+            var registration = await registrationFactory.CreateAsync(HttpContext.Session, organisation, registrationYear.GetValueOrDefault(), registrationJourney, isResubmission);
+
+            return View("RegistrationTaskListDomain", new RegistrationTaskListDomainViewModel(
+                registration,
+                organisation.Name,
+                organisation.OrganisationNumber.ToReferenceNumberFormat(),
+                registrationYear.GetValueOrDefault()));
+        }
+
+        var legacySession = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, organisation, registrationYear.GetValueOrDefault(), registrationJourney, isResubmission);
+        legacySession.Journey = [legacySession.IsComplianceScheme ? PagePaths.ComplianceSchemeLanding : PagePaths.HomePageSelfManaged, PagePaths.RegistrationTaskList];
+
+        if (legacySession.SkipProducerRegistrationGuidance)
+        {
+            legacySession.Journey = [legacySession.IsComplianceScheme ? PagePaths.CsoRegistration : PagePaths.HomePageSelfManaged, PagePaths.RegistrationTaskList];
+            var nation = NationExtensions.GetNationName(legacySession.RegulatorNation);
+            SetBackLink(legacySession, PagePaths.RegistrationTaskList, null, null, legacySession.IsComplianceScheme ? nation : null);
         }
         else
         {
-            session.Journey = [PagePaths.ProducerRegistrationGuidance, PagePaths.RegistrationTaskList];
-            SetBackLink(session, PagePaths.RegistrationTaskList, registrationYear, registrationJourney);
+            legacySession.Journey = [PagePaths.ProducerRegistrationGuidance, PagePaths.RegistrationTaskList];
+            SetBackLink(legacySession, PagePaths.RegistrationTaskList, registrationYear, registrationJourney);
         }
 
         return View(new RegistrationTaskListViewModel
         {
-            IsResubmission = session.IsResubmission,
+            IsResubmission = legacySession.IsResubmission,
             OrganisationName = organisation.Name,
-            IsComplianceScheme = session.IsComplianceScheme,
+            IsComplianceScheme = legacySession.IsComplianceScheme,
             OrganisationNumber = organisation.OrganisationNumber.ToReferenceNumberFormat(),
-            ApplicationStatus = session.ApplicationStatus,
-            FileUploadStatus = session.FileUploadStatus,
-            PaymentViewStatus = session.PaymentViewStatus,
-            AdditionalDetailsStatus = session.AdditionalDetailsStatus,
+            ApplicationStatus = legacySession.ApplicationStatus,
+            FileUploadStatus = legacySession.FileUploadStatus,
+            PaymentViewStatus = legacySession.PaymentViewStatus,
+            AdditionalDetailsStatus = legacySession.AdditionalDetailsStatus,
             RegistrationYear = registrationYear.GetValueOrDefault(),
-            ShowRegistrationCaption = session.ShowRegistrationCaption,
-            RegistrationJourney = session.RegistrationJourney
+            ShowRegistrationCaption = legacySession.ShowRegistrationCaption,
+            RegistrationJourney = legacySession.RegistrationJourney
         });
     }
 
@@ -116,26 +133,67 @@ public class RegistrationApplicationController(
         var organisation = userData.Organisations[0];
         var registrationYear = registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
 
-        var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
-        session.Journey = [PagePaths.RegistrationTaskList, PagePaths.RegistrationFeeCalculations];
-        SetBackLink(session, PagePaths.RegistrationFeeCalculations, registrationYear, session.RegistrationJourney);
-
-        if (session.FileUploadStatus is not RegistrationTaskListStatus.Completed)
+        if (await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationDomainModel))
         {
-            logger.LogWarning("RegistrationApplicationSession.FileUploadStatus is not Completed for ApplicationReferenceNumber {Number}", session.ApplicationReferenceNumber);
+            var registration = await registrationFactory.CreateAsync(HttpContext.Session, organisation, registrationYear.GetValueOrDefault(), null);
+
+            if (!registration.CanViewFeeCalculations)
+            {
+                logger.LogWarning("RegistrationApplicationSession.FileUploadStatus is not Completed for ApplicationReferenceNumber {Number}", registration.ApplicationReferenceNumber);
+                return RedirectToAction(nameof(RegistrationTaskList), new { registrationyear = registrationYear });
+            }
+
+            logger.LogInformation("getting Registration Fee Details for OrganisationNumber {OrganisationNumber}, ApplicationReferenceNumber {ApplicationReferenceNumber}, selectedComplianceSchemeId {selectedComplianceSchemeId}", organisation.OrganisationNumber!, registration.ApplicationReferenceNumber, registration.SelectedComplianceSchemeId);
+
+            if (registration.IsComplianceScheme)
+            {
+                var response = await registration.GetComplianceSchemeRegistrationFees(paymentCalculationService, logger);
+
+                if (response is not null)
+                {
+                    response.RegistrationYear = registrationYear.GetValueOrDefault();
+                    response.RegistrationJourney = registration.RegistrationJourney;
+                    return View("ComplianceSchemeRegistrationFeeCalculationsDomain", response);
+                }
+            }
+            else
+            {
+                var response = await registration.GetProducerRegistrationFees(paymentCalculationService, logger);
+
+                if (response is not null)
+                {
+                    response.RegistrationYear = registrationYear.GetValueOrDefault();
+                    return View("RegistrationFeeCalculationsDomain", response);
+                }
+            }
+
+            logger.LogWarning("Error in Getting Registration Fees Details for OrganisationNumber {OrganisationNumber}, ApplicationReferenceNumber {ApplicationReferenceNumber}, selectedComplianceSchemeId {selectedComplianceSchemeId}", organisation.OrganisationNumber!, registration.ApplicationReferenceNumber, registration.SelectedComplianceSchemeId);
+
+            return RedirectToAction(
+                nameof(ErrorController.HandleThrownExceptions),
+                nameof(ErrorController).RemoveControllerFromName());
+        }
+
+        var legacySession = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
+        legacySession.Journey = [PagePaths.RegistrationTaskList, PagePaths.RegistrationFeeCalculations];
+        SetBackLink(legacySession, PagePaths.RegistrationFeeCalculations, registrationYear, legacySession.RegistrationJourney);
+
+        if (legacySession.FileUploadStatus is not RegistrationTaskListStatus.Completed)
+        {
+            logger.LogWarning("RegistrationApplicationSession.FileUploadStatus is not Completed for ApplicationReferenceNumber {Number}", legacySession.ApplicationReferenceNumber);
             return RedirectToAction(nameof(RegistrationTaskList), new { registrationyear = registrationYear });
         }
 
-        logger.LogInformation("getting Registration Fee Details for OrganisationNumber {OrganisationNumber}, ApplicationReferenceNumber {ApplicationReferenceNumber}, selectedComplianceSchemeId {selectedComplianceSchemeId}", organisation.OrganisationNumber!, session.ApplicationReferenceNumber, session.SelectedComplianceScheme?.Id);
+        logger.LogInformation("getting Registration Fee Details for OrganisationNumber {OrganisationNumber}, ApplicationReferenceNumber {ApplicationReferenceNumber}, selectedComplianceSchemeId {selectedComplianceSchemeId}", organisation.OrganisationNumber!, legacySession.ApplicationReferenceNumber, legacySession.SelectedComplianceScheme?.Id);
 
-        if (session.IsComplianceScheme)
+        if (legacySession.IsComplianceScheme)
         {
             var response = await registrationApplicationService.GetComplianceSchemeRegistrationFees(HttpContext.Session);
 
             if (response is not null)
             {
                 response.RegistrationYear = registrationYear.GetValueOrDefault();
-                response.RegistrationJourney = session.RegistrationJourney;
+                response.RegistrationJourney = legacySession.RegistrationJourney;
                 return View("ComplianceSchemeRegistrationFeeCalculations", response);
             }
         }
@@ -150,7 +208,7 @@ public class RegistrationApplicationController(
             }
         }
 
-        logger.LogWarning("Error in Getting Registration Fees Details for SubmissionId {SubmissionId}, OrganisationNumber {OrganisationNumber}, ApplicationReferenceNumber {ApplicationReferenceNumber}, selectedComplianceSchemeId {selectedComplianceSchemeId}", session.SubmissionId, organisation.OrganisationNumber!, session.ApplicationReferenceNumber, session.SelectedComplianceScheme?.Id);
+        logger.LogWarning("Error in Getting Registration Fees Details for SubmissionId {SubmissionId}, OrganisationNumber {OrganisationNumber}, ApplicationReferenceNumber {ApplicationReferenceNumber}, selectedComplianceSchemeId {selectedComplianceSchemeId}", legacySession.SubmissionId, organisation.OrganisationNumber!, legacySession.ApplicationReferenceNumber, legacySession.SelectedComplianceScheme?.Id);
 
         return RedirectToAction(
             nameof(ErrorController.HandleThrownExceptions),
