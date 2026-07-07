@@ -3,6 +3,7 @@
 using Application.Options;
 using Constants;
 using ControllerExtensions;
+using Helpers;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -110,10 +111,11 @@ public class AccountController : Controller
             values: null,
             protocol: Request.Scheme);
 
-        if (await _featureManager.IsEnabledAsync(FeatureFlags.CsocEnabled))
-        {
-            callbackUrl = GetWasteObligationsClearSessionUrl() ?? callbackUrl;
-        }
+        var csocEnabled = await _featureManager.IsEnabledAsync(FeatureFlags.CsocEnabled);
+        callbackUrl = CsocHelper.ResolveSignOutCallbackUrl(
+            callbackUrl,
+            csocEnabled,
+            _csocOptions.WasteObligationsBaseAddress);
 
         return SignOut(
             new AuthenticationProperties
@@ -164,11 +166,5 @@ public class AccountController : Controller
         // Refresh session by interacting with it
         HttpContext.Session.SetString("LastPing", DateTime.UtcNow.ToString());
         return Ok(new { message = "Session extended" });
-    }
-
-    private string? GetWasteObligationsClearSessionUrl()
-    {
-        var baseAddress = _csocOptions.WasteObligationsBaseAddress?.TrimEnd('/');
-        return string.IsNullOrEmpty(baseAddress) ? null : $"{baseAddress}/clear-session";
     }
 }

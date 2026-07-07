@@ -108,4 +108,23 @@ public static class CsocHelper
 
     private static Guid GetSchemeId(Guid organisationId, RegistrationSession? registrationSession) =>
         registrationSession?.SelectedComplianceScheme?.Id ?? organisationId;
+
+    public static string? GetWasteObligationsClearSessionUrl(string? wasteObligationsBaseAddress)
+    {
+        var baseAddress = wasteObligationsBaseAddress?.TrimEnd('/');
+        return string.IsNullOrEmpty(baseAddress) ? null : $"{baseAddress}/clear-session";
+    }
+
+    public static string ResolveSignOutCallbackUrl(
+        string signedOutCallbackUrl,
+        bool csocEnabled,
+        string? wasteObligationsBaseAddress)
+    {
+        if (!csocEnabled)
+        {
+            return signedOutCallbackUrl;
+        }
+
+        return GetWasteObligationsClearSessionUrl(wasteObligationsBaseAddress) ?? signedOutCallbackUrl;
+    }
 }
