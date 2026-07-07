@@ -1,11 +1,16 @@
 ﻿namespace FrontendSchemeRegistration.UI.Controllers;
 
+using Application.Options;
+using Constants;
 using ControllerExtensions;
+using Helpers;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Microsoft.FeatureManagement;
 using Microsoft.Identity.Web;
 using System.Diagnostics.CodeAnalysis;
 
@@ -15,6 +20,15 @@ using System.Diagnostics.CodeAnalysis;
 [Route("[controller]/[action]")]
 public class AccountController : Controller
 {
+    private readonly CsocOptions _csocOptions;
+    private readonly IFeatureManager _featureManager;
+
+    public AccountController(IOptions<CsocOptions> csocOptions, IFeatureManager featureManager)
+    {
+        _csocOptions = csocOptions.Value;
+        _featureManager = featureManager;
+    }
+
     /// <summary>
     /// Handles user sign in.
     /// </summary>
@@ -44,13 +58,40 @@ public class AccountController : Controller
     }
 
     /// <summary>
+    /// Clears local session state and signs the user out of Azure AD B2C.
+    /// Used when signing out from a linked CDP child app.
+    /// </summary>
+    /// <returns>Sign out result.</returns>
+    [ExcludeFromCodeCoverage(Justification = "Unable to mock authentication")]
+    [HttpGet]
+    [AllowAnonymous]
+    public IActionResult ClearSession()
+    {
+        HttpContext.Session.Clear();
+
+        var callbackUrl = Url.Action(
+            action: nameof(HomeController.SignedOut),
+            controller: nameof(HomeController).RemoveControllerFromName(),
+            values: null,
+            protocol: Request.Scheme);
+
+        return SignOut(
+            new AuthenticationProperties
+            {
+                RedirectUri = callbackUrl,
+            },
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            OpenIdConnectDefaults.AuthenticationScheme);
+    }
+
+    /// <summary>
     /// Handles the user sign-out.
     /// </summary>
     /// <param name="scheme">Authentication scheme.</param>
     /// <returns>Sign out result.</returns>
     [ExcludeFromCodeCoverage(Justification = "Unable to mock authentication")]
     [HttpGet("{scheme?}")]
-    public IActionResult SignOut(
+    public async Task<IActionResult> SignOut(
         [FromRoute] string? scheme)
     {
         if (AppServicesAuthenticationInformation.IsAppServicesAadAuthenticationEnabled)
@@ -64,7 +105,17 @@ public class AccountController : Controller
         }
 
         scheme ??= OpenIdConnectDefaults.AuthenticationScheme;
-        var callbackUrl = Url.Action(action: "SignedOut", controller: nameof(HomeController).RemoveControllerFromName(), values: null, protocol: Request.Scheme);
+        var callbackUrl = Url.Action(
+            action: "SignedOut",
+            controller: nameof(HomeController).RemoveControllerFromName(),
+            values: null,
+            protocol: Request.Scheme);
+
+        var csocEnabled = await _featureManager.IsEnabledAsync(FeatureFlags.CsocEnabled);
+        callbackUrl = CsocHelper.ResolveSignOutCallbackUrl(
+            callbackUrl,
+            csocEnabled,
+            _csocOptions.WasteObligationsBaseAddress);
 
         return SignOut(
             new AuthenticationProperties

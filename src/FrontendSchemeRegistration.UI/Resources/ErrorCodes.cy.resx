@@ -394,6 +394,15 @@ Darllenwch y canllawiau ar sut i greu’ch ffeil manylion sefydliad. Ar ôl ichi
   <data name="107" xml:space="preserve">
     <value>Rhaid i sefydliadau bach (S) sy'n cyflwyno pecynwaith sefydliad bach (SP) neu gynwysyddion diodydd cartrefi (HDC) roi'r deunydd pecynwaith fel plastig (PL) yn unig ar gyfer cyfnodau cyflwyno 2025</value>
   </data>
+  <data name="110" xml:space="preserve">
+    <value>[Welsh Required]: A valid recyclability code must be provided for all packaging rows for each producer providing this information. Add recyclability codes to each row and resubmit.</value>
+  </data>
+  <data name="111" xml:space="preserve">
+    <value>[Welsh Required]: You have not provided a recycling code for this column. Please check whether you should be providing these codes.</value>
+  </data>
+  <data name="112" xml:space="preserve">
+    <value>[Welsh Required]: You have provided a material and recycling code combination that does not usually apply. Please check whether you are providing the correct information. You can still submit if you are certain.</value>
+  </data>
   <data name="67" xml:space="preserve">
     <value>Y cyfnod cyflwyno ar gyfer Ionawr i Fehefin 2025 fydd 2025-H1</value>
   </data>

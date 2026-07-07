@@ -33,7 +33,7 @@ public class CsocTests
     [TestCase("/report-data/manage-your-recycling-obligations", Language.Welsh, false, ServiceRoleConstants.Approved)]
     public async Task WhenCsocEnabledOrDisabled_ShouldLocalizeAsExpected(string path, string language, bool csocEnabled, string serviceRole)
     {
-        SetUp(csocEnabled);
+        SetUp(csocEnabled, serviceRole: serviceRole);
         await Context.Client.AuthenticateDefaultUser();
 
         var sessionStore = Context.GetSessionStore();
@@ -55,7 +55,7 @@ public class CsocTests
     [TestCase("/report-data/manage-your-recycling-obligations")]
     public async Task WhenBasicUser_ShouldHidePrivilegedContent(string path)
     {
-        SetUp(csocEnabled: true);
+        SetUp(csocEnabled: true, serviceRole: ServiceRoleConstants.Basic);
         await Context.Client.AuthenticateDefaultUser();
 
         var sessionStore = Context.GetSessionStore();
@@ -75,7 +75,10 @@ public class CsocTests
     [Test]
     public async Task WhenNoObligationData_ShouldHideSubmissionTile()
     {
-        SetUp(csocEnabled: true, obligationData: WebApiOptions.ObligationDataType.NoDataYet);
+        SetUp(
+            csocEnabled: true,
+            obligationData: WebApiOptions.ObligationDataType.NoDataYet,
+            serviceRole: ServiceRoleConstants.Basic);
         await Context.Client.AuthenticateDefaultUser();
 
         var sessionStore = Context.GetSessionStore();
@@ -108,6 +111,28 @@ public class CsocTests
 
         var content = await response.Content.ReadAsStringAsync();
         content.Should().Contain("View your certificate of compliance");
+    }
+
+    [Test]
+    public async Task WhenDeclarationSubmitted_BasicUser_ShouldShowViewLink()
+    {
+        SetUp(
+            csocEnabled: true,
+            obligationData: WebApiOptions.ObligationDataType.Mixed,
+            complianceDeclarationStatus: WebApiOptions.ComplianceDeclarationStatusType.Submitted,
+            serviceRole: ServiceRoleConstants.Basic);
+        await Context.Client.AuthenticateDefaultUser();
+
+        var sessionStore = Context.GetSessionStore();
+        SetSession(sessionStore, ServiceRoleConstants.Basic);
+
+        var response = await Context.Client.GetAsync("/report-data/manage-your-recycling-obligations");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        content.Should().Contain("View your certificate of compliance");
+        content.Should().MatchRegex(
+            """<a class="govuk-link govuk-link--no-visited-state" href="[^"]+">View your certificate of compliance</a>""");
     }
 
     [Test]
@@ -157,7 +182,8 @@ public class CsocTests
     private void SetUp(
         bool csocEnabled,
         WebApiOptions.ObligationDataType obligationData = WebApiOptions.ObligationDataType.Mixed,
-        WebApiOptions.ComplianceDeclarationStatusType complianceDeclarationStatus = WebApiOptions.ComplianceDeclarationStatusType.None)
+        WebApiOptions.ComplianceDeclarationStatusType complianceDeclarationStatus = WebApiOptions.ComplianceDeclarationStatusType.None,
+        string serviceRole = ServiceRoleConstants.Approved)
     {
         Context.SetUp(overrideSession: true, additionalConfig: new Dictionary<string, string?>
             {
@@ -166,7 +192,8 @@ public class CsocTests
             new WebApiOptions
             {
                 ObligationData = obligationData,
-                ComplianceDeclarationStatus = complianceDeclarationStatus
+                ComplianceDeclarationStatus = complianceDeclarationStatus,
+                ServiceRole = serviceRole
             });
     }
 
