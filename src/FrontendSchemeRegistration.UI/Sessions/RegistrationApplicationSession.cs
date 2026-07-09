@@ -75,6 +75,7 @@ public class RegistrationApplicationSession
 
     public ComplianceSchemeDto? SelectedComplianceScheme { get; set; }
     public RegistrationJourney? RegistrationJourney { get; set; }
+    public int? SubmissionPeriodId { get; set; }
     public bool ShowRegistrationCaption => RegistrationJourney != null;
     public bool SkipProducerRegistrationGuidance =>
     ApplicationStatus is

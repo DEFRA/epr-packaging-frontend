@@ -38,6 +38,7 @@ public class DeclarationWithFullNameControllerTests
     private Mock<IRegistrationPeriodProvider> _registrationPeriodProviderMock;
     private Mock<IFeatureManager> _featureManagerMock;
     private Mock<IPaymentCalculationService> _paymentCalculationServiceMock;
+    private Mock<ISessionManager<RegistrationApplicationSession>> _registrationApplicationSessionManagerMock;
 
     [SetUp]
     public void SetUp()
@@ -45,6 +46,7 @@ public class DeclarationWithFullNameControllerTests
         _submissionServiceMock = new Mock<ISubmissionService>();
         _claimsPrincipalMock = new Mock<ClaimsPrincipal>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
+        _registrationApplicationSessionManagerMock = new Mock<ISessionManager<RegistrationApplicationSession>>();
         _registrationPeriodProviderMock = new Mock<IRegistrationPeriodProvider>();
         _featureManagerMock = new Mock<IFeatureManager>();
         _paymentCalculationServiceMock = new Mock<IPaymentCalculationService>();
@@ -54,7 +56,7 @@ public class DeclarationWithFullNameControllerTests
                 RegistrationSession = new RegistrationSession { IsResubmission = true }
             });
 
-        _systemUnderTest = new DeclarationWithFullNameController(_submissionServiceMock.Object, _sessionManagerMock.Object, new NullLogger<DeclarationWithFullNameController>(), _registrationPeriodProviderMock.Object, _featureManagerMock.Object);
+        _systemUnderTest = new DeclarationWithFullNameController(_submissionServiceMock.Object, _sessionManagerMock.Object, _registrationApplicationSessionManagerMock.Object, new NullLogger<DeclarationWithFullNameController>(), _registrationPeriodProviderMock.Object, _featureManagerMock.Object);
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext

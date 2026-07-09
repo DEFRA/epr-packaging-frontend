@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Security.Claims;
 using AutoFixture;
 using EPR.Common.Authorization.Models;
@@ -1507,7 +1507,7 @@ public class RegistrationApplicationServiceTests
             TotalAmountOutstanding = 10,
             IsLateFeeApplicable = true,
             RegistrationJourney = null
-        });
+        }, options => options.Excluding(x => x.SubmissionPeriodId));
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(
             It.IsAny<RegistrationApplicationData>(), It.IsAny<string>(), false,
@@ -1605,7 +1605,7 @@ public class RegistrationApplicationServiceTests
             TotalAmountOutstanding = 10,
             RegistrationJourney = RegistrationJourney.CsoLargeProducer,
             IsLateFeeApplicable = true
-        });
+        }, options => options.Excluding(x => x.SubmissionPeriodId));
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(
                 It.IsAny<RegistrationApplicationData>(), It.IsAny<string>(), false,
@@ -1694,7 +1694,7 @@ public class RegistrationApplicationServiceTests
             RegistrationReferenceNumber = "Test",
             IsLateFeeApplicable = true,
             RegistrationJourney = null
-        });
+        }, options => options.Excluding(x => x.SubmissionPeriodId));
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(
                 It.Is<RegistrationApplicationData>(data => data.PaymentMethod == "No-Outstanding-Payment"),
@@ -1795,7 +1795,7 @@ public class RegistrationApplicationServiceTests
             RegistrationReferenceNumber = "Test",
             RegistrationJourney = null,
             IsLateFeeApplicable = true
-        });
+        }, options => options.Excluding(x => x.SubmissionPeriodId));
 
         _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(
             It.Is<RegistrationApplicationData>(data => data.PaymentMethod == "No-Outstanding-Payment"),
@@ -3517,7 +3517,7 @@ public class RegistrationApplicationServiceTests
         var opening = openingDateOffset ?? new DateTime(RegistrationYear, 6, 1);
         var deadline = deadlineDateOffset ?? new DateTime(RegistrationYear, 7, 1);
         var closing = closingDateOffset ?? new DateTime(RegistrationYear, 8, 1);
-        return new RegistrationWindow(_dateTimeProvider, windowType, registrationYear.GetValueOrDefault(RegistrationYear),
+        return new RegistrationWindow(_dateTimeProvider, 1, windowType, registrationYear.GetValueOrDefault(RegistrationYear),
                 opening, deadline, closing);
     }
 

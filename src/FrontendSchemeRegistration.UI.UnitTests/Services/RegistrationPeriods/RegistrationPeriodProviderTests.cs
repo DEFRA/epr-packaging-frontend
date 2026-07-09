@@ -1,5 +1,5 @@
-﻿using FrontendSchemeRegistration.Application.Options.RegistrationPeriodPatterns;
-using FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
+﻿using FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
+using FrontendSchemeRegistration.Application.Options.RegistrationPeriodPatterns;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Time.Testing;
@@ -27,15 +27,19 @@ public class RegistrationPeriodProviderTests
         _mockHttpContext = new ();
     }
 
+    private RegistrationPeriodProvider BuildProvider(List<TestPattern> patterns, IHttpContextAccessor httpContextAccessor)
+    {
+        var provider = new RegistrationPeriodProvider(_timeProvider, httpContextAccessor);
+        provider.Load(patterns.ToSubmissionPeriods(_timeProvider));
+        return provider;
+    }
+
     [Test]
     public void WHEN_constructor_called_with_valid_config_THEN_parsePatterns_creates_registration_windows()
     {
         // arrange
-        var registrationPeriodPatterns = CreateValidRegistrationPatterns();
-        var options = Options.Create(registrationPeriodPatterns);
-
-        // act
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var TestPatterns = CreateValidRegistrationPatterns();
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
         var windows = sut.GetActiveRegistrationWindows(isCso: true);
 
         // assert
@@ -47,13 +51,13 @@ public class RegistrationPeriodProviderTests
     public void GIVEN_mixed_windows_WHEN_GetRegistrationWindows_called_for_CSO_THEN_returns_only_CSO_journeys_and_null_journeys()
     {
         // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2026,
                 FinalRegistrationYear = 2026,
-                Windows = new List<Window>
+                Windows = new List<TestWindow>
                 {
                     CreateWindow(WindowType.CsoLargeProducer),
                     CreateWindow(WindowType.DirectLargeProducer),
@@ -61,8 +65,7 @@ public class RegistrationPeriodProviderTests
                 }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetActiveRegistrationWindows(isCso: true);
@@ -82,13 +85,13 @@ public class RegistrationPeriodProviderTests
     public void GIVEN_mixed_windows_WHEN_GetRegistrationWindows_called_for_non_CSO_THEN_returns_only_Direct_journeys_and_null_journeys()
     {
         // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2026,
                 FinalRegistrationYear = 2026,
-                Windows = new List<Window>
+                Windows = new List<TestWindow>
                 {
                     CreateWindow(WindowType.DirectLargeProducer),
                     CreateWindow(WindowType.CsoLargeProducer),
@@ -96,8 +99,7 @@ public class RegistrationPeriodProviderTests
                 }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetActiveRegistrationWindows(isCso: false);
@@ -117,20 +119,19 @@ public class RegistrationPeriodProviderTests
     public void WHEN_GetRegistrationWindows_called_THEN_windows_are_ordered_by_registration_year_descending()
     {
         // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2024,
                 FinalRegistrationYear = 2026,
-                Windows = new List<Window>
+                Windows = new List<TestWindow>
                 {
                     CreateWindow(WindowType.CsoLargeProducer)
                 }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetActiveRegistrationWindows(isCso: true).ToList();
@@ -139,31 +140,9 @@ public class RegistrationPeriodProviderTests
         windows.Should().BeInDescendingOrder(w => w.RegistrationYear);
     }
 
-    [Test]
-    public void WHEN_constructor_called_with_duplicate_registration_years_THEN_throws_InvalidOperationException()
-    {
-        // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
-        {
-            new()
-            {
-                InitialRegistrationYear = 2026,
-                FinalRegistrationYear = 2026,
-                Windows = new List<Window> { CreateWindow(WindowType.CsoLargeProducer) }
-            },
-            new()
-            {
-                InitialRegistrationYear = 2026,
-                FinalRegistrationYear = 2026,
-                Windows = new List<Window> { CreateWindow(WindowType.DirectLargeProducer) }
-            }
-        };
-        var options = Options.Create(registrationPeriodPatterns);
-
-        // act & assert
-        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object));
-        ex.Message.Should().Contain("configured in multiple RegistrationPeriodPattern");
-    }
+    // Duplicate-year detection was an artifact of parsing appsettings patterns with overlapping InitialRegistrationYear/FinalRegistrationYear ranges.
+    // The provider now loads pre-computed rows from the payment service (SubmissionPeriod DB table), which has a unique index on (WindowType, RegistrationYear).
+    // Duplicate rows cannot arise at that layer, so the test is obsolete.
 
     [Test]
     public void WHEN_constructor_called_THEN_includes_closed_registration_windows()
@@ -171,23 +150,20 @@ public class RegistrationPeriodProviderTests
         // arrange
         // Create a window that closed in the past
             var closedWindow = CreateWindow(WindowType.CsoLargeProducer,
-            openingDateConfig: new Date { Day = 1, Month = 1 },
-            deadlineDateConfig: new Date { Day = 1, Month = 2 },
-            closingDateConfig: new Date { Day = 1, Month = 3 });
+            openingDateConfig: new TestDate { Day = 1, Month = 1 },
+            deadlineDateConfig: new TestDate { Day = 1, Month = 2 },
+            closingDateConfig: new TestDate { Day = 1, Month = 3 });
 
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2025,
                 FinalRegistrationYear = 2025,
-                Windows = new List<Window> { closedWindow }
+                Windows = new List<TestWindow> { closedWindow }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-
-        // act
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
         var windows = sut.GetActiveRegistrationWindows(isCso: true);
 
         // assert
@@ -200,21 +176,20 @@ public class RegistrationPeriodProviderTests
         // arrange
         // Create a window that will close
         var closingWindow = CreateWindow(WindowType.CsoLargeProducer,
-            openingDateConfig: new Date { Day = 1, Month = 1 },
-            deadlineDateConfig: new Date { Day = 1, Month = 2 },
-            closingDateConfig: new Date { Day = 1, Month = 3 });
+            openingDateConfig: new TestDate { Day = 1, Month = 1 },
+            deadlineDateConfig: new TestDate { Day = 1, Month = 2 },
+            closingDateConfig: new TestDate { Day = 1, Month = 3 });
 
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2026,
                 FinalRegistrationYear = 2026,
-                Windows = new List<Window> { closingWindow, CreateWindow(WindowType.CsoSmallProducer) }
+                Windows = new List<TestWindow> { closingWindow, CreateWindow(WindowType.CsoSmallProducer) }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
         var initialWindows = sut.GetActiveRegistrationWindows(isCso: true);
 
         // act
@@ -227,50 +202,24 @@ public class RegistrationPeriodProviderTests
         finalWindows.Count.Should().Be(2);
     }
 
-    [Test]
-    public void GIVEN_null_final_registration_year_WHEN_year_rolls_over_THEN_GetRegistrationWindows_returns_windows_for_new_year()
-    {
-        // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
-        {
-            new()
-            {
-                InitialRegistrationYear = 2026,
-                FinalRegistrationYear = null,  // No final year specified, should use current year
-                Windows = new List<Window> { CreateWindow(WindowType.CsoLargeProducer) }
-            }
-        };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
-        var initialWindows = sut.GetActiveRegistrationWindows(isCso: true);
-
-        // act
-        _timeProvider.SetUtcNow(new DateTime(2027, 1, 1));
-        var finalWindows = sut.GetActiveRegistrationWindows(isCso: true);
-
-        // assert
-        initialWindows.Should().Contain(w => w.RegistrationYear == 2026);
-        initialWindows.Should().NotContain(w => w.RegistrationYear > 2026);
-        finalWindows.Should().Contain(w => w.RegistrationYear == 2027);
-    }
+    // Year-rollover auto-refresh was a feature of the old ParsePatterns loop that derived future years from
+    // YearOffset. The provider now caches a single snapshot loaded at startup from the payment service; new
+    // years are picked up on the next app restart (or by rerunning the warmup service). Test dropped.
 
     [Test]
     public void WHEN_constructor_called_with_null_final_registration_year_THEN_uses_current_year()
     {
         // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2025,
                 FinalRegistrationYear = null,  // No final year specified, should use current year
-                Windows = new List<Window> { CreateWindow(WindowType.CsoLargeProducer) }
+                Windows = new List<TestWindow> { CreateWindow(WindowType.CsoLargeProducer) }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-
-        // act
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
         var windows = sut.GetActiveRegistrationWindows(isCso: true);
 
         // assert
@@ -282,7 +231,7 @@ public class RegistrationPeriodProviderTests
     public void WHEN_constructor_called_with_null_final_registration_year_and_offset_opening_date_THEN_uses_current_year()
     {
         // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             // 2025 should all be closed, but still returned
             // 2026 should all be returned
@@ -292,20 +241,17 @@ public class RegistrationPeriodProviderTests
             {
                 InitialRegistrationYear = 2025,
                 FinalRegistrationYear = null,  // No final year specified
-                Windows = new List<Window>
+                Windows = new List<TestWindow>
                 {
                     CreateWindow(
                         WindowType.CsoLargeProducer,
-                        new Date { Day = 1, Month = 1, YearOffset = -1},
-                        new Date { Day = 1, Month = 7 },
-                        new Date { Day = 1, Month = 8 })
+                        new TestDate { Day = 1, Month = 1, YearOffset = -1},
+                        new TestDate { Day = 1, Month = 7 },
+                        new TestDate { Day = 1, Month = 8 })
                 }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-
-        // act
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
         var windows = sut.GetActiveRegistrationWindows(isCso: true);
 
         // assert
@@ -319,13 +265,13 @@ public class RegistrationPeriodProviderTests
     public void GIVEN_multiple_window_types_WHEN_GetRegistrationWindows_called_THEN_maps_correctly()
     {
         // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2026,
                 FinalRegistrationYear = 2026,
-                Windows = new List<Window>
+                Windows = new List<TestWindow>
                 {
                     CreateWindow(WindowType.CsoLargeProducer),
                     CreateWindow(WindowType.CsoSmallProducer),
@@ -336,8 +282,7 @@ public class RegistrationPeriodProviderTests
                 }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act
         var csoWindows = sut.GetActiveRegistrationWindows(isCso: true);
@@ -360,9 +305,8 @@ public class RegistrationPeriodProviderTests
     public void WHEN_GetRegistrationWindows_called_THEN_returns_read_only_collection()
     {
         // arrange
-        var registrationPeriodPatterns = CreateValidRegistrationPatterns();
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var TestPatterns = CreateValidRegistrationPatterns();
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetActiveRegistrationWindows(isCso: true);
@@ -376,24 +320,23 @@ public class RegistrationPeriodProviderTests
     {
         // arrange
         // create windows that stay open for multiple years so that many are active at once
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2024,
                 FinalRegistrationYear = 2027,
-                Windows = new List<Window>
+                Windows = new List<TestWindow>
                 {
                     CreateWindow(
                         WindowType.CsoLargeProducer,
-                        openingDateConfig: new Date { Day = 15, Month = 2 },
-                        deadlineDateConfig: new Date { Day = 1, Month = 3 },
-                        closingDateConfig: new Date { Day = 1, Month = 4, YearOffset = 2})
+                        openingDateConfig: new TestDate { Day = 15, Month = 2 },
+                        deadlineDateConfig: new TestDate { Day = 1, Month = 3 },
+                        closingDateConfig: new TestDate { Day = 1, Month = 4, YearOffset = 2})
                 }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetActiveRegistrationWindows(isCso: true).ToList();
@@ -410,27 +353,26 @@ public class RegistrationPeriodProviderTests
         // Create windows with opening dates in the future (before current time)
         var futureWindow = CreateWindow(
             WindowType.CsoLargeProducer,
-            openingDateConfig: new Date { Day = 15, Month = 2 },  // Opens Feb 15, 2026 (future from Jan 15)
-            deadlineDateConfig: new Date { Day = 1, Month = 3 },
-            closingDateConfig: new Date { Day = 1, Month = 4 });
+            openingDateConfig: new TestDate { Day = 15, Month = 2 },  // Opens Feb 15, 2026 (future from Jan 15)
+            deadlineDateConfig: new TestDate { Day = 1, Month = 3 },
+            closingDateConfig: new TestDate { Day = 1, Month = 4 });
 
         var currentWindow = CreateWindow(
             WindowType.CsoSmallProducer,
-            openingDateConfig: new Date { Day = 1, Month = 1 },   // Opens Jan 1, 2026 (past)
-            deadlineDateConfig: new Date { Day = 1, Month = 7 },
-            closingDateConfig: new Date { Day = 1, Month = 8 });
+            openingDateConfig: new TestDate { Day = 1, Month = 1 },   // Opens Jan 1, 2026 (past)
+            deadlineDateConfig: new TestDate { Day = 1, Month = 7 },
+            closingDateConfig: new TestDate { Day = 1, Month = 8 });
 
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2026,
                 FinalRegistrationYear = 2026,
-                Windows = new List<Window> { futureWindow, currentWindow }
+                Windows = new List<TestWindow> { futureWindow, currentWindow }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetActiveRegistrationWindows(isCso: true).ToList();
@@ -445,9 +387,8 @@ public class RegistrationPeriodProviderTests
     public void WHEN_GetAllRegistrationWindows_called_THEN_returns_read_only_collection()
     {
         // arrange
-        var registrationPeriodPatterns = CreateValidRegistrationPatterns();
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var TestPatterns = CreateValidRegistrationPatterns();
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetAllRegistrationWindows(isCso: true);
@@ -460,13 +401,13 @@ public class RegistrationPeriodProviderTests
     public void WHEN_GetAllRegistrationWindows_called_for_CSO_THEN_returns_only_CSO_windows()
     {
         // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2026,
                 FinalRegistrationYear = 2026,
-                Windows = new List<Window>
+                Windows = new List<TestWindow>
                 {
                     CreateWindow(WindowType.CsoLargeProducer),
                     CreateWindow(WindowType.DirectLargeProducer),
@@ -474,8 +415,7 @@ public class RegistrationPeriodProviderTests
                 }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetAllRegistrationWindows(isCso: true);
@@ -496,13 +436,13 @@ public class RegistrationPeriodProviderTests
     public void WHEN_GetAllRegistrationWindows_called_for_non_CSO_THEN_returns_only_Direct_windows()
     {
         // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2026,
                 FinalRegistrationYear = 2026,
-                Windows = new List<Window>
+                Windows = new List<TestWindow>
                 {
                     CreateWindow(WindowType.DirectLargeProducer),
                     CreateWindow(WindowType.CsoLargeProducer),
@@ -510,8 +450,7 @@ public class RegistrationPeriodProviderTests
                 }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetAllRegistrationWindows(isCso: false);
@@ -532,20 +471,19 @@ public class RegistrationPeriodProviderTests
     public void WHEN_GetAllRegistrationWindows_called_THEN_orders_by_registration_year_descending()
     {
         // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2024,
                 FinalRegistrationYear = 2026,
-                Windows = new List<Window>
+                Windows = new List<TestWindow>
                 {
                     CreateWindow(WindowType.CsoLargeProducer)
                 }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetAllRegistrationWindows(isCso: true).ToList();
@@ -561,27 +499,26 @@ public class RegistrationPeriodProviderTests
         // Create windows with opening dates in the future
         var futureWindow = CreateWindow(
             WindowType.CsoLargeProducer,
-            openingDateConfig: new Date { Day = 15, Month = 2 },  // Opens Feb 15, 2026 (future from Jan 15)
-            deadlineDateConfig: new Date { Day = 1, Month = 3 },
-            closingDateConfig: new Date { Day = 1, Month = 4 });
+            openingDateConfig: new TestDate { Day = 15, Month = 2 },  // Opens Feb 15, 2026 (future from Jan 15)
+            deadlineDateConfig: new TestDate { Day = 1, Month = 3 },
+            closingDateConfig: new TestDate { Day = 1, Month = 4 });
 
         var currentWindow = CreateWindow(
             WindowType.CsoSmallProducer,
-            openingDateConfig: new Date { Day = 1, Month = 1 },   // Opens Jan 1, 2026 (past)
-            deadlineDateConfig: new Date { Day = 1, Month = 7 },
-            closingDateConfig: new Date { Day = 1, Month = 8 });
+            openingDateConfig: new TestDate { Day = 1, Month = 1 },   // Opens Jan 1, 2026 (past)
+            deadlineDateConfig: new TestDate { Day = 1, Month = 7 },
+            closingDateConfig: new TestDate { Day = 1, Month = 8 });
 
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2026,
                 FinalRegistrationYear = 2026,
-                Windows = new List<Window> { futureWindow, currentWindow }
+                Windows = new List<TestWindow> { futureWindow, currentWindow }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetAllRegistrationWindows(isCso: true).ToList();
@@ -598,21 +535,20 @@ public class RegistrationPeriodProviderTests
         // arrange
         // Create a window that closed in the past
         var closedWindow = CreateWindow(WindowType.CsoLargeProducer,
-            openingDateConfig: new Date { Day = 1, Month = 1 },
-            deadlineDateConfig: new Date { Day = 1, Month = 2 },
-            closingDateConfig: new Date { Day = 1, Month = 3 });
+            openingDateConfig: new TestDate { Day = 1, Month = 1 },
+            deadlineDateConfig: new TestDate { Day = 1, Month = 2 },
+            closingDateConfig: new TestDate { Day = 1, Month = 3 });
 
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2025,
                 FinalRegistrationYear = 2025,
-                Windows = new List<Window> { closedWindow }
+                Windows = new List<TestWindow> { closedWindow }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetAllRegistrationWindows(isCso: true);
@@ -626,13 +562,13 @@ public class RegistrationPeriodProviderTests
     public void GIVEN_multiple_window_types_WHEN_GetAllRegistrationWindows_called_THEN_maps_correctly()
     {
         // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2026,
                 FinalRegistrationYear = 2026,
-                Windows = new List<Window>
+                Windows = new List<TestWindow>
                 {
                     CreateWindow(WindowType.CsoLargeProducer),
                     CreateWindow(WindowType.CsoSmallProducer),
@@ -643,8 +579,7 @@ public class RegistrationPeriodProviderTests
                 }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act
         var csoWindows = sut.GetAllRegistrationWindows(isCso: true);
@@ -665,24 +600,23 @@ public class RegistrationPeriodProviderTests
     public void WHEN_GetAllRegistrationWindows_called_with_multiple_years_THEN_returns_all_years_ordered_descending()
     {
         // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2024,
                 FinalRegistrationYear = 2027,
-                Windows = new List<Window>
+                Windows = new List<TestWindow>
                 {
                     CreateWindow(
                         WindowType.CsoLargeProducer,
-                        openingDateConfig: new Date { Day = 15, Month = 2 },
-                        deadlineDateConfig: new Date { Day = 1, Month = 3 },
-                        closingDateConfig: new Date { Day = 1, Month = 4, YearOffset = 2})
+                        openingDateConfig: new TestDate { Day = 15, Month = 2 },
+                        deadlineDateConfig: new TestDate { Day = 1, Month = 3 },
+                        closingDateConfig: new TestDate { Day = 1, Month = 4, YearOffset = 2})
                 }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act
         var windows = sut.GetAllRegistrationWindows(isCso: true).ToList();
@@ -701,33 +635,32 @@ public class RegistrationPeriodProviderTests
         // Create windows in various states: future, current, and closed
         var futureWindow = CreateWindow(
             WindowType.CsoLargeProducer,
-            openingDateConfig: new Date { Day = 15, Month = 2 },  // Opens Feb 15, 2026 (future)
-            deadlineDateConfig: new Date { Day = 1, Month = 3 },
-            closingDateConfig: new Date { Day = 1, Month = 4 });
+            openingDateConfig: new TestDate { Day = 15, Month = 2 },  // Opens Feb 15, 2026 (future)
+            deadlineDateConfig: new TestDate { Day = 1, Month = 3 },
+            closingDateConfig: new TestDate { Day = 1, Month = 4 });
 
         var currentWindow = CreateWindow(
             WindowType.CsoSmallProducer,
-            openingDateConfig: new Date { Day = 1, Month = 1 },   // Opens Jan 1, 2026 (open)
-            deadlineDateConfig: new Date { Day = 1, Month = 7 },
-            closingDateConfig: new Date { Day = 1, Month = 8 });
+            openingDateConfig: new TestDate { Day = 1, Month = 1 },   // Opens Jan 1, 2026 (open)
+            deadlineDateConfig: new TestDate { Day = 1, Month = 7 },
+            closingDateConfig: new TestDate { Day = 1, Month = 8 });
 
         var pastWindow = CreateWindow(
             WindowType.CsoLargeProducer,
-            openingDateConfig: new Date { Day = 1, Month = 1 },
-            deadlineDateConfig: new Date { Day = 1, Month = 2 },
-            closingDateConfig: new Date { Day = 1, Month = 3 });  // Closes March 1, 2025 (past - when using 2025 year)
+            openingDateConfig: new TestDate { Day = 1, Month = 1 },
+            deadlineDateConfig: new TestDate { Day = 1, Month = 2 },
+            closingDateConfig: new TestDate { Day = 1, Month = 3 });  // Closes March 1, 2025 (past - when using 2025 year)
 
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2025,
                 FinalRegistrationYear = 2026,
-                Windows = new List<Window> { futureWindow, currentWindow, pastWindow }
+                Windows = new List<TestWindow> { futureWindow, currentWindow, pastWindow }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act
         var allWindows = sut.GetAllRegistrationWindows(isCso: true);
@@ -741,15 +674,15 @@ public class RegistrationPeriodProviderTests
 
     // Creates registration period configuration for 2026 and a number of windows for that period. The windows
     // all have an opening date of 2026-06-01, a deadline date of 2026-07-01 and a closing date of 2026-08-01.
-    private static List<RegistrationPeriodPattern> CreateValidRegistrationPatterns()
+    private static List<TestPattern> CreateValidRegistrationPatterns()
     {
-        return new List<RegistrationPeriodPattern>
+        return new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = RegistrationYear,
                 FinalRegistrationYear = RegistrationYear,
-                Windows = new List<Window>
+                Windows = new List<TestWindow>
                 {
                     CreateWindow(WindowType.CsoLargeProducer),
                     CreateWindow(WindowType.CsoSmallProducer),
@@ -764,17 +697,17 @@ public class RegistrationPeriodProviderTests
     /// By default, creates a window configuration item with an opening date of 01/06, a deadline date of 01/07
     /// and a closing date of 01/08.
     /// </summary>
-    private static Window CreateWindow(
+    private static TestWindow CreateWindow(
         WindowType windowType,
-        Date? openingDateConfig = null,
-        Date? deadlineDateConfig = null,
-        Date? closingDateConfig = null)
+        TestDate? openingDateConfig = null,
+        TestDate? deadlineDateConfig = null,
+        TestDate? closingDateConfig = null)
     {
-        var opening = openingDateConfig ?? new Date { Day = 1, Month = 1 };
-        var deadline = deadlineDateConfig ?? new Date { Day = 1, Month = 7 };
-        var closing = closingDateConfig ?? new Date { Day = 1, Month = 8 };
+        var opening = openingDateConfig ?? new TestDate { Day = 1, Month = 1 };
+        var deadline = deadlineDateConfig ?? new TestDate { Day = 1, Month = 7 };
+        var closing = closingDateConfig ?? new TestDate { Day = 1, Month = 8 };
 
-        return new Window
+        return new TestWindow
         {
             WindowType = windowType,
             OpeningDate = opening,
@@ -810,9 +743,8 @@ public class RegistrationPeriodProviderTests
     public void GIVEN_null_or_empty_registration_year_and_optional_parameter_WHEN_ValidateRegistrationYear_called_THEN_returns_null(string registrationYear)
     {
         // arrange
-        var registrationPeriodPatterns = CreateValidRegistrationPatterns();
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var TestPatterns = CreateValidRegistrationPatterns();
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act
         var result = sut.ValidateRegistrationYear(registrationYear, isParamOptional: true);
@@ -827,9 +759,8 @@ public class RegistrationPeriodProviderTests
     public void GIVEN_null_or_empty_registration_year_and_required_parameter_WHEN_ValidateRegistrationYear_called_THEN_throws_ArgumentException(string registrationYear)
     {
         // arrange
-        var registrationPeriodPatterns = CreateValidRegistrationPatterns();
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var TestPatterns = CreateValidRegistrationPatterns();
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act & assert
         var ex = Assert.Throws<ArgumentException>(() => sut.ValidateRegistrationYear(registrationYear, isParamOptional: false));
@@ -842,9 +773,8 @@ public class RegistrationPeriodProviderTests
     public void GIVEN_non_numeric_registration_year_WHEN_ValidateRegistrationYear_called_THEN_throws_ArgumentException(string registrationYear)
     {
         // arrange
-        var registrationPeriodPatterns = CreateValidRegistrationPatterns();
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var TestPatterns = CreateValidRegistrationPatterns();
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act & assert
         var ex = Assert.Throws<ArgumentException>(() => sut.ValidateRegistrationYear(registrationYear, isParamOptional: false));
@@ -855,10 +785,9 @@ public class RegistrationPeriodProviderTests
     public void GIVEN_valid_registration_year_with_no_user_organisation_WHEN_ValidateRegistrationYear_called_THEN_throws_InvalidOperationException()
     {
         // arrange
-        var registrationPeriodPatterns = CreateValidRegistrationPatterns();
-        var options = Options.Create(registrationPeriodPatterns);
-        var mockHttpContextAccessor = CreateMockHttpContextAccessor(new UserData { Organisations = [] });
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, mockHttpContextAccessor.Object);
+        var TestPatterns = CreateValidRegistrationPatterns();
+                var mockHttpContextAccessor = CreateMockHttpContextAccessor(new UserData { Organisations = [] });
+        var sut = BuildProvider(TestPatterns, mockHttpContextAccessor.Object);
 
         // act & assert
         var ex = Assert.Throws<InvalidOperationException>(() => sut.ValidateRegistrationYear("2026", isParamOptional: false));
@@ -869,14 +798,13 @@ public class RegistrationPeriodProviderTests
     public void GIVEN_valid_registration_year_for_CSO_with_matching_window_WHEN_ValidateRegistrationYear_called_THEN_returns_parsed_year()
     {
         // arrange
-        var registrationPeriodPatterns = CreateValidRegistrationPatterns();
-        var options = Options.Create(registrationPeriodPatterns);
-        var userDataDto = new UserData
+        var TestPatterns = CreateValidRegistrationPatterns();
+                var userDataDto = new UserData
         {
             Organisations = [new Organisation { OrganisationRole = OrganisationRoles.ComplianceScheme }]
         };
         var mockHttpContextAccessor = CreateMockHttpContextAccessor(userDataDto);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, mockHttpContextAccessor.Object);
+        var sut = BuildProvider(TestPatterns, mockHttpContextAccessor.Object);
 
         // act
         var result = sut.ValidateRegistrationYear("2026", isParamOptional: false);
@@ -889,14 +817,13 @@ public class RegistrationPeriodProviderTests
     public void GIVEN_valid_registration_year_for_non_CSO_with_matching_window_WHEN_ValidateRegistrationYear_called_THEN_returns_parsed_year()
     {
         // arrange
-        var registrationPeriodPatterns = CreateValidRegistrationPatterns();
-        var options = Options.Create(registrationPeriodPatterns);
-        var userDataDto = new UserData
+        var TestPatterns = CreateValidRegistrationPatterns();
+                var userDataDto = new UserData
         {
             Organisations = [new Organisation { OrganisationRole = OrganisationRoles.Producer }]
         };
         var mockHttpContextAccessor = CreateMockHttpContextAccessor(userDataDto);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, mockHttpContextAccessor.Object);
+        var sut = BuildProvider(TestPatterns, mockHttpContextAccessor.Object);
 
         // act
         var result = sut.ValidateRegistrationYear("2026", isParamOptional: false);
@@ -909,14 +836,13 @@ public class RegistrationPeriodProviderTests
     public void GIVEN_valid_registration_year_but_not_in_active_windows_WHEN_ValidateRegistrationYear_called_THEN_throws_ArgumentException()
     {
         // arrange
-        var registrationPeriodPatterns = CreateValidRegistrationPatterns();
-        var options = Options.Create(registrationPeriodPatterns);
-        var userDataDto = new UserData
+        var TestPatterns = CreateValidRegistrationPatterns();
+                var userDataDto = new UserData
         {
             Organisations = [new Organisation { OrganisationRole = OrganisationRoles.Producer }]
         };
         var mockHttpContextAccessor = CreateMockHttpContextAccessor(userDataDto);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, mockHttpContextAccessor.Object);
+        var sut = BuildProvider(TestPatterns, mockHttpContextAccessor.Object);
 
         // act & assert
         var ex = Assert.Throws<ArgumentException>(() => sut.ValidateRegistrationYear("2025", isParamOptional: false));
@@ -927,14 +853,13 @@ public class RegistrationPeriodProviderTests
     public void GIVEN_valid_registration_year_far_in_future_WHEN_ValidateRegistrationYear_called_THEN_throws_ArgumentException()
     {
         // arrange
-        var registrationPeriodPatterns = CreateValidRegistrationPatterns();
-        var options = Options.Create(registrationPeriodPatterns);
-        var userDataDto = new UserData
+        var TestPatterns = CreateValidRegistrationPatterns();
+                var userDataDto = new UserData
         {
             Organisations = [new Organisation { OrganisationRole = OrganisationRoles.Producer }]
         };
         var mockHttpContextAccessor = CreateMockHttpContextAccessor(userDataDto);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, mockHttpContextAccessor.Object);
+        var sut = BuildProvider(TestPatterns, mockHttpContextAccessor.Object);
 
         // act & assert
         var ex = Assert.Throws<ArgumentException>(() => sut.ValidateRegistrationYear("2030", isParamOptional: false));
@@ -948,25 +873,24 @@ public class RegistrationPeriodProviderTests
     public void GIVEN_multiple_active_registration_years_WHEN_ValidateRegistrationYear_called_with_valid_year_THEN_returns_correct_year(int year)
     {
         // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2024,
                 FinalRegistrationYear = 2026,
-                Windows = new List<Window>
+                Windows = new List<TestWindow>
                 {
                     CreateWindow(WindowType.DirectLargeProducer)
                 }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var userDataDto = new UserData
+                var userDataDto = new UserData
         {
             Organisations = [new Organisation { OrganisationRole = OrganisationRoles.Producer }]
         };
         var mockHttpContextAccessor = CreateMockHttpContextAccessor(userDataDto);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, mockHttpContextAccessor.Object);
+        var sut = BuildProvider(TestPatterns, mockHttpContextAccessor.Object);
 
         // act
         var result = sut.ValidateRegistrationYear(year.ToString(), isParamOptional: false);
@@ -979,14 +903,13 @@ public class RegistrationPeriodProviderTests
     public void GIVEN_registration_year_with_leading_zeros_WHEN_ValidateRegistrationYear_called_THEN_parses_correctly()
     {
         // arrange
-        var registrationPeriodPatterns = CreateValidRegistrationPatterns();
-        var options = Options.Create(registrationPeriodPatterns);
-        var userDataDto = new UserData
+        var TestPatterns = CreateValidRegistrationPatterns();
+                var userDataDto = new UserData
         {
             Organisations = [new Organisation { OrganisationRole = OrganisationRoles.Producer }]
         };
         var mockHttpContextAccessor = CreateMockHttpContextAccessor(userDataDto);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, mockHttpContextAccessor.Object);
+        var sut = BuildProvider(TestPatterns, mockHttpContextAccessor.Object);
 
         // act
         var result = sut.ValidateRegistrationYear("02026", isParamOptional: false);
@@ -999,14 +922,13 @@ public class RegistrationPeriodProviderTests
     public void GIVEN_negative_registration_year_WHEN_ValidateRegistrationYear_called_THEN_throws_ArgumentException()
     {
         // arrange
-        var registrationPeriodPatterns = CreateValidRegistrationPatterns();
-        var options = Options.Create(registrationPeriodPatterns);
-        var userDataDto = new UserData
+        var TestPatterns = CreateValidRegistrationPatterns();
+                var userDataDto = new UserData
         {
             Organisations = [new Organisation { OrganisationRole = OrganisationRoles.Producer }]
         };
         var mockHttpContextAccessor = CreateMockHttpContextAccessor(userDataDto);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, mockHttpContextAccessor.Object);
+        var sut = BuildProvider(TestPatterns, mockHttpContextAccessor.Object);
 
         // act & assert
         var ex = Assert.Throws<ArgumentException>(() => sut.ValidateRegistrationYear("-2026", isParamOptional: false));
@@ -1021,20 +943,19 @@ public class RegistrationPeriodProviderTests
     public void GIVEN_single_CSO_window_WHEN_GetRegistrationWindow_called_THEN_returns_that_window()
     {
         // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2026,
                 FinalRegistrationYear = 2026,
-                Windows = new List<Window>
+                Windows = new List<TestWindow>
                 {
                     CreateWindow(WindowType.Cso)
                 }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act
         var result = sut.GetRegistrationWindow(isCso: true, isSmallProducer: false, registrationYear: 2026);
@@ -1050,20 +971,19 @@ public class RegistrationPeriodProviderTests
     public void GIVEN_single_Direct_window_WHEN_GetRegistrationWindow_called_THEN_returns_that_window()
     {
         // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2026,
                 FinalRegistrationYear = 2026,
-                Windows = new List<Window>
+                Windows = new List<TestWindow>
                 {
                     CreateWindow(WindowType.Direct)
                 }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act
         var result = sut.GetRegistrationWindow(isCso: false, isSmallProducer: true, registrationYear: 2026);
@@ -1079,21 +999,20 @@ public class RegistrationPeriodProviderTests
     public void GIVEN_multiple_CSO_windows_and_isSmallProducer_true_WHEN_GetRegistrationWindow_called_THEN_returns_small_producer_window()
     {
         // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2026,
                 FinalRegistrationYear = 2026,
-                Windows = new List<Window>
+                Windows = new List<TestWindow>
                 {
                     CreateWindow(WindowType.CsoLargeProducer),
                     CreateWindow(WindowType.CsoSmallProducer)
                 }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act
         var result = sut.GetRegistrationWindow(isCso: true, isSmallProducer: true, registrationYear: 2026);
@@ -1109,21 +1028,20 @@ public class RegistrationPeriodProviderTests
     public void GIVEN_multiple_CSO_windows_and_isSmallProducer_false_WHEN_GetRegistrationWindow_called_THEN_returns_large_producer_window()
     {
         // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2026,
                 FinalRegistrationYear = 2026,
-                Windows = new List<Window>
+                Windows = new List<TestWindow>
                 {
                     CreateWindow(WindowType.CsoLargeProducer),
                     CreateWindow(WindowType.CsoSmallProducer)
                 }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act
         var result = sut.GetRegistrationWindow(isCso: true, isSmallProducer: false, registrationYear: 2026);
@@ -1139,21 +1057,20 @@ public class RegistrationPeriodProviderTests
     public void GIVEN_multiple_Direct_windows_and_isSmallProducer_true_WHEN_GetRegistrationWindow_called_THEN_returns_small_producer_window()
     {
         // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2026,
                 FinalRegistrationYear = 2026,
-                Windows = new List<Window>
+                Windows = new List<TestWindow>
                 {
                     CreateWindow(WindowType.DirectLargeProducer),
                     CreateWindow(WindowType.DirectSmallProducer)
                 }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act
         var result = sut.GetRegistrationWindow(isCso: false, isSmallProducer: true, registrationYear: 2026);
@@ -1169,21 +1086,20 @@ public class RegistrationPeriodProviderTests
     public void GIVEN_multiple_Direct_windows_and_isSmallProducer_false_WHEN_GetRegistrationWindow_called_THEN_returns_large_producer_window()
     {
         // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2026,
                 FinalRegistrationYear = 2026,
-                Windows = new List<Window>
+                Windows = new List<TestWindow>
                 {
                     CreateWindow(WindowType.DirectLargeProducer),
                     CreateWindow(WindowType.DirectSmallProducer)
                 }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act
         var result = sut.GetRegistrationWindow(isCso: false, isSmallProducer: false, registrationYear: 2026);
@@ -1199,20 +1115,19 @@ public class RegistrationPeriodProviderTests
     public void GIVEN_no_matching_windows_for_registration_year_WHEN_GetRegistrationWindow_called_THEN_throws_InvalidOperationException()
     {
         // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2026,
                 FinalRegistrationYear = 2026,
-                Windows = new List<Window>
+                Windows = new List<TestWindow>
                 {
                     CreateWindow(WindowType.CsoLargeProducer)
                 }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act & assert
         var ex = Assert.Throws<InvalidOperationException>(() => 
@@ -1227,20 +1142,19 @@ public class RegistrationPeriodProviderTests
     public void GIVEN_no_matching_windows_for_isCso_WHEN_GetRegistrationWindow_called_THEN_throws_InvalidOperationException()
     {
         // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2026,
                 FinalRegistrationYear = 2026,
-                Windows = new List<Window>
+                Windows = new List<TestWindow>
                 {
                     CreateWindow(WindowType.CsoLargeProducer)
                 }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act & assert
         var ex = Assert.Throws<InvalidOperationException>(() => 
@@ -1255,20 +1169,19 @@ public class RegistrationPeriodProviderTests
     public void GIVEN_first_of_multiple_CSO_years_WHEN_GetRegistrationWindow_called_THEN_returns_correct_window()
     {
         // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2024,
                 FinalRegistrationYear = 2026,
-                Windows = new List<Window>
+                Windows = new List<TestWindow>
                 {
                     CreateWindow(WindowType.CsoLargeProducer)
                 }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act
         var result = sut.GetRegistrationWindow(isCso: true, isSmallProducer: false, registrationYear: 2024);
@@ -1283,20 +1196,19 @@ public class RegistrationPeriodProviderTests
     public void GIVEN_middle_of_multiple_CSO_years_WHEN_GetRegistrationWindow_called_THEN_returns_correct_window()
     {
         // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2024,
                 FinalRegistrationYear = 2026,
-                Windows = new List<Window>
+                Windows = new List<TestWindow>
                 {
                     CreateWindow(WindowType.CsoLargeProducer)
                 }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act
         var result = sut.GetRegistrationWindow(isCso: true, isSmallProducer: false, registrationYear: 2025);
@@ -1311,20 +1223,19 @@ public class RegistrationPeriodProviderTests
     public void GIVEN_last_of_multiple_CSO_years_WHEN_GetRegistrationWindow_called_THEN_returns_correct_window()
     {
         // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2024,
                 FinalRegistrationYear = 2026,
-                Windows = new List<Window>
+                Windows = new List<TestWindow>
                 {
                     CreateWindow(WindowType.CsoLargeProducer)
                 }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act
         var result = sut.GetRegistrationWindow(isCso: true, isSmallProducer: false, registrationYear: 2026);
@@ -1339,13 +1250,13 @@ public class RegistrationPeriodProviderTests
     public void GIVEN_multiple_CSO_and_Direct_windows_WHEN_GetRegistrationWindow_called_for_CSO_THEN_returns_only_CSO_window()
     {
         // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2026,
                 FinalRegistrationYear = 2026,
-                Windows = new List<Window>
+                Windows = new List<TestWindow>
                 {
                     CreateWindow(WindowType.CsoLargeProducer),
                     CreateWindow(WindowType.CsoSmallProducer),
@@ -1354,8 +1265,7 @@ public class RegistrationPeriodProviderTests
                 }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act
         var result = sut.GetRegistrationWindow(isCso: true, isSmallProducer: true, registrationYear: 2026);
@@ -1370,13 +1280,13 @@ public class RegistrationPeriodProviderTests
     public void GIVEN_multiple_CSO_and_Direct_windows_WHEN_GetRegistrationWindow_called_for_Direct_THEN_returns_only_Direct_window()
     {
         // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2026,
                 FinalRegistrationYear = 2026,
-                Windows = new List<Window>
+                Windows = new List<TestWindow>
                 {
                     CreateWindow(WindowType.CsoLargeProducer),
                     CreateWindow(WindowType.CsoSmallProducer),
@@ -1385,8 +1295,7 @@ public class RegistrationPeriodProviderTests
                 }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act
         var result = sut.GetRegistrationWindow(isCso: false, isSmallProducer: true, registrationYear: 2026);
@@ -1401,20 +1310,19 @@ public class RegistrationPeriodProviderTests
     public void GIVEN_single_null_journey_CSO_window_WHEN_GetRegistrationWindow_called_THEN_returns_that_window()
     {
         // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2026,
                 FinalRegistrationYear = 2026,
-                Windows = new List<Window>
+                Windows = new List<TestWindow>
                 {
                     CreateWindow(WindowType.Cso)
                 }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act
         var resultSmall = sut.GetRegistrationWindow(isCso: true, isSmallProducer: true, registrationYear: 2026);
@@ -1432,20 +1340,19 @@ public class RegistrationPeriodProviderTests
     public void GIVEN_single_null_journey_Direct_window_WHEN_GetRegistrationWindow_called_THEN_returns_that_window()
     {
         // arrange
-        var registrationPeriodPatterns = new List<RegistrationPeriodPattern>
+        var TestPatterns = new List<TestPattern>
         {
             new()
             {
                 InitialRegistrationYear = 2026,
                 FinalRegistrationYear = 2026,
-                Windows = new List<Window>
+                Windows = new List<TestWindow>
                 {
                     CreateWindow(WindowType.Direct)
                 }
             }
         };
-        var options = Options.Create(registrationPeriodPatterns);
-        var sut = new RegistrationPeriodProvider(options, _timeProvider, _mockHttpContext.Object);
+        var sut = BuildProvider(TestPatterns, _mockHttpContext.Object);
 
         // act
         var resultSmall = sut.GetRegistrationWindow(isCso: false, isSmallProducer: true, registrationYear: 2026);

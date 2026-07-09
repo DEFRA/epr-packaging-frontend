@@ -168,6 +168,31 @@ public class PaymentCalculationService(
         }
     }
 
+    public async Task<SubmissionPeriodDetails[]?> GetSubmissionPeriods()
+    {
+        var endpoint = options.Value.Endpoints.SubmissionPeriodsEndpoint;
+
+        try
+        {
+            // Anonymous — called from RegistrationPeriodProviderWarmupService at startup where no user context exists.
+            var result = await paymentCalculationServiceApiClient.SendGetRequest(endpoint, authenticated: false);
+
+            if (result.StatusCode == HttpStatusCode.NotFound)
+            {
+                return null;
+            }
+
+            result.EnsureSuccessStatusCode();
+
+            return await result.Content.ReadFromJsonAsync<SubmissionPeriodDetails[]>();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to retrieve submission periods from payment facade");
+            return null;
+        }
+    }
+
     private static string RemoveDecimalValues(string jsonString)
 	{
 		return Regex.Replace(jsonString, @"(\d+)\.0+", "$1", RegexOptions.None, TimeSpan.FromMilliseconds(100));

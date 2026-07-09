@@ -18,4 +18,6 @@ public interface IPaymentCalculationService
 	Task<PackagingPaymentResponse> GetResubmissionFees(string applicationReferenceNumber, string regulatorNation, int memberCount, bool isComplianceScheme, DateTime? resubmissionDate);
 
     Task<RegistrationFeeCalculationDetails[]?> GetRegistrationFeeCalculationDetails(Guid submissionId);
+
+    Task<SubmissionPeriodDetails[]?> GetSubmissionPeriods();
 }

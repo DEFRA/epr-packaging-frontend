@@ -178,6 +178,8 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         else
             nationId = organisation.NationId;
 
+        session.SubmissionPeriodId = ResolveSubmissionPeriodId(session, registrationJourney, registrationYear);
+
         session.RegulatorNation = nationId switch
         {
             (int) Nation.England => "GB-ENG",
@@ -722,7 +724,24 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     {
         return session.RegistrationApplicationSubmittedDate ?? _timeProvider.GetLocalNow().UtcDateTime;
     }
-    
+
+    private int? ResolveSubmissionPeriodId(RegistrationApplicationSession session, RegistrationJourney? registrationJourney, int registrationYear)
+    {
+        var journey = session.RegistrationJourney ?? registrationJourney;
+        var isSmallProducer = journey?.ToString().Contains("Small", StringComparison.OrdinalIgnoreCase) ?? false;
+
+        try
+        {
+            return _registrationPeriodProvider
+                .GetRegistrationWindow(session.IsComplianceScheme, isSmallProducer, registrationYear)
+                ?.Id;
+        }
+        catch (InvalidOperationException)
+        {
+            return null;
+        }
+    }
+
     // this structure provides data for tile representing a CSO reg window AND for the single tile that represents the two Direct registration windows,
     // hence allowing the two deadline dates to be displayed on the Direct reg tile
     private record class RegistrationWindowKeyInformation(RegistrationJourney? Journey, RegistrationWindow RegistrationWindow, RegistrationWindow? SecondaryRegistrationWindow, int RegistrationYear);

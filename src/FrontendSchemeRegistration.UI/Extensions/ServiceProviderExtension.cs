@@ -155,7 +155,6 @@ public static class ServiceProviderExtension
         services.Configure<ComplianceSchemeMembersPaginationOptions>(configuration.GetSection(ComplianceSchemeMembersPaginationOptions.ConfigSection));
         services.Configure<SessionOptions>(configuration.GetSection(SessionOptions.ConfigSection));
         services.AddSingleton<GuidanceLinkOptions>();
-        services.Configure<List<RegistrationPeriodPattern>>(configuration.GetSection(RegistrationPeriodPattern.ConfigSection));
         services.Configure<NotificationBannerOptions>(configuration.GetSection(NotificationBannerOptions.Section));
         services.Configure<FibreOptions>(configuration.GetSection(FibreOptions.ConfigSection));
         services.Configure<CsocOptions>(configuration.GetSection(CsocOptions.ConfigSection));
@@ -205,6 +204,7 @@ public static class ServiceProviderExtension
         services.AddScoped<ComplianceSchemeIdHttpContextFilterAttribute>();
         services.AddScoped<IResubmissionApplicationService, ResubmissionApplicationServices>();
         services.AddSingleton<IRegistrationPeriodProvider, RegistrationPeriodProvider>();
+        services.AddHostedService<RegistrationPeriodProviderWarmupService>();
     }
 
     // When testing PRNs use a configurable date in place of the current date
