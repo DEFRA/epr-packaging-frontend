@@ -924,4 +924,84 @@ public class DeclarationWithFullNameControllerTests
             .Which.ActionName.Should().Be("Get");
         ((RedirectToActionResult)result).ControllerName.Should().Be("DeclarationProcessing");
     }
+
+    [Test]
+    public async Task Post_FeatureFlagOff_DoesNotCallPaymentFacade()
+    {
+        // Arrange
+        var submission = new RegistrationSubmission
+        {
+            Id = Guid.NewGuid(),
+            IsSubmitted = false,
+            SubmissionPeriod = "January to December 2026",
+            LastUploadedValidFiles = new UploadedRegistrationFilesInformation
+            {
+                CompanyDetailsFileName = "FileName",
+                CompanyDetailsUploadDatetime = DateTime.Now,
+                CompanyDetailsUploadedBy = Guid.NewGuid(),
+                CompanyDetailsFileId = Guid.NewGuid(),
+            },
+            HasValidFile = true,
+        };
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession { ApplicationReferenceNumber = "test" },
+        });
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService)).ReturnsAsync(false);
+
+        var request = new DeclarationWithFullNameViewModel
+        {
+            FullName = DeclarationName,
+            OrganisationDetailsFileId = Guid.NewGuid().ToString(),
+        };
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer));
+
+        // Act
+        await _systemUnderTest.Post(submission.Id, request);
+
+        // Assert
+        _paymentCalculationServiceMock.Verify(s => s.GetRegistrationFeeCalculationDetails(It.IsAny<Guid>()), Times.Never);
+    }
+
+    [Test]
+    public async Task Post_FeatureFlagOn_RedirectsToDeclarationProcessing()
+    {
+        // Arrange
+        var submission = new RegistrationSubmission
+        {
+            Id = Guid.NewGuid(),
+            IsSubmitted = false,
+            SubmissionPeriod = "January to December 2026",
+            LastUploadedValidFiles = new UploadedRegistrationFilesInformation
+            {
+                CompanyDetailsFileName = "FileName",
+                CompanyDetailsUploadDatetime = DateTime.Now,
+                CompanyDetailsUploadedBy = Guid.NewGuid(),
+                CompanyDetailsFileId = Guid.NewGuid(),
+            },
+            HasValidFile = true,
+        };
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession { ApplicationReferenceNumber = "test" },
+        });
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService)).ReturnsAsync(true);
+
+        var request = new DeclarationWithFullNameViewModel
+        {
+            FullName = DeclarationName,
+            OrganisationDetailsFileId = Guid.NewGuid().ToString(),
+        };
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer));
+
+        // Act
+        var result = await _systemUnderTest.Post(submission.Id, request);
+
+        // Assert
+        result.Should().BeOfType<RedirectToActionResult>()
+            .Which.ActionName.Should().Be("Get");
+        ((RedirectToActionResult)result).ControllerName.Should().Be("DeclarationProcessing");
+    }
 }
