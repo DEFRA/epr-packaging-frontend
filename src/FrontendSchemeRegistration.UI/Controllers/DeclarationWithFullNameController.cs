@@ -165,10 +165,6 @@ public class DeclarationWithFullNameController(
                     ? ProcessingViewName
                     : ConfirmationViewName;
 
-                var postSubmitController = await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService)
-                    ? ProcessingViewName
-                    : ConfirmationViewName;
-
                 return (model.RegistrationYear.HasValue
                     ? RedirectToAction("Get", postSubmitController,
                         new
