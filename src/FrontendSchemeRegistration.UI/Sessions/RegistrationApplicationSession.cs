@@ -19,6 +19,7 @@ public class RegistrationApplicationSession
 
     public Guid? SubmissionId { get; set; }
 
+    // Has this been submitted for fee calculation (submit 1)
     public bool IsSubmitted { get; set; }
 
     public bool IsResubmission { get; set; }
@@ -26,7 +27,7 @@ public class RegistrationApplicationSession
     public ApplicationStatusType ApplicationStatus { get; set; }
 
     public RegistrationTaskListStatus FileUploadStatus =>
-        RegistrationApplicationStatusCalculator.CalculateFileUploadStatus(ApplicationStatus, FileReachedSynapse);
+        RegistrationApplicationStatusCalculator.CalculateFileUploadStatus(ApplicationStatus, ReadyToCalculateFees);
 
     public RegistrationTaskListStatus PaymentViewStatus =>
         RegistrationApplicationStatusCalculator.CalculatePaymentViewStatus(FileUploadStatus, IsRegistrationFeePaid);
@@ -38,14 +39,14 @@ public class RegistrationApplicationSession
 
     public bool RegistrationApplicationSubmitted => RegistrationApplicationSubmittedDate is not null;
 
-    public bool FileReachedSynapse => RegistrationApplicationStatusCalculator.FileReachedSynapse(RegistrationFeeCalculationDetails);
+    public bool ReadyToCalculateFees => RegistrationApplicationStatusCalculator.ReadyToCalculateFees(RegistrationFeeCalculationDetails);
 
+    // this is the last time the submission was submitted to the Regulator for review (submit 2)
     public DateTime? RegistrationApplicationSubmittedDate { get; set; }
 
     public string? RegistrationApplicationSubmittedComment { get; set; }
 
     public string? RegistrationFeePaymentMethod { get; set; }
-
 
     public bool IsLateFeeApplicable { get; set; }
 
@@ -53,16 +54,22 @@ public class RegistrationApplicationSession
 
     public bool HasAnyApprovedOrQueriedRegulatorDecision { get; set; }
 
+    // is the most recent submission (submit 1) after the latest successful (and validated) file upload? If not,
+    // then the file has been successfully uploaded, but not submitted (submit 1), and is therefore ready to submit (submit 1)
     public bool IsLatestSubmittedEventAfterFileUpload { get; set; }
 
+    // this is the last time that the file was submitted for fee calculation (submit 1)
     public DateTime? LatestSubmittedEventCreatedDatetime { get; set; }
 
+    // this is the first time the submission was submitted to the Regulator for review (submit 2)
     public DateTime? FirstApplicationSubmittedEventCreatedDatetime { get; set; }
 
     public int TotalAmountOutstanding { get; set; }
 
+    // This is generated when the application is submitted for fee calculation (submit 1), eg PEPR1690421049026P1L
     public string? ApplicationReferenceNumber { get; set; }
 
+    // This is generated when the registration is granted by the regulator, eg R26EC169042104392L
     public string? RegistrationReferenceNumber { get; set; }
 
     public string RegulatorNation { get; set; } = string.Empty;

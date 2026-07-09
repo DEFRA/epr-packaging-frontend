@@ -171,7 +171,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             nationId = session.SelectedComplianceScheme.NationId;
             session.RegistrationJourney = registrationApplicationDetails.RegistrationJourney ?? registrationJourney;
         }
-        else if (session.FileReachedSynapse)
+        else if (session.ReadyToCalculateFees)
             nationId = session.RegistrationFeeCalculationDetails[0].NationId;
         else
             nationId = organisation.NationId;
@@ -223,9 +223,9 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     public async Task<FeeCalculationBreakdownViewModel?> GetProducerRegistrationFees(ISession httpSession)
     {
         var session = await sessionManager.GetSessionAsync(httpSession);
-        if (!session.FileReachedSynapse)
+        if (!session.ReadyToCalculateFees)
         {
-            logger.LogWarning("Unable to GetProducerRegistrationFees Details, session.FileReachedSynapse is null");
+            logger.LogWarning("Unable to GetProducerRegistrationFees Details, session.ReadyToCalculateFees is null");
             return null;
         }
 
@@ -283,9 +283,9 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     public async Task<ComplianceSchemeFeeCalculationBreakdownViewModel?> GetComplianceSchemeRegistrationFees(ISession httpSession)
     {
         var session = await sessionManager.GetSessionAsync(httpSession);
-        if (!session.FileReachedSynapse)
+        if (!session.ReadyToCalculateFees)
         {
-            logger.LogWarning("Unable to GetComplianceSchemeRegistrationFees Details, session.FileReachedSynapse is null");
+            logger.LogWarning("Unable to GetComplianceSchemeRegistrationFees Details, session.ReadyToCalculateFees is null");
             return null;
         }
 
