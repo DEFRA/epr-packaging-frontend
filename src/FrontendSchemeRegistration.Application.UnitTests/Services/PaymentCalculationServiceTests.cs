@@ -2,6 +2,7 @@ using System.Net;
 using System.Text;
 using System.Text.Json;
 using FluentAssertions;
+using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.DTOs.PaymentCalculations;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services;
@@ -787,6 +788,88 @@ public class PaymentCalculationServiceTests
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.InternalServerError));
 
         var result = await _systemUnderTest.GetRegistrationFeeCalculationDetails(Guid.NewGuid());
+
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetSubmissionPeriods_Success_ReturnsDetailsArray()
+    {
+        var payload = new[]
+        {
+            new SubmissionPeriodDetails
+            {
+                Id = 1, WindowType = "Cso", RegistrationYear = 2025,
+                OpeningDate = new DateTime(2024, 7, 1, 0, 0, 0, DateTimeKind.Utc),
+                DeadlineDate = new DateTime(2025, 4, 2, 0, 0, 0, DateTimeKind.Utc),
+                ClosingDate = new DateTime(2026, 2, 1, 0, 0, 0, DateTimeKind.Utc)
+            }
+        };
+        var response = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = payload.ToJsonContent(_jsonOptions)
+        };
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendGetRequest(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(response);
+
+        var result = await _systemUnderTest.GetSubmissionPeriods();
+
+        result.Should().NotBeNull();
+        result!.Should().BeEquivalentTo(payload);
+    }
+
+    [Test]
+    public async Task GetSubmissionPeriods_CallsSendGetRequestAnonymously()
+    {
+        var response = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = Array.Empty<SubmissionPeriodDetails>().ToJsonContent(_jsonOptions)
+        };
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendGetRequest(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(response);
+
+        await _systemUnderTest.GetSubmissionPeriods();
+
+        // Warmup runs before any user is signed in — no user token available.
+        _paymentServiceApiClientMock.Verify(
+            x => x.SendGetRequest(It.IsAny<string>(), false),
+            Times.Once);
+    }
+
+    [Test]
+    public async Task GetSubmissionPeriods_NotFound_ReturnsNull()
+    {
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendGetRequest(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.NotFound));
+
+        var result = await _systemUnderTest.GetSubmissionPeriods();
+
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetSubmissionPeriods_ClientThrows_ReturnsNull()
+    {
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendGetRequest(It.IsAny<string>(), It.IsAny<bool>()))
+            .ThrowsAsync(new Exception("boom"));
+
+        var result = await _systemUnderTest.GetSubmissionPeriods();
+
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetSubmissionPeriods_ServerError_ReturnsNull()
+    {
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendGetRequest(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.InternalServerError));
+
+        var result = await _systemUnderTest.GetSubmissionPeriods();
 
         result.Should().BeNull();
     }

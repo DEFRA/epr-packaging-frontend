@@ -17,7 +17,6 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
     private readonly TimeProvider _timeProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private IReadOnlyCollection<RegistrationWindow> _registrationWindows = [];
-    private int? _loadedYear;
 
     private readonly object _lock = new();
 
@@ -53,7 +52,6 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
         lock (_lock)
         {
             _registrationWindows = windows;
-            _loadedYear = _timeProvider.GetUtcNow().Year;
         }
     }
 
