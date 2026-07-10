@@ -38,7 +38,8 @@ public class FrontendSchemeRegistrationController(
     INotificationService notificationService,
     TimeProvider timeProvider,
     IFeatureManager featureManager,
-    IOptions<CsocOptions> csocOptions)
+    IOptions<CsocOptions> csocOptions,
+    IWebApiGatewayClient webApiGatewayClient)
     : Controller
 {
 
@@ -444,6 +445,7 @@ public class FrontendSchemeRegistrationController(
         
         var isApprovedUser = userData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved);
         var now = timeProvider.GetLocalNow().DateTime;
+        var csocObligationViewModel = await TryGetCsocObligationViewModelAsync(now.GetComplianceYear());
 
         // Note: We are reading desired values using existing service to avoid SonarQube issue for adding 8th parameter in the constructor.
         var viewModel = new HomePageSelfManagedViewModel
@@ -456,7 +458,13 @@ public class FrontendSchemeRegistrationController(
             RegistrationApplications = registrationApplicationYearViewModelsTask.Result.SelectMany(ray => ray.Applications),
             PackagingResubmissionPeriod = packagingResubmissionPeriod,
             ComplianceYear = timeProvider.GetUtcNow().GetComplianceYear().ToString(),
-            CsocViewModel = await CsocHelper.CreateViewModel(featureManager, isApprovedUser, organisation, now, csocOptions.Value)
+            CsocViewModel = await CsocHelper.CreateViewModel(
+                featureManager,
+                isApprovedUser,
+                organisation,
+                now,
+                csocOptions.Value,
+                csocObligationViewModel)
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id!.Value);
@@ -543,5 +551,38 @@ public class FrontendSchemeRegistrationController(
         }
 
         return complianceSchemesList;
+    }
+
+    private async Task<ViewModels.Prns.PrnObligationViewModel?> TryGetCsocObligationViewModelAsync(int complianceYear)
+    {
+        if (!await featureManager.IsEnabledAsync(FeatureFlags.CsocEnabled))
+        {
+            return null;
+        }
+
+        try
+        {
+            var declaration = await webApiGatewayClient.GetLatestComplianceDeclaration(complianceYear);
+            if (declaration is null)
+            {
+                return new ViewModels.Prns.PrnObligationViewModel();
+            }
+
+            return new ViewModels.Prns.PrnObligationViewModel
+            {
+                ComplianceDeclarationStatus = declaration.Status,
+                ComplianceDeclarationId = declaration.Id
+            };
+        }
+        catch (HttpRequestException ex)
+        {
+            logger.LogWarning(ex, "Failed to fetch compliance declaration for year {ComplianceYear}", complianceYear);
+            return new ViewModels.Prns.PrnObligationViewModel();
+        }
+        catch (System.Text.Json.JsonException ex)
+        {
+            logger.LogWarning(ex, "Failed to parse compliance declaration for year {ComplianceYear}", complianceYear);
+            return new ViewModels.Prns.PrnObligationViewModel();
+        }
     }
 }

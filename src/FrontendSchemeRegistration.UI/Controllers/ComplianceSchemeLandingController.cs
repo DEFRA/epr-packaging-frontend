@@ -16,9 +16,11 @@ using Microsoft.FeatureManagement;
 
 namespace FrontendSchemeRegistration.UI.Controllers;
 
+using Application.DTOs.Prns;
 using Application.Options;
 using Helpers;
 using Microsoft.Extensions.Options;
+using ViewModels.Prns;
 
 [SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters", Justification = "Required for dependency injection")]
 [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
@@ -31,7 +33,8 @@ public class ComplianceSchemeLandingController(
     ILogger<ComplianceSchemeLandingController> logger,
     IFeatureManager featureManager,
     TimeProvider timeProvider,
-    IOptions<CsocOptions> csocOptions)
+    IOptions<CsocOptions> csocOptions,
+    IWebApiGatewayClient webApiGatewayClient)
     : Controller
 {
     [HttpGet]
@@ -65,7 +68,8 @@ public class ComplianceSchemeLandingController(
             organisation, new List<string> { packagingResubmissionPeriod.DataPeriod }, session.RegistrationSession.SelectedComplianceScheme?.Id);
 
         var isApprovedUser = userData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved);
-        
+        var csocObligationViewModel = await TryGetCsocObligationViewModelAsync(complianceYear);
+
         var model = new ComplianceSchemeLandingViewModel
         {
             CurrentComplianceSchemeId = currentComplianceSchemeId,
@@ -76,7 +80,14 @@ public class ComplianceSchemeLandingController(
             ResubmissionTaskListViewModel = resubmissionApplicationDetails.ToResubmissionTaskListViewModel(organisation),
             PackagingResubmissionPeriod = packagingResubmissionPeriod,
             ComplianceYear = complianceYear.ToString(),
-            CsocViewModel = await CsocHelper.CreateViewModel(featureManager, isApprovedUser, organisation, now, csocOptions.Value, registrationSession: session.RegistrationSession)
+            CsocViewModel = await CsocHelper.CreateViewModel(
+                featureManager,
+                isApprovedUser,
+                organisation,
+                now,
+                csocOptions.Value,
+                csocObligationViewModel,
+                session.RegistrationSession)
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id.Value);
@@ -113,5 +124,38 @@ public class ComplianceSchemeLandingController(
         }
 
         return RedirectToAction(nameof(Get));
+    }
+
+    private async Task<PrnObligationViewModel?> TryGetCsocObligationViewModelAsync(int complianceYear)
+    {
+        if (!await featureManager.IsEnabledAsync(FeatureFlags.CsocEnabled))
+        {
+            return null;
+        }
+
+        try
+        {
+            var declaration = await webApiGatewayClient.GetLatestComplianceDeclaration(complianceYear);
+            if (declaration is null)
+            {
+                return new PrnObligationViewModel();
+            }
+
+            return new PrnObligationViewModel
+            {
+                ComplianceDeclarationStatus = declaration.Status,
+                ComplianceDeclarationId = declaration.Id
+            };
+        }
+        catch (HttpRequestException ex)
+        {
+            logger.LogWarning(ex, "Failed to fetch compliance declaration for year {ComplianceYear}", complianceYear);
+            return new PrnObligationViewModel();
+        }
+        catch (System.Text.Json.JsonException ex)
+        {
+            logger.LogWarning(ex, "Failed to parse compliance declaration for year {ComplianceYear}", complianceYear);
+            return new PrnObligationViewModel();
+        }
     }
 }

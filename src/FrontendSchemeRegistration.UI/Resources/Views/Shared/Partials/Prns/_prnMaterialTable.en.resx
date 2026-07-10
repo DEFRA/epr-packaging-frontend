@@ -142,16 +142,16 @@
     <value>Material</value>
   </data>
   <data name="met" xml:space="preserve">
-    <value>MET</value>
+    <value>Met</value>
   </data>
   <data name="not_available_yet" xml:space="preserve">
     <value>Not available yet</value>
   </data>
   <data name="not_met" xml:space="preserve">
-    <value>NOT MET</value>
+    <value>Not met</value>
   </data>
   <data name="no_data_yet" xml:space="preserve">
-    <value>NO DATA YET</value>
+    <value>No data yet</value>
   </data>
   <data name="arialabel_paper_board_fibre" xml:space="preserve">
     <value>Paper, board or fibre-based composite material recycling obligation page</value>
