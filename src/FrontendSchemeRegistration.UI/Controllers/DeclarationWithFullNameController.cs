@@ -24,11 +24,11 @@ public class DeclarationWithFullNameController(
     ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
     ILogger<DeclarationWithFullNameController> logger,
     IRegistrationPeriodProvider registrationPeriodProvider,
-    IFeatureManager featureManager,
-    IRegistrationApplicationService registrationApplicationService) : Controller
+    IFeatureManager featureManager) : Controller
 {
     private const string ViewName = "DeclarationWithFullName";
     private const string ConfirmationViewName = "CompanyDetailsConfirmation";
+    private const string ProcessingViewName = "DeclarationProcessing";
     private const string SubmissionErrorViewName = "OrganisationDetailsSubmissionFailed";
 
     [HttpGet]
@@ -157,19 +157,18 @@ public class DeclarationWithFullNameController(
                     session.RegistrationSession.IsResubmission,
                     regJourney);
 
-                if (await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService))
-                {
-                    await registrationApplicationService.WaitForRegistrationFeeSnapshotAsync(HttpContext.Session, submissionId, HttpContext.RequestAborted);
-                }
+                var postSubmitController = await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService)
+                    ? ProcessingViewName
+                    : ConfirmationViewName;
 
                 return (model.RegistrationYear.HasValue
-                    ? RedirectToAction("Get", ConfirmationViewName,
+                    ? RedirectToAction("Get", postSubmitController,
                         new
                         {
                             submissionId, registrationyear = model.RegistrationYear.ToString(),
                             registrationjourney = regJourney
                         })
-                    : RedirectToAction("Get", ConfirmationViewName, new { submissionId }));
+                    : RedirectToAction("Get", postSubmitController, new { submissionId }));
             }
             catch (Exception ex)
             {

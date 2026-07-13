@@ -16,7 +16,6 @@ using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 using Microsoft.FeatureManagement;
 using Moq;
 
@@ -40,8 +39,6 @@ public class DeclarationWithFullNameControllerTests
     private Mock<IRegistrationPeriodProvider> _registrationPeriodProviderMock;
     private Mock<IFeatureManager> _featureManagerMock;
     private Mock<IPaymentCalculationService> _paymentCalculationServiceMock;
-    private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
-    private IOptions<RegistrationFeeSnapshotPollingOptions> _snapshotPollingOptions;
 
     [SetUp]
     public void SetUp()
@@ -52,16 +49,13 @@ public class DeclarationWithFullNameControllerTests
         _registrationPeriodProviderMock = new Mock<IRegistrationPeriodProvider>();
         _featureManagerMock = new Mock<IFeatureManager>();
         _paymentCalculationServiceMock = new Mock<IPaymentCalculationService>();
-        _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
-        // Tight polling settings keep timeout-path tests under a second.
-        _snapshotPollingOptions = Options.Create(new RegistrationFeeSnapshotPollingOptions { TimeoutSeconds = 1, IntervalSeconds = 0 });
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
                 RegistrationSession = new RegistrationSession { IsResubmission = true }
             });
 
-        _systemUnderTest = new DeclarationWithFullNameController(_submissionServiceMock.Object, _sessionManagerMock.Object, new NullLogger<DeclarationWithFullNameController>(), _registrationPeriodProviderMock.Object, _featureManagerMock.Object, _registrationApplicationServiceMock.Object);
+        _systemUnderTest = new DeclarationWithFullNameController(_submissionServiceMock.Object, _sessionManagerMock.Object, new NullLogger<DeclarationWithFullNameController>(), _registrationPeriodProviderMock.Object, _featureManagerMock.Object);
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
@@ -890,7 +884,7 @@ public class DeclarationWithFullNameControllerTests
     }
 
     [Test]
-    public async Task Post_FeatureFlagOn_WaitsUntilSnapshotReadyThenRedirectsToConfirmation()
+    public async Task Post_FeatureFlagOn_RedirectsToDeclarationProcessing()
     {
         // Arrange
         var submission = new RegistrationSubmission
@@ -913,9 +907,6 @@ public class DeclarationWithFullNameControllerTests
             RegistrationSession = new RegistrationSession { ApplicationReferenceNumber = "test" },
         });
         _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService)).ReturnsAsync(true);
-        _registrationApplicationServiceMock
-            .Setup(s => s.WaitForRegistrationFeeSnapshotAsync(It.IsAny<ISession>(), submission.Id, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(true);
 
         var request = new DeclarationWithFullNameViewModel
         {
@@ -928,52 +919,8 @@ public class DeclarationWithFullNameControllerTests
         var result = await _systemUnderTest.Post(submission.Id, request);
 
         // Assert
-        _registrationApplicationServiceMock.Verify(s => s.WaitForRegistrationFeeSnapshotAsync(It.IsAny<ISession>(), submission.Id, It.IsAny<CancellationToken>()), Times.Once);
         result.Should().BeOfType<RedirectToActionResult>()
             .Which.ActionName.Should().Be("Get");
-        ((RedirectToActionResult)result).ControllerName.Should().Be("CompanyDetailsConfirmation");
-    }
-
-    [Test]
-    public async Task Post_FeatureFlagOn_TimeoutFires_StillRedirectsToConfirmation()
-    {
-        // Arrange
-        var submission = new RegistrationSubmission
-        {
-            Id = Guid.NewGuid(),
-            IsSubmitted = false,
-            SubmissionPeriod = "January to December 2026",
-            LastUploadedValidFiles = new UploadedRegistrationFilesInformation
-            {
-                CompanyDetailsFileName = "FileName",
-                CompanyDetailsUploadDatetime = DateTime.Now,
-                CompanyDetailsUploadedBy = Guid.NewGuid(),
-                CompanyDetailsFileId = Guid.NewGuid(),
-            },
-            HasValidFile = true,
-        };
-        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
-        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
-        {
-            RegistrationSession = new RegistrationSession { ApplicationReferenceNumber = "test" },
-        });
-        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService)).ReturnsAsync(true);
-        _registrationApplicationServiceMock
-            .Setup(s => s.WaitForRegistrationFeeSnapshotAsync(It.IsAny<ISession>(), submission.Id, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(false);
-
-        var request = new DeclarationWithFullNameViewModel
-        {
-            FullName = DeclarationName,
-            OrganisationDetailsFileId = Guid.NewGuid().ToString(),
-        };
-        _claimsPrincipalMock.Setup(x => x.Claims).Returns(CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer));
-
-        // Act
-        var result = await _systemUnderTest.Post(submission.Id, request);
-
-        // Assert — wait wrapper was invoked, returned false (timeout-internal), controller still redirects
-        _registrationApplicationServiceMock.Verify(s => s.WaitForRegistrationFeeSnapshotAsync(It.IsAny<ISession>(), submission.Id, It.IsAny<CancellationToken>()), Times.Once);
-        result.Should().BeOfType<RedirectToActionResult>();
+        ((RedirectToActionResult)result).ControllerName.Should().Be("DeclarationProcessing");
     }
 }
