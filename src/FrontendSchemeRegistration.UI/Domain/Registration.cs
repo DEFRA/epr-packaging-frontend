@@ -15,8 +15,8 @@ namespace FrontendSchemeRegistration.UI.Domain;
 public sealed class Registration
 {
     private readonly RegistrationFeeCalculationDetails[]? _feeCalculationDetails;
-    private readonly DateTime? _registrationApplicationSubmittedDate;
-    private readonly DateTime? _firstApplicationSubmittedEventCreatedDatetime;
+    private readonly DateTime? _latestSubmit2Date;
+    private readonly DateTime? _firstSubmit2Date;
     private readonly DateTimeOffset _now;
     private readonly bool _isRegistrationFeePaid;
     private readonly bool _isLateFeeApplicable;
@@ -24,7 +24,16 @@ public sealed class Registration
     private readonly string _regulatorNation;
 
     internal Registration(
-        RegistrationApplicationDetails details,
+        ApplicationStatusType applicationStatus,
+        bool? applicationIsResubmission,
+        string? applicationReferenceNumber,
+        string? registrationFeePaymentMethod,
+        RegistrationJourney? applicationRegistrationJourney,
+        DateTime? latestSubmit2Date,
+        DateTime? firstSubmit2Date,
+        bool hasAnyApprovedOrQueriedRegulatorDecision,
+        bool hasLatestFileBeenSubmittedForFeeCalculation,
+        DateTime? latestSubmit1Date,
         RegistrationFeeCalculationDetails[]? feeCalculationDetails,
         ComplianceSchemeDto? selectedComplianceScheme,
         RegistrationJourney? registrationJourney,
@@ -35,14 +44,13 @@ public sealed class Registration
         DateTimeOffset now)
     {
         _feeCalculationDetails = feeCalculationDetails;
-        _registrationApplicationSubmittedDate = details.RegistrationApplicationSubmittedDate;
-        _firstApplicationSubmittedEventCreatedDatetime = details.FirstApplicationSubmittedEventCreatedDatetime;
+        _latestSubmit2Date = latestSubmit2Date;
+        _firstSubmit2Date = firstSubmit2Date;
         _now = now;
 
         var isComplianceScheme = selectedComplianceScheme is not null;
 
-        var effectiveIsResubmission = (details.IsResubmission ?? isResubmission) ?? false;
-        var applicationStatus = details.ApplicationStatus;
+        var effectiveIsResubmission = (applicationIsResubmission ?? isResubmission) ?? false;
         if (applicationStatus is ApplicationStatusType.AcceptedByRegulator or ApplicationStatusType.ApprovedByRegulator
             && isResubmission is true)
         {
@@ -68,24 +76,31 @@ public sealed class Registration
         };
 
         var effectiveJourney = isComplianceScheme
-            ? (details.RegistrationJourney ?? registrationJourney)
+            ? (applicationRegistrationJourney ?? registrationJourney)
             : registrationJourney;
 
-        var (isLateFeeApplicable, isOriginalCsoSubmissionLate) =
-            ComputeLateFee(details, isComplianceScheme, registrationYear, lateFeeDeadlineDate, now);
+        var (isLateFeeApplicable, isOriginalCsoSubmissionLate) = ComputeLateFee(
+            hasAnyApprovedOrQueriedRegulatorDecision,
+            hasLatestFileBeenSubmittedForFeeCalculation,
+            latestSubmit1Date,
+            firstSubmit2Date,
+            isComplianceScheme,
+            registrationYear,
+            lateFeeDeadlineDate,
+            now);
 
         var readyToCalculateFees = RegistrationApplicationStatusCalculator.ReadyToCalculateFees(feeCalculationDetails);
         var fileUploadStatus = RegistrationApplicationStatusCalculator.CalculateFileUploadStatus(applicationStatus, readyToCalculateFees);
-        var isRegistrationFeePaid = RegistrationApplicationStatusCalculator.IsRegistrationFeePaid(details.RegistrationFeePaymentMethod);
+        var isRegistrationFeePaid = RegistrationApplicationStatusCalculator.IsRegistrationFeePaid(registrationFeePaymentMethod);
         var paymentViewStatus = RegistrationApplicationStatusCalculator.CalculatePaymentViewStatus(fileUploadStatus, isRegistrationFeePaid);
-        var additionalDetailsStatus = RegistrationApplicationStatusCalculator.CalculateAdditionalDetailsStatus(paymentViewStatus, details.RegistrationApplicationSubmittedDate is not null);
+        var additionalDetailsStatus = RegistrationApplicationStatusCalculator.CalculateAdditionalDetailsStatus(paymentViewStatus, latestSubmit2Date is not null);
 
         ApplicationStatus = applicationStatus;
         IsResubmission = effectiveIsResubmission;
         IsComplianceScheme = isComplianceScheme;
         SelectedComplianceSchemeId = selectedComplianceScheme?.Id;
         RegistrationJourney = effectiveJourney;
-        ApplicationReferenceNumber = details.ApplicationReferenceNumber;
+        ApplicationReferenceNumber = applicationReferenceNumber;
         _regulatorNation = regulatorNation;
         FileUploadStatus = fileUploadStatus;
         PaymentViewStatus = paymentViewStatus;
@@ -128,7 +143,7 @@ public sealed class Registration
             NoOfSubsidiariesClosedLoopRecycling = feeCalculationDetails.NumberOfSubsidiariesBeingClosedLoopRecycling,
             NumberOfSubsidiaries = feeCalculationDetails.NumberOfSubsidiaries,
             ProducerType = feeCalculationDetails.OrganisationSize,
-            SubmissionDate = _registrationApplicationSubmittedDate ?? _now.UtcDateTime
+            SubmissionDate = _latestSubmit2Date ?? _now.UtcDateTime
         });
 
         if (response is null)
@@ -160,7 +175,7 @@ public sealed class Registration
             TotalAmountOutstanding = response.OutstandingPayment < 0 ? 0 : response.OutstandingPayment,
             IsRegistrationFeePaid = _isRegistrationFeePaid,
             ProducerLateRegistrationFee = response.ProducerLateRegistrationFee,
-            RegistrationApplicationSubmitted = _registrationApplicationSubmittedDate is not null
+            RegistrationApplicationSubmitted = _latestSubmit2Date is not null
         };
     }
 
@@ -178,7 +193,7 @@ public sealed class Registration
         {
             IsLateFeeApplicable =
                 _isOriginalCsoSubmissionLate
-                || (_firstApplicationSubmittedEventCreatedDatetime is null && _isLateFeeApplicable)
+                || (_firstSubmit2Date is null && _isLateFeeApplicable)
                 || (_isLateFeeApplicable && c.IsNewJoiner),
             IsOnlineMarketplace = c.IsOnlineMarketplace,
             IsClosedLoopRecycling = c.IsClosedLoopRecycling,
@@ -198,7 +213,7 @@ public sealed class Registration
         {
             Regulator = _regulatorNation,
             ApplicationReferenceNumber = ApplicationReferenceNumber,
-            SubmissionDate = _registrationApplicationSubmittedDate ?? _now.UtcDateTime,
+            SubmissionDate = _latestSubmit2Date ?? _now.UtcDateTime,
             ComplianceSchemeMembers = complianceSchemeMembers,
             IncludeRegistrationFee = includeRegistrationFee
         });
@@ -237,12 +252,15 @@ public sealed class Registration
             TotalFeeAmount = response.TotalFee,
             TotalAmountOutstanding = response.OutstandingPayment < 0 ? 0 : response.OutstandingPayment,
             IsRegistrationFeePaid = _isRegistrationFeePaid,
-            RegistrationApplicationSubmitted = _registrationApplicationSubmittedDate is not null
+            RegistrationApplicationSubmitted = _latestSubmit2Date is not null
         };
     }
 
     private static (bool isLateFeeApplicable, bool isOriginalCsoSubmissionLate) ComputeLateFee(
-        RegistrationApplicationDetails details,
+        bool hasAnyApprovedOrQueriedRegulatorDecision,
+        bool hasLatestFileBeenSubmittedForFeeCalculation,
+        DateTime? latestSubmit1Date,
+        DateTime? firstSubmit2Date,
         bool isComplianceScheme,
         int registrationYear,
         DateTime lateFeeDeadlineDate,
@@ -250,24 +268,36 @@ public sealed class Registration
     {
         if (isComplianceScheme)
         {
-            var isLateFeeApplicable =
-                details is { HasAnyApprovedOrQueriedRegulatorDecision: true, IsLatestSubmittedEventAfterFileUpload: true } && registrationYear >= 2026
-                    ? details.LatestSubmittedEventCreatedDatetime!.Value.Date >= lateFeeDeadlineDate
-                    : details.FirstApplicationSubmittedEventCreatedDatetime is not null
-                        ? details.FirstApplicationSubmittedEventCreatedDatetime >= lateFeeDeadlineDate
-                        : now.Date >= lateFeeDeadlineDate;
+            bool isLateFeeApplicable;
+            if (hasAnyApprovedOrQueriedRegulatorDecision && hasLatestFileBeenSubmittedForFeeCalculation && registrationYear >= 2026)
+            {
+                isLateFeeApplicable = latestSubmit1Date!.Value.Date >= lateFeeDeadlineDate;
+            }
+            else if (firstSubmit2Date is not null)  // has it ever been submitted for approval, then base fee the first time it was submitted for approval
+            {
+                isLateFeeApplicable = firstSubmit2Date >= lateFeeDeadlineDate;
+            }
+            else // has never been submitted for approval - generate fees dynamically
+            {
+                isLateFeeApplicable = now.Date >= lateFeeDeadlineDate;
+            }
 
             var isOriginalCsoSubmissionLate =
-                details.FirstApplicationSubmittedEventCreatedDatetime is not null
-                && details.FirstApplicationSubmittedEventCreatedDatetime >= lateFeeDeadlineDate;
+                firstSubmit2Date is not null
+                && firstSubmit2Date >= lateFeeDeadlineDate;
 
             return (isLateFeeApplicable, isOriginalCsoSubmissionLate);
         }
 
-        var producerIsLateFeeApplicable =
-            details.FirstApplicationSubmittedEventCreatedDatetime is not null
-                ? details.FirstApplicationSubmittedEventCreatedDatetime >= lateFeeDeadlineDate
-                : now.Date >= lateFeeDeadlineDate;
+        bool producerIsLateFeeApplicable;
+        if (firstSubmit2Date is not null)
+        {
+            producerIsLateFeeApplicable = firstSubmit2Date >= lateFeeDeadlineDate;
+        }
+        else
+        {
+            producerIsLateFeeApplicable = now.Date >= lateFeeDeadlineDate;
+        }
 
         return (producerIsLateFeeApplicable, false);
     }

@@ -91,20 +91,22 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         //CSO logic
         if (session.IsComplianceScheme)
         {
+            // if any approved or queried submission in the past and the latest file has been submitted (submit 1)
             if (session is { HasAnyApprovedOrQueriedRegulatorDecision: true, IsLatestSubmittedEventAfterFileUpload: true } && registrationYear >= 2026)
             {
                 session.IsLateFeeApplicable = session.LatestSubmittedEventCreatedDatetime.Value.Date >= lateFeeDeadline;
             }
-            else if (session.FirstApplicationSubmittedEventCreatedDatetime is not null)
+            else if (session.FirstApplicationSubmittedEventCreatedDatetime is not null) // if submit 2 has ever happened 
             {
                 session.IsLateFeeApplicable = session.FirstApplicationSubmittedEventCreatedDatetime >= lateFeeDeadline;
             }
-            else
+            else // submit 2 has never happened
             {
                 var today = _timeProvider.GetLocalNow().Date;
                 session.IsLateFeeApplicable = today >= lateFeeDeadline;
             }
             
+            // did submit 2 ever happen
             if (session.FirstApplicationSubmittedEventCreatedDatetime is not null)
             {
                 session.IsOriginalCsoSubmissionLate = session.FirstApplicationSubmittedEventCreatedDatetime >= lateFeeDeadline;

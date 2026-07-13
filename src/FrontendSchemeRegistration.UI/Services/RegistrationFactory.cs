@@ -55,7 +55,16 @@ public class RegistrationFactory(
             ?? throw new InvalidOperationException($"There is no registration window for registration year {registrationYear}, IsComplianceScheme: {isComplianceScheme}, isSmallProducer: {isSmallProducer}");
 
         return new Registration(
-            details,
+            details.ApplicationStatus,
+            details.IsResubmission,
+            details.ApplicationReferenceNumber,
+            details.RegistrationFeePaymentMethod,
+            details.RegistrationJourney,
+            details.RegistrationApplicationSubmittedDate,
+            details.FirstApplicationSubmittedEventCreatedDatetime,
+            details.HasAnyApprovedOrQueriedRegulatorDecision,
+            details.IsLatestSubmittedEventAfterFileUpload,
+            details.LatestSubmittedEventCreatedDatetime,
             feeCalculationDetails,
             selectedComplianceScheme,
             registrationJourney,
