@@ -187,7 +187,6 @@ public static class ServiceProviderExtension
             FrontendSessionManager = sp.GetRequiredService<ISessionManager<FrontendSchemeRegistrationSession>>(),
             Logger = sp.GetRequiredService<ILogger<RegistrationApplicationService>>(),
             FeatureManager = sp.GetRequiredService<IFeatureManager>(),
-            SnapshotPollingOptions = sp.GetRequiredService<IOptions<RegistrationFeeSnapshotPollingOptions>>(),
             RegistrationPeriodProvider = sp.GetRequiredService<IRegistrationPeriodProvider>()
         });
         services.AddScoped<IRegistrationApplicationService, RegistrationApplicationService>();

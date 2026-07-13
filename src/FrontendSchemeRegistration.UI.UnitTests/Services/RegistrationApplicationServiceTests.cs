@@ -42,7 +42,6 @@ public class RegistrationApplicationServiceTests
     private RegistrationApplicationService _service;
     private Mock<IFeatureManager> _featureManagerMock;
     private Mock<IRegistrationPeriodProvider> _mockRegistrationPeriodProvider;
-    private IOptions<RegistrationFeeSnapshotPollingOptions> _snapshotPollingOptions;
     private FakeTimeProvider _dateTimeProvider;
     private const int RegistrationYear = 2026;
 
@@ -73,8 +72,7 @@ public class RegistrationApplicationServiceTests
             FrontendSessionManager = _frontEndSessionManagerMock.Object,
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            SnapshotPollingOptions = _snapshotPollingOptions,
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
 
         _service = new RegistrationApplicationService(deps, _dateTimeProvider);
@@ -3149,8 +3147,7 @@ public class RegistrationApplicationServiceTests
             FrontendSessionManager = _frontEndSessionManagerMock.Object,
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            SnapshotPollingOptions = _snapshotPollingOptions,
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -3169,8 +3166,7 @@ public class RegistrationApplicationServiceTests
             FrontendSessionManager = _frontEndSessionManagerMock.Object,
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            SnapshotPollingOptions = _snapshotPollingOptions,
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -3188,8 +3184,7 @@ public class RegistrationApplicationServiceTests
             FrontendSessionManager = _frontEndSessionManagerMock.Object,
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            SnapshotPollingOptions = _snapshotPollingOptions,
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -3207,8 +3202,7 @@ public class RegistrationApplicationServiceTests
             FrontendSessionManager = null!,
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            SnapshotPollingOptions = _snapshotPollingOptions,
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -3226,8 +3220,7 @@ public class RegistrationApplicationServiceTests
             FrontendSessionManager = _frontEndSessionManagerMock.Object,
             Logger = null!,
             FeatureManager = _featureManagerMock.Object,
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            SnapshotPollingOptions = _snapshotPollingOptions,
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -3245,8 +3238,7 @@ public class RegistrationApplicationServiceTests
             FrontendSessionManager = _frontEndSessionManagerMock.Object,
             Logger = _loggerMock.Object,
             FeatureManager = null!,
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            SnapshotPollingOptions = _snapshotPollingOptions,
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -3263,8 +3255,7 @@ public class RegistrationApplicationServiceTests
             FrontendSessionManager = _frontEndSessionManagerMock.Object,
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            SnapshotPollingOptions = _snapshotPollingOptions,
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
 
         Assert.DoesNotThrow(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -3354,8 +3345,7 @@ public class RegistrationApplicationServiceTests
             FrontendSessionManager = _frontEndSessionManagerMock.Object,
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
-            SnapshotPollingOptions = options,
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
         };
         return new RegistrationApplicationService(deps, _dateTimeProvider);
     }

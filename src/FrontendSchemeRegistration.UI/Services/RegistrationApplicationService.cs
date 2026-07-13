@@ -33,7 +33,6 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     private readonly IFeatureManager featureManager;
     private readonly TimeProvider _timeProvider;
     private readonly IRegistrationPeriodProvider _registrationPeriodProvider;
-    private readonly IOptions<RegistrationFeeSnapshotPollingOptions> snapshotPollingOptions;
 
     public RegistrationApplicationService(RegistrationApplicationServiceDependencies dependencies, TimeProvider timeProvider)
     {
@@ -53,8 +52,6 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         featureManager = dependencies.FeatureManager
                          ?? throw new InvalidOperationException($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(dependencies.FeatureManager)} cannot be null.");
         _registrationPeriodProvider = dependencies.RegistrationPeriodProvider;
-        snapshotPollingOptions = dependencies.SnapshotPollingOptions
-            ?? throw new InvalidOperationException($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(dependencies.SnapshotPollingOptions)} cannot be null.");
     }
     private async Task TryHydrateRegistrationFeeFromSnapshot(RegistrationApplicationSession session)
     {
@@ -659,5 +656,4 @@ public sealed class RegistrationApplicationServiceDependencies
     public required ILogger<RegistrationApplicationService> Logger { get; init; }
     public required IFeatureManager FeatureManager { get; init; }
     public required IRegistrationPeriodProvider RegistrationPeriodProvider { get; init; }
-    public required IOptions<RegistrationFeeSnapshotPollingOptions> SnapshotPollingOptions { get; init; }
 }
