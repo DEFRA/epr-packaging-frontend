@@ -21,12 +21,10 @@ public static class FeatureFlags
     public const string ShowAllSubsidiaries = "ShowAllSubsidiaries";
     public const string ImplementPackagingDataResubmissionJourney = "ImplementPackagingDataResubmissionJourney";
     public const string ShowSessionTimeoutWarning = "ShowSessionTimeoutWarning";
-    public const string ShowPoMSubmission2025 = "ShowPoMSubmission2025";
     public const string ShowYourFeedbackFooter = "ShowYourFeedbackFooter";
     public const string ShowWasteTile = "ShowWasteTile";
     public const string ShowServiceNowFooterLink = "ShowServiceNowFooterLink";
     public const string UseGraphApiForExtendedUserClaims = "UseGraphApiForExtendedUserClaims";
-    public const string EnableRegistrationFeeV2 = "EnableRegistrationFeeV2";
 
     public const string ShowNotificationBanner = "ShowNotificationBanner";
     public const string CsocEnabled = nameof(CsocEnabled);
