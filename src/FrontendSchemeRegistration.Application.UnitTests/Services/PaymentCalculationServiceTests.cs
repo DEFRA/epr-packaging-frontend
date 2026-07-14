@@ -839,38 +839,38 @@ public class PaymentCalculationServiceTests
     }
 
     [Test]
-    public async Task GetSubmissionPeriods_NotFound_ReturnsNull()
+    public async Task GetSubmissionPeriods_NotFound_ThrowsHttpRequestException()
     {
         _paymentServiceApiClientMock
             .Setup(x => x.SendGetRequest(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.NotFound));
 
-        var result = await _systemUnderTest.GetSubmissionPeriods();
+        Func<Task> act = () => _systemUnderTest.GetSubmissionPeriods();
 
-        result.Should().BeNull();
+        await act.Should().ThrowAsync<HttpRequestException>();
     }
 
     [Test]
-    public async Task GetSubmissionPeriods_ClientThrows_ReturnsNull()
+    public async Task GetSubmissionPeriods_ClientThrows_PropagatesException()
     {
         _paymentServiceApiClientMock
             .Setup(x => x.SendGetRequest(It.IsAny<string>(), It.IsAny<bool>()))
             .ThrowsAsync(new Exception("boom"));
 
-        var result = await _systemUnderTest.GetSubmissionPeriods();
+        Func<Task> act = () => _systemUnderTest.GetSubmissionPeriods();
 
-        result.Should().BeNull();
+        await act.Should().ThrowAsync<Exception>().WithMessage("boom");
     }
 
     [Test]
-    public async Task GetSubmissionPeriods_ServerError_ReturnsNull()
+    public async Task GetSubmissionPeriods_ServerError_ThrowsHttpRequestException()
     {
         _paymentServiceApiClientMock
             .Setup(x => x.SendGetRequest(It.IsAny<string>(), It.IsAny<bool>()))
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.InternalServerError));
 
-        var result = await _systemUnderTest.GetSubmissionPeriods();
+        Func<Task> act = () => _systemUnderTest.GetSubmissionPeriods();
 
-        result.Should().BeNull();
+        await act.Should().ThrowAsync<HttpRequestException>();
     }
 }

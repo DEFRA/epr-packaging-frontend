@@ -19,5 +19,5 @@ public interface IPaymentCalculationService
 
     Task<RegistrationFeeCalculationDetails[]?> GetRegistrationFeeCalculationDetails(Guid submissionId);
 
-    Task<SubmissionPeriodDetails[]?> GetSubmissionPeriods();
+    Task<SubmissionPeriodDetails[]> GetSubmissionPeriods();
 }
