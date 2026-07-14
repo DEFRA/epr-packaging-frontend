@@ -607,12 +607,6 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         return windows;
     }
 
-    private static DateTimeOffset GetInvoicePeriodEnd(dynamic session)
-    {
-        var periodEnd = DateTime.Parse($"30 {session.Period.EndMonth} {session.Period.Year}", new CultureInfo("en-GB"));
-        return new DateTimeOffset(periodEnd, TimeSpan.Zero);
-    }
-
     /// <summary>
     /// Gets the submission date to use for fee calculations.
     /// Use RegistrationApplicationSubmittedDate if it exists (aligns with Regulator portal),
