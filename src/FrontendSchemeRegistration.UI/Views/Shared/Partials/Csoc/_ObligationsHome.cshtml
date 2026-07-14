@@ -30,7 +30,7 @@
     {
         <div class="govuk-card govuk-!-margin-bottom-6">
             <div class="govuk-card-body">
-                <h2 class="govuk-heading-m">@Localizer[$"{statusKey}_heading_{actorKey}"]</h2>
+                <h3 class="govuk-heading-m">@Localizer[$"{statusKey}_heading_{actorKey}"]</h3>
                 <p class="govuk-body">@Localizer[$"{statusKey}_paragraph_{actorKey}", regulator.Value, Model.ComplianceYear, Model.SubmissionDeadline]</p>
                 @{
                     var showAction = Model.WasteObligationsBaseAddress is not null
