@@ -442,10 +442,17 @@ public class FrontendSchemeRegistrationController(
             [packagingResubmissionPeriod?.DataPeriod], session.RegistrationSession.SelectedComplianceScheme?.Id);
         
         await Task.WhenAll(registrationApplicationYearViewModelsTask, resubmissionApplicationDetailsTask);
-        
+
+        var registrationApplicationYearViewModels = await registrationApplicationYearViewModelsTask;
+        var resubmissionApplicationDetails = await resubmissionApplicationDetailsTask;
+
         var isApprovedUser = userData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved);
         var now = timeProvider.GetLocalNow().DateTime;
-        var csocObligationViewModel = await TryGetCsocObligationViewModelAsync(now.GetComplianceYear());
+        var csocObligationViewModel = await CsocHelper.TryGetCsocObligationViewModelAsync(
+            featureManager,
+            webApiGatewayClient,
+            logger,
+            now.GetComplianceYear());
 
         // Note: We are reading desired values using existing service to avoid SonarQube issue for adding 8th parameter in the constructor.
         var viewModel = new HomePageSelfManagedViewModel
@@ -454,8 +461,8 @@ public class FrontendSchemeRegistrationController(
             OrganisationNumber = organisation.OrganisationNumber.ToReferenceNumberFormat(),
             CanSelectComplianceScheme = userData.ServiceRole is ServiceRoles.ApprovedPerson or ServiceRoles.DelegatedPerson,
             OrganisationRole = organisation.OrganisationRole!,
-            ResubmissionTaskListViewModel = resubmissionApplicationDetailsTask.Result.ToResubmissionTaskListViewModel(organisation),
-            RegistrationApplications = registrationApplicationYearViewModelsTask.Result.SelectMany(ray => ray.Applications),
+            ResubmissionTaskListViewModel = resubmissionApplicationDetails.ToResubmissionTaskListViewModel(organisation),
+            RegistrationApplications = registrationApplicationYearViewModels.SelectMany(ray => ray.Applications),
             PackagingResubmissionPeriod = packagingResubmissionPeriod,
             ComplianceYear = timeProvider.GetUtcNow().GetComplianceYear().ToString(),
             CsocViewModel = await CsocHelper.CreateViewModel(
@@ -551,38 +558,5 @@ public class FrontendSchemeRegistrationController(
         }
 
         return complianceSchemesList;
-    }
-
-    private async Task<ViewModels.Prns.PrnObligationViewModel?> TryGetCsocObligationViewModelAsync(int complianceYear)
-    {
-        if (!await featureManager.IsEnabledAsync(FeatureFlags.CsocEnabled))
-        {
-            return null;
-        }
-
-        try
-        {
-            var declaration = await webApiGatewayClient.GetLatestComplianceDeclaration(complianceYear);
-            if (declaration is null)
-            {
-                return new ViewModels.Prns.PrnObligationViewModel();
-            }
-
-            return new ViewModels.Prns.PrnObligationViewModel
-            {
-                ComplianceDeclarationStatus = declaration.Status,
-                ComplianceDeclarationId = declaration.Id
-            };
-        }
-        catch (HttpRequestException ex)
-        {
-            logger.LogWarning(ex, "Failed to fetch compliance declaration for year {ComplianceYear}", complianceYear);
-            return new ViewModels.Prns.PrnObligationViewModel();
-        }
-        catch (System.Text.Json.JsonException ex)
-        {
-            logger.LogWarning(ex, "Failed to parse compliance declaration for year {ComplianceYear}", complianceYear);
-            return new ViewModels.Prns.PrnObligationViewModel();
-        }
     }
 }
