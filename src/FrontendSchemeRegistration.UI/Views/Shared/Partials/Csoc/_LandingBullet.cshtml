@@ -1,7 +1,7 @@
 @using FrontendSchemeRegistration.Application.Enums
 @model CsocViewModel?
 
-@if (Model is not null && Model.IsApprovedUser)
+@if (Model is not null && Model.ShowLandingBullet)
 {
     var key = Model switch
     {
@@ -15,6 +15,6 @@
         var isSubmitted = Model.ComplianceDeclarationStatus is ComplianceDeclarationStatus.Submitted
             or ComplianceDeclarationStatus.Accepted;
         var bulletKey = isSubmitted ? $"bullet_view_{key}" : $"bullet_{key}";
-        <li>@Localizer[bulletKey]</li>
+        @Localizer[bulletKey]
     }
 }
