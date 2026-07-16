@@ -622,16 +622,9 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         var journey = session.RegistrationJourney ?? registrationJourney;
         var isSmallProducer = journey?.ToString().Contains("Small", StringComparison.OrdinalIgnoreCase) ?? false;
 
-        try
-        {
-            return _registrationPeriodProvider
-                .GetRegistrationWindow(session.IsComplianceScheme, isSmallProducer, registrationYear)
-                ?.Id;
-        }
-        catch (InvalidOperationException)
-        {
-            return null;
-        }
+        return _registrationPeriodProvider
+            .GetRegistrationWindow(session.IsComplianceScheme, isSmallProducer, registrationYear)
+            ?.Id;
     }
 
     // this structure provides data for tile representing a CSO reg window AND for the single tile that represents the two Direct registration windows,
