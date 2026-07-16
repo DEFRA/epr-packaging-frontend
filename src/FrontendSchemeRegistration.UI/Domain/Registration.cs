@@ -202,11 +202,11 @@ public sealed class Registration
 
         // in chronological order
         // 1. until submit2, the fee calculation is calculated using today's date.
-        // 1b. after the first submit2, then the fee calculation is always calculated using the latest submit2 date, in addition to...
+        // 1b. after the first submit2, then the fee calculation is always calculated using the latest submit2 date (in order to get the current charges), in addition to...
         // 2a. after submit2 for the first time, the fee calculation is based on the submit 2 date
         // 2b. if the regulator rejects, the fee calculation is based on the submit 2 date
         // 3. if the regulator has not accepted or queried and a new file is submitted, then the fee calculation is based on the first submit 2 date
-        // 4a. if the regulator accepts or queries then if it is 2026+, then the fee calculation is based on the latest submit1 date, otherwise it's based on the first submit2 date
+        // 4a. if the regulator accepts or queries then if it is 2026+, then the fee calculation is based on the latest submit1 date, If not 2026+ otherwise it's based on the first submit2 date
         // 4b. (if the regulator accepts or queries) if the original submit1 date was not late, then the member is charged a late fee if they are a new joiner and the latest submit1 date is late
         // 5. if the regulator accepts or queries and a new file is uploaded, then fee calculation is based on the first submit2 date
         // 6. if the regulator rejects (having previously approved), then see 4a/b
