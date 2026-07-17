@@ -28,28 +28,12 @@ public class PaymentCalculationService(
             "Failed to retrieve registration fees for producer reference {ReferenceNumber}",
             request.ApplicationReferenceNumber);
 
-    public Task<PaymentCalculationResponse?> GetProducerRegistrationFees(ProducerPaymentCalculationV2Request request) =>
-        PostToPaymentCalculationService<ProducerPaymentCalculationV2Request, PaymentCalculationResponse>(
-            options.Value.Endpoints.ProducerRegistrationFeesEndpoint,
-            request,
-            "V2 Service registration fees details Not Found fees for producer reference {ReferenceNumber}",
-            "V2 Service Failed to retrieve registration fees for producer reference {ReferenceNumber}",
-            request.ApplicationReferenceNumber);
-
     public Task<ComplianceSchemePaymentCalculationResponse?> GetComplianceSchemeRegistrationFees(ComplianceSchemePaymentCalculationRequest request) =>
         PostToPaymentCalculationService<ComplianceSchemePaymentCalculationRequest, ComplianceSchemePaymentCalculationResponse>(
             options.Value.Endpoints.ComplianceSchemeRegistrationFeesEndpoint,
             request,
             "registration fees details Not Found for compliance scheme reference {ReferenceNumber}",
             "Failed to retrieve registration fees for compliance scheme reference {ReferenceNumber}",
-            request.ApplicationReferenceNumber);
-
-    public Task<ComplianceSchemePaymentCalculationResponse?> GetComplianceSchemeRegistrationFees(ComplianceSchemePaymentCalculationV2Request request) =>
-        PostToPaymentCalculationService<ComplianceSchemePaymentCalculationV2Request, ComplianceSchemePaymentCalculationResponse>(
-            options.Value.Endpoints.ComplianceSchemeRegistrationFeesEndpoint,
-            request,
-            "V2 Service registration fees details Not Found for compliance scheme reference {ReferenceNumber}",
-            "V2 Service Failed to retrieve registration fees for compliance scheme reference {ReferenceNumber}",
             request.ApplicationReferenceNumber);
 
     public async Task<string> InitiatePayment(PaymentInitiationRequest request)
@@ -165,6 +149,23 @@ public class PaymentCalculationService(
         {
             logger.LogError(ex, "Failed to retrieve registration fee calculation details for {SubmissionId}", submissionId);
             return null;
+        }
+    }
+
+    // Anonymous — called from RegistrationPeriodProviderWarmupService at startup where no user context exists.
+    public async Task<SubmissionPeriodDetails[]> GetSubmissionPeriods()
+    {
+        var endpoint = options.Value.Endpoints.SubmissionPeriodsEndpoint;
+        try
+        {
+            var result = await paymentCalculationServiceApiClient.SendGetRequest(endpoint, authenticated: false);
+            result.EnsureSuccessStatusCode();
+            return await result.Content.ReadFromJsonAsync<SubmissionPeriodDetails[]>() ?? [];
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to retrieve submission periods from payment facade");
+            throw;
         }
     }
 

@@ -26,7 +26,7 @@ public class RegistrationWindowTests
         
         var timeProvider = new FakeTimeProvider();
         timeProvider.SetUtcNow(currentDate);
-        var sut = new RegistrationWindow(timeProvider, WindowType.CsoLargeProducer, 2026, openingDate, deadlineDate, closingDate);
+        var sut = new RegistrationWindow(timeProvider, 1, WindowType.CsoLargeProducer, 2026, openingDate, deadlineDate, closingDate);
         
         // act
         var result = sut.GetRegistrationWindowStatus();
@@ -50,7 +50,7 @@ public class RegistrationWindowTests
         var closingDate = new DateTime(2026, 8, 1);
 
         // act
-        var sut = new RegistrationWindow(timeProvider, windowType, 2026, openingDate, deadlineDate, closingDate);
+        var sut = new RegistrationWindow(timeProvider, 1, windowType, 2026, openingDate, deadlineDate, closingDate);
 
         // assert
         sut.IsCso.Should().Be(expectedIsCso);
