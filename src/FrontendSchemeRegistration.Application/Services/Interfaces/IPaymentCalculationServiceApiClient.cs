@@ -4,5 +4,5 @@ public interface IPaymentCalculationServiceApiClient
 {
     Task<HttpResponseMessage> SendPostRequest<T>(string endpoint, T body);
 
-    Task<HttpResponseMessage> SendGetRequest(string endpoint);
+    Task<HttpResponseMessage> SendGetRequest(string endpoint, bool authenticated = true);
 }

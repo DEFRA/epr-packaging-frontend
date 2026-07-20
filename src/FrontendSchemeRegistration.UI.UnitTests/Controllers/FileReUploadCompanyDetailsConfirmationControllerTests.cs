@@ -611,6 +611,6 @@ public class FileReUploadCompanyDetailsConfirmationControllerTests
         var deadline = deadlineDateOffset ?? new DateTime(today.Year, today.Month, today.Day);
         var closing = closingDateOffset ?? new DateTime(today.AddDays(1).Year, today.AddDays(1).Month, today.AddDays(1).Day);
         
-        return new RegistrationWindow(_dateTimeProvider, windowType, today.Year, opening, deadline, closing);
+        return new RegistrationWindow(_dateTimeProvider, 1, windowType, today.Year, opening, deadline, closing);
     }
 }

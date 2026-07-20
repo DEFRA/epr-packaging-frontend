@@ -2,71 +2,64 @@ namespace FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using Application.DTOs;
 using Application.Options.RegistrationPeriodPatterns;
 using Constants;
 using Extensions;
-using Microsoft.Extensions.Options;
 
 /// <summary>
-/// This provides access to registration window data. It is registered as a singleton, however, the windows that it
-/// returns are not registered in the DI container because available windows are date dependent.
+/// This provides access to registration window data. It is registered as a singleton, and hydrated at
+/// application startup by <see cref="RegistrationPeriodProviderWarmupService"/> from the payment service
+/// submission-periods lookup (via the payment facade).
 /// </summary>
 internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
 {
     private readonly TimeProvider _timeProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IEnumerable<RegistrationPeriodPattern> _registrationPeriodPatterns;
     private IReadOnlyCollection<RegistrationWindow> _registrationWindows = [];
-    private int? _parseYear;    // the year when Parse was last called
-    
+
     private readonly object _lock = new();
 
-    public RegistrationPeriodProvider(IOptions<List<RegistrationPeriodPattern>> registrationPeriodPatternOptions, TimeProvider timeProvider, IHttpContextAccessor httpContextAccessor)
+    public RegistrationPeriodProvider(
+        TimeProvider timeProvider,
+        IHttpContextAccessor httpContextAccessor)
     {
         _timeProvider = timeProvider;
         _httpContextAccessor = httpContextAccessor;
-        _registrationPeriodPatterns = registrationPeriodPatternOptions.Value;
-        ParsePatterns();
     }
 
     /// <summary>
-    /// Rebuilds the window collection 
+    /// Replaces the internal window collection from the supplied submission-period rows. Called by the
+    /// warmup hosted service at startup, and again on year rollover.
     /// </summary>
-    private void ParsePatterns()
+    public void Load(IEnumerable<SubmissionPeriodDetails> submissionPeriods)
     {
-        _parseYear = _timeProvider.GetUtcNow().Year;
-        var windows = new List<RegistrationWindow>();
-        
-        foreach (var registrationPeriodPattern in _registrationPeriodPatterns)
+        ArgumentNullException.ThrowIfNull(submissionPeriods);
+
+        var windows = submissionPeriods
+            .Where(p => Enum.TryParse<WindowType>(p.WindowType, ignoreCase: true, out _))
+            .Select(p => new RegistrationWindow(
+                _timeProvider,
+                p.Id,
+                Enum.Parse<WindowType>(p.WindowType, ignoreCase: true),
+                p.RegistrationYear,
+                p.OpeningDate,
+                p.DeadlineDate,
+                p.ClosingDate))
+            .OrderByDescending(w => w.RegistrationYear)
+            .ToList();
+
+        lock (_lock)
         {
-            // loop from initial registration year to final registration year (or this year, which ever is first), constructing windows
-            var registrationYear = registrationPeriodPattern.InitialRegistrationYear;
-            var finalYear = ParseFinalYear(registrationPeriodPattern);
-            
-            // loop through the registration years in this pattern
-            do
-            {
-                // this is checking BEFORE going through the windows in the new pattern, so 
-                EnsureRegistrationYearNotDuplicated(windows, registrationYear);
-
-                foreach (var patternWindow in registrationPeriodPattern.Windows)
-                {
-                    var closeDate = new DateTime(registrationYear + patternWindow.ClosingDate.YearOffset,
-                        patternWindow.ClosingDate.Month, patternWindow.ClosingDate.Day, 0, 0, 0, DateTimeKind.Utc);
-                    var openingDate = new DateTime(registrationYear + patternWindow.OpeningDate.YearOffset,
-                        patternWindow.OpeningDate.Month, patternWindow.OpeningDate.Day, 0, 0, 0, DateTimeKind.Utc);
-                    var deadlineDate = new DateTime(registrationYear + patternWindow.DeadlineDate.YearOffset,
-                        patternWindow.DeadlineDate.Month, patternWindow.DeadlineDate.Day, 0, 0, 0, DateTimeKind.Utc);
-                    
-                    windows.Add(new RegistrationWindow(_timeProvider, patternWindow.WindowType, registrationYear, openingDate, deadlineDate, closeDate));
-                }
-
-                registrationYear++;
-            } while (registrationYear <= finalYear);
+            _registrationWindows = windows;
         }
-        
-        _registrationWindows = [..windows.OrderByDescending(w => w.RegistrationYear)];
     }
+
+    /// <summary>
+    /// Reports whether the internal collection has been hydrated. Consumers should treat a false result
+    /// as a transient startup condition.
+    /// </summary>
+    public bool IsLoaded => _registrationWindows.Count > 0;
 
     /// <summary>
     /// Gets active registration windows. These include closed windows, as producers may still register
@@ -76,8 +69,6 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
     /// <returns></returns>
     public IReadOnlyCollection<RegistrationWindow> GetActiveRegistrationWindows(bool isCso)
     {
-        CheckWindowsUpToDate();
-
         var orderedWindows = _registrationWindows
             .Where(w => w.IsCso == isCso && w.GetRegistrationWindowStatus() != RegistrationWindowStatus.PriorToOpening)
             .OrderByDescending(ra => ra.RegistrationYear);
@@ -93,8 +84,6 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
     /// <returns>All past, current or future registration windows</returns>
     public IReadOnlyCollection<RegistrationWindow> GetAllRegistrationWindows(bool isCso)
     {
-        CheckWindowsUpToDate();
-        
         var orderedWindows = _registrationWindows
             .Where(w => w.IsCso == isCso)
             .OrderByDescending(ra => ra.RegistrationYear);
@@ -121,30 +110,11 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
         };
     }
 
-    /// <summary>
-    /// Rebuild the collection if we tick into the next year and we have
-    /// derived the final year in a pattern (ie, the final year in config is null)
-    /// </summary>
-    [SuppressMessage("ReSharper", "InconsistentlySynchronizedField")]
-    private void CheckWindowsUpToDate()
-    {
-        if (_timeProvider.GetUtcNow().Year > _parseYear)
-        {
-            lock (_lock)
-            {
-                if (_timeProvider.GetUtcNow().Year > _parseYear)
-                {
-                    ParsePatterns();
-                }
-            }
-        }
-    }
-
     /// <inheritdoc />
     public int? ValidateRegistrationYear(string? registrationYear, bool isParamOptional = false)
     {
         bool nullRegYear = string.IsNullOrWhiteSpace(registrationYear);
-        
+
         switch (nullRegYear)
         {
             case true when isParamOptional:
@@ -157,12 +127,12 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
 
         // is user's org a CSO?
         var org = _httpContextAccessor.HttpContext.User.GetUserData().Organisations.FirstOrDefault();
-        
+
         if (org == null) throw new InvalidOperationException("The user must have an organisation.");
-        
+
         var isCso = org.OrganisationRole == OrganisationRoles.ComplianceScheme;
-        
-        // check windows. 
+
+        // check windows.
         var regWindows = GetActiveRegistrationWindows(isCso);
 
         if (regWindows.Any(w => w.RegistrationYear == parsedYear))
@@ -173,45 +143,5 @@ internal class RegistrationPeriodProvider : IRegistrationPeriodProvider
         {
             throw new ArgumentException("Invalid registration year");
         }
-    }
-
-    /// <summary>
-    /// Gets the final year for a registration period pattern, validates and stores the derived value.
-    /// If the pattern does not explicitly include a final year, then we derive a value for which we
-    /// generate data, based on the opening date and the current year (ie, if the opening date has a year
-    /// offset of -1, then we need to generate registration window data for next year's registration) 
-    /// </summary>
-    /// <param name="registrationPeriodPattern"></param>
-    /// <returns>The final year for a registration period</returns>
-    /// <exception cref="InvalidOperationException"></exception>
-    private int ParseFinalYear(RegistrationPeriodPattern registrationPeriodPattern)
-    {
-        int finalYear;
-        if (registrationPeriodPattern.FinalRegistrationYear.HasValue)
-        {
-            finalYear = registrationPeriodPattern.FinalRegistrationYear.Value;
-        }
-        else
-        {
-            // we might want to create entries for a future registration year, in case the start date is the year before
-            // get the largest year offset for all of the windows` start dates
-            var earliestOpeningDateYearOffset = registrationPeriodPattern.Windows.Min(w => w.OpeningDate.YearOffset);
-
-            // eg, if the opening date offset is -1, and this year is 2026, then we need to generate data for 2027 = 2026 - (-1)
-            finalYear = _timeProvider.GetUtcNow().Year - earliestOpeningDateYearOffset;
-        }
-
-        return finalYear;
-    }
-
-    /// <summary>
-    /// Ensures that the registration year does not already exist in the list of windows
-    /// </summary>
-    /// <param name="windows"></param>
-    /// <param name="registrationYear"></param>
-    /// <exception cref="InvalidOperationException"></exception>
-    private static void EnsureRegistrationYearNotDuplicated(List<RegistrationWindow> windows, int registrationYear)
-    {
-        if (windows.Any(w => w.RegistrationYear == registrationYear)) throw new InvalidOperationException($"Registration year {registrationYear} is configured in multiple RegistrationPeriodPattern items within appsettings. The years between and including the InitialRegistrationYear and the FinalRegistrationYear may only exist in a single pattern.");
     }
 }
