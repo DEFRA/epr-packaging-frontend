@@ -1,6 +1,7 @@
+@using FrontendSchemeRegistration.Application.Enums
 @model CsocViewModel?
 
-@if (Model is not null && Model.IsApprovedUser)
+@if (Model is not null && Model.ShowLandingBullet)
 {
     var key = Model switch
     {
@@ -8,9 +9,12 @@
         { IsDirectProducer: true } => "direct_producer",
         _ => null
     };
-    
+
     if (key is not null)
     {
-        <li>@Localizer[$"bullet_{key}"]</li>
+        var isSubmitted = Model.ComplianceDeclarationStatus is ComplianceDeclarationStatus.Submitted
+            or ComplianceDeclarationStatus.Accepted;
+        var bulletKey = isSubmitted ? $"bullet_view_{key}" : $"bullet_{key}";
+        @Localizer[bulletKey]
     }
 }

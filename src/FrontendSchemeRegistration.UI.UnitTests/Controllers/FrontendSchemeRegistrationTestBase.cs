@@ -108,6 +108,8 @@ public abstract class FrontendSchemeRegistrationTestBase
     protected FrontendSchemeRegistrationSession FrontEndSchemeRegistrationSession { get; set; }
     
     protected Mock<IResubmissionApplicationService> ResubmissionApplicationService { get; set; }
+
+    protected Mock<IWebApiGatewayClient> WebApiGatewayClient { get; set; }
     protected Mock<IOptions<GlobalVariables>> globalVariables { get; set; }
     protected FakeTimeProvider FakeTimeProvider { get; } = new();
 
@@ -147,6 +149,7 @@ public abstract class FrontendSchemeRegistrationTestBase
         RegistrationApplicationService = new Mock<IRegistrationApplicationService>();
         PaymentCalculationService = new Mock<IPaymentCalculationService>();
         ResubmissionApplicationService = new Mock<IResubmissionApplicationService>();
+        WebApiGatewayClient = new Mock<IWebApiGatewayClient>();
 
         SystemUnderTest = new FrontendSchemeRegistrationController(
             SessionManagerMock.Object,
@@ -158,7 +161,8 @@ public abstract class FrontendSchemeRegistrationTestBase
             NotificationService.Object,
             FakeTimeProvider,
             new Mock<IFeatureManager>().Object,
-            new OptionsWrapper<CsocOptions>(new CsocOptions()));
+            new OptionsWrapper<CsocOptions>(new CsocOptions()),
+            WebApiGatewayClient.Object);
         SystemUnderTest.ControllerContext.HttpContext = _httpContextMock.Object;
         SystemUnderTest.TempData = tempDataDictionaryMock.Object;
     }

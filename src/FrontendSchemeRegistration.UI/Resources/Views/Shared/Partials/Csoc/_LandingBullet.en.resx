@@ -18,4 +18,10 @@
   <data name="bullet_direct_producer" xml:space="preserve">
     <value>submit your certificate of compliance</value>
   </data>
+  <data name="bullet_view_compliance_scheme" xml:space="preserve">
+    <value>view your statement of compliance</value>
+  </data>
+  <data name="bullet_view_direct_producer" xml:space="preserve">
+    <value>view your certificate of compliance</value>
+  </data>
 </root>
