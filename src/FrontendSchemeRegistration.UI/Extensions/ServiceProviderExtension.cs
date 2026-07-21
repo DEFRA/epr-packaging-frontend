@@ -454,6 +454,29 @@ public static class ServiceProviderExtension
 
                         await existingOnRemoteFailure(context);
                     };
+
+                    // Gate the redirect to B2C behind a fresh JS-verification check. The JS-enabled
+                    // cookie is session-scoped and can outlive the browser's actual JS state (e.g.
+                    // user disabled JS between visits, or the browser restored a prior session).
+                    // Without this hook, a stale cookie would let the request pass the detection
+                    // middleware only to hit B2C's JS-required error page.
+                    var existingOnRedirectToIdentityProvider = options.Events.OnRedirectToIdentityProvider;
+                    options.Events.OnRedirectToIdentityProvider = async context =>
+                    {
+                        var verifiedCookieName = cookieOptions.JsVerifiedCookieName;
+                        if (string.IsNullOrEmpty(verifiedCookieName)
+                            || context.Request.Cookies.ContainsKey(verifiedCookieName))
+                        {
+                            await existingOnRedirectToIdentityProvider(context);
+                            return;
+                        }
+
+                        context.HandleResponse();
+                        await JavaScriptDetectionMiddleware.WriteGatePageAsync(
+                            context.HttpContext,
+                            cookieOptions.JsEnabledCookieName,
+                            verifiedCookieName);
+                    };
                 },
                 options =>
                 {
