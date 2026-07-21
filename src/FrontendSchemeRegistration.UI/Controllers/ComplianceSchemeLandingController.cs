@@ -31,7 +31,8 @@ public class ComplianceSchemeLandingController(
     ILogger<ComplianceSchemeLandingController> logger,
     IFeatureManager featureManager,
     TimeProvider timeProvider,
-    IOptions<CsocOptions> csocOptions)
+    IOptions<CsocOptions> csocOptions,
+    IWebApiGatewayClient webApiGatewayClient)
     : Controller
 {
     [HttpGet]
@@ -65,7 +66,12 @@ public class ComplianceSchemeLandingController(
             organisation, new List<string> { packagingResubmissionPeriod.DataPeriod }, session.RegistrationSession.SelectedComplianceScheme?.Id);
 
         var isApprovedUser = userData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved);
-        
+        var csocObligationViewModel = await CsocHelper.TryGetCsocObligationViewModelAsync(
+            featureManager,
+            webApiGatewayClient,
+            logger,
+            complianceYear);
+
         var model = new ComplianceSchemeLandingViewModel
         {
             CurrentComplianceSchemeId = currentComplianceSchemeId,
@@ -76,7 +82,14 @@ public class ComplianceSchemeLandingController(
             ResubmissionTaskListViewModel = resubmissionApplicationDetails.ToResubmissionTaskListViewModel(organisation),
             PackagingResubmissionPeriod = packagingResubmissionPeriod,
             ComplianceYear = complianceYear.ToString(),
-            CsocViewModel = await CsocHelper.CreateViewModel(featureManager, isApprovedUser, organisation, now, csocOptions.Value, registrationSession: session.RegistrationSession)
+            CsocViewModel = await CsocHelper.CreateViewModel(
+                featureManager,
+                isApprovedUser,
+                organisation,
+                now,
+                csocOptions.Value,
+                csocObligationViewModel,
+                session.RegistrationSession)
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id.Value);
