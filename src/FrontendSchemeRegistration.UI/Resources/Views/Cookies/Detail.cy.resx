@@ -247,13 +247,13 @@
     <value>Yn cadarnhau bod JavaScript wedi’i alluogi yn eich porwr fel y gall y gwasanaeth lwytho’r tudalennau mewngofnodi.</value>
   </data>
   <data name="Detail.JsEnabledCookieExpires" xml:space="preserve">
-    <value>Pan fyddwch yn cau eich porwr</value>
+    <value>Sesiwn</value>
   </data>
   <data name="Detail.JsVerifiedCookiePurpose" xml:space="preserve">
     <value>[Welsh] Works with the .epr_js_enabled cookie to detect if JavaScript is disabled during a user's logged-in session</value>
   </data>
   <data name="Detail.JsVerifiedCookieExpires" xml:space="preserve">
-    <value>[Welsh] 60 seconds, once per logged-in user session</value>
+    <value>60 eiliad</value>
   </data>
   <data name="Details.Title" xml:space="preserve">
     <value>Cwcis</value>
