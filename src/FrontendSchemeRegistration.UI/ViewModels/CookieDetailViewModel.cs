@@ -29,6 +29,8 @@ public class CookieDetailViewModel
 
     public string JsEnabledCookieName { get; set; }
 
+    public string JsVerifiedCookieName { get; set; }
+
     public string GoogleAnalyticsDefaultCookieName { get; set; }
 
     public string GoogleAnalyticsAdditionalCookieName { get; set; }
