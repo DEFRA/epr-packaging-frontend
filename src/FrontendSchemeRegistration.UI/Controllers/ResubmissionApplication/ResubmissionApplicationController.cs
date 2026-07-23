@@ -45,6 +45,8 @@ public class ResubmissionApplicationController : Controller
     public async Task<IActionResult> SelectPaymentOptions()
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+        await _resubmissionApplicationService.RefreshPomSubmissionAsync(session);
+        
         session.PomResubmissionSession.Journey = [$"/report-data/{PagePaths.ResubmissionFeeCalculations}", PagePaths.SelectPaymentOptions];
         SetBackLink(session, PagePaths.SelectPaymentOptions);
 
@@ -72,6 +74,8 @@ public class ResubmissionApplicationController : Controller
     public async Task<IActionResult> SelectPaymentOptions(SelectPaymentOptionsViewModel model)
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+        await _resubmissionApplicationService.RefreshPomSubmissionAsync(session);
+        
         session.PomResubmissionSession.Journey = [$"/report-data/{PagePaths.ResubmissionFeeCalculations}", PagePaths.SelectPaymentOptions];
         SetBackLink(session, PagePaths.SelectPaymentOptions);
 
@@ -195,10 +199,11 @@ public class ResubmissionApplicationController : Controller
     public async Task<IActionResult> AdditionalInformation(AdditionalInformationViewModel model)
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+        await _resubmissionApplicationService.RefreshPomSubmissionAsync(session);
         session.PomResubmissionSession.Journey = [$"/report-data/{PagePaths.ResubmissionTaskList}", $"packaging-resubmission/{PagePaths.AdditionalInformation}"];
         SetBackLink(session, $"packaging-resubmission/{PagePaths.AdditionalInformation}");
-
         var submission = session.PomResubmissionSession.PomSubmission;
+        
         var submittedByName = "";
         if (submission != null)
         {
@@ -238,6 +243,7 @@ public class ResubmissionApplicationController : Controller
     public async Task<IActionResult> SubmitToEnvironmentRegulator()
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+        await _resubmissionApplicationService.RefreshPomSubmissionAsync(session);
 
         return View("ResubmissionConfirmation",
             new ApplicationSubmissionConfirmationViewModel
@@ -256,12 +262,13 @@ public class ResubmissionApplicationController : Controller
     public async Task<IActionResult> RedirectToComplianceSchemeDashboard()
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+        await _resubmissionApplicationService.RefreshPomSubmissionAsync(session);
 
         if (string.IsNullOrEmpty(session.PomResubmissionSession.PackagingResubmissionApplicationSession.ResubmissionFeePaymentMethod))
         {
             await _resubmissionApplicationService.CreatePackagingDataResubmissionFeePaymentEvent(
                     session.PomResubmissionSession.PackagingResubmissionApplicationSession.SubmissionId,
-                    session.PomResubmissionSession.PackagingResubmissionApplicationSession.LastSubmittedFile.FileId,
+                    session.PomResubmissionSession.PomSubmission?.LastSubmittedFile.FileId,
                     Enum.GetName(typeof(PaymentOptions), PaymentOptions.PayByPhone));
         }
 

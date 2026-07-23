@@ -846,6 +846,80 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
     }
 
     [Test]
+    public async Task ResubmissionFeeCalculations_UsesRefreshedFileIdAndSubmittedDateForDownstreamCalls()
+    {
+        // Regression: the fee-view event's FileId AND the resubmission date passed to GetResubmissionFees
+        // must both come from the re-fetched submission, not the stale session snapshot (SUB-332).
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var staleFileId = Guid.NewGuid();
+        var staleDate = DateTime.UtcNow.AddDays(-10);
+        var freshFileId = Guid.NewGuid();
+        var freshDate = DateTime.UtcNow.AddMinutes(-5);
+
+        var session = new FrontendSchemeRegistrationSession
+        {
+            PomResubmissionSession = new PackagingReSubmissionSession
+            {
+                PackagingResubmissionApplicationSession = new PackagingResubmissionApplicationSession
+                {
+                    ApplicationReferenceNumber = "REF-STALE",
+                    SubmissionId = submissionId
+                },
+                PomSubmission = new PomSubmission
+                {
+                    Id = submissionId,
+                    LastSubmittedFile = new SubmittedFileInformation
+                    {
+                        FileId = staleFileId,
+                        SubmittedDateTime = staleDate
+                    }
+                }
+            }
+        };
+
+        SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+
+        ResubmissionApplicationService
+            .Setup(s => s.RefreshPomSubmissionAsync(It.IsAny<FrontendSchemeRegistrationSession>()))
+            .Callback<FrontendSchemeRegistrationSession>(s =>
+                s.PomResubmissionSession.PomSubmission = new PomSubmission
+                {
+                    Id = submissionId,
+                    LastSubmittedFile = new SubmittedFileInformation
+                    {
+                        FileId = freshFileId,
+                        SubmittedDateTime = freshDate
+                    }
+                })
+            .Returns(Task.CompletedTask);
+
+        ResubmissionApplicationService
+            .Setup(s => s.GetPackagingResubmissionMemberDetails(It.IsAny<PackagingResubmissionMemberRequest>()))
+            .ReturnsAsync(new PackagingResubmissionMemberDetails { MemberCount = 1 });
+        ResubmissionApplicationService
+            .Setup(s => s.GetResubmissionFees(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<DateTime?>()))
+            .ReturnsAsync(new PackagingPaymentResponse());
+
+        // Act
+        await SystemUnderTest.ResubmissionFeeCalculations();
+
+        // Assert
+        ResubmissionApplicationService.Verify(s => s.RefreshPomSubmissionAsync(session), Times.Once);
+
+        ResubmissionApplicationService.Verify(
+            s => s.CreatePackagingResubmissionFeeViewEvent(submissionId, freshFileId),
+            Times.Once);
+        ResubmissionApplicationService.Verify(
+            s => s.CreatePackagingResubmissionFeeViewEvent(It.IsAny<Guid?>(), staleFileId),
+            Times.Never);
+
+        ResubmissionApplicationService.Verify(
+            s => s.GetResubmissionFees(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), freshDate),
+            Times.Once);
+    }
+
+    [Test]
     public async Task GetMemberCount_ReturnsMemberCountForProducers()
     {
         // Arrange

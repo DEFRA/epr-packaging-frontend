@@ -115,6 +115,8 @@ public class PackagingDataResubmissionController : Controller
         var isComplianceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
 
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+        await _resubmissionApplicationService.RefreshPomSubmissionAsync(session);
+
         var complianceSchemeId = session.RegistrationSession?.SelectedComplianceScheme?.Id;
         session.PomResubmissionSession.Journey = new List<string> { $"/report-data/{PagePaths.ResubmissionTaskList}", PagePaths.ResubmissionFeeCalculations };
         SetBackLink(session, PagePaths.ResubmissionFeeCalculations);
