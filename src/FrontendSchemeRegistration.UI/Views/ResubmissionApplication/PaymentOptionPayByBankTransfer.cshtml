@@ -107,12 +107,18 @@
                     </a>
                 </p>
             </div>
-            <p class="govuk-body">
-                <a href="/report-data/home-self-managed" class="govuk-link govuk-link--no-visited-state">
-                    @Localizer["return_to_dashboard"]
-                </a>
-            </p>
-            
+            @if (Model.IsComplianceScheme)
+            {
+                <p class="govuk-body govuk-!-margin-top-4">
+                    <a asp-controller="ComplianceSchemeLanding" asp-action="Get" class="govuk-link">@Localizer["return_to_dashboard"]</a>
+                </p>
+            }
+            else
+            {
+                <p class="govuk-body govuk-!-margin-top-4">
+                    <a asp-controller="FrontendSchemeRegistration" asp-action="HomePageSelfManaged" class="govuk-link">@Localizer["return_to_dashboard"]</a>
+                </p>
+            }
         </div>
     </div>
 </main>

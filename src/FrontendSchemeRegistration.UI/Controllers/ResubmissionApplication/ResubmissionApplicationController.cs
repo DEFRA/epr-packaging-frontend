@@ -117,6 +117,7 @@ public class ResubmissionApplicationController : Controller
         {
             TotalAmountOutstanding = Convert.ToInt32(session.PomResubmissionSession.FeeBreakdownDetails.TotalAmountOutstanding),
             ApplicationReferenceNumber = session.PomResubmissionSession.PackagingResubmissionApplicationSession.ApplicationReferenceNumber,
+            IsComplianceScheme = session.PomResubmissionSession.PackagingResubmissionApplicationSession.Organisation.IsComplianceScheme()
         };
 
         return View("PaymentOptionPayByPhone", model);
@@ -137,7 +138,8 @@ public class ResubmissionApplicationController : Controller
         {
             TotalAmountOutstanding = Convert.ToInt32(session.PomResubmissionSession.FeeBreakdownDetails.TotalAmountOutstanding),
             ApplicationReferenceNumber = session.PomResubmissionSession.PackagingResubmissionApplicationSession.ApplicationReferenceNumber,
-            PaymentLink = paymentLink
+            PaymentLink = paymentLink,
+            IsComplianceScheme = session.PomResubmissionSession.PackagingResubmissionApplicationSession.Organisation.IsComplianceScheme()
         };
 
         return View("PaymentOptionPayOnline", model);
@@ -165,7 +167,8 @@ public class ResubmissionApplicationController : Controller
         {
             TotalAmountOutstanding = Convert.ToInt32(session.PomResubmissionSession.FeeBreakdownDetails.TotalAmountOutstanding),
             ApplicationReferenceNumber = session.PomResubmissionSession.PackagingResubmissionApplicationSession.ApplicationReferenceNumber,
-            RegulatorNation = session.PomResubmissionSession.RegulatorNation
+            RegulatorNation = session.PomResubmissionSession.RegulatorNation,
+            IsComplianceScheme = session.PomResubmissionSession.PackagingResubmissionApplicationSession.Organisation.IsComplianceScheme()
         };
 
         return View("PaymentOptionPayByBankTransfer", model);
