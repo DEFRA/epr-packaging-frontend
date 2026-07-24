@@ -545,6 +545,87 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
     }
 
     [Test]
+    public async Task ResubmissionTaskList_RehydratesSubmissionPeriod_WhenSessionCopyIsMissing()
+    {
+        // Arrange — session has been wiped by SetupMinimalSession, so SubmissionPeriod is null.
+        FrontendSchemeRegistrationSession = new FrontendSchemeRegistrationSession
+        {
+            PomResubmissionSession = new PackagingReSubmissionSession
+            {
+                SubmissionPeriod = null
+            }
+        };
+
+        var rehydratedPeriod = new SubmissionPeriod
+        {
+            DataPeriod = "January to December 2024",
+            StartMonth = "January",
+            EndMonth = "December",
+            Year = "2024"
+        };
+
+        var details = new PackagingResubmissionApplicationDetails
+        {
+            IsSubmitted = false,
+            ApplicationStatus = ApplicationStatusType.NotStarted,
+            SynapseResponse = new SynapseResponse { IsFileSynced = true }
+        };
+
+        SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(FrontendSchemeRegistrationSession);
+
+        ResubmissionApplicationService
+            .Setup(x => x.PackagingResubmissionPeriod(It.IsAny<string[]>(), It.IsAny<DateTime>()))
+            .Returns(rehydratedPeriod);
+
+        ResubmissionApplicationService
+            .Setup(x => x.GetPackagingDataResubmissionApplicationDetails(It.IsAny<Organisation>(), It.IsAny<List<string>>(), It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<PackagingResubmissionApplicationDetails> { details });
+
+        // Act
+        var result = await SystemUnderTest.ResubmissionTaskList() as ViewResult;
+
+        // Assert — rehydration happened and the service was called with the rehydrated data period.
+        result.Should().NotBeNull();
+        ResubmissionApplicationService.Verify(x => x.PackagingResubmissionPeriod(It.IsAny<string[]>(), It.IsAny<DateTime>()), Times.Once);
+        ResubmissionApplicationService.Verify(x => x.GetPackagingDataResubmissionApplicationDetails(
+            It.IsAny<Organisation>(),
+            It.Is<List<string>>(list => list.Count == 1 && list[0] == rehydratedPeriod.DataPeriod),
+            It.IsAny<Guid?>()), Times.Once);
+        FrontendSchemeRegistrationSession.PomResubmissionSession.SubmissionPeriod.Should().Be(rehydratedPeriod.DataPeriod);
+    }
+
+    [Test]
+    public async Task ResubmissionTaskList_DoesNotRehydrateSubmissionPeriod_WhenSessionCopyIsPresent()
+    {
+        // Arrange — session already has a SubmissionPeriod, rehydration must not run.
+        FrontendSchemeRegistrationSession = new FrontendSchemeRegistrationSession
+        {
+            PomResubmissionSession = new PackagingReSubmissionSession
+            {
+                SubmissionPeriod = "January to December 2024"
+            }
+        };
+
+        var details = new PackagingResubmissionApplicationDetails
+        {
+            IsSubmitted = false,
+            ApplicationStatus = ApplicationStatusType.NotStarted,
+            SynapseResponse = new SynapseResponse { IsFileSynced = true }
+        };
+
+        SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(FrontendSchemeRegistrationSession);
+        ResubmissionApplicationService
+            .Setup(x => x.GetPackagingDataResubmissionApplicationDetails(It.IsAny<Organisation>(), It.IsAny<List<string>>(), It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<PackagingResubmissionApplicationDetails> { details });
+
+        // Act
+        await SystemUnderTest.ResubmissionTaskList();
+
+        // Assert
+        ResubmissionApplicationService.Verify(x => x.PackagingResubmissionPeriod(It.IsAny<string[]>(), It.IsAny<DateTime>()), Times.Never);
+    }
+
+    [Test]
     public void RedirectToFileUpload_ReturnsCorrectView()
     {
         // Arrange

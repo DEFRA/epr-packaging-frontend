@@ -8,6 +8,7 @@ using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Extensions;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
 using FrontendSchemeRegistration.UI.Extensions;
@@ -30,6 +31,7 @@ public class PackagingDataResubmissionController : Controller
     private readonly List<SubmissionPeriod> _submissionPeriods;
     private readonly IResubmissionApplicationService _resubmissionApplicationService;
     private readonly IComplianceSchemeService _complianceSchemeService;
+    private readonly TimeProvider _timeProvider;
 
     public PackagingDataResubmissionController(
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
@@ -37,7 +39,8 @@ public class PackagingDataResubmissionController : Controller
         IUserAccountService userAccountService,
         IOptions<GlobalVariables> globalVariables,
         IResubmissionApplicationService resubmissionApplicationService,
-        IComplianceSchemeService complianceSchemeService)
+        IComplianceSchemeService complianceSchemeService,
+        TimeProvider timeProvider)
     {
         _sessionManager = sessionManager;
         _userAccountService = userAccountService;
@@ -45,10 +48,12 @@ public class PackagingDataResubmissionController : Controller
         _submissionPeriods = globalVariables.Value.SubmissionPeriods;
         _complianceSchemeService = complianceSchemeService;
         _logger = logger;
+        _timeProvider = timeProvider;
     }
 
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
+    [PomResubmissionSessionGuardActionFilter(RedirectOnMissingState = false)]
     [Route(PagePaths.ResubmissionTaskList)]
     public async Task<IActionResult> ResubmissionTaskList()
     {
@@ -63,6 +68,15 @@ public class PackagingDataResubmissionController : Controller
         if (complianceSchemeId != null)
         {
             complianceSchemeSummary = await _complianceSchemeService.GetComplianceSchemeSummary(organisation.Id.Value, complianceSchemeId.Value);
+        }
+
+        if (string.IsNullOrEmpty(session.PomResubmissionSession.SubmissionPeriod))
+        {
+            var now = _timeProvider.GetLocalNow().DateTime;
+            var complianceYear = now.GetComplianceYear();
+            var currentYear = new[] { complianceYear.ToString(), (complianceYear + 1).ToString() };
+            var currentResubmissionPeriod = _resubmissionApplicationService.PackagingResubmissionPeriod(currentYear, now);
+            session.PomResubmissionSession.SubmissionPeriod = currentResubmissionPeriod?.DataPeriod;
         }
 
         var submissionPeriod = FindSubmissionPeriod(session.PomResubmissionSession.SubmissionPeriod);
@@ -106,6 +120,7 @@ public class PackagingDataResubmissionController : Controller
 
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
+    [PomResubmissionSessionGuardActionFilter]
     [Route(PagePaths.ResubmissionFeeCalculations)]
     public async Task<IActionResult> ResubmissionFeeCalculations()
     {
@@ -167,6 +182,7 @@ public class PackagingDataResubmissionController : Controller
 
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
+    [PomResubmissionSessionGuardActionFilter]
     [Route(PagePaths.RedirectPackagingUploadDetails)]
     public async Task<IActionResult> RedirectToFileUpload()
     {
@@ -179,6 +195,7 @@ public class PackagingDataResubmissionController : Controller
 
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
+    [PomResubmissionSessionGuardActionFilter]
     [Route(PagePaths.FileUploadResubmissionConfirmation)]
     public async Task<IActionResult> FileUploadResubmissionConfirmation()
     {
