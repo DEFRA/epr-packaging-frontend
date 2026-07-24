@@ -7,6 +7,14 @@
 	ViewData["Title"] = Localizer["search_prns_and_perns"];
 	var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
 	var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer);
+	
+	Func<bool, string>? rowBorder = (bool IsAwaitingAcceptance) => IsAwaitingAcceptance ? "border-bottom-0" : null;
+	Func<int[], string> DecemberWasteFlashText = (int[] AvailableAcceptanceYears) => AvailableAcceptanceYears.Length switch {
+		1 => string.Format(Localizer["acceptance_year"].Value, AvailableAcceptanceYears[0]),
+		2 => string.Format(Localizer["acceptance_years"].Value, AvailableAcceptanceYears[0], AvailableAcceptanceYears[1]),
+		_ => string.Empty
+	};
+
 }
 <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content">
 	<div class="govuk-grid-row">
@@ -105,7 +113,7 @@
 					@foreach (var prn in Model.ActivePageOfResults)
 					{
 						<tbody class="govuk-table__body">
-							<tr class="govuk-table__row">
+							<tr class="govuk-table__row @rowBorder(prn.IsAwaitingAcceptance)">
 								<td class="govuk-table__cell">
 									<a class="govuk-link" href="@Url.Action(nameof(PrnsController.SelectSinglePrn), "Prns", new { id = prn.ExternalId })" aria-label="@Localizer["prn_or_pern_number"] @prn.PrnOrPernNumber">
 										@prn.PrnOrPernNumber
@@ -125,6 +133,14 @@
 									</div>
 								</td>
 							</tr>
+							
+							@if (prn.IsAwaitingAcceptance && prn.IsDecemberWaste) {
+							<tr class="govuk-table__row">
+								<td class="govuk-table__cell" colspan="7">
+									@await Html.PartialAsync("../Shared/Partials/Prns/_prnFlashLabel", new ViewDataDictionary(ViewData) { { "BackgroundColor", "blue" }, { "LabelText", @DecemberWasteFlashText(prn.AvailableAcceptanceYears) } })
+								</td>
+							</tr>
+							}
 						</tbody>
 					}
 				}
