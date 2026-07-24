@@ -144,6 +144,9 @@
   <data name="year" xml:space="preserve">
     <value>Year of issue</value>
   </data>
+  <data name="accepted_towards_recycling_obligations" xml:space="preserve">
+    <value>Accepted towards {0} recycling obligations</value>
+  </data>
   <data name="prn_note" xml:space="preserve">
     <value>Packaging Waste Recycling Note</value>
   </data>
