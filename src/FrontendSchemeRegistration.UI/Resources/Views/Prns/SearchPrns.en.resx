@@ -104,4 +104,10 @@
 	<data name="page_title" xml:space="preserve">
 		<value>Search PRNs and PERNs</value>
 	</data>
+	<data name="acceptance_year" xml:space="preserve">
+    	<value>Can be accepted towards {0}.</value>
+  	</data>
+	<data name="acceptance_years" xml:space="preserve">
+    	<value>Can be accepted towards {0} or {1}.</value>
+  	</data>
 </root>

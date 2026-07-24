@@ -1,0 +1,16 @@
+@using FrontendSchemeRegistration.Application.Constants
+@using FrontendSchemeRegistration.UI.ViewModels.Prns
+@model PrnSearchResultViewModel;
+@inject IStringLocalizer<PrnDataResources> PrnDataLocalizer
+
+@{
+    var BackgroundColor = ViewData["BackgroundColor"]?.ToString() ?? "grey";
+    var LabelText = ViewData["LabelText"].ToString();
+}
+
+<span class="govuk-tag govuk-tag--@BackgroundColor text-align-left">
+    @LabelText
+</span>
+
+ 
+
