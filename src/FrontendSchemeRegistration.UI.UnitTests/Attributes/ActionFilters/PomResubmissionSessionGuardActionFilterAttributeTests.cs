@@ -49,12 +49,13 @@ public class PomResubmissionSessionGuardActionFilterAttributeTests
     }
 
     [Test]
-    public async Task OnActionExecutionAsync_CallsNext_WhenSubmissionIdIsPresent()
+    public async Task OnActionExecutionAsync_CallsNext_WhenSubmissionIdAndSubmissionPeriodArePresent()
     {
         _sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
         {
             PomResubmissionSession = new PackagingReSubmissionSession
             {
+                SubmissionPeriod = "January to December 2024",
                 PackagingResubmissionApplicationSession = new PackagingResubmissionApplicationSession
                 {
                     SubmissionId = Guid.NewGuid()
@@ -69,36 +70,65 @@ public class PomResubmissionSessionGuardActionFilterAttributeTests
     }
 
     [Test]
-    public async Task OnActionExecutionAsync_RedirectsToResubmissionTaskList_WhenSessionIsNull()
+    public async Task OnActionExecutionAsync_RedirectsToFileUploadSubLanding_WhenSessionIsNull()
     {
         _sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync((FrontendSchemeRegistrationSession?)null);
 
         await _systemUnderTest.OnActionExecutionAsync(_actionExecutingContext, _delegateMock.Object);
 
         _actionExecutingContext.Result.Should().BeOfType<RedirectResult>()
-            .Subject.Url.Should().Be($"~/{PagePaths.ResubmissionTaskList}");
+            .Subject.Url.Should().Be($"~{PagePaths.FileUploadSubLanding}");
         _delegateMock.Verify(next => next(), Times.Never);
     }
 
     [Test]
-    public async Task OnActionExecutionAsync_RedirectsToResubmissionTaskList_WhenSubmissionIdIsNull()
-    {
-        _sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession());
-
-        await _systemUnderTest.OnActionExecutionAsync(_actionExecutingContext, _delegateMock.Object);
-
-        _actionExecutingContext.Result.Should().BeOfType<RedirectResult>()
-            .Subject.Url.Should().Be($"~/{PagePaths.ResubmissionTaskList}");
-        _delegateMock.Verify(next => next(), Times.Never);
-    }
-
-    [Test]
-    public async Task OnActionExecutionAsync_SetsCacheControlNoStore_WhenSubmissionIdIsPresent()
+    public async Task OnActionExecutionAsync_RedirectsToFileUploadSubLanding_WhenSubmissionIdIsNull()
     {
         _sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
         {
             PomResubmissionSession = new PackagingReSubmissionSession
             {
+                SubmissionPeriod = "January to December 2024"
+            }
+        });
+
+        await _systemUnderTest.OnActionExecutionAsync(_actionExecutingContext, _delegateMock.Object);
+
+        _actionExecutingContext.Result.Should().BeOfType<RedirectResult>()
+            .Subject.Url.Should().Be($"~{PagePaths.FileUploadSubLanding}");
+        _delegateMock.Verify(next => next(), Times.Never);
+    }
+
+    [Test]
+    public async Task OnActionExecutionAsync_RedirectsToFileUploadSubLanding_WhenSubmissionPeriodIsMissing()
+    {
+        _sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+        {
+            PomResubmissionSession = new PackagingReSubmissionSession
+            {
+                SubmissionPeriod = null,
+                PackagingResubmissionApplicationSession = new PackagingResubmissionApplicationSession
+                {
+                    SubmissionId = Guid.NewGuid()
+                }
+            }
+        });
+
+        await _systemUnderTest.OnActionExecutionAsync(_actionExecutingContext, _delegateMock.Object);
+
+        _actionExecutingContext.Result.Should().BeOfType<RedirectResult>()
+            .Subject.Url.Should().Be($"~{PagePaths.FileUploadSubLanding}");
+        _delegateMock.Verify(next => next(), Times.Never);
+    }
+
+    [Test]
+    public async Task OnActionExecutionAsync_SetsCacheControlNoStore_WhenSubmissionIdAndSubmissionPeriodArePresent()
+    {
+        _sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+        {
+            PomResubmissionSession = new PackagingReSubmissionSession
+            {
+                SubmissionPeriod = "January to December 2024",
                 PackagingResubmissionApplicationSession = new PackagingResubmissionApplicationSession
                 {
                     SubmissionId = Guid.NewGuid()
@@ -122,15 +152,43 @@ public class PomResubmissionSessionGuardActionFilterAttributeTests
     }
 
     [Test]
-    public async Task OnActionExecutionAsync_DoesNotRedirect_WhenRedirectOnMissingStateIsFalse()
+    public async Task OnActionExecutionAsync_CallsNext_WhenRequireSubmissionIdIsFalseAndSubmissionIdIsMissing()
     {
-        _systemUnderTest = new PomResubmissionSessionGuardActionFilterAttribute { RedirectOnMissingState = false };
-        _sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession());
+        _systemUnderTest = new PomResubmissionSessionGuardActionFilterAttribute { RequireSubmissionId = false };
+        _sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+        {
+            PomResubmissionSession = new PackagingReSubmissionSession
+            {
+                SubmissionPeriod = "January to December 2024"
+            }
+        });
 
         await _systemUnderTest.OnActionExecutionAsync(_actionExecutingContext, _delegateMock.Object);
 
         _actionExecutingContext.Result.Should().BeNull();
-        _actionExecutingContext.HttpContext.Response.Headers[HeaderNames.CacheControl].ToString().Should().Be("no-store");
         _delegateMock.Verify(next => next(), Times.Once);
+    }
+
+    [Test]
+    public async Task OnActionExecutionAsync_RedirectsToFileUploadSubLanding_WhenRequireSubmissionIdIsFalseButSubmissionPeriodIsMissing()
+    {
+        _systemUnderTest = new PomResubmissionSessionGuardActionFilterAttribute { RequireSubmissionId = false };
+        _sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+        {
+            PomResubmissionSession = new PackagingReSubmissionSession
+            {
+                SubmissionPeriod = null,
+                PackagingResubmissionApplicationSession = new PackagingResubmissionApplicationSession
+                {
+                    SubmissionId = Guid.NewGuid()
+                }
+            }
+        });
+
+        await _systemUnderTest.OnActionExecutionAsync(_actionExecutingContext, _delegateMock.Object);
+
+        _actionExecutingContext.Result.Should().BeOfType<RedirectResult>()
+            .Subject.Url.Should().Be($"~{PagePaths.FileUploadSubLanding}");
+        _delegateMock.Verify(next => next(), Times.Never);
     }
 }

@@ -31,7 +31,6 @@ public class PackagingDataResubmissionController : Controller
     private readonly List<SubmissionPeriod> _submissionPeriods;
     private readonly IResubmissionApplicationService _resubmissionApplicationService;
     private readonly IComplianceSchemeService _complianceSchemeService;
-    private readonly TimeProvider _timeProvider;
 
     public PackagingDataResubmissionController(
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
@@ -39,8 +38,7 @@ public class PackagingDataResubmissionController : Controller
         IUserAccountService userAccountService,
         IOptions<GlobalVariables> globalVariables,
         IResubmissionApplicationService resubmissionApplicationService,
-        IComplianceSchemeService complianceSchemeService,
-        TimeProvider timeProvider)
+        IComplianceSchemeService complianceSchemeService)
     {
         _sessionManager = sessionManager;
         _userAccountService = userAccountService;
@@ -48,12 +46,11 @@ public class PackagingDataResubmissionController : Controller
         _submissionPeriods = globalVariables.Value.SubmissionPeriods;
         _complianceSchemeService = complianceSchemeService;
         _logger = logger;
-        _timeProvider = timeProvider;
     }
 
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
-    [PomResubmissionSessionGuardActionFilter(RedirectOnMissingState = false)]
+    [PomResubmissionSessionGuardActionFilter(RequireSubmissionId = false)]
     [Route(PagePaths.ResubmissionTaskList)]
     public async Task<IActionResult> ResubmissionTaskList()
     {
@@ -68,15 +65,6 @@ public class PackagingDataResubmissionController : Controller
         if (complianceSchemeId != null)
         {
             complianceSchemeSummary = await _complianceSchemeService.GetComplianceSchemeSummary(organisation.Id.Value, complianceSchemeId.Value);
-        }
-
-        if (string.IsNullOrEmpty(session.PomResubmissionSession.SubmissionPeriod))
-        {
-            var now = _timeProvider.GetLocalNow().DateTime;
-            var complianceYear = now.GetComplianceYear();
-            var currentYear = new[] { complianceYear.ToString(), (complianceYear + 1).ToString() };
-            var currentResubmissionPeriod = _resubmissionApplicationService.PackagingResubmissionPeriod(currentYear, now);
-            session.PomResubmissionSession.SubmissionPeriod = currentResubmissionPeriod?.DataPeriod;
         }
 
         var submissionPeriod = FindSubmissionPeriod(session.PomResubmissionSession.SubmissionPeriod);

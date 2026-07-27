@@ -79,8 +79,7 @@ public abstract class PackagingDataResubmissionTestBase
                 }
             }),
             ResubmissionApplicationService.Object,
-			ComplianceService.Object,
-            TimeProvider.System);
+			ComplianceService.Object);
         SystemUnderTest.ControllerContext.HttpContext = _httpContextMock.Object;
         SystemUnderTest.ControllerContext.HttpContext.Session = new Mock<ISession>().Object;
         SystemUnderTest.Url = _urlHelperMock.Object;
