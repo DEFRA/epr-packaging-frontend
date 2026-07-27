@@ -74,4 +74,22 @@ public class DateTimeExtensionsTests
 
         now.GetCsocSubmissionDeadline().Should().Be(new DateTime(expectedYear, 1, 31, 0,0,0, DateTimeKind.Unspecified));
     }
+
+    [TestCase(2026, 12, 1, 2026, true)]
+    [TestCase(2026, 12, 31, 2026, true)]
+    [TestCase(2027, 1, 1, 2026, true)]
+    [TestCase(2027, 1, 31, 2026, true)]
+    [TestCase(2026, 11, 30, 2026, false)]
+    [TestCase(2027, 2, 1, 2026, false)]
+    [TestCase(2025, 12, 15, 2026, false)]
+    [TestCase(2026, 12, 15, 2025, false)]
+    [TestCase(2027, 1, 15, 2025, false)]
+    [TestCase(2027, 12, 15, 2026, false)]
+    public void IsInDecemberWasteFlashWindow_Returns_Expected(
+        int year, int month, int day, int obligationYear, bool expected)
+    {
+        var now = new DateTimeOffset(year, month, day, 12, 0, 0, TimeSpan.Zero);
+
+        now.IsInDecemberWasteFlashWindow(obligationYear).Should().Be(expected);
+    }
 }

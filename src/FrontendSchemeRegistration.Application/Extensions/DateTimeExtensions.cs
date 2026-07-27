@@ -54,4 +54,20 @@ public static class DateTimeExtensions
 
         return new DateTime(year, 1, 31, 0, 0, 0, DateTimeKind.Unspecified);
     }
+
+    /// <summary>
+    ///     Whether the UK calendar date is in the December/January flash window for a December waste PRN.
+    ///     That is December of <paramref name="obligationYear"/>, or January of <paramref name="obligationYear"/> + 1.
+    /// </summary>
+    public static bool IsInDecemberWasteFlashWindow(this DateTimeOffset dateTimeOffset, int obligationYear)
+    {
+        var ukDateTime = TimeZoneInfo.ConvertTime(dateTimeOffset, UkZone).DateTime;
+
+        return ukDateTime.Month switch
+        {
+            12 => ukDateTime.Year == obligationYear,
+            1 => ukDateTime.Year == obligationYear + 1,
+            _ => false
+        };
+    }
 }

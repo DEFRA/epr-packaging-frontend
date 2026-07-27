@@ -52,5 +52,42 @@ namespace FrontendSchemeRegistration.UI.UnitTests.ViewModels.Prns
 
             subject.MaterialGroup.Should().Be(expectedMaterialGroup);
         }
+
+        [TestCase("AWAITING ACCEPTANCE", true)]
+        [TestCase("ACCEPTED", false)]
+        public void IsAwaitingAcceptance_Returns_Expected(string approvalStatus, bool expected)
+        {
+            var sut = new BasePrnViewModel { ApprovalStatus = approvalStatus };
+
+            sut.IsAwaitingAcceptance.Should().Be(expected);
+        }
+
+        [TestCase(true, "AWAITING ACCEPTANCE", 2026, "2026-12-15", new[] { 2026, 2027 }, true)]
+        [TestCase(true, "AWAITING ACCEPTANCE", 2026, "2027-01-15", new[] { 2026, 2027 }, true)]
+        [TestCase(true, "AWAITING ACCEPTANCE", 2026, "2026-07-15", new[] { 2026, 2027 }, false)]
+        [TestCase(true, "AWAITING ACCEPTANCE", 2025, "2026-12-15", new[] { 2026 }, false)]
+        [TestCase(true, "AWAITING ACCEPTANCE", 2026, "2027-12-15", new[] { 2027 }, false)]
+        [TestCase(true, "AWAITING ACCEPTANCE", 2026, "2026-12-15", new[] { 2026 }, false)]
+        [TestCase(false, "AWAITING ACCEPTANCE", 2026, "2026-12-15", new[] { 2026, 2027 }, false)]
+        [TestCase(true, "ACCEPTED", 2026, "2026-12-15", new[] { 2026, 2027 }, false)]
+        [TestCase(true, "AWAITING ACCEPTANCE", 0, "2026-12-15", new[] { 2026, 2027 }, false)]
+        public void ShouldShowDecemberWasteFlash_Returns_Expected(
+            bool isDecemberWaste,
+            string approvalStatus,
+            int obligationYear,
+            string utcNow,
+            int[] availableAcceptanceYears,
+            bool expected)
+        {
+            var sut = new BasePrnViewModel
+            {
+                IsDecemberWaste = isDecemberWaste,
+                ApprovalStatus = approvalStatus,
+                ObligationYear = obligationYear,
+                AvailableAcceptanceYears = availableAcceptanceYears
+            };
+
+            sut.ShouldShowDecemberWasteFlash(DateTimeOffset.Parse(utcNow)).Should().Be(expected);
+        }
     }
 }

@@ -1,12 +1,14 @@
 ﻿@using FrontendSchemeRegistration.UI.Controllers.Prns
 @using FrontendSchemeRegistration.UI.ViewModels.Prns
 @inject FrontendSchemeRegistration.UI.Resources.IPrnDataResourcesLocalizer PrnDataResourcesLocalizer
+@inject TimeProvider TimeProvider
 @model AwaitingAcceptancePrnsViewModel
 
 @{
     ViewData["Title"] = Localizer["page_title"];
     var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
     var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer);
+    var utcNow = TimeProvider.GetUtcNow();
 }
 
 <main class="govuk-main-wrapper govuk-!-padding-top-4" id="select-multiple-prns">
@@ -95,7 +97,17 @@
 								<div id="checkboxes-hint" class="govuk-hint govuk-visually-hidden">@Localizer["select_all_that_apply"]</div>
 								@for (var i = 0; i < Model.Prns.Count; i++)
 								{
-									<tr class="govuk-table__row">
+									var prn = Model.Prns[i];
+									var showDecemberWasteFlash = prn.ShouldShowDecemberWasteFlash(utcNow);
+									var rowBorder = showDecemberWasteFlash ? "border-bottom-0" : null;
+									var decemberWasteFlashText = showDecemberWasteFlash
+										? string.Format(
+											Localizer["acceptance_years"].Value,
+											prn.AvailableAcceptanceYears[0],
+											prn.AvailableAcceptanceYears[1])
+										: string.Empty;
+
+									<tr class="govuk-table__row @rowBorder">
 										@Html.HiddenFor(x => x.Prns[i].ExternalId)
 										@Html.HiddenFor(x => x.Prns[i].NoteType)
 										<td class="govuk-table__cell" data-label=@Localizer["prn_or_pern_number"]>
@@ -142,6 +154,14 @@
 											}
 										</td>
 									</tr>
+									@if (showDecemberWasteFlash && !string.IsNullOrEmpty(decemberWasteFlashText))
+									{
+										<tr class="govuk-table__row">
+											<td class="govuk-table__cell" colspan="7">
+												@await Html.PartialAsync("../Shared/Partials/Prns/_prnFlashLabel", new ViewDataDictionary(ViewData) { { "BackgroundColor", "blue" }, { "LabelText", decemberWasteFlashText } })
+											</td>
+										</tr>
+									}
 								}
 								</tbody>
 							</table>
