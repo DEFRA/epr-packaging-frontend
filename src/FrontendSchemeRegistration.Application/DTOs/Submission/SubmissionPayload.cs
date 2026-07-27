@@ -16,4 +16,6 @@ public class SubmissionPayload
     public string? RegistrationJourney { get; set; }
 
     public int? SubmissionPeriodId { get; set; }
+
+    public string? RegulatorNation { get; set; }
 }

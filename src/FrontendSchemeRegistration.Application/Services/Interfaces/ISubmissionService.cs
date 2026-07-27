@@ -16,7 +16,8 @@ public interface ISubmissionService
     Task SubmitAsync(Guid submissionId, Guid fileId, string submittedBy,
         string? appReferenceNumber = null, bool? isResubmitted = null,
         RegistrationJourney? registrationJourney = null,
-        int? submissionPeriodId = null);
+        int? submissionPeriodId = null,
+        string? regulatorNation = null);
 
     Task CreateRegistrationApplicationEvent(RegistrationApplicationData registrationApplicationData, string applicationReferenceNumber, bool isResubmission, SubmissionType submissionType,
         RegistrationJourney? registrationJourney);

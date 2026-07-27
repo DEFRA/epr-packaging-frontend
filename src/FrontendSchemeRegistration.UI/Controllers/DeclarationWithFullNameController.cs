@@ -159,7 +159,8 @@ public class DeclarationWithFullNameController(
                     session.RegistrationSession.ApplicationReferenceNumber,
                     session.RegistrationSession.IsResubmission,
                     regJourney,
-                    registrationApplicationSession?.SubmissionPeriodId);
+                    registrationApplicationSession?.SubmissionPeriodId,
+                    registrationApplicationSession?.RegulatorNation);
 
                 var postSubmitController = await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService)
                     ? ProcessingViewName
