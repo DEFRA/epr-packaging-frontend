@@ -104,7 +104,8 @@
 				{
 					@foreach (var prn in Model.ActivePageOfResults)
 					{
-						var rowBorder = prn.IsAwaitingAcceptance && prn.IsDecemberWaste ? "border-bottom-0" : null;
+						var showDecemberWasteFlash = prn.IsAwaitingAcceptance && prn.IsDecemberWaste;
+						var rowBorder = showDecemberWasteFlash ? "border-bottom-0" : null;
 						var decemberWasteFlashText =  prn.AvailableAcceptanceYears.Length switch {
 							1 => string.Format(Localizer["acceptance_year"].Value, prn.AvailableAcceptanceYears[0]),
 							2 => string.Format(Localizer["acceptance_years"].Value, prn.AvailableAcceptanceYears[0], prn.AvailableAcceptanceYears[1]),
@@ -133,7 +134,7 @@
 								</td>
 							</tr>
 							
-							@if (prn.IsAwaitingAcceptance && prn.IsDecemberWaste) {
+							@if (showDecemberWasteFlash) {
 							<tr class="govuk-table__row">
 								<td class="govuk-table__cell" colspan="7">
 									@await Html.PartialAsync("../Shared/Partials/Prns/_prnFlashLabel", new ViewDataDictionary(ViewData) { { "BackgroundColor", "blue" }, { "LabelText", @decemberWasteFlashText } })
