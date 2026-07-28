@@ -162,7 +162,7 @@ public class DeclarationWithFullNameController(
                     registrationApplicationSession?.SubmissionPeriodId,
                     registrationApplicationSession?.RegulatorNation);
 
-                var postSubmitController = await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService)
+                var postSubmitController = await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeParametersViaPaymentService)
                     ? ProcessingViewName
                     : ConfirmationViewName;
 

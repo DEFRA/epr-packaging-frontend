@@ -152,6 +152,31 @@ public class PaymentCalculationService(
         }
     }
 
+    public async Task<ComplianceSchemePaymentCalculationResponse?> GetComplianceSchemeRegistrationFeesBySubmissionId(Guid submissionId)
+    {
+        var endpoint = options.Value.Endpoints.ComplianceSchemeRegistrationFeesBySubmissionEndpoint.Replace("{submissionId}", submissionId.ToString());
+
+        try
+        {
+            var result = await paymentCalculationServiceApiClient.SendGetRequest(endpoint);
+
+            if (result.StatusCode == HttpStatusCode.NotFound)
+            {
+                return null;
+            }
+
+            result.EnsureSuccessStatusCode();
+
+            var jsonContent = RemoveDecimalValues(await result.Content.ReadAsStringAsync());
+            return JsonSerializer.Deserialize<ComplianceSchemePaymentCalculationResponse>(jsonContent, _options);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to retrieve compliance-scheme registration fees for {SubmissionId}", submissionId);
+            return null;
+        }
+    }
+
     // Anonymous — called from RegistrationPeriodProviderWarmupService at startup where no user context exists.
     public async Task<SubmissionPeriodDetails[]> GetSubmissionPeriods()
     {

@@ -28,5 +28,6 @@ public static class FeatureFlags
 
     public const string ShowNotificationBanner = "ShowNotificationBanner";
     public const string CsocEnabled = nameof(CsocEnabled);
+    public const string EnableRegistrationFeeParametersViaPaymentService = nameof(EnableRegistrationFeeParametersViaPaymentService);
     public const string EnableRegistrationFeeCalculationViaPaymentService = nameof(EnableRegistrationFeeCalculationViaPaymentService);
 }

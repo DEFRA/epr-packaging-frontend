@@ -57,7 +57,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     {
         if (!session.SubmissionId.HasValue
             || session.SubmissionId.Value == Guid.Empty
-            || !await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService))
+            || !await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeParametersViaPaymentService))
         {
             return;
         }
@@ -288,6 +288,42 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             return null;
         }
 
+        var response = await ResolveComplianceSchemeFeesResponseAsync(session);
+        if (response is null)
+        {
+            logger.LogWarning("Unable to GetComplianceSchemeRegistrationFees Details, paymentCalculationService.GetComplianceSchemeRegistrationFees is null");
+            return null;
+        }
+
+        session.TotalAmountOutstanding = response.OutstandingPayment < 0 ? 0 : response.OutstandingPayment;
+        await sessionManager.SaveSessionAsync(httpSession, session);
+
+        return BuildComplianceSchemeViewModel(response, session);
+    }
+
+    // Prefer the server-driven endpoint that derives every fee-calc input from the stored
+    // RegistrationSubmissionData snapshot. Falls back to the legacy POST-based flow when:
+    //   - the flag is off (kill switch),
+    //   - the session has no SubmissionId, or
+    //   - the new endpoint returns null (404 = no non-rejected submission captured for this id,
+    //     i.e. historic submissions predating lifecycle capture).
+    private async Task<ComplianceSchemePaymentCalculationResponse?> ResolveComplianceSchemeFeesResponseAsync(RegistrationApplicationSession session)
+    {
+        var useSubmissionEndpoint = await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService);
+        if (useSubmissionEndpoint && session.SubmissionId is Guid submissionId)
+        {
+            var fromSubmission = await paymentCalculationService.GetComplianceSchemeRegistrationFeesBySubmissionId(submissionId);
+            if (fromSubmission is not null)
+            {
+                return fromSubmission;
+            }
+        }
+
+        return await paymentCalculationService.GetComplianceSchemeRegistrationFees(BuildLegacyComplianceSchemeRequest(session));
+    }
+
+    private ComplianceSchemePaymentCalculationRequest BuildLegacyComplianceSchemeRequest(RegistrationApplicationSession session)
+    {
         var feeCalculationDetails = session.RegistrationFeeCalculationDetails;
 
         var complianceSchemeMembers = feeCalculationDetails.Select(c => new ComplianceSchemePaymentCalculationRequestMember
@@ -314,24 +350,21 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         // (it is assumed to have been charged for the Large Producer journey)
         bool includeRegistrationFee = !(session.RegistrationJourney == RegistrationJourney.CsoSmallProducer);
 
-        var response = await paymentCalculationService.GetComplianceSchemeRegistrationFees(new ComplianceSchemePaymentCalculationRequest
+        return new ComplianceSchemePaymentCalculationRequest
         {
             Regulator = session.RegulatorNation,
             ApplicationReferenceNumber = session.ApplicationReferenceNumber,
             SubmissionDate = GetSubmissionDateForFeeCalculation(session),
             ComplianceSchemeMembers = complianceSchemeMembers,
             IncludeRegistrationFee = includeRegistrationFee
-        });
+        };
+    }
 
-        if (response is null)
-        {
-            logger.LogWarning("Unable to GetComplianceSchemeRegistrationFees Details, paymentCalculationService.GetComplianceSchemeRegistrationFees is null");
-            return null;
-        }
-
-        session.TotalAmountOutstanding = response.OutstandingPayment < 0 ? 0 : response.OutstandingPayment;
-        await sessionManager.SaveSessionAsync(httpSession, session);
-
+    private static ComplianceSchemeFeeCalculationBreakdownViewModel BuildComplianceSchemeViewModel(
+        ComplianceSchemePaymentCalculationResponse response,
+        RegistrationApplicationSession session)
+    {
+        var feeCalculationDetails = session.RegistrationFeeCalculationDetails;
         var perProducer = response.ComplianceSchemeMembersWithFees.GetIndividualProducers(feeCalculationDetails);
         var smallFee = perProducer.smallProducers.GetFees();
         var largeFee = perProducer.largeProducers.GetFees();

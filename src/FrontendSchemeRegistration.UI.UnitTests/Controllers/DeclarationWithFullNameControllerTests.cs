@@ -869,7 +869,7 @@ public class DeclarationWithFullNameControllerTests
         {
             RegistrationSession = new RegistrationSession { ApplicationReferenceNumber = "test" },
         });
-        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService)).ReturnsAsync(false);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeParametersViaPaymentService)).ReturnsAsync(false);
 
         var request = new DeclarationWithFullNameViewModel
         {
@@ -908,7 +908,7 @@ public class DeclarationWithFullNameControllerTests
         {
             RegistrationSession = new RegistrationSession { ApplicationReferenceNumber = "test" },
         });
-        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService)).ReturnsAsync(true);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeParametersViaPaymentService)).ReturnsAsync(true);
 
         var request = new DeclarationWithFullNameViewModel
         {

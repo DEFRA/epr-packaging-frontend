@@ -11,6 +11,8 @@ public interface IPaymentCalculationService
     Task<string> InitiatePayment(PaymentInitiationRequest request);
 
     Task<ComplianceSchemePaymentCalculationResponse?> GetComplianceSchemeRegistrationFees(ComplianceSchemePaymentCalculationRequest request);
+
+    Task<ComplianceSchemePaymentCalculationResponse?> GetComplianceSchemeRegistrationFeesBySubmissionId(Guid submissionId);
 	Task<PackagingPaymentResponse> GetResubmissionFees(string applicationReferenceNumber, string regulatorNation, int memberCount, bool isComplianceScheme, DateTime? resubmissionDate);
 
     Task<RegistrationFeeCalculationDetails[]?> GetRegistrationFeeCalculationDetails(Guid submissionId);

@@ -10,6 +10,8 @@ public class PaymentFacadeApiEndpoints
 
     public string ComplianceSchemeRegistrationFeesEndpoint { get; set; }
 
+    public string ComplianceSchemeRegistrationFeesBySubmissionEndpoint { get; set; }
+
     public string ComplianceSchemeResubmissionFeesEndpoint { get; set; }
 
     public string RegistrationSubmissionDataEndpoint { get; set; }
