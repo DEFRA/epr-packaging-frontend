@@ -1,0 +1,30 @@
+.prn-responsive-table {
+  tr.govuk-table__row.border-bottom-0 {
+    border-bottom-width: 0;
+
+    @include govuk-media-query($from: tablet) {
+      border-bottom-width: 2px;
+    }
+  }
+
+  td.govuk-table__cell:has(.flash-container) {
+    padding-left: 0;
+
+    @include govuk-media-query($from: tablet) {
+      padding-left: 0.5rem;
+    }
+  }
+}
+.flash-container {
+  display: inline-block;
+  @include govuk-font($size: 16, $weight: normal);
+  line-height: 1.25rem;
+  margin-bottom: 0.3125rem;
+  padding: 0.3125rem 0.5rem 0.25rem 0.5rem;
+  text-align: left;
+  text-transform: none;
+}
+.flash-container--blue {
+  color: #0c2d4a;
+  background-color: #bbd4ea;
+}

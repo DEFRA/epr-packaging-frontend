@@ -1,6 +1,6 @@
 @using FrontendSchemeRegistration.Application.Constants
 @using FrontendSchemeRegistration.UI.ViewModels.Prns
-@model PrnSearchResultViewModel;
+@model PrnSearchResultListViewModel;
 @inject IStringLocalizer<PrnDataResources> PrnDataLocalizer
 
 @{
@@ -8,7 +8,7 @@
     var LabelText = ViewData["LabelText"].ToString();
 }
 
-<span class="govuk-tag govuk-tag--@BackgroundColor text-align-left">
+<span class="flash-container flash-container--@BackgroundColor">
     @LabelText
 </span>
 
