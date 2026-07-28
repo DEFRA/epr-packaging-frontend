@@ -154,13 +154,31 @@ public class DeclarationWithFullNameController(
 
                 var registrationApplicationSession = await registrationApplicationSessionManager.GetSessionAsync(HttpContext.Session);
 
+                var regulatorNation = registrationApplicationSession?.RegulatorNation;
+                if (string.IsNullOrWhiteSpace(regulatorNation))
+                {
+                    var nationId = model.IsCso
+                        ? session.RegistrationSession.SelectedComplianceScheme?.NationId
+                        : userData.Organisations[0].NationId;
+
+                    regulatorNation = nationId.HasValue
+                        ? NationExtensions.GetNationNameFromId(nationId.Value)
+                        : null;
+                }
+
+                if (string.IsNullOrWhiteSpace(regulatorNation))
+                {
+                    logger.LogError("RegulatorNation could not be resolved for submission ID {SubmissionId}", submissionId);
+                    throw new ArgumentException($"RegulatorNation could not be resolved for submission ID {submissionId}");
+                }
+
                 await submissionService.SubmitAsync(submissionId, organisationDetailsFileId,
                     model.FullName,
                     session.RegistrationSession.ApplicationReferenceNumber,
                     session.RegistrationSession.IsResubmission,
                     regJourney,
                     registrationApplicationSession?.SubmissionPeriodId,
-                    registrationApplicationSession?.RegulatorNation);
+                    regulatorNation);
 
                 var postSubmitController = await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeParametersViaPaymentService)
                     ? ProcessingViewName
