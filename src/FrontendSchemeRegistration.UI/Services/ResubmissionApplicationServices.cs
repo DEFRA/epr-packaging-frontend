@@ -127,6 +127,18 @@ public class ResubmissionApplicationServices(
         await submissionService.CreatePackagingResubmissionApplicationSubmittedCreatedEvent(submissionId, filedId, submittedBy, submissionDate, comment);
     }
 
+    // Re-fetches the current PomSubmission so callers don't act on a stale FileId
+    // captured earlier in the session (e.g. before a re-upload in another tab).
+    public async Task RefreshPomSubmissionAsync(FrontendSchemeRegistrationSession session)
+    {
+        var submissionId = session.PomResubmissionSession.PackagingResubmissionApplicationSession.SubmissionId;
+        if (submissionId.HasValue)
+        {
+            session.PomResubmissionSession.PomSubmission =
+                await submissionService.GetSubmissionAsync<PomSubmission>(submissionId.Value);
+        }
+    }
+
     public async Task<List<PackagingResubmissionApplicationSession>> GetPackagingResubmissionApplicationSession(Organisation organisation, List<string> submissionPeriods, Guid? complianceSchemeId)
     {
         var detailsForAllSubmissionPeriods = await GetPackagingDataResubmissionApplicationDetails(organisation, submissionPeriods, complianceSchemeId);
