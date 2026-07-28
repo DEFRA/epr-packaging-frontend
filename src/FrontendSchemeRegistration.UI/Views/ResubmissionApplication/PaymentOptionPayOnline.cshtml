@@ -23,9 +23,19 @@
                     <a class="govuk-button govuk-body" href="@Model.PaymentLink">@Localizer["pay_online_now"]</a>                    
                 </form>
                 <p class="govuk-body">
-                    <a href="/report-data/home-self-managed" class="govuk-link govuk-link--no-visited-state">
-                        @Localizer["return_to_dashboard"]
-                    </a>
+                    
+                    @if (Model.IsComplianceScheme)
+                    {
+                        <p class="govuk-body govuk-!-margin-top-4">
+                            <a asp-controller="ComplianceSchemeLanding" asp-action="Get" class="govuk-link">@Localizer["return_to_dashboard"]</a>
+                        </p>
+                    }
+                    else
+                    {
+                        <p class="govuk-body govuk-!-margin-top-4">
+                            <a asp-controller="FrontendSchemeRegistration" asp-action="HomePageSelfManaged" class="govuk-link">@Localizer["return_to_dashboard"]</a>
+                        </p>
+                    }
                 </p>
             </div>
         </div>
