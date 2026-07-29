@@ -31,6 +31,11 @@ public class SubmissionPeriodDetail
 
     public bool? IsResubmissionComplete { get; set; }
 
+    // SUB-332: IsResubmissionComplete stays gated on the fee and Synapse sync, so between declaring and the
+    // sync completing it reads false while IsResubmissionInProgress is also false. This carries the
+    // declaration itself so the tile keeps an action during that window.
+    public bool ResubmissionApplicationSubmitted { get; set; }
+
     public InProgressSubmissionPeriodStatus? InProgressSubmissionPeriodStatus { get; set; }
 
     public string ApplicationStatus { get; set; }

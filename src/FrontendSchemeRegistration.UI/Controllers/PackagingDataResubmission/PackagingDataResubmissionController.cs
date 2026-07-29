@@ -80,10 +80,23 @@ public class PackagingDataResubmissionController : Controller
         {
             session.PomResubmissionSession.Journey = new List<string> { PagePaths.FileUploadSubLanding, $"/report-data{PagePaths.UploadNewFileToSubmit}?submissionId={submission.Id}", PagePaths.ResubmissionTaskList };
 
-            if (string.IsNullOrEmpty(session.PomResubmissionSession.PackagingResubmissionApplicationSession.ApplicationReferenceNumber))
+            // SUB-332: only raise a reference number when the server reports no cycle at all. Requiring
+            // NotStarted as well as an empty reference number means a cycle the API considers open can
+            // never trigger a second PackagingResubmissionReferenceNumberCreated event mid-cycle.
+            var applicationSession = session.PomResubmissionSession.PackagingResubmissionApplicationSession;
+
+            if (string.IsNullOrEmpty(applicationSession.ApplicationReferenceNumber)
+                && applicationSession.ApplicationStatus == ApplicationStatusType.NotStarted)
             {
                 var submittedByName = await GetUserNameFromId(submission.LastSubmittedFile.SubmittedBy!);
                 var historyCount = await GetSubmissionHistory(submission, organisation.Id.Value, complianceSchemeId);
+
+                _logger.LogInformation(
+                    "Creating packaging resubmission reference number for organisation '{OrganisationId}', submission '{SubmissionId}', period '{SubmissionPeriod}'",
+                    organisation.Id.Value,
+                    submission.Id,
+                    session.PomResubmissionSession.SubmissionPeriod);
+
                 await _resubmissionApplicationService.CreatePomResubmissionReferenceNumber(session, submittedByName, submission.Id, historyCount);
             }
         }
