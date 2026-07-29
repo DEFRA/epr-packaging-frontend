@@ -849,4 +849,74 @@ public class ResubmissionApplicationServiceTests
         var result = _service.PackagingResubmissionPeriod(new[]{"2025"}, new DateTime(2025, 03, 01));
         Assert.That(result.Year, Is.EqualTo("2025"));
     }
+
+    [Test]
+    public async Task RefreshPomSubmissionAsync_WhenSubmissionIdSet_ReplacesSessionPomSubmissionWithFreshFetch()
+    {
+        // Arrange — the session holds a stale FileId; the service should replace PomSubmission with the freshly-fetched one.
+        var submissionId = Guid.NewGuid();
+        var staleFileId = Guid.NewGuid();
+        var freshFileId = Guid.NewGuid();
+
+        var session = new FrontendSchemeRegistrationSession
+        {
+            PomResubmissionSession = new PackagingReSubmissionSession
+            {
+                PackagingResubmissionApplicationSession = new PackagingResubmissionApplicationSession
+                {
+                    SubmissionId = submissionId
+                },
+                PomSubmission = new PomSubmission
+                {
+                    LastSubmittedFile = new SubmittedFileInformation { FileId = staleFileId }
+                }
+            }
+        };
+
+        var freshSubmission = new PomSubmission
+        {
+            LastSubmittedFile = new SubmittedFileInformation { FileId = freshFileId }
+        };
+
+        _mockSubmissionService
+            .Setup(s => s.GetSubmissionAsync<PomSubmission>(submissionId))
+            .ReturnsAsync(freshSubmission);
+
+        // Act
+        await _service.RefreshPomSubmissionAsync(session);
+
+        // Assert
+        _mockSubmissionService.Verify(s => s.GetSubmissionAsync<PomSubmission>(submissionId), Times.Once);
+        session.PomResubmissionSession.PomSubmission.Should().BeSameAs(freshSubmission);
+        session.PomResubmissionSession.PomSubmission.LastSubmittedFile.FileId.Should().Be(freshFileId);
+    }
+
+    [Test]
+    public async Task RefreshPomSubmissionAsync_WhenSubmissionIdMissing_DoesNotFetchAndLeavesSessionUntouched()
+    {
+        // Arrange
+        var existing = new PomSubmission
+        {
+            LastSubmittedFile = new SubmittedFileInformation { FileId = Guid.NewGuid() }
+        };
+
+        var session = new FrontendSchemeRegistrationSession
+        {
+            PomResubmissionSession = new PackagingReSubmissionSession
+            {
+                PackagingResubmissionApplicationSession = new PackagingResubmissionApplicationSession
+                {
+                    SubmissionId = null
+                },
+                PomSubmission = existing
+            }
+        };
+
+        // Act
+        await _service.RefreshPomSubmissionAsync(session);
+
+        // Assert
+        _mockSubmissionService.Verify(s => s.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>()), Times.Never);
+        session.PomResubmissionSession.PomSubmission.Should().BeSameAs(existing);
+    }
 }
