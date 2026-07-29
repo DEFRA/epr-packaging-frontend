@@ -1,5 +1,4 @@
 ﻿using FrontendSchemeRegistration.Application.Constants;
-using FrontendSchemeRegistration.Application.Extensions;
 
 namespace FrontendSchemeRegistration.UI.ViewModels.Prns
 {
@@ -50,14 +49,13 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
 
         /// <summary>
         ///     December waste flash is only shown for awaiting-acceptance December waste PRNs
-        ///     that can be accepted into either of two years, during December/January of that window.
+        ///     that can be accepted into either of two years.
+        ///     The two-year window is already resolved by <see cref="AvailableAcceptanceYears"/>.
         /// </summary>
-        public bool ShouldShowDecemberWasteFlash(DateTimeOffset utcNow) =>
+        public bool ShouldShowDecemberWasteFlash =>
             IsDecemberWaste
             && IsAwaitingAcceptance
-            && ObligationYear > 0
-            && AvailableAcceptanceYears.Length == 2
-            && utcNow.IsInDecemberWasteFlashWindow(ObligationYear);
+            && AvailableAcceptanceYears.Length == 2;
 
         public string ApprovalStatusDisplayCssColour => ApprovalStatus switch
         {

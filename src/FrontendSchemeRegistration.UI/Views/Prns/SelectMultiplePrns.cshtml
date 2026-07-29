@@ -1,14 +1,12 @@
 ﻿@using FrontendSchemeRegistration.UI.Controllers.Prns
 @using FrontendSchemeRegistration.UI.ViewModels.Prns
 @inject FrontendSchemeRegistration.UI.Resources.IPrnDataResourcesLocalizer PrnDataResourcesLocalizer
-@inject TimeProvider TimeProvider
 @model AwaitingAcceptancePrnsViewModel
 
 @{
     ViewData["Title"] = Localizer["page_title"];
     var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
     var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer);
-    var utcNow = TimeProvider.GetUtcNow();
 }
 
 <main class="govuk-main-wrapper govuk-!-padding-top-4" id="select-multiple-prns">
@@ -98,7 +96,7 @@
 								@for (var i = 0; i < Model.Prns.Count; i++)
 								{
 									var prn = Model.Prns[i];
-									var showDecemberWasteFlash = prn.ShouldShowDecemberWasteFlash(utcNow);
+									var showDecemberWasteFlash = prn.ShouldShowDecemberWasteFlash;
 									var decemberWasteFlashText = showDecemberWasteFlash
 										? string.Format(
 											Localizer["acceptance_years"].Value,

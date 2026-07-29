@@ -62,20 +62,14 @@ namespace FrontendSchemeRegistration.UI.UnitTests.ViewModels.Prns
             sut.IsAwaitingAcceptance.Should().Be(expected);
         }
 
-        [TestCase(true, "AWAITING ACCEPTANCE", 2026, "2026-12-15", new[] { 2026, 2027 }, true)]
-        [TestCase(true, "AWAITING ACCEPTANCE", 2026, "2027-01-15", new[] { 2026, 2027 }, true)]
-        [TestCase(true, "AWAITING ACCEPTANCE", 2026, "2026-07-15", new[] { 2026, 2027 }, false)]
-        [TestCase(true, "AWAITING ACCEPTANCE", 2025, "2026-12-15", new[] { 2026 }, false)]
-        [TestCase(true, "AWAITING ACCEPTANCE", 2026, "2027-12-15", new[] { 2027 }, false)]
-        [TestCase(true, "AWAITING ACCEPTANCE", 2026, "2026-12-15", new[] { 2026 }, false)]
-        [TestCase(false, "AWAITING ACCEPTANCE", 2026, "2026-12-15", new[] { 2026, 2027 }, false)]
-        [TestCase(true, "ACCEPTED", 2026, "2026-12-15", new[] { 2026, 2027 }, false)]
-        [TestCase(true, "AWAITING ACCEPTANCE", 0, "2026-12-15", new[] { 2026, 2027 }, false)]
+        [TestCase(true, "AWAITING ACCEPTANCE", new[] { 2026, 2027 }, true)]
+        [TestCase(true, "AWAITING ACCEPTANCE", new[] { 2026 }, false)]
+        [TestCase(true, "AWAITING ACCEPTANCE", new int[] { }, false)]
+        [TestCase(false, "AWAITING ACCEPTANCE", new[] { 2026, 2027 }, false)]
+        [TestCase(true, "ACCEPTED", new[] { 2026, 2027 }, false)]
         public void ShouldShowDecemberWasteFlash_Returns_Expected(
             bool isDecemberWaste,
             string approvalStatus,
-            int obligationYear,
-            string utcNow,
             int[] availableAcceptanceYears,
             bool expected)
         {
@@ -83,11 +77,10 @@ namespace FrontendSchemeRegistration.UI.UnitTests.ViewModels.Prns
             {
                 IsDecemberWaste = isDecemberWaste,
                 ApprovalStatus = approvalStatus,
-                ObligationYear = obligationYear,
                 AvailableAcceptanceYears = availableAcceptanceYears
             };
 
-            sut.ShouldShowDecemberWasteFlash(DateTimeOffset.Parse(utcNow)).Should().Be(expected);
+            sut.ShouldShowDecemberWasteFlash.Should().Be(expected);
         }
     }
 }
