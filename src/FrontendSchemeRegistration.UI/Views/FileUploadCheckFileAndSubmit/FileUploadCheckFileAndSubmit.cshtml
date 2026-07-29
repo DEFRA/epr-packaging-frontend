@@ -13,6 +13,10 @@
     var dateAndTimeSubmittedSubmitted = Localizer["date_and_time_submitted"];
     var submittedBy = Localizer["submitted_by"];
     var download = Localizer["download"];
+
+    // SUB-332: a newer upload that never became the valid file blocks submission entirely - the file on
+    // offer is not the one the user thinks they are submitting.
+    var submissionBlocked = Model.HasNewerUnprocessedUpload;
 }
 
 @await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
@@ -28,12 +32,12 @@
 
             <h1 class="govuk-heading-l govuk-!-margin-bottom-7">@title</h1>
 
-            @if (Model.UserCanSubmit)
+            @if (Model.UserCanSubmit && !submissionBlocked)
             {
                 <p class="govuk-body">@Localizer["your_file_has_saved_and_you_can_submit_it_to_the_environmental_regulator"]</p>
 
                 if (Model.HasSubmittedPreviously)
-                {   
+                {
                     <p class="govuk-body">@Localizer["submitting_the_new_packaging_data_file_will_replace_the_last_one_that_you_submitted"]</p>
                 }
 
@@ -42,6 +46,19 @@
             else
             {
                 <p class="govuk-body govuk-!-margin-bottom-7">@Localizer["the_file_youve_uploaded_has_saved"]</p>
+            }
+
+            @if (submissionBlocked)
+            {
+                <div class="govuk-error-summary" aria-labelledby="unprocessed-upload-title" role="alert" data-module="govuk-error-summary" data-testid="unprocessed-upload-banner">
+                    <h2 class="govuk-error-summary__title" id="unprocessed-upload-title">
+                        @SharedLocalizer["there_is_a_problem"]
+                    </h2>
+                    <div class="govuk-error-summary__body">
+                        <p class="govuk-body">@Localizer["your_most_recent_upload_could_not_be_processed", Model.UnprocessedUploadFileName, Model.UnprocessedUploadDateTime.Value.ToReadableDateTime()]</p>
+                        <p class="govuk-body govuk-!-margin-bottom-0">@Localizer["you_must_upload_your_file_again_before_you_can_submit"]</p>
+                    </div>
+                </div>
             }
 
             <div class="govuk-summary-card">
@@ -149,7 +166,14 @@
                 </div>
             }
 
-            @if (Model.UserCanSubmit)
+            @if (Model.UserCanSubmit && submissionBlocked)
+            {
+                <div class="govuk-!-margin-top-7 govuk-!-margin-bottom-6">
+                    <a class="govuk-button" data-module="govuk-button" data-testid="upload-again-button"
+                       asp-controller="FileUpload" asp-action="Get" asp-route-submissionId="@Model.SubmissionId">@SharedLocalizer["upload_your_file_again"]</a>
+                </div>
+            }
+            else if (Model.UserCanSubmit)
             {
                 @using (Html.BeginForm(FormMethod.Post))
                 {

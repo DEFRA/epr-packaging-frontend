@@ -67,6 +67,15 @@ public class FileUploadSubmissionDeclarationController : Controller
             return RedirectToAction("Get", "FileUploadCheckFileAndSubmit", routeValues);
         }
 
+        // SUB-332: the file on offer is not the user's most recent upload, so there is nothing safe to
+        // declare here. Send them back to the check-and-submit page, which explains why and offers a
+        // re-upload. Guarding the Get as well stops the declaration being reached by a direct link.
+        if (submission.HasNewerUnprocessedUploadThanValidFile())
+        {
+            var unprocessedUploadRouteValues = new RouteValueDictionary { { "submissionId", submission.Id.ToString() } };
+            return RedirectToAction("Get", "FileUploadCheckFileAndSubmit", unprocessedUploadRouteValues);
+        }
+
         ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadCheckFileAndSubmit}?submissionId={submissionId}");
         return View("FileUploadSubmissionDeclaration", new FileUploadSubmissionDeclarationViewModel
         {
@@ -92,6 +101,19 @@ public class FileUploadSubmissionDeclarationController : Controller
         if (submission is null)
         {
             return RedirectToAction("Get", "FileUploadSubLanding");
+        }
+
+        // SUB-332: last line of defence before SubmitAsync. The session FileId was captured on the previous
+        // page, so a newer upload may have failed validation since then - re-check against the submission
+        // rather than trusting the captured id.
+        if (submission.HasNewerUnprocessedUploadThanValidFile())
+        {
+            _logger.LogWarning(
+                "Blocked declaration of submission {SubmissionId}: the upload at {UnprocessedUploadDateTime} is newer than the last valid file, so the user must upload again before declaring",
+                submission.Id,
+                submission.PomFileUploadDateTime);
+
+            return RedirectToAction("Get", "FileUploadCheckFileAndSubmit", routeValues);
         }
 
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);

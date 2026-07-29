@@ -134,6 +134,20 @@
                 </div>
             }
 
+            @* SUB-332: this page is informational - submission itself is blocked on the check-and-submit page. *@
+            @if (Model.HasNewerUnprocessedUpload)
+            {
+                <div class="govuk-error-summary govuk-!-margin-top-6" aria-labelledby="unprocessed-upload-title" role="alert" data-module="govuk-error-summary" data-testid="unprocessed-upload-banner">
+                    <h2 class="govuk-error-summary__title" id="unprocessed-upload-title">
+                        @SharedLocalizer["there_is_a_problem"]
+                    </h2>
+                    <div class="govuk-error-summary__body">
+                        <p class="govuk-body">@Localizer["your_most_recent_upload_could_not_be_processed", Model.UnprocessedUploadFileName, Model.UnprocessedUploadDateTime.Value.ToReadableDateTime()]</p>
+                        <p class="govuk-body govuk-!-margin-bottom-0">@Localizer["you_must_upload_your_file_again_before_you_can_submit"]</p>
+                    </div>
+                </div>
+            }
+
             <div class="govuk-summary-card">
                 <div class="govuk-summary-card__title-wrapper">
                     <h2 class="govuk-summary-card__title">

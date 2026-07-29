@@ -88,6 +88,7 @@ public class FileUploadSubLandingController(
                 Comments = decision.Comments,
                 IsSubmitted = submission?.IsSubmitted ?? false,
                 IsResubmissionComplete = packagingResubmissionApplicationSession != null ? packagingResubmissionApplicationSession.IsResubmissionComplete : null,
+                ResubmissionApplicationSubmitted = packagingResubmissionApplicationSession?.ResubmissionApplicationSubmitted ?? false,
                 ApplicationStatus = packagingResubmissionApplicationSession?.ApplicationStatus.ToString(),
                 FileUploadStatus = packagingResubmissionApplicationSession?.FileUploadStatus.ToString(),
             };
@@ -293,7 +294,11 @@ public class FileUploadSubLandingController(
 
         var packagingResubmissionApplicationSession = session.PomResubmissionSession.PackagingResubmissionApplicationSessions.Find(x => x.SubmissionId == submission.Id);
 
-        if (packagingResubmissionApplicationSession.IsResubmissionInProgress || packagingResubmissionApplicationSession.IsResubmissionComplete)
+        // SUB-332: ResubmissionApplicationSubmitted covers the window between declaring and the Synapse sync
+        // completing, where IsResubmissionInProgress and IsResubmissionComplete are both false.
+        if (packagingResubmissionApplicationSession.IsResubmissionInProgress
+            || packagingResubmissionApplicationSession.IsResubmissionComplete
+            || packagingResubmissionApplicationSession.ResubmissionApplicationSubmitted)
         {
             return RedirectToAction(
                nameof(PackagingDataResubmissionController.ResubmissionTaskList),
