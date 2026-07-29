@@ -26,4 +26,13 @@ public class FileUploadCheckFileAndSubmitViewModel : ViewModelWithOrganisationRo
     public bool HasSubmittedPreviously => SubmittedFileName is not null;
 
     public bool IsSubmittedByUserDeleted { get; set; }
+
+    // SUB-332: a more recent upload attempt that never became the valid file. When true, submission is
+    // blocked outright rather than warned about - the file on offer is not the one the user believes they
+    // are submitting, so declaring it would send the wrong data to the regulator.
+    public bool HasNewerUnprocessedUpload { get; set; }
+
+    public string? UnprocessedUploadFileName { get; set; }
+
+    public DateTime? UnprocessedUploadDateTime { get; set; }
 }

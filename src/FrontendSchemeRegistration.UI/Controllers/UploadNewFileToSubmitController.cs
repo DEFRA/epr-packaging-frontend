@@ -113,7 +113,10 @@ public class UploadNewFileToSubmitController : Controller
             RegulatorDecision = decision.Decision,
             IsResubmissionNeeded = decision.IsResubmissionRequired,
             IsSubmittedByPersonDeleted = isSubmittedByPersonDeleted,
-            IsUploadByPersonDeleted = isSubmittedByPersonDeleted
+            IsUploadByPersonDeleted = isSubmittedByPersonDeleted,
+            HasNewerUnprocessedUpload = submission.HasNewerUnprocessedUploadThanValidFile(),
+            UnprocessedUploadFileName = submission.PomFileName,
+            UnprocessedUploadDateTime = submission.PomFileUploadDateTime
         };
 
         if (!session.RegistrationSession.Journey.Contains(PagePaths.FileUploadSubLanding))

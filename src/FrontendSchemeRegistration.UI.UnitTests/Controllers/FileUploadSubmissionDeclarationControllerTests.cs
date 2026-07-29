@@ -299,6 +299,85 @@ public class FileUploadSubmissionDeclarationControllerTests
         result.ViewName.Should().Be(ViewName);
     }
 
+    // SUB-332: reaching the declaration by direct link must not bypass the block applied on the
+    // check-and-submit page.
+    [Test]
+    public async Task Get_RedirectsToCheckFileAndSubmit_WhenARetryNeverBecameTheValidFile()
+    {
+        // Arrange
+        var submission = new PomSubmission
+        {
+            Id = Guid.NewGuid(),
+            IsSubmitted = false,
+            PomFileName = "retry.csv",
+            PomFileUploadDateTime = DateTime.Now,
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileName = "original.csv",
+                UploadedBy = Guid.NewGuid(),
+                FileUploadDateTime = DateTime.Now.AddMinutes(-2),
+                FileId = Guid.NewGuid()
+            },
+        };
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Get() as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadCheckFileAndSubmit");
+    }
+
+    // The session FileId was captured on the previous page, so this is the last point at which a stale file
+    // can be caught before SubmitAsync sends it to the regulator.
+    [Test]
+    public async Task Post_BlocksSubmitAsync_WhenARetryNeverBecameTheValidFile()
+    {
+        // Arrange
+        var submission = new PomSubmission
+        {
+            Id = Guid.NewGuid(),
+            IsSubmitted = false,
+            PomFileName = "retry.csv",
+            PomFileUploadDateTime = DateTime.Now,
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileName = "original.csv",
+                FileUploadDateTime = DateTime.Now.AddMinutes(-2),
+                UploadedBy = Guid.NewGuid(),
+                FileId = Guid.NewGuid()
+            },
+        };
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+
+        _sessionManagerMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession { FileId = _fileId },
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation> { new Organisation { Id = Guid.NewGuid() } }
+                }
+            });
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Post(new SubmissionDeclarationRequest { DeclarationName = DeclarationName }) as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadCheckFileAndSubmit");
+        _submissionServiceMock.Verify(x => x.SubmitAsync(
+            It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<bool?>(), null), Times.Never);
+    }
+
     [TestCase(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved)]
     [TestCase(ServiceRoles.DelegatedPerson, EnrolmentStatuses.Approved)]
     public async Task Post_ReturnsSubmissionComplete_WhenDeclarationNameIsValid(string serviceRole, string enrolmentStatus)

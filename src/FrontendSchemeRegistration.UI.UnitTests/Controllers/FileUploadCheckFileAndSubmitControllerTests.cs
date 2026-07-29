@@ -167,6 +167,42 @@ public class FileUploadCheckFileAndSubmitControllerTests
         _userAccountServiceMock.Verify(x => x.GetAllPersonByUserId(_lastValidFileUploadedByUserId), Times.Once);
     }
 
+    // SUB-332: the declaration must name the attempt that did not make it, so the user is not silently
+    // routed to declare an older file than the one they just uploaded.
+    [Test]
+    public async Task Get_FlagsTheUnprocessedUpload_WhenARetryNeverBecameTheValidFile()
+    {
+        // Arrange
+        var submission = new PomSubmission
+        {
+            Id = _submissionId,
+            IsSubmitted = false,
+            PomFileName = "retry.csv",
+            PomFileUploadDateTime = DateTime.Now,
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileName = "original.csv",
+                UploadedBy = _lastValidFileUploadedByUserId,
+                FileUploadDateTime = DateTime.Now.AddMinutes(-2),
+                FileId = Guid.NewGuid()
+            },
+        };
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        var model = result.Model.As<FileUploadCheckFileAndSubmitViewModel>();
+        model.HasNewerUnprocessedUpload.Should().BeTrue();
+        model.UnprocessedUploadFileName.Should().Be("retry.csv");
+        model.UnprocessedUploadDateTime.Should().Be(submission.PomFileUploadDateTime);
+        model.LastValidFileName.Should().Be("original.csv");
+    }
+
     [TestCase(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, true)]
     [TestCase(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Enrolled, false)]
     [TestCase(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Invited, false)]
@@ -952,6 +988,46 @@ public class FileUploadCheckFileAndSubmitControllerTests
         result.ActionName.Should().Be("Get");
         result.ControllerName.Should().Be("FileUploadSubmissionDeclaration");
         result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(submission.Id.ToString());
+        _submissionServiceMock.Verify(x => x.SubmitAsync(
+            It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<bool?>(), null), Times.Never);
+    }
+
+    // SUB-332: the incident itself - a retry hit a Redis timeout during validation, so LastUploadedValidFile
+    // still pointed at the earlier good upload and the user declared that instead of their retry. Submission
+    // is now blocked until they upload again, for both the direct-producer and compliance-scheme routes.
+    [TestCase(OrganisationRoles.Producer)]
+    [TestCase(OrganisationRoles.ComplianceScheme)]
+    public async Task Post_BlocksSubmissionAndRedirectsToGet_WhenARetryNeverBecameTheValidFile(string organisationRole)
+    {
+        // Arrange
+        var model = new FileUploadCheckFileAndSubmitViewModel { LastValidFileId = Guid.NewGuid() };
+        var submission = new PomSubmission
+        {
+            Id = _submissionId,
+            PomFileName = "retry.csv",
+            PomFileUploadDateTime = DateTime.Now,
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileName = "original.csv",
+                UploadedBy = _lastValidFileUploadedByUserId,
+                FileUploadDateTime = DateTime.Now.AddMinutes(-2),
+                FileId = Guid.NewGuid()
+            }
+        };
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, organisationRole);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Post(model) as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be(nameof(FileUploadCheckFileAndSubmitController.Get));
+        result.ControllerName.Should().BeNull();
+        result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(submission.Id.ToString());
+
+        // Neither route may reach a submission, nor the declaration page that would perform one.
         _submissionServiceMock.Verify(x => x.SubmitAsync(
             It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<bool?>(), null), Times.Never);
     }
