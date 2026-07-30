@@ -13,7 +13,7 @@
       "section": "December Waste acceptance-year message shown against awaiting-acceptance rows.",
       "english": "Can be accepted towards {0}",
       "welsh": "",
-      "figmaUrl": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-151171&t=vPDT88raEfQ8Gbyg-4",
       "context": "Search PRNs and PERNs page: December Waste acceptance-year message shown against awaiting-acceptance rows.\nDecember Waste acceptance-year message shown against awaiting-acceptance rows.\nFeature flag(s): ShowPrn"
     },
     {
@@ -25,7 +25,7 @@
       "section": "December Waste acceptance-year message shown against awaiting-acceptance rows.",
       "english": "Can be accepted towards {0} or {1}",
       "welsh": "",
-      "figmaUrl": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-151171&t=vPDT88raEfQ8Gbyg-4",
       "context": "Search PRNs and PERNs page: December Waste acceptance-year message shown against awaiting-acceptance rows.\nDecember Waste acceptance-year message shown against awaiting-acceptance rows.\nFeature flag(s): ShowPrn"
     }
   ]
