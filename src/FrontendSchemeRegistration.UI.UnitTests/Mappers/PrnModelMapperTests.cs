@@ -34,6 +34,20 @@ public class PrnModelMapperTests
 
                     return mock.Object;
                 }
+
+                if (type == typeof(PrnDecemberWasteFlashWindowResolver))
+                {
+                    var mock = new Mock<IValueResolver<PrnModel, object, bool>>();
+                    mock.Setup(x => x.Resolve(
+                            It.IsAny<PrnModel>(),
+                            It.IsAny<object>(),
+                            It.IsAny<bool>(),
+                            It.IsAny<ResolutionContext>()))
+                        .Returns(false);
+
+                    return mock.Object;
+                }
+
                 return null!;
             });
         });

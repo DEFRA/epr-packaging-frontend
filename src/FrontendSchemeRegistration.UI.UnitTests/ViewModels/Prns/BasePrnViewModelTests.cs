@@ -62,14 +62,16 @@ namespace FrontendSchemeRegistration.UI.UnitTests.ViewModels.Prns
             sut.IsAwaitingAcceptance.Should().Be(expected);
         }
 
-        [TestCase(true, "AWAITING ACCEPTANCE", new[] { 2026, 2027 }, true)]
-        [TestCase(true, "AWAITING ACCEPTANCE", new[] { 2026 }, false)]
-        [TestCase(true, "AWAITING ACCEPTANCE", new int[] { }, false)]
-        [TestCase(false, "AWAITING ACCEPTANCE", new[] { 2026, 2027 }, false)]
-        [TestCase(true, "ACCEPTED", new[] { 2026, 2027 }, false)]
+        [TestCase(true, "AWAITING ACCEPTANCE", true, new[] { 2025 }, true)]
+        [TestCase(true, "AWAITING ACCEPTANCE", true, new[] { 2026, 2027 }, true)]
+        [TestCase(true, "AWAITING ACCEPTANCE", true, new int[] { }, false)]
+        [TestCase(true, "AWAITING ACCEPTANCE", false, new[] { 2026, 2027 }, false)]
+        [TestCase(false, "AWAITING ACCEPTANCE", true, new[] { 2026, 2027 }, false)]
+        [TestCase(true, "ACCEPTED", true, new[] { 2026, 2027 }, false)]
         public void ShouldShowDecemberWasteFlash_Returns_Expected(
             bool isDecemberWaste,
             string approvalStatus,
+            bool isInDecemberWasteFlashWindow,
             int[] availableAcceptanceYears,
             bool expected)
         {
@@ -77,6 +79,7 @@ namespace FrontendSchemeRegistration.UI.UnitTests.ViewModels.Prns
             {
                 IsDecemberWaste = isDecemberWaste,
                 ApprovalStatus = approvalStatus,
+                IsInDecemberWasteFlashWindow = isInDecemberWasteFlashWindow,
                 AvailableAcceptanceYears = availableAcceptanceYears
             };
 

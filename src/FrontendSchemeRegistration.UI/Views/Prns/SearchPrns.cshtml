@@ -104,9 +104,9 @@
 				{
 					@foreach (var prn in Model.ActivePageOfResults)
 					{
-						var showDecemberWasteFlash = prn.IsAwaitingAcceptance && prn.IsDecemberWaste;
+						var showDecemberWasteFlash = prn.ShouldShowDecemberWasteFlash;
 						var borderBottomOff = showDecemberWasteFlash ? "border-bottom-0" : null;
-						var decemberWasteFlashText =  prn.AvailableAcceptanceYears.Length switch {
+						var decemberWasteFlashText = prn.AvailableAcceptanceYears.Length switch {
 							1 => string.Format(Localizer["acceptance_year"].Value, prn.AvailableAcceptanceYears[0]),
 							2 => string.Format(Localizer["acceptance_years"].Value, prn.AvailableAcceptanceYears[0], prn.AvailableAcceptanceYears[1]),
 							_ => string.Empty

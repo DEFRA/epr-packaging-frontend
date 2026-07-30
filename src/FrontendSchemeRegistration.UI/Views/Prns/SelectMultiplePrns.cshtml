@@ -97,12 +97,15 @@
 								{
 									var prn = Model.Prns[i];
 									var showDecemberWasteFlash = prn.ShouldShowDecemberWasteFlash;
-									var decemberWasteFlashText = showDecemberWasteFlash
-										? string.Format(
+									var decemberWasteFlashText = prn.AvailableAcceptanceYears.Length switch
+									{
+										1 => string.Format(Localizer["acceptance_year"].Value, prn.AvailableAcceptanceYears[0]),
+										2 => string.Format(
 											Localizer["acceptance_years"].Value,
 											prn.AvailableAcceptanceYears[0],
-											prn.AvailableAcceptanceYears[1])
-										: string.Empty;
+											prn.AvailableAcceptanceYears[1]),
+										_ => string.Empty
+									};
 									var cellBorder = showDecemberWasteFlash && !string.IsNullOrEmpty(decemberWasteFlashText)
 										? "border-bottom-0"
 										: null;

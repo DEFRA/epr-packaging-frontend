@@ -48,14 +48,20 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
         public bool IsAwaitingAcceptance => ApprovalStatus == PrnStatus.AwaitingAcceptance;
 
         /// <summary>
+        ///     True when the user is viewing during the UK December/January flash window
+        ///     and this PRN was issued in that same immediate Dec/Jan period.
+        /// </summary>
+        public bool IsInDecemberWasteFlashWindow { get; set; }
+
+        /// <summary>
         ///     December waste flash is only shown for awaiting-acceptance December waste PRNs
-        ///     that can be accepted into either of two years.
-        ///     The two-year window is already resolved by <see cref="AvailableAcceptanceYears"/>.
+        ///     during Dec/Jan for that waste year, when at least one acceptance year is available.
         /// </summary>
         public bool ShouldShowDecemberWasteFlash =>
             IsDecemberWaste
             && IsAwaitingAcceptance
-            && AvailableAcceptanceYears.Length == 2;
+            && IsInDecemberWasteFlashWindow
+            && AvailableAcceptanceYears.Length > 0;
 
         public string ApprovalStatusDisplayCssColour => ApprovalStatus switch
         {

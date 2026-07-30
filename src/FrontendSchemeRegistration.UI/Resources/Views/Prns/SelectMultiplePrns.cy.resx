@@ -222,6 +222,9 @@
   <data name="checkboxes-hint" xml:space="preserve">
 	  <value>Dewiswch y PRNs yr hoffech eu derbyn neu eu gwrthod.</value>
   </data>
+  <data name="acceptance_year" xml:space="preserve">
+    <value>Can be accepted towards {0} recycling obligations</value>
+  </data>
   <data name="acceptance_years" xml:space="preserve">
     <value>Can be accepted towards {0} or {1} recycling obligations</value>
   </data>

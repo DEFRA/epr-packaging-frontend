@@ -222,6 +222,9 @@
   <data name="checkboxes-hint" xml:space="preserve">
 	  <value>Please select the PRNs you wish to accept or reject.</value>
   </data>
+  <data name="acceptance_year" xml:space="preserve">
+    <value>Can be accepted towards {0} recycling obligations</value>
+  </data>
   <data name="acceptance_years" xml:space="preserve">
     <value>Can be accepted towards {0} or {1} recycling obligations</value>
   </data>

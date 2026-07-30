@@ -1,5 +1,6 @@
 namespace FrontendSchemeRegistration.Application.UnitTests.Extensions;
 
+using System.Globalization;
 using Application.Extensions;
 using FluentAssertions;
 
@@ -65,13 +66,25 @@ public class DateTimeExtensionsTests
         result.Should().Be(expectedComplianceYear);
     }
 
-    [TestCase(0, 2026)]
-    [TestCase(-1, 2026)]
-    [TestCase(1, 2027)]
-    public void GetCsocSubmissionDeadline_WhenNow_ShouldBeExpected(int offset, int expectedYear)
+    [TestCase("2025-12-15", "2025-12-18", true)]
+    [TestCase("2025-12-15", "2026-01-14", true)]
+    [TestCase("2025-12-15", "2025-01-10", false)]
+    [TestCase("2026-01-31", "2025-12-18", true)]
+    [TestCase("2026-01-31", "2026-01-14", true)]
+    [TestCase("2026-01-31", "2025-01-10", false)]
+    [TestCase("2026-01-31", "2024-12-15", false)]
+    [TestCase("2026-02-01", "2025-12-18", false)]
+    [TestCase("2026-06-15", "2026-06-15", false)]
+    [TestCase("2026-12-15", "2026-12-15", true)]
+    [TestCase("2026-12-15", "2026-01-14", false)]
+    [TestCase("2027-01-12", "2026-12-15", true)]
+    [TestCase("2027-01-12", "2026-01-14", false)]
+    public void IsInImmediateDecemberJanuaryFlashWindow_Returns_Expected(
+        string nowText, string issueDateText, bool expected)
     {
-        var now = new DateTime(2026, 1, 31, 0,0,0, DateTimeKind.Unspecified).AddMilliseconds(offset);
+        var now = DateTimeOffset.Parse(nowText + "T12:00:00Z", DateTimeFormatInfo.InvariantInfo);
+        var issueDate = DateTime.Parse(issueDateText, DateTimeFormatInfo.InvariantInfo);
 
-        now.GetCsocSubmissionDeadline().Should().Be(new DateTime(expectedYear, 1, 31, 0,0,0, DateTimeKind.Unspecified));
+        now.IsInImmediateDecemberJanuaryFlashWindow(issueDate).Should().Be(expected);
     }
 }
