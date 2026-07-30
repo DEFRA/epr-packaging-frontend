@@ -86,6 +86,59 @@ markup, and that translated values do not start or end with whitespace. Use
 decoded tags such as `<strong>` in workbooks, not RESX/XML entities such as
 `&lt;strong&gt;`; the import process writes the correct RESX encoding.
 
+## December Waste profile
+
+The second profile is `december-waste`:
+
+```bash
+dotnet run --project tools/translations/cli/cli.csproj -- export --profile december-waste
+```
+
+By default this writes one workbook per December Waste page with translation entries to:
+
+```text
+translations/welsh-translations/december-waste/xlsx
+```
+
+It also writes matching deterministic review JSON files to:
+
+```text
+translations/welsh-translations/december-waste/json
+```
+
+Existing workbooks and JSON files are only overwritten when their translator
+notes or translation rows have changed, so repeated exports do not create Git
+diffs from workbook metadata alone. Treat the JSON files as generated review
+artifacts; the Excel workbooks remain the translator-facing files, and the
+profile and RESX files remain the source inputs.
+
+Export fails if a selected English RESX value starts or ends with whitespace.
+Move spacing into the Razor view or layout instead of preserving it in
+translator-owned strings.
+
+The current December Waste profile covers:
+
+- `/report-data/view-awaiting-acceptance` loading the December Waste flash label for each PRN's, determining display via `IsAwaitingAcceptance` and `IsDecemberWaste` boolean. The flash label text is created from the `AvailableAcceptanceYears` year range (`int[]`);
+- `/report-data/selected-prn/[:id]` via `PrnController`, loading the December Waste flash label for the PRN, determining display via `IsAwaitingAcceptance` and `IsDecemberWaste` boolean. The flash label text is created from the `AvailableAcceptanceYears` year range (`int[]`);
+
+To import translated workbooks:
+
+```bash
+dotnet run --project tools/translations/cli/cli.csproj -- import --profile december-waste
+```
+
+By default import reads from `translations/welsh-translations/december-waste/xlsx`. If
+you pass an export root directory, such as `translations/welsh-translations/december-waste`
+or `/tmp/epr-packaging-december-waste-translations`, import reads from its `xlsx`
+subdirectory.
+
+Blank Welsh cells preserve the existing Welsh RESX value. Conflicting non-blank translations for the same hidden translation key fail the import.
+
+Import also validates that translated values preserve source placeholders and
+markup, and that translated values do not start or end with whitespace. Use
+decoded tags such as `<strong>` in workbooks, not RESX/XML entities such as
+`&lt;strong&gt;`; the import process writes the correct RESX encoding.
+
 ## Adding profiles or pages
 
 Add or update JSON under `tools/translations/profiles`. A page entry should include:
@@ -124,14 +177,12 @@ files currently named in the profile:
 
 3. Trace each matching controller endpoint to its Razor view. For CSoC this
    currently starts with:
-
    - `ComplianceSchemeLandingController` / `/report-data/home-compliance-scheme`
    - `FrontendSchemeRegistrationController` / `/report-data/home-self-managed`
    - `PrnsObligationController` / `/report-data/manage-your-recycling-obligations`
 
 4. In those views, follow every CSoC partial, view component or localizer call,
    such as:
-
    - `Partials/Csoc/_LandingBullet`
    - `Partials/Csoc/_LandingParagraph`
    - `Partials/Csoc/_ObligationsHome`
@@ -167,17 +218,17 @@ files currently named in the profile:
    ```
 
 10. Import from the scratch export to prove the hidden translation keys still map
-   back to real source and Welsh RESX files:
+    back to real source and Welsh RESX files:
 
-   ```bash
-   dotnet run --project tools/translations/cli/cli.csproj -- import --profile csoc --input /tmp/epr-packaging-csoc-translations
-   ```
+```bash
+dotnet run --project tools/translations/cli/cli.csproj -- import --profile csoc --input /tmp/epr-packaging-csoc-translations
+```
 
 11. Once the profile is correct, regenerate the default workbooks:
 
-   ```bash
-   dotnet run --project tools/translations/cli/cli.csproj -- export --profile csoc
-   ```
+```bash
+dotnet run --project tools/translations/cli/cli.csproj -- export --profile csoc
+```
 
 Do not create Welsh translations manually. Only import or copy Welsh text from
 an approved source when the English string and UI placement match.

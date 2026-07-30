@@ -1,11 +1,6 @@
-@using FrontendSchemeRegistration.Application.Constants
-@using FrontendSchemeRegistration.UI.ViewModels.Prns
-@model PrnSearchResultListViewModel;
-@inject IStringLocalizer<PrnDataResources> PrnDataLocalizer
-
 @{
     var BackgroundColor = ViewData["BackgroundColor"]?.ToString() ?? "grey";
-    var LabelText = ViewData["LabelText"].ToString();
+    var LabelText = ViewData["LabelText"].ToString() ?? string.Empty;
 }
 
 <span class="flash-container flash-container--@BackgroundColor">
