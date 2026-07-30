@@ -6,6 +6,8 @@ public class PaymentFacadeApiEndpoints
 
     public string ProducerRegistrationFeesEndpoint { get; set; }
 
+    public string ProducerRegistrationFeesBySubmissionEndpoint { get; set; }
+
     public string ProducerResubmissionFeesEndpoint { get; set; }
 
     public string ComplianceSchemeRegistrationFeesEndpoint { get; set; }

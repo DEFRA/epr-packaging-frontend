@@ -95,7 +95,7 @@ public class PaymentCalculationServiceTests
 		_accountServiceApiClientMock = new Mock<IAccountServiceApiClient>();
 		_paymentServiceApiClientMock = new Mock<IPaymentCalculationServiceApiClient>();
 		_webApiGatewayClientMock = new Mock<IWebApiGatewayClient>();
-		var facadeOptions = Microsoft.Extensions.Options.Options.Create(new PaymentFacadeApiOptions { DownstreamScope = "https://mock/test", Endpoints = new PaymentFacadeApiEndpoints { OnlinePaymentsEndpoint = "online-payments", RegistrationFeeCalculationDetailsEndpoint = "registration-submission-data/{submissionId}/fee-calculation-details", ComplianceSchemeRegistrationFeesBySubmissionEndpoint = "compliance-scheme/registration-fee/{submissionId}" } });
+		var facadeOptions = Microsoft.Extensions.Options.Options.Create(new PaymentFacadeApiOptions { DownstreamScope = "https://mock/test", Endpoints = new PaymentFacadeApiEndpoints { OnlinePaymentsEndpoint = "online-payments", RegistrationFeeCalculationDetailsEndpoint = "registration-submission-data/{submissionId}/fee-calculation-details", ComplianceSchemeRegistrationFeesBySubmissionEndpoint = "compliance-scheme/registration-fee/{submissionId}", ProducerRegistrationFeesBySubmissionEndpoint = "producer/registration-fee/{submissionId}" } });
 		_systemUnderTest = new PaymentCalculationService(_accountServiceApiClientMock.Object, _paymentServiceApiClientMock.Object, new NullLogger<PaymentCalculationService>(), facadeOptions);
 	}
 
@@ -702,6 +702,60 @@ public class PaymentCalculationServiceTests
             .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.InternalServerError));
 
         var result = await _systemUnderTest.GetComplianceSchemeRegistrationFeesBySubmissionId(Guid.NewGuid());
+
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetProducerRegistrationFeesBySubmissionId_Ok_ReturnsResponse_AndSubstitutesSubmissionId()
+    {
+        var submissionId = Guid.NewGuid();
+        var response = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = CalculationResponse.ToJsonContent(_jsonOptions),
+        };
+        _paymentServiceApiClientMock.Setup(x => x.SendGetRequest(It.IsAny<string>())).ReturnsAsync(response);
+
+        var result = await _systemUnderTest.GetProducerRegistrationFeesBySubmissionId(submissionId);
+
+        result.Should().BeEquivalentTo(CalculationResponse);
+        _paymentServiceApiClientMock.Verify(
+            x => x.SendGetRequest($"producer/registration-fee/{submissionId}"),
+            Times.Once);
+    }
+
+    [Test]
+    public async Task GetProducerRegistrationFeesBySubmissionId_NotFound_ReturnsNull()
+    {
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.NotFound));
+
+        var result = await _systemUnderTest.GetProducerRegistrationFeesBySubmissionId(Guid.NewGuid());
+
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetProducerRegistrationFeesBySubmissionId_ClientThrows_ReturnsNull()
+    {
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .ThrowsAsync(new Exception("boom"));
+
+        var result = await _systemUnderTest.GetProducerRegistrationFeesBySubmissionId(Guid.NewGuid());
+
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetProducerRegistrationFeesBySubmissionId_ServerError_ReturnsNull()
+    {
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.InternalServerError));
+
+        var result = await _systemUnderTest.GetProducerRegistrationFeesBySubmissionId(Guid.NewGuid());
 
         result.Should().BeNull();
     }

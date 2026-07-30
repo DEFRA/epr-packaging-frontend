@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Security.Claims;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
+using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.DTOs.PaymentCalculations;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
@@ -229,19 +230,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         }
 
         var feeCalculationDetails = session.RegistrationFeeCalculationDetails[0];
-        var response = await paymentCalculationService.GetProducerRegistrationFees(new PaymentCalculationRequest
-        {
-            Regulator = session.RegulatorNation,
-            ApplicationReferenceNumber = session.ApplicationReferenceNumber,
-            IsLateFeeApplicable = session.IsLateFeeApplicable,
-            IsProducerOnlineMarketplace = feeCalculationDetails.IsOnlineMarketplace,
-            IsClosedLoopRecycling = feeCalculationDetails.IsClosedLoopRecycling,
-            NoOfSubsidiariesOnlineMarketplace = feeCalculationDetails.NumberOfSubsidiariesBeingOnlineMarketPlace,
-            NoOfSubsidiariesClosedLoopRecycling = feeCalculationDetails.NumberOfSubsidiariesBeingClosedLoopRecycling,
-            NumberOfSubsidiaries = feeCalculationDetails.NumberOfSubsidiaries,
-            ProducerType = feeCalculationDetails.OrganisationSize,
-            SubmissionDate = GetSubmissionDateForFeeCalculation(session)
-        });
+        var response = await ResolveProducerFeesResponseAsync(session, feeCalculationDetails);
 
         if (response is null)
         {
@@ -320,6 +309,35 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         }
 
         return await paymentCalculationService.GetComplianceSchemeRegistrationFees(BuildLegacyComplianceSchemeRequest(session));
+    }
+
+    private async Task<PaymentCalculationResponse?> ResolveProducerFeesResponseAsync(
+        RegistrationApplicationSession session,
+        RegistrationFeeCalculationDetails feeCalculationDetails)
+    {
+        var useSubmissionEndpoint = await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService);
+        if (useSubmissionEndpoint && session.SubmissionId is Guid submissionId)
+        {
+            var fromSubmission = await paymentCalculationService.GetProducerRegistrationFeesBySubmissionId(submissionId);
+            if (fromSubmission is not null)
+            {
+                return fromSubmission;
+            }
+        }
+
+        return await paymentCalculationService.GetProducerRegistrationFees(new PaymentCalculationRequest
+        {
+            Regulator = session.RegulatorNation,
+            ApplicationReferenceNumber = session.ApplicationReferenceNumber,
+            IsLateFeeApplicable = session.IsLateFeeApplicable,
+            IsProducerOnlineMarketplace = feeCalculationDetails.IsOnlineMarketplace,
+            IsClosedLoopRecycling = feeCalculationDetails.IsClosedLoopRecycling,
+            NoOfSubsidiariesOnlineMarketplace = feeCalculationDetails.NumberOfSubsidiariesBeingOnlineMarketPlace,
+            NoOfSubsidiariesClosedLoopRecycling = feeCalculationDetails.NumberOfSubsidiariesBeingClosedLoopRecycling,
+            NumberOfSubsidiaries = feeCalculationDetails.NumberOfSubsidiaries,
+            ProducerType = feeCalculationDetails.OrganisationSize,
+            SubmissionDate = GetSubmissionDateForFeeCalculation(session),
+        });
     }
 
     private ComplianceSchemePaymentCalculationRequest BuildLegacyComplianceSchemeRequest(RegistrationApplicationSession session)

@@ -6,6 +6,9 @@ namespace FrontendSchemeRegistration.Application.Services.Interfaces;
 public interface IPaymentCalculationService
 {
     Task<PaymentCalculationResponse?> GetProducerRegistrationFees(PaymentCalculationRequest request);
+
+    Task<PaymentCalculationResponse?> GetProducerRegistrationFeesBySubmissionId(Guid submissionId);
+
     Task<string> GetRegulatorNation(Guid? organisationId);
 
     Task<string> InitiatePayment(PaymentInitiationRequest request);
