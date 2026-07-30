@@ -113,7 +113,7 @@ public class UploadNewFileToSubmitController : Controller
             RegulatorDecision = decision.Decision,
             IsResubmissionNeeded = decision.IsResubmissionRequired,
             IsSubmittedByPersonDeleted = isSubmittedByPersonDeleted,
-            IsUploadByPersonDeleted = isSubmittedByPersonDeleted,
+            IsUploadByPersonDeleted = isUploadedByPersonDeleted,
             HasNewerUnprocessedUpload = submission.HasNewerUnprocessedUploadThanValidFile(),
             UnprocessedUploadFileName = submission.PomFileName,
             UnprocessedUploadDateTime = submission.PomFileUploadDateTime
