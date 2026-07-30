@@ -45,6 +45,8 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
 
         public string NoteType { get; set; }
 
+        public bool IsAwaitingAcceptance => ApprovalStatus == PrnStatus.AwaitingAcceptance;
+
         public string ApprovalStatusDisplayCssColour => ApprovalStatus switch
         {
 	        PrnStatus.AwaitingAcceptance => "grey",

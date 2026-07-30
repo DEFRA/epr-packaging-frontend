@@ -1,0 +1,32 @@
+{
+  "translatorNotes": [
+    "Preserve placeholders such as {0}, {1}, and format suffixes such as {2:d MMMM yyyy}.",
+    "Preserve inline HTML tags such as <strong>...</strong> where they appear."
+  ],
+  "rows": [
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Prns/SearchPrns.en.resx::acceptance_year",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Prns/SearchPrns.en.resx",
+      "resourceKey": "acceptance_year",
+      "pageId": "prns-search",
+      "route": "/report-data/view-awaiting-acceptance",
+      "section": "December Waste acceptance-year message shown against awaiting-acceptance rows.",
+      "english": "Can be accepted towards {0}",
+      "welsh": "",
+      "figmaUrl": "",
+      "context": "Search PRNs and PERNs page: December Waste acceptance-year message shown against awaiting-acceptance rows.\nDecember Waste acceptance-year message shown against awaiting-acceptance rows.\nFeature flag(s): ShowPrn"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Prns/SearchPrns.en.resx::acceptance_years",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Prns/SearchPrns.en.resx",
+      "resourceKey": "acceptance_years",
+      "pageId": "prns-search",
+      "route": "/report-data/view-awaiting-acceptance",
+      "section": "December Waste acceptance-year message shown against awaiting-acceptance rows.",
+      "english": "Can be accepted towards {0} or {1}",
+      "welsh": "",
+      "figmaUrl": "",
+      "context": "Search PRNs and PERNs page: December Waste acceptance-year message shown against awaiting-acceptance rows.\nDecember Waste acceptance-year message shown against awaiting-acceptance rows.\nFeature flag(s): ShowPrn"
+    }
+  ]
+}

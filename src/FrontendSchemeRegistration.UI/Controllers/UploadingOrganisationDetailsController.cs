@@ -50,7 +50,7 @@ public class UploadingOrganisationDetailsController : Controller
             return RedirectToFileUploadCompanyDetails(registrationYear);
         }
 
-        if (!ValidationHasCompleted(submission) || session is null)
+        if ((!ValidationHasCompleted(submission) && !HasFileErrors(submission)) || session is null)
         {
             return GetUploadingOrganisationDetailsViewResult(submissionId, registrationYear, registrationJourney);
         }

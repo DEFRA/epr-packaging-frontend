@@ -28,5 +28,17 @@ dotnet run --project tools/translations/cli/cli.csproj -- export --profile csoc 
 dotnet run --project tools/translations/cli/cli.csproj -- import --profile csoc --input /tmp/epr-packaging-csoc-translations
 ```
 
+For December waste, follow the refresh process in the translation tool README to find new
+resources and keys. Start with a broad search across UI and application code,
+then trace controller routes, feature gates, Razor views, partials and matching
+RESX resources before updating `tools/translations/profiles/december-waste.json`.
+Exports write workbooks to an `xlsx` subdirectory and matching deterministic
+review JSON sidecars to a `json` subdirectory.
+
+```bash
+dotnet run --project tools/translations/cli/cli.csproj -- export --profile december-waste --output /tmp/epr-packaging-december-waste-translations
+dotnet run --project tools/translations/cli/cli.csproj -- import --profile december-waste --input /tmp/epr-packaging-december-waste-translations
+```
+
 Do not create Welsh translations manually. Only import or copy Welsh text from
 an approved source when the English string and UI placement match.

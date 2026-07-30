@@ -210,4 +210,10 @@
   <data name="page_title_prn" xml:space="preserve">
     <value>Accept this PRN</value>
   </data>
+  <data name="acceptance_year" xml:space="preserve">
+    <value>Can be accepted towards {0}</value>
+  </data>
+  <data name="acceptance_years" xml:space="preserve">
+    <value>Can be accepted towards {0} or {1}</value>
+  </data>
 </root>
