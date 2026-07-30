@@ -83,7 +83,10 @@ public class DateTimeExtensionsTests
         string nowText, string issueDateText, bool expected)
     {
         var now = DateTimeOffset.Parse(nowText + "T12:00:00Z", DateTimeFormatInfo.InvariantInfo);
-        var issueDate = DateTime.Parse(issueDateText, DateTimeFormatInfo.InvariantInfo);
+        var issueDate = DateTime.Parse(
+            issueDateText,
+            DateTimeFormatInfo.InvariantInfo,
+            DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
 
         now.IsInImmediateDecemberJanuaryFlashWindow(issueDate).Should().Be(expected);
     }

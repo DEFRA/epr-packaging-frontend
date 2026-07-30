@@ -66,8 +66,10 @@ public class PrnDecemberWasteFlashWindowResolverTests
 
     public record FlashWindowCase(string IssueDateText, bool IsDecemberWaste, string CurrentTime, bool Expected)
     {
-        public DateTime IssueDate => DateTime.Parse(IssueDateText, DateTimeFormatInfo.InvariantInfo);
+        public DateTime IssueDate =>
+            DateTime.Parse(IssueDateText, DateTimeFormatInfo.InvariantInfo, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
 
-        public DateTime CurrentTimeStamp => DateTime.Parse(CurrentTime, DateTimeFormatInfo.InvariantInfo);
+        public DateTimeOffset CurrentTimeStamp =>
+            DateTimeOffset.Parse(CurrentTime + "T12:00:00Z", DateTimeFormatInfo.InvariantInfo);
     }
 }

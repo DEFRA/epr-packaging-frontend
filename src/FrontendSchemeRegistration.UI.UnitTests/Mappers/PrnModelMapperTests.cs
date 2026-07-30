@@ -91,6 +91,7 @@ public class PrnModelMapperTests
         result.AdditionalNotes.Should().Be("Test notes");
         result.NoteType.Should().Be(PrnConstants.PrnText);
         result.IsStatusEditable.Should().BeTrue();
+        result.IsInDecemberWasteFlashWindow.Should().BeFalse();
     }
 
     [Test]
