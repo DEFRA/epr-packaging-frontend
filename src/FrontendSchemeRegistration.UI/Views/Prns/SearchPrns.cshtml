@@ -106,8 +106,7 @@
 				{
 					@foreach (var prn in Model.ActivePageOfResults)
 					{
-						var decemberWasteEnabled = FeatureManager.IsEnabledAsync(nameof(FeatureFlags.ShowDecemberWaste)).Result;
-						var showDecemberWasteFlash = decemberWasteEnabled && prn.IsAwaitingAcceptance && prn.IsDecemberWaste;
+						var showDecemberWasteFlash = prn.IsAwaitingAcceptance && prn.IsDecemberWaste;
 
 						var borderBottomOff = showDecemberWasteFlash ? "border-bottom-0" : null;
 						var decemberWasteFlashText =  prn.AvailableAcceptanceYears.Length switch {
@@ -137,14 +136,15 @@
 									</div>
 								</td>
 							</tr>
-							
-							@if (showDecemberWasteFlash) {
-							<tr class="govuk-table__row">
-								<td class="govuk-table__cell" colspan="7">
-									@await Html.PartialAsync("../Shared/Partials/Prns/_prnFlashLabel", new ViewDataDictionary(ViewData) { { "BackgroundColor", "blue" }, { "LabelText", @decemberWasteFlashText } })
-								</td>
-							</tr>
-							}
+							<feature name="ShowDecemberWaste">
+								@if (showDecemberWasteFlash) {
+								<tr class="govuk-table__row">
+									<td class="govuk-table__cell" colspan="7">
+										@await Html.PartialAsync("../Shared/Partials/Prns/_prnFlashLabel", new ViewDataDictionary(ViewData) { { "BackgroundColor", "blue" }, { "LabelText", @decemberWasteFlashText } })
+									</td>
+								</tr>
+								}
+							</feature>
 						</tbody>
 					}
 				}
