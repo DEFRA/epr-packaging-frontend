@@ -47,7 +47,8 @@ public class SubmissionService(IWebApiGatewayClient webApiGatewayClient) : ISubm
         string? appReferenceNumber = null, bool? isResubmitted = null,
         RegistrationJourney? registrationJourney = null,
         int? submissionPeriodId = null,
-        string? regulatorNation = null)
+        string? regulatorNation = null,
+        bool notifyPaymentService = true)
     {
         var payload = new SubmissionPayload
         {
@@ -57,7 +58,8 @@ public class SubmissionService(IWebApiGatewayClient webApiGatewayClient) : ISubm
             IsResubmission = isResubmitted,
             RegistrationJourney = registrationJourney?.ToString(),
             SubmissionPeriodId = submissionPeriodId,
-            RegulatorNation = regulatorNation
+            RegulatorNation = regulatorNation,
+            NotifyPaymentService = notifyPaymentService
         };
 
         await webApiGatewayClient.SubmitAsync(submissionId, payload);

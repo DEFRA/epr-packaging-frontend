@@ -18,4 +18,6 @@ public class SubmissionPayload
     public int? SubmissionPeriodId { get; set; }
 
     public string? RegulatorNation { get; set; }
+
+    public bool NotifyPaymentService { get; set; } = true;
 }

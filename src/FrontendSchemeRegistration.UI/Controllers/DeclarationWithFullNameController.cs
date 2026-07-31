@@ -25,7 +25,8 @@ public class DeclarationWithFullNameController(
     ISessionManager<RegistrationApplicationSession> registrationApplicationSessionManager,
     ILogger<DeclarationWithFullNameController> logger,
     IRegistrationPeriodProvider registrationPeriodProvider,
-    IFeatureManager featureManager) : Controller
+    IFeatureManager featureManager,
+    IPaymentCalculationService paymentCalculationService) : Controller
 {
     private const string ViewName = "DeclarationWithFullName";
     private const string ConfirmationViewName = "CompanyDetailsConfirmation";
@@ -172,13 +173,27 @@ public class DeclarationWithFullNameController(
                     throw new ArgumentException($"RegulatorNation could not be resolved for submission ID {submissionId}");
                 }
 
+                var notifyPaymentService = true;
+                if (session.RegistrationSession.IsResubmission && submission.IsSubmitted)
+                {
+                    var feeParams = await paymentCalculationService.GetRegistrationFeeCalculationDetails(submissionId);
+                    notifyPaymentService = feeParams is { Length: > 0 };
+                    if (!notifyPaymentService)
+                    {
+                        logger.LogInformation(
+                            "Suppressing payment-service notification for legacy resubmission {SubmissionId} with no payment-service snapshot",
+                            submissionId);
+                    }
+                }
+
                 await submissionService.SubmitAsync(submissionId, organisationDetailsFileId,
                     model.FullName,
                     session.RegistrationSession.ApplicationReferenceNumber,
                     session.RegistrationSession.IsResubmission,
                     regJourney,
                     registrationApplicationSession?.SubmissionPeriodId,
-                    regulatorNation);
+                    regulatorNation,
+                    notifyPaymentService);
 
                 var postSubmitController = await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeParametersViaPaymentService)
                     ? ProcessingViewName

@@ -17,7 +17,8 @@ public interface ISubmissionService
         string? appReferenceNumber = null, bool? isResubmitted = null,
         RegistrationJourney? registrationJourney = null,
         int? submissionPeriodId = null,
-        string? regulatorNation = null);
+        string? regulatorNation = null,
+        bool notifyPaymentService = true);
 
     Task CreateRegistrationApplicationEvent(RegistrationApplicationData registrationApplicationData, string applicationReferenceNumber, bool isResubmission, SubmissionType submissionType,
         RegistrationJourney? registrationJourney);
