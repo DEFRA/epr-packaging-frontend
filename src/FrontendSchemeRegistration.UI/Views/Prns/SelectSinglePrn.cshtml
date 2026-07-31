@@ -1,13 +1,16 @@
 ﻿@using FrontendSchemeRegistration.Application.Constants
 @using FrontendSchemeRegistration.UI.Controllers.Prns
 @using FrontendSchemeRegistration.UI.ViewModels.Prns
+@using Microsoft.FeatureManagement
 @inject IStringLocalizer<PrnDataResources> PrnDataLocalizer
+@inject IFeatureManager FeatureManager
 @model PrnViewModel
 
 @{
     ViewData["Title"] = Localizer[(Model.IsPrn ? "page_title_prn" : "page_title_pern")];
     var isPdf = ViewData["IsPdf"] as bool? ?? false;
-    var showDecemberWasteFlash = Model.IsAwaitingAcceptance && Model.IsDecemberWaste;
+    var decemberWasteEnabled = FeatureManager.IsEnabledAsync(nameof(FeatureFlags.ShowDecemberWaste)).Result;
+    var showDecemberWasteFlash = decemberWasteEnabled && Model.IsAwaitingAcceptance && Model.IsDecemberWaste;
     var decemberWasteFlashText =  Model.AvailableAcceptanceYears.Length switch {
         1 => string.Format(Localizer["acceptance_year"].Value, Model.AvailableAcceptanceYears[0]),
         2 => string.Format(Localizer["acceptance_years"].Value, Model.AvailableAcceptanceYears[0], Model.AvailableAcceptanceYears[1]),
