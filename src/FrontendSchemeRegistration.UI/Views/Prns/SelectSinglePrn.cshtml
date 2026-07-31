@@ -37,6 +37,12 @@
                 <div class="govuk-heading-m">
                     @Localizer["year"]: <strong>@Html.DisplayFor(x => x.IssueYear)</strong>
                 </div>
+                @if (Model.ApprovalStatus == PrnStatus.Accepted)
+                {
+                    <div class="govuk-heading-m">
+                        @Localizer["accepted_towards_recycling_obligations", Model.ObligationYear]
+                    </div>
+                }
                 <feature name="@FeatureFlags.ShowDecemberWaste">
                     @if (Model.ShouldShowDecemberWasteFlash) {
                         <div class="govuk-table__row">

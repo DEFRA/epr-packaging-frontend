@@ -71,6 +71,8 @@ public class ObligationsTests
     [TestCase("/report-data/selected-prn/00000000-0000-0000-0000-000000000001", Language.Welsh)]
     [TestCase("/report-data/selected-prn/00000000-0000-0000-0000-000000000002", Language.English)]
     [TestCase("/report-data/selected-prn/00000000-0000-0000-0000-000000000002", Language.Welsh)]
+    [TestCase("/report-data/selected-prn/00000000-0000-0000-0000-000000000005", Language.English)]
+    [TestCase("/report-data/selected-prn/00000000-0000-0000-0000-000000000005", Language.Welsh)]
     public async Task WhenPrnsArePresent_ShouldLocalizeAsExpected(string path, string language)
     {
         await Context.Client.AuthenticateDefaultUser();

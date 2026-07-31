@@ -32,8 +32,8 @@
       "fileName": "02-select-single-prn.xlsx",
       "route": "/report-data/selected-prn/{id}",
       "view": "src/FrontendSchemeRegistration.UI/Views/Prns/SelectSinglePrn.cshtml",
-      "figmaUrl": null,
-      "notes": "Single PRN or PERN details page: December Waste acceptance-year message.",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=2012-26252",
+      "notes": "Single PRN or PERN details page: December Waste acceptance-year message and Accepted obligation-year line.",
       "featureFlags": [
         "ShowPrn"
       ],
@@ -41,10 +41,11 @@
       "resources": [
         {
           "source": "src/FrontendSchemeRegistration.UI/Resources/Views/Prns/SelectSinglePrn.en.resx",
-          "section": "December Waste acceptance-year message.",
+          "section": "December Waste acceptance-year message and Accepted obligation-year line.",
           "keys": [
             "acceptance_year",
-            "acceptance_years"
+            "acceptance_years",
+            "accepted_towards_recycling_obligations"
           ]
         }
       ]
