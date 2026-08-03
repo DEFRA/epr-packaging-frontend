@@ -16,6 +16,8 @@ public class PrnModelMapper : Profile
             .ForMember(dest => dest.ApprovalStatus,
                 opt => opt.MapFrom(src => MapStatus(src.PrnStatus)))
             .ForMember(dest => dest.AvailableAcceptanceYears, opt => opt.MapFrom<PrnAvailableAcceptanceYearsResolver>())
+            .ForMember(dest => dest.IsInDecemberWasteFlashWindow,
+                opt => opt.MapFrom<PrnDecemberWasteFlashWindowResolver>())
             .ForMember(dest => dest.PrnOrPernNumber,
                 opt => opt.MapFrom(src => src.PrnNumber))
             .ForMember(dest => dest.Material,

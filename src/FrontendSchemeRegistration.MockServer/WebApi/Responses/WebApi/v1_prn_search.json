@@ -14,7 +14,11 @@
       "prnNumber": "PRN-02",
       "materialName": "Paper/board",
       "issueDate": "2026-05-01T13:15:15",
-      "prnStatus": "AWAITINGACCEPTANCE"
+      "prnStatus": "AWAITINGACCEPTANCE",
+      "decemberWaste": true,
+      "obligationYear": "2026",
+      "issuedByOrg": "Test Reprocessor",
+      "tonnageValue": 1
     },
     {
       "id": 3,
