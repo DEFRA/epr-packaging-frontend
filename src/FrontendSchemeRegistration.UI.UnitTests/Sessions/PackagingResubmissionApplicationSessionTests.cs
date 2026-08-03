@@ -107,6 +107,49 @@ public class PackagingResubmissionApplicationSessionTests
         session.ResubmissionApplicationSubmitted.Should().BeTrue();
     }
 
+    // SUB-332: the reported task-list state - the file is uploaded, synced and paid for, but nothing has been
+    // declared for this cycle, so only the last step is outstanding. Reporting a superseded declaration
+    // against the cycle marked that step Completed and pointed its link at the confirmation page.
+    [Test]
+    public void TaskListStatuses_ShouldLeaveOnlyTheDeclarationOutstanding_WhenTheFeeIsPaidButNothingHasBeenDeclared()
+    {
+        var session = new PackagingResubmissionApplicationSession
+        {
+            ApplicationReferenceNumber = "PEPR12345S01",
+            ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+            FileReachedSynapse = true,
+            HasSubmissionSyncCompleted = true,
+            ResubmissionFeePaymentMethod = "PayByPhone",
+            ResubmissionApplicationSubmittedDate = null
+        };
+
+        session.FileUploadStatus.Should().Be(ResubmissionTaskListStatus.Completed);
+        session.PaymentViewStatus.Should().Be(ResubmissionTaskListStatus.Completed);
+        session.AdditionalDetailsStatus.Should().Be(ResubmissionTaskListStatus.NotStarted);
+        session.ResubmissionApplicationSubmitted.Should().BeFalse();
+        session.IsResubmissionInProgress.Should().BeTrue();
+    }
+
+    // SUB-332: an upload that never produced a valid file reports NotStarted, which is what keeps the upload
+    // step startable so the user can replace it. The reference number, not the status, is what keeps the
+    // cycle in progress.
+    [Test]
+    public void FileUploadStatus_ShouldBeNotStarted_WithTheCycleStillInProgress_WhenTheLatestUploadDidNotValidate()
+    {
+        var session = new PackagingResubmissionApplicationSession
+        {
+            ApplicationReferenceNumber = "PEPR12345S01",
+            ApplicationStatus = ApplicationStatusType.NotStarted,
+            FileReachedSynapse = true,
+            ResubmissionApplicationSubmittedDate = null
+        };
+
+        session.FileUploadStatus.Should().Be(ResubmissionTaskListStatus.NotStarted);
+        session.PaymentViewStatus.Should().Be(ResubmissionTaskListStatus.CanNotStartYet);
+        session.AdditionalDetailsStatus.Should().Be(ResubmissionTaskListStatus.CanNotStartYet);
+        session.IsResubmissionInProgress.Should().BeTrue();
+    }
+
     [Test]
     public void IsResubmissionComplete_ShouldBeFalse_WhenDeclaredButFeeNotPaid()
     {
