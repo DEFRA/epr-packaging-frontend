@@ -49,7 +49,9 @@ public class RegistrationApplicationDetails
     public ComplianceSchemeDto? SelectedComplianceScheme { get; set; }
     
     public LastSubmittedFileDetails LastSubmittedFile { get; set; } = new LastSubmittedFileDetails();
-    
+
     [JsonConverter( typeof(JsonStringEnumConverter))]
     public RegistrationJourney? RegistrationJourney { get; set; }
+
+    public string? LastUploadedFileBlobName { get; set; }
 }

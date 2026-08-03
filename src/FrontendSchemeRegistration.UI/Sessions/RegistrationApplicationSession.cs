@@ -80,6 +80,11 @@ public class RegistrationApplicationSession
 
     public LastSubmittedFileDetails LastSubmittedFile { get; set; } = new LastSubmittedFileDetails();
 
+    // Blob name of the latest company-details file that reached the antivirus check. Compared
+    // against the RegistrationBlobName returned by the payment-service fee endpoints so the UI
+    // does not display fees derived from a stale, previously-submitted file's snapshot.
+    public string? LastUploadedFileBlobName { get; set; }
+
     public ComplianceSchemeDto? SelectedComplianceScheme { get; set; }
     public RegistrationJourney? RegistrationJourney { get; set; }
     public int? SubmissionPeriodId { get; set; }

@@ -440,6 +440,68 @@ public class RegistrationApplicationServiceTests
     }
 
     [Test]
+    public async Task GetProducerRegistrationFees_FallsBackToLegacyPost_WhenSubmissionEndpointBlobDoesNotMatchSessionExpected()
+    {
+        // Arrange - the submission endpoint returned a snapshot for a PREVIOUS blob (payment-service
+        // consumer hasn't yet caught up). The cross-check must ignore it and fall back to the legacy
+        // POST-based calc so the display doesn't show stale fees.
+        _session.LastUploadedFileBlobName = "blob-current.csv";
+        _session.RegistrationFeeCalculationDetails = _fixture.CreateMany<RegistrationFeeCalculationDetails>(1).ToArray();
+        var submissionId = _session.SubmissionId!.Value;
+
+        var staleResponse = _fixture.Build<PaymentCalculationResponse>()
+            .With(r => r.RegistrationBlobName, "blob-previous.csv")
+            .Create();
+        var legacyResponse = _fixture.Create<PaymentCalculationResponse>();
+
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService)).ReturnsAsync(true);
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(_session);
+        _paymentCalculationServiceMock.Setup(pcs => pcs.GetProducerRegistrationFeesBySubmissionId(submissionId))
+            .ReturnsAsync(staleResponse);
+        _paymentCalculationServiceMock.Setup(pcs => pcs.GetProducerRegistrationFees(It.IsAny<PaymentCalculationRequest>()))
+            .ReturnsAsync(legacyResponse);
+
+        // Act
+        var result = await _service.GetProducerRegistrationFees(_httpSession);
+
+        // Assert
+        result.Should().NotBeNull();
+        result!.BaseFee.Should().Be(legacyResponse.ProducerRegistrationFee);
+        _paymentCalculationServiceMock.Verify(pcs => pcs.GetProducerRegistrationFeesBySubmissionId(submissionId), Times.Once);
+        _paymentCalculationServiceMock.Verify(pcs => pcs.GetProducerRegistrationFees(It.IsAny<PaymentCalculationRequest>()), Times.Once);
+    }
+
+    [Test]
+    public async Task GetComplianceSchemeRegistrationFees_FallsBackToLegacyPost_WhenSubmissionEndpointBlobDoesNotMatchSessionExpected()
+    {
+        // Arrange - same rationale as the producer variant above.
+        _session.LastUploadedFileBlobName = "blob-current.csv";
+        _session.RegistrationFeeCalculationDetails = _fixture.CreateMany<RegistrationFeeCalculationDetails>().ToArray();
+        var submissionId = _session.SubmissionId!.Value;
+
+        var staleResponse = _fixture.Build<ComplianceSchemePaymentCalculationResponse>()
+            .With(r => r.RegistrationBlobName, "blob-previous.csv")
+            .Create();
+        var legacyResponse = _fixture.Create<ComplianceSchemePaymentCalculationResponse>();
+
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService)).ReturnsAsync(true);
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(_session);
+        _paymentCalculationServiceMock.Setup(pcs => pcs.GetComplianceSchemeRegistrationFeesBySubmissionId(submissionId))
+            .ReturnsAsync(staleResponse);
+        _paymentCalculationServiceMock.Setup(pcs => pcs.GetComplianceSchemeRegistrationFees(It.IsAny<ComplianceSchemePaymentCalculationRequest>()))
+            .ReturnsAsync(legacyResponse);
+
+        // Act
+        var result = await _service.GetComplianceSchemeRegistrationFees(_httpSession);
+
+        // Assert
+        result.Should().NotBeNull();
+        result!.RegistrationFee.Should().Be(legacyResponse.ComplianceSchemeRegistrationFee);
+        _paymentCalculationServiceMock.Verify(pcs => pcs.GetComplianceSchemeRegistrationFeesBySubmissionId(submissionId), Times.Once);
+        _paymentCalculationServiceMock.Verify(pcs => pcs.GetComplianceSchemeRegistrationFees(It.IsAny<ComplianceSchemePaymentCalculationRequest>()), Times.Once);
+    }
+
+    [Test]
     public async Task GetComplianceSchemeRegistrationFees_ShouldUse_IsNewJoiner_For_LateFee_WhenPaymentCalculationServiceReturnsResponse()
     {
         // Arrange
@@ -899,7 +961,13 @@ public class RegistrationApplicationServiceTests
         existingDetails.SubmissionId = submissionId;
         var snapshotDetails = new[]
         {
-            new FrontendSchemeRegistration.Application.DTOs.RegistrationFeeCalculationDetails { OrganisationId = "ORG-S", OrganisationSize = "Large", NationId = 1 },
+            new FrontendSchemeRegistration.Application.DTOs.RegistrationFeeCalculationDetails
+            {
+                OrganisationId = "ORG-S",
+                OrganisationSize = "Large",
+                NationId = 1,
+                RegistrationBlobName = existingDetails.LastUploadedFileBlobName,
+            },
         };
 
         _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(_session);
@@ -3479,6 +3547,52 @@ public class RegistrationApplicationServiceTests
 
         // Assert
         result.Should().BeFalse();
+        _sessionManagerMock.Verify(sm => sm.SaveSessionAsync(_httpSession, It.IsAny<RegistrationApplicationSession>()), Times.Never);
+    }
+
+    [Test]
+    public async Task TryPopulateRegistrationFeeSnapshotAsync_SnapshotBlobMatchesSessionExpected_PopulatesAndReturnsTrue()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var snapshot = new[] { new RegistrationFeeCalculationDetails { RegistrationBlobName = "blob-current.csv" } };
+        var existingSession = new RegistrationApplicationSession { LastUploadedFileBlobName = "blob-current.csv" };
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(existingSession);
+        _paymentCalculationServiceMock
+            .Setup(s => s.GetRegistrationFeeCalculationDetails(submissionId))
+            .ReturnsAsync(snapshot);
+
+        // Act
+        var result = await _service.TryPopulateRegistrationFeeSnapshotAsync(_httpSession, submissionId, CancellationToken.None);
+
+        // Assert
+        result.Should().BeTrue();
+        existingSession.RegistrationFeeCalculationDetails.Should().BeSameAs(snapshot);
+        _sessionManagerMock.Verify(sm => sm.SaveSessionAsync(_httpSession, existingSession), Times.Once);
+    }
+
+    [Test]
+    public async Task TryPopulateRegistrationFeeSnapshotAsync_SnapshotBlobMismatchesSessionExpected_ReturnsFalseSoPollingRetries()
+    {
+        // Arrange - the payment-service consumer hasn't yet processed the current blob's message; the
+        // endpoint returns the PREVIOUS submission's snapshot. The cross-check must reject it so the
+        // frontend keeps polling instead of displaying stale fees.
+        var submissionId = Guid.NewGuid();
+        var stalePreviousSnapshot = new[] { new RegistrationFeeCalculationDetails { RegistrationBlobName = "blob-previous.csv" } };
+        var existingSession = new RegistrationApplicationSession { LastUploadedFileBlobName = "blob-current.csv" };
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(existingSession);
+        _paymentCalculationServiceMock
+            .Setup(s => s.GetRegistrationFeeCalculationDetails(submissionId))
+            .ReturnsAsync(stalePreviousSnapshot);
+
+        // Act
+        var result = await _service.TryPopulateRegistrationFeeSnapshotAsync(_httpSession, submissionId, CancellationToken.None);
+
+        // Assert
+        result.Should().BeFalse();
+        existingSession.RegistrationFeeCalculationDetails.Should().BeNull();
         _sessionManagerMock.Verify(sm => sm.SaveSessionAsync(_httpSession, It.IsAny<RegistrationApplicationSession>()), Times.Never);
     }
 
