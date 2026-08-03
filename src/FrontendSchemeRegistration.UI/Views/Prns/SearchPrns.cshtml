@@ -1,9 +1,7 @@
 ﻿@using FrontendSchemeRegistration.UI.Controllers.Prns
 @using FrontendSchemeRegistration.UI.ViewModels.Prns
-@using Microsoft.FeatureManagement
 @inject IStringLocalizer<PrnDataResources> PrnDataLocalizer
 @inject FrontendSchemeRegistration.UI.Resources.IPrnDataResourcesLocalizer PrnDataResourcesLocalizer
-@inject IFeatureManager FeatureManager
 @model PrnSearchResultListViewModel
 @{
 	ViewData["Title"] = Localizer["search_prns_and_perns"];
@@ -136,7 +134,7 @@
 									</div>
 								</td>
 							</tr>
-							<feature name="ShowDecemberWaste">
+							<feature name="@FeatureFlags.ShowDecemberWaste">
 								@if (showDecemberWasteFlash) {
 								<tr class="govuk-table__row">
 									<td class="govuk-table__cell" colspan="7">

@@ -1,9 +1,7 @@
 ﻿@using FrontendSchemeRegistration.Application.Constants
 @using FrontendSchemeRegistration.UI.Controllers.Prns
 @using FrontendSchemeRegistration.UI.ViewModels.Prns
-@using Microsoft.FeatureManagement
 @inject IStringLocalizer<PrnDataResources> PrnDataLocalizer
-@inject IFeatureManager FeatureManager
 @model PrnViewModel
 
 @{
@@ -43,7 +41,7 @@
                 <div class="govuk-heading-m">
                     @Localizer["year"]: <strong>@Html.DisplayFor(x => x.IssueYear)</strong>
                 </div>
-                <feature name="ShowDecemberWaste">
+                <feature name="@FeatureFlags.ShowDecemberWaste">
                     @if (showDecemberWasteFlash) {
                         <div class="govuk-table__row">
                             @await Html.PartialAsync("../Shared/Partials/Prns/_prnFlashLabel", new ViewDataDictionary(ViewData) { { "BackgroundColor", "blue" }, { "LabelText", @decemberWasteFlashText } })
