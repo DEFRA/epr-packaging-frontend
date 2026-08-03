@@ -7,8 +7,8 @@
 @{
     ViewData["Title"] = Localizer[(Model.IsPrn ? "page_title_prn" : "page_title_pern")];
     var isPdf = ViewData["IsPdf"] as bool? ?? false;
-    var showDecemberWasteFlash = Model.IsAwaitingAcceptance && Model.IsDecemberWaste;
-    var decemberWasteFlashText =  Model.AvailableAcceptanceYears.Length switch {
+    var showDecemberWasteFlash = Model.ShouldShowDecemberWasteFlash;
+    var decemberWasteFlashText = Model.AvailableAcceptanceYears.Length switch {
         1 => string.Format(Localizer["acceptance_year"].Value, Model.AvailableAcceptanceYears[0]),
         2 => string.Format(Localizer["acceptance_years"].Value, Model.AvailableAcceptanceYears[0], Model.AvailableAcceptanceYears[1]),
         _ => string.Empty
@@ -41,11 +41,11 @@
                 <div class="govuk-heading-m">
                     @Localizer["year"]: <strong>@Html.DisplayFor(x => x.IssueYear)</strong>
                 </div>
-                @if (showDecemberWasteFlash) {
+                @if (showDecemberWasteFlash && !string.IsNullOrEmpty(decemberWasteFlashText)) {
                     <div class="govuk-table__row">
-                        @await Html.PartialAsync("../Shared/Partials/Prns/_prnFlashLabel", new ViewDataDictionary(ViewData) { { "BackgroundColor", "blue" }, { "LabelText", @decemberWasteFlashText } })
+                        @await Html.PartialAsync("../Shared/Partials/Prns/_prnFlashLabel", new ViewDataDictionary(ViewData) { { "BackgroundColor", "blue" }, { "LabelText", decemberWasteFlashText } })
                     </div>
-                }         
+                }
             </div>
             @if (Model.IsDecemberWaste)
             {

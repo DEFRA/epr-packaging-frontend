@@ -1,6 +1,6 @@
 .prn-responsive-table {
-  tbody.govuk-table__body:hover {
-      background-color: #f1f1f1;
+  td.govuk-table__cell.border-bottom-0 {
+    border-bottom: 0;
   }
 
   tr.govuk-table__row.border-bottom-0 {
@@ -13,20 +13,34 @@
 
   td.govuk-table__cell:has(.flash-container) {
     padding-left: 0;
+    overflow: visible;
 
     @include govuk-media-query($from: tablet) {
       padding-left: 0.5rem;
     }
   }
+
+  .govuk-table__row:has(+ .december-waste-flash-row):hover + .december-waste-flash-row,
+  .govuk-table__row:has(+ .december-waste-flash-row:hover) {
+    background-color: #f1f1f1;
+  }
+
+  @include govuk-media-query($until: tablet) {
+    tr:has(> .govuk-table__cell.border-bottom-0) {
+      border-bottom: 0;
+    }
+  }
 }
 .flash-container {
   display: inline-block;
+  width: max-content;
   @include govuk-font($size: 16, $weight: normal);
   line-height: 1.25rem;
   margin-bottom: 0.3125rem;
   padding: 0.3125rem 0.5rem 0.25rem 0.5rem;
   text-align: left;
   text-transform: none;
+  white-space: nowrap;
 }
 .flash-container--blue {
   color: #0c2d4a;

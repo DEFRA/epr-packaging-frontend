@@ -131,14 +131,16 @@ public static class WebApi
                 .WithHeader("Content-Type", "application/json")
                 .WithBodyAsJson(new
                 {
-                    id = 1,
-                    externalId = "00000000-0000-0000-0000-000000000001",
+                    id = 2,
+                    externalId = "00000000-0000-0000-0000-000000000002",
                     prnNumber = "PRN-02",
                     materialName = "Paper/board",
                     issueDate = "2026-05-01T13:15:15",
                     prnStatus = "AWAITINGACCEPTANCE",
                     tonnageValue = 1,
-                    obligationYear = "2026"
+                    obligationYear = "2026",
+                    decemberWaste = true,
+                    issuedByOrg = "Test Reprocessor"
                 }));
 
         server.Given(Request.Create().UsingGet().WithPath("/api/v1/prn/00000000-0000-0000-0000-000000000003"))
