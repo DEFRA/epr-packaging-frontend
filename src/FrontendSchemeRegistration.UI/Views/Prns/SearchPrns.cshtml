@@ -104,7 +104,7 @@
 				{
 					@foreach (var prn in Model.ActivePageOfResults)
 					{
-						var showDecemberWasteFlash = prn.IsAwaitingAcceptance && prn.IsDecemberWaste;
+						var showDecemberWasteFlash = prn.ShouldShowDecemberWasteFlash;
 
 						var borderBottomOff = showDecemberWasteFlash ? "border-bottom-0" : null;
 						var decemberWasteFlashText = prn.AvailableAcceptanceYears.Length switch {
