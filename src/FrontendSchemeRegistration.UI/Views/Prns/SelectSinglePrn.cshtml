@@ -41,11 +41,13 @@
                 <div class="govuk-heading-m">
                     @Localizer["year"]: <strong>@Html.DisplayFor(x => x.IssueYear)</strong>
                 </div>
-                @if (showDecemberWasteFlash && !string.IsNullOrEmpty(decemberWasteFlashText)) {
-                    <div class="govuk-table__row">
-                        @await Html.PartialAsync("../Shared/Partials/Prns/_prnFlashLabel", new ViewDataDictionary(ViewData) { { "BackgroundColor", "blue" }, { "LabelText", decemberWasteFlashText } })
-                    </div>
-                }
+                <feature name="@FeatureFlags.ShowDecemberWaste">
+                    @if (showDecemberWasteFlash) {
+                        <div class="govuk-table__row">
+                            @await Html.PartialAsync("../Shared/Partials/Prns/_prnFlashLabel", new ViewDataDictionary(ViewData) { { "BackgroundColor", "blue" }, { "LabelText", @decemberWasteFlashText } })
+                        </div>
+                    }
+                </feature>
             </div>
             @if (Model.IsDecemberWaste)
             {
