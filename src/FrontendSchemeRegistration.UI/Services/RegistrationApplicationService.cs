@@ -63,28 +63,37 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             return;
         }
 
-        var snapshotDetails = await paymentCalculationService.GetRegistrationFeeCalculationDetails(session.SubmissionId.Value);
+        var submissionId = session.SubmissionId.Value;
+        var snapshotDetails = await paymentCalculationService.GetRegistrationFeeCalculationDetails(submissionId);
         if (snapshotDetails is null)
         {
             return;
         }
 
         var returnedBlob = snapshotDetails.FirstOrDefault()?.RegistrationBlobName;
-        if (!SnapshotIsForExpectedBlob(returnedBlob, session.LastUploadedFileBlobName))
+        var expectedBlob = await GetExpectedBlobNameAsync(submissionId);
+        if (!SnapshotIsForExpectedBlob(returnedBlob, expectedBlob))
         {
             logger.LogInformation(
                 "Ignoring stale fee snapshot for SubmissionId {SubmissionId}: expected blob {Expected} but got {Returned}.",
-                session.SubmissionId, session.LastUploadedFileBlobName, returnedBlob);
+                submissionId, expectedBlob, returnedBlob);
             return;
         }
 
         session.RegistrationFeeCalculationDetails = snapshotDetails;
     }
 
+    // Authoritative source for the file the frontend is currently expecting fees for:
+    // GET /api/v1/submissions/{id} returns the antivirus-result blob name on LastUploadedValidFiles.
+    // Fetched on demand at every cross-check so we never carry stale session/DTO copies.
+    private async Task<string?> GetExpectedBlobNameAsync(Guid submissionId)
+    {
+        var submission = await _submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
+        return submission?.LastUploadedValidFiles?.CompanyDetailsBlobName;
+    }
+
     // Returns true when the returned snapshot corresponds to the file the frontend expects fees for.
-    // When the session has no expected blob (legacy session, or backend hasn't populated the field
-    // yet), the check falls through to true so that behaviour is unchanged for callers that predate
-    // the cross-check.
+    // A null expected value (no valid file yet) falls through to true — defensive.
     private static bool SnapshotIsForExpectedBlob(string? returnedBlob, string? expectedBlob)
     {
         if (string.IsNullOrEmpty(expectedBlob))
@@ -178,7 +187,6 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         session.RegistrationApplicationSubmittedDate = registrationApplicationDetails.RegistrationApplicationSubmittedDate;
         session.RegistrationApplicationSubmittedComment = registrationApplicationDetails.RegistrationApplicationSubmittedComment;
         session.RegistrationFeeCalculationDetails = registrationApplicationDetails.RegistrationFeeCalculationDetails;
-        session.LastUploadedFileBlobName = registrationApplicationDetails.LastUploadedFileBlobName;
 
         await TryHydrateRegistrationFeeFromSnapshot(session);
 
@@ -328,16 +336,17 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         if (useSubmissionEndpoint && session.SubmissionId is Guid submissionId)
         {
             var fromSubmission = await paymentCalculationService.GetComplianceSchemeRegistrationFeesBySubmissionId(submissionId);
-            if (fromSubmission is not null && SnapshotIsForExpectedBlob(fromSubmission.RegistrationBlobName, session.LastUploadedFileBlobName))
-            {
-                return fromSubmission;
-            }
-
             if (fromSubmission is not null)
             {
+                var expectedBlob = await GetExpectedBlobNameAsync(submissionId);
+                if (SnapshotIsForExpectedBlob(fromSubmission.RegistrationBlobName, expectedBlob))
+                {
+                    return fromSubmission;
+                }
+
                 logger.LogInformation(
                     "Ignoring stale compliance-scheme fee response for SubmissionId {SubmissionId}: expected blob {Expected} but got {Returned}.",
-                    submissionId, session.LastUploadedFileBlobName, fromSubmission.RegistrationBlobName);
+                    submissionId, expectedBlob, fromSubmission.RegistrationBlobName);
             }
         }
 
@@ -352,16 +361,17 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         if (useSubmissionEndpoint && session.SubmissionId is Guid submissionId)
         {
             var fromSubmission = await paymentCalculationService.GetProducerRegistrationFeesBySubmissionId(submissionId);
-            if (fromSubmission is not null && SnapshotIsForExpectedBlob(fromSubmission.RegistrationBlobName, session.LastUploadedFileBlobName))
-            {
-                return fromSubmission;
-            }
-
             if (fromSubmission is not null)
             {
+                var expectedBlob = await GetExpectedBlobNameAsync(submissionId);
+                if (SnapshotIsForExpectedBlob(fromSubmission.RegistrationBlobName, expectedBlob))
+                {
+                    return fromSubmission;
+                }
+
                 logger.LogInformation(
                     "Ignoring stale producer fee response for SubmissionId {SubmissionId}: expected blob {Expected} but got {Returned}.",
-                    submissionId, session.LastUploadedFileBlobName, fromSubmission.RegistrationBlobName);
+                    submissionId, expectedBlob, fromSubmission.RegistrationBlobName);
             }
         }
 
@@ -515,17 +525,17 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             return false;
         }
 
-        var session = await sessionManager.GetSessionAsync(httpSession) ?? new RegistrationApplicationSession();
-
         var returnedBlob = snapshot.FirstOrDefault()?.RegistrationBlobName;
-        if (!SnapshotIsForExpectedBlob(returnedBlob, session.LastUploadedFileBlobName))
+        var expectedBlob = await GetExpectedBlobNameAsync(submissionId);
+        if (!SnapshotIsForExpectedBlob(returnedBlob, expectedBlob))
         {
             logger.LogInformation(
                 "Ignoring stale fee snapshot for SubmissionId {SubmissionId}: expected blob {Expected} but got {Returned}. Polling will retry.",
-                submissionId, session.LastUploadedFileBlobName, returnedBlob);
+                submissionId, expectedBlob, returnedBlob);
             return false;
         }
 
+        var session = await sessionManager.GetSessionAsync(httpSession) ?? new RegistrationApplicationSession();
         session.RegistrationFeeCalculationDetails = snapshot;
         await sessionManager.SaveSessionAsync(httpSession, session);
         return true;

@@ -52,6 +52,4 @@ public class RegistrationApplicationDetails
 
     [JsonConverter( typeof(JsonStringEnumConverter))]
     public RegistrationJourney? RegistrationJourney { get; set; }
-
-    public string? LastUploadedFileBlobName { get; set; }
 }
