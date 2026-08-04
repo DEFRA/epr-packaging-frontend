@@ -1,6 +1,8 @@
 ﻿@using FrontendSchemeRegistration.UI.Controllers.Prns
 @using FrontendSchemeRegistration.UI.ViewModels.Prns
+@using Microsoft.FeatureManagement
 @inject FrontendSchemeRegistration.UI.Resources.IPrnDataResourcesLocalizer PrnDataResourcesLocalizer
+@inject IFeatureManager _featureManager
 
 @model AwaitingAcceptancePrnsViewModel
 
@@ -8,6 +10,7 @@
     ViewData["Title"] = Localizer["page_title"];
     var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
     var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer);
+	var isDecemberWasteFeatureEnabled = _featureManager.IsEnabledAsync(FeatureFlags.ShowDecemberWaste).Result;
 }
 
 <main class="govuk-main-wrapper govuk-!-padding-top-4" id="select-multiple-prns">
@@ -99,7 +102,7 @@
 									var prn = Model.Prns[i];
 									var showDecemberWasteFlash = !prn.ShouldShowDecemberWasteFlash; 
 									var decemberWasteFlashText = Localizer.DecemberWasteFlashText(prn.AvailableAcceptanceYears);
-									var cellBorder = showDecemberWasteFlash && !string.IsNullOrEmpty(decemberWasteFlashText)
+									var cellBorder = isDecemberWasteFeatureEnabled && showDecemberWasteFlash && !string.IsNullOrEmpty(decemberWasteFlashText)
 										? "border-bottom-0"
 										: null;
 

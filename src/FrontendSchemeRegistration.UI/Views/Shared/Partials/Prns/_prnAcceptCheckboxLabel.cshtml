@@ -7,6 +7,9 @@
     var index = (int)ViewData["index"];
     var checkBoxId = string.Concat("chkBoxSelectPrn_", Model.Prns[index].NoteType, "_", Model.Prns[index].ExternalId);
 }
+
+@Html.CheckBoxFor(x => x.Prns[index].IsSelected, new { @id = checkBoxId, @class = "govuk-checkboxes__input" })													
+
 <label class="govuk-label govuk-checkboxes__label" for=@checkBoxId>
     @Html.ActionLink(Model.Prns[index].PrnOrPernNumber, nameof(PrnsController.SelectSinglePrn), "Prns", new { id = Model.Prns[index].ExternalId },
         new
