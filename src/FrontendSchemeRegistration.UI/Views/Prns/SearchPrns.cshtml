@@ -9,7 +9,7 @@
 	ViewData["Title"] = Localizer["search_prns_and_perns"];
 	var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
 	var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer);
-	var decemberWasteEnabled = FeatureManager.IsEnabledAsync(FeatureFlags.ShowDecemberWaste).Result;
+	var decemberWasteEnabled = await FeatureManager.IsEnabledAsync(FeatureFlags.ShowDecemberWaste);
 }
 <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content">
 	<div class="govuk-grid-row">
@@ -108,10 +108,9 @@
 					@foreach (var prn in Model.ActivePageOfResults)
 					{
 						var decemberWasteFlashText = Localizer.DecemberWasteFlashText(prn.AvailableAcceptanceYears);
-						var showDecemberWasteFlash = decemberWasteEnabled
-							&& prn.ShouldShowDecemberWasteFlash
+						var showDecemberWasteFlash = prn.ShouldShowDecemberWasteFlash
 							&& !string.IsNullOrEmpty(decemberWasteFlashText);
-						var borderBottomOff = showDecemberWasteFlash ? "border-bottom-0" : null;
+						var borderBottomOff = decemberWasteEnabled && showDecemberWasteFlash ? "border-bottom-0" : null;
 
 						<tbody class="govuk-table__body">
 							<tr class="govuk-table__row @borderBottomOff">

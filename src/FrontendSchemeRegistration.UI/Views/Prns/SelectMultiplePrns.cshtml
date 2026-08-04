@@ -9,7 +9,7 @@
     ViewData["Title"] = Localizer["page_title"];
     var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
     var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer);
-    var decemberWasteEnabled = FeatureManager.IsEnabledAsync(FeatureFlags.ShowDecemberWaste).Result;
+    var decemberWasteEnabled = await FeatureManager.IsEnabledAsync(FeatureFlags.ShowDecemberWaste);
 }
 
 <main class="govuk-main-wrapper govuk-!-padding-top-4" id="select-multiple-prns">
@@ -100,10 +100,9 @@
 								{
 									var prn = Model.Prns[i];
 									var decemberWasteFlashText = Localizer.DecemberWasteFlashText(prn.AvailableAcceptanceYears);
-									var showDecemberWasteFlash = decemberWasteEnabled
-										&& prn.ShouldShowDecemberWasteFlash
+									var showDecemberWasteFlash = prn.ShouldShowDecemberWasteFlash
 										&& !string.IsNullOrEmpty(decemberWasteFlashText);
-									var cellBorder = showDecemberWasteFlash ? "border-bottom-0" : null;
+									var cellBorder = decemberWasteEnabled && showDecemberWasteFlash ? "border-bottom-0" : null;
 
 									<tr class="govuk-table__row">
 										@Html.HiddenFor(x => x.Prns[i].ExternalId)

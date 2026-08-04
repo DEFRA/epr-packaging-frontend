@@ -14,7 +14,7 @@
       "english": "Can be accepted towards {0}",
       "welsh": "",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=2012-26252",
-      "context": "Single PRN or PERN details page: December Waste acceptance-year message and Accepted obligation-year line.\nDecember Waste acceptance-year message and Accepted obligation-year line.\nFeature flag(s): ShowPrn"
+      "context": "Single PRN or PERN details page: December Waste acceptance-year message and Accepted obligation-year line.\nDecember Waste acceptance-year message and Accepted obligation-year line.\nFeature flag(s): ShowPrn, ShowDecemberWaste"
     },
     {
       "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Prns/SelectSinglePrn.en.resx::acceptance_years",
@@ -26,7 +26,7 @@
       "english": "Can be accepted towards {0} or {1}",
       "welsh": "",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=2012-26252",
-      "context": "Single PRN or PERN details page: December Waste acceptance-year message and Accepted obligation-year line.\nDecember Waste acceptance-year message and Accepted obligation-year line.\nFeature flag(s): ShowPrn"
+      "context": "Single PRN or PERN details page: December Waste acceptance-year message and Accepted obligation-year line.\nDecember Waste acceptance-year message and Accepted obligation-year line.\nFeature flag(s): ShowPrn, ShowDecemberWaste"
     },
     {
       "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Prns/SelectSinglePrn.en.resx::accepted_towards_recycling_obligations",
@@ -38,7 +38,7 @@
       "english": "Accepted towards {0} recycling obligations",
       "welsh": "",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=2012-26252",
-      "context": "Single PRN or PERN details page: December Waste acceptance-year message and Accepted obligation-year line.\nDecember Waste acceptance-year message and Accepted obligation-year line.\nFeature flag(s): ShowPrn"
+      "context": "Single PRN or PERN details page: December Waste acceptance-year message and Accepted obligation-year line.\nDecember Waste acceptance-year message and Accepted obligation-year line.\nFeature flag(s): ShowPrn, ShowDecemberWaste"
     }
   ]
 }

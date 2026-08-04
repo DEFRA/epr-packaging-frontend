@@ -9,6 +9,8 @@
     var isPdf = ViewData["IsPdf"] as bool? ?? false;
 
     var decemberWasteFlashText = Localizer.DecemberWasteFlashText(Model.AvailableAcceptanceYears);
+    var showDecemberWasteFlash = Model.ShouldShowDecemberWasteFlash
+        && !string.IsNullOrEmpty(decemberWasteFlashText);
 }
 
 @{
@@ -44,7 +46,8 @@
                             @Localizer["accepted_towards_recycling_obligations", Model.ObligationYear]
                         </div>
                     }
-                    @if (Model.ShouldShowDecemberWasteFlash) {
+                    @if (showDecemberWasteFlash)
+                    {
                         <div class="govuk-table__row">
                             @await Html.PartialAsync("../Shared/Partials/Prns/_prnFlashLabel", new ViewDataDictionary(ViewData) { { "BackgroundColor", "blue" }, { "LabelText", @decemberWasteFlashText } })
                         </div>

@@ -13,7 +13,8 @@
       "figmaUrl": null,
       "notes": "Search PRNs and PERNs page: December Waste acceptance-year message shown against awaiting-acceptance rows.",
       "featureFlags": [
-        "ShowPrn"
+        "ShowPrn",
+        "ShowDecemberWaste"
       ],
       "appSettings": {},
       "resources": [
@@ -35,7 +36,8 @@
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=2012-26252",
       "notes": "Single PRN or PERN details page: December Waste acceptance-year message and Accepted obligation-year line.",
       "featureFlags": [
-        "ShowPrn"
+        "ShowPrn",
+        "ShowDecemberWaste"
       ],
       "appSettings": {},
       "resources": [
