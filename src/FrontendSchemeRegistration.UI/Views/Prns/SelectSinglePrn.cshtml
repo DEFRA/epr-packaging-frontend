@@ -37,13 +37,13 @@
                 <div class="govuk-heading-m">
                     @Localizer["year"]: <strong>@Html.DisplayFor(x => x.IssueYear)</strong>
                 </div>
-                @if (Model.ApprovalStatus == PrnStatus.Accepted)
-                {
-                    <div class="govuk-heading-m">
-                        @Localizer["accepted_towards_recycling_obligations", Model.ObligationYear]
-                    </div>
-                }
                 <feature name="@FeatureFlags.ShowDecemberWaste">
+                    @if (Model.ApprovalStatus == PrnStatus.Accepted)
+                    {
+                        <div class="govuk-heading-m">
+                            @Localizer["accepted_towards_recycling_obligations", Model.ObligationYear]
+                        </div>
+                    }
                     @if (Model.ShouldShowDecemberWasteFlash) {
                         <div class="govuk-table__row">
                             @await Html.PartialAsync("../Shared/Partials/Prns/_prnFlashLabel", new ViewDataDictionary(ViewData) { { "BackgroundColor", "blue" }, { "LabelText", @decemberWasteFlashText } })

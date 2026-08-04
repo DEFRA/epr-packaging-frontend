@@ -17,7 +17,12 @@ public class ObligationsTests
     [SetUp]
     public void SetUp()
     {
-        Context.SetUp(overrideSession: true);
+        Context.SetUp(
+            overrideSession: true,
+            additionalConfig: new Dictionary<string, string?>
+            {
+                { "FeatureManagement:ShowDecemberWaste", "true" }
+            });
         
         Session.TryAdd("/report-data/accept-bulk", sessionStore =>
         {

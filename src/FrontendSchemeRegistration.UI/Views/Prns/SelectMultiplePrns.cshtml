@@ -1,12 +1,15 @@
 ﻿@using FrontendSchemeRegistration.UI.Controllers.Prns
 @using FrontendSchemeRegistration.UI.ViewModels.Prns
+@using Microsoft.FeatureManagement
 @inject FrontendSchemeRegistration.UI.Resources.IPrnDataResourcesLocalizer PrnDataResourcesLocalizer
+@inject IFeatureManager FeatureManager
 @model AwaitingAcceptancePrnsViewModel
 
 @{
     ViewData["Title"] = Localizer["page_title"];
     var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
     var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer);
+    var decemberWasteEnabled = FeatureManager.IsEnabledAsync(FeatureFlags.ShowDecemberWaste).Result;
 }
 
 <main class="govuk-main-wrapper govuk-!-padding-top-4" id="select-multiple-prns">
@@ -96,19 +99,11 @@
 								@for (var i = 0; i < Model.Prns.Count; i++)
 								{
 									var prn = Model.Prns[i];
-									var showDecemberWasteFlash = prn.ShouldShowDecemberWasteFlash;
-									var decemberWasteFlashText = prn.AvailableAcceptanceYears.Length switch
-									{
-										1 => string.Format(Localizer["acceptance_year"].Value, prn.AvailableAcceptanceYears[0]),
-										2 => string.Format(
-											Localizer["acceptance_years"].Value,
-											prn.AvailableAcceptanceYears[0],
-											prn.AvailableAcceptanceYears[1]),
-										_ => string.Empty
-									};
-									var cellBorder = showDecemberWasteFlash && !string.IsNullOrEmpty(decemberWasteFlashText)
-										? "border-bottom-0"
-										: null;
+									var decemberWasteFlashText = Localizer.DecemberWasteFlashText(prn.AvailableAcceptanceYears);
+									var showDecemberWasteFlash = decemberWasteEnabled
+										&& prn.ShouldShowDecemberWasteFlash
+										&& !string.IsNullOrEmpty(decemberWasteFlashText);
+									var cellBorder = showDecemberWasteFlash ? "border-bottom-0" : null;
 
 									<tr class="govuk-table__row">
 										@Html.HiddenFor(x => x.Prns[i].ExternalId)
@@ -157,14 +152,16 @@
 											}
 										</td>
 									</tr>
-									@if (showDecemberWasteFlash && !string.IsNullOrEmpty(decemberWasteFlashText))
-									{
-										<tr class="govuk-table__row december-waste-flash-row">
-											<td class="govuk-table__cell" colspan="7">
-												@await Html.PartialAsync("../Shared/Partials/Prns/_prnFlashLabel", new ViewDataDictionary(ViewData) { { "BackgroundColor", "blue" }, { "LabelText", decemberWasteFlashText } })
-											</td>
-										</tr>
-									}
+									<feature name="@FeatureFlags.ShowDecemberWaste">
+										@if (showDecemberWasteFlash)
+										{
+											<tr class="govuk-table__row december-waste-flash-row">
+												<td class="govuk-table__cell" colspan="7">
+													@await Html.PartialAsync("../Shared/Partials/Prns/_prnFlashLabel", new ViewDataDictionary(ViewData) { { "BackgroundColor", "blue" }, { "LabelText", decemberWasteFlashText } })
+												</td>
+											</tr>
+										}
+									</feature>
 								}
 								</tbody>
 							</table>
