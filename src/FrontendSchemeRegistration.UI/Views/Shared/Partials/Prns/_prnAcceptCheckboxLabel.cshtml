@@ -1,0 +1,16 @@
+@using FrontendSchemeRegistration.UI.Controllers.Prns
+@using FrontendSchemeRegistration.UI.ViewModels.Prns
+
+@model AwaitingAcceptancePrnsViewModel
+
+@{
+    var index = (int)ViewData["index"];
+    var checkBoxId = ViewData["checkBoxId"];
+}
+<label class="govuk-label govuk-checkboxes__label" for=@checkBoxId>
+    @Html.ActionLink(Model.Prns[index].PrnOrPernNumber, nameof(PrnsController.SelectSinglePrn), "Prns", new { id = Model.Prns[index].ExternalId },
+        new
+        {
+            @class = "govuk-link"
+        })
+</label>

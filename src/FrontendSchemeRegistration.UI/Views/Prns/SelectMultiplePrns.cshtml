@@ -1,6 +1,7 @@
 ﻿@using FrontendSchemeRegistration.UI.Controllers.Prns
 @using FrontendSchemeRegistration.UI.ViewModels.Prns
 @inject FrontendSchemeRegistration.UI.Resources.IPrnDataResourcesLocalizer PrnDataResourcesLocalizer
+
 @model AwaitingAcceptancePrnsViewModel
 
 @{
@@ -96,16 +97,8 @@
 								@for (var i = 0; i < Model.Prns.Count; i++)
 								{
 									var prn = Model.Prns[i];
-									var showDecemberWasteFlash = prn.ShouldShowDecemberWasteFlash;
-									var decemberWasteFlashText = prn.AvailableAcceptanceYears.Length switch
-									{
-										1 => string.Format(Localizer["acceptance_year"].Value, prn.AvailableAcceptanceYears[0]),
-										2 => string.Format(
-											Localizer["acceptance_years"].Value,
-											prn.AvailableAcceptanceYears[0],
-											prn.AvailableAcceptanceYears[1]),
-										_ => string.Empty
-									};
+									var showDecemberWasteFlash = prn.ShouldShowDecemberWasteFlash; 
+									var decemberWasteFlashText = Localizer.DecemberWasteFlashText(prn.AvailableAcceptanceYears);
 									var cellBorder = showDecemberWasteFlash && !string.IsNullOrEmpty(decemberWasteFlashText)
 										? "border-bottom-0"
 										: null;
@@ -122,14 +115,14 @@
 															var checkBoxId = string.Concat("chkBoxSelectPrn_", Model.Prns[i].NoteType, "_", Model.Prns[i].ExternalId);
 														}
 														@Html.CheckBoxFor(x => x.Prns[i].IsSelected, new { @id = checkBoxId, @class = "govuk-checkboxes__input" })
-
-														<label class="govuk-label govuk-checkboxes__label" for=@checkBoxId>
-															@Html.ActionLink(Model.Prns[i].PrnOrPernNumber, nameof(PrnsController.SelectSinglePrn), "Prns", new { id = Model.Prns[i].ExternalId },
-																new
-																{
-																	@class = "govuk-link"
-																})
-														</label>
+														<feature name="@FeatureFlags.ShowDecemberWaste">
+															@if(!showDecemberWasteFlash) {
+																@await Html.PartialAsync("../Shared/Partials/Prns/_prnAcceptCheckboxLabel", new ViewDataDictionary(ViewData) { { "index", i }, { "checkBoxId", @checkBoxId }})
+															}
+														</feature>
+														<feature name="@FeatureFlags.ShowDecemberWaste" negate="true">
+															@await Html.PartialAsync("../Shared/Partials/Prns/_prnAcceptCheckboxLabel", new ViewDataDictionary(ViewData) { { "index", i }, { "checkBoxId", @checkBoxId }})
+														</feature>
 													</div>
 												</div>
 											}
@@ -157,6 +150,7 @@
 											}
 										</td>
 									</tr>
+									<feature name="@FeatureFlags.ShowDecemberWaste">
 									@if (showDecemberWasteFlash && !string.IsNullOrEmpty(decemberWasteFlashText))
 									{
 										<tr class="govuk-table__row december-waste-flash-row">
@@ -165,6 +159,7 @@
 											</td>
 										</tr>
 									}
+									</feature>
 								}
 								</tbody>
 							</table>
