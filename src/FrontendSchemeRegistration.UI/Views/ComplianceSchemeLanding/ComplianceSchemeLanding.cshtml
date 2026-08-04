@@ -229,7 +229,10 @@
                                 <ul class="govuk-list govuk-list--bullet">
                                     <li>@Localizer["prn_unordered_list_point_1"]</li>
                                     <li>@Localizer["prn_unordered_list_point_2"]</li>
-                                    @await Html.PartialAsync("Partials/Csoc/_LandingBullet", Model.CsocViewModel)
+                                    @if (Model.CsocViewModel is { ShowLandingBullet: true })
+                                    {
+                                        <li>@await Html.PartialAsync("Partials/Csoc/_LandingBullet", Model.CsocViewModel)</li>
+                                    }
                                 </ul>
                                 @await Html.PartialAsync("Partials/Csoc/_LandingParagraph", Model.CsocViewModel)
                             </div>

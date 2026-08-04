@@ -31,6 +31,8 @@ namespace FrontendSchemeRegistration.UI.Services.Interfaces
 
         Task CreatePackagingResubmissionApplicationSubmittedCreatedEvent(Guid? submissionId, Guid? filedId, string submittedBy, DateTime submissionDate, string comment);
 
+        Task RefreshPomSubmissionAsync(FrontendSchemeRegistrationSession session);
+
         Task<List<PackagingResubmissionApplicationSession>> GetPackagingResubmissionApplicationSession(Organisation organisation, List<string> submissionPeriods, Guid? complianceSchemeId);
 
         Task<List<SubmissionPeriodId>> GetSubmissionIdsAsync(Guid organisationId, SubmissionType type, Guid? complianceSchemeId, int? year);

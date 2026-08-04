@@ -16,4 +16,6 @@ public class PaymentFacadeApiEndpoints
 
     public string RegistrationFeeCalculationDetailsEndpoint { get; set; }
 
+    public string SubmissionPeriodsEndpoint { get; set; }
+
 }

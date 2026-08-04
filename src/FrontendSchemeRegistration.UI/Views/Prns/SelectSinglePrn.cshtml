@@ -1,11 +1,14 @@
 ﻿@using FrontendSchemeRegistration.Application.Constants
 @using FrontendSchemeRegistration.UI.Controllers.Prns
 @using FrontendSchemeRegistration.UI.ViewModels.Prns
+@inject IStringLocalizer<PrnDataResources> PrnDataLocalizer
 @model PrnViewModel
 
 @{
     ViewData["Title"] = Localizer[(Model.IsPrn ? "page_title_prn" : "page_title_pern")];
     var isPdf = ViewData["IsPdf"] as bool? ?? false;
+
+    var decemberWasteFlashText = Localizer.DecemberWasteFlashText(Model.AvailableAcceptanceYears);
 }
 
 @{
@@ -34,6 +37,13 @@
                 <div class="govuk-heading-m">
                     @Localizer["year"]: <strong>@Html.DisplayFor(x => x.IssueYear)</strong>
                 </div>
+                <feature name="@FeatureFlags.ShowDecemberWaste">
+                    @if (Model.ShouldShowDecemberWasteFlash) {
+                        <div class="govuk-table__row">
+                            @await Html.PartialAsync("../Shared/Partials/Prns/_prnFlashLabel", new ViewDataDictionary(ViewData) { { "BackgroundColor", "blue" }, { "LabelText", @decemberWasteFlashText } })
+                        </div>
+                    }
+                </feature>
             </div>
             @if (Model.IsDecemberWaste)
             {

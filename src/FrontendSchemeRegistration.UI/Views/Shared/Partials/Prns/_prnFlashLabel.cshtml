@@ -1,0 +1,8 @@
+@{
+    var BackgroundColor = ViewData["BackgroundColor"]?.ToString() ?? "grey";
+    var LabelText = ViewData["LabelText"]?.ToString() ?? string.Empty;
+}
+
+<span class="flash-container flash-container--@BackgroundColor">
+    @LabelText
+</span>

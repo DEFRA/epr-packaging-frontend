@@ -3,6 +3,7 @@
 using Application.Options;
 using AutoFixture;
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Options;
@@ -15,10 +16,14 @@ public class AccountControllerTests
 {
     private AccountController _accountController;
     private Fixture _fixture;
+    private Mock<ISession> _sessionMock;
 
     [SetUp]
     public void SetUp()
     {
+        _sessionMock = new Mock<ISession>();
+        _sessionMock.SetupGet(x => x.IsAvailable).Returns(true);
+
         _accountController = new AccountController(
             Options.Create(new CsocOptions
             {
@@ -32,6 +37,13 @@ public class AccountControllerTests
             .Setup(x => x.Action(It.IsAny<UrlActionContext>()))
             .Returns<UrlActionContext>(context => $"/{context.Action}/{context.Controller}");
         _accountController.Url = mockUrlHelper.Object;
+        _accountController.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                Session = _sessionMock.Object
+            }
+        };
     }
 
     [Test]
@@ -60,5 +72,43 @@ public class AccountControllerTests
 
         // Assert
         result.Properties.RedirectUri.Should().BeNull();
+    }
+
+    [Test]
+    public void ClearSession_Should_Clear_Session_And_Return_SignOutResult()
+    {
+        var result = _accountController.ClearSession();
+
+        _sessionMock.Verify(x => x.Clear(), Times.Once);
+        result.Should().BeOfType<SignOutResult>();
+    }
+
+    [Test]
+    public async Task SignOut_Should_Clear_Session_Before_SignOut()
+    {
+        var result = await _accountController.SignOut(null);
+
+        _sessionMock.Verify(x => x.Clear(), Times.Once);
+        result.Should().BeOfType<SignOutResult>();
+    }
+
+    [Test]
+    public void SessionSignOut_Should_Clear_Session_Before_SignOut()
+    {
+        var result = _accountController.SessionSignOut(null);
+
+        _sessionMock.Verify(x => x.Clear(), Times.Once);
+        result.Should().BeOfType<SignOutResult>();
+    }
+
+    [Test]
+    public void KeepSessionAlive_Should_Set_LastPing()
+    {
+        var result = _accountController.KeepSessionAlive();
+
+        _sessionMock.Verify(
+            x => x.Set("LastPing", It.IsAny<byte[]>()),
+            Times.Once);
+        result.Should().BeOfType<OkObjectResult>();
     }
 }

@@ -409,6 +409,195 @@ public class ResubmissionApplicationControllerTests
     }
 
     [Test]
+    public async Task AdditionalInformation_Post_UsesRefreshedFileIdWhenCreatingSubmittedEvent()
+    {
+        // Regression: FileId sent to the "submitted" event must come from the re-fetched submission,
+        // not the stale FileId cached on the session snapshot (SUB-332).
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var staleFileId = Guid.NewGuid();
+        var freshFileId = Guid.NewGuid();
+        var submittedByUserId = Guid.NewGuid();
+
+        var session = new FrontendSchemeRegistrationSession
+        {
+            PomResubmissionSession = new PackagingReSubmissionSession
+            {
+                PackagingResubmissionApplicationSession = new PackagingResubmissionApplicationSession
+                {
+                    SubmissionId = submissionId
+                },
+                PomSubmission = new PomSubmission
+                {
+                    Id = submissionId,
+                    LastSubmittedFile = new SubmittedFileInformation
+                    {
+                        FileId = staleFileId,
+                        SubmittedBy = submittedByUserId
+                    }
+                }
+            }
+        };
+
+        _mockSessionManager.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+
+        _mockResubmissionApplicationServices
+            .Setup(s => s.RefreshPomSubmissionAsync(It.IsAny<FrontendSchemeRegistrationSession>()))
+            .Callback<FrontendSchemeRegistrationSession>(s =>
+                s.PomResubmissionSession.PomSubmission = new PomSubmission
+                {
+                    Id = submissionId,
+                    LastSubmittedFile = new SubmittedFileInformation
+                    {
+                        FileId = freshFileId,
+                        SubmittedBy = submittedByUserId
+                    }
+                })
+            .Returns(Task.CompletedTask);
+
+        _userAccountService.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>()))
+            .ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
+
+        // Act
+        await _controller.AdditionalInformation(new AdditionalInformationViewModel());
+
+        // Assert
+        _mockResubmissionApplicationServices.Verify(
+            s => s.RefreshPomSubmissionAsync(session), Times.Once);
+
+        _mockResubmissionApplicationServices.Verify(
+            s => s.CreatePackagingResubmissionApplicationSubmittedCreatedEvent(
+                submissionId,
+                freshFileId,
+                "Test Name",
+                It.IsAny<DateTime>(),
+                It.IsAny<string>()),
+            Times.Once);
+
+        _mockResubmissionApplicationServices.Verify(
+            s => s.CreatePackagingResubmissionApplicationSubmittedCreatedEvent(
+                It.IsAny<Guid?>(),
+                staleFileId,
+                It.IsAny<string>(),
+                It.IsAny<DateTime>(),
+                It.IsAny<string>()),
+            Times.Never);
+    }
+
+    [Test]
+    public async Task SelectPaymentOptions_Post_UsesRefreshedFileIdWhenCreatingPaymentEvent()
+    {
+        // Regression: FileId sent to the fee-payment event must come from the re-fetched submission (SUB-332).
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var staleFileId = Guid.NewGuid();
+        var freshFileId = Guid.NewGuid();
+
+        var session = new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession
+            {
+                Journey = new List<string> { PagePaths.ResubmissionTaskList }
+            },
+            PomResubmissionSession = new PackagingReSubmissionSession
+            {
+                RegulatorNation = "GB-ENG",
+                PackagingResubmissionApplicationSession = new PackagingResubmissionApplicationSession
+                {
+                    SubmissionId = submissionId
+                },
+                PomSubmission = new PomSubmission
+                {
+                    LastSubmittedFile = new SubmittedFileInformation { FileId = staleFileId }
+                }
+            }
+        };
+
+        _mockSessionManager.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+
+        _mockResubmissionApplicationServices
+            .Setup(s => s.RefreshPomSubmissionAsync(It.IsAny<FrontendSchemeRegistrationSession>()))
+            .Callback<FrontendSchemeRegistrationSession>(s =>
+                s.PomResubmissionSession.PomSubmission = new PomSubmission
+                {
+                    LastSubmittedFile = new SubmittedFileInformation { FileId = freshFileId }
+                })
+            .Returns(Task.CompletedTask);
+
+        var model = new SelectPaymentOptionsViewModel { PaymentOption = (int)PaymentOptions.PayByPhone };
+
+        // Act
+        await _controller.SelectPaymentOptions(model);
+
+        // Assert
+        _mockResubmissionApplicationServices.Verify(
+            s => s.RefreshPomSubmissionAsync(session), Times.Once);
+
+        _mockResubmissionApplicationServices.Verify(
+            s => s.CreatePackagingDataResubmissionFeePaymentEvent(
+                submissionId,
+                freshFileId,
+                It.IsAny<string>()),
+            Times.Once);
+
+        _mockResubmissionApplicationServices.Verify(
+            s => s.CreatePackagingDataResubmissionFeePaymentEvent(
+                It.IsAny<Guid?>(),
+                staleFileId,
+                It.IsAny<string>()),
+            Times.Never);
+    }
+
+    [Test]
+    public async Task SelectPaymentOptions_Get_NonEngland_UsesRefreshedFileIdWhenCreatingPaymentEvent()
+    {
+        // Regression: the non-England GET branch also emits the payment event and must use the fresh FileId (SUB-332).
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var staleFileId = Guid.NewGuid();
+        var freshFileId = Guid.NewGuid();
+
+        var session = new FrontendSchemeRegistrationSession
+        {
+            PomResubmissionSession = new PackagingReSubmissionSession
+            {
+                RegulatorNation = "GB-WLS",
+                FeeBreakdownDetails = new FeeBreakdownDetails { TotalAmountOutstanding = 100 },
+                PackagingResubmissionApplicationSession = new PackagingResubmissionApplicationSession
+                {
+                    SubmissionId = submissionId
+                },
+                PomSubmission = new PomSubmission
+                {
+                    LastSubmittedFile = new SubmittedFileInformation { FileId = staleFileId }
+                }
+            }
+        };
+
+        _mockSessionManager.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+
+        _mockResubmissionApplicationServices
+            .Setup(s => s.RefreshPomSubmissionAsync(It.IsAny<FrontendSchemeRegistrationSession>()))
+            .Callback<FrontendSchemeRegistrationSession>(s =>
+                s.PomResubmissionSession.PomSubmission = new PomSubmission
+                {
+                    LastSubmittedFile = new SubmittedFileInformation { FileId = freshFileId }
+                })
+            .Returns(Task.CompletedTask);
+
+        // Act
+        await _controller.SelectPaymentOptions();
+
+        // Assert
+        _mockResubmissionApplicationServices.Verify(
+            s => s.CreatePackagingDataResubmissionFeePaymentEvent(
+                submissionId,
+                freshFileId,
+                It.IsAny<string>()),
+            Times.Once);
+    }
+
+    [Test]
     public async Task SubmitToEnvironmentRegulator_ShouldReturnView_WithExpectedModel()
     {
         // Arrange
@@ -450,6 +639,55 @@ public class ResubmissionApplicationControllerTests
         model.RegistrationApplicationSubmittedDate.Should().Be(expectedDate);
         model.ApplicationReferenceNumber.Should().Be(expectedReference);
         model.ApplicationStatus.Should().Be(ApplicationStatusType.SubmittedToRegulator);
+    }
+
+    [Test]
+    public async Task SubmitToEnvironmentRegulator_UsesRefreshedSubmittedDateTimeOnConfirmationView()
+    {
+        // Regression: the confirmation view must reflect the freshly-fetched submission date,
+        // not the pre-refresh session snapshot (SUB-332).
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var staleDate = DateTime.UtcNow.AddDays(-7);
+        var freshDate = DateTime.UtcNow.AddMinutes(-1);
+
+        var session = new FrontendSchemeRegistrationSession
+        {
+            PomResubmissionSession = new PackagingReSubmissionSession
+            {
+                PackagingResubmissionApplicationSession = new PackagingResubmissionApplicationSession
+                {
+                    SubmissionId = submissionId,
+                    ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+                    ApplicationReferenceNumber = "REF-STALE"
+                },
+                PomSubmission = new PomSubmission
+                {
+                    LastSubmittedFile = new SubmittedFileInformation { SubmittedDateTime = staleDate }
+                }
+            }
+        };
+
+        _mockSessionManager.Setup(s => s.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+
+        _mockResubmissionApplicationServices
+            .Setup(s => s.RefreshPomSubmissionAsync(It.IsAny<FrontendSchemeRegistrationSession>()))
+            .Callback<FrontendSchemeRegistrationSession>(s =>
+                s.PomResubmissionSession.PomSubmission = new PomSubmission
+                {
+                    LastSubmittedFile = new SubmittedFileInformation { SubmittedDateTime = freshDate }
+                })
+            .Returns(Task.CompletedTask);
+
+        // Act
+        var result = await _controller.SubmitToEnvironmentRegulator() as ViewResult;
+        var model = result.Model as ApplicationSubmissionConfirmationViewModel;
+
+        // Assert
+        _mockResubmissionApplicationServices.Verify(
+            s => s.RefreshPomSubmissionAsync(session), Times.Once);
+        model.RegistrationApplicationSubmittedDate.Should().Be(freshDate);
+        model.RegistrationApplicationSubmittedDate.Should().NotBe(staleDate);
     }
 
     [Test]
@@ -533,6 +771,60 @@ public class ResubmissionApplicationControllerTests
 
         // Assert
         _mockResubmissionApplicationServices.Verify(x => x.CreatePackagingDataResubmissionFeePaymentEvent(It.IsAny<Guid?>(), It.IsAny<Guid?>(), It.IsAny<string>()), Times.Once);
+    }
+
+    [Test]
+    public async Task RedirectToComplianceSchemeDashboard_UsesRefreshedFileIdWhenCreatingPaymentEvent()
+    {
+        // Regression: the "pay by phone default" event on the dashboard-redirect path must use
+        // the re-fetched FileId, not the stale one held on PackagingResubmissionApplicationSession (SUB-332).
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var staleFileId = Guid.NewGuid();
+        var freshFileId = Guid.NewGuid();
+
+        var session = new FrontendSchemeRegistrationSession
+        {
+            PomResubmissionSession = new PackagingReSubmissionSession
+            {
+                PackagingResubmissionApplicationSession = new PackagingResubmissionApplicationSession
+                {
+                    SubmissionId = submissionId,
+                    LastSubmittedFile = new LastSubmittedFileDetails { FileId = staleFileId },
+                    ResubmissionFeePaymentMethod = string.Empty
+                },
+                PomSubmission = new PomSubmission
+                {
+                    LastSubmittedFile = new SubmittedFileInformation { FileId = staleFileId }
+                }
+            }
+        };
+
+        _mockSessionManager.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+
+        _mockResubmissionApplicationServices
+            .Setup(s => s.RefreshPomSubmissionAsync(It.IsAny<FrontendSchemeRegistrationSession>()))
+            .Callback<FrontendSchemeRegistrationSession>(s =>
+                s.PomResubmissionSession.PomSubmission = new PomSubmission
+                {
+                    LastSubmittedFile = new SubmittedFileInformation { FileId = freshFileId }
+                })
+            .Returns(Task.CompletedTask);
+
+        // Act
+        await _controller.RedirectToComplianceSchemeDashboard();
+
+        // Assert
+        _mockResubmissionApplicationServices.Verify(
+            s => s.RefreshPomSubmissionAsync(session), Times.Once);
+
+        _mockResubmissionApplicationServices.Verify(
+            s => s.CreatePackagingDataResubmissionFeePaymentEvent(submissionId, freshFileId, It.IsAny<string>()),
+            Times.Once);
+
+        _mockResubmissionApplicationServices.Verify(
+            s => s.CreatePackagingDataResubmissionFeePaymentEvent(It.IsAny<Guid?>(), staleFileId, It.IsAny<string>()),
+            Times.Never);
     }
 
     [Test]

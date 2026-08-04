@@ -47,6 +47,7 @@ public class ComplianceSchemeLandingControllerTests
     private readonly Mock<ISubmissionService> _submissionService = new();
     private readonly Mock<IResubmissionApplicationService> _resubmissionApplicationService = new();
     private readonly Mock<IFeatureManager> _featureManagerMock = new();
+    private readonly Mock<IWebApiGatewayClient> _webApiGatewayClientMock = new();
     private FakeTimeProvider _testTimeProvider;
 
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock = new();
@@ -168,7 +169,8 @@ public class ComplianceSchemeLandingControllerTests
             _nullLogger,
             _featureManagerMock.Object,
             _testTimeProvider,
-            new OptionsWrapper<CsocOptions>(new CsocOptions()))
+            new OptionsWrapper<CsocOptions>(new CsocOptions()),
+            _webApiGatewayClientMock.Object)
         {
             ControllerContext = { HttpContext = _httpContextMock.Object }
         };

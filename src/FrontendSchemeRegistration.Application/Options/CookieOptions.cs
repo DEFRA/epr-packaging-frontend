@@ -31,4 +31,6 @@ public class CookieOptions
     public string TempDataCookie { get; set; }
 
     public string JsEnabledCookieName { get; set; }
+
+    public string JsVerifiedCookieName { get; set; }
 }

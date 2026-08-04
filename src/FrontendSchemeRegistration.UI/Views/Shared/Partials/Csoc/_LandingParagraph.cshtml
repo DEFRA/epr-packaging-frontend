@@ -1,16 +1,23 @@
+@using FrontendSchemeRegistration.Application.Enums
 @model CsocViewModel?
 
 @if (Model is not null && Model.IsApprovedUser)
 {
-    var key = Model switch
-    {
-        { IsComplianceScheme: true } => "compliance_scheme",
-        { IsDirectProducer: true } => "direct_producer",
-        _ => null
-    };
+    var isSubmitted = Model.ComplianceDeclarationStatus is ComplianceDeclarationStatus.Submitted
+        or ComplianceDeclarationStatus.Accepted;
 
-    if (key is not null)
+    if (!isSubmitted)
     {
-        <p class="govuk-body">@Localizer[$"paragraph_{key}", Model.SubmissionDeadline]</p>
+        var key = Model switch
+        {
+            { IsComplianceScheme: true } => "compliance_scheme",
+            { IsDirectProducer: true } => "direct_producer",
+            _ => null
+        };
+
+        if (key is not null)
+        {
+            <p class="govuk-body">@Localizer[$"paragraph_{key}", Model.SubmissionDeadline]</p>
+        }
     }
 }

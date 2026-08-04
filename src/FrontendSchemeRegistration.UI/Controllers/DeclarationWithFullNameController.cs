@@ -22,6 +22,7 @@ using Constants;
 public class DeclarationWithFullNameController(
     ISubmissionService submissionService,
     ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
+    ISessionManager<RegistrationApplicationSession> registrationApplicationSessionManager,
     ILogger<DeclarationWithFullNameController> logger,
     IRegistrationPeriodProvider registrationPeriodProvider,
     IFeatureManager featureManager) : Controller
@@ -151,11 +152,14 @@ public class DeclarationWithFullNameController(
 
                 var organisationDetailsFileId = new Guid(model.OrganisationDetailsFileId);
 
+                var registrationApplicationSession = await registrationApplicationSessionManager.GetSessionAsync(HttpContext.Session);
+
                 await submissionService.SubmitAsync(submissionId, organisationDetailsFileId,
                     model.FullName,
                     session.RegistrationSession.ApplicationReferenceNumber,
                     session.RegistrationSession.IsResubmission,
-                    regJourney);
+                    regJourney,
+                    registrationApplicationSession?.SubmissionPeriodId);
 
                 var postSubmitController = await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService)
                     ? ProcessingViewName

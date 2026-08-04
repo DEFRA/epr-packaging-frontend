@@ -11,6 +11,10 @@ public class JavaScriptDetectionMiddleware
 {
     public const string JavaScriptRequiredPath = "/javascript-required";
 
+    // Lifetime (seconds) of the short-lived verification cookie. Only needs to survive
+    // the immediate reload after the gate page runs, so a small value is fine.
+    public const int VerifiedCookieMaxAgeSeconds = 60;
+
     private static readonly string[] BypassPaths =
     {
         JavaScriptRequiredPath,
@@ -43,7 +47,7 @@ public class JavaScriptDetectionMiddleware
             return;
         }
 
-        await WriteGatePageAsync(httpContext, cookieName);
+        await WriteGatePageAsync(httpContext, cookieName, cookieOptions.Value.JsVerifiedCookieName);
     }
 
     private static bool IsBypassPath(PathString path, string? signedOutCallbackPath)
@@ -57,13 +61,30 @@ public class JavaScriptDetectionMiddleware
                && path.StartsWithSegments(new PathString(signedOutCallbackPath), StringComparison.OrdinalIgnoreCase);
     }
 
-    private static async Task WriteGatePageAsync(HttpContext httpContext, string cookieName)
+    public static async Task WriteGatePageAsync(HttpContext httpContext, string enabledCookieName, string? verifiedCookieName)
     {
         var nonce = httpContext.Items[ContextKeys.ScriptNonceKey] as string ?? string.Empty;
         var basePath = httpContext.Request.PathBase.HasValue ? httpContext.Request.PathBase.Value : string.Empty;
         var cssHref = $"{basePath}/css/application.css";
         var noScriptUrl = $"{basePath}{JavaScriptRequiredPath}";
-        var cookieAttributes = $"{cookieName}=1; path={(string.IsNullOrEmpty(basePath) ? "/" : basePath)}; secure; samesite=lax";
+        var cookiePath = string.IsNullOrEmpty(basePath) ? "/" : basePath;
+        var enabledCookieAttributes = $"{enabledCookieName}=1; path={cookiePath}; secure; samesite=lax";
+        var verifiedCookieAttributes = string.IsNullOrEmpty(verifiedCookieName)
+            ? null
+            : $"{verifiedCookieName}=1; path={cookiePath}; secure; samesite=lax; max-age={VerifiedCookieMaxAgeSeconds}";
+
+        var script = new StringBuilder()
+            .Append("(function(){")
+            .Append("if(!navigator.cookieEnabled){")
+            .Append($"window.location.replace({JsString(noScriptUrl)});return;")
+            .Append('}')
+            .Append($"document.cookie={JsString(enabledCookieAttributes)};");
+        if (verifiedCookieAttributes is not null)
+        {
+            script.Append($"document.cookie={JsString(verifiedCookieAttributes)};");
+        }
+        script.Append("window.location.replace(window.location.href);")
+              .Append("})();");
 
         var html = new StringBuilder()
             .Append("<!DOCTYPE html>")
@@ -75,13 +96,7 @@ public class JavaScriptDetectionMiddleware
             .Append($"<link rel=\"stylesheet\" href=\"{WebUtility.HtmlEncode(cssHref)}\">")
             .Append($"<noscript><meta http-equiv=\"refresh\" content=\"0; url={WebUtility.HtmlEncode(noScriptUrl)}\"></noscript>")
             .Append($"<script nonce=\"{WebUtility.HtmlEncode(nonce)}\">")
-            .Append("(function(){")
-            .Append("if(!navigator.cookieEnabled){")
-            .Append($"window.location.replace({JsString(noScriptUrl)});return;")
-            .Append('}')
-            .Append($"document.cookie={JsString(cookieAttributes)};")
-            .Append("window.location.replace(window.location.href);")
-            .Append("})();")
+            .Append(script)
             .Append("</script>")
             .Append("</head>")
             .Append("<body>")

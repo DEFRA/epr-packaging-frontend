@@ -147,9 +147,9 @@ public static class RegistrationApplicationStatusCalculator
     }
 
     /// <summary>
-    /// Determines if the file has reached synapse (has fee calculation details).
+    /// Determines fees are ready to be calculated.
     /// </summary>
-    public static bool FileReachedSynapse(RegistrationFeeCalculationDetails[]? registrationFeeCalculationDetails)
+    public static bool ReadyToCalculateFees(RegistrationFeeCalculationDetails[]? registrationFeeCalculationDetails)
     {
         return registrationFeeCalculationDetails is { Length: > 0 };
     }

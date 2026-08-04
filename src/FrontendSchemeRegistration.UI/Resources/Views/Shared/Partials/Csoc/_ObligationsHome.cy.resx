@@ -19,10 +19,10 @@
     <value>Submit your certificate of compliance</value>
   </data>
   <data name="submit_paragraph_compliance_scheme" xml:space="preserve">
-    <value>An approved or delegated person must submit your {1} statement of compliance before or on &lt;strong&gt;{2:d MMMM yyyy}&lt;/strong&gt;</value>
+    <value>An approved or delegated person must submit your {1} statement of compliance before or on {2:d MMMM yyyy}.</value>
   </data>
   <data name="submit_paragraph_direct_producer" xml:space="preserve">
-    <value>An approved or delegated person must submit your {1} certificate of compliance before or on &lt;strong&gt;{2:d MMMM yyyy}&lt;/strong&gt;</value>
+    <value>An approved or delegated person must submit your {1} certificate of compliance before or on {2:d MMMM yyyy}.</value>
   </data>
   <data name="submit_button_compliance_scheme" xml:space="preserve">
     <value>Submit your statement</value>
@@ -55,10 +55,10 @@
     <value>Resubmit your certificate of compliance</value>
   </data>
   <data name="cancelled_paragraph_compliance_scheme" xml:space="preserve">
-    <value>The {0} cancelled your {1} statement of compliance. An approved or delegated person must resubmit your statement before or on &lt;strong&gt;{2:d MMMM yyyy}&lt;/strong&gt;</value>
+    <value>The {0} cancelled your {1} statement of compliance. An approved or delegated person must resubmit your statement before or on {2:d MMMM yyyy}.</value>
   </data>
   <data name="cancelled_paragraph_direct_producer" xml:space="preserve">
-    <value>The {0} cancelled your {1} certificate of compliance. An approved or delegated person must resubmit your certificate before or on &lt;strong&gt;{2:d MMMM yyyy}&lt;/strong&gt;</value>
+    <value>The {0} cancelled your {1} certificate of compliance. An approved or delegated person must resubmit your certificate before or on {2:d MMMM yyyy}.</value>
   </data>
   <data name="cancelled_button_compliance_scheme" xml:space="preserve">
     <value>Resubmit your statement</value>

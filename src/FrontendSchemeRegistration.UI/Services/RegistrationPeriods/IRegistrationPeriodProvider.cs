@@ -1,7 +1,21 @@
 namespace FrontendSchemeRegistration.UI.Services.RegistrationPeriods;
 
+using FrontendSchemeRegistration.Application.DTOs;
+
 public interface IRegistrationPeriodProvider
 {
+    /// <summary>
+    /// Replaces the internal window collection from the supplied submission-period rows. Called by the
+    /// warmup hosted service at startup and again on year rollover.
+    /// </summary>
+    void Load(IEnumerable<SubmissionPeriodDetails> submissionPeriods);
+
+    /// <summary>
+    /// Reports whether the internal collection has been hydrated.
+    /// </summary>
+    bool IsLoaded { get; }
+
+
     /// <summary>
     /// Returns registration windows that are open. Orders them by descending registration year
     /// </summary>

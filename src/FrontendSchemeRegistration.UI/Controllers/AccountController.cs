@@ -105,6 +105,9 @@ public class AccountController : Controller
         }
 
         scheme ??= OpenIdConnectDefaults.AuthenticationScheme;
+
+        HttpContext.Session.Clear();
+
         var callbackUrl = Url.Action(
             action: "SignedOut",
             controller: nameof(HomeController).RemoveControllerFromName(),
@@ -147,6 +150,9 @@ public class AccountController : Controller
         }
 
         scheme ??= OpenIdConnectDefaults.AuthenticationScheme;
+
+        HttpContext.Session.Clear();
+
         var callbackUrl = Url.Action(action: "TimeoutSignedOut", controller: nameof(HomeController).RemoveControllerFromName(), values: null, protocol: Request.Scheme);
 
         return SignOut(

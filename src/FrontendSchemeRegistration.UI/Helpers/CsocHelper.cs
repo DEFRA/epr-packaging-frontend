@@ -3,9 +3,11 @@ namespace FrontendSchemeRegistration.UI.Helpers;
 using Application.Enums;
 using Application.Extensions;
 using Application.Options;
+using Application.Services.Interfaces;
 using Constants;
 using EPR.Common.Authorization.Models;
 using Extensions;
+using Microsoft.Extensions.Logging;
 using Microsoft.FeatureManagement;
 using Sessions;
 using ViewModels;
@@ -49,6 +51,47 @@ public static class CsocHelper
             ComplianceDeclarationStatus = complianceDeclarationStatus,
             NationId = prnObligationViewModel?.NationId
         };
+    }
+
+    public static async Task<PrnObligationViewModel?> TryGetCsocObligationViewModelAsync(
+        IFeatureManager featureManager,
+        IWebApiGatewayClient webApiGatewayClient,
+        ILogger logger,
+        int complianceYear)
+    {
+        if (!await featureManager.IsEnabledAsync(FeatureFlags.CsocEnabled))
+        {
+            return null;
+        }
+
+        try
+        {
+            var declaration = await webApiGatewayClient.GetLatestComplianceDeclaration(complianceYear);
+            if (declaration is null)
+            {
+                return new PrnObligationViewModel();
+            }
+
+            return new PrnObligationViewModel
+            {
+                ComplianceDeclarationStatus = declaration.Status,
+                ComplianceDeclarationId = declaration.Id
+            };
+        }
+        catch (HttpRequestException ex)
+        {
+            return HandleLoadFailure(ex);
+        }
+        catch (System.Text.Json.JsonException ex)
+        {
+            return HandleLoadFailure(ex);
+        }
+
+        PrnObligationViewModel HandleLoadFailure(Exception ex)
+        {
+            logger.LogWarning(ex, "Failed to load compliance declaration for year {ComplianceYear}", complianceYear);
+            return new PrnObligationViewModel();
+        }
     }
 
     private static string? GetWasteObligationsBaseAddress(

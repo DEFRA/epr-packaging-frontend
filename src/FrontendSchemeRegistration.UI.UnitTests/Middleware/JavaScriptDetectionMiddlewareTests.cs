@@ -14,6 +14,7 @@ using CookieOptions = Application.Options.CookieOptions;
 public class JavaScriptDetectionMiddlewareTests
 {
     private const string CookieName = ".epr_js_enabled";
+    private const string VerifiedCookieName = ".epr_js_verified";
     private const string SignedOutCallbackPath = "/signout/B2C_1A_EPR_SignUpSignIn";
 
     private Mock<RequestDelegate> _next;
@@ -27,7 +28,11 @@ public class JavaScriptDetectionMiddlewareTests
         _next = new Mock<RequestDelegate>();
         _next.Setup(d => d(It.IsAny<HttpContext>())).Returns(Task.CompletedTask);
 
-        _cookieOptions = Options.Create(new CookieOptions { JsEnabledCookieName = CookieName });
+        _cookieOptions = Options.Create(new CookieOptions
+        {
+            JsEnabledCookieName = CookieName,
+            JsVerifiedCookieName = VerifiedCookieName,
+        });
         _b2COptions = Options.Create(new AzureAdB2COptions { SignedOutCallbackPath = SignedOutCallbackPath });
 
         _middleware = new JavaScriptDetectionMiddleware(_next.Object);
@@ -152,6 +157,35 @@ public class JavaScriptDetectionMiddlewareTests
         body.Should().Contain("path=/");
         body.Should().Contain("secure");
         body.Should().Contain("samesite=lax");
+    }
+
+    [Test]
+    public async Task InvokeAsync_GatePage_SetsShortLivedVerifiedCookie()
+    {
+        var context = CreateContext("/some-page");
+
+        await _middleware.InvokeAsync(context, _cookieOptions, _b2COptions);
+
+        var body = await ReadResponseAsync(context);
+        body.Should().Contain($"{VerifiedCookieName}=1");
+        body.Should().Contain($"max-age={JavaScriptDetectionMiddleware.VerifiedCookieMaxAgeSeconds}");
+    }
+
+    [Test]
+    public async Task InvokeAsync_GatePage_OmitsVerifiedCookie_WhenVerifiedCookieNameNotConfigured()
+    {
+        var cookieOptions = Options.Create(new CookieOptions
+        {
+            JsEnabledCookieName = CookieName,
+            JsVerifiedCookieName = null!,
+        });
+        var context = CreateContext("/some-page");
+
+        await _middleware.InvokeAsync(context, cookieOptions, _b2COptions);
+
+        var body = await ReadResponseAsync(context);
+        body.Should().Contain($"{CookieName}=1");
+        body.Should().NotContain("max-age=");
     }
 
     [Test]

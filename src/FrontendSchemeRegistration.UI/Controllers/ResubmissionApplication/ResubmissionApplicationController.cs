@@ -4,6 +4,7 @@ using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Extensions;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
 using FrontendSchemeRegistration.UI.Controllers.FrontendSchemeRegistration;
@@ -41,10 +42,13 @@ public class ResubmissionApplicationController : Controller
 
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
+    [PomResubmissionSessionGuardActionFilter]
     [Route(PagePaths.SelectPaymentOptions)]
     public async Task<IActionResult> SelectPaymentOptions()
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+        await _resubmissionApplicationService.RefreshPomSubmissionAsync(session);
+        
         session.PomResubmissionSession.Journey = [$"/report-data/{PagePaths.ResubmissionFeeCalculations}", PagePaths.SelectPaymentOptions];
         SetBackLink(session, PagePaths.SelectPaymentOptions);
 
@@ -68,10 +72,13 @@ public class ResubmissionApplicationController : Controller
 
     [HttpPost]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
+    [PomResubmissionSessionGuardActionFilter]
     [Route(PagePaths.SelectPaymentOptions)]
     public async Task<IActionResult> SelectPaymentOptions(SelectPaymentOptionsViewModel model)
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+        await _resubmissionApplicationService.RefreshPomSubmissionAsync(session);
+        
         session.PomResubmissionSession.Journey = [$"/report-data/{PagePaths.ResubmissionFeeCalculations}", PagePaths.SelectPaymentOptions];
         SetBackLink(session, PagePaths.SelectPaymentOptions);
 
@@ -102,6 +109,7 @@ public class ResubmissionApplicationController : Controller
 
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
+    [PomResubmissionSessionGuardActionFilter]
     [Route(PagePaths.PaymentOptionPayByPhone)]
     public async Task<IActionResult> PayByPhone()
     {
@@ -113,6 +121,7 @@ public class ResubmissionApplicationController : Controller
         {
             TotalAmountOutstanding = Convert.ToInt32(session.PomResubmissionSession.FeeBreakdownDetails.TotalAmountOutstanding),
             ApplicationReferenceNumber = session.PomResubmissionSession.PackagingResubmissionApplicationSession.ApplicationReferenceNumber,
+            IsComplianceScheme = session.PomResubmissionSession.PackagingResubmissionApplicationSession.Organisation.IsComplianceScheme()
         };
 
         return View("PaymentOptionPayByPhone", model);
@@ -121,6 +130,7 @@ public class ResubmissionApplicationController : Controller
 
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
+    [PomResubmissionSessionGuardActionFilter]
     [Route(PagePaths.PaymentOptionPayOnline)]
     public async Task<IActionResult> PayOnline()
     {
@@ -133,7 +143,8 @@ public class ResubmissionApplicationController : Controller
         {
             TotalAmountOutstanding = Convert.ToInt32(session.PomResubmissionSession.FeeBreakdownDetails.TotalAmountOutstanding),
             ApplicationReferenceNumber = session.PomResubmissionSession.PackagingResubmissionApplicationSession.ApplicationReferenceNumber,
-            PaymentLink = paymentLink
+            PaymentLink = paymentLink,
+            IsComplianceScheme = session.PomResubmissionSession.PackagingResubmissionApplicationSession.Organisation.IsComplianceScheme()
         };
 
         return View("PaymentOptionPayOnline", model);
@@ -141,6 +152,7 @@ public class ResubmissionApplicationController : Controller
 
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
+    [PomResubmissionSessionGuardActionFilter]
     [Route(PagePaths.PaymentOptionPayByBankTransfer)]
     public async Task<IActionResult> PayByBankTransfer()
     {
@@ -161,7 +173,8 @@ public class ResubmissionApplicationController : Controller
         {
             TotalAmountOutstanding = Convert.ToInt32(session.PomResubmissionSession.FeeBreakdownDetails.TotalAmountOutstanding),
             ApplicationReferenceNumber = session.PomResubmissionSession.PackagingResubmissionApplicationSession.ApplicationReferenceNumber,
-            RegulatorNation = session.PomResubmissionSession.RegulatorNation
+            RegulatorNation = session.PomResubmissionSession.RegulatorNation,
+            IsComplianceScheme = session.PomResubmissionSession.PackagingResubmissionApplicationSession.Organisation.IsComplianceScheme()
         };
 
         return View("PaymentOptionPayByBankTransfer", model);
@@ -169,6 +182,7 @@ public class ResubmissionApplicationController : Controller
 
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
+    [PomResubmissionSessionGuardActionFilter]
     [Route(PagePaths.AdditionalInformation)]
     public async Task<IActionResult> AdditionalInformation()
     {
@@ -191,14 +205,16 @@ public class ResubmissionApplicationController : Controller
 
     [HttpPost]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
+    [PomResubmissionSessionGuardActionFilter]
     [Route(PagePaths.AdditionalInformation)]
     public async Task<IActionResult> AdditionalInformation(AdditionalInformationViewModel model)
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+        await _resubmissionApplicationService.RefreshPomSubmissionAsync(session);
         session.PomResubmissionSession.Journey = [$"/report-data/{PagePaths.ResubmissionTaskList}", $"packaging-resubmission/{PagePaths.AdditionalInformation}"];
         SetBackLink(session, $"packaging-resubmission/{PagePaths.AdditionalInformation}");
-
         var submission = session.PomResubmissionSession.PomSubmission;
+        
         var submittedByName = "";
         if (submission != null)
         {
@@ -234,10 +250,12 @@ public class ResubmissionApplicationController : Controller
 
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprSelectSchemePolicy)]
+    [PomResubmissionSessionGuardActionFilter]
     [Route(PagePaths.SubmitToEnvironmentRegulator)]
     public async Task<IActionResult> SubmitToEnvironmentRegulator()
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+        await _resubmissionApplicationService.RefreshPomSubmissionAsync(session);
 
         return View("ResubmissionConfirmation",
             new ApplicationSubmissionConfirmationViewModel
@@ -252,16 +270,18 @@ public class ResubmissionApplicationController : Controller
 
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
+    [PomResubmissionSessionGuardActionFilter]
     [Route(PagePaths.RedirectToComplianceSchemeDashboard)]
     public async Task<IActionResult> RedirectToComplianceSchemeDashboard()
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+        await _resubmissionApplicationService.RefreshPomSubmissionAsync(session);
 
         if (string.IsNullOrEmpty(session.PomResubmissionSession.PackagingResubmissionApplicationSession.ResubmissionFeePaymentMethod))
         {
             await _resubmissionApplicationService.CreatePackagingDataResubmissionFeePaymentEvent(
                     session.PomResubmissionSession.PackagingResubmissionApplicationSession.SubmissionId,
-                    session.PomResubmissionSession.PackagingResubmissionApplicationSession.LastSubmittedFile.FileId,
+                    session.PomResubmissionSession.PomSubmission?.LastSubmittedFile.FileId,
                     Enum.GetName(typeof(PaymentOptions), PaymentOptions.PayByPhone));
         }
 

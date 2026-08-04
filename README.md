@@ -200,6 +200,8 @@ The structure of the appsettings can be found in the repository. Example configu
 | Cookie__OpenIdCookieName                                   | Name of the Open Id cookie                                                                                       |
 | Cookie__AuthenticationExpiryInMinutes                      | Time before the Authentication expires (in minutes)                                                              |
 | Cookie__CookiePolicyDurationInMonths                       | Time before cookies need to be reaccepted (in months)                                                            |
+| Cookie__JsEnabledCookieName                                | Confirms that your browser has JavaScript enabled so the service can load the sign-in pages                      |
+| Cookie__JsVerifiedCookieName                               | Detects if JavaScript is disabled mid-session                                                                    |
 | BasePath                                                   | URL path of the application                                                                                      |
 | HttpClient__RetryCount                                     | Number of retries should connection to HTTP client fail                                                          |
 | HttpClient__RetryDelaySeconds                              | Time between each HTTP client retry (in seconds)                                                                 |

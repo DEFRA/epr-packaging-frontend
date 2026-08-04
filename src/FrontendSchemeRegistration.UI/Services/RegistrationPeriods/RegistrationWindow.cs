@@ -14,12 +14,14 @@ public class RegistrationWindow
     /// Constructs a registration window
     /// </summary>
     /// <param name="timeProvider">Provides datetime operations</param>
+    /// <param name="id">The identifier of this window as sourced from the payment service submission-periods lookup</param>
     /// <param name="windowType">The type of window</param>
     /// <param name="registrationYear">The registration year for which this window exists</param>
     /// <param name="openingDate">The window opens at 00:00 on this date. This is when registration opens</param>
     /// <param name="deadlineDate">This is the registration deadline after which late fees apply. The deadline closes at 00:00 on this date. Ie, late fees apply once this date is reached</param>
     /// <param name="closingDate">The window closes at 00:00 on this date. Ie, you can register up to, but not including, this date</param>
     public RegistrationWindow(TimeProvider timeProvider,
+        int id,
         WindowType windowType,
         int registrationYear,
         DateTime openingDate,
@@ -29,6 +31,7 @@ public class RegistrationWindow
     {
         _timeProvider = timeProvider;
         _closingDate = closingDate;
+        Id = id;
         WindowType = windowType;
         RegistrationYear = registrationYear;
         OpeningDate = openingDate;
@@ -36,6 +39,7 @@ public class RegistrationWindow
         IsCso = IsRegistrationWindowForCso(windowType);
     }
 
+    public int Id { get; }
     public WindowType WindowType { get; }
     public int RegistrationYear { get; }
     public DateTime OpeningDate { get; }

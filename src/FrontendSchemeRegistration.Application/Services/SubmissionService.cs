@@ -45,7 +45,8 @@ public class SubmissionService(IWebApiGatewayClient webApiGatewayClient) : ISubm
 
     public async Task SubmitAsync(Guid submissionId, Guid fileId, string? submittedBy,
         string? appReferenceNumber = null, bool? isResubmitted = null,
-        RegistrationJourney? registrationJourney = null)
+        RegistrationJourney? registrationJourney = null,
+        int? submissionPeriodId = null)
     {
         var payload = new SubmissionPayload
         {
@@ -53,7 +54,8 @@ public class SubmissionService(IWebApiGatewayClient webApiGatewayClient) : ISubm
             SubmittedBy = submittedBy,
             AppReferenceNumber = appReferenceNumber,
             IsResubmission = isResubmitted,
-            RegistrationJourney = registrationJourney?.ToString()
+            RegistrationJourney = registrationJourney?.ToString(),
+            SubmissionPeriodId = submissionPeriodId
         };
 
         await webApiGatewayClient.SubmitAsync(submissionId, payload);

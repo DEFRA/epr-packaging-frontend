@@ -3,13 +3,16 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Helpers;
 using Application.Enums;
 using Application.Extensions;
 using Application.Options;
+using Application.Services.Interfaces;
 using Constants;
 using EPR.Common.Authorization.Models;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Microsoft.FeatureManagement;
 using Moq;
 using System;
 using Application.DTOs.ComplianceScheme;
+using Application.DTOs.Prns;
 using UI.Helpers;
 using UI.Sessions;
 using UI.ViewModels.Prns;
@@ -341,5 +344,102 @@ public class CsocHelperTests
                 csocEnabled: true,
                 wasteObligationsBaseAddress: null)
             .Should().Be("/signed-out");
+    }
+
+    [Test]
+    public async Task TryGetCsocObligationViewModelAsync_WhenCsocDisabled_ReturnsNull()
+    {
+        MockFeatureManager.Setup(x => x.IsEnabledAsync(FeatureFlags.CsocEnabled)).ReturnsAsync(false);
+        var webApiGatewayClient = new Mock<IWebApiGatewayClient>();
+        var logger = new Mock<ILogger>();
+
+        var result = await CsocHelper.TryGetCsocObligationViewModelAsync(
+            MockFeatureManager.Object,
+            webApiGatewayClient.Object,
+            logger.Object,
+            2026);
+
+        result.Should().BeNull();
+        webApiGatewayClient.Verify(x => x.GetLatestComplianceDeclaration(It.IsAny<int>()), Times.Never);
+    }
+
+    [Test]
+    public async Task TryGetCsocObligationViewModelAsync_WhenDeclarationMissing_ReturnsEmptyViewModel()
+    {
+        var webApiGatewayClient = new Mock<IWebApiGatewayClient>();
+        webApiGatewayClient.Setup(x => x.GetLatestComplianceDeclaration(2026)).ReturnsAsync((ComplianceDeclarationModel?)null);
+        var logger = new Mock<ILogger>();
+
+        var result = await CsocHelper.TryGetCsocObligationViewModelAsync(
+            MockFeatureManager.Object,
+            webApiGatewayClient.Object,
+            logger.Object,
+            2026);
+
+        result.Should().NotBeNull();
+        result!.ComplianceDeclarationStatus.Should().BeNull();
+        result.ComplianceDeclarationId.Should().BeNull();
+    }
+
+    [Test]
+    public async Task TryGetCsocObligationViewModelAsync_WhenDeclarationExists_MapsStatusAndId()
+    {
+        var webApiGatewayClient = new Mock<IWebApiGatewayClient>();
+        webApiGatewayClient
+            .Setup(x => x.GetLatestComplianceDeclaration(2026))
+            .ReturnsAsync(new ComplianceDeclarationModel
+            {
+                Id = "declaration-1",
+                Status = ComplianceDeclarationStatus.Submitted
+            });
+        var logger = new Mock<ILogger>();
+
+        var result = await CsocHelper.TryGetCsocObligationViewModelAsync(
+            MockFeatureManager.Object,
+            webApiGatewayClient.Object,
+            logger.Object,
+            2026);
+
+        result.Should().NotBeNull();
+        result!.ComplianceDeclarationId.Should().Be("declaration-1");
+        result.ComplianceDeclarationStatus.Should().Be(ComplianceDeclarationStatus.Submitted);
+    }
+
+    [Test]
+    public async Task TryGetCsocObligationViewModelAsync_WhenHttpRequestFails_ReturnsEmptyViewModel()
+    {
+        var webApiGatewayClient = new Mock<IWebApiGatewayClient>();
+        webApiGatewayClient
+            .Setup(x => x.GetLatestComplianceDeclaration(2026))
+            .ThrowsAsync(new HttpRequestException("boom"));
+        var logger = new Mock<ILogger>();
+
+        var result = await CsocHelper.TryGetCsocObligationViewModelAsync(
+            MockFeatureManager.Object,
+            webApiGatewayClient.Object,
+            logger.Object,
+            2026);
+
+        result.Should().NotBeNull();
+        result!.ComplianceDeclarationStatus.Should().BeNull();
+    }
+
+    [Test]
+    public async Task TryGetCsocObligationViewModelAsync_WhenJsonFails_ReturnsEmptyViewModel()
+    {
+        var webApiGatewayClient = new Mock<IWebApiGatewayClient>();
+        webApiGatewayClient
+            .Setup(x => x.GetLatestComplianceDeclaration(2026))
+            .ThrowsAsync(new System.Text.Json.JsonException("bad json"));
+        var logger = new Mock<ILogger>();
+
+        var result = await CsocHelper.TryGetCsocObligationViewModelAsync(
+            MockFeatureManager.Object,
+            webApiGatewayClient.Object,
+            logger.Object,
+            2026);
+
+        result.Should().NotBeNull();
+        result!.ComplianceDeclarationStatus.Should().BeNull();
     }
 }

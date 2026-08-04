@@ -49,6 +49,7 @@ public class CookiesController : Controller
             CorrelationCookieName = _eprCookieOptions.CorrelationCookieName,
             OpenIdCookieName = _eprCookieOptions.OpenIdCookieName,
             JsEnabledCookieName = _eprCookieOptions.JsEnabledCookieName,
+            JsVerifiedCookieName = _eprCookieOptions.JsVerifiedCookieName,
             CookiesAccepted = hasUserAcceptedCookies,
             ReturnUrl = returnUrlAddress,
             ShowAcknowledgement = cookiesAccepted != null

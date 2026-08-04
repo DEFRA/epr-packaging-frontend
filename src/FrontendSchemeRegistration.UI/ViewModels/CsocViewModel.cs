@@ -15,4 +15,7 @@ public class CsocViewModel
     public bool IsObligationDataSubmitted { get; set; }
     public ComplianceDeclarationStatus? ComplianceDeclarationStatus { get; set; }
     public int? NationId { get; set; }
+
+    public bool ShowLandingBullet =>
+        IsApprovedUser && (IsComplianceScheme || IsDirectProducer);
 }

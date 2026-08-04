@@ -2,6 +2,7 @@ using System.Net;
 using System.Text;
 using System.Text.Json;
 using FluentAssertions;
+using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.DTOs.PaymentCalculations;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services;
@@ -487,146 +488,6 @@ public class PaymentCalculationServiceTests
     }
 
     [Test]
-    public async Task GetProducerRegistrationFees_V2_Succeeds()
-    {
-        // Arrange
-        var response = new HttpResponseMessage(HttpStatusCode.OK)
-        {
-            Content = PaymentCalculationServiceTests.CalculationResponse.ToJsonContent(_jsonOptions)
-        };
-
-        _paymentServiceApiClientMock
-            .Setup(x => x.SendPostRequest(It.IsAny<string>(), It.IsAny<ProducerPaymentCalculationV2Request>()))
-            .ReturnsAsync(response);
-
-        // Act
-        var result = await _systemUnderTest.GetProducerRegistrationFees(new ProducerPaymentCalculationV2Request { ApplicationReferenceNumber = "V2-OK" });
-
-        // Assert
-        result.Should().BeEquivalentTo(PaymentCalculationServiceTests.CalculationResponse);
-    }
-
-    [Test]
-    public async Task GetProducerRegistrationFees_V2_NotFound_ReturnsNull()
-    {
-        // Arrange
-        var response = new HttpResponseMessage(HttpStatusCode.NotFound);
-        _paymentServiceApiClientMock
-            .Setup(x => x.SendPostRequest(It.IsAny<string>(), It.IsAny<ProducerPaymentCalculationV2Request>()))
-            .ReturnsAsync(response);
-
-        // Act
-        var result = await _systemUnderTest.GetProducerRegistrationFees(new ProducerPaymentCalculationV2Request { ApplicationReferenceNumber = "V2-NF" });
-
-        // Assert
-        result.Should().BeNull();
-    }
-
-    [Test]
-    public async Task GetProducerRegistrationFees_V2_ServerError_EnsureSuccess_Throws_ReturnsNull()
-    {
-        // Arrange
-        var response = new HttpResponseMessage(HttpStatusCode.InternalServerError)
-        {
-            Content = new StringContent("error")
-        };
-        _paymentServiceApiClientMock
-            .Setup(x => x.SendPostRequest(It.IsAny<string>(), It.IsAny<ProducerPaymentCalculationV2Request>()))
-            .ReturnsAsync(response);
-
-        // Act
-        var result = await _systemUnderTest.GetProducerRegistrationFees(new ProducerPaymentCalculationV2Request { ApplicationReferenceNumber = "V2-500" });
-
-        // Assert
-        result.Should().BeNull();
-    }
-
-    [Test]
-    public async Task GetProducerRegistrationFees_V2_Exception_ReturnsNull()
-    {
-        // Arrange
-        _paymentServiceApiClientMock
-            .Setup(x => x.SendPostRequest(It.IsAny<string>(), It.IsAny<ProducerPaymentCalculationV2Request>()))
-            .ThrowsAsync(new Exception("exception"));
-
-        // Act
-        var result = await _systemUnderTest.GetProducerRegistrationFees(new ProducerPaymentCalculationV2Request { ApplicationReferenceNumber = "V2-EX" });
-
-        // Assert
-        result.Should().BeNull();
-    }
-
-    [Test]
-    public async Task GetComplianceSchemeRegistrationFees_V2_Succeeds()
-    {
-        // Arrange
-        var response = new HttpResponseMessage(HttpStatusCode.OK)
-        {
-            Content = PaymentCalculationServiceTests._complianceSchemeCalculationResponse.ToJsonContent(_jsonOptions)
-        };
-
-        _paymentServiceApiClientMock
-            .Setup(x => x.SendPostRequest(It.IsAny<string>(), It.IsAny<ComplianceSchemePaymentCalculationV2Request>()))
-            .ReturnsAsync(response);
-
-        // Act
-        var result = await _systemUnderTest.GetComplianceSchemeRegistrationFees(new ComplianceSchemePaymentCalculationV2Request { ApplicationReferenceNumber = "CSV2-OK" });
-
-        // Assert
-        result.Should().BeEquivalentTo(PaymentCalculationServiceTests._complianceSchemeCalculationResponse);
-    }
-
-    [Test]
-    public async Task GetComplianceSchemeRegistrationFees_V2_NotFound_ReturnsNull()
-    {
-        // Arrange
-        var response = new HttpResponseMessage(HttpStatusCode.NotFound);
-        _paymentServiceApiClientMock
-            .Setup(x => x.SendPostRequest(It.IsAny<string>(), It.IsAny<ComplianceSchemePaymentCalculationV2Request>()))
-            .ReturnsAsync(response);
-
-        // Act
-        var result = await _systemUnderTest.GetComplianceSchemeRegistrationFees(new ComplianceSchemePaymentCalculationV2Request { ApplicationReferenceNumber = "CSV2-NF" });
-
-        // Assert
-        result.Should().BeNull();
-    }
-
-    [Test]
-    public async Task GetComplianceSchemeRegistrationFees_V2_ServerError_EnsureSuccess_Throws_ReturnsNull()
-    {
-        // Arrange
-        var response = new HttpResponseMessage(HttpStatusCode.InternalServerError)
-        {
-            Content = new StringContent("error")
-        };
-        _paymentServiceApiClientMock
-            .Setup(x => x.SendPostRequest(It.IsAny<string>(), It.IsAny<ComplianceSchemePaymentCalculationV2Request>()))
-            .ReturnsAsync(response);
-
-        // Act
-        var result = await _systemUnderTest.GetComplianceSchemeRegistrationFees(new ComplianceSchemePaymentCalculationV2Request { ApplicationReferenceNumber = "CSV2-500" });
-
-        // Assert
-        result.Should().BeNull();
-    }
-
-    [Test]
-    public async Task GetComplianceSchemeRegistrationFees_V2_Exception_ReturnsNull()
-    {
-        // Arrange
-        _paymentServiceApiClientMock
-            .Setup(x => x.SendPostRequest(It.IsAny<string>(), It.IsAny<ComplianceSchemePaymentCalculationV2Request>()))
-            .ThrowsAsync(new Exception("error"));
-
-        // Act
-        var result = await _systemUnderTest.GetComplianceSchemeRegistrationFees(new ComplianceSchemePaymentCalculationV2Request { ApplicationReferenceNumber = "CSV2-EX" });
-
-        // Assert
-        result.Should().BeNull();
-    }
-
-    [Test]
     public async Task InitiatePayment_WhenClientThrowsException_ReturnsEmpty()
     {
         // Arrange
@@ -789,5 +650,87 @@ public class PaymentCalculationServiceTests
         var result = await _systemUnderTest.GetRegistrationFeeCalculationDetails(Guid.NewGuid());
 
         result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetSubmissionPeriods_Success_ReturnsDetailsArray()
+    {
+        var payload = new[]
+        {
+            new SubmissionPeriodDetails
+            {
+                Id = 1, WindowType = "Cso", RegistrationYear = 2025,
+                OpeningDate = new DateTime(2024, 7, 1, 0, 0, 0, DateTimeKind.Utc),
+                DeadlineDate = new DateTime(2025, 4, 2, 0, 0, 0, DateTimeKind.Utc),
+                ClosingDate = new DateTime(2026, 2, 1, 0, 0, 0, DateTimeKind.Utc)
+            }
+        };
+        var response = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = payload.ToJsonContent(_jsonOptions)
+        };
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendGetRequest(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(response);
+
+        var result = await _systemUnderTest.GetSubmissionPeriods();
+
+        result.Should().NotBeNull();
+        result!.Should().BeEquivalentTo(payload);
+    }
+
+    [Test]
+    public async Task GetSubmissionPeriods_CallsSendGetRequestAnonymously()
+    {
+        var response = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = Array.Empty<SubmissionPeriodDetails>().ToJsonContent(_jsonOptions)
+        };
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendGetRequest(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(response);
+
+        await _systemUnderTest.GetSubmissionPeriods();
+
+        // Warmup runs before any user is signed in — no user token available.
+        _paymentServiceApiClientMock.Verify(
+            x => x.SendGetRequest(It.IsAny<string>(), false),
+            Times.Once);
+    }
+
+    [Test]
+    public async Task GetSubmissionPeriods_NotFound_ThrowsHttpRequestException()
+    {
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendGetRequest(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.NotFound));
+
+        Func<Task> act = () => _systemUnderTest.GetSubmissionPeriods();
+
+        await act.Should().ThrowAsync<HttpRequestException>();
+    }
+
+    [Test]
+    public async Task GetSubmissionPeriods_ClientThrows_PropagatesException()
+    {
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendGetRequest(It.IsAny<string>(), It.IsAny<bool>()))
+            .ThrowsAsync(new Exception("boom"));
+
+        Func<Task> act = () => _systemUnderTest.GetSubmissionPeriods();
+
+        await act.Should().ThrowAsync<Exception>().WithMessage("boom");
+    }
+
+    [Test]
+    public async Task GetSubmissionPeriods_ServerError_ThrowsHttpRequestException()
+    {
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendGetRequest(It.IsAny<string>(), It.IsAny<bool>()))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.InternalServerError));
+
+        Func<Task> act = () => _systemUnderTest.GetSubmissionPeriods();
+
+        await act.Should().ThrowAsync<HttpRequestException>();
     }
 }

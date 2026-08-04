@@ -155,7 +155,6 @@ public static class ServiceProviderExtension
         services.Configure<ComplianceSchemeMembersPaginationOptions>(configuration.GetSection(ComplianceSchemeMembersPaginationOptions.ConfigSection));
         services.Configure<SessionOptions>(configuration.GetSection(SessionOptions.ConfigSection));
         services.AddSingleton<GuidanceLinkOptions>();
-        services.Configure<List<RegistrationPeriodPattern>>(configuration.GetSection(RegistrationPeriodPattern.ConfigSection));
         services.Configure<NotificationBannerOptions>(configuration.GetSection(NotificationBannerOptions.Section));
         services.Configure<FibreOptions>(configuration.GetSection(FibreOptions.ConfigSection));
         services.Configure<CsocOptions>(configuration.GetSection(CsocOptions.ConfigSection));
@@ -187,7 +186,6 @@ public static class ServiceProviderExtension
             FrontendSessionManager = sp.GetRequiredService<ISessionManager<FrontendSchemeRegistrationSession>>(),
             Logger = sp.GetRequiredService<ILogger<RegistrationApplicationService>>(),
             FeatureManager = sp.GetRequiredService<IFeatureManager>(),
-            HttpContextAccessor = sp.GetRequiredService<IHttpContextAccessor>(),
             RegistrationPeriodProvider = sp.GetRequiredService<IRegistrationPeriodProvider>()
         });
         services.AddScoped<IRegistrationApplicationService, RegistrationApplicationService>();
@@ -205,6 +203,7 @@ public static class ServiceProviderExtension
         services.AddScoped<ComplianceSchemeIdHttpContextFilterAttribute>();
         services.AddScoped<IResubmissionApplicationService, ResubmissionApplicationServices>();
         services.AddSingleton<IRegistrationPeriodProvider, RegistrationPeriodProvider>();
+        services.AddHostedService<RegistrationPeriodProviderWarmupService>();
     }
 
     // When testing PRNs use a configurable date in place of the current date
@@ -237,16 +236,7 @@ public static class ServiceProviderExtension
         services
             .AddHttpClient<IPaymentCalculationServiceApiClient, PaymentCalculationServiceApiClient>(client =>
             {
-                var featureManager = sp.GetRequiredService<IFeatureManager>();
-                var baseUrl = sp.GetRequiredService<IOptions<PaymentFacadeApiOptions>>().Value.BaseUrl;
-                var useV2 = featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeV2).GetAwaiter().GetResult();
-
-                if (useV2)
-                {
-                    baseUrl = Regex.Replace(baseUrl, @"/v1(/|$)", "/v2$1", RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
-                }
-
-                client.BaseAddress = new Uri(baseUrl);
+                client.BaseAddress = new Uri(sp.GetRequiredService<IOptions<PaymentFacadeApiOptions>>().Value.BaseUrl);
                 client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
             })
             .AddTransientHttpErrorPolicy(builder => builder.WaitAndRetryAsync(
@@ -463,6 +453,29 @@ public static class ServiceProviderExtension
                         }
 
                         await existingOnRemoteFailure(context);
+                    };
+
+                    // Gate the redirect to B2C behind a fresh JS-verification check. The JS-enabled
+                    // cookie is session-scoped and can outlive the browser's actual JS state (e.g.
+                    // user disabled JS between visits, or the browser restored a prior session).
+                    // Without this hook, a stale cookie would let the request pass the detection
+                    // middleware only to hit B2C's JS-required error page.
+                    var existingOnRedirectToIdentityProvider = options.Events.OnRedirectToIdentityProvider;
+                    options.Events.OnRedirectToIdentityProvider = async context =>
+                    {
+                        var verifiedCookieName = cookieOptions.JsVerifiedCookieName;
+                        if (string.IsNullOrEmpty(verifiedCookieName)
+                            || context.Request.Cookies.ContainsKey(verifiedCookieName))
+                        {
+                            await existingOnRedirectToIdentityProvider(context);
+                            return;
+                        }
+
+                        context.HandleResponse();
+                        await JavaScriptDetectionMiddleware.WriteGatePageAsync(
+                            context.HttpContext,
+                            cookieOptions.JsEnabledCookieName,
+                            verifiedCookieName);
                     };
                 },
                 options =>

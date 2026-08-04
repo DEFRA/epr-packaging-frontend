@@ -8,6 +8,7 @@ using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Extensions;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
+using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
 using FrontendSchemeRegistration.UI.Extensions;
@@ -49,6 +50,7 @@ public class PackagingDataResubmissionController : Controller
 
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
+    [PomResubmissionSessionGuardActionFilter(RequireSubmissionId = false)]
     [Route(PagePaths.ResubmissionTaskList)]
     public async Task<IActionResult> ResubmissionTaskList()
     {
@@ -106,6 +108,7 @@ public class PackagingDataResubmissionController : Controller
 
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
+    [PomResubmissionSessionGuardActionFilter]
     [Route(PagePaths.ResubmissionFeeCalculations)]
     public async Task<IActionResult> ResubmissionFeeCalculations()
     {
@@ -115,6 +118,8 @@ public class PackagingDataResubmissionController : Controller
         var isComplianceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
 
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+        await _resubmissionApplicationService.RefreshPomSubmissionAsync(session);
+
         var complianceSchemeId = session.RegistrationSession?.SelectedComplianceScheme?.Id;
         session.PomResubmissionSession.Journey = new List<string> { $"/report-data/{PagePaths.ResubmissionTaskList}", PagePaths.ResubmissionFeeCalculations };
         SetBackLink(session, PagePaths.ResubmissionFeeCalculations);
@@ -165,6 +170,7 @@ public class PackagingDataResubmissionController : Controller
 
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
+    [PomResubmissionSessionGuardActionFilter]
     [Route(PagePaths.RedirectPackagingUploadDetails)]
     public async Task<IActionResult> RedirectToFileUpload()
     {
@@ -177,6 +183,7 @@ public class PackagingDataResubmissionController : Controller
 
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
+    [PomResubmissionSessionGuardActionFilter]
     [Route(PagePaths.FileUploadResubmissionConfirmation)]
     public async Task<IActionResult> FileUploadResubmissionConfirmation()
     {
