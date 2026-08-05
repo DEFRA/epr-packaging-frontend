@@ -101,13 +101,27 @@ public class FileUploadCheckFileAndSubmitController : Controller
             return RedirectToAction("Get", "FileUploadSubLanding");
         }
 
+        var routeValues = new RouteValueDictionary { { "submissionId", submissionId.ToString() } };
+
+        // SUB-332: a more recent upload that never became the valid file means the file on offer is not the
+        // one the user believes they are submitting. Block rather than let them declare the older file, and
+        // enforce it here as well as in the view because the view only hides the button.
+        if (submission.HasNewerUnprocessedUploadThanValidFile())
+        {
+            _logger.LogWarning(
+                "Blocked submission of submission {SubmissionId}: the upload at {UnprocessedUploadDateTime} is newer than the last valid file at {LastValidFileUploadDateTime}, so the user must upload again before submitting",
+                submission.Id,
+                submission.PomFileUploadDateTime,
+                submission.LastUploadedValidFile.FileUploadDateTime);
+
+            return RedirectToAction(nameof(Get), routeValues);
+        }
+
         if (!ModelState.IsValid)
         {
             var viewModel = await BuildModel(submission, userData);
             return View("FileUploadCheckFileAndSubmit", viewModel);
         }
-
-        var routeValues = new RouteValueDictionary { { "submissionId", submissionId.ToString() } };
 
         if (userData.Organisations.FirstOrDefault() is not { OrganisationRole: OrganisationRoles.ComplianceScheme })
         {
@@ -172,7 +186,10 @@ public class FileUploadCheckFileAndSubmitController : Controller
             LastValidFileUploadedBy = uploadedByUser.UserName,
             LastValidFileUploadDateTime = submission.LastUploadedValidFile.FileUploadDateTime,
             SubmittedFileName = submission.LastSubmittedFile?.FileName,
-            SubmittedDateTime = submission.LastSubmittedFile?.SubmittedDateTime
+            SubmittedDateTime = submission.LastSubmittedFile?.SubmittedDateTime,
+            HasNewerUnprocessedUpload = submission.HasNewerUnprocessedUploadThanValidFile(),
+            UnprocessedUploadFileName = submission.PomFileName,
+            UnprocessedUploadDateTime = submission.PomFileUploadDateTime
         };
 
         var submittedByUserId = submission.LastSubmittedFile?.SubmittedBy;

@@ -365,7 +365,7 @@
                                                     <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@SharedLocalizer["continue"]</button>
                                                 </div>
                                             }
-                                            else if (implementPackagingDataResubmissionJourney && submissionPeriodDetail.Status is SubmissionPeriodStatus.SubmittedToRegulator && submissionPeriodDetail.IsResubmissionComplete is not null && submissionPeriodDetail.IsResubmissionComplete is true)
+                                            else if (implementPackagingDataResubmissionJourney && submissionPeriodDetail.Status is SubmissionPeriodStatus.SubmittedToRegulator && (submissionPeriodDetail.IsResubmissionComplete is true || submissionPeriodDetail.ResubmissionApplicationSubmitted))
                                             {
                                                 <div class="govuk-card-footer">
                                                     <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["view_your_resubmission"]</button>
@@ -416,7 +416,7 @@
                                                     <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@SharedLocalizer["continue"]</button>
                                                 </div>
                                             }
-                                            else if (implementPackagingDataResubmissionJourney && submissionPeriodDetail.Status is SubmissionPeriodStatus.SubmittedToRegulator && submissionPeriodDetail.IsResubmissionComplete is not null && submissionPeriodDetail.IsResubmissionComplete is true)
+                                            else if (implementPackagingDataResubmissionJourney && submissionPeriodDetail.Status is SubmissionPeriodStatus.SubmittedToRegulator && (submissionPeriodDetail.IsResubmissionComplete is true || submissionPeriodDetail.ResubmissionApplicationSubmitted))
                                             {
                                                 <div class="govuk-card-footer">
                                                     <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["view_your_resubmission"]</button>

@@ -1,0 +1,56 @@
+{
+  "name": "december-waste",
+  "sourceCulture": "en",
+  "targetCulture": "cy",
+  "defaultOutputPath": "translations/welsh-translations/december-waste",
+  "translatorInstructions": [],
+  "pages": [
+    {
+      "id": "prns-search",
+      "fileName": "01-search-prns.xlsx",
+      "route": "/report-data/view-awaiting-acceptance",
+      "view": "src/FrontendSchemeRegistration.UI/Views/Prns/SearchPrns.cshtml",
+      "figmaUrl": null,
+      "notes": "Search PRNs and PERNs page: December Waste acceptance-year message shown against awaiting-acceptance rows.",
+      "featureFlags": [
+        "ShowPrn",
+        "ShowDecemberWaste"
+      ],
+      "appSettings": {},
+      "resources": [
+        {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/Prns/SearchPrns.en.resx",
+          "section": "December Waste acceptance-year message shown against awaiting-acceptance rows.",
+          "keys": [
+            "acceptance_year",
+            "acceptance_years"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prns-select-single",
+      "fileName": "02-select-single-prn.xlsx",
+      "route": "/report-data/selected-prn/{id}",
+      "view": "src/FrontendSchemeRegistration.UI/Views/Prns/SelectSinglePrn.cshtml",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=2012-26252",
+      "notes": "Single PRN or PERN details page: December Waste acceptance-year message and Accepted obligation-year line.",
+      "featureFlags": [
+        "ShowPrn",
+        "ShowDecemberWaste"
+      ],
+      "appSettings": {},
+      "resources": [
+        {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/Prns/SelectSinglePrn.en.resx",
+          "section": "December Waste acceptance-year message and Accepted obligation-year line.",
+          "keys": [
+            "acceptance_year",
+            "acceptance_years",
+            "accepted_towards_recycling_obligations"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -41,6 +41,11 @@
                 <div class="govuk-heading-m">
                     @Localizer["year"]: <strong>@Model.IssueYear</strong>
                 </div>
+                <feature name="@FeatureFlags.ShowDecemberWaste">
+                    <div class="govuk-heading-m">
+                        @Localizer["accepted_towards_recycling_obligations", Model.ObligationYear]
+                    </div>
+                </feature>
             </div>
             @await Html.PartialAsync("../Shared/Partials/Prns/_recyclingNoteStatus.cshtml", Model)
             <br>

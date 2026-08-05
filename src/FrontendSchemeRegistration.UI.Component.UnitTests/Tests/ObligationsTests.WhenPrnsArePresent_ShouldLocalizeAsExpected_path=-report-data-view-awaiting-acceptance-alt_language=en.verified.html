@@ -1,4 +1,4 @@
-
+﻿
 <title>Accept or reject PRNs and PERNs - Report packaging data - GOV.UK</title>
 
 <form method="POST" action="/report-data/update-cookie-acceptance?returnUrl=%2Freport-data%2Fview-awaiting-acceptance-alt">
@@ -121,16 +121,20 @@
                       <input data-val="true" data-val-required="The ExternalId field is required." id="Prns_1__ExternalId" name="Prns[1].ExternalId" type="hidden" value="00000000-0000-0000-0000-000000000002">
                       <input data-val="true" data-val-required="The NoteType field is required." id="Prns_1__NoteType" name="Prns[1].NoteType" type="hidden" value="PRN">
                       <td class="govuk-table__cell" data-label="PRN" or="" pern="" number="">
-                        <a class="govuk-link" href="/report-data/selected-prn/00000000-0000-0000-0000-000000000002" aria-label="PRN or PERN number PRN-02">
-                          PRN-02
-                          <span class="govuk-visually-hidden">PRN or PERN number</span>
-                        </a>
+                        <div class="govuk-checkboxes govuk-checkboxes--small">
+                          <div class="govuk-checkboxes__item">
+                            <input class="govuk-checkboxes__input" data-val="true" data-val-required="The IsSelected field is required." id="chkBoxSelectPrn_PRN_00000000-0000-0000-0000-000000000002" name="Prns[1].IsSelected" type="checkbox" value="true">
+                            <label class="govuk-label govuk-checkboxes__label" for="chkBoxSelectPrn_PRN_00000000-0000-0000-0000-000000000002">
+                              <a class="govuk-link" href="/report-data/selected-prn/00000000-0000-0000-0000-000000000002">PRN-02</a>
+                            </label>
+                          </div>
+                        </div>
                       </td>
                       <td class="govuk-table__cell" data-label="Material">Paper or board</td>
                       <td class="govuk-table__cell" data-label="Date" issued="">01 May 2026</td>
-                      <td class="govuk-table__cell" data-label="December" waste="">No</td>
-                      <td class="govuk-table__cell" data-label="Issued" by=""></td>
-                      <td class="govuk-table__cell govuk-table__cell--numeric" data-label="Tonnage">0</td>
+                      <td class="govuk-table__cell" data-label="December" waste="">Yes</td>
+                      <td class="govuk-table__cell" data-label="Issued" by="">Test Reprocessor</td>
+                      <td class="govuk-table__cell govuk-table__cell--numeric" data-label="Tonnage">1</td>
                       <td class="govuk-table__cell" data-label="Issuer" note="">
                         Not provided
                       </td>
@@ -201,6 +205,7 @@
             </fieldset>
           </div>
           <input name="__RequestVerificationToken" type="hidden" value="[Scrubbed]">
+          <input name="Prns[1].IsSelected" type="hidden" value="false">
         </form>
       </div>
     </div>

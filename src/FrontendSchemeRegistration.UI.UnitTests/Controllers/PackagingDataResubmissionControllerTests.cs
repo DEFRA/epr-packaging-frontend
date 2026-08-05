@@ -214,6 +214,249 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
         ResubmissionApplicationService.Verify(x => x.CreatePomResubmissionReferenceNumber(It.IsAny<FrontendSchemeRegistrationSession?>(), It.IsAny<string?>(), It.IsAny<Guid>(), It.IsAny<int>()), Times.Once);
     }
 
+    // SUB-332: an empty reference number alone must not trigger creation. If the API reports an open cycle
+    // the reference number belongs to that cycle, and raising another produces a second
+    // PackagingResubmissionReferenceNumberCreated event mid-cycle.
+    [Test]
+    public async Task ResubmissionTaskList_CreatePomResubmissionReferenceNumber_ShouldNotBeCalled_WhenCycleIsOpenDespiteEmptyReferenceNumber()
+    {
+        // Arrange
+        var resubmissionApplicationDetails = new PackagingResubmissionApplicationDetails
+        {
+            IsSubmitted = true,
+            ApplicationReferenceNumber = string.Empty,
+            ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+            SynapseResponse = new SynapseResponse
+            {
+                IsFileSynced = true
+            }
+        };
+        var resubmissionApplicationDetailsCollection = new List<PackagingResubmissionApplicationDetails> { resubmissionApplicationDetails };
+
+        _userData = new UserData
+        {
+            Id = Guid.NewGuid(),
+            Organisations = new()
+            {
+                new()
+                {
+                    Name = OrganisationName,
+                    OrganisationNumber = "123456",
+                    Id = _organisationId,
+                    OrganisationRole = OrganisationRoles.ComplianceScheme
+                }
+            }
+        };
+
+        SetupBase(_userData);
+
+        var session = new FrontendSchemeRegistrationSession
+        {
+            PomResubmissionSession = new PackagingReSubmissionSession
+            {
+                SubmissionPeriod = "January to December 2024",
+                PomSubmissions = new List<PomSubmission>
+                        { new PomSubmission
+                            { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b") }
+                        },
+                PomSubmission = new PomSubmission()
+                {
+                    Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"),
+                    IsSubmitted = true,
+                    LastSubmittedFile = new SubmittedFileInformation
+                    {
+                        FileId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"),
+                        SubmittedDateTime = DateTime.Now.AddDays(-2)
+                    }
+                }
+            },
+            RegistrationSession = new RegistrationSession
+            {
+                SelectedComplianceScheme = new Application.DTOs.ComplianceScheme.ComplianceSchemeDto
+                {
+                    Id = Guid.NewGuid()
+                }
+            }
+        };
+        var complianceSchemeSummary = new ComplianceSchemeSummary
+        {
+            Nation = Nation.England
+        };
+
+        SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
+            .Returns(Task.FromResult(session));
+        UserAccountService.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
+        ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(It.IsAny<Organisation>(), It.IsAny<List<string>>(), It.IsAny<Guid?>())).ReturnsAsync(resubmissionApplicationDetailsCollection);
+
+        PaymentCalculationService.Setup(x => x.GetRegulatorNation(It.IsAny<Guid>())).ReturnsAsync("England");
+        ComplianceService.Setup(x => x.GetComplianceSchemeSummary(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(complianceSchemeSummary));
+
+        // Act
+        await SystemUnderTest.ResubmissionTaskList();
+
+        // Assert
+        ResubmissionApplicationService.Verify(x => x.CreatePomResubmissionReferenceNumber(It.IsAny<FrontendSchemeRegistrationSession?>(), It.IsAny<string?>(), It.IsAny<Guid>(), It.IsAny<int>()), Times.Never);
+    }
+
+    [Test]
+    public async Task ResubmissionTaskList_CreatePomResubmissionReferenceNumber_ShouldNotBeCalled_WhenSubmissionHasNoLastSubmittedFile()
+    {
+        // The submitter on the reference-number event can only come from LastSubmittedFile, so a submission
+        // without one must be skipped rather than dereferenced. Reachable because the refreshed submission
+        // now drives this block, and the refresh can return a submission the session copy never had.
+        // Arrange
+        var submissionId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b");
+
+        var resubmissionApplicationDetails = new PackagingResubmissionApplicationDetails
+        {
+            IsSubmitted = false,
+            SubmissionId = submissionId,
+            ApplicationReferenceNumber = string.Empty,
+            ApplicationStatus = ApplicationStatusType.NotStarted,
+            SynapseResponse = new SynapseResponse
+            {
+                IsFileSynced = true
+            }
+        };
+        var resubmissionApplicationDetailsCollection = new List<PackagingResubmissionApplicationDetails> { resubmissionApplicationDetails };
+
+        _userData = GetUserData(OrganisationRoles.ComplianceScheme);
+
+        SetupBase(_userData);
+
+        var session = new FrontendSchemeRegistrationSession
+        {
+            PomResubmissionSession = new PackagingReSubmissionSession
+            {
+                SubmissionPeriod = "January to December 2024",
+                PomSubmission = new PomSubmission
+                {
+                    Id = submissionId,
+                    LastSubmittedFile = null
+                }
+            },
+            RegistrationSession = new RegistrationSession
+            {
+                SelectedComplianceScheme = new Application.DTOs.ComplianceScheme.ComplianceSchemeDto
+                {
+                    Id = Guid.NewGuid()
+                }
+            }
+        };
+
+        SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
+            .Returns(Task.FromResult(session));
+        ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(It.IsAny<Organisation>(), It.IsAny<List<string>>(), It.IsAny<Guid?>())).ReturnsAsync(resubmissionApplicationDetailsCollection);
+        ComplianceService.Setup(x => x.GetComplianceSchemeSummary(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(new ComplianceSchemeSummary { Nation = Nation.England }));
+
+        // Act
+        var result = await SystemUnderTest.ResubmissionTaskList() as ViewResult;
+
+        // Assert
+        result.Should().NotBeNull();
+
+        ResubmissionApplicationService.Verify(
+            x => x.CreatePomResubmissionReferenceNumber(It.IsAny<FrontendSchemeRegistrationSession?>(), It.IsAny<string?>(), It.IsAny<Guid>(), It.IsAny<int>()),
+            Times.Never);
+        UserAccountService.Verify(x => x.GetAllPersonByUserId(It.IsAny<Guid>()), Times.Never);
+    }
+
+    [Test]
+    public async Task ResubmissionTaskList_UsesRefreshedSubmissionForReferenceNumberEvent()
+    {
+        // Regression: the reference-number event's submitter name must come from the re-fetched submission,
+        // not the stale session snapshot (SUB-331). ResubmissionTaskList was the one event-creating action
+        // in the journey still reading the cached copy.
+        // Arrange
+        var submissionId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b");
+        var staleSubmittedBy = Guid.NewGuid();
+        var freshSubmittedBy = Guid.NewGuid();
+
+        var resubmissionApplicationDetails = new PackagingResubmissionApplicationDetails
+        {
+            IsSubmitted = false,
+            SubmissionId = submissionId,
+            ApplicationReferenceNumber = string.Empty,
+            ApplicationStatus = ApplicationStatusType.NotStarted,
+            SynapseResponse = new SynapseResponse
+            {
+                IsFileSynced = true
+            }
+        };
+        var resubmissionApplicationDetailsCollection = new List<PackagingResubmissionApplicationDetails> { resubmissionApplicationDetails };
+
+        _userData = GetUserData(OrganisationRoles.ComplianceScheme);
+
+        SetupBase(_userData);
+
+        var session = new FrontendSchemeRegistrationSession
+        {
+            PomResubmissionSession = new PackagingReSubmissionSession
+            {
+                SubmissionPeriod = "January to December 2024",
+                PomSubmission = new PomSubmission
+                {
+                    Id = submissionId,
+                    IsSubmitted = true,
+                    LastSubmittedFile = new SubmittedFileInformation
+                    {
+                        FileId = Guid.NewGuid(),
+                        SubmittedBy = staleSubmittedBy,
+                        SubmittedDateTime = DateTime.Now.AddDays(-2)
+                    }
+                }
+            },
+            RegistrationSession = new RegistrationSession
+            {
+                SelectedComplianceScheme = new Application.DTOs.ComplianceScheme.ComplianceSchemeDto
+                {
+                    Id = Guid.NewGuid()
+                }
+            }
+        };
+
+        SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
+            .Returns(Task.FromResult(session));
+        UserAccountService.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
+        ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(It.IsAny<Organisation>(), It.IsAny<List<string>>(), It.IsAny<Guid?>())).ReturnsAsync(resubmissionApplicationDetailsCollection);
+
+        ResubmissionApplicationService
+            .Setup(x => x.RefreshPomSubmissionAsync(It.IsAny<FrontendSchemeRegistrationSession>()))
+            .Callback<FrontendSchemeRegistrationSession>(x =>
+                x.PomResubmissionSession.PomSubmission = new PomSubmission
+                {
+                    Id = submissionId,
+                    IsSubmitted = true,
+                    LastSubmittedFile = new SubmittedFileInformation
+                    {
+                        FileId = Guid.NewGuid(),
+                        SubmittedBy = freshSubmittedBy,
+                        SubmittedDateTime = DateTime.Now.AddMinutes(-5)
+                    }
+                })
+            .Returns(Task.CompletedTask);
+
+        PaymentCalculationService.Setup(x => x.GetRegulatorNation(It.IsAny<Guid>())).ReturnsAsync("England");
+        ComplianceService.Setup(x => x.GetComplianceSchemeSummary(It.IsAny<Guid>(), It.IsAny<Guid>())).Returns(Task.FromResult(new ComplianceSchemeSummary { Nation = Nation.England }));
+
+        ResubmissionApplicationService.Setup(x => x.GetSubmissionIdsAsync(It.IsAny<Guid>(), SubmissionType.Producer, It.IsAny<Guid?>(), It.IsAny<int?>()))
+            .ReturnsAsync(new List<SubmissionPeriodId> { new() { SubmissionId = submissionId, Year = DateTime.Now.Year } });
+        ResubmissionApplicationService.Setup(x => x.GetSubmissionHistoryAsync(It.IsAny<Guid>(), It.IsAny<DateTime>())).ReturnsAsync(new List<SubmissionHistory>());
+
+        // Act
+        await SystemUnderTest.ResubmissionTaskList();
+
+        // Assert
+        ResubmissionApplicationService.Verify(x => x.RefreshPomSubmissionAsync(session), Times.Once);
+
+        UserAccountService.Verify(x => x.GetAllPersonByUserId(freshSubmittedBy), Times.Once);
+        UserAccountService.Verify(x => x.GetAllPersonByUserId(staleSubmittedBy), Times.Never);
+
+        ResubmissionApplicationService.Verify(
+            x => x.CreatePomResubmissionReferenceNumber(session, It.IsAny<string?>(), submissionId, It.IsAny<int>()),
+            Times.Once);
+    }
+
     [Test]
     public async Task ResubmissionTaskList_ReturnsCorrectViewAndModel()
     {
@@ -843,6 +1086,80 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
         // Assert
         pageBackLink.Should().Be($"/report-data/{PagePaths.ResubmissionTaskList}");
         result?.ActionName.Should().Be(nameof(PackagingDataResubmissionController.ResubmissionTaskList));
+    }
+
+    [Test]
+    public async Task ResubmissionFeeCalculations_UsesRefreshedFileIdAndSubmittedDateForDownstreamCalls()
+    {
+        // Regression: the fee-view event's FileId AND the resubmission date passed to GetResubmissionFees
+        // must both come from the re-fetched submission, not the stale session snapshot (SUB-332).
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var staleFileId = Guid.NewGuid();
+        var staleDate = DateTime.UtcNow.AddDays(-10);
+        var freshFileId = Guid.NewGuid();
+        var freshDate = DateTime.UtcNow.AddMinutes(-5);
+
+        var session = new FrontendSchemeRegistrationSession
+        {
+            PomResubmissionSession = new PackagingReSubmissionSession
+            {
+                PackagingResubmissionApplicationSession = new PackagingResubmissionApplicationSession
+                {
+                    ApplicationReferenceNumber = "REF-STALE",
+                    SubmissionId = submissionId
+                },
+                PomSubmission = new PomSubmission
+                {
+                    Id = submissionId,
+                    LastSubmittedFile = new SubmittedFileInformation
+                    {
+                        FileId = staleFileId,
+                        SubmittedDateTime = staleDate
+                    }
+                }
+            }
+        };
+
+        SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+
+        ResubmissionApplicationService
+            .Setup(s => s.RefreshPomSubmissionAsync(It.IsAny<FrontendSchemeRegistrationSession>()))
+            .Callback<FrontendSchemeRegistrationSession>(s =>
+                s.PomResubmissionSession.PomSubmission = new PomSubmission
+                {
+                    Id = submissionId,
+                    LastSubmittedFile = new SubmittedFileInformation
+                    {
+                        FileId = freshFileId,
+                        SubmittedDateTime = freshDate
+                    }
+                })
+            .Returns(Task.CompletedTask);
+
+        ResubmissionApplicationService
+            .Setup(s => s.GetPackagingResubmissionMemberDetails(It.IsAny<PackagingResubmissionMemberRequest>()))
+            .ReturnsAsync(new PackagingResubmissionMemberDetails { MemberCount = 1 });
+        ResubmissionApplicationService
+            .Setup(s => s.GetResubmissionFees(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<DateTime?>()))
+            .ReturnsAsync(new PackagingPaymentResponse());
+
+        // Act
+        await SystemUnderTest.ResubmissionFeeCalculations();
+
+        // Assert
+        ResubmissionApplicationService.Verify(s => s.RefreshPomSubmissionAsync(session), Times.Once);
+
+        ResubmissionApplicationService.Verify(
+            s => s.CreatePackagingResubmissionFeeViewEvent(submissionId, freshFileId),
+            Times.Once);
+        ResubmissionApplicationService.Verify(
+            s => s.CreatePackagingResubmissionFeeViewEvent(It.IsAny<Guid?>(), staleFileId),
+            Times.Never);
+
+        ResubmissionApplicationService.Verify(
+            s => s.GetResubmissionFees(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), freshDate),
+            Times.Once);
     }
 
     [Test]

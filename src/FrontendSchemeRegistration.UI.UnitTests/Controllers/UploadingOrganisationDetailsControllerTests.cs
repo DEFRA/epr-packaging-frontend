@@ -177,6 +177,35 @@ public class UploadingOrganisationDetailsControllerTests
     }
 
     [Test]
+    public async Task Get_RedirectsToFileUploadCompanyDetailsGet_WhenUploadHasNotCompletedButContainsErrors()
+    {
+        // Arrange
+        // Simulates a file that failed the antivirus scan (e.g. error code 81, "file contains a virus"):
+        // CompanyDetailsDataComplete never becomes true for such a file, because row validation is
+        // correctly never run against it, so the errors list must be enough to end the polling loop.
+        var submission = new RegistrationSubmission
+        {
+            Id = SubmissionId,
+            CompanyDetailsDataComplete = false,
+            Errors = new List<string> { "81" }
+        };
+
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(submission);
+
+        // Act
+        var result = await _testUploadingOrgDetailsController.Get(SubmissionId) as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadCompanyDetails");
+        result.RouteValues.Should().HaveCount(3);
+        result.RouteValues.Should().ContainKey("registrationyear");
+        result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId.ToString());
+    }
+
+    [Test]
     public async Task Get_ReturnsFileUploadingViewModel_WhenCompanyDetailDataHasNotFinishedProcessing()
     {
         // Arrange

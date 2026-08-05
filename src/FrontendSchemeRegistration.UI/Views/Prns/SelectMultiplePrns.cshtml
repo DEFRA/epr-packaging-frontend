@@ -1,12 +1,15 @@
 ﻿@using FrontendSchemeRegistration.UI.Controllers.Prns
 @using FrontendSchemeRegistration.UI.ViewModels.Prns
+@using Microsoft.FeatureManagement
 @inject FrontendSchemeRegistration.UI.Resources.IPrnDataResourcesLocalizer PrnDataResourcesLocalizer
+@inject IFeatureManager FeatureManager
 @model AwaitingAcceptancePrnsViewModel
 
 @{
     ViewData["Title"] = Localizer["page_title"];
     var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
     var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer);
+    var decemberWasteEnabled = await FeatureManager.IsEnabledAsync(FeatureFlags.ShowDecemberWaste);
 }
 
 <main class="govuk-main-wrapper govuk-!-padding-top-4" id="select-multiple-prns">
@@ -95,10 +98,16 @@
 								<div id="checkboxes-hint" class="govuk-hint govuk-visually-hidden">@Localizer["select_all_that_apply"]</div>
 								@for (var i = 0; i < Model.Prns.Count; i++)
 								{
+									var prn = Model.Prns[i];
+									var decemberWasteFlashText = Localizer.DecemberWasteFlashText(prn.AvailableAcceptanceYears);
+									var showDecemberWasteFlash = prn.ShouldShowDecemberWasteFlash
+										&& !string.IsNullOrEmpty(decemberWasteFlashText);
+									var cellBorder = decemberWasteEnabled && showDecemberWasteFlash ? "border-bottom-0" : null;
+
 									<tr class="govuk-table__row">
 										@Html.HiddenFor(x => x.Prns[i].ExternalId)
 										@Html.HiddenFor(x => x.Prns[i].NoteType)
-										<td class="govuk-table__cell" data-label=@Localizer["prn_or_pern_number"]>
+										<td class="govuk-table__cell @cellBorder" data-label=@Localizer["prn_or_pern_number"]>
 											@if (Model.Prns[i].IsStatusEditable)
 											{
 												<div class="govuk-checkboxes govuk-checkboxes--small">
@@ -126,12 +135,12 @@
 												</a>
 											}
 										</td>
-										<td class="govuk-table__cell" data-label=@Localizer["material"]>@PrnDataResourcesLocalizer.Material(Model.Prns[i])</td>
-										<td class="govuk-table__cell" data-label=@Localizer["date_issued"]>@Model.Prns[i].DateIssuedDisplay</td>
-										<td class="govuk-table__cell" data-label=@Localizer["december_waste"]>@SharedLocalizer[Model.Prns[i].DecemberWasteDisplay]</td>
-										<td class="govuk-table__cell" data-label=@Localizer["issued_by"]>@Model.Prns[i].IssuedBy</td>
-										<td class="govuk-table__cell govuk-table__cell--numeric" data-label=@Localizer["tonnage"]>@Model.Prns[i].Tonnage</td>
-										<td class="govuk-table__cell" data-label=@Localizer["issuer_note"]>
+										<td class="govuk-table__cell @cellBorder" data-label=@Localizer["material"]>@PrnDataResourcesLocalizer.Material(Model.Prns[i])</td>
+										<td class="govuk-table__cell @cellBorder" data-label=@Localizer["date_issued"]>@Model.Prns[i].DateIssuedDisplay</td>
+										<td class="govuk-table__cell @cellBorder" data-label=@Localizer["december_waste"]>@SharedLocalizer[Model.Prns[i].DecemberWasteDisplay]</td>
+										<td class="govuk-table__cell @cellBorder" data-label=@Localizer["issued_by"]>@Model.Prns[i].IssuedBy</td>
+										<td class="govuk-table__cell govuk-table__cell--numeric @cellBorder" data-label=@Localizer["tonnage"]>@Model.Prns[i].Tonnage</td>
+										<td class="govuk-table__cell @cellBorder" data-label=@Localizer["issuer_note"]>
 											@if (string.IsNullOrWhiteSpace(@Model.Prns[i].AdditionalNotes))
 											{
 												@Localizer["not_provided"]
@@ -142,6 +151,16 @@
 											}
 										</td>
 									</tr>
+									<feature name="@FeatureFlags.ShowDecemberWaste">
+										@if (showDecemberWasteFlash)
+										{
+											<tr class="govuk-table__row december-waste-flash-row">
+												<td class="govuk-table__cell" colspan="7">
+													@await Html.PartialAsync("../Shared/Partials/Prns/_prnFlashLabel", new ViewDataDictionary(ViewData) { { "BackgroundColor", "blue" }, { "LabelText", decemberWasteFlashText } })
+												</td>
+											</tr>
+										}
+									</feature>
 								}
 								</tbody>
 							</table>

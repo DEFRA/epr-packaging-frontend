@@ -8,4 +8,13 @@
         <NoWarn>S3903</NoWarn>
     </PropertyGroup>
 
+    <ItemGroup Condition="'$(UsingMicrosoftNETSdkWeb)' != 'true'">
+        <!-- Microsoft.Identity.Web and Microsoft.AspNetCore.DataProtection pull in 10.0.9 transitively,
+             which carries five high-severity advisories (NU1903, including CVE-2026-47302) fixed in
+             10.0.10. Web projects get the patched assembly pruned in from the ASP.NET Core shared
+             framework; the rest resolve the package itself, so pin it. Remove once those packages depend
+             on a patched version themselves. -->
+        <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.10" />
+    </ItemGroup>
+
 </Project>

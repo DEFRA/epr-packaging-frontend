@@ -8,7 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="WireMock.Net.StandAlone" Version="1.19.0" />
+    <!-- 2.x brings Scriban.Signed 7.2.5; 1.19.0 pinned 5.5.0, which carries NU1902/NU1903 advisories
+         fixed in 7.2.0. -->
+    <PackageReference Include="WireMock.Net.StandAlone" Version="2.13.0" />
   </ItemGroup>
 
   <ItemGroup>

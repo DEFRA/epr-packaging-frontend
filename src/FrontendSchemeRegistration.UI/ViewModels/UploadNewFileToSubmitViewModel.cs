@@ -35,4 +35,14 @@ public class UploadNewFileToSubmitViewModel : ViewModelWithOrganisationRole
     public string RegulatorDecision { get; set; }
 
     public bool IsResubmissionNeeded { get; set; }
+
+    // SUB-332: HasNewFileUploaded is driven by LastUploadedValidFile, which a failed upload never moves, so
+    // a retry that did not validate leaves this page reporting that nothing new was uploaded. These carry
+    // the attempt itself so the user can see why the file they uploaded is not the one on offer. This page
+    // is informational - submission is blocked on the check-and-submit page.
+    public bool HasNewerUnprocessedUpload { get; set; }
+
+    public string? UnprocessedUploadFileName { get; set; }
+
+    public DateTime? UnprocessedUploadDateTime { get; set; }
 }

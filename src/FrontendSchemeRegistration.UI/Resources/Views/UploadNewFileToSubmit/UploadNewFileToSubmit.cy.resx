@@ -240,4 +240,12 @@
   <data name="it_is_your_responsibility_to_make_sure_you_submit_correct_accurate_data_an_approved_person_or_their_delegate_must_verify_an_organisations_data" xml:space="preserve">
     <value>Eich cyfrifoldeb chi yw sicrhau eich bod yn cyflwyno data cywir. Rhaid i ddata sefydliad gael ei wirio gan berson a gymeradwywyd neu ei ddirprwy.</value>
   </data>
+  <!-- SUB-332: AWAITING WELSH TRANSLATION - English placeholder, must not ship untranslated. -->
+  <data name="your_most_recent_upload_could_not_be_processed" xml:space="preserve">
+    <value>You uploaded {0} on {1}, but it could not be processed because it contained invalid information. Download the file to view the errors.</value>
+  </data>
+  <!-- SUB-332: AWAITING WELSH TRANSLATION - English placeholder, must not ship untranslated. -->
+  <data name="you_must_upload_your_file_again_before_you_can_submit" xml:space="preserve">
+    <value>The file shown below is from an earlier upload and does not contain your latest data. Upload your file again before you submit.</value>
+  </data>
 </root>
