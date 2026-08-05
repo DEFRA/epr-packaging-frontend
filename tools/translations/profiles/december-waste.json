@@ -51,6 +51,56 @@
           ]
         }
       ]
+    },
+    {
+      "id": "account-home-direct-producer",
+      "fileName": "03-account-home-direct-producer.xlsx",
+      "route": "/report-data/home-self-managed",
+      "view": "src/FrontendSchemeRegistration.UI/Views/FrontendSchemeRegistration/HomePageSelfManaged.cshtml",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112333",
+      "notes": "Direct producer account home page: multi-year Manage recycling obligations tile content and Search all PRNs and PERNs link.",
+      "featureFlags": [
+        "ShowPrn",
+        "ShowMultiYearObligations"
+      ],
+      "appSettings": {},
+      "resources": [
+        {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/FrontendSchemeRegistration/HomePageSelfManaged.en.resx",
+          "section": "Multi-year Manage recycling obligations tile content and Search all PRNs and PERNs link.",
+          "keys": [
+            "prn_heading_text_multi_year",
+            "prn_view_or_manage_obligations_by_year",
+            "prn_submit_compliance_by_deadline",
+            "prn_search_all_link"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "account-home-compliance-scheme",
+      "fileName": "04-account-home-compliance-scheme.xlsx",
+      "route": "/report-data/home-compliance-scheme",
+      "view": "src/FrontendSchemeRegistration.UI/Views/ComplianceSchemeLanding/ComplianceSchemeLanding.cshtml",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112333",
+      "notes": "Compliance scheme account home page: multi-year Manage recycling obligations tile content and Search all PRNs and PERNs link.",
+      "featureFlags": [
+        "ShowPrn",
+        "ShowMultiYearObligations"
+      ],
+      "appSettings": {},
+      "resources": [
+        {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/ComplianceSchemeLanding/ComplianceSchemeLanding.en.resx",
+          "section": "Multi-year Manage recycling obligations tile content and Search all PRNs and PERNs link.",
+          "keys": [
+            "prn_heading_text_multi_year",
+            "prn_view_or_manage_obligations_by_year",
+            "prn_submit_compliance_by_deadline",
+            "prn_search_all_link"
+          ]
+        }
+      ]
     }
   ]
 }

@@ -240,7 +240,8 @@ public class ComplianceSchemeLandingControllerTests
                 },
                 PackagingResubmissionPeriod = _submissionPeriods
                     .First(sp => sp.Year == expectedComplianceYear.ToString()),
-                ComplianceYear = expectedComplianceYear.ToString()
+                ComplianceYear = expectedComplianceYear.ToString(),
+                ObligationDeadline = _testTimeProvider.GetLocalNow().DateTime.GetCsocSubmissionDeadline()
             });
 
         _sessionManagerMock.Verify(
@@ -312,7 +313,8 @@ public class ComplianceSchemeLandingControllerTests
                 },
                 PackagingResubmissionPeriod = _submissionPeriods
                     .First(sp => sp.Year == _testTimeProvider.GetUtcNow().GetComplianceYear().ToString()),
-                ComplianceYear = _testTimeProvider.GetUtcNow().GetComplianceYear().ToString()
+                ComplianceYear = _testTimeProvider.GetUtcNow().GetComplianceYear().ToString(),
+                ObligationDeadline = _testTimeProvider.GetLocalNow().DateTime.GetCsocSubmissionDeadline()
             });
 
         _sessionManagerMock.Verify(
@@ -414,7 +416,8 @@ public class ComplianceSchemeLandingControllerTests
                 },
                 PackagingResubmissionPeriod = _submissionPeriods
                     .First(sp => sp.Year == _testTimeProvider.GetUtcNow().GetComplianceYear().ToString()),
-                ComplianceYear = _testTimeProvider.GetUtcNow().GetComplianceYear().ToString()
+                ComplianceYear = _testTimeProvider.GetUtcNow().GetComplianceYear().ToString(),
+                ObligationDeadline = _testTimeProvider.GetLocalNow().DateTime.GetCsocSubmissionDeadline()
             });
 
         _sessionManagerMock.Verify(
@@ -516,7 +519,8 @@ public class ComplianceSchemeLandingControllerTests
                 },
                 PackagingResubmissionPeriod = _submissionPeriods
                     .First(sp => sp.Year == _testTimeProvider.GetUtcNow().GetComplianceYear().ToString()),
-                ComplianceYear = _testTimeProvider.GetUtcNow().GetComplianceYear().ToString()
+                ComplianceYear = _testTimeProvider.GetUtcNow().GetComplianceYear().ToString(),
+                ObligationDeadline = _testTimeProvider.GetLocalNow().DateTime.GetCsocSubmissionDeadline()
             });
 
         _sessionManagerMock.Verify(
@@ -618,7 +622,8 @@ public class ComplianceSchemeLandingControllerTests
                 },
                 PackagingResubmissionPeriod = _submissionPeriods
                     .First(sp => sp.Year == _testTimeProvider.GetUtcNow().GetComplianceYear().ToString()),
-                ComplianceYear = _testTimeProvider.GetUtcNow().GetComplianceYear().ToString()
+                ComplianceYear = _testTimeProvider.GetUtcNow().GetComplianceYear().ToString(),
+                ObligationDeadline = _testTimeProvider.GetLocalNow().DateTime.GetCsocSubmissionDeadline()
             });
 
         _sessionManagerMock.Verify(
@@ -702,6 +707,7 @@ public class ComplianceSchemeLandingControllerTests
                 PackagingResubmissionPeriod = _submissionPeriods
                     .First(sp => sp.Year == _testTimeProvider.GetUtcNow().GetComplianceYear().ToString()),
                 ComplianceYear = _testTimeProvider.GetUtcNow().GetComplianceYear().ToString(),
+                ObligationDeadline = _testTimeProvider.GetLocalNow().DateTime.GetCsocSubmissionDeadline(),
                 ResubmissionTaskListViewModel = new ResubmissionTaskListViewModel
                 {
                     AdditionalDetailsStatus = ResubmissionTaskListStatus.CanNotStartYet,
@@ -811,7 +817,8 @@ public class ComplianceSchemeLandingControllerTests
                 },
                 PackagingResubmissionPeriod = _submissionPeriods
                     .First(sp => sp.Year == _testTimeProvider.GetUtcNow().GetComplianceYear().ToString()),
-                ComplianceYear = _testTimeProvider.GetUtcNow().GetComplianceYear().ToString()
+                ComplianceYear = _testTimeProvider.GetUtcNow().GetComplianceYear().ToString(),
+                ObligationDeadline = _testTimeProvider.GetLocalNow().DateTime.GetCsocSubmissionDeadline()
             });
 
         _sessionManagerMock.Verify(

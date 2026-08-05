@@ -465,6 +465,7 @@ public class FrontendSchemeRegistrationController(
             RegistrationApplications = registrationApplicationYearViewModels.SelectMany(ray => ray.Applications),
             PackagingResubmissionPeriod = packagingResubmissionPeriod,
             ComplianceYear = timeProvider.GetUtcNow().GetComplianceYear().ToString(),
+            ObligationDeadline = now.GetCsocSubmissionDeadline(),
             CsocViewModel = await CsocHelper.CreateViewModel(
                 featureManager,
                 isApprovedUser,

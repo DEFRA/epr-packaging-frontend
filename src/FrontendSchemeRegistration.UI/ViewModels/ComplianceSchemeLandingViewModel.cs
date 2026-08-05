@@ -24,6 +24,11 @@ public class ComplianceSchemeLandingViewModel
     /// </summary>
     public string ComplianceYear { get; set; }
 
+    /// <summary>
+    /// Statement of compliance submission deadline for the current obligation year.
+    /// </summary>
+    public DateTime ObligationDeadline { get; set; }
+
     public int ComplianceYearAsInteger(string complianceYear)
     {
         var yearInt = int.TryParse(complianceYear, out var year) ? year : 0;
