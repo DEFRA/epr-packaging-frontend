@@ -231,9 +231,10 @@
                                         }
                                         else if (submissionPeriodDetail.IsJanuaryToJunePeriodFromYearOrLater())
                                         {
+                                            <span class="govuk-caption-m">@SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] (@Localizer["h1_data_note"])</span>
                                             if (implementPackagingDataResubmissionJourney)
                                             {
-                                                <h3 class="govuk-heading-m govuk-!-margin-bottom-0">@Localizer["report_packaging_data_for"] @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) </h3>
+                                                <h3 class="govuk-heading-m govuk-!-margin-bottom-0">@Localizer["report_packaging_data_for"] @Localizer["h1_data_note"] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"])</h3>
                                                 if(submissionPeriodDetail.InProgressSubmissionPeriodStatus == InProgressSubmissionPeriodStatus.InProgress_Resubmission_FileInSynapse_FeesNotViewed_NotSubmitted)
                                                 {
                                                     <br /><p class="govuk-body">@Localizer["inprogress_resubmission_fileinsynapse_feesnotviewed_notsubmitted"]</p>
@@ -255,22 +256,16 @@
                                             }
                                             else
                                             {
-                                                <h3 class="govuk-heading-m govuk-!-margin-bottom-0">
-                                                    @Localizer["report_packaging_data_for"]
-                                                    @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] 
-                                                    @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"]) </h3> 
+                                                <h3 class="govuk-heading-m govuk-!-margin-bottom-0">@Localizer["report_packaging_data_for"] @Localizer["h1_data_note"] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"])</h3>
                                             }
                                         }                                       
                                         else
                                         {                                            
-                                            <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_packaging_data_for"] 
-                                                @SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] 
-                                                @submissionPeriodDetail.DatePeriodYear 
-                                                (@Localizer["large_producers_sentence_text"])
-                                                @Localizer["or"]
-                                                @Localizer["January_to_December"] 
-                                                @submissionPeriodDetail.DatePeriodYear
-                                                (@Localizer["small_producers_sentence_text"]) </h3> 
+                                            <span class="govuk-caption-m">@SharedLocalizer["date1_to_date2", submissionPeriodDetail.DatePeriodStartMonth, submissionPeriodDetail.DatePeriodEndMonth] (@Localizer["h2_data_note"])</span>
+                                            <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_packaging_data_for"] @Localizer["h2_data_note"] @submissionPeriodDetail.DatePeriodYear (@Localizer["large_producers_sentence_text"])</h3>
+                                            <p class="govuk-body">@Localizer["or"]</p>
+                                            <span class="govuk-caption-m">@Localizer["January_to_December"]</span>
+                                            <h3 class="govuk-heading-m govuk-!-margin-bottom-2">@Localizer["report_packaging_data_for"] @Localizer["January_to_December"] @submissionPeriodDetail.DatePeriodYear (@Localizer["small_producers_sentence_text"])</h3>
                                             if (submissionPeriodDetail.InProgressSubmissionPeriodStatus == InProgressSubmissionPeriodStatus.InProgress_Resubmission_FileInSynapse_FeesNotViewed_NotSubmitted)
                                             {
                                                 <br />
