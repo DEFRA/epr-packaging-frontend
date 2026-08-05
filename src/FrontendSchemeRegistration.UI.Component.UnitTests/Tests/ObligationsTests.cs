@@ -17,7 +17,12 @@ public class ObligationsTests
     [SetUp]
     public void SetUp()
     {
-        Context.SetUp(overrideSession: true);
+        Context.SetUp(
+            overrideSession: true,
+            additionalConfig: new Dictionary<string, string?>
+            {
+                { "FeatureManagement:ShowDecemberWaste", "true" }
+            });
         
         Session.TryAdd("/report-data/accept-bulk", sessionStore =>
         {
@@ -71,6 +76,8 @@ public class ObligationsTests
     [TestCase("/report-data/selected-prn/00000000-0000-0000-0000-000000000001", Language.Welsh)]
     [TestCase("/report-data/selected-prn/00000000-0000-0000-0000-000000000002", Language.English)]
     [TestCase("/report-data/selected-prn/00000000-0000-0000-0000-000000000002", Language.Welsh)]
+    [TestCase("/report-data/selected-prn/00000000-0000-0000-0000-000000000005", Language.English)]
+    [TestCase("/report-data/selected-prn/00000000-0000-0000-0000-000000000005", Language.Welsh)]
     public async Task WhenPrnsArePresent_ShouldLocalizeAsExpected(string path, string language)
     {
         await Context.Client.AuthenticateDefaultUser();
@@ -90,6 +97,32 @@ public class ObligationsTests
             await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
                 .ScrubCommonHtmlNodes()
                 .UseParameters(path, language);
+    }
+
+    [TestCase("/report-data/selected-prn/00000000-0000-0000-0000-000000000005", Language.English)]
+    [TestCase("/report-data/selected-prn/00000000-0000-0000-0000-000000000005", Language.Welsh)]
+    [TestCase("/report-data/accepted-prn/00000000-0000-0000-0000-000000000005", Language.English)]
+    [TestCase("/report-data/accepted-prn/00000000-0000-0000-0000-000000000005", Language.Welsh)]
+    public async Task WhenDecemberWasteDisabled_ShouldHideAcceptedTowardsObligationYear(string path, string language)
+    {
+        Context.Dispose();
+        Context.SetUp(
+            overrideSession: true,
+            additionalConfig: new Dictionary<string, string?>
+            {
+                { "FeatureManagement:ShowDecemberWaste", "false" }
+            });
+
+        await Context.Client.AuthenticateDefaultUser();
+
+        var sessionStore = Context.GetSessionStore();
+        sessionStore.Session.Set(Language.SessionLanguageKey, Encoding.UTF8.GetBytes(language));
+
+        var response = await Context.Client.GetAsync(path);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        content.Should().NotContain("Accepted towards");
     }
 
     [TearDown]
