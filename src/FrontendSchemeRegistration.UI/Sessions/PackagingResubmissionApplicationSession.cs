@@ -1,11 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using EPR.Common.Authorization.Models;
+﻿using EPR.Common.Authorization.Models;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
 
 namespace FrontendSchemeRegistration.UI.Sessions;
 
-[ExcludeFromCodeCoverage]
 public class PackagingResubmissionApplicationSession
 {
     public ResubmissionTaskListStatus FileUploadStatus
@@ -129,8 +127,10 @@ public class PackagingResubmissionApplicationSession
 
     public bool FileReachedSynapse { get; set; }
 
-    public bool IsResubmissionInProgress => ((FileUploadStatus != ResubmissionTaskListStatus.NotStarted && FileUploadStatus != ResubmissionTaskListStatus.CanNotStartYet) &&
-                                            AdditionalDetailsStatus != ResubmissionTaskListStatus.Completed);
+    // SUB-332: derived from the authoritative cycle fields rather than from FileUploadStatus, which is
+    // itself derived from upload validity. An upload that failed validation used to collapse this to false
+    // mid-cycle, which removed the only route back into the resubmission journey.
+    public bool IsResubmissionInProgress => !string.IsNullOrEmpty(ApplicationReferenceNumber) && !ResubmissionApplicationSubmitted;
 
     public bool IsResubmissionComplete => (AdditionalDetailsStatus == ResubmissionTaskListStatus.Completed);
 

@@ -315,6 +315,159 @@ public class UploadNewFileToSubmitControllerTests
         model?.IsApprovedOrDelegatedUser.Should().Be(isApprovedOrDelegated);
     }
 
+    // SUB-332: this is the incident state. The retry never became the valid file, so HasNewFileUploaded is
+    // false and the page would otherwise report that nothing new was uploaded.
+    [Test]
+    public async Task Get_FlagsTheUnprocessedUpload_WhenARetryNeverBecameTheValidFile()
+    {
+        // Arrange
+        var validFileUploadedAt = DateTime.Now.AddMinutes(-10);
+
+        var submission = new PomSubmission
+        {
+            Id = Guid.NewGuid(),
+            IsSubmitted = true,
+            PomFileName = "retry.csv",
+            PomFileUploadDateTime = DateTime.Now.AddMinutes(-8),
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileName = "original.csv",
+                FileUploadDateTime = validFileUploadedAt,
+                UploadedBy = Guid.NewGuid(),
+                FileId = Guid.NewGuid()
+            },
+            LastSubmittedFile = new SubmittedFileInformation
+            {
+                FileName = "original.csv",
+                SubmittedDateTime = DateTime.Now.AddMinutes(-9),
+                SubmittedBy = Guid.NewGuid()
+            }
+        };
+
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(submission);
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        var model = (UploadNewFileToSubmitViewModel)result.ViewData.Model;
+        model?.HasNewerUnprocessedUpload.Should().BeTrue();
+        model?.UnprocessedUploadFileName.Should().Be("retry.csv");
+        model?.UnprocessedUploadDateTime.Should().Be(submission.PomFileUploadDateTime);
+    }
+
+    [Test]
+    public async Task Get_DoesNotFlagAnUnprocessedUpload_WhenTheLatestUploadIsTheValidFile()
+    {
+        // Arrange
+        var uploadedAt = DateTime.Now.AddMinutes(-10);
+
+        var submission = new PomSubmission
+        {
+            Id = Guid.NewGuid(),
+            IsSubmitted = true,
+            PomFileName = "original.csv",
+            PomFileUploadDateTime = uploadedAt,
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileName = "original.csv",
+                FileUploadDateTime = uploadedAt,
+                UploadedBy = Guid.NewGuid(),
+                FileId = Guid.NewGuid()
+            },
+            LastSubmittedFile = new SubmittedFileInformation
+            {
+                FileName = "original.csv",
+                SubmittedDateTime = DateTime.Now.AddMinutes(-9),
+                SubmittedBy = Guid.NewGuid()
+            }
+        };
+
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(submission);
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        var model = (UploadNewFileToSubmitViewModel)result.ViewData.Model;
+        model?.HasNewerUnprocessedUpload.Should().BeFalse();
+    }
+
+    // SUB-332: the uploader's deleted state was being taken from the submitter, so the card marked the
+    // wrong person as no longer in the organisation.
+    [Test]
+    [TestCase(true, false)]
+    [TestCase(false, true)]
+    [TestCase(true, true)]
+    [TestCase(false, false)]
+    public async Task Get_PopulatesEachDeletedPersonFlagFromItsOwnPerson(
+        bool isUploaderDeleted,
+        bool isSubmitterDeleted)
+    {
+        // Arrange
+        var uploadedBy = Guid.NewGuid();
+        var submittedBy = Guid.NewGuid();
+
+        var submission = new PomSubmission
+        {
+            Id = Guid.NewGuid(),
+            IsSubmitted = true,
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileName = "UploadedFile",
+                FileUploadDateTime = DateTime.Now.AddDays(1),
+                UploadedBy = uploadedBy,
+                FileId = Guid.NewGuid()
+            },
+            LastSubmittedFile = new SubmittedFileInformation
+            {
+                FileName = "SubmittedFile",
+                SubmittedDateTime = DateTime.Now,
+                SubmittedBy = submittedBy
+            }
+        };
+
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(submission);
+
+        _userAccountServiceMock.Setup(x => x.GetAllPersonByUserId(uploadedBy))
+            .ReturnsAsync(new PersonDto
+            {
+                FirstName = "Uploading",
+                LastName = "Person",
+                ContactEmail = "uploader@email.com",
+                IsDeleted = isUploaderDeleted
+            });
+
+        _userAccountServiceMock.Setup(x => x.GetAllPersonByUserId(submittedBy))
+            .ReturnsAsync(new PersonDto
+            {
+                FirstName = "Submitting",
+                LastName = "Person",
+                ContactEmail = "submitter@email.com",
+                IsDeleted = isSubmitterDeleted
+            });
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        var model = (UploadNewFileToSubmitViewModel)result.ViewData.Model;
+        model?.IsUploadByPersonDeleted.Should().Be(isUploaderDeleted);
+        model?.IsSubmittedByPersonDeleted.Should().Be(isSubmitterDeleted);
+    }
+
     [Test]
     [TestCase(ServiceRoles.ApprovedPerson, true)]
     [TestCase(ServiceRoles.DelegatedPerson, true)]
