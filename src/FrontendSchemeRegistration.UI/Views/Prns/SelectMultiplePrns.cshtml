@@ -2,7 +2,7 @@
 @using FrontendSchemeRegistration.UI.ViewModels.Prns
 @using Microsoft.FeatureManagement
 @inject FrontendSchemeRegistration.UI.Resources.IPrnDataResourcesLocalizer PrnDataResourcesLocalizer
-@inject IFeatureManager _featureManager
+@inject IFeatureManager featureManager
 
 @model AwaitingAcceptancePrnsViewModel
 
@@ -10,7 +10,7 @@
     ViewData["Title"] = Localizer["page_title"];
     var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
     var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer);
-	var isDecemberWasteFeatureEnabled = _featureManager.IsEnabledAsync(FeatureFlags.ShowDecemberWaste).Result;
+	var isDecemberWasteFeatureEnabled = await featureManager.IsEnabledAsync(FeatureFlags.ShowDecemberWaste);
 }
 
 <main class="govuk-main-wrapper govuk-!-padding-top-4" id="select-multiple-prns">
