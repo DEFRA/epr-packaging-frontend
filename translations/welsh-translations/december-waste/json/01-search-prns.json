@@ -14,7 +14,7 @@
       "english": "Can be accepted towards {0}",
       "welsh": "",
       "figmaUrl": "",
-      "context": "Search PRNs and PERNs page: December Waste acceptance-year message shown against awaiting-acceptance rows.\nDecember Waste acceptance-year message shown against awaiting-acceptance rows.\nFeature flag(s): ShowPrn"
+      "context": "Search PRNs and PERNs page: December Waste acceptance-year message shown against awaiting-acceptance rows.\nDecember Waste acceptance-year message shown against awaiting-acceptance rows.\nFeature flag(s): ShowPrn, ShowDecemberWaste"
     },
     {
       "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Prns/SearchPrns.en.resx::acceptance_years",
@@ -26,7 +26,7 @@
       "english": "Can be accepted towards {0} or {1}",
       "welsh": "",
       "figmaUrl": "",
-      "context": "Search PRNs and PERNs page: December Waste acceptance-year message shown against awaiting-acceptance rows.\nDecember Waste acceptance-year message shown against awaiting-acceptance rows.\nFeature flag(s): ShowPrn"
+      "context": "Search PRNs and PERNs page: December Waste acceptance-year message shown against awaiting-acceptance rows.\nDecember Waste acceptance-year message shown against awaiting-acceptance rows.\nFeature flag(s): ShowPrn, ShowDecemberWaste"
     }
   ]
 }
