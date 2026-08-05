@@ -15,6 +15,9 @@
         <PackageReference Include="FluentAssertions" Version="7.2.0" />
         <PackageReference Include="NUnit" Version="4.4.0" />
         <PackageReference Include="NUnit3TestAdapter" Version="6.1.0" />
+        <!-- Verify.AngleSharp 4.7.0 pulls in AngleSharp 1.3.0, which carries NU1902 (GHSA-pgww-w46g-26qg)
+             fixed in 1.5.0. Pinned to the version Verify.AngleSharp itself moved to in 5.0.0. -->
+        <PackageReference Include="AngleSharp" Version="1.5.2" />
         <PackageReference Include="Verify.AngleSharp" Version="4.7.0" />
         <PackageReference Include="Verify.CsvHelper" Version="0.2.0" />
         <PackageReference Include="Verify.NUnit" Version="31.13.0" />

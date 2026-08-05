@@ -3,15 +3,15 @@
 @model UploadNewFileToSubmitViewModel
 
 @{
-    Status status = Model.Status;
-    string regulatorComment = Model.RegulatorComment;
-    bool nothingSubmitted = status == Status.FileUploadedButNothingSubmitted;
-    bool isApprovedOrDelegatedUser = Model.IsApprovedOrDelegatedUser;
-    bool isBasicUser = !isApprovedOrDelegatedUser;
-    bool isBasicUserAndNothingSubmitted = isBasicUser && nothingSubmitted;
-    bool accepted = Model.RegulatorDecision is RegulatorDecision.Accepted or RegulatorDecision.Approved;
-    bool rejectedWithResubmissionRequired = Model is { RegulatorDecision: RegulatorDecision.Rejected, IsResubmissionNeeded: true };
-    bool rejectedWithNoResubmission = Model is { RegulatorDecision: RegulatorDecision.Rejected, IsResubmissionNeeded: false };
+    var status = Model.Status;
+    var regulatorComment = Model.RegulatorComment;
+    var nothingSubmitted = status == Status.FileUploadedButNothingSubmitted;
+    var isApprovedOrDelegatedUser = Model.IsApprovedOrDelegatedUser;
+    var isBasicUser = !isApprovedOrDelegatedUser;
+    var isBasicUserAndNothingSubmitted = isBasicUser && nothingSubmitted;
+    var accepted = Model.RegulatorDecision is RegulatorDecision.Accepted or RegulatorDecision.Approved;
+    var rejectedWithResubmissionRequired = Model is { RegulatorDecision: RegulatorDecision.Rejected, IsResubmissionNeeded: true };
+    var rejectedWithNoResubmission = Model is { RegulatorDecision: RegulatorDecision.Rejected, IsResubmissionNeeded: false };
     LocalizedHtmlString title;
     if (accepted)
     {
@@ -32,9 +32,18 @@
             : "upload_new_file_to_submit_to_environmental_regulator"];
     }
 
+    // SUB-332: an upload that never became the valid file leaves this card describing an earlier upload
+    // rather than the file the user has just uploaded, so suppress the uploaded-file view of it - the
+    // banner below names the file that could not be processed - and fall back to the last submitted file,
+    // which is still accurate. With neither to show, the card goes entirely.
+    var hasUploadedFile = Model.UploadedFileName is not null && Model.UploadedAt.HasValue;
+    var hasSubmittedFile = Model.SubmittedFileName is not null && Model.SubmittedAt.HasValue;
+    var showUploadedFile = hasUploadedFile && !Model.HasNewerUnprocessedUpload && (nothingSubmitted || Model.HasNewFileUploaded);
+    var showFileCard = showUploadedFile || hasSubmittedFile;
+
     var fileNameHeader = Localizer["file_name"];
-    var dateHeader = Localizer[nothingSubmitted || Model.HasNewFileUploaded ? "date_uploaded" : "date_submitted"];
-    var userHeader = Localizer[nothingSubmitted || Model.HasNewFileUploaded ? "uploaded_by" : "submitted_by"];
+    var dateHeader = Localizer[showUploadedFile ? "date_uploaded" : "date_submitted"];
+    var userHeader = Localizer[showUploadedFile ? "uploaded_by" : "submitted_by"];
 
     ViewData["Title"] = title;
 }
@@ -134,42 +143,59 @@
                 </div>
             }
 
-            <div class="govuk-summary-card">
-                <div class="govuk-summary-card__title-wrapper">
-                    <h2 class="govuk-summary-card__title">
-                        @Localizer[nothingSubmitted || Model.HasNewFileUploaded ? "file_already_uploaded" : "file_already_submitted"]
+            @* SUB-332: this page is informational - submission itself is blocked on the check-and-submit page. *@
+            @if (Model.HasNewerUnprocessedUpload)
+            {
+                <div class="govuk-error-summary govuk-!-margin-top-6" aria-labelledby="unprocessed-upload-title" role="alert" data-module="govuk-error-summary" data-testid="unprocessed-upload-banner">
+                    <h2 class="govuk-error-summary__title" id="unprocessed-upload-title">
+                        @SharedLocalizer["there_is_a_problem"]
                     </h2>
+                    <div class="govuk-error-summary__body">
+                        <p class="govuk-body">@Localizer["your_most_recent_upload_could_not_be_processed", Model.UnprocessedUploadFileName, Model.UnprocessedUploadDateTime.Value.ToReadableDateTime()]</p>
+                        <p class="govuk-body govuk-!-margin-bottom-0">@Localizer["you_must_upload_your_file_again_before_you_can_submit"]</p>
+                    </div>
                 </div>
-                <div class="govuk-summary-card__content">
-                    <table class="govuk-table govuk-!-margin-bottom-0 responsive-table">
-                        <caption class="govuk-visually-hidden">@Localizer["detail_regarding_the_latest_file_uploaded"]</caption>
-                        <thead class="govuk-table__head">
-                            <tr class="govuk-table__row">
-                                <th scope="col" class="govuk-table__header">@fileNameHeader</th>
-                                <th scope="col" class="govuk-table__header">@dateHeader</th>
-                                <th scope="col" class="govuk-table__header">@userHeader</th>
-                            </tr>
-                        </thead>
-                        <tbody class="govuk-table__body">
-                            <tr class="govuk-table__row">
-                                <td data-heading="@fileNameHeader" class="govuk-table__cell break-word">
-                                    @(nothingSubmitted || Model.HasNewFileUploaded ? Model.UploadedFileName : Model.SubmittedFileName)
-                                </td>
-                                <td data-heading="@dateHeader" class="govuk-table__cell break-word">
-                                    @(nothingSubmitted || Model.HasNewFileUploaded ? Model.UploadedAt.Value.ToReadableDateTime() : Model.SubmittedAt.Value.ToReadableDateTime())
-                                </td>
-                                <td data-heading="@userHeader" class="govuk-table__cell break-word">
-                                    @(nothingSubmitted || Model.HasNewFileUploaded ? Model.UploadedBy : Model.SubmittedBy)
-                                    @if (Model.IsUploadByPersonDeleted)
-                                    {
-                                        <span><br />(@SharedLocalizer["no_longer_in_this_organisation"])</span>
-                                    }
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+            }
+
+            @if (showFileCard)
+            {
+                <div class="govuk-summary-card">
+                    <div class="govuk-summary-card__title-wrapper">
+                        <h2 class="govuk-summary-card__title">
+                            @Localizer[showUploadedFile ? "file_already_uploaded" : "file_already_submitted"]
+                        </h2>
+                    </div>
+                    <div class="govuk-summary-card__content">
+                        <table class="govuk-table govuk-!-margin-bottom-0 responsive-table">
+                            <caption class="govuk-visually-hidden">@Localizer["detail_regarding_the_latest_file_uploaded"]</caption>
+                            <thead class="govuk-table__head">
+                                <tr class="govuk-table__row">
+                                    <th scope="col" class="govuk-table__header">@fileNameHeader</th>
+                                    <th scope="col" class="govuk-table__header">@dateHeader</th>
+                                    <th scope="col" class="govuk-table__header">@userHeader</th>
+                                </tr>
+                            </thead>
+                            <tbody class="govuk-table__body">
+                                <tr class="govuk-table__row">
+                                    <td data-heading="@fileNameHeader" class="govuk-table__cell break-word">
+                                        @(showUploadedFile ? Model.UploadedFileName : Model.SubmittedFileName)
+                                    </td>
+                                    <td data-heading="@dateHeader" class="govuk-table__cell break-word">
+                                        @(showUploadedFile ? Model.UploadedAt.Value.ToReadableDateTime() : Model.SubmittedAt.Value.ToReadableDateTime())
+                                    </td>
+                                    <td data-heading="@userHeader" class="govuk-table__cell break-word">
+                                        @(showUploadedFile ? Model.UploadedBy : Model.SubmittedBy)
+                                        @if (showUploadedFile ? Model.IsUploadByPersonDeleted : Model.IsSubmittedByPersonDeleted)
+                                        {
+                                            <span><br />(@SharedLocalizer["no_longer_in_this_organisation"])</span>
+                                        }
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
+            }
 
             @if (accepted)
             {

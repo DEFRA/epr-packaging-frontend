@@ -183,4 +183,10 @@
   <data name="download" xml:space="preserve">
     <value>Download</value>
   </data>
+  <data name="your_most_recent_upload_could_not_be_processed" xml:space="preserve">
+    <value>You uploaded {0} on {1}, but it could not be processed.</value>
+  </data>
+  <data name="you_must_upload_your_file_again_before_you_can_submit" xml:space="preserve">
+    <value>You must upload your file again before you can submit. The file shown below is an earlier upload, so submitting it would send the wrong data to the environmental regulator.</value>
+  </data>
 </root>

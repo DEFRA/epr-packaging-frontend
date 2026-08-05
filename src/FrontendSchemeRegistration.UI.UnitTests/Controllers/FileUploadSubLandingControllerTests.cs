@@ -401,7 +401,9 @@ public class FileUploadSubLandingControllerTests
         _featureManagerMock.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney))).ReturnsAsync(true);
 
         _resubmissionApplicationServicMock.Setup(x => x.GetPackagingResubmissionApplicationSession(It.IsAny<Organisation>(), It.IsAny<List<string>>(), It.IsAny<Guid>()))
-            .ReturnsAsync(new List<PackagingResubmissionApplicationSession> { new PackagingResubmissionApplicationSession { SubmissionId = submissionId, ApplicationStatus = ApplicationStatusType.FileUploaded, IsResubmissionFeeViewed = false, FileReachedSynapse = false, IsSubmitted = false } });
+            // SUB-332: an open cycle always carries a reference number - FileUploaded is only returned from
+            // the API's open-cycle branch, which populates ApplicationReferenceNumber.
+            .ReturnsAsync(new List<PackagingResubmissionApplicationSession> { new PackagingResubmissionApplicationSession { SubmissionId = submissionId, ApplicationReferenceNumber = "PEPR00000S01", ApplicationStatus = ApplicationStatusType.FileUploaded, IsResubmissionFeeViewed = false, FileReachedSynapse = false, IsSubmitted = false } });
 
         // Act
         var result = await _systemUnderTest.Get() as ViewResult;
@@ -1931,9 +1933,12 @@ public class FileUploadSubLandingControllerTests
                 {
                     PackagingResubmissionApplicationSessions = new List<PackagingResubmissionApplicationSession>()
                     {
+                        // SUB-332: an open cycle always carries a reference number - FileUploaded is only
+                        // returned from the API's open-cycle branch, which populates it.
                         new PackagingResubmissionApplicationSession()
                         {
                             SubmissionId = submission.Id,
+                            ApplicationReferenceNumber = "PEPR00000S01",
                             ApplicationStatus = ApplicationStatusType.FileUploaded
                         }
                     }
@@ -1947,6 +1952,69 @@ public class FileUploadSubLandingControllerTests
         var result = await _systemUnderTest.Post(submissionPeriod) as RedirectToActionResult;
 
         // Assert
+        result.Should().NotBeNull();
+        result.ActionName.Should().Be(nameof(PackagingDataResubmissionController.ResubmissionTaskList));
+        result.ControllerName.Should().Be("PackagingDataResubmission");
+    }
+
+    // SUB-332: IsResubmissionComplete keeps its Synapse dependency, so between declaring and the sync
+    // completing both cycle flags read false. Without ResubmissionApplicationSubmitted the user would be
+    // routed away from the task list during that window.
+    [Test]
+    public async Task Post_RedirectsToResubmissionTaskList_WhenDeclaredButNotYetSynced()
+    {
+        // Arrange
+        var submissionPeriod = _submissionPeriods[0].DataPeriod;
+        var submission = CreatePomSubmissionWithWarningsAndFileIdMismatch();
+
+        submission.HasWarnings = false;
+        submission.ValidationPass = false;
+
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionsAsync<PomSubmission>(
+                It.IsAny<List<string>>(),
+                It.IsAny<int>(),
+                It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<PomSubmission> { submission });
+
+        _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(true);
+
+        _sessionMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SubmissionPeriod = submissionPeriod
+                },
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation> { new() { Id = Guid.NewGuid(), OrganisationRole = OrganisationRoles.Producer } }
+                },
+                PomResubmissionSession = new PackagingReSubmissionSession()
+                {
+                    PackagingResubmissionApplicationSessions = new List<PackagingResubmissionApplicationSession>()
+                    {
+                        new PackagingResubmissionApplicationSession()
+                        {
+                            SubmissionId = submission.Id,
+                            ApplicationReferenceNumber = "PEPR00000S01",
+                            ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+                            ResubmissionFeePaymentMethod = "PayOnline",
+                            ResubmissionApplicationSubmittedDate = DateTime.Now,
+                            FileReachedSynapse = false
+                        }
+                    }
+                }
+            });
+
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)))
+            .ReturnsAsync(true);
+
+        // Act
+        var result = await _systemUnderTest.Post(submissionPeriod) as RedirectToActionResult;
+
+        // Assert - both cycle flags are false here, so this only passes via ResubmissionApplicationSubmitted
         result.Should().NotBeNull();
         result.ActionName.Should().Be(nameof(PackagingDataResubmissionController.ResubmissionTaskList));
         result.ControllerName.Should().Be("PackagingDataResubmission");

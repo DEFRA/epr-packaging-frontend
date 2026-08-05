@@ -13,6 +13,10 @@
     var dateAndTimeSubmittedSubmitted = Localizer["date_and_time_submitted"];
     var submittedBy = Localizer["submitted_by"];
     var download = Localizer["download"];
+
+    // SUB-332: a newer upload that never became the valid file blocks submission entirely - the file on
+    // offer is not the one the user thinks they are submitting.
+    var submissionBlocked = Model.HasNewerUnprocessedUpload;
 }
 
 @await Html.PartialAsync("Partials/Govuk/_AccountActionBar")
@@ -28,12 +32,12 @@
 
             <h1 class="govuk-heading-l govuk-!-margin-bottom-7">@title</h1>
 
-            @if (Model.UserCanSubmit)
+            @if (Model.UserCanSubmit && !submissionBlocked)
             {
                 <p class="govuk-body">@Localizer["your_file_has_saved_and_you_can_submit_it_to_the_environmental_regulator"]</p>
 
                 if (Model.HasSubmittedPreviously)
-                {   
+                {
                     <p class="govuk-body">@Localizer["submitting_the_new_packaging_data_file_will_replace_the_last_one_that_you_submitted"]</p>
                 }
 
@@ -44,59 +48,78 @@
                 <p class="govuk-body govuk-!-margin-bottom-7">@Localizer["the_file_youve_uploaded_has_saved"]</p>
             }
 
-            <div class="govuk-summary-card">
-                <div class="govuk-summary-card__title-wrapper">
-                    <h2 class="govuk-summary-card__title">
-                        @(Model is { HasSubmittedPreviously: true, UserCanSubmit: true }
-                            ? Localizer["file_youre_submitting"]
-                            : Localizer["file_uploaded"])
+            @if (submissionBlocked)
+            {
+                <div class="govuk-error-summary" aria-labelledby="unprocessed-upload-title" role="alert" data-module="govuk-error-summary" data-testid="unprocessed-upload-banner">
+                    <h2 class="govuk-error-summary__title" id="unprocessed-upload-title">
+                        @SharedLocalizer["there_is_a_problem"]
                     </h2>
-
-                    <ul class="govuk-summary-card__actions">
-                        <li class="govuk-summary-card__action">
-                            <a class="govuk-link govuk-link--no-visited-state" asp-controller="FileUpload" asp-action="Get"
-                               asp-route-submissionId="@Model.SubmissionId">@SharedLocalizer["change"]</a>
-                        </li>
-                    </ul>
+                    <div class="govuk-error-summary__body">
+                        <p class="govuk-body">@Localizer["your_most_recent_upload_could_not_be_processed", Model.UnprocessedUploadFileName, Model.UnprocessedUploadDateTime.Value.ToReadableDateTime()]</p>
+                        <p class="govuk-body govuk-!-margin-bottom-0">@Localizer["you_must_upload_your_file_again_before_you_can_submit"]</p>
+                    </div>
                 </div>
+            }
 
-                <div class="govuk-summary-card__content">
-                    <table class="govuk-table govuk-!-margin-bottom-0 responsive-table">
-                        <caption class="govuk-visually-hidden">@Localizer["detail_regarding_the_latest_file_uploaded"]</caption>
-                        <thead class="govuk-table__head">
-                        <tr class="govuk-table__row">
-                            <th scope="col" class="govuk-table__header">@fileName</th>
-                            <th scope="col" class="govuk-table__header">@dateAndTimeUploaded</th>
-                            <th scope="col" class="govuk-table__header">@uploadedBy</th>
-                            <feature name="@FeatureFlags.EnableCsvDownload">
-                                    <td class="govuk-table__header no-wrap-text"></td>
-                                    
-                            </feature>
-                        </tr>
-                        </thead>
-                        <tbody class="govuk-table__body">
-                        <tr class="govuk-table__row">
-                            <td data-heading="@fileName" class="govuk-table__cell break-word">@Model.LastValidFileName</td>
-                            <td data-heading="@dateAndTimeUploaded" class="govuk-table__cell break-word">@Model.LastValidFileUploadDateTime.Value.ToReadableDateTime()</td>
-                            <td data-heading="@uploadedBy" class="govuk-table__cell break-word">@Model.LastValidFileUploadedBy</td>
-                            <feature name="@FeatureFlags.EnableCsvDownload">
-                                    <td data-heading="@download" class="govuk-table__cell no-wrap-text">
-                                    @Html.ActionLink(
-                                        download.Value,
-                                        "Get",
-                                        "FileDownloadPackaging",
-                                        new { SubmissionId = Model.SubmissionId, Type = FileDownloadType.Upload },
-                                        new
-                                        {
-                                            @class = "govuk-link--no-visited-state download-button"
-                                        })
-                                </td>
-                            </feature>
-                        </tr>
-                        </tbody>
-                    </table>
+            @* SUB-332: when submission is blocked this card holds an earlier upload, not the file the user
+               has just uploaded, so presenting it as the file being submitted misleads. The banner above
+               names the file that could not be processed, which is all the user needs. *@
+            @if (!submissionBlocked)
+            {
+                <div class="govuk-summary-card">
+                    <div class="govuk-summary-card__title-wrapper">
+                        <h2 class="govuk-summary-card__title">
+                            @(Model is { HasSubmittedPreviously: true, UserCanSubmit: true }
+                                ? Localizer["file_youre_submitting"]
+                                : Localizer["file_uploaded"])
+                        </h2>
+
+                        <ul class="govuk-summary-card__actions">
+                            <li class="govuk-summary-card__action">
+                                <a class="govuk-link govuk-link--no-visited-state" asp-controller="FileUpload" asp-action="Get"
+                                   asp-route-submissionId="@Model.SubmissionId">@SharedLocalizer["change"]</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="govuk-summary-card__content">
+                        <table class="govuk-table govuk-!-margin-bottom-0 responsive-table">
+                            <caption class="govuk-visually-hidden">@Localizer["detail_regarding_the_latest_file_uploaded"]</caption>
+                            <thead class="govuk-table__head">
+                            <tr class="govuk-table__row">
+                                <th scope="col" class="govuk-table__header">@fileName</th>
+                                <th scope="col" class="govuk-table__header">@dateAndTimeUploaded</th>
+                                <th scope="col" class="govuk-table__header">@uploadedBy</th>
+                                <feature name="@FeatureFlags.EnableCsvDownload">
+                                        <td class="govuk-table__header no-wrap-text"></td>
+
+                                </feature>
+                            </tr>
+                            </thead>
+                            <tbody class="govuk-table__body">
+                            <tr class="govuk-table__row">
+                                <td data-heading="@fileName" class="govuk-table__cell break-word">@Model.LastValidFileName</td>
+                                <td data-heading="@dateAndTimeUploaded" class="govuk-table__cell break-word">@Model.LastValidFileUploadDateTime.Value.ToReadableDateTime()</td>
+                                <td data-heading="@uploadedBy" class="govuk-table__cell break-word">@Model.LastValidFileUploadedBy</td>
+                                <feature name="@FeatureFlags.EnableCsvDownload">
+                                        <td data-heading="@download" class="govuk-table__cell no-wrap-text">
+                                        @Html.ActionLink(
+                                            download.Value,
+                                            "Get",
+                                            "FileDownloadPackaging",
+                                            new { SubmissionId = Model.SubmissionId, Type = FileDownloadType.Upload },
+                                            new
+                                            {
+                                                @class = "govuk-link--no-visited-state download-button"
+                                            })
+                                    </td>
+                                </feature>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
+            }
 
             @if (Model.HasSubmittedPreviously)
             {
@@ -149,7 +172,16 @@
                 </div>
             }
 
-            @if (Model.UserCanSubmit)
+            @* SUB-332: offered whatever the user's permissions are - with the file card hidden this is the
+               only route back to the upload page, and uploading again is the fix for every role. *@
+            @if (submissionBlocked)
+            {
+                <div class="govuk-!-margin-top-7 govuk-!-margin-bottom-6">
+                    <a class="govuk-button" data-module="govuk-button" data-testid="upload-again-button"
+                       asp-controller="FileUpload" asp-action="Get" asp-route-submissionId="@Model.SubmissionId">@SharedLocalizer["upload_your_file_again"]</a>
+                </div>
+            }
+            else if (Model.UserCanSubmit)
             {
                 @using (Html.BeginForm(FormMethod.Post))
                 {
@@ -173,7 +205,8 @@
                     }   
                 }
             }
-            else
+
+            @if (!Model.UserCanSubmit)
             {
                 <div class="govuk-!-margin-bottom-6">
                     <h2 class="govuk-heading-m govuk-!-margin-top-7">@Localizer["how_to_submit_your_file"]</h2>
