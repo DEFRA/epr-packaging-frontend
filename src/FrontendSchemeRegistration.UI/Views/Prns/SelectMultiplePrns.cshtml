@@ -114,7 +114,7 @@
 												<div class="govuk-checkboxes govuk-checkboxes--small">
 													<div class="govuk-checkboxes__item">														
 														<feature name="@FeatureFlags.ShowDecemberWaste">
-															@if(!showDecemberWasteFlash) {
+															@if(!shouldShowDecemberWasteFlash) {
 																@await Html.PartialAsync("../Shared/Partials/Prns/_prnAcceptCheckboxLabel", new ViewDataDictionary(ViewData) { { "index", i } })
 															}
 														</feature>
