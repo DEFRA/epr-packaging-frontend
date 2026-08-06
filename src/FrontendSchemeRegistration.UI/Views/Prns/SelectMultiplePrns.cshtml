@@ -112,7 +112,7 @@
 											@if (Model.Prns[i].IsStatusEditable)
 											{
 												<div class="govuk-checkboxes govuk-checkboxes--small">
-													<div class="govuk-checkboxes__item">														
+													<div class="govuk-checkboxes__item">	
 														<feature name="@FeatureFlags.ShowDecemberWaste">
 															@if(!shouldShowDecemberWasteFlash) {
 																@await Html.PartialAsync("../Shared/Partials/Prns/_prnAcceptCheckboxLabel", new ViewDataDictionary(ViewData) { { "index", i } })
@@ -150,7 +150,7 @@
 										</td>
 									</tr>
 									<feature name="@FeatureFlags.ShowDecemberWaste">
-										@if (shouldShowDecemberWasteFlash)
+										@if (shouldShowDecemberWasteFlash && decemberWasteFlashText != string.Empty)
 										{
 											<tr class="govuk-table__row december-waste-flash-row">
 												<td class="govuk-table__cell" colspan="7">
