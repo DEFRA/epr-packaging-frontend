@@ -513,13 +513,17 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         }
     }
 
-    public async Task<ComplianceDeclarationModel?> GetLatestComplianceDeclaration(int obligationYear)
+    public async Task<ComplianceDeclarationModel?> GetLatestComplianceDeclaration(int obligationYear, Guid? complianceSchemeId = null)
     {
+        AddComplianceSchemeHeader(complianceSchemeId);
         await PrepareAuthenticatedClientAsync();
 
         try
         {
             var response = await _httpClient.GetAsync($"/api/v1/prn/compliance-declarations?obligationYear={obligationYear}");
+            if (response.StatusCode == HttpStatusCode.NotFound)
+                return null;
+            
             response.EnsureSuccessStatusCode();
 
             var declarations = await response.Content.ReadFromJsonAsync<OrganisationComplianceDeclarationsModel>();
@@ -710,9 +714,16 @@ public class WebApiGatewayClient : IWebApiGatewayClient
            Microsoft.Identity.Web.Constants.Bearer, accessToken);
     }
 
-    private void AddComplianceSchemeHeader()
+    /// <summary>
+    /// This method sets a default header on the client. Therefore, it's persisted
+    /// beyond the immediate request and methods in this client class that don't call
+    /// it might actually be sending a compliance scheme ID if a method that does
+    /// call it has already executed.
+    /// </summary>
+    /// <param name="complianceSchemeId"></param>
+    private void AddComplianceSchemeHeader(Guid? complianceSchemeId = null)
     {
-        var complianceSchemeId = _complianceSchemeSvc.GetComplianceSchemeId();
+        complianceSchemeId ??= _complianceSchemeSvc.GetComplianceSchemeId();
         _httpClient.AddHeaderComplianceSchemeIdIfNotNull(complianceSchemeId);
     }
 }

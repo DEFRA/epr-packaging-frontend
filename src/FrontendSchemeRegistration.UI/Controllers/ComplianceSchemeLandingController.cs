@@ -70,7 +70,8 @@ public class ComplianceSchemeLandingController(
             featureManager,
             webApiGatewayClient,
             logger,
-            complianceYear);
+            complianceYear,
+            selectedComplianceSchemeId);
 
         var model = new ComplianceSchemeLandingViewModel
         {
