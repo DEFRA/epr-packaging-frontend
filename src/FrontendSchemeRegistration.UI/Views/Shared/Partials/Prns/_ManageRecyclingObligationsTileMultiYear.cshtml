@@ -1,0 +1,18 @@
+@model FrontendSchemeRegistration.UI.ViewModels.Prns.ManageRecyclingObligationsTileViewModel
+
+@{
+    var submitComplianceKey = Model.IsComplianceScheme
+        ? "submit_compliance_by_deadline_compliance_scheme"
+        : "submit_compliance_by_deadline_direct_producer";
+}
+
+<h2 class="govuk-heading-m">
+    <a href="@FrontendSchemeRegistration.Application.Constants.PagePaths.Prns.ObligationsHome"
+       class="govuk-link--no-visited-state">@Localizer["heading"]</a>
+</h2>
+<p class="govuk-body">@Localizer["view_or_manage_by_year"]</p>
+<p class="govuk-body">@Localizer[submitComplianceKey, Model.ComplianceYear, Model.ObligationDeadline]</p>
+<p class="govuk-body govuk-!-margin-bottom-0">
+    <a href="@FrontendSchemeRegistration.Application.Constants.PagePaths.Prns.Search"
+       class="govuk-link govuk-link--no-visited-state">@Localizer["search_all_link"]</a>
+</p>
