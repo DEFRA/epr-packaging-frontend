@@ -123,30 +123,6 @@
   <data name="add-manage-subsidiaries" xml:space="preserve">
     <value>Ychwanegu un is-gwmni</value>
   </data>
-  <data name="prn_heading_text" xml:space="preserve">
-    <value>Manage your {0} recycling obligations</value>
-  </data>
-  <data name="prn_heading_text_multi_year" xml:space="preserve">
-    <value>Manage recycling obligations</value>
-  </data>
-  <data name="prn_paragraph_1" xml:space="preserve">
-    <value>Review your recycling obligations and accept PRNs or PERNs to meet them. You can also:</value>
-  </data>
-  <data name="prn_view_or_manage_obligations_by_year" xml:space="preserve">
-    <value>View or manage your recycling obligations by year (includes PRNs and PERNs).</value>
-  </data>
-  <data name="prn_submit_compliance_by_deadline" xml:space="preserve">
-    <value>An approved or delegated person must submit your {0} statement of compliance on or before {1:d MMMM yyyy}.</value>
-  </data>
-  <data name="prn_unordered_list_point_1" xml:space="preserve">
-    <value>see how your recycling obligations were calculated</value>
-  </data>
-  <data name="prn_unordered_list_point_2" xml:space="preserve">
-    <value>check your recycling obligations progress</value>
-  </data>
-  <data name="prn_search_all_link" xml:space="preserve">
-    <value>Search all PRNs and PERNs</value>
-  </data>
   <data name="registration" xml:space="preserve">
     <value>Cofrestriad</value>
   </data>
