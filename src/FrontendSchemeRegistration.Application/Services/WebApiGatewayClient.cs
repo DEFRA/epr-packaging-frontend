@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -20,6 +21,7 @@ using Microsoft.Identity.Web;
 
 namespace FrontendSchemeRegistration.Application.Services;
 
+[SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters", Justification = "Required for dependency injection")]
 public class WebApiGatewayClient : IWebApiGatewayClient
 {
     private readonly HttpClient _httpClient;

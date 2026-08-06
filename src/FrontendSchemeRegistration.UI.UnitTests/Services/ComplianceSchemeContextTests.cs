@@ -16,6 +16,14 @@ public class ComplianceSchemeContextTests
     private readonly Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManager = new();
     private readonly Mock<IHttpContextAccessor> _httpContextAccessor = new();
 
+    [SetUp]
+    public void SetUp()
+    {
+        _complianceSchemeMemberService.Reset();
+        _sessionManager.Reset();
+        _httpContextAccessor.Reset();
+    }
+
     [Test]
     public async Task GetComplianceSchemeIdAsync_ReturnsIdFromHttpContextItems_WhenPresent()
     {
@@ -54,6 +62,20 @@ public class ComplianceSchemeContextTests
         var result = await CreateSystemUnderTest().GetComplianceSchemeIdAsync();
 
         result.Should().Be(complianceSchemeId);
+    }
+
+    [Test]
+    public async Task GetComplianceSchemeIdAsync_ReturnsNull_WhenHttpContextIsMissing()
+    {
+        _complianceSchemeMemberService
+            .Setup(x => x.GetComplianceSchemeId())
+            .Returns((Guid?)null);
+        _httpContextAccessor.SetupGet(x => x.HttpContext).Returns((HttpContext?)null);
+
+        var result = await CreateSystemUnderTest().GetComplianceSchemeIdAsync();
+
+        result.Should().BeNull();
+        _sessionManager.Verify(x => x.GetSessionAsync(It.IsAny<ISession>()), Times.Never);
     }
 
     private ComplianceSchemeContext CreateSystemUnderTest() => new(
