@@ -82,6 +82,7 @@ public class ComplianceSchemeLandingController(
             ResubmissionTaskListViewModel = resubmissionApplicationDetails.ToResubmissionTaskListViewModel(organisation),
             PackagingResubmissionPeriod = packagingResubmissionPeriod,
             ComplianceYear = complianceYear.ToString(),
+            ObligationDeadline = now.GetCsocSubmissionDeadline(),
             CsocViewModel = await CsocHelper.CreateViewModel(
                 featureManager,
                 isApprovedUser,
