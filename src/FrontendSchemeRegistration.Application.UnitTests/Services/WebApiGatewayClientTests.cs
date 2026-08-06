@@ -34,6 +34,7 @@ public class WebApiGatewayClientTests
     private WebApiGatewayClient _webApiGatewayClient;
     private HttpClient _httpClient;
     private Mock<IComplianceSchemeMemberService> _complianceSchemeMemberServiceMock;
+    private Mock<IComplianceSchemeContext> _complianceSchemeContextMock;
     private static readonly IFixture _fixture = new Fixture();
     private readonly FakeTimeProvider _timeProvider = new(new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc));
 
@@ -44,13 +45,15 @@ public class WebApiGatewayClientTests
         _httpMessageHandlerMock = new Mock<HttpMessageHandler>();
         _httpClient = new HttpClient(_httpMessageHandlerMock.Object);
         _complianceSchemeMemberServiceMock = new Mock<IComplianceSchemeMemberService>();
+        _complianceSchemeContextMock = new Mock<IComplianceSchemeContext>();
         _webApiGatewayClient = new WebApiGatewayClient(
             _httpClient,
             _tokenAcquisitionMock.Object,
             Options.Create(new HttpClientOptions { UserAgent = "SchemeRegistration/1.0" }),
             Options.Create(new WebApiOptions { DownstreamScope = "https://api.com", BaseEndpoint = "https://example.com/" }),
             _loggerMock.Object,
-            _complianceSchemeMemberServiceMock.Object, // Pass the mocked service here
+            _complianceSchemeMemberServiceMock.Object,
+            _complianceSchemeContextMock.Object,
             _timeProvider
         );
     }
@@ -1409,6 +1412,8 @@ public class WebApiGatewayClientTests
         result.NumberOfPrnsAwaitingAcceptance.Should().Be(expectedNumberOfPrnsAwaitingAcceptance);
         result.ObligationData.Count.Should().Be(prnMaterials.Count);
 
+        _complianceSchemeContextMock.Verify(x => x.GetComplianceSchemeIdAsync(), Times.Never);
+
         // Asserting for first material
         var firstMaterial = result.ObligationData[0];
         var expectedFirstMaterial = prnMaterials[0];
@@ -1472,6 +1477,10 @@ public class WebApiGatewayClientTests
     public async Task GetLatestComplianceDeclaration_ReturnsLatestStatus_WhenResponseContainsDeclarations()
     {
         var year = 2026;
+        var complianceSchemeId = Guid.NewGuid();
+        _complianceSchemeContextMock
+            .Setup(x => x.GetComplianceSchemeIdAsync())
+            .ReturnsAsync(complianceSchemeId);
 
         HttpRequestMessage capturedRequest = null!;
         var response = new HttpResponseMessage
@@ -1511,6 +1520,7 @@ public class WebApiGatewayClientTests
         result!.Status.Should().Be(ComplianceDeclarationStatus.Submitted);
         result.Id.Should().Be("6830b9d4c7e21f5a8d3e64b2");
         capturedRequest.RequestUri.Should().Be($"https://example.com/api/v1/prn/compliance-declarations?obligationYear={year}");
+        capturedRequest.Headers.GetValues("ComplianceSchemeId").Single().Should().Be(complianceSchemeId.ToString());
     }
 
     [Test]
@@ -1535,11 +1545,13 @@ public class WebApiGatewayClientTests
     }
 
     [Test]
-    public void GetLatestComplianceDeclaration_ThrowsException_WhenResponseIsUnsuccessful()
+    [TestCase(HttpStatusCode.NotFound)]
+    [TestCase(HttpStatusCode.InternalServerError)]
+    public void GetLatestComplianceDeclaration_ThrowsException_WhenResponseIsUnsuccessful(HttpStatusCode statusCode)
     {
         var response = new HttpResponseMessage
         {
-            StatusCode = HttpStatusCode.InternalServerError
+            StatusCode = statusCode
         };
 
         _httpMessageHandlerMock.Protected()

@@ -57,8 +57,7 @@ public static class CsocHelper
         IFeatureManager featureManager,
         IWebApiGatewayClient webApiGatewayClient,
         ILogger logger,
-        int complianceYear,
-        Guid? complianceSchemeId = null)
+        int complianceYear)
     {
         if (!await featureManager.IsEnabledAsync(FeatureFlags.CsocEnabled))
         {
@@ -67,7 +66,7 @@ public static class CsocHelper
 
         try
         {
-            var declaration = await webApiGatewayClient.GetLatestComplianceDeclaration(complianceYear, complianceSchemeId);
+            var declaration = await webApiGatewayClient.GetLatestComplianceDeclaration(complianceYear);
             if (declaration is null)
             {
                 return new PrnObligationViewModel();
@@ -90,7 +89,7 @@ public static class CsocHelper
 
         PrnObligationViewModel HandleLoadFailure(Exception ex)
         {
-            logger.LogWarning(ex, "Failed to load compliance declaration for year {ComplianceYear} and scheme {ComplianceScheme}", complianceYear, complianceSchemeId);
+            logger.LogWarning(ex, "Failed to load compliance declaration for year {ComplianceYear}", complianceYear);
             return new PrnObligationViewModel();
         }
     }
