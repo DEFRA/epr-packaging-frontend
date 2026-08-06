@@ -187,7 +187,8 @@ public class CsocTests
     {
         Context.SetUp(overrideSession: true, additionalConfig: new Dictionary<string, string?>
             {
-                { "FeatureManagement:CsocEnabled", csocEnabled.ToString().ToLower() }
+                { "FeatureManagement:CsocEnabled", csocEnabled.ToString().ToLower() },
+                { "FeatureManagement:ShowMultiYearObligations", "false" }
             },
             new WebApiOptions
             {
