@@ -172,4 +172,58 @@ public class PrnsObligationController : Controller
         
         return session;
     }
+
+    [HttpGet]
+    [Route(PagePaths.Prns.ChooseYear)]
+    [FeatureGate(FeatureFlags.ShowMultiYearObligations)]
+    public async Task<IActionResult> ChooseYear()
+    {
+        if (!await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
+        {
+            return NotFound();
+        }
+
+        ViewBag.BackLinkToDisplay = _globalVariables.Value.BasePath;
+
+        return View(BuildChooseYearViewModel());
+    }
+
+    [HttpPost]
+    [Route(PagePaths.Prns.ChooseYear)]
+    [FeatureGate(FeatureFlags.ShowMultiYearObligations)]
+    public async Task<IActionResult> ChooseYear(ChooseYearViewModel model)
+    {
+        if (!await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
+        {
+            return NotFound();
+        }
+
+        ViewBag.BackLinkToDisplay = _globalVariables.Value.BasePath;
+
+        var viewModel = BuildChooseYearViewModel(model.SelectedYear);
+
+        if (!model.SelectedYear.HasValue || !viewModel.Years.Contains(model.SelectedYear.Value))
+        {
+            ModelState.ClearValidationState(nameof(model.SelectedYear));
+            ModelState.AddModelError(nameof(model.SelectedYear), "select_a_year");
+
+            return View(viewModel);
+        }
+
+        var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+        session.PrnSession.SelectedObligationYear = model.SelectedYear.Value;
+        await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
+
+        return RedirectToAction(nameof(ObligationsHome));
+    }
+
+    private ChooseYearViewModel BuildChooseYearViewModel(int? selectedYear = null)
+    {
+        return new ChooseYearViewModel
+        {
+            CurrentYear = _complianceYear,
+            SelectedYear = selectedYear,
+            Years = ObligationYearOptions.GetSelectableYears(_complianceYear)
+        };
+    }
 }
