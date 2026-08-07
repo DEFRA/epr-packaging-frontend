@@ -77,6 +77,29 @@
           ]
         }
       ]
+    },
+    {
+      "id": "prns-choose-year",
+      "fileName": "04-choose-year.xlsx",
+      "route": "/report-data/choose-your-recycling-obligations-year",
+      "view": "src/FrontendSchemeRegistration.UI/Views/PrnsObligation/ChooseYear.cshtml",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-111839",
+      "notes": "Choose a year page: select historical, current or future recycling obligation year before managing obligations.",
+      "featureFlags": [
+        "ShowPrn",
+        "ShowMultiYearObligations"
+      ],
+      "appSettings": {},
+      "resources": [
+        {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ChooseYear.en.resx",
+          "section": "Choose a year page title and validation.",
+          "keys": [
+            "title",
+            "select_a_year"
+          ]
+        }
+      ]
     }
   ]
 }

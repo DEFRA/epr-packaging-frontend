@@ -1,0 +1,63 @@
+@using FrontendSchemeRegistration.UI.Extensions
+@using FrontendSchemeRegistration.UI.ViewModels.GovUk
+@using FrontendSchemeRegistration.UI.ViewModels.Prns
+@model ChooseYearViewModel
+@{
+    ViewData["Title"] = Localizer["title"];
+    var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer);
+}
+
+<main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @await Html.PartialAsync("Partials/Govuk/_ErrorsViewModelSummary", errorsViewModel)
+            }
+
+            @using (Html.BeginForm("ChooseYear", "PrnsObligation", FormMethod.Post))
+            {
+                <div class="govuk-form-group @(ViewData.ModelState.IsValid ? string.Empty : "govuk-form-group--error")">
+                    <fieldset class="govuk-fieldset" aria-describedby="@(ViewData.ModelState.IsValid ? null : "SelectedYear-error")">
+                        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+                            <h1 class="govuk-fieldset__heading">
+                                @Localizer["title"]
+                            </h1>
+                        </legend>
+
+                        @if (!ViewData.ModelState.IsValid && errorsViewModel.HasErrorKey(nameof(Model.SelectedYear)))
+                        {
+                            <p id="SelectedYear-error" class="govuk-error-message">
+                                <span class="govuk-visually-hidden">Error:</span>
+                                @errorsViewModel[nameof(Model.SelectedYear)]!.First().Message
+                            </p>
+                        }
+
+                        <div class="govuk-radios" data-module="govuk-radios">
+                            @for (var i = 0; i < Model.Years.Count; i++)
+                            {
+                                var year = Model.Years[i];
+                                var radioId = i == 0 ? nameof(Model.SelectedYear) : $"{nameof(Model.SelectedYear)}-{year}";
+                                <div class="govuk-radios__item">
+                                    <input class="govuk-radios__input"
+                                           id="@radioId"
+                                           name="@nameof(Model.SelectedYear)"
+                                           type="radio"
+                                           value="@year"
+                                           @(Model.SelectedYear == year ? "checked=\"checked\"" : null) />
+                                    <label class="govuk-label govuk-radios__label" for="@radioId">
+                                        @year
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    </fieldset>
+                </div>
+
+                <button type="submit" class="govuk-button" data-module="govuk-button">
+                    @SharedLocalizer["continue"]
+                </button>
+            }
+        </div>
+    </div>
+</main>

@@ -9,5 +9,7 @@ namespace FrontendSchemeRegistration.UI.Sessions
         public string InitialNoteTypes { get; set; }
 
         public Hashtable Backlinks { get; set;} = new();
+
+        public int? SelectedObligationYear { get; set; }
     }
 }
