@@ -612,4 +612,151 @@ public class PrnsObligationControllerTests
         controller.ViewData.Should().ContainKey("BackLinkToDisplay");
         controller.ViewData.Should().ContainKey("ProducerResponsibilityObligationsLink");
     }
+
+    [Test]
+    public async Task ChooseYear_Get_Returns_View_With_Selectable_Years()
+    {
+        _fakeTimeProvider.SetUtcNow(new DateTimeOffset(2026, 6, 1, 0, 0, 0, TimeSpan.Zero));
+        _featureManagerMock
+            .Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
+            .ReturnsAsync(true);
+        var controller = CreateController();
+
+        var result = await controller.ChooseYear() as ViewResult;
+
+        result.Should().NotBeNull();
+        var model = result!.Model.Should().BeOfType<ChooseYearViewModel>().Subject;
+        model.CurrentYear.Should().Be(2026);
+        model.Years.Should().Equal(2027, 2026, 2025);
+        model.SelectedYear.Should().BeNull();
+        ((string)controller.ViewBag.BackLinkToDisplay).Should().Be("BasePath");
+    }
+
+    [Test]
+    public async Task ChooseYear_Get_Returns_NotFound_When_Feature_Flag_Disabled()
+    {
+        _featureManagerMock
+            .Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
+            .ReturnsAsync(false);
+        var controller = CreateController();
+
+        var result = await controller.ChooseYear();
+
+        result.Should().BeOfType<NotFoundResult>();
+    }
+
+    [Test]
+    public async Task ChooseYear_Post_Returns_NotFound_When_Feature_Flag_Disabled()
+    {
+        _featureManagerMock
+            .Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
+            .ReturnsAsync(false);
+        var controller = CreateController();
+
+        var result = await controller.ChooseYear(new ChooseYearViewModel { SelectedYear = 2026 });
+
+        result.Should().BeOfType<NotFoundResult>();
+        _sessionManagerMock.Verify(
+            m => m.SaveSessionAsync(It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()),
+            Times.Never);
+    }
+
+    [Test]
+    public async Task ChooseYear_Post_When_No_Year_Selected_Returns_View_With_Error()
+    {
+        _fakeTimeProvider.SetUtcNow(new DateTimeOffset(2026, 6, 1, 0, 0, 0, TimeSpan.Zero));
+        _featureManagerMock
+            .Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
+            .ReturnsAsync(true);
+        var controller = CreateController();
+
+        var result = await controller.ChooseYear(new ChooseYearViewModel()) as ViewResult;
+
+        result.Should().NotBeNull();
+        controller.ModelState.IsValid.Should().BeFalse();
+        controller.ModelState.Should().ContainKey(nameof(ChooseYearViewModel.SelectedYear));
+        _sessionManagerMock.Verify(
+            m => m.SaveSessionAsync(It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()),
+            Times.Never);
+    }
+
+    [Test]
+    public async Task ChooseYear_Post_When_Year_Invalid_Returns_View_With_Error()
+    {
+        _fakeTimeProvider.SetUtcNow(new DateTimeOffset(2026, 6, 1, 0, 0, 0, TimeSpan.Zero));
+        _featureManagerMock
+            .Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
+            .ReturnsAsync(true);
+        var controller = CreateController();
+
+        var result = await controller.ChooseYear(new ChooseYearViewModel { SelectedYear = 2020 }) as ViewResult;
+
+        result.Should().NotBeNull();
+        controller.ModelState.IsValid.Should().BeFalse();
+        _sessionManagerMock.Verify(
+            m => m.SaveSessionAsync(It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()),
+            Times.Never);
+    }
+
+    [Test]
+    public async Task ChooseYear_Post_When_Year_Selected_Saves_Session_And_Redirects()
+    {
+        _fakeTimeProvider.SetUtcNow(new DateTimeOffset(2026, 6, 1, 0, 0, 0, TimeSpan.Zero));
+        _featureManagerMock
+            .Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
+            .ReturnsAsync(true);
+        var session = new FrontendSchemeRegistrationSession
+        {
+            UserData = new UserData
+            {
+                Organisations =
+                [
+                    new Organisation
+                    {
+                        Id = Guid.NewGuid(),
+                        OrganisationRole = OrganisationRoles.Producer,
+                        Name = "Test Organisation",
+                        NationId = 1
+                    }
+                ],
+                ServiceRole = "Basic User"
+            }
+        };
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+        var controller = CreateController();
+
+        var result = await controller.ChooseYear(new ChooseYearViewModel { SelectedYear = 2026 });
+
+        var redirect = result.Should().BeOfType<RedirectToActionResult>().Subject;
+        redirect.ActionName.Should().Be(nameof(PrnsObligationController.ObligationsHome));
+        session.PrnSession.SelectedObligationYear.Should().Be(2026);
+        _sessionManagerMock.Verify(
+            m => m.SaveSessionAsync(It.IsAny<ISession>(), session),
+            Times.Once);
+    }
+
+    private PrnsObligationController CreateController()
+    {
+        var globalVariables = Options.Create(new GlobalVariables { BasePath = "BasePath", LogPrefix = "[FrontendSchemaRegistration]" });
+
+        return new PrnsObligationController(
+            _sessionManagerMock.Object,
+            _prnServiceMock.Object,
+            _fakeTimeProvider,
+            globalVariables,
+            _urlOptionsMock.Object,
+            _loggerMock.Object,
+            _featureManagerMock.Object,
+            new OptionsWrapper<CsocOptions>(new CsocOptions()))
+        {
+            Url = _urlHelperMock.Object,
+            ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    Session = new Mock<ISession>().Object
+                }
+            }
+        };
+    }
 }
