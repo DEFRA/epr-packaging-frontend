@@ -65,20 +65,14 @@ public class PrnsObligationController : Controller
     [Route(PagePaths.Prns.ObligationsHome)]
     public async Task<IActionResult> ObligationsHome()
     {
-        var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-        var isMultiYearObligationsEnabled = await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations);
-        var selectedYear = isMultiYearObligationsEnabled && session.PrnSession.SelectedObligationYear.HasValue
-            ? session.PrnSession.SelectedObligationYear.Value
-            : _complianceYear;
-
         var isCsocEnabled = await _featureManager.IsEnabledAsync(FeatureFlags.CsocEnabled);
-        var viewModel = await _prnService.GetRecyclingObligationsCalculation(selectedYear, includeComplianceDeclarationStatus: isCsocEnabled);
-
+        var viewModel = await _prnService.GetRecyclingObligationsCalculation(_complianceYear, includeComplianceDeclarationStatus: isCsocEnabled);
+        
         _logger.LogInformation(
             "{LogPrefix}: PrnsObligationController - ObligationsHome: Recycling Obligations returned for year {Year} : {Results}",
-            _logPrefix, selectedYear, JsonConvert.SerializeObject(viewModel));
+            _logPrefix, _complianceYear, JsonConvert.SerializeObject(viewModel));
 
-        await FillViewModelFromSessionAsync(viewModel, selectedYear);
+        var session = await FillViewModelFromSessionAsync(viewModel);
         var userData = session.UserData;
 
         ViewBag.HomeLinkToDisplay = _globalVariables.Value.BasePath;
@@ -151,7 +145,7 @@ public class PrnsObligationController : Controller
     }
 
     [NonAction]
-    public async Task<FrontendSchemeRegistrationSession> FillViewModelFromSessionAsync(PrnObligationViewModel viewModel, int? complianceYear = null)
+    public async Task<FrontendSchemeRegistrationSession> FillViewModelFromSessionAsync(PrnObligationViewModel viewModel)
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
 
@@ -174,8 +168,8 @@ public class PrnsObligationController : Controller
         viewModel.NationId = isDirectProducer
             ? organisation.NationId
             : session.RegistrationSession.SelectedComplianceScheme?.NationId ?? 0;
-        viewModel.ComplianceYear = complianceYear ?? _complianceYear;
-
+        viewModel.ComplianceYear = _complianceYear;
+        
         return session;
     }
 
