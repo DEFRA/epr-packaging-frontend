@@ -22,6 +22,11 @@ public class HomePageSelfManagedViewModel
     /// </summary>
     public string ComplianceYear { get; set; }
 
+    /// <summary>
+    /// Certificate of compliance submission deadline for the current obligation year.
+    /// </summary>
+    public DateTime ObligationDeadline { get; set; }
+
     public string LastYear => (DateTime.Now.Year - 1).ToString();
 
     public NotificationViewModel Notification { get; set; } = new NotificationViewModel();
