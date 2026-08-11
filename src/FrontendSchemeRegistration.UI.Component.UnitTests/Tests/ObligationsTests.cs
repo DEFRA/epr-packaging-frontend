@@ -136,6 +136,32 @@ public class ObligationsTests
         content.Should().NotContain("Accepted towards");
     }
 
+    [TestCase("/report-data/selected-prn/00000000-0000-0000-0000-000000000005", Language.English)]
+    [TestCase("/report-data/selected-prn/00000000-0000-0000-0000-000000000005", Language.Welsh)]
+    [TestCase("/report-data/accepted-prn/00000000-0000-0000-0000-000000000005", Language.English)]
+    [TestCase("/report-data/accepted-prn/00000000-0000-0000-0000-000000000005", Language.Welsh)]
+    public async Task WhenDecemberWasteEnabled_ShouldShowAcceptedTowardsObligationYear(string path, string language)
+    {
+        Context.Dispose();
+        Context.SetUp(
+            overrideSession: true,
+            additionalConfig: new Dictionary<string, string?>
+            {
+                { "FeatureManagement:ShowDecemberWaste", "true" }
+            });
+
+        await Context.Client.AuthenticateDefaultUser();
+
+        var sessionStore = Context.GetSessionStore();
+        sessionStore.Session.Set(Language.SessionLanguageKey, Encoding.UTF8.GetBytes(language));
+
+        var response = await Context.Client.GetAsync(path);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        content.Should().Contain("Accepted towards");
+    }
+
     [TearDown]
     public void TearDown()
     {
