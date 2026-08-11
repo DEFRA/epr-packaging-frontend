@@ -100,6 +100,30 @@
           ]
         }
       ]
+    },
+    {
+      "id": "prns-accept-single-confirm",
+      "fileName": "05-accept-single-sonfirm-prn.xlsx",
+      "route": "/report-data/accept-prn/{id}",
+      "view": "src/FrontendSchemeRegistration.UI/Views/PrnsAccept/AcceptSinglePrn.cshtml",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1932-66960&t=kwdkV7tx2CNkKvrA-0",
+      "notes": "Single PRN Accepted year confirmation page.",
+      "featureFlags": [
+        "ShowPrn",
+        "ShowMultiYearObligations"
+      ],
+      "appSettings": {},
+      "resources": [
+        {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/AcceptSinglePrn.en.resx",
+          "section": "Single PRN Accepted year confirmation page",
+          "keys": [
+            "acceptance_year_confirmation",
+            "acceptance_years_confirmation",
+            "accepted_towards_recycling_obligations_confirmation"
+          ]
+        }
+      ]
     }
   ]
 }
