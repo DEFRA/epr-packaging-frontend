@@ -134,6 +134,19 @@ public class PackagingResubmissionApplicationSession
 
     public bool IsResubmissionComplete => (AdditionalDetailsStatus == ResubmissionTaskListStatus.Completed);
 
+    /// <summary>
+    /// True when this resubmission cycle has actually been started, as opposed to merely being open.
+    /// </summary>
+    /// <remarks>
+    /// SUB-345: IsResubmissionInProgress is satisfied by ApplicationReferenceNumber alone, and that number
+    /// survives a regulator decision so the cycle keeps its identity. On its own it therefore reads as
+    /// "in progress" for a cycle the user has not touched, which headed an untouched task list with
+    /// "Continue your packaging data resubmission" while every step below it read Not started.
+    /// The landing pages already pair the flag with this ApplicationStatus check; this is that pairing,
+    /// named once rather than repeated inline.
+    /// </remarks>
+    public bool IsResubmissionStarted => IsResubmissionInProgress && ApplicationStatus != ApplicationStatusType.NotStarted;
+
     public Organisation Organisation { get; set; } = new Organisation();
     
     public bool HasSubmissionSyncCompleted { get; set; }

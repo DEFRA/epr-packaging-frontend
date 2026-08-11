@@ -102,6 +102,7 @@ public class PackagingDataResubmissionController : Controller
             PaymentViewStatus = session.PomResubmissionSession.PackagingResubmissionApplicationSession.PaymentViewStatus,
             AdditionalDetailsStatus = session.PomResubmissionSession.PackagingResubmissionApplicationSession.AdditionalDetailsStatus,
             IsResubmissionInProgress = session.PomResubmissionSession.PackagingResubmissionApplicationSession.IsResubmissionInProgress,
+            IsResubmissionStarted = session.PomResubmissionSession.PackagingResubmissionApplicationSession.IsResubmissionStarted,
             ResubmissionApplicationSubmitted = session.PomResubmissionSession.PackagingResubmissionApplicationSession.ResubmissionApplicationSubmitted,
             HasSubmissionSyncCompleted = session.PomResubmissionSession.PackagingResubmissionApplicationSession.HasSubmissionSyncCompleted
         });

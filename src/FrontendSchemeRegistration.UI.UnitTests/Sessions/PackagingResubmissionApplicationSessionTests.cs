@@ -150,6 +150,58 @@ public class PackagingResubmissionApplicationSessionTests
         session.IsResubmissionInProgress.Should().BeTrue();
     }
 
+    // SUB-345: the state the user lands in after the regulator accepts a declared cycle. The reference number
+    // survives so the cycle keeps its identity, but nothing has been done in the new cycle: every task-list
+    // step is unstarted, so the heading must not offer to "continue" it.
+    [Test]
+    public void IsResubmissionStarted_ShouldBeFalse_WhenTheCycleIsOpenButUntouched()
+    {
+        var session = new PackagingResubmissionApplicationSession
+        {
+            ApplicationReferenceNumber = "PEPR12345S01",
+            ApplicationStatus = ApplicationStatusType.NotStarted,
+            ResubmissionApplicationSubmittedDate = null
+        };
+
+        session.IsResubmissionInProgress.Should().BeTrue();
+        session.IsResubmissionStarted.Should().BeFalse();
+        session.FileUploadStatus.Should().Be(ResubmissionTaskListStatus.NotStarted);
+    }
+
+    // The upload is registered but not yet submitted or synced, so FileUploadStatus is only Pending. The
+    // heading keys off ApplicationStatus rather than FileUploadStatus so that this still counts as started -
+    // the user has uploaded something and does have work to continue.
+    [Test]
+    public void IsResubmissionStarted_ShouldBeTrue_OnceAFileHasBeenUploadedIntoTheCycle()
+    {
+        var session = new PackagingResubmissionApplicationSession
+        {
+            ApplicationReferenceNumber = "PEPR12345S01",
+            ApplicationStatus = ApplicationStatusType.FileUploaded,
+            FileReachedSynapse = false,
+            ResubmissionApplicationSubmittedDate = null
+        };
+
+        session.FileUploadStatus.Should().Be(ResubmissionTaskListStatus.Pending);
+        session.IsResubmissionStarted.Should().BeTrue();
+    }
+
+    // Started is a narrowing of in progress, never a widening: once the cycle is declared it is no longer
+    // either, and the heading falls back to the organisation-named one.
+    [Test]
+    public void IsResubmissionStarted_ShouldBeFalse_OnceTheApplicationHasBeenSubmitted()
+    {
+        var session = new PackagingResubmissionApplicationSession
+        {
+            ApplicationReferenceNumber = "PEPR12345S01",
+            ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+            ResubmissionApplicationSubmittedDate = DateTime.Now
+        };
+
+        session.IsResubmissionInProgress.Should().BeFalse();
+        session.IsResubmissionStarted.Should().BeFalse();
+    }
+
     [Test]
     public void IsResubmissionComplete_ShouldBeFalse_WhenDeclaredButFeeNotPaid()
     {
