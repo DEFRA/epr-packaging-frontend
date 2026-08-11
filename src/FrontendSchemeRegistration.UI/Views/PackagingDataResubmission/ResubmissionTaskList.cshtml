@@ -12,7 +12,10 @@
 	var canStartViewPayResubmissionFeeStep = Model.FileUploadStatus is ResubmissionTaskListStatus.Completed & Model.HasSubmissionSyncCompleted;
 	
 	var canStartSubmitResubmissionApplicationStep = Model.PaymentViewStatus is ResubmissionTaskListStatus.Completed;
-	var isResubmissionInProgress = Model.IsResubmissionInProgress ?? false;
+	//SUB-345: the heading has to follow what has been started, not what is open. A regulator decision leaves
+	//the reference number in place so the cycle keeps its identity, which is enough for IsResubmissionInProgress
+	//but not enough to tell the user to "continue" something they have not begun.
+	var hasStartedResubmission = Model.IsResubmissionStarted;
 	var isResubmissionApplicationSubmitted = Model.ResubmissionApplicationSubmitted;
 	
 	//SUB-39: added to reflect that although the FileUpload may have completed, the related data may not have been processed by Synapse and the status should remain as "Pending"
@@ -26,7 +29,7 @@
 	<div class="govuk-grid-row">
 		<div class="govuk-grid-column-three-quarters">
 			<h1 class="govuk-heading-l govuk-!-margin-bottom-4">
-				@if (isResubmissionInProgress)
+				@if (hasStartedResubmission)
 				{
 					@Localizer["continue_your_packaging_data_resubmission"]
 				}
