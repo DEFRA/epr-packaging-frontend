@@ -129,7 +129,7 @@
     },
     {
       "id": "prns-accept-single-confirm",
-      "fileName": "05-accept-single-confirm-prn.xlsx",
+      "fileName": "05-accept-single-sonfirm-prn.xlsx",
       "route": "/report-data/accept-prn/{id}",
       "view": "src/FrontendSchemeRegistration.UI/Views/PrnsAccept/AcceptSinglePrn.cshtml",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1932-66960&t=kwdkV7tx2CNkKvrA-0",
