@@ -296,7 +296,12 @@ public class FileUploadSubLandingController(
 
         // SUB-332: ResubmissionApplicationSubmitted covers the window between declaring and the Synapse sync
         // completing, where IsResubmissionInProgress and IsResubmissionComplete are both false.
-        if (packagingResubmissionApplicationSession.IsResubmissionInProgress
+        // SUB-345: an open cycle is not the same as a started one. IsResubmissionInProgress is satisfied by
+        // ApplicationReferenceNumber alone, which is raised on the first task-list render and then persists
+        // across a reopened cycle, so on its own it skips UploadNewFileToSubmit before the user has acted on
+        // the regulator's decision. That page is the only one carrying the decision and its comments, so
+        // require evidence that this cycle has actually been started before routing past it.
+        if ((packagingResubmissionApplicationSession.IsResubmissionInProgress && HasStartedThisResubmissionCycle(packagingResubmissionApplicationSession, submission))
             || packagingResubmissionApplicationSession.IsResubmissionComplete
             || packagingResubmissionApplicationSession.ResubmissionApplicationSubmitted)
         {
@@ -306,6 +311,23 @@ public class FileUploadSubLandingController(
         }
 
         return HandleSubmittedSubmission(submission);
+    }
+
+    /// <summary>
+    /// True when the user has done something in the current resubmission cycle, as opposed to merely having
+    /// one open.
+    /// </summary>
+    /// <remarks>
+    /// SUB-345: a cycle with a failed upload and a cycle the user has not touched both report
+    /// <c>ApplicationStatus.NotStarted</c>, so the session alone cannot separate them. The submission can:
+    /// a failed attempt leaves a newer upload than the valid file on offer. That case keeps SUB-332's route
+    /// straight back into the task list; an untouched cycle goes to UploadNewFileToSubmit first, which is
+    /// where the regulator's decision and comments are shown.
+    /// </remarks>
+    private static bool HasStartedThisResubmissionCycle(PackagingResubmissionApplicationSession applicationSession, PomSubmission submission)
+    {
+        return applicationSession.FileUploadStatus != ResubmissionTaskListStatus.NotStarted
+               || submission.HasNewerUnprocessedUploadThanValidFile();
     }
 
     private RedirectToActionResult HandleSubmittedSubmission(PomSubmission submission)

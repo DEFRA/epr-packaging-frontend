@@ -2290,6 +2290,148 @@ public class FileUploadSubLandingControllerTests
         result.ControllerName.Should().Be("FileUploadCheckFileAndSubmit");
     }
 
+    // SUB-345: an open cycle carries a reference number from its first task-list render onwards, so on its
+    // own it is not evidence the user has acted on the regulator's decision. UploadNewFileToSubmit is the
+    // only page carrying that decision and its comments, so it must still be reached here.
+    [Test]
+    public async Task Post_RedirectsToUploadNewFileToSubmit_WhenTheCycleIsOpenButNothingHasBeenUploaded()
+    {
+        // Arrange
+        var submissionPeriod = _submissionPeriods[0].DataPeriod;
+        var submission = CreateSubmittedPomSubmissionWithMatchingFileIds();
+
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionsAsync<PomSubmission>(
+                It.IsAny<List<string>>(),
+                It.IsAny<int>(),
+                It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<PomSubmission> { submission });
+
+        _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(true);
+
+        _sessionMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SubmissionPeriod = submissionPeriod
+                },
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation> { new() { Id = Guid.NewGuid(), OrganisationRole = OrganisationRoles.Producer } }
+                },
+                PomResubmissionSession = new PackagingReSubmissionSession()
+                {
+                    PackagingResubmissionApplicationSessions = new List<PackagingResubmissionApplicationSession>()
+                    {
+                        new PackagingResubmissionApplicationSession()
+                        {
+                            SubmissionId = submission.Id,
+                            ApplicationReferenceNumber = "PEPR00000S01",
+                            ApplicationStatus = ApplicationStatusType.NotStarted,
+                            ResubmissionApplicationSubmittedDate = null
+                        }
+                    }
+                }
+            });
+
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)))
+            .ReturnsAsync(true);
+
+        // Act
+        var result = await _systemUnderTest.Post(submissionPeriod) as RedirectToActionResult;
+
+        // Assert - IsResubmissionInProgress is true off the reference number alone, so this only passes
+        // while the redirect also requires the cycle to have been started
+        result.Should().NotBeNull();
+        result.ActionName.Should().Be(nameof(UploadNewFileToSubmitController.Get));
+        result.ControllerName.Should().Be("UploadNewFileToSubmit");
+    }
+
+    // SUB-332: an upload that never became the valid file reports ApplicationStatus NotStarted, the same as
+    // an untouched cycle. The newer upload attempt on the submission is what separates them, and it must
+    // keep routing back into the task list rather than to UploadNewFileToSubmit.
+    [Test]
+    public async Task Post_RedirectsToResubmissionTaskList_WhenTheCycleIsOpenAndTheLatestUploadDidNotValidate()
+    {
+        // Arrange
+        var submissionPeriod = _submissionPeriods[0].DataPeriod;
+        var submission = CreateSubmittedPomSubmissionWithMatchingFileIds();
+
+        submission.PomFileName = "latest-attempt.csv";
+        submission.PomFileUploadDateTime = submission.LastUploadedValidFile.FileUploadDateTime.AddHours(1);
+
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionsAsync<PomSubmission>(
+                It.IsAny<List<string>>(),
+                It.IsAny<int>(),
+                It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<PomSubmission> { submission });
+
+        _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(true);
+
+        _sessionMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SubmissionPeriod = submissionPeriod
+                },
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation> { new() { Id = Guid.NewGuid(), OrganisationRole = OrganisationRoles.Producer } }
+                },
+                PomResubmissionSession = new PackagingReSubmissionSession()
+                {
+                    PackagingResubmissionApplicationSessions = new List<PackagingResubmissionApplicationSession>()
+                    {
+                        new PackagingResubmissionApplicationSession()
+                        {
+                            SubmissionId = submission.Id,
+                            ApplicationReferenceNumber = "PEPR00000S01",
+                            ApplicationStatus = ApplicationStatusType.NotStarted,
+                            ResubmissionApplicationSubmittedDate = null
+                        }
+                    }
+                }
+            });
+
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)))
+            .ReturnsAsync(true);
+
+        // Act
+        var result = await _systemUnderTest.Post(submissionPeriod) as RedirectToActionResult;
+
+        // Assert - the file ids match, so nothing but the started-cycle check can produce this redirect
+        result.Should().NotBeNull();
+        result.ActionName.Should().Be(nameof(PackagingDataResubmissionController.ResubmissionTaskList));
+        result.ControllerName.Should().Be("PackagingDataResubmission");
+    }
+
+    private static PomSubmission CreateSubmittedPomSubmissionWithMatchingFileIds()
+    {
+        var fileId = Guid.NewGuid();
+
+        return new PomSubmission
+        {
+            Id = Guid.NewGuid(),
+            IsSubmitted = true,
+            HasWarnings = false,
+            ValidationPass = true,
+            LastSubmittedFile = new SubmittedFileInformation
+            {
+                FileId = fileId
+            },
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileId = fileId,
+                FileUploadDateTime = DateTime.UtcNow.AddDays(-1)
+            }
+        };
+    }
+
     private static PomSubmission CreatePomSubmissionWithWarningsAndFileIdMismatch()
     {
         return new PomSubmission
