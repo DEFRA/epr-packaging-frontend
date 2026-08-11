@@ -133,7 +133,9 @@ public class ObligationsTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().NotContain("Accepted towards");
+        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
+            .ScrubCommonHtmlNodes()
+            .UseParameters(path, language);
     }
 
     [TestCase("/report-data/selected-prn/00000000-0000-0000-0000-000000000005", Language.English)]
@@ -159,7 +161,9 @@ public class ObligationsTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("Accepted towards");
+        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
+            .ScrubCommonHtmlNodes()
+            .UseParameters(path, language);
     }
 
     [TestCase("/report-data/accept-prn/00000000-0000-0000-0000-000000000001", Language.English)]
@@ -183,7 +187,9 @@ public class ObligationsTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("Are you sure you want to accept this PRN");
+        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
+            .ScrubCommonHtmlNodes()
+            .UseParameters(path, language);
     }
 
     [TearDown]
