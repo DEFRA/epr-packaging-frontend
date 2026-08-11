@@ -83,6 +83,20 @@ public class PackagingResubmissionApplicationSession
     {
         get
         {
+            // SUB-345: both messages below tell the user what is outstanding on work they have already done,
+            // so neither can be shown for a cycle that has merely been opened. The cycle survives a regulator
+            // decision by design - the reference number keeps its identity - and FileReachedSynapse refers to
+            // whichever file last reached Synapse, which for a ruled-on cycle is the file that was ruled on.
+            // Between them that was enough to head an untouched cycle's tile with "you've viewed your fee, you
+            // now need to submit to the regulator" while the task list showed every step unstarted.
+            //
+            // Neither legitimate state is lost: in both the file has been submitted, so ApplicationStatus is
+            // SubmittedToRegulator and the cycle reads as started.
+            if (!IsResubmissionStarted)
+            {
+                return null;
+            }
+
             if ((!IsResubmissionFeeViewed.HasValue || !IsResubmissionFeeViewed.Value)
                 && FileReachedSynapse && !ResubmissionApplicationSubmitted)
             {
