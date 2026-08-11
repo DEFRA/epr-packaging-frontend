@@ -219,6 +219,30 @@ public class ObligationsTests
             .UseParameters(language);
     }
 
+    [TestCase("/report-data/accept-prn/00000000-0000-0000-0000-000000000001", Language.English)]
+    [TestCase("/report-data/accept-prn/00000000-0000-0000-0000-000000000003", Language.English)]
+    public async Task WhenMultiYearObligationsEnabled_ShouldShowConfirmHeading(string path, string language)
+    {
+        Context.Dispose();
+        Context.SetUp(
+            overrideSession: true,
+            additionalConfig: new Dictionary<string, string?>
+            {
+                { "FeatureManagement:ShowMultiYearObligations", "true" }
+            });
+
+        await Context.Client.AuthenticateDefaultUser();
+
+        var sessionStore = Context.GetSessionStore();
+        sessionStore.Session.Set(Language.SessionLanguageKey, Encoding.UTF8.GetBytes(language));
+
+        var response = await Context.Client.GetAsync(path);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        content.Should().Contain("Are you sure you want to accept this PRN");
+    }
+
     [TearDown]
     public void TearDown()
     {
