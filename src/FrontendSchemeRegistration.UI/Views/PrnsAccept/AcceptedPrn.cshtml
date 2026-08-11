@@ -1,35 +1,65 @@
 @using FrontendSchemeRegistration.UI.Controllers.Prns
 @using FrontendSchemeRegistration.UI.ViewModels.Prns
+@using Microsoft.FeatureManagement
 @inject IStringLocalizer<PrnDataResources> PrnDataLocalizer
+@inject IFeatureManager FeatureManager
 @model PrnViewModel
 
 @{
     ViewData["Title"] = Localizer["page_title"];
     var isPdf = ViewData["IsPdf"] as bool? ?? false;
+    var multiYearEnabled = await FeatureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations);
+    var columnClass = multiYearEnabled ? "govuk-grid-column-two-thirds" : "govuk-grid-column-full";
 }
 
 <main class="govuk-main-wrapper govuk-!-padding-top-4">
     <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
-            @await Html.PartialAsync("../Shared/Partials/Prns/_agenciesLogo.cshtml")
-            @if(!isPdf)
+        <div class="@columnClass">
+            @if (multiYearEnabled)
             {
-                <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
-                    <div class="govuk-notification-banner__header">
-                        <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
-                            @SharedLocalizer["success"]
-                        </h2>
+                @if (!isPdf)
+                {
+                    <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+                        <div class="govuk-notification-banner__header">
+                            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                                @SharedLocalizer["success"]
+                            </h2>
+                        </div>
+                        <div class="govuk-notification-banner__content">
+                            <h3 class="govuk-notification-banner__heading">
+                                @string.Format(Localizer["prn_accepted_multi_year"].Value, PrnDataLocalizer[Model.NoteType], Model.EffectiveAcceptanceYear)
+                            </h3>
+                            <p class="govuk-body">@Localizer["tonnage_credited_towards_your_obligation_multi_year", Model.Tonnage, PrnDataLocalizer[Model.MaterialGroup].Value.ToLower()]</p>
+                            <button id="downloadPDFButton" class="govuk-body govuk-link">
+                                @string.Format(Localizer["download_this_prn"].Value, PrnDataLocalizer[Model.NoteType])
+                            </button>
+                        </div>
                     </div>
-                    <div class="govuk-notification-banner__content">
-                        <h3 class="govuk-notification-banner__heading">
-                            @string.Format(Localizer["prn_accepted"].Value, PrnDataLocalizer[Model.NoteType], Model.EffectiveAcceptanceYear)
-                        </h3>
-                        <p class="govuk-body">@Localizer["tonnage_credited_towards_your_obligation", Model.Tonnage, PrnDataLocalizer[Model.MaterialGroup].Value.ToLower()]</p>
-                        <button id="downloadPDFButton" class="govuk-body govuk-link">
-                            @string.Format(Localizer["download_this_prn"].Value, PrnDataLocalizer[Model.NoteType])
-                        </button>
+                }
+                @await Html.PartialAsync("../Shared/Partials/Prns/_agenciesLogo.cshtml")
+            }
+            else
+            {
+                @await Html.PartialAsync("../Shared/Partials/Prns/_agenciesLogo.cshtml")
+                @if (!isPdf)
+                {
+                    <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+                        <div class="govuk-notification-banner__header">
+                            <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+                                @SharedLocalizer["success"]
+                            </h2>
+                        </div>
+                        <div class="govuk-notification-banner__content">
+                            <h3 class="govuk-notification-banner__heading">
+                                @string.Format(Localizer["prn_accepted"].Value, PrnDataLocalizer[Model.NoteType], Model.EffectiveAcceptanceYear)
+                            </h3>
+                            <p class="govuk-body">@Localizer["tonnage_credited_towards_your_obligation", Model.Tonnage, PrnDataLocalizer[Model.MaterialGroup].Value.ToLower()]</p>
+                            <button id="downloadPDFButton" class="govuk-body govuk-link">
+                                @string.Format(Localizer["download_this_prn"].Value, PrnDataLocalizer[Model.NoteType])
+                            </button>
+                        </div>
                     </div>
-                </div>
+                }
             }
             <h1 class="govuk-heading-l">
                 @Localizer[(Model.IsPrn ? "prn_note" : "pern_note")]

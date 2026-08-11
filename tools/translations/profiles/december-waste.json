@@ -126,6 +126,29 @@
           ]
         }
       ]
+    },
+    {
+      "id": "prns-accepted-single",
+      "fileName": "05-accepted-prn.xlsx",
+      "route": "/report-data/accepted-prn/{id}",
+      "view": "src/FrontendSchemeRegistration.UI/Views/PrnsAccept/AcceptedPrn.cshtml",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1932-67004",
+      "notes": "Single accept confirmation page: multi-year success banner heading and body text.",
+      "featureFlags": [
+        "ShowPrn",
+        "ShowMultiYearObligations"
+      ],
+      "appSettings": {},
+      "resources": [
+        {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/AcceptedPrn.en.resx",
+          "section": "Multi-year single accept confirmation success banner.",
+          "keys": [
+            "prn_accepted_multi_year",
+            "tonnage_credited_towards_your_obligation_multi_year"
+          ]
+        }
+      ]
     }
   ]
 }
