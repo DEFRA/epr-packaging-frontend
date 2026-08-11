@@ -2311,6 +2311,70 @@ public class FileUploadSubLandingControllerTests
         result.ControllerName.Should().Be("PackagingDataResubmission");
     }
 
+    // SUB-345: the state the user is in when the regulator has rejected a declared cycle. The submission
+    // API stops reporting that cycle's declaration at the decision, so ResubmissionApplicationSubmitted is
+    // false and the reference number is all that is left of the cycle - which must not be enough to route
+    // past the page carrying the decision.
+    [Test]
+    public async Task Post_RedirectsToUploadNewFileToSubmit_WhenTheRegulatorHasRejectedTheDeclaredCycle()
+    {
+        // Arrange
+        var submissionPeriod = _submissionPeriods[0].DataPeriod;
+        var submission = CreateSubmittedPomSubmissionWithMatchingFileIds();
+
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionsAsync<PomSubmission>(
+                It.IsAny<List<string>>(),
+                It.IsAny<int>(),
+                It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<PomSubmission> { submission });
+
+        _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(true);
+
+        _sessionMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SubmissionPeriod = submissionPeriod
+                },
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation> { new() { Id = Guid.NewGuid(), OrganisationRole = OrganisationRoles.Producer } }
+                },
+                PomResubmissionSession = new PackagingReSubmissionSession()
+                {
+                    PackagingResubmissionApplicationSessions = new List<PackagingResubmissionApplicationSession>()
+                    {
+                        new PackagingResubmissionApplicationSession()
+                        {
+                            SubmissionId = submission.Id,
+
+                            // The closed cycle's reference number and fee survive the rejection; its
+                            // declaration does not, and FileReachedSynapse is still true from that cycle.
+                            ApplicationReferenceNumber = "PEPR33333S01",
+                            ApplicationStatus = ApplicationStatusType.NotStarted,
+                            ResubmissionApplicationSubmittedDate = null,
+                            ResubmissionFeePaymentMethod = "PayByPhone",
+                            FileReachedSynapse = true
+                        }
+                    }
+                }
+            });
+
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)))
+            .ReturnsAsync(true);
+
+        // Act
+        var result = await _systemUnderTest.Post(submissionPeriod) as RedirectToActionResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        result.ActionName.Should().Be(nameof(UploadNewFileToSubmitController.Get));
+        result.ControllerName.Should().Be("UploadNewFileToSubmit");
+    }
+
     private static PomSubmission CreateSubmittedPomSubmissionWithMatchingFileIds()
     {
         var fileId = Guid.NewGuid();
