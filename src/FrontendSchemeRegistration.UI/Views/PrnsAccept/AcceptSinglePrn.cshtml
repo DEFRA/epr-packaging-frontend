@@ -10,7 +10,7 @@
     ViewData["Title"] = Localizer[(Model.IsPrn ? "prn_page_title" : "pern_page_title")];
     
     var prnHeading = string.Format(Localizer[(Model.IsPrn ? "prn_heading" : "pern_heading")].Value, Model.EffectiveAcceptanceYear);
-    var prnConfirmHeading = string.Format(Localizer[(Model.IsPrn ? "prn_confirm_heading" : "pern_heading")].Value, Model.EffectiveAcceptanceYear) : 
+    var prnConfirmHeading = string.Format(Localizer[(Model.IsPrn ? "prn_confirm_heading" : "pern_heading")].Value, Model.EffectiveAcceptanceYear); 
     
     var headerText = multiYearObligationsEnabled ? prnConfirmHeading : prnHeading;
     var paragraph = Localizer[multiYearObligationsEnabled ? "Confirm_Title": "Title"].Value; 
