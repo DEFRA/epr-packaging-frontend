@@ -2,12 +2,10 @@
 @using FrontendSchemeRegistration.UI.ViewModels.Prns
 @model CsocViewModel?
 
-@{
-    var complianceYear = ViewData["ComplianceYear"];
-}
-
 @if (Model is not null && Model.IsObligationDataSubmitted)
 {
+    var complianceYear = ViewData["ComplianceYear"] as int? ?? Model.ComplianceYear;
+
     var actorKey = Model switch
     {
         { IsComplianceScheme: true } => "compliance_scheme",
