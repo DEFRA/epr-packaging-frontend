@@ -52,27 +52,15 @@ public sealed class PackagingFrontendAggregateHealthService(
         try
         {
             endpoint = endpointFactory();
-            using var client = httpClientFactory.CreateClient(clientName);
-            using var request = new HttpRequestMessage(HttpMethod.Get, endpoint);
-            if (hop.HasValue)
-            {
-                AggregateHealthHop.AddTo(request, hop.Value);
-            }
-
-            using var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, timeout.Token);
-            var body = includeResponse ? await ReadJsonResponseAsync(response, timeout.Token) : null;
-            var failure = response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden
-                ? "authentication"
-                : includeResponse && body is null ? "invalid_response" : null;
-            var isHealthy = response.IsSuccessStatusCode && failure is null;
+            var response = await SendHealthRequestAsync(clientName, endpoint, includeResponse, hop, timeout.Token);
 
             return (name, new DownstreamHealthResult(
-                isHealthy ? Healthy : Unhealthy,
+                response.IsHealthy ? Healthy : Unhealthy,
                 SafeEndpoint(endpoint),
-                (int)response.StatusCode,
+                response.StatusCode,
                 stopwatch.ElapsedMilliseconds,
-                body,
-                failure));
+                response.Body,
+                response.Failure));
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
         {
@@ -94,6 +82,46 @@ public sealed class PackagingFrontendAggregateHealthService(
         {
             return (name, new DownstreamHealthResult(Unhealthy, endpoint is null ? "not configured" : SafeEndpoint(endpoint), null, stopwatch.ElapsedMilliseconds, Failure: endpoint is null ? "configuration" : "unavailable"));
         }
+    }
+
+    private async Task<HealthCheckResponse> SendHealthRequestAsync(
+        string clientName,
+        Uri endpoint,
+        bool includeResponse,
+        int? hop,
+        CancellationToken cancellationToken)
+    {
+        using var client = httpClientFactory.CreateClient(clientName);
+        using var request = new HttpRequestMessage(HttpMethod.Get, endpoint);
+        if (hop.HasValue)
+        {
+            AggregateHealthHop.AddTo(request, hop.Value);
+        }
+
+        using var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+        var body = includeResponse ? await ReadJsonResponseAsync(response, cancellationToken) : null;
+        var failure = DetermineFailure(response, includeResponse, body);
+
+        return new HealthCheckResponse(
+            response.IsSuccessStatusCode && failure is null,
+            (int)response.StatusCode,
+            body,
+            failure);
+    }
+
+    private static string? DetermineFailure(HttpResponseMessage response, bool includeResponse, JsonNode? body)
+    {
+        if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+        {
+            return "authentication";
+        }
+
+        if (includeResponse && body is null)
+        {
+            return "invalid_response";
+        }
+
+        return null;
     }
 
     private async Task<JsonNode?> ReadJsonResponseAsync(HttpResponseMessage response, CancellationToken cancellationToken)
@@ -137,6 +165,8 @@ public sealed class PackagingFrontendAggregateHealthService(
         var builder = new UriBuilder(endpoint) { UserName = string.Empty, Password = string.Empty, Query = string.Empty };
         return builder.Uri.ToString();
     }
+
+    private sealed record HealthCheckResponse(bool IsHealthy, int StatusCode, JsonNode? Body, string? Failure);
 }
 
 public sealed record AggregateHealthReport(
