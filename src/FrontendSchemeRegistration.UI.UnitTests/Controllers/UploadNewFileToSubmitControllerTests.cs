@@ -758,6 +758,52 @@ public class UploadNewFileToSubmitControllerTests
         result.ControllerName.Should().Be("FileUploadSubLanding");
     }
 
+    // SUB-345: the action-link partials read this to decide whether their button continues into the
+    // resubmission task list or back into the upload journey, so it has to describe this period's own
+    // history rather than the fact that the page was reached at all.
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task Get_SetsIsAnySubmissionAcceptedForDataPeriod_FromThisPeriodsSubmissionHistory(bool isAnySubmissionAccepted)
+    {
+        // Arrange
+        var submission = new PomSubmission
+        {
+            Id = Guid.NewGuid(),
+            IsSubmitted = true,
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileName = "UploadedFile",
+                FileUploadDateTime = DateTime.Now,
+                UploadedBy = Guid.NewGuid(),
+                FileId = Guid.NewGuid()
+            },
+            LastSubmittedFile = new SubmittedFileInformation
+            {
+                FileName = "SubmittedFile",
+                SubmittedDateTime = DateTime.Now.AddDays(1),
+                SubmittedBy = Guid.NewGuid()
+            }
+        };
+
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(submission);
+
+        _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, OrganisationId, null))
+            .ReturnsAsync(isAnySubmissionAccepted);
+
+        var claims = CreateUserDataClaim(ServiceRoles.ApprovedPerson, OrganisationRoles.Producer);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(claims);
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be(ViewName);
+        var model = (UploadNewFileToSubmitViewModel)result.ViewData.Model;
+        model.IsAnySubmissionAcceptedForDataPeriod.Should().Be(isAnySubmissionAccepted);
+    }
+
     private static List<Claim> CreateUserDataClaim(string serviceRole, string organisationRole)
     {
         var userData = new UserData

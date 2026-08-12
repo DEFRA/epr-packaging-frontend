@@ -1882,6 +1882,64 @@ public class FileUploadSubLandingControllerTests
         result.ControllerName.Should().Be("FileUpload");
     }
 
+    // SUB-345: keeping a producer with nothing accepted out of the resubmission journey is right, but the
+    // gate did it by skipping the only page that carries the regulator's rejection and its comments. Both
+    // rejected tiles arrive here - "Resubmit packaging data" when a resubmission is required and "Check if
+    // you need to resubmit packaging data" when it is not - and the decision is what they exist to explain.
+    // The page keeps them out of the task list from its own action links instead.
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task Post_RedirectsToUploadNewFileToSubmit_WhenTheRegulatorRejectedASubmissionNothingWasAcceptedFor(bool isResubmissionRequired)
+    {
+        // Arrange
+        var submissionPeriod = _submissionPeriods[0].DataPeriod;
+        var submission = CreateSubmittedPomSubmissionWithMatchingFileIds();
+
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionsAsync<PomSubmission>(
+                It.IsAny<List<string>>(),
+                It.IsAny<int>(),
+                It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<PomSubmission> { submission });
+
+        _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(false);
+
+        _submissionServiceMock
+            .Setup(x => x.GetDecisionAsync<PomDecision>(It.IsAny<int?>(), submission.Id, SubmissionType.Producer))
+            .ReturnsAsync(new PomDecision
+            {
+                Decision = RegulatorDecision.Rejected,
+                IsResubmissionRequired = isResubmissionRequired
+            });
+
+        _sessionMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SubmissionPeriod = submissionPeriod
+                },
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation> { new() { Id = Guid.NewGuid(), OrganisationRole = OrganisationRoles.Producer } }
+                }
+            });
+
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)))
+            .ReturnsAsync(true);
+
+        // Act
+        var result = await _systemUnderTest.Post(submissionPeriod) as RedirectToActionResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        result.ActionName.Should().Be(nameof(UploadNewFileToSubmitController.Get));
+        result.ControllerName.Should().Be("UploadNewFileToSubmit");
+        result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(submission.Id);
+    }
+
     [Test]
     public async Task Post_RedirectsToCheckFileAndSubmit_When_InitialSubmissionWasNeverAccepted_ButHasNewValidUpload()
     {
@@ -2450,8 +2508,11 @@ public class FileUploadSubLandingControllerTests
                         {
                             SubmissionId = submission.Id,
 
-                            // The closed cycle's reference number and fee survive the rejection; its
-                            // declaration does not, and FileReachedSynapse is still true from that cycle.
+                            // Only the reference number survives the rejection - the API reports the cycle's
+                            // declaration, fee view and payment as aged out by the decision. The fee and
+                            // FileReachedSynapse are left set here deliberately: they are what previously
+                            // resolved this cycle's upload and fee steps as completed, so the route has to
+                            // hold even if they are still reported.
                             ApplicationReferenceNumber = "PEPR33333S01",
                             ApplicationStatus = ApplicationStatusType.NotStarted,
                             ResubmissionApplicationSubmittedDate = null,
