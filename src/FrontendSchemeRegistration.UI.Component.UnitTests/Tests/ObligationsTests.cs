@@ -2,11 +2,14 @@ namespace FrontendSchemeRegistration.UI.Component.UnitTests.Tests;
 
 using System.Net;
 using System.Text;
+using Application.DTOs.ComplianceScheme;
+using Application.Enums;
 using Constants;
 using EPR.Common.Authorization.Models;
 using Extensions;
 using FluentAssertions;
 using Infrastructure;
+using MockServer.WebApi;
 using NUnit.Framework;
 using Sessions;
 
@@ -182,9 +185,14 @@ public class ObligationsTests
             .UseParameters(path, language);
     }
 
-    [TestCase(Language.English)]
-    [TestCase(Language.Welsh)]
-    public async Task WhenCsocEnabled_ShouldShowObligationsHomePartial(string language)
+    [TestCase(Language.English, WebApiOptions.ComplianceDeclarationStatusType.None, OrganisationRoles.Producer, ServiceRoleConstants.Approved)]
+    [TestCase(Language.Welsh, WebApiOptions.ComplianceDeclarationStatusType.None, OrganisationRoles.Producer, ServiceRoleConstants.Approved)]
+    [TestCase(Language.English, WebApiOptions.ComplianceDeclarationStatusType.Submitted, OrganisationRoles.Producer, ServiceRoleConstants.Approved)]
+    [TestCase(Language.English, WebApiOptions.ComplianceDeclarationStatusType.Cancelled, OrganisationRoles.Producer, ServiceRoleConstants.Approved)]
+    [TestCase(Language.English, WebApiOptions.ComplianceDeclarationStatusType.None, OrganisationRoles.ComplianceScheme, ServiceRoleConstants.Approved)]
+    [TestCase(Language.English, WebApiOptions.ComplianceDeclarationStatusType.None, OrganisationRoles.Producer, ServiceRoleConstants.Basic)]
+    public async Task WhenCsocEnabled_ShouldShowObligationsHomePartial(
+        string language, WebApiOptions.ComplianceDeclarationStatusType complianceDeclarationStatus, string organisationRole, string serviceRole)
     {
         Context.Dispose();
         Context.SetUp(
@@ -192,28 +200,68 @@ public class ObligationsTests
             additionalConfig: new Dictionary<string, string?>
             {
                 { "FeatureManagement:CsocEnabled", "true" }
+            },
+            new WebApiOptions
+            {
+                ComplianceDeclarationStatus = complianceDeclarationStatus,
+                ServiceRole = serviceRole
             });
 
         await Context.Client.AuthenticateDefaultUser();
 
-        var sessionStore = Context.GetSessionStore();
-        sessionStore.Session.Set(nameof(FrontendSchemeRegistrationSession),
-            Encoding.UTF8.GetBytes(System.Text.Json.JsonSerializer.Serialize(new FrontendSchemeRegistrationSession
+        SetObligationsHomeSession(organisationRole, serviceRole, language);
+
+        var response = await Context.Client.GetAsync("/report-data/manage-your-recycling-obligations");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
+            .ScrubCommonHtmlNodes()
+            .UseParameters(language, complianceDeclarationStatus, organisationRole.Replace(" ", ""), serviceRole.Replace(" ", ""));
+    }
+
+    [Test]
+    public async Task WhenCsocDisabled_ShouldHideObligationsHomePartial()
+    {
+        Context.Dispose();
+        Context.SetUp(
+            overrideSession: true,
+            additionalConfig: new Dictionary<string, string?>
             {
-                UserData = new UserData
-                {
-                    ServiceRole = "Approved Person",
-                    Organisations =
-                    [
-                        new Organisation
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000009"),
-                            OrganisationRole = "Producer"
-                        }
-                    ]
-                }
-            })));
-        sessionStore.Session.Set(Language.SessionLanguageKey, Encoding.UTF8.GetBytes(language));
+                { "FeatureManagement:CsocEnabled", "false" }
+            });
+
+        await Context.Client.AuthenticateDefaultUser();
+
+        SetObligationsHomeSession(OrganisationRoles.Producer, ServiceRoleConstants.Approved, Language.English);
+
+        var response = await Context.Client.GetAsync("/report-data/manage-your-recycling-obligations");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
+            .ScrubCommonHtmlNodes();
+    }
+
+    [TestCase(Language.English)]
+    [TestCase(Language.Welsh)]
+    public async Task WhenObligationDataNotYetAvailable_ShouldShowNoDataYetGuidance(string language)
+    {
+        Context.Dispose();
+        Context.SetUp(
+            overrideSession: true,
+            additionalConfig: new Dictionary<string, string?>
+            {
+                { "FeatureManagement:CsocEnabled", "true" }
+            },
+            new WebApiOptions
+            {
+                ObligationData = WebApiOptions.ObligationDataType.NoDataYet
+            });
+
+        await Context.Client.AuthenticateDefaultUser();
+
+        SetObligationsHomeSession(OrganisationRoles.Producer, ServiceRoleConstants.Approved, language);
 
         var response = await Context.Client.GetAsync("/report-data/manage-your-recycling-obligations");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -222,6 +270,35 @@ public class ObligationsTests
         await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
             .ScrubCommonHtmlNodes()
             .UseParameters(language);
+    }
+
+    private void SetObligationsHomeSession(string organisationRole, string serviceRole, string language)
+    {
+        var sessionStore = Context.GetSessionStore();
+        sessionStore.Session.Set(nameof(FrontendSchemeRegistrationSession),
+            Encoding.UTF8.GetBytes(System.Text.Json.JsonSerializer.Serialize(new FrontendSchemeRegistrationSession
+            {
+                UserData = new UserData
+                {
+                    ServiceRole = serviceRole,
+                    Organisations =
+                    [
+                        new Organisation
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000009"),
+                            OrganisationRole = organisationRole
+                        }
+                    ]
+                },
+                RegistrationSession = new RegistrationSession
+                {
+                    SelectedComplianceScheme = new ComplianceSchemeDto
+                    {
+                        Id = new Guid("00000000-0000-0000-0000-000000000010")
+                    }
+                }
+            })));
+        sessionStore.Session.Set(Language.SessionLanguageKey, Encoding.UTF8.GetBytes(language));
     }
 
     [TearDown]
