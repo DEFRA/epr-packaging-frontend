@@ -26,6 +26,17 @@ public class ComponentTestClient(TestServer server, string baseUrl = "https://lo
         return response;
     }
 
+    public async Task<HttpResponseMessage> GetAsync(string url, IReadOnlyDictionary<string, string> headers)
+    {
+        var request = BuildRequest(url);
+        foreach (var (name, value) in headers)
+        {
+            request.AddHeader(name, value);
+        }
+
+        return await request.GetAsync();
+    }
+
     public override async Task<HttpResponseMessage> PostAsync(string url, Dictionary<string, string> content)
     {
         var getResponse = await GetAsync(url);

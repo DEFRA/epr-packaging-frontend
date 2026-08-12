@@ -1,10 +1,12 @@
 using FrontendSchemeRegistration.Application.ConfigurationExtensions;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.UI.Extensions;
+using FrontendSchemeRegistration.UI.HealthChecks;
 using FrontendSchemeRegistration.UI.Middleware;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Logging;
 using Serilog;
 using CookieOptions = FrontendSchemeRegistration.Application.Options.CookieOptions;
@@ -89,6 +91,8 @@ services.Configure<ForwardedHeadersOptions>(options =>
 });
 
 services.AddHealthChecks();
+services.Configure<HealthAllOptions>(builderConfig.GetSection(HealthAllOptions.ConfigSection));
+services.AddSingleton<PackagingFrontendAggregateHealthService>();
 
 services.AddHsts(options =>
 {
@@ -103,6 +107,19 @@ services.AddWebApiGatewayClient();
 var app = builder.Build();
 
 app.MapHealthChecks("/admin/health").AllowAnonymous();
+app.MapGet(
+        "/admin/health/all",
+        async (bool deep, HttpContext context, IOptions<HealthAllOptions> options, PackagingFrontendAggregateHealthService healthService) =>
+        {
+            if (!HealthAllAccess.IsValid(context.Request, options.Value))
+                return Results.Unauthorized();
+
+            var report = await healthService.CheckAsync(deep, context.RequestAborted);
+            context.Response.Headers.CacheControl = "no-store";
+
+            return Results.Json(report, statusCode: report.Status == "Healthy" ? StatusCodes.Status200OK : StatusCodes.Status503ServiceUnavailable);
+        })
+    .AllowAnonymous();
 
 app.UsePathBase(basePath);
 
