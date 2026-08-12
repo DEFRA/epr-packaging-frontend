@@ -45,6 +45,10 @@
     var dateHeader = Localizer[showUploadedFile ? "date_uploaded" : "date_submitted"];
     var userHeader = Localizer[showUploadedFile ? "uploaded_by" : "submitted_by"];
 
+    // SUB-345: read by both action-link partials, which every branch below renders through a copy of this
+    // ViewData. Whether this period has an accepted submission decides where their button goes.
+    ViewData["IsAnySubmissionAcceptedForDataPeriod"] = Model.IsAnySubmissionAcceptedForDataPeriod;
+
     ViewData["Title"] = title;
 }
 
