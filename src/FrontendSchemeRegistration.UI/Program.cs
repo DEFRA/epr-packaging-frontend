@@ -110,12 +110,15 @@ var app = builder.Build();
 app.MapHealthChecks("/admin/health").AllowAnonymous();
 app.MapGet(
         "/admin/health/all",
-        async (bool deep, HttpContext context, IOptions<HealthAllOptions> options, PackagingFrontendAggregateHealthService healthService) =>
+        async (bool? deep, HttpContext context, IOptions<HealthAllOptions> options, PackagingFrontendAggregateHealthService healthService) =>
         {
             if (!HealthAllAccess.IsValid(context.Request, options.Value))
                 return Results.Unauthorized();
 
-            var report = await healthService.CheckAsync(deep, context.RequestAborted);
+            if (!AggregateHealthHop.TryRead(context.Request, options.Value.MaximumDeepHealthHops, out var hop))
+                return Results.BadRequest();
+
+            var report = await healthService.CheckAsync(deep is true, hop, context.RequestAborted);
             context.Response.Headers.CacheControl = "no-store";
 
             return Results.Json(report, statusCode: report.Status == "Healthy" ? StatusCodes.Status200OK : StatusCodes.Status503ServiceUnavailable);

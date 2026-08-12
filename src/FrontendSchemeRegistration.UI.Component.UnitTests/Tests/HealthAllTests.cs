@@ -24,6 +24,20 @@ public class HealthAllTests
     }
 
     [Test]
+    public async Task WhenShallowHealthIsRequestedWithoutTheDeepQuery_ShouldReturnTheShallowHealthReport()
+    {
+        var response = await Context.Client.GetAsync(
+            "/admin/health/all",
+            new Dictionary<string, string> { ["X-Health-Check-Token"] = "health-test-token" });
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        await VerifyJson(await response.Content.ReadAsStringAsync())
+            .UseStrictJson()
+            .ScrubMember("durationMs");
+    }
+
+    [Test]
     public async Task WhenDeepHealthIsRequested_ShouldReturnTheGatewayHealthReport()
     {
         var response = await Context.Client.GetAsync(
@@ -35,5 +49,19 @@ public class HealthAllTests
         await VerifyJson(await response.Content.ReadAsStringAsync())
             .UseStrictJson()
             .ScrubMember("durationMs");
+    }
+
+    [Test]
+    public async Task WhenTheHealthHopHeaderIsInvalid_ShouldReturnBadRequest()
+    {
+        var response = await Context.Client.GetAsync(
+            "/admin/health/all?deep=true",
+            new Dictionary<string, string>
+            {
+                ["X-Health-Check-Token"] = "health-test-token",
+                ["X-EPR-Health-Check-Hop"] = "invalid",
+            });
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 }

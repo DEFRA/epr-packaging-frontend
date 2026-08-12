@@ -19,20 +19,21 @@ public sealed class PackagingFrontendAggregateHealthService(
     private const string Healthy = "Healthy";
     private const string Unhealthy = "Unhealthy";
 
-    public async Task<AggregateHealthReport> CheckAsync(bool deep, CancellationToken cancellationToken)
+    public async Task<AggregateHealthReport> CheckAsync(bool deep, int hop, CancellationToken cancellationToken)
     {
+        var effectiveDeep = deep && hop < healthAllOptions.Value.MaximumDeepHealthHops;
         var checks = new[]
         {
-            CheckAsync("WebApiGateway", DownstreamHealthClientNames.WebApiGateway, () => WebApiGatewayHealth(webApiOptions.Value.BaseEndpoint, deep), deep, cancellationToken),
-            CheckAsync("AccountsFacade", DownstreamHealthClientNames.AccountsFacade, () => AdminHealth(accountsFacadeApiOptions.Value.BaseEndpoint), false, cancellationToken),
-            CheckAsync("PaymentFacade", DownstreamHealthClientNames.PaymentFacade, () => AdminHealth(paymentFacadeApiOptions.Value.BaseUrl), false, cancellationToken),
+            CheckAsync("WebApiGateway", DownstreamHealthClientNames.WebApiGateway, () => WebApiGatewayHealth(webApiOptions.Value.BaseEndpoint, effectiveDeep), effectiveDeep, effectiveDeep ? hop : null, cancellationToken),
+            CheckAsync("AccountsFacade", DownstreamHealthClientNames.AccountsFacade, () => AdminHealth(accountsFacadeApiOptions.Value.BaseEndpoint), false, null, cancellationToken),
+            CheckAsync("PaymentFacade", DownstreamHealthClientNames.PaymentFacade, () => AdminHealth(paymentFacadeApiOptions.Value.BaseUrl), false, null, cancellationToken),
         };
 
         var results = await Task.WhenAll(checks);
         var resultMap = results.ToDictionary(result => result.Name, result => result.Result, StringComparer.Ordinal);
         var status = resultMap.Values.All(result => result.Status == Healthy) ? Healthy : Unhealthy;
 
-        return new AggregateHealthReport(status, resultMap);
+        return new AggregateHealthReport(status, resultMap, deep && !effectiveDeep);
     }
 
     private async Task<(string Name, DownstreamHealthResult Result)> CheckAsync(
@@ -40,6 +41,7 @@ public sealed class PackagingFrontendAggregateHealthService(
         string clientName,
         Func<Uri> endpointFactory,
         bool includeResponse,
+        int? hop,
         CancellationToken cancellationToken)
     {
         var stopwatch = Stopwatch.StartNew();
@@ -51,7 +53,13 @@ public sealed class PackagingFrontendAggregateHealthService(
         {
             endpoint = endpointFactory();
             using var client = httpClientFactory.CreateClient(clientName);
-            using var response = await client.GetAsync(endpoint, HttpCompletionOption.ResponseHeadersRead, timeout.Token);
+            using var request = new HttpRequestMessage(HttpMethod.Get, endpoint);
+            if (hop.HasValue)
+            {
+                AggregateHealthHop.AddTo(request, hop.Value);
+            }
+
+            using var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, timeout.Token);
             var body = includeResponse ? await ReadJsonResponseAsync(response, timeout.Token) : null;
             var failure = response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden
                 ? "authentication"
@@ -133,7 +141,10 @@ public sealed class PackagingFrontendAggregateHealthService(
     }
 }
 
-public sealed record AggregateHealthReport(string Status, IReadOnlyDictionary<string, DownstreamHealthResult> Results);
+public sealed record AggregateHealthReport(
+    string Status,
+    IReadOnlyDictionary<string, DownstreamHealthResult> Results,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] bool DeepLimited = false);
 
 public sealed record DownstreamHealthResult(
     string Status,
