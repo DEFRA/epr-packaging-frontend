@@ -12,7 +12,7 @@ namespace FrontendSchemeRegistration.UI.Services.Interfaces
 
         Task<PrnListViewModel> GetPrnsAwaitingAcceptanceAsync();
 
-        Task AcceptPrnAsync(Guid id);
+        Task AcceptPrnAsync(Guid id, string? obligationYear = null);
 
         Task AcceptPrnsAsync(Guid[] ids);
 

@@ -394,14 +394,14 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         }
     }
 
-    public async Task SetPrnApprovalStatusToAcceptedAsync(Guid id)
+    public async Task SetPrnApprovalStatusToAcceptedAsync(Guid id, string? obligationYear = null)
     {
         AddComplianceSchemeHeader();
         await PrepareAuthenticatedClientAsync();
 
         try
         {
-            UpdatePrnStatus prnStatus = ToAcceptedPrnStatus(id);
+            UpdatePrnStatus prnStatus = ToAcceptedPrnStatus(id, obligationYear);
             List<UpdatePrnStatus> payload = [prnStatus];
             var response = await _httpClient.PostAsJsonAsync("/api/v1/prn/status", payload);
 
@@ -420,7 +420,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         await PrepareAuthenticatedClientAsync();
         try
         {
-            IEnumerable<UpdatePrnStatus> payload = ids.Select(ToAcceptedPrnStatus);
+            IEnumerable<UpdatePrnStatus> payload = ids.Select(id => ToAcceptedPrnStatus(id));
             var response = await _httpClient.PostAsJsonAsync("/api/v1/prn/status", payload);
 
             response.EnsureSuccessStatusCode();
@@ -432,12 +432,12 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         }
     }
     
-    private UpdatePrnStatus ToAcceptedPrnStatus(Guid id)
+    private UpdatePrnStatus ToAcceptedPrnStatus(Guid id, string? obligationYear = null)
     {
         return new UpdatePrnStatus
         {
             PrnId = id,
-            ObligationYear = _timeProvider.GetUtcNow().GetComplianceYear().ToString(),
+            ObligationYear = obligationYear ?? _timeProvider.GetUtcNow().GetComplianceYear().ToString(),
             Status = PrnStatus.Accepted
         };
     }

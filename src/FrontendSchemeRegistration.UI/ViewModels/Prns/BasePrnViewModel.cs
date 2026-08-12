@@ -36,6 +36,12 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
         /// </summary>
         public int[] AvailableAcceptanceYears { get; set; } = [];
 
+        /// <summary>
+        ///     True when the PRN currently offers a choice of obligation years to accept into
+        ///     (December Waste within the Dec/Jan window for 2026 onwards).
+        /// </summary>
+        public bool HasChoiceOfAcceptanceYear => AvailableAcceptanceYears.Length == 2;
+
         public bool IsStatusEditable => ApprovalStatus == PrnStatus.AwaitingAcceptance
 			&& AvailableAcceptanceYears.Length > 0;
 
