@@ -1290,6 +1290,30 @@ public class WebApiGatewayClientTests
     }
 
     [Test]
+    public async Task SetPrnApprovalStatusToAcceptedAsyncForSinglePrn_UsesProvidedObligationYear()
+    {
+        var prnsToUpdate = Guid.NewGuid();
+
+        HttpRequestMessage expectedRequest = null;
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .Callback<HttpRequestMessage, CancellationToken>((request, _) => expectedRequest = request)
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.OK });
+
+        await _webApiGatewayClient.SetPrnApprovalStatusToAcceptedAsync(prnsToUpdate, "2027");
+
+        var body = await expectedRequest.Content.ReadFromJsonAsync<List<UpdatePrnStatus>>();
+
+        body.Should().BeEquivalentTo(new List<UpdatePrnStatus>()
+        {
+            new() { PrnId = prnsToUpdate, ObligationYear = "2027", Status = "ACCEPTED" }
+        });
+    }
+
+    [Test]
     public async Task SetPrnApprovalStatusToAcceptedAsyncForMultiple_CallsFacadeWithCorrectPayload()
     {
         // Arrange
