@@ -223,4 +223,47 @@ public class ComplianceSchemeMemberLandingControllerTests
             }
         });
     }
+
+    [Test]
+    public async Task Get_ReturnsView_WhenBuildFromNotificationListThrowsArgumentException()
+    {
+        // Arrange - a DelegatedPersonNomination notification with no "EnrolmentId" entry triggers the ArgumentException
+        var notificationDtoList = new List<NotificationDto>
+        {
+            new NotificationDto
+            {
+                Type = NotificationTypes.Packaging.DelegatedPersonNomination,
+                Data = new List<KeyValuePair<string, string>>()
+            }
+        };
+
+        _notificationServiceMock
+            .Setup(x => x.GetCurrentUserNotifications(
+                It.IsAny<Guid>(),
+                It.IsAny<Guid>()))
+            .ReturnsAsync(notificationDtoList);
+
+        _sessionManager
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(Mock.Of<FrontendSchemeRegistrationSession>());
+
+        _complianceSchemeService
+            .Setup(x => x.GetProducerComplianceScheme(It.IsAny<Guid>()))
+            .ReturnsAsync(new ProducerComplianceSchemeDto { ComplianceSchemeName = ComplianceSchemeName });
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert - the exception is caught and logged, and the view is still returned with the un-populated notification
+        result.ViewName.Should().Be("ComplianceSchemeMemberLanding");
+        result.Model.Should().BeEquivalentTo(new ComplianceSchemeMemberLandingViewModel
+        {
+            ComplianceSchemeName = ComplianceSchemeName,
+            OrganisationName = OrganisationName,
+            OrganisationId = _organisationId,
+            ServiceRole = ServiceRoles.ApprovedPerson,
+            OrganisationNumber = OrganisationNumber.ToReferenceNumberFormat(),
+            CanManageComplianceScheme = true
+        });
+    }
 }
