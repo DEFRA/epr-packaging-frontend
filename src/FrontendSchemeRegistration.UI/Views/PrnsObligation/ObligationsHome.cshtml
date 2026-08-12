@@ -1,9 +1,12 @@
 ﻿@using FrontendSchemeRegistration.UI.ViewModels.Prns
 @using FrontendSchemeRegistration.Application.Enums
+@using Microsoft.FeatureManagement
+@inject IFeatureManager FeatureManager
 @model PrnObligationViewModel
 @{
     var pageTitle = Localizer["manage_your_recycling_obligations", Model.ComplianceYear];
     ViewData["Title"] = pageTitle;
+    var showMultiYearObligations = await FeatureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations);
 }
 
 <main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
@@ -40,12 +43,23 @@
             <h2 class="govuk-heading-l">@Localizer["how_to_meet_your_recycling_obligations"]</h2>
             @if (Model.OverallStatus == ObligationStatus.NoDataYet)
             {
-                <p class="govuk-body">@Localizer["your_recycling_obligations_will_be"]</p>
-                <ul class="govuk-list govuk-list--bullet">
-                    <li>@Localizer["you_submit_your_packaging_data_for", Model.ComplianceYear - 1]</li>
-                    <li>@Localizer["the_regulator_accepts_your_data_submissions"]</li>
-                </ul>
-                <p class="govuk-body">@Localizer["you_can_start_acquiring_and_accepting"]</p>
+                @if (showMultiYearObligations)
+                {
+                    <p class="govuk-body">@Localizer["your_yyyy_recycling_obligations_will_be", Model.ComplianceYear]</p>
+                    <ul class="govuk-list govuk-list--bullet">
+                        <li>@Localizer["you_submit_your_packaging_data_for", Model.ComplianceYear - 1]</li>
+                        <li>@Localizer["the_regulator_accepts_your_h1_and_h2_packaging_data_submissions"]</li>
+                    </ul>
+                }
+                else
+                {
+                    <p class="govuk-body">@Localizer["your_recycling_obligations_will_be"]</p>
+                    <ul class="govuk-list govuk-list--bullet">
+                        <li>@Localizer["you_submit_your_packaging_data_for", Model.ComplianceYear - 1]</li>
+                        <li>@Localizer["the_regulator_accepts_your_data_submissions"]</li>
+                    </ul>
+                    <p class="govuk-body">@Localizer["you_can_start_acquiring_and_accepting"]</p>
+                }
             }
             else
             {
