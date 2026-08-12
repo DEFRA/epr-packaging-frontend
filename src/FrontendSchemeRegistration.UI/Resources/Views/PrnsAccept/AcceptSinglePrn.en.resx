@@ -139,7 +139,7 @@
     <value>This will credit {0} tonnes towards your {1} recycling obligation.</value>
   </data>
   <data name="Confirm_Title" xml:space="preserve">
-    <value>This will contribute {0} tonnes towards your recycling obligation for {1} material.</value>
+    <value>This will contribute {0} tonnes towards your recycling obligation for {1}</value>
   </data>
   <data name="YesAcceptButton" xml:space="preserve">
     <value>Yes, accept</value>
