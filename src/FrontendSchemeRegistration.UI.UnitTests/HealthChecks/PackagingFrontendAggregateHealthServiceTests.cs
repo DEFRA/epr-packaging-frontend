@@ -26,6 +26,12 @@ public class PackagingFrontendAggregateHealthServiceTests
                 "https://account.test/account/admin/health",
                 "https://payment.test/payment/admin/health",
             ]);
+        handler.ClientNames.Should().BeEquivalentTo(
+            [
+                DownstreamHealthClientNames.WebApiGateway,
+                DownstreamHealthClientNames.AccountsFacade,
+                DownstreamHealthClientNames.PaymentFacade,
+            ]);
         report.Results["WebApiGateway"].Response.Should().BeNull();
     }
 
@@ -50,14 +56,20 @@ public class PackagingFrontendAggregateHealthServiceTests
         Options.Create(new PaymentFacadeApiOptions { BaseUrl = "https://payment.test/payment/api/" }),
         Options.Create(new HealthAllOptions { Token = "test-token" }));
 
-    private sealed class TestHttpClientFactory(HttpMessageHandler handler) : IHttpClientFactory
+    private sealed class TestHttpClientFactory(RecordingHandler handler) : IHttpClientFactory
     {
-        public HttpClient CreateClient(string name) => new(handler, disposeHandler: false);
+        public HttpClient CreateClient(string name)
+        {
+            handler.ClientNames.Add(name);
+            return new HttpClient(handler, disposeHandler: false);
+        }
     }
 
     private sealed class RecordingHandler : HttpMessageHandler
     {
         public ConcurrentBag<string> RequestUris { get; } = [];
+
+        public ConcurrentBag<string> ClientNames { get; } = [];
 
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {

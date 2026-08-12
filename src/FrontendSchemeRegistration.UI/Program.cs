@@ -92,6 +92,7 @@ services.Configure<ForwardedHeadersOptions>(options =>
 
 services.AddHealthChecks();
 services.Configure<HealthAllOptions>(builderConfig.GetSection(HealthAllOptions.ConfigSection));
+services.AddAggregateHealthHttpClients();
 services.AddSingleton<PackagingFrontendAggregateHealthService>();
 
 services.AddHsts(options =>

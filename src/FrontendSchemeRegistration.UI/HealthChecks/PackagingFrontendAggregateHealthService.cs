@@ -1,6 +1,7 @@
 namespace FrontendSchemeRegistration.UI.HealthChecks;
 
 using System.Diagnostics;
+using System.Net;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -22,9 +23,9 @@ public sealed class PackagingFrontendAggregateHealthService(
     {
         var checks = new[]
         {
-            CheckAsync("WebApiGateway", () => WebApiGatewayHealth(webApiOptions.Value.BaseEndpoint, deep), deep, cancellationToken),
-            CheckAsync("AccountsFacade", () => AdminHealth(accountsFacadeApiOptions.Value.BaseEndpoint), false, cancellationToken),
-            CheckAsync("PaymentFacade", () => AdminHealth(paymentFacadeApiOptions.Value.BaseUrl), false, cancellationToken),
+            CheckAsync("WebApiGateway", DownstreamHealthClientNames.WebApiGateway, () => WebApiGatewayHealth(webApiOptions.Value.BaseEndpoint, deep), deep, cancellationToken),
+            CheckAsync("AccountsFacade", DownstreamHealthClientNames.AccountsFacade, () => AdminHealth(accountsFacadeApiOptions.Value.BaseEndpoint), false, cancellationToken),
+            CheckAsync("PaymentFacade", DownstreamHealthClientNames.PaymentFacade, () => AdminHealth(paymentFacadeApiOptions.Value.BaseUrl), false, cancellationToken),
         };
 
         var results = await Task.WhenAll(checks);
@@ -36,6 +37,7 @@ public sealed class PackagingFrontendAggregateHealthService(
 
     private async Task<(string Name, DownstreamHealthResult Result)> CheckAsync(
         string name,
+        string clientName,
         Func<Uri> endpointFactory,
         bool includeResponse,
         CancellationToken cancellationToken)
@@ -48,10 +50,12 @@ public sealed class PackagingFrontendAggregateHealthService(
         try
         {
             endpoint = endpointFactory();
-            using var client = httpClientFactory.CreateClient();
+            using var client = httpClientFactory.CreateClient(clientName);
             using var response = await client.GetAsync(endpoint, HttpCompletionOption.ResponseHeadersRead, timeout.Token);
             var body = includeResponse ? await ReadJsonResponseAsync(response, timeout.Token) : null;
-            var failure = includeResponse && body is null ? "invalid_response" : null;
+            var failure = response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden
+                ? "authentication"
+                : includeResponse && body is null ? "invalid_response" : null;
             var isHealthy = response.IsSuccessStatusCode && failure is null;
 
             return (name, new DownstreamHealthResult(
