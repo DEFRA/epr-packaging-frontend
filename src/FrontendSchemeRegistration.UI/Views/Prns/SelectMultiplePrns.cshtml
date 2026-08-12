@@ -113,7 +113,13 @@
 												<div class="govuk-checkboxes govuk-checkboxes--small">
 													<div class="govuk-checkboxes__item">	
 														<feature name="@FeatureFlags.ShowDecemberWaste">
-															@if(!shouldShowDecemberWasteFlash) {
+															@if(shouldShowDecemberWasteFlash) {
+																@Html.ActionLink(Model.Prns[i].PrnOrPernNumber, nameof(PrnsController.SelectSinglePrn), "Prns", new { id = Model.Prns[i].ExternalId },
+																new
+																{
+																	@class = "govuk-link"
+																})
+															} else {
 																@await Html.PartialAsync("../Shared/Partials/Prns/_prnAcceptCheckboxLabel", new ViewDataDictionary(ViewData) { { "index", i } })
 															}
 														</feature>
