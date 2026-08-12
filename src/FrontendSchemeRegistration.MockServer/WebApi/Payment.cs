@@ -19,7 +19,22 @@ public static class Payment
         MapFeeEndpoint(server, "/compliance-scheme/registration-fee", "WebApi/Responses/payment/compliance-default.json", "WebApi/Responses/payment/compliance-latefee.json");
         MapFeeEndpoint(server, "/v1/compliance-scheme/registration-fee", "WebApi/Responses/payment/compliance-default.json", "WebApi/Responses/payment/compliance-latefee.json");
 
+        // Registration windows used by RegistrationPeriodProviderWarmupService at startup
+        MapSubmissionPeriodsEndpoint(server, "/submission-periods", "WebApi/Responses/payment/submission-periods.json");
+        MapSubmissionPeriodsEndpoint(server, "/v1/submission-periods", "WebApi/Responses/payment/submission-periods.json");
+
         return server;
+    }
+
+    private static void MapSubmissionPeriodsEndpoint(WireMockServer server, string path, string jsonFile)
+    {
+        server.Given(Request.Create()
+                .UsingGet()
+                .WithPath(path))
+            .RespondWith(Response.Create()
+                .WithStatusCode(200)
+                .WithHeader("Content-Type", "application/json")
+                .WithBodyFromFile(jsonFile));
     }
 
     private static void MapInitiatePaymentEndpoint(WireMockServer server, string path, string htmlFile)
