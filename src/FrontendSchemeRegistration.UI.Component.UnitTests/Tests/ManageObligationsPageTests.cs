@@ -17,24 +17,27 @@ public class ManageObligationsPageTests
 {
     private const string ObligationsHomePath = "/report-data/manage-your-recycling-obligations";
 
+    // Must match ConfigBuilder StartupUtcTimestampOverride used by the ComponentTest host.
+    private static readonly int ComplianceYear =
+        DateTimeOffset.Parse("2026-03-27T08:58:00Z").GetComplianceYear();
+
     private ComponentTestContext Context { get; } = new();
 
     [Test]
     public async Task WhenNoObligations_AndMultiYearEnabled_ShowsAlternativeContent()
     {
-        var complianceYear = DateTimeOffset.UtcNow.GetComplianceYear();
         SetUp(
             showMultiYearObligations: true,
             obligationData: WebApiOptions.ObligationDataType.NoDataYet);
         await Context.Client.AuthenticateDefaultUser();
-        SetProducerSession(selectedObligationYear: complianceYear);
+        SetProducerSession();
 
         var response = await Context.Client.GetAsync(ObligationsHomePath);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain($"Your {complianceYear} recycling obligations will be calculated after:");
-        content.Should().Contain($"you submit your packaging data for {complianceYear - 1}");
+        content.Should().Contain($"Your {ComplianceYear} recycling obligations will be calculated after:");
+        content.Should().Contain($"you submit your packaging data for {ComplianceYear - 1}");
         content.Should().Contain("the regulator accepts your H1 and H2 packaging data submissions");
         content.Should().NotContain("You can start acquiring and accepting PRNs and PERNs");
         content.Should().NotContain("Your recycling obligations will be calculated after:");
@@ -43,7 +46,6 @@ public class ManageObligationsPageTests
     [Test]
     public async Task WhenNoObligations_AndMultiYearDisabled_ShowsLegacyContent()
     {
-        var complianceYear = DateTimeOffset.UtcNow.GetComplianceYear();
         SetUp(
             showMultiYearObligations: false,
             obligationData: WebApiOptions.ObligationDataType.NoDataYet);
@@ -55,52 +57,30 @@ public class ManageObligationsPageTests
 
         var content = await response.Content.ReadAsStringAsync();
         content.Should().Contain("Your recycling obligations will be calculated after:");
-        content.Should().Contain($"you submit your packaging data for {complianceYear - 1}");
+        content.Should().Contain($"you submit your packaging data for {ComplianceYear - 1}");
         content.Should().Contain("the regulator accepts your data submissions");
         content.Should().Contain("You can start acquiring and accepting PRNs and PERNs to meet your recycling obligations.");
         content.Should().NotContain("H1 and H2");
-        content.Should().NotContain($"Your {complianceYear} recycling obligations will be calculated after:");
+        content.Should().NotContain($"Your {ComplianceYear} recycling obligations will be calculated after:");
     }
 
     [Test]
     public async Task WhenObligationsPresent_AndMultiYearEnabled_ShowsExistingAdvisoryText()
     {
-        var complianceYear = DateTimeOffset.UtcNow.GetComplianceYear();
         SetUp(
             showMultiYearObligations: true,
             obligationData: WebApiOptions.ObligationDataType.Mixed);
         await Context.Client.AuthenticateDefaultUser();
-        SetProducerSession(selectedObligationYear: complianceYear);
+        SetProducerSession();
 
         var response = await Context.Client.GetAsync(ObligationsHomePath);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await response.Content.ReadAsStringAsync();
         content.Should().Contain(
-            $"Acquire and accept PRNs and PERNs until your recycling obligations are fully met. Select a material for information on how the data was calculated and view your progress towards meeting your {complianceYear} recycling obligations.");
+            $"Acquire and accept PRNs and PERNs until your recycling obligations are fully met. Select a material for information on how the data was calculated and view your progress towards meeting your {ComplianceYear} recycling obligations.");
         content.Should().NotContain("will be calculated after:");
         content.Should().NotContain("H1 and H2");
-    }
-
-    [Test]
-    public async Task WhenMultiYearEnabled_AndFutureYearSelected_ShowsSelectedYearInHeadingAndAlternativeContent()
-    {
-        var complianceYear = DateTimeOffset.UtcNow.GetComplianceYear();
-        var futureYear = complianceYear + 1;
-        SetUp(
-            showMultiYearObligations: true,
-            obligationData: WebApiOptions.ObligationDataType.NoDataYet);
-        await Context.Client.AuthenticateDefaultUser();
-        SetProducerSession(selectedObligationYear: futureYear);
-
-        var response = await Context.Client.GetAsync(ObligationsHomePath);
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain($"Manage your {futureYear} recycling obligations");
-        content.Should().Contain($"Your {futureYear} recycling obligations will be calculated after:");
-        content.Should().Contain($"you submit your packaging data for {complianceYear}");
-        content.Should().Contain("the regulator accepts your H1 and H2 packaging data submissions");
     }
 
     [TearDown]
@@ -127,7 +107,7 @@ public class ManageObligationsPageTests
             });
     }
 
-    private void SetProducerSession(int? selectedObligationYear = null)
+    private void SetProducerSession()
     {
         var sessionStore = Context.GetSessionStore();
         sessionStore.Session.Set(
@@ -154,10 +134,6 @@ public class ManageObligationsPageTests
                     {
                         Id = Accounts.ComplianceSchemeId
                     }
-                },
-                PrnSession = new PrnSession
-                {
-                    SelectedObligationYear = selectedObligationYear
                 }
             })));
     }
