@@ -22,9 +22,9 @@ public class PackagingFrontendAggregateHealthServiceTests
         report.Status.Should().Be("Healthy");
         handler.RequestUris.Should().BeEquivalentTo(
             [
-                "https://gateway.test/gateway/admin/health",
-                "https://account.test/account/admin/health",
-                "https://payment.test/payment/admin/health",
+                "https://gateway.test/admin/health",
+                "https://account.test/admin/health",
+                "https://payment.test/admin/health",
             ]);
         handler.ClientNames.Should().BeEquivalentTo(
             [
@@ -43,9 +43,9 @@ public class PackagingFrontendAggregateHealthServiceTests
 
         var report = await service.CheckAsync(true, 0, CancellationToken.None);
 
-        handler.RequestUris.Should().Contain("https://gateway.test/gateway/admin/health/all?deep=true");
-        handler.RequestUris.Should().Contain("https://account.test/account/admin/health");
-        handler.RequestUris.Should().Contain("https://payment.test/payment/admin/health");
+        handler.RequestUris.Should().Contain("https://gateway.test/admin/health/all?deep=true");
+        handler.RequestUris.Should().Contain("https://account.test/admin/health");
+        handler.RequestUris.Should().Contain("https://payment.test/admin/health");
         handler.Requests.Single(request => request.Uri.EndsWith("/health/all?deep=true", StringComparison.Ordinal)).Hop.Should().Be("1");
         report.Results["WebApiGateway"].Response!.ToJsonString().Should().Be("{\"status\":\"Healthy\",\"results\":{}}");
     }
@@ -71,9 +71,9 @@ public class PackagingFrontendAggregateHealthServiceTests
         var report = await service.CheckAsync(true, 2, CancellationToken.None);
 
         report.DeepLimited.Should().BeTrue();
-        handler.RequestUris.Should().Contain("https://gateway.test/gateway/admin/health");
-        handler.RequestUris.Should().NotContain("https://gateway.test/gateway/admin/health/all?deep=true");
-        handler.Requests.Single(request => request.Uri == "https://gateway.test/gateway/admin/health").Hop.Should().BeNull();
+        handler.RequestUris.Should().Contain("https://gateway.test/admin/health");
+        handler.RequestUris.Should().NotContain("https://gateway.test/admin/health/all?deep=true");
+        handler.Requests.Single(request => request.Uri == "https://gateway.test/admin/health").Hop.Should().BeNull();
         report.Results["WebApiGateway"].Response.Should().BeNull();
     }
 
@@ -81,7 +81,7 @@ public class PackagingFrontendAggregateHealthServiceTests
         new TestHttpClientFactory(handler),
         Options.Create(new WebApiOptions { BaseEndpoint = "https://gateway.test/gateway" }),
         Options.Create(new AccountsFacadeApiOptions { BaseEndpoint = "https://account.test/account/api/" }),
-        Options.Create(new PaymentFacadeApiOptions { BaseUrl = "https://payment.test/payment/api/" }),
+        Options.Create(new PaymentFacadeApiOptions { BaseUrl = "https://payment.test/payment/api/v1/" }),
         Options.Create(new HealthAllOptions { Token = "test-token" }));
 
     private sealed class TestHttpClientFactory(RecordingHandler handler) : IHttpClientFactory

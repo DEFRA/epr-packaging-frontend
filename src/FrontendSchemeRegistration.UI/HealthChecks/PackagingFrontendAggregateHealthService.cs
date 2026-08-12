@@ -128,11 +128,9 @@ public sealed class PackagingFrontendAggregateHealthService(
     }
 
     private static Uri WebApiGatewayHealth(string baseUrl, bool deep) =>
-        new(EnsureTrailingSlash(baseUrl), deep ? "admin/health/all?deep=true" : "admin/health");
+        new(new Uri(baseUrl, UriKind.Absolute), deep ? "/admin/health/all?deep=true" : "/admin/health");
 
-    private static Uri AdminHealth(string baseUrl) => new(EnsureTrailingSlash(baseUrl), "../admin/health");
-
-    private static Uri EnsureTrailingSlash(string baseUrl) => new(baseUrl.TrimEnd('/') + "/", UriKind.Absolute);
+    private static Uri AdminHealth(string baseUrl) => new(new Uri(baseUrl, UriKind.Absolute), "/admin/health");
 
     private static string SafeEndpoint(Uri endpoint)
     {
