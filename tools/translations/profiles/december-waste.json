@@ -53,6 +53,32 @@
       ]
     },
     {
+      "id": "prns-choose-acceptance-year",
+      "fileName": "04-choose-acceptance-year.xlsx",
+      "route": "/report-data/choose-acceptance-year/{id}",
+      "view": "src/FrontendSchemeRegistration.UI/Views/PrnsAccept/ChooseAcceptanceYear.cshtml",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1932-66964",
+      "notes": "Choose which year to accept a December Waste PRN or PERN into when two obligation years are available.",
+      "featureFlags": [
+        "ShowPrn",
+        "ShowMultiYearObligations"
+      ],
+      "appSettings": {},
+      "resources": [
+        {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/ChooseAcceptanceYear.en.resx",
+          "section": "Choose which year to accept into page.",
+          "keys": [
+            "page_title_prn",
+            "page_title_pern",
+            "heading_prn",
+            "heading_pern",
+            "select_a_year"
+          ]
+        }
+      ]
+    },
+    {
       "id": "account-home-manage-recycling-obligations-tile",
       "fileName": "03-account-home-manage-recycling-obligations-tile.xlsx",
       "route": "/report-data/home-self-managed",

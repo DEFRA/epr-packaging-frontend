@@ -7,6 +7,7 @@ using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels.Prns;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.FeatureManagement;
 using Microsoft.FeatureManagement.Mvc;
 
 namespace FrontendSchemeRegistration.UI.Controllers.Prns
@@ -17,27 +18,122 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
     {
         private readonly IPrnService _prnService;
         private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
-        private const string NoPrnsSelected = "NoPrnsSelected";
         private readonly IDownloadPrnService _downloadPrnService;
+        private readonly IFeatureManager _featureManager;
+        private const string NoPrnsSelected = "NoPrnsSelected";
 
-        public PrnsAcceptController(IPrnService prnService, ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
-            IDownloadPrnService downloadPrnService)
+        public PrnsAcceptController(
+            IPrnService prnService,
+            ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
+            IDownloadPrnService downloadPrnService,
+            IFeatureManager featureManager)
         {
             _prnService = prnService;
             _sessionManager = sessionManager;
-            _downloadPrnService = downloadPrnService; 
+            _downloadPrnService = downloadPrnService;
+            _featureManager = featureManager;
         }
 
         // Note steps 1 and 2 are in the PrnsController
+        // Choose obligation year for December Waste PRNs with a two-year choice
+        [HttpGet]
+        [Route(PagePaths.Prns.AskToChooseAcceptanceYear + "/{id:guid}")]
+        public async Task<IActionResult> ChooseAcceptanceYear(Guid id)
+        {
+            if (!await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
+            {
+                return RedirectToAction(nameof(AcceptSinglePrn), new { id });
+            }
+
+            var prn = await _prnService.GetPrnByExternalIdAsync(id);
+            if (prn is null || !prn.IsStatusEditable || !prn.HasChoiceOfAcceptanceYear)
+            {
+                return RedirectToAction(nameof(AcceptSinglePrn), new { id });
+            }
+
+            var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+            var selectedYear = session.PrnSession.SelectedAcceptanceYearPrnId == id
+                ? session.PrnSession.SelectedAcceptanceYear
+                : null;
+
+            ViewBag.BackLinkToDisplay = Url.Content($"~/{PagePaths.Prns.ShowSelected}/{id}");
+
+            return View(new ChooseAcceptanceYearViewModel
+            {
+                ExternalId = prn.ExternalId,
+                IsPrn = prn.IsPrn,
+                AvailableAcceptanceYears = prn.AvailableAcceptanceYears,
+                SelectedYear = selectedYear
+            });
+        }
+
+        [HttpPost]
+        [Route(PagePaths.Prns.AskToChooseAcceptanceYear + "/{id:guid}")]
+        public async Task<IActionResult> ChooseAcceptanceYear(Guid id, ChooseAcceptanceYearViewModel model)
+        {
+            if (!await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
+            {
+                return RedirectToAction(nameof(AcceptSinglePrn), new { id });
+            }
+
+            var prn = await _prnService.GetPrnByExternalIdAsync(id);
+            if (prn is null || !prn.IsStatusEditable || !prn.HasChoiceOfAcceptanceYear)
+            {
+                return RedirectToAction(nameof(AcceptSinglePrn), new { id });
+            }
+
+            model.ExternalId = prn.ExternalId;
+            model.IsPrn = prn.IsPrn;
+            model.AvailableAcceptanceYears = prn.AvailableAcceptanceYears;
+
+            if (model.SelectedYear is null || !prn.AvailableAcceptanceYears.Contains(model.SelectedYear.Value))
+            {
+                ModelState.Remove(nameof(model.SelectedYear));
+                ModelState.AddModelError(nameof(model.SelectedYear), "select_a_year");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.BackLinkToDisplay = Url.Content($"~/{PagePaths.Prns.ShowSelected}/{id}");
+
+                return View(model);
+            }
+
+            var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+            session.PrnSession.SelectedAcceptanceYearPrnId = id;
+            session.PrnSession.SelectedAcceptanceYear = model.SelectedYear;
+            await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
+
+            return RedirectToAction(nameof(AcceptSinglePrn), new { id });
+        }
+
         // Accept single Prn. Step 3 of 5, are you sure?
         [HttpGet]
         [Route(PagePaths.Prns.AskToAccept + "/{id:guid}")]
         public async Task<IActionResult> AcceptSinglePrn(Guid id)
         {
             var prn = await _prnService.GetPrnByExternalIdAsync(id);
-            
+
+            if (prn is not null
+                && await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)
+                && prn.IsStatusEditable
+                && prn.HasChoiceOfAcceptanceYear)
+            {
+                var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+                var hasChosenYear = session.PrnSession.SelectedAcceptanceYearPrnId == id
+                    && session.PrnSession.SelectedAcceptanceYear is not null
+                    && prn.AvailableAcceptanceYears.Contains(session.PrnSession.SelectedAcceptanceYear.Value);
+
+                if (!hasChosenYear)
+                {
+                    return RedirectToAction(nameof(ChooseAcceptanceYear), new { id });
+                }
+
+                prn.SelectedAcceptanceYear = session.PrnSession.SelectedAcceptanceYear;
+            }
+
             return View("AcceptSinglePrn", prn);
-        }        
+        }
 
         // Unexpected hit, assume user has timed out and been redirected here after relogin
         [HttpGet]
@@ -47,14 +143,30 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
             return RedirectToAction(nameof(PrnsController.SelectMultiplePrns), nameof(PrnsController).RemoveControllerFromName());
         }
 
-        // Accept single Prn. Step 4 of 5, update PRN to accpted
+        // Accept single Prn. Step 4 of 5, update PRN to accepted
         [HttpPost]
         [Route(PagePaths.Prns.ConfirmAccept)]
         public async Task<ActionResult> ConfirmAcceptSinglePrnPassThrough(PrnViewModel model)
         {
-            await _prnService.AcceptPrnAsync(model.ExternalId);
+            string? obligationYear = null;
+            var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+            if (session?.PrnSession.SelectedAcceptanceYearPrnId == model.ExternalId
+                && session.PrnSession.SelectedAcceptanceYear is not null)
+            {
+                obligationYear = session.PrnSession.SelectedAcceptanceYear.Value.ToString();
+            }
 
-            return RedirectToAction(nameof(PrnsAcceptController.AcceptedPrn), nameof(PrnsAcceptController).RemoveControllerFromName(), new { id = model.ExternalId });
+            await _prnService.AcceptPrnAsync(model.ExternalId, obligationYear);
+
+            if (session is not null
+                && session.PrnSession.SelectedAcceptanceYearPrnId == model.ExternalId)
+            {
+                session.PrnSession.SelectedAcceptanceYearPrnId = null;
+                session.PrnSession.SelectedAcceptanceYear = null;
+                await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
+            }
+
+            return RedirectToAction(nameof(AcceptedPrn), nameof(PrnsAcceptController).RemoveControllerFromName(), new { id = model.ExternalId });
         }
 
         // Accept single Prn. Step 5 of 5, show updated PRN details following acceptance
@@ -106,13 +218,13 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
                 session.PrnSession.InitialNoteTypes = model.GetPluralNoteType(selectedPrns);
                 await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
 
-                return RedirectToAction(nameof(PrnsAcceptController.AcceptMultiplePrns));
+                return RedirectToAction(nameof(AcceptMultiplePrns));
             }
             TempData[NoPrnsSelected] = "select_one_or_more_prns_or_perns_to_accept_them";
-            return RedirectToAction(nameof(PrnsController.SelectMultiplePrns), nameof(PrnsController).RemoveControllerFromName(), 
+            return RedirectToAction(nameof(PrnsController.SelectMultiplePrns), nameof(PrnsController).RemoveControllerFromName(),
             new SearchPrnsViewModel()
             {
-                FilterBy = model.FilterBy, SortBy = model.SortBy  
+                FilterBy = model.FilterBy, SortBy = model.SortBy
             });
         }
 
@@ -130,8 +242,8 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
             {
                 var removedPrn = viewModel.Prns.First(x => x.ExternalId == id);
                 viewModel.RemovedPrn = new RemovedPrn(removedPrn.PrnOrPernNumber, removedPrn.IsPrn);
-                
-                selectedPrnIds.Remove(id);         
+
+                selectedPrnIds.Remove(id);
                 session.PrnSession.SelectedPrnIds = selectedPrnIds.ToList();
                 await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
             }
@@ -141,9 +253,9 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
             {
                 viewModel.Prns = selectedPrns.ToList();
             }
-            
+
             ViewBag.BackLinkToDisplay = Url.Content($"~/{PagePaths.Prns.ShowAwaitingAcceptance}");
-            
+
             return View(viewModel);
         }
 
@@ -155,14 +267,14 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
             return RedirectToAction(nameof(PrnsController.SelectMultiplePrns), nameof(PrnsController).RemoveControllerFromName());
         }
 
-        // Accept multiple Prns. Step 4 of 5 update PRNs to accpted
+        // Accept multiple Prns. Step 4 of 5 update PRNs to accepted
         [HttpPost]
         [Route(PagePaths.Prns.ConfirmAcceptMany)]
         public async Task<ActionResult> ConfirmAcceptMultiplePrnsPassThrough(PrnListViewModel model)
         {
             var selectedPrnIds = model.Prns.Select(x => x.ExternalId);
             await _prnService.AcceptPrnsAsync(selectedPrnIds.ToArray());
-            return RedirectToAction(nameof(PrnsAcceptController.AcceptedPrns));
+            return RedirectToAction(nameof(AcceptedPrns));
         }
 
         // Accept multiple Prns. Step 5 of 5 display newly accepted PRN summary details
