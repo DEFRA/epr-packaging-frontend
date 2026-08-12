@@ -19,6 +19,20 @@ public class AggregateHealthHopTests
         hop.Should().Be(0);
     }
 
+    [TestCase(0)]
+    [TestCase(1)]
+    [TestCase(2)]
+    public void TryRead_WhenHeaderIsWithinTheMaximum_ReturnsTheSuppliedHop(int expectedHop)
+    {
+        var request = new DefaultHttpContext().Request;
+        request.Headers[AggregateHealthHop.HeaderName] = expectedHop.ToString();
+
+        var isValid = AggregateHealthHop.TryRead(request, 2, out var hop);
+
+        isValid.Should().BeTrue();
+        hop.Should().Be(expectedHop);
+    }
+
     [TestCase("-1")]
     [TestCase("3")]
     [TestCase("invalid")]
