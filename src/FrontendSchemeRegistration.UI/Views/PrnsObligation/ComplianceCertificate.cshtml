@@ -1,0 +1,32 @@
+@using FrontendSchemeRegistration.Application.Constants
+
+@{
+    ViewData["Title"] = Localizer["title"];
+}
+
+<main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-l">
+                @Localizer["title"]
+            </h1>
+        </div>
+        <div class="govuk-grid-column-two-thirds">
+            <p class="govuk-body">@Localizer["can_show_paragraph"]</p>
+            <p class="govuk-body">@Localizer["cannot_show_paragraph"]</p>
+            <p class="govuk-body">@Localizer["queries_paragraph"] <a class="govuk-link govuk-link--no-visited-state" href="mailto:packagingproducers@environment-agency.gov.uk">packagingproducers@environment-agency.gov.uk</a>.</p>
+            <p class="govuk-body">@Localizer["view_prns_paragraph"]</p>
+        </div>
+    </div>
+    <div class="govuk-grid-row govuk-!-margin-bottom-6 govuk-!-margin-top-6">
+        <div class="govuk-grid-column-two-thirds">
+            <div class="govuk-card">
+                <div class="govuk-card-body">
+                    <h3 class="govuk-heading-m">@Localizer["your_prns_and_perns"]</h3>
+                    <p class="govuk-body"><a class="govuk-link govuk-link--no-visited-state" href="@PagePaths.Prns.Search">@Localizer["search_prns_and_perns"]</a></p>
+                    <p class="govuk-body"><a class="govuk-link govuk-link--no-visited-state" href="@PagePaths.Prns.DownloadAllPRNsAndPERNs">@Localizer["download_prns_and_perns"]</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

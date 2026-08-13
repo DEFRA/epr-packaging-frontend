@@ -220,7 +220,34 @@ public class PrnsObligationController : Controller
         session.PrnSession.SelectedObligationYear = model.SelectedYear.Value;
         await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
 
+        if (model.SelectedYear.Value == 2025)
+        {
+            return RedirectToAction(nameof(ComplianceCertificate));
+        }
+
         return RedirectToAction(nameof(ObligationsHome));
+    }
+
+    [HttpGet]
+    [Route(PagePaths.Prns.ComplianceCertificate)]
+    [FeatureGate(FeatureFlags.ShowMultiYearObligations)]
+    public async Task<IActionResult> ComplianceCertificate()
+    {
+        if (!await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
+        {
+            return NotFound();
+        }
+
+        var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+
+        if (session.PrnSession.SelectedObligationYear != 2025)
+        {
+            return NotFound();
+        }
+
+        ViewBag.BackLinkToDisplay = _globalVariables.Value.BasePath;
+
+        return View();
     }
 
     private ChooseYearViewModel BuildChooseYearViewModel(int? selectedYear = null)
