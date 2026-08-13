@@ -242,6 +242,26 @@ public class PrnMappingContractTests : TestBase
             because: "all renamed fields should appear under their mapped display names in the CSV header");
     }
 
+    // AcceptSinglePrn heading text switches to the "are you sure" confirm wording
+    // when FeatureManagement:ShowMultiYearObligations is enabled.
+    [Test]
+    [Category("IntegrationTest")]
+    public async Task AcceptSinglePrn_ReturnsOk_WithConfirmHeading_WhenMultiYearObligationsEnabled()
+    {
+        await ReconfigureAsync(new Dictionary<string, string?>
+        {
+            ["FeatureManagement:ShowMultiYearObligations"] = "true"
+        });
+        SetupPrnById(FullyPopulatedPrnId, FullyPopulatedPrn);
+
+        var response = await Client.GetAsync($"/report-data/accept-prn/{FullyPopulatedPrnId}");
+
+        response.Should().HaveStatusCode(HttpStatusCode.OK);
+        var content = await response.Content.ReadAsStringAsync();
+        content.Should().Contain("Are you sure you want to accept this PRN",
+            because: "ShowMultiYearObligations=true should render the confirm heading instead of the plain accept heading");
+    }
+
     // CSV data row: verify field renames appear in the correct column positions
     //   prnNumber    → column 1  (PRN or PERN number)
     //   isExport     → column 2  (PRN or PERN: "PRN" when false, "PERN" when true)

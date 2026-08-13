@@ -1,8 +1,11 @@
 @using FrontendSchemeRegistration.Application.Enums
+@using FrontendSchemeRegistration.UI.ViewModels.Prns
 @model CsocViewModel?
 
 @if (Model is not null && Model.IsObligationDataSubmitted)
 {
+    var complianceYear = ViewData["ComplianceYear"] as int? ?? Model.ComplianceYear;
+
     var actorKey = Model switch
     {
         { IsComplianceScheme: true } => "compliance_scheme",
@@ -30,8 +33,9 @@
     {
         <div class="govuk-card govuk-!-margin-bottom-6">
             <div class="govuk-card-body">
+
                 <h3 class="govuk-heading-m">@Localizer[$"{statusKey}_heading_{actorKey}"]</h3>
-                <p class="govuk-body">@Localizer[$"{statusKey}_paragraph_{actorKey}", regulator.Value, Model.ComplianceYear, Model.SubmissionDeadline]</p>
+                <p class="govuk-body">@Localizer[$"{statusKey}_paragraph_{actorKey}", regulator.Value, complianceYear.ToString(), Model.SubmissionDeadline]</p>
                 @{
                     var showAction = Model.WasteObligationsBaseAddress is not null
                         && (statusKey == "submitted" || Model.IsApprovedUser);
