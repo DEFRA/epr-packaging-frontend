@@ -87,6 +87,17 @@ public class ObligationsTests
     [TestCase("/report-data/selected-prn/00000000-0000-0000-0000-000000000005", Language.Welsh)]
     public async Task WhenPrnsArePresent_ShouldLocalizeAsExpected(string path, string language)
     {
+        if (path.StartsWith("/report-data/accept-prn/"))
+        {
+            Context.Dispose();
+            Context.SetUp(
+                overrideSession: true,
+                additionalConfig: new Dictionary<string, string?>
+                {
+                    { "FeatureManagement:ShowDecemberWaste", "false" }
+                });
+        }
+
         await Context.Client.AuthenticateDefaultUser();
 
         var sessionStore = Context.GetSessionStore();
