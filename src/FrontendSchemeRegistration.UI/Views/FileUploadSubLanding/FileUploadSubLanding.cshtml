@@ -89,6 +89,19 @@
                     <div class="card-row govuk-!-margin-bottom-2">
                         @foreach (var submissionPeriodDetail in submissionPeriodGroup.SubmissionPeriodDetails)
                         {
+                            @* SUB-345: a resubmission the user has finished, whether it is still with the
+                               regulator or has already been accepted. An accepting decision closes the cycle and
+                               stops its own fields being reported, so HasCompletedResubmission is what is left to
+                               recognise one by - without it the tile falls back to offering a resubmission that is
+                               already done. A rejection is excluded deliberately: that has to be acted on, and the
+                               branches below are what carry it. *@
+                            var showCompletedResubmission = implementPackagingDataResubmissionJourney
+                                && submissionPeriodDetail.Status is not SubmissionPeriodStatus.InProgress
+                                && submissionPeriodDetail.Decision is not "Rejected"
+                                && (submissionPeriodDetail.IsResubmissionComplete is true
+                                    || submissionPeriodDetail.ResubmissionApplicationSubmitted
+                                    || submissionPeriodDetail.HasCompletedResubmission);
+
                             <div class="govuk-card govuk-!-margin-top-2 submission-period-card">
                                 <div class="govuk-card-body">
                                     <div class="govuk-card-headers">
@@ -305,7 +318,13 @@
                                     {
                                         @if (!Model.IsComplianceScheme)
                                         {
-                                            @if (submissionPeriodDetail.IsResubmissionRequired && submissionPeriodDetail.Decision is "Rejected")
+                                            @if (showCompletedResubmission)
+                                            {
+                                                <div class="govuk-card-footer">
+                                                    <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["view_your_resubmission"]</button>
+                                                </div>
+                                            }
+                                            else if (submissionPeriodDetail.IsResubmissionRequired && submissionPeriodDetail.Decision is "Rejected")
                                             {
                                                 @if (Model.ServiceRole is "Basic User")
                                                 {
@@ -360,16 +379,16 @@
                                                     <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@SharedLocalizer["continue"]</button>
                                                 </div>
                                             }
-                                            else if (implementPackagingDataResubmissionJourney && submissionPeriodDetail.Status is SubmissionPeriodStatus.SubmittedToRegulator && (submissionPeriodDetail.IsResubmissionComplete is true || submissionPeriodDetail.ResubmissionApplicationSubmitted))
+                                        }
+                                        else
+                                        {
+                                            @if (showCompletedResubmission)
                                             {
                                                 <div class="govuk-card-footer">
                                                     <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["view_your_resubmission"]</button>
                                                 </div>
                                             }
-                                        }
-                                        else
-                                        {
-                                            @if (submissionPeriodDetail.IsResubmissionRequired && submissionPeriodDetail.Decision is "Rejected")
+                                            else if (submissionPeriodDetail.IsResubmissionRequired && submissionPeriodDetail.Decision is "Rejected")
                                             {
                                                 @if (Model.ServiceRole is "Basic User")
                                                 {
@@ -402,19 +421,20 @@
                                             else if ((submissionPeriodDetail.Decision is "Accepted" || submissionPeriodDetail.Decision is "Approved") && (submissionPeriodDetail.Status is not SubmissionPeriodStatus.InProgress))
                                             {
                                                 <div class="govuk-card-footer">
-                                                    <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["check_if_you_need_to_update_member's_packaging_data"]</button>
+                                                    @if (implementPackagingDataResubmissionJourney)
+                                                    {
+                                                        <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["check_if_you_need_to_resubmit_members_packaging_data"]</button>
+                                                    }
+                                                    else
+                                                    {
+                                                        <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["check_if_you_need_to_update_member's_packaging_data"]</button>
+                                                    }
                                                 </div>
                                             }
                                             else if (implementPackagingDataResubmissionJourney && submissionPeriodDetail.Status is SubmissionPeriodStatus.InProgress)
                                             {
                                                 <div class="govuk-card-footer">
                                                     <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@SharedLocalizer["continue"]</button>
-                                                </div>
-                                            }
-                                            else if (implementPackagingDataResubmissionJourney && submissionPeriodDetail.Status is SubmissionPeriodStatus.SubmittedToRegulator && (submissionPeriodDetail.IsResubmissionComplete is true || submissionPeriodDetail.ResubmissionApplicationSubmitted))
-                                            {
-                                                <div class="govuk-card-footer">
-                                                    <button type="submit" class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-text-align-left" name="dataPeriod" value="@submissionPeriodDetail.DataPeriod">@Localizer["view_your_resubmission"]</button>
                                                 </div>
                                             }
                                         }

@@ -29,6 +29,7 @@ namespace FrontendSchemeRegistration.UI.Extensions
                 Organisation = organisation,
                 IsResubmissionFeeViewed = item.IsResubmissionFeeViewed,
                 HasSubmissionSyncCompleted = item.SynapseResponse.IsResubmissionDataSynced,
+                LastCompletedResubmission = item.LastCompletedResubmission,
             };
 
             return packagingResubmissionApplicationDetails;
