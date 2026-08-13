@@ -1,0 +1,141 @@
+@model CompletedResubmissionViewModel
+
+@{
+	ViewData["Title"] = Localizer["completed_resubmission_title"];
+
+	var fileNameHeader = Localizer["file_name"];
+	var dateSubmittedHeader = Localizer["date_submitted"];
+	var submittedByHeader = Localizer["submitted_by"];
+}
+
+<main class="govuk-main-wrapper" id="main-content" role="main">
+	<div class="govuk-grid-row">
+		<div class="govuk-grid-column-three-quarters">
+			<h1 class="govuk-heading-l govuk-!-margin-bottom-4">@Localizer["completed_resubmission_title"]</h1>
+
+			<p class="govuk-body">@Localizer["packaging_data_accepted"]</p>
+
+			@if (!string.IsNullOrEmpty(Model.ApplicationReferenceNumber))
+			{
+				<p class="govuk-body govuk-!-margin-bottom-6">
+					@Localizer["resubmission_reference_number"]<br />
+					<strong>@Model.ApplicationReferenceNumber</strong>
+				</p>
+			}
+
+			@* SUB-345: the same three steps as the task list, with no links: every one of them is done, and the
+			   routes behind them belong to whichever cycle is open now. *@
+			<dl class="govuk-summary-list">
+				<div class="govuk-summary-list__row">
+					<dt class="govuk-summary-list__value">
+						@Localizer["submit_resubmission_data"]
+						<br />
+						@Localizer["you_have_resubmitted_your_packaging_data"]
+					</dt>
+					<dd class="govuk-summary-list__actions">
+						<strong class="govuk-tag govuk-tag--blue">@Localizer["completed_status"]</strong>
+					</dd>
+				</div>
+				<div class="govuk-summary-list__row">
+					<dt class="govuk-summary-list__value">
+						@Localizer["view_pay_resubmission_fee"]
+						<br />
+						@Localizer["you_have_paid_resubmission_fee"]
+					</dt>
+					<dd class="govuk-summary-list__actions">
+						<strong class="govuk-tag govuk-tag--blue">@Localizer["completed_status"]</strong>
+					</dd>
+				</div>
+				<div class="govuk-summary-list__row">
+					<dt class="govuk-summary-list__value">
+						@Localizer["submit_resubmission_application"]
+						<br />
+						@Localizer["resubmission_application_has_been_submitted"]
+						@if (Model.DeclarationDate.HasValue)
+						{
+							<br />
+							@Localizer["submitted_to_the_regulator_on", Model.DeclarationDate.Value.ToReadableDateTime()]
+						}
+					</dt>
+					<dd class="govuk-summary-list__actions">
+						<strong class="govuk-tag govuk-tag--blue">@Localizer["completed_status"]</strong>
+					</dd>
+				</div>
+			</dl>
+
+			@if (Model.SubmittedAt.HasValue)
+			{
+				<div class="govuk-summary-card">
+					<div class="govuk-summary-card__title-wrapper">
+						<h2 class="govuk-summary-card__title">@Localizer["file_already_submitted"]</h2>
+					</div>
+					<div class="govuk-summary-card__content">
+						<table class="govuk-table govuk-!-margin-bottom-0 responsive-table">
+							<caption class="govuk-visually-hidden">@Localizer["file_already_submitted"]</caption>
+							<thead class="govuk-table__head">
+								<tr class="govuk-table__row">
+									<th scope="col" class="govuk-table__header">@fileNameHeader</th>
+									<th scope="col" class="govuk-table__header">@dateSubmittedHeader</th>
+									<th scope="col" class="govuk-table__header">@submittedByHeader</th>
+								</tr>
+							</thead>
+							<tbody class="govuk-table__body">
+								<tr class="govuk-table__row">
+									<td data-heading="@fileNameHeader" class="govuk-table__cell break-word">@Model.FileName</td>
+									<td data-heading="@dateSubmittedHeader" class="govuk-table__cell break-word">@Model.SubmittedAt.Value.ToReadableDateTime()</td>
+									<td data-heading="@submittedByHeader" class="govuk-table__cell break-word">@Model.SubmittedBy</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			}
+
+			@if (!string.IsNullOrEmpty(Model.RegulatorComments))
+			{
+				<h2 class="govuk-heading-m">@Localizer["what_the_regulator_said"]</h2>
+				<div class="govuk-inset-text">@Model.RegulatorComments</div>
+			}
+
+			@* SUB-345: dropped rather than faked when the payment service cannot price the closed cycle - the
+			   steps above still record that the fee was paid. *@
+			@if (Model.Fee is not null)
+			{
+				<h2 class="govuk-heading-m">@Localizer["resubmission_fee"]</h2>
+				<partial name="_PackagingResubmissionFeeBreakdown" model="@Model.Fee" />
+			}
+
+			<h2 class="govuk-heading-m">@Localizer["if_your_circumstances_change"]</h2>
+			<p class="govuk-body">@Localizer["if_your_circumstances_change_text_approved_user"]</p>
+
+			@* SUB-345: starting another resubmission is the task list's job, which raises the new cycle. *@
+			@if (Model.IsApprovedOrDelegatedUser)
+			{
+				<p class="govuk-body">
+					<a asp-controller="PackagingDataResubmission" asp-action="ResubmissionTaskList" class="govuk-link govuk-link--no-visited-state">
+						@Localizer[Model.IsComplianceScheme ? "resubmit_members_packaging_data" : "resubmit_packaging_data"]
+					</a>
+				</p>
+			}
+
+			<p class="govuk-body">
+				<a asp-controller="FileUploadSubmissionHistory" asp-action="Get" class="govuk-link govuk-link--no-visited-state">
+					@Localizer["view_submission_history"]
+				</a>
+			</p>
+
+			@if (Model.IsComplianceScheme)
+			{
+				<p class="govuk-body govuk-!-margin-top-4">
+					<a asp-controller="ComplianceSchemeLanding" asp-action="Get" class="govuk-link">@Localizer["return_to_dashboard"]</a>
+				</p>
+			}
+			else
+			{
+				<p class="govuk-body govuk-!-margin-top-4">
+					<a asp-controller="FrontendSchemeRegistration" asp-action="HomePageSelfManaged" class="govuk-link">@Localizer["return_to_dashboard"]</a>
+				</p>
+			}
+		</div>
+	</div>
+</main>

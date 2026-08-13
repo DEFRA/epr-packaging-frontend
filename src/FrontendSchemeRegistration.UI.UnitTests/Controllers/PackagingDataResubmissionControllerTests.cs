@@ -1163,6 +1163,237 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
     }
 
     [Test]
+    public async Task CompletedResubmission_DescribesTheRuledOnCycle_WhenTheRegulatorHasAcceptedOne()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var submittedAt = DateTime.UtcNow.AddDays(-10);
+        var declaredAt = DateTime.UtcNow.AddDays(-9);
+
+        _userData = GetUserData(OrganisationRoles.Producer);
+        _userData.ServiceRole = EPR.Common.Authorization.Constants.ServiceRoles.ApprovedPerson;
+        SetupBase(_userData);
+
+        SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                PomResubmissionSession = new PackagingReSubmissionSession { SubmissionPeriod = SubmissionPeriod }
+            });
+
+        SetupCompletedResubmission(new CompletedResubmissionDetails
+        {
+            ApplicationReferenceNumber = "PEPR-REF-01",
+            DeclarationDate = declaredAt,
+            Decision = "Accepted",
+            RegulatorComments = "All present and correct",
+            FileName = "accepted-packaging-data.csv",
+            SubmittedFile = new LastSubmittedFileDetails
+            {
+                SubmittedByName = "Alex Submitter",
+                SubmittedDateTime = submittedAt
+            }
+        }, submissionId);
+
+        ResubmissionApplicationService.Setup(x => x.GetRegulatorNation(It.IsAny<Guid?>())).ReturnsAsync("England");
+        ResubmissionApplicationService.Setup(x => x.GetPackagingResubmissionMemberDetails(It.IsAny<PackagingResubmissionMemberRequest>()))
+            .ReturnsAsync(new PackagingResubmissionMemberDetails { MemberCount = 4 });
+        ResubmissionApplicationService.Setup(x => x.GetResubmissionFees(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<DateTime?>()))
+            .ReturnsAsync(new PackagingPaymentResponse { ResubmissionFee = 200m, TotalOutstanding = 0m, PreviousPaymentsReceived = 200m });
+
+        // Act
+        var result = await SystemUnderTest.CompletedResubmission() as ViewResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        (SystemUnderTest.ViewBag.BackLinkToDisplay as string).Should().Be($"~{PagePaths.FileUploadSubLanding}");
+
+        var model = result.Model.As<CompletedResubmissionViewModel>();
+        model.OrganisationName.Should().Be(OrganisationName);
+        model.IsComplianceScheme.Should().BeFalse();
+        model.IsApprovedOrDelegatedUser.Should().BeTrue();
+        model.SubmissionId.Should().Be(submissionId);
+        model.ApplicationReferenceNumber.Should().Be("PEPR-REF-01");
+        model.FileName.Should().Be("accepted-packaging-data.csv");
+        model.SubmittedAt.Should().Be(submittedAt);
+        model.SubmittedBy.Should().Be("Alex Submitter");
+        model.DeclarationDate.Should().Be(declaredAt);
+        model.RegulatorComments.Should().Be("All present and correct");
+        model.Fee.Should().NotBeNull();
+        model.Fee.MemberCount.Should().Be(4);
+        model.Fee.ResubmissionFee.Should().Be(200m);
+
+        // The closed cycle's own reference number and file date price the fee, not the current cycle's (SUB-345).
+        ResubmissionApplicationService.Verify(
+            x => x.GetResubmissionFees("PEPR-REF-01", "England", 4, false, submittedAt),
+            Times.Once);
+    }
+
+    [Test]
+    public async Task CompletedResubmission_RedirectsToTheSubLandingPage_WhenNoResubmissionHasBeenRuledOn()
+    {
+        // Arrange
+        SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                PomResubmissionSession = new PackagingReSubmissionSession { SubmissionPeriod = SubmissionPeriod }
+            });
+
+        SetupCompletedResubmission(null, Guid.NewGuid());
+
+        // Act
+        var result = await SystemUnderTest.CompletedResubmission() as RedirectToActionResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadSubLanding");
+        ResubmissionApplicationService.Verify(
+            x => x.GetResubmissionFees(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<DateTime?>()),
+            Times.Never);
+    }
+
+    [Test]
+    public async Task CompletedResubmission_WritesNothing_WhenACompletedResubmissionIsViewed()
+    {
+        // SUB-345: looking back at a finished resubmission must not open a new cycle: no fee-view event, no
+        // reference number, and no session write that would flag the resubmission journey as under way.
+        // Arrange
+        var submissionId = Guid.NewGuid();
+
+        SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                PomResubmissionSession = new PackagingReSubmissionSession { SubmissionPeriod = SubmissionPeriod }
+            });
+
+        SetupCompletedResubmission(new CompletedResubmissionDetails
+        {
+            ApplicationReferenceNumber = "PEPR-REF-02",
+            DeclarationDate = DateTime.UtcNow.AddDays(-3),
+            Decision = "Accepted"
+        }, submissionId);
+
+        ResubmissionApplicationService.Setup(x => x.GetRegulatorNation(It.IsAny<Guid?>())).ReturnsAsync("England");
+        ResubmissionApplicationService.Setup(x => x.GetPackagingResubmissionMemberDetails(It.IsAny<PackagingResubmissionMemberRequest>()))
+            .ReturnsAsync(new PackagingResubmissionMemberDetails { MemberCount = 1 });
+        ResubmissionApplicationService.Setup(x => x.GetResubmissionFees(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<DateTime?>()))
+            .ReturnsAsync(new PackagingPaymentResponse());
+
+        // Act
+        var result = await SystemUnderTest.CompletedResubmission() as ViewResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        ResubmissionApplicationService.Verify(x => x.CreatePackagingResubmissionFeeViewEvent(It.IsAny<Guid?>(), It.IsAny<Guid?>()), Times.Never);
+        ResubmissionApplicationService.Verify(
+            x => x.CreatePomResubmissionReferenceNumberForProducer(It.IsAny<FrontendSchemeRegistrationSession?>(), It.IsAny<SubmissionPeriod>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<Guid>(), It.IsAny<int>()),
+            Times.Never);
+        ResubmissionApplicationService.Verify(x => x.RefreshPomSubmissionAsync(It.IsAny<FrontendSchemeRegistrationSession>()), Times.Never);
+        SessionManagerMock.Verify(sm => sm.SaveSessionAsync(It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()), Times.Never);
+    }
+
+    [Test]
+    public async Task CompletedResubmission_DropsTheFeeButKeepsThePage_WhenTheFeeCannotBePriced()
+    {
+        // Arrange
+        SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                PomResubmissionSession = new PackagingReSubmissionSession { SubmissionPeriod = SubmissionPeriod }
+            });
+
+        SetupCompletedResubmission(new CompletedResubmissionDetails
+        {
+            ApplicationReferenceNumber = "PEPR-REF-03",
+            DeclarationDate = DateTime.UtcNow.AddDays(-4),
+            Decision = "Accepted",
+            FileName = "accepted-packaging-data.csv"
+        }, Guid.NewGuid());
+
+        ResubmissionApplicationService.Setup(x => x.GetRegulatorNation(It.IsAny<Guid?>())).ReturnsAsync("England");
+        ResubmissionApplicationService.Setup(x => x.GetPackagingResubmissionMemberDetails(It.IsAny<PackagingResubmissionMemberRequest>()))
+            .ThrowsAsync(new HttpRequestException("message", null, System.Net.HttpStatusCode.PreconditionRequired));
+
+        // Act
+        var result = await SystemUnderTest.CompletedResubmission() as ViewResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        var model = result.Model.As<CompletedResubmissionViewModel>();
+        model.Fee.Should().BeNull();
+        model.FileName.Should().Be("accepted-packaging-data.csv");
+    }
+
+    [Test]
+    public async Task CompletedResubmission_PricesTheFeeAgainstTheSchemesNation_WhenAComplianceSchemeViewsIt()
+    {
+        // Arrange
+        var complianceSchemeId = Guid.NewGuid();
+
+        _userData = GetUserData(OrganisationRoles.ComplianceScheme);
+        SetupBase(_userData);
+
+        SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                PomResubmissionSession = new PackagingReSubmissionSession { SubmissionPeriod = SubmissionPeriod },
+                RegistrationSession = new RegistrationSession
+                {
+                    SelectedComplianceScheme = new ComplianceSchemeDto { Id = complianceSchemeId }
+                }
+            });
+
+        SetupCompletedResubmission(new CompletedResubmissionDetails
+        {
+            ApplicationReferenceNumber = "PEPR-REF-04",
+            DeclarationDate = DateTime.UtcNow.AddDays(-5),
+            Decision = "Accepted"
+        }, Guid.NewGuid());
+
+        ComplianceService.Setup(x => x.GetComplianceSchemeSummary(_organisationId, complianceSchemeId))
+            .ReturnsAsync(new ComplianceSchemeSummary { Nation = Nation.Wales });
+        ResubmissionApplicationService.Setup(x => x.GetPackagingResubmissionMemberDetails(It.IsAny<PackagingResubmissionMemberRequest>()))
+            .ReturnsAsync(new PackagingResubmissionMemberDetails { MemberCount = 12 });
+        ResubmissionApplicationService.Setup(x => x.GetResubmissionFees(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<DateTime?>()))
+            .ReturnsAsync(new PackagingPaymentResponse { ResubmissionFee = 500m });
+
+        // Act
+        var result = await SystemUnderTest.CompletedResubmission() as ViewResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Model.As<CompletedResubmissionViewModel>().IsComplianceScheme.Should().BeTrue();
+
+        // The scheme's own nation, in the same form the task list sends for an open cycle (SUB-345).
+        ResubmissionApplicationService.Verify(
+            x => x.GetResubmissionFees("PEPR-REF-04", "GB-WLS", 12, true, It.IsAny<DateTime?>()),
+            Times.Once);
+        ResubmissionApplicationService.Verify(x => x.GetRegulatorNation(It.IsAny<Guid?>()), Times.Never);
+    }
+
+    private void SetupCompletedResubmission(CompletedResubmissionDetails? completedResubmission, Guid submissionId)
+    {
+        ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(
+                It.IsAny<Organisation>(),
+                It.IsAny<List<string>>(),
+                It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<PackagingResubmissionApplicationDetails>
+            {
+                new()
+                {
+                    SubmissionId = submissionId,
+
+                    // SUB-345: what the submissions API reports once a decision has closed the cycle - the
+                    // current-cycle fields are back to NotStarted, and only the closed cycle records what
+                    // was done.
+                    ApplicationStatus = ApplicationStatusType.NotStarted,
+                    LastCompletedResubmission = completedResubmission,
+                    SynapseResponse = new SynapseResponse { IsFileSynced = true }
+                }
+            });
+    }
+
+    [Test]
     public async Task GetMemberCount_ReturnsMemberCountForProducers()
     {
         // Arrange
