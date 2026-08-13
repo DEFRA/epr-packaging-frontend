@@ -3,13 +3,14 @@
 @using Microsoft.FeatureManagement
 @inject FrontendSchemeRegistration.UI.Resources.IPrnDataResourcesLocalizer PrnDataResourcesLocalizer
 @inject IFeatureManager FeatureManager
+
 @model AwaitingAcceptancePrnsViewModel
 
 @{
     ViewData["Title"] = Localizer["page_title"];
     var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
     var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer);
-    var decemberWasteEnabled = await FeatureManager.IsEnabledAsync(FeatureFlags.ShowDecemberWaste);
+	var isDecemberWasteFeatureEnabled = await FeatureManager.IsEnabledAsync(FeatureFlags.ShowDecemberWaste);
 }
 
 <main class="govuk-main-wrapper govuk-!-padding-top-4" id="select-multiple-prns">
@@ -100,9 +101,8 @@
 								{
 									var prn = Model.Prns[i];
 									var decemberWasteFlashText = Localizer.DecemberWasteFlashText(prn.AvailableAcceptanceYears);
-									var showDecemberWasteFlash = prn.ShouldShowDecemberWasteFlash
-										&& !string.IsNullOrEmpty(decemberWasteFlashText);
-									var cellBorder = decemberWasteEnabled && showDecemberWasteFlash ? "border-bottom-0" : null;
+									var shouldShowDecemberWasteFlash = prn.ShouldShowDecemberWasteFlash;
+									var cellBorder = isDecemberWasteFeatureEnabled && shouldShowDecemberWasteFlash ? "border-bottom-0" : null;
 
 									<tr class="govuk-table__row">
 										@Html.HiddenFor(x => x.Prns[i].ExternalId)
@@ -111,21 +111,24 @@
 											@if (Model.Prns[i].IsStatusEditable)
 											{
 												<div class="govuk-checkboxes govuk-checkboxes--small">
-													<div class="govuk-checkboxes__item">
-														@{
-															var checkBoxId = string.Concat("chkBoxSelectPrn_", Model.Prns[i].NoteType, "_", Model.Prns[i].ExternalId);
-														}
-														@Html.CheckBoxFor(x => x.Prns[i].IsSelected, new { @id = checkBoxId, @class = "govuk-checkboxes__input" })
-
-														<label class="govuk-label govuk-checkboxes__label" for=@checkBoxId>
-															@Html.ActionLink(Model.Prns[i].PrnOrPernNumber, nameof(PrnsController.SelectSinglePrn), "Prns", new { id = Model.Prns[i].ExternalId },
+													<div class="govuk-checkboxes__item">	
+														<feature name="@FeatureFlags.ShowDecemberWaste">
+															@if(shouldShowDecemberWasteFlash) {
+																@Html.ActionLink(Model.Prns[i].PrnOrPernNumber, nameof(PrnsController.SelectSinglePrn), "Prns", new { id = Model.Prns[i].ExternalId },
 																new
 																{
 																	@class = "govuk-link"
 																})
-														</label>
+															} else {
+																@await Html.PartialAsync("../Shared/Partials/Prns/_prnAcceptCheckboxLabel", new ViewDataDictionary(ViewData) { { "index", i } })
+															}
+														</feature>
+														<feature negate="true" name="@FeatureFlags.ShowDecemberWaste">
+															@await Html.PartialAsync("../Shared/Partials/Prns/_prnAcceptCheckboxLabel", new ViewDataDictionary(ViewData) { { "index", i } })
+														</feature>
 													</div>
 												</div>
+												
 											}
 											else
 											{
@@ -152,7 +155,7 @@
 										</td>
 									</tr>
 									<feature name="@FeatureFlags.ShowDecemberWaste">
-										@if (showDecemberWasteFlash)
+										@if (shouldShowDecemberWasteFlash && decemberWasteFlashText != string.Empty)
 										{
 											<tr class="govuk-table__row december-waste-flash-row">
 												<td class="govuk-table__cell" colspan="7">
@@ -165,16 +168,26 @@
 								</tbody>
 							</table>
 						</div>
-
+ 
 						@if (Model?.Prns?.Count > 0)
 						{
+							var showButton = Model.Prns.Count > Model.Prns.Count(x => x.IsAwaitingAcceptance);
 							@await Html.PartialAsync("Partials/RecordNavigation/_RecordPaging", Model.PagingDetail)
 							<hr class="govuk-section-break govuk-section-break--l govuk-section-break--xl">
-
 							<div class="govuk-button-group">
-								<button class="govuk-button" type="submit">
-									@Localizer["accept_selected_prns_and_perns"]
-								</button>
+								<feature name="@FeatureFlags.ShowDecemberWaste">
+									@if (showButton)
+								    {
+										<button class="govuk-button" type="submit">
+											@Localizer["accept_selected_prns_and_perns"]
+										</button>
+									}
+								</feature>
+								<feature negate="true" name="@FeatureFlags.ShowDecemberWaste">
+									<button class="govuk-button" type="submit">
+										@Localizer["accept_selected_prns_and_perns"]
+									</button>
+								</feature>						
 							</div>
 						}
 					</fieldset>
