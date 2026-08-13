@@ -3,7 +3,7 @@ $(document).ready(function () {
     const statusUrl = $config.data('status-url');
     const fallbackUrl = $config.data('fallback-url');
     const intervalMs = parseInt($config.data('interval-ms'), 10) || 3000;
-    const timeoutMs = parseInt($config.data('timeout-ms'), 10) || 60000;
+    const timeoutMs = parseInt($config.data('timeout-ms'), 10) || 30000;
     const startTime = Date.now();
 
     $('#global-spinner').css('display', 'flex');
