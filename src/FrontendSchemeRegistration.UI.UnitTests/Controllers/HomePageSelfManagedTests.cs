@@ -151,7 +151,9 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
 
         // Act
         var result = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
-        var complianceYear = ((HomePageSelfManagedViewModel)result.Model).ComplianceYear;
+        var viewModel = (HomePageSelfManagedViewModel)result.Model;
+        var complianceYear = viewModel.ComplianceYear;
+        var obligationDeadline = viewModel.ObligationDeadline;
 
         // Assert
         result.ViewName.Should().Be(ViewName);
@@ -176,7 +178,8 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
                 IsResubmissionInProgress = null,
                 IsResubmissionComplete = null,
             },
-            ComplianceYear = complianceYear
+            ComplianceYear = complianceYear,
+                ObligationDeadline = obligationDeadline
         });
     }
 
@@ -326,7 +329,9 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
 
         // Act
         var response = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
-        var complianceYear = ((HomePageSelfManagedViewModel)response.Model).ComplianceYear;
+        var viewModel = (HomePageSelfManagedViewModel)response.Model;
+        var complianceYear = viewModel.ComplianceYear;
+        var obligationDeadline = viewModel.ObligationDeadline;
 
         // Assert
         response.ViewName.Should().Be("HomePageSelfManaged");
@@ -341,7 +346,8 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
                 RegistrationApplications = registrationApplicationYears.SelectMany(ray => ray.Applications),
                 ResubmissionTaskListViewModel = new(),
                 PackagingResubmissionPeriod = submissionPeriod,
-                ComplianceYear = complianceYear
+                ComplianceYear = complianceYear,
+                ObligationDeadline = obligationDeadline
             });
     }
 
@@ -404,7 +410,9 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
 
         // Act
         var response = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
-        var complianceYear = ((HomePageSelfManagedViewModel)response.Model).ComplianceYear;
+        var viewModel = (HomePageSelfManagedViewModel)response.Model;
+        var complianceYear = viewModel.ComplianceYear;
+        var obligationDeadline = viewModel.ObligationDeadline;
 
         // Assert
         response.ViewName.Should().Be("HomePageSelfManaged");
@@ -419,7 +427,8 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
                 RegistrationApplications = registrationApplicationYears.SelectMany(ray => ray.Applications),
                 ResubmissionTaskListViewModel = new(),
                 PackagingResubmissionPeriod = submissionPeriod,
-                ComplianceYear = complianceYear
+                ComplianceYear = complianceYear,
+                ObligationDeadline = obligationDeadline
             });
     }
 
@@ -484,7 +493,9 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
 
         // Act
         var response = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
-        var complianceYear = ((HomePageSelfManagedViewModel)response.Model).ComplianceYear;
+        var viewModel = (HomePageSelfManagedViewModel)response.Model;
+        var complianceYear = viewModel.ComplianceYear;
+        var obligationDeadline = viewModel.ObligationDeadline;
 
         // Assert
         response.ViewName.Should().Be("HomePageSelfManaged");
@@ -499,7 +510,8 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
                 RegistrationApplications = registrationApplicationYears.SelectMany(ray => ray.Applications),
                 ResubmissionTaskListViewModel = new(),
                 PackagingResubmissionPeriod = submissionPeriod,
-                ComplianceYear = complianceYear
+                ComplianceYear = complianceYear,
+                ObligationDeadline = obligationDeadline
             });
     }
 }

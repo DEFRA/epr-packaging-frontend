@@ -165,20 +165,21 @@
             <div class="govuk-grid-column-one-half box">
                 <div class="govuk-card govuk-card--grey govuk-card--border-bottom-blue govuk-!-margin-bottom-7">
                     <div class="govuk-card-body">
-                        <h2 class="govuk-heading-m">
-                            <a href="@FrontendSchemeRegistration.Application.Constants.PagePaths.Prns.ObligationsHome"
-                               class="govuk-link--no-visited-state">@Localizer["prn_heading_text", Model.ComplianceYear]</a>
-                        </h2>
-                        <p class="govuk-body">@Localizer["prn_paragraph_1"]</p>
-                        <ul class="govuk-list govuk-list--bullet">
-                            <li>@Localizer["prn_unordered_list_point_1"]</li>
-                            <li>@Localizer["prn_unordered_list_point_2"]</li>
-                            @if (Model.CsocViewModel is { ShowLandingBullet: true })
+                        @{
+                            var prnTileModel = new FrontendSchemeRegistration.UI.ViewModels.Prns.ManageRecyclingObligationsTileViewModel
                             {
-                                <li>@await Html.PartialAsync("Partials/Csoc/_LandingBullet", Model.CsocViewModel)</li>
-                            }
-                        </ul>
-                        @await Html.PartialAsync("Partials/Csoc/_LandingParagraph", Model.CsocViewModel)
+                                ComplianceYear = Model.ComplianceYear,
+                                ObligationDeadline = Model.ObligationDeadline,
+                                CsocViewModel = Model.CsocViewModel,
+                                IsComplianceScheme = false
+                            };
+                        }
+                        <feature name="@FeatureFlags.ShowMultiYearObligations">
+                            @await Html.PartialAsync("Partials/Prns/_ManageRecyclingObligationsTileMultiYear", prnTileModel)
+                        </feature>
+                        <feature name="@FeatureFlags.ShowMultiYearObligations" negate="true">
+                            @await Html.PartialAsync("Partials/Prns/_ManageRecyclingObligationsTile", prnTileModel)
+                        </feature>
                     </div>
                 </div>
             </div>

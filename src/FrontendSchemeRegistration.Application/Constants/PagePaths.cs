@@ -116,6 +116,7 @@ public static class PagePaths
 
     public static class Prns
     {
+        public const string ChooseYear = "choose-your-recycling-obligations-year";
         public const string ObligationsHome = "manage-your-recycling-obligations";
         public const string ObligationPerMaterial = "manage-your-recycling-obligations";
         public const string Search = "view-awaiting-acceptance";
@@ -124,6 +125,7 @@ public static class PagePaths
         public const string DownloadAllPRNsAndPERNs = "download-prns-csv";
 
         // Accept single PRN
+        public const string AskToChooseAcceptanceYear = "choose-acceptance-year";
         public const string AskToAccept = "accept-prn";
         public const string ConfirmAccept = "confirm-accept-prn";
         public const string Accepted = "accepted-prn";

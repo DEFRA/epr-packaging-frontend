@@ -168,6 +168,12 @@
   <data name="small_producers_sentence_text" xml:space="preserve">
     <value>cynhyrchwyr bach</value>
   </data>
+  <data name="h1_data_note" xml:space="preserve">
+    <value>H1</value>
+  </data>
+  <data name="h2_data_note" xml:space="preserve">
+    <value>H2</value>
+  </data>
   <data name="or" xml:space="preserve">
 	<value>neu</value>
   </data>

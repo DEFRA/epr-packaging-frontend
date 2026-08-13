@@ -85,5 +85,18 @@ namespace FrontendSchemeRegistration.UI.UnitTests.ViewModels.Prns
 
             sut.ShouldShowDecemberWasteFlash.Should().Be(expected);
         }
+
+        [TestCase(new[] { 2026, 2027 }, true)]
+        [TestCase(new[] { 2026 }, false)]
+        [TestCase(new int[] { }, false)]
+        public void HasChoiceOfAcceptanceYear_Returns_Expected(int[] availableAcceptanceYears, bool expected)
+        {
+            var sut = new BasePrnViewModel
+            {
+                AvailableAcceptanceYears = availableAcceptanceYears
+            };
+
+            sut.HasChoiceOfAcceptanceYear.Should().Be(expected);
+        }
     }
 }

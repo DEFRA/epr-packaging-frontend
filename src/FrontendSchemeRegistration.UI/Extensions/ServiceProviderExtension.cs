@@ -164,6 +164,7 @@ public static class ServiceProviderExtension
     {
         services.AddScoped<ICompaniesHouseService, CompaniesHouseService>();
         services.AddScoped<IComplianceSchemeMemberService, ComplianceSchemeMemberService>();
+        services.AddScoped<IComplianceSchemeContext, ComplianceSchemeContext>();
         services.AddScoped<ICookieService, CookieService>();
         services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<IComplianceSchemeService, ComplianceSchemeService>();

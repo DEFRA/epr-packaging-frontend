@@ -1,0 +1,25 @@
+@model FrontendSchemeRegistration.UI.ViewModels.Prns.ManageRecyclingObligationsTileViewModel
+
+@{
+    var headingKey = Model.IsComplianceScheme
+        ? "heading_compliance_scheme"
+        : "heading_direct_producer";
+    var paragraphKey = Model.IsComplianceScheme
+        ? "paragraph_1_compliance_scheme"
+        : "paragraph_1_direct_producer";
+}
+
+<h2 class="govuk-heading-m">
+    <a href="@FrontendSchemeRegistration.Application.Constants.PagePaths.Prns.ObligationsHome"
+       class="govuk-link--no-visited-state">@Localizer[headingKey, Model.ComplianceYear]</a>
+</h2>
+<p class="govuk-body">@Localizer[paragraphKey]</p>
+<ul class="govuk-list govuk-list--bullet">
+    <li>@Localizer["unordered_list_point_1"]</li>
+    <li>@Localizer["unordered_list_point_2"]</li>
+    @if (Model.CsocViewModel is { ShowLandingBullet: true })
+    {
+        <li>@await Html.PartialAsync("Partials/Csoc/_LandingBullet", Model.CsocViewModel)</li>
+    }
+</ul>
+@await Html.PartialAsync("Partials/Csoc/_LandingParagraph", Model.CsocViewModel)

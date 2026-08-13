@@ -96,10 +96,10 @@ public class PrnService : IPrnService
         return await GetPrnByExternalIdAsync(id);
     }
 
-    public async Task AcceptPrnAsync(Guid id)
+    public async Task AcceptPrnAsync(Guid id, string? obligationYear = null)
     {
         _logger.LogInformation("{Logprefix}: PrnService - AcceptPrnAsync: accept Prn for given organisation Id {OrgId}", logPrefix, id);
-        await _webApiGatewayClient.SetPrnApprovalStatusToAcceptedAsync(id);
+        await _webApiGatewayClient.SetPrnApprovalStatusToAcceptedAsync(id, obligationYear);
     }
 
     public async Task AcceptPrnsAsync(Guid[] ids)

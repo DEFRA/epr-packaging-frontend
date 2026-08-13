@@ -125,6 +125,33 @@ public class ObligationsTests
         content.Should().NotContain("Accepted towards");
     }
 
+    [TestCase(Language.English)]
+    [TestCase(Language.Welsh)]
+    public async Task WhenMultiYearObligationsEnabled_AcceptedPrn_ShouldShowUpdatedConfirmationText(string language)
+    {
+        Context.Dispose();
+        Context.SetUp(
+            overrideSession: true,
+            additionalConfig: new Dictionary<string, string?>
+            {
+                { "FeatureManagement:ShowDecemberWaste", "true" },
+                { "FeatureManagement:ShowMultiYearObligations", "true" }
+            });
+
+        await Context.Client.AuthenticateDefaultUser();
+
+        var sessionStore = Context.GetSessionStore();
+        sessionStore.Session.Set(Language.SessionLanguageKey, Encoding.UTF8.GetBytes(language));
+
+        var response = await Context.Client.GetAsync("/report-data/accepted-prn/00000000-0000-0000-0000-000000000005");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
+            .ScrubCommonHtmlNodes()
+            .UseParameters(language);
+    }
+
     [TearDown]
     public void TearDown()
     {

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -20,6 +21,7 @@ using Microsoft.Identity.Web;
 
 namespace FrontendSchemeRegistration.Application.Services;
 
+[SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters", Justification = "Required for dependency injection")]
 public class WebApiGatewayClient : IWebApiGatewayClient
 {
     private readonly HttpClient _httpClient;
@@ -27,6 +29,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
     private readonly ILogger<WebApiGatewayClient> _logger;
     private readonly ITokenAcquisition _tokenAcquisition;
     private readonly IComplianceSchemeMemberService _complianceSchemeSvc;
+    private readonly IComplianceSchemeContext _complianceSchemeContext;
     private readonly TimeProvider _timeProvider;
     private readonly List<HttpStatusCode> PassThroughExceptions;
 
@@ -37,12 +40,14 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         IOptions<WebApiOptions> webApiOptions,
         ILogger<WebApiGatewayClient> logger,
         IComplianceSchemeMemberService complianceSchemeSvc,
+        IComplianceSchemeContext complianceSchemeContext,
         TimeProvider timeProvider)
     {
         _httpClient = httpClient;
         _tokenAcquisition = tokenAcquisition;
         _logger = logger;
         _complianceSchemeSvc = complianceSchemeSvc;
+        _complianceSchemeContext = complianceSchemeContext;
         _timeProvider = timeProvider;
         _scopes = [webApiOptions.Value.DownstreamScope];
         _httpClient.BaseAddress = new Uri(webApiOptions.Value.BaseEndpoint);
@@ -389,14 +394,14 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         }
     }
 
-    public async Task SetPrnApprovalStatusToAcceptedAsync(Guid id)
+    public async Task SetPrnApprovalStatusToAcceptedAsync(Guid id, string? obligationYear = null)
     {
         AddComplianceSchemeHeader();
         await PrepareAuthenticatedClientAsync();
 
         try
         {
-            UpdatePrnStatus prnStatus = ToAcceptedPrnStatus(id);
+            UpdatePrnStatus prnStatus = ToAcceptedPrnStatus(id, obligationYear);
             List<UpdatePrnStatus> payload = [prnStatus];
             var response = await _httpClient.PostAsJsonAsync("/api/v1/prn/status", payload);
 
@@ -415,7 +420,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         await PrepareAuthenticatedClientAsync();
         try
         {
-            IEnumerable<UpdatePrnStatus> payload = ids.Select(ToAcceptedPrnStatus);
+            IEnumerable<UpdatePrnStatus> payload = ids.Select(id => ToAcceptedPrnStatus(id));
             var response = await _httpClient.PostAsJsonAsync("/api/v1/prn/status", payload);
 
             response.EnsureSuccessStatusCode();
@@ -427,12 +432,12 @@ public class WebApiGatewayClient : IWebApiGatewayClient
         }
     }
     
-    private UpdatePrnStatus ToAcceptedPrnStatus(Guid id)
+    private UpdatePrnStatus ToAcceptedPrnStatus(Guid id, string? obligationYear = null)
     {
         return new UpdatePrnStatus
         {
             PrnId = id,
-            ObligationYear = _timeProvider.GetUtcNow().GetComplianceYear().ToString(),
+            ObligationYear = obligationYear ?? _timeProvider.GetUtcNow().GetComplianceYear().ToString(),
             Status = PrnStatus.Accepted
         };
     }
@@ -515,6 +520,7 @@ public class WebApiGatewayClient : IWebApiGatewayClient
 
     public async Task<ComplianceDeclarationModel?> GetLatestComplianceDeclaration(int obligationYear)
     {
+        await AddComplianceSchemeHeaderForCsocAsync();
         await PrepareAuthenticatedClientAsync();
 
         try
@@ -710,9 +716,24 @@ public class WebApiGatewayClient : IWebApiGatewayClient
            Microsoft.Identity.Web.Constants.Bearer, accessToken);
     }
 
+    /// <summary>
+    /// Adds the compliance scheme ID from the request context to this client's default headers.
+    /// Standard PRN routes populate the context through ComplianceSchemeIdHttpContextFilterAttribute.
+    /// A session fallback is deliberately not used because producer journeys can retain a selected scheme.
+    /// </summary>
     private void AddComplianceSchemeHeader()
     {
         var complianceSchemeId = _complianceSchemeSvc.GetComplianceSchemeId();
+        _httpClient.AddHeaderComplianceSchemeIdIfNotNull(complianceSchemeId);
+    }
+
+    /// <summary>
+    /// Adds the compliance scheme ID for CSoC declaration requests using the session-aware resolver.
+    /// The CSoC landing route can create and select a scheme without running ComplianceSchemeIdHttpContextFilterAttribute.
+    /// </summary>
+    private async Task AddComplianceSchemeHeaderForCsocAsync()
+    {
+        var complianceSchemeId = await _complianceSchemeContext.GetComplianceSchemeIdAsync();
         _httpClient.AddHeaderComplianceSchemeIdIfNotNull(complianceSchemeId);
     }
 }
