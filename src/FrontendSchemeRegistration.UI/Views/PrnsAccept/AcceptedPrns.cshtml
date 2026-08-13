@@ -1,30 +1,47 @@
 ﻿@using FrontendSchemeRegistration.UI.Controllers.Prns
 @using FrontendSchemeRegistration.UI.ViewModels.Prns
+@using Microsoft.FeatureManagement
 @inject IStringLocalizer<PrnDataResources> PrnDataLocalizer
+@inject IFeatureManager FeatureManager
 @model AcceptedPrnsModel
 @{
     ViewData["Title"] = Localizer["page_title"];
-    var summaryText = string.Empty;
+    var multiYearEnabled = await FeatureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations);
+    var summaryText = Model.BuildConfirmationHeading(
+        multiYearEnabled,
+        key => Localizer[key].Value,
+        noteType => PrnDataLocalizer[noteType].Value);
 
-    if (Model.NoteTypes == PrnConstants.PrnText || Model.NoteTypes == PrnConstants.PernText)
+    var obligationsButtonClass = multiYearEnabled
+        ? "govuk-button govuk-button--secondary"
+        : "govuk-button govuk-button--primary";
+    var pageColumnClass = multiYearEnabled
+        ? "govuk-grid-column-full"
+        : "govuk-grid-column-two-thirds";
+
+    void RenderMaterialCard(AcceptedDetails detail)
     {
-        summaryText = string.Format(Localizer["you_have_accepted_one_prn_or_pern"].Value, PrnDataLocalizer[Model.NoteTypes]);
-    }
-    else if (Model.NoteTypes == PrnConstants.PrnsText || Model.NoteTypes == PrnConstants.PernsText)
-    {
-        summaryText = string.Format(Localizer["you_have_accepted_multipe_prn_or_pern"].Value, Model.Count, PrnDataLocalizer[Model.NoteTypes]);
-    }
-    else
-    {
-        var noteTypes = Model.NoteTypes.Split(",");
-        summaryText = string.Format(Localizer["you_have_accepted_mix_prns_and_perns"].Value, Model.Count, PrnDataLocalizer[noteTypes[0]], PrnDataLocalizer[noteTypes[1]]);
+        <div class="card govuk-card--blue govuk-!-margin-bottom-5">
+            <div class="govuk-card-body">
+                @if (!multiYearEnabled)
+                {
+                    <h2 class="govuk-heading-s govuk-!-margin-bottom-3 govuk-card-body-text--white">@PrnDataLocalizer[detail.Material]</h2>
+                }
+                <h2 class="govuk-heading-xl govuk-!-margin-bottom-3 govuk-card-body-text--white">@Localizer["number_tonnes", detail.Tonnage]</h2>
+                <p class="govuk-body govuk-!-margin-bottom-3 govuk-card-body-text--white">
+                    @(multiYearEnabled
+                        ? Localizer["accepted_towards_your_material_obligation_multi_year", PrnDataLocalizer[detail.Material].Value.ToLower()]
+                        : Localizer["credited_towards_your_material_obligation", PrnDataLocalizer[detail.Material].Value])
+                </p>
+            </div>
+        </div>
     }
 }
 
 <main class="govuk-main-wrapper govuk-!-padding-top-4" aria-label="main" id="main-content" role="main">
 
     <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
+        <div class="@pageColumnClass">
             <main class="govuk-main-wrapper govuk-main-wrapper--l" aria-label="confirmation" id="main-content-confirmation" role="main">
                 <div class="govuk-grid-row">
                     <div class="govuk-grid-column-full">
@@ -37,33 +54,24 @@
                 </div>
             </main>
 
-            <h2 class="govuk-heading-m">@Localizer["what_happens_next"]</h2>
-            <p class="govuk-body">
-                @Localizer[Model.Count == 1 ? "we_will_credit_this_towards_your_yyyy_recycling obligations" : "we_will_credit_these_towards_your_yyyy_recycling obligations", Model.ObligationYears]
-            </p>
+            @if (!multiYearEnabled)
+            {
+                <h2 class="govuk-heading-m">@Localizer["what_happens_next"]</h2>
+                <p class="govuk-body">
+                    @Localizer[Model.Count == 1 ? "we_will_credit_this_towards_your_yyyy_recycling obligations" : "we_will_credit_these_towards_your_yyyy_recycling obligations", Model.ObligationYears]
+                </p>
+            }
             @for (int i = 0; i < Model.Details.Count; i++)
             {
                 <div class="govuk-grid-row">
                     <div class="govuk-grid-column-one-half">
-                        <div class="card govuk-card--blue govuk-!-margin-bottom-5">
-                            <div class="govuk-card-body">
-                                <h2 class="govuk-heading-s govuk-!-margin-bottom-3 govuk-card-body-text--white">@PrnDataLocalizer[Model.Details[i].Material]</h2>
-                                <h2 class="govuk-heading-xl govuk-!-margin-bottom-3 govuk-card-body-text--white">@Localizer["number_tonnes", Model.Details[i].Tonnage]</h2>
-                                <p class="govuk-body govuk-!-margin-bottom-3 govuk-card-body-text--white">@Localizer["credited_towards_your_material_obligation", @PrnDataLocalizer[Model.Details[i].Material].Value]</p>
-                            </div>
-                        </div>
+                        @{ RenderMaterialCard(Model.Details[i]); }
                     </div>
                     @if (i + 1 < Model.Details.Count)
                     {
                         i++;
                         <div class="govuk-grid-column-one-half">
-                            <div class="card govuk-card--blue govuk-!-margin-bottom-5">
-                                <div class="govuk-card-body">
-                                    <h2 class="govuk-heading-s govuk-!-margin-bottom-3 govuk-card-body-text--white">@PrnDataLocalizer[Model.Details[i].Material]</h2>
-                                    <h2 class="govuk-heading-xl govuk-!-margin-bottom-3 govuk-card-body-text--white">@Localizer["number_tonnes", Model.Details[i].Tonnage]</h2>
-                                    <p class="govuk-body govuk-!-margin-bottom-3 govuk-card-body-text--white">@Localizer["credited_towards_your_material_obligation", @PrnDataLocalizer[Model.Details[i].Material].Value]</p>
-                                </div>
-                            </div>
+                            @{ RenderMaterialCard(Model.Details[i]); }
                         </div>
                     }
                 </div>
@@ -81,7 +89,7 @@
                          null,
                          new
                          {
-                             @class = "govuk-button govuk-button--primary"
+                             @class = obligationsButtonClass
                          })
             </div>
 
