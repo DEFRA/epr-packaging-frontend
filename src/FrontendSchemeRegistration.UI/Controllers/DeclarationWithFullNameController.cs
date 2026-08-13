@@ -195,7 +195,7 @@ public class DeclarationWithFullNameController(
                     regulatorNation,
                     notifyPaymentService);
 
-                var postSubmitController = await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeParametersViaPaymentService)
+                var postSubmitController = (await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeParametersViaPaymentService) && notifyPaymentService)
                     ? ProcessingViewName
                     : ConfirmationViewName;
 
