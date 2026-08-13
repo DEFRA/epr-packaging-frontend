@@ -89,6 +89,7 @@ public class FileUploadSubLandingController(
                 IsSubmitted = submission?.IsSubmitted ?? false,
                 IsResubmissionComplete = packagingResubmissionApplicationSession != null ? packagingResubmissionApplicationSession.IsResubmissionComplete : null,
                 ResubmissionApplicationSubmitted = packagingResubmissionApplicationSession?.ResubmissionApplicationSubmitted ?? false,
+                HasCompletedResubmission = packagingResubmissionApplicationSession?.HasCompletedResubmission ?? false,
                 ApplicationStatus = packagingResubmissionApplicationSession?.ApplicationStatus.ToString(),
                 FileUploadStatus = packagingResubmissionApplicationSession?.FileUploadStatus.ToString(),
             };
@@ -179,7 +180,13 @@ public class FileUploadSubLandingController(
             return SubmissionPeriodStatus.NotStarted;
         }
 
-        if (featureManager.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)).Result && session?.IsResubmissionInProgress == true)
+        // SUB-345: an open cycle is not a started one, and only a started one outranks the regulator's decision
+        // below. IsResubmissionInProgress is satisfied by the reference number alone, which survives a decision
+        // so the cycle keeps its identity; unpaired it reported "In progress" for a resubmission the regulator
+        // had already accepted, hiding the decision from the tile entirely.
+        if (featureManager.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)).Result
+            && session?.IsResubmissionInProgress == true
+            && HasStartedThisResubmissionCycle(session, submission))
         {
             return SubmissionPeriodStatus.InProgress;
         }
@@ -279,6 +286,8 @@ public class FileUploadSubLandingController(
 
         var isAnySubmissionAcceptedForDataPeriod = await submissionService.IsAnySubmissionAcceptedForDataPeriod(submission, organisationId.Value, session.RegistrationSession.SelectedComplianceScheme?.Id);
 
+        var regulatorDecision = await GetRegulatorDecisionAsync(submission);
+
         if (!isAnySubmissionAcceptedForDataPeriod)
         {
             if (HasNewValidUploadAfterSubmission(submission))
@@ -293,7 +302,7 @@ public class FileUploadSubLandingController(
             // why their submission needs redoing. Nothing accepted for this period still means this is not a
             // resubmission, which the page's action links carry through to keep the user out of the
             // resubmission task list and its fee.
-            if (await IsRejectedByRegulator(submission))
+            if (regulatorDecision == RegulatorDecision.Rejected)
             {
                 return RedirectToAction(
                     nameof(UploadNewFileToSubmitController.Get),
@@ -309,6 +318,33 @@ public class FileUploadSubLandingController(
 
         var packagingResubmissionApplicationSession = session.PomResubmissionSession.PackagingResubmissionApplicationSessions.Find(x => x.SubmissionId == submission.Id);
 
+        var hasStartedThisResubmissionCycle = HasStartedThisResubmissionCycle(packagingResubmissionApplicationSession, submission);
+
+        // SUB-345: the regulator has accepted a resubmission and the user has not begun another one. Everything
+        // the closed cycle was made of stops being reported at the decision, so the task list can only show a
+        // fresh cycle here - which is how an accepted resubmission ended up inviting the user to start over, fee
+        // and all. The completed cycle is reported separately, so show that instead.
+        if ((regulatorDecision is RegulatorDecision.Accepted or RegulatorDecision.Approved)
+            && packagingResubmissionApplicationSession.HasCompletedResubmission
+            && !hasStartedThisResubmissionCycle)
+        {
+            return RedirectToAction(
+                nameof(PackagingDataResubmissionController.CompletedResubmission),
+                nameof(PackagingDataResubmissionController).RemoveControllerFromName());
+        }
+
+        // SUB-345: any other decision the interstitial can explain, with nothing started since. A ruled-on
+        // cycle's declaration and fee may still be reported - the submission API only stopped doing that
+        // recently - and on their own they route into a task list showing every step unstarted. The interstitial
+        // carries the decision and its comments, which is what the user needs before deciding to resubmit again.
+        if (IsCycleClosingDecision(regulatorDecision) && !hasStartedThisResubmissionCycle)
+        {
+            return RedirectToAction(
+                nameof(UploadNewFileToSubmitController.Get),
+                nameof(UploadNewFileToSubmitController).RemoveControllerFromName(),
+                routeValueDictionary);
+        }
+
         // SUB-332: ResubmissionApplicationSubmitted covers the window between declaring and the Synapse sync
         // completing, where IsResubmissionInProgress and IsResubmissionComplete are both false.
         // SUB-345: an open cycle is not the same as a started one. IsResubmissionInProgress is satisfied by
@@ -316,7 +352,7 @@ public class FileUploadSubLandingController(
         // across a reopened cycle, so on its own it skips UploadNewFileToSubmit before the user has acted on
         // the regulator's decision. That page is the only one carrying the decision and its comments, so
         // require evidence that this cycle has actually been started before routing past it.
-        if ((packagingResubmissionApplicationSession.IsResubmissionInProgress && HasStartedThisResubmissionCycle(packagingResubmissionApplicationSession, submission))
+        if ((packagingResubmissionApplicationSession.IsResubmissionInProgress && hasStartedThisResubmissionCycle)
             || packagingResubmissionApplicationSession.IsResubmissionComplete
             || packagingResubmissionApplicationSession.ResubmissionApplicationSubmitted)
         {
@@ -329,17 +365,32 @@ public class FileUploadSubLandingController(
     }
 
     /// <summary>
-    /// True when the regulator has rejected the file this submission last sent them.
+    /// SUB-345: the regulator's ruling on the file this submission last sent them, or empty if they have not
+    /// ruled on it.
     /// </summary>
-    private async Task<bool> IsRejectedByRegulator(PomSubmission submission)
+    /// <remarks>
+    /// The decisions endpoint reports whichever is the more recent of the last submission and the last decision,
+    /// so a decision coming back at all means it followed the file currently in front of the regulator.
+    /// </remarks>
+    private async Task<string> GetRegulatorDecisionAsync(PomSubmission submission)
     {
         var decision = await submissionService.GetDecisionAsync<PomDecision>(
             SubmissionsLimit,
             submission.Id,
             SubmissionType.Producer);
 
-        return decision?.Decision == RegulatorDecision.Rejected;
+        return decision?.Decision ?? string.Empty;
     }
+
+    /// <summary>
+    /// SUB-345: true for the decisions that close the resubmission cycle they ruled on.
+    /// </summary>
+    /// <remarks>
+    /// These are the three the submission API stops reporting a declaration for, and the three
+    /// UploadNewFileToSubmit has wording for. Cancelled and Queried leave the cycle live on both sides.
+    /// </remarks>
+    private static bool IsCycleClosingDecision(string decision) =>
+        decision is RegulatorDecision.Accepted or RegulatorDecision.Approved or RegulatorDecision.Rejected;
 
     /// <summary>
     /// True when the user has done something in the current resubmission cycle, as opposed to merely having

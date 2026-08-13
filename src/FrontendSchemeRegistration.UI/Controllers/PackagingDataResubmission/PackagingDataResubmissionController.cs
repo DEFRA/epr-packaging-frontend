@@ -108,6 +108,65 @@ public class PackagingDataResubmissionController : Controller
         });
     }
 
+    /// <summary>
+    /// SUB-345: a read-only view of the resubmission the regulator has already ruled on for this period.
+    /// </summary>
+    /// <remarks>
+    /// The task list can only ever describe the cycle that is open, so once a decision closes a cycle it has
+    /// nothing left to show but a fresh one - which is how an accepted resubmission came to invite the user
+    /// through the whole journey again. This writes nothing: no reference number, no fee-view event, and no
+    /// change to the resubmission journey flags. Looking at a finished resubmission must not start one.
+    /// </remarks>
+    [HttpGet]
+    [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
+    [PomResubmissionSessionGuardActionFilter(RequireSubmissionId = false)]
+    [Route(PagePaths.CompletedResubmission)]
+    public async Task<IActionResult> CompletedResubmission()
+    {
+        var userData = User.GetUserData();
+        var organisation = userData.Organisations[0];
+
+        var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+        var isComplianceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
+        var complianceSchemeId = session.RegistrationSession?.SelectedComplianceScheme?.Id;
+
+        var resubmissionApplicationDetails = await _resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(
+            organisation,
+            new List<string> { session.PomResubmissionSession.SubmissionPeriod },
+            complianceSchemeId);
+
+        var applicationSession = resubmissionApplicationDetails.FirstOrDefault()?.ToPackagingResubmissionApplicationSession(organisation);
+        var completedResubmission = applicationSession?.LastCompletedResubmission;
+
+        // SUB-345: either no resubmission has been ruled on for this period, or the page was reached directly.
+        if (completedResubmission is null)
+        {
+            return RedirectToAction("Get", "FileUploadSubLanding");
+        }
+
+        ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadSubLanding}");
+
+        return View(new CompletedResubmissionViewModel
+        {
+            OrganisationName = organisation.Name!,
+            IsComplianceScheme = isComplianceScheme,
+            IsApprovedOrDelegatedUser = userData.ServiceRole is ServiceRoles.ApprovedPerson or ServiceRoles.DelegatedPerson,
+            SubmissionId = applicationSession.SubmissionId,
+            ApplicationReferenceNumber = completedResubmission.ApplicationReferenceNumber,
+            FileName = completedResubmission.FileName,
+            SubmittedAt = completedResubmission.SubmittedFile?.SubmittedDateTime,
+            SubmittedBy = completedResubmission.SubmittedFile?.SubmittedByName,
+            DeclarationDate = completedResubmission.DeclarationDate,
+            RegulatorComments = completedResubmission.RegulatorComments,
+            Fee = await GetCompletedResubmissionFee(
+                completedResubmission,
+                applicationSession.SubmissionId,
+                organisation,
+                isComplianceScheme,
+                complianceSchemeId)
+        });
+    }
+
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
     [PomResubmissionSessionGuardActionFilter]
@@ -237,6 +296,69 @@ public class PackagingDataResubmissionController : Controller
         }
 
         await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
+    }
+
+    /// <summary>
+    /// SUB-345: the fee breakdown for a completed resubmission, or null when it cannot be priced.
+    /// </summary>
+    /// <remarks>
+    /// Read-only throughout: unlike <see cref="ResubmissionFeeCalculations"/> this records no fee-view event,
+    /// which on a closed cycle would read as the user starting to view a fee for the next one. A cycle whose
+    /// member details can no longer be priced still has a file, a declaration and a decision worth showing, so
+    /// a failure here drops the fee rather than the page.
+    /// </remarks>
+    private async Task<ResubmissionFeeViewModel?> GetCompletedResubmissionFee(
+        CompletedResubmissionDetails completedResubmission,
+        Guid? submissionId,
+        EPR.Common.Authorization.Models.Organisation organisation,
+        bool isComplianceScheme,
+        Guid? complianceSchemeId)
+    {
+        if (string.IsNullOrEmpty(completedResubmission.ApplicationReferenceNumber))
+        {
+            return null;
+        }
+
+        try
+        {
+            var regulatorNation = isComplianceScheme && complianceSchemeId is not null
+                ? NationExtensions.GetNationNameFromId((int)(await _complianceSchemeService.GetComplianceSchemeSummary(organisation.Id.Value, complianceSchemeId.Value)).Nation)
+                : await _resubmissionApplicationService.GetRegulatorNation(organisation.Id);
+
+            var memberCount = await GetMemberCount(submissionId, isComplianceScheme, complianceSchemeId);
+
+            var paymentResponse = await _resubmissionApplicationService.GetResubmissionFees(
+                completedResubmission.ApplicationReferenceNumber,
+                regulatorNation,
+                memberCount,
+                isComplianceScheme,
+                completedResubmission.SubmittedFile?.SubmittedDateTime);
+
+            if (paymentResponse is null)
+            {
+                return null;
+            }
+
+            return new ResubmissionFeeViewModel
+            {
+                IsComplianceScheme = isComplianceScheme,
+                MemberCount = memberCount,
+                ResubmissionFee = paymentResponse.ResubmissionFee,
+                TotalChargeableItems = paymentResponse.ResubmissionFee,
+                PreviousPaymentsReceived = paymentResponse.PreviousPaymentsReceived,
+                TotalOutstanding = paymentResponse.TotalOutstanding
+            };
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(
+                ex,
+                "Could not read the fee for completed resubmission '{ApplicationReferenceNumber}' in organisation '{OrganisationId}'",
+                completedResubmission.ApplicationReferenceNumber,
+                organisation.Id);
+
+            return null;
+        }
     }
 
     public async Task<int> GetMemberCount(Guid? submissionId, bool isComplianceScheme, Guid? complianceSchemeId)

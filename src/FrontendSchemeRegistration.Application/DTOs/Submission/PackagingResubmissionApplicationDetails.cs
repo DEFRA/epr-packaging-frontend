@@ -28,5 +28,11 @@ public class PackagingResubmissionApplicationDetails
     
     public string? ResubmissionReferenceNumber { get; set; }
 
+    /// <summary>
+    /// SUB-345: the most recent resubmission cycle the regulator has ruled on, or null if there is none. See
+    /// <see cref="CompletedResubmissionDetails"/> for why the fields above cannot answer that.
+    /// </summary>
+    public CompletedResubmissionDetails? LastCompletedResubmission { get; set; }
+
     public SynapseResponse SynapseResponse { get; set; } = new();
 }

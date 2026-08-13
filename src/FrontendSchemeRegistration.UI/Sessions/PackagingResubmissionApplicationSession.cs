@@ -139,6 +139,22 @@ public class PackagingResubmissionApplicationSession
 
     public ApplicationStatusType ApplicationStatus { get; set; }
 
+    /// <summary>
+    /// SUB-345: the most recent resubmission cycle the regulator has ruled on, or null if there is none.
+    /// </summary>
+    /// <remarks>
+    /// Every other property here describes the cycle that is open now, and all of them stop describing a cycle
+    /// at the decision that closed it - correctly, because none of that state belongs to whatever the user does
+    /// next. That leaves nothing to tell a completed resubmission from one never started, which is what had an
+    /// accepted resubmission's tile offering to begin the journey again.
+    /// </remarks>
+    public CompletedResubmissionDetails? LastCompletedResubmission { get; set; }
+
+    /// <summary>
+    /// SUB-345: true when the regulator has ruled on a resubmission this organisation completed for the period.
+    /// </summary>
+    public bool HasCompletedResubmission => LastCompletedResubmission is not null;
+
     public bool FileReachedSynapse { get; set; }
 
     // SUB-332: derived from the authoritative cycle fields rather than from FileUploadStatus, which is
