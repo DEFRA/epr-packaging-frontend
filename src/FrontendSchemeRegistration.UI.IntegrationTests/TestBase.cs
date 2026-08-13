@@ -49,6 +49,27 @@ public abstract class TestBase
     }
 
     /// <summary>
+    /// Rebuilds the host with additional/overriding configuration (e.g. a feature flag) and
+    /// re-authenticates. The WireMock server and any stubs already registered on it are kept.
+    /// </summary>
+    protected async Task ReconfigureAsync(Dictionary<string, string?> additionalConfig)
+    {
+        Client.Dispose();
+        _factory.Dispose();
+
+        _factory = new IntegrationTestFactory(_mockApiServer.Url!, additionalConfig);
+
+        Client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+        {
+            AllowAutoRedirect = true,
+            HandleCookies = true,
+            BaseAddress = new Uri("https://localhost")
+        });
+
+        await AuthenticateAsync();
+    }
+
+    /// <summary>
     /// Registers a WireMock stub that returns <paramref name="prnData"/> for GET /api/v1/prn/{externalId}.
     /// Call this in each test before making requests that need a specific PRN.
     /// </summary>
@@ -87,7 +108,7 @@ public abstract class TestBase
         await Client.PostAsync("/services/account-details", formData);
     }
 
-    private sealed class IntegrationTestFactory(string mockServerUrl)
+    private sealed class IntegrationTestFactory(string mockServerUrl, Dictionary<string, string?>? additionalConfig = null)
         : WebApplicationFactory<FrontendSchemeRegistrationController>
     {
         protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -108,6 +129,7 @@ public abstract class TestBase
                     ["AccountsFacadeAPI:BaseEndpoint"] = $"{mockServerUrl}/api/",
                     ["StartupUtcTimestampOverride"] = "2026-03-27T08:58:00Z"
                 })
+                .AddInMemoryCollection(additionalConfig ?? new Dictionary<string, string?>())
                 .Build();
 
             builder.UseConfiguration(testConfig);
