@@ -58,6 +58,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="accepted_towards_your_material_obligation_multi_year" xml:space="preserve">
+    <value>accepted towards your recycling obligation for {0}</value>
+  </data>
   <data name="credited_towards_your_material_obligation" xml:space="preserve">
     <value>Wedi'u credydu tuag at eich rhwymedigaeth ailgylchu {0}. </value>
   </data>
@@ -82,11 +85,20 @@
   <data name="you_have_accepted_mix_prns_and_perns" xml:space="preserve">
     <value>Rydych chi wedi derbyn {0} o {1} a {2}</value>
   </data>
+  <data name="you_have_accepted_mix_prns_and_perns_multi_year" xml:space="preserve">
+    <value>You’ve accepted {0} {1} and {2} towards your {3} recycling obligations</value>
+  </data>
   <data name="you_have_accepted_multipe_prn_or_pern" xml:space="preserve">
     <value>Rydych chi wedi derbyn {0} o {1}</value>
   </data>
+  <data name="you_have_accepted_multipe_prn_or_pern_multi_year" xml:space="preserve">
+    <value>You’ve accepted {0} {1} towards your {2} recycling obligations</value>
+  </data>
   <data name="you_have_accepted_one_prn_or_pern" xml:space="preserve">
     <value>Rydych chi wedi derbyn un {0}</value>
+  </data>
+  <data name="you_have_accepted_one_prn_or_pern_multi_year" xml:space="preserve">
+    <value>You’ve accepted one {0} towards your {1} recycling obligations</value>
   </data>
   <data name="we_will_credit_this_towards_your_yyyy_recycling obligations" xml:space="preserve">
     <value>Byddwn ni'n credydu hyn tuag at eich rhwymedigaethau ailgylchu {0}</value>

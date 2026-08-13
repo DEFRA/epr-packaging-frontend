@@ -150,6 +150,31 @@
           ]
         }
       ]
+    },
+    {
+      "id": "prns-accepted-multi",
+      "fileName": "06-accepted-prns.xlsx",
+      "route": "/report-data/accepted-prns",
+      "view": "src/FrontendSchemeRegistration.UI/Views/PrnsAccept/AcceptedPrns.cshtml",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-113629",
+      "notes": "Multi-accept confirmation page: multi-year green panel heading and blue material tile text.",
+      "featureFlags": [
+        "ShowPrn",
+        "ShowMultiYearObligations"
+      ],
+      "appSettings": {},
+      "resources": [
+        {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/AcceptedPrns.en.resx",
+          "section": "Multi-year multi-accept confirmation panel and material tiles.",
+          "keys": [
+            "you_have_accepted_one_prn_or_pern_multi_year",
+            "you_have_accepted_multipe_prn_or_pern_multi_year",
+            "you_have_accepted_mix_prns_and_perns_multi_year",
+            "accepted_towards_your_material_obligation_multi_year"
+          ]
+        }
+      ]
     }
   ]
 }
