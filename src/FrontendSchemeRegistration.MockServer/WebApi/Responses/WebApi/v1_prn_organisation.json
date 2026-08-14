@@ -50,5 +50,16 @@
     "prnStatus": "ACCEPTED",
     "obligationYear": "2026",
     "tonnageValue": 2
+  },
+  {
+    "id": 7,
+    "externalId": "00000000-0000-0000-0000-000000000007",
+    "prnNumber": "PERN-07",
+    "materialName": "Steel",
+    "issueDate": "2026-05-01T13:15:15",
+    "prnStatus": "ACCEPTED",
+    "obligationYear": "2026",
+    "tonnageValue": 5,
+    "isExport": true
   }
 ]
