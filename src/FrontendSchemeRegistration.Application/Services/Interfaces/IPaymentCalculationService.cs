@@ -6,11 +6,16 @@ namespace FrontendSchemeRegistration.Application.Services.Interfaces;
 public interface IPaymentCalculationService
 {
     Task<PaymentCalculationResponse?> GetProducerRegistrationFees(PaymentCalculationRequest request);
+
+    Task<PaymentCalculationResponse?> GetProducerRegistrationFeesBySubmissionId(Guid submissionId);
+
     Task<string> GetRegulatorNation(Guid? organisationId);
 
     Task<string> InitiatePayment(PaymentInitiationRequest request);
 
     Task<ComplianceSchemePaymentCalculationResponse?> GetComplianceSchemeRegistrationFees(ComplianceSchemePaymentCalculationRequest request);
+
+    Task<ComplianceSchemePaymentCalculationResponse?> GetComplianceSchemeRegistrationFeesBySubmissionId(Guid submissionId);
 	Task<PackagingPaymentResponse> GetResubmissionFees(string applicationReferenceNumber, string regulatorNation, int memberCount, bool isComplianceScheme, DateTime? resubmissionDate);
 
     Task<RegistrationFeeCalculationDetails[]?> GetRegistrationFeeCalculationDetails(Guid submissionId);
