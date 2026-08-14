@@ -141,11 +141,17 @@
   <data name="your_recycling_obligations_will_be" xml:space="preserve">
     <value>Your {0} recycling obligations will be calculated after:</value>
   </data>
+  <data name="your_yyyy_recycling_obligations_will_be" xml:space="preserve">
+    <value>Your {0} recycling obligations will be calculated after:</value>
+  </data>
   <data name="you_can_start_acquiring_and_accepting" xml:space="preserve">
     <value>You can start acquiring and accepting PRNs and PERNs to meet your recycling obligations.</value>
   </data>
   <data name="you_submit_your_packaging_data_for" xml:space="preserve">
     <value>you submit your packaging data for {0}</value>
+  </data>
+  <data name="the_regulator_accepts_your_h1_and_h2_packaging_data_submissions" xml:space="preserve">
+    <value>the regulator accepts your H1 and H2 packaging data submissions</value>
   </data>
   <data name="to_meet_your_recycling_obligations_for" xml:space="preserve">
     <value>to meet your recycling obligations for</value>
