@@ -249,6 +249,9 @@
 	<data name="inprogress_resubmission_feesviewed_notsubmitted" xml:space="preserve">
     <value>You've viewed your fee. You now need to submit to the regulator</value>
   </data>
+  <data name="view_your_submission" xml:space="preserve">
+    <value>View your submission</value>
+  </data>
   <data name="view_your_resubmission" xml:space="preserve">
     <value>View your resubmission</value>
   </data>
