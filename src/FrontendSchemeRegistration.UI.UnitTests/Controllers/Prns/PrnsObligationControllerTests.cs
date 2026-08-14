@@ -124,6 +124,79 @@ public class PrnsObligationControllerTests
     }
 
     [Test]
+    public async Task ObligationsHome_WhenMultiYearObligationsEnabled_AndSelectedYearSet_UsesSelectedYear()
+    {
+        // Arrange
+        var session = new FrontendSchemeRegistrationSession
+        {
+            UserData = new UserData
+            {
+                Organisations = new List<Organisation>
+                {
+                    new()
+                    {
+                        Id = Guid.NewGuid(),
+                        OrganisationRole = OrganisationRoles.Producer,
+                        Name = "Test Organisation",
+                        NationId = 1
+                    }
+                },
+                ServiceRole = "Basic User"
+            }
+        };
+        session.PrnSession.SelectedObligationYear = 2025;
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)).ReturnsAsync(true);
+
+        var viewModel = _fixture.Create<PrnObligationViewModel>();
+        _prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(2025, It.IsAny<bool>())).ReturnsAsync(viewModel);
+
+        // Act
+        var result = await _controller.ObligationsHome() as ViewResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        _prnServiceMock.Verify(x => x.GetRecyclingObligationsCalculation(2025, It.IsAny<bool>()), Times.Once);
+    }
+
+    [Test]
+    public async Task ObligationsHome_WhenMultiYearObligationsEnabled_AndNoSelectedYear_UsesComplianceYear()
+    {
+        // Arrange
+        var session = new FrontendSchemeRegistrationSession
+        {
+            UserData = new UserData
+            {
+                Organisations = new List<Organisation>
+                {
+                    new()
+                    {
+                        Id = Guid.NewGuid(),
+                        OrganisationRole = OrganisationRoles.Producer,
+                        Name = "Test Organisation",
+                        NationId = 1
+                    }
+                },
+                ServiceRole = "Basic User"
+            }
+        };
+        session.PrnSession.SelectedObligationYear = null;
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)).ReturnsAsync(true);
+
+        var complianceYear = _fakeTimeProvider.GetUtcNow().GetComplianceYear();
+        var viewModel = _fixture.Create<PrnObligationViewModel>();
+        _prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(complianceYear, It.IsAny<bool>())).ReturnsAsync(viewModel);
+
+        // Act
+        var result = await _controller.ObligationsHome() as ViewResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        _prnServiceMock.Verify(x => x.GetRecyclingObligationsCalculation(complianceYear, It.IsAny<bool>()), Times.Once);
+    }
+
+    [Test]
     public async Task ObligationsHome_WhenCsocDisabled_DoesNotRequestComplianceDeclarationStatus()
     {
         var session = new FrontendSchemeRegistrationSession
