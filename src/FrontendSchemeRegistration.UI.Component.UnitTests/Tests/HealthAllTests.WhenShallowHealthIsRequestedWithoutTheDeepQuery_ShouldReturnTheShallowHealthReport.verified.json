@@ -1,0 +1,23 @@
+﻿{
+  "status": "Healthy",
+  "results": {
+    "WebApiGateway": {
+      "status": "Healthy",
+      "endpoint": "http://localhost:9091/admin/health",
+      "statusCode": 200,
+      "durationMs": "{Scrubbed}"
+    },
+    "AccountsFacade": {
+      "status": "Healthy",
+      "endpoint": "http://localhost:9091/admin/health",
+      "statusCode": 200,
+      "durationMs": "{Scrubbed}"
+    },
+    "PaymentFacade": {
+      "status": "Healthy",
+      "endpoint": "http://localhost:9091/admin/health",
+      "statusCode": 200,
+      "durationMs": "{Scrubbed}"
+    }
+  }
+}
