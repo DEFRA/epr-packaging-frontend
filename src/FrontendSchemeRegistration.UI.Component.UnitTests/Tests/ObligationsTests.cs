@@ -2,10 +2,15 @@ namespace FrontendSchemeRegistration.UI.Component.UnitTests.Tests;
 
 using System.Net;
 using System.Text;
+using Application.DTOs.ComplianceScheme;
+using Application.Enums;
 using Constants;
+using EPR.Common.Authorization.Models;
+using EPR.Common.Authorization.Models;
 using Extensions;
 using FluentAssertions;
 using Infrastructure;
+using MockServer.WebApi;
 using NUnit.Framework;
 using Sessions;
 
@@ -23,7 +28,8 @@ public class ObligationsTests
             {
                 { "FeatureManagement:ShowDecemberWaste", "true" }
             });
-        
+
+
         Session.TryAdd("/report-data/accept-bulk", sessionStore =>
         {
             sessionStore.Session.Set(nameof(FrontendSchemeRegistrationSession),
@@ -55,7 +61,8 @@ public class ObligationsTests
                 })));
         });
     }
-    
+
+
     [TestCase("/report-data/view-awaiting-acceptance-alt", Language.English)]
     [TestCase("/report-data/view-awaiting-acceptance-alt", Language.Welsh)]
     [TestCase("/report-data/view-awaiting-acceptance", Language.English)]
@@ -190,6 +197,48 @@ public class ObligationsTests
         await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
             .ScrubCommonHtmlNodes()
             .UseParameters(path, language);
+    }
+
+    [TestCase(Language.English)]
+    [TestCase(Language.Welsh)]
+    public async Task WhenCsocEnabled_ShouldShowObligationsHomePartial(string language)
+    {
+        Context.Dispose();
+        Context.SetUp(
+            overrideSession: true,
+            additionalConfig: new Dictionary<string, string?>
+            {
+                { "FeatureManagement:CsocEnabled", "true" }
+            });
+
+        await Context.Client.AuthenticateDefaultUser();
+
+        var sessionStore = Context.GetSessionStore();
+        sessionStore.Session.Set(nameof(FrontendSchemeRegistrationSession),
+            Encoding.UTF8.GetBytes(System.Text.Json.JsonSerializer.Serialize(new FrontendSchemeRegistrationSession
+            {
+                UserData = new UserData
+                {
+                    ServiceRole = "Approved Person",
+                    Organisations =
+                    [
+                        new Organisation
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000009"),
+                            OrganisationRole = "Producer"
+                        }
+                    ]
+                }
+            })));
+        sessionStore.Session.Set(Language.SessionLanguageKey, Encoding.UTF8.GetBytes(language));
+
+        var response = await Context.Client.GetAsync("/report-data/manage-your-recycling-obligations");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
+            .ScrubCommonHtmlNodes()
+            .UseParameters(language);
     }
 
     [TestCase(Language.English)]
@@ -344,3 +393,4 @@ public class ObligationsTests
         Context.Dispose();
     }
 }
+

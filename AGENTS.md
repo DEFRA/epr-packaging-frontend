@@ -42,3 +42,11 @@ dotnet run --project tools/translations/cli/cli.csproj -- import --profile decem
 
 Do not create Welsh translations manually. Only import or copy Welsh text from
 an approved source when the English string and UI placement match.
+
+## Aggregate health checks
+
+When adding a downstream health check, inspect the existing client’s
+authentication flow. Do not use delegated-user clients from the header-protected
+anonymous endpoint. Add service-token support only when an existing app-only
+client configuration already exists; otherwise use a dedicated unauthenticated
+named health client and retain the current downstream convention.

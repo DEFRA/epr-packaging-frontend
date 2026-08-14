@@ -124,6 +124,40 @@
         }
 
         [Test]
+        public async Task SearchPrns_WhenServiceReturnsNull_ReturnsViewWithNullModel()
+        {
+            // Arrange
+            var request = _fixture.Create<SearchPrnsViewModel>();
+            _prnServiceMock.Setup(x => x.GetPrnSearchResultsAsync(request)).ReturnsAsync((PrnSearchResultListViewModel)null);
+
+            // Act
+            var result = await _controller.SearchPrns(request);
+
+            // Assert
+            var view = result.Should().BeOfType<ViewResult>().Which;
+            view.ViewName.Should().BeNull();
+            view.Model.Should().BeNull();
+        }
+
+        [Test]
+        public async Task SearchPrns_WhenAllResultsAreNull_ReturnsViewWithOriginalModel()
+        {
+            // Arrange
+            var request = new SearchPrnsViewModel { FilterBy = "SomeFilter" };
+            var emptySearchResult = new PrnSearchResultListViewModel { ActivePageOfResults = new() };
+            _prnServiceMock.Setup(x => x.GetPrnSearchResultsAsync(request)).ReturnsAsync(emptySearchResult);
+            // no setup for the default (unfiltered) request, so the second lookup resolves to null
+
+            // Act
+            var result = await _controller.SearchPrns(request);
+
+            // Assert
+            var view = result.Should().BeOfType<ViewResult>().Which;
+            view.ViewName.Should().BeNull();
+            view.Model.Should().Be(emptySearchResult);
+        }
+
+        [Test]
         public async Task SearchPrns_ShouldReturnViewWithCorrectModel_WhenPageIsValid()
         {
             // Arrange
@@ -354,6 +388,22 @@
             _sessionManagerMock.Verify(x => x.GetSessionAsync(It.IsAny<ISession>()), Times.Once);
         }
 
+
+        [Test]
+        public async Task SelectSinglePrn_UsesBackLinkFromSession_WhenPresent()
+        {
+            var session = new FrontendSchemeRegistrationSession();
+            session.PrnSession.Backlinks["SelectSinglePrn"] = "/report-data/search-prns";
+            _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+            _prnServiceMock.Setup(x => x.GetPrnByExternalIdAsync(It.IsAny<Guid>())).ReturnsAsync(new PrnViewModel());
+
+            // Act
+            var result = await _controller.SelectSinglePrn(Guid.NewGuid()) as ViewResult;
+
+            // Assert
+            result.ViewName.Should().BeNull();
+            ((string)_controller.ViewBag.BackLinkToDisplay).Should().Be("/report-data/search-prns");
+        }
 
         [Test]
         public async Task DownloadPrnsToCsv_WhenZeroPrns_ReturnsEmptyView()
