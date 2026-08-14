@@ -276,6 +276,23 @@ public class PrnsAcceptControllerTests
     }
 
     [Test]
+    public async Task ChooseAcceptanceYear_RedirectsToAcceptSinglePrn_WhenPrnHasNoChoiceOfAcceptanceYear()
+    {
+        var prnId = Guid.NewGuid();
+        var prn = _fixture.Create<PrnViewModel>();
+        prn.ExternalId = prnId;
+        prn.ApprovalStatus = PrnStatus.AwaitingAcceptance;
+        prn.AvailableAcceptanceYears = [2026];
+        _mockPrnService.Setup(x => x.GetPrnByExternalIdAsync(prnId)).ReturnsAsync(prn);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)).ReturnsAsync(true);
+
+        var result = await _sut.ChooseAcceptanceYear(prnId) as RedirectToActionResult;
+
+        result.ActionName.Should().Be(nameof(PrnsAcceptController.AcceptSinglePrn));
+        result.RouteValues!["id"].Should().Be(prnId);
+    }
+
+    [Test]
     public async Task ChooseAcceptanceYear_Post_SavesSelectedYearAndRedirects()
     {
         var prnId = Guid.NewGuid();
