@@ -1,3 +1,4 @@
+using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
@@ -155,17 +156,7 @@ public class DeclarationWithFullNameController(
 
                 var registrationApplicationSession = await registrationApplicationSessionManager.GetSessionAsync(HttpContext.Session);
 
-                var regulatorNation = registrationApplicationSession?.RegulatorNation;
-                if (string.IsNullOrWhiteSpace(regulatorNation))
-                {
-                    var nationId = model.IsCso
-                        ? session.RegistrationSession.SelectedComplianceScheme?.NationId
-                        : userData.Organisations[0].NationId;
-
-                    regulatorNation = nationId.HasValue
-                        ? NationExtensions.GetNationNameFromId(nationId.Value)
-                        : null;
-                }
+                var regulatorNation = ResolveRegulatorNation(model, session, userData, registrationApplicationSession);
 
                 if (string.IsNullOrWhiteSpace(regulatorNation))
                 {
@@ -173,18 +164,7 @@ public class DeclarationWithFullNameController(
                     throw new ArgumentException($"RegulatorNation could not be resolved for submission ID {submissionId}");
                 }
 
-                var notifyPaymentService = true;
-                if (session.RegistrationSession.IsResubmission && submission.IsSubmitted)
-                {
-                    var feeParams = await paymentCalculationService.GetRegistrationFeeCalculationDetails(submissionId);
-                    notifyPaymentService = feeParams is { Length: > 0 };
-                    if (!notifyPaymentService)
-                    {
-                        logger.LogInformation(
-                            "Suppressing payment-service notification for legacy resubmission {SubmissionId} with no payment-service snapshot",
-                            submissionId);
-                    }
-                }
+                var notifyPaymentService = await ShouldNotifyPaymentServiceAsync(session, submission, submissionId);
 
                 await submissionService.SubmitAsync(submissionId, organisationDetailsFileId,
                     model.FullName,
@@ -214,6 +194,49 @@ public class DeclarationWithFullNameController(
                 return RedirectToAction("Get", SubmissionErrorViewName, new { submissionId });
             }
         }
+    }
+
+    private static string? ResolveRegulatorNation(
+        DeclarationWithFullNameViewModel model,
+        FrontendSchemeRegistrationSession session,
+        UserData userData,
+        RegistrationApplicationSession? registrationApplicationSession)
+    {
+        var regulatorNation = registrationApplicationSession?.RegulatorNation;
+        if (!string.IsNullOrWhiteSpace(regulatorNation))
+        {
+            return regulatorNation;
+        }
+
+        var nationId = model.IsCso
+            ? session.RegistrationSession.SelectedComplianceScheme?.NationId
+            : userData.Organisations[0].NationId;
+
+        return nationId.HasValue
+            ? NationExtensions.GetNationNameFromId(nationId.Value)
+            : null;
+    }
+
+    private async Task<bool> ShouldNotifyPaymentServiceAsync(
+        FrontendSchemeRegistrationSession session,
+        RegistrationSubmission submission,
+        Guid submissionId)
+    {
+        if (!session.RegistrationSession.IsResubmission || !submission.IsSubmitted)
+        {
+            return true;
+        }
+
+        var feeParams = await paymentCalculationService.GetRegistrationFeeCalculationDetails(submissionId);
+        var notify = feeParams is { Length: > 0 };
+        if (!notify)
+        {
+            logger.LogInformation(
+                "Suppressing payment-service notification for legacy resubmission {SubmissionId} with no payment-service snapshot",
+                submissionId);
+        }
+
+        return notify;
     }
 
     private void SetBackLink(Guid submissionId, int? registrationYear, RegistrationJourney? regJourney)
