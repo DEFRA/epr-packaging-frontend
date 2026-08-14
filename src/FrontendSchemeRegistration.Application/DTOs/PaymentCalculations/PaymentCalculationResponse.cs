@@ -16,6 +16,7 @@ namespace FrontendSchemeRegistration.Application.DTOs.PaymentCalculations
         public int PreviousPayment { get; set; }
         public int OutstandingPayment { get; set; }
         public SubsidiariesFeeBreakdown SubsidiariesFeeBreakdown { get; set; }
+        public string? RegistrationBlobName { get; set; }
     }
 
     [ExcludeFromCodeCoverage]

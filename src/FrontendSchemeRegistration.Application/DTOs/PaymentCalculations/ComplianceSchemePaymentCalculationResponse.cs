@@ -10,4 +10,5 @@ public class ComplianceSchemePaymentCalculationResponse
     public int PreviousPayment { get; set; }
     public int OutstandingPayment { get; set; }
     public List<ComplianceSchemePaymentCalculationResponseMember> ComplianceSchemeMembersWithFees { get; set; }
+    public string? RegistrationBlobName { get; set; }
 }

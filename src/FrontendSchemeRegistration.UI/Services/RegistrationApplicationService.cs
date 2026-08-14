@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Security.Claims;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
+using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.DTOs.PaymentCalculations;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
@@ -57,16 +58,48 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     {
         if (!session.SubmissionId.HasValue
             || session.SubmissionId.Value == Guid.Empty
-            || !await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService))
+            || !await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeParametersViaPaymentService))
         {
             return;
         }
 
-        var snapshotDetails = await paymentCalculationService.GetRegistrationFeeCalculationDetails(session.SubmissionId.Value);
-        if (snapshotDetails is not null)
+        var submissionId = session.SubmissionId.Value;
+        var snapshotDetails = await paymentCalculationService.GetRegistrationFeeCalculationDetails(submissionId);
+        if (snapshotDetails is null)
         {
-            session.RegistrationFeeCalculationDetails = snapshotDetails;
+            return;
         }
+
+        var returnedBlob = snapshotDetails.FirstOrDefault()?.RegistrationBlobName;
+        var expectedBlob = await GetExpectedBlobNameAsync(submissionId);
+        if (!SnapshotIsForExpectedBlob(returnedBlob, expectedBlob))
+        {
+            logger.IgnoringStaleFeeSnapshot(submissionId, expectedBlob, returnedBlob);
+            return;
+        }
+
+        session.RegistrationFeeCalculationDetails = snapshotDetails;
+    }
+
+    // Authoritative source for the file the frontend is currently expecting fees for:
+    // GET /api/v1/submissions/{id} returns the antivirus-result blob name on LastUploadedValidFiles.
+    // Fetched on demand at every cross-check so we never carry stale session/DTO copies.
+    private async Task<string?> GetExpectedBlobNameAsync(Guid submissionId)
+    {
+        var submission = await _submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
+        return submission?.LastUploadedValidFiles?.CompanyDetailsBlobName;
+    }
+
+    // Returns true when the returned snapshot corresponds to the file the frontend expects fees for.
+    // A null expected value (no valid file yet) falls through to true — defensive.
+    private static bool SnapshotIsForExpectedBlob(string? returnedBlob, string? expectedBlob)
+    {
+        if (string.IsNullOrEmpty(expectedBlob))
+        {
+            return true;
+        }
+
+        return string.Equals(returnedBlob, expectedBlob, StringComparison.Ordinal);
     }
 
     private void SetLateFeeFlag(RegistrationApplicationSession session, int registrationYear)
@@ -229,19 +262,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         }
 
         var feeCalculationDetails = session.RegistrationFeeCalculationDetails[0];
-        var response = await paymentCalculationService.GetProducerRegistrationFees(new PaymentCalculationRequest
-        {
-            Regulator = session.RegulatorNation,
-            ApplicationReferenceNumber = session.ApplicationReferenceNumber,
-            IsLateFeeApplicable = session.IsLateFeeApplicable,
-            IsProducerOnlineMarketplace = feeCalculationDetails.IsOnlineMarketplace,
-            IsClosedLoopRecycling = feeCalculationDetails.IsClosedLoopRecycling,
-            NoOfSubsidiariesOnlineMarketplace = feeCalculationDetails.NumberOfSubsidiariesBeingOnlineMarketPlace,
-            NoOfSubsidiariesClosedLoopRecycling = feeCalculationDetails.NumberOfSubsidiariesBeingClosedLoopRecycling,
-            NumberOfSubsidiaries = feeCalculationDetails.NumberOfSubsidiaries,
-            ProducerType = feeCalculationDetails.OrganisationSize,
-            SubmissionDate = GetSubmissionDateForFeeCalculation(session)
-        });
+        var response = await ResolveProducerFeesResponseAsync(session, feeCalculationDetails);
 
         if (response is null)
         {
@@ -288,6 +309,83 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             return null;
         }
 
+        var response = await ResolveComplianceSchemeFeesResponseAsync(session);
+        if (response is null)
+        {
+            logger.LogWarning("Unable to GetComplianceSchemeRegistrationFees Details, paymentCalculationService.GetComplianceSchemeRegistrationFees is null");
+            return null;
+        }
+
+        session.TotalAmountOutstanding = response.OutstandingPayment < 0 ? 0 : response.OutstandingPayment;
+        await sessionManager.SaveSessionAsync(httpSession, session);
+
+        return BuildComplianceSchemeViewModel(response, session);
+    }
+
+    // Prefer the server-driven endpoint that derives every fee-calc input from the stored
+    // RegistrationSubmissionData snapshot. Falls back to the legacy POST-based flow when:
+    //   - the flag is off (kill switch),
+    //   - the session has no SubmissionId, or
+    //   - the new endpoint returns null (404 = no non-rejected submission captured for this id,
+    //     i.e. historic submissions predating lifecycle capture).
+    private async Task<ComplianceSchemePaymentCalculationResponse?> ResolveComplianceSchemeFeesResponseAsync(RegistrationApplicationSession session)
+    {
+        var useSubmissionEndpoint = await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService);
+        if (useSubmissionEndpoint && session.SubmissionId is Guid submissionId)
+        {
+            var fromSubmission = await paymentCalculationService.GetComplianceSchemeRegistrationFeesBySubmissionId(submissionId);
+            if (fromSubmission is not null)
+            {
+                var expectedBlob = await GetExpectedBlobNameAsync(submissionId);
+                if (SnapshotIsForExpectedBlob(fromSubmission.RegistrationBlobName, expectedBlob))
+                {
+                    return fromSubmission;
+                }
+
+                logger.IgnoringStaleComplianceSchemeFeeResponse(submissionId, expectedBlob, fromSubmission.RegistrationBlobName);
+            }
+        }
+
+        return await paymentCalculationService.GetComplianceSchemeRegistrationFees(BuildLegacyComplianceSchemeRequest(session));
+    }
+
+    private async Task<PaymentCalculationResponse?> ResolveProducerFeesResponseAsync(
+        RegistrationApplicationSession session,
+        RegistrationFeeCalculationDetails feeCalculationDetails)
+    {
+        var useSubmissionEndpoint = await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService);
+        if (useSubmissionEndpoint && session.SubmissionId is Guid submissionId)
+        {
+            var fromSubmission = await paymentCalculationService.GetProducerRegistrationFeesBySubmissionId(submissionId);
+            if (fromSubmission is not null)
+            {
+                var expectedBlob = await GetExpectedBlobNameAsync(submissionId);
+                if (SnapshotIsForExpectedBlob(fromSubmission.RegistrationBlobName, expectedBlob))
+                {
+                    return fromSubmission;
+                }
+
+                logger.IgnoringStaleProducerFeeResponse(submissionId, expectedBlob, fromSubmission.RegistrationBlobName);
+            }
+        }
+
+        return await paymentCalculationService.GetProducerRegistrationFees(new PaymentCalculationRequest
+        {
+            Regulator = session.RegulatorNation,
+            ApplicationReferenceNumber = session.ApplicationReferenceNumber,
+            IsLateFeeApplicable = session.IsLateFeeApplicable,
+            IsProducerOnlineMarketplace = feeCalculationDetails.IsOnlineMarketplace,
+            IsClosedLoopRecycling = feeCalculationDetails.IsClosedLoopRecycling,
+            NoOfSubsidiariesOnlineMarketplace = feeCalculationDetails.NumberOfSubsidiariesBeingOnlineMarketPlace,
+            NoOfSubsidiariesClosedLoopRecycling = feeCalculationDetails.NumberOfSubsidiariesBeingClosedLoopRecycling,
+            NumberOfSubsidiaries = feeCalculationDetails.NumberOfSubsidiaries,
+            ProducerType = feeCalculationDetails.OrganisationSize,
+            SubmissionDate = GetSubmissionDateForFeeCalculation(session),
+        });
+    }
+
+    private ComplianceSchemePaymentCalculationRequest BuildLegacyComplianceSchemeRequest(RegistrationApplicationSession session)
+    {
         var feeCalculationDetails = session.RegistrationFeeCalculationDetails;
 
         var complianceSchemeMembers = feeCalculationDetails.Select(c => new ComplianceSchemePaymentCalculationRequestMember
@@ -314,24 +412,21 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         // (it is assumed to have been charged for the Large Producer journey)
         bool includeRegistrationFee = !(session.RegistrationJourney == RegistrationJourney.CsoSmallProducer);
 
-        var response = await paymentCalculationService.GetComplianceSchemeRegistrationFees(new ComplianceSchemePaymentCalculationRequest
+        return new ComplianceSchemePaymentCalculationRequest
         {
             Regulator = session.RegulatorNation,
             ApplicationReferenceNumber = session.ApplicationReferenceNumber,
             SubmissionDate = GetSubmissionDateForFeeCalculation(session),
             ComplianceSchemeMembers = complianceSchemeMembers,
             IncludeRegistrationFee = includeRegistrationFee
-        });
+        };
+    }
 
-        if (response is null)
-        {
-            logger.LogWarning("Unable to GetComplianceSchemeRegistrationFees Details, paymentCalculationService.GetComplianceSchemeRegistrationFees is null");
-            return null;
-        }
-
-        session.TotalAmountOutstanding = response.OutstandingPayment < 0 ? 0 : response.OutstandingPayment;
-        await sessionManager.SaveSessionAsync(httpSession, session);
-
+    private static ComplianceSchemeFeeCalculationBreakdownViewModel BuildComplianceSchemeViewModel(
+        ComplianceSchemePaymentCalculationResponse response,
+        RegistrationApplicationSession session)
+    {
+        var feeCalculationDetails = session.RegistrationFeeCalculationDetails;
         var perProducer = response.ComplianceSchemeMembersWithFees.GetIndividualProducers(feeCalculationDetails);
         var smallFee = perProducer.smallProducers.GetFees();
         var largeFee = perProducer.largeProducers.GetFees();
@@ -421,6 +516,16 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         var snapshot = await paymentCalculationService.GetRegistrationFeeCalculationDetails(submissionId);
         if (snapshot is null)
         {
+            return false;
+        }
+
+        var returnedBlob = snapshot.FirstOrDefault()?.RegistrationBlobName;
+        var expectedBlob = await GetExpectedBlobNameAsync(submissionId);
+        if (!SnapshotIsForExpectedBlob(returnedBlob, expectedBlob))
+        {
+            logger.LogInformation(
+                "Ignoring stale fee snapshot for SubmissionId {SubmissionId}: expected blob {Expected} but got {Returned}. Polling will retry.",
+                submissionId, expectedBlob, returnedBlob);
             return false;
         }
 
@@ -662,4 +767,25 @@ public sealed class RegistrationApplicationServiceDependencies
     public required ILogger<RegistrationApplicationService> Logger { get; init; }
     public required IFeatureManager FeatureManager { get; init; }
     public required IRegistrationPeriodProvider RegistrationPeriodProvider { get; init; }
+}
+
+internal static partial class RegistrationApplicationServiceLog
+{
+    [LoggerMessage(
+        EventId = 6001,
+        Level = LogLevel.Information,
+        Message = "Ignoring stale fee snapshot for SubmissionId {SubmissionId}: expected blob {Expected} but got {Returned}.")]
+    public static partial void IgnoringStaleFeeSnapshot(this ILogger logger, Guid submissionId, string? expected, string? returned);
+
+    [LoggerMessage(
+        EventId = 6002,
+        Level = LogLevel.Information,
+        Message = "Ignoring stale compliance-scheme fee response for SubmissionId {SubmissionId}: expected blob {Expected} but got {Returned}.")]
+    public static partial void IgnoringStaleComplianceSchemeFeeResponse(this ILogger logger, Guid submissionId, string? expected, string? returned);
+
+    [LoggerMessage(
+        EventId = 6003,
+        Level = LogLevel.Information,
+        Message = "Ignoring stale producer fee response for SubmissionId {SubmissionId}: expected blob {Expected} but got {Returned}.")]
+    public static partial void IgnoringStaleProducerFeeResponse(this ILogger logger, Guid submissionId, string? expected, string? returned);
 }

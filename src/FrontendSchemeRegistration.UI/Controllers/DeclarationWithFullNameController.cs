@@ -1,3 +1,4 @@
+using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
@@ -25,7 +26,8 @@ public class DeclarationWithFullNameController(
     ISessionManager<RegistrationApplicationSession> registrationApplicationSessionManager,
     ILogger<DeclarationWithFullNameController> logger,
     IRegistrationPeriodProvider registrationPeriodProvider,
-    IFeatureManager featureManager) : Controller
+    IFeatureManager featureManager,
+    IPaymentCalculationService paymentCalculationService) : Controller
 {
     private const string ViewName = "DeclarationWithFullName";
     private const string ConfirmationViewName = "CompanyDetailsConfirmation";
@@ -154,14 +156,29 @@ public class DeclarationWithFullNameController(
 
                 var registrationApplicationSession = await registrationApplicationSessionManager.GetSessionAsync(HttpContext.Session);
 
+                var regulatorNation = ResolveRegulatorNation(model, session, userData, registrationApplicationSession);
+
+                if (string.IsNullOrWhiteSpace(regulatorNation))
+                {
+                    logger.LogError("RegulatorNation could not be resolved for submission ID {SubmissionId}", submissionId);
+                    throw new ArgumentException($"RegulatorNation could not be resolved for submission ID {submissionId}");
+                }
+
+                var notifyPaymentService = await ShouldNotifyPaymentServiceAsync(session, submission, submissionId);
+
                 await submissionService.SubmitAsync(submissionId, organisationDetailsFileId,
                     model.FullName,
                     session.RegistrationSession.ApplicationReferenceNumber,
                     session.RegistrationSession.IsResubmission,
                     regJourney,
-                    registrationApplicationSession?.SubmissionPeriodId);
+                    new RegistrationSubmitContext
+                    {
+                        SubmissionPeriodId = registrationApplicationSession?.SubmissionPeriodId,
+                        RegulatorNation = regulatorNation,
+                        NotifyPaymentService = notifyPaymentService
+                    });
 
-                var postSubmitController = await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeCalculationViaPaymentService)
+                var postSubmitController = (await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeParametersViaPaymentService) && notifyPaymentService)
                     ? ProcessingViewName
                     : ConfirmationViewName;
 
@@ -182,6 +199,47 @@ public class DeclarationWithFullNameController(
         }
     }
 
+    private static string? ResolveRegulatorNation(
+        DeclarationWithFullNameViewModel model,
+        FrontendSchemeRegistrationSession session,
+        UserData userData,
+        RegistrationApplicationSession? registrationApplicationSession)
+    {
+        var regulatorNation = registrationApplicationSession?.RegulatorNation;
+        if (!string.IsNullOrWhiteSpace(regulatorNation))
+        {
+            return regulatorNation;
+        }
+
+        var nationId = model.IsCso
+            ? session.RegistrationSession.SelectedComplianceScheme?.NationId
+            : userData.Organisations[0].NationId;
+
+        return nationId.HasValue
+            ? NationExtensions.GetNationNameFromId(nationId.Value)
+            : null;
+    }
+
+    private async Task<bool> ShouldNotifyPaymentServiceAsync(
+        FrontendSchemeRegistrationSession session,
+        RegistrationSubmission submission,
+        Guid submissionId)
+    {
+        if (!session.RegistrationSession.IsResubmission || !submission.IsSubmitted)
+        {
+            return true;
+        }
+
+        var feeParams = await paymentCalculationService.GetRegistrationFeeCalculationDetails(submissionId);
+        var notify = feeParams is { Length: > 0 };
+        if (!notify)
+        {
+            logger.SuppressingPaymentServiceNotification(submissionId);
+        }
+
+        return notify;
+    }
+
     private void SetBackLink(Guid submissionId, int? registrationYear, RegistrationJourney? regJourney)
     {
         var reviewOrganisationDataPath = PagePaths.ReviewOrganisationData.StartsWith('/')
@@ -191,4 +249,13 @@ public class DeclarationWithFullNameController(
         ViewBag.BackLinkToDisplay = QueryHelpers.AddQueryString(Url.Content($"~{reviewOrganisationDataPath}"), routeValue.ToDictionary(k => k.Key, k => k.Value.ToString() ?? string.Empty));
     }
 
+}
+
+internal static partial class DeclarationWithFullNameControllerLog
+{
+    [LoggerMessage(
+        EventId = 5001,
+        Level = LogLevel.Information,
+        Message = "Suppressing payment-service notification for legacy resubmission {SubmissionId} with no payment-service snapshot")]
+    public static partial void SuppressingPaymentServiceNotification(this ILogger logger, Guid submissionId);
 }
