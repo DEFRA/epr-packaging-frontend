@@ -1,0 +1,35 @@
+﻿{
+  "status": "Healthy",
+  "results": {
+    "WebApiGateway": {
+      "status": "Healthy",
+      "endpoint": "http://localhost:9091/admin/health/all",
+      "statusCode": 200,
+      "durationMs": "{Scrubbed}",
+      "response": {
+        "status": "Healthy",
+        "results": {
+          "WasteObligations": {
+            "status": "Healthy",
+            "statusCode": 200,
+            "response": {
+              "status": "Healthy"
+            }
+          }
+        }
+      }
+    },
+    "AccountsFacade": {
+      "status": "Healthy",
+      "endpoint": "http://localhost:9091/admin/health",
+      "statusCode": 200,
+      "durationMs": "{Scrubbed}"
+    },
+    "PaymentFacade": {
+      "status": "Healthy",
+      "endpoint": "http://localhost:9091/admin/health",
+      "statusCode": 200,
+      "durationMs": "{Scrubbed}"
+    }
+  }
+}
