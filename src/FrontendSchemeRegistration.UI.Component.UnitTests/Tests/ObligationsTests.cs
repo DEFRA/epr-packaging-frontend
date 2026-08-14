@@ -2,10 +2,15 @@ namespace FrontendSchemeRegistration.UI.Component.UnitTests.Tests;
 
 using System.Net;
 using System.Text;
+using Application.DTOs.ComplianceScheme;
+using Application.Enums;
 using Constants;
+using EPR.Common.Authorization.Models;
+using EPR.Common.Authorization.Models;
 using Extensions;
 using FluentAssertions;
 using Infrastructure;
+using MockServer.WebApi;
 using NUnit.Framework;
 using Sessions;
 
@@ -23,7 +28,8 @@ public class ObligationsTests
             {
                 { "FeatureManagement:ShowDecemberWaste", "true" }
             });
-        
+
+
         Session.TryAdd("/report-data/accept-bulk", sessionStore =>
         {
             sessionStore.Session.Set(nameof(FrontendSchemeRegistrationSession),
@@ -55,7 +61,8 @@ public class ObligationsTests
                 })));
         });
     }
-    
+
+
     [TestCase("/report-data/view-awaiting-acceptance-alt", Language.English)]
     [TestCase("/report-data/view-awaiting-acceptance-alt", Language.Welsh)]
     [TestCase("/report-data/view-awaiting-acceptance", Language.English)]
@@ -80,6 +87,17 @@ public class ObligationsTests
     [TestCase("/report-data/selected-prn/00000000-0000-0000-0000-000000000005", Language.Welsh)]
     public async Task WhenPrnsArePresent_ShouldLocalizeAsExpected(string path, string language)
     {
+        if (path.StartsWith("/report-data/accept-prn/"))
+        {
+            Context.Dispose();
+            Context.SetUp(
+                overrideSession: true,
+                additionalConfig: new Dictionary<string, string?>
+                {
+                    { "FeatureManagement:ShowDecemberWaste", "false" }
+                });
+        }
+
         await Context.Client.AuthenticateDefaultUser();
 
         var sessionStore = Context.GetSessionStore();
@@ -122,7 +140,105 @@ public class ObligationsTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().NotContain("Accepted towards");
+        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
+            .ScrubCommonHtmlNodes()
+            .UseParameters(path, language);
+    }
+
+    [TestCase("/report-data/selected-prn/00000000-0000-0000-0000-000000000005", Language.English)]
+    [TestCase("/report-data/selected-prn/00000000-0000-0000-0000-000000000005", Language.Welsh)]
+    [TestCase("/report-data/accepted-prn/00000000-0000-0000-0000-000000000005", Language.English)]
+    [TestCase("/report-data/accepted-prn/00000000-0000-0000-0000-000000000005", Language.Welsh)]
+    public async Task WhenDecemberWasteEnabled_ShouldShowAcceptedTowardsObligationYear(string path, string language)
+    {
+        Context.Dispose();
+        Context.SetUp(
+            overrideSession: true,
+            additionalConfig: new Dictionary<string, string?>
+            {
+                { "FeatureManagement:ShowDecemberWaste", "true" }
+            });
+
+        await Context.Client.AuthenticateDefaultUser();
+
+        var sessionStore = Context.GetSessionStore();
+        sessionStore.Session.Set(Language.SessionLanguageKey, Encoding.UTF8.GetBytes(language));
+
+        var response = await Context.Client.GetAsync(path);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
+            .ScrubCommonHtmlNodes()
+            .UseParameters(path, language);
+    }
+
+    [TestCase("/report-data/accept-prn/00000000-0000-0000-0000-000000000001", Language.English)]
+    [TestCase("/report-data/accept-prn/00000000-0000-0000-0000-000000000003", Language.English)]
+    public async Task WhenMultiYearObligationsEnabled_ShouldShowConfirmHeading(string path, string language)
+    {
+        Context.Dispose();
+        Context.SetUp(
+            overrideSession: true,
+            additionalConfig: new Dictionary<string, string?>
+            {
+                { "FeatureManagement:ShowMultiYearObligations", "true" }
+            });
+
+        await Context.Client.AuthenticateDefaultUser();
+
+        var sessionStore = Context.GetSessionStore();
+        sessionStore.Session.Set(Language.SessionLanguageKey, Encoding.UTF8.GetBytes(language));
+
+        var response = await Context.Client.GetAsync(path);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
+            .ScrubCommonHtmlNodes()
+            .UseParameters(path, language);
+    }
+
+    [TestCase(Language.English)]
+    [TestCase(Language.Welsh)]
+    public async Task WhenCsocEnabled_ShouldShowObligationsHomePartial(string language)
+    {
+        Context.Dispose();
+        Context.SetUp(
+            overrideSession: true,
+            additionalConfig: new Dictionary<string, string?>
+            {
+                { "FeatureManagement:CsocEnabled", "true" }
+            });
+
+        await Context.Client.AuthenticateDefaultUser();
+
+        var sessionStore = Context.GetSessionStore();
+        sessionStore.Session.Set(nameof(FrontendSchemeRegistrationSession),
+            Encoding.UTF8.GetBytes(System.Text.Json.JsonSerializer.Serialize(new FrontendSchemeRegistrationSession
+            {
+                UserData = new UserData
+                {
+                    ServiceRole = "Approved Person",
+                    Organisations =
+                    [
+                        new Organisation
+                        {
+                            Id = new Guid("00000000-0000-0000-0000-000000000009"),
+                            OrganisationRole = "Producer"
+                        }
+                    ]
+                }
+            })));
+        sessionStore.Session.Set(Language.SessionLanguageKey, Encoding.UTF8.GetBytes(language));
+
+        var response = await Context.Client.GetAsync("/report-data/manage-your-recycling-obligations");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
+            .ScrubCommonHtmlNodes()
+            .UseParameters(language);
     }
 
     [TestCase(Language.English)]
@@ -152,9 +268,129 @@ public class ObligationsTests
             .UseParameters(language);
     }
 
+    [TestCase(Language.English)]
+    [TestCase(Language.Welsh)]
+    public async Task WhenMultiYearObligationsEnabled_AcceptedPrns_ShouldShowUpdatedConfirmationText(string language)
+    {
+        await AssertAcceptedPrnsMultiYearConfirmationAsync(
+            language,
+            [
+                new Guid("00000000-0000-0000-0000-000000000005"),
+                new Guid("00000000-0000-0000-0000-000000000006"),
+            ]);
+    }
+
+    [TestCase(Language.English)]
+    [TestCase(Language.Welsh)]
+    public async Task WhenMultiYearObligationsEnabled_AcceptedPrns_SinglePrn_ShouldShowOneNoteHeading(string language)
+    {
+        Context.Dispose();
+        Context.SetUp(
+            overrideSession: true,
+            additionalConfig: new Dictionary<string, string?>
+            {
+                { "FeatureManagement:ShowDecemberWaste", "true" },
+                { "FeatureManagement:ShowMultiYearObligations", "true" }
+            });
+
+        await Context.Client.AuthenticateDefaultUser();
+
+        var sessionStore = Context.GetSessionStore();
+        sessionStore.Session.Set(nameof(FrontendSchemeRegistrationSession),
+            Encoding.UTF8.GetBytes(System.Text.Json.JsonSerializer.Serialize(new FrontendSchemeRegistrationSession
+            {
+                PrnSession = new PrnSession
+                {
+                    SelectedPrnIds = [new Guid("00000000-0000-0000-0000-000000000005")]
+                }
+            })));
+        sessionStore.Session.Set(Language.SessionLanguageKey, Encoding.UTF8.GetBytes(language));
+
+        var response = await Context.Client.GetAsync("/report-data/accepted-prns");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        content.Should().Contain("accepted one PRN towards your 2026 recycling obligations");
+        content.Should().Contain("govuk-button--secondary");
+        content.Should().NotContain("What happens next");
+    }
+
+    [TestCase(Language.English)]
+    [TestCase(Language.Welsh)]
+    public async Task WhenMultiYearObligationsEnabled_AcceptedPrns_MixedNotes_ShouldShowMixHeading(string language)
+    {
+        Context.Dispose();
+        Context.SetUp(
+            overrideSession: true,
+            additionalConfig: new Dictionary<string, string?>
+            {
+                { "FeatureManagement:ShowDecemberWaste", "true" },
+                { "FeatureManagement:ShowMultiYearObligations", "true" }
+            });
+
+        await Context.Client.AuthenticateDefaultUser();
+
+        var sessionStore = Context.GetSessionStore();
+        sessionStore.Session.Set(nameof(FrontendSchemeRegistrationSession),
+            Encoding.UTF8.GetBytes(System.Text.Json.JsonSerializer.Serialize(new FrontendSchemeRegistrationSession
+            {
+                PrnSession = new PrnSession
+                {
+                    SelectedPrnIds =
+                    [
+                        new Guid("00000000-0000-0000-0000-000000000005"),
+                        new Guid("00000000-0000-0000-0000-000000000007"),
+                    ]
+                }
+            })));
+        sessionStore.Session.Set(Language.SessionLanguageKey, Encoding.UTF8.GetBytes(language));
+
+        var response = await Context.Client.GetAsync("/report-data/accepted-prns");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        content.Should().Contain("accepted 2 PRNs and PERNs towards your 2026 recycling obligations");
+        content.Should().Contain("accepted towards your recycling obligation for");
+        content.Should().Contain("govuk-button--secondary");
+    }
+
+    private async Task AssertAcceptedPrnsMultiYearConfirmationAsync(string language, Guid[] selectedPrnIds)
+    {
+        Context.Dispose();
+        Context.SetUp(
+            overrideSession: true,
+            additionalConfig: new Dictionary<string, string?>
+            {
+                { "FeatureManagement:ShowDecemberWaste", "true" },
+                { "FeatureManagement:ShowMultiYearObligations", "true" }
+            });
+
+        await Context.Client.AuthenticateDefaultUser();
+
+        var sessionStore = Context.GetSessionStore();
+        sessionStore.Session.Set(nameof(FrontendSchemeRegistrationSession),
+            Encoding.UTF8.GetBytes(System.Text.Json.JsonSerializer.Serialize(new FrontendSchemeRegistrationSession
+            {
+                PrnSession = new PrnSession
+                {
+                    SelectedPrnIds = selectedPrnIds.ToList()
+                }
+            })));
+        sessionStore.Session.Set(Language.SessionLanguageKey, Encoding.UTF8.GetBytes(language));
+
+        var response = await Context.Client.GetAsync("/report-data/accepted-prns");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
+            .ScrubCommonHtmlNodes()
+            .UseParameters(language);
+    }
+
     [TearDown]
     public void TearDown()
     {
         Context.Dispose();
     }
 }
+
