@@ -402,6 +402,47 @@ public class PrnsAcceptControllerTests
     }
 
     [Test]
+    public async Task ConfirmAcceptSinglePrnPassThrough_OnPost_WhenSessionHasDifferentPrnId_DoesNotClearOrPassObligationYear()
+    {
+        var model = new PrnViewModel
+        {
+            ExternalId = Guid.NewGuid(),
+        };
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                PrnSession = new PrnSession
+                {
+                    SelectedAcceptanceYearPrnId = Guid.NewGuid(),
+                    SelectedAcceptanceYear = 2027
+                }
+            });
+
+        var result = await _sut.ConfirmAcceptSinglePrnPassThrough(model) as RedirectToActionResult;
+
+        result.ActionName.Should().Be(nameof(PrnsAcceptController.AcceptedPrn));
+        _mockPrnService.Verify(x => x.AcceptPrnAsync(model.ExternalId, null), Times.Once);
+        _sessionManagerMock.Verify(x => x.SaveSessionAsync(It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()), Times.Never);
+    }
+
+    [Test]
+    public async Task ConfirmAcceptSinglePrnPassThrough_OnPost_WhenSessionHasNoAcceptanceYearSelection_DoesNotClearOrPassObligationYear()
+    {
+        var model = new PrnViewModel
+        {
+            ExternalId = Guid.NewGuid(),
+        };
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession());
+
+        var result = await _sut.ConfirmAcceptSinglePrnPassThrough(model) as RedirectToActionResult;
+
+        result.ActionName.Should().Be(nameof(PrnsAcceptController.AcceptedPrn));
+        _mockPrnService.Verify(x => x.AcceptPrnAsync(model.ExternalId, null), Times.Once);
+        _sessionManagerMock.Verify(x => x.SaveSessionAsync(It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()), Times.Never);
+    }
+
+    [Test]
     public async Task ConfirmAcceptSinglePrnPassThrough_OnPost_PassesChosenObligationYear()
     {
         var model = new PrnViewModel

@@ -139,7 +139,7 @@
     <value>the regulator accepts your data submissions</value>
   </data>
   <data name="your_recycling_obligations_will_be" xml:space="preserve">
-    <value>Your recycling obligations will be calculated after:</value>
+    <value>Your {0} recycling obligations will be calculated after:</value>
   </data>
   <data name="you_can_start_acquiring_and_accepting" xml:space="preserve">
     <value>You can start acquiring and accepting PRNs and PERNs to meet your recycling obligations.</value>
