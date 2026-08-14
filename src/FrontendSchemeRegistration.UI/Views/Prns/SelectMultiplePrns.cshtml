@@ -172,7 +172,11 @@
  
 						@if (Model?.Prns?.Count > 0)
 						{
-							var showButton = Model.Prns.Any(x => x.IsStatusEditable);
+							var hasEditablePrns = Model.Prns.Any(x => x.IsStatusEditable);
+							var prnsAllShowDecemberWaste = Model.Prns.All(x => x.ShouldShowDecemberWasteFlash);
+
+							var showButton = hasEditablePrns && !prnsAllShowDecemberWaste;
+
 							@await Html.PartialAsync("Partials/RecordNavigation/_RecordPaging", Model.PagingDetail)
 							<hr class="govuk-section-break govuk-section-break--l govuk-section-break--xl">
 							<div class="govuk-button-group">

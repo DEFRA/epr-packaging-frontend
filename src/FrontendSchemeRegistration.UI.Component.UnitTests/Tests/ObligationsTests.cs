@@ -199,6 +199,37 @@ public class ObligationsTests
             .UseParameters(path, language);
     }
 
+    [Test]
+    public async Task WhenAllPrnsAreDecemberWasteOutsideFlashWindow_ShouldStillShowAcceptSelectedButton()
+    {
+        Context.Dispose();
+        Context.SetUp(
+            overrideSession: true,
+            additionalConfig: new Dictionary<string, string?>
+            {
+                { "FeatureManagement:ShowDecemberWaste", "true" }
+            },
+            webApiOptions: new WebApiOptions
+            {
+                PrnSearchData = WebApiOptions.PrnSearchDataType.AllDecemberWasteOutsideFlashWindow
+            });
+
+        await Context.Client.AuthenticateDefaultUser();
+
+        var response = await Context.Client.GetAsync("/report-data/view-awaiting-acceptance-alt");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+
+        // Every PRN on the page is editable and December Waste, but issued outside the Dec/Jan flash
+        // window, so checkboxes should render (not flash-only links)...
+        content.Should().Contain("type=\"checkbox\"");
+        content.Should().NotContain("december-waste-flash-row");
+
+        // ...and the bulk accept button must still be shown, since there are selectable PRNs on the page.
+        content.Should().Contain("Accept selected PRNs and PERNs");
+    }
+
     [TestCase(Language.English)]
     [TestCase(Language.Welsh)]
     public async Task WhenCsocEnabled_ShouldShowObligationsHomePartial(string language)
