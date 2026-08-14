@@ -232,7 +232,7 @@ public class SubmissionServiceTests
         var fileId = Guid.NewGuid();
 
         // Act
-        await _submissionService.SubmitAsync(submissionId, fileId, "TestSubmittedBy", notifyPaymentService: false);
+        await _submissionService.SubmitAsync(submissionId, fileId, "TestSubmittedBy", registrationContext: new RegistrationSubmitContext { NotifyPaymentService = false });
 
         // Assert
         _webApiGatewayClientMock.Verify(x => x.SubmitAsync(submissionId, It.Is<SubmissionPayload>(p => p.NotifyPaymentService == false)), Times.Once);

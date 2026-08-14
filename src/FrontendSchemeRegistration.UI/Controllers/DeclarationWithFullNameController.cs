@@ -171,9 +171,12 @@ public class DeclarationWithFullNameController(
                     session.RegistrationSession.ApplicationReferenceNumber,
                     session.RegistrationSession.IsResubmission,
                     regJourney,
-                    registrationApplicationSession?.SubmissionPeriodId,
-                    regulatorNation,
-                    notifyPaymentService);
+                    new RegistrationSubmitContext
+                    {
+                        SubmissionPeriodId = registrationApplicationSession?.SubmissionPeriodId,
+                        RegulatorNation = regulatorNation,
+                        NotifyPaymentService = notifyPaymentService
+                    });
 
                 var postSubmitController = (await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeParametersViaPaymentService) && notifyPaymentService)
                     ? ProcessingViewName
@@ -231,9 +234,7 @@ public class DeclarationWithFullNameController(
         var notify = feeParams is { Length: > 0 };
         if (!notify)
         {
-            logger.LogInformation(
-                "Suppressing payment-service notification for legacy resubmission {SubmissionId} with no payment-service snapshot",
-                submissionId);
+            logger.SuppressingPaymentServiceNotification(submissionId);
         }
 
         return notify;
@@ -248,4 +249,13 @@ public class DeclarationWithFullNameController(
         ViewBag.BackLinkToDisplay = QueryHelpers.AddQueryString(Url.Content($"~{reviewOrganisationDataPath}"), routeValue.ToDictionary(k => k.Key, k => k.Value.ToString() ?? string.Empty));
     }
 
+}
+
+internal static partial class DeclarationWithFullNameControllerLog
+{
+    [LoggerMessage(
+        EventId = 5001,
+        Level = LogLevel.Information,
+        Message = "Suppressing payment-service notification for legacy resubmission {SubmissionId} with no payment-service snapshot")]
+    public static partial void SuppressingPaymentServiceNotification(this ILogger logger, Guid submissionId);
 }

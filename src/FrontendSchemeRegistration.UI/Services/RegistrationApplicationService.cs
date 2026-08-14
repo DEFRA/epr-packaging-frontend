@@ -74,9 +74,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         var expectedBlob = await GetExpectedBlobNameAsync(submissionId);
         if (!SnapshotIsForExpectedBlob(returnedBlob, expectedBlob))
         {
-            logger.LogInformation(
-                "Ignoring stale fee snapshot for SubmissionId {SubmissionId}: expected blob {Expected} but got {Returned}.",
-                submissionId, expectedBlob, returnedBlob);
+            logger.IgnoringStaleFeeSnapshot(submissionId, expectedBlob, returnedBlob);
             return;
         }
 
@@ -344,9 +342,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
                     return fromSubmission;
                 }
 
-                logger.LogInformation(
-                    "Ignoring stale compliance-scheme fee response for SubmissionId {SubmissionId}: expected blob {Expected} but got {Returned}.",
-                    submissionId, expectedBlob, fromSubmission.RegistrationBlobName);
+                logger.IgnoringStaleComplianceSchemeFeeResponse(submissionId, expectedBlob, fromSubmission.RegistrationBlobName);
             }
         }
 
@@ -369,9 +365,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
                     return fromSubmission;
                 }
 
-                logger.LogInformation(
-                    "Ignoring stale producer fee response for SubmissionId {SubmissionId}: expected blob {Expected} but got {Returned}.",
-                    submissionId, expectedBlob, fromSubmission.RegistrationBlobName);
+                logger.IgnoringStaleProducerFeeResponse(submissionId, expectedBlob, fromSubmission.RegistrationBlobName);
             }
         }
 
@@ -773,4 +767,25 @@ public sealed class RegistrationApplicationServiceDependencies
     public required ILogger<RegistrationApplicationService> Logger { get; init; }
     public required IFeatureManager FeatureManager { get; init; }
     public required IRegistrationPeriodProvider RegistrationPeriodProvider { get; init; }
+}
+
+internal static partial class RegistrationApplicationServiceLog
+{
+    [LoggerMessage(
+        EventId = 6001,
+        Level = LogLevel.Information,
+        Message = "Ignoring stale fee snapshot for SubmissionId {SubmissionId}: expected blob {Expected} but got {Returned}.")]
+    public static partial void IgnoringStaleFeeSnapshot(this ILogger logger, Guid submissionId, string? expected, string? returned);
+
+    [LoggerMessage(
+        EventId = 6002,
+        Level = LogLevel.Information,
+        Message = "Ignoring stale compliance-scheme fee response for SubmissionId {SubmissionId}: expected blob {Expected} but got {Returned}.")]
+    public static partial void IgnoringStaleComplianceSchemeFeeResponse(this ILogger logger, Guid submissionId, string? expected, string? returned);
+
+    [LoggerMessage(
+        EventId = 6003,
+        Level = LogLevel.Information,
+        Message = "Ignoring stale producer fee response for SubmissionId {SubmissionId}: expected blob {Expected} but got {Returned}.")]
+    public static partial void IgnoringStaleProducerFeeResponse(this ILogger logger, Guid submissionId, string? expected, string? returned);
 }

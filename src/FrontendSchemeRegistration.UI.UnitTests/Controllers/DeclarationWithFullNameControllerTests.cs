@@ -643,7 +643,7 @@ public class DeclarationWithFullNameControllerTests
         result.ControllerName.Should().Be("CompanyDetailsConfirmation");
         _submissionServiceMock.Verify(x => x.SubmitAsync(It.IsAny<Guid>(),
             It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
-            It.IsAny<int?>(), It.IsAny<string?>()), Times.Once);
+            It.IsAny<RegistrationSubmitContext?>()), Times.Once);
     }
 
     [TestCase(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved)]
@@ -972,7 +972,7 @@ public class DeclarationWithFullNameControllerTests
         _submissionServiceMock.Verify(x => x.SubmitAsync(
             It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
             It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
-            It.IsAny<int?>(), "GB-SCT"), Times.Once);
+            It.Is<RegistrationSubmitContext>(c => c.RegulatorNation == "GB-SCT")), Times.Once);
     }
 
     [Test]
@@ -1017,7 +1017,7 @@ public class DeclarationWithFullNameControllerTests
         _submissionServiceMock.Verify(x => x.SubmitAsync(
             It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
             It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
-            It.IsAny<int?>(), "GB-WLS"), Times.Once);
+            It.Is<RegistrationSubmitContext>(c => c.RegulatorNation == "GB-WLS")), Times.Once);
     }
 
     [Test]
@@ -1058,7 +1058,7 @@ public class DeclarationWithFullNameControllerTests
         _submissionServiceMock.Verify(x => x.SubmitAsync(
             It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
             It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
-            It.IsAny<int?>(), "GB-NIR"), Times.Once);
+            It.Is<RegistrationSubmitContext>(c => c.RegulatorNation == "GB-NIR")), Times.Once);
     }
 
     [Test]
@@ -1101,7 +1101,7 @@ public class DeclarationWithFullNameControllerTests
         _submissionServiceMock.Verify(x => x.SubmitAsync(
             It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
             It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
-            It.IsAny<int?>(), It.IsAny<string?>()), Times.Never);
+            It.IsAny<RegistrationSubmitContext?>()), Times.Never);
     }
 
     [Test]
@@ -1142,7 +1142,7 @@ public class DeclarationWithFullNameControllerTests
         _submissionServiceMock.Verify(x => x.SubmitAsync(
             It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
             It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
-            It.IsAny<int?>(), It.IsAny<string?>(), true), Times.Once);
+            It.Is<RegistrationSubmitContext>(c => c.NotifyPaymentService)), Times.Once);
     }
 
     [Test]
@@ -1186,7 +1186,7 @@ public class DeclarationWithFullNameControllerTests
         _submissionServiceMock.Verify(x => x.SubmitAsync(
             It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
             It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
-            It.IsAny<int?>(), It.IsAny<string?>(), true), Times.Once);
+            It.Is<RegistrationSubmitContext>(c => c.NotifyPaymentService)), Times.Once);
     }
 
     [Test]
@@ -1231,7 +1231,7 @@ public class DeclarationWithFullNameControllerTests
         _submissionServiceMock.Verify(x => x.SubmitAsync(
             It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
             It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
-            It.IsAny<int?>(), It.IsAny<string?>(), false), Times.Once);
+            It.Is<RegistrationSubmitContext>(c => !c.NotifyPaymentService)), Times.Once);
     }
 
     [Test]
@@ -1274,6 +1274,6 @@ public class DeclarationWithFullNameControllerTests
         _submissionServiceMock.Verify(x => x.SubmitAsync(
             It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
             It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
-            It.IsAny<int?>(), It.IsAny<string?>(), true), Times.Once);
+            It.Is<RegistrationSubmitContext>(c => c.NotifyPaymentService)), Times.Once);
     }
 }
