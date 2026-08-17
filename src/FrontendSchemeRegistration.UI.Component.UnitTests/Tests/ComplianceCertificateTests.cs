@@ -2,6 +2,7 @@ namespace FrontendSchemeRegistration.UI.Component.UnitTests.Tests;
 
 using System.Net;
 using System.Text;
+using Application.DTOs.ComplianceScheme;
 using Constants;
 using EPR.Common.Authorization.Models;
 using Extensions;
@@ -46,6 +47,46 @@ public class ComplianceCertificateTests
     }
 
     [Test]
+    public async Task Get_WhenLoggedInAsDirectProducer_ShowsCertificateWording()
+    {
+        SetUp(showMultiYearObligations: true);
+        await Context.Client.AuthenticateDefaultUser();
+
+        var sessionStore = Context.GetSessionStore();
+        SetSession(sessionStore, selectedObligationYear: 2025, organisationRole: OrganisationRoles.Producer);
+
+        var response = await Context.Client.GetAsync(Path);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        content.Should().Contain("Your certificate of compliance record for 2025");
+        content.Should().Contain("We can only show certificate of compliance records for certificates that were processed by the ‘Report packaging data’ service.");
+        content.Should().Contain("We cannot show certificates of compliance for 2025, because they were processed outside the service.");
+        content.Should().NotContain("Your statement of compliance record for 2025");
+    }
+
+    [Test]
+    public async Task Get_WhenLoggedInAsComplianceScheme_ShowsStatementWording()
+    {
+        SetUp(showMultiYearObligations: true);
+        await Context.Client.AuthenticateDefaultUser();
+
+        var sessionStore = Context.GetSessionStore();
+        SetSession(sessionStore, selectedObligationYear: 2025, organisationRole: OrganisationRoles.ComplianceScheme);
+
+        var response = await Context.Client.GetAsync(Path);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        content.Should().Contain("Your statement of compliance record for 2025");
+        content.Should().Contain("We can only show statement of compliance records for statements that were processed by the ‘Report packaging data’ service.");
+        content.Should().Contain("We cannot show statements of compliance for 2025, because they were processed outside the service.");
+        content.Should().NotContain("Your certificate of compliance record for 2025");
+    }
+
+    [Test]
     public async Task Get_WhenMultiYearObligationsFeatureDisabled_ReturnsNotFound()
     {
         SetUp(showMultiYearObligations: false);
@@ -85,7 +126,7 @@ public class ComplianceCertificateTests
             });
     }
 
-    private static void SetSession(SessionStore sessionStore, int? selectedObligationYear)
+    private static void SetSession(SessionStore sessionStore, int? selectedObligationYear, string organisationRole = OrganisationRoles.Producer)
     {
         sessionStore.Session.Set(nameof(FrontendSchemeRegistrationSession),
             Encoding.UTF8.GetBytes(System.Text.Json.JsonSerializer.Serialize(new FrontendSchemeRegistrationSession
@@ -98,13 +139,19 @@ public class ComplianceCertificateTests
                         new Organisation
                         {
                             Id = Guid.NewGuid(),
-                            OrganisationRole = "Producer"
+                            OrganisationRole = organisationRole
                         }
                     ]
                 },
                 PrnSession = new PrnSession
                 {
                     SelectedObligationYear = selectedObligationYear
+                },
+                RegistrationSession = new RegistrationSession
+                {
+                    SelectedComplianceScheme = organisationRole == OrganisationRoles.ComplianceScheme
+                        ? new ComplianceSchemeDto { Id = Guid.NewGuid() }
+                        : null
                 }
             })));
     }

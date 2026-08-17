@@ -6,6 +6,7 @@ using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Sessions;
+using FrontendSchemeRegistration.UI.ViewModels;
 using FrontendSchemeRegistration.UI.ViewModels.Prns;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -247,7 +248,10 @@ public class PrnsObligationController : Controller
 
         ViewBag.BackLinkToDisplay = Url.Content($"~/{PagePaths.Prns.ChooseYear}");
 
-        return View();
+        var organisation = session.UserData.Organisations?.FirstOrDefault();
+        var viewModel = new ViewModelWithOrganisationRole { OrganisationRole = organisation?.OrganisationRole };
+
+        return View(viewModel);
     }
 
     private ChooseYearViewModel BuildChooseYearViewModel(int? selectedYear = null)
