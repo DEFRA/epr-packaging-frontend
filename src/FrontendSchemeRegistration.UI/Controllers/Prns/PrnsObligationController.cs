@@ -245,7 +245,7 @@ public class PrnsObligationController : Controller
             return NotFound();
         }
 
-        ViewBag.BackLinkToDisplay = _globalVariables.Value.BasePath;
+        ViewBag.BackLinkToDisplay = Url.Content($"~/{PagePaths.Prns.ChooseYear}");
 
         return View();
     }
