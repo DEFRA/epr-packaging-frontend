@@ -158,6 +158,53 @@ public class FileUploadingPartnershipsControllerTests
     }
 
     [Test]
+    public async Task Get_RedirectsToFileUploadCompanyDetailsSubLanding_WhenJourneyDoesNotContainFileUploadPartnerships()
+    {
+        // Arrange
+        var submission = new RegistrationSubmission
+        {
+            Id = SubmissionId,
+            PartnershipsDataComplete = false
+        };
+
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(submission);
+
+        _sessionManagerMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation>
+                    {
+                        new()
+                        {
+                            OrganisationRole = OrganisationRoles.Producer
+                        }
+                    }
+                },
+                RegistrationSession = new RegistrationSession
+                {
+                    Journey = new List<string>
+                    {
+                        PagePaths.FileUploadCompanyDetailsSubLanding,
+                        PagePaths.FileUploadCompanyDetails,
+                        PagePaths.FileUploadBrands
+                    }
+                }
+            });
+
+        // Act
+        var result = await _systemUnderTest.Get() as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadCompanyDetailsSubLanding");
+    }
+
+    [Test]
     public async Task Get_RedirectsToFileUploadingPartnerships_WhenSessionIsNull()
     {
         // Arrange
