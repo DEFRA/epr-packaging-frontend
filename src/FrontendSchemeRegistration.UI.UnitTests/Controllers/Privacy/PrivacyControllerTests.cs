@@ -107,6 +107,52 @@ public class PrivacyControllerTests
         privacyViewModel.ScottishEnvironmentalProtectionAgencyUrl.Should().Be(_urlOptions.Object.Value.PrivacyScottishEnvironmentalProtectionAgency);
     }
 
+    [Test]
+    public void Detail_WhenReturnUrlIsAllowedAndLocal_SetsBackLinkToReturnUrl()
+    {
+        // Arrange
+        const string returnUrl = "/report-data/some-page";
+        var mockUrlHelper = new Mock<IUrlHelper>();
+        mockUrlHelper
+            .Setup(m => m.IsLocalUrl(returnUrl))
+            .Returns(true);
+
+        _systemUnderTest.Url = mockUrlHelper.Object;
+
+        // Act
+        var result = _systemUnderTest!.Detail(returnUrl);
+
+        // Assert
+        result.Should().BeOfType(typeof(ViewResult));
+        _systemUnderTest.ViewData["BackLinkToDisplay"].Should().Be(returnUrl);
+        _systemUnderTest.ViewData["CurrentPage"].Should().Be(returnUrl);
+    }
+
+    [Test]
+    [TestCase(null)]
+    [TestCase("")]
+    public void Detail_WhenReturnUrlIsNullOrEmpty_SetsModelWithHomePath(string returnUrl)
+    {
+        // Arrange
+        var mockUrlHelper = new Mock<IUrlHelper>();
+        mockUrlHelper
+            .Setup(m => m.IsLocalUrl(It.IsAny<string>()))
+            .Returns(true);
+        mockUrlHelper
+            .Setup(m => m.Content("~/"))
+            .Returns("/");
+
+        _systemUnderTest.Url = mockUrlHelper.Object;
+
+        // Act
+        var result = _systemUnderTest!.Detail(returnUrl);
+
+        // Assert
+        result.Should().BeOfType(typeof(ViewResult));
+        _systemUnderTest.ViewData["BackLinkToDisplay"].Should().Be("/");
+        _systemUnderTest.ViewData["CurrentPage"].Should().Be("/");
+    }
+
     private void SetUpConfigOption()
     {
         var externalUrlOptions = new ExternalUrlOptions
