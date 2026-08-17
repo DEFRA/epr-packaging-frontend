@@ -13,15 +13,13 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="completed_resubmission_title" xml:space="preserve">
-        <value>Your packaging data resubmission</value>
-        <comment>NEEDS WELSH TRANSLATION</comment>
+        <value>Aildflwyno eich data pecynnu</value>
     </data>
     <data name="packaging_data_accepted" xml:space="preserve">
         <value>Cafodd eich data ei dderbyn gan y rheoleiddiwr amgylcheddol.</value>
     </data>
     <data name="resubmission_reference_number" xml:space="preserve">
-        <value>Resubmission reference number</value>
-        <comment>NEEDS WELSH TRANSLATION</comment>
+        <value>Rhif cyfeirio ail-gyflwyno</value>
     </data>
     <data name="submit_resubmission_data" xml:space="preserve">
         <value>Llwythwch i fyny data pecynnu</value>
@@ -42,8 +40,7 @@
         <value>Mae eich cais am gofrestru wedi'i gyflwyno</value>
     </data>
     <data name="submitted_to_the_regulator_on" xml:space="preserve">
-        <value>Submitted to the regulator on {0}</value>
-        <comment>NEEDS WELSH TRANSLATION</comment>
+        <value>Cyflwynwyd i'r rheoleiddiwr ar {0}</value>
     </data>
     <data name="completed_status" xml:space="preserve">
         <value>CYFLAWN</value>
@@ -61,12 +58,10 @@
         <value>Cafodd ei chyflwyno gan</value>
     </data>
     <data name="what_the_regulator_said" xml:space="preserve">
-        <value>What the environmental regulator said</value>
-        <comment>NEEDS WELSH TRANSLATION</comment>
+        <value>Yr hyn a ddywedodd y rheoleiddiwr amgylcheddol</value>
     </data>
     <data name="resubmission_fee" xml:space="preserve">
-        <value>Resubmission fee</value>
-        <comment>NEEDS WELSH TRANSLATION</comment>
+        <value>Ffi ail-gyflwyno</value>
     </data>
     <data name="if_your_circumstances_change" xml:space="preserve">
         <value>Os bydd eich amgylchiadau'n newid</value>
