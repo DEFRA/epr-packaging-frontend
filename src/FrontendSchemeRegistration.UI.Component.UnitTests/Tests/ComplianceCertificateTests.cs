@@ -2,6 +2,7 @@ namespace FrontendSchemeRegistration.UI.Component.UnitTests.Tests;
 
 using System.Net;
 using System.Text;
+using Application.Constants;
 using Application.DTOs.ComplianceScheme;
 using Constants;
 using EPR.Common.Authorization.Models;
@@ -46,13 +47,15 @@ public class ComplianceCertificateTests
         content.Should().Contain("Download a list of your PRNs and PERNs for 2025 (CSV)");
     }
 
-    [Test]
-    public async Task Get_WhenLoggedInAsDirectProducer_ShowsCertificateWording()
+    [TestCase(Language.English)]
+    [TestCase(Language.Welsh)]
+    public async Task Get_WhenLoggedInAsDirectProducer_ShowsCertificateWording(string language)
     {
         SetUp(showMultiYearObligations: true);
         await Context.Client.AuthenticateDefaultUser();
 
         var sessionStore = Context.GetSessionStore();
+        sessionStore.Session.Set(Language.SessionLanguageKey, Encoding.UTF8.GetBytes(language));
         SetSession(sessionStore, selectedObligationYear: 2025, organisationRole: OrganisationRoles.Producer);
 
         var response = await Context.Client.GetAsync(Path);
@@ -60,19 +63,22 @@ public class ComplianceCertificateTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await response.Content.ReadAsStringAsync();
+        content.Should().Contain("<title>Your certificate of compliance record for 2025");
         content.Should().Contain("Your certificate of compliance record for 2025");
         content.Should().Contain("We can only show certificate of compliance records for certificates that were processed by the ‘Report packaging data’ service.");
         content.Should().Contain("We cannot show certificates of compliance for 2025, because they were processed outside the service.");
         content.Should().NotContain("Your statement of compliance record for 2025");
     }
 
-    [Test]
-    public async Task Get_WhenLoggedInAsComplianceScheme_ShowsStatementWording()
+    [TestCase(Language.English)]
+    [TestCase(Language.Welsh)]
+    public async Task Get_WhenLoggedInAsComplianceScheme_ShowsStatementWording(string language)
     {
         SetUp(showMultiYearObligations: true);
         await Context.Client.AuthenticateDefaultUser();
 
         var sessionStore = Context.GetSessionStore();
+        sessionStore.Session.Set(Language.SessionLanguageKey, Encoding.UTF8.GetBytes(language));
         SetSession(sessionStore, selectedObligationYear: 2025, organisationRole: OrganisationRoles.ComplianceScheme);
 
         var response = await Context.Client.GetAsync(Path);
@@ -80,10 +86,28 @@ public class ComplianceCertificateTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await response.Content.ReadAsStringAsync();
+        content.Should().Contain("<title>Your statement of compliance record for 2025");
         content.Should().Contain("Your statement of compliance record for 2025");
         content.Should().Contain("We can only show statement of compliance records for statements that were processed by the ‘Report packaging data’ service.");
         content.Should().Contain("We cannot show statements of compliance for 2025, because they were processed outside the service.");
         content.Should().NotContain("Your certificate of compliance record for 2025");
+    }
+
+    [Test]
+    public async Task Get_RendersBackLinkToChooseYearPage()
+    {
+        SetUp(showMultiYearObligations: true);
+        await Context.Client.AuthenticateDefaultUser();
+
+        var sessionStore = Context.GetSessionStore();
+        SetSession(sessionStore, selectedObligationYear: 2025);
+
+        var response = await Context.Client.GetAsync(Path);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        content.Should().Contain($"<a href=\"/report-data/{PagePaths.Prns.ChooseYear}\" class=\"govuk-back-link\"");
     }
 
     [Test]
