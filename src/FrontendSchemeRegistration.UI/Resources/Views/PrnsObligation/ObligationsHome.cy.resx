@@ -139,7 +139,7 @@
     <value>ar ôl i'r rheoleiddiwr dderbyn eich cyflwyniadau data </value>
   </data>
   <data name="your_recycling_obligations_will_be" xml:space="preserve">
-    <value>Bydd eich {0} rhwymedigaethau ailgylchu yn cael eu cyfrifo:</value>
+    <value>Bydd eich rhwymedigaethau ailgylchu yn cael eu cyfrifo:</value>
   </data>
   <data name="your_yyyy_recycling_obligations_will_be" xml:space="preserve">
     <value>Your {0} recycling obligations will be calculated after:</value>
