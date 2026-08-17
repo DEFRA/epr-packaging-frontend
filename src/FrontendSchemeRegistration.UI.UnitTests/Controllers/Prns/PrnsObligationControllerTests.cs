@@ -879,6 +879,43 @@ public class PrnsObligationControllerTests
     }
 
     [Test]
+    public async Task ChooseYear_Post_When_Year_Selected_Is_2025_Saves_Session_And_Redirects_To_ComplianceCertificate()
+    {
+        _fakeTimeProvider.SetUtcNow(new DateTimeOffset(2026, 6, 1, 0, 0, 0, TimeSpan.Zero));
+        _featureManagerMock
+            .Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
+            .ReturnsAsync(true);
+        var session = new FrontendSchemeRegistrationSession
+        {
+            UserData = new UserData
+            {
+                Organisations =
+                [
+                    new Organisation
+                    {
+                        Id = Guid.NewGuid(),
+                        OrganisationRole = OrganisationRoles.Producer,
+                        Name = "Test Organisation",
+                        NationId = 1
+                    }
+                ],
+                ServiceRole = "Basic User"
+            }
+        };
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+        var controller = CreateController();
+
+        var result = await controller.ChooseYear(new ChooseYearViewModel { SelectedYear = 2025 });
+
+        var redirect = result.Should().BeOfType<RedirectToActionResult>().Subject;
+        redirect.ActionName.Should().Be(nameof(PrnsObligationController.ComplianceCertificate));
+        session.PrnSession.SelectedObligationYear.Should().Be(2025);
+        _sessionManagerMock.Verify(
+            m => m.SaveSessionAsync(It.IsAny<ISession>(), session),
+            Times.Once);
+    }
+
+    [Test]
     public async Task ComplianceCertificate_Get_Returns_View_With_BackLink_To_ChooseYear()
     {
         _featureManagerMock

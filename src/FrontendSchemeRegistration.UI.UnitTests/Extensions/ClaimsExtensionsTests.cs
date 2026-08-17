@@ -179,6 +179,61 @@ public class ClaimsExtensionsTests
     }
 
     [Test]
+    public async Task UpdateUserDataClaimsAndSignInAsync_ShouldRemoveExistingUserDataClaim_WhenOnePresent()
+    {
+        // Arrange
+        var userData = _fixture.Create<UserData>();
+        var existingClaim = new Claim(ClaimTypes.UserData, JsonSerializer.Serialize(_fixture.Create<UserData>()));
+
+        _claimsIdentityMock.Setup(x => x.FindFirst(ClaimTypes.UserData)).Returns(existingClaim);
+
+        var userMock = new Mock<ClaimsPrincipal>();
+        userMock.Setup(x => x.Identity).Returns(_claimsIdentityMock.Object);
+
+        var authenticationServiceMock = new Mock<IAuthenticationService>();
+        authenticationServiceMock
+            .Setup(x => x.SignInAsync(
+                It.IsAny<HttpContext>(),
+                It.IsAny<string>(),
+                It.IsAny<ClaimsPrincipal>(),
+                It.IsAny<AuthenticationProperties>()))
+            .Returns(Task.CompletedTask);
+
+        var serviceProviderMock = new Mock<IServiceProvider>();
+        serviceProviderMock
+            .Setup(_ => _.GetService(typeof(IAuthenticationService)))
+            .Returns(authenticationServiceMock.Object);
+        serviceProviderMock.Setup(_ => _.GetService(typeof(IUrlHelperFactory)))
+            .Returns(Mock.Of<IUrlHelperFactory>());
+
+        _httpContextMock
+            .Setup(x => x.User)
+            .Returns(userMock.Object);
+
+        _httpContextMock
+            .SetupGet(x => x.RequestServices)
+            .Returns(serviceProviderMock.Object);
+
+        _httpContextMock
+            .SetupGet(x => x.Features)
+            .Returns(Mock.Of<IFeatureCollection>());
+
+        // Act
+        await ClaimsExtensions.UpdateUserDataClaimsAndSignInAsync(_httpContextMock.Object, userData);
+
+        // Assert
+        _claimsIdentityMock.Verify(x => x.RemoveClaim(existingClaim), Times.AtLeastOnce);
+
+        authenticationServiceMock.Verify(
+            x => x.SignInAsync(
+                It.IsAny<HttpContext>(),
+                It.IsAny<string>(),
+                It.IsAny<ClaimsPrincipal>(),
+                It.IsAny<AuthenticationProperties>()),
+            Times.Once);
+    }
+
+    [Test]
     public void TryGetOrganisatonIds_ShouldReturnNull_WhenNoOrganisationIdsDataClaimPresent()
     {
         // Arrange
