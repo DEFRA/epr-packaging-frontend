@@ -139,7 +139,7 @@
     <value>the regulator accepts your data submissions</value>
   </data>
   <data name="your_recycling_obligations_will_be" xml:space="preserve">
-    <value>Your {0} recycling obligations will be calculated after:</value>
+    <value>Your recycling obligations will be calculated after:</value>
   </data>
   <data name="your_yyyy_recycling_obligations_will_be" xml:space="preserve">
     <value>Your {0} recycling obligations will be calculated after:</value>
