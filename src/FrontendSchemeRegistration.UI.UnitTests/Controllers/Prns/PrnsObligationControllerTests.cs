@@ -5,6 +5,7 @@ using AutoFixture;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FluentAssertions;
+using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.ComplianceScheme;
 using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Options;
@@ -875,6 +876,57 @@ public class PrnsObligationControllerTests
         _sessionManagerMock.Verify(
             m => m.SaveSessionAsync(It.IsAny<ISession>(), session),
             Times.Once);
+    }
+
+    [Test]
+    public async Task ComplianceCertificate_Get_Returns_View_With_BackLink_To_ChooseYear()
+    {
+        _featureManagerMock
+            .Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
+            .ReturnsAsync(true);
+        var session = new FrontendSchemeRegistrationSession
+        {
+            PrnSession = new PrnSession { SelectedObligationYear = 2025 }
+        };
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+        _urlHelperMock.Setup(x => x.Content(It.IsAny<string>())).Returns((string contentPath) => contentPath);
+        var controller = CreateController();
+
+        var result = await controller.ComplianceCertificate();
+
+        result.Should().BeOfType<ViewResult>();
+        ((string)controller.ViewBag.BackLinkToDisplay).Should().Be($"~/{PagePaths.Prns.ChooseYear}");
+    }
+
+    [Test]
+    public async Task ComplianceCertificate_Get_Returns_NotFound_When_Feature_Flag_Disabled()
+    {
+        _featureManagerMock
+            .Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
+            .ReturnsAsync(false);
+        var controller = CreateController();
+
+        var result = await controller.ComplianceCertificate();
+
+        result.Should().BeOfType<NotFoundResult>();
+    }
+
+    [Test]
+    public async Task ComplianceCertificate_Get_Returns_NotFound_When_SelectedYear_Is_Not_2025()
+    {
+        _featureManagerMock
+            .Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
+            .ReturnsAsync(true);
+        var session = new FrontendSchemeRegistrationSession
+        {
+            PrnSession = new PrnSession { SelectedObligationYear = 2026 }
+        };
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+        var controller = CreateController();
+
+        var result = await controller.ComplianceCertificate();
+
+        result.Should().BeOfType<NotFoundResult>();
     }
 
     private PrnsObligationController CreateController()
