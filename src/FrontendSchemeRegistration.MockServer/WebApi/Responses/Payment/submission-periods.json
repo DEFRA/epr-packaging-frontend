@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "windowType": "Cso",
+    "registrationYear": 2025,
+    "openingDate": "2024-07-01T00:00:00Z",
+    "deadlineDate": "2025-04-01T23:59:00Z",
+    "closingDate": "2026-02-01T00:00:00Z"
+  },
+  {
+    "id": 2,
+    "windowType": "CsoLargeProducer",
+    "registrationYear": 2025,
+    "openingDate": "2024-07-01T00:00:00Z",
+    "deadlineDate": "2025-04-01T23:59:00Z",
+    "closingDate": "2026-02-01T00:00:00Z"
+  },
+  {
+    "id": 3,
+    "windowType": "Cso",
+    "registrationYear": 2026,
+    "openingDate": "2025-07-01T00:00:00Z",
+    "deadlineDate": "2026-04-01T23:59:00Z",
+    "closingDate": "2027-02-01T00:00:00Z"
+  },
+  {
+    "id": 4,
+    "windowType": "CsoLargeProducer",
+    "registrationYear": 2026,
+    "openingDate": "2025-07-01T00:00:00Z",
+    "deadlineDate": "2026-04-01T23:59:00Z",
+    "closingDate": "2027-02-01T00:00:00Z"
+  },
+  {
+    "id": 5,
+    "windowType": "Cso",
+    "registrationYear": 2027,
+    "openingDate": "2026-07-01T00:00:00Z",
+    "deadlineDate": "2027-04-01T23:59:00Z",
+    "closingDate": "2028-02-01T00:00:00Z"
+  },
+  {
+    "id": 6,
+    "windowType": "CsoLargeProducer",
+    "registrationYear": 2027,
+    "openingDate": "2026-07-01T00:00:00Z",
+    "deadlineDate": "2027-04-01T23:59:00Z",
+    "closingDate": "2028-02-01T00:00:00Z"
+  }
+]

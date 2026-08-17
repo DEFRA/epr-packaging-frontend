@@ -175,6 +175,29 @@
           ]
         }
       ]
+    },
+    {
+      "id": "prns-obligations-home-no-obligations",
+      "fileName": "07-obligations-home-no-obligations.xlsx",
+      "route": "/report-data/manage-your-recycling-obligations",
+      "view": "src/FrontendSchemeRegistration.UI/Views/PrnsObligation/ObligationsHome.cshtml",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
+      "notes": "Manage obligations page: alternative intro content when there are no obligations yet (all zeros / No data yet).",
+      "featureFlags": [
+        "ShowPrn",
+        "ShowMultiYearObligations"
+      ],
+      "appSettings": {},
+      "resources": [
+        {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ObligationsHome.en.resx",
+          "section": "No-obligations alternative content below How to meet your recycling obligations.",
+          "keys": [
+            "your_yyyy_recycling_obligations_will_be",
+            "the_regulator_accepts_your_h1_and_h2_packaging_data_submissions"
+          ]
+        }
+      ]
     }
   ]
 }
