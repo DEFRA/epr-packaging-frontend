@@ -38,6 +38,7 @@ public class PrnsObligationController : Controller
     private readonly IOptions<CsocOptions> _csocOptions;
     private readonly string _logPrefix;
     private readonly int _complianceYear;
+    private readonly int _csocUnavailablePastYear;
 
     public PrnsObligationController(ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
         IPrnService prnService,
@@ -58,6 +59,7 @@ public class PrnsObligationController : Controller
         _csocOptions = csocOptions;
         _logPrefix = _globalVariables.Value.LogPrefix;
         _complianceYear = timeProvider.GetUtcNow().GetComplianceYear();
+        _csocUnavailablePastYear = 2025;
     }
 
     private const string GlassOrNonGlassResource = "GlassOrNonGlassResource";
@@ -221,7 +223,7 @@ public class PrnsObligationController : Controller
         session.PrnSession.SelectedObligationYear = model.SelectedYear.Value;
         await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
 
-        if (model.SelectedYear.Value == 2025)
+        if (model.SelectedYear.Value == model.CsocUnavailablePastYear)
         {
             return RedirectToAction(nameof(ComplianceCertificate));
         }
@@ -232,7 +234,7 @@ public class PrnsObligationController : Controller
     [HttpGet]
     [Route(PagePaths.Prns.ComplianceCertificate)]
     [FeatureGate(FeatureFlags.ShowMultiYearObligations)]
-    public async Task<IActionResult> ComplianceCertificate()
+    public async Task<IActionResult> ComplianceCertificate(ChooseYearViewModel model)
     {
         if (!await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
         {
@@ -241,7 +243,7 @@ public class PrnsObligationController : Controller
 
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
 
-        if (session.PrnSession.SelectedObligationYear != 2025)
+        if (session.PrnSession.SelectedObligationYear != model.CsocUnavailablePastYear)
         {
             return NotFound();
         }
@@ -258,6 +260,7 @@ public class PrnsObligationController : Controller
     {
         return new ChooseYearViewModel
         {
+            CsocUnavailablePastYear = _csocUnavailablePastYear,
             CurrentYear = _complianceYear,
             SelectedYear = selectedYear,
             Years = ObligationYearOptions.GetSelectableYears(_complianceYear)

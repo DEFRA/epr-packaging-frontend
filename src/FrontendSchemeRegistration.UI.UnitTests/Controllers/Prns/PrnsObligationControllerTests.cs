@@ -13,6 +13,7 @@ using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers.Prns;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Sessions;
+using FrontendSchemeRegistration.UI.ViewModels;
 using FrontendSchemeRegistration.UI.ViewModels.Prns;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -929,10 +930,44 @@ public class PrnsObligationControllerTests
         _urlHelperMock.Setup(x => x.Content(It.IsAny<string>())).Returns((string contentPath) => contentPath);
         var controller = CreateController();
 
-        var result = await controller.ComplianceCertificate();
+        var result = await controller.ComplianceCertificate(new ChooseYearViewModel());
 
         result.Should().BeOfType<ViewResult>();
         ((string)controller.ViewBag.BackLinkToDisplay).Should().Be($"~/{PagePaths.Prns.ChooseYear}");
+    }
+
+    [Test]
+    public async Task ComplianceCertificate_Get_WithOrganisationInSession_Returns_ViewModel_With_OrganisationRole()
+    {
+        _featureManagerMock
+            .Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
+            .ReturnsAsync(true);
+        var session = new FrontendSchemeRegistrationSession
+        {
+            UserData = new UserData
+            {
+                Organisations =
+                [
+                    new Organisation
+                    {
+                        Id = Guid.NewGuid(),
+                        OrganisationRole = OrganisationRoles.Producer,
+                        Name = "Test Organisation",
+                        NationId = 1
+                    }
+                ]
+            },
+            PrnSession = new PrnSession { SelectedObligationYear = 2025 }
+        };
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+        _urlHelperMock.Setup(x => x.Content(It.IsAny<string>())).Returns((string contentPath) => contentPath);
+        var controller = CreateController();
+
+        var result = await controller.ComplianceCertificate(new ChooseYearViewModel()) as ViewResult;
+
+        result.Should().NotBeNull();
+        var model = result!.Model.Should().BeOfType<ViewModelWithOrganisationRole>().Subject;
+        model.OrganisationRole.Should().Be(OrganisationRoles.Producer);
     }
 
     [Test]
@@ -943,7 +978,7 @@ public class PrnsObligationControllerTests
             .ReturnsAsync(false);
         var controller = CreateController();
 
-        var result = await controller.ComplianceCertificate();
+        var result = await controller.ComplianceCertificate(new ChooseYearViewModel());
 
         result.Should().BeOfType<NotFoundResult>();
     }
@@ -961,7 +996,7 @@ public class PrnsObligationControllerTests
         _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
         var controller = CreateController();
 
-        var result = await controller.ComplianceCertificate();
+        var result = await controller.ComplianceCertificate(new ChooseYearViewModel());
 
         result.Should().BeOfType<NotFoundResult>();
     }
