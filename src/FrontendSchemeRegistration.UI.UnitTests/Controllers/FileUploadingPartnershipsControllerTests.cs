@@ -147,6 +147,31 @@ public class FileUploadingPartnershipsControllerTests
     }
 
     [Test]
+    public async Task Get_ReturnsPartnershipsUploadingView_WithoutRegistrationYear_WhenRegistrationYearIsNull()
+    {
+        // Arrange
+        var submission = new RegistrationSubmission
+        {
+            Id = SubmissionId,
+            PartnershipsDataComplete = false
+        };
+
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(submission);
+
+        _registrationPeriodProviderMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns((int?)null);
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("FileUploadingPartnerships");
+        result.Model.As<FileUploadingViewModel>().SubmissionId.Should().Be(SubmissionId.ToString());
+        result.Model.As<FileUploadingViewModel>().RegistrationYear.Should().BeNull();
+    }
+
+    [Test]
     public async Task Get_RedirectsToFileUploadPartnerships_WhenNoSubmissionIsFound()
     {
         // Act

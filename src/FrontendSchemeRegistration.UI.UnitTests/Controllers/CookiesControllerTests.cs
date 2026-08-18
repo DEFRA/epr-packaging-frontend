@@ -154,6 +154,29 @@ public class CookiesControllerTests
     }
 
     [Test]
+    public void Detail_ReturnUrlIsNull_SetBacklinkAndCurrentPage()
+    {
+        string returnUrl = null;
+
+        var mockUrlHelper = new Mock<IUrlHelper>();
+        mockUrlHelper
+            .Setup(m => m.Content("~/"))
+            .Returns("/")
+            .Verifiable();
+
+        _systemUnderTest.Url = mockUrlHelper.Object;
+
+        var result = _systemUnderTest!.Detail(returnUrl);
+        var viewResult = (ViewResult)result;
+        var cookieDetailViewModel = (CookieDetailViewModel)viewResult.Model!;
+
+        result.Should().BeOfType(typeof(ViewResult));
+        viewResult.ViewData["BackLinkToDisplay"].Should().Be("/");
+        viewResult.ViewData["CurrentPage"].Should().Be("/");
+        cookieDetailViewModel.ReturnUrl.Should().Be("/");
+    }
+
+    [Test]
     public void Detail_PostCookieAccepted_SetsTempData()
     {
         const string returnUrl = "/report-data/test?p=1";

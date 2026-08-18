@@ -360,6 +360,47 @@ public class FileUploadSubLandingControllerTests
     [Test]
     [TestCase(OrganisationRoles.Producer)]
     [TestCase(OrganisationRoles.ComplianceScheme)]
+    public async Task Get_ShowsNotStarted_WhenUploadedFileIsNotValid(string organisationRole)
+    {
+        // Arrange
+        var selectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), Name = "Acme Org Ltd" };
+        var submissionId = Guid.NewGuid();
+        var pomSubmission = new PomSubmission
+        {
+            Id = submissionId,
+            HasValidFile = false,
+            PomFileUploadDateTime = DateTime.Now.AddDays(-14),
+            SubmissionPeriod = _submissionPeriods[0].DataPeriod,
+            LastSubmittedFile = null
+        };
+        _submissionServiceMock.Setup(x => x.GetSubmissionsAsync<PomSubmission>(
+                It.IsAny<List<string>>(), 2, selectedComplianceScheme.Id))
+            .ReturnsAsync(new List<PomSubmission> { pomSubmission });
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<PomSubmission>(submissionId))
+            .ReturnsAsync(pomSubmission);
+
+        _sessionMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession { SelectedComplianceScheme = selectedComplianceScheme },
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation> { new() { OrganisationRole = organisationRole } }
+                }
+            });
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("FileUploadSubLanding");
+        result.Model.Should().BeOfType<FileUploadSubLandingViewModel>();
+        result.Model.As<FileUploadSubLandingViewModel>().SubmissionPeriodDetailGroups[0].SubmissionPeriodDetails[0].Status.Should().Be(SubmissionPeriodStatus.NotStarted);
+    }
+
+    [Test]
+    [TestCase(OrganisationRoles.Producer)]
+    [TestCase(OrganisationRoles.ComplianceScheme)]
     public async Task Get_ShowsInProgress_WhenResubmissionIsInProgress(string organisationRole)
     {
         // Arrange
@@ -1896,6 +1937,64 @@ public class FileUploadSubLandingControllerTests
         result.ActionName.Should().Be(nameof(FileUploadCheckFileAndSubmitController.Get));
         result.ControllerName.Should().Be(nameof(FileUploadCheckFileAndSubmitController).RemoveControllerFromName());
         result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(submission.Id);
+    }
+
+    [Test]
+    public async Task Post_RedirectsToFileUpload_When_InitialSubmissionWasNeverAccepted_AndUploadedFileIdMatchesSubmittedFileId()
+    {
+        // Arrange
+        var submissionPeriod = _submissionPeriods[0].DataPeriod;
+        var submission = CreatePomSubmissionWithWarningsAndFileIdMismatch();
+        submission.HasValidFile = true;
+        submission.LastUploadedValidFile.FileId = submission.LastSubmittedFile.FileId;
+
+        submission.HasWarnings = false;
+        submission.ValidationPass = false;
+
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionsAsync<PomSubmission>(
+                It.IsAny<List<string>>(),
+                It.IsAny<int>(),
+                It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<PomSubmission> { submission });
+
+        _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(false);
+
+        _sessionMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SubmissionPeriod = submissionPeriod
+                },
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation> { new() { Id = Guid.NewGuid(), OrganisationRole = OrganisationRoles.Producer } }
+                },
+                PomResubmissionSession = new PackagingReSubmissionSession()
+                {
+                    PackagingResubmissionApplicationSessions = new List<PackagingResubmissionApplicationSession>()
+                    {
+                        new PackagingResubmissionApplicationSession()
+                        {
+                            SubmissionId = submission.Id,
+                            ApplicationStatus = ApplicationStatusType.NotStarted
+                        }
+                    }
+                }
+            });
+
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)))
+            .ReturnsAsync(true);
+
+        // Act
+        var result = await _systemUnderTest.Post(submissionPeriod) as RedirectToActionResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        result.ActionName.Should().Be(nameof(FileUploadController.Get));
+        result.ControllerName.Should().Be("FileUpload");
     }
 
     [Test]

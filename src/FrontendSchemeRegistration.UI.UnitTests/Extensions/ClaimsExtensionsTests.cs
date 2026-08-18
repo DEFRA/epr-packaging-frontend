@@ -289,4 +289,89 @@ public class ClaimsExtensionsTests
         // Assert
         result.Should().BeNull();
     }
+
+    [Test]
+    public void TryGetOrganisatonIds_ShouldReturnNull_WhenClaimsPresentButNoneAreOrganisationIds()
+    {
+        // Arrange
+        var claimsPrincipalMock = new Mock<ClaimsPrincipal>();
+        claimsPrincipalMock.Setup(x => x.Claims).Returns(new[] { new Claim(ClaimTypes.Name, "some-user") });
+
+        // Act
+        var result = claimsPrincipalMock.Object.TryGetOrganisatonIds();
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public void GetOrganisationId_ShouldReturnOrganisationId_WhenOrganisationsListHasAnEntry()
+    {
+        // Arrange
+        var userData = _fixture.Build<UserData>()
+            .With(x => x.Organisations, new List<Organisation> { _fixture.Create<Organisation>() })
+            .Create();
+        var serializedUserData = JsonSerializer.Serialize(userData);
+
+        var claimsPrincipalMock = new Mock<ClaimsPrincipal>();
+        claimsPrincipalMock.Setup(x => x.Claims).Returns(new[] { new Claim(ClaimTypes.UserData, serializedUserData) });
+
+        // Act
+        var result = claimsPrincipalMock.Object.GetOrganisationId();
+
+        // Assert
+        result.Should().Be(userData.Organisations.First().Id);
+    }
+
+    [Test]
+    public void GetOrganisationId_ShouldReturnNull_WhenOrganisationsListIsEmpty()
+    {
+        // Arrange
+        var userData = _fixture.Build<UserData>()
+            .With(x => x.Organisations, new List<Organisation>())
+            .Create();
+        var serializedUserData = JsonSerializer.Serialize(userData);
+
+        var claimsPrincipalMock = new Mock<ClaimsPrincipal>();
+        claimsPrincipalMock.Setup(x => x.Claims).Returns(new[] { new Claim(ClaimTypes.UserData, serializedUserData) });
+
+        // Act
+        var result = claimsPrincipalMock.Object.GetOrganisationId();
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public void GetOrganisationId_ShouldReturnNull_WhenOrganisationsListIsNull()
+    {
+        // Arrange
+        var userData = _fixture.Build<UserData>()
+            .With(x => x.Organisations, (List<Organisation>)null)
+            .Create();
+        var serializedUserData = JsonSerializer.Serialize(userData);
+
+        var claimsPrincipalMock = new Mock<ClaimsPrincipal>();
+        claimsPrincipalMock.Setup(x => x.Claims).Returns(new[] { new Claim(ClaimTypes.UserData, serializedUserData) });
+
+        // Act
+        var result = claimsPrincipalMock.Object.GetOrganisationId();
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public void GetOrganisationId_ShouldReturnNull_WhenUserDataClaimDeserializesToNull()
+    {
+        // Arrange
+        var claimsPrincipalMock = new Mock<ClaimsPrincipal>();
+        claimsPrincipalMock.Setup(x => x.Claims).Returns(new[] { new Claim(ClaimTypes.UserData, "null") });
+
+        // Act
+        var result = claimsPrincipalMock.Object.GetOrganisationId();
+
+        // Assert
+        result.Should().BeNull();
+    }
 }
