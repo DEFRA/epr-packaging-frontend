@@ -56,7 +56,7 @@ public class ManageObligationsPageTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain($"Your {ComplianceYear} recycling obligations will be calculated after:");
+        content.Should().Contain("Your recycling obligations will be calculated after:");
         content.Should().Contain($"you submit your packaging data for {ComplianceYear - 1}");
         content.Should().Contain("the regulator accepts your data submissions");
         content.Should().Contain("You can start acquiring and accepting PRNs and PERNs to meet your recycling obligations.");
