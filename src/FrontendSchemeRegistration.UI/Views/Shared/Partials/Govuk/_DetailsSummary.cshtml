@@ -1,0 +1,17 @@
+@{
+    var DetailsSummaryInitialState = ViewData["InitialState"].ToString() ?? "open";
+    var OpenState = DetailsSummaryInitialState == "open";
+    var DetailsSummaryHeading = ViewData["Heading"]?.ToString() ?? string.Empty;
+    var DetailsSummaryContent = ViewData["Content"] ?? string.Empty;
+}
+<details class="govuk-details" open="@OpenState">
+  <summary class="govuk-details__summary">
+    <span class="govuk-details__summary-text">
+        @DetailsSummaryHeading
+    </span>
+  </summary>
+  <div class="govuk-details__text">
+    @DetailsSummaryContent
+  </div>
+</details>
+
