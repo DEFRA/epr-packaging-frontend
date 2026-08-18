@@ -124,6 +124,40 @@
         }
 
         [Test]
+        public async Task SearchPrns_WhenServiceReturnsNull_ReturnsViewWithNullModel()
+        {
+            // Arrange
+            var request = _fixture.Create<SearchPrnsViewModel>();
+            _prnServiceMock.Setup(x => x.GetPrnSearchResultsAsync(request)).ReturnsAsync((PrnSearchResultListViewModel)null);
+
+            // Act
+            var result = await _controller.SearchPrns(request);
+
+            // Assert
+            var view = result.Should().BeOfType<ViewResult>().Which;
+            view.ViewName.Should().BeNull();
+            view.Model.Should().BeNull();
+        }
+
+        [Test]
+        public async Task SearchPrns_WhenAllResultsAreNull_ReturnsViewWithOriginalModel()
+        {
+            // Arrange
+            var request = new SearchPrnsViewModel { FilterBy = "SomeFilter" };
+            var emptySearchResult = new PrnSearchResultListViewModel { ActivePageOfResults = new() };
+            _prnServiceMock.Setup(x => x.GetPrnSearchResultsAsync(request)).ReturnsAsync(emptySearchResult);
+            // no setup for the default (unfiltered) request, so the second lookup resolves to null
+
+            // Act
+            var result = await _controller.SearchPrns(request);
+
+            // Assert
+            var view = result.Should().BeOfType<ViewResult>().Which;
+            view.ViewName.Should().BeNull();
+            view.Model.Should().Be(emptySearchResult);
+        }
+
+        [Test]
         public async Task SearchPrns_ShouldReturnViewWithCorrectModel_WhenPageIsValid()
         {
             // Arrange
@@ -337,6 +371,70 @@
             request.FilterBy.Should().Be(PrnConstants.Filters.AwaitingAll);
         }
 
+        [Test]
+        public async Task SelectMultiplePrns_WhenNoTempDataError_DoesNotAddModelError()
+        {
+            // Arrange
+            var request = _fixture.Create<SearchPrnsViewModel>();
+            var awaitngPrns = _fixture.Create<AwaitingAcceptancePrnsViewModel>();
+            _prnServiceMock.Setup(x => x.GetPrnAwaitingAcceptanceSearchResultsAsync(request)).ReturnsAsync(awaitngPrns);
+
+            // Act
+            var result = await _controller.SelectMultiplePrns(request);
+
+            // Assert
+            var view = result.Should().BeOfType<ViewResult>().Which;
+            view.ViewData.ModelState.Count.Should().Be(0);
+        }
+
+        [Test]
+        public async Task SelectMultiplePrns_ShouldReturnViewWithCorrectModel_WhenMatchesFound()
+        {
+            // Arrange
+            var request = _fixture.Create<SearchPrnsViewModel>();
+            var awaitngPrns = _fixture.Create<AwaitingAcceptancePrnsViewModel>();
+            var testUrl = _fixture.Create<string>();
+            _prnServiceMock.Setup(x => x.GetPrnAwaitingAcceptanceSearchResultsAsync(request)).ReturnsAsync(awaitngPrns);
+            _urlHelperMock.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(testUrl);
+
+            // Act
+            var result = await _controller.SelectMultiplePrns(request);
+
+            // Assert
+            var view = result.Should().BeOfType<ViewResult>().Which;
+            view.Model.Should().Be(awaitngPrns);
+
+            var model = view.Model as AwaitingAcceptancePrnsViewModel;
+            model.SelectedFilter.Should().Be(request.FilterBy);
+            model.SelectedSort.Should().Be(request.SortBy);
+            model.PagingDetail.PagingLink.Should().Be(testUrl + $"?sortBy={request.SortBy}&filterBy={request.FilterBy}&page=");
+
+            _controller.ViewData.Should().ContainKey("BackLinkToDisplay");
+        }
+
+        [Test]
+        public async Task SelectMultiplePrns_ShouldSaveSessionBackLink_WithCorrectContent()
+        {
+            // Arrange
+            var request = _fixture.Create<SearchPrnsViewModel>();
+            var awaitngPrns = _fixture.Create<AwaitingAcceptancePrnsViewModel>();
+            _prnServiceMock.Setup(x => x.GetPrnAwaitingAcceptanceSearchResultsAsync(request)).ReturnsAsync(awaitngPrns);
+            _urlHelperMock.Setup(x => x.Content(It.IsAny<string>())).Returns<string>(url => url);
+
+            FrontendSchemeRegistrationSession savedSession = null;
+            _sessionManagerMock
+                .Setup(x => x.SaveSessionAsync(It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()))
+                .Callback<ISession, FrontendSchemeRegistrationSession>((_, session) => savedSession = session)
+                .Returns(Task.CompletedTask);
+
+            // Act
+            await _controller.SelectMultiplePrns(request);
+
+            // Assert
+            savedSession.Should().NotBeNull();
+            savedSession.PrnSession.Backlinks["SelectSinglePrn"].Should().Be($"~/{PagePaths.Prns.ShowAwaitingAcceptance}");
+        }
+
         // Accept or reject single Prn. Step 2 of 5 when accepting or rejecting single PRN
         [Test]
         public async Task SelectSinglePrn_LoadTheStandardResponse()
@@ -354,6 +452,22 @@
             _sessionManagerMock.Verify(x => x.GetSessionAsync(It.IsAny<ISession>()), Times.Once);
         }
 
+
+        [Test]
+        public async Task SelectSinglePrn_UsesBackLinkFromSession_WhenPresent()
+        {
+            var session = new FrontendSchemeRegistrationSession();
+            session.PrnSession.Backlinks["SelectSinglePrn"] = "/report-data/search-prns";
+            _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+            _prnServiceMock.Setup(x => x.GetPrnByExternalIdAsync(It.IsAny<Guid>())).ReturnsAsync(new PrnViewModel());
+
+            // Act
+            var result = await _controller.SelectSinglePrn(Guid.NewGuid()) as ViewResult;
+
+            // Assert
+            result.ViewName.Should().BeNull();
+            ((string)_controller.ViewBag.BackLinkToDisplay).Should().Be("/report-data/search-prns");
+        }
 
         [Test]
         public async Task DownloadPrnsToCsv_WhenZeroPrns_ReturnsEmptyView()

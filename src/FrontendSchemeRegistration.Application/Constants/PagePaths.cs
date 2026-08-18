@@ -126,6 +126,7 @@ public static class PagePaths
         public const string DownloadAllPRNsAndPERNs = "download-prns-csv";
 
         // Accept single PRN
+        public const string AskToChooseAcceptanceYear = "choose-acceptance-year";
         public const string AskToAccept = "accept-prn";
         public const string ConfirmAccept = "confirm-accept-prn";
         public const string Accepted = "accepted-prn";

@@ -49,7 +49,7 @@ public interface IWebApiGatewayClient
 
     Task<PrnModel> GetPrnByExternalIdAsync(Guid id);
 
-    Task SetPrnApprovalStatusToAcceptedAsync(Guid id);
+    Task SetPrnApprovalStatusToAcceptedAsync(Guid id, string? obligationYear = null);
 
     Task SetPrnApprovalStatusToAcceptedAsync(Guid[] ids);
 

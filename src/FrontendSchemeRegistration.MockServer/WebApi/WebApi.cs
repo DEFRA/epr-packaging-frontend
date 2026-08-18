@@ -13,6 +13,29 @@ public static class WebApi
     public static WireMockServer WithWebApi(this WireMockServer server, WebApiOptions? options = null)
     {
         options ??= new WebApiOptions();
+
+        server.Given(Request.Create().UsingGet().WithPath("/admin/health"))
+            .RespondWith(Response.Create().WithStatusCode(200).WithBody("Healthy"));
+
+        server.Given(Request.Create().UsingGet().WithPath("/admin/health/all"))
+            .RespondWith(Response.Create()
+                .WithStatusCode(200)
+                .WithHeader("Content-Type", "application/json")
+                .WithBody("""
+                    {
+                      "status": "Healthy",
+                      "results": {
+                        "WasteObligations": {
+                          "status": "Healthy",
+                          "statusCode": 200,
+                          "response": {
+                            "status": "Healthy",
+                            "results": {}
+                          }
+                        }
+                      }
+                    }
+                    """));
         
         // Actual submission period
         server.Given(Request.Create()
@@ -109,7 +132,7 @@ public static class WebApi
         server.Given(Request.Create().UsingGet().WithPath("/api/v1/prn/search"))
             .RespondWith(Response.Create().WithStatusCode(200)
                 .WithHeader("Content-Type", "application/json")
-                .WithBodyFromFile("WebApi/Responses/WebApi/v1_prn_search.json"));
+                .WithBodyFromFile($"WebApi/Responses/WebApi/{options.PrnSearchResponseFile}"));
 
         server.Given(Request.Create().UsingGet().WithPath("/api/v1/prn/00000000-0000-0000-0000-000000000001"))
             .RespondWith(Response.Create().WithStatusCode(200)

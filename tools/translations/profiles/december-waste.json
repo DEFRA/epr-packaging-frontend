@@ -53,6 +53,32 @@
       ]
     },
     {
+      "id": "prns-choose-acceptance-year",
+      "fileName": "04-choose-acceptance-year.xlsx",
+      "route": "/report-data/choose-acceptance-year/{id}",
+      "view": "src/FrontendSchemeRegistration.UI/Views/PrnsAccept/ChooseAcceptanceYear.cshtml",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1932-66964",
+      "notes": "Choose which year to accept a December Waste PRN or PERN into when two obligation years are available.",
+      "featureFlags": [
+        "ShowPrn",
+        "ShowMultiYearObligations"
+      ],
+      "appSettings": {},
+      "resources": [
+        {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/ChooseAcceptanceYear.en.resx",
+          "section": "Choose which year to accept into page.",
+          "keys": [
+            "page_title_prn",
+            "page_title_pern",
+            "heading_prn",
+            "heading_pern",
+            "select_a_year"
+          ]
+        }
+      ]
+    },
+    {
       "id": "account-home-manage-recycling-obligations-tile",
       "fileName": "03-account-home-manage-recycling-obligations-tile.xlsx",
       "route": "/report-data/home-self-managed",
@@ -97,6 +123,78 @@
           "keys": [
             "title",
             "select_a_year"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prns-accept-single-confirm",
+      "fileName": "05-accept-single-sonfirm-prn.xlsx",
+      "route": "/report-data/accept-prn/{id}",
+      "view": "src/FrontendSchemeRegistration.UI/Views/PrnsAccept/AcceptSinglePrn.cshtml",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1932-66960&t=kwdkV7tx2CNkKvrA-0",
+      "notes": "Single PRN Accepted year confirmation page.",
+      "featureFlags": [
+        "ShowPrn",
+        "ShowMultiYearObligations"
+      ],
+      "appSettings": {},
+      "resources": [
+        {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/AcceptSinglePrn.en.resx",
+          "section": "Single PRN Accepted year confirmation page",
+          "keys": [
+            "acceptance_year_confirmation",
+            "acceptance_years_confirmation",
+            "accepted_towards_recycling_obligations_confirmation"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prns-accepted-multi",
+      "fileName": "06-accepted-prns.xlsx",
+      "route": "/report-data/accepted-prns",
+      "view": "src/FrontendSchemeRegistration.UI/Views/PrnsAccept/AcceptedPrns.cshtml",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-113629",
+      "notes": "Multi-accept confirmation page: multi-year green panel heading and blue material tile text.",
+      "featureFlags": [
+        "ShowPrn",
+        "ShowMultiYearObligations"
+      ],
+      "appSettings": {},
+      "resources": [
+        {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/AcceptedPrns.en.resx",
+          "section": "Multi-year multi-accept confirmation panel and material tiles.",
+          "keys": [
+            "you_have_accepted_one_prn_or_pern_multi_year",
+            "you_have_accepted_multipe_prn_or_pern_multi_year",
+            "you_have_accepted_mix_prns_and_perns_multi_year",
+            "accepted_towards_your_material_obligation_multi_year"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prns-obligations-home-no-obligations",
+      "fileName": "07-obligations-home-no-obligations.xlsx",
+      "route": "/report-data/manage-your-recycling-obligations",
+      "view": "src/FrontendSchemeRegistration.UI/Views/PrnsObligation/ObligationsHome.cshtml",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
+      "notes": "Manage obligations page: alternative intro content when there are no obligations yet (all zeros / No data yet).",
+      "featureFlags": [
+        "ShowPrn",
+        "ShowMultiYearObligations"
+      ],
+      "appSettings": {},
+      "resources": [
+        {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ObligationsHome.en.resx",
+          "section": "No-obligations alternative content below How to meet your recycling obligations.",
+          "keys": [
+            "your_yyyy_recycling_obligations_will_be",
+            "the_regulator_accepts_your_h1_and_h2_packaging_data_submissions"
           ]
         }
       ]

@@ -211,6 +211,34 @@ public class SubmissionServiceTests
     }
 
     [Test]
+    public async Task SubmitAsync_DefaultsNotifyPaymentServiceToTrue()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var fileId = Guid.NewGuid();
+
+        // Act
+        await _submissionService.SubmitAsync(submissionId, fileId, "TestSubmittedBy");
+
+        // Assert
+        _webApiGatewayClientMock.Verify(x => x.SubmitAsync(submissionId, It.Is<SubmissionPayload>(p => p.NotifyPaymentService == true)), Times.Once);
+    }
+
+    [Test]
+    public async Task SubmitAsync_PropagatesNotifyPaymentServiceFalse()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var fileId = Guid.NewGuid();
+
+        // Act
+        await _submissionService.SubmitAsync(submissionId, fileId, "TestSubmittedBy", registrationContext: new RegistrationSubmitContext { NotifyPaymentService = false });
+
+        // Assert
+        _webApiGatewayClientMock.Verify(x => x.SubmitAsync(submissionId, It.Is<SubmissionPayload>(p => p.NotifyPaymentService == false)), Times.Once);
+    }
+
+    [Test]
     public async Task WhenSubmitAsyncIsCalledToSaveSubmissionType_CallsWebApiGatewayClient()
     {
         // Arrange

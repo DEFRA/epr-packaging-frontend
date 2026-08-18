@@ -58,6 +58,22 @@ public class PrnMappingContractTests : TestBase
         processToBeUsed = (string?)null
     };
 
+    private const string DecemberWastePrnId = "00000000-0000-0000-0000-000000000010";
+
+    private static object DecemberWastePrn => new
+    {
+        id = 10,
+        externalId = DecemberWastePrnId,
+        prnNumber = "CONTRACT-PRN-010",
+        materialName = "Aluminium",
+        issueDate = "2025-06-15T10:30:00",
+        prnStatus = "AWAITINGACCEPTANCE",
+        tonnageValue = 999,
+        obligationYear = "2025",
+        isExport = false,
+        decemberWaste = true
+    };
+
     // prnNumber → PrnOrPernNumber
     // issuedByOrg → IssuedBy
     // prnSignatory → AuthorisedBy
@@ -178,6 +194,36 @@ public class PrnMappingContractTests : TestBase
             because: "null PrnSignatoryPosition and ProcessToBeUsed should map to empty string, not throw");
     }
 
+    // decemberWaste true → IsDecemberWaste=true → December waste warning rendered with the obligation year
+    [Test]
+    [Category("IntegrationTest")]
+    public async Task SelectedPrn_ReturnsOk_WithDecemberWasteWarning_WhenDecemberWasteIsTrue()
+    {
+        SetupPrnById(DecemberWastePrnId, DecemberWastePrn);
+
+        var response = await Client.GetAsync($"/report-data/selected-prn/{DecemberWastePrnId}");
+
+        response.Should().HaveStatusCode(HttpStatusCode.OK);
+        var content = await response.Content.ReadAsStringAsync();
+        content.Should().Contain("This PRN relates to waste received for reprocessing in December 2025",
+            because: "decemberWaste=true should map to IsDecemberWaste and render the December waste warning for the obligation year");
+    }
+
+    // decemberWaste false → IsDecemberWaste=false → no December waste warning rendered
+    [Test]
+    [Category("IntegrationTest")]
+    public async Task SelectedPrn_ReturnsOk_WithoutDecemberWasteWarning_WhenDecemberWasteIsFalse()
+    {
+        SetupPrnById(FullyPopulatedPrnId, FullyPopulatedPrn);
+
+        var response = await Client.GetAsync($"/report-data/selected-prn/{FullyPopulatedPrnId}");
+
+        response.Should().HaveStatusCode(HttpStatusCode.OK);
+        var content = await response.Content.ReadAsStringAsync();
+        content.Should().NotContain("relates to waste received for reprocessing in December",
+            because: "decemberWaste=false should map to IsDecemberWaste=false and not render the warning");
+    }
+
     // CSV column headers: all renamed fields should appear under their mapped names
     [Test]
     [Category("IntegrationTest")]
@@ -194,6 +240,26 @@ public class PrnMappingContractTests : TestBase
         headerRow.Should().Be(
             "PRN or PERN number,PRN or PERN,Status,Issued by,Issued to,Accreditation number,Date issued,December waste,Material,Recycling process,Tonnes,Date accepted,Date cancelled,Issuer note",
             because: "all renamed fields should appear under their mapped display names in the CSV header");
+    }
+
+    // AcceptSinglePrn heading text switches to the "are you sure" confirm wording
+    // when FeatureManagement:ShowMultiYearObligations is enabled.
+    [Test]
+    [Category("IntegrationTest")]
+    public async Task AcceptSinglePrn_ReturnsOk_WithConfirmHeading_WhenMultiYearObligationsEnabled()
+    {
+        await ReconfigureAsync(new Dictionary<string, string?>
+        {
+            ["FeatureManagement:ShowMultiYearObligations"] = "true"
+        });
+        SetupPrnById(FullyPopulatedPrnId, FullyPopulatedPrn);
+
+        var response = await Client.GetAsync($"/report-data/accept-prn/{FullyPopulatedPrnId}");
+
+        response.Should().HaveStatusCode(HttpStatusCode.OK);
+        var content = await response.Content.ReadAsStringAsync();
+        content.Should().Contain("Are you sure you want to accept this PRN",
+            because: "ShowMultiYearObligations=true should render the confirm heading instead of the plain accept heading");
     }
 
     // CSV data row: verify field renames appear in the correct column positions
