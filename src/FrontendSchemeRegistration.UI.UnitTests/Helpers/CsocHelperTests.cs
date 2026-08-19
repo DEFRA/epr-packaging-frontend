@@ -284,6 +284,103 @@ public class CsocHelperTests
     }
 
     [Test]
+    [SetUICulture(Language.Welsh)]
+    public async Task CreateViewModel_WhenWelsh_ShouldAppendLangToCertificateUrlWithYear()
+    {
+        var organisationId = Guid.NewGuid();
+        var now = DateTime.Now;
+
+        var result = await CsocHelper.CreateViewModel(
+            MockFeatureManager.Object,
+            isApprovedUser: true,
+            new Organisation
+            {
+                Id = organisationId,
+                OrganisationRole = OrganisationRoles.Producer
+            },
+            now,
+            new CsocOptions
+            {
+                WasteObligationsBaseAddress = "https://understanding-obligations"
+            });
+
+        result.Should().NotBeNull();
+        result?.WasteObligationsBaseAddress.Should()
+            .Be($"https://understanding-obligations/compliance/producer/{organisationId}/certificate?year={now.GetComplianceYear()}&lang=cy");
+    }
+
+    [Test]
+    [SetUICulture(Language.Welsh)]
+    public async Task CreateViewModel_WhenWelsh_ShouldAppendLangToCertificateDeepLink()
+    {
+        var organisationId = Guid.NewGuid();
+        const string complianceDeclarationId = "6830b9d4c7e21f5a8d3e64b2";
+
+        var result = await CsocHelper.CreateViewModel(
+            MockFeatureManager.Object,
+            isApprovedUser: true,
+            new Organisation
+            {
+                Id = organisationId,
+                OrganisationRole = OrganisationRoles.Producer
+            },
+            DateTime.Now,
+            new CsocOptions
+            {
+                WasteObligationsBaseAddress = "https://understanding-obligations"
+            },
+            new PrnObligationViewModel
+            {
+                OverallStatus = ObligationStatus.Met,
+                ComplianceDeclarationStatus = ComplianceDeclarationStatus.Submitted,
+                ComplianceDeclarationId = complianceDeclarationId
+            });
+
+        result.Should().NotBeNull();
+        result?.WasteObligationsBaseAddress.Should()
+            .Be($"https://understanding-obligations/compliance/producer/{organisationId}/certificate/{complianceDeclarationId}?lang=cy");
+    }
+
+    [Test]
+    [SetUICulture("cy-GB")]
+    public async Task CreateViewModel_WhenWelshRegionCulture_ShouldAppendLangToStatementUrl()
+    {
+        var organisationId = Guid.NewGuid();
+        var complianceSchemeId = Guid.NewGuid();
+        var now = DateTime.Now;
+        var session = new RegistrationSession
+        {
+            SelectedComplianceScheme = new ComplianceSchemeDto
+            {
+                Id = complianceSchemeId
+            }
+        };
+
+        var result = await CsocHelper.CreateViewModel(
+            MockFeatureManager.Object,
+            isApprovedUser: true,
+            new Organisation
+            {
+                Id = organisationId,
+                OrganisationRole = OrganisationRoles.ComplianceScheme
+            },
+            now,
+            new CsocOptions
+            {
+                WasteObligationsBaseAddress = "https://understanding-obligations"
+            },
+            new PrnObligationViewModel
+            {
+                OverallStatus = ObligationStatus.Met
+            },
+            session);
+
+        result.Should().NotBeNull();
+        result?.WasteObligationsBaseAddress.Should()
+            .Be($"https://understanding-obligations/compliance/cso/{complianceSchemeId}/statement?year={now.GetComplianceYear()}&lang=cy");
+    }
+
+    [Test]
     public async Task CreateViewModel_WhenOrganisationIsNeitherDirectProducerNorComplianceScheme_ShouldUseBaseAddress()
     {
         var organisationId = Guid.NewGuid();

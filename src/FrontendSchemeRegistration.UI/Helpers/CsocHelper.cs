@@ -1,5 +1,6 @@
 namespace FrontendSchemeRegistration.UI.Helpers;
 
+using System.Globalization;
 using Application.Enums;
 using Application.Extensions;
 using Application.Options;
@@ -7,6 +8,7 @@ using Application.Services.Interfaces;
 using Constants;
 using EPR.Common.Authorization.Models;
 using Extensions;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.FeatureManagement;
 using Sessions;
@@ -39,13 +41,14 @@ public static class CsocHelper
             IsComplianceScheme = organisation.IsComplianceScheme(),
             SubmissionDeadline = now.GetCsocSubmissionDeadline(),
             ComplianceYear = complianceYear,
-            WasteObligationsBaseAddress = GetWasteObligationsBaseAddress(
-                options.WasteObligationsBaseAddress,
-                organisation,
-                complianceYear,
-                complianceDeclarationStatus,
-                prnObligationViewModel?.ComplianceDeclarationId,
-                registrationSession),
+            WasteObligationsBaseAddress = AppendLangQuery(
+                GetWasteObligationsBaseAddress(
+                    options.WasteObligationsBaseAddress,
+                    organisation,
+                    complianceYear,
+                    complianceDeclarationStatus,
+                    prnObligationViewModel?.ComplianceDeclarationId,
+                    registrationSession)),
             IsObligationDataSubmitted = prnObligationViewModel is not null &&
                                         prnObligationViewModel.OverallStatus != ObligationStatus.NoDataYet,
             ComplianceDeclarationStatus = complianceDeclarationStatus,
@@ -151,6 +154,23 @@ public static class CsocHelper
 
     private static Guid GetSchemeId(Guid organisationId, RegistrationSession? registrationSession) =>
         registrationSession?.SelectedComplianceScheme?.Id ?? organisationId;
+
+    private static string? AppendLangQuery(string? url)
+    {
+        if (string.IsNullOrEmpty(url))
+        {
+            return url;
+        }
+
+        var locale = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+
+        if (!string.Equals(locale, Language.Welsh, StringComparison.OrdinalIgnoreCase))
+        {
+            return url;
+        }
+
+        return QueryHelpers.AddQueryString(url, "lang", Language.Welsh);
+    }
 
     public static string? GetWasteObligationsClearSessionUrl(string? wasteObligationsBaseAddress)
     {
