@@ -1,3 +1,4 @@
+@using Microsoft.AspNetCore.Html
 @using FrontendSchemeRegistration.Application.Extensions;
 @using FrontendSchemeRegistration.UI.ViewModels.Prns;
 @inject TimeProvider TimeProvider
@@ -13,8 +14,8 @@
 
 @if (ShowAccordion) {
     @await Html.PartialAsync("../Shared/Partials/Govuk/_DetailsSummary", new ViewDataDictionary(ViewData) {
-        { "InitialState", "open" },  
+        { "InitialState", true },  
         { "Heading", "Lorem ipsum dolor sit amet" }, 
-        { "Content", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat." }
+        { "Content", new HtmlString("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. <ul><li>prīmus</li><li>secundus</li><li>tertius</li></ul>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.") }
     })
 }

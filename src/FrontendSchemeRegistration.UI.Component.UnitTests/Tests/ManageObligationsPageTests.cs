@@ -82,6 +82,65 @@ public class ManageObligationsPageTests
         content.Should().NotContain("H1 and H2");
     }
 
+    [Test]
+    public async Task WhenFutureYearSelected_InDecemberJanuaryFlashWindow_WithDecemberWastePrnAwaitingAcceptance_ShowsDetailsSummaryAccordion()
+    {
+        SetUp(
+            showMultiYearObligations: true,
+            obligationData: WebApiOptions.ObligationDataType.NoDataYet,
+            prnOrganisationData: WebApiOptions.PrnOrganisationDataType.DecemberWasteAwaitingAcceptance,
+            startupUtcTimestampOverride: "2026-12-15T08:00:00Z");
+        await Context.Client.AuthenticateDefaultUser();
+        SetProducerSession(selectedObligationYear: ComplianceYear + 1);
+
+        var response = await Context.Client.GetAsync(ObligationsHomePath);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        content.Should().Contain("govuk-details");
+        content.Should().Contain("Lorem ipsum dolor sit amet");
+    }
+
+    [Test]
+    public async Task WhenFutureYearSelected_InDecemberJanuaryFlashWindow_WithDecemberWastePrnAwaitingAcceptance_RendersHtmlStringContentUnescaped()
+    {
+        SetUp(
+            showMultiYearObligations: true,
+            obligationData: WebApiOptions.ObligationDataType.NoDataYet,
+            prnOrganisationData: WebApiOptions.PrnOrganisationDataType.DecemberWasteAwaitingAcceptance,
+            startupUtcTimestampOverride: "2026-12-15T08:00:00Z");
+        await Context.Client.AuthenticateDefaultUser();
+        SetProducerSession(selectedObligationYear: ComplianceYear + 1);
+
+        var response = await Context.Client.GetAsync(ObligationsHomePath);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+
+        // The partial passes Content as an HtmlString, so its markup must render raw rather than HTML-encoded.
+        content.Should().Contain("<ul><li>prīmus</li><li>secundus</li><li>tertius</li></ul>");
+        content.Should().NotContain("&lt;ul&gt;");
+        content.Should().NotContain("&lt;li&gt;");
+    }
+
+    [Test]
+    public async Task WhenFutureYearSelected_InDecemberJanuaryFlashWindow_WithoutDecemberWastePrnAwaitingAcceptance_HidesDetailsSummaryAccordion()
+    {
+        SetUp(
+            showMultiYearObligations: true,
+            obligationData: WebApiOptions.ObligationDataType.NoDataYet,
+            prnOrganisationData: WebApiOptions.PrnOrganisationDataType.Default,
+            startupUtcTimestampOverride: "2026-12-15T08:00:00Z");
+        await Context.Client.AuthenticateDefaultUser();
+        SetProducerSession(selectedObligationYear: ComplianceYear + 1);
+
+        var response = await Context.Client.GetAsync(ObligationsHomePath);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        content.Should().NotContain("govuk-details");
+    }
+
     [TearDown]
     public void TearDown()
     {
@@ -90,23 +149,33 @@ public class ManageObligationsPageTests
 
     private void SetUp(
         bool showMultiYearObligations,
-        WebApiOptions.ObligationDataType obligationData)
+        WebApiOptions.ObligationDataType obligationData,
+        WebApiOptions.PrnOrganisationDataType prnOrganisationData = WebApiOptions.PrnOrganisationDataType.Default,
+        string? startupUtcTimestampOverride = null)
     {
+        var additionalConfig = new Dictionary<string, string?>
+        {
+            { "FeatureManagement:ShowMultiYearObligations", showMultiYearObligations.ToString().ToLowerInvariant() },
+            { "FeatureManagement:CsocEnabled", "false" }
+        };
+
+        if (startupUtcTimestampOverride is not null)
+        {
+            additionalConfig["StartupUtcTimestampOverride"] = startupUtcTimestampOverride;
+        }
+
         Context.SetUp(
             overrideSession: true,
-            additionalConfig: new Dictionary<string, string?>
-            {
-                { "FeatureManagement:ShowMultiYearObligations", showMultiYearObligations.ToString().ToLowerInvariant() },
-                { "FeatureManagement:CsocEnabled", "false" }
-            },
+            additionalConfig: additionalConfig,
             new WebApiOptions
             {
                 ObligationData = obligationData,
+                PrnOrganisationData = prnOrganisationData,
                 ServiceRole = ServiceRoleConstants.Approved
             });
     }
 
-    private void SetProducerSession()
+    private void SetProducerSession(int? selectedObligationYear = null)
     {
         var sessionStore = Context.GetSessionStore();
         sessionStore.Session.Set(
@@ -133,6 +202,10 @@ public class ManageObligationsPageTests
                     {
                         Id = Accounts.ComplianceSchemeId
                     }
+                },
+                PrnSession = new PrnSession
+                {
+                    SelectedObligationYear = selectedObligationYear
                 }
             })));
     }
