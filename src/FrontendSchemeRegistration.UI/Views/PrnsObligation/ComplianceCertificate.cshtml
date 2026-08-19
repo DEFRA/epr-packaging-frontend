@@ -1,8 +1,20 @@
+
 @using FrontendSchemeRegistration.Application.Constants
+@using FrontendSchemeRegistration.Application.Enums
+@using FrontendSchemeRegistration.Application.Extensions
 @model FrontendSchemeRegistration.UI.ViewModels.ViewModelWithOrganisationRole
 
 @{
     var complianceKey = Model.IsComplianceScheme ? "compliance_scheme" : "direct_producer";
+    var nationId = Model.OrganisationNationId is null or (int)Nation.NotSet ? (int)Nation.England : Model.OrganisationNationId.Value;
+    var environmentAgencyName = NationExtensions.GetEnvironmentAgencyName(NationExtensions.GetNationNameFromId(nationId));
+    var mailToHref = nationId switch
+    {
+        (int)Nation.NorthernIreland => "northernireland.packaging_daera",
+        (int)Nation.Scotland => "scotland.packaging_EPA",
+        (int)Nation.Wales => "wales.packaging_NatRes",
+        _ => "england.packaging_producers_EA"
+    };
     ViewData["Title"] = Localizer[@String.Format("{0}_{1}", "title", complianceKey)];
 }
 
@@ -16,7 +28,7 @@
         <div class="govuk-grid-column-two-thirds">
             <p class="govuk-body">@Localizer[@String.Format("{0}_{1}", "can_show_paragraph", complianceKey)]</p>
             <p class="govuk-body">@Localizer[@String.Format("{0}_{1}", "cannot_show_paragraph", complianceKey)]</p>
-            <p class="govuk-body">@Localizer["queries_paragraph"] <a class="govuk-link govuk-link--no-visited-state" href="mailto:packagingproducers@environment-agency.gov.uk">packagingproducers@environment-agency.gov.uk</a>.</p>
+            <p class="govuk-body">@Localizer["queries_paragraph", environmentAgencyName] <a class="govuk-link govuk-link--no-visited-state" href="mailto:@Localizer[mailToHref]">@Localizer[mailToHref]</a>.</p>
             <p class="govuk-body">@Localizer["view_prns_paragraph"]</p>
         </div>
     </div>

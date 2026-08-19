@@ -251,7 +251,12 @@ public class PrnsObligationController : Controller
         ViewBag.BackLinkToDisplay = Url.Content($"~/{PagePaths.Prns.ChooseYear}");
 
         var organisation = session.UserData.Organisations?.FirstOrDefault();
-        var viewModel = new ViewModelWithOrganisationRole { OrganisationRole = organisation?.OrganisationRole };
+
+        var viewModel = new ViewModelWithOrganisationRole
+        {
+            OrganisationRole = organisation?.OrganisationRole,
+            OrganisationNationId = organisation?.NationId
+        };
 
         return View(viewModel);
     }

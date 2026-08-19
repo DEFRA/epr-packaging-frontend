@@ -968,6 +968,30 @@ public class PrnsObligationControllerTests
         result.Should().NotBeNull();
         var model = result!.Model.Should().BeOfType<ViewModelWithOrganisationRole>().Subject;
         model.OrganisationRole.Should().Be(OrganisationRoles.Producer);
+        model.OrganisationNationId.Should().Be(1);
+    }
+
+    [Test]
+    public async Task ComplianceCertificate_Get_WithNoOrganisationInSession_Returns_ViewModel_With_NullOrganisationNationId()
+    {
+        _featureManagerMock
+            .Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
+            .ReturnsAsync(true);
+        var session = new FrontendSchemeRegistrationSession
+        {
+            UserData = new UserData { Organisations = [] },
+            PrnSession = new PrnSession { SelectedObligationYear = 2025 }
+        };
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+        _urlHelperMock.Setup(x => x.Content(It.IsAny<string>())).Returns((string contentPath) => contentPath);
+        var controller = CreateController();
+
+        var result = await controller.ComplianceCertificate(new ChooseYearViewModel()) as ViewResult;
+
+        result.Should().NotBeNull();
+        var model = result!.Model.Should().BeOfType<ViewModelWithOrganisationRole>().Subject;
+        model.OrganisationRole.Should().BeNull();
+        model.OrganisationNationId.Should().BeNull();
     }
 
     [Test]

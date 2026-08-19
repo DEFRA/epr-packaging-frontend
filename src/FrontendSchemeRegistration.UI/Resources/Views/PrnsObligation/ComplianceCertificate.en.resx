@@ -31,8 +31,20 @@
     <value>We cannot show statements of compliance for 2025, because they were processed outside the service.</value>
   </data>
   <data name="queries_paragraph" xml:space="preserve">
-    <value>If you have any queries, contact the Environment Agency:</value>
+    <value>If you have any queries, contact the {0}:</value>
   </data>
+  <data name="northernireland.packaging_daera" xml:space="preserve">
+      <value>packaging@daera-ni.gov.uk</value>
+  </data>
+  <data name="england.packaging_producers_EA" xml:space="preserve">
+      <value>packagingproducers@environment-agency.gov.uk</value>
+  </data>  
+  <data name="scotland.packaging_EPA" xml:space="preserve">
+      <value>producer.responsibility@sepa.org.uk</value>
+  </data>
+  <data name="wales.packaging_NatRes" xml:space="preserve">
+      <value>packaging@naturalresourceswales.gov.uk</value>
+  </data>  
   <data name="view_prns_paragraph" xml:space="preserve">
     <value>You can view your PRNs and PERNs for 2025 below.</value>
   </data>

@@ -93,6 +93,28 @@ public class ComplianceCertificateTests
         content.Should().NotContain("Your certificate of compliance record for 2025");
     }
 
+    [TestCase(null, "Environment Agency", "packagingproducers@environment-agency.gov.uk")]
+    [TestCase(1, "Environment Agency", "packagingproducers@environment-agency.gov.uk")]
+    [TestCase(2, "Northern Ireland Environment Agency", "packaging@daera-ni.gov.uk")]
+    [TestCase(3, "Scottish Environment Protection Agency", "producer.responsibility@sepa.org.uk")]
+    [TestCase(4, "Natural Resources Wales", "packaging@naturalresourceswales.gov.uk")]
+    public async Task Get_RendersNationSpecificEnvironmentAgencyContactDetails(int? nationId, string expectedAgencyName, string expectedEmail)
+    {
+        SetUp(showMultiYearObligations: true);
+        await Context.Client.AuthenticateDefaultUser();
+
+        var sessionStore = Context.GetSessionStore();
+        SetSession(sessionStore, selectedObligationYear: 2025, nationId: nationId);
+
+        var response = await Context.Client.GetAsync(Path);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        content.Should().Contain($"If you have any queries, contact the {expectedAgencyName}:");
+        content.Should().Contain($"mailto:{expectedEmail}");
+    }
+
     [Test]
     public async Task Get_RendersBackLinkToChooseYearPage()
     {
@@ -150,7 +172,7 @@ public class ComplianceCertificateTests
             });
     }
 
-    private static void SetSession(SessionStore sessionStore, int? selectedObligationYear, string organisationRole = OrganisationRoles.Producer)
+    private static void SetSession(SessionStore sessionStore, int? selectedObligationYear, string organisationRole = OrganisationRoles.Producer, int? nationId = null)
     {
         sessionStore.Session.Set(nameof(FrontendSchemeRegistrationSession),
             Encoding.UTF8.GetBytes(System.Text.Json.JsonSerializer.Serialize(new FrontendSchemeRegistrationSession
@@ -163,7 +185,8 @@ public class ComplianceCertificateTests
                         new Organisation
                         {
                             Id = Guid.NewGuid(),
-                            OrganisationRole = organisationRole
+                            OrganisationRole = organisationRole,
+                            NationId = nationId
                         }
                     ]
                 },
