@@ -1,6 +1,7 @@
 ﻿namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
 
 using System.ComponentModel.DataAnnotations;
+using Application.Enums;
 using Constants;
 using FluentAssertions;
 using UI.ViewModels;
@@ -62,5 +63,61 @@ public class ReviewCompanyDetailsViewModelTests
 
         // Assert
         result.Should().HaveCount(1);
+    }
+
+    [Test]
+    public void ShowRegistrationCaption_WhenRegistrationJourneyAndRegistrationYearAreBothSet_ShouldBeTrue()
+    {
+        // Arrange
+        var viewModel = new ReviewCompanyDetailsViewModel
+        {
+            RegistrationJourney = RegistrationJourney.DirectLargeProducer,
+            RegistrationYear = 2025
+        };
+
+        // Act & Assert
+        viewModel.ShowRegistrationCaption.Should().BeTrue();
+    }
+
+    [Test]
+    public void ShowRegistrationCaption_WhenRegistrationJourneyIsNullAndRegistrationYearIsSet_ShouldBeFalse()
+    {
+        // Arrange
+        var viewModel = new ReviewCompanyDetailsViewModel
+        {
+            RegistrationJourney = null,
+            RegistrationYear = 2025
+        };
+
+        // Act & Assert
+        viewModel.ShowRegistrationCaption.Should().BeFalse();
+    }
+
+    [Test]
+    public void ShowRegistrationCaption_WhenRegistrationJourneyIsSetAndRegistrationYearIsNull_ShouldBeFalse()
+    {
+        // Arrange
+        var viewModel = new ReviewCompanyDetailsViewModel
+        {
+            RegistrationJourney = RegistrationJourney.DirectLargeProducer,
+            RegistrationYear = null
+        };
+
+        // Act & Assert
+        viewModel.ShowRegistrationCaption.Should().BeFalse();
+    }
+
+    [Test]
+    public void ShowRegistrationCaption_WhenRegistrationJourneyAndRegistrationYearAreBothNull_ShouldBeFalse()
+    {
+        // Arrange
+        var viewModel = new ReviewCompanyDetailsViewModel
+        {
+            RegistrationJourney = null,
+            RegistrationYear = null
+        };
+
+        // Act & Assert
+        viewModel.ShowRegistrationCaption.Should().BeFalse();
     }
 }

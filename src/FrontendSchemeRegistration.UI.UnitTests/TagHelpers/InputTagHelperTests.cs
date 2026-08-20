@@ -148,4 +148,21 @@ public class InputTagHelperTests
 
         output.Attributes.ContainsName("checked").Should().BeFalse();
     }
+
+    [Test]
+    public void Process_WhenTypeIsRadioAndForModelIsNull_DoesNotSetCheckedAttribute()
+    {
+        var sut = new InputTagHelper
+        {
+            For = CreateModelExpression("MyProperty", null),
+            Type = "radio",
+            Value = "option-1",
+            IsFirstOption = true
+        };
+        var output = CreateOutput();
+
+        sut.Process(CreateContext(), output);
+
+        output.Attributes.ContainsName("checked").Should().BeFalse();
+    }
 }

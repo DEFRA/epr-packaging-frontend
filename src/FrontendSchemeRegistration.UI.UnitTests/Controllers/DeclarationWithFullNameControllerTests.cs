@@ -1105,6 +1105,50 @@ public class DeclarationWithFullNameControllerTests
     }
 
     [Test]
+    public async Task Post_RedirectsToOrganisationDetailsSubmissionFailed_WhenCsoAndComplianceSchemeMissing()
+    {
+        // Arrange - CSO submitter with no selected compliance scheme on session and no hydrated session RegulatorNation,
+        // so the compliance-scheme branch of ResolveRegulatorNation yields a null NationId.
+        var submission = new RegistrationSubmission
+        {
+            Id = Guid.NewGuid(),
+            IsSubmitted = false,
+            LastUploadedValidFiles = new UploadedRegistrationFilesInformation
+            {
+                CompanyDetailsFileName = "FileName",
+                CompanyDetailsUploadDatetime = DateTime.Now,
+                CompanyDetailsUploadedBy = Guid.NewGuid(),
+                CompanyDetailsFileId = Guid.NewGuid(),
+            },
+            HasValidFile = true,
+        };
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession { ApplicationReferenceNumber = "test" },
+        });
+
+        var request = new DeclarationWithFullNameViewModel
+        {
+            FullName = DeclarationName,
+            OrganisationDetailsFileId = Guid.NewGuid().ToString(),
+            IsCso = true,
+        };
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.ComplianceScheme, nationId: (int)Nation.England));
+
+        // Act
+        var result = await _systemUnderTest.Post(submission.Id, request) as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("OrganisationDetailsSubmissionFailed");
+        _submissionServiceMock.Verify(x => x.SubmitAsync(
+            It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
+            It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
+            It.IsAny<RegistrationSubmitContext?>()), Times.Never);
+    }
+
+    [Test]
     public async Task Post_FirstTimeSubmission_DoesNotProbePaymentService_AndNotifiesPaymentService()
     {
         // Arrange

@@ -1521,6 +1521,168 @@ public class RegistrationApplicationServiceTests
     }
 
     [Test]
+    public async Task GetRegistrationApplicationSession_SetLateFeeFlag_ComplianceScheme_WithApprovedOrQueriedRegulatorDecision_LatestEventBeforeDeadline_SetsLateFeeToFalse()
+    {
+        // Arrange
+        var organisation = _fixture.Create<Organisation>();
+        organisation.OrganisationNumber = "123";
+        organisation.NationId = 1;
+
+        var selectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), Name = "Test CS", NationId = 1 };
+
+        var registrationApplicationDetails = new RegistrationApplicationDetails
+        {
+            HasAnyApprovedOrQueriedRegulatorDecision = true,
+            IsLatestSubmittedEventAfterFileUpload = true,
+            LatestSubmittedEventCreatedDatetime = DateTime.Parse("2025/06/15"),
+            FirstApplicationSubmittedEventCreatedDatetime = DateTime.Parse("2025/06/10"),
+            ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+            SelectedComplianceScheme = selectedComplianceScheme
+        };
+
+        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(registrationApplicationDetails);
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new RegistrationApplicationSession());
+
+        _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SelectedComplianceScheme = selectedComplianceScheme
+                }
+            });
+
+        _mockRegistrationPeriodProvider
+            .Setup(x => x.GetRegistrationWindow(true, false, RegistrationYear))
+            .Returns(
+                CreateRegistrationWindow(
+                    WindowType.CsoLargeProducer,
+                    RegistrationYear,
+                    new DateTime(2025, 6, 1),
+                    new DateTime(2025, 7, 1),
+                    new DateTime(2025, 8, 1)));
+
+        // Act
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, RegistrationYear, null);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsLateFeeApplicable.Should().BeFalse();
+        result.IsOriginalCsoSubmissionLate.Should().BeFalse();
+    }
+
+    [Test]
+    public async Task GetRegistrationApplicationSession_SetLateFeeFlag_ComplianceScheme_WithApprovedOrQueriedRegulatorDecision_LatestEventAfterDeadline_FirstSubmissionBeforeDeadline_SetsOriginalCsoSubmissionLateToFalse()
+    {
+        // Arrange
+        var organisation = _fixture.Create<Organisation>();
+        organisation.OrganisationNumber = "123";
+        organisation.NationId = 1;
+
+        var selectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), Name = "Test CS", NationId = 1 };
+
+        var registrationApplicationDetails = new RegistrationApplicationDetails
+        {
+            HasAnyApprovedOrQueriedRegulatorDecision = true,
+            IsLatestSubmittedEventAfterFileUpload = true,
+            LatestSubmittedEventCreatedDatetime = DateTime.Parse("2025/08/02"),
+            FirstApplicationSubmittedEventCreatedDatetime = DateTime.Parse("2025/06/15"),
+            ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+            SelectedComplianceScheme = selectedComplianceScheme
+        };
+
+        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(registrationApplicationDetails);
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new RegistrationApplicationSession());
+
+        _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SelectedComplianceScheme = selectedComplianceScheme
+                }
+            });
+
+        _mockRegistrationPeriodProvider
+            .Setup(x => x.GetRegistrationWindow(true, false, RegistrationYear))
+            .Returns(
+                CreateRegistrationWindow(
+                    WindowType.CsoLargeProducer,
+                    RegistrationYear,
+                    new DateTime(2025, 6, 1),
+                    new DateTime(2025, 7, 1),
+                    new DateTime(2025, 8, 1)));
+
+        // Act
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, RegistrationYear, null);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsLateFeeApplicable.Should().BeTrue();
+        result.IsOriginalCsoSubmissionLate.Should().BeFalse();
+    }
+
+    [Test]
+    public async Task GetRegistrationApplicationSession_SetLateFeeFlag_ComplianceScheme_ApprovedDecisionButNotAfterFileUpload_UsesFirstSubmissionDate_SetsLateFeeToTrue()
+    {
+        // Arrange
+        var organisation = _fixture.Create<Organisation>();
+        organisation.OrganisationNumber = "123";
+        organisation.NationId = 1;
+
+        var selectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), Name = "Test CS", NationId = 1 };
+
+        var registrationApplicationDetails = new RegistrationApplicationDetails
+        {
+            HasAnyApprovedOrQueriedRegulatorDecision = true,
+            IsLatestSubmittedEventAfterFileUpload = false,
+            LatestSubmittedEventCreatedDatetime = DateTime.Parse("2025/06/15"),
+            FirstApplicationSubmittedEventCreatedDatetime = DateTime.Parse("2025/07/02"),
+            ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+            SelectedComplianceScheme = selectedComplianceScheme
+        };
+
+        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(registrationApplicationDetails);
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new RegistrationApplicationSession());
+
+        _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SelectedComplianceScheme = selectedComplianceScheme
+                }
+            });
+
+        _mockRegistrationPeriodProvider
+            .Setup(x => x.GetRegistrationWindow(true, false, RegistrationYear))
+            .Returns(
+                CreateRegistrationWindow(
+                    WindowType.CsoLargeProducer,
+                    RegistrationYear,
+                    new DateTime(2025, 6, 1),
+                    new DateTime(2025, 7, 1),
+                    new DateTime(2025, 8, 1)));
+
+        // Act
+        var result = await _service.GetRegistrationApplicationSession(_httpSession, organisation, RegistrationYear, null);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsLateFeeApplicable.Should().BeTrue();
+        result.IsOriginalCsoSubmissionLate.Should().BeTrue();
+    }
+
+    [Test]
     public async Task GetRegistrationApplicationSession_SetLateFeeFlag_NoSubmissionDate_UsesTodayDate()
     {
         // Arrange

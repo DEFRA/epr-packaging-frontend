@@ -104,7 +104,34 @@ public class UploadingOrganisationDetailsControllerTests
         result.RouteValues.Should().HaveCount(3).And.ContainKey("registrationjourney");
         result.RouteValues.Should().HaveCount(3).And.ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId.ToString());
     }
-    
+
+    [Test]
+    public async Task Get_RedirectsToFileUploadCompanyDetailsSuccessGet_WithoutRegistrationYear_WhenUploadHasCompletedAndContainsNoErrorsAndRegistrationYearIsNull()
+    {
+        // Arrange
+        var submission = new RegistrationSubmission
+        {
+            Id = SubmissionId,
+            CompanyDetailsDataComplete = true
+        };
+
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(submission);
+
+        _registrationPeriodProviderMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns((int?)null);
+
+        // Act
+        var result = await _testUploadingOrgDetailsController.Get(SubmissionId) as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadCompanyDetailsSuccess");
+        result.RouteValues.Should().HaveCount(2);
+        result.RouteValues.Should().NotContainKey("registrationyear");
+        result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId.ToString());
+    }
+
     [Test]
     public async Task Get_RedirectsToFileUploadCompanyDetailsSubLandingGet_When_Path_FileUploadCompanyDetails_Is_Missing_From_Journey_List_And_Upload_Has_Completed_And_Contains_No_Errors_For_CSO_Journey()
     {
@@ -206,6 +233,34 @@ public class UploadingOrganisationDetailsControllerTests
     }
 
     [Test]
+    public async Task Get_RedirectsToFileUploadCompanyDetailsGet_WithoutRegistrationYear_WhenUploadHasCompletedAndContainsErrorsAndRegistrationYearIsNull()
+    {
+        // Arrange
+        var submission = new RegistrationSubmission
+        {
+            Id = SubmissionId,
+            CompanyDetailsDataComplete = true,
+            Errors = new List<string> { "89" }
+        };
+
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(submission);
+
+        _registrationPeriodProviderMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns((int?)null);
+
+        // Act
+        var result = await _testUploadingOrgDetailsController.Get(SubmissionId) as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadCompanyDetails");
+        result.RouteValues.Should().HaveCount(2);
+        result.RouteValues.Should().NotContainKey("registrationyear");
+        result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(SubmissionId.ToString());
+    }
+
+    [Test]
     public async Task Get_ReturnsFileUploadingViewModel_WhenCompanyDetailDataHasNotFinishedProcessing()
     {
         // Arrange
@@ -229,7 +284,33 @@ public class UploadingOrganisationDetailsControllerTests
         actualModel.RegistrationJourney.Should().Be(null);
         actualModel.ShowRegistrationCaption.Should().BeFalse();
     }
-    
+
+    [Test]
+    public async Task Get_ReturnsFileUploadingViewModel_WithoutRegistrationYear_WhenCompanyDetailDataHasNotFinishedProcessingAndRegistrationYearIsNull()
+    {
+        // Arrange
+        var submission = new RegistrationSubmission
+        {
+            Id = SubmissionId,
+            CompanyDetailsDataComplete = false,
+        };
+
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()))
+            .ReturnsAsync(submission);
+
+        _registrationPeriodProviderMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns((int?)null);
+
+        // Act
+        var result = await _testUploadingOrgDetailsController.Get(SubmissionId) as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be("UploadingOrganisationDetails");
+        var actualModel = result.Model.As<FileUploadingViewModel>();
+        actualModel.SubmissionId.Should().Be(SubmissionId.ToString());
+        actualModel.RegistrationYear.Should().BeNull();
+    }
+
     [Test]
     public async Task Get_Returns_FileUploadingViewModel__And_Sets_Producer_Size_When_Company_Detail_Data_Has_Not_Finished_Processing_For_CSO_Jounrey()
     {
