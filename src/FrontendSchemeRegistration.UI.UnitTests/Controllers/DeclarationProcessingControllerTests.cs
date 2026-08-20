@@ -71,6 +71,26 @@ public class DeclarationProcessingControllerTests
     }
 
     [Test]
+    public void Get_WhenUrlActionReturnsNull_SetsStatusUrlAndFallbackUrlToEmpty()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var urlHelperMock = new Mock<IUrlHelper>();
+        urlHelperMock
+            .Setup(x => x.Action(It.IsAny<UrlActionContext>()))
+            .Returns((string)null);
+        _systemUnderTest.Url = urlHelperMock.Object;
+
+        // Act
+        var result = _systemUnderTest.Get(submissionId) as ViewResult;
+
+        // Assert
+        var model = result.Model.Should().BeOfType<DeclarationProcessingViewModel>().Subject;
+        model.StatusUrl.Should().Be(string.Empty);
+        model.FallbackUrl.Should().Be(string.Empty);
+    }
+
+    [Test]
     public async Task Status_SnapshotReady_ReturnsRedirectUrl()
     {
         // Arrange

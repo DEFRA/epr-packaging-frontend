@@ -40,4 +40,36 @@ public class CorrelationIdProviderTests
 
         provider.GetCurrentCorrelationIdOrNew().Should().Be(correlationId);
     }
+
+    [Test]
+    public void WhenHttpContextIsNotNullButUserIsNull_ThenReturnNewGuid()
+    {
+        var httpContextMock = new Mock<HttpContext>();
+        httpContextMock.Setup(c => c.User).Returns((ClaimsPrincipal)null);
+
+        Mock<IHttpContextAccessor> httpContextAccessor = new();
+        httpContextAccessor.Setup(accessor => accessor.HttpContext).Returns(httpContextMock.Object);
+
+        var provider = new CorrelationIdProvider(NullLogger<CorrelationIdProvider>.Instance, httpContextAccessor.Object);
+
+        provider.GetCurrentCorrelationIdOrNew().Should().NotBe(Guid.Empty);
+    }
+
+    [Test]
+    public void WhenHttpContextUserHasClaimsButNoCorrelationIdClaim_ThenReturnNewGuid()
+    {
+        Mock<IHttpContextAccessor> httpContextAccessor = new();
+
+        httpContextAccessor
+            .Setup(accessor => accessor.HttpContext.User)
+            .Returns(new ClaimsPrincipal(
+                new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.Name, "some-user")
+                })));
+
+        var provider = new CorrelationIdProvider(NullLogger<CorrelationIdProvider>.Instance, httpContextAccessor.Object);
+
+        provider.GetCurrentCorrelationIdOrNew().Should().NotBe(Guid.Empty);
+    }
 }

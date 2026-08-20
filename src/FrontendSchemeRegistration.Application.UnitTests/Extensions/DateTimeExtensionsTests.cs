@@ -91,6 +91,20 @@ public class DateTimeExtensionsTests
         now.IsInImmediateDecemberJanuaryFlashWindow(issueDate).Should().Be(expected);
     }
 
+    [TestCase("2025-11-30", false)]
+    [TestCase("2025-12-01", true)]
+    [TestCase("2025-12-31", true)]
+    [TestCase("2026-01-01", true)]
+    [TestCase("2026-01-31", true)]
+    [TestCase("2026-02-01", false)]
+    [TestCase("2026-06-15", false)]
+    public void IsInDecemberJanuaryFlashWindow_Returns_Expected(string nowText, bool expected)
+    {
+        var now = DateTimeOffset.Parse(nowText + "T12:00:00Z", DateTimeFormatInfo.InvariantInfo);
+
+        now.IsInDecemberJanuaryFlashWindow().Should().Be(expected);
+    }
+
     [TestCase(0, 2026)]
     [TestCase(-1, 2026)]
     [TestCase(1, 2027)]
