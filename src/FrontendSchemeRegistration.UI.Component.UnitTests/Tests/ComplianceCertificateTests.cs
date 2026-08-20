@@ -93,12 +93,12 @@ public class ComplianceCertificateTests
         content.Should().NotContain("Your certificate of compliance record for 2025");
     }
 
-    [TestCase(null, "Environment Agency", "packagingproducers@environment-agency.gov.uk")]
-    [TestCase(1, "Environment Agency", "packagingproducers@environment-agency.gov.uk")]
-    [TestCase(2, "Northern Ireland Environment Agency", "packaging@daera-ni.gov.uk")]
-    [TestCase(3, "Scottish Environment Protection Agency", "producer.responsibility@sepa.org.uk")]
-    [TestCase(4, "Natural Resources Wales", "packaging@naturalresourceswales.gov.uk")]
-    public async Task Get_RendersNationSpecificEnvironmentAgencyContactDetails(int? nationId, string expectedAgencyName, string expectedEmail)
+    [TestCase(null, "Environment Agency", "packagingproducers@environment-agency.gov.uk", false)]
+    [TestCase(1, "Environment Agency", "packagingproducers@environment-agency.gov.uk", false)]
+    [TestCase(2, "Northern Ireland Environment Agency", "packaging@daera-ni.gov.uk", false)]
+    [TestCase(3, "Scottish Environment Protection Agency", "producer.responsibility@sepa.org.uk", false)]
+    [TestCase(4, "Natural Resources Wales", "packaging@naturalresourceswales.gov.uk", true)]
+    public async Task Get_RendersNationSpecificEnvironmentAgencyContactDetails(int? nationId, string expectedAgencyName, string expectedEmail, bool isWales)
     {
         SetUp(showMultiYearObligations: true);
         await Context.Client.AuthenticateDefaultUser();
@@ -111,7 +111,10 @@ public class ComplianceCertificateTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain($"If you have any queries, contact the {expectedAgencyName}:");
+        var expectedQueriesParagraph = isWales
+            ? $"If you have any queries, contact {expectedAgencyName}:"
+            : $"If you have any queries, contact the {expectedAgencyName}:";
+        content.Should().Contain(expectedQueriesParagraph);
         content.Should().Contain($"mailto:{expectedEmail}");
     }
 

@@ -1,9 +1,8 @@
-﻿using FrontendSchemeRegistration.Application.Enums;
-using System.Diagnostics.CodeAnalysis;
+﻿using Microsoft.AspNetCore.Html;
+using FrontendSchemeRegistration.Application.Enums;
 
 namespace FrontendSchemeRegistration.Application.Extensions
 {
-    [ExcludeFromCodeCoverage]
     public static class NationExtensions
     {
         public static string GetNationName(string nationcode) => nationcode switch
@@ -32,5 +31,17 @@ namespace FrontendSchemeRegistration.Application.Extensions
             "GB-WLS" => "Natural Resources Wales",
             _ => ""
         };
+
+        public static HtmlString GetEnvironmentAgencyEmailLink(int nationId) {  
+            var mailToHref = nationId switch
+            {
+                (int)Nation.NorthernIreland => "packaging@daera-ni.gov.uk",
+                (int)Nation.Scotland => "producer.responsibility@sepa.org.uk",
+                (int)Nation.Wales => "packaging@naturalresourceswales.gov.uk",
+                _ => "packagingproducers@environment-agency.gov.uk"
+            };
+
+            return new HtmlString(string.Format("<a class=\"govuk-link govuk-link--no-visited-state\" href=\"mailto:{0}\">{0}</a>", mailToHref));
+        }
     }
 }
