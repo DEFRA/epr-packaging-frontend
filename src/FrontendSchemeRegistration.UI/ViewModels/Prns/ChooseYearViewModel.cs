@@ -1,10 +1,9 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace FrontendSchemeRegistration.UI.ViewModels.Prns;
 
-[ExcludeFromCodeCoverage]
 public class ChooseYearViewModel
 {
+    public int CsocUnavailablePastYear { get; set; } = 2025;
+
     public int? SelectedYear { get; set; }
 
     public int CurrentYear { get; set; }

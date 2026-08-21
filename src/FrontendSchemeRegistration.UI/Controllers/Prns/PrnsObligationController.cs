@@ -6,6 +6,7 @@ using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Sessions;
+using FrontendSchemeRegistration.UI.ViewModels;
 using FrontendSchemeRegistration.UI.ViewModels.Prns;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -37,6 +38,7 @@ public class PrnsObligationController : Controller
     private readonly IOptions<CsocOptions> _csocOptions;
     private readonly string _logPrefix;
     private readonly int _complianceYear;
+    private readonly int _csocUnavailablePastYear;
 
     public PrnsObligationController(ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
         IPrnService prnService,
@@ -57,6 +59,7 @@ public class PrnsObligationController : Controller
         _csocOptions = csocOptions;
         _logPrefix = _globalVariables.Value.LogPrefix;
         _complianceYear = timeProvider.GetUtcNow().GetComplianceYear();
+        _csocUnavailablePastYear = 2025;
     }
 
     private const string GlassOrNonGlassResource = "GlassOrNonGlassResource";
@@ -220,13 +223,49 @@ public class PrnsObligationController : Controller
         session.PrnSession.SelectedObligationYear = model.SelectedYear.Value;
         await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
 
+        if (model.SelectedYear.Value == model.CsocUnavailablePastYear)
+        {
+            return RedirectToAction(nameof(ComplianceCertificate));
+        }
+
         return RedirectToAction(nameof(ObligationsHome));
+    }
+
+    [HttpGet]
+    [Route(PagePaths.Prns.ComplianceCertificate)]
+    [FeatureGate(FeatureFlags.ShowMultiYearObligations)]
+    public async Task<IActionResult> ComplianceCertificate(ChooseYearViewModel model)
+    {
+        if (!await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
+        {
+            return NotFound();
+        }
+
+        var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+
+        if (session.PrnSession.SelectedObligationYear != model.CsocUnavailablePastYear)
+        {
+            return NotFound();
+        }
+
+        ViewBag.BackLinkToDisplay = Url.Content($"~/{PagePaths.Prns.ChooseYear}");
+
+        var organisation = session.UserData.Organisations?.FirstOrDefault();
+
+        var viewModel = new ViewModelWithOrganisationRole
+        {
+            OrganisationRole = organisation?.OrganisationRole,
+            OrganisationNationId = organisation?.NationId
+        };
+
+        return View(viewModel);
     }
 
     private ChooseYearViewModel BuildChooseYearViewModel(int? selectedYear = null)
     {
         return new ChooseYearViewModel
         {
+            CsocUnavailablePastYear = _csocUnavailablePastYear,
             CurrentYear = _complianceYear,
             SelectedYear = selectedYear,
             Years = ObligationYearOptions.GetSelectableYears(_complianceYear)

@@ -152,6 +152,26 @@ public class UserDataCheckerMiddlewareTests : FrontendSchemeRegistrationTestBase
     }
 
     [Test]
+    public async Task Middleware_CallsUserAccountServiceAndSignsIn_WhenUserDataDoesNotExistInUserClaims_WithEndpointMetadataMissingControllerActionDescriptor()
+    {
+        // Arrange
+        var claims = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(), "authenticationType"));
+        var serviceProviderMock = new Mock<IServiceProvider>();
+        serviceProviderMock.Setup(x => x.GetService(typeof(IAuthenticationService))).Returns(Mock.Of<IAuthenticationService>());
+        _httpContextMock.Setup(x => x.User).Returns(claims);
+        _httpContextMock.Setup(x => x.Features.Get<IEndpointFeature>().Endpoint).Returns(new Endpoint(c => Task.CompletedTask, new EndpointMetadataCollection(new List<object>()), "NoController"));
+        _httpContextMock.Setup(x => x.RequestServices).Returns(serviceProviderMock.Object);
+        _userAccountServiceMock.Setup(x => x.GetUserAccount()).ReturnsAsync(GetUserAccount());
+
+        // Act
+        await _systemUnderTest.InvokeAsync(_httpContextMock.Object, _requestDelegateMock.Object);
+
+        // Assert
+        _userAccountServiceMock.Verify(x => x.GetUserAccount(), Times.Once);
+        _requestDelegateMock.Verify(x => x(_httpContextMock.Object), Times.Once);
+    }
+
+    [Test]
     public async Task Middleware_LogsOrgIdsClaim_WhenClaimIsPresentAtSignIn()
     {
         // Arrange
