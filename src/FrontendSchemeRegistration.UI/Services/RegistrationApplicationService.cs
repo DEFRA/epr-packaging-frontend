@@ -535,23 +535,29 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         return true;
     }
 
-    public async Task SetRegistrationFileUploadSession(ISession httpSession, string organisationNumber, int registrationYear, bool? isResubmission)
+    public async Task SetRegistrationFileUploadSession(ISession httpSession, string organisationNumber, int registrationYear)
     {
         var registrationSessionTask = sessionManager.GetSessionAsync(httpSession);
         var frontEndSession = await frontEndSessionManager.GetSessionAsync(httpSession) ?? new FrontendSchemeRegistrationSession();
 
-        //this is wrong needs fixing 
+        //this is wrong needs fixing
         var submissionYear = registrationYear;
         var period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" };
 
         frontEndSession.RegistrationSession.SubmissionPeriod = period.DataPeriod;
         frontEndSession.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration = true;
-        frontEndSession.RegistrationSession.IsResubmission = isResubmission ?? false;
-        
+
         var registrationSession = await registrationSessionTask;
-        
-        // Only generate ApplicationReferenceNumber if it doesn't already exist in the session
-        if (string.IsNullOrWhiteSpace(frontEndSession.RegistrationSession.ApplicationReferenceNumber))
+
+        frontEndSession.RegistrationSession.IsResubmission = registrationSession.IsResubmission;
+
+        // Prefer the persisted database value; only generate a new ApplicationReferenceNumber
+        // if neither the database nor the session already has one.
+        if (!string.IsNullOrWhiteSpace(registrationSession.ApplicationReferenceNumber))
+        {
+            frontEndSession.RegistrationSession.ApplicationReferenceNumber = registrationSession.ApplicationReferenceNumber;
+        }
+        else if (string.IsNullOrWhiteSpace(frontEndSession.RegistrationSession.ApplicationReferenceNumber))
         {
             frontEndSession.RegistrationSession.ApplicationReferenceNumber = ReferenceNumberBuilder.Build(
                 registrationSession.Period,
@@ -749,7 +755,7 @@ public interface IRegistrationApplicationService
 
     Task CreateRegistrationApplicationEvent(ISession httpSession, string? comments, string? paymentMethod, SubmissionType submissionType);
 
-    Task SetRegistrationFileUploadSession(ISession httpSession, string organisationNumber, int registrationYear, bool? isResubmission);
+    Task SetRegistrationFileUploadSession(ISession httpSession, string organisationNumber, int registrationYear);
 
     Task<List<RegistrationYearApplicationsViewModel>> BuildRegistrationYearApplicationsViewModels(
         ISession httpSession, Organisation organisation, UserData userData);
