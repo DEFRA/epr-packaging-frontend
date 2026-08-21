@@ -53,4 +53,16 @@
     <data name="no_keep_this_file_uploaded" xml:space="preserve">
         <value>Na hoffwn. Cadwch y ffeil yma wedi’i huwchlwytho i gyfrif fy sefydliad i.</value>
     </data>
+    <data name="continue_with_this_file" xml:space="preserve">
+        <value>Continue with this file</value>
+    </data>
+    <data name="what_do_you_want_to_do_next" xml:space="preserve">
+        <value>What do you want to do next?</value>
+    </data>
+    <data name="warnings_hint" xml:space="preserve">
+        <value>The warnings will not stop your file being submitted.</value>
+    </data>
+    <data name="upload_new_file" xml:space="preserve">
+        <value>Uwchlwythwch ffeil newydd</value>
+    </data>
 </root>

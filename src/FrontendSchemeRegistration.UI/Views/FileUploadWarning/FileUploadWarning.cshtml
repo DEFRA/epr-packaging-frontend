@@ -65,7 +65,7 @@
                  <span id="environment-regulator-hint" class="govuk-hint govuk-visually-hidden">@Localizer["do_you_want_to_upload_a_new_file"]</span>
                  <fieldset class="govuk-fieldset" aria-describedby="environment-regulator-hint">
                      <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-                         <h1 class="govuk-fieldset__heading">@Localizer["do_you_want_to_upload_a_new_file"]</h1>
+                         <h1 class="govuk-fieldset__heading">@Localizer["what_do_you_want_to_do_next"]</h1>
                      </legend>
                      
                      @if (!ViewData.ModelState.IsValid)
@@ -75,21 +75,28 @@
 
                      <div class="govuk-radios" data-module="govuk-radios">
                          <div class="govuk-radios__item">
-                             @Html.RadioButtonFor(m => m.UploadNewFile, true, new
-                             {
-                                 @class = "govuk-radios__input",
-                                 Id = "UploadNewFile"
-                             })
-                             <label for="UploadNewFile" class="govuk-label govuk-radios__label">@Localizer["yes"]</label>
-                         </div>
-
-                         <div class="govuk-radios__item">
                              @Html.RadioButtonFor(m => m.UploadNewFile, false, new
                              {
                                  @class = "govuk-radios__input",
                                  Id = "UploadNewFile-1"
                              })
-                             <label for="UploadNewFile-1" class="govuk-label govuk-radios__label">@Localizer["no_keep_this_file_uploaded"]</label>
+                             <label for="UploadNewFile-1" class="govuk-label govuk-radios__label">@Localizer["continue_with_this_file"]</label>
+                             <div class="govuk-warning-text">
+                                 <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+                                 <strong class="govuk-warning-text__text">
+                                     <span class="govuk-visually-hidden">Warning</span>
+                                     @Localizer["warnings_hint"]
+                                 </strong>
+                             </div>
+                         </div>
+                         
+                         <div class="govuk-radios__item">
+                             @Html.RadioButtonFor(m => m.UploadNewFile, true, new
+                             {
+                                 @class = "govuk-radios__input",
+                                 Id = "UploadNewFile"
+                             })
+                             <label for="UploadNewFile" class="govuk-label govuk-radios__label">@Localizer["upload_new_file"]</label>
                          </div>
                      </div>
                  </fieldset>
