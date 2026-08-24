@@ -63,10 +63,10 @@ public static class DateTimeExtensions
         this DateTimeOffset now,
         DateTime issueDate)
     {
-        var ukNow = TimeZoneInfo.ConvertTime(now, UkZone).DateTime;
-        if (ukNow.Month is not (1 or 12))
+        if (!now.IsInDecemberJanuaryFlashWindow())
             return false;
 
+        var ukNow = TimeZoneInfo.ConvertTime(now, UkZone).DateTime;
         var ukIssue = issueDate.Kind switch
         {
             DateTimeKind.Local => TimeZoneInfo.ConvertTime(issueDate, UkZone),
@@ -79,6 +79,22 @@ public static class DateTimeExtensions
         var windowEnd = new DateTime(windowStartYear + 1, 2, 1, 0, 0, 0, DateTimeKind.Unspecified);
 
         return ukIssue >= windowStart && ukIssue < windowEnd;
+    }
+
+    /// <summary>
+    ///     Whether <paramref name="now"/> falls within the UK December/January flash window,
+    ///     i.e. whether the UK calendar month is December or January.
+    /// </summary>
+    /// <remarks>
+    ///     Use this when there is no specific PRN issue date to check against (e.g. deciding
+    ///     whether to show flash-related UI at the page level). To check whether a specific
+    ///     PRN's issue date falls in the immediate window, use
+    ///     <see cref="IsInImmediateDecemberJanuaryFlashWindow(DateTimeOffset, DateTime)"/> instead.
+    /// </remarks>
+    public static bool IsInDecemberJanuaryFlashWindow(this DateTimeOffset now)
+    {
+        var ukNow = TimeZoneInfo.ConvertTime(now, UkZone).DateTime;
+        return ukNow.Month is 1 or 12;
     }
 
     public static DateTime GetCsocSubmissionDeadline(this DateTime now)

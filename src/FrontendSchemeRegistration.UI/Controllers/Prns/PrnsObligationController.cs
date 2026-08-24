@@ -77,6 +77,13 @@ public class PrnsObligationController : Controller
         var isCsocEnabled = await _featureManager.IsEnabledAsync(FeatureFlags.CsocEnabled);
         var viewModel = await _prnService.GetRecyclingObligationsCalculation(selectedYear, includeComplianceDeclarationStatus: isCsocEnabled);
 
+        if (selectedYear > _complianceYear && _timeProvider.GetUtcNow().IsInDecemberJanuaryFlashWindow())
+        {
+            var awaitingAcceptance = await _prnService.GetPrnsAwaitingAcceptanceAsync();
+            viewModel.HasDecemberWasteMultiYearPrnAwaitingAcceptance = awaitingAcceptance.Prns
+                .Any(prn => prn.IsDecemberWaste && prn.IsAwaitingAcceptance && prn.HasChoiceOfAcceptanceYear);
+        }
+
         _logger.LogInformation(
             "{LogPrefix}: PrnsObligationController - ObligationsHome: Recycling Obligations returned for year {Year} : {Results}",
             _logPrefix, selectedYear, JsonConvert.SerializeObject(viewModel));

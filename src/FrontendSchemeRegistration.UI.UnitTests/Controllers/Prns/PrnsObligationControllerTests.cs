@@ -334,6 +334,194 @@ public class PrnsObligationControllerTests
     }
 
     [Test]
+    public async Task ObligationsHome_WhenSelectedYearInFuture_AndInDecemberJanuaryFlashWindow_AndMatchingPrnExists_SetsHasDecemberWasteMultiYearPrnAwaitingAcceptanceTrue()
+    {
+        // Arrange
+        _fakeTimeProvider.SetUtcNow(new DateTimeOffset(2026, 1, 15, 0, 0, 0, TimeSpan.Zero));
+        var session = new FrontendSchemeRegistrationSession
+        {
+            UserData = new UserData
+            {
+                Organisations =
+                [
+                    new Organisation
+                    {
+                        Id = Guid.NewGuid(),
+                        OrganisationRole = OrganisationRoles.Producer,
+                        Name = "Test Organisation",
+                        NationId = 1
+                    }
+                ],
+                ServiceRole = "Basic User"
+            },
+            PrnSession = new PrnSession { SelectedObligationYear = 2026 }
+        };
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)).ReturnsAsync(true);
+        _prnServiceMock
+            .Setup(x => x.GetRecyclingObligationsCalculation(2026, It.IsAny<bool>()))
+            .ReturnsAsync(_fixture.Create<PrnObligationViewModel>());
+        _prnServiceMock
+            .Setup(x => x.GetPrnsAwaitingAcceptanceAsync())
+            .ReturnsAsync(new PrnListViewModel
+            {
+                Prns =
+                [
+                    new PrnViewModel
+                    {
+                        IsDecemberWaste = true,
+                        ApprovalStatus = PrnStatus.AwaitingAcceptance,
+                        AvailableAcceptanceYears = [2025, 2026]
+                    }
+                ]
+            });
+        var controller = CreateController();
+
+        // Act
+        var result = await controller.ObligationsHome() as ViewResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        (result!.Model as PrnObligationViewModel)!.HasDecemberWasteMultiYearPrnAwaitingAcceptance.Should().BeTrue();
+        _prnServiceMock.Verify(x => x.GetPrnsAwaitingAcceptanceAsync(), Times.Once);
+    }
+
+    [Test]
+    public async Task ObligationsHome_WhenSelectedYearInFuture_AndInDecemberJanuaryFlashWindow_AndNoMatchingPrnExists_SetsHasDecemberWasteMultiYearPrnAwaitingAcceptanceFalse()
+    {
+        // Arrange
+        _fakeTimeProvider.SetUtcNow(new DateTimeOffset(2026, 1, 15, 0, 0, 0, TimeSpan.Zero));
+        var session = new FrontendSchemeRegistrationSession
+        {
+            UserData = new UserData
+            {
+                Organisations =
+                [
+                    new Organisation
+                    {
+                        Id = Guid.NewGuid(),
+                        OrganisationRole = OrganisationRoles.Producer,
+                        Name = "Test Organisation",
+                        NationId = 1
+                    }
+                ],
+                ServiceRole = "Basic User"
+            },
+            PrnSession = new PrnSession { SelectedObligationYear = 2026 }
+        };
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)).ReturnsAsync(true);
+        _prnServiceMock
+            .Setup(x => x.GetRecyclingObligationsCalculation(2026, It.IsAny<bool>()))
+            .ReturnsAsync(_fixture.Create<PrnObligationViewModel>());
+        _prnServiceMock
+            .Setup(x => x.GetPrnsAwaitingAcceptanceAsync())
+            .ReturnsAsync(new PrnListViewModel
+            {
+                Prns =
+                [
+                    new PrnViewModel
+                    {
+                        IsDecemberWaste = false,
+                        ApprovalStatus = PrnStatus.AwaitingAcceptance,
+                        AvailableAcceptanceYears = [2025, 2026]
+                    }
+                ]
+            });
+        var controller = CreateController();
+
+        // Act
+        var result = await controller.ObligationsHome() as ViewResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        (result!.Model as PrnObligationViewModel)!.HasDecemberWasteMultiYearPrnAwaitingAcceptance.Should().BeFalse();
+        _prnServiceMock.Verify(x => x.GetPrnsAwaitingAcceptanceAsync(), Times.Once);
+    }
+
+    [Test]
+    public async Task ObligationsHome_WhenSelectedYearNotInFuture_DoesNotCheckPrnsAwaitingAcceptance()
+    {
+        // Arrange
+        _fakeTimeProvider.SetUtcNow(new DateTimeOffset(2026, 1, 15, 0, 0, 0, TimeSpan.Zero));
+        var session = new FrontendSchemeRegistrationSession
+        {
+            UserData = new UserData
+            {
+                Organisations =
+                [
+                    new Organisation
+                    {
+                        Id = Guid.NewGuid(),
+                        OrganisationRole = OrganisationRoles.Producer,
+                        Name = "Test Organisation",
+                        NationId = 1
+                    }
+                ],
+                ServiceRole = "Basic User"
+            },
+            PrnSession = new PrnSession { SelectedObligationYear = 2025 }
+        };
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)).ReturnsAsync(true);
+        var expectedViewModel = _fixture.Create<PrnObligationViewModel>();
+        expectedViewModel.HasDecemberWasteMultiYearPrnAwaitingAcceptance = false;
+        _prnServiceMock
+            .Setup(x => x.GetRecyclingObligationsCalculation(2025, It.IsAny<bool>()))
+            .ReturnsAsync(expectedViewModel);
+        var controller = CreateController();
+
+        // Act
+        var result = await controller.ObligationsHome() as ViewResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        (result!.Model as PrnObligationViewModel)!.HasDecemberWasteMultiYearPrnAwaitingAcceptance.Should().BeFalse();
+        _prnServiceMock.Verify(x => x.GetPrnsAwaitingAcceptanceAsync(), Times.Never);
+    }
+
+    [Test]
+    public async Task ObligationsHome_WhenSelectedYearInFuture_ButNotInDecemberJanuaryFlashWindow_DoesNotCheckPrnsAwaitingAcceptance()
+    {
+        // Arrange
+        _fakeTimeProvider.SetUtcNow(new DateTimeOffset(2026, 6, 1, 0, 0, 0, TimeSpan.Zero));
+        var session = new FrontendSchemeRegistrationSession
+        {
+            UserData = new UserData
+            {
+                Organisations =
+                [
+                    new Organisation
+                    {
+                        Id = Guid.NewGuid(),
+                        OrganisationRole = OrganisationRoles.Producer,
+                        Name = "Test Organisation",
+                        NationId = 1
+                    }
+                ],
+                ServiceRole = "Basic User"
+            },
+            PrnSession = new PrnSession { SelectedObligationYear = 2027 }
+        };
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)).ReturnsAsync(true);
+        var expectedViewModel = _fixture.Create<PrnObligationViewModel>();
+        expectedViewModel.HasDecemberWasteMultiYearPrnAwaitingAcceptance = false;
+        _prnServiceMock
+            .Setup(x => x.GetRecyclingObligationsCalculation(2027, It.IsAny<bool>()))
+            .ReturnsAsync(expectedViewModel);
+        var controller = CreateController();
+
+        // Act
+        var result = await controller.ObligationsHome() as ViewResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        (result!.Model as PrnObligationViewModel)!.HasDecemberWasteMultiYearPrnAwaitingAcceptance.Should().BeFalse();
+        _prnServiceMock.Verify(x => x.GetPrnsAwaitingAcceptanceAsync(), Times.Never);
+    }
+
+    [Test]
     public async Task ObligationPerMaterial_WhenGivenGlass_ReturnsView()
     {
 		// Arrange
@@ -980,6 +1168,29 @@ public class PrnsObligationControllerTests
         var session = new FrontendSchemeRegistrationSession
         {
             UserData = new UserData { Organisations = [] },
+            PrnSession = new PrnSession { SelectedObligationYear = 2025 }
+        };
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+        _urlHelperMock.Setup(x => x.Content(It.IsAny<string>())).Returns((string contentPath) => contentPath);
+        var controller = CreateController();
+
+        var result = await controller.ComplianceCertificate(new ChooseYearViewModel()) as ViewResult;
+
+        result.Should().NotBeNull();
+        var model = result!.Model.Should().BeOfType<ViewModelWithOrganisationRole>().Subject;
+        model.OrganisationRole.Should().BeNull();
+        model.OrganisationNationId.Should().BeNull();
+    }
+
+    [Test]
+    public async Task ComplianceCertificate_Get_WithNullOrganisationsInSession_Returns_ViewModel_With_NullOrganisationDetails()
+    {
+        _featureManagerMock
+            .Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
+            .ReturnsAsync(true);
+        var session = new FrontendSchemeRegistrationSession
+        {
+            UserData = new UserData { Organisations = null },
             PrnSession = new PrnSession { SelectedObligationYear = 2025 }
         };
         _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
