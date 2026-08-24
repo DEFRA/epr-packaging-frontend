@@ -464,9 +464,11 @@ public class PrnsObligationControllerTests
         };
         _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
         _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)).ReturnsAsync(true);
+        var expectedViewModel = _fixture.Create<PrnObligationViewModel>();
+        expectedViewModel.HasDecemberWasteMultiYearPrnAwaitingAcceptance = false;
         _prnServiceMock
             .Setup(x => x.GetRecyclingObligationsCalculation(2025, It.IsAny<bool>()))
-            .ReturnsAsync(_fixture.Create<PrnObligationViewModel>());
+            .ReturnsAsync(expectedViewModel);
         var controller = CreateController();
 
         // Act
@@ -503,9 +505,11 @@ public class PrnsObligationControllerTests
         };
         _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
         _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)).ReturnsAsync(true);
+        var expectedViewModel = _fixture.Create<PrnObligationViewModel>();
+        expectedViewModel.HasDecemberWasteMultiYearPrnAwaitingAcceptance = false;
         _prnServiceMock
             .Setup(x => x.GetRecyclingObligationsCalculation(2027, It.IsAny<bool>()))
-            .ReturnsAsync(_fixture.Create<PrnObligationViewModel>());
+            .ReturnsAsync(expectedViewModel);
         var controller = CreateController();
 
         // Act
