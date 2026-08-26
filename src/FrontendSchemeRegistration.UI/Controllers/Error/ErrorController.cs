@@ -17,12 +17,24 @@ public class ErrorController : Controller
         // Both UseStatusCodePagesWithReExecute and UseExceptionHandler re-execute this action, but only the
         // former rewrites the query string, so ?statusCode= cannot be trusted (a user could supply their own).
         // The response status code is already correct on both paths, and a ViewResult does not overwrite it.
-        var statusCode = HttpContext.Features.Get<IStatusCodeReExecuteFeature>()?.OriginalStatusCode
-                         ?? HttpContext.Response.StatusCode;
+        var reExecute = HttpContext.Features.Get<IStatusCodeReExecuteFeature>();
+        var statusCode = reExecute?.OriginalStatusCode ?? HttpContext.Response.StatusCode;
 
-        return statusCode == StatusCodes.Status404NotFound
-            ? View(PageNotFoundView)
-            : View(nameof(ProblemWithServiceError), new ErrorViewModel());
+        if (statusCode == StatusCodes.Status404NotFound)
+        {
+            return View(PageNotFoundView);
+        }
+
+        // With neither feature set nothing re-executed us, so this is a plain GET of /error: either a user
+        // typing the URL, or one of the app's own redirects here to report a failure it has already logged
+        // (a failed fee lookup, an empty payment link, a B2C remote failure, a missing submissionId). Both
+        // are a service failure, so report one instead of serving "Something has gone wrong" as a 200 OK.
+        if (reExecute is null && HttpContext.Features.Get<IExceptionHandlerFeature>() is null)
+        {
+            Response.StatusCode = StatusCodes.Status500InternalServerError;
+        }
+
+        return View(nameof(ProblemWithServiceError), new ErrorViewModel());
     }
 
     [Route("submission-error")]
