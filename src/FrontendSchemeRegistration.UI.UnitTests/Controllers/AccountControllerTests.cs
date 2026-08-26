@@ -143,4 +143,13 @@ public class AccountControllerTests
             Times.Once);
         result.Should().BeOfType<OkObjectResult>();
     }
+
+    [Test]
+    public void AccessDenied_Should_Return_Default_View()
+    {
+        var result = _accountController.AccessDenied();
+
+        result.Should().BeOfType<ViewResult>()
+            .Which.ViewName.Should().BeNull();
+    }
 }

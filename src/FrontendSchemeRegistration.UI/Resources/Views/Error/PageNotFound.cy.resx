@@ -1,0 +1,26 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="page_not_found_title" xml:space="preserve">
+        <value>Tudalen heb ei ganfod</value>
+    </data>
+    <data name="page_not_found_typed_address" xml:space="preserve">
+        <value>Os oeddech chi wedi teipio'r cyfeiriad gwe, gwnewch yn siŵr ei fod yn gywir.</value>
+    </data>
+    <data name="page_not_found_pasted_address" xml:space="preserve">
+        <value>Os oeddech chi wedi gludo'r cyfeiriad gwe, gwnewch yn siŵr eich bod wedi copïo'r cyfeiriad cyfan.</value>
+    </data>
+    <data name="page_not_found_still_having_issues" xml:space="preserve">
+        <value>Os ydych chi'n dal i gael problemau, mynnwch help gan ein tîm gwasanaeth cwsmeriaid.</value>
+    </data>
+</root>

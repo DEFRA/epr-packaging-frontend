@@ -97,28 +97,15 @@ public static class ServiceProviderExtension
 
     private static void ConfigureAuthorization(IServiceCollection services, IConfiguration configuration, bool isStubAuth)
     {
-
         if (isStubAuth)
         {
-            ConfigureStubAuthentication(services, configuration);    
+            ConfigureStubAuthentication(services, configuration);
         }
-        else
-        {
-            services.ConfigureApplicationCookie(options =>
-            {
-                options.Cookie.HttpOnly = true;
-        
-                var azureB2COptions = services.BuildServiceProvider().GetRequiredService<IOptions<AzureAdB2COptions>>().Value;
-        
-                options.LoginPath = azureB2COptions.SignedOutCallbackPath;
-                options.AccessDeniedPath = azureB2COptions.SignedOutCallbackPath;
-        
-                options.SlidingExpiration = true;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-            });
-        }
-        
-        
+
+        // SUB-126, Note: the non-stub cookie scheme ("Cookies") is configured in ConfigureAuthentication.
+        // AccessDeniedPath is deliberately left at its framework default of /Account/AccessDenied,
+        // which AccountController.AccessDenied serves.
+
         services.AddAntiforgery(options =>
         {
             options.Cookie.HttpOnly = true;

@@ -10,4 +10,6 @@ public class EmailAddressOptions
     public string DataProtection { get; set; }
 
     public string DefraGroupProtectionOfficer { get; set; }
+
+    public string SupportEmail { get; set; }
 }
