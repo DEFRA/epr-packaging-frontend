@@ -83,6 +83,45 @@ public class ManageObligationsPageTests
     }
 
     [Test]
+    public async Task WhenMultiYearEnabled_WhatToDoNext_ShowsComplianceYearInHeadingAndLinks()
+    {
+        SetUp(
+            showMultiYearObligations: true,
+            obligationData: WebApiOptions.ObligationDataType.Mixed);
+        await Context.Client.AuthenticateDefaultUser();
+        SetProducerSession();
+
+        var response = await Context.Client.GetAsync(ObligationsHomePath);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        content.Should().Contain($"Review your PRNs and PERNs for {ComplianceYear}");
+        content.Should().Contain($"Accept or reject PRNs and PERNs for {ComplianceYear}");
+        content.Should().Contain($"Download a list of all PRNs and PERNs for {ComplianceYear} (CSV)");
+    }
+
+    [Test]
+    public async Task WhenMultiYearDisabled_WhatToDoNext_OmitsComplianceYearFromHeadingAndLinks()
+    {
+        SetUp(
+            showMultiYearObligations: false,
+            obligationData: WebApiOptions.ObligationDataType.Mixed);
+        await Context.Client.AuthenticateDefaultUser();
+        SetProducerSession();
+
+        var response = await Context.Client.GetAsync(ObligationsHomePath);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        content.Should().Contain("Review your PRNs and PERNs");
+        content.Should().Contain("Accept or reject PRNs and PERNs");
+        content.Should().Contain("Download a list of all PRNs and PERNs (CSV)");
+        content.Should().NotContain($"Review your PRNs and PERNs for {ComplianceYear}");
+        content.Should().NotContain($"Accept or reject PRNs and PERNs for {ComplianceYear}");
+        content.Should().NotContain($"Download a list of all PRNs and PERNs for {ComplianceYear} (CSV)");
+    }
+
+    [Test]
     public async Task WhenFutureYearSelected_InDecemberJanuaryFlashWindow_WithDecemberWastePrnAwaitingAcceptance_ShowsDetailsSummaryAccordion()
     {
         SetUp(
