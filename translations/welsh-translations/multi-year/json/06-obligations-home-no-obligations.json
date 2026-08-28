@@ -132,7 +132,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Shared partial for review your PRNS and PERNS links, shown on Manage obligations page .",
       "english": "Download a list of all PRNs and PERNs for {0} (CSV)",
-      "welsh": "Lawrlwytho rhestr o'r holl PRNs a PERNs ar gyfer {0} ar gyfer {0",
+      "welsh": "",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
       "context": "\nShared partial for review your PRNS and PERNS links, shown on Manage obligations page .\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },

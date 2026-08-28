@@ -170,8 +170,7 @@ Move spacing into the Razor view or layout instead of preserving it in
 translator-owned strings.
 
 The current Multi profile covers:
-TODO:
-(ObligationsHome|HomePageSelfManaged|AcceptedPrn|ComplianceSchemeLanding|AcceptedPrns).cshtml
+
 - `/report-data/accept-prn/{id}` - uses the `ShowMultiYearObligations` feature flag in the single PRN/PERN view to set the Confirmation Heading text;
 - `/report-data/accepted-prns` uses the `ShowMultiYearObligations` feature flag to set the `Accepted towards {0} recycling obligations` statement in the multi PRN/PERNs `AcceptedPrn` view;
 - `/report-data/home-self-managed` - uses the `ShowMultiYearObligations` feature flag to set the multi-year specific title via the `_ManageRecyclingObligationsTileMultiYear` partial view;
