@@ -1,0 +1,68 @@
+{
+  "translatorNotes": [
+    "Preserve placeholders such as {0}, {1}, and format suffixes such as {2:d MMMM yyyy}.",
+    "Preserve inline HTML tags such as <strong>...</strong> where they appear."
+  ],
+  "rows": [
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/ChooseAcceptanceYear.en.resx::page_title_prn",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/ChooseAcceptanceYear.en.resx",
+      "resourceKey": "page_title_prn",
+      "pageId": "prns-choose-acceptance-year",
+      "route": "/report-data/choose-acceptance-year/{id}",
+      "section": "Choose which year to accept into page.",
+      "english": "Which year’s recycling obligations do you want to accept this PRN towards?",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1932-66964",
+      "context": "Choose which year to accept a December Waste PRN or PERN into when two obligation years are available.\nChoose which year to accept into page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/ChooseAcceptanceYear.en.resx::page_title_pern",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/ChooseAcceptanceYear.en.resx",
+      "resourceKey": "page_title_pern",
+      "pageId": "prns-choose-acceptance-year",
+      "route": "/report-data/choose-acceptance-year/{id}",
+      "section": "Choose which year to accept into page.",
+      "english": "Which year’s recycling obligations do you want to accept this PERN towards?",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1932-66964",
+      "context": "Choose which year to accept a December Waste PRN or PERN into when two obligation years are available.\nChoose which year to accept into page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/ChooseAcceptanceYear.en.resx::heading_prn",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/ChooseAcceptanceYear.en.resx",
+      "resourceKey": "heading_prn",
+      "pageId": "prns-choose-acceptance-year",
+      "route": "/report-data/choose-acceptance-year/{id}",
+      "section": "Choose which year to accept into page.",
+      "english": "Which year’s recycling obligations do you want to accept this PRN towards?",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1932-66964",
+      "context": "Choose which year to accept a December Waste PRN or PERN into when two obligation years are available.\nChoose which year to accept into page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/ChooseAcceptanceYear.en.resx::heading_pern",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/ChooseAcceptanceYear.en.resx",
+      "resourceKey": "heading_pern",
+      "pageId": "prns-choose-acceptance-year",
+      "route": "/report-data/choose-acceptance-year/{id}",
+      "section": "Choose which year to accept into page.",
+      "english": "Which year’s recycling obligations do you want to accept this PERN towards?",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1932-66964",
+      "context": "Choose which year to accept a December Waste PRN or PERN into when two obligation years are available.\nChoose which year to accept into page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/ChooseAcceptanceYear.en.resx::select_a_year",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/ChooseAcceptanceYear.en.resx",
+      "resourceKey": "select_a_year",
+      "pageId": "prns-choose-acceptance-year",
+      "route": "/report-data/choose-acceptance-year/{id}",
+      "section": "Choose which year to accept into page.",
+      "english": "Select a year",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1932-66964",
+      "context": "Choose which year to accept a December Waste PRN or PERN into when two obligation years are available.\nChoose which year to accept into page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    }
+  ]
+}
