@@ -11,7 +11,7 @@
     <div class="govuk-card-body">
         <h3 class="govuk-heading-m">        
         @if (showMultiYearObligations) {
-            @Localizer["review_your_prns_and_perns_year", complianceYear.ToString()]
+            @Localizer["review_your_prns_and_perns_yyyy", complianceYear.ToString()]
         } else {
             @Localizer["review_your_prns_and_perns"]
         }

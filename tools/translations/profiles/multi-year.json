@@ -140,7 +140,7 @@
           "section": "Shared partial for review your PRNS and PERNS links, shown on Manage obligations page .",
           "keys": [
             "review_your_prns_and_perns",
-            "review_your_prns_and_perns_year",
+            "review_your_prns_and_perns_yyyy",
             "view_and_accept_prns_and_perns",
             "what_to_do_next",
             "accept_or_reject_prns_and_perns",

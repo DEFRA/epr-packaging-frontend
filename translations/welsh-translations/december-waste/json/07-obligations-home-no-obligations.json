@@ -41,9 +41,9 @@
       "context": "Manage obligations page: alternative intro content when there are no obligations yet (all zeros / No data yet).\nShared partial for review your PRNS and PERNS links, shown on Manage obligations page .\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
     {
-      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_reviewPRNsAndPERNs.en.resx::review_your_prns_and_perns_year",
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_reviewPRNsAndPERNs.en.resx::review_your_prns_and_perns_yyyy",
       "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_reviewPRNsAndPERNs.en.resx",
-      "resourceKey": "review_your_prns_and_perns_year",
+      "resourceKey": "review_your_prns_and_perns_yyyy",
       "pageId": "prns-obligations-home-no-obligations",
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Shared partial for review your PRNS and PERNS links, shown on Manage obligations page .",
