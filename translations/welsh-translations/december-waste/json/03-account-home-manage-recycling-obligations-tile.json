@@ -1,0 +1,68 @@
+{
+  "translatorNotes": [
+    "Preserve placeholders such as {0}, {1}, and format suffixes such as {2:d MMMM yyyy}.",
+    "Preserve inline HTML tags such as <strong>...</strong> where they appear."
+  ],
+  "rows": [
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_ManageRecyclingObligationsTileMultiYear.en.resx::heading",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_ManageRecyclingObligationsTileMultiYear.en.resx",
+      "resourceKey": "heading",
+      "pageId": "account-home-manage-recycling-obligations-tile",
+      "route": "/report-data/home-self-managed",
+      "section": "Multi-year Manage recycling obligations tile content and Search all PRNs and PERNs link.",
+      "english": "Manage recycling obligations",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112333",
+      "context": "Shared Manage recycling obligations tile (multi-year): used on direct producer and compliance scheme account home pages.\nMulti-year Manage recycling obligations tile content and Search all PRNs and PERNs link.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_ManageRecyclingObligationsTileMultiYear.en.resx::view_or_manage_by_year",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_ManageRecyclingObligationsTileMultiYear.en.resx",
+      "resourceKey": "view_or_manage_by_year",
+      "pageId": "account-home-manage-recycling-obligations-tile",
+      "route": "/report-data/home-self-managed",
+      "section": "Multi-year Manage recycling obligations tile content and Search all PRNs and PERNs link.",
+      "english": "View or manage your recycling obligations by year (includes PRNs and PERNs).",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112333",
+      "context": "Shared Manage recycling obligations tile (multi-year): used on direct producer and compliance scheme account home pages.\nMulti-year Manage recycling obligations tile content and Search all PRNs and PERNs link.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_ManageRecyclingObligationsTileMultiYear.en.resx::submit_compliance_by_deadline_direct_producer",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_ManageRecyclingObligationsTileMultiYear.en.resx",
+      "resourceKey": "submit_compliance_by_deadline_direct_producer",
+      "pageId": "account-home-manage-recycling-obligations-tile",
+      "route": "/report-data/home-self-managed",
+      "section": "Multi-year Manage recycling obligations tile content and Search all PRNs and PERNs link.",
+      "english": "An approved or delegated person must submit your {0} certificate of compliance on or before {1:d MMMM yyyy}.",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112333",
+      "context": "Shared Manage recycling obligations tile (multi-year): used on direct producer and compliance scheme account home pages.\nMulti-year Manage recycling obligations tile content and Search all PRNs and PERNs link.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_ManageRecyclingObligationsTileMultiYear.en.resx::submit_compliance_by_deadline_compliance_scheme",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_ManageRecyclingObligationsTileMultiYear.en.resx",
+      "resourceKey": "submit_compliance_by_deadline_compliance_scheme",
+      "pageId": "account-home-manage-recycling-obligations-tile",
+      "route": "/report-data/home-self-managed",
+      "section": "Multi-year Manage recycling obligations tile content and Search all PRNs and PERNs link.",
+      "english": "An approved or delegated person must submit your {0} statement of compliance on or before {1:d MMMM yyyy}.",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112333",
+      "context": "Shared Manage recycling obligations tile (multi-year): used on direct producer and compliance scheme account home pages.\nMulti-year Manage recycling obligations tile content and Search all PRNs and PERNs link.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_ManageRecyclingObligationsTileMultiYear.en.resx::search_all_link",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_ManageRecyclingObligationsTileMultiYear.en.resx",
+      "resourceKey": "search_all_link",
+      "pageId": "account-home-manage-recycling-obligations-tile",
+      "route": "/report-data/home-self-managed",
+      "section": "Multi-year Manage recycling obligations tile content and Search all PRNs and PERNs link.",
+      "english": "Search all PRNs and PERNs",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112333",
+      "context": "Shared Manage recycling obligations tile (multi-year): used on direct producer and compliance scheme account home pages.\nMulti-year Manage recycling obligations tile content and Search all PRNs and PERNs link.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    }
+  ]
+}

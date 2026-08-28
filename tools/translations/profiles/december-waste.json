@@ -12,19 +12,13 @@
       "view": "src/FrontendSchemeRegistration.UI/Views/Prns/SearchPrns.cshtml",
       "figmaUrl": null,
       "notes": "Search PRNs and PERNs page: December Waste acceptance-year message shown against awaiting-acceptance rows.",
-      "featureFlags": [
-        "ShowPrn",
-        "ShowDecemberWaste"
-      ],
+      "featureFlags": ["ShowPrn", "ShowDecemberWaste"],
       "appSettings": {},
       "resources": [
         {
           "source": "src/FrontendSchemeRegistration.UI/Resources/Views/Prns/SearchPrns.en.resx",
           "section": "December Waste acceptance-year message shown against awaiting-acceptance rows.",
-          "keys": [
-            "acceptance_year",
-            "acceptance_years"
-          ]
+          "keys": ["acceptance_year", "acceptance_years"]
         }
       ]
     },
@@ -35,10 +29,7 @@
       "view": "src/FrontendSchemeRegistration.UI/Views/Prns/SelectSinglePrn.cshtml",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=2012-26252",
       "notes": "Single PRN or PERN details page: December Waste acceptance-year message and Accepted obligation-year line.",
-      "featureFlags": [
-        "ShowPrn",
-        "ShowDecemberWaste"
-      ],
+      "featureFlags": ["ShowPrn", "ShowDecemberWaste"],
       "appSettings": {},
       "resources": [
         {
@@ -59,10 +50,7 @@
       "view": "src/FrontendSchemeRegistration.UI/Views/PrnsAccept/ChooseAcceptanceYear.cshtml",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1932-66964",
       "notes": "Choose which year to accept a December Waste PRN or PERN into when two obligation years are available.",
-      "featureFlags": [
-        "ShowPrn",
-        "ShowMultiYearObligations"
-      ],
+      "featureFlags": ["ShowPrn", "ShowMultiYearObligations"],
       "appSettings": {},
       "resources": [
         {
@@ -85,10 +73,7 @@
       "view": "src/FrontendSchemeRegistration.UI/Views/Shared/Partials/Prns/_ManageRecyclingObligationsTileMultiYear.cshtml",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112333",
       "notes": "Shared Manage recycling obligations tile (multi-year): used on direct producer and compliance scheme account home pages.",
-      "featureFlags": [
-        "ShowPrn",
-        "ShowMultiYearObligations"
-      ],
+      "featureFlags": ["ShowPrn", "ShowMultiYearObligations"],
       "appSettings": {},
       "resources": [
         {
@@ -111,19 +96,13 @@
       "view": "src/FrontendSchemeRegistration.UI/Views/PrnsObligation/ChooseYear.cshtml",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-111839",
       "notes": "Choose a year page: select historical, current or future recycling obligation year before managing obligations.",
-      "featureFlags": [
-        "ShowPrn",
-        "ShowMultiYearObligations"
-      ],
+      "featureFlags": ["ShowPrn", "ShowMultiYearObligations"],
       "appSettings": {},
       "resources": [
         {
           "source": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ChooseYear.en.resx",
           "section": "Choose a year page title and validation.",
-          "keys": [
-            "title",
-            "select_a_year"
-          ]
+          "keys": ["title", "select_a_year"]
         }
       ]
     },
@@ -134,19 +113,23 @@
       "view": "src/FrontendSchemeRegistration.UI/Views/PrnsAccept/AcceptSinglePrn.cshtml",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1932-66960&t=kwdkV7tx2CNkKvrA-0",
       "notes": "Single PRN Accepted year confirmation page.",
-      "featureFlags": [
-        "ShowPrn",
-        "ShowMultiYearObligations"
-      ],
+      "featureFlags": ["ShowPrn", "ShowMultiYearObligations"],
       "appSettings": {},
       "resources": [
         {
           "source": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/AcceptSinglePrn.en.resx",
           "section": "Single PRN Accepted year confirmation page",
           "keys": [
-            "acceptance_year_confirmation",
-            "acceptance_years_confirmation",
-            "accepted_towards_recycling_obligations_confirmation"
+            "NoBackButton",
+            "pern_heading",
+            "pern_page_title",
+            "prn_heading",
+            "prn_confirm_heading",
+            "prn_page_title",
+            "Title",
+            "Confirm_Title",
+            "YesAcceptButton",
+            "tonnage_in_words"
           ]
         }
       ]
@@ -158,10 +141,7 @@
       "view": "src/FrontendSchemeRegistration.UI/Views/PrnsAccept/AcceptedPrns.cshtml",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-113629",
       "notes": "Multi-accept confirmation page: multi-year green panel heading and blue material tile text.",
-      "featureFlags": [
-        "ShowPrn",
-        "ShowMultiYearObligations"
-      ],
+      "featureFlags": ["ShowPrn", "ShowMultiYearObligations"],
       "appSettings": {},
       "resources": [
         {
@@ -183,10 +163,7 @@
       "view": "src/FrontendSchemeRegistration.UI/Views/PrnsObligation/ObligationsHome.cshtml",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
       "notes": "Manage obligations page: alternative intro content when there are no obligations yet (all zeros / No data yet).",
-      "featureFlags": [
-        "ShowPrn",
-        "ShowMultiYearObligations"
-      ],
+      "featureFlags": ["ShowPrn", "ShowMultiYearObligations"],
       "appSettings": {},
       "resources": [
         {
@@ -195,6 +172,78 @@
           "keys": [
             "your_yyyy_recycling_obligations_will_be",
             "the_regulator_accepts_your_h1_and_h2_packaging_data_submissions"
+          ]
+        },
+        {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_reviewPRNsAndPERNs.en.resx",
+          "section": "Shared partial for review your PRNS and PERNS links, shown on Manage obligations page .",
+          "keys": [
+            "review_your_prns_and_perns",
+            "review_your_prns_and_perns_year",
+            "view_and_accept_prns_and_perns",
+            "what_to_do_next",
+            "accept_or_reject_prns_and_perns",
+            "accept_or_reject_prns_and_perns_yyyy",
+            "search_prns_and_perns",
+            "download_all_prns_and_perns",
+            "download_all_prns_and_perns_yyyy"
+          ]
+        },
+        {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_obligationsHeader.en.resx",
+          "section": "Shared partial for producer and regulator, shown on Manage obligations page header.",
+          "keys": [
+            "compliance_scheme",
+            "january",
+            "producer",
+            "regulator",
+            "regulator_england",
+            "regulator_northern_ireland",
+            "regulator_scotland",
+            "regulator_wales"
+          ]
+        },
+        {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_numberOfPrns.en.resx",
+          "section": "Shared partial for number of PRNs and PERNs, shown on Manage obligations page inset panel.",
+          "keys": [
+            "number_of_prns_and_perns_awaiting_acceptance",
+            "accept_or_reject_prns_and_perns"
+          ]
+        },
+        {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_prnMaterialTable.en.resx",
+          "section": "Shared partial for material obligations, shown on Manage obligations page obligations progress table.",
+          "keys": [
+            "arialabel_aluminium",
+            "aluminium",
+            "arialabel_glass",
+            "glass",
+            "glass_recycling_obligation_breakdown",
+            "arialabel_glass_remelt",
+            "glass_remelt",
+            "material",
+            "met",
+            "not_available_yet",
+            "not_met",
+            "no_data_yet",
+            "arialabel_paper_board_fibre",
+            "paper_board_fibre",
+            "arialabel_plastic",
+            "plastic",
+            "recycling_obligations_to_meet",
+            "arialabel_remaining_glass",
+            "remaining_glass",
+            "status",
+            "arialabel_steel",
+            "steel",
+            "tonnage_accepted",
+            "tonnage_awaiting_acceptance",
+            "tonnage_outstanding",
+            "totals",
+            "arialabel_wood",
+            "wood",
+            "your_recycling_obligations_progress"
           ]
         }
       ]
