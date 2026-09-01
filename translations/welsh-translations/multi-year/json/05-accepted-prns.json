@@ -1,0 +1,56 @@
+{
+  "translatorNotes": [
+    "Preserve placeholders such as {0}, {1}, and format suffixes such as {2:d MMMM yyyy}.",
+    "Preserve inline HTML tags such as <strong>...</strong> where they appear."
+  ],
+  "rows": [
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/AcceptedPrns.en.resx::accepted_towards_your_material_obligation_multi_year",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/AcceptedPrns.en.resx",
+      "resourceKey": "accepted_towards_your_material_obligation_multi_year",
+      "pageId": "prns-accepted-multi",
+      "route": "/report-data/accepted-prns",
+      "section": "Multi-year multi-accept confirmation panel and material tiles.",
+      "english": "accepted towards your recycling obligation for {0}",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-113629",
+      "context": "Multi-accept confirmation page: multi-year green panel heading and blue material tile text.\nMulti-year multi-accept confirmation panel and material tiles.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/AcceptedPrns.en.resx::you_have_accepted_mix_prns_and_perns_multi_year",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/AcceptedPrns.en.resx",
+      "resourceKey": "you_have_accepted_mix_prns_and_perns_multi_year",
+      "pageId": "prns-accepted-multi",
+      "route": "/report-data/accepted-prns",
+      "section": "Multi-year multi-accept confirmation panel and material tiles.",
+      "english": "You’ve accepted {0} {1} and {2} towards your {3} recycling obligations",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-113629",
+      "context": "Multi-accept confirmation page: multi-year green panel heading and blue material tile text.\nMulti-year multi-accept confirmation panel and material tiles.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/AcceptedPrns.en.resx::you_have_accepted_multipe_prn_or_pern_multi_year",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/AcceptedPrns.en.resx",
+      "resourceKey": "you_have_accepted_multipe_prn_or_pern_multi_year",
+      "pageId": "prns-accepted-multi",
+      "route": "/report-data/accepted-prns",
+      "section": "Multi-year multi-accept confirmation panel and material tiles.",
+      "english": "You’ve accepted {0} {1} towards your {2} recycling obligations",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-113629",
+      "context": "Multi-accept confirmation page: multi-year green panel heading and blue material tile text.\nMulti-year multi-accept confirmation panel and material tiles.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/AcceptedPrns.en.resx::you_have_accepted_one_prn_or_pern_multi_year",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/AcceptedPrns.en.resx",
+      "resourceKey": "you_have_accepted_one_prn_or_pern_multi_year",
+      "pageId": "prns-accepted-multi",
+      "route": "/report-data/accepted-prns",
+      "section": "Multi-year multi-accept confirmation panel and material tiles.",
+      "english": "You’ve accepted one {0} towards your {1} recycling obligations",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-113629",
+      "context": "Multi-accept confirmation page: multi-year green panel heading and blue material tile text.\nMulti-year multi-accept confirmation panel and material tiles.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "translatorNotes": [
+    "Preserve placeholders such as {0}, {1}, and format suffixes such as {2:d MMMM yyyy}.",
+    "Preserve inline HTML tags such as <strong>...</strong> where they appear."
+  ],
+  "rows": [
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ChooseYear.en.resx::title",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ChooseYear.en.resx",
+      "resourceKey": "title",
+      "pageId": "prns-choose-year",
+      "route": "/report-data/choose-your-recycling-obligations-year",
+      "section": "Choose a year page title and validation.",
+      "english": "Choose a year",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-111839",
+      "context": "Choose a year page: select historical, current or future recycling obligation year before managing obligations.\nChoose a year page title and validation.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ChooseYear.en.resx::select_a_year",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ChooseYear.en.resx",
+      "resourceKey": "select_a_year",
+      "pageId": "prns-choose-year",
+      "route": "/report-data/choose-your-recycling-obligations-year",
+      "section": "Choose a year page title and validation.",
+      "english": "Select a year",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-111839",
+      "context": "Choose a year page: select historical, current or future recycling obligation year before managing obligations.\nChoose a year page title and validation.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    }
+  ]
+}
