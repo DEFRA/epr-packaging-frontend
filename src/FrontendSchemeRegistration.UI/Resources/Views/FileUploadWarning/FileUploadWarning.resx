@@ -60,4 +60,16 @@
     <data name="no_keep_this_file_uploaded" xml:space="preserve">
         <value />
     </data>
+    <data name="continue_with_this_file" xml:space="preserve">
+        <value />
+    </data>
+    <data name="what_do_you_want_to_do_next" xml:space="preserve">
+        <value />
+    </data>
+    <data name="warnings_hint" xml:space="preserve">
+        <value />
+    </data>
+    <data name="upload_new_file" xml:space="preserve">
+        <value />
+    </data>
 </root>
