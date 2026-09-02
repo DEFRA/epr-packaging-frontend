@@ -81,7 +81,24 @@ public class ReferenceNumberBuilderTests
         };
         
         var refNo = ReferenceNumberBuilder.Build(sp, "Org", tp, false, 0, journey);
-        
+
         Assert.That(refNo, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void BuildReferenceNumber_ForCSO_WhenComplianceSchemeRowNumberIsNull_DoesNotAppendRowNumberSuffix()
+    {
+        var tp = new FakeTimeProvider();
+        tp.SetUtcNow(new DateTimeOffset(2025, 12, 31, 0, 0, 1, TimeSpan.Zero));
+        var sp = new SubmissionPeriod
+        {
+            Year = "2025",
+            EndMonth = "December",
+            StartMonth = "January"
+        };
+
+        var refNo = ReferenceNumberBuilder.Build(sp, "Org", tp, true, null, RegistrationJourney.CsoLargeProducer.ToString());
+
+        Assert.That(refNo, Is.EqualTo("PEPROrg25P1L"));
     }
 }

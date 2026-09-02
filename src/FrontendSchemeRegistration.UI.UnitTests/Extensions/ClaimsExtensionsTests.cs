@@ -179,6 +179,61 @@ public class ClaimsExtensionsTests
     }
 
     [Test]
+    public async Task UpdateUserDataClaimsAndSignInAsync_ShouldRemoveExistingUserDataClaim_WhenOnePresent()
+    {
+        // Arrange
+        var userData = _fixture.Create<UserData>();
+        var existingClaim = new Claim(ClaimTypes.UserData, JsonSerializer.Serialize(_fixture.Create<UserData>()));
+
+        _claimsIdentityMock.Setup(x => x.FindFirst(ClaimTypes.UserData)).Returns(existingClaim);
+
+        var userMock = new Mock<ClaimsPrincipal>();
+        userMock.Setup(x => x.Identity).Returns(_claimsIdentityMock.Object);
+
+        var authenticationServiceMock = new Mock<IAuthenticationService>();
+        authenticationServiceMock
+            .Setup(x => x.SignInAsync(
+                It.IsAny<HttpContext>(),
+                It.IsAny<string>(),
+                It.IsAny<ClaimsPrincipal>(),
+                It.IsAny<AuthenticationProperties>()))
+            .Returns(Task.CompletedTask);
+
+        var serviceProviderMock = new Mock<IServiceProvider>();
+        serviceProviderMock
+            .Setup(_ => _.GetService(typeof(IAuthenticationService)))
+            .Returns(authenticationServiceMock.Object);
+        serviceProviderMock.Setup(_ => _.GetService(typeof(IUrlHelperFactory)))
+            .Returns(Mock.Of<IUrlHelperFactory>());
+
+        _httpContextMock
+            .Setup(x => x.User)
+            .Returns(userMock.Object);
+
+        _httpContextMock
+            .SetupGet(x => x.RequestServices)
+            .Returns(serviceProviderMock.Object);
+
+        _httpContextMock
+            .SetupGet(x => x.Features)
+            .Returns(Mock.Of<IFeatureCollection>());
+
+        // Act
+        await ClaimsExtensions.UpdateUserDataClaimsAndSignInAsync(_httpContextMock.Object, userData);
+
+        // Assert
+        _claimsIdentityMock.Verify(x => x.RemoveClaim(existingClaim), Times.AtLeastOnce);
+
+        authenticationServiceMock.Verify(
+            x => x.SignInAsync(
+                It.IsAny<HttpContext>(),
+                It.IsAny<string>(),
+                It.IsAny<ClaimsPrincipal>(),
+                It.IsAny<AuthenticationProperties>()),
+            Times.Once);
+    }
+
+    [Test]
     public void TryGetOrganisatonIds_ShouldReturnNull_WhenNoOrganisationIdsDataClaimPresent()
     {
         // Arrange
@@ -230,6 +285,91 @@ public class ClaimsExtensionsTests
 
         // Act
         var result = claimsPrincipal.TryGetOrganisatonIds();
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public void TryGetOrganisatonIds_ShouldReturnNull_WhenClaimsPresentButNoneAreOrganisationIds()
+    {
+        // Arrange
+        var claimsPrincipalMock = new Mock<ClaimsPrincipal>();
+        claimsPrincipalMock.Setup(x => x.Claims).Returns(new[] { new Claim(ClaimTypes.Name, "some-user") });
+
+        // Act
+        var result = claimsPrincipalMock.Object.TryGetOrganisatonIds();
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public void GetOrganisationId_ShouldReturnOrganisationId_WhenOrganisationsListHasAnEntry()
+    {
+        // Arrange
+        var userData = _fixture.Build<UserData>()
+            .With(x => x.Organisations, new List<Organisation> { _fixture.Create<Organisation>() })
+            .Create();
+        var serializedUserData = JsonSerializer.Serialize(userData);
+
+        var claimsPrincipalMock = new Mock<ClaimsPrincipal>();
+        claimsPrincipalMock.Setup(x => x.Claims).Returns(new[] { new Claim(ClaimTypes.UserData, serializedUserData) });
+
+        // Act
+        var result = claimsPrincipalMock.Object.GetOrganisationId();
+
+        // Assert
+        result.Should().Be(userData.Organisations.First().Id);
+    }
+
+    [Test]
+    public void GetOrganisationId_ShouldReturnNull_WhenOrganisationsListIsEmpty()
+    {
+        // Arrange
+        var userData = _fixture.Build<UserData>()
+            .With(x => x.Organisations, new List<Organisation>())
+            .Create();
+        var serializedUserData = JsonSerializer.Serialize(userData);
+
+        var claimsPrincipalMock = new Mock<ClaimsPrincipal>();
+        claimsPrincipalMock.Setup(x => x.Claims).Returns(new[] { new Claim(ClaimTypes.UserData, serializedUserData) });
+
+        // Act
+        var result = claimsPrincipalMock.Object.GetOrganisationId();
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public void GetOrganisationId_ShouldReturnNull_WhenOrganisationsListIsNull()
+    {
+        // Arrange
+        var userData = _fixture.Build<UserData>()
+            .With(x => x.Organisations, (List<Organisation>)null)
+            .Create();
+        var serializedUserData = JsonSerializer.Serialize(userData);
+
+        var claimsPrincipalMock = new Mock<ClaimsPrincipal>();
+        claimsPrincipalMock.Setup(x => x.Claims).Returns(new[] { new Claim(ClaimTypes.UserData, serializedUserData) });
+
+        // Act
+        var result = claimsPrincipalMock.Object.GetOrganisationId();
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public void GetOrganisationId_ShouldReturnNull_WhenUserDataClaimDeserializesToNull()
+    {
+        // Arrange
+        var claimsPrincipalMock = new Mock<ClaimsPrincipal>();
+        claimsPrincipalMock.Setup(x => x.Claims).Returns(new[] { new Claim(ClaimTypes.UserData, "null") });
+
+        // Act
+        var result = claimsPrincipalMock.Object.GetOrganisationId();
 
         // Assert
         result.Should().BeNull();

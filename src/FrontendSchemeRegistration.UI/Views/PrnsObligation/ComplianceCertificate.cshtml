@@ -1,0 +1,44 @@
+
+@using FrontendSchemeRegistration.Application.Constants
+@using FrontendSchemeRegistration.Application.Enums
+@using FrontendSchemeRegistration.Application.Extensions
+@model FrontendSchemeRegistration.UI.ViewModels.ViewModelWithOrganisationRole
+
+@{
+    var complianceKey = Model.IsComplianceScheme ? "compliance_scheme" : "direct_producer";
+    var nationId = Model.OrganisationNationId is null or (int)Nation.NotSet ? (int)Nation.England : Model.OrganisationNationId.Value;
+
+    var environmentAgencyName = NationExtensions.GetEnvironmentAgencyName(NationExtensions.GetNationNameFromId(nationId));
+    var isWales = (int)Nation.Wales == nationId;
+    var mailTo = NationExtensions.GetEnvironmentAgencyEmailLink(nationId);
+    var contactParagraph = Localizer[isWales ? "queries_paragraph_wales" : "queries_paragraph", environmentAgencyName];
+
+    ViewData["Title"] = Localizer[@String.Format("{0}_{1}", "title", complianceKey)];
+}
+
+<main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-l">
+                @Localizer[@String.Format("{0}_{1}", "title", complianceKey)]
+            </h1>
+        </div>
+        <div class="govuk-grid-column-two-thirds">
+            <p class="govuk-body">@Localizer[@String.Format("{0}_{1}", "can_show_paragraph", complianceKey)]</p>
+            <p class="govuk-body">@Localizer[@String.Format("{0}_{1}", "cannot_show_paragraph", complianceKey)]</p>
+            <p class="govuk-body">@contactParagraph @mailTo.</p>
+            <p class="govuk-body">@Localizer["view_prns_paragraph"]</p>
+        </div>
+    </div>
+    <div class="govuk-grid-row govuk-!-margin-bottom-6 govuk-!-margin-top-6">
+        <div class="govuk-grid-column-two-thirds">
+            <div class="govuk-card">
+                <div class="govuk-card-body">
+                    <h3 class="govuk-heading-m">@Localizer["your_prns_and_perns"]</h3>
+                    <p class="govuk-body"><a class="govuk-link govuk-link--no-visited-state" href="@PagePaths.Prns.Search">@Localizer["search_prns_and_perns"]</a></p>
+                    <p class="govuk-body"><a class="govuk-link govuk-link--no-visited-state" href="@PagePaths.Prns.DownloadAllPRNsAndPERNs">@Localizer["download_prns_and_perns"]</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

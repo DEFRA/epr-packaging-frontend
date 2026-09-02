@@ -139,6 +139,61 @@ markup, and that translated values do not start or end with whitespace. Use
 decoded tags such as `<strong>` in workbooks, not RESX/XML entities such as
 `&lt;strong&gt;`; the import process writes the correct RESX encoding.
 
+## Multi Year profile
+
+The third profile is `multi-year`:
+
+```bash
+dotnet run --project tools/translations/cli/cli.csproj -- export --profile multi-year
+```
+
+By default this writes one workbook per Multi Year page with translation entries to:
+
+```text
+translations/welsh-translations/multi-year/xlsx
+```
+
+It also writes matching deterministic review JSON files to:
+
+```text
+translations/welsh-translations/multi-year/json
+```
+
+Existing workbooks and JSON files are only overwritten when their translator
+notes or translation rows have changed, so repeated exports do not create Git
+diffs from workbook metadata alone. Treat the JSON files as generated review
+artifacts; the Excel workbooks remain the translator-facing files, and the
+profile and RESX files remain the source inputs.
+
+Export fails if a selected English RESX value starts or ends with whitespace.
+Move spacing into the Razor view or layout instead of preserving it in
+translator-owned strings.
+
+The current Multi profile covers:
+
+- `/report-data/accept-prn/{id}` - uses the `ShowMultiYearObligations` feature flag in the single PRN/PERN view to set the Confirmation Heading text;
+- `/report-data/accepted-prns` uses the `ShowMultiYearObligations` feature flag to set the `Accepted towards {0} recycling obligations` statement in the multi PRN/PERNs `AcceptedPrn` view;
+- `/report-data/home-self-managed` - uses the `ShowMultiYearObligations` feature flag to set the multi-year specific title via the `_ManageRecyclingObligationsTileMultiYear` partial view;
+- `/report-data/manage-your-recycling-obligations` - uses the `ShowMultiYearObligations` feature flag to set obligation year specific text in the partials used in the `PrnsObligation/ObligationsHome.cshtml` view;
+
+To import translated workbooks:
+
+```bash
+dotnet run --project tools/translations/cli/cli.csproj -- import --profile multi-year
+```
+
+By default import reads from `translations/welsh-translations/multi-year/xlsx`. If
+you pass an export root directory, such as `translations/welsh-translations/multi-year`
+or `/tmp/epr-packaging-multi-year-translations`, import reads from its `xlsx`
+subdirectory.
+
+Blank Welsh cells preserve the existing Welsh RESX value. Conflicting non-blank translations for the same hidden translation key fail the import.
+
+Import also validates that translated values preserve source placeholders and
+markup, and that translated values do not start or end with whitespace. Use
+decoded tags such as `<strong>` in workbooks, not RESX/XML entities such as
+`&lt;strong&gt;`; the import process writes the correct RESX encoding.
+
 ## Adding profiles or pages
 
 Add or update JSON under `tools/translations/profiles`. A page entry should include:
@@ -166,7 +221,7 @@ files currently named in the profile:
 1. Find current CSoC entry points:
 
    ```bash
-   rg -n "Csoc|CSoC|CsocEnabled|CsocViewModel|Partials/Csoc|ComplianceDeclarationStatus|certificate of compliance|statement of compliance" src/FrontendSchemeRegistration.UI src/FrontendSchemeRegistration.Application -g '!bin/**' -g '!obj/**' -g '!node_modules/**'
+   rg -n "Csoc|CSoC|CsocEnabled|CsocViewModel|Partials/Csoc|ComplianceDeclarationStatus|certificate of compliance|statement of compliance"  
    ```
 
 2. For each hit, trace from the controller action or helper back to the route,

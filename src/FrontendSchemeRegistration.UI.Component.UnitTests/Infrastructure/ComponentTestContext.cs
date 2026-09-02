@@ -35,7 +35,7 @@ public class ComponentTestContext : IDisposable
         var webApp = factory
             .WithWebHostBuilder(c =>
                 c.UseEnvironment("ComponentTest")
-                    .UseConfiguration(ConfigBuilder.GenerateConfiguration())
+                    .UseConfiguration(ConfigBuilder.GenerateConfiguration(additionalConfig))
             );
         _server = webApp.Server;
         
