@@ -101,6 +101,9 @@
 	<data name="review_your_prns_and_perns" xml:space="preserve">
 		<value>Adolygu'ch PRNs a'ch PERNs</value>
 	</data>
+	<data name="review_your_prns_and_perns_yyyy" xml:space="preserve">
+		<value>Review your PRNs and PERNs for {0}</value>
+	</data>
 	<data name="view_and_accept_prns_and_perns" xml:space="preserve">
 		<value>Gweld a derbyn unrhyw PRNs a PERNs sydd wedi'u rhoi er mwyn cyflawni'ch rhwymedigaethau ailgylchu.</value>
 	</data>
@@ -110,10 +113,16 @@
 	<data name="accept_or_reject_prns_and_perns" xml:space="preserve">
 	  <value>Derbyn neu wrthod PRNs a PERNs</value>
 	</data>
+	<data name="accept_or_reject_prns_and_perns_yyyy" xml:space="preserve">
+	  <value>Accept or reject PRNs and PERNs for {0}</value>
+	</data>
 	<data name="search_prns_and_perns" xml:space="preserve">
 	  <value>Chwilio PRNs a PERNs</value>
 	</data>
 	<data name="download_all_prns_and_perns" xml:space="preserve">
 	  <value>Lawrlwytho rhestr o'r holl PRNs a PERNs</value>
+	</data>
+	<data name="download_all_prns_and_perns_yyyy" xml:space="preserve">
+	  <value>Download a list of all PRNs and PERNs for {0} (CSV)</value>
 	</data>
 </root>
