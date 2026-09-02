@@ -60,7 +60,7 @@
         <value>What do you want to do next?</value>
     </data>
     <data name="warnings_hint" xml:space="preserve">
-        <value>The warnings will not stop your file being submitted.</value>
+        <value>Warnings don’t stop you submitting your file.</value>
     </data>
     <data name="upload_new_file" xml:space="preserve">
         <value>Uwchlwythwch ffeil newydd</value>

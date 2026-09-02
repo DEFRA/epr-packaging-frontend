@@ -78,16 +78,11 @@
                              @Html.RadioButtonFor(m => m.UploadNewFile, false, new
                              {
                                  @class = "govuk-radios__input",
-                                 Id = "UploadNewFile-1"
+                                 Id = "UploadNewFile-1",
+                                 aria_describedby = "UploadNewFile-1-item-hint"
                              })
                              <label for="UploadNewFile-1" class="govuk-label govuk-radios__label">@Localizer["continue_with_this_file"]</label>
-                             <div class="govuk-warning-text">
-                                 <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-                                 <strong class="govuk-warning-text__text">
-                                     <span class="govuk-visually-hidden">Warning</span>
-                                     @Localizer["warnings_hint"]
-                                 </strong>
-                             </div>
+                             <div id="UploadNewFile-1-item-hint" class="govuk-hint govuk-radios__hint">@Localizer["warnings_hint"]</div>
                          </div>
                          
                          <div class="govuk-radios__item">
