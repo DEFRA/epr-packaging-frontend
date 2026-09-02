@@ -127,7 +127,7 @@ public static class WebApi
         server.Given(Request.Create().UsingGet().WithPath("/api/v1/prn/organisation"))
             .RespondWith(Response.Create().WithStatusCode(200)
                 .WithHeader("Content-Type", "application/json")
-                .WithBodyFromFile("WebApi/Responses/WebApi/v1_prn_organisation.json"));
+                .WithBodyFromFile($"WebApi/Responses/WebApi/{options.PrnOrganisationResponseFile}"));
 
         server.Given(Request.Create().UsingGet().WithPath("/api/v1/prn/search"))
             .RespondWith(Response.Create().WithStatusCode(200)

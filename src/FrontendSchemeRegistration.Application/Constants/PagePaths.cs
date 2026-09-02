@@ -117,6 +117,7 @@ public static class PagePaths
     public static class Prns
     {
         public const string ChooseYear = "choose-your-recycling-obligations-year";
+        public const string ComplianceCertificate = "certificate-of-compliance-record";
         public const string ObligationsHome = "manage-your-recycling-obligations";
         public const string ObligationPerMaterial = "manage-your-recycling-obligations";
         public const string Search = "view-awaiting-acceptance";

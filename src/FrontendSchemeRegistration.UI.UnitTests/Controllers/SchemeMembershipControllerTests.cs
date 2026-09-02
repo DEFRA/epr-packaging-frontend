@@ -562,6 +562,35 @@ public class SchemeMembershipControllerTests
     }
 
     [Test]
+    public async Task GetReasonsForRemoval_JourneyHasPreviousPage_SetsBackLinkToPreviousPage()
+    {
+        // Arrange
+        var selectedSchemeId = Guid.NewGuid();
+        var dto = new ComplianceSchemeMemberDetails
+        {
+            OrganisationNumber = _organisationNumber,
+            OrganisationName = _organisationName,
+            RegisteredNation = "England",
+            ProducerType = "Partnership",
+            CompanyHouseNumber = "12333",
+            ComplianceScheme = "Co2"
+        };
+
+        _complianceSchemeMemberService.Setup(x => x.GetComplianceSchemeMemberDetails(It.IsAny<Guid>(), It.IsAny<Guid>())).ReturnsAsync(dto);
+
+        var currentPagePath = $"/reason-for-removal/{selectedSchemeId}";
+        var previousPagePath = $"/member-details/{selectedSchemeId}";
+        _session.SchemeMembershipSession.Journey = new List<string> { previousPagePath, currentPagePath };
+
+        // Act
+        var result = await _systemUnderTest.ReasonsForRemoval(selectedSchemeId) as ViewResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        result.ViewData["BackLinkToDisplay"].Should().Be($"{_globalVariablesMock.Object.Value.BasePath}{previousPagePath}");
+    }
+
+    [Test]
     public async Task GetRemovalTellUsMore_SessionNull_RedirectsToHome()
     {
         // Arrange

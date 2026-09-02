@@ -36,11 +36,8 @@ public class ManageObligationsPageTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain($"Your {ComplianceYear} recycling obligations will be calculated after:");
-        content.Should().Contain($"you submit your packaging data for {ComplianceYear - 1}");
-        content.Should().Contain("the regulator accepts your H1 and H2 packaging data submissions");
-        content.Should().NotContain("You can start acquiring and accepting PRNs and PERNs");
-        content.Should().NotContain("Your recycling obligations will be calculated after:");
+        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
+            .ScrubCommonHtmlNodes();
     }
 
     [Test]
@@ -56,11 +53,8 @@ public class ManageObligationsPageTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("Your recycling obligations will be calculated after:");
-        content.Should().Contain($"you submit your packaging data for {ComplianceYear - 1}");
-        content.Should().Contain("the regulator accepts your data submissions");
-        content.Should().Contain("You can start acquiring and accepting PRNs and PERNs to meet your recycling obligations.");
-        content.Should().NotContain("H1 and H2");
+        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
+            .ScrubCommonHtmlNodes();
     }
 
     [Test]
@@ -76,10 +70,102 @@ public class ManageObligationsPageTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain(
-            $"Acquire and accept PRNs and PERNs until your recycling obligations are fully met. Select a material for information on how the data was calculated and view your progress towards meeting your {ComplianceYear} recycling obligations.");
-        content.Should().NotContain("will be calculated after:");
-        content.Should().NotContain("H1 and H2");
+        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
+            .ScrubCommonHtmlNodes();
+    }
+
+    [Test]
+    public async Task WhenMultiYearEnabled_WhatToDoNext_ShowsComplianceYearInHeadingAndLinks()
+    {
+        SetUp(
+            showMultiYearObligations: true,
+            obligationData: WebApiOptions.ObligationDataType.Mixed);
+        await Context.Client.AuthenticateDefaultUser();
+        SetProducerSession();
+
+        var response = await Context.Client.GetAsync(ObligationsHomePath);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
+            .ScrubCommonHtmlNodes();
+    }
+
+    [Test]
+    public async Task WhenMultiYearDisabled_WhatToDoNext_OmitsComplianceYearFromHeadingAndLinks()
+    {
+        SetUp(
+            showMultiYearObligations: false,
+            obligationData: WebApiOptions.ObligationDataType.Mixed);
+        await Context.Client.AuthenticateDefaultUser();
+        SetProducerSession();
+
+        var response = await Context.Client.GetAsync(ObligationsHomePath);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
+            .ScrubCommonHtmlNodes();
+    }
+
+    [Test]
+    public async Task WhenFutureYearSelected_InDecemberJanuaryFlashWindow_WithDecemberWastePrnAwaitingAcceptance_ShowsDetailsSummaryAccordion()
+    {
+        SetUp(
+            showMultiYearObligations: true,
+            obligationData: WebApiOptions.ObligationDataType.NoDataYet,
+            prnOrganisationData: WebApiOptions.PrnOrganisationDataType.DecemberWasteAwaitingAcceptance,
+            startupUtcTimestampOverride: "2026-12-15T08:00:00Z");
+        await Context.Client.AuthenticateDefaultUser();
+        SetProducerSession(selectedObligationYear: ComplianceYear + 1);
+
+        var response = await Context.Client.GetAsync(ObligationsHomePath);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
+            .ScrubCommonHtmlNodes();
+    }
+
+    [Test]
+    public async Task WhenFutureYearSelected_InDecemberJanuaryFlashWindow_WithDecemberWastePrnAwaitingAcceptance_RendersHtmlStringContentUnescaped()
+    {
+        SetUp(
+            showMultiYearObligations: true,
+            obligationData: WebApiOptions.ObligationDataType.NoDataYet,
+            prnOrganisationData: WebApiOptions.PrnOrganisationDataType.DecemberWasteAwaitingAcceptance,
+            startupUtcTimestampOverride: "2026-12-15T08:00:00Z");
+        await Context.Client.AuthenticateDefaultUser();
+        SetProducerSession(selectedObligationYear: ComplianceYear + 1);
+
+        var response = await Context.Client.GetAsync(ObligationsHomePath);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+
+        // The partial passes Content as an HtmlString, so its markup must render raw rather than
+        // HTML-encoded — the snapshot captures the accordion body as a real <ul>/<li> subtree.
+        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
+            .ScrubCommonHtmlNodes();
+    }
+
+    [Test]
+    public async Task WhenFutureYearSelected_InDecemberJanuaryFlashWindow_WithoutDecemberWastePrnAwaitingAcceptance_HidesDetailsSummaryAccordion()
+    {
+        SetUp(
+            showMultiYearObligations: true,
+            obligationData: WebApiOptions.ObligationDataType.NoDataYet,
+            prnOrganisationData: WebApiOptions.PrnOrganisationDataType.Default,
+            startupUtcTimestampOverride: "2026-12-15T08:00:00Z");
+        await Context.Client.AuthenticateDefaultUser();
+        SetProducerSession(selectedObligationYear: ComplianceYear + 1);
+
+        var response = await Context.Client.GetAsync(ObligationsHomePath);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
+            .ScrubCommonHtmlNodes();
     }
 
     [TearDown]
@@ -90,23 +176,33 @@ public class ManageObligationsPageTests
 
     private void SetUp(
         bool showMultiYearObligations,
-        WebApiOptions.ObligationDataType obligationData)
+        WebApiOptions.ObligationDataType obligationData,
+        WebApiOptions.PrnOrganisationDataType prnOrganisationData = WebApiOptions.PrnOrganisationDataType.Default,
+        string? startupUtcTimestampOverride = null)
     {
+        var additionalConfig = new Dictionary<string, string?>
+        {
+            { "FeatureManagement:ShowMultiYearObligations", showMultiYearObligations.ToString().ToLowerInvariant() },
+            { "FeatureManagement:CsocEnabled", "false" }
+        };
+
+        if (startupUtcTimestampOverride is not null)
+        {
+            additionalConfig["StartupUtcTimestampOverride"] = startupUtcTimestampOverride;
+        }
+
         Context.SetUp(
             overrideSession: true,
-            additionalConfig: new Dictionary<string, string?>
-            {
-                { "FeatureManagement:ShowMultiYearObligations", showMultiYearObligations.ToString().ToLowerInvariant() },
-                { "FeatureManagement:CsocEnabled", "false" }
-            },
+            additionalConfig: additionalConfig,
             new WebApiOptions
             {
                 ObligationData = obligationData,
+                PrnOrganisationData = prnOrganisationData,
                 ServiceRole = ServiceRoleConstants.Approved
             });
     }
 
-    private void SetProducerSession()
+    private void SetProducerSession(int? selectedObligationYear = null)
     {
         var sessionStore = Context.GetSessionStore();
         sessionStore.Session.Set(
@@ -133,6 +229,10 @@ public class ManageObligationsPageTests
                     {
                         Id = Accounts.ComplianceSchemeId
                     }
+                },
+                PrnSession = new PrnSession
+                {
+                    SelectedObligationYear = selectedObligationYear
                 }
             })));
     }

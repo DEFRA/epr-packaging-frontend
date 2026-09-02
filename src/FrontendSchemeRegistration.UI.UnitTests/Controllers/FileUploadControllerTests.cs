@@ -255,6 +255,33 @@ public class FileUploadControllerTests
     }
 
     [Test]
+    public async Task Get_ReturnsFileUploadView_WhenRegistrationSessionIsNull()
+    {
+        // Arrange
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = null!,
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation>
+                    {
+                        new()
+                        {
+                            OrganisationRole = OrganisationRoles.Producer
+                        }
+                    }
+                }
+            });
+
+        // Act
+        var result = await _fileUploadController.Get() as ViewResult;
+
+        // Assert
+        result.ViewName.Should().Be(ViewName);
+    }
+
+    [Test]
     public async Task Post_ReturnsFileUploadView_WhenTheModelStateIsInvalid()
     {
         // Arrange
