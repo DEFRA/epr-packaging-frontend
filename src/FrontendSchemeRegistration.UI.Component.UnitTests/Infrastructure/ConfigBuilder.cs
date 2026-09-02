@@ -7,27 +7,31 @@ using Microsoft.Extensions.Configuration.Memory;
 [ExcludeFromCodeCoverage]
 public static class ConfigBuilder
 {
-    public static IConfigurationRoot GenerateConfiguration()
+    public static IConfigurationRoot GenerateConfiguration(Dictionary<string, string?>? overrides = null)
     {
-        var configSource = new MemoryConfigurationSource
+        var data = new Dictionary<string, string?>
         {
-            InitialData =
-            [
-                new KeyValuePair<string,string>("IsStubAuth", "true"),
-                new KeyValuePair<string,string>("UseLocalSession", "true"),
-                new KeyValuePair<string,string>("WebAPI:BaseEndpoint", "http://localhost:9091"),
-                new KeyValuePair<string,string>("PaymentFacadeApi:BaseUrl", "http://localhost:9091"),
-                new KeyValuePair<string,string>("EprAuthorizationConfig:FacadeBaseUrl", "http://localhost:9091/api/"),
-                new KeyValuePair<string,string>("AccountsFacadeAPI:BaseEndpoint", "http://localhost:9091/api/"),
-                new KeyValuePair<string,string>("StartupUtcTimestampOverride", "2026-03-27T08:58:00Z"),
-                new KeyValuePair<string,string>(
-                    "Csoc:WasteObligationsBaseAddress",
-                    "https://understanding-obligations")
-            ]
+            ["IsStubAuth"] = "true",
+            ["UseLocalSession"] = "true",
+            ["WebAPI:BaseEndpoint"] = "http://localhost:9091",
+            ["PaymentFacadeApi:BaseUrl"] = "http://localhost:9091",
+            ["EprAuthorizationConfig:FacadeBaseUrl"] = "http://localhost:9091/api/",
+            ["AccountsFacadeAPI:BaseEndpoint"] = "http://localhost:9091/api/",
+            ["StartupUtcTimestampOverride"] = "2026-03-27T08:58:00Z",
+            ["Csoc:WasteObligationsBaseAddress"] = "https://understanding-obligations"
         };
-        
+
+        if (overrides is not null)
+        {
+            foreach (var (key, value) in overrides)
+            {
+                data[key] = value;
+            }
+        }
+
+        var configSource = new MemoryConfigurationSource { InitialData = data };
         var provider = new MemoryConfigurationProvider(configSource);
-        
+
         return new ConfigurationRoot(new List<IConfigurationProvider> { provider });
     }
 }

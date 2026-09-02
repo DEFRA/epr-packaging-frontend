@@ -183,6 +183,26 @@ public class FileUploadBrandsSuccessControllerTests
     }
 
     [Test]
+    public async Task Get_RedirectsToFileUploadGetWithRegistrationYear_WhenSessionIsNull()
+    {
+        // Arrange
+        var registrationYear = DateTime.Now.Year;
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync((FrontendSchemeRegistrationSession)null);
+        _registrationPeriodProviderMock.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), true)).Returns(registrationYear);
+
+        // Act
+        var result = await _systemUnderTest.Get() as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("FileUploadCompanyDetails");
+        result.RouteValues.Should().ContainKey("registrationyear").WhoseValue.Should().Be(registrationYear.ToString());
+
+        _submissionServiceMock.Verify(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>()), Times.Never);
+    }
+
+    [Test]
     public async Task Get_RedirectsToFileUploadGet_WhenOrganisationRoleIsNull()
     {
         // Arrange

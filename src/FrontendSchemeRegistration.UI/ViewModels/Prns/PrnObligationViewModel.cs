@@ -18,6 +18,12 @@ public class PrnObligationViewModel
     public int DeadlineYear => ComplianceYear + 1;
     public int NumberOfPrnsAwaitingAcceptance { get; set; }
 
+    /// <summary>
+    ///     True when the user has a December Waste PRN, awaiting acceptance, that currently offers
+    ///     a choice between the current and next Compliance Year (see <see cref="BasePrnViewModel.HasChoiceOfAcceptanceYear"/>).
+    /// </summary>
+    public bool HasDecemberWasteMultiYearPrnAwaitingAcceptance { get; set; }
+
     public ObligationStatus OverallStatus { get; set; }
     public ComplianceDeclarationStatus? ComplianceDeclarationStatus { get; set; }
     public string? ComplianceDeclarationId { get; set; }

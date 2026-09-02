@@ -8,6 +8,20 @@ public static class PagePaths
     public const string ComplianceSchemeMemberLanding = "manage-compliance-scheme";
     public const string ChangeComplianceSchemeOptions = "change-compliance-scheme-options";
     public const string Culture = "culture";
+
+    /// <summary>
+    /// Target of UseExceptionHandler and UseStatusCodePagesWithReExecute, and of nothing else. It decides
+    /// which error page to render from the status code it was re-executed with, so a request that reaches
+    /// it any other way has no status code to report and is treated as a request for a page that does not
+    /// exist. Code that wants to show the service error page must use <see cref="ServiceError"/>.
+    /// </summary>
+    public const string Error = "/error";
+
+    /// <summary>
+    /// The service error page as a destination the app can redirect to itself, for a failure it has
+    /// already detected and logged.
+    /// </summary>
+    public const string ServiceError = "/service-error";
     public const string FileUpload = "/file-upload";
     public const string FileUploadBrands = "/upload-brand-details";
     public const string FileUploadBrandsSuccess = "/file-upload-brands-success";
@@ -118,6 +132,7 @@ public static class PagePaths
     public static class Prns
     {
         public const string ChooseYear = "choose-your-recycling-obligations-year";
+        public const string ComplianceCertificate = "certificate-of-compliance-record";
         public const string ObligationsHome = "manage-your-recycling-obligations";
         public const string ObligationPerMaterial = "manage-your-recycling-obligations";
         public const string Search = "view-awaiting-acceptance";

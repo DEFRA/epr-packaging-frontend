@@ -3,6 +3,7 @@
 using Application.Options;
 using AutoFixture;
 using FluentAssertions;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
@@ -61,11 +62,42 @@ public class AccountControllerTests
     }
 
     [Test]
+    public void SignIn_WhenSchemeIsNull_DefaultsToOpenIdConnectScheme()
+    {
+        // Arrange
+        var redirectUri = _fixture.Create<string>();
+
+        // Act
+        var result = _accountController.SignIn(null, redirectUri) as ChallengeResult;
+
+        // Assert
+        result!.AuthenticationSchemes.Should().ContainSingle().Which.Should().Be(OpenIdConnectDefaults.AuthenticationScheme);
+    }
+
+    [Test]
     public void SignIn_WhenRedirectUriIsEmpty_SetsDefaultRedirectUri()
     {
         // Arrange
         var scheme = _fixture.Create<string>();
         var redirectUri = string.Empty;
+
+        // Act
+        var result = _accountController.SignIn(scheme, redirectUri) as ChallengeResult;
+
+        // Assert
+        result.Properties.RedirectUri.Should().BeNull();
+    }
+
+    [Test]
+    public void SignIn_WhenRedirectUriIsNotLocal_SetsDefaultRedirectUri()
+    {
+        // Arrange
+        var scheme = _fixture.Create<string>();
+        var redirectUri = "https://external-malicious-site.example.com";
+
+        var mockUrlHelper = new Mock<IUrlHelper>();
+        mockUrlHelper.Setup(x => x.IsLocalUrl(redirectUri)).Returns(false);
+        _accountController.Url = mockUrlHelper.Object;
 
         // Act
         var result = _accountController.SignIn(scheme, redirectUri) as ChallengeResult;
@@ -110,5 +142,14 @@ public class AccountControllerTests
             x => x.Set("LastPing", It.IsAny<byte[]>()),
             Times.Once);
         result.Should().BeOfType<OkObjectResult>();
+    }
+
+    [Test]
+    public void AccessDenied_Should_Return_Default_View()
+    {
+        var result = _accountController.AccessDenied();
+
+        result.Should().BeOfType<ViewResult>()
+            .Which.ViewName.Should().BeNull();
     }
 }

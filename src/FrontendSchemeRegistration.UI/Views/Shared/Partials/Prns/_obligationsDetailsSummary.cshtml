@@ -1,0 +1,21 @@
+@using Microsoft.AspNetCore.Html
+@using FrontendSchemeRegistration.Application.Extensions;
+@using FrontendSchemeRegistration.UI.ViewModels.Prns;
+@inject TimeProvider TimeProvider
+
+@{
+    var ComplianceYear = Model.ComplianceYear;
+    var IsFutureYear = ComplianceYear > DateTime.Now.Year;
+    var InDecemberJanuaryFlashWindow = TimeProvider.GetUtcNow().IsInDecemberJanuaryFlashWindow();
+    var ShowAccordion = IsFutureYear
+        && InDecemberJanuaryFlashWindow
+        && Model.HasDecemberWasteMultiYearPrnAwaitingAcceptance;
+}
+
+@if (ShowAccordion) {
+    @await Html.PartialAsync("../Shared/Partials/Govuk/_DetailsSummary", new ViewDataDictionary(ViewData) {
+        { "InitialState", true },  
+        { "Heading", "Lorem ipsum dolor sit amet" }, 
+        { "Content", new HtmlString("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. <ul><li>prīmus</li><li>secundus</li><li>tertius</li></ul>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.") }
+    })
+}

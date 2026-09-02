@@ -173,4 +173,14 @@ public class AccountController : Controller
         HttpContext.Session.SetString("LastPing", DateTime.UtcNow.ToString());
         return Ok(new { message = "Session extended" });
     }
+
+    /// <summary>
+    /// Shown when a signed-in user fails an authorization policy. The cookie handler redirects
+    /// here on a 403; the path is the framework default for <see cref="CookieAuthenticationDefaults"/>,
+    /// so it needs no explicit configuration.
+    /// </summary>
+    /// <returns>The access denied page.</returns>
+    [HttpGet]
+    [AllowAnonymous]
+    public IActionResult AccessDenied() => View();
 }
