@@ -71,7 +71,7 @@ public class CsocHelperTests
         result?.SubmissionDeadline.Should().BeAfter(now);
         result?.ComplianceYear.Should().Be(now.GetComplianceYear());
         result?.WasteObligationsBaseAddress.Should()
-            .Be($"https://understanding-obligations/compliance/producer/{organisationId}/certificate?year={now.GetComplianceYear()}");
+            .Be($"https://understanding-obligations/producer/{organisationId}/compliance/certificate?year={now.GetComplianceYear()}");
     }
 
     [TestCase(null, false)]
@@ -173,7 +173,7 @@ public class CsocHelperTests
 
         result.Should().NotBeNull();
         result?.WasteObligationsBaseAddress.Should()
-            .Be($"https://understanding-obligations/compliance/cso/{complianceSchemeId}/statement?year={now.GetComplianceYear()}");
+            .Be($"https://understanding-obligations/cso/{complianceSchemeId}/compliance/statement?year={now.GetComplianceYear()}");
     }
 
     [TestCase(ComplianceDeclarationStatus.Submitted)]
@@ -215,7 +215,7 @@ public class CsocHelperTests
 
         result.Should().NotBeNull();
         result?.WasteObligationsBaseAddress.Should()
-            .Be($"https://understanding-obligations/compliance/cso/{complianceSchemeId}/statement/{complianceDeclarationId}");
+            .Be($"https://understanding-obligations/cso/{complianceSchemeId}/compliance/statement/{complianceDeclarationId}");
     }
 
     [TestCase(ComplianceDeclarationStatus.Submitted)]
@@ -248,7 +248,7 @@ public class CsocHelperTests
 
         result.Should().NotBeNull();
         result?.WasteObligationsBaseAddress.Should()
-            .Be($"https://understanding-obligations/compliance/producer/{organisationId}/certificate/{complianceDeclarationId}");
+            .Be($"https://understanding-obligations/producer/{organisationId}/compliance/certificate/{complianceDeclarationId}");
     }
 
     [TestCase(ComplianceDeclarationStatus.Submitted)]
@@ -280,7 +280,7 @@ public class CsocHelperTests
 
         result.Should().NotBeNull();
         result?.WasteObligationsBaseAddress.Should()
-            .Be($"https://understanding-obligations/compliance/producer/{organisationId}/certificate?year={now.GetComplianceYear()}");
+            .Be($"https://understanding-obligations/producer/{organisationId}/compliance/certificate?year={now.GetComplianceYear()}");
     }
 
     [Test]
@@ -306,7 +306,7 @@ public class CsocHelperTests
 
         result.Should().NotBeNull();
         result?.WasteObligationsBaseAddress.Should()
-            .Be($"https://understanding-obligations/compliance/producer/{organisationId}/certificate?year={now.GetComplianceYear()}&lang=cy");
+            .Be($"https://understanding-obligations/producer/{organisationId}/compliance/certificate?year={now.GetComplianceYear()}&lang=cy");
     }
 
     [Test]
@@ -338,7 +338,7 @@ public class CsocHelperTests
 
         result.Should().NotBeNull();
         result?.WasteObligationsBaseAddress.Should()
-            .Be($"https://understanding-obligations/compliance/producer/{organisationId}/certificate/{complianceDeclarationId}?lang=cy");
+            .Be($"https://understanding-obligations/producer/{organisationId}/compliance/certificate/{complianceDeclarationId}?lang=cy");
     }
 
     [Test]
@@ -377,7 +377,7 @@ public class CsocHelperTests
 
         result.Should().NotBeNull();
         result?.WasteObligationsBaseAddress.Should()
-            .Be($"https://understanding-obligations/compliance/cso/{complianceSchemeId}/statement?year={now.GetComplianceYear()}&lang=cy");
+            .Be($"https://understanding-obligations/cso/{complianceSchemeId}/compliance/statement?year={now.GetComplianceYear()}&lang=cy");
     }
 
     [Test]
