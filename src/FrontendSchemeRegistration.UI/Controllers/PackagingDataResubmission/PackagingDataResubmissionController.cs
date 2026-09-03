@@ -86,7 +86,7 @@ public class PackagingDataResubmissionController : Controller
         {
             session.PomResubmissionSession.Journey = new List<string> { PagePaths.FileUploadSubLanding, $"/report-data{PagePaths.UploadNewFileToSubmit}?submissionId={submission.Id}", PagePaths.ResubmissionTaskList };
 
-            await CreateReferenceNumberIfNoCycleExists(session, submission, organisation, complianceSchemeId);
+            await CreateReferenceNumberIfNewCycleNeeded(session, submission, organisation, complianceSchemeId);
         }
 
         await SaveSession(session, PagePaths.ResubmissionTaskList, PagePaths.ResubmissionFeeCalculations);
@@ -385,19 +385,26 @@ public class PackagingDataResubmissionController : Controller
         return histories?.Count;
     }
 
-    private async Task CreateReferenceNumberIfNoCycleExists(
+    private async Task CreateReferenceNumberIfNewCycleNeeded(
         FrontendSchemeRegistrationSession session,
         PomSubmission submission,
         EPR.Common.Authorization.Models.Organisation organisation,
         Guid? complianceSchemeId)
     {
+        var applicationSession = session.PomResubmissionSession.PackagingResubmissionApplicationSession;
+
         // SUB-332: only raise a reference number when the server reports no cycle at all. Requiring
         // NotStarted as well as an empty reference number means a cycle the API considers open can
         // never trigger a second PackagingResubmissionReferenceNumberCreated event mid-cycle.
-        var applicationSession = session.PomResubmissionSession.PackagingResubmissionApplicationSession;
+        var hasNoCycleYet = string.IsNullOrEmpty(applicationSession.ApplicationReferenceNumber)
+                            && applicationSession.ApplicationStatus == ApplicationStatusType.NotStarted;
 
-        if (!string.IsNullOrEmpty(applicationSession.ApplicationReferenceNumber)
-            || applicationSession.ApplicationStatus != ApplicationStatusType.NotStarted)
+        // SUB-345: ...but every resubmission after the first is owed a reference number of its own, and since
+        // SUB-332 the API reports the previous cycle's number on every path, so the check above can only ever
+        // fire once in a submission's life. IsResubmissionCycleClosed is the API saying the cycle it just
+        // described has been ruled on and nothing has replaced it, which is precisely when the next number is
+        // due. It goes false again as soon as that number exists, so this cannot fire twice for one cycle.
+        if (!hasNoCycleYet && !applicationSession.IsResubmissionCycleClosed)
         {
             return;
         }

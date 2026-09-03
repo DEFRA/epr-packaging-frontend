@@ -1,9 +1,25 @@
-﻿<feature name=@FeatureFlags.ImplementPackagingDataResubmissionJourney>
-    @Html.ActionLink(Localizer["continue-button"].Value, "ResubmissionTaskList", "PackagingDataResubmission",
-            null, new { @class = "govuk-button govuk-!-margin-bottom-3" })
-</feature>
+﻿@{
+    var isAnySubmissionAcceptedForDataPeriod = (bool?)ViewData["IsAnySubmissionAcceptedForDataPeriod"] ?? false;
+}
 
-<feature name=@FeatureFlags.ImplementPackagingDataResubmissionJourney negate="true">
+@* SUB-345: with nothing accepted for this period the user is still completing their original submission,
+   so continue into the upload journey rather than the resubmission task list and its fee. This branch of
+   the page is the one the sub-landing does not route to for an unaccepted period, but the page is routable
+   and the task list leaves it on the journey as a back-link, so the guard cannot be left to the routing. *@
+@if (!isAnySubmissionAcceptedForDataPeriod)
+{
     @Html.ActionLink(Localizer["upload_new_file"].Value, "Get", "FileUpload",
             new { submissionId = Model.SubmissionId }, new { @class = "govuk-button govuk-!-margin-bottom-3" })
-</feature>
+}
+else
+{
+    <feature name=@FeatureFlags.ImplementPackagingDataResubmissionJourney>
+        @Html.ActionLink(Localizer["continue-button"].Value, "ResubmissionTaskList", "PackagingDataResubmission",
+                null, new { @class = "govuk-button govuk-!-margin-bottom-3" })
+    </feature>
+
+    <feature name=@FeatureFlags.ImplementPackagingDataResubmissionJourney negate="true">
+        @Html.ActionLink(Localizer["upload_new_file"].Value, "Get", "FileUpload",
+                new { submissionId = Model.SubmissionId }, new { @class = "govuk-button govuk-!-margin-bottom-3" })
+    </feature>
+}

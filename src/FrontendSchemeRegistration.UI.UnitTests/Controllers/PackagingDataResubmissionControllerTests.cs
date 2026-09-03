@@ -298,6 +298,71 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
         ResubmissionApplicationService.Verify(x => x.CreatePomResubmissionReferenceNumber(It.IsAny<FrontendSchemeRegistrationSession?>(), It.IsAny<string?>(), It.IsAny<Guid>(), It.IsAny<int>()), Times.Never);
     }
 
+    // SUB-345: each resubmission needs a reference number of its own, but since SUB-332 the API reports the
+    // previous cycle's number on every path, so an empty number only ever means the very first cycle and every
+    // resubmission after it went unnumbered. IsResubmissionCycleClosed is the API releasing the number: true
+    // once the regulator has ruled and nothing has replaced the cycle, false again as soon as it has.
+    [TestCase(true, 1, Description = "The regulator has ruled and the next cycle has no number yet")]
+    [TestCase(false, 0, Description = "The reported number still belongs to the cycle the user is working on")]
+    public async Task ResubmissionTaskList_CreatePomResubmissionReferenceNumber_ShouldFollowTheApisCycleState_WhenAReferenceNumberAlreadyExists(
+        bool isResubmissionCycleClosed,
+        int expectedCalls)
+    {
+        // Arrange
+        var submissionId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b");
+
+        var resubmissionApplicationDetails = new PackagingResubmissionApplicationDetails
+        {
+            IsSubmitted = true,
+            SubmissionId = submissionId,
+            ApplicationReferenceNumber = "PEPR12345S01",
+            ApplicationStatus = ApplicationStatusType.NotStarted,
+            IsResubmissionCycleClosed = isResubmissionCycleClosed,
+            SynapseResponse = new SynapseResponse { IsFileSynced = true }
+        };
+
+        var resubmissionApplicationDetailsCollection = new List<PackagingResubmissionApplicationDetails> { resubmissionApplicationDetails };
+
+        var session = new FrontendSchemeRegistrationSession
+        {
+            PomResubmissionSession = new PackagingReSubmissionSession
+            {
+                SubmissionPeriod = "January to December 2024",
+                PomSubmission = new PomSubmission
+                {
+                    Id = submissionId,
+                    IsSubmitted = true,
+                    LastSubmittedFile = new SubmittedFileInformation
+                    {
+                        FileId = submissionId,
+                        SubmittedDateTime = DateTime.Now.AddDays(-2)
+                    }
+                }
+            },
+            RegistrationSession = new RegistrationSession()
+        };
+
+        var submissionPeriodIds = new List<SubmissionPeriodId>
+        {
+            new() { SubmissionId = submissionId, Year = DateTime.Now.Year }
+        };
+
+        SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>())).Returns(Task.FromResult(session));
+        UserAccountService.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
+        ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(It.IsAny<Organisation>(), It.IsAny<List<string>>(), It.IsAny<Guid?>())).ReturnsAsync(resubmissionApplicationDetailsCollection);
+        ResubmissionApplicationService.Setup(x => x.GetSubmissionIdsAsync(It.IsAny<Guid>(), SubmissionType.Producer, It.IsAny<Guid?>(), It.IsAny<int?>())).ReturnsAsync(submissionPeriodIds);
+        ResubmissionApplicationService.Setup(x => x.GetSubmissionHistoryAsync(It.IsAny<Guid>(), It.IsAny<DateTime>())).ReturnsAsync(new List<SubmissionHistory>());
+        PaymentCalculationService.Setup(x => x.GetRegulatorNation(It.IsAny<Guid>())).ReturnsAsync("England");
+
+        // Act
+        await SystemUnderTest.ResubmissionTaskList();
+
+        // Assert
+        ResubmissionApplicationService.Verify(
+            x => x.CreatePomResubmissionReferenceNumber(It.IsAny<FrontendSchemeRegistrationSession?>(), It.IsAny<string?>(), It.IsAny<Guid>(), It.IsAny<int?>()),
+            Times.Exactly(expectedCalls));
+    }
+
     [Test]
     public async Task ResubmissionTaskList_CreatePomResubmissionReferenceNumber_ShouldNotBeCalled_WhenSubmissionHasNoLastSubmittedFile()
     {
