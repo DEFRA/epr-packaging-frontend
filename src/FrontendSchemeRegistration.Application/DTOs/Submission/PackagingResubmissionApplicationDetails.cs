@@ -34,5 +34,11 @@ public class PackagingResubmissionApplicationDetails
     /// </summary>
     public CompletedResubmissionDetails? LastCompletedResubmission { get; set; }
 
+    /// <summary>
+    /// SUB-345: true when the cycle the fields above describe has been closed by a regulator decision, with
+    /// nothing having opened a later one - so the next resubmission needs a reference number of its own.
+    /// </summary>
+    public bool IsResubmissionCycleClosed { get; set; }
+
     public SynapseResponse SynapseResponse { get; set; } = new();
 }

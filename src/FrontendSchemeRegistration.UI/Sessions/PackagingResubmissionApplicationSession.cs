@@ -155,6 +155,22 @@ public class PackagingResubmissionApplicationSession
     /// </summary>
     public bool HasCompletedResubmission => LastCompletedResubmission is not null;
 
+    /// <summary>
+    /// SUB-345: the submission API reporting that the cycle every other property here describes has been ruled
+    /// on, with nothing having opened a later one.
+    /// </summary>
+    /// <remarks>
+    /// Distinct from <see cref="HasCompletedResubmission"/>, which stays true for the rest of the period once
+    /// any cycle has been ruled on. This is true only while the ruled-on cycle is still the one being reported,
+    /// which is exactly the window in which the next resubmission is owed a reference number of its own.
+    /// <para>
+    /// Not derived here, because the cycle model lives in the API: whether a reference number has been raised
+    /// since the ruling is not visible from these properties. It defaults to false, so a frontend running ahead
+    /// of the APIs simply does not raise one rather than raising one on every render.
+    /// </para>
+    /// </remarks>
+    public bool IsResubmissionCycleClosed { get; set; }
+
     public bool FileReachedSynapse { get; set; }
 
     // SUB-332: derived from the authoritative cycle fields rather than from FileUploadStatus, which is
