@@ -17,8 +17,8 @@ using ViewModels.Prns;
 
 public static class CsocHelper
 {
-    private const string ProducerCompliancePathPrefix = "/compliance/producer";
-    private const string CsoCompliancePathPrefix = "/compliance/cso";
+    private const string ProducerPathPrefix = "/producer";
+    private const string CsoPathPrefix = "/cso";
 
     public static async Task<CsocViewModel?> CreateViewModel(IFeatureManager featureManager,
         bool isApprovedUser,
@@ -126,13 +126,13 @@ public static class CsocHelper
         return documentType switch
         {
             "certificate" when canView && !string.IsNullOrWhiteSpace(complianceDeclarationId) =>
-                $"{normalizedBaseEndpoint}{ProducerCompliancePathPrefix}/{organisationId}/certificate/{complianceDeclarationId}",
+                $"{normalizedBaseEndpoint}{ProducerPathPrefix}/{organisationId}/compliance/certificate/{complianceDeclarationId}",
             "certificate" =>
-                $"{normalizedBaseEndpoint}{ProducerCompliancePathPrefix}/{organisationId}/certificate?year={complianceYear}",
+                $"{normalizedBaseEndpoint}{ProducerPathPrefix}/{organisationId}/compliance/certificate?year={complianceYear}",
             "statement" when canView && !string.IsNullOrWhiteSpace(complianceDeclarationId) =>
-                $"{normalizedBaseEndpoint}{CsoCompliancePathPrefix}/{GetSchemeId(organisationId, registrationSession)}/statement/{complianceDeclarationId}",
+                $"{normalizedBaseEndpoint}{CsoPathPrefix}/{GetSchemeId(organisationId, registrationSession)}/compliance/statement/{complianceDeclarationId}",
             "statement" =>
-                $"{normalizedBaseEndpoint}{CsoCompliancePathPrefix}/{GetSchemeId(organisationId, registrationSession)}/statement?year={complianceYear}",
+                $"{normalizedBaseEndpoint}{CsoPathPrefix}/{GetSchemeId(organisationId, registrationSession)}/compliance/statement?year={complianceYear}",
             _ => baseEndpoint
         };
     }

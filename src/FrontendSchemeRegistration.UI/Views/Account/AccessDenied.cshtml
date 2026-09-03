@@ -1,0 +1,16 @@
+@inject IOptions<EmailAddressOptions> EmailOptions;
+@{
+    ViewData["Title"] = Localizer["access_denied_title"];
+    var supportEmail = EmailOptions.Value.SupportEmail;
+}
+
+<main class="govuk-main-wrapper govuk-!-padding-top-4" id="main-content" role="main">
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds govuk-!-margin-top-8">
+            <h1 class="govuk-heading-l">@Localizer["access_denied_title"]</h1>
+            <p class="govuk-body">
+                @Localizer["email_prefix"]&nbsp;<a href="mailto:@supportEmail" class="govuk-link govuk-link--no-visited-state">@supportEmail</a>&nbsp;@Localizer["email_suffix"]
+            </p>
+        </div>
+    </div>
+</main>
