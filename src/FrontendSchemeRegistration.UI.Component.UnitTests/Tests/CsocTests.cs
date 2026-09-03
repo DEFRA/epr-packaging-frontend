@@ -232,7 +232,7 @@ public static class CsocTestsExtensions
     {
         settings.PrettyPrintHtml(nodes =>
         {
-            foreach (var node in nodes.QuerySelectorAll("a[href*='understanding-obligations/compliance/']"))
+            foreach (var node in nodes.QuerySelectorAll("a[href*='understanding-obligations/']"))
             {
                 var href = node.GetAttribute("href");
                 if (string.IsNullOrEmpty(href))
