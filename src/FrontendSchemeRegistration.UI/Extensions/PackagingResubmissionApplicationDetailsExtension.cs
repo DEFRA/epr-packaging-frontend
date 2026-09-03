@@ -30,6 +30,7 @@ namespace FrontendSchemeRegistration.UI.Extensions
                 IsResubmissionFeeViewed = item.IsResubmissionFeeViewed,
                 HasSubmissionSyncCompleted = item.SynapseResponse.IsResubmissionDataSynced,
                 LastCompletedResubmission = item.LastCompletedResubmission,
+                IsResubmissionCycleClosed = item.IsResubmissionCycleClosed
             };
 
             return packagingResubmissionApplicationDetails;
