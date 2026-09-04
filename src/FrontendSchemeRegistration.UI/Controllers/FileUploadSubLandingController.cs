@@ -290,30 +290,7 @@ public class FileUploadSubLandingController(
 
         if (!isAnySubmissionAcceptedForDataPeriod)
         {
-            if (HasNewValidUploadAfterSubmission(submission))
-            {
-                return HandleSubmittedSubmission(submission);
-            }
-
-            // SUB-345: a rejection is a regulator decision the user has to act on, and UploadNewFileToSubmit
-            // is the only page that shows it - the headline, the resubmission-required distinction and the
-            // regulator's comments. Its rejected branches predate the resubmission journey by a year and were
-            // written for exactly this state. Skipping straight to the upload page leaves the user to work out
-            // why their submission needs redoing. Nothing accepted for this period still means this is not a
-            // resubmission, which the page's action links carry through to keep the user out of the
-            // resubmission task list and its fee.
-            if (regulatorDecision == RegulatorDecision.Rejected)
-            {
-                return RedirectToAction(
-                    nameof(UploadNewFileToSubmitController.Get),
-                    nameof(UploadNewFileToSubmitController).RemoveControllerFromName(),
-                    routeValueDictionary);
-            }
-
-            return RedirectToAction(
-                nameof(FileUploadController.Get),
-                nameof(FileUploadController).RemoveControllerFromName(),
-                routeValueDictionary);
+            return HandleDataPeriodWithNothingAccepted(submission, regulatorDecision, routeValueDictionary);
         }
 
         var packagingResubmissionApplicationSession = session.PomResubmissionSession.PackagingResubmissionApplicationSessions.Find(x => x.SubmissionId == submission.Id);
@@ -362,6 +339,41 @@ public class FileUploadSubLandingController(
         }
 
         return HandleSubmittedSubmission(submission);
+    }
+
+    /// <summary>
+    /// Routes a data period with no accepted submission, where whatever the user does next is still their
+    /// original submission rather than a resubmission.
+    /// </summary>
+    private RedirectToActionResult HandleDataPeriodWithNothingAccepted(
+        PomSubmission submission,
+        string regulatorDecision,
+        RouteValueDictionary routeValueDictionary)
+    {
+        if (HasNewValidUploadAfterSubmission(submission))
+        {
+            return HandleSubmittedSubmission(submission);
+        }
+
+        // SUB-345: a rejection is a regulator decision the user has to act on, and UploadNewFileToSubmit
+        // is the only page that shows it - the headline, the resubmission-required distinction and the
+        // regulator's comments. Its rejected branches predate the resubmission journey by a year and were
+        // written for exactly this state. Skipping straight to the upload page leaves the user to work out
+        // why their submission needs redoing. Nothing accepted for this period still means this is not a
+        // resubmission, which the page's action links carry through to keep the user out of the
+        // resubmission task list and its fee.
+        if (regulatorDecision == RegulatorDecision.Rejected)
+        {
+            return RedirectToAction(
+                nameof(UploadNewFileToSubmitController.Get),
+                nameof(UploadNewFileToSubmitController).RemoveControllerFromName(),
+                routeValueDictionary);
+        }
+
+        return RedirectToAction(
+            nameof(FileUploadController.Get),
+            nameof(FileUploadController).RemoveControllerFromName(),
+            routeValueDictionary);
     }
 
     /// <summary>
