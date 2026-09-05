@@ -1856,7 +1856,7 @@ public class RegistrationApplicationControllerTests
         result!.ActionName.Should().Be(nameof(FileUploadCompanyDetailsController.Get));
         result.RouteValues!["registrationJourney"].Should().Be(expectedRegistrationJourney);
         result.RouteValues!["dataPeriod"].Should().Be(expectedDataPeriod);
-        RegistrationApplicationService.Verify(x => x.SetRegistrationFileUploadSession(It.IsAny<ISession>(), _userData.Organisations[0].OrganisationNumber, It.IsAny<int>(), It.IsAny<bool?>()), Times.Once);
+        RegistrationApplicationService.Verify(x => x.SetRegistrationFileUploadSession(It.IsAny<ISession>(), _userData.Organisations[0].OrganisationNumber, It.IsAny<int>()), Times.Once);
     }
 
     [TestCase(ApplicationStatusType.NotStarted, "Basic User", "FileUploadCompanyDetails", null)]
@@ -1909,7 +1909,7 @@ public class RegistrationApplicationControllerTests
             result.RouteValues[expectedRouteValueKey].Should().Be(submissionId);
         }
 
-        RegistrationApplicationService.Verify(x => x.SetRegistrationFileUploadSession(It.IsAny<ISession>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool?>()), Times.Once);
+        RegistrationApplicationService.Verify(x => x.SetRegistrationFileUploadSession(It.IsAny<ISession>(), It.IsAny<string>(), It.IsAny<int>()), Times.Once);
     }
 
     [Test]
