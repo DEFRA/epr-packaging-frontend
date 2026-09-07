@@ -80,6 +80,57 @@ namespace FrontendSchemeRegistration.UI.UnitTests.Extensions
             result.SubmissionId.Should().Be(packagingResubmissionApplicationDetails.SubmissionId);
         }
 
+        // SUB-345: the resubmission cycle fields are the ones the task list acts on - a dropped
+        // IsResubmissionCycleClosed silently costs every resubmission after the first its own reference
+        // number, and a dropped LastCompletedResubmission sends a finished resubmission back round the journey.
+        [Test]
+        public void ToPackagingResubmissionApplicationSession_ShouldCarryTheResubmissionCycleFields()
+        {
+            // Arrange
+            var packagingResubmissionApplicationDetails = new PackagingResubmissionApplicationDetails
+            {
+                ApplicationReferenceNumber = "PEPR12345S01",
+                SubmissionId = Guid.NewGuid(),
+                IsResubmissionCycleClosed = true,
+                LastCompletedResubmission = new CompletedResubmissionDetails
+                {
+                    ApplicationReferenceNumber = "PEPR12345S01",
+                    Decision = "Accepted",
+                    RegulatorComments = "Regulator comment"
+                }
+            };
+
+            var organisation = new Organisation { Id = Guid.NewGuid() };
+
+            // Act
+            var result = packagingResubmissionApplicationDetails.ToPackagingResubmissionApplicationSession(organisation);
+
+            // Assert
+            result.IsResubmissionCycleClosed.Should().BeTrue();
+            result.HasCompletedResubmission.Should().BeTrue();
+            result.LastCompletedResubmission.Should().BeSameAs(packagingResubmissionApplicationDetails.LastCompletedResubmission);
+        }
+
+        [Test]
+        public void ToPackagingResubmissionApplicationSession_ShouldNotReportAClosedCycle_WhenTheApiDoesNot()
+        {
+            // Arrange - the shape an API predating SUB-345 deserialises to: no cycle fields at all.
+            var packagingResubmissionApplicationDetails = new PackagingResubmissionApplicationDetails
+            {
+                ApplicationReferenceNumber = "PEPR12345S01",
+                SubmissionId = Guid.NewGuid()
+            };
+
+            var organisation = new Organisation { Id = Guid.NewGuid() };
+
+            // Act
+            var result = packagingResubmissionApplicationDetails.ToPackagingResubmissionApplicationSession(organisation);
+
+            // Assert
+            result.IsResubmissionCycleClosed.Should().BeFalse();
+            result.HasCompletedResubmission.Should().BeFalse();
+        }
+
         [Test]
         public void ToResubmissionTaskListViewModel_ShouldReturn_ResubmissionTaskListViewModel_WhenValidInput()
         {

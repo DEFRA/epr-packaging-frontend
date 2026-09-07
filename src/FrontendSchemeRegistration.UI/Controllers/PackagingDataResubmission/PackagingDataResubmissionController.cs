@@ -86,7 +86,7 @@ public class PackagingDataResubmissionController : Controller
         {
             session.PomResubmissionSession.Journey = new List<string> { PagePaths.FileUploadSubLanding, $"/report-data{PagePaths.UploadNewFileToSubmit}?submissionId={submission.Id}", PagePaths.ResubmissionTaskList };
 
-            await CreateReferenceNumberIfNoCycleExists(session, submission, organisation, complianceSchemeId);
+            await CreateReferenceNumberIfNewCycleNeeded(session, submission, organisation, complianceSchemeId);
         }
 
         await SaveSession(session, PagePaths.ResubmissionTaskList, PagePaths.ResubmissionFeeCalculations);
@@ -102,8 +102,68 @@ public class PackagingDataResubmissionController : Controller
             PaymentViewStatus = session.PomResubmissionSession.PackagingResubmissionApplicationSession.PaymentViewStatus,
             AdditionalDetailsStatus = session.PomResubmissionSession.PackagingResubmissionApplicationSession.AdditionalDetailsStatus,
             IsResubmissionInProgress = session.PomResubmissionSession.PackagingResubmissionApplicationSession.IsResubmissionInProgress,
+            IsResubmissionStarted = session.PomResubmissionSession.PackagingResubmissionApplicationSession.IsResubmissionStarted,
             ResubmissionApplicationSubmitted = session.PomResubmissionSession.PackagingResubmissionApplicationSession.ResubmissionApplicationSubmitted,
             HasSubmissionSyncCompleted = session.PomResubmissionSession.PackagingResubmissionApplicationSession.HasSubmissionSyncCompleted
+        });
+    }
+
+    /// <summary>
+    /// SUB-345: a read-only view of the resubmission the regulator has already ruled on for this period.
+    /// </summary>
+    /// <remarks>
+    /// The task list can only ever describe the cycle that is open, so once a decision closes a cycle it has
+    /// nothing left to show but a fresh one - which is how an accepted resubmission came to invite the user
+    /// through the whole journey again. This writes nothing: no reference number, no fee-view event, and no
+    /// change to the resubmission journey flags. Looking at a finished resubmission must not start one.
+    /// </remarks>
+    [HttpGet]
+    [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
+    [PomResubmissionSessionGuardActionFilter(RequireSubmissionId = false)]
+    [Route(PagePaths.CompletedResubmission)]
+    public async Task<IActionResult> CompletedResubmission()
+    {
+        var userData = User.GetUserData();
+        var organisation = userData.Organisations[0];
+
+        var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+        var isComplianceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
+        var complianceSchemeId = session.RegistrationSession?.SelectedComplianceScheme?.Id;
+
+        var resubmissionApplicationDetails = await _resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(
+            organisation,
+            new List<string> { session.PomResubmissionSession.SubmissionPeriod },
+            complianceSchemeId);
+
+        var applicationSession = resubmissionApplicationDetails.FirstOrDefault()?.ToPackagingResubmissionApplicationSession(organisation);
+        var completedResubmission = applicationSession?.LastCompletedResubmission;
+
+        // SUB-345: either no resubmission has been ruled on for this period, or the page was reached directly.
+        if (completedResubmission is null)
+        {
+            return RedirectToAction("Get", "FileUploadSubLanding");
+        }
+
+        ViewBag.BackLinkToDisplay = Url.Content($"~{PagePaths.FileUploadSubLanding}");
+
+        return View(new CompletedResubmissionViewModel
+        {
+            OrganisationName = organisation.Name!,
+            IsComplianceScheme = isComplianceScheme,
+            IsApprovedOrDelegatedUser = userData.ServiceRole is ServiceRoles.ApprovedPerson or ServiceRoles.DelegatedPerson,
+            SubmissionId = applicationSession.SubmissionId,
+            ApplicationReferenceNumber = completedResubmission.ApplicationReferenceNumber,
+            FileName = completedResubmission.FileName,
+            SubmittedAt = completedResubmission.SubmittedFile?.SubmittedDateTime,
+            SubmittedBy = completedResubmission.SubmittedFile?.SubmittedByName,
+            DeclarationDate = completedResubmission.DeclarationDate,
+            RegulatorComments = completedResubmission.RegulatorComments,
+            Fee = await GetCompletedResubmissionFee(
+                completedResubmission,
+                applicationSession.SubmissionId,
+                organisation,
+                isComplianceScheme,
+                complianceSchemeId)
         });
     }
 
@@ -238,6 +298,69 @@ public class PackagingDataResubmissionController : Controller
         await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
     }
 
+    /// <summary>
+    /// SUB-345: the fee breakdown for a completed resubmission, or null when it cannot be priced.
+    /// </summary>
+    /// <remarks>
+    /// Read-only throughout: unlike <see cref="ResubmissionFeeCalculations"/> this records no fee-view event,
+    /// which on a closed cycle would read as the user starting to view a fee for the next one. A cycle whose
+    /// member details can no longer be priced still has a file, a declaration and a decision worth showing, so
+    /// a failure here drops the fee rather than the page.
+    /// </remarks>
+    private async Task<ResubmissionFeeViewModel?> GetCompletedResubmissionFee(
+        CompletedResubmissionDetails completedResubmission,
+        Guid? submissionId,
+        EPR.Common.Authorization.Models.Organisation organisation,
+        bool isComplianceScheme,
+        Guid? complianceSchemeId)
+    {
+        if (string.IsNullOrEmpty(completedResubmission.ApplicationReferenceNumber))
+        {
+            return null;
+        }
+
+        try
+        {
+            var regulatorNation = isComplianceScheme && complianceSchemeId is not null
+                ? NationExtensions.GetNationNameFromId((int)(await _complianceSchemeService.GetComplianceSchemeSummary(organisation.Id.Value, complianceSchemeId.Value)).Nation)
+                : await _resubmissionApplicationService.GetRegulatorNation(organisation.Id);
+
+            var memberCount = await GetMemberCount(submissionId, isComplianceScheme, complianceSchemeId);
+
+            var paymentResponse = await _resubmissionApplicationService.GetResubmissionFees(
+                completedResubmission.ApplicationReferenceNumber,
+                regulatorNation,
+                memberCount,
+                isComplianceScheme,
+                completedResubmission.SubmittedFile?.SubmittedDateTime);
+
+            if (paymentResponse is null)
+            {
+                return null;
+            }
+
+            return new ResubmissionFeeViewModel
+            {
+                IsComplianceScheme = isComplianceScheme,
+                MemberCount = memberCount,
+                ResubmissionFee = paymentResponse.ResubmissionFee,
+                TotalChargeableItems = paymentResponse.ResubmissionFee,
+                PreviousPaymentsReceived = paymentResponse.PreviousPaymentsReceived,
+                TotalOutstanding = paymentResponse.TotalOutstanding
+            };
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(
+                ex,
+                "Could not read the fee for completed resubmission '{ApplicationReferenceNumber}' in organisation '{OrganisationId}'",
+                completedResubmission.ApplicationReferenceNumber,
+                organisation.Id);
+
+            return null;
+        }
+    }
+
     public async Task<int> GetMemberCount(Guid? submissionId, bool isComplianceScheme, Guid? complianceSchemeId)
     {
         var response = await _resubmissionApplicationService.GetPackagingResubmissionMemberDetails(new PackagingResubmissionMemberRequest()
@@ -262,19 +385,26 @@ public class PackagingDataResubmissionController : Controller
         return histories?.Count;
     }
 
-    private async Task CreateReferenceNumberIfNoCycleExists(
+    private async Task CreateReferenceNumberIfNewCycleNeeded(
         FrontendSchemeRegistrationSession session,
         PomSubmission submission,
         EPR.Common.Authorization.Models.Organisation organisation,
         Guid? complianceSchemeId)
     {
+        var applicationSession = session.PomResubmissionSession.PackagingResubmissionApplicationSession;
+
         // SUB-332: only raise a reference number when the server reports no cycle at all. Requiring
         // NotStarted as well as an empty reference number means a cycle the API considers open can
         // never trigger a second PackagingResubmissionReferenceNumberCreated event mid-cycle.
-        var applicationSession = session.PomResubmissionSession.PackagingResubmissionApplicationSession;
+        var hasNoCycleYet = string.IsNullOrEmpty(applicationSession.ApplicationReferenceNumber)
+                            && applicationSession.ApplicationStatus == ApplicationStatusType.NotStarted;
 
-        if (!string.IsNullOrEmpty(applicationSession.ApplicationReferenceNumber)
-            || applicationSession.ApplicationStatus != ApplicationStatusType.NotStarted)
+        // SUB-345: ...but every resubmission after the first is owed a reference number of its own, and since
+        // SUB-332 the API reports the previous cycle's number on every path, so the check above can only ever
+        // fire once in a submission's life. IsResubmissionCycleClosed is the API saying the cycle it just
+        // described has been ruled on and nothing has replaced it, which is precisely when the next number is
+        // due. It goes false again as soon as that number exists, so this cannot fire twice for one cycle.
+        if (!hasNoCycleYet && !applicationSession.IsResubmissionCycleClosed)
         {
             return;
         }

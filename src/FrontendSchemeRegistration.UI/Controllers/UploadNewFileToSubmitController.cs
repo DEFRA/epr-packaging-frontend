@@ -48,6 +48,12 @@ public class UploadNewFileToSubmitController : Controller
             return RedirectToAction("Get", "FileUploadSubLanding");
         }
 
+        var organisationId = session.UserData.Organisations?.FirstOrDefault()?.Id;
+        if (organisationId is null)
+        {
+            return RedirectToAction("Get", "FileUploadSubLanding");
+        }
+
         var submissionId = Request.Query.ContainsKey("submissionId")
             ? Guid.Parse(Request.Query["submissionId"])
             : Guid.Empty;
@@ -116,7 +122,11 @@ public class UploadNewFileToSubmitController : Controller
             IsUploadByPersonDeleted = isUploadedByPersonDeleted,
             HasNewerUnprocessedUpload = submission.HasNewerUnprocessedUploadThanValidFile(),
             UnprocessedUploadFileName = submission.PomFileName,
-            UnprocessedUploadDateTime = submission.PomFileUploadDateTime
+            UnprocessedUploadDateTime = submission.PomFileUploadDateTime,
+            IsAnySubmissionAcceptedForDataPeriod = await _submissionService.IsAnySubmissionAcceptedForDataPeriod(
+                submission,
+                organisationId.Value,
+                session.RegistrationSession.SelectedComplianceScheme?.Id)
         };
 
         if (!session.RegistrationSession.Journey.Contains(PagePaths.FileUploadSubLanding))

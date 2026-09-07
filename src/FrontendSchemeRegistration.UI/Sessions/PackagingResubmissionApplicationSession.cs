@@ -83,6 +83,20 @@ public class PackagingResubmissionApplicationSession
     {
         get
         {
+            // SUB-345: both messages below tell the user what is outstanding on work they have already done,
+            // so neither can be shown for a cycle that has merely been opened. The cycle survives a regulator
+            // decision by design - the reference number keeps its identity - and FileReachedSynapse refers to
+            // whichever file last reached Synapse, which for a ruled-on cycle is the file that was ruled on.
+            // Between them that was enough to head an untouched cycle's tile with "you've viewed your fee, you
+            // now need to submit to the regulator" while the task list showed every step unstarted.
+            //
+            // Neither legitimate state is lost: in both the file has been submitted, so ApplicationStatus is
+            // SubmittedToRegulator and the cycle reads as started.
+            if (!IsResubmissionStarted)
+            {
+                return null;
+            }
+
             if ((!IsResubmissionFeeViewed.HasValue || !IsResubmissionFeeViewed.Value)
                 && FileReachedSynapse && !ResubmissionApplicationSubmitted)
             {
@@ -125,6 +139,38 @@ public class PackagingResubmissionApplicationSession
 
     public ApplicationStatusType ApplicationStatus { get; set; }
 
+    /// <summary>
+    /// SUB-345: the most recent resubmission cycle the regulator has ruled on, or null if there is none.
+    /// </summary>
+    /// <remarks>
+    /// Every other property here describes the cycle that is open now, and all of them stop describing a cycle
+    /// at the decision that closed it - correctly, because none of that state belongs to whatever the user does
+    /// next. That leaves nothing to tell a completed resubmission from one never started, which is what had an
+    /// accepted resubmission's tile offering to begin the journey again.
+    /// </remarks>
+    public CompletedResubmissionDetails? LastCompletedResubmission { get; set; }
+
+    /// <summary>
+    /// SUB-345: true when the regulator has ruled on a resubmission this organisation completed for the period.
+    /// </summary>
+    public bool HasCompletedResubmission => LastCompletedResubmission is not null;
+
+    /// <summary>
+    /// SUB-345: the submission API reporting that the cycle every other property here describes has been ruled
+    /// on, with nothing having opened a later one.
+    /// </summary>
+    /// <remarks>
+    /// Distinct from <see cref="HasCompletedResubmission"/>, which stays true for the rest of the period once
+    /// any cycle has been ruled on. This is true only while the ruled-on cycle is still the one being reported,
+    /// which is exactly the window in which the next resubmission is owed a reference number of its own.
+    /// <para>
+    /// Not derived here, because the cycle model lives in the API: whether a reference number has been raised
+    /// since the ruling is not visible from these properties. It defaults to false, so a frontend running ahead
+    /// of the APIs simply does not raise one rather than raising one on every render.
+    /// </para>
+    /// </remarks>
+    public bool IsResubmissionCycleClosed { get; set; }
+
     public bool FileReachedSynapse { get; set; }
 
     // SUB-332: derived from the authoritative cycle fields rather than from FileUploadStatus, which is
@@ -133,6 +179,19 @@ public class PackagingResubmissionApplicationSession
     public bool IsResubmissionInProgress => !string.IsNullOrEmpty(ApplicationReferenceNumber) && !ResubmissionApplicationSubmitted;
 
     public bool IsResubmissionComplete => (AdditionalDetailsStatus == ResubmissionTaskListStatus.Completed);
+
+    /// <summary>
+    /// True when this resubmission cycle has actually been started, as opposed to merely being open.
+    /// </summary>
+    /// <remarks>
+    /// SUB-345: IsResubmissionInProgress is satisfied by ApplicationReferenceNumber alone, and that number
+    /// survives a regulator decision so the cycle keeps its identity. On its own it therefore reads as
+    /// "in progress" for a cycle the user has not touched, which headed an untouched task list with
+    /// "Continue your packaging data resubmission" while every step below it read Not started.
+    /// The landing pages already pair the flag with this ApplicationStatus check; this is that pairing,
+    /// named once rather than repeated inline.
+    /// </remarks>
+    public bool IsResubmissionStarted => IsResubmissionInProgress && ApplicationStatus != ApplicationStatusType.NotStarted;
 
     public Organisation Organisation { get; set; } = new Organisation();
     

@@ -1882,6 +1882,64 @@ public class FileUploadSubLandingControllerTests
         result.ControllerName.Should().Be("FileUpload");
     }
 
+    // SUB-345: keeping a producer with nothing accepted out of the resubmission journey is right, but the
+    // gate did it by skipping the only page that carries the regulator's rejection and its comments. Both
+    // rejected tiles arrive here - "Resubmit packaging data" when a resubmission is required and "Check if
+    // you need to resubmit packaging data" when it is not - and the decision is what they exist to explain.
+    // The page keeps them out of the task list from its own action links instead.
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task Post_RedirectsToUploadNewFileToSubmit_WhenTheRegulatorRejectedASubmissionNothingWasAcceptedFor(bool isResubmissionRequired)
+    {
+        // Arrange
+        var submissionPeriod = _submissionPeriods[0].DataPeriod;
+        var submission = CreateSubmittedPomSubmissionWithMatchingFileIds();
+
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionsAsync<PomSubmission>(
+                It.IsAny<List<string>>(),
+                It.IsAny<int>(),
+                It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<PomSubmission> { submission });
+
+        _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(false);
+
+        _submissionServiceMock
+            .Setup(x => x.GetDecisionAsync<PomDecision>(It.IsAny<int?>(), submission.Id, SubmissionType.Producer))
+            .ReturnsAsync(new PomDecision
+            {
+                Decision = RegulatorDecision.Rejected,
+                IsResubmissionRequired = isResubmissionRequired
+            });
+
+        _sessionMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SubmissionPeriod = submissionPeriod
+                },
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation> { new() { Id = Guid.NewGuid(), OrganisationRole = OrganisationRoles.Producer } }
+                }
+            });
+
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)))
+            .ReturnsAsync(true);
+
+        // Act
+        var result = await _systemUnderTest.Post(submissionPeriod) as RedirectToActionResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        result.ActionName.Should().Be(nameof(UploadNewFileToSubmitController.Get));
+        result.ControllerName.Should().Be("UploadNewFileToSubmit");
+        result.RouteValues.Should().ContainKey("submissionId").WhoseValue.Should().Be(submission.Id);
+    }
+
     [Test]
     public async Task Post_RedirectsToCheckFileAndSubmit_When_InitialSubmissionWasNeverAccepted_ButHasNewValidUpload()
     {
@@ -2288,6 +2346,550 @@ public class FileUploadSubLandingControllerTests
         result.Should().NotBeNull();
         result.ActionName.Should().Be(nameof(UploadNewFileToSubmitController.Get));
         result.ControllerName.Should().Be("FileUploadCheckFileAndSubmit");
+    }
+
+    // SUB-345: an open cycle carries a reference number from its first task-list render onwards, so on its
+    // own it is not evidence the user has acted on the regulator's decision. UploadNewFileToSubmit is the
+    // only page carrying that decision and its comments, so it must still be reached here.
+    [Test]
+    public async Task Post_RedirectsToUploadNewFileToSubmit_WhenTheCycleIsOpenButNothingHasBeenUploaded()
+    {
+        // Arrange
+        var submissionPeriod = _submissionPeriods[0].DataPeriod;
+        var submission = CreateSubmittedPomSubmissionWithMatchingFileIds();
+
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionsAsync<PomSubmission>(
+                It.IsAny<List<string>>(),
+                It.IsAny<int>(),
+                It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<PomSubmission> { submission });
+
+        _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(true);
+
+        _sessionMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SubmissionPeriod = submissionPeriod
+                },
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation> { new() { Id = Guid.NewGuid(), OrganisationRole = OrganisationRoles.Producer } }
+                },
+                PomResubmissionSession = new PackagingReSubmissionSession()
+                {
+                    PackagingResubmissionApplicationSessions = new List<PackagingResubmissionApplicationSession>()
+                    {
+                        new PackagingResubmissionApplicationSession()
+                        {
+                            SubmissionId = submission.Id,
+                            ApplicationReferenceNumber = "PEPR00000S01",
+                            ApplicationStatus = ApplicationStatusType.NotStarted,
+                            ResubmissionApplicationSubmittedDate = null
+                        }
+                    }
+                }
+            });
+
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)))
+            .ReturnsAsync(true);
+
+        // Act
+        var result = await _systemUnderTest.Post(submissionPeriod) as RedirectToActionResult;
+
+        // Assert - IsResubmissionInProgress is true off the reference number alone, so this only passes
+        // while the redirect also requires the cycle to have been started
+        result.Should().NotBeNull();
+        result.ActionName.Should().Be(nameof(UploadNewFileToSubmitController.Get));
+        result.ControllerName.Should().Be("UploadNewFileToSubmit");
+    }
+
+    // SUB-332: an upload that never became the valid file reports ApplicationStatus NotStarted, the same as
+    // an untouched cycle. The newer upload attempt on the submission is what separates them, and it must
+    // keep routing back into the task list rather than to UploadNewFileToSubmit.
+    [Test]
+    public async Task Post_RedirectsToResubmissionTaskList_WhenTheCycleIsOpenAndTheLatestUploadDidNotValidate()
+    {
+        // Arrange
+        var submissionPeriod = _submissionPeriods[0].DataPeriod;
+        var submission = CreateSubmittedPomSubmissionWithMatchingFileIds();
+
+        submission.PomFileName = "latest-attempt.csv";
+        submission.PomFileUploadDateTime = submission.LastUploadedValidFile.FileUploadDateTime.AddHours(1);
+
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionsAsync<PomSubmission>(
+                It.IsAny<List<string>>(),
+                It.IsAny<int>(),
+                It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<PomSubmission> { submission });
+
+        _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(true);
+
+        _sessionMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SubmissionPeriod = submissionPeriod
+                },
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation> { new() { Id = Guid.NewGuid(), OrganisationRole = OrganisationRoles.Producer } }
+                },
+                PomResubmissionSession = new PackagingReSubmissionSession()
+                {
+                    PackagingResubmissionApplicationSessions = new List<PackagingResubmissionApplicationSession>()
+                    {
+                        new PackagingResubmissionApplicationSession()
+                        {
+                            SubmissionId = submission.Id,
+                            ApplicationReferenceNumber = "PEPR00000S01",
+                            ApplicationStatus = ApplicationStatusType.NotStarted,
+                            ResubmissionApplicationSubmittedDate = null
+                        }
+                    }
+                }
+            });
+
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)))
+            .ReturnsAsync(true);
+
+        // Act
+        var result = await _systemUnderTest.Post(submissionPeriod) as RedirectToActionResult;
+
+        // Assert - the file ids match, so nothing but the started-cycle check can produce this redirect
+        result.Should().NotBeNull();
+        result.ActionName.Should().Be(nameof(PackagingDataResubmissionController.ResubmissionTaskList));
+        result.ControllerName.Should().Be("PackagingDataResubmission");
+    }
+
+    // SUB-345: the state the user is in when the regulator has rejected a declared cycle. The submission
+    // API stops reporting that cycle's declaration at the decision, so ResubmissionApplicationSubmitted is
+    // false and the reference number is all that is left of the cycle - which must not be enough to route
+    // past the page carrying the decision.
+    [Test]
+    public async Task Post_RedirectsToUploadNewFileToSubmit_WhenTheRegulatorHasRejectedTheDeclaredCycle()
+    {
+        // Arrange
+        var submissionPeriod = _submissionPeriods[0].DataPeriod;
+        var submission = CreateSubmittedPomSubmissionWithMatchingFileIds();
+
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionsAsync<PomSubmission>(
+                It.IsAny<List<string>>(),
+                It.IsAny<int>(),
+                It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<PomSubmission> { submission });
+
+        _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(true);
+
+        _sessionMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SubmissionPeriod = submissionPeriod
+                },
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation> { new() { Id = Guid.NewGuid(), OrganisationRole = OrganisationRoles.Producer } }
+                },
+                PomResubmissionSession = new PackagingReSubmissionSession()
+                {
+                    PackagingResubmissionApplicationSessions = new List<PackagingResubmissionApplicationSession>()
+                    {
+                        new PackagingResubmissionApplicationSession()
+                        {
+                            SubmissionId = submission.Id,
+
+                            // Only the reference number survives the rejection - the API reports the cycle's
+                            // declaration, fee view and payment as aged out by the decision. The fee and
+                            // FileReachedSynapse are left set here deliberately: they are what previously
+                            // resolved this cycle's upload and fee steps as completed, so the route has to
+                            // hold even if they are still reported.
+                            ApplicationReferenceNumber = "PEPR33333S01",
+                            ApplicationStatus = ApplicationStatusType.NotStarted,
+                            ResubmissionApplicationSubmittedDate = null,
+                            ResubmissionFeePaymentMethod = "PayByPhone",
+                            FileReachedSynapse = true
+                        }
+                    }
+                }
+            });
+
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)))
+            .ReturnsAsync(true);
+
+        // Act
+        var result = await _systemUnderTest.Post(submissionPeriod) as RedirectToActionResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        result.ActionName.Should().Be(nameof(UploadNewFileToSubmitController.Get));
+        result.ControllerName.Should().Be("UploadNewFileToSubmit");
+    }
+
+    // SUB-345: the tile has to be able to tell a resubmission that has been completed and ruled on from one that
+    // was never started. Every field describing the cycle is aged out by the decision, so the closed cycle the
+    // API reports separately is the only thing left that says it happened.
+    [Test]
+    public async Task Get_ReportsACompletedResubmission_WhenTheRegulatorHasRuledOnOne()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var submission = new PomSubmission
+        {
+            Id = submissionId,
+            HasValidFile = true,
+            SubmissionPeriod = _submissionPeriods[0].DataPeriod,
+            LastSubmittedFile = new SubmittedFileInformation { FileId = Guid.NewGuid() }
+        };
+
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionsAsync<PomSubmission>(It.IsAny<List<string>>(), It.IsAny<int>(), It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<PomSubmission> { submission });
+
+        _submissionServiceMock
+            .Setup(x => x.GetDecisionAsync<PomDecision>(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<SubmissionType>()))
+            .ReturnsAsync(new PomDecision { Decision = RegulatorDecision.Accepted });
+
+        _sessionMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession(),
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation> { new() { Id = Guid.NewGuid(), OrganisationRole = OrganisationRoles.ComplianceScheme } }
+                }
+            });
+
+        _resubmissionApplicationServicMock
+            .Setup(x => x.GetPackagingResubmissionApplicationSession(It.IsAny<Organisation>(), It.IsAny<List<string>>(), It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<PackagingResubmissionApplicationSession>
+            {
+                new()
+                {
+                    SubmissionId = submissionId,
+                    ApplicationReferenceNumber = "PEPR33333S01",
+                    ApplicationStatus = ApplicationStatusType.NotStarted,
+                    ResubmissionApplicationSubmittedDate = null,
+                    LastCompletedResubmission = new CompletedResubmissionDetails
+                    {
+                        ApplicationReferenceNumber = "PEPR33333S01",
+                        Decision = RegulatorDecision.Accepted,
+                        FileName = "accepted.csv"
+                    }
+                }
+            });
+
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)))
+            .ReturnsAsync(true);
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        var detail = result.Model.As<FileUploadSubLandingViewModel>()
+            .SubmissionPeriodDetailGroups[0].SubmissionPeriodDetails
+            .Single(x => x.DataPeriod == _submissionPeriods[0].DataPeriod);
+
+        detail.HasCompletedResubmission.Should().BeTrue();
+        detail.Status.Should().Be(SubmissionPeriodStatus.AcceptedByRegulator);
+    }
+
+    // SUB-345: the reference number outlives the decision so the cycle keeps its identity, which leaves
+    // IsResubmissionInProgress true for a cycle nobody has touched. Unpaired with a started check it outranks
+    // the decision and the tile reads "In progress" over an accepted resubmission.
+    [Test]
+    public async Task Get_ReportsTheRegulatorsDecision_WhenTheCycleIsOpenButNothingHasBeenStarted()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var submission = new PomSubmission
+        {
+            Id = submissionId,
+            HasValidFile = true,
+            SubmissionPeriod = _submissionPeriods[0].DataPeriod,
+            LastSubmittedFile = new SubmittedFileInformation { FileId = Guid.NewGuid() }
+        };
+
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionsAsync<PomSubmission>(It.IsAny<List<string>>(), It.IsAny<int>(), It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<PomSubmission> { submission });
+
+        _submissionServiceMock
+            .Setup(x => x.GetDecisionAsync<PomDecision>(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<SubmissionType>()))
+            .ReturnsAsync(new PomDecision { Decision = RegulatorDecision.Accepted });
+
+        _sessionMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession(),
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation> { new() { Id = Guid.NewGuid(), OrganisationRole = OrganisationRoles.Producer } }
+                }
+            });
+
+        _resubmissionApplicationServicMock
+            .Setup(x => x.GetPackagingResubmissionApplicationSession(It.IsAny<Organisation>(), It.IsAny<List<string>>(), It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<PackagingResubmissionApplicationSession>
+            {
+                new()
+                {
+                    SubmissionId = submissionId,
+
+                    // Only the reference number is left of the cycle the decision closed (SUB-345)
+                    ApplicationReferenceNumber = "PEPR33333S01",
+                    ApplicationStatus = ApplicationStatusType.NotStarted,
+                    ResubmissionApplicationSubmittedDate = null
+                }
+            });
+
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)))
+            .ReturnsAsync(true);
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert - IsResubmissionInProgress is true here, so this only passes while the status also requires the
+        // cycle to have been started (SUB-345)
+        result.Model.As<FileUploadSubLandingViewModel>()
+            .SubmissionPeriodDetailGroups[0].SubmissionPeriodDetails
+            .Single(x => x.DataPeriod == _submissionPeriods[0].DataPeriod)
+            .Status.Should().Be(SubmissionPeriodStatus.AcceptedByRegulator);
+    }
+
+    // SUB-345, the reported bug: the regulator accepts a resubmission, and the tile's link walks the user back
+    // into the journey - upload, fee and declaration all over again - instead of showing what they already sent.
+    [Test]
+    [TestCase(RegulatorDecision.Accepted)]
+    [TestCase(RegulatorDecision.Approved)]
+    public async Task Post_RedirectsToCompletedResubmission_WhenTheRegulatorHasAcceptedACompletedResubmission(string decision)
+    {
+        // Arrange
+        var submissionPeriod = _submissionPeriods[0].DataPeriod;
+        var submission = CreateSubmittedPomSubmissionWithMatchingFileIds();
+
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionsAsync<PomSubmission>(
+                It.IsAny<List<string>>(),
+                It.IsAny<int>(),
+                It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<PomSubmission> { submission });
+
+        _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(true);
+
+        _submissionServiceMock
+            .Setup(x => x.GetDecisionAsync<PomDecision>(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<SubmissionType>()))
+            .ReturnsAsync(new PomDecision { Decision = decision });
+
+        _sessionMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SubmissionPeriod = submissionPeriod
+                },
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation> { new() { Id = Guid.NewGuid(), OrganisationRole = OrganisationRoles.ComplianceScheme } }
+                },
+                PomResubmissionSession = new PackagingReSubmissionSession()
+                {
+                    PackagingResubmissionApplicationSessions = new List<PackagingResubmissionApplicationSession>()
+                    {
+                        new PackagingResubmissionApplicationSession()
+                        {
+                            SubmissionId = submission.Id,
+                            ApplicationReferenceNumber = "PEPR33333S01",
+                            ApplicationStatus = ApplicationStatusType.NotStarted,
+                            ResubmissionApplicationSubmittedDate = null,
+                            LastCompletedResubmission = new CompletedResubmissionDetails
+                            {
+                                ApplicationReferenceNumber = "PEPR33333S01",
+                                Decision = decision
+                            }
+                        }
+                    }
+                }
+            });
+
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)))
+            .ReturnsAsync(true);
+
+        // Act
+        var result = await _systemUnderTest.Post(submissionPeriod) as RedirectToActionResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        result.ActionName.Should().Be(nameof(PackagingDataResubmissionController.CompletedResubmission));
+        result.ControllerName.Should().Be("PackagingDataResubmission");
+    }
+
+    // SUB-345: where the API still reports a ruled-on cycle's declaration, ResubmissionApplicationSubmitted
+    // sends the user to a task list showing every step unstarted - a new cycle wearing the old one's clothes.
+    // The interstitial at least carries the decision.
+    [Test]
+    public async Task Post_RedirectsToUploadNewFileToSubmit_WhenARuledOnCyclesDeclarationIsStillReported()
+    {
+        // Arrange
+        var submissionPeriod = _submissionPeriods[0].DataPeriod;
+        var submission = CreateSubmittedPomSubmissionWithMatchingFileIds();
+
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionsAsync<PomSubmission>(
+                It.IsAny<List<string>>(),
+                It.IsAny<int>(),
+                It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<PomSubmission> { submission });
+
+        _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(true);
+
+        _submissionServiceMock
+            .Setup(x => x.GetDecisionAsync<PomDecision>(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<SubmissionType>()))
+            .ReturnsAsync(new PomDecision { Decision = RegulatorDecision.Accepted });
+
+        _sessionMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SubmissionPeriod = submissionPeriod
+                },
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation> { new() { Id = Guid.NewGuid(), OrganisationRole = OrganisationRoles.Producer } }
+                },
+                PomResubmissionSession = new PackagingReSubmissionSession()
+                {
+                    PackagingResubmissionApplicationSessions = new List<PackagingResubmissionApplicationSession>()
+                    {
+                        new PackagingResubmissionApplicationSession()
+                        {
+                            SubmissionId = submission.Id,
+
+                            // The declaration and the fee of the cycle the regulator has already ruled on (SUB-345)
+                            ApplicationReferenceNumber = "PEPR33333S01",
+                            ApplicationStatus = ApplicationStatusType.NotStarted,
+                            ResubmissionApplicationSubmittedDate = DateTime.Now.AddDays(-2),
+                            ResubmissionFeePaymentMethod = "PayByPhone",
+                            FileReachedSynapse = true
+                        }
+                    }
+                }
+            });
+
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)))
+            .ReturnsAsync(true);
+
+        // Act
+        var result = await _systemUnderTest.Post(submissionPeriod) as RedirectToActionResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        result.ActionName.Should().Be(nameof(UploadNewFileToSubmitController.Get));
+        result.ControllerName.Should().Be("UploadNewFileToSubmit");
+    }
+
+    // SUB-345: once the user has started another cycle, that cycle is what they are in the middle of - the
+    // completed one must not divert them out of it.
+    [Test]
+    public async Task Post_RedirectsToResubmissionTaskList_WhenANewCycleHasBeenStartedSinceTheRuling()
+    {
+        // Arrange
+        var submissionPeriod = _submissionPeriods[0].DataPeriod;
+        var submission = CreateSubmittedPomSubmissionWithMatchingFileIds();
+
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionsAsync<PomSubmission>(
+                It.IsAny<List<string>>(),
+                It.IsAny<int>(),
+                It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<PomSubmission> { submission });
+
+        _submissionServiceMock.Setup(x => x.IsAnySubmissionAcceptedForDataPeriod(submission, It.IsAny<Guid>(), It.IsAny<Guid?>())).ReturnsAsync(true);
+
+        _submissionServiceMock
+            .Setup(x => x.GetDecisionAsync<PomDecision>(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<SubmissionType>()))
+            .ReturnsAsync(new PomDecision { Decision = RegulatorDecision.Accepted });
+
+        _sessionMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession
+                {
+                    SubmissionPeriod = submissionPeriod
+                },
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation> { new() { Id = Guid.NewGuid(), OrganisationRole = OrganisationRoles.Producer } }
+                },
+                PomResubmissionSession = new PackagingReSubmissionSession()
+                {
+                    PackagingResubmissionApplicationSessions = new List<PackagingResubmissionApplicationSession>()
+                    {
+                        new PackagingResubmissionApplicationSession()
+                        {
+                            SubmissionId = submission.Id,
+                            ApplicationReferenceNumber = "PEPR33333S02",
+
+                            // A file uploaded into the cycle that followed the ruling (SUB-345)
+                            ApplicationStatus = ApplicationStatusType.FileUploaded,
+                            ResubmissionApplicationSubmittedDate = null,
+                            LastCompletedResubmission = new CompletedResubmissionDetails
+                            {
+                                ApplicationReferenceNumber = "PEPR33333S01",
+                                Decision = RegulatorDecision.Accepted
+                            }
+                        }
+                    }
+                }
+            });
+
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)))
+            .ReturnsAsync(true);
+
+        // Act
+        var result = await _systemUnderTest.Post(submissionPeriod) as RedirectToActionResult;
+
+        // Assert
+        result.Should().NotBeNull();
+        result.ActionName.Should().Be(nameof(PackagingDataResubmissionController.ResubmissionTaskList));
+        result.ControllerName.Should().Be("PackagingDataResubmission");
+    }
+
+    private static PomSubmission CreateSubmittedPomSubmissionWithMatchingFileIds()
+    {
+        var fileId = Guid.NewGuid();
+
+        return new PomSubmission
+        {
+            Id = Guid.NewGuid(),
+            IsSubmitted = true,
+            HasWarnings = false,
+            ValidationPass = true,
+            LastSubmittedFile = new SubmittedFileInformation
+            {
+                FileId = fileId
+            },
+            LastUploadedValidFile = new UploadedFileInformation
+            {
+                FileId = fileId,
+                FileUploadDateTime = DateTime.UtcNow.AddDays(-1)
+            }
+        };
     }
 
     private static PomSubmission CreatePomSubmissionWithWarningsAndFileIdMismatch()

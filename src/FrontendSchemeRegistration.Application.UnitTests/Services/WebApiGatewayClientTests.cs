@@ -688,6 +688,66 @@ public class WebApiGatewayClientTests
         // Assert
         result.Should().BeNull();
     }
+    // SUB-345: this DTO is a hand-maintained copy of the gateway's, which is itself a copy of the submission
+    // microservice's, so a field added upstream and forgotten here is dropped in silence. Assert against the
+    // wire shape rather than a round trip of our own class, which would match either way.
+    [Test]
+    public async Task GetPackagingDataResubmissionApplicationDetails_Should_Carry_TheResubmissionCycleFields_FromTheGateway()
+    {
+        // Arrange
+        var request = new GetPackagingResubmissionApplicationDetailsRequest
+        {
+            OrganisationId = Guid.NewGuid(),
+            SubmissionPeriods = new List<string> { "2024-12" }
+        };
+
+        var submissionId = Guid.NewGuid();
+
+        var body = $$"""
+            [
+              {
+                "submissionId": "{{submissionId}}",
+                "isSubmitted": true,
+                "applicationReferenceNumber": "PEPR12345S01",
+                "isResubmissionCycleClosed": true,
+                "lastCompletedResubmission": {
+                  "applicationReferenceNumber": "PEPR12345S01",
+                  "decision": "Accepted",
+                  "regulatorComments": "Regulator comment"
+                }
+              }
+            ]
+            """;
+
+        var responseMessage = new HttpResponseMessage
+        {
+            StatusCode = HttpStatusCode.OK,
+            Content = new StringContent(body, System.Text.Encoding.UTF8, "application/json")
+        };
+
+        _httpMessageHandlerMock
+            .Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(responseMessage);
+
+        // Act
+        var result = await _webApiGatewayClient.GetPackagingDataResubmissionApplicationDetails(request);
+
+        // Assert
+        result.Should().NotBeNull();
+
+        var details = result.First();
+        details.SubmissionId.Should().Be(submissionId);
+        details.IsResubmissionCycleClosed.Should().BeTrue();
+        details.LastCompletedResubmission.Should().NotBeNull();
+        details.LastCompletedResubmission!.ApplicationReferenceNumber.Should().Be("PEPR12345S01");
+        details.LastCompletedResubmission.Decision.Should().Be("Accepted");
+        details.LastCompletedResubmission.RegulatorComments.Should().Be("Regulator comment");
+    }
+
     [Test]
     public async Task GetPackagingDataResubmissionApplicationDetails_Should_Handle_Empty_SubmissionPeriods()
     {

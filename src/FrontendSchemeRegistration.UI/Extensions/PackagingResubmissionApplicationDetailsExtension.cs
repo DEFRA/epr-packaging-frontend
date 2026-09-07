@@ -29,6 +29,8 @@ namespace FrontendSchemeRegistration.UI.Extensions
                 Organisation = organisation,
                 IsResubmissionFeeViewed = item.IsResubmissionFeeViewed,
                 HasSubmissionSyncCompleted = item.SynapseResponse.IsResubmissionDataSynced,
+                LastCompletedResubmission = item.LastCompletedResubmission,
+                IsResubmissionCycleClosed = item.IsResubmissionCycleClosed
             };
 
             return packagingResubmissionApplicationDetails;
@@ -50,6 +52,7 @@ namespace FrontendSchemeRegistration.UI.Extensions
                     resubmissionTaskListModel.IsSubmitted = resubmissionSession.IsSubmitted;
                     resubmissionTaskListModel.IsResubmissionInProgress = resubmissionSession.IsResubmissionInProgress;
                     resubmissionTaskListModel.IsResubmissionComplete = resubmissionSession.IsResubmissionComplete;
+                    resubmissionTaskListModel.IsResubmissionStarted = resubmissionSession.IsResubmissionStarted;
                     resubmissionTaskListModel.AppReferenceNumber = resubmissionSession.ApplicationReferenceNumber;
                 }
             }

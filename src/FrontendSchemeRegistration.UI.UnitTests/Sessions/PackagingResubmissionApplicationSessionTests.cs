@@ -2,6 +2,7 @@
 
 using FluentAssertions;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
+using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.UI.Sessions;
 using NUnit.Framework;
 
@@ -148,6 +149,148 @@ public class PackagingResubmissionApplicationSessionTests
         session.PaymentViewStatus.Should().Be(ResubmissionTaskListStatus.CanNotStartYet);
         session.AdditionalDetailsStatus.Should().Be(ResubmissionTaskListStatus.CanNotStartYet);
         session.IsResubmissionInProgress.Should().BeTrue();
+    }
+
+    // SUB-345: the state the user lands in after the regulator accepts a declared cycle. The reference number
+    // survives so the cycle keeps its identity, but nothing has been done in the new cycle: every task-list
+    // step is unstarted, so the heading must not offer to "continue" it.
+    [Test]
+    public void IsResubmissionStarted_ShouldBeFalse_WhenTheCycleIsOpenButUntouched()
+    {
+        var session = new PackagingResubmissionApplicationSession
+        {
+            ApplicationReferenceNumber = "PEPR12345S01",
+            ApplicationStatus = ApplicationStatusType.NotStarted,
+            ResubmissionApplicationSubmittedDate = null
+        };
+
+        session.IsResubmissionInProgress.Should().BeTrue();
+        session.IsResubmissionStarted.Should().BeFalse();
+        session.FileUploadStatus.Should().Be(ResubmissionTaskListStatus.NotStarted);
+    }
+
+    // The upload is registered but not yet submitted or synced, so FileUploadStatus is only Pending. The
+    // heading keys off ApplicationStatus rather than FileUploadStatus so that this still counts as started -
+    // the user has uploaded something and does have work to continue.
+    [Test]
+    public void IsResubmissionStarted_ShouldBeTrue_OnceAFileHasBeenUploadedIntoTheCycle()
+    {
+        var session = new PackagingResubmissionApplicationSession
+        {
+            ApplicationReferenceNumber = "PEPR12345S01",
+            ApplicationStatus = ApplicationStatusType.FileUploaded,
+            FileReachedSynapse = false,
+            ResubmissionApplicationSubmittedDate = null
+        };
+
+        session.FileUploadStatus.Should().Be(ResubmissionTaskListStatus.Pending);
+        session.IsResubmissionStarted.Should().BeTrue();
+    }
+
+    // Started is a narrowing of in progress, never a widening: once the cycle is declared it is no longer
+    // either, and the heading falls back to the organisation-named one.
+    [Test]
+    public void IsResubmissionStarted_ShouldBeFalse_OnceTheApplicationHasBeenSubmitted()
+    {
+        var session = new PackagingResubmissionApplicationSession
+        {
+            ApplicationReferenceNumber = "PEPR12345S01",
+            ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+            ResubmissionApplicationSubmittedDate = DateTime.Now
+        };
+
+        session.IsResubmissionInProgress.Should().BeFalse();
+        session.IsResubmissionStarted.Should().BeFalse();
+    }
+
+    // SUB-345: the sub-landing tile message for the state the user lands in after the regulator rules on a
+    // declared cycle. The fee flags belong to the closed cycle and FileReachedSynapse still refers to the file
+    // that was ruled on, so both branches below would otherwise fire for a cycle nothing has been done in.
+    [Test]
+    public void ApplicationInProgressSubmissionPeriodStatus_ShouldBeNull_WhenTheCycleIsOpenButUntouched()
+    {
+        var session = new PackagingResubmissionApplicationSession
+        {
+            ApplicationReferenceNumber = "PEPR12345S01",
+            ApplicationStatus = ApplicationStatusType.NotStarted,
+            FileReachedSynapse = true,
+            IsResubmissionFeeViewed = true,
+            ResubmissionApplicationSubmittedDate = null
+        };
+
+        session.IsResubmissionStarted.Should().BeFalse();
+        session.ApplicationInProgressSubmissionPeriodStatus.Should().BeNull();
+    }
+
+    // The same untouched cycle with the API's fee reset applied. Without the started check this swaps one wrong
+    // message for another - "your file is in Synapse, you haven't viewed your fee" - rather than falling silent.
+    [Test]
+    public void ApplicationInProgressSubmissionPeriodStatus_ShouldBeNull_WhenTheCycleIsUntouchedAndTheFeeWasNeverViewed()
+    {
+        var session = new PackagingResubmissionApplicationSession
+        {
+            ApplicationReferenceNumber = "PEPR12345S01",
+            ApplicationStatus = ApplicationStatusType.NotStarted,
+            FileReachedSynapse = true,
+            IsResubmissionFeeViewed = null,
+            ResubmissionApplicationSubmittedDate = null
+        };
+
+        session.ApplicationInProgressSubmissionPeriodStatus.Should().BeNull();
+    }
+
+    // The legitimate state the fee-viewed message exists for: the file is submitted and synced, the fee has been
+    // viewed, and only the declaration is outstanding.
+    [Test]
+    public void ApplicationInProgressSubmissionPeriodStatus_ShouldReportTheDeclarationOutstanding_WhenTheFeeHasBeenViewedInAStartedCycle()
+    {
+        var session = new PackagingResubmissionApplicationSession
+        {
+            ApplicationReferenceNumber = "PEPR12345S01",
+            ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+            FileReachedSynapse = true,
+            IsResubmissionFeeViewed = true,
+            ResubmissionApplicationSubmittedDate = null
+        };
+
+        session.IsResubmissionStarted.Should().BeTrue();
+        session.ApplicationInProgressSubmissionPeriodStatus.Should()
+            .Be(InProgressSubmissionPeriodStatus.InProgress_Resubmission_FeesViewed_NotSubmitted);
+    }
+
+    // The other legitimate state: the same started cycle before the fee has been looked at.
+    [Test]
+    public void ApplicationInProgressSubmissionPeriodStatus_ShouldReportTheFeeOutstanding_WhenItHasNotBeenViewedInAStartedCycle()
+    {
+        var session = new PackagingResubmissionApplicationSession
+        {
+            ApplicationReferenceNumber = "PEPR12345S01",
+            ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+            FileReachedSynapse = true,
+            IsResubmissionFeeViewed = null,
+            ResubmissionApplicationSubmittedDate = null
+        };
+
+        session.IsResubmissionStarted.Should().BeTrue();
+        session.ApplicationInProgressSubmissionPeriodStatus.Should()
+            .Be(InProgressSubmissionPeriodStatus.InProgress_Resubmission_FileInSynapse_FeesNotViewed_NotSubmitted);
+    }
+
+    // Both messages describe outstanding work, so once the cycle is declared there is none to describe. This was
+    // already the behaviour through the !ResubmissionApplicationSubmitted checks; the started guard keeps it.
+    [Test]
+    public void ApplicationInProgressSubmissionPeriodStatus_ShouldBeNull_OnceTheApplicationHasBeenSubmitted()
+    {
+        var session = new PackagingResubmissionApplicationSession
+        {
+            ApplicationReferenceNumber = "PEPR12345S01",
+            ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+            FileReachedSynapse = true,
+            IsResubmissionFeeViewed = true,
+            ResubmissionApplicationSubmittedDate = DateTime.Now
+        };
+
+        session.ApplicationInProgressSubmissionPeriodStatus.Should().BeNull();
     }
 
     [Test]

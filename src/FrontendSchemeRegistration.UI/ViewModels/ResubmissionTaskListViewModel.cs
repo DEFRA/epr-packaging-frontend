@@ -32,6 +32,8 @@ public class ResubmissionTaskListViewModel
 
     public bool? IsResubmissionComplete { get; set; }
 
+    public bool IsResubmissionStarted { get; set; }
+
     public bool ResubmissionApplicationSubmitted { get; set; }
     
     public bool HasSubmissionSyncCompleted { get; set; }

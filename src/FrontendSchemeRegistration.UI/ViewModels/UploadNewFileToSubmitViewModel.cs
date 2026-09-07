@@ -24,6 +24,11 @@ public class UploadNewFileToSubmitViewModel : ViewModelWithOrganisationRole
 
     public bool IsSubmittedByPersonDeleted { get; set; }
 
+    // SUB-345: the action-link partials read this to decide where their button goes. A period with nothing
+    // accepted is not a resubmission - the user is still completing their original submission - so the
+    // resubmission task list, and the fee it carries, does not apply to it.
+    public bool IsAnySubmissionAcceptedForDataPeriod { get; set; }
+
     public DateTime? SubmittedAt { get; set; }
 
     public string? SubmittedFileName { get; set; }
