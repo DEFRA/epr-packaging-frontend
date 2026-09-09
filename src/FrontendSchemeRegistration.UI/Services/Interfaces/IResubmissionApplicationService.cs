@@ -11,11 +11,11 @@ namespace FrontendSchemeRegistration.UI.Services.Interfaces
     {
         Task<string> GetRegulatorNation(Guid? organisationId);
 
-        Task<string> CreatePomResubmissionReferenceNumberForProducer(FrontendSchemeRegistrationSession session, SubmissionPeriod submissionPeriod, string organisationNumber, string submittedByName, Guid submissionId, int? historyCount);
+        Task<string> CreatePomResubmissionReferenceNumberForProducer(FrontendSchemeRegistrationSession session, SubmissionPeriod submissionPeriod, string organisationNumber, Guid submissionId, int? historyCount);
 
-        Task<string> CreatePomResubmissionReferenceNumberForCSO(FrontendSchemeRegistrationSession session, SubmissionPeriod submissionPeriod, string organisationNumber, string submittedByName, Guid submissionId, int? historyCount);
+        Task<string> CreatePomResubmissionReferenceNumberForCSO(FrontendSchemeRegistrationSession session, SubmissionPeriod submissionPeriod, string organisationNumber, Guid submissionId, int? historyCount);
 
-        Task<string> CreatePomResubmissionReferenceNumber(FrontendSchemeRegistrationSession session, string submittedByName, Guid submissionId, int? historyCount);
+        Task<string> CreatePomResubmissionReferenceNumber(FrontendSchemeRegistrationSession session, Guid submissionId, int? historyCount);
 
         Task<List<PackagingResubmissionApplicationDetails>> GetPackagingDataResubmissionApplicationDetails(Organisation organisation, List<string> submissionPeriods, Guid? complianceSchemeId);
 
