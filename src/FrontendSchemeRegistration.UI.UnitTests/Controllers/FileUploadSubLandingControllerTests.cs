@@ -2569,6 +2569,140 @@ public class FileUploadSubLandingControllerTests
             .Status.Should().Be(SubmissionPeriodStatus.AcceptedByRegulator);
     }
 
+    // SUB-345: the same shape as the test above, but with no decision to report. Demoting to SubmittedToRegulator
+    // there leaves the tile with no branch to render: the status tag appears with no footer button, and the user
+    // cannot reach a resubmission they have already submitted a file for. Reached by a cycle left before any
+    // upload, and by one whose reference number was raised after its file was submitted - the submission API
+    // reports NotStarted for that, so the started check cannot see the work already done.
+    [Test]
+    [TestCase(null)]
+    [TestCase("")]
+    [TestCase("Cancelled")]
+    [TestCase("Queried")]
+    public async Task Get_ReportsInProgress_WhenTheCycleIsOpenAndTheRegulatorHasNotRuledOnTheSubmittedFile(string pendingDecision)
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var submission = new PomSubmission
+        {
+            Id = submissionId,
+            HasValidFile = true,
+            SubmissionPeriod = _submissionPeriods[0].DataPeriod,
+            LastSubmittedFile = new SubmittedFileInformation { FileId = Guid.NewGuid() }
+        };
+
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionsAsync<PomSubmission>(It.IsAny<List<string>>(), It.IsAny<int>(), It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<PomSubmission> { submission });
+
+        _submissionServiceMock
+            .Setup(x => x.GetDecisionAsync<PomDecision>(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<SubmissionType>()))
+            .ReturnsAsync(new PomDecision { Decision = pendingDecision });
+
+        _sessionMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession(),
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation> { new() { Id = Guid.NewGuid(), OrganisationRole = OrganisationRoles.Producer } }
+                }
+            });
+
+        _resubmissionApplicationServicMock
+            .Setup(x => x.GetPackagingResubmissionApplicationSession(It.IsAny<Organisation>(), It.IsAny<List<string>>(), It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<PackagingResubmissionApplicationSession>
+            {
+                new()
+                {
+                    SubmissionId = submissionId,
+
+                    // An open cycle the API reports nothing started against
+                    ApplicationReferenceNumber = "PEPR33333S01",
+                    ApplicationStatus = ApplicationStatusType.NotStarted,
+                    ResubmissionApplicationSubmittedDate = null
+                }
+            });
+
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)))
+            .ReturnsAsync(true);
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        result.Model.As<FileUploadSubLandingViewModel>()
+            .SubmissionPeriodDetailGroups[0].SubmissionPeriodDetails
+            .Single(x => x.DataPeriod == _submissionPeriods[0].DataPeriod)
+            .Status.Should().Be(SubmissionPeriodStatus.InProgress);
+    }
+
+    // SUB-345: the pending-decision allowance above must not extend to the decisions the tile has wording for -
+    // those still outrank an untouched cycle, or the decision is hidden behind "In progress" again.
+    [Test]
+    [TestCase(RegulatorDecision.Rejected, SubmissionPeriodStatus.RejectedByRegulator)]
+    [TestCase(RegulatorDecision.Accepted, SubmissionPeriodStatus.AcceptedByRegulator)]
+    [TestCase(RegulatorDecision.Approved, SubmissionPeriodStatus.AcceptedByRegulator)]
+    public async Task Get_StillReportsTheDecision_WhenTheCycleIsOpenAndTheRegulatorHasRuled(
+        string decision,
+        SubmissionPeriodStatus expectedStatus)
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var submission = new PomSubmission
+        {
+            Id = submissionId,
+            HasValidFile = true,
+            SubmissionPeriod = _submissionPeriods[0].DataPeriod,
+            LastSubmittedFile = new SubmittedFileInformation { FileId = Guid.NewGuid() }
+        };
+
+        _submissionServiceMock
+            .Setup(x => x.GetSubmissionsAsync<PomSubmission>(It.IsAny<List<string>>(), It.IsAny<int>(), It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<PomSubmission> { submission });
+
+        _submissionServiceMock
+            .Setup(x => x.GetDecisionAsync<PomDecision>(It.IsAny<int>(), It.IsAny<Guid>(), It.IsAny<SubmissionType>()))
+            .ReturnsAsync(new PomDecision { Decision = decision });
+
+        _sessionMock
+            .Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                RegistrationSession = new RegistrationSession(),
+                UserData = new UserData
+                {
+                    Organisations = new List<Organisation> { new() { Id = Guid.NewGuid(), OrganisationRole = OrganisationRoles.Producer } }
+                }
+            });
+
+        _resubmissionApplicationServicMock
+            .Setup(x => x.GetPackagingResubmissionApplicationSession(It.IsAny<Organisation>(), It.IsAny<List<string>>(), It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<PackagingResubmissionApplicationSession>
+            {
+                new()
+                {
+                    SubmissionId = submissionId,
+                    ApplicationReferenceNumber = "PEPR33333S01",
+                    ApplicationStatus = ApplicationStatusType.NotStarted,
+                    ResubmissionApplicationSubmittedDate = null
+                }
+            });
+
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)))
+            .ReturnsAsync(true);
+
+        // Act
+        var result = await _systemUnderTest.Get() as ViewResult;
+
+        // Assert
+        result.Model.As<FileUploadSubLandingViewModel>()
+            .SubmissionPeriodDetailGroups[0].SubmissionPeriodDetails
+            .Single(x => x.DataPeriod == _submissionPeriods[0].DataPeriod)
+            .Status.Should().Be(expectedStatus);
+    }
+
     // SUB-345, the reported bug: the regulator accepts a resubmission, and the tile's link walks the user back
     // into the journey - upload, fee and declaration all over again - instead of showing what they already sent.
     [Test]
