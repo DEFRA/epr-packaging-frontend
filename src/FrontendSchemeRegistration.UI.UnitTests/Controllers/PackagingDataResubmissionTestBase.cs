@@ -27,8 +27,6 @@ public abstract class PackagingDataResubmissionTestBase
 
     protected PackagingDataResubmissionController SystemUnderTest { get; set; }
 
-    protected Mock<IUserAccountService> UserAccountService { get; private set; }
-
     protected Mock<ILogger<PackagingDataResubmissionController>> LoggerMock { get; set; }
 
     protected FrontendSchemeRegistrationSession FrontendSchemeRegistrationSession { get; set; }
@@ -57,7 +55,6 @@ public abstract class PackagingDataResubmissionTestBase
             .Returns(Task.FromResult(new FrontendSchemeRegistrationSession()));
 
         LoggerMock = new Mock<ILogger<PackagingDataResubmissionController>>();
-        UserAccountService = new Mock<IUserAccountService>();
         PaymentCalculationService = new Mock<IPaymentCalculationService>();
         ResubmissionApplicationService = new Mock<IResubmissionApplicationService>();
         ComplianceService = new Mock<IComplianceSchemeService>();
@@ -70,7 +67,6 @@ public abstract class PackagingDataResubmissionTestBase
         SystemUnderTest = new PackagingDataResubmissionController(
             SessionManagerMock.Object,
             LoggerMock.Object,
-            UserAccountService.Object,
             Options.Create(new GlobalVariables
             {
                 SubmissionPeriods = new List<SubmissionPeriod>()
