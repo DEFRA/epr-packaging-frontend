@@ -25,7 +25,7 @@ public class ResubmissionApplicationServices(
     IOptions<GlobalVariables> globalVariables,
     TimeProvider timeProvider) : IResubmissionApplicationService
 {
-    public async Task<string> CreatePomResubmissionReferenceNumberForProducer(FrontendSchemeRegistrationSession session, SubmissionPeriod submissionPeriod, string organisationNumber, string submittedByName, Guid submissionId, int? historyCount)
+    public async Task<string> CreatePomResubmissionReferenceNumberForProducer(FrontendSchemeRegistrationSession session, SubmissionPeriod submissionPeriod, string organisationNumber, Guid submissionId, int? historyCount)
     {
         var resubmissionCount = historyCount == null ? 0 : historyCount.Value + 1;
         var period = (submissionPeriod.StartMonth == "January" && submissionPeriod.EndMonth == "June") ? 1 : 2;
@@ -35,7 +35,7 @@ public class ResubmissionApplicationServices(
         return await CreateSubmissionEvent(pomResubmissionReferenceNumber, submissionId);
     }
 
-    public async Task<string> CreatePomResubmissionReferenceNumberForCSO(FrontendSchemeRegistrationSession session, SubmissionPeriod submissionPeriod, string organisationNumber, string submittedByName, Guid submissionId, int? historyCount)
+    public async Task<string> CreatePomResubmissionReferenceNumberForCSO(FrontendSchemeRegistrationSession session, SubmissionPeriod submissionPeriod, string organisationNumber, Guid submissionId, int? historyCount)
     {
         var period = (submissionPeriod.StartMonth == "January" && submissionPeriod.EndMonth == "June") ? 1 : 2;
         var nation = session.PomResubmissionSession.RegulatorNation.Split('-')[1][0];
@@ -46,7 +46,7 @@ public class ResubmissionApplicationServices(
         return await CreateSubmissionEvent(pomResubmissionReferenceNumber, submissionId);
     }
 
-    public async Task<string> CreatePomResubmissionReferenceNumber(FrontendSchemeRegistrationSession session, string submittedByName, Guid submissionId, int? historyCount)
+    public async Task<string> CreatePomResubmissionReferenceNumber(FrontendSchemeRegistrationSession session, Guid submissionId, int? historyCount)
     {
         var resbumissonSession = session.PomResubmissionSession;
         var organisation = resbumissonSession.PackagingResubmissionApplicationSession.Organisation;
@@ -54,8 +54,8 @@ public class ResubmissionApplicationServices(
         var isComplianceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
 
         return isComplianceScheme ?
-            await CreatePomResubmissionReferenceNumberForCSO(session, submissionPeriod, organisation.OrganisationNumber, submittedByName, submissionId, historyCount)
-            : await CreatePomResubmissionReferenceNumberForProducer(session, submissionPeriod, organisation.OrganisationNumber, submittedByName, submissionId, historyCount);
+            await CreatePomResubmissionReferenceNumberForCSO(session, submissionPeriod, organisation.OrganisationNumber, submissionId, historyCount)
+            : await CreatePomResubmissionReferenceNumberForProducer(session, submissionPeriod, organisation.OrganisationNumber, submissionId, historyCount);
     }
 
     public async Task<List<PackagingResubmissionApplicationDetails>> GetPackagingDataResubmissionApplicationDetails(
