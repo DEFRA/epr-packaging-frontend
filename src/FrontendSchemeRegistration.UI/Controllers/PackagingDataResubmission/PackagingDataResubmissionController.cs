@@ -27,7 +27,6 @@ public class PackagingDataResubmissionController : Controller
 {
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
     private readonly ILogger<PackagingDataResubmissionController> _logger;
-    private readonly IUserAccountService _userAccountService;
     private readonly List<SubmissionPeriod> _submissionPeriods;
     private readonly IResubmissionApplicationService _resubmissionApplicationService;
     private readonly IComplianceSchemeService _complianceSchemeService;
@@ -35,13 +34,11 @@ public class PackagingDataResubmissionController : Controller
     public PackagingDataResubmissionController(
         ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
         ILogger<PackagingDataResubmissionController> logger,
-        IUserAccountService userAccountService,
         IOptions<GlobalVariables> globalVariables,
         IResubmissionApplicationService resubmissionApplicationService,
         IComplianceSchemeService complianceSchemeService)
     {
         _sessionManager = sessionManager;
-        _userAccountService = userAccountService;
         _resubmissionApplicationService = resubmissionApplicationService;
         _submissionPeriods = globalVariables.Value.SubmissionPeriods;
         _complianceSchemeService = complianceSchemeService;
@@ -75,9 +72,9 @@ public class PackagingDataResubmissionController : Controller
 
         await UpdateSession(session, resubmissionApplicationDetails[0], organisation, isComplianceScheme, complianceSchemeSummary, submissionPeriod);
 
-        // SUB-332: the reference-number event below is built from the submission, so read it from a fresh
-        // fetch rather than the cached session copy, which can be stale after a re-upload in another tab.
-        // This has to follow UpdateSession, which is what populates the SubmissionId the refresh needs.
+        // SUB-332: whether a file has been submitted is what decides the reference number below, so read it
+        // from a fresh fetch rather than the cached session copy, which can be stale after a re-upload in
+        // another tab. This has to follow UpdateSession, which populates the SubmissionId the refresh needs.
         await _resubmissionApplicationService.RefreshPomSubmissionAsync(session);
 
         var submission = session.PomResubmissionSession.PomSubmission;
@@ -409,10 +406,15 @@ public class PackagingDataResubmissionController : Controller
             return;
         }
 
-        // A resubmission reference number only means something once a file has been submitted, and
-        // LastSubmittedFile is the only source for the submitter carried on the event. Skip rather than
-        // throw when it is absent: the task list still renders, and the next visit raises the number once
-        // the submitted file is known.
+        // A resubmission reference number only means something once a file has been submitted. Skip rather
+        // than throw when none has been: the task list still renders, and the next visit raises the number
+        // once a submitted file exists.
+        //
+        // SUB-345: nothing about that file is carried on the event - the number is built from the
+        // organisation, its nation, and the period - so nothing here may depend on resolving who submitted
+        // it. Looking their name up cost the whole raise: the last submitted file belongs to the cycle just
+        // closed, so on seeded or migrated data its submitter can be a user the accounts service has never
+        // heard of, and the lookup threw before the number was created.
         if (submission.LastSubmittedFile is null)
         {
             _logger.LogWarning(
@@ -424,7 +426,6 @@ public class PackagingDataResubmissionController : Controller
             return;
         }
 
-        var submittedByName = await GetUserNameFromId(submission.LastSubmittedFile.SubmittedBy);
         var historyCount = await GetSubmissionHistory(submission, organisation.Id.Value, complianceSchemeId);
 
         _logger.LogInformation(
@@ -433,7 +434,7 @@ public class PackagingDataResubmissionController : Controller
             submission.Id,
             session.PomResubmissionSession.SubmissionPeriod);
 
-        await _resubmissionApplicationService.CreatePomResubmissionReferenceNumber(session, submittedByName, submission.Id, historyCount);
+        await _resubmissionApplicationService.CreatePomResubmissionReferenceNumber(session, submission.Id, historyCount);
     }
 
     private async Task<RedirectToActionResult> RedirectToRightAction(FrontendSchemeRegistrationSession session)
@@ -503,12 +504,6 @@ public class PackagingDataResubmissionController : Controller
     private SubmissionPeriod FindSubmissionPeriod(string dataPeriod)
     {
         return _submissionPeriods.Find(period => period.DataPeriod == dataPeriod);
-    }
-
-    private async Task<string> GetUserNameFromId(Guid userId)
-    {
-        var user = await _userAccountService.GetAllPersonByUserId(userId);
-        return $"{user.FirstName} {user.LastName}";
     }
 
     private async Task UpdateResubmissionApplicationPaymentSession(FrontendSchemeRegistrationSession session, PackagingPaymentResponse packagingPaymentResponse)
