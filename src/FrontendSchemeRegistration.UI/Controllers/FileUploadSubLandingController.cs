@@ -415,10 +415,16 @@ public class FileUploadSubLandingController(
     /// SubmittedToRegulator, and the tile has no branch pairing that status with an open cycle: it renders the
     /// status tag and no footer button at all, leaving the user outside a resubmission they can still finish.
     /// <para>
-    /// Two states reach it. A cycle opened and then left before uploading anything. And a cycle whose reference
-    /// number was raised after its file was already submitted, which the submission API reads as a cycle
-    /// nothing has been uploaded into - it ages the cycle's own upload out and reports NotStarted - so
-    /// HasStartedThisResubmissionCycle cannot see the work the user has done.
+    /// In practice that is a submission's first cycle. Its reference number is only raised once a file has been
+    /// submitted, so the number always post-dates that submit, and the submission API reads a cycle with no
+    /// upload after its own number as one nothing has been uploaded into: it reports NotStarted, so
+    /// HasStartedThisResubmissionCycle cannot see the file the user has already submitted.
+    /// </para>
+    /// <para>
+    /// A cycle numbered late for any other reason does not reach here, and does not need to. Numbering only
+    /// lags a cycle already under way when a regulator ruling released the number, a ruling is a decision the
+    /// tile can show, and the submission API dates such a cycle from the ruling rather than from the number -
+    /// so the work done under it is reported and the started check above is what carries it.
     /// </para>
     /// </remarks>
     private static bool HasNoDecisionToShowForSubmittedFile(PomSubmission submission, PomDecision decision) =>
