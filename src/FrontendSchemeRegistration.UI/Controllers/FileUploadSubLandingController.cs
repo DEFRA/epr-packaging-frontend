@@ -186,7 +186,8 @@ public class FileUploadSubLandingController(
         // had already accepted, hiding the decision from the tile entirely.
         if (featureManager.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)).Result
             && session?.IsResubmissionInProgress == true
-            && HasStartedThisResubmissionCycle(session, submission))
+            && (HasStartedThisResubmissionCycle(session, submission)
+                || HasNoDecisionToShowForSubmittedFile(submission, decision)))
         {
             return SubmissionPeriodStatus.InProgress;
         }
@@ -403,6 +404,25 @@ public class FileUploadSubLandingController(
     /// </remarks>
     private static bool IsCycleClosingDecision(string decision) =>
         decision is RegulatorDecision.Accepted or RegulatorDecision.Approved or RegulatorDecision.Rejected;
+
+    /// <summary>
+    /// SUB-345: true when the regulator has nothing to say yet about the file they are holding, so an open
+    /// cycle is the most useful thing the tile can report.
+    /// </summary>
+    /// <remarks>
+    /// A decision outranks an untouched cycle above so that an accepted or rejected resubmission is not hidden
+    /// behind "In progress" - but only a decision that exists. Without one, the fall-through below reports
+    /// SubmittedToRegulator, and the tile has no branch pairing that status with an open cycle: it renders the
+    /// status tag and no footer button at all, leaving the user outside a resubmission they can still finish.
+    /// <para>
+    /// Two states reach it. A cycle opened and then left before uploading anything. And a cycle whose reference
+    /// number was raised after its file was already submitted, which the submission API reads as a cycle
+    /// nothing has been uploaded into - it ages the cycle's own upload out and reports NotStarted - so
+    /// HasStartedThisResubmissionCycle cannot see the work the user has done.
+    /// </para>
+    /// </remarks>
+    private static bool HasNoDecisionToShowForSubmittedFile(PomSubmission submission, PomDecision decision) =>
+        submission.LastSubmittedFile is not null && !IsCycleClosingDecision(decision.Decision);
 
     /// <summary>
     /// True when the user has done something in the current resubmission cycle, as opposed to merely having
