@@ -83,7 +83,12 @@ public class PackagingDataResubmissionController : Controller
         {
             session.PomResubmissionSession.Journey = new List<string> { PagePaths.FileUploadSubLanding, $"/report-data{PagePaths.UploadNewFileToSubmit}?submissionId={submission.Id}", PagePaths.ResubmissionTaskList };
 
-            await CreateReferenceNumberIfNewCycleNeeded(session, submission, organisation, complianceSchemeId);
+            var raisedReferenceNumber = await CreateReferenceNumberIfNewCycleNeeded(session, submission, organisation, complianceSchemeId);
+
+            if (raisedReferenceNumber is not null)
+            {
+                await RefreshSessionForNewlyNumberedCycle(session, raisedReferenceNumber, organisation, isComplianceScheme, complianceSchemeSummary, submissionPeriod, complianceSchemeId);
+            }
         }
 
         await SaveSession(session, PagePaths.ResubmissionTaskList, PagePaths.ResubmissionFeeCalculations);
@@ -382,7 +387,11 @@ public class PackagingDataResubmissionController : Controller
         return histories?.Count;
     }
 
-    private async Task CreateReferenceNumberIfNewCycleNeeded(
+    /// <summary>
+    /// Raises this cycle's packaging resubmission reference number when it is owed one, returning the number
+    /// raised, or null when the cycle already has one or is in no state to be given one.
+    /// </summary>
+    private async Task<string?> CreateReferenceNumberIfNewCycleNeeded(
         FrontendSchemeRegistrationSession session,
         PomSubmission submission,
         EPR.Common.Authorization.Models.Organisation organisation,
@@ -403,7 +412,7 @@ public class PackagingDataResubmissionController : Controller
         // due. It goes false again as soon as that number exists, so this cannot fire twice for one cycle.
         if (!hasNoCycleYet && !applicationSession.IsResubmissionCycleClosed)
         {
-            return;
+            return null;
         }
 
         // A resubmission reference number only means something once a file has been submitted. Skip rather
@@ -423,7 +432,7 @@ public class PackagingDataResubmissionController : Controller
                 submission.Id,
                 session.PomResubmissionSession.SubmissionPeriod);
 
-            return;
+            return null;
         }
 
         var historyCount = await GetSubmissionHistory(submission, organisation.Id.Value, complianceSchemeId);
@@ -434,7 +443,48 @@ public class PackagingDataResubmissionController : Controller
             submission.Id,
             session.PomResubmissionSession.SubmissionPeriod);
 
-        await _resubmissionApplicationService.CreatePomResubmissionReferenceNumber(session, submission.Id, historyCount);
+        return await _resubmissionApplicationService.CreatePomResubmissionReferenceNumber(session, submission.Id, historyCount);
+    }
+
+    /// <summary>
+    /// SUB-345: re-describes the session, and so this render, in terms of the cycle the reference number just
+    /// raised has opened.
+    /// </summary>
+    /// <remarks>
+    /// Everything the session holds about the resubmission was read before that number existed, and so
+    /// describes the cycle that had already closed. The number matters most - nothing downstream of the task
+    /// list re-reads these details, so the fee lookup, the payment reference, the payment pages and the number
+    /// stamped on the file at declaration would all have belonged to the previous resubmission - but the
+    /// statuses matter too: the API dates a backfilled cycle from the number and only then reports the work
+    /// already done under it, so a page built from the earlier read shows steps the user has finished as
+    /// unstarted until they refresh.
+    /// <para>
+    /// Re-reading rather than deriving is deliberate: what a cycle contains is the API's to decide, and
+    /// <see cref="PackagingResubmissionApplicationSession.IsResubmissionCycleClosed"/> says as much. The one
+    /// thing known first-hand is the number itself, so it is written back over whatever the re-read reports,
+    /// which also keeps a read that has yet to catch up with the write from restoring the old number.
+    /// </para>
+    /// </remarks>
+    private async Task RefreshSessionForNewlyNumberedCycle(
+        FrontendSchemeRegistrationSession session,
+        string raisedReferenceNumber,
+        EPR.Common.Authorization.Models.Organisation organisation,
+        bool isComplianceScheme,
+        ComplianceSchemeSummary complianceSchemeSummary,
+        SubmissionPeriod submissionPeriod,
+        Guid? complianceSchemeId)
+    {
+        var resubmissionApplicationDetails = await _resubmissionApplicationService.GetPackagingDataResubmissionApplicationDetails(
+            organisation,
+            new List<string> { session.PomResubmissionSession.SubmissionPeriod },
+            complianceSchemeId);
+
+        if (resubmissionApplicationDetails.Count > 0)
+        {
+            await UpdateSession(session, resubmissionApplicationDetails[0], organisation, isComplianceScheme, complianceSchemeSummary, submissionPeriod);
+        }
+
+        session.PomResubmissionSession.PackagingResubmissionApplicationSession.ApplicationReferenceNumber = raisedReferenceNumber;
     }
 
     private async Task<RedirectToActionResult> RedirectToRightAction(FrontendSchemeRegistrationSession session)
