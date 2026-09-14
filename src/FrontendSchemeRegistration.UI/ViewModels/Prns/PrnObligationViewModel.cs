@@ -20,7 +20,7 @@ public class PrnObligationViewModel
     public int NumberOfPrnsAwaitingAcceptance { get; set; }
 
     /// <summary>
-    ///     Accept-or-reject list. The waste-obligations URL when AcceptRejectPrns is on;
+    ///     Accept-or-reject list. The waste-obligations URL when ShowPrnsListOnCdp is on;
     ///     otherwise the packaging list path.
     /// </summary>
     public string AcceptRejectPrnsHref { get; set; } = PagePaths.Prns.ShowAwaitingAcceptance;
