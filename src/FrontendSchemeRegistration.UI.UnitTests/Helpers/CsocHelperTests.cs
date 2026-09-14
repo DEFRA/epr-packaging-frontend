@@ -539,4 +539,91 @@ public class CsocHelperTests
         result.Should().NotBeNull();
         result!.ComplianceDeclarationStatus.Should().BeNull();
     }
+
+    [Test]
+    public void GetAcceptRejectPrnsUrl_WhenBaseAddressMissing_ShouldBeNull()
+    {
+        var result = CsocHelper.GetAcceptRejectPrnsUrl(
+            null,
+            new Organisation
+            {
+                Id = Guid.NewGuid(),
+                OrganisationRole = OrganisationRoles.Producer
+            },
+            2026,
+            null);
+
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public void GetAcceptRejectPrnsUrl_WhenOrganisationIdMissing_ShouldBeNull()
+    {
+        var result = CsocHelper.GetAcceptRejectPrnsUrl(
+            "https://understanding-obligations",
+            new Organisation { OrganisationRole = OrganisationRoles.Producer },
+            2026,
+            null);
+
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public void GetAcceptRejectPrnsUrl_WhenDirectProducer_ShouldBuildProducerListUrl()
+    {
+        var organisationId = Guid.NewGuid();
+
+        var result = CsocHelper.GetAcceptRejectPrnsUrl(
+            "https://understanding-obligations/",
+            new Organisation
+            {
+                Id = organisationId,
+                OrganisationRole = OrganisationRoles.Producer
+            },
+            2026,
+            null);
+
+        result.Should().Be($"https://understanding-obligations/producer/{organisationId}/prns?year=2026");
+    }
+
+    [Test]
+    public void GetAcceptRejectPrnsUrl_WhenComplianceScheme_ShouldBuildCsoListUrl()
+    {
+        var organisationId = Guid.NewGuid();
+        var complianceSchemeId = Guid.NewGuid();
+
+        var result = CsocHelper.GetAcceptRejectPrnsUrl(
+            "https://understanding-obligations",
+            new Organisation
+            {
+                Id = organisationId,
+                OrganisationRole = OrganisationRoles.ComplianceScheme
+            },
+            2026,
+            new RegistrationSession
+            {
+                SelectedComplianceScheme = new ComplianceSchemeDto { Id = complianceSchemeId }
+            });
+
+        result.Should().Be($"https://understanding-obligations/cso/{complianceSchemeId}/prns?year=2026");
+    }
+
+    [Test]
+    [SetUICulture(Language.Welsh)]
+    public void GetAcceptRejectPrnsUrl_WhenWelsh_ShouldAppendLang()
+    {
+        var organisationId = Guid.NewGuid();
+
+        var result = CsocHelper.GetAcceptRejectPrnsUrl(
+            "https://understanding-obligations",
+            new Organisation
+            {
+                Id = organisationId,
+                OrganisationRole = OrganisationRoles.Producer
+            },
+            2026,
+            null);
+
+        result.Should().Be($"https://understanding-obligations/producer/{organisationId}/prns?year=2026&lang=cy");
+    }
 }
