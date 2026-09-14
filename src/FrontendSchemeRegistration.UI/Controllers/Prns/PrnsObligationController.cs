@@ -108,7 +108,7 @@ public class PrnsObligationController : Controller
             : null;
 
         viewModel.AcceptRejectPrnsHref = PagePaths.Prns.ShowAwaitingAcceptance;
-        if (await _featureManager.IsEnabledAsync(FeatureFlags.AcceptRejectPrns))
+        if (await _featureManager.IsEnabledAsync(FeatureFlags.ShowPrnsListOnCdp))
         {
             var acceptRejectPrnsUrl = CsocHelper.GetAcceptRejectPrnsUrl(
                 _csocOptions.Value.WasteObligationsBaseAddress,

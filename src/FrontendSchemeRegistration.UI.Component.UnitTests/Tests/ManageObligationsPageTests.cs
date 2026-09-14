@@ -170,11 +170,11 @@ public class ManageObligationsPageTests
     }
 
     [Test]
-    public async Task WhenAcceptRejectPrnsDisabled_KeepsPackagingAwaitingAcceptanceLinks()
+    public async Task WhenShowPrnsListOnCdpDisabled_KeepsPackagingAwaitingAcceptanceLinks()
     {
         SetUp(
             showMultiYearObligations: true,
-            acceptRejectPrns: false,
+            showPrnsListOnCdp: false,
             obligationData: WebApiOptions.ObligationDataType.Mixed);
         await Context.Client.AuthenticateDefaultUser();
         SetProducerSession();
@@ -188,11 +188,11 @@ public class ManageObligationsPageTests
     }
 
     [Test]
-    public async Task WhenAcceptRejectPrnsEnabled_AsDirectProducer_LinksToWasteObligationsList()
+    public async Task WhenShowPrnsListOnCdpEnabled_AsDirectProducer_LinksToWasteObligationsList()
     {
         SetUp(
             showMultiYearObligations: true,
-            acceptRejectPrns: true,
+            showPrnsListOnCdp: true,
             obligationData: WebApiOptions.ObligationDataType.Mixed);
         await Context.Client.AuthenticateDefaultUser();
         SetProducerSession();
@@ -208,11 +208,11 @@ public class ManageObligationsPageTests
     }
 
     [Test]
-    public async Task WhenAcceptRejectPrnsEnabled_AsComplianceScheme_LinksToWasteObligationsList()
+    public async Task WhenShowPrnsListOnCdpEnabled_AsComplianceScheme_LinksToWasteObligationsList()
     {
         SetUp(
             showMultiYearObligations: true,
-            acceptRejectPrns: true,
+            showPrnsListOnCdp: true,
             obligationData: WebApiOptions.ObligationDataType.Mixed);
         await Context.Client.AuthenticateDefaultUser();
         SetComplianceSchemeSession();
@@ -237,13 +237,13 @@ public class ManageObligationsPageTests
         WebApiOptions.ObligationDataType obligationData,
         WebApiOptions.PrnOrganisationDataType prnOrganisationData = WebApiOptions.PrnOrganisationDataType.Default,
         string? startupUtcTimestampOverride = null,
-        bool acceptRejectPrns = false)
+        bool showPrnsListOnCdp = false)
     {
         var additionalConfig = new Dictionary<string, string?>
         {
             { "FeatureManagement:ShowMultiYearObligations", showMultiYearObligations.ToString().ToLowerInvariant() },
             { "FeatureManagement:CsocEnabled", "false" },
-            { "FeatureManagement:AcceptRejectPrns", acceptRejectPrns.ToString().ToLowerInvariant() }
+            { "FeatureManagement:ShowPrnsListOnCdp", showPrnsListOnCdp.ToString().ToLowerInvariant() }
         };
 
         if (startupUtcTimestampOverride is not null)
