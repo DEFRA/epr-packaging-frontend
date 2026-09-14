@@ -170,11 +170,11 @@ public class ManageObligationsPageTests
     }
 
     [Test]
-    public async Task WhenShowPrnsListOnCdpDisabled_KeepsPackagingAwaitingAcceptanceLinks()
+    public async Task WhenShowPrnsOnCdpDisabled_KeepsPackagingAwaitingAcceptanceLinks()
     {
         SetUp(
             showMultiYearObligations: true,
-            showPrnsListOnCdp: false,
+            showPrnsOnCdp: false,
             obligationData: WebApiOptions.ObligationDataType.Mixed);
         await Context.Client.AuthenticateDefaultUser();
         SetProducerSession();
@@ -188,11 +188,11 @@ public class ManageObligationsPageTests
     }
 
     [Test]
-    public async Task WhenShowPrnsListOnCdpEnabled_AsDirectProducer_LinksToWasteObligationsList()
+    public async Task WhenShowPrnsOnCdpEnabled_AsDirectProducer_LinksToWasteObligationsList()
     {
         SetUp(
             showMultiYearObligations: true,
-            showPrnsListOnCdp: true,
+            showPrnsOnCdp: true,
             obligationData: WebApiOptions.ObligationDataType.Mixed);
         await Context.Client.AuthenticateDefaultUser();
         SetProducerSession();
@@ -208,11 +208,11 @@ public class ManageObligationsPageTests
     }
 
     [Test]
-    public async Task WhenShowPrnsListOnCdpEnabled_AsComplianceScheme_LinksToWasteObligationsList()
+    public async Task WhenShowPrnsOnCdpEnabled_AsComplianceScheme_LinksToWasteObligationsList()
     {
         SetUp(
             showMultiYearObligations: true,
-            showPrnsListOnCdp: true,
+            showPrnsOnCdp: true,
             obligationData: WebApiOptions.ObligationDataType.Mixed);
         await Context.Client.AuthenticateDefaultUser();
         SetComplianceSchemeSession();
@@ -237,13 +237,13 @@ public class ManageObligationsPageTests
         WebApiOptions.ObligationDataType obligationData,
         WebApiOptions.PrnOrganisationDataType prnOrganisationData = WebApiOptions.PrnOrganisationDataType.Default,
         string? startupUtcTimestampOverride = null,
-        bool showPrnsListOnCdp = false)
+        bool showPrnsOnCdp = false)
     {
         var additionalConfig = new Dictionary<string, string?>
         {
             { "FeatureManagement:ShowMultiYearObligations", showMultiYearObligations.ToString().ToLowerInvariant() },
             { "FeatureManagement:CsocEnabled", "false" },
-            { "FeatureManagement:ShowPrnsListOnCdp", showPrnsListOnCdp.ToString().ToLowerInvariant() }
+            { "FeatureManagement:ShowPrnsOnCdp", showPrnsOnCdp.ToString().ToLowerInvariant() }
         };
 
         if (startupUtcTimestampOverride is not null)
