@@ -268,7 +268,7 @@ public class PrnsObligationControllerTests
     }
 
     [Test]
-    public async Task ObligationsHome_WhenShowPrnsListOnCdpDisabled_UsesPackagingAwaitingAcceptancePath()
+    public async Task ObligationsHome_WhenShowPrnsOnCdpDisabled_UsesPackagingAwaitingAcceptancePath()
     {
         var organisationId = Guid.NewGuid();
         var session = new FrontendSchemeRegistrationSession
@@ -289,7 +289,7 @@ public class PrnsObligationControllerTests
             }
         };
         _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
-        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowPrnsListOnCdp)).ReturnsAsync(false);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowPrnsOnCdp)).ReturnsAsync(false);
         _prnServiceMock
             .Setup(x => x.GetRecyclingObligationsCalculation(It.IsAny<int>(), It.IsAny<bool>()))
             .ReturnsAsync(_fixture.Create<PrnObligationViewModel>());
@@ -301,7 +301,7 @@ public class PrnsObligationControllerTests
     }
 
     [Test]
-    public async Task ObligationsHome_WhenShowPrnsListOnCdpEnabled_AsDirectProducer_LinksToWasteObligationsList()
+    public async Task ObligationsHome_WhenShowPrnsOnCdpEnabled_AsDirectProducer_LinksToWasteObligationsList()
     {
         var organisationId = Guid.NewGuid();
         var session = new FrontendSchemeRegistrationSession
@@ -322,7 +322,7 @@ public class PrnsObligationControllerTests
             }
         };
         _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
-        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowPrnsListOnCdp)).ReturnsAsync(true);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowPrnsOnCdp)).ReturnsAsync(true);
         _prnServiceMock
             .Setup(x => x.GetRecyclingObligationsCalculation(It.IsAny<int>(), It.IsAny<bool>()))
             .ReturnsAsync(_fixture.Create<PrnObligationViewModel>());
@@ -335,7 +335,7 @@ public class PrnsObligationControllerTests
     }
 
     [Test]
-    public async Task ObligationsHome_WhenShowPrnsListOnCdpEnabled_AsComplianceScheme_LinksToWasteObligationsList()
+    public async Task ObligationsHome_WhenShowPrnsOnCdpEnabled_AsComplianceScheme_LinksToWasteObligationsList()
     {
         var organisationId = Guid.NewGuid();
         var complianceSchemeId = Guid.NewGuid();
@@ -366,7 +366,7 @@ public class PrnsObligationControllerTests
             }
         };
         _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
-        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowPrnsListOnCdp)).ReturnsAsync(true);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowPrnsOnCdp)).ReturnsAsync(true);
         _prnServiceMock
             .Setup(x => x.GetRecyclingObligationsCalculation(It.IsAny<int>(), It.IsAny<bool>()))
             .ReturnsAsync(_fixture.Create<PrnObligationViewModel>());
@@ -379,7 +379,7 @@ public class PrnsObligationControllerTests
     }
 
     [Test]
-    public async Task ObligationsHome_WhenShowPrnsListOnCdpEnabled_AndSelectedYearSet_UsesSelectedYearOnListUrl()
+    public async Task ObligationsHome_WhenShowPrnsOnCdpEnabled_AndSelectedYearSet_UsesSelectedYearOnListUrl()
     {
         var organisationId = Guid.NewGuid();
         var session = new FrontendSchemeRegistrationSession
@@ -402,7 +402,7 @@ public class PrnsObligationControllerTests
         };
         _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
         _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)).ReturnsAsync(true);
-        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowPrnsListOnCdp)).ReturnsAsync(true);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowPrnsOnCdp)).ReturnsAsync(true);
         _prnServiceMock
             .Setup(x => x.GetRecyclingObligationsCalculation(2025, It.IsAny<bool>()))
             .ReturnsAsync(_fixture.Create<PrnObligationViewModel>());
