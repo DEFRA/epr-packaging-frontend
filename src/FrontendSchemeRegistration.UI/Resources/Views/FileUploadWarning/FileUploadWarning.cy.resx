@@ -54,13 +54,13 @@
         <value>Na hoffwn. Cadwch y ffeil yma wedi’i huwchlwytho i gyfrif fy sefydliad i.</value>
     </data>
     <data name="continue_with_this_file" xml:space="preserve">
-        <value>Continue with this file</value>
+        <value>Parhau gyda’r ffeil hon</value>
     </data>
     <data name="what_do_you_want_to_do_next" xml:space="preserve">
-        <value>What do you want to do next?</value>
+        <value>Beth rydych chi am ei wneud nesaf?</value>
     </data>
     <data name="warnings_hint" xml:space="preserve">
-        <value>Warnings don’t stop you submitting your file.</value>
+        <value>Nid yw rhybuddion yn eich atal rhag cyflwyno eich ffeil.</value>
     </data>
     <data name="upload_new_file" xml:space="preserve">
         <value>Uwchlwythwch ffeil newydd</value>
