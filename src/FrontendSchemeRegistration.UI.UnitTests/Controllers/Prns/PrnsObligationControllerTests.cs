@@ -70,7 +70,10 @@ public class PrnsObligationControllerTests
             _urlOptionsMock.Object, 
             _loggerMock.Object,
             _featureManagerMock.Object,
-            new OptionsWrapper<CsocOptions>(new CsocOptions()))
+            new OptionsWrapper<CsocOptions>(new CsocOptions
+            {
+                WasteObligationsBaseAddress = "https://understanding-obligations"
+            }))
         {
             Url = _urlHelperMock.Object
         };
@@ -262,6 +265,152 @@ public class PrnsObligationControllerTests
         _prnServiceMock.Verify(x => x.GetRecyclingObligationsCalculation(It.IsAny<int>(), true), Times.Once);
         result.Should().NotBeNull();
         (result!.Model as PrnObligationViewModel)!.CsocViewModel.Should().NotBeNull();
+    }
+
+    [Test]
+    public async Task ObligationsHome_WhenAcceptRejectPrnsDisabled_UsesPackagingAwaitingAcceptancePath()
+    {
+        var organisationId = Guid.NewGuid();
+        var session = new FrontendSchemeRegistrationSession
+        {
+            UserData = new UserData
+            {
+                Organisations =
+                [
+                    new Organisation
+                    {
+                        Id = organisationId,
+                        OrganisationRole = OrganisationRoles.Producer,
+                        Name = "Test Organisation",
+                        NationId = 1
+                    }
+                ],
+                ServiceRole = "Basic User"
+            }
+        };
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.AcceptRejectPrns)).ReturnsAsync(false);
+        _prnServiceMock
+            .Setup(x => x.GetRecyclingObligationsCalculation(It.IsAny<int>(), It.IsAny<bool>()))
+            .ReturnsAsync(_fixture.Create<PrnObligationViewModel>());
+
+        var result = await _controller.ObligationsHome() as ViewResult;
+
+        (result!.Model as PrnObligationViewModel)!.AcceptRejectPrnsHref
+            .Should().Be(PagePaths.Prns.ShowAwaitingAcceptance);
+    }
+
+    [Test]
+    public async Task ObligationsHome_WhenAcceptRejectPrnsEnabled_AsDirectProducer_LinksToWasteObligationsList()
+    {
+        var organisationId = Guid.NewGuid();
+        var session = new FrontendSchemeRegistrationSession
+        {
+            UserData = new UserData
+            {
+                Organisations =
+                [
+                    new Organisation
+                    {
+                        Id = organisationId,
+                        OrganisationRole = OrganisationRoles.Producer,
+                        Name = "Test Organisation",
+                        NationId = 1
+                    }
+                ],
+                ServiceRole = "Basic User"
+            }
+        };
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.AcceptRejectPrns)).ReturnsAsync(true);
+        _prnServiceMock
+            .Setup(x => x.GetRecyclingObligationsCalculation(It.IsAny<int>(), It.IsAny<bool>()))
+            .ReturnsAsync(_fixture.Create<PrnObligationViewModel>());
+
+        var result = await _controller.ObligationsHome() as ViewResult;
+        var year = _fakeTimeProvider.GetUtcNow().GetComplianceYear();
+
+        (result!.Model as PrnObligationViewModel)!.AcceptRejectPrnsHref
+            .Should().Be($"https://understanding-obligations/producer/{organisationId}/prns?year={year}");
+    }
+
+    [Test]
+    public async Task ObligationsHome_WhenAcceptRejectPrnsEnabled_AsComplianceScheme_LinksToWasteObligationsList()
+    {
+        var organisationId = Guid.NewGuid();
+        var complianceSchemeId = Guid.NewGuid();
+        var session = new FrontendSchemeRegistrationSession
+        {
+            UserData = new UserData
+            {
+                Organisations =
+                [
+                    new Organisation
+                    {
+                        Id = organisationId,
+                        OrganisationRole = OrganisationRoles.ComplianceScheme,
+                        Name = "Test Organisation",
+                        NationId = 1
+                    }
+                ],
+                ServiceRole = "Basic User"
+            },
+            RegistrationSession = new RegistrationSession
+            {
+                SelectedComplianceScheme = new ComplianceSchemeDto
+                {
+                    Id = complianceSchemeId,
+                    Name = "Test Scheme",
+                    NationId = 1
+                }
+            }
+        };
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.AcceptRejectPrns)).ReturnsAsync(true);
+        _prnServiceMock
+            .Setup(x => x.GetRecyclingObligationsCalculation(It.IsAny<int>(), It.IsAny<bool>()))
+            .ReturnsAsync(_fixture.Create<PrnObligationViewModel>());
+
+        var result = await _controller.ObligationsHome() as ViewResult;
+        var year = _fakeTimeProvider.GetUtcNow().GetComplianceYear();
+
+        (result!.Model as PrnObligationViewModel)!.AcceptRejectPrnsHref
+            .Should().Be($"https://understanding-obligations/cso/{complianceSchemeId}/prns?year={year}");
+    }
+
+    [Test]
+    public async Task ObligationsHome_WhenAcceptRejectPrnsEnabled_AndSelectedYearSet_UsesSelectedYearOnListUrl()
+    {
+        var organisationId = Guid.NewGuid();
+        var session = new FrontendSchemeRegistrationSession
+        {
+            UserData = new UserData
+            {
+                Organisations =
+                [
+                    new Organisation
+                    {
+                        Id = organisationId,
+                        OrganisationRole = OrganisationRoles.Producer,
+                        Name = "Test Organisation",
+                        NationId = 1
+                    }
+                ],
+                ServiceRole = "Basic User"
+            },
+            PrnSession = new PrnSession { SelectedObligationYear = 2025 }
+        };
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)).ReturnsAsync(true);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.AcceptRejectPrns)).ReturnsAsync(true);
+        _prnServiceMock
+            .Setup(x => x.GetRecyclingObligationsCalculation(2025, It.IsAny<bool>()))
+            .ReturnsAsync(_fixture.Create<PrnObligationViewModel>());
+
+        var result = await _controller.ObligationsHome() as ViewResult;
+
+        (result!.Model as PrnObligationViewModel)!.AcceptRejectPrnsHref
+            .Should().Be($"https://understanding-obligations/producer/{organisationId}/prns?year=2025");
     }
 
     [Test]
