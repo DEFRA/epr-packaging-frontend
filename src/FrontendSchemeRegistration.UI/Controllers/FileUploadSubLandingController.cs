@@ -186,7 +186,8 @@ public class FileUploadSubLandingController(
         // had already accepted, hiding the decision from the tile entirely.
         if (featureManager.IsEnabledAsync(nameof(FeatureFlags.ImplementPackagingDataResubmissionJourney)).Result
             && session?.IsResubmissionInProgress == true
-            && HasStartedThisResubmissionCycle(session, submission))
+            && (HasStartedThisResubmissionCycle(session, submission)
+                || HasNoDecisionToShowForSubmittedFile(submission, decision)))
         {
             return SubmissionPeriodStatus.InProgress;
         }
@@ -403,6 +404,31 @@ public class FileUploadSubLandingController(
     /// </remarks>
     private static bool IsCycleClosingDecision(string decision) =>
         decision is RegulatorDecision.Accepted or RegulatorDecision.Approved or RegulatorDecision.Rejected;
+
+    /// <summary>
+    /// SUB-345: true when the regulator has nothing to say yet about the file they are holding, so an open
+    /// cycle is the most useful thing the tile can report.
+    /// </summary>
+    /// <remarks>
+    /// A decision outranks an untouched cycle above so that an accepted or rejected resubmission is not hidden
+    /// behind "In progress" - but only a decision that exists. Without one, the fall-through below reports
+    /// SubmittedToRegulator, and the tile has no branch pairing that status with an open cycle: it renders the
+    /// status tag and no footer button at all, leaving the user outside a resubmission they can still finish.
+    /// <para>
+    /// In practice that is a submission's first cycle. Its reference number is only raised once a file has been
+    /// submitted, so the number always post-dates that submit, and the submission API reads a cycle with no
+    /// upload after its own number as one nothing has been uploaded into: it reports NotStarted, so
+    /// HasStartedThisResubmissionCycle cannot see the file the user has already submitted.
+    /// </para>
+    /// <para>
+    /// A cycle numbered late for any other reason does not reach here, and does not need to. Numbering only
+    /// lags a cycle already under way when a regulator ruling released the number, a ruling is a decision the
+    /// tile can show, and the submission API dates such a cycle from the ruling rather than from the number -
+    /// so the work done under it is reported and the started check above is what carries it.
+    /// </para>
+    /// </remarks>
+    private static bool HasNoDecisionToShowForSubmittedFile(PomSubmission submission, PomDecision decision) =>
+        submission.LastSubmittedFile is not null && !IsCycleClosingDecision(decision.Decision);
 
     /// <summary>
     /// True when the user has done something in the current resubmission cycle, as opposed to merely having
