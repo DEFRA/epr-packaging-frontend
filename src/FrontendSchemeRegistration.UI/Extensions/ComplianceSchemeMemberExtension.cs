@@ -51,5 +51,28 @@ namespace FrontendSchemeRegistration.UI.Extensions
 
         internal static IList<int> GetSubsidiariesCompanies(this List<ComplianceSchemePaymentCalculationResponseMember> complianceSchemeMembers) =>
             complianceSchemeMembers.Where(r => r.SubsidiariesFee > 0).Select(r => r.SubsidiariesFee).ToList();
+
+        // Band-only total = Σ FeeBreakdowns[*].TotalPrice across members. Excludes the OMP/CLR/late
+        // subsidiary lines so the four rendered rows sum to the old aggregate SubsidiariesFee.
+        internal static int GetSubsidiaryBandFeeTotal(this List<ComplianceSchemePaymentCalculationResponseMember> complianceSchemeMembers) =>
+            complianceSchemeMembers.Sum(m => m.SubsidiariesFeeBreakdown?.FeeBreakdowns?.Sum(fb => fb.TotalPrice) ?? 0);
+
+        internal static int GetSubsidiariesOnlineMarketplaceFeeTotal(this List<ComplianceSchemePaymentCalculationResponseMember> complianceSchemeMembers) =>
+            complianceSchemeMembers.Sum(m => m.SubsidiariesFeeBreakdown?.TotalSubsidiariesOnlineMarketplaceFee ?? 0);
+
+        internal static int GetSubsidiariesOnlineMarketplaceCount(this List<ComplianceSchemePaymentCalculationResponseMember> complianceSchemeMembers) =>
+            complianceSchemeMembers.Sum(m => m.SubsidiariesFeeBreakdown?.CountOfOnlineMarketplaceSubsidiaries ?? 0);
+
+        internal static int GetSubsidiariesClosedLoopRecyclingFeeTotal(this List<ComplianceSchemePaymentCalculationResponseMember> complianceSchemeMembers) =>
+            complianceSchemeMembers.Sum(m => m.SubsidiariesFeeBreakdown?.TotalSubsidiariesClosedLoopRecyclingFee ?? 0);
+
+        internal static int GetSubsidiariesClosedLoopRecyclingCount(this List<ComplianceSchemePaymentCalculationResponseMember> complianceSchemeMembers) =>
+            complianceSchemeMembers.Sum(m => m.SubsidiariesFeeBreakdown?.CountOfClosedLoopRecyclingSubsidiaries ?? 0);
+
+        internal static int GetSubsidiariesLateFeeTotal(this List<ComplianceSchemePaymentCalculationResponseMember> complianceSchemeMembers) =>
+            complianceSchemeMembers.Sum(m => m.SubsidiariesFeeBreakdown?.TotalSubsidiariesLateFee ?? 0);
+
+        internal static int GetSubsidiariesLateCount(this List<ComplianceSchemePaymentCalculationResponseMember> complianceSchemeMembers) =>
+            complianceSchemeMembers.Sum(m => m.SubsidiariesFeeBreakdown?.CountOfLateSubsidiaries ?? 0);
     }
 }

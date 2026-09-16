@@ -49,6 +49,9 @@
   <data name="subsidiaries_as_closed_loop" xml:space="preserve">
     <value>Gwastraff pecynnu dolen gaeedig is-gwmni</value>
   </data>
+  <data name="subsidiaries_late_fee" xml:space="preserve">
+    <value>[Welsh] Subsidiary late fees</value>
+  </data>
   <data name="sub_total_amount" xml:space="preserve">
     <value>Is-gyfanswm</value>
   </data>

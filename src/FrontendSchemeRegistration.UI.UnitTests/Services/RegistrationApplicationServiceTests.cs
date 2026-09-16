@@ -3891,6 +3891,115 @@ public class RegistrationApplicationServiceTests
         return new RegistrationApplicationService(deps, _dateTimeProvider);
     }
 
+    [Test]
+    public async Task GetProducerRegistrationFees_PopulatesSubsidiaryLateFeeAndSubtractsFromTotalSubsidiaryFee()
+    {
+        _session.RegistrationFeeCalculationDetails = _fixture.CreateMany<RegistrationFeeCalculationDetails>(1).ToArray();
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(_session);
+
+        var response = _fixture.Build<PaymentCalculationResponse>()
+            .With(x => x.SubsidiariesFeeBreakdown, new SubsidiariesFeeBreakdown
+            {
+                TotalSubsidiariesOnlineMarketplaceFee = 100,
+                TotalSubsidiariesClosedLoopRecyclingFee = 250,
+                TotalSubsidiariesLateFee = 400,
+                CountOfLateSubsidiaries = 4,
+            })
+            .With(x => x.SubsidiariesFee, 2000)
+            .Create();
+
+        _paymentCalculationServiceMock
+            .Setup(p => p.GetProducerRegistrationFees(It.IsAny<PaymentCalculationRequest>()))
+            .ReturnsAsync(response);
+
+        var result = await _service.GetProducerRegistrationFees(_httpSession);
+
+        result.Should().NotBeNull();
+        result!.TotalSubsidiaryLateFee.Should().Be(400);
+        result.CountOfLateSubsidiaries.Should().Be(4);
+        // Band-only total subtracts OMP, CLR AND the new subsidiary-late-fee.
+        result.TotalSubsidiaryFee.Should().Be(2000 - 100 - 250 - 400);
+    }
+
+    [Test]
+    public async Task GetComplianceSchemeRegistrationFees_AggregatesSubsidiaryBreakdownsIntoBandOnlyAndPerFeeTypeTotals()
+    {
+        var session = _fixture.Build<RegistrationApplicationSession>().Create();
+        session.RegistrationFeeCalculationDetails = _fixture.CreateMany<RegistrationFeeCalculationDetails>(2).ToArray();
+        session.RegistrationFeeCalculationDetails[0].OrganisationSize = "Large";
+        session.RegistrationFeeCalculationDetails[1].OrganisationSize = "Large";
+        session.RegistrationFeeCalculationDetails[0].NumberOfSubsidiaries = 3;
+        session.RegistrationFeeCalculationDetails[1].NumberOfSubsidiaries = 2;
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(session);
+
+        var response = new ComplianceSchemePaymentCalculationResponse
+        {
+            TotalFee = 0,
+            PreviousPayment = 0,
+            OutstandingPayment = 0,
+            ComplianceSchemeRegistrationFee = 0,
+            ComplianceSchemeMembersWithFees = new List<ComplianceSchemePaymentCalculationResponseMember>
+            {
+                new()
+                {
+                    MemberId = session.RegistrationFeeCalculationDetails[0].OrganisationId,
+                    MemberRegistrationFee = 100,
+                    SubsidiariesFee = 0,
+                    TotalMemberFee = 0,
+                    SubsidiariesFeeBreakdown = new SubsidiariesFeeBreakdown
+                    {
+                        FeeBreakdowns = new[]
+                        {
+                            new FeeBreakdown { BandNumber = 1, UnitCount = 2, UnitPrice = 50, TotalPrice = 100 },
+                        },
+                        TotalSubsidiariesOnlineMarketplaceFee = 30,
+                        CountOfOnlineMarketplaceSubsidiaries = 1,
+                        TotalSubsidiariesClosedLoopRecyclingFee = 20,
+                        CountOfClosedLoopRecyclingSubsidiaries = 1,
+                        TotalSubsidiariesLateFee = 15,
+                        CountOfLateSubsidiaries = 1,
+                    },
+                },
+                new()
+                {
+                    MemberId = session.RegistrationFeeCalculationDetails[1].OrganisationId,
+                    MemberRegistrationFee = 100,
+                    SubsidiariesFee = 0,
+                    TotalMemberFee = 0,
+                    SubsidiariesFeeBreakdown = new SubsidiariesFeeBreakdown
+                    {
+                        FeeBreakdowns = new[]
+                        {
+                            new FeeBreakdown { BandNumber = 1, UnitCount = 3, UnitPrice = 40, TotalPrice = 120 },
+                        },
+                        TotalSubsidiariesOnlineMarketplaceFee = 45,
+                        CountOfOnlineMarketplaceSubsidiaries = 2,
+                        TotalSubsidiariesClosedLoopRecyclingFee = 0,
+                        CountOfClosedLoopRecyclingSubsidiaries = 0,
+                        TotalSubsidiariesLateFee = 25,
+                        CountOfLateSubsidiaries = 2,
+                    },
+                },
+            },
+        };
+
+        _paymentCalculationServiceMock
+            .Setup(p => p.GetComplianceSchemeRegistrationFees(It.IsAny<ComplianceSchemePaymentCalculationRequest>()))
+            .ReturnsAsync(response);
+
+        var result = await _service.GetComplianceSchemeRegistrationFees(_httpSession);
+
+        result.Should().NotBeNull();
+        // Band-only total = sum of FeeBreakdowns[*].TotalPrice across members (100 + 120)
+        result!.SubsidiaryCompanyFee.Should().Be(220);
+        result.SubsidiaryCompanyCount.Should().Be(3 + 2);
+        result.TotalSubsidiaryOnlineMarketplaceFee.Should().Be(30 + 45);
+        result.NumberOfSubsidiariesBeingOnlineMarketplace.Should().Be(1 + 2);
+        result.TotalSubsidiaryClosedLoopRecyclingFee.Should().Be(20 + 0);
+        result.NumberOfSubsidiariesBeingClosedLoopRecycling.Should().Be(1 + 0);
+        result.TotalSubsidiaryLateFee.Should().Be(15 + 25);
+        result.CountOfLateSubsidiaries.Should().Be(1 + 2);
+    }
 }
 
 internal static class ClaimsPrincipalExtensions

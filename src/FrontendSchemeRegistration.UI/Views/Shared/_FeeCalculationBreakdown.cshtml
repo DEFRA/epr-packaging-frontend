@@ -68,6 +68,15 @@
                     <td class="govuk-table__cell govuk-table__header--numeric">&pound;@ConvertToThousandSeparatedDecimal(Model.TotalSubsidiaryOnlineMarketplaceFee)</td>
                 </tr>
             }
+
+            @if (Model.TotalSubsidiaryLateFee > 0)
+            {
+                <tr class="govuk-table__row">
+                    <th scope="row" class="govuk-table__header">@Localizer["subsidiaries_late_fee"]</th>
+                    <td class="govuk-table__cell govuk-!-padding-left-2">@Model.CountOfLateSubsidiaries</td>
+                    <td class="govuk-table__cell govuk-table__header--numeric">&pound;@ConvertToThousandSeparatedDecimal(Model.TotalSubsidiaryLateFee)</td>
+                </tr>
+            }
         }
 
         <tr class="govuk-table__row">
