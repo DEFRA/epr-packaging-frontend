@@ -16,10 +16,10 @@
     <value>Rheoli'ch rhwymedigaethau ailgylchu ar gyfer {0}</value>
   </data>
   <data name="heading_compliance_scheme" xml:space="preserve">
-    <value>Manage your {0} recycling obligations</value>
+    <value>Rheoli'ch rhwymedigaethau ailgylchu ar gyfer {0}</value>
   </data>
   <data name="paragraph_1_direct_producer" xml:space="preserve">
-    <value>Review your recycling obligations and accept PRNs or PERNs to meet them.</value>
+    <value>Review your recycling obligations and accept PRNs or PERNs to meet them. You can also:</value>
   </data>
   <data name="paragraph_1_compliance_scheme" xml:space="preserve">
     <value>Review your recycling obligations and accept PRNs or PERNs to meet them. You can also:</value>

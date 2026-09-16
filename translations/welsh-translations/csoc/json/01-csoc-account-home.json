@@ -5,6 +5,78 @@
   ],
   "rows": [
     {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_ManageRecyclingObligationsTile.en.resx::heading_direct_producer",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_ManageRecyclingObligationsTile.en.resx",
+      "resourceKey": "heading_direct_producer",
+      "pageId": "csoc-account-home",
+      "route": "/report-data/home-compliance-scheme",
+      "section": "PRN tile heading, intro and existing bullets on account home.",
+      "english": "Manage your {0} recycling obligations",
+      "welsh": "Rheoli'ch rhwymedigaethau ailgylchu ar gyfer {0}",
+      "figmaUrl": "",
+      "context": "Compliance scheme account home page: CSoC content in the PRN tile.\nPRN tile heading, intro and existing bullets on account home.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_ManageRecyclingObligationsTile.en.resx::heading_compliance_scheme",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_ManageRecyclingObligationsTile.en.resx",
+      "resourceKey": "heading_compliance_scheme",
+      "pageId": "csoc-account-home",
+      "route": "/report-data/home-compliance-scheme",
+      "section": "PRN tile heading, intro and existing bullets on account home.",
+      "english": "Manage your {0} recycling obligations",
+      "welsh": "Rheoli'ch rhwymedigaethau ailgylchu ar gyfer {0}",
+      "figmaUrl": "",
+      "context": "Compliance scheme account home page: CSoC content in the PRN tile.\nPRN tile heading, intro and existing bullets on account home.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_ManageRecyclingObligationsTile.en.resx::paragraph_1_direct_producer",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_ManageRecyclingObligationsTile.en.resx",
+      "resourceKey": "paragraph_1_direct_producer",
+      "pageId": "csoc-account-home",
+      "route": "/report-data/home-compliance-scheme",
+      "section": "PRN tile heading, intro and existing bullets on account home.",
+      "english": "Review your recycling obligations and accept PRNs or PERNs to meet them. You can also:",
+      "welsh": "",
+      "figmaUrl": "",
+      "context": "Compliance scheme account home page: CSoC content in the PRN tile.\nPRN tile heading, intro and existing bullets on account home.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_ManageRecyclingObligationsTile.en.resx::paragraph_1_compliance_scheme",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_ManageRecyclingObligationsTile.en.resx",
+      "resourceKey": "paragraph_1_compliance_scheme",
+      "pageId": "csoc-account-home",
+      "route": "/report-data/home-compliance-scheme",
+      "section": "PRN tile heading, intro and existing bullets on account home.",
+      "english": "Review your recycling obligations and accept PRNs or PERNs to meet them. You can also:",
+      "welsh": "",
+      "figmaUrl": "",
+      "context": "Compliance scheme account home page: CSoC content in the PRN tile.\nPRN tile heading, intro and existing bullets on account home.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_ManageRecyclingObligationsTile.en.resx::unordered_list_point_1",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_ManageRecyclingObligationsTile.en.resx",
+      "resourceKey": "unordered_list_point_1",
+      "pageId": "csoc-account-home",
+      "route": "/report-data/home-compliance-scheme",
+      "section": "PRN tile heading, intro and existing bullets on account home.",
+      "english": "see how your recycling obligations were calculated",
+      "welsh": "",
+      "figmaUrl": "",
+      "context": "Compliance scheme account home page: CSoC content in the PRN tile.\nPRN tile heading, intro and existing bullets on account home.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_ManageRecyclingObligationsTile.en.resx::unordered_list_point_2",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_ManageRecyclingObligationsTile.en.resx",
+      "resourceKey": "unordered_list_point_2",
+      "pageId": "csoc-account-home",
+      "route": "/report-data/home-compliance-scheme",
+      "section": "PRN tile heading, intro and existing bullets on account home.",
+      "english": "check your recycling obligations progress",
+      "welsh": "",
+      "figmaUrl": "",
+      "context": "Compliance scheme account home page: CSoC content in the PRN tile.\nPRN tile heading, intro and existing bullets on account home.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
+    },
+    {
       "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Csoc/_LandingBullet.en.resx::bullet_compliance_scheme",
       "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Csoc/_LandingBullet.en.resx",
       "resourceKey": "bullet_compliance_scheme",
@@ -12,7 +84,7 @@
       "route": "/report-data/home-compliance-scheme",
       "section": "Additional PRN tile bullet shown to approved users.",
       "english": "submit your statement of compliance",
-      "welsh": "",
+      "welsh": "cyflwyno eich datganiad cydymffurfio",
       "figmaUrl": "",
       "context": "Compliance scheme account home page: CSoC content in the PRN tile.\nAdditional PRN tile bullet shown to approved users.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
     },
@@ -24,7 +96,31 @@
       "route": "/report-data/home-compliance-scheme",
       "section": "Additional PRN tile bullet shown to approved users.",
       "english": "submit your certificate of compliance",
-      "welsh": "",
+      "welsh": "cyflwyno eich tystysgrif cydymffurfio",
+      "figmaUrl": "",
+      "context": "Compliance scheme account home page: CSoC content in the PRN tile.\nAdditional PRN tile bullet shown to approved users.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Csoc/_LandingBullet.en.resx::bullet_view_compliance_scheme",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Csoc/_LandingBullet.en.resx",
+      "resourceKey": "bullet_view_compliance_scheme",
+      "pageId": "csoc-account-home",
+      "route": "/report-data/home-compliance-scheme",
+      "section": "Additional PRN tile bullet shown to approved users.",
+      "english": "view your statement of compliance",
+      "welsh": "gweld eich datganiad cydymffurfio",
+      "figmaUrl": "",
+      "context": "Compliance scheme account home page: CSoC content in the PRN tile.\nAdditional PRN tile bullet shown to approved users.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Csoc/_LandingBullet.en.resx::bullet_view_direct_producer",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Csoc/_LandingBullet.en.resx",
+      "resourceKey": "bullet_view_direct_producer",
+      "pageId": "csoc-account-home",
+      "route": "/report-data/home-compliance-scheme",
+      "section": "Additional PRN tile bullet shown to approved users.",
+      "english": "view your certificate of compliance",
+      "welsh": "gweld eich tystysgrif cydymffurfio",
       "figmaUrl": "",
       "context": "Compliance scheme account home page: CSoC content in the PRN tile.\nAdditional PRN tile bullet shown to approved users.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
     },
@@ -35,8 +131,8 @@
       "pageId": "csoc-account-home",
       "route": "/report-data/home-compliance-scheme",
       "section": "Deadline paragraph shown below the PRN tile bullets.",
-      "english": "An approved or delegated person must submit your statement of compliance before or on <strong>{0:d MMMM yyyy}</strong>.",
-      "welsh": "",
+      "english": "An approved or delegated person must submit your statement of compliance before or on {0:d MMMM yyyy}.",
+      "welsh": "Rhaid i berson cymeradwy neu ddirprwyedig gyflwyno eich datganiad cydymffurfio ar {0:d MMMM yyyy} neu cyn hynny.",
       "figmaUrl": "",
       "context": "Compliance scheme account home page: CSoC content in the PRN tile.\nDeadline paragraph shown below the PRN tile bullets.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
     },
@@ -47,8 +143,8 @@
       "pageId": "csoc-account-home",
       "route": "/report-data/home-compliance-scheme",
       "section": "Deadline paragraph shown below the PRN tile bullets.",
-      "english": "An approved or delegated person must submit your certificate of compliance before or on <strong>{0:d MMMM yyyy}</strong>.",
-      "welsh": "",
+      "english": "An approved or delegated person must submit your certificate of compliance before or on {0:d MMMM yyyy}.",
+      "welsh": "Rhaid i berson cymeradwy neu ddirprwyedig gyflwyno eich tystysgrif cydymffurfio ar {0:d MMMM yyyy} neu cyn hynny.",
       "figmaUrl": "",
       "context": "Compliance scheme account home page: CSoC content in the PRN tile.\nDeadline paragraph shown below the PRN tile bullets.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
     }

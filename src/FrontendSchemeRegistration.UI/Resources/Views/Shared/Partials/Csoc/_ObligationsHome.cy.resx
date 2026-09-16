@@ -13,72 +13,72 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="submit_heading_compliance_scheme" xml:space="preserve">
-    <value>Submit your statement of compliance</value>
+    <value>Cyflwyno eich datganiad cydymffurfio</value>
   </data>
   <data name="submit_heading_direct_producer" xml:space="preserve">
-    <value>Submit your certificate of compliance</value>
+    <value>Cyflwyno eich tystysgrif cydymffurfio</value>
   </data>
   <data name="submit_paragraph_compliance_scheme" xml:space="preserve">
-    <value>An approved or delegated person must submit your {1} statement of compliance before or on {2:d MMMM yyyy}.</value>
+    <value>Rhaid i berson cymeradwy neu ddirprwyedig gyflwyno eich {1} datganiad cydymffurfio ar {2:d MMMM yyyy} neu cyn hynny.</value>
   </data>
   <data name="submit_paragraph_direct_producer" xml:space="preserve">
-    <value>An approved or delegated person must submit your {1} certificate of compliance before or on {2:d MMMM yyyy}.</value>
+    <value>Rhaid i berson cymeradwy neu ddirprwyedig gyflwyno eich {1} tystysgrif cydymffurfio ar {2:d MMMM yyyy} neu cyn hynny.</value>
   </data>
   <data name="submit_button_compliance_scheme" xml:space="preserve">
-    <value>Submit your statement</value>
+    <value>Cyflwyno eich datganiad</value>
   </data>
   <data name="submit_button_direct_producer" xml:space="preserve">
-    <value>Submit your certificate</value>
+    <value>Cyflwyno eich tystysgrif</value>
   </data>
   <data name="submitted_heading_compliance_scheme" xml:space="preserve">
-    <value>View your statement of compliance</value>
+    <value>Gweld eich datganiad cydymffurfio</value>
   </data>
   <data name="submitted_heading_direct_producer" xml:space="preserve">
-    <value>View your certificate of compliance</value>
+    <value>Gweld eich tystysgrif cydymffurfio</value>
   </data>
   <data name="submitted_paragraph_compliance_scheme" xml:space="preserve">
-    <value>Your {1} statement of compliance has been submitted.</value>
+    <value>Mae eich {1} datganiad cydymffurfio wedi’i gyflwyno.</value>
   </data>
   <data name="submitted_paragraph_direct_producer" xml:space="preserve">
-    <value>Your {1} certificate of compliance has been submitted.</value>
+    <value>Mae eich {1} tystysgrif cydymffurfio wedi’i chyflwyno.</value>
   </data>
   <data name="submitted_button_compliance_scheme" xml:space="preserve">
-    <value>View your statement of compliance</value>
+    <value>Gweld eich datganiad cydymffurfio</value>
   </data>
   <data name="submitted_button_direct_producer" xml:space="preserve">
-    <value>View your certificate of compliance</value>
+    <value>Gweld eich tystysgrif cydymffurfio</value>
   </data>
   <data name="cancelled_heading_compliance_scheme" xml:space="preserve">
-    <value>Resubmit your statement of compliance</value>
+    <value>Ailgyflwyno eich datganiad cydymffurfio</value>
   </data>
   <data name="cancelled_heading_direct_producer" xml:space="preserve">
-    <value>Resubmit your certificate of compliance</value>
+    <value>Ailgyflwyno eich tystysgrif cydymffurfio</value>
   </data>
   <data name="cancelled_paragraph_compliance_scheme" xml:space="preserve">
-    <value>The {0} cancelled your {1} statement of compliance. An approved or delegated person must resubmit your statement before or on {2:d MMMM yyyy}.</value>
+    <value>Mae {0} wedi canslo eich {1} datganiad cydymffurfio. Rhaid i berson cymeradwy neu ddirprwyedig ailgyflwyno eich datganiad ar {2:d MMMM yyyy} neu cyn hynny.</value>
   </data>
   <data name="cancelled_paragraph_direct_producer" xml:space="preserve">
-    <value>The {0} cancelled your {1} certificate of compliance. An approved or delegated person must resubmit your certificate before or on {2:d MMMM yyyy}.</value>
+    <value>Mae {0} wedi canslo eich {1} tystysgrif cydymffurfio. Rhaid i berson cymeradwy neu ddirprwyedig gyflwyno eich tystysgrif ar {2:d MMMM yyyy} neu cyn hynny.</value>
   </data>
   <data name="cancelled_button_compliance_scheme" xml:space="preserve">
-    <value>Resubmit your statement</value>
+    <value>Ailgyflwyno eich datganiad</value>
   </data>
   <data name="cancelled_button_direct_producer" xml:space="preserve">
-    <value>Resubmit your certificate</value>
+    <value>Ailgyflwyno eich tystysgrif</value>
   </data>
   <data name="regulator" xml:space="preserve">
     <value>Rheoleiddiwr</value>
   </data>
   <data name="regulator_england" xml:space="preserve">
-    <value>Environment Agency (England)</value>
+    <value>Asiantaeth yr Amgylchedd (Lloegr)</value>
   </data>
     <data name="regulator_northern_ireland" xml:space="preserve">
-    <value>Environment Agency (Northern Ireland)</value>
+    <value>Asiantaeth yr Amgylchedd (Gogledd Iwerddon)</value>
   </data>
     <data name="regulator_scotland" xml:space="preserve">
-    <value>Environment Agency (Scotland)</value>
+    <value>Asiantaeth yr Amgylchedd (Yr Alban)</value>
   </data>
     <data name="regulator_wales" xml:space="preserve">
-    <value>Environment Agency (Wales)</value>
+    <value>Asiantaeth yr Amgylchedd (Cymru)</value>
   </data>
 </root>
