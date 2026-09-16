@@ -503,7 +503,7 @@ public class RegistrationApplicationController(
         var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
         session.Journey = [PagePaths.FileUploadCompanyDetailsSubLanding];
         await sessionManager.SaveSessionAsync(HttpContext.Session, session);
-        await registrationApplicationService.SetRegistrationFileUploadSession(HttpContext.Session, organisation.OrganisationNumber, registrationYear.GetValueOrDefault(), session.IsResubmission);
+        await registrationApplicationService.SetRegistrationFileUploadSession(HttpContext.Session, organisation.OrganisationNumber, registrationYear.GetValueOrDefault());
         
         if (session.SubmissionId != null)
         {

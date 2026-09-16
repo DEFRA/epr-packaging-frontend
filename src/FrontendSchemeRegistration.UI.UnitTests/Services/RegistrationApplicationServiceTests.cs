@@ -802,7 +802,7 @@ public class RegistrationApplicationServiceTests
             _session.SelectedComplianceScheme = new ComplianceSchemeDto { RowNumber = csRowNumber };
 
             // Act
-            await _service.SetRegistrationFileUploadSession(_httpSession, organisationId, It.IsAny<int>(), false);
+            await _service.SetRegistrationFileUploadSession(_httpSession, organisationId, It.IsAny<int>());
 
             switch (int.Parse(period.Year))
             {
@@ -846,7 +846,7 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(frontEndSession);
 
         // Act
-        await _service.SetRegistrationFileUploadSession(_httpSession, organisationNumber, It.IsAny<int>(), false);
+        await _service.SetRegistrationFileUploadSession(_httpSession, organisationNumber, It.IsAny<int>());
 
         // Assert
         _frontEndSessionManagerMock.Verify(
@@ -879,7 +879,7 @@ public class RegistrationApplicationServiceTests
         
         var expectedApplicationReferenceNumber = $"PEPR{organisationNumber}{submissionYear - 2000}P2";
         // Act
-        await _service.SetRegistrationFileUploadSession(_httpSession, organisationNumber, It.IsAny<int>(), false);
+        await _service.SetRegistrationFileUploadSession(_httpSession, organisationNumber, It.IsAny<int>());
 
         // Assert
         _frontEndSessionManagerMock.Verify(
@@ -911,12 +911,110 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(frontEndSession);
 
         // Act
-        await _service.SetRegistrationFileUploadSession(_httpSession, organisationNumber, It.IsAny<int>(), false);
+        await _service.SetRegistrationFileUploadSession(_httpSession, organisationNumber, It.IsAny<int>());
 
         // Assert
         _frontEndSessionManagerMock.Verify(
             m => m.SaveSessionAsync(_httpSession, It.Is<FrontendSchemeRegistrationSession>(session =>
                 session.RegistrationSession.ApplicationReferenceNumber == expectedApplicationReferenceNumber)),
+            Times.Once);
+    }
+
+    [Test]
+    public async Task SetRegistrationFileUploadSession_ShouldUsePersistedApplicationReferenceNumber_WhenAlreadyInDatabase()
+    {
+        // Arrange
+        const string persistedApplicationReferenceNumber = "PEPR12345678P1";
+        _session.ApplicationReferenceNumber = persistedApplicationReferenceNumber;
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(_session);
+
+        var frontEndSession = new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession
+            {
+                ApplicationReferenceNumber = "STALE-CACHED-VALUE"
+            }
+        };
+
+        _frontEndSessionManagerMock
+            .Setup(m => m.GetSessionAsync(_httpSession))
+            .ReturnsAsync(frontEndSession);
+
+        // Act
+        await _service.SetRegistrationFileUploadSession(_httpSession, "123", RegistrationYear);
+
+        // Assert
+        _frontEndSessionManagerMock.Verify(
+            m => m.SaveSessionAsync(_httpSession, It.Is<FrontendSchemeRegistrationSession>(session =>
+                session.RegistrationSession.ApplicationReferenceNumber == persistedApplicationReferenceNumber)),
+            Times.Once);
+    }
+
+    [Test]
+    public async Task SetRegistrationFileUploadSession_ShouldKeepCachedApplicationReferenceNumber_WhenDatabaseHasNone()
+    {
+        // Arrange
+        const string cachedApplicationReferenceNumber = "PEPR00000000P1";
+        _session.ApplicationReferenceNumber = null;
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(_session);
+
+        var frontEndSession = new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession
+            {
+                ApplicationReferenceNumber = cachedApplicationReferenceNumber
+            }
+        };
+
+        _frontEndSessionManagerMock
+            .Setup(m => m.GetSessionAsync(_httpSession))
+            .ReturnsAsync(frontEndSession);
+
+        // Act
+        await _service.SetRegistrationFileUploadSession(_httpSession, "123", RegistrationYear);
+
+        // Assert
+        _frontEndSessionManagerMock.Verify(
+            m => m.SaveSessionAsync(_httpSession, It.Is<FrontendSchemeRegistrationSession>(session =>
+                session.RegistrationSession.ApplicationReferenceNumber == cachedApplicationReferenceNumber)),
+            Times.Once);
+    }
+
+    [Test]
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task SetRegistrationFileUploadSession_ShouldSetIsResubmission_FromPersistedRegistrationApplicationSession(bool isResubmission)
+    {
+        // Arrange
+        _session.IsResubmission = isResubmission;
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(_session);
+
+        var frontEndSession = new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession
+            {
+                // Seeded with the opposite value to prove it is overwritten from the persisted session.
+                IsResubmission = !isResubmission
+            }
+        };
+
+        _frontEndSessionManagerMock
+            .Setup(m => m.GetSessionAsync(_httpSession))
+            .ReturnsAsync(frontEndSession);
+
+        // Act
+        await _service.SetRegistrationFileUploadSession(_httpSession, "123", RegistrationYear);
+
+        // Assert
+        _frontEndSessionManagerMock.Verify(
+            m => m.SaveSessionAsync(_httpSession, It.Is<FrontendSchemeRegistrationSession>(session =>
+                session.RegistrationSession.IsResubmission == isResubmission)),
             Times.Once);
     }
 
@@ -2970,7 +3068,7 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(_session);
 
         // Act
-        await _service.SetRegistrationFileUploadSession(_httpSession, "123", RegistrationYear, false);
+        await _service.SetRegistrationFileUploadSession(_httpSession, "123", RegistrationYear);
 
         // Assert
         frontEndSession.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration.Should().BeTrue();

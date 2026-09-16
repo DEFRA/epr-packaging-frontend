@@ -1,4 +1,4 @@
-using AutoFixture;
+﻿using AutoFixture;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using EPR.SubmissionMicroservice.API.Contracts.Submissions.Get;
@@ -155,7 +155,7 @@ public class ResubmissionApplicationServiceTests
             .Returns(Task.CompletedTask);
 
         // Act
-        var response = await _service.CreatePomResubmissionReferenceNumberForProducer(session, submissionPeriod, organisationNumber, submittedByName, submissionId, 1);
+        var response = await _service.CreatePomResubmissionReferenceNumberForProducer(session, submissionPeriod, organisationNumber, submissionId, 1);
 
         // Assert
         var expectedReferenceNumbers = new List<KeyValuePair<string, string>>();
@@ -201,7 +201,7 @@ public class ResubmissionApplicationServiceTests
             .Returns(Task.CompletedTask);
 
         // Act
-        var response = await _service.CreatePomResubmissionReferenceNumberForProducer(session, submissionPeriod, organisationNumber, submittedByName, submissionId, 1);
+        var response = await _service.CreatePomResubmissionReferenceNumberForProducer(session, submissionPeriod, organisationNumber, submissionId, 1);
 
         // Assert
         var expectedReferenceNumbers = new List<KeyValuePair<string, string>>();
@@ -250,7 +250,7 @@ public class ResubmissionApplicationServiceTests
             .Returns(Task.CompletedTask);
 
         // Act
-        var response = await _service.CreatePomResubmissionReferenceNumberForCSO(session, submissionPeriod, organisationNumber, submittedByName, submissionId, 1);
+        var response = await _service.CreatePomResubmissionReferenceNumberForCSO(session, submissionPeriod, organisationNumber, submissionId, 1);
 
         // Assert
         var expectedReferenceNumbers = new List<KeyValuePair<string, string>>();
@@ -299,7 +299,7 @@ public class ResubmissionApplicationServiceTests
             .Returns(Task.CompletedTask);
 
         // Act
-        var response = await _service.CreatePomResubmissionReferenceNumberForCSO(session, submissionPeriod, organisationNumber, submittedByName, submissionId, 1);
+        var response = await _service.CreatePomResubmissionReferenceNumberForCSO(session, submissionPeriod, organisationNumber, submissionId, 1);
 
         // Assert
         var expectedReferenceNumber = new KeyValuePair<string, string>("July to December 2025", $"PEPR12345E250202");
@@ -348,7 +348,7 @@ public class ResubmissionApplicationServiceTests
             .Returns(Task.CompletedTask);
 
         // Act
-        var result = await _service.CreatePomResubmissionReferenceNumber(session, submittedByName, submissionId, 1);
+        var result = await _service.CreatePomResubmissionReferenceNumber(session, submissionId, 1);
 
         // Assert
         result.Should().NotBeNull();
@@ -396,7 +396,7 @@ public class ResubmissionApplicationServiceTests
             .Returns(Task.CompletedTask);
 
         // Act
-        var result = await _service.CreatePomResubmissionReferenceNumber(session, submittedByName, submissionId, 1);
+        var result = await _service.CreatePomResubmissionReferenceNumber(session, submissionId, 1);
 
         // Assert
         result.Should().NotBeNull();

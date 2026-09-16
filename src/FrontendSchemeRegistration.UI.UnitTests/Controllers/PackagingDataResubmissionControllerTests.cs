@@ -1,4 +1,4 @@
-namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
+﻿namespace FrontendSchemeRegistration.UI.UnitTests.Controllers;
 
 using Application.Constants;
 using Application.DTOs.Submission;
@@ -101,7 +101,6 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
 
         SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
             .Returns(Task.FromResult(session));
-        UserAccountService.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
         ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(
             It.IsAny<Organisation>(),
             It.IsAny<List<string>>(),
@@ -119,7 +118,7 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
         var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
 
         // Assert
-        ResubmissionApplicationService.Verify(x => x.CreatePomResubmissionReferenceNumberForProducer(It.IsAny<FrontendSchemeRegistrationSession?>(), It.IsAny<SubmissionPeriod>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<Guid>(), It.IsAny<int>()), Times.Never);
+        ResubmissionApplicationService.Verify(x => x.CreatePomResubmissionReferenceNumberForProducer(It.IsAny<FrontendSchemeRegistrationSession?>(), It.IsAny<SubmissionPeriod>(), It.IsAny<string?>(), It.IsAny<Guid>(), It.IsAny<int>()), Times.Never);
     }
 
     [Test]
@@ -197,7 +196,6 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
 
         SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
             .Returns(Task.FromResult(session));
-        UserAccountService.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
         ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(It.IsAny<Organisation>(), It.IsAny<List<string>>(), It.IsAny<Guid?>())).ReturnsAsync(resubmissionApplicationDetailsCollection);
 
         PaymentCalculationService.Setup(x => x.GetRegulatorNation(It.IsAny<Guid>())).ReturnsAsync("England");
@@ -211,7 +209,7 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
         var pageBackLink = SystemUnderTest.ViewBag.BackLinkToDisplay as string;
 
         // Assert
-        ResubmissionApplicationService.Verify(x => x.CreatePomResubmissionReferenceNumber(It.IsAny<FrontendSchemeRegistrationSession?>(), It.IsAny<string?>(), It.IsAny<Guid>(), It.IsAny<int>()), Times.Once);
+        ResubmissionApplicationService.Verify(x => x.CreatePomResubmissionReferenceNumber(It.IsAny<FrontendSchemeRegistrationSession?>(), It.IsAny<Guid>(), It.IsAny<int>()), Times.Once);
     }
 
     // SUB-332: an empty reference number alone must not trigger creation. If the API reports an open cycle
@@ -285,7 +283,6 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
 
         SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
             .Returns(Task.FromResult(session));
-        UserAccountService.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
         ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(It.IsAny<Organisation>(), It.IsAny<List<string>>(), It.IsAny<Guid?>())).ReturnsAsync(resubmissionApplicationDetailsCollection);
 
         PaymentCalculationService.Setup(x => x.GetRegulatorNation(It.IsAny<Guid>())).ReturnsAsync("England");
@@ -295,7 +292,7 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
         await SystemUnderTest.ResubmissionTaskList();
 
         // Assert
-        ResubmissionApplicationService.Verify(x => x.CreatePomResubmissionReferenceNumber(It.IsAny<FrontendSchemeRegistrationSession?>(), It.IsAny<string?>(), It.IsAny<Guid>(), It.IsAny<int>()), Times.Never);
+        ResubmissionApplicationService.Verify(x => x.CreatePomResubmissionReferenceNumber(It.IsAny<FrontendSchemeRegistrationSession?>(), It.IsAny<Guid>(), It.IsAny<int>()), Times.Never);
     }
 
     // SUB-345: each resubmission needs a reference number of its own, but since SUB-332 the API reports the
@@ -348,7 +345,6 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
         };
 
         SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>())).Returns(Task.FromResult(session));
-        UserAccountService.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
         ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(It.IsAny<Organisation>(), It.IsAny<List<string>>(), It.IsAny<Guid?>())).ReturnsAsync(resubmissionApplicationDetailsCollection);
         ResubmissionApplicationService.Setup(x => x.GetSubmissionIdsAsync(It.IsAny<Guid>(), SubmissionType.Producer, It.IsAny<Guid?>(), It.IsAny<int?>())).ReturnsAsync(submissionPeriodIds);
         ResubmissionApplicationService.Setup(x => x.GetSubmissionHistoryAsync(It.IsAny<Guid>(), It.IsAny<DateTime>())).ReturnsAsync(new List<SubmissionHistory>());
@@ -359,8 +355,265 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
 
         // Assert
         ResubmissionApplicationService.Verify(
-            x => x.CreatePomResubmissionReferenceNumber(It.IsAny<FrontendSchemeRegistrationSession?>(), It.IsAny<string?>(), It.IsAny<Guid>(), It.IsAny<int?>()),
+            x => x.CreatePomResubmissionReferenceNumber(It.IsAny<FrontendSchemeRegistrationSession?>(), It.IsAny<Guid>(), It.IsAny<int?>()),
             Times.Exactly(expectedCalls));
+    }
+
+    // SUB-345: the session is filled from details fetched before the number is raised, so the number it holds
+    // at that point belongs to the cycle just closed. Nothing downstream of the task list re-reads those
+    // details, so unless the raise writes its result back the fee, the payment reference and the number
+    // stamped on the file at declaration all belong to the previous resubmission. The re-read here still
+    // reports the closed cycle, which is also the case of a read that has yet to catch up with the write:
+    // the number raised is known first-hand and has to survive that.
+    [Test]
+    public async Task ResubmissionTaskList_ShouldSaveTheRaisedReferenceNumberToTheSession_WhenTheCycleIsOwedOne()
+    {
+        // Arrange
+        var submissionId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b");
+
+        const string ClosedCycleReferenceNumber = "PEPR12345S01";
+        const string OpenCycleReferenceNumber = "PEPR12345S02";
+
+        var resubmissionApplicationDetails = new PackagingResubmissionApplicationDetails
+        {
+            IsSubmitted = true,
+            SubmissionId = submissionId,
+            ApplicationReferenceNumber = ClosedCycleReferenceNumber,
+            ApplicationStatus = ApplicationStatusType.NotStarted,
+            IsResubmissionCycleClosed = true,
+            SynapseResponse = new SynapseResponse { IsFileSynced = true }
+        };
+
+        var resubmissionApplicationDetailsCollection = new List<PackagingResubmissionApplicationDetails> { resubmissionApplicationDetails };
+
+        var session = new FrontendSchemeRegistrationSession
+        {
+            PomResubmissionSession = new PackagingReSubmissionSession
+            {
+                SubmissionPeriod = "January to December 2024",
+                PomSubmission = new PomSubmission
+                {
+                    Id = submissionId,
+                    IsSubmitted = true,
+                    LastSubmittedFile = new SubmittedFileInformation
+                    {
+                        FileId = submissionId,
+                        SubmittedDateTime = DateTime.Now.AddDays(-2)
+                    }
+                }
+            },
+            RegistrationSession = new RegistrationSession()
+        };
+
+        var submissionPeriodIds = new List<SubmissionPeriodId>
+        {
+            new() { SubmissionId = submissionId, Year = DateTime.Now.Year }
+        };
+
+        SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>())).Returns(Task.FromResult(session));
+        ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(It.IsAny<Organisation>(), It.IsAny<List<string>>(), It.IsAny<Guid?>())).ReturnsAsync(resubmissionApplicationDetailsCollection);
+        ResubmissionApplicationService.Setup(x => x.GetSubmissionIdsAsync(It.IsAny<Guid>(), SubmissionType.Producer, It.IsAny<Guid?>(), It.IsAny<int?>())).ReturnsAsync(submissionPeriodIds);
+        ResubmissionApplicationService.Setup(x => x.GetSubmissionHistoryAsync(It.IsAny<Guid>(), It.IsAny<DateTime>())).ReturnsAsync(new List<SubmissionHistory>());
+        ResubmissionApplicationService.Setup(x => x.CreatePomResubmissionReferenceNumber(It.IsAny<FrontendSchemeRegistrationSession>(), It.IsAny<Guid>(), It.IsAny<int?>())).ReturnsAsync(OpenCycleReferenceNumber);
+        PaymentCalculationService.Setup(x => x.GetRegulatorNation(It.IsAny<Guid>())).ReturnsAsync("England");
+
+        // Act
+        await SystemUnderTest.ResubmissionTaskList();
+
+        // Assert
+        session.PomResubmissionSession.PackagingResubmissionApplicationSession.ApplicationReferenceNumber
+            .Should().Be(OpenCycleReferenceNumber);
+
+        // The number only survives the request if the session it now sits in is written back.
+        SessionManagerMock.Verify(
+            x => x.SaveSessionAsync(It.IsAny<ISession>(), It.Is<FrontendSchemeRegistrationSession>(
+                s => s.PomResubmissionSession.PackagingResubmissionApplicationSession.ApplicationReferenceNumber == OpenCycleReferenceNumber)),
+            Times.AtLeastOnce);
+    }
+
+    // The write-back above must not reach a cycle that already has its number: raising one is what returns
+    // it, so on every other render there is nothing to write and the API's number has to stand.
+    [Test]
+    public async Task ResubmissionTaskList_ShouldLeaveTheReportedReferenceNumberAlone_WhenNoneIsRaised()
+    {
+        // Arrange
+        var submissionId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b");
+
+        const string OpenCycleReferenceNumber = "PEPR12345S02";
+
+        var resubmissionApplicationDetails = new PackagingResubmissionApplicationDetails
+        {
+            IsSubmitted = true,
+            SubmissionId = submissionId,
+            ApplicationReferenceNumber = OpenCycleReferenceNumber,
+            ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+            IsResubmissionCycleClosed = false,
+            SynapseResponse = new SynapseResponse { IsFileSynced = true }
+        };
+
+        var resubmissionApplicationDetailsCollection = new List<PackagingResubmissionApplicationDetails> { resubmissionApplicationDetails };
+
+        var session = new FrontendSchemeRegistrationSession
+        {
+            PomResubmissionSession = new PackagingReSubmissionSession
+            {
+                SubmissionPeriod = "January to December 2024",
+                PomSubmission = new PomSubmission
+                {
+                    Id = submissionId,
+                    IsSubmitted = true,
+                    LastSubmittedFile = new SubmittedFileInformation
+                    {
+                        FileId = submissionId,
+                        SubmittedDateTime = DateTime.Now.AddDays(-2)
+                    }
+                }
+            },
+            RegistrationSession = new RegistrationSession()
+        };
+
+        SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>())).Returns(Task.FromResult(session));
+        ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(It.IsAny<Organisation>(), It.IsAny<List<string>>(), It.IsAny<Guid?>())).ReturnsAsync(resubmissionApplicationDetailsCollection);
+        PaymentCalculationService.Setup(x => x.GetRegulatorNation(It.IsAny<Guid>())).ReturnsAsync("England");
+
+        // Act
+        await SystemUnderTest.ResubmissionTaskList();
+
+        // Assert
+        session.PomResubmissionSession.PackagingResubmissionApplicationSession.ApplicationReferenceNumber
+            .Should().Be(OpenCycleReferenceNumber);
+    }
+
+    // SUB-345: the API dates a backfilled cycle from the number just raised and only then reports the work
+    // already done under it, so the details read before the raise describe the closed cycle and nothing else.
+    // Rendering the task list from that earlier read shows steps the user has finished as unstarted, and only
+    // a refresh puts it right.
+    [Test]
+    public async Task ResubmissionTaskList_ShouldDescribeTheNewlyNumberedCycle_WhenAReferenceNumberIsRaised()
+    {
+        // Arrange
+        var submissionId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b");
+
+        const string ClosedCycleReferenceNumber = "PEPR12345S01";
+        const string OpenCycleReferenceNumber = "PEPR12345S02";
+
+        var detailsBeforeTheRaise = new PackagingResubmissionApplicationDetails
+        {
+            IsSubmitted = true,
+            SubmissionId = submissionId,
+            ApplicationReferenceNumber = ClosedCycleReferenceNumber,
+            ApplicationStatus = ApplicationStatusType.NotStarted,
+            IsResubmissionCycleClosed = true,
+            SynapseResponse = new SynapseResponse { IsFileSynced = true }
+        };
+
+        // What the API reports once the cycle has a number to be dated from: the file submitted under it.
+        var detailsAfterTheRaise = new PackagingResubmissionApplicationDetails
+        {
+            IsSubmitted = true,
+            SubmissionId = submissionId,
+            ApplicationReferenceNumber = OpenCycleReferenceNumber,
+            ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+            IsResubmissionCycleClosed = false,
+            SynapseResponse = new SynapseResponse { IsFileSynced = true }
+        };
+
+        var session = new FrontendSchemeRegistrationSession
+        {
+            PomResubmissionSession = new PackagingReSubmissionSession
+            {
+                SubmissionPeriod = "January to December 2024",
+                PomSubmission = new PomSubmission
+                {
+                    Id = submissionId,
+                    IsSubmitted = true,
+                    LastSubmittedFile = new SubmittedFileInformation
+                    {
+                        FileId = submissionId,
+                        SubmittedDateTime = DateTime.Now.AddDays(-2)
+                    }
+                }
+            },
+            RegistrationSession = new RegistrationSession()
+        };
+
+        var submissionPeriodIds = new List<SubmissionPeriodId>
+        {
+            new() { SubmissionId = submissionId, Year = DateTime.Now.Year }
+        };
+
+        SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>())).Returns(Task.FromResult(session));
+        ResubmissionApplicationService.SetupSequence(x => x.GetPackagingDataResubmissionApplicationDetails(It.IsAny<Organisation>(), It.IsAny<List<string>>(), It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<PackagingResubmissionApplicationDetails> { detailsBeforeTheRaise })
+            .ReturnsAsync(new List<PackagingResubmissionApplicationDetails> { detailsAfterTheRaise });
+        ResubmissionApplicationService.Setup(x => x.GetSubmissionIdsAsync(It.IsAny<Guid>(), SubmissionType.Producer, It.IsAny<Guid?>(), It.IsAny<int?>())).ReturnsAsync(submissionPeriodIds);
+        ResubmissionApplicationService.Setup(x => x.GetSubmissionHistoryAsync(It.IsAny<Guid>(), It.IsAny<DateTime>())).ReturnsAsync(new List<SubmissionHistory>());
+        ResubmissionApplicationService.Setup(x => x.CreatePomResubmissionReferenceNumber(It.IsAny<FrontendSchemeRegistrationSession>(), It.IsAny<Guid>(), It.IsAny<int?>())).ReturnsAsync(OpenCycleReferenceNumber);
+        PaymentCalculationService.Setup(x => x.GetRegulatorNation(It.IsAny<Guid>())).ReturnsAsync("England");
+
+        // Act
+        var result = await SystemUnderTest.ResubmissionTaskList() as ViewResult;
+
+        // Assert
+        var model = result.Model as ResubmissionTaskListViewModel;
+
+        model.ApplicationStatus.Should().Be(ApplicationStatusType.SubmittedToRegulator);
+        model.FileUploadStatus.Should().Be(ResubmissionTaskListStatus.Completed);
+        model.IsResubmissionStarted.Should().BeTrue();
+
+        session.PomResubmissionSession.PackagingResubmissionApplicationSession.ApplicationReferenceNumber
+            .Should().Be(OpenCycleReferenceNumber);
+        session.PomResubmissionSession.PackagingResubmissionApplicationSession.IsResubmissionCycleClosed
+            .Should().BeFalse();
+    }
+
+    [Test]
+    public async Task ResubmissionTaskList_ShouldNotReReadTheApplicationDetails_WhenNoReferenceNumberIsRaised()
+    {
+        // Arrange
+        var submissionId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b");
+
+        var resubmissionApplicationDetails = new PackagingResubmissionApplicationDetails
+        {
+            IsSubmitted = true,
+            SubmissionId = submissionId,
+            ApplicationReferenceNumber = "PEPR12345S02",
+            ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+            IsResubmissionCycleClosed = false,
+            SynapseResponse = new SynapseResponse { IsFileSynced = true }
+        };
+
+        var session = new FrontendSchemeRegistrationSession
+        {
+            PomResubmissionSession = new PackagingReSubmissionSession
+            {
+                SubmissionPeriod = "January to December 2024",
+                PomSubmission = new PomSubmission
+                {
+                    Id = submissionId,
+                    IsSubmitted = true,
+                    LastSubmittedFile = new SubmittedFileInformation
+                    {
+                        FileId = submissionId,
+                        SubmittedDateTime = DateTime.Now.AddDays(-2)
+                    }
+                }
+            },
+            RegistrationSession = new RegistrationSession()
+        };
+
+        SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>())).Returns(Task.FromResult(session));
+        ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(It.IsAny<Organisation>(), It.IsAny<List<string>>(), It.IsAny<Guid?>()))
+            .ReturnsAsync(new List<PackagingResubmissionApplicationDetails> { resubmissionApplicationDetails });
+        PaymentCalculationService.Setup(x => x.GetRegulatorNation(It.IsAny<Guid>())).ReturnsAsync("England");
+
+        // Act
+        await SystemUnderTest.ResubmissionTaskList();
+
+        // Assert
+        ResubmissionApplicationService.Verify(
+            x => x.GetPackagingDataResubmissionApplicationDetails(It.IsAny<Organisation>(), It.IsAny<List<string>>(), It.IsAny<Guid?>()),
+            Times.Once);
     }
 
     [Test]
@@ -421,21 +674,19 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
         result.Should().NotBeNull();
 
         ResubmissionApplicationService.Verify(
-            x => x.CreatePomResubmissionReferenceNumber(It.IsAny<FrontendSchemeRegistrationSession?>(), It.IsAny<string?>(), It.IsAny<Guid>(), It.IsAny<int>()),
+            x => x.CreatePomResubmissionReferenceNumber(It.IsAny<FrontendSchemeRegistrationSession?>(), It.IsAny<Guid>(), It.IsAny<int>()),
             Times.Never);
-        UserAccountService.Verify(x => x.GetAllPersonByUserId(It.IsAny<Guid>()), Times.Never);
     }
 
     [Test]
     public async Task ResubmissionTaskList_UsesRefreshedSubmissionForReferenceNumberEvent()
     {
-        // Regression: the reference-number event's submitter name must come from the re-fetched submission,
-        // not the stale session snapshot (SUB-331). ResubmissionTaskList was the one event-creating action
-        // in the journey still reading the cached copy.
+        // Regression: whether a file has been submitted must be read from the re-fetched submission, not the
+        // stale session snapshot (SUB-331). ResubmissionTaskList was the one event-creating action in the
+        // journey still reading the cached copy. Here only the refreshed copy has a submitted file, so the
+        // number can only be raised if that is the copy the action used.
         // Arrange
         var submissionId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b");
-        var staleSubmittedBy = Guid.NewGuid();
-        var freshSubmittedBy = Guid.NewGuid();
 
         var resubmissionApplicationDetails = new PackagingResubmissionApplicationDetails
         {
@@ -463,12 +714,7 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
                 {
                     Id = submissionId,
                     IsSubmitted = true,
-                    LastSubmittedFile = new SubmittedFileInformation
-                    {
-                        FileId = Guid.NewGuid(),
-                        SubmittedBy = staleSubmittedBy,
-                        SubmittedDateTime = DateTime.Now.AddDays(-2)
-                    }
+                    LastSubmittedFile = null
                 }
             },
             RegistrationSession = new RegistrationSession
@@ -482,7 +728,6 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
 
         SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
             .Returns(Task.FromResult(session));
-        UserAccountService.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
         ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(It.IsAny<Organisation>(), It.IsAny<List<string>>(), It.IsAny<Guid?>())).ReturnsAsync(resubmissionApplicationDetailsCollection);
 
         ResubmissionApplicationService
@@ -495,7 +740,7 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
                     LastSubmittedFile = new SubmittedFileInformation
                     {
                         FileId = Guid.NewGuid(),
-                        SubmittedBy = freshSubmittedBy,
+                        SubmittedBy = Guid.NewGuid(),
                         SubmittedDateTime = DateTime.Now.AddMinutes(-5)
                     }
                 })
@@ -514,11 +759,8 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
         // Assert
         ResubmissionApplicationService.Verify(x => x.RefreshPomSubmissionAsync(session), Times.Once);
 
-        UserAccountService.Verify(x => x.GetAllPersonByUserId(freshSubmittedBy), Times.Once);
-        UserAccountService.Verify(x => x.GetAllPersonByUserId(staleSubmittedBy), Times.Never);
-
         ResubmissionApplicationService.Verify(
-            x => x.CreatePomResubmissionReferenceNumber(session, It.IsAny<string?>(), submissionId, It.IsAny<int>()),
+            x => x.CreatePomResubmissionReferenceNumber(session, submissionId, It.IsAny<int>()),
             Times.Once);
     }
 
@@ -548,7 +790,6 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
 
         SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
             .Returns(Task.FromResult(new FrontendSchemeRegistrationSession { PomResubmissionSession = new PackagingReSubmissionSession { PomSubmissions = new List<PomSubmission> { new PomSubmission { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b") } }, PomSubmission = new PomSubmission() { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), LastSubmittedFile = new SubmittedFileInformation { FileId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), SubmittedDateTime = DateTime.Now.AddDays(-2) } } } }));
-        UserAccountService.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
         ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(It.IsAny<Organisation>(), It.IsAny<List<string>>(), It.IsAny<Guid?>())).ReturnsAsync(resubmissionApplicationDetailsCollection);
         ResubmissionApplicationService.Setup(x => x.GetRegulatorNation(It.IsAny<Guid>())).ReturnsAsync("England");
         PaymentCalculationService.Setup(x => x.GetRegulatorNation(It.IsAny<Guid>())).ReturnsAsync("England");
@@ -602,7 +843,6 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
 
         SessionManagerMock.Setup(sm => sm.GetSessionAsync(It.IsAny<ISession>()))
             .Returns(Task.FromResult(new FrontendSchemeRegistrationSession { PomResubmissionSession = new PackagingReSubmissionSession { PomSubmissions = new List<PomSubmission> { new PomSubmission { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b") } }, PomSubmission = new PomSubmission() { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), LastSubmittedFile = new SubmittedFileInformation { FileId = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b"), SubmittedDateTime = DateTime.Now.AddDays(-2) } } } }));
-        UserAccountService.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
         ResubmissionApplicationService.Setup(x => x.GetPackagingDataResubmissionApplicationDetails(It.IsAny<Organisation>(), It.IsAny<List<string>>(), It.IsAny<Guid?>())).ReturnsAsync(resubmissionApplicationDetailsCollection);
         ResubmissionApplicationService.Setup(x => x.GetRegulatorNation(It.IsAny<Guid>())).ReturnsAsync("England");
         PaymentCalculationService.Setup(x => x.GetRegulatorNation(It.IsAny<Guid>())).ReturnsAsync("England");
@@ -663,7 +903,6 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
 
         SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(FrontendSchemeRegistrationSession);
 
-        UserAccountService.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
 
         var details = new PackagingResubmissionApplicationDetails
         {
@@ -733,7 +972,6 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
 
         SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(FrontendSchemeRegistrationSession);
 
-        UserAccountService.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
 
         ResubmissionApplicationService.Setup(x => x.GetSubmissionIdsAsync(It.IsAny<Guid>(), SubmissionType.Producer, It.IsAny<Guid?>(), It.IsAny<int?>())).ReturnsAsync(submissionPeriodIds);
 
@@ -808,7 +1046,6 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
 
         SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(FrontendSchemeRegistrationSession);
 
-        UserAccountService.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
 
         ResubmissionApplicationService.Setup(x => x.GetSubmissionIdsAsync(It.IsAny<Guid>(), SubmissionType.Producer, It.IsAny<Guid?>(), It.IsAny<int?>())).ReturnsAsync(submissionPeriodIds);
 
@@ -987,7 +1224,6 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
                     PomSubmissions = new List<PomSubmission> { new PomSubmission { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b") } }
                 }
             }));
-        UserAccountService.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
         ResubmissionApplicationService.Setup(x => x.GetResubmissionFees(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<DateTime?>())).ReturnsAsync(new PackagingPaymentResponse());
         ResubmissionApplicationService.Setup(x => x.GetPackagingResubmissionMemberDetails(It.IsAny<PackagingResubmissionMemberRequest>())).ReturnsAsync(new PackagingResubmissionMemberDetails() { MemberCount = 1 });
 
@@ -1027,7 +1263,6 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
                     PomSubmissions = new List<PomSubmission> { new PomSubmission { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b") } }
                 }
             }));
-        UserAccountService.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
         ResubmissionApplicationService.Setup(x => x.GetResubmissionFees(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<DateTime?>())).ReturnsAsync(new PackagingPaymentResponse());
         ResubmissionApplicationService.Setup(x => x.GetPackagingResubmissionMemberDetails(It.IsAny<PackagingResubmissionMemberRequest>())).ReturnsAsync(new PackagingResubmissionMemberDetails() { MemberCount = 1 });
         // Act
@@ -1069,7 +1304,6 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
                     PomSubmissions = new List<PomSubmission> { new PomSubmission { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b") } }
                 }
             }));
-        UserAccountService.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
         _userData.Organisations[0].OrganisationRole = OrganisationRoles.ComplianceScheme;
 
         ResubmissionApplicationService.Setup(x => x.GetResubmissionFees(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<DateTime>())).ReturnsAsync(new PackagingPaymentResponse());
@@ -1107,7 +1341,6 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
                     PomSubmissions = new List<PomSubmission> { new PomSubmission { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b") } }
                 }
             }));
-        UserAccountService.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
         _userData.Organisations[0].OrganisationRole = OrganisationRoles.ComplianceScheme;
 
         ResubmissionApplicationService.Setup(x => x.GetResubmissionFees(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<DateTime?>())).ReturnsAsync(new PackagingPaymentResponse());
@@ -1142,7 +1375,6 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
                     PomSubmissions = new List<PomSubmission> { new PomSubmission { Id = new Guid("147f59f0-3d4e-4557-91d2-db033dffa60b") } }
                 }
             }));
-        UserAccountService.Setup(x => x.GetAllPersonByUserId(It.IsAny<Guid>())).ReturnsAsync(new Application.DTOs.UserAccount.PersonDto { FirstName = "Test", LastName = "Name" });
 
         // Act
         var result = await SystemUnderTest.ResubmissionFeeCalculations() as RedirectToActionResult;
@@ -1351,7 +1583,7 @@ public class PackagingDataResubmissionControllerTests : PackagingDataResubmissio
         result.Should().NotBeNull();
         ResubmissionApplicationService.Verify(x => x.CreatePackagingResubmissionFeeViewEvent(It.IsAny<Guid?>(), It.IsAny<Guid?>()), Times.Never);
         ResubmissionApplicationService.Verify(
-            x => x.CreatePomResubmissionReferenceNumberForProducer(It.IsAny<FrontendSchemeRegistrationSession?>(), It.IsAny<SubmissionPeriod>(), It.IsAny<string?>(), It.IsAny<string?>(), It.IsAny<Guid>(), It.IsAny<int>()),
+            x => x.CreatePomResubmissionReferenceNumberForProducer(It.IsAny<FrontendSchemeRegistrationSession?>(), It.IsAny<SubmissionPeriod>(), It.IsAny<string?>(), It.IsAny<Guid>(), It.IsAny<int>()),
             Times.Never);
         ResubmissionApplicationService.Verify(x => x.RefreshPomSubmissionAsync(It.IsAny<FrontendSchemeRegistrationSession>()), Times.Never);
         SessionManagerMock.Verify(sm => sm.SaveSessionAsync(It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()), Times.Never);
