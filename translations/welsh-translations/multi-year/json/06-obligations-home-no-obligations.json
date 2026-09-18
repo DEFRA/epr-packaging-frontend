@@ -603,6 +603,114 @@
       "welsh": "Cynnydd eich rhwymedigaethau ailgylchu",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
       "context": "\nShared partial for material obligations, shown on Manage obligations page obligations progress table.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_obligationsDetailsSummary.en.resx::obligations_details_summary_heading",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_obligationsDetailsSummary.en.resx",
+      "resourceKey": "obligations_details_summary_heading",
+      "pageId": "prns-obligations-home-no-obligations",
+      "route": "/report-data/manage-your-recycling-obligations",
+      "section": "Shared partial for future-years details/summary element, shown on Manage obligations page.",
+      "english": "Why does the recycling obligations table already have tonnage awaiting acceptance?",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
+      "context": "\nShared partial for future-years details/summary element, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_obligationsDetailsSummary.en.resx::obligations_details_summary_content_intro",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_obligationsDetailsSummary.en.resx",
+      "resourceKey": "obligations_details_summary_content_intro",
+      "pageId": "prns-obligations-home-no-obligations",
+      "route": "/report-data/manage-your-recycling-obligations",
+      "section": "Shared partial for future-years details/summary element, shown on Manage obligations page.",
+      "english": "Tonnage awaiting acceptance is for PRNs or PERNs that have been issued to you but have not yet been accepted.",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
+      "context": "\nShared partial for future-years details/summary element, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_obligationsDetailsSummary.en.resx::obligations_details_summary_content_before_list_1",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_obligationsDetailsSummary.en.resx",
+      "resourceKey": "obligations_details_summary_content_before_list_1",
+      "pageId": "prns-obligations-home-no-obligations",
+      "route": "/report-data/manage-your-recycling-obligations",
+      "section": "Shared partial for future-years details/summary element, shown on Manage obligations page.",
+      "english": "You have been issued at least one December waste PRN or PERN.",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
+      "context": "\nShared partial for future-years details/summary element, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_obligationsDetailsSummary.en.resx::obligations_details_summary_content_before_list_2",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_obligationsDetailsSummary.en.resx",
+      "resourceKey": "obligations_details_summary_content_before_list_2",
+      "pageId": "prns-obligations-home-no-obligations",
+      "route": "/report-data/manage-your-recycling-obligations",
+      "section": "Shared partial for future-years details/summary element, shown on Manage obligations page.",
+      "english": "These:",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
+      "context": "\nShared partial for future-years details/summary element, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_obligationsDetailsSummary.en.resx::obligations_details_summary_content_bullet_1",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_obligationsDetailsSummary.en.resx",
+      "resourceKey": "obligations_details_summary_content_bullet_1",
+      "pageId": "prns-obligations-home-no-obligations",
+      "route": "/report-data/manage-your-recycling-obligations",
+      "section": "Shared partial for future-years details/summary element, shown on Manage obligations page.",
+      "english": "are for packaging waste received for recycling at UK or overseas reprocessing sites in December",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
+      "context": "\nShared partial for future-years details/summary element, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_obligationsDetailsSummary.en.resx::obligations_details_summary_content_bullet_2",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_obligationsDetailsSummary.en.resx",
+      "resourceKey": "obligations_details_summary_content_bullet_2",
+      "pageId": "prns-obligations-home-no-obligations",
+      "route": "/report-data/manage-your-recycling-obligations",
+      "section": "Shared partial for future-years details/summary element, shown on Manage obligations page.",
+      "english": "can be accepted towards either your {0} or {1} recycling obligations",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
+      "context": "\nShared partial for future-years details/summary element, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_obligationsDetailsSummary.en.resx::obligations_details_summary_content_bullet_3",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_obligationsDetailsSummary.en.resx",
+      "resourceKey": "obligations_details_summary_content_bullet_3",
+      "pageId": "prns-obligations-home-no-obligations",
+      "route": "/report-data/manage-your-recycling-obligations",
+      "section": "Shared partial for future-years details/summary element, shown on Manage obligations page.",
+      "english": "have a blue tag to show which years you can accept them towards",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
+      "context": "\nShared partial for future-years details/summary element, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_obligationsDetailsSummary.en.resx::obligations_details_summary_content_after_list",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_obligationsDetailsSummary.en.resx",
+      "resourceKey": "obligations_details_summary_content_after_list",
+      "pageId": "prns-obligations-home-no-obligations",
+      "route": "/report-data/manage-your-recycling-obligations",
+      "section": "Shared partial for future-years details/summary element, shown on Manage obligations page.",
+      "english": "A December waste PRN or PERN will appear under ‘Tonnage awaiting acceptance’ for both {0} and {1} until you accept it towards a specific year’s recycling obligations.",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
+      "context": "\nShared partial for future-years details/summary element, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_obligationsDetailsSummary.en.resx::obligations_details_summary_content_end",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_obligationsDetailsSummary.en.resx",
+      "resourceKey": "obligations_details_summary_content_end",
+      "pageId": "prns-obligations-home-no-obligations",
+      "route": "/report-data/manage-your-recycling-obligations",
+      "section": "Shared partial for future-years details/summary element, shown on Manage obligations page.",
+      "english": "Once you accept the PRN or PERN towards a specific year, it is assigned to that year only and the blue tag is removed.",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
+      "context": "\nShared partial for future-years details/summary element, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     }
   ]
 }

@@ -1,4 +1,5 @@
 @using Microsoft.AspNetCore.Html
+@using Microsoft.AspNetCore.Mvc.Razor
 @using FrontendSchemeRegistration.Application.Extensions;
 @using FrontendSchemeRegistration.UI.ViewModels.Prns;
 @inject TimeProvider TimeProvider
@@ -7,15 +8,37 @@
     var ComplianceYear = Model.ComplianceYear;
     var IsFutureYear = ComplianceYear > DateTime.Now.Year;
     var InDecemberJanuaryFlashWindow = TimeProvider.GetUtcNow().IsInDecemberJanuaryFlashWindow();
+    
     var ShowAccordion = IsFutureYear
         && InDecemberJanuaryFlashWindow
         && Model.HasDecemberWasteMultiYearPrnAwaitingAcceptance;
+
+    var bulletTwo = string.Format(Localizer["obligations_details_summary_content_bullet_2"].Value, ComplianceYear - 1, ComplianceYear);
+    var afterList = string.Format(Localizer["obligations_details_summary_content_after_list"].Value, ComplianceYear - 1, ComplianceYear);
+
+    Func<dynamic, HelperResult> detailsContent = @<text>
+        <p class="govuk-body">@Localizer["obligations_details_summary_content_intro"]</p>
+        <p class="govuk-body govuk-!-margin-bottom-0">@Localizer["obligations_details_summary_content_before_list_1"]</p>
+        <p class="govuk-body">@Localizer["obligations_details_summary_content_before_list_2"]</p>
+        <ul class="govuk-list govuk-list--bullet">
+            <li>@Localizer["obligations_details_summary_content_bullet_1"]</li>
+            <li>@bulletTwo</li>
+            <li>@Localizer["obligations_details_summary_content_bullet_3"]</li>
+        </ul>
+        <p class="govuk-body">@afterList</p>
+        <p class="govuk-body">@Localizer["obligations_details_summary_content_end"]</p>
+    </text>;
+
+    var HtmlContent = detailsContent(null);
 }
 
 @if (ShowAccordion) {
     @await Html.PartialAsync("../Shared/Partials/Govuk/_DetailsSummary", new ViewDataDictionary(ViewData) {
-        { "InitialState", true },  
-        { "Heading", "Lorem ipsum dolor sit amet" }, 
-        { "Content", new HtmlString("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. <ul><li>prīmus</li><li>secundus</li><li>tertius</li></ul>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.") }
+        { "InitialState", true },
+        { "Heading", Localizer["obligations_details_summary_heading"].Value },
+        { "Content", HtmlContent },
+        { "ExtendDetailsClassNames", "govuk-grid-column-two-thirds govuk-!-margin-bottom-6" }
     })
 }
+    
+
