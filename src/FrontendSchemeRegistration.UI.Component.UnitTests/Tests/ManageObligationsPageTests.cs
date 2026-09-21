@@ -171,17 +171,6 @@ public class ManageObligationsPageTests
     }
 
     [Test]
-    public async Task WhenCurrentYearSelected_InDecemberJanuaryFlashWindow_WithDecemberWastePrnAwaitingAcceptance_HidesDetailsSummaryAccordion()
-    {
-        // ShowAccordion requires the selected year to be a *future* Compliance Year - selecting the
-        // current year should hide the accordion even though the other two conditions are met.
-        SetUp(
-            showMultiYearObligations: true,
-            obligationData: WebApiOptions.ObligationDataType.NoDataYet,
-            prnOrganisationData: WebApiOptions.PrnOrganisationDataType.DecemberWasteAwaitingAcceptance,
-            startupUtcTimestampOverride: "2026-12-15T08:00:00Z");
-        await Context.Client.AuthenticateDefaultUser();
-        SetProducerSession(selectedObligationYear: ComplianceYear);
     public async Task WhenShowPrnsOnCdpDisabled_KeepsPackagingAwaitingAcceptanceLinks()
     {
         SetUp(
@@ -195,22 +184,6 @@ public class ManageObligationsPageTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await response.Content.ReadAsStringAsync();
-        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
-            .ScrubCommonHtmlNodes();
-    }
-
-    [Test]
-    public async Task WhenFutureYearSelected_OutsideDecemberJanuaryFlashWindow_WithDecemberWastePrnAwaitingAcceptance_HidesDetailsSummaryAccordion()
-    {
-        // ShowAccordion requires being within the Dec/Jan flash window - a future year selection with
-        // an otherwise-qualifying PRN should still hide the accordion outside that window (e.g. June).
-        SetUp(
-            showMultiYearObligations: true,
-            obligationData: WebApiOptions.ObligationDataType.NoDataYet,
-            prnOrganisationData: WebApiOptions.PrnOrganisationDataType.DecemberWasteAwaitingAcceptance,
-            startupUtcTimestampOverride: "2026-06-15T08:00:00Z");
-        await Context.Client.AuthenticateDefaultUser();
-        SetProducerSession(selectedObligationYear: ComplianceYear + 1);
         content.Should().Contain($"href=\"{PagePaths.Prns.ShowAwaitingAcceptance}\"");
         content.Should().NotContain("/prns?year=");
     }
@@ -228,9 +201,6 @@ public class ManageObligationsPageTests
         var response = await Context.Client.GetAsync(ObligationsHomePath);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var content = await response.Content.ReadAsStringAsync();
-        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
-            .ScrubCommonHtmlNodes();
         var organisationId = Guid.Parse("b6f76437-65b6-4ed2-a7d5-c50e9af76201");
         var expectedHref = $"https://understanding-obligations/producer/{organisationId}/prns?year={ComplianceYear}";
         var content = await response.Content.ReadAsStringAsync();
@@ -290,6 +260,17 @@ public class ManageObligationsPageTests
             obligationData: WebApiOptions.ObligationDataType.NoDataYet);
         await Context.Client.AuthenticateDefaultUser();
         SetProducerSession();
+    public async Task WhenCurrentYearSelected_InDecemberJanuaryFlashWindow_WithDecemberWastePrnAwaitingAcceptance_HidesDetailsSummaryAccordion()
+    {
+        // ShowAccordion requires the selected year to be a *future* Compliance Year - selecting the
+        // current year should hide the accordion even though the other two conditions are met.
+        SetUp(
+            showMultiYearObligations: true,
+            obligationData: WebApiOptions.ObligationDataType.NoDataYet,
+            prnOrganisationData: WebApiOptions.PrnOrganisationDataType.DecemberWasteAwaitingAcceptance,
+            startupUtcTimestampOverride: "2026-12-15T08:00:00Z");
+        await Context.Client.AuthenticateDefaultUser();
+        SetProducerSession(selectedObligationYear: ComplianceYear);
 
         var response = await Context.Client.GetAsync(ObligationsHomePath);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -309,6 +290,22 @@ public class ManageObligationsPageTests
         await Context.Client.AuthenticateDefaultUser();
         SetProducerSession(selectedObligationYear: ComplianceYear + 1);
         Context.GetSessionStore().Session.SetString(Language.SessionLanguageKey, Language.Welsh);
+        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
+            .ScrubCommonHtmlNodes();
+    }
+
+    [Test]
+    public async Task WhenFutureYearSelected_OutsideDecemberJanuaryFlashWindow_WithDecemberWastePrnAwaitingAcceptance_HidesDetailsSummaryAccordion()
+    {
+        // ShowAccordion requires being within the Dec/Jan flash window - a future year selection with
+        // an otherwise-qualifying PRN should still hide the accordion outside that window (e.g. June).
+        SetUp(
+            showMultiYearObligations: true,
+            obligationData: WebApiOptions.ObligationDataType.NoDataYet,
+            prnOrganisationData: WebApiOptions.PrnOrganisationDataType.DecemberWasteAwaitingAcceptance,
+            startupUtcTimestampOverride: "2026-06-15T08:00:00Z");
+        await Context.Client.AuthenticateDefaultUser();
+        SetProducerSession(selectedObligationYear: ComplianceYear + 1);
 
         var response = await Context.Client.GetAsync(ObligationsHomePath);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -324,6 +321,8 @@ public class ManageObligationsPageTests
         System.Text.RegularExpressions.Regex
             .Matches(content, "<ul class=\"govuk-list govuk-list--bullet govuk-!-margin-left-2\">")
             .Should().HaveCount(2);
+        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
+            .ScrubCommonHtmlNodes();
     }
 
     [TearDown]
