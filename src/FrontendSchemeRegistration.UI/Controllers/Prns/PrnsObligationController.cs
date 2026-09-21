@@ -106,6 +106,21 @@ public class PrnsObligationController : Controller
                 viewModel,
                 session.RegistrationSession)
             : null;
+
+        viewModel.AcceptRejectPrnsHref = PagePaths.Prns.ShowAwaitingAcceptance;
+        if (await _featureManager.IsEnabledAsync(FeatureFlags.ShowPrnsOnCdp))
+        {
+            var acceptRejectPrnsUrl = CsocHelper.GetAcceptRejectPrnsUrl(
+                _csocOptions.Value.WasteObligationsBaseAddress,
+                organisation,
+                selectedYear,
+                session.RegistrationSession);
+
+            if (!string.IsNullOrEmpty(acceptRejectPrnsUrl))
+            {
+                viewModel.AcceptRejectPrnsHref = acceptRejectPrnsUrl;
+            }
+        }
         
         return View(viewModel);
     }

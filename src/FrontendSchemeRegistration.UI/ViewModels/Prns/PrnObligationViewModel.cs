@@ -1,4 +1,5 @@
-﻿using FrontendSchemeRegistration.Application.Enums;
+﻿using FrontendSchemeRegistration.Application.Constants;
+using FrontendSchemeRegistration.Application.Enums;
 using System.Diagnostics.CodeAnalysis;
 
 namespace FrontendSchemeRegistration.UI.ViewModels.Prns;
@@ -17,6 +18,12 @@ public class PrnObligationViewModel
 
     public int DeadlineYear => ComplianceYear + 1;
     public int NumberOfPrnsAwaitingAcceptance { get; set; }
+
+    /// <summary>
+    ///     Accept-or-reject list. The waste-obligations URL when ShowPrnsOnCdp is on;
+    ///     otherwise the packaging list path.
+    /// </summary>
+    public string AcceptRejectPrnsHref { get; set; } = PagePaths.Prns.ShowAwaitingAcceptance;
 
     /// <summary>
     ///     True when the user has a December Waste PRN, awaiting acceptance, that currently offers
