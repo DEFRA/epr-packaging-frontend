@@ -1,4 +1,6 @@
 ﻿@using FrontendSchemeRegistration.Application.Constants
+@using FrontendSchemeRegistration.UI.ViewModels.Prns
+@model PrnObligationViewModel
 
 @{
     var complianceYear = ViewData["ComplianceYear"] as int? ?? Model.ComplianceYear;
@@ -21,7 +23,7 @@
         </p>
         <p class="govuk-body">
             <span id="arialblAcceptOrReject" class="govuk-visually-hidden">@Localizer["accept_or_reject_prns_and_perns"]</span>
-            <a href="@PagePaths.Prns.ShowAwaitingAcceptance" class="govuk-link govuk-link--no-visited-state" aria-labelledby="arialblAcceptOrReject">
+            <a href="@Model.AcceptRejectPrnsHref" class="govuk-link govuk-link--no-visited-state" aria-labelledby="arialblAcceptOrReject">
                 @if (showMultiYearObligations) {
                     @Localizer["accept_or_reject_prns_and_perns_yyyy", complianceYear.ToString()]
                 }

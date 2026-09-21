@@ -97,6 +97,37 @@ public static class CsocHelper
         }
     }
 
+    public static string? GetAcceptRejectPrnsUrl(
+        string? baseEndpoint,
+        Organisation organisation,
+        int year,
+        RegistrationSession? registrationSession)
+    {
+        if (string.IsNullOrWhiteSpace(baseEndpoint) || !organisation.Id.HasValue)
+        {
+            return null;
+        }
+
+        var normalizedBaseEndpoint = baseEndpoint.TrimEnd('/');
+        var organisationId = organisation.Id.Value;
+
+        string path;
+        if (organisation.IsComplianceScheme())
+        {
+            path = $"{CsoPathPrefix}/{GetSchemeId(organisationId, registrationSession)}/prns?year={year}";
+        }
+        else if (organisation.IsDirectProducer())
+        {
+            path = $"{ProducerPathPrefix}/{organisationId}/prns?year={year}";
+        }
+        else
+        {
+            return null;
+        }
+
+        return AppendLangQuery($"{normalizedBaseEndpoint}{path}");
+    }
+
     private static string? GetWasteObligationsBaseAddress(
         string? baseEndpoint,
         Organisation organisation,
