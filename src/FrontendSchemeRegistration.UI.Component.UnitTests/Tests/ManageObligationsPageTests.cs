@@ -260,6 +260,17 @@ public class ManageObligationsPageTests
             obligationData: WebApiOptions.ObligationDataType.NoDataYet);
         await Context.Client.AuthenticateDefaultUser();
         SetProducerSession();
+
+        var response = await Context.Client.GetAsync(ObligationsHomePath);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+
+        content.Should().NotContain("Until then, you can:");
+        content.Should().NotContain("have not been calculated yet");
+    }
+
+    [Test]
     public async Task WhenCurrentYearSelected_InDecemberJanuaryFlashWindow_WithDecemberWastePrnAwaitingAcceptance_HidesDetailsSummaryAccordion()
     {
         // ShowAccordion requires the selected year to be a *future* Compliance Year - selecting the
@@ -276,9 +287,8 @@ public class ManageObligationsPageTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await response.Content.ReadAsStringAsync();
-
-        content.Should().NotContain("Until then, you can:");
-        content.Should().NotContain("have not been calculated yet");
+        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
+            .ScrubCommonHtmlNodes();
     }
 
     [Test]
@@ -290,8 +300,21 @@ public class ManageObligationsPageTests
         await Context.Client.AuthenticateDefaultUser();
         SetProducerSession(selectedObligationYear: ComplianceYear + 1);
         Context.GetSessionStore().Session.SetString(Language.SessionLanguageKey, Language.Welsh);
-        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
-            .ScrubCommonHtmlNodes();
+
+        var response = await Context.Client.GetAsync(ObligationsHomePath);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+
+        // The layout hard-codes lang="en", so use the language toggle (which offers English when Welsh is active).
+        content.Should().Contain("culture?culture=en");
+        content.Should().NotContain("meeting_obligations_");
+        content.Should().NotContain("{0}");
+
+        // Structural check that the partial rendered: its two bullet lists are the only elements carrying this margin class here.
+        System.Text.RegularExpressions.Regex
+            .Matches(content, "<ul class=\"govuk-list govuk-list--bullet govuk-!-margin-left-2\">")
+            .Should().HaveCount(2);
     }
 
     [Test]
@@ -311,16 +334,6 @@ public class ManageObligationsPageTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await response.Content.ReadAsStringAsync();
-
-        // The layout hard-codes lang="en", so use the language toggle (which offers English when Welsh is active).
-        content.Should().Contain("culture?culture=en");
-        content.Should().NotContain("meeting_obligations_");
-        content.Should().NotContain("{0}");
-
-        // Structural check that the partial rendered: its two bullet lists are the only elements carrying this margin class here.
-        System.Text.RegularExpressions.Regex
-            .Matches(content, "<ul class=\"govuk-list govuk-list--bullet govuk-!-margin-left-2\">")
-            .Should().HaveCount(2);
         await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
             .ScrubCommonHtmlNodes();
     }
