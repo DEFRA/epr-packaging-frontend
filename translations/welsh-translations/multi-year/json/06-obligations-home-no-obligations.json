@@ -5,30 +5,6 @@
   ],
   "rows": [
     {
-      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ObligationsHome.en.resx::your_yyyy_recycling_obligations_will_be",
-      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ObligationsHome.en.resx",
-      "resourceKey": "your_yyyy_recycling_obligations_will_be",
-      "pageId": "prns-obligations-home-no-obligations",
-      "route": "/report-data/manage-your-recycling-obligations",
-      "section": "No-obligations alternative content below How to meet your recycling obligations.",
-      "english": "Your {0} recycling obligations will be calculated after:",
-      "welsh": "",
-      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
-      "context": "\nNo-obligations alternative content below How to meet your recycling obligations.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
-    },
-    {
-      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ObligationsHome.en.resx::the_regulator_accepts_your_h1_and_h2_packaging_data_submissions",
-      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ObligationsHome.en.resx",
-      "resourceKey": "the_regulator_accepts_your_h1_and_h2_packaging_data_submissions",
-      "pageId": "prns-obligations-home-no-obligations",
-      "route": "/report-data/manage-your-recycling-obligations",
-      "section": "No-obligations alternative content below How to meet your recycling obligations.",
-      "english": "the regulator accepts your H1 and H2 packaging data submissions",
-      "welsh": "",
-      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
-      "context": "\nNo-obligations alternative content below How to meet your recycling obligations.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
-    },
-    {
       "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_reviewPRNsAndPERNs.en.resx::review_your_prns_and_perns",
       "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_reviewPRNsAndPERNs.en.resx",
       "resourceKey": "review_your_prns_and_perns",
@@ -711,6 +687,90 @@
       "welsh": "",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
       "context": "\nShared partial for future-years details/summary element, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_meetingObligations.en.resx::meeting_obligations_list_1_prefix",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_meetingObligations.en.resx",
+      "resourceKey": "meeting_obligations_list_1_prefix",
+      "pageId": "prns-obligations-home-no-obligations",
+      "route": "/report-data/manage-your-recycling-obligations",
+      "section": "Shared partial for future-years how to meet obligations content, shown on Manage obligations page.",
+      "english": "Your {0} recycling obligations have not been calculated yet. They will be calculated after:",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
+      "context": "\nShared partial for future-years how to meet obligations content, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_meetingObligations.en.resx::meeting_obligations_list_1_bullet_1",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_meetingObligations.en.resx",
+      "resourceKey": "meeting_obligations_list_1_bullet_1",
+      "pageId": "prns-obligations-home-no-obligations",
+      "route": "/report-data/manage-your-recycling-obligations",
+      "section": "Shared partial for future-years how to meet obligations content, shown on Manage obligations page.",
+      "english": "you submit your packaging data for {0}",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
+      "context": "\nShared partial for future-years how to meet obligations content, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_meetingObligations.en.resx::meeting_obligations_list_1_bullet_2",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_meetingObligations.en.resx",
+      "resourceKey": "meeting_obligations_list_1_bullet_2",
+      "pageId": "prns-obligations-home-no-obligations",
+      "route": "/report-data/manage-your-recycling-obligations",
+      "section": "Shared partial for future-years how to meet obligations content, shown on Manage obligations page.",
+      "english": "your environmental regulator accepts your H1 and H2 packaging data submissions",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
+      "context": "\nShared partial for future-years how to meet obligations content, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_meetingObligations.en.resx::meeting_obligations_list_2_prefix",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_meetingObligations.en.resx",
+      "resourceKey": "meeting_obligations_list_2_prefix",
+      "pageId": "prns-obligations-home-no-obligations",
+      "route": "/report-data/manage-your-recycling-obligations",
+      "section": "Shared partial for future-years how to meet obligations content, shown on Manage obligations page.",
+      "english": "Until then, you can:",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
+      "context": "\nShared partial for future-years how to meet obligations content, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_meetingObligations.en.resx::meeting_obligations_list_2_bullet_1",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_meetingObligations.en.resx",
+      "resourceKey": "meeting_obligations_list_2_bullet_1",
+      "pageId": "prns-obligations-home-no-obligations",
+      "route": "/report-data/manage-your-recycling-obligations",
+      "section": "Shared partial for future-years how to meet obligations content, shown on Manage obligations page.",
+      "english": "acquire packaging waste recycling notes (PRNs) and packaging waste export recycling notes (PERNs)",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
+      "context": "\nShared partial for future-years how to meet obligations content, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_meetingObligations.en.resx::meeting_obligations_list_2_bullet_2",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_meetingObligations.en.resx",
+      "resourceKey": "meeting_obligations_list_2_bullet_2",
+      "pageId": "prns-obligations-home-no-obligations",
+      "route": "/report-data/manage-your-recycling-obligations",
+      "section": "Shared partial for future-years how to meet obligations content, shown on Manage obligations page.",
+      "english": "accept your PRNs and PERNs towards your recycling obligations",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
+      "context": "\nShared partial for future-years how to meet obligations content, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_meetingObligations.en.resx::meeting_obligations_table_below_statement",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_meetingObligations.en.resx",
+      "resourceKey": "meeting_obligations_table_below_statement",
+      "pageId": "prns-obligations-home-no-obligations",
+      "route": "/report-data/manage-your-recycling-obligations",
+      "section": "Shared partial for future-years how to meet obligations content, shown on Manage obligations page.",
+      "english": "You will see data for PRNs and PERNs you have acquired in the table below. But you will only see progress against your actual recycling obligations once they have been calculated.",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
+      "context": "\nShared partial for future-years how to meet obligations content, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     }
   ]
 }

@@ -10,6 +10,7 @@ using EPR.Common.Authorization.Models;
 using Extensions;
 using FluentAssertions;
 using Infrastructure;
+using Microsoft.AspNetCore.Http;
 using MockServer.WebApi;
 using Sessions;
 
@@ -208,6 +209,75 @@ public class ManageObligationsPageTests
         var content = await response.Content.ReadAsStringAsync();
         await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
             .ScrubCommonHtmlNodes();
+    }
+
+    [Test]
+    public async Task WhenNoObligations_AndMultiYearEnabled_MeetingObligationsRendersLocalizedContentForSelectedYear()
+    {
+        SetUp(
+            showMultiYearObligations: true,
+            obligationData: WebApiOptions.ObligationDataType.NoDataYet);
+        await Context.Client.AuthenticateDefaultUser();
+        SetProducerSession(selectedObligationYear: ComplianceYear + 1);
+
+        var response = await Context.Client.GetAsync(ObligationsHomePath);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+
+        content.Should().Contain($"Your {ComplianceYear + 1} recycling obligations have not been calculated yet. They will be calculated after:");
+        content.Should().Contain($"you submit your packaging data for {ComplianceYear}");
+        content.Should().Contain("your environmental regulator accepts your H1 and H2 packaging data submissions");
+        content.Should().Contain("Until then, you can:");
+        content.Should().Contain("acquire packaging waste recycling notes (PRNs) and packaging waste export recycling notes (PERNs)");
+        content.Should().Contain("accept your PRNs and PERNs towards your recycling obligations");
+        content.Should().Contain("You will see data for PRNs and PERNs you have acquired in the table below.");
+        content.Should().NotContain("meeting_obligations_");
+        content.Should().NotContain("{0}");
+    }
+
+    [Test]
+    public async Task WhenNoObligations_AndMultiYearDisabled_DoesNotRenderMeetingObligations()
+    {
+        SetUp(
+            showMultiYearObligations: false,
+            obligationData: WebApiOptions.ObligationDataType.NoDataYet);
+        await Context.Client.AuthenticateDefaultUser();
+        SetProducerSession();
+
+        var response = await Context.Client.GetAsync(ObligationsHomePath);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+
+        content.Should().NotContain("Until then, you can:");
+        content.Should().NotContain("have not been calculated yet");
+    }
+
+    [Test]
+    public async Task WhenNoObligations_AndMultiYearEnabled_InWelsh_MeetingObligationsResolvesAllResources()
+    {
+        SetUp(
+            showMultiYearObligations: true,
+            obligationData: WebApiOptions.ObligationDataType.NoDataYet);
+        await Context.Client.AuthenticateDefaultUser();
+        SetProducerSession(selectedObligationYear: ComplianceYear + 1);
+        Context.GetSessionStore().Session.SetString(Language.SessionLanguageKey, Language.Welsh);
+
+        var response = await Context.Client.GetAsync(ObligationsHomePath);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+
+        // The layout hard-codes lang="en", so use the language toggle (which offers English when Welsh is active).
+        content.Should().Contain("culture?culture=en");
+        content.Should().NotContain("meeting_obligations_");
+        content.Should().NotContain("{0}");
+
+        // Structural check that the partial rendered: its two bullet lists are the only elements carrying this margin class here.
+        System.Text.RegularExpressions.Regex
+            .Matches(content, "<ul class=\"govuk-list govuk-list--bullet govuk-!-margin-left-2\">")
+            .Should().HaveCount(2);
     }
 
     [TearDown]

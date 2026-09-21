@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!-- 
-    Microsoft ResX Schema 
-    
+  <!--
+    Microsoft ResX Schema
+
     Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
     associated with the data types.
-    
+
     Example:
-    
+
     ... ado.net/XML headers & schema ...
     <resheader name="resmimetype">text/microsoft-resx</resheader>
     <resheader name="version">2.0</resheader>
@@ -26,36 +26,36 @@
         <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
         <comment>This is a comment</comment>
     </data>
-                
-    There are any number of "resheader" rows that contain simple 
+
+    There are any number of "resheader" rows that contain simple
     name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
     mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
     extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
     read any of the formats listed below.
-    
+
     mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
-    
+
     mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
             : and then encoded with base64 encoding.
 
     mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
+    value   : The object must be serialized into a byte array
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
@@ -117,49 +117,25 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="epr_for_packaging_data_homepage" xml:space="preserve">
-    <value>EPR for packaging data homepage</value>
+  <data name="meeting_obligations_list_1_prefix" xml:space="preserve">
+    <value>Your {0} recycling obligations have not been calculated yet. They will be calculated after:</value>
   </data>
-  <data name="home" xml:space="preserve">
-    <value>Home</value>
-  </data>
-  <data name="how_to_meet_the_glass_recycling_obligation" xml:space="preserve">
-    <value>How to meet the glass recycling obligation</value>
-  </data>
-  <data name="how_to_meet_the_glass_recycling_obligation_description" xml:space="preserve">
-    <value>A minimum of {0}% of your glass recycling obligation must be made up of glass re-melt PRNs or PERNs. This will make up a proportion of your overall glass recycling obligation. The remaining glass recycling obligation can be met by either glass re-melt, glass other or a mix of both.</value>
-  </data>
-  <data name="how_to_meet_your_recycling_obligations" xml:space="preserve">
-    <value>How to meet your recycling obligations</value>
-  </data>
-  <data name="manage_your_recycling_obligations" xml:space="preserve">
-    <value>Manage your {0} recycling obligations</value>
-  </data>
-  <data name="the_regulator_accepts_your_data_submissions" xml:space="preserve">
-    <value>the regulator accepts your data submissions</value>
-  </data>
-  <data name="your_recycling_obligations_will_be" xml:space="preserve">
-    <value>Your recycling obligations will be calculated after:</value>
-  </data>
-  <data name="you_can_start_acquiring_and_accepting" xml:space="preserve">
-    <value>You can start acquiring and accepting PRNs and PERNs to meet your recycling obligations.</value>
-  </data>
-  <data name="you_submit_your_packaging_data_for" xml:space="preserve">
+  <data name="meeting_obligations_list_1_bullet_1" xml:space="preserve">
     <value>you submit your packaging data for {0}</value>
   </data>
-  <data name="to_meet_your_recycling_obligations_for" xml:space="preserve">
-    <value>to meet your recycling obligations for</value>
+  <data name="meeting_obligations_list_1_bullet_2" xml:space="preserve">
+    <value>your environmental regulator accepts your H1 and H2 packaging data submissions</value>
   </data>
-  <data name="you_have_until" xml:space="preserve">
-    <value>You have until</value>
+  <data name="meeting_obligations_list_2_prefix" xml:space="preserve">
+    <value>Until then, you can:</value>
   </data>
-  <data name="enforcement_action_warning" xml:space="preserve">
-    <value>You may face enforcement action if you miss this deadline.</value>
+  <data name="meeting_obligations_list_2_bullet_1" xml:space="preserve">
+    <value>acquire packaging waste recycling notes (PRNs) and packaging waste export recycling notes (PERNs)</value>
   </data>
-  <data name="january" xml:space="preserve">
-    <value>31 January</value>
+  <data name="meeting_obligations_list_2_bullet_2" xml:space="preserve">
+    <value>accept your PRNs and PERNs towards your recycling obligations</value>
   </data>
-    <data name="acquire_and_accept_advisory_text" xml:space="preserve">
-    <value>Acquire and accept PRNs and PERNs until your recycling obligations are fully met. Select a material for information on how the data was calculated and view your progress towards meeting your {0} recycling obligations.</value>
-  </data> 
+  <data name="meeting_obligations_table_below_statement" xml:space="preserve">
+    <value>You will see data for PRNs and PERNs you have acquired in the table below. But you will only see progress against your actual recycling obligations once they have been calculated.</value>
+  </data>
 </root>
