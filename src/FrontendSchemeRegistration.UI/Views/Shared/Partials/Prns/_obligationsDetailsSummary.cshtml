@@ -6,8 +6,9 @@
 
 @{
     var ComplianceYear = Model.ComplianceYear;
-    var IsFutureYear = ComplianceYear > DateTime.Now.Year;
-    var InDecemberJanuaryFlashWindow = TimeProvider.GetUtcNow().IsInDecemberJanuaryFlashWindow();
+    var Now = TimeProvider.GetUtcNow();
+    var IsFutureYear = ComplianceYear > Now.GetComplianceYear();
+    var InDecemberJanuaryFlashWindow = Now.IsInDecemberJanuaryFlashWindow();
     
     var ShowAccordion = IsFutureYear
         && InDecemberJanuaryFlashWindow

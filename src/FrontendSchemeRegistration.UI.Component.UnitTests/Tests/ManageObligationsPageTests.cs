@@ -192,6 +192,29 @@ public class ManageObligationsPageTests
     }
 
     [Test]
+    public async Task WhenFutureYearSelected_InJanuaryPartOfDecemberJanuaryFlashWindow_WithDecemberWastePrnAwaitingAcceptance_ShowsDetailsSummaryAccordion()
+    {
+        // January's calendar year is one ahead of its compliance year (MapToComplianceYear
+        // subtracts 1 in January), so comparing against the raw calendar year - rather than the
+        // compliance year - would wrongly treat the selected future compliance year as not future
+        // and hide the accordion for the whole January leg of the flash window.
+        SetUp(
+            showMultiYearObligations: true,
+            obligationData: WebApiOptions.ObligationDataType.NoDataYet,
+            prnOrganisationData: WebApiOptions.PrnOrganisationDataType.DecemberWasteAwaitingAcceptance,
+            startupUtcTimestampOverride: "2027-01-15T08:00:00Z");
+        await Context.Client.AuthenticateDefaultUser();
+        SetProducerSession(selectedObligationYear: ComplianceYear + 1);
+
+        var response = await Context.Client.GetAsync(ObligationsHomePath);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
+            .ScrubCommonHtmlNodes();
+    }
+
+    [Test]
     public async Task WhenShowPrnsOnCdpDisabled_KeepsPackagingAwaitingAcceptanceLinks()
     {
         SetUp(
