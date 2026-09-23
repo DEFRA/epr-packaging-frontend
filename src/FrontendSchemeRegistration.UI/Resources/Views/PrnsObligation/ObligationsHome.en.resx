@@ -159,7 +159,10 @@
   <data name="january" xml:space="preserve">
     <value>31 January</value>
   </data>
-    <data name="acquire_and_accept_advisory_text" xml:space="preserve">
+  <data name="acquire_and_accept_advisory_text" xml:space="preserve">
     <value>Acquire and accept PRNs and PERNs until your recycling obligations are fully met. Select a material for information on how the data was calculated and view your progress towards meeting your {0} recycling obligations.</value>
+  </data> 
+  <data name="acquire_and_accept_advisory_text_multi_year" xml:space="preserve">
+    <value>Acquire and accept packaging waste recycling notes (PRNs) and packaging waste export recycling notes (PERNs) until your recycling obligations are fully met. Select a material for information on how the data was calculated and view your progress towards meeting your {0} recycling obligations.</value>
   </data> 
 </root>

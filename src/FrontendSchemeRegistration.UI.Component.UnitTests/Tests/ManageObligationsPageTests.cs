@@ -60,13 +60,34 @@ public class ManageObligationsPageTests
     }
 
     [Test]
-    public async Task WhenObligationsPresent_AndMultiYearEnabled_ShowsExistingAdvisoryText()
+    public async Task WhenObligationsPresent_AndMultiYearEnabled_AndNotFutureYear_ShowsMultiYearAdvisoryText()
     {
+        // ShowMultiYearObligations && !IsFutureYear selects the fuller "packaging waste recycling
+        // notes (PRNs) and packaging waste export recycling notes (PERNs)" wording.
         SetUp(
             showMultiYearObligations: true,
             obligationData: WebApiOptions.ObligationDataType.Mixed);
         await Context.Client.AuthenticateDefaultUser();
         SetProducerSession();
+
+        var response = await Context.Client.GetAsync(ObligationsHomePath);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        await Verify(content, VerifyHtml.Extension, VerifyHtml.DefaultSettings)
+            .ScrubCommonHtmlNodes();
+    }
+
+    [Test]
+    public async Task WhenObligationsPresent_AndMultiYearEnabled_AndFutureYear_ShowsOriginalAdvisoryText()
+    {
+        // A future compliance year keeps the original, shorter "PRNs and PERNs" wording even
+        // with multi-year obligations enabled - IsFutureYear takes precedence.
+        SetUp(
+            showMultiYearObligations: true,
+            obligationData: WebApiOptions.ObligationDataType.Mixed);
+        await Context.Client.AuthenticateDefaultUser();
+        SetProducerSession(selectedObligationYear: ComplianceYear + 1);
 
         var response = await Context.Client.GetAsync(ObligationsHomePath);
         response.StatusCode.Should().Be(HttpStatusCode.OK);

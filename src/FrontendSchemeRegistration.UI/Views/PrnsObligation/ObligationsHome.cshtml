@@ -41,6 +41,9 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
             <h2 class="govuk-heading-l">@Localizer["how_to_meet_your_recycling_obligations"]</h2>
+            @{
+               var IsFutureYear =  Model.ComplianceYear > DateTime.Now.Year;
+            }
             @if (Model.OverallStatus == ObligationStatus.NoDataYet)
             {
                 @if (showMultiYearObligations)
@@ -61,7 +64,13 @@
             }
             else
             {
-                <p class="govuk-body">@Localizer["acquire_and_accept_advisory_text", Model.ComplianceYear]</p>
+                @if (showMultiYearObligations)
+                {
+                    <p class="govuk-body">@Localizer["acquire_and_accept_advisory_text_multi_year", Model.ComplianceYear]</p>                    
+                } 
+                else {
+                    <p class="govuk-body">@Localizer["acquire_and_accept_advisory_text", Model.ComplianceYear]</p>
+                }
             }
             @await Html.PartialAsync("Partials/Prns/_prnMaterialTable",
             new PrnMaterialObligationTableViewModel
