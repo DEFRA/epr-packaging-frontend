@@ -206,6 +206,21 @@
             "wood",
             "your_recycling_obligations_progress"
           ]
+        },
+        {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_obligationsDetailsSummary.en.resx",
+          "section": "Shared partial for future-years details/summary element, shown on Manage obligations page.",
+          "keys": [
+            "obligations_details_summary_heading",
+            "obligations_details_summary_content_intro",
+            "obligations_details_summary_content_before_list_1",
+            "obligations_details_summary_content_before_list_2",
+            "obligations_details_summary_content_bullet_1",
+            "obligations_details_summary_content_bullet_2", 
+            "obligations_details_summary_content_bullet_3",
+            "obligations_details_summary_content_after_list",
+            "obligations_details_summary_content_end"
+          ]
         }
       ]
     }
