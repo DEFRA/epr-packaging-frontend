@@ -45,11 +45,7 @@
             {
                 @if (showMultiYearObligations)
                 {
-                    <p class="govuk-body">@Localizer["your_yyyy_recycling_obligations_will_be", Model.ComplianceYear]</p>
-                    <ul class="govuk-list govuk-list--bullet">
-                        <li>@Localizer["you_submit_your_packaging_data_for", Model.ComplianceYear - 1]</li>
-                        <li>@Localizer["the_regulator_accepts_your_h1_and_h2_packaging_data_submissions"]</li>
-                    </ul>
+                    @await Html.PartialAsync("../Shared/Partials/Prns/_meetingObligations")
                     @await Html.PartialAsync("../Shared/Partials/Prns/_obligationsDetailsSummary")
                 }
                 else
@@ -65,7 +61,13 @@
             }
             else
             {
-                <p class="govuk-body">@Localizer["acquire_and_accept_advisory_text", Model.ComplianceYear]</p>
+                @if (showMultiYearObligations)
+                {
+                    <p class="govuk-body">@Localizer["acquire_and_accept_advisory_text_multi_year", Model.ComplianceYear]</p>                    
+                } 
+                else {
+                    <p class="govuk-body">@Localizer["acquire_and_accept_advisory_text", Model.ComplianceYear]</p>
+                }
             }
             @await Html.PartialAsync("Partials/Prns/_prnMaterialTable",
             new PrnMaterialObligationTableViewModel

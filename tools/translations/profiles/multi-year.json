@@ -128,14 +128,6 @@
       "appSettings": {},
       "resources": [
         {
-          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ObligationsHome.en.resx",
-          "section": "No-obligations alternative content below How to meet your recycling obligations.",
-          "keys": [
-            "your_yyyy_recycling_obligations_will_be",
-            "the_regulator_accepts_your_h1_and_h2_packaging_data_submissions"
-          ]
-        },
-        {
           "source": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_reviewPRNsAndPERNs.en.resx",
           "section": "Shared partial for review your PRNS and PERNS links, shown on Manage obligations page .",
           "keys": [
@@ -216,10 +208,23 @@
             "obligations_details_summary_content_before_list_1",
             "obligations_details_summary_content_before_list_2",
             "obligations_details_summary_content_bullet_1",
-            "obligations_details_summary_content_bullet_2", 
+            "obligations_details_summary_content_bullet_2",
             "obligations_details_summary_content_bullet_3",
             "obligations_details_summary_content_after_list",
             "obligations_details_summary_content_end"
+          ]
+        },
+        {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_meetingObligations.en.resx",
+          "section": "Shared partial for future-years how to meet obligations content, shown on Manage obligations page.",
+          "keys": [
+            "meeting_obligations_list_1_prefix",
+            "meeting_obligations_list_1_bullet_1",
+            "meeting_obligations_list_1_bullet_2",
+            "meeting_obligations_list_2_prefix",
+            "meeting_obligations_list_2_bullet_1",
+            "meeting_obligations_list_2_bullet_2",
+            "meeting_obligations_table_below_statement"
           ]
         }
       ]
