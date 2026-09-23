@@ -41,9 +41,6 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
             <h2 class="govuk-heading-l">@Localizer["how_to_meet_your_recycling_obligations"]</h2>
-            @{
-               var IsFutureYear =  Model.ComplianceYear > DateTime.Now.Year;
-            }
             @if (Model.OverallStatus == ObligationStatus.NoDataYet)
             {
                 @if (showMultiYearObligations)

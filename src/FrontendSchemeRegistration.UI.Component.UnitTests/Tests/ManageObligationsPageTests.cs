@@ -60,10 +60,10 @@ public class ManageObligationsPageTests
     }
 
     [Test]
-    public async Task WhenObligationsPresent_AndMultiYearEnabled_AndNotFutureYear_ShowsMultiYearAdvisoryText()
+    public async Task WhenObligationsPresent_AndMultiYearEnabled_ShowsMultiYearAdvisoryText()
     {
-        // ShowMultiYearObligations && !IsFutureYear selects the fuller "packaging waste recycling
-        // notes (PRNs) and packaging waste export recycling notes (PERNs)" wording.
+        // ShowMultiYearObligations selects the fuller "packaging waste recycling notes (PRNs) and
+        // packaging waste export recycling notes (PERNs)" wording.
         SetUp(
             showMultiYearObligations: true,
             obligationData: WebApiOptions.ObligationDataType.Mixed);
@@ -79,10 +79,10 @@ public class ManageObligationsPageTests
     }
 
     [Test]
-    public async Task WhenObligationsPresent_AndMultiYearEnabled_AndFutureYear_ShowsOriginalAdvisoryText()
+    public async Task WhenObligationsPresent_AndMultiYearEnabled_AndFutureYear_StillShowsMultiYearAdvisoryText()
     {
-        // A future compliance year keeps the original, shorter "PRNs and PERNs" wording even
-        // with multi-year obligations enabled - IsFutureYear takes precedence.
+        // The multi-year advisory wording does not depend on the selected year being in the
+        // future - it shows whenever showMultiYearObligations is enabled.
         SetUp(
             showMultiYearObligations: true,
             obligationData: WebApiOptions.ObligationDataType.Mixed);
