@@ -36,7 +36,7 @@
       "route": "/report-data/home-compliance-scheme",
       "section": "PRN tile heading, intro and existing bullets on account home.",
       "english": "Review your recycling obligations and accept PRNs or PERNs to meet them. You can also:",
-      "welsh": "",
+      "welsh": "Adolygu eich rhwymedigaethau ailgylchu a derbyn PRNs neu PERNs i'w bodloni. Gallwch chi hefyd:",
       "figmaUrl": "",
       "context": "Compliance scheme account home page: CSoC content in the PRN tile.\nPRN tile heading, intro and existing bullets on account home.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
     },
@@ -48,7 +48,7 @@
       "route": "/report-data/home-compliance-scheme",
       "section": "PRN tile heading, intro and existing bullets on account home.",
       "english": "Review your recycling obligations and accept PRNs or PERNs to meet them. You can also:",
-      "welsh": "",
+      "welsh": "Adolygu eich rhwymedigaethau ailgylchu a derbyn PRNs neu PERNs i'w bodloni. Gallwch chi hefyd:",
       "figmaUrl": "",
       "context": "Compliance scheme account home page: CSoC content in the PRN tile.\nPRN tile heading, intro and existing bullets on account home.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
     },
@@ -60,7 +60,7 @@
       "route": "/report-data/home-compliance-scheme",
       "section": "PRN tile heading, intro and existing bullets on account home.",
       "english": "see how your recycling obligations were calculated",
-      "welsh": "",
+      "welsh": "gweld sut cafodd eich rhwymedigaethau ailgylchu eu cyfrifo",
       "figmaUrl": "",
       "context": "Compliance scheme account home page: CSoC content in the PRN tile.\nPRN tile heading, intro and existing bullets on account home.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
     },
@@ -72,7 +72,7 @@
       "route": "/report-data/home-compliance-scheme",
       "section": "PRN tile heading, intro and existing bullets on account home.",
       "english": "check your recycling obligations progress",
-      "welsh": "",
+      "welsh": "gwirio cynnydd eich rhwymedigaethau ailgylchu",
       "figmaUrl": "",
       "context": "Compliance scheme account home page: CSoC content in the PRN tile.\nPRN tile heading, intro and existing bullets on account home.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
     },
