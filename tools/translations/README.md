@@ -59,9 +59,9 @@ translator-owned strings.
 
 The current CSoC profile covers:
 
-- `/report-data/home-compliance-scheme` via `ComplianceSchemeLandingController`, where `FeatureManagement:ShowPrn` and `FeatureManagement:CsocEnabled` allow the CSoC bullet and paragraph in the PRN tile.
+- `/report-data/home-compliance-scheme` via `ComplianceSchemeLandingController`, where `FeatureManagement:ShowPrn` and `FeatureManagement:CsocEnabled` allow the CSoC bullet and paragraph in the PRN tile, plus the existing tile heading, intro and bullets.
 - `/report-data/manage-your-recycling-obligations` via `PrnsObligationController`, where `FeatureManagement:ShowPrn` and `FeatureManagement:CsocEnabled` allow the CSoC status card.
-- `/report-data/home-self-managed` via `FrontendSchemeRegistrationController`, where `FeatureManagement:ShowPrn` and `FeatureManagement:CsocEnabled` allow the same shared CSoC bullet and paragraph in the PRN tile.
+- `/report-data/home-self-managed` via `FrontendSchemeRegistrationController`, where `FeatureManagement:ShowPrn` and `FeatureManagement:CsocEnabled` allow the same shared PRN tile and CSoC bullet and paragraph.
 - `Csoc:WasteObligationsBaseAddress`, which is used by `CsocHelper` to build statement and certificate links.
 
 Shared content is exported only once. If a profiled page only reuses entries
@@ -238,6 +238,7 @@ files currently named in the profile:
 
 4. In those views, follow every CSoC partial, view component or localizer call,
    such as:
+   - `Partials/Prns/_ManageRecyclingObligationsTile`
    - `Partials/Csoc/_LandingBullet`
    - `Partials/Csoc/_LandingParagraph`
    - `Partials/Csoc/_ObligationsHome`

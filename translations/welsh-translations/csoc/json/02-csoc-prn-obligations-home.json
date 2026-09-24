@@ -12,7 +12,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Status card headings, body text, regulator names and action buttons.",
       "english": "Submit your statement of compliance",
-      "welsh": "",
+      "welsh": "Cyflwyno eich datganiad cydymffurfio",
       "figmaUrl": "",
       "context": "Manage recycling obligations page: CSoC status card.\nStatus card headings, body text, regulator names and action buttons.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
     },
@@ -24,7 +24,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Status card headings, body text, regulator names and action buttons.",
       "english": "Submit your certificate of compliance",
-      "welsh": "",
+      "welsh": "Cyflwyno eich tystysgrif cydymffurfio",
       "figmaUrl": "",
       "context": "Manage recycling obligations page: CSoC status card.\nStatus card headings, body text, regulator names and action buttons.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
     },
@@ -35,8 +35,8 @@
       "pageId": "csoc-prn-obligations-home",
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Status card headings, body text, regulator names and action buttons.",
-      "english": "An approved or delegated person must submit your {1} statement of compliance before or on <strong>{2:d MMMM yyyy}</strong>",
-      "welsh": "",
+      "english": "An approved or delegated person must submit your {1} statement of compliance before or on {2:d MMMM yyyy}.",
+      "welsh": "Rhaid i berson cymeradwy neu ddirprwyedig gyflwyno eich {1} datganiad cydymffurfio ar {2:d MMMM yyyy} neu cyn hynny.",
       "figmaUrl": "",
       "context": "Manage recycling obligations page: CSoC status card.\nStatus card headings, body text, regulator names and action buttons.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
     },
@@ -47,8 +47,8 @@
       "pageId": "csoc-prn-obligations-home",
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Status card headings, body text, regulator names and action buttons.",
-      "english": "An approved or delegated person must submit your {1} certificate of compliance before or on <strong>{2:d MMMM yyyy}</strong>",
-      "welsh": "",
+      "english": "An approved or delegated person must submit your {1} certificate of compliance before or on {2:d MMMM yyyy}.",
+      "welsh": "Rhaid i berson cymeradwy neu ddirprwyedig gyflwyno eich {1} tystysgrif cydymffurfio ar {2:d MMMM yyyy} neu cyn hynny.",
       "figmaUrl": "",
       "context": "Manage recycling obligations page: CSoC status card.\nStatus card headings, body text, regulator names and action buttons.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
     },
@@ -60,7 +60,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Status card headings, body text, regulator names and action buttons.",
       "english": "Submit your statement",
-      "welsh": "",
+      "welsh": "Cyflwyno eich datganiad",
       "figmaUrl": "",
       "context": "Manage recycling obligations page: CSoC status card.\nStatus card headings, body text, regulator names and action buttons.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
     },
@@ -72,7 +72,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Status card headings, body text, regulator names and action buttons.",
       "english": "Submit your certificate",
-      "welsh": "",
+      "welsh": "Cyflwyno eich tystysgrif",
       "figmaUrl": "",
       "context": "Manage recycling obligations page: CSoC status card.\nStatus card headings, body text, regulator names and action buttons.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
     },
@@ -84,7 +84,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Status card headings, body text, regulator names and action buttons.",
       "english": "View your statement of compliance",
-      "welsh": "",
+      "welsh": "Gweld eich datganiad cydymffurfio",
       "figmaUrl": "",
       "context": "Manage recycling obligations page: CSoC status card.\nStatus card headings, body text, regulator names and action buttons.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
     },
@@ -96,7 +96,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Status card headings, body text, regulator names and action buttons.",
       "english": "View your certificate of compliance",
-      "welsh": "",
+      "welsh": "Gweld eich tystysgrif cydymffurfio",
       "figmaUrl": "",
       "context": "Manage recycling obligations page: CSoC status card.\nStatus card headings, body text, regulator names and action buttons.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
     },
@@ -108,7 +108,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Status card headings, body text, regulator names and action buttons.",
       "english": "Your {1} statement of compliance has been submitted.",
-      "welsh": "",
+      "welsh": "Mae eich {1} datganiad cydymffurfio wedi’i gyflwyno.",
       "figmaUrl": "",
       "context": "Manage recycling obligations page: CSoC status card.\nStatus card headings, body text, regulator names and action buttons.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
     },
@@ -120,7 +120,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Status card headings, body text, regulator names and action buttons.",
       "english": "Your {1} certificate of compliance has been submitted.",
-      "welsh": "",
+      "welsh": "Mae eich {1} tystysgrif cydymffurfio wedi’i chyflwyno.",
       "figmaUrl": "",
       "context": "Manage recycling obligations page: CSoC status card.\nStatus card headings, body text, regulator names and action buttons.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
     },
@@ -132,7 +132,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Status card headings, body text, regulator names and action buttons.",
       "english": "View your statement of compliance",
-      "welsh": "",
+      "welsh": "Gweld eich datganiad cydymffurfio",
       "figmaUrl": "",
       "context": "Manage recycling obligations page: CSoC status card.\nStatus card headings, body text, regulator names and action buttons.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
     },
@@ -144,7 +144,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Status card headings, body text, regulator names and action buttons.",
       "english": "View your certificate of compliance",
-      "welsh": "",
+      "welsh": "Gweld eich tystysgrif cydymffurfio",
       "figmaUrl": "",
       "context": "Manage recycling obligations page: CSoC status card.\nStatus card headings, body text, regulator names and action buttons.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
     },
@@ -156,7 +156,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Status card headings, body text, regulator names and action buttons.",
       "english": "Resubmit your statement of compliance",
-      "welsh": "",
+      "welsh": "Ailgyflwyno eich datganiad cydymffurfio",
       "figmaUrl": "",
       "context": "Manage recycling obligations page: CSoC status card.\nStatus card headings, body text, regulator names and action buttons.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
     },
@@ -168,7 +168,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Status card headings, body text, regulator names and action buttons.",
       "english": "Resubmit your certificate of compliance",
-      "welsh": "",
+      "welsh": "Ailgyflwyno eich tystysgrif cydymffurfio",
       "figmaUrl": "",
       "context": "Manage recycling obligations page: CSoC status card.\nStatus card headings, body text, regulator names and action buttons.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
     },
@@ -179,8 +179,8 @@
       "pageId": "csoc-prn-obligations-home",
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Status card headings, body text, regulator names and action buttons.",
-      "english": "The {0} cancelled your {1} statement of compliance. An approved or delegated person must resubmit your statement before or on <strong>{2:d MMMM yyyy}</strong>",
-      "welsh": "",
+      "english": "The {0} cancelled your {1} statement of compliance. An approved or delegated person must resubmit your statement before or on {2:d MMMM yyyy}.",
+      "welsh": "Mae {0} wedi canslo eich {1} datganiad cydymffurfio. Rhaid i berson cymeradwy neu ddirprwyedig ailgyflwyno eich datganiad ar {2:d MMMM yyyy} neu cyn hynny.",
       "figmaUrl": "",
       "context": "Manage recycling obligations page: CSoC status card.\nStatus card headings, body text, regulator names and action buttons.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
     },
@@ -191,8 +191,8 @@
       "pageId": "csoc-prn-obligations-home",
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Status card headings, body text, regulator names and action buttons.",
-      "english": "The {0} cancelled your {1} certificate of compliance. An approved or delegated person must resubmit your certificate before or on <strong>{2:d MMMM yyyy}</strong>",
-      "welsh": "",
+      "english": "The {0} cancelled your {1} certificate of compliance. An approved or delegated person must resubmit your certificate before or on {2:d MMMM yyyy}.",
+      "welsh": "Mae {0} wedi canslo eich {1} tystysgrif cydymffurfio. Rhaid i berson cymeradwy neu ddirprwyedig gyflwyno eich tystysgrif ar {2:d MMMM yyyy} neu cyn hynny.",
       "figmaUrl": "",
       "context": "Manage recycling obligations page: CSoC status card.\nStatus card headings, body text, regulator names and action buttons.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
     },
@@ -204,7 +204,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Status card headings, body text, regulator names and action buttons.",
       "english": "Resubmit your statement",
-      "welsh": "",
+      "welsh": "Ailgyflwyno eich datganiad",
       "figmaUrl": "",
       "context": "Manage recycling obligations page: CSoC status card.\nStatus card headings, body text, regulator names and action buttons.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
     },
@@ -216,7 +216,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Status card headings, body text, regulator names and action buttons.",
       "english": "Resubmit your certificate",
-      "welsh": "",
+      "welsh": "Ailgyflwyno eich tystysgrif",
       "figmaUrl": "",
       "context": "Manage recycling obligations page: CSoC status card.\nStatus card headings, body text, regulator names and action buttons.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
     },
@@ -240,7 +240,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Status card headings, body text, regulator names and action buttons.",
       "english": "Environment Agency (England)",
-      "welsh": "",
+      "welsh": "Asiantaeth yr Amgylchedd (Lloegr)",
       "figmaUrl": "",
       "context": "Manage recycling obligations page: CSoC status card.\nStatus card headings, body text, regulator names and action buttons.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
     },
@@ -252,7 +252,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Status card headings, body text, regulator names and action buttons.",
       "english": "Environment Agency (Northern Ireland)",
-      "welsh": "",
+      "welsh": "Asiantaeth yr Amgylchedd (Gogledd Iwerddon)",
       "figmaUrl": "",
       "context": "Manage recycling obligations page: CSoC status card.\nStatus card headings, body text, regulator names and action buttons.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
     },
@@ -264,7 +264,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Status card headings, body text, regulator names and action buttons.",
       "english": "Environment Agency (Scotland)",
-      "welsh": "",
+      "welsh": "Asiantaeth yr Amgylchedd (Yr Alban)",
       "figmaUrl": "",
       "context": "Manage recycling obligations page: CSoC status card.\nStatus card headings, body text, regulator names and action buttons.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
     },
@@ -276,7 +276,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Status card headings, body text, regulator names and action buttons.",
       "english": "Environment Agency (Wales)",
-      "welsh": "",
+      "welsh": "Asiantaeth yr Amgylchedd (Cymru)",
       "figmaUrl": "",
       "context": "Manage recycling obligations page: CSoC status card.\nStatus card headings, body text, regulator names and action buttons.\nFeature flag(s): ShowPrn, CsocEnabled\nApp setting(s): Csoc:WasteObligationsBaseAddress - Base address used by CsocHelper to build certificate or statement links."
     }
