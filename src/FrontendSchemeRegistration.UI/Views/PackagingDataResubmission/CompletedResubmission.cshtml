@@ -106,14 +106,27 @@
 			}
 
 			<h2 class="govuk-heading-m">@Localizer["if_your_circumstances_change"]</h2>
-			<p class="govuk-body">@Localizer["if_your_circumstances_change_text_approved_user"]</p>
 
-			@* SUB-345: starting another resubmission is the task list's job, which raises the new cycle. *@
+			@* SUB-345: starting another resubmission is the task list's job, which raises the new cycle. A basic
+			   user can upload a new file but not submit it, so they are offered the same route with wording that
+			   says so - matching the accepted branch of UploadNewFileToSubmit ("View your submission"). The
+			   submit steps beyond the upload are left for an approved or delegated person to complete. *@
 			@if (Model.IsApprovedOrDelegatedUser)
 			{
+				<p class="govuk-body">@Localizer["if_your_circumstances_change_text_approved_user"]</p>
 				<p class="govuk-body">
 					<a asp-controller="PackagingDataResubmission" asp-action="ResubmissionTaskList" class="govuk-link govuk-link--no-visited-state">
 						@Localizer[Model.IsComplianceScheme ? "resubmit_members_packaging_data" : "resubmit_packaging_data"]
+					</a>
+				</p>
+			}
+			else
+			{
+				<p class="govuk-body">@Localizer["upload_a_new_file_text_basic_user"]</p>
+				<p class="govuk-body">@Localizer["upload_a_new_file_text_permission_basic_user"]</p>
+				<p class="govuk-body">
+					<a asp-controller="PackagingDataResubmission" asp-action="ResubmissionTaskList" class="govuk-link govuk-link--no-visited-state">
+						@Localizer["upload_new_file"]
 					</a>
 				</p>
 			}
