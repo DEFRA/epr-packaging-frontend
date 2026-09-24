@@ -81,4 +81,13 @@
     <data name="return_to_dashboard" xml:space="preserve">
         <value>Return to the dashboard</value>
     </data>
+    <data name="upload_a_new_file_text_basic_user" xml:space="preserve">
+        <value>You can upload a new file to the environmental regulator, but you don’t have permission to submit files.</value>
+    </data>
+    <data name="upload_a_new_file_text_permission_basic_user" xml:space="preserve">
+        <value>Someone in your team with the right account permissions will need to submit the file to the environmental regulator.</value>
+    </data>
+    <data name="upload_new_file" xml:space="preserve">
+        <value>Upload new file</value>
+    </data>
 </root>
