@@ -81,4 +81,13 @@
     <data name="return_to_dashboard" xml:space="preserve">
         <value>Yn ôl i’r dangosfwrdd</value>
     </data>
+    <data name="upload_a_new_file_text_basic_user" xml:space="preserve">
+        <value>Cewch uwchlwytho ffeil newydd i'r rheoleiddiwr amgylcheddol, ond does dim caniatâd gennych i gyflwyno ffeiliau.</value>
+    </data>
+    <data name="upload_a_new_file_text_permission_basic_user" xml:space="preserve">
+        <value>Bydd angen i rywun yn eich tîm sydd â'r caniatâd cywir yn y cyfrif gyflwyno'r ffeil i'r rheoleiddiwr amgylcheddol.</value>
+    </data>
+    <data name="upload_new_file" xml:space="preserve">
+        <value>Uwchlwytho ffeil newydd</value>
+    </data>
 </root>
