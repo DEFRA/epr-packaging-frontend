@@ -540,9 +540,18 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         var registrationSessionTask = sessionManager.GetSessionAsync(httpSession);
         var frontEndSession = await frontEndSessionManager.GetSessionAsync(httpSession) ?? new FrontendSchemeRegistrationSession();
 
-        //this is wrong needs fixing
         var submissionYear = registrationYear;
         var period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" };
+
+        // A cached ApplicationReferenceNumber only belongs to this registration year if it was cached
+        // against this exact period. One left over from a different year - e.g. the producer entered
+        // the file-upload journey for a different registration year earlier in this browser session -
+        // must never be carried into this year's submission, so drop it rather than reuse it.
+        if (!string.IsNullOrWhiteSpace(frontEndSession.RegistrationSession.SubmissionPeriod)
+            && !string.Equals(frontEndSession.RegistrationSession.SubmissionPeriod, period.DataPeriod, StringComparison.Ordinal))
+        {
+            frontEndSession.RegistrationSession.ApplicationReferenceNumber = null;
+        }
 
         frontEndSession.RegistrationSession.SubmissionPeriod = period.DataPeriod;
         frontEndSession.RegistrationSession.IsFileUploadJourneyInvokedViaRegistration = true;
@@ -551,23 +560,28 @@ public class RegistrationApplicationService : IRegistrationApplicationService
 
         frontEndSession.RegistrationSession.IsResubmission = registrationSession.IsResubmission;
 
+        // Likewise, only trust the persisted/"database" value when it was actually loaded for the
+        // year being requested here: RegistrationApplicationSession can be left over from the last
+        // registration year the producer viewed (e.g. the task list), not necessarily this one.
+        var registrationSessionIsForRequestedYear = registrationSession.Period?.Year == period.Year;
+
         // Prefer the persisted database value; only generate a new ApplicationReferenceNumber
-        // if neither the database nor the session already has one.
-        if (!string.IsNullOrWhiteSpace(registrationSession.ApplicationReferenceNumber))
+        // if neither the database nor the session already has one for this year.
+        if (registrationSessionIsForRequestedYear && !string.IsNullOrWhiteSpace(registrationSession.ApplicationReferenceNumber))
         {
             frontEndSession.RegistrationSession.ApplicationReferenceNumber = registrationSession.ApplicationReferenceNumber;
         }
         else if (string.IsNullOrWhiteSpace(frontEndSession.RegistrationSession.ApplicationReferenceNumber))
         {
             frontEndSession.RegistrationSession.ApplicationReferenceNumber = ReferenceNumberBuilder.Build(
-                registrationSession.Period,
+                period,
                 organisationNumber,
                 _timeProvider,
                 registrationSession.IsComplianceScheme,
                 registrationSession.SelectedComplianceScheme?.RowNumber ?? 0,
                 registrationSession.RegistrationJourney?.ToString());
         }
-        
+
         await frontEndSessionManager.SaveSessionAsync(httpSession, frontEndSession);
     }
 
