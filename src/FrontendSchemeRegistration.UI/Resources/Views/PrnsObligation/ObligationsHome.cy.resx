@@ -141,17 +141,11 @@
   <data name="your_recycling_obligations_will_be" xml:space="preserve">
     <value>Bydd eich rhwymedigaethau ailgylchu yn cael eu cyfrifo:</value>
   </data>
-  <data name="your_yyyy_recycling_obligations_will_be" xml:space="preserve">
-    <value>Your {0} recycling obligations will be calculated after:</value>
-  </data>
   <data name="you_can_start_acquiring_and_accepting" xml:space="preserve">
     <value>Gallwch chi ddechrau sicrhau a derbyn PRNs a PERNs i gyflawni'ch rhwymedigaethau ailgylchu.</value>
   </data>
   <data name="you_submit_your_packaging_data_for" xml:space="preserve">
     <value>ar ôl ichi gyflwyno'ch data pecynwaith ar gyfer {0}</value>
-  </data>
-  <data name="the_regulator_accepts_your_h1_and_h2_packaging_data_submissions" xml:space="preserve">
-    <value>the regulator accepts your H1 and H2 packaging data submissions</value>
   </data>
   <data name="to_meet_your_recycling_obligations_for" xml:space="preserve">
     <value>i gyflawni'ch rhwymedigaethau ailgylchu ar gyfer </value>
@@ -168,4 +162,7 @@
     <data name="acquire_and_accept_advisory_text" xml:space="preserve">
     <value>Ewch ati i sicrhau a derbyn PRNs a PERNs nes bod eich rhwymedigaethau ailgylchu wedi'u cyflawni'n llwyr. Dewiswch ddeunydd ar gyfer gwybodaeth am sut cafodd y data ei gasglu ac i weld eich cynnydd tuag at gyflawni'ch rhwymedigaethau ailgylchu ar gyfer {0}.</value>
   </data>
+  <data name="acquire_and_accept_advisory_text_multi_year" xml:space="preserve">
+    <value>Acquire and accept packaging waste recycling notes (PRNs) and packaging waste export recycling notes (PERNs) until your recycling obligations are fully met. Select a material for information on how the data was calculated and view your progress towards meeting your {0} recycling obligations.</value>
+  </data> 
 </root>

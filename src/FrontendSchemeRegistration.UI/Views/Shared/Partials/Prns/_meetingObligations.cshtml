@@ -1,0 +1,17 @@
+@{
+    var ComplianceYear = Model.ComplianceYear;
+
+    var listOnePrefix = string.Format(Localizer["meeting_obligations_list_1_prefix"].Value, ComplianceYear);
+    var listOneBulletOne = string.Format(Localizer["meeting_obligations_list_1_bullet_1"].Value, ComplianceYear - 1);
+}
+<p class="govuk-body">@listOnePrefix</p>
+<ul class="govuk-list govuk-list--bullet govuk-!-margin-left-2">
+    <li>@listOneBulletOne</li>
+    <li>@Localizer["meeting_obligations_list_1_bullet_2"]</li>
+</ul>
+<p class="govuk-body">@Localizer["meeting_obligations_list_2_prefix"]</p>
+<ul class="govuk-list govuk-list--bullet govuk-!-margin-left-2">
+    <li>@Localizer["meeting_obligations_list_2_bullet_1"]</li>
+    <li>@Localizer["meeting_obligations_list_2_bullet_2"]</li>
+</ul>
+<p class="govuk-body">@Localizer["meeting_obligations_table_below_statement"]</p>

@@ -13,15 +13,15 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="bullet_compliance_scheme" xml:space="preserve">
-    <value>submit your statement of compliance</value>
+    <value>cyflwyno eich datganiad cydymffurfio</value>
   </data>
   <data name="bullet_direct_producer" xml:space="preserve">
-    <value>submit your certificate of compliance</value>
+    <value>cyflwyno eich tystysgrif cydymffurfio</value>
   </data>
   <data name="bullet_view_compliance_scheme" xml:space="preserve">
-    <value>view your statement of compliance</value>
+    <value>gweld eich datganiad cydymffurfio</value>
   </data>
   <data name="bullet_view_direct_producer" xml:space="preserve">
-    <value>view your certificate of compliance</value>
+    <value>gweld eich tystysgrif cydymffurfio</value>
   </data>
 </root>

@@ -802,7 +802,7 @@ public class RegistrationApplicationServiceTests
             _session.SelectedComplianceScheme = new ComplianceSchemeDto { RowNumber = csRowNumber };
 
             // Act
-            await _service.SetRegistrationFileUploadSession(_httpSession, organisationId, It.IsAny<int>());
+            await _service.SetRegistrationFileUploadSession(_httpSession, organisationId, int.Parse(period.Year));
 
             switch (int.Parse(period.Year))
             {
@@ -846,7 +846,7 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(frontEndSession);
 
         // Act
-        await _service.SetRegistrationFileUploadSession(_httpSession, organisationNumber, It.IsAny<int>());
+        await _service.SetRegistrationFileUploadSession(_httpSession, organisationNumber, RegistrationYear);
 
         // Assert
         _frontEndSessionManagerMock.Verify(
@@ -873,13 +873,12 @@ public class RegistrationApplicationServiceTests
             .Setup(m => m.GetSessionAsync(_httpSession))
             .ReturnsAsync(frontEndSession);
 
-        //this is wrong needs fixing 
         var submissionYear = _dateTimeProvider.GetUtcNow().AddYears(-1).Year;
         _session.Period = new SubmissionPeriod { DataPeriod = $"January to December {submissionYear}", StartMonth = "January", EndMonth = "December", Year = $"{submissionYear}" };
-        
+
         var expectedApplicationReferenceNumber = $"PEPR{organisationNumber}{submissionYear - 2000}P2";
         // Act
-        await _service.SetRegistrationFileUploadSession(_httpSession, organisationNumber, It.IsAny<int>());
+        await _service.SetRegistrationFileUploadSession(_httpSession, organisationNumber, submissionYear);
 
         // Assert
         _frontEndSessionManagerMock.Verify(
@@ -911,7 +910,7 @@ public class RegistrationApplicationServiceTests
             .ReturnsAsync(frontEndSession);
 
         // Act
-        await _service.SetRegistrationFileUploadSession(_httpSession, organisationNumber, It.IsAny<int>());
+        await _service.SetRegistrationFileUploadSession(_httpSession, organisationNumber, RegistrationYear);
 
         // Assert
         _frontEndSessionManagerMock.Verify(
@@ -982,6 +981,95 @@ public class RegistrationApplicationServiceTests
             m => m.SaveSessionAsync(_httpSession, It.Is<FrontendSchemeRegistrationSession>(session =>
                 session.RegistrationSession.ApplicationReferenceNumber == cachedApplicationReferenceNumber)),
             Times.Once);
+    }
+
+    [Test]
+    public async Task SetRegistrationFileUploadSession_ShouldNotLeakApplicationReferenceNumber_WhenPersistedSessionIsForDifferentRegistrationYear()
+    {
+        // Arrange
+        // Reproduces the reported production bug: a Direct producer has an in-flight 2025 registration
+        // and a 2026 registration. The cookie-backed RegistrationApplicationSession ("_session", aka
+        // "the database value") was last refreshed for 2026 - e.g. because the producer viewed the 2026
+        // task list in another tab, or navigated back to it - so it still carries 2026's persisted
+        // ApplicationReferenceNumber when the file-upload journey is now entered for 2025.
+        const int staleSessionYear = 2026;
+        const int requestedRegistrationYear = 2025;
+        const string year2026ApplicationReferenceNumber = "PEPR12345678P1";
+
+        _session.Period = new SubmissionPeriod
+        {
+            DataPeriod = $"January to December {staleSessionYear}",
+            StartMonth = "January",
+            EndMonth = "December",
+            Year = $"{staleSessionYear}"
+        };
+        _session.ApplicationReferenceNumber = year2026ApplicationReferenceNumber;
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(_session);
+
+        var frontEndSession = new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession()
+        };
+
+        _frontEndSessionManagerMock
+            .Setup(m => m.GetSessionAsync(_httpSession))
+            .ReturnsAsync(frontEndSession);
+
+        // Act - entering the file-upload journey for 2025, the year actually being submitted
+        await _service.SetRegistrationFileUploadSession(_httpSession, "123", requestedRegistrationYear);
+
+        // Assert - the 2025 file-upload session must never be populated with 2026's reference number,
+        // and any number it does end up with must actually be a 2025 one. FileUploadCheckFileAndSubmitController
+        // /DeclarationWithFullNameController later pair this value with the 2025 submissionId when calling
+        // SubmitAsync, which would write 2026's AppReferenceNumber onto the 2025 CosmosDB Submission record.
+        _frontEndSessionManagerMock.Verify(
+            m => m.SaveSessionAsync(_httpSession, It.Is<FrontendSchemeRegistrationSession>(session =>
+                session.RegistrationSession.ApplicationReferenceNumber != year2026ApplicationReferenceNumber
+                && session.RegistrationSession.ApplicationReferenceNumber.Contains("25"))),
+            Times.Once);
+    }
+
+    [Test]
+    public async Task SetRegistrationFileUploadSession_ShouldNotCarryFrontEndCachedApplicationReferenceNumber_AcrossRegistrationYears()
+    {
+        // Arrange
+        // Simulates one browser session: the producer entered the file-upload journey for 2026 first,
+        // which cached 2026's freshly generated ApplicationReferenceNumber on the shared
+        // FrontendSchemeRegistrationSession.RegistrationSession, then entered the file-upload journey
+        // for 2025 in the same session. Neither year has a persisted ("database") reference number yet.
+        const string organisationNumber = "123";
+
+        var frontEndSession = new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession()
+        };
+
+        _frontEndSessionManagerMock
+            .Setup(m => m.GetSessionAsync(_httpSession))
+            .ReturnsAsync(() => frontEndSession);
+        _frontEndSessionManagerMock
+            .Setup(m => m.SaveSessionAsync(_httpSession, It.IsAny<FrontendSchemeRegistrationSession>()))
+            .Callback<ISession, FrontendSchemeRegistrationSession>((_, s) => frontEndSession = s)
+            .Returns(Task.CompletedTask);
+
+        _session.ApplicationReferenceNumber = null;
+        _session.Period = new SubmissionPeriod { DataPeriod = "January to December 2026", StartMonth = "January", EndMonth = "December", Year = "2026" };
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession)).ReturnsAsync(_session);
+
+        // Act - touch 2026 first
+        await _service.SetRegistrationFileUploadSession(_httpSession, organisationNumber, 2026);
+        var year2026ReferenceNumber = frontEndSession.RegistrationSession.ApplicationReferenceNumber;
+
+        // Act - then switch to 2025 in the same session
+        _session.Period = new SubmissionPeriod { DataPeriod = "January to December 2025", StartMonth = "January", EndMonth = "December", Year = "2025" };
+        await _service.SetRegistrationFileUploadSession(_httpSession, organisationNumber, 2025);
+        var year2025ReferenceNumber = frontEndSession.RegistrationSession.ApplicationReferenceNumber;
+
+        // Assert - the 2025 journey must not reuse 2026's cached reference number
+        year2025ReferenceNumber.Should().NotBe(year2026ReferenceNumber);
+        year2025ReferenceNumber.Should().Contain("25");
     }
 
     [Test]

@@ -1,6 +1,7 @@
 @{
     var DetailsSummaryInitialState = ViewData["InitialState"] ?? true;
     var DetailsSummaryHeading = ViewData["Heading"]?.ToString() ?? string.Empty;
+    var ExtendDetailsClassNames = ViewData["ExtendDetailsClassNames"]?.ToString() ?? string.Empty;
     
     // if content contains HTML use "new HtmlString(...)
     var DetailsSummaryContent = ViewData["Content"] ?? string.Empty;
@@ -11,7 +12,7 @@
       @DetailsSummaryHeading
     </span>
   </summary>
-  <div class="govuk-details__text">
+  <div class="govuk-details__text@(string.IsNullOrEmpty(ExtendDetailsClassNames) ? "" : " " + ExtendDetailsClassNames)">
     @DetailsSummaryContent
   </div>
 </details>

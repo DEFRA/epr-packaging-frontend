@@ -21,6 +21,10 @@
       },
       "resources": [
         {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_ManageRecyclingObligationsTile.en.resx",
+          "section": "PRN tile heading, intro and existing bullets on account home."
+        },
+        {
           "source": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Csoc/_LandingBullet.en.resx",
           "section": "Additional PRN tile bullet shown to approved users."
         },
@@ -66,6 +70,10 @@
         "Csoc:WasteObligationsBaseAddress": "Base address used by CsocHelper to build certificate or statement links."
       },
       "resources": [
+        {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_ManageRecyclingObligationsTile.en.resx",
+          "section": "PRN tile heading, intro and existing bullets on account home."
+        },
         {
           "source": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Csoc/_LandingBullet.en.resx",
           "section": "Additional PRN tile bullet shown to approved users."
