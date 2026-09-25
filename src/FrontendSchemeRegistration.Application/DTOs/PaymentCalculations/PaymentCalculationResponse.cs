@@ -40,6 +40,15 @@ namespace FrontendSchemeRegistration.Application.DTOs.PaymentCalculations
         [JsonPropertyName("unitClosedLoopRecyclingFees")]
         public int UnitClosedLoopRecyclingFee { get; set; }
 
+        [JsonPropertyName("totalSubsidiariesLateFees")]
+        public int TotalSubsidiariesLateFee { get; set; }
+
+        [JsonPropertyName("countOfLateSubsidiaries")]
+        public int CountOfLateSubsidiaries { get; set; }
+
+        [JsonPropertyName("unitSubsidiaryLateFee")]
+        public int UnitSubsidiaryLateFee { get; set; }
+
         public FeeBreakdown[] FeeBreakdowns { get; set; }
     }
 
