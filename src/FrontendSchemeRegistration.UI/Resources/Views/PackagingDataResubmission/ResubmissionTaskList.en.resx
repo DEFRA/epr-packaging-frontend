@@ -144,6 +144,9 @@
 	<data name="pending_status" xml:space="preserve">
     <value>PENDING</value>
   </data>
+	<data name="incomplete_status" xml:space="preserve">
+    <value>INCOMPLETE</value>
+  </data>
 	<data name="completed_status" xml:space="preserve">
     <value>COMPLETED</value>
   </data>

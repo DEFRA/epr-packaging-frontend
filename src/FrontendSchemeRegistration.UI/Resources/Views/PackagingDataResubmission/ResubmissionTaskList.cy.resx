@@ -39,6 +39,9 @@
     <data name="pending_status" xml:space="preserve">
         <value>YN YR ARFAETH</value>
     </data>
+    <data name="incomplete_status" xml:space="preserve">
+        <value>ANGHYFLAWN</value>
+    </data>
     <data name="completed_status" xml:space="preserve">
         <value>CYFLAWN</value>
     </data>

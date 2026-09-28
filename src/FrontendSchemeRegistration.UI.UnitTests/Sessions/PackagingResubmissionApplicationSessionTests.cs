@@ -169,7 +169,7 @@ public class PackagingResubmissionApplicationSessionTests
         session.FileUploadStatus.Should().Be(ResubmissionTaskListStatus.NotStarted);
     }
 
-    // The upload is registered but not yet submitted or synced, so FileUploadStatus is only Pending. The
+    // The upload is registered but not yet submitted or synced, so FileUploadStatus is only Incomplete. The
     // heading keys off ApplicationStatus rather than FileUploadStatus so that this still counts as started -
     // the user has uploaded something and does have work to continue.
     [Test]
@@ -183,7 +183,7 @@ public class PackagingResubmissionApplicationSessionTests
             ResubmissionApplicationSubmittedDate = null
         };
 
-        session.FileUploadStatus.Should().Be(ResubmissionTaskListStatus.Pending);
+        session.FileUploadStatus.Should().Be(ResubmissionTaskListStatus.Incomplete);
         session.IsResubmissionStarted.Should().BeTrue();
     }
 
@@ -306,5 +306,41 @@ public class PackagingResubmissionApplicationSessionTests
         };
 
         session.IsResubmissionComplete.Should().BeFalse();
+    }
+
+    // SUB-353: a file has been uploaded but the declaration that submits it has not been completed. Nothing is
+    // waiting on our systems, so the upload step reads Incomplete rather than Pending and the later steps stay
+    // locked.
+    [TestCase(ApplicationStatusType.FileUploaded)]
+    [TestCase(ApplicationStatusType.SubmittedAndHasRecentFileUpload)]
+    public void TaskListStatuses_ShouldShowTheUploadIncomplete_WhenAFileIsUploadedButNotYetSubmitted(ApplicationStatusType applicationStatus)
+    {
+        var session = new PackagingResubmissionApplicationSession
+        {
+            ApplicationReferenceNumber = "PEPR12345S01",
+            ApplicationStatus = applicationStatus,
+            FileReachedSynapse = false,
+            ResubmissionApplicationSubmittedDate = null
+        };
+
+        session.FileUploadStatus.Should().Be(ResubmissionTaskListStatus.Incomplete);
+        session.PaymentViewStatus.Should().Be(ResubmissionTaskListStatus.CanNotStartYet);
+        session.AdditionalDetailsStatus.Should().Be(ResubmissionTaskListStatus.CanNotStartYet);
+    }
+
+    // SUB-353: once the file has been submitted it is genuinely waiting for Synapse, which is what Pending means.
+    [Test]
+    public void FileUploadStatus_ShouldStayPending_WhenTheFileHasBeenSubmittedButNotYetReachedSynapse()
+    {
+        var session = new PackagingResubmissionApplicationSession
+        {
+            ApplicationReferenceNumber = "PEPR12345S01",
+            ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+            FileReachedSynapse = false,
+            ResubmissionApplicationSubmittedDate = null
+        };
+
+        session.FileUploadStatus.Should().Be(ResubmissionTaskListStatus.Pending);
+        session.PaymentViewStatus.Should().Be(ResubmissionTaskListStatus.CanNotStartYet);
     }
 }

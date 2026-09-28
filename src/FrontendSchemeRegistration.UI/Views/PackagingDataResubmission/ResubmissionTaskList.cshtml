@@ -158,6 +158,10 @@
 		{
 			<strong class="govuk-tag govuk-tag--yellow">@Localizer["pending_status"]</strong>
 		}
+		else if (status == ResubmissionTaskListStatus.Incomplete)
+		{
+			<strong class="govuk-tag govuk-tag--light-blue">@Localizer["incomplete_status"]</strong>
+		}
 		else if (status == ResubmissionTaskListStatus.Completed)
 		{
 			<strong class="govuk-tag govuk-tag--blue">@Localizer["completed_status"]</strong>

@@ -22,11 +22,14 @@ public class PackagingResubmissionApplicationSession
                 return FileReachedSynapse ? ResubmissionTaskListStatus.Completed : ResubmissionTaskListStatus.Pending;
             }
 
+            // SUB-353: the file is uploaded but the user has not yet completed the declaration that submits it.
+            // Nothing is waiting on our systems, so it is Incomplete rather than Pending - Pending is reserved for
+            // a submitted file that has not yet reached Synapse.
             if (!FileReachedSynapse && ApplicationStatus is
                     ApplicationStatusType.FileUploaded or
                     ApplicationStatusType.SubmittedAndHasRecentFileUpload)
             {
-                return ResubmissionTaskListStatus.Pending;
+                return ResubmissionTaskListStatus.Incomplete;
             }
 
             return ResubmissionTaskListStatus.NotStarted;
@@ -37,7 +40,7 @@ public class PackagingResubmissionApplicationSession
     {
         get
         {
-            if (FileUploadStatus == ResubmissionTaskListStatus.NotStarted || FileUploadStatus == ResubmissionTaskListStatus.Pending)
+            if (FileUploadStatus is ResubmissionTaskListStatus.NotStarted or ResubmissionTaskListStatus.Pending or ResubmissionTaskListStatus.Incomplete)
             {
                 return ResubmissionTaskListStatus.CanNotStartYet;
             }
