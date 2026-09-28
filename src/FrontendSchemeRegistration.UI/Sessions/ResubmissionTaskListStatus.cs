@@ -6,4 +6,5 @@ public enum ResubmissionTaskListStatus
     NotStarted,
     Pending,
     Completed,
+    Incomplete,
 }
