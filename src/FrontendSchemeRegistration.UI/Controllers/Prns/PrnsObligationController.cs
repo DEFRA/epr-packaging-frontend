@@ -69,10 +69,7 @@ public class PrnsObligationController : Controller
     public async Task<IActionResult> ObligationsHome()
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-        var isMultiYearObligationsEnabled = await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations);
-        var selectedYear = isMultiYearObligationsEnabled && session.PrnSession.SelectedObligationYear.HasValue
-            ? session.PrnSession.SelectedObligationYear.Value
-            : _complianceYear;
+        var selectedYear = await GetSelectedObligationYearAsync(session);
 
         var isCsocEnabled = await _featureManager.IsEnabledAsync(FeatureFlags.CsocEnabled);
         var viewModel = await _prnService.GetRecyclingObligationsCalculation(selectedYear, includeComplianceDeclarationStatus: isCsocEnabled);
@@ -131,16 +128,19 @@ public class PrnsObligationController : Controller
     {
         PrnObligationViewModel viewModel = new();
 
+        var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+        var selectedYear = await GetSelectedObligationYearAsync(session);
+
         _logger.LogInformation(
             "{LogPrefix}: PrnsObligationController - ObligationPerMaterial: Get Recycling Obligations Calculation request for year {Year}, material {Material}",
-            _logPrefix, _complianceYear, material);
+            _logPrefix, selectedYear, material);
 
         if (Enum.TryParse(material, true, out MaterialType materialType))
         {
-            viewModel = await _prnService.GetRecyclingObligationsCalculation(_complianceYear, includeComplianceDeclarationStatus: false);
+            viewModel = await _prnService.GetRecyclingObligationsCalculation(selectedYear, includeComplianceDeclarationStatus: false);
             _logger.LogInformation(
                 "{LogPrefix}: PrnsObligationController - ObligationsHome: Recycling Obligations returned for year {Year} : {Results}",
-                _logPrefix, _complianceYear, JsonConvert.SerializeObject(viewModel));
+                _logPrefix, selectedYear, JsonConvert.SerializeObject(viewModel));
 
             if (materialType == MaterialType.Glass || materialType == MaterialType.GlassRemelt ||
                 materialType == MaterialType.RemainingGlass)
@@ -159,7 +159,7 @@ public class PrnsObligationController : Controller
             }
         }
 
-        await FillViewModelFromSessionAsync(viewModel);
+        await FillViewModelFromSessionAsync(viewModel, selectedYear);
 
         if (_urlOptions.ProducerResponsibilityObligations is not null)
         {
@@ -281,6 +281,19 @@ public class PrnsObligationController : Controller
         };
 
         return View(viewModel);
+    }
+
+    /// <summary>
+    ///     The obligation year chosen on the Choose a year page, or the current compliance year
+    ///     when multi-year obligations are disabled or no year has been chosen.
+    /// </summary>
+    private async Task<int> GetSelectedObligationYearAsync(FrontendSchemeRegistrationSession? session)
+    {
+        var isMultiYearObligationsEnabled = await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations);
+
+        return isMultiYearObligationsEnabled && session?.PrnSession.SelectedObligationYear is { } selectedYear
+            ? selectedYear
+            : _complianceYear;
     }
 
     private ChooseYearViewModel BuildChooseYearViewModel(int? selectedYear = null)

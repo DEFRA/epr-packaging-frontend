@@ -710,6 +710,51 @@ public class PrnsObligationControllerTests
         _prnServiceMock.Verify(x => x.GetRecyclingObligationsCalculation(year, false), Times.Once);
     }
 
+    [TestCase(true, 2027)]
+    [TestCase(true, 2025)]
+    [TestCase(false, 2027)]
+    public async Task ObligationPerMaterial_UsesSelectedYear_OnlyWhenMultiYearObligationsEnabled(bool multiYearEnabled, int selectedYear)
+    {
+        // Arrange
+        _fakeTimeProvider.SetUtcNow(new DateTimeOffset(2026, 12, 1, 0, 0, 0, TimeSpan.Zero));
+        _controller = new PrnsObligationController(
+            _sessionManagerMock.Object,
+            _prnServiceMock.Object,
+            _fakeTimeProvider,
+            Options.Create(new GlobalVariables { BasePath = "BasePath", LogPrefix = "[FrontendSchemaRegistration]" }),
+            _urlOptionsMock.Object,
+            _loggerMock.Object,
+            _featureManagerMock.Object,
+            new OptionsWrapper<CsocOptions>(new CsocOptions()))
+        {
+            Url = _urlHelperMock.Object,
+            ControllerContext = _controller.ControllerContext
+        };
+
+        var session = new FrontendSchemeRegistrationSession
+        {
+            UserData = new UserData
+            {
+                Organisations = [new() { Id = Guid.NewGuid(), OrganisationRole = OrganisationRoles.Producer, Name = "Test Organisation", NationId = 1 }]
+            },
+            PrnSession = new PrnSession { SelectedObligationYear = selectedYear }
+        };
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)).ReturnsAsync(multiYearEnabled);
+
+        var expectedYear = multiYearEnabled ? selectedYear : 2026;
+        var viewModel = _fixture.Create<PrnObligationViewModel>();
+        _prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(expectedYear, false)).ReturnsAsync(viewModel);
+
+        // Act
+        var response = await _controller.ObligationPerMaterial("Plastic");
+
+        // Assert
+        var model = response.Should().BeOfType<ViewResult>().Which.Model.Should().BeOfType<PrnObligationViewModel>().Which;
+        model.ComplianceYear.Should().Be(expectedYear);
+        _prnServiceMock.Verify(x => x.GetRecyclingObligationsCalculation(expectedYear, false), Times.Once);
+    }
+
     [Theory]
     [TestCase("Aluminium", "aluminium")]
     [TestCase("Paper", "paper_board_fibre")]
