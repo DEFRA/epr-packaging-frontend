@@ -1,0 +1,32 @@
+{
+  "items": [
+    {
+      "id": 201,
+      "externalId": "00000000-0000-0000-0000-000000000201",
+      "prnNumber": "PRN-201",
+      "materialName": "Paper/board",
+      "issueDate": "2026-12-01T13:15:15",
+      "prnStatus": "AWAITINGACCEPTANCE",
+      "decemberWaste": true,
+      "obligationYear": "2026",
+      "issuedByOrg": "Test Reprocessor",
+      "tonnageValue": 1
+    },
+    {
+      "id": 203,
+      "externalId": "00000000-0000-0000-0000-000000000203",
+      "prnNumber": "PRN-203",
+      "materialName": "Paper/board",
+      "issueDate": "2026-12-02T13:15:15",
+      "prnStatus": "AWAITINGACCEPTANCE",
+      "decemberWaste": true,
+      "obligationYear": "2026",
+      "issuedByOrg": "Test Reprocessor",
+      "tonnageValue": 2
+    }
+  ],
+  "pageNumber": 1,
+  "pageSize": 50,
+  "totalItems": 2,
+  "totalPages": 1
+}

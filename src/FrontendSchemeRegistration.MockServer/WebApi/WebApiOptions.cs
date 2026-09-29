@@ -17,6 +17,8 @@ public class WebApiOptions
     public string PrnSearchResponseFile => PrnSearchData switch
     {
         PrnSearchDataType.AllDecemberWasteOutsideFlashWindow => "v1_prn_search_all_december_waste_outside_flash_window.json",
+        PrnSearchDataType.DecemberWasteInFlashWindow => "v1_prn_search_december_waste_in_flash_window.json",
+        PrnSearchDataType.AllDecemberWasteInFlashWindow => "v1_prn_search_all_december_waste_in_flash_window.json",
         _ => "v1_prn_search.json"
     };
 
@@ -40,7 +42,18 @@ public class WebApiOptions
         ///     All returned PRNs are editable, awaiting-acceptance, December Waste, but issued outside the
         ///     immediate Dec/Jan flash window - so checkboxes render (not the flash-only link).
         /// </summary>
-        AllDecemberWasteOutsideFlashWindow
+        AllDecemberWasteOutsideFlashWindow,
+
+        /// <summary>
+        ///     One December Waste PRN issued 1 Dec 2026 (in the Dec/Jan flash window when the clock is Dec 2026/Jan 2027)
+        ///     and one standard 2026 PRN.
+        /// </summary>
+        DecemberWasteInFlashWindow,
+
+        /// <summary>
+        ///     Only December Waste PRNs issued in Dec 2026 (in the Dec/Jan flash window when the clock is Dec 2026/Jan 2027).
+        /// </summary>
+        AllDecemberWasteInFlashWindow
     }
 
     public enum ComplianceDeclarationStatusType

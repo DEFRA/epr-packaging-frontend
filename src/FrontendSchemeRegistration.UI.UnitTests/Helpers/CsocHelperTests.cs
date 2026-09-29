@@ -77,7 +77,7 @@ public class CsocHelperTests
     [TestCase("2026-12-01", 2027)]
     [TestCase("2026-12-01", 2025)]
     [TestCase("2027-01-31T12:00:00", 2026)]
-    public async Task CreateViewModel_WhenComplianceYearGiven_UsesItForYearDeadlineAndCertificateUrl(string now, int complianceYear)
+    public async Task CreateViewModel_WhenPrnObligationViewModelHasComplianceYear_UsesItForYearDeadlineAndCertificateUrl(string now, int complianceYear)
     {
         var organisationId = Guid.NewGuid();
 
@@ -94,7 +94,7 @@ public class CsocHelperTests
             {
                 WasteObligationsBaseAddress = "https://understanding-obligations"
             },
-            complianceYear: complianceYear);
+            new PrnObligationViewModel { ComplianceYear = complianceYear });
 
         result!.ComplianceYear.Should().Be(complianceYear);
         result.SubmissionDeadline.Should().Be(new DateTime(complianceYear + 1, 1, 31));

@@ -181,6 +181,24 @@ public static class WebApi
                     obligationYear = "2026"
                 }));
 
+        // December Waste PRN issued 1 Dec 2026 - offers a choice of 2026 or 2027 until 1 Feb 2027
+        server.Given(Request.Create().UsingGet().WithPath("/api/v1/prn/00000000-0000-0000-0000-000000000201"))
+            .RespondWith(Response.Create().WithStatusCode(200)
+                .WithHeader("Content-Type", "application/json")
+                .WithBodyAsJson(new
+                {
+                    id = 201,
+                    externalId = "00000000-0000-0000-0000-000000000201",
+                    prnNumber = "PRN-201",
+                    materialName = "Paper/board",
+                    issueDate = "2026-12-01T13:15:15",
+                    prnStatus = "AWAITINGACCEPTANCE",
+                    tonnageValue = 1,
+                    obligationYear = "2026",
+                    decemberWaste = true,
+                    issuedByOrg = "Test Reprocessor"
+                }));
+
         server.Given(Request.Create().UsingGet().WithPath("/api/v1/prn/00000000-0000-0000-0000-000000000005"))
             .RespondWith(Response.Create().WithStatusCode(200)
                 .WithHeader("Content-Type", "application/json")
