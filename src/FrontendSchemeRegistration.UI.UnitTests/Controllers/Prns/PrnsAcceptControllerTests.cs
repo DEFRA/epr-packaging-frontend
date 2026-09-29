@@ -406,6 +406,8 @@ public class PrnsAcceptControllerTests
         var model = new PrnViewModel
         {
             ExternalId = Guid.NewGuid(),
+            ApprovalStatus = PrnStatus.AwaitingAcceptance,
+            AvailableAcceptanceYears = [2026]
         };
         _mockPrnService.Setup(x => x.GetPrnByExternalIdAsync(It.IsAny<Guid>())).ReturnsAsync(model);
 
@@ -425,6 +427,7 @@ public class PrnsAcceptControllerTests
         {
             ExternalId = Guid.NewGuid(),
         };
+        SetupEditablePrn(model.ExternalId);
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
@@ -449,6 +452,7 @@ public class PrnsAcceptControllerTests
         {
             ExternalId = Guid.NewGuid(),
         };
+        SetupEditablePrn(model.ExternalId);
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession());
 
@@ -466,6 +470,8 @@ public class PrnsAcceptControllerTests
         {
             ExternalId = Guid.NewGuid(),
         };
+        SetupEditablePrn(model.ExternalId, 2026, 2027);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)).ReturnsAsync(true);
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
@@ -494,6 +500,7 @@ public class PrnsAcceptControllerTests
         {
             ExternalId = Guid.NewGuid(),
         };
+        SetupEditablePrn(model.ExternalId);
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
@@ -518,6 +525,7 @@ public class PrnsAcceptControllerTests
         {
             ExternalId = Guid.NewGuid(),
         };
+        SetupEditablePrn(model.ExternalId);
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
@@ -529,6 +537,118 @@ public class PrnsAcceptControllerTests
         result.ActionName.Should().Be(nameof(PrnsAcceptController.AcceptedPrn));
         _mockPrnService.Verify(x => x.AcceptPrnAsync(model.ExternalId, null), Times.Once);
         _sessionManagerMock.Verify(x => x.SaveSessionAsync(It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession?>()), Times.Never);
+    }
+
+    [Test]
+    public async Task ConfirmAcceptSinglePrnPassThrough_OnPost_WhenPrnNotFound_RedirectsToPrnAndDoesNotAccept()
+    {
+        var id = Guid.NewGuid();
+        _mockPrnService.Setup(x => x.GetPrnByExternalIdAsync(id)).ReturnsAsync((PrnViewModel)null);
+
+        var result = await _sut.ConfirmAcceptSinglePrnPassThrough(new PrnViewModel { ExternalId = id }) as RedirectToActionResult;
+
+        result.ActionName.Should().Be(nameof(PrnsController.SelectSinglePrn));
+        result.ControllerName.Should().Be("Prns");
+        result.RouteValues["id"].Should().Be(id);
+        _mockPrnService.Verify(x => x.AcceptPrnAsync(It.IsAny<Guid>(), It.IsAny<string>()), Times.Never);
+    }
+
+    [Test]
+    public async Task ConfirmAcceptSinglePrnPassThrough_OnPost_WhenPrnHasExpired_RedirectsToPrnAndDoesNotAccept()
+    {
+        var id = Guid.NewGuid();
+        var prn = SetupEditablePrn(id);
+        prn.AvailableAcceptanceYears = [];
+
+        var result = await _sut.ConfirmAcceptSinglePrnPassThrough(new PrnViewModel { ExternalId = id }) as RedirectToActionResult;
+
+        result.ActionName.Should().Be(nameof(PrnsController.SelectSinglePrn));
+        result.ControllerName.Should().Be("Prns");
+        _mockPrnService.Verify(x => x.AcceptPrnAsync(It.IsAny<Guid>(), It.IsAny<string>()), Times.Never);
+    }
+
+    [TestCase(PrnStatus.Accepted)]
+    [TestCase(PrnStatus.Rejected)]
+    [TestCase(PrnStatus.Cancelled)]
+    public async Task ConfirmAcceptSinglePrnPassThrough_OnPost_WhenPrnNoLongerAwaitingAcceptance_RedirectsToPrnAndDoesNotAccept(string status)
+    {
+        var id = Guid.NewGuid();
+        var prn = SetupEditablePrn(id);
+        prn.ApprovalStatus = status;
+
+        var result = await _sut.ConfirmAcceptSinglePrnPassThrough(new PrnViewModel { ExternalId = id }) as RedirectToActionResult;
+
+        result.ActionName.Should().Be(nameof(PrnsController.SelectSinglePrn));
+        _mockPrnService.Verify(x => x.AcceptPrnAsync(It.IsAny<Guid>(), It.IsAny<string>()), Times.Never);
+    }
+
+    [Test]
+    public async Task ConfirmAcceptSinglePrnPassThrough_OnPost_WhenYearChoiceAndNoYearChosen_RedirectsToChooseAcceptanceYear()
+    {
+        var id = Guid.NewGuid();
+        SetupEditablePrn(id, 2026, 2027);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)).ReturnsAsync(true);
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession());
+
+        var result = await _sut.ConfirmAcceptSinglePrnPassThrough(new PrnViewModel { ExternalId = id }) as RedirectToActionResult;
+
+        result.ActionName.Should().Be(nameof(PrnsAcceptController.ChooseAcceptanceYear));
+        result.RouteValues["id"].Should().Be(id);
+        _mockPrnService.Verify(x => x.AcceptPrnAsync(It.IsAny<Guid>(), It.IsAny<string>()), Times.Never);
+    }
+
+    [Test]
+    public async Task ConfirmAcceptSinglePrnPassThrough_OnPost_WhenChosenYearNoLongerAvailable_RedirectsToChooseAcceptanceYear()
+    {
+        var id = Guid.NewGuid();
+        SetupEditablePrn(id, 2026, 2027);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)).ReturnsAsync(true);
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                PrnSession = new PrnSession { SelectedAcceptanceYearPrnId = id, SelectedAcceptanceYear = 2025 }
+            });
+
+        var result = await _sut.ConfirmAcceptSinglePrnPassThrough(new PrnViewModel { ExternalId = id }) as RedirectToActionResult;
+
+        result.ActionName.Should().Be(nameof(PrnsAcceptController.ChooseAcceptanceYear));
+        _mockPrnService.Verify(x => x.AcceptPrnAsync(It.IsAny<Guid>(), It.IsAny<string>()), Times.Never);
+    }
+
+    [Test]
+    public async Task ConfirmAcceptSinglePrnPassThrough_OnPost_WhenYearChoiceHasEnded_IgnoresStaleChosenYear()
+    {
+        // e.g. year chosen on 31 Jan, confirmed after 1 Feb when only the next year remains
+        var id = Guid.NewGuid();
+        SetupEditablePrn(id, 2027);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)).ReturnsAsync(true);
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                PrnSession = new PrnSession { SelectedAcceptanceYearPrnId = id, SelectedAcceptanceYear = 2026 }
+            });
+
+        var result = await _sut.ConfirmAcceptSinglePrnPassThrough(new PrnViewModel { ExternalId = id }) as RedirectToActionResult;
+
+        result.ActionName.Should().Be(nameof(PrnsAcceptController.AcceptedPrn));
+        _mockPrnService.Verify(x => x.AcceptPrnAsync(id, null), Times.Once);
+    }
+
+    [Test]
+    public async Task ConfirmAcceptSinglePrnPassThrough_OnPost_WhenMultiYearDisabled_DoesNotPassChosenYear()
+    {
+        var id = Guid.NewGuid();
+        SetupEditablePrn(id, 2026, 2027);
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession
+            {
+                PrnSession = new PrnSession { SelectedAcceptanceYearPrnId = id, SelectedAcceptanceYear = 2027 }
+            });
+
+        var result = await _sut.ConfirmAcceptSinglePrnPassThrough(new PrnViewModel { ExternalId = id }) as RedirectToActionResult;
+
+        result.ActionName.Should().Be(nameof(PrnsAcceptController.AcceptedPrn));
+        _mockPrnService.Verify(x => x.AcceptPrnAsync(id, null), Times.Once);
     }
 
     // Accept single Prn. Step 5 of 5
@@ -713,6 +833,8 @@ public class PrnsAcceptControllerTests
     public async Task ConfirmAcceptMultiplePrnsPassThrough_OnPostRedirectToAcceptedPrnsBySettingTempData()
     {
         var model = _fixture.Create<PrnListViewModel>();
+        MakeEditable(model.Prns);
+        _mockPrnService.Setup(x => x.GetPrnsAwaitingAcceptanceAsync()).ReturnsAsync(model);
         _mockPrnService.Setup(x => x.AcceptPrnsAsync(It.IsAny<Guid[]>())).Returns(Task.CompletedTask);
 
         // Act
@@ -721,6 +843,76 @@ public class PrnsAcceptControllerTests
         var view = result.Should().BeOfType<RedirectToActionResult>().Which;
         view.ActionName.Should().Be("AcceptedPrns");
         _mockPrnService.VerifyAll();
+    }
+
+    [Test]
+    public async Task ConfirmAcceptMultiplePrnsPassThrough_OnPost_OnlyAcceptsPrnsThatAreStillAcceptableWithoutAYearChoice()
+    {
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)).ReturnsAsync(true);
+        var acceptable = EditablePrn(2026);
+        var yearChoice = EditablePrn(2026, 2027);
+        var expired = EditablePrn();
+        var notPosted = EditablePrn(2026);
+        _mockPrnService.Setup(x => x.GetPrnsAwaitingAcceptanceAsync())
+            .ReturnsAsync(new PrnListViewModel { Prns = [acceptable, yearChoice, expired, notPosted] });
+        var posted = new PrnListViewModel
+        {
+            Prns = [acceptable, yearChoice, expired, new PrnViewModel { ExternalId = Guid.NewGuid() }]
+        };
+
+        var result = await _sut.ConfirmAcceptMultiplePrnsPassThrough(posted) as RedirectToActionResult;
+
+        result.ActionName.Should().Be(nameof(PrnsAcceptController.AcceptedPrns));
+        _mockPrnService.Verify(x => x.AcceptPrnsAsync(It.Is<Guid[]>(ids => ids.SequenceEqual(new[] { acceptable.ExternalId }))), Times.Once);
+    }
+
+    [Test]
+    public async Task ConfirmAcceptMultiplePrnsPassThrough_OnPost_WhenMultiYearDisabled_AcceptsPrnsWithYearChoice()
+    {
+        var yearChoice = EditablePrn(2026, 2027);
+        _mockPrnService.Setup(x => x.GetPrnsAwaitingAcceptanceAsync())
+            .ReturnsAsync(new PrnListViewModel { Prns = [yearChoice] });
+
+        var result = await _sut.ConfirmAcceptMultiplePrnsPassThrough(new PrnListViewModel { Prns = [yearChoice] }) as RedirectToActionResult;
+
+        result.ActionName.Should().Be(nameof(PrnsAcceptController.AcceptedPrns));
+        _mockPrnService.Verify(x => x.AcceptPrnsAsync(It.Is<Guid[]>(ids => ids.SequenceEqual(new[] { yearChoice.ExternalId }))), Times.Once);
+    }
+
+    [Test]
+    public async Task ConfirmAcceptMultiplePrnsPassThrough_OnPost_WhenNoPrnsAcceptable_RedirectsToSelectPrnsAndDoesNotAccept()
+    {
+        var expired = EditablePrn();
+        _mockPrnService.Setup(x => x.GetPrnsAwaitingAcceptanceAsync())
+            .ReturnsAsync(new PrnListViewModel { Prns = [expired] });
+
+        var result = await _sut.ConfirmAcceptMultiplePrnsPassThrough(new PrnListViewModel { Prns = [expired] }) as RedirectToActionResult;
+
+        result.ActionName.Should().Be(nameof(PrnsController.SelectMultiplePrns));
+        result.ControllerName.Should().Be("Prns");
+        _mockPrnService.Verify(x => x.AcceptPrnsAsync(It.IsAny<Guid[]>()), Times.Never);
+    }
+
+    [Test]
+    public async Task AcceptMultiplePrns_ExcludesPrnsThatCannotBeAcceptedWithoutAYearChoice()
+    {
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)).ReturnsAsync(true);
+        var acceptable = EditablePrn(2026);
+        var yearChoice = EditablePrn(2026, 2027);
+        var expired = EditablePrn();
+        _mockPrnService.Setup(x => x.GetPrnsAwaitingAcceptanceAsync())
+            .ReturnsAsync(new PrnListViewModel { Prns = [acceptable, yearChoice, expired] });
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+        {
+            PrnSession = new PrnSession
+            {
+                SelectedPrnIds = [acceptable.ExternalId, yearChoice.ExternalId, expired.ExternalId]
+            }
+        });
+
+        var result = await _sut.AcceptMultiplePrns(Guid.Empty) as ViewResult;
+
+        ((PrnListViewModel)result.Model).Prns.Should().ContainSingle().Which.ExternalId.Should().Be(acceptable.ExternalId);
     }
 
     // Accept multiple PRNs. Step 5 of 5
@@ -800,5 +992,29 @@ public class PrnsAcceptControllerTests
         result.Value.Should().BeEquivalentTo(new { fileName = "PRN123", htmlContent = "<html><body>Sample Content</body></html>" });
 
         _mockDownloadPrnService.Verify(x => x.DownloadPrnAsync(prnId, "AcceptedPrn", It.IsAny<ActionContext>()), Times.Once);
+    }
+
+    private static PrnViewModel EditablePrn(params int[] availableAcceptanceYears) => new()
+    {
+        ExternalId = Guid.NewGuid(),
+        ApprovalStatus = PrnStatus.AwaitingAcceptance,
+        AvailableAcceptanceYears = availableAcceptanceYears
+    };
+
+    private static void MakeEditable(IEnumerable<PrnViewModel> prns)
+    {
+        foreach (var prn in prns)
+        {
+            prn.ApprovalStatus = PrnStatus.AwaitingAcceptance;
+            prn.AvailableAcceptanceYears = [2026];
+        }
+    }
+
+    private PrnViewModel SetupEditablePrn(Guid id, params int[] availableAcceptanceYears)
+    {
+        var prn = EditablePrn(availableAcceptanceYears.Length > 0 ? availableAcceptanceYears : [2026]);
+        prn.ExternalId = id;
+        _mockPrnService.Setup(x => x.GetPrnByExternalIdAsync(id)).ReturnsAsync(prn);
+        return prn;
     }
 }
