@@ -29,6 +29,8 @@ public class FeeCalculationBreakdownViewModel
     public int TotalSubsidiaryFee { get; set; }
     public int TotalSubsidiaryOnlineMarketplaceFee { get; set; }
     public int TotalSubsidiaryClosedLoopRecyclingFee { get; set; }
+    public int TotalSubsidiaryLateFee { get; set; }
+    public int CountOfLateSubsidiaries { get; set; }
 
     public int TotalPreviousPayments { get; set; }
 
