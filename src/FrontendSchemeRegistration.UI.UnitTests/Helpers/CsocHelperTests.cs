@@ -74,6 +74,34 @@ public class CsocHelperTests
             .Be($"https://understanding-obligations/producer/{organisationId}/compliance/certificate?year={now.GetComplianceYear()}");
     }
 
+    [TestCase("2026-12-01", 2027)]
+    [TestCase("2026-12-01", 2025)]
+    [TestCase("2027-01-31T12:00:00", 2026)]
+    public async Task CreateViewModel_WhenComplianceYearGiven_UsesItForYearDeadlineAndCertificateUrl(string now, int complianceYear)
+    {
+        var organisationId = Guid.NewGuid();
+
+        var result = await CsocHelper.CreateViewModel(
+            MockFeatureManager.Object,
+            isApprovedUser: true,
+            new Organisation
+            {
+                Id = organisationId,
+                OrganisationRole = OrganisationRoles.Producer
+            },
+            DateTime.Parse(now),
+            new CsocOptions
+            {
+                WasteObligationsBaseAddress = "https://understanding-obligations"
+            },
+            complianceYear: complianceYear);
+
+        result!.ComplianceYear.Should().Be(complianceYear);
+        result.SubmissionDeadline.Should().Be(new DateTime(complianceYear + 1, 1, 31));
+        result.WasteObligationsBaseAddress.Should()
+            .Be($"https://understanding-obligations/producer/{organisationId}/compliance/certificate?year={complianceYear}");
+    }
+
     [TestCase(null, false)]
     [TestCase(ObligationStatus.NoDataYet, false)]
     [TestCase(ObligationStatus.Met, true)]

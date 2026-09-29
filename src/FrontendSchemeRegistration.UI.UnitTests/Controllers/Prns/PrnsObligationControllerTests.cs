@@ -235,6 +235,45 @@ public class PrnsObligationControllerTests
     }
 
     [Test]
+    public async Task ObligationsHome_WhenMultiYearObligationsEnabled_CsocUsesSelectedYear()
+    {
+        var organisationId = Guid.NewGuid();
+        var session = new FrontendSchemeRegistrationSession
+        {
+            UserData = new UserData
+            {
+                Organisations =
+                [
+                    new Organisation
+                    {
+                        Id = organisationId,
+                        OrganisationRole = OrganisationRoles.Producer,
+                        Name = "Test Organisation",
+                        NationId = 1
+                    }
+                ],
+                ServiceRole = "Approved Person"
+            },
+            PrnSession = new PrnSession { SelectedObligationYear = 2027 }
+        };
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.CsocEnabled)).ReturnsAsync(true);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)).ReturnsAsync(true);
+        var obligations = _fixture.Create<PrnObligationViewModel>();
+        obligations.ComplianceDeclarationStatus = null;
+        obligations.ComplianceDeclarationId = null;
+        _prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(2027, true)).ReturnsAsync(obligations);
+
+        var result = await _controller.ObligationsHome() as ViewResult;
+
+        var csoc = (result!.Model as PrnObligationViewModel)!.CsocViewModel!;
+        csoc.ComplianceYear.Should().Be(2027);
+        csoc.SubmissionDeadline.Should().Be(new DateTime(2028, 1, 31));
+        csoc.WasteObligationsBaseAddress.Should()
+            .Be($"https://understanding-obligations/producer/{organisationId}/compliance/certificate?year=2027");
+    }
+
+    [Test]
     public async Task ObligationsHome_WhenCsocEnabled_RequestsComplianceDeclarationStatus()
     {
         var session = new FrontendSchemeRegistrationSession

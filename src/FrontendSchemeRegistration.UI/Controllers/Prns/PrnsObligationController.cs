@@ -101,7 +101,8 @@ public class PrnsObligationController : Controller
                 _timeProvider.GetLocalNow().DateTime,
                 _csocOptions.Value,
                 viewModel,
-                session.RegistrationSession)
+                session.RegistrationSession,
+                selectedYear)
             : null;
 
         viewModel.AcceptRejectPrnsHref = PagePaths.Prns.ShowAwaitingAcceptance;
