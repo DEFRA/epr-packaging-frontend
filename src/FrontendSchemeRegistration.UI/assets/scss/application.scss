@@ -470,3 +470,8 @@ table.cookies-table {
     flex-direction: column;
   }
 }
+
+// .govuk-button sets display: inline-block, which overrides the browser's display: none for [hidden]
+.govuk-button[hidden] {
+  display: none;
+}
