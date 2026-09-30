@@ -288,9 +288,12 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             ClosedLoopRecyclingFee = response.ProducerClosedLoopRecyclingFee,
             TotalSubsidiaryFee = response.SubsidiariesFee
                                  - response.SubsidiariesFeeBreakdown.TotalSubsidiariesOnlineMarketplaceFee
-                                 - response.SubsidiariesFeeBreakdown.TotalSubsidiariesClosedLoopRecyclingFee,
+                                 - response.SubsidiariesFeeBreakdown.TotalSubsidiariesClosedLoopRecyclingFee
+                                 - response.SubsidiariesFeeBreakdown.TotalSubsidiariesLateFee,
             TotalSubsidiaryOnlineMarketplaceFee = response.SubsidiariesFeeBreakdown.TotalSubsidiariesOnlineMarketplaceFee,
             TotalSubsidiaryClosedLoopRecyclingFee = response.SubsidiariesFeeBreakdown.TotalSubsidiariesClosedLoopRecyclingFee,
+            TotalSubsidiaryLateFee = response.SubsidiariesFeeBreakdown.TotalSubsidiariesLateFee,
+            CountOfLateSubsidiaries = response.SubsidiariesFeeBreakdown.CountOfLateSubsidiaries,
             TotalPreviousPayments = response.PreviousPayment,
             TotalFeeAmount = response.TotalFee,
             TotalAmountOutstanding = session.TotalAmountOutstanding,
@@ -433,8 +436,14 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         var onlineMarketplaces = response.ComplianceSchemeMembersWithFees.GetOnlineMarketPlaces();
         var closedLoopRecyclers = response.ComplianceSchemeMembersWithFees.GetClosedLoopRecyclers();
         var lateFees = response.ComplianceSchemeMembersWithFees.GetLateProducers();
-        var subsidiariesFees = response.ComplianceSchemeMembersWithFees.GetSubsidiariesCompanies();
         var subsidiariesCount = feeCalculationDetails.Sum(d => d.NumberOfSubsidiaries);
+        var subsidiaryBandFee = response.ComplianceSchemeMembersWithFees.GetSubsidiaryBandFeeTotal();
+        var subsidiaryOmpFee = response.ComplianceSchemeMembersWithFees.GetSubsidiariesOnlineMarketplaceFeeTotal();
+        var subsidiaryOmpCount = response.ComplianceSchemeMembersWithFees.GetSubsidiariesOnlineMarketplaceCount();
+        var subsidiaryClrFee = response.ComplianceSchemeMembersWithFees.GetSubsidiariesClosedLoopRecyclingFeeTotal();
+        var subsidiaryClrCount = response.ComplianceSchemeMembersWithFees.GetSubsidiariesClosedLoopRecyclingCount();
+        var subsidiaryLateFee = response.ComplianceSchemeMembersWithFees.GetSubsidiariesLateFeeTotal();
+        var subsidiaryLateCount = response.ComplianceSchemeMembersWithFees.GetSubsidiariesLateCount();
 
         return new ComplianceSchemeFeeCalculationBreakdownViewModel
         {
@@ -447,8 +456,14 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             OnlineMarketplaceCount = onlineMarketplaces.Count,
             ClosedLoopRecyclingFee = closedLoopRecyclers.Sum(),
             ClosedLoopRecyclingCount = closedLoopRecyclers.Count,
-            SubsidiaryCompanyFee = subsidiariesFees.Sum(),
+            SubsidiaryCompanyFee = subsidiaryBandFee,
             SubsidiaryCompanyCount = subsidiariesCount,
+            TotalSubsidiaryOnlineMarketplaceFee = subsidiaryOmpFee,
+            NumberOfSubsidiariesBeingOnlineMarketplace = subsidiaryOmpCount,
+            TotalSubsidiaryClosedLoopRecyclingFee = subsidiaryClrFee,
+            NumberOfSubsidiariesBeingClosedLoopRecycling = subsidiaryClrCount,
+            TotalSubsidiaryLateFee = subsidiaryLateFee,
+            CountOfLateSubsidiaries = subsidiaryLateCount,
             LateProducerFee = lateFees.Sum(),
             LateProducersCount = lateFees.Count,
             TotalPreviousPayments = response.PreviousPayment,

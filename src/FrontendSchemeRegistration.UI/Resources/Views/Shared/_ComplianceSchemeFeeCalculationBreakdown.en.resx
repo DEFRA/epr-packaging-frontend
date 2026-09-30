@@ -147,14 +147,14 @@
   <data name="subsidiaries" xml:space="preserve">
     <value>Subsidiaries</value>
   </data>
-  <data name="subsidiaries_amount_explanation" xml:space="preserve">
-    <value>The amount includes subsidiary EPR fees and any subsidiary registrations for:</value>
+  <data name="subsidiaries_as_online_marketplace" xml:space="preserve">
+    <value>Subsidiaries online marketplaces</value>
   </data>
-  <data name="closed_loop_packaging_waste_bullet" xml:space="preserve">
-    <value>closed loop packaging waste</value>
+  <data name="subsidiaries_as_closed_loop" xml:space="preserve">
+    <value>Subsidiary closed loop packaging waste</value>
   </data>
-  <data name="online_marketplaces_bullet" xml:space="preserve">
-    <value>online marketplaces</value>
+  <data name="subsidiaries_late_fee" xml:space="preserve">
+    <value>Subsidiary late fees</value>
   </data>
   <data name="sub_total_amount" xml:space="preserve">
     <value>Sub-total</value>

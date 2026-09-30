@@ -61,19 +61,39 @@
             </tr>
         }
 
-        @if (Model.SubsidiaryCompanyCount > 0)
+        @if (Model.SubsidiaryCompanyFee > 0)
         {
             <tr class="govuk-table__row">
-                <th scope="row" class="govuk-table__header">
-                    @Localizer["subsidiaries"]
-                    <p class="govuk-!-font-weight-regular">@Localizer["subsidiaries_amount_explanation"]</p>
-                    <ul class="govuk-list govuk-list--bullet govuk-!-font-weight-regular">
-                        <li>@Localizer["closed_loop_packaging_waste_bullet"]</li>
-                        <li>@Localizer["online_marketplaces_bullet"]</li>
-                    </ul>
-                </th>
+                <th scope="row" class="govuk-table__header">@Localizer["subsidiaries"]</th>
                 <td class="govuk-table__cell govuk-!-padding-left-2">@Model.SubsidiaryCompanyCount</td>
                 <td class="govuk-table__cell govuk-table__header--numeric">&pound;@ConvertToThousandSeparatedDecimal(Model.SubsidiaryCompanyFee)</td>
+            </tr>
+        }
+
+        @if (Model.TotalSubsidiaryOnlineMarketplaceFee > 0)
+        {
+            <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">@Localizer["subsidiaries_as_online_marketplace"]</th>
+                <td class="govuk-table__cell govuk-!-padding-left-2">@Model.NumberOfSubsidiariesBeingOnlineMarketplace</td>
+                <td class="govuk-table__cell govuk-table__header--numeric">&pound;@ConvertToThousandSeparatedDecimal(Model.TotalSubsidiaryOnlineMarketplaceFee)</td>
+            </tr>
+        }
+
+        @if (Model.TotalSubsidiaryClosedLoopRecyclingFee > 0)
+        {
+            <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">@Localizer["subsidiaries_as_closed_loop"]</th>
+                <td class="govuk-table__cell govuk-!-padding-left-2">@Model.NumberOfSubsidiariesBeingClosedLoopRecycling</td>
+                <td class="govuk-table__cell govuk-table__header--numeric">&pound;@ConvertToThousandSeparatedDecimal(Model.TotalSubsidiaryClosedLoopRecyclingFee)</td>
+            </tr>
+        }
+
+        @if (Model.TotalSubsidiaryLateFee > 0)
+        {
+            <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">@Localizer["subsidiaries_late_fee"]</th>
+                <td class="govuk-table__cell govuk-!-padding-left-2">@Model.CountOfLateSubsidiaries</td>
+                <td class="govuk-table__cell govuk-table__header--numeric">&pound;@ConvertToThousandSeparatedDecimal(Model.TotalSubsidiaryLateFee)</td>
             </tr>
         }
 
