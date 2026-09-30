@@ -265,7 +265,7 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
 
             var isMultiYearObligationsEnabled = await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations);
             var selectedPrns = viewModel?.Prns?
-                .Where(x => selectedPrnIds.Contains(x.ExternalId) && CanAcceptWithoutChoosingYear(x, isMultiYearObligationsEnabled))
+                .Where(x => selectedPrnIds.Contains(x.ExternalId) && x.CanAcceptWithoutChoosingYear(isMultiYearObligationsEnabled))
                 .OrderBy(x => x.Material).ThenByDescending(x => x.DateIssued);
             if (selectedPrns != null)
             {
@@ -295,7 +295,7 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
             var isMultiYearObligationsEnabled = await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations);
             var awaitingAcceptance = await _prnService.GetPrnsAwaitingAcceptanceAsync();
             var selectedPrnIds = awaitingAcceptance.Prns
-                .Where(x => postedPrnIds.Contains(x.ExternalId) && CanAcceptWithoutChoosingYear(x, isMultiYearObligationsEnabled))
+                .Where(x => postedPrnIds.Contains(x.ExternalId) && x.CanAcceptWithoutChoosingYear(isMultiYearObligationsEnabled))
                 .Select(x => x.ExternalId)
                 .ToArray();
 
@@ -305,14 +305,14 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
             }
 
             await _prnService.AcceptPrnsAsync(selectedPrnIds);
+
+            // The summary page reports on the PRNs accepted by this request, which may be fewer than those originally selected
+            var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+            session.PrnSession.SelectedPrnIds = selectedPrnIds.ToList();
+            await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
+
             return RedirectToAction(nameof(AcceptedPrns));
         }
-
-        /// <summary>
-        ///     Whether a PRN can be accepted as part of a multiple acceptance, where no obligation year is chosen.
-        /// </summary>
-        private static bool CanAcceptWithoutChoosingYear(PrnViewModel prn, bool isMultiYearObligationsEnabled) =>
-            prn.IsStatusEditable && !(isMultiYearObligationsEnabled && prn.HasChoiceOfAcceptanceYear);
 
         // Accept multiple Prns. Step 5 of 5 display newly accepted PRN summary details
         [HttpGet]

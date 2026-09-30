@@ -2,6 +2,7 @@ namespace FrontendSchemeRegistration.UI.Component.UnitTests.Tests;
 
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using Constants;
 using Extensions;
 using FluentAssertions;
@@ -19,6 +20,8 @@ public class DecemberWasteFlashWindowTests
     private const string InFlashWindow = "2026-12-15T08:00:00Z";
     private const string SelectMultiplePath = "/report-data/view-awaiting-acceptance-alt";
     private const string AcceptMultiplePath = "/report-data/accept-bulk";
+    private const string AcceptMultiplePassThroughPath = "/report-data/accept-bulk-passthrough";
+    private const string StandardPrnId = "00000000-0000-0000-0000-000000000202";
     private const string FlashPrnId = "00000000-0000-0000-0000-000000000201";
     private const string SelectSinglePath = $"/report-data/selected-prn/{FlashPrnId}";
     private const string ChooseAcceptanceYearPath = $"/report-data/choose-acceptance-year/{FlashPrnId}";
@@ -54,17 +57,61 @@ public class DecemberWasteFlashWindowTests
         content.Should().NotContain("Accept selected PRNs and PERNs");
     }
 
-    [TestCase(true)]
-    [TestCase(false)]
-    public async Task SelectMultiplePrns_WhenDecemberWasteDisabled_AllPrnsHaveCheckboxesAndNoFlash(bool multiYear)
+    [Test]
+    public async Task SelectMultiplePrns_WhenDecemberWasteDisabled_AndMultiYearEnabled_YearChoicePrnsAreLinksNotCheckboxes()
     {
-        await SetUp(decemberWaste: false, multiYear, WebApiOptions.PrnSearchDataType.AllDecemberWasteInFlashWindow);
+        await SetUp(decemberWaste: false, multiYear: true, WebApiOptions.PrnSearchDataType.AllDecemberWasteInFlashWindow);
+
+        var content = await GetOk(SelectMultiplePath);
+
+        CountCheckboxes(content).Should().Be(0, "PRNs with a choice of year must be accepted individually");
+        content.Should().Contain($"href=\"/report-data/selected-prn/{FlashPrnId}\"");
+        content.Should().NotContain("december-waste-flash-row");
+        content.Should().NotContain("Accept selected PRNs and PERNs");
+    }
+
+    [Test]
+    public async Task SelectMultiplePrns_WhenDecemberWasteDisabled_AndMultiYearDisabled_AllPrnsHaveCheckboxesAndNoFlash()
+    {
+        await SetUp(decemberWaste: false, multiYear: false, WebApiOptions.PrnSearchDataType.AllDecemberWasteInFlashWindow);
 
         var content = await GetOk(SelectMultiplePath);
 
         CountCheckboxes(content).Should().Be(2);
         content.Should().NotContain("december-waste-flash-row");
         content.Should().Contain("Accept selected PRNs and PERNs");
+    }
+
+    [Test]
+    public async Task SelectMultiplePrns_WhenDecemberWasteDisabled_AndMultiYearEnabled_SelectionFollowsThroughToConfirmation()
+    {
+        await SetUp(
+            decemberWaste: false,
+            multiYear: true,
+            WebApiOptions.PrnSearchDataType.DecemberWasteInFlashWindow,
+            WebApiOptions.PrnOrganisationDataType.DecemberWasteInFlashWindow);
+
+        var selectPage = await GetOk(SelectMultiplePath);
+
+        var selectableIds = Regex.Matches(selectPage, "chkBoxSelectPrn_[^_\"]*_(?<id>[0-9a-f-]{36})")
+            .Select(m => m.Groups["id"].Value)
+            .Distinct()
+            .ToList();
+        selectableIds.Should().BeEquivalentTo([StandardPrnId], "the year choice PRN is not offered for bulk selection");
+
+        var form = new Dictionary<string, string>
+        {
+            { "Prns[0].ExternalId", selectableIds[0] },
+            { "Prns[0].IsSelected", "true" },
+            { "__RequestVerificationToken", "not-validated-in-component-tests" }
+        };
+        var passThrough = await Context.Client.PostAsync(AcceptMultiplePassThroughPath, form);
+        passThrough.StatusCode.Should().Be(HttpStatusCode.Redirect);
+
+        var confirmPage = await GetOk(AcceptMultiplePath);
+
+        confirmPage.Should().Contain("PRN-202");
+        confirmPage.Should().NotContain("PRN-201");
     }
 
     [TestCase(true, true)]

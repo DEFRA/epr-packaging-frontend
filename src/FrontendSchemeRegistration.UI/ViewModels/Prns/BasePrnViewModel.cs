@@ -45,6 +45,13 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
         public bool IsStatusEditable => ApprovalStatus == PrnStatus.AwaitingAcceptance
 			&& AvailableAcceptanceYears.Length > 0;
 
+        /// <summary>
+        ///     Whether the PRN can be accepted as part of a multiple acceptance, where no obligation year is chosen.
+        ///     PRNs with a choice of years must be accepted individually so the user can pick the year.
+        /// </summary>
+        public bool CanAcceptWithoutChoosingYear(bool isMultiYearObligationsEnabled) =>
+            IsStatusEditable && !(isMultiYearObligationsEnabled && HasChoiceOfAcceptanceYear);
+
         public int ObligationYear { get; set; }
 
         public string AdditionalNotes { get; set; }

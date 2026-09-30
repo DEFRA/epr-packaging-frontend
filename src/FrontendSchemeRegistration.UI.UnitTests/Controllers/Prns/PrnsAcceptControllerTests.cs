@@ -894,6 +894,63 @@ public class PrnsAcceptControllerTests
     }
 
     [Test]
+    public async Task ConfirmAcceptMultiplePrnsPassThrough_OnPost_SavesOnlyTheSubmittedPrnIdsToSession()
+    {
+        var acceptable = EditablePrn(2026);
+        var alreadyAcceptedByAnotherUser = EditablePrn(2026);
+        var session = new FrontendSchemeRegistrationSession
+        {
+            PrnSession = new PrnSession { SelectedPrnIds = [acceptable.ExternalId, alreadyAcceptedByAnotherUser.ExternalId] }
+        };
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+        _mockPrnService.Setup(x => x.GetPrnsAwaitingAcceptanceAsync())
+            .ReturnsAsync(new PrnListViewModel { Prns = [acceptable] });
+        var posted = new PrnListViewModel
+        {
+            Prns = [acceptable, new PrnViewModel { ExternalId = alreadyAcceptedByAnotherUser.ExternalId }]
+        };
+
+        await _sut.ConfirmAcceptMultiplePrnsPassThrough(posted);
+
+        _mockPrnService.Verify(x => x.AcceptPrnsAsync(It.Is<Guid[]>(ids => ids.SequenceEqual(new[] { acceptable.ExternalId }))), Times.Once);
+        _sessionManagerMock.Verify(x => x.SaveSessionAsync(It.IsAny<ISession>(),
+            It.Is<FrontendSchemeRegistrationSession>(s => s.PrnSession.SelectedPrnIds.SequenceEqual(new[] { acceptable.ExternalId }))), Times.Once);
+    }
+
+    [Test]
+    public async Task AcceptedPrns_AfterPartialAcceptance_OnlySummarisesPrnsAcceptedByThisRequest()
+    {
+        var acceptedByThisUser = EditablePrn(2026);
+        acceptedByThisUser.NoteType = "PRN";
+        acceptedByThisUser.Tonnage = 10;
+        var acceptedByAnotherUser = EditablePrn(2026);
+        acceptedByAnotherUser.NoteType = "PRN";
+        acceptedByAnotherUser.Tonnage = 20;
+        var session = new FrontendSchemeRegistrationSession
+        {
+            PrnSession = new PrnSession { SelectedPrnIds = [acceptedByThisUser.ExternalId, acceptedByAnotherUser.ExternalId] }
+        };
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+        _sessionManagerMock.Setup(x => x.SaveSessionAsync(It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()))
+            .Callback<ISession, FrontendSchemeRegistrationSession>((_, saved) => session = saved);
+        _mockPrnService.Setup(x => x.GetPrnsAwaitingAcceptanceAsync())
+            .ReturnsAsync(new PrnListViewModel { Prns = [acceptedByThisUser] });
+        _mockPrnService.Setup(x => x.GetAllAcceptedPrnsAsync())
+            .ReturnsAsync(new PrnListViewModel { Prns = [acceptedByThisUser, acceptedByAnotherUser] });
+        var posted = new PrnListViewModel
+        {
+            Prns = [acceptedByThisUser, new PrnViewModel { ExternalId = acceptedByAnotherUser.ExternalId }]
+        };
+
+        await _sut.ConfirmAcceptMultiplePrnsPassThrough(posted);
+        var result = await _sut.AcceptedPrns() as ViewResult;
+
+        var summary = result.Model.As<AcceptedPrnsModel>();
+        summary.Count.Should().Be(1);
+        summary.Details.Should().ContainSingle().Which.Tonnage.Should().Be(10);
+    }
+
+    [Test]
     public async Task AcceptMultiplePrns_ExcludesPrnsThatCannotBeAcceptedWithoutAYearChoice()
     {
         _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)).ReturnsAsync(true);
