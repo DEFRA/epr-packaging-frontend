@@ -11,6 +11,7 @@
     var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
     var errorsViewModel = new ErrorsViewModel(ViewData.ModelState.ToErrorDictionary(), Localizer);
 	var isDecemberWasteFeatureEnabled = await FeatureManager.IsEnabledAsync(FeatureFlags.ShowDecemberWaste);
+	var isMultiYearObligationsEnabled = await FeatureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations);
 }
 
 <main class="govuk-main-wrapper govuk-!-padding-top-4" id="select-multiple-prns">
@@ -102,6 +103,8 @@
 									var prn = Model.Prns[i];
 									var decemberWasteFlashText = Localizer.DecemberWasteFlashText(prn.AvailableAcceptanceYears);
 									var shouldShowDecemberWasteFlash = prn.ShouldShowDecemberWasteFlash;
+									// PRNs that must be accepted individually (December Waste flash, or a choice of obligation year) get a link, not a checkbox
+									var linkOnly = (isDecemberWasteFeatureEnabled && shouldShowDecemberWasteFlash) || !prn.CanAcceptWithoutChoosingYear(isMultiYearObligationsEnabled);
 									var cellBorder = isDecemberWasteFeatureEnabled && shouldShowDecemberWasteFlash ? "border-bottom-0" : null;
 
 									<tr class="govuk-table__row">
@@ -113,20 +116,15 @@
 											{
 												<div class="govuk-checkboxes govuk-checkboxes--small">
 													<div class="govuk-checkboxes__item">	
-														<feature name="@FeatureFlags.ShowDecemberWaste">
-															@if(shouldShowDecemberWasteFlash) {
-																@Html.ActionLink(Model.Prns[i].PrnOrPernNumber, nameof(PrnsController.SelectSinglePrn), "Prns", new { id = Model.Prns[i].ExternalId },
-																new
-																{
-																	@class = "govuk-link"
-																})
-															} else {
-																@await Html.PartialAsync("../Shared/Partials/Prns/_prnAcceptCheckboxLabel", new ViewDataDictionary(ViewData) { { "index", i } })
-															}
-														</feature>
-														<feature negate="true" name="@FeatureFlags.ShowDecemberWaste">
+														@if (linkOnly) {
+															@Html.ActionLink(Model.Prns[i].PrnOrPernNumber, nameof(PrnsController.SelectSinglePrn), "Prns", new { id = Model.Prns[i].ExternalId },
+															new
+															{
+																@class = "govuk-link"
+															})
+														} else {
 															@await Html.PartialAsync("../Shared/Partials/Prns/_prnAcceptCheckboxLabel", new ViewDataDictionary(ViewData) { { "index", i } })
-														</feature>
+														}
 													</div>
 												</div>
 												
@@ -175,24 +173,19 @@
 							var hasEditablePrns = Model.Prns.Any(x => x.IsStatusEditable);
 							var prnsAllShowDecemberWaste = Model.Prns.All(x => x.ShouldShowDecemberWasteFlash);
 
-							var showButton = hasEditablePrns && !prnsAllShowDecemberWaste;
+							var anySelectable = Model.Prns.Any(x => x.CanAcceptWithoutChoosingYear(isMultiYearObligationsEnabled)
+								&& !(isDecemberWasteFeatureEnabled && x.ShouldShowDecemberWasteFlash));
+							var showButton = isMultiYearObligationsEnabled
+								? anySelectable
+								: !isDecemberWasteFeatureEnabled || (hasEditablePrns && !prnsAllShowDecemberWaste);
 
 							@await Html.PartialAsync("Partials/RecordNavigation/_RecordPaging", Model.PagingDetail)
 							<hr class="govuk-section-break govuk-section-break--l govuk-section-break--xl">
 							<div class="govuk-button-group">
-								<feature name="@FeatureFlags.ShowDecemberWaste">
-									@if (showButton)
-								    {
-										<button class="govuk-button" type="submit">
-											@Localizer["accept_selected_prns_and_perns"]
-										</button>
-									}
-								</feature>
-								<feature negate="true" name="@FeatureFlags.ShowDecemberWaste">
-									<button class="govuk-button" type="submit">
-										@Localizer["accept_selected_prns_and_perns"]
-									</button>
-								</feature>						
+								@* Always rendered: selections retained from other pages (sessionStorage) can still be submitted, so the script reveals it when needed *@
+								<button id="acceptSelectedPrns" class="govuk-button" type="submit" hidden="@(showButton ? null : "hidden")">
+									@Localizer["accept_selected_prns_and_perns"]
+								</button>
 							</div>
 						}
 					</fieldset>
@@ -205,6 +198,16 @@
 {
     <script type="text/javascript" nonce="@scriptNonce">
         window.onload = function () {
+
+            const acceptButton = document.getElementById('acceptSelectedPrns');
+            if (acceptButton && acceptButton.hidden) {
+                for (let i = 0; i < sessionStorage.length; i++) {
+                    if (sessionStorage.key(i).startsWith("chkBoxSelectPrn_")) {
+                        acceptButton.hidden = false;
+                        break;
+                    }
+                }
+            }
 
             document.getElementById('clearSortFilter')
                 .addEventListener('click', function () {

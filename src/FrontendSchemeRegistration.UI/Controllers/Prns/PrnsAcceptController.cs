@@ -148,12 +148,27 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         [Route(PagePaths.Prns.ConfirmAccept)]
         public async Task<ActionResult> ConfirmAcceptSinglePrnPassThrough(PrnViewModel model)
         {
+            // Re-check the PRN: it may have expired or changed since the confirmation page was shown
+            var prn = await _prnService.GetPrnByExternalIdAsync(model.ExternalId);
+            if (prn is null || !prn.IsStatusEditable)
+            {
+                return RedirectToAction(nameof(PrnsController.SelectSinglePrn), nameof(PrnsController).RemoveControllerFromName(), new { id = model.ExternalId });
+            }
+
             string? obligationYear = null;
             var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-            if (session?.PrnSession.SelectedAcceptanceYearPrnId == model.ExternalId
-                && session.PrnSession.SelectedAcceptanceYear is not null)
+            if (await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations) && prn.HasChoiceOfAcceptanceYear)
             {
-                obligationYear = session.PrnSession.SelectedAcceptanceYear.Value.ToString();
+                var selectedYear = session?.PrnSession.SelectedAcceptanceYearPrnId == model.ExternalId
+                    ? session.PrnSession.SelectedAcceptanceYear
+                    : null;
+
+                if (selectedYear is null || !prn.AvailableAcceptanceYears.Contains(selectedYear.Value))
+                {
+                    return RedirectToAction(nameof(ChooseAcceptanceYear), new { id = model.ExternalId });
+                }
+
+                obligationYear = selectedYear.Value.ToString();
             }
 
             await _prnService.AcceptPrnAsync(model.ExternalId, obligationYear);
@@ -248,7 +263,10 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
                 await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
             }
 
-            var selectedPrns = viewModel?.Prns?.Where(x => selectedPrnIds.Contains(x.ExternalId)).OrderBy(x => x.Material).ThenByDescending(x => x.DateIssued);
+            var isMultiYearObligationsEnabled = await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations);
+            var selectedPrns = viewModel?.Prns?
+                .Where(x => selectedPrnIds.Contains(x.ExternalId) && x.CanAcceptWithoutChoosingYear(isMultiYearObligationsEnabled))
+                .OrderBy(x => x.Material).ThenByDescending(x => x.DateIssued);
             if (selectedPrns != null)
             {
                 viewModel.Prns = selectedPrns.ToList();
@@ -272,8 +290,27 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         [Route(PagePaths.Prns.ConfirmAcceptMany)]
         public async Task<ActionResult> ConfirmAcceptMultiplePrnsPassThrough(PrnListViewModel model)
         {
-            var selectedPrnIds = model.Prns.Select(x => x.ExternalId);
-            await _prnService.AcceptPrnsAsync(selectedPrnIds.ToArray());
+            // Only accept PRNs that are still editable and don't need a year choosing - the posted list may be stale or tampered with
+            var postedPrnIds = model.Prns.Select(x => x.ExternalId).ToHashSet();
+            var isMultiYearObligationsEnabled = await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations);
+            var awaitingAcceptance = await _prnService.GetPrnsAwaitingAcceptanceAsync();
+            var selectedPrnIds = awaitingAcceptance.Prns
+                .Where(x => postedPrnIds.Contains(x.ExternalId) && x.CanAcceptWithoutChoosingYear(isMultiYearObligationsEnabled))
+                .Select(x => x.ExternalId)
+                .ToArray();
+
+            if (selectedPrnIds.Length == 0)
+            {
+                return RedirectToAction(nameof(PrnsController.SelectMultiplePrns), nameof(PrnsController).RemoveControllerFromName());
+            }
+
+            await _prnService.AcceptPrnsAsync(selectedPrnIds);
+
+            // The summary page reports on the PRNs accepted by this request, which may be fewer than those originally selected
+            var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
+            session.PrnSession.SelectedPrnIds = selectedPrnIds.ToList();
+            await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
+
             return RedirectToAction(nameof(AcceptedPrns));
         }
 

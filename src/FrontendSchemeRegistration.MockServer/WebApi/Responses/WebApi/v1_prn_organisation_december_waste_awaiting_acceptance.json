@@ -5,7 +5,8 @@
     "prnNumber": "PRN-01",
     "materialName": "Paper/board",
     "issueDate": "2026-03-01T13:15:15",
-    "prnStatus": "AWAITINGACCEPTANCE"
+    "prnStatus": "AWAITINGACCEPTANCE",
+    "obligationYear": "2026"
   },
   {
     "id": 2,
@@ -13,7 +14,8 @@
     "prnNumber": "PRN-02",
     "materialName": "Paper/board",
     "issueDate": "2026-05-01T13:15:15",
-    "prnStatus": "AWAITINGACCEPTANCE"
+    "prnStatus": "AWAITINGACCEPTANCE",
+    "obligationYear": "2026"
   },
   {
     "id": 3,
@@ -21,7 +23,8 @@
     "prnNumber": "PRN-03",
     "materialName": "Fibre",
     "issueDate": "2026-03-01T13:15:15",
-    "prnStatus": "AWAITINGACCEPTANCE"
+    "prnStatus": "AWAITINGACCEPTANCE",
+    "obligationYear": "2026"
   },
   {
     "id": 4,
@@ -29,7 +32,8 @@
     "prnNumber": "PRN-04",
     "materialName": "Fibre",
     "issueDate": "2026-05-01T13:15:15",
-    "prnStatus": "AWAITINGACCEPTANCE"
+    "prnStatus": "AWAITINGACCEPTANCE",
+    "obligationYear": "2026"
   },
   {
     "id": 5,

@@ -315,6 +315,28 @@ public class ManageObligationsPageTests
     }
 
     [Test]
+    public async Task WhenMultiYearDisabled_InDecemberJanuaryFlashWindow_WithDecemberWastePrnAwaitingAcceptance_IgnoresSelectedYearAndHidesDetailsSummaryAccordion()
+    {
+        // A future year left in the session must be ignored when multi-year obligations are off,
+        // so the page shows the current year and the December Waste accordion stays hidden.
+        SetUp(
+            showMultiYearObligations: false,
+            obligationData: WebApiOptions.ObligationDataType.Mixed,
+            prnOrganisationData: WebApiOptions.PrnOrganisationDataType.DecemberWasteAwaitingAcceptance,
+            startupUtcTimestampOverride: "2026-12-15T08:00:00Z");
+        await Context.Client.AuthenticateDefaultUser();
+        SetProducerSession(selectedObligationYear: 2027);
+
+        var response = await Context.Client.GetAsync(ObligationsHomePath);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadAsStringAsync();
+        content.Should().Contain("Manage your 2026 recycling obligations");
+        content.Should().NotContain("Manage your 2027 recycling obligations");
+        content.Should().NotContain("Tonnage awaiting acceptance is for PRNs or PERNs that have been issued to you but have not yet been accepted.");
+    }
+
+    [Test]
     public async Task WhenCurrentYearSelected_InDecemberJanuaryFlashWindow_WithDecemberWastePrnAwaitingAcceptance_HidesDetailsSummaryAccordion()
     {
         // ShowAccordion requires the selected year to be a *future* Compliance Year - selecting the

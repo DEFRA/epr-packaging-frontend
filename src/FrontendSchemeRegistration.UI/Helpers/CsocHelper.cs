@@ -31,7 +31,13 @@ public static class CsocHelper
         var enabled = await featureManager.IsEnabledAsync(FeatureFlags.CsocEnabled);
         if (!enabled) return null;
 
-        var complianceYear = now.GetComplianceYear();
+        // The obligations page passes the year being viewed (e.g. chosen on the Choose a year page), whose deadline is
+        // the end of the following January. Otherwise, use the current compliance year.
+        var hasYear = prnObligationViewModel is { ComplianceYear: > 0 };
+        var year = hasYear ? prnObligationViewModel!.ComplianceYear : now.GetComplianceYear();
+        var submissionDeadline = hasYear
+            ? new DateTime(year + 1, 1, 31, 0, 0, 0, DateTimeKind.Unspecified)
+            : now.GetCsocSubmissionDeadline();
         var complianceDeclarationStatus = prnObligationViewModel?.ComplianceDeclarationStatus;
 
         return new CsocViewModel
@@ -39,13 +45,13 @@ public static class CsocHelper
             IsApprovedUser = isApprovedUser,
             IsDirectProducer = organisation.IsDirectProducer(),
             IsComplianceScheme = organisation.IsComplianceScheme(),
-            SubmissionDeadline = now.GetCsocSubmissionDeadline(),
-            ComplianceYear = complianceYear,
+            SubmissionDeadline = submissionDeadline,
+            ComplianceYear = year,
             WasteObligationsBaseAddress = AppendLangQuery(
                 GetWasteObligationsBaseAddress(
                     options.WasteObligationsBaseAddress,
                     organisation,
-                    complianceYear,
+                    year,
                     complianceDeclarationStatus,
                     prnObligationViewModel?.ComplianceDeclarationId,
                     registrationSession)),
