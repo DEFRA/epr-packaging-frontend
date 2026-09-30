@@ -182,12 +182,10 @@
 							@await Html.PartialAsync("Partials/RecordNavigation/_RecordPaging", Model.PagingDetail)
 							<hr class="govuk-section-break govuk-section-break--l govuk-section-break--xl">
 							<div class="govuk-button-group">
-								@if (showButton)
-								{
-									<button class="govuk-button" type="submit">
-										@Localizer["accept_selected_prns_and_perns"]
-									</button>
-								}
+								@* Always rendered: selections retained from other pages (sessionStorage) can still be submitted, so the script reveals it when needed *@
+								<button id="acceptSelectedPrns" class="govuk-button" type="submit" hidden="@(showButton ? null : "hidden")">
+									@Localizer["accept_selected_prns_and_perns"]
+								</button>
 							</div>
 						}
 					</fieldset>
@@ -200,6 +198,16 @@
 {
     <script type="text/javascript" nonce="@scriptNonce">
         window.onload = function () {
+
+            const acceptButton = document.getElementById('acceptSelectedPrns');
+            if (acceptButton && acceptButton.hidden) {
+                for (let i = 0; i < sessionStorage.length; i++) {
+                    if (sessionStorage.key(i).startsWith("chkBoxSelectPrn_")) {
+                        acceptButton.hidden = false;
+                        break;
+                    }
+                }
+            }
 
             document.getElementById('clearSortFilter')
                 .addEventListener('click', function () {

@@ -43,7 +43,7 @@ public class DecemberWasteFlashWindowTests
         content.Should().Contain("Can be accepted towards 2026 or 2027 recycling obligations");
         content.Should().Contain($"href=\"/report-data/selected-prn/{FlashPrnId}\"");
         CountCheckboxes(content).Should().Be(1, "only the standard PRN can be selected");
-        content.Should().Contain("Accept selected PRNs and PERNs");
+        AcceptButtonIsVisible(content).Should().BeTrue();
     }
 
     [Test]
@@ -54,7 +54,7 @@ public class DecemberWasteFlashWindowTests
         var content = await GetOk(SelectMultiplePath);
 
         CountCheckboxes(content).Should().Be(0);
-        content.Should().NotContain("Accept selected PRNs and PERNs");
+        AcceptButtonIsVisible(content).Should().BeFalse();
     }
 
     [Test]
@@ -67,7 +67,23 @@ public class DecemberWasteFlashWindowTests
         CountCheckboxes(content).Should().Be(0, "PRNs with a choice of year must be accepted individually");
         content.Should().Contain($"href=\"/report-data/selected-prn/{FlashPrnId}\"");
         content.Should().NotContain("december-waste-flash-row");
-        content.Should().NotContain("Accept selected PRNs and PERNs");
+        AcceptButtonIsVisible(content).Should().BeFalse();
+    }
+
+    [Test]
+    public async Task SelectMultiplePrns_WhenNothingSelectableOnPage_AcceptButtonIsHiddenButRevealedForSelectionsRetainedFromOtherPages()
+    {
+        // A later page holding only PRNs that need a year choosing: nothing can be ticked here, but selections
+        // ticked on earlier pages are kept in sessionStorage and must still be submittable.
+        await SetUp(decemberWaste: false, multiYear: true, WebApiOptions.PrnSearchDataType.AllDecemberWasteInFlashWindow);
+
+        var content = await GetOk(SelectMultiplePath);
+
+        CountCheckboxes(content).Should().Be(0);
+        AcceptButtonIsVisible(content).Should().BeFalse("nothing on this page is selectable");
+        content.Should().Contain("id=\"acceptSelectedPrns\"", "the button stays in the page so it can be revealed");
+        content.Should().Contain("acceptButton.hidden = false");
+        content.Should().Contain("sessionStorage.key(i).startsWith(\"chkBoxSelectPrn_\")");
     }
 
     [Test]
@@ -79,7 +95,7 @@ public class DecemberWasteFlashWindowTests
 
         CountCheckboxes(content).Should().Be(2);
         content.Should().NotContain("december-waste-flash-row");
-        content.Should().Contain("Accept selected PRNs and PERNs");
+        AcceptButtonIsVisible(content).Should().BeTrue();
     }
 
     [Test]
@@ -271,6 +287,13 @@ public class DecemberWasteFlashWindowTests
         var response = await Context.Client.GetAsync(path);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         return await response.Content.ReadAsStringAsync();
+    }
+
+    private static bool AcceptButtonIsVisible(string content)
+    {
+        var button = Regex.Match(content, "<button id=\"acceptSelectedPrns\"[^>]*>");
+        button.Success.Should().BeTrue("the accept button is always rendered when PRNs are listed");
+        return !button.Value.Contains("hidden");
     }
 
     private static int CountCheckboxes(string content) =>
