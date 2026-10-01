@@ -18,6 +18,7 @@ using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Time.Testing;
 using Microsoft.FeatureManagement;
 using Moq;
 
@@ -32,6 +33,7 @@ public class DeclarationWithFullNameControllerTests
     private const string ViewName = "DeclarationWithFullName";
     private const string OrganisationName = "Org Name Ltd";
     private const string DeclarationName = "Test Name";
+    private const string OrganisationNumber = "123456";
     private const string RegistrationReferenceNumber = "TESTREGREFNO123";
     private static readonly Guid _submissionId = Guid.NewGuid();
     private static readonly Guid _userId = Guid.NewGuid();
@@ -43,6 +45,7 @@ public class DeclarationWithFullNameControllerTests
     private Mock<IFeatureManager> _featureManagerMock;
     private Mock<IPaymentCalculationService> _paymentCalculationServiceMock;
     private Mock<ISessionManager<RegistrationApplicationSession>> _registrationApplicationSessionManagerMock;
+    private FakeTimeProvider _timeProvider;
 
     [SetUp]
     public void SetUp()
@@ -54,13 +57,14 @@ public class DeclarationWithFullNameControllerTests
         _registrationPeriodProviderMock = new Mock<IRegistrationPeriodProvider>();
         _featureManagerMock = new Mock<IFeatureManager>();
         _paymentCalculationServiceMock = new Mock<IPaymentCalculationService>();
+        _timeProvider = new FakeTimeProvider(new DateTimeOffset(2026, 9, 15, 0, 0, 0, TimeSpan.Zero));
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
                 RegistrationSession = new RegistrationSession { IsResubmission = true }
             });
 
-        _systemUnderTest = new DeclarationWithFullNameController(_submissionServiceMock.Object, _sessionManagerMock.Object, _registrationApplicationSessionManagerMock.Object, new NullLogger<DeclarationWithFullNameController>(), _registrationPeriodProviderMock.Object, _featureManagerMock.Object, _paymentCalculationServiceMock.Object);
+        _systemUnderTest = new DeclarationWithFullNameController(_submissionServiceMock.Object, _sessionManagerMock.Object, _registrationApplicationSessionManagerMock.Object, new NullLogger<DeclarationWithFullNameController>(), _registrationPeriodProviderMock.Object, _featureManagerMock.Object, _paymentCalculationServiceMock.Object, _timeProvider);
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
@@ -838,6 +842,7 @@ public class DeclarationWithFullNameControllerTests
                 new()
                 {
                     Id = Guid.NewGuid(),
+                    OrganisationNumber = OrganisationNumber,
                     OrganisationRole = organisationRole,
                     Name = OrganisationName,
                     NationId = nationId
@@ -1217,6 +1222,158 @@ public class DeclarationWithFullNameControllerTests
             It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
             It.Is<RegistrationSubmitContext>(c => c.SubmissionPeriodId == 9)), Times.Once);
     }
+
+    [Test]
+    public async Task Post_BuildsApplicationReferenceNumberForSubmissionYear_WhenSessionHoldsDifferentYear()
+    {
+        // Arrange - session app ref was cached for 2026, submission is for 2027 and has no persisted ref yet.
+        var submission = Create2027DirectLargeSubmission();
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession
+            {
+                ApplicationReferenceNumber = $"PEPR{OrganisationNumber}26P1L",
+                SubmissionPeriod = "January to December 2026",
+            },
+        });
+        SetupRegistrationApplicationSession();
+
+        // Act
+        await _systemUnderTest.Post(submission.Id, CreateProducerDeclaration());
+
+        // Assert
+        _submissionServiceMock.Verify(x => x.SubmitAsync(
+            It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
+            $"PEPR{OrganisationNumber}27P1L", It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
+            It.IsAny<RegistrationSubmitContext>()), Times.Once);
+    }
+
+    [Test]
+    public async Task Post_UsesPersistedApplicationReferenceNumber_WhenSubmissionAlreadyHasOne()
+    {
+        // Arrange
+        var submission = Create2027DirectLargeSubmission();
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        _submissionServiceMock.Setup(x => x.GetRegistrationApplicationDetails(It.Is<GetRegistrationApplicationDetailsRequest>(r =>
+                r.SubmissionPeriod == "January to December 2027"
+                && r.OrganisationNumber == int.Parse(OrganisationNumber)
+                && r.RegistrationJourney == nameof(RegistrationJourney.DirectLargeProducer))))
+            .ReturnsAsync(new RegistrationApplicationDetails { SubmissionId = submission.Id, ApplicationReferenceNumber = "PERSISTED-REF" });
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession
+            {
+                ApplicationReferenceNumber = "SESSION-REF",
+                SubmissionPeriod = "January to December 2027",
+            },
+        });
+        SetupRegistrationApplicationSession();
+
+        // Act
+        await _systemUnderTest.Post(submission.Id, CreateProducerDeclaration());
+
+        // Assert
+        _submissionServiceMock.Verify(x => x.SubmitAsync(
+            It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
+            "PERSISTED-REF", It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
+            It.IsAny<RegistrationSubmitContext>()), Times.Once);
+    }
+
+    [Test]
+    public async Task Post_UsesSubmissionIsResubmission_WhenSessionHoldsDifferentYear()
+    {
+        // Arrange - session flagged a resubmission (left over from an approved 2026 application), the 2027
+        // submission has a prior submit but is not a resubmission.
+        var submission = Create2027DirectLargeSubmission();
+        submission.IsSubmitted = true;
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        _submissionServiceMock.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(new RegistrationApplicationDetails { SubmissionId = submission.Id, ApplicationReferenceNumber = "REF", IsResubmission = null });
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession
+            {
+                ApplicationReferenceNumber = "REF",
+                SubmissionPeriod = "January to December 2027",
+                IsResubmission = true,
+            },
+        });
+        SetupRegistrationApplicationSession();
+
+        // Act
+        await _systemUnderTest.Post(submission.Id, CreateProducerDeclaration());
+
+        // Assert
+        _paymentCalculationServiceMock.Verify(x => x.GetRegistrationFeeCalculationDetails(It.IsAny<Guid>()), Times.Never);
+        _submissionServiceMock.Verify(x => x.SubmitAsync(
+            It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
+            It.IsAny<string?>(), false, It.IsAny<RegistrationJourney?>(),
+            It.Is<RegistrationSubmitContext>(c => c.NotifyPaymentService)), Times.Once);
+    }
+
+    [Test]
+    public async Task Post_FallsBackToSessionValues_WhenApplicationDetailsAreForDifferentSubmission()
+    {
+        // Arrange
+        var submission = Create2027DirectLargeSubmission();
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        _submissionServiceMock.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(new RegistrationApplicationDetails { SubmissionId = Guid.NewGuid(), ApplicationReferenceNumber = "OTHER-REF", IsResubmission = false });
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession
+            {
+                ApplicationReferenceNumber = "SESSION-REF",
+                SubmissionPeriod = "January to December 2027",
+                IsResubmission = true,
+            },
+        });
+        SetupRegistrationApplicationSession();
+
+        // Act
+        await _systemUnderTest.Post(submission.Id, CreateProducerDeclaration());
+
+        // Assert
+        _submissionServiceMock.Verify(x => x.SubmitAsync(
+            It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
+            "SESSION-REF", true, It.IsAny<RegistrationJourney?>(),
+            It.IsAny<RegistrationSubmitContext>()), Times.Once);
+    }
+
+    private static RegistrationSubmission Create2027DirectLargeSubmission() => new()
+    {
+        Id = Guid.NewGuid(),
+        IsSubmitted = false,
+        SubmissionPeriod = "January to December 2027",
+        RegistrationJourney = RegistrationJourney.DirectLargeProducer,
+        LastUploadedValidFiles = new UploadedRegistrationFilesInformation
+        {
+            CompanyDetailsFileName = "FileName",
+            CompanyDetailsUploadDatetime = DateTime.Now,
+            CompanyDetailsUploadedBy = Guid.NewGuid(),
+            CompanyDetailsFileId = Guid.NewGuid(),
+        },
+        HasValidFile = true,
+    };
+
+    private DeclarationWithFullNameViewModel CreateProducerDeclaration()
+    {
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer, nationId: (int)Nation.England));
+
+        return new DeclarationWithFullNameViewModel
+        {
+            FullName = DeclarationName,
+            OrganisationDetailsFileId = Guid.NewGuid().ToString(),
+            IsCso = false,
+        };
+    }
+
+    private void SetupRegistrationApplicationSession() =>
+        _registrationApplicationSessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new RegistrationApplicationSession
+        {
+            RegulatorNation = "GB-ENG",
+        });
 
     [Test]
     public async Task Post_RedirectsToOrganisationDetailsSubmissionFailed_WhenRegulatorNationCannotBeResolved()

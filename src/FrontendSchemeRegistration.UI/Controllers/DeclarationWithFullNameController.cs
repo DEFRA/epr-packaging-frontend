@@ -27,7 +27,8 @@ public class DeclarationWithFullNameController(
     ILogger<DeclarationWithFullNameController> logger,
     IRegistrationPeriodProvider registrationPeriodProvider,
     IFeatureManager featureManager,
-    IPaymentCalculationService paymentCalculationService) : Controller
+    IPaymentCalculationService paymentCalculationService,
+    TimeProvider timeProvider) : Controller
 {
     private const string ViewName = "DeclarationWithFullName";
     private const string ConfirmationViewName = "CompanyDetailsConfirmation";
@@ -144,7 +145,14 @@ public class DeclarationWithFullNameController(
                     throw new InvalidOperationException($"RegistrationSession not found for submission ID {submissionId}");
                 }
 
-                if (string.IsNullOrWhiteSpace(session.RegistrationSession.ApplicationReferenceNumber))
+                var registrationYear = ParseRegistrationYear(submission.SubmissionPeriod) ?? model.RegistrationYear;
+                var applicationDetails = await GetApplicationDetailsForSubmissionAsync(submission, regJourney, userData, session);
+                var isResubmission = applicationDetails is not null
+                    ? applicationDetails.IsResubmission ?? false
+                    : session.RegistrationSession.IsResubmission;
+                var applicationReferenceNumber = ResolveApplicationReferenceNumber(submission, regJourney, registrationYear, userData, session, applicationDetails);
+
+                if (string.IsNullOrWhiteSpace(applicationReferenceNumber))
                 {
                     logger.LogError("Application reference number is missing for submission ID {SubmissionId}", submissionId);
                     throw new ArgumentException($"Application reference number is missing for submission ID {submissionId}");
@@ -164,14 +172,14 @@ public class DeclarationWithFullNameController(
                     throw new ArgumentException($"RegulatorNation could not be resolved for submission ID {submissionId}");
                 }
 
-                var notifyPaymentService = await ShouldNotifyPaymentServiceAsync(session, submission, submissionId);
+                var notifyPaymentService = await ShouldNotifyPaymentServiceAsync(isResubmission, submission, submissionId);
 
-                var submissionPeriodId = ResolveSubmissionPeriodId(submission, model, regJourney, userData, registrationApplicationSession);
+                var submissionPeriodId = ResolveSubmissionPeriodId(registrationYear, regJourney, userData, registrationApplicationSession);
 
                 await submissionService.SubmitAsync(submissionId, organisationDetailsFileId,
                     model.FullName,
-                    session.RegistrationSession.ApplicationReferenceNumber,
-                    session.RegistrationSession.IsResubmission,
+                    applicationReferenceNumber,
+                    isResubmission,
                     regJourney,
                     new RegistrationSubmitContext
                     {
@@ -222,16 +230,78 @@ public class DeclarationWithFullNameController(
             : null;
     }
 
-    // RegistrationApplicationSession is shared across registration years, so its SubmissionPeriodId reflects whichever
-    // year's task list was last loaded. Derive the period from the submission being submitted instead.
-    private int? ResolveSubmissionPeriodId(
+    // The registration sessions are shared across registration years, so their values reflect whichever year's
+    // task list / file upload journey was last entered. Resolve per-submission values from the submission instead.
+    private async Task<RegistrationApplicationDetails?> GetApplicationDetailsForSubmissionAsync(
         RegistrationSubmission submission,
-        DeclarationWithFullNameViewModel model,
+        RegistrationJourney? regJourney,
+        UserData userData,
+        FrontendSchemeRegistrationSession session)
+    {
+        var organisation = userData.Organisations[0];
+        if (string.IsNullOrWhiteSpace(submission.SubmissionPeriod)
+            || organisation.Id is null
+            || !int.TryParse(organisation.OrganisationNumber, out var organisationNumber))
+        {
+            return null;
+        }
+
+        var details = await submissionService.GetRegistrationApplicationDetails(new GetRegistrationApplicationDetailsRequest
+        {
+            OrganisationNumber = organisationNumber,
+            OrganisationId = organisation.Id.Value,
+            ComplianceSchemeId = session.RegistrationSession.SelectedComplianceScheme?.Id,
+            SubmissionPeriod = submission.SubmissionPeriod,
+            RegistrationJourney = regJourney?.ToString()
+        });
+
+        return details?.SubmissionId == submission.Id ? details : null;
+    }
+
+    private string? ResolveApplicationReferenceNumber(
+        RegistrationSubmission submission,
+        RegistrationJourney? regJourney,
+        int? registrationYear,
+        UserData userData,
+        FrontendSchemeRegistrationSession session,
+        RegistrationApplicationDetails? applicationDetails)
+    {
+        if (!string.IsNullOrWhiteSpace(applicationDetails?.ApplicationReferenceNumber))
+        {
+            return applicationDetails.ApplicationReferenceNumber;
+        }
+
+        var sessionIsForSubmissionPeriod = string.IsNullOrWhiteSpace(submission.SubmissionPeriod)
+            || string.Equals(session.RegistrationSession.SubmissionPeriod, submission.SubmissionPeriod, StringComparison.Ordinal);
+
+        if (sessionIsForSubmissionPeriod && !string.IsNullOrWhiteSpace(session.RegistrationSession.ApplicationReferenceNumber))
+        {
+            return session.RegistrationSession.ApplicationReferenceNumber;
+        }
+
+        if (registrationYear is null)
+        {
+            return null;
+        }
+
+        var organisation = userData.Organisations[0];
+        var period = new SubmissionPeriod { DataPeriod = $"January to December {registrationYear}", StartMonth = "January", EndMonth = "December", Year = $"{registrationYear}" };
+
+        return ReferenceNumberBuilder.Build(
+            period,
+            organisation.OrganisationNumber,
+            timeProvider,
+            organisation.OrganisationRole == OrganisationRoles.ComplianceScheme,
+            session.RegistrationSession.SelectedComplianceScheme?.RowNumber ?? 0,
+            regJourney?.ToString());
+    }
+
+    private int? ResolveSubmissionPeriodId(
+        int? registrationYear,
         RegistrationJourney? regJourney,
         UserData userData,
         RegistrationApplicationSession? registrationApplicationSession)
     {
-        var registrationYear = ParseRegistrationYear(submission.SubmissionPeriod) ?? model.RegistrationYear;
         if (registrationYear is null)
         {
             return registrationApplicationSession?.SubmissionPeriodId;
@@ -250,11 +320,11 @@ public class DeclarationWithFullNameController(
     }
 
     private async Task<bool> ShouldNotifyPaymentServiceAsync(
-        FrontendSchemeRegistrationSession session,
+        bool isResubmission,
         RegistrationSubmission submission,
         Guid submissionId)
     {
-        if (!session.RegistrationSession.IsResubmission || !submission.IsSubmitted)
+        if (!isResubmission || !submission.IsSubmitted)
         {
             return true;
         }
