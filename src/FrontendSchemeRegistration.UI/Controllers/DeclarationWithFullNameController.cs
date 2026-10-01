@@ -166,6 +166,8 @@ public class DeclarationWithFullNameController(
 
                 var notifyPaymentService = await ShouldNotifyPaymentServiceAsync(session, submission, submissionId);
 
+                var submissionPeriodId = ResolveSubmissionPeriodId(submission, model, regJourney, userData, registrationApplicationSession);
+
                 await submissionService.SubmitAsync(submissionId, organisationDetailsFileId,
                     model.FullName,
                     session.RegistrationSession.ApplicationReferenceNumber,
@@ -173,7 +175,7 @@ public class DeclarationWithFullNameController(
                     regJourney,
                     new RegistrationSubmitContext
                     {
-                        SubmissionPeriodId = registrationApplicationSession?.SubmissionPeriodId,
+                        SubmissionPeriodId = submissionPeriodId,
                         RegulatorNation = regulatorNation,
                         NotifyPaymentService = notifyPaymentService
                     });
@@ -218,6 +220,33 @@ public class DeclarationWithFullNameController(
         return nationId.HasValue
             ? NationExtensions.GetNationNameFromId(nationId.Value)
             : null;
+    }
+
+    // RegistrationApplicationSession is shared across registration years, so its SubmissionPeriodId reflects whichever
+    // year's task list was last loaded. Derive the period from the submission being submitted instead.
+    private int? ResolveSubmissionPeriodId(
+        RegistrationSubmission submission,
+        DeclarationWithFullNameViewModel model,
+        RegistrationJourney? regJourney,
+        UserData userData,
+        RegistrationApplicationSession? registrationApplicationSession)
+    {
+        var registrationYear = ParseRegistrationYear(submission.SubmissionPeriod) ?? model.RegistrationYear;
+        if (registrationYear is null)
+        {
+            return registrationApplicationSession?.SubmissionPeriodId;
+        }
+
+        var isCso = userData.Organisations[0].OrganisationRole == OrganisationRoles.ComplianceScheme;
+        var isSmallProducer = regJourney?.ToString().Contains("Small", StringComparison.OrdinalIgnoreCase) ?? false;
+
+        return registrationPeriodProvider.GetRegistrationWindow(isCso, isSmallProducer, registrationYear.Value)?.Id;
+    }
+
+    private static int? ParseRegistrationYear(string? submissionPeriod)
+    {
+        var lastToken = submissionPeriod?.Trim().Split(' ').LastOrDefault();
+        return int.TryParse(lastToken, out var year) ? year : null;
     }
 
     private async Task<bool> ShouldNotifyPaymentServiceAsync(

@@ -7,6 +7,7 @@ using FluentAssertions;
 using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Options;
+using FrontendSchemeRegistration.Application.Options.RegistrationPeriodPatterns;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers;
@@ -1059,6 +1060,162 @@ public class DeclarationWithFullNameControllerTests
             It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
             It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
             It.Is<RegistrationSubmitContext>(c => c.RegulatorNation == "GB-NIR")), Times.Once);
+    }
+
+    [Test]
+    public async Task Post_DerivesSubmissionPeriodIdFromSubmission_WhenSessionHoldsDifferentYear()
+    {
+        // Arrange - session was last hydrated by the 2026 task list (period 5), but the submission is for 2027.
+        var submission = new RegistrationSubmission
+        {
+            Id = Guid.NewGuid(),
+            IsSubmitted = false,
+            SubmissionPeriod = "January to December 2027",
+            RegistrationJourney = RegistrationJourney.DirectLargeProducer,
+            LastUploadedValidFiles = new UploadedRegistrationFilesInformation
+            {
+                CompanyDetailsFileName = "FileName",
+                CompanyDetailsUploadDatetime = DateTime.Now,
+                CompanyDetailsUploadedBy = Guid.NewGuid(),
+                CompanyDetailsFileId = Guid.NewGuid(),
+            },
+            HasValidFile = true,
+        };
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession { ApplicationReferenceNumber = "test" },
+        });
+        _registrationApplicationSessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new RegistrationApplicationSession
+        {
+            RegulatorNation = "GB-ENG",
+            SubmissionPeriodId = 5,
+        });
+        _registrationPeriodProviderMock
+            .Setup(x => x.GetRegistrationWindow(false, false, 2027))
+            .Returns(new RegistrationWindow(TimeProvider.System, 9, WindowType.DirectLargeProducer, 2027,
+                new DateTime(2026, 7, 1), new DateTime(2026, 10, 2), new DateTime(2028, 1, 1)));
+
+        var request = new DeclarationWithFullNameViewModel
+        {
+            FullName = DeclarationName,
+            OrganisationDetailsFileId = Guid.NewGuid().ToString(),
+            IsCso = false,
+            RegistrationYear = 2026,
+        };
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer, nationId: (int)Nation.England));
+
+        // Act
+        await _systemUnderTest.Post(submission.Id, request);
+
+        // Assert - the submission's own period wins over both the stale session and the model's year.
+        _submissionServiceMock.Verify(x => x.SubmitAsync(
+            It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
+            It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
+            It.Is<RegistrationSubmitContext>(c => c.SubmissionPeriodId == 9)), Times.Once);
+    }
+
+    [Test]
+    public async Task Post_DerivesSubmissionPeriodIdFromModelYear_WhenSubmissionPeriodHasNoYear()
+    {
+        // Arrange
+        var submission = new RegistrationSubmission
+        {
+            Id = Guid.NewGuid(),
+            IsSubmitted = false,
+            RegistrationJourney = RegistrationJourney.CsoSmallProducer,
+            LastUploadedValidFiles = new UploadedRegistrationFilesInformation
+            {
+                CompanyDetailsFileName = "FileName",
+                CompanyDetailsUploadDatetime = DateTime.Now,
+                CompanyDetailsUploadedBy = Guid.NewGuid(),
+                CompanyDetailsFileId = Guid.NewGuid(),
+            },
+            HasValidFile = true,
+        };
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession
+            {
+                ApplicationReferenceNumber = "test",
+                SelectedComplianceScheme = new ComplianceSchemeDto { NationId = (int)Nation.England },
+            },
+        });
+        _registrationApplicationSessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new RegistrationApplicationSession
+        {
+            RegulatorNation = "GB-ENG",
+            SubmissionPeriodId = 4,
+        });
+        _registrationPeriodProviderMock
+            .Setup(x => x.GetRegistrationWindow(true, true, 2027))
+            .Returns(new RegistrationWindow(TimeProvider.System, 8, WindowType.CsoSmallProducer, 2027,
+                new DateTime(2027, 1, 1), new DateTime(2027, 4, 2), new DateTime(2028, 1, 29)));
+
+        var request = new DeclarationWithFullNameViewModel
+        {
+            FullName = DeclarationName,
+            OrganisationDetailsFileId = Guid.NewGuid().ToString(),
+            IsCso = true,
+            RegistrationYear = 2027,
+        };
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.ComplianceScheme, nationId: (int)Nation.England));
+
+        // Act
+        await _systemUnderTest.Post(submission.Id, request);
+
+        // Assert
+        _submissionServiceMock.Verify(x => x.SubmitAsync(
+            It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
+            It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
+            It.Is<RegistrationSubmitContext>(c => c.SubmissionPeriodId == 8)), Times.Once);
+    }
+
+    [Test]
+    public async Task Post_FallsBackToSessionSubmissionPeriodId_WhenNoRegistrationYearAvailable()
+    {
+        // Arrange
+        var submission = new RegistrationSubmission
+        {
+            Id = Guid.NewGuid(),
+            IsSubmitted = false,
+            LastUploadedValidFiles = new UploadedRegistrationFilesInformation
+            {
+                CompanyDetailsFileName = "FileName",
+                CompanyDetailsUploadDatetime = DateTime.Now,
+                CompanyDetailsUploadedBy = Guid.NewGuid(),
+                CompanyDetailsFileId = Guid.NewGuid(),
+            },
+            HasValidFile = true,
+        };
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession { ApplicationReferenceNumber = "test" },
+        });
+        _registrationApplicationSessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new RegistrationApplicationSession
+        {
+            RegulatorNation = "GB-ENG",
+            SubmissionPeriodId = 9,
+        });
+
+        var request = new DeclarationWithFullNameViewModel
+        {
+            FullName = DeclarationName,
+            OrganisationDetailsFileId = Guid.NewGuid().ToString(),
+            IsCso = false,
+        };
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer, nationId: (int)Nation.England));
+
+        // Act
+        await _systemUnderTest.Post(submission.Id, request);
+
+        // Assert
+        _registrationPeriodProviderMock.Verify(x => x.GetRegistrationWindow(It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<int>()), Times.Never);
+        _submissionServiceMock.Verify(x => x.SubmitAsync(
+            It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
+            It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
+            It.Is<RegistrationSubmitContext>(c => c.SubmissionPeriodId == 9)), Times.Once);
     }
 
     [Test]
