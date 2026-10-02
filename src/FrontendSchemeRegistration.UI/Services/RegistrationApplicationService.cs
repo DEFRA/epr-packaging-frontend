@@ -6,6 +6,7 @@ using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.DTOs.PaymentCalculations;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Enums;
+using FrontendSchemeRegistration.Application.Extensions;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Extensions;
@@ -601,6 +602,104 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     }
 
     /// <summary>
+    /// Resolves the values sent when a registration submission is declared. The registration sessions are shared across
+    /// registration years (and other journeys write to them), so per-submission values are derived from the submission
+    /// being declared rather than from whichever year's journey was last entered in this browser session.
+    /// </summary>
+    public async Task<RegistrationSubmitDetails> ResolveRegistrationSubmitDetailsAsync(
+        ISession httpSession,
+        Organisation organisation,
+        RegistrationSubmission submission,
+        RegistrationJourney? registrationJourney,
+        int? fallbackRegistrationYear)
+    {
+        var frontEndSession = await frontEndSessionManager.GetSessionAsync(httpSession) ?? new FrontendSchemeRegistrationSession();
+        var registrationSession = await sessionManager.GetSessionAsync(httpSession);
+
+        var isCso = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme;
+        var selectedComplianceScheme = frontEndSession.RegistrationSession.SelectedComplianceScheme;
+        var registrationYear = ParseRegistrationYear(submission.SubmissionPeriod) ?? fallbackRegistrationYear;
+
+        var applicationDetails = await GetApplicationDetailsForSubmissionAsync(organisation, submission, registrationJourney, selectedComplianceScheme);
+
+        var isResubmission = applicationDetails is not null
+            ? applicationDetails.IsResubmission ?? false
+            : frontEndSession.RegistrationSession.IsResubmission;
+
+        string? applicationReferenceNumber;
+        if (!string.IsNullOrWhiteSpace(applicationDetails?.ApplicationReferenceNumber))
+        {
+            applicationReferenceNumber = applicationDetails.ApplicationReferenceNumber;
+        }
+        else if (registrationYear is not null)
+        {
+            var period = new SubmissionPeriod { DataPeriod = $"January to December {registrationYear}", StartMonth = "January", EndMonth = "December", Year = $"{registrationYear}" };
+            applicationReferenceNumber = ReferenceNumberBuilder.Build(
+                period,
+                organisation.OrganisationNumber,
+                _timeProvider,
+                isCso,
+                selectedComplianceScheme?.RowNumber ?? 0,
+                registrationJourney?.ToString());
+        }
+        else
+        {
+            applicationReferenceNumber = frontEndSession.RegistrationSession.ApplicationReferenceNumber;
+        }
+
+        int? submissionPeriodId;
+        if (registrationYear is not null)
+        {
+            var isSmallProducer = registrationJourney?.ToString().Contains("Small", StringComparison.OrdinalIgnoreCase) ?? false;
+            submissionPeriodId = _registrationPeriodProvider.GetRegistrationWindow(isCso, isSmallProducer, registrationYear.Value)?.Id;
+        }
+        else
+        {
+            submissionPeriodId = registrationSession?.SubmissionPeriodId;
+        }
+
+        var regulatorNation = registrationSession?.RegulatorNation;
+        if (string.IsNullOrWhiteSpace(regulatorNation))
+        {
+            var nationId = isCso ? selectedComplianceScheme?.NationId : organisation.NationId;
+            regulatorNation = nationId.HasValue ? NationExtensions.GetNationNameFromId(nationId.Value) : null;
+        }
+
+        return new RegistrationSubmitDetails(applicationReferenceNumber, isResubmission, submissionPeriodId, regulatorNation);
+    }
+
+    private async Task<RegistrationApplicationDetails?> GetApplicationDetailsForSubmissionAsync(
+        Organisation organisation,
+        RegistrationSubmission submission,
+        RegistrationJourney? registrationJourney,
+        ComplianceSchemeDto? selectedComplianceScheme)
+    {
+        if (string.IsNullOrWhiteSpace(submission.SubmissionPeriod)
+            || organisation.Id is null
+            || !int.TryParse(organisation.OrganisationNumber, out var organisationNumber))
+        {
+            return null;
+        }
+
+        var details = await _submissionService.GetRegistrationApplicationDetails(new GetRegistrationApplicationDetailsRequest
+        {
+            OrganisationNumber = organisationNumber,
+            OrganisationId = organisation.Id.Value,
+            ComplianceSchemeId = selectedComplianceScheme?.Id,
+            SubmissionPeriod = submission.SubmissionPeriod,
+            RegistrationJourney = registrationJourney?.ToString()
+        });
+
+        return details?.SubmissionId == submission.Id ? details : null;
+    }
+
+    private static int? ParseRegistrationYear(string? submissionPeriod)
+    {
+        var lastToken = submissionPeriod?.Trim().Split(' ').LastOrDefault();
+        return int.TryParse(lastToken, out var year) ? year : null;
+    }
+
+    /// <summary>
     /// Builds view models for rendering a list of registration tiles for each window that applies to the organisation.
     /// 
     /// This method does not modify session state. It makes direct API calls to get registration application details
@@ -790,7 +889,11 @@ public interface IRegistrationApplicationService
         ISession httpSession, Organisation organisation, UserData userData);
 
     Task<bool> TryPopulateRegistrationFeeSnapshotAsync(ISession httpSession, Guid submissionId, CancellationToken cancellationToken);
+
+    Task<RegistrationSubmitDetails> ResolveRegistrationSubmitDetailsAsync(ISession httpSession, Organisation organisation, RegistrationSubmission submission, RegistrationJourney? registrationJourney, int? fallbackRegistrationYear);
 }
+
+public sealed record RegistrationSubmitDetails(string? ApplicationReferenceNumber, bool IsResubmission, int? SubmissionPeriodId, string? RegulatorNation);
 
 
 public sealed class RegistrationApplicationServiceDependencies

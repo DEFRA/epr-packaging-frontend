@@ -7,6 +7,7 @@ using FluentAssertions;
 using FrontendSchemeRegistration.Application.DTOs;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
 using FrontendSchemeRegistration.Application.Options;
+using FrontendSchemeRegistration.Application.Options.RegistrationPeriodPatterns;
 using FrontendSchemeRegistration.Application.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Controllers;
@@ -41,7 +42,7 @@ public class DeclarationWithFullNameControllerTests
     private Mock<IRegistrationPeriodProvider> _registrationPeriodProviderMock;
     private Mock<IFeatureManager> _featureManagerMock;
     private Mock<IPaymentCalculationService> _paymentCalculationServiceMock;
-    private Mock<ISessionManager<RegistrationApplicationSession>> _registrationApplicationSessionManagerMock;
+    private Mock<IRegistrationApplicationService> _registrationApplicationServiceMock;
 
     [SetUp]
     public void SetUp()
@@ -49,7 +50,8 @@ public class DeclarationWithFullNameControllerTests
         _submissionServiceMock = new Mock<ISubmissionService>();
         _claimsPrincipalMock = new Mock<ClaimsPrincipal>();
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
-        _registrationApplicationSessionManagerMock = new Mock<ISessionManager<RegistrationApplicationSession>>();
+        _registrationApplicationServiceMock = new Mock<IRegistrationApplicationService>();
+        SetupSubmitDetails();
         _registrationPeriodProviderMock = new Mock<IRegistrationPeriodProvider>();
         _featureManagerMock = new Mock<IFeatureManager>();
         _paymentCalculationServiceMock = new Mock<IPaymentCalculationService>();
@@ -59,7 +61,7 @@ public class DeclarationWithFullNameControllerTests
                 RegistrationSession = new RegistrationSession { IsResubmission = true }
             });
 
-        _systemUnderTest = new DeclarationWithFullNameController(_submissionServiceMock.Object, _sessionManagerMock.Object, _registrationApplicationSessionManagerMock.Object, new NullLogger<DeclarationWithFullNameController>(), _registrationPeriodProviderMock.Object, _featureManagerMock.Object, _paymentCalculationServiceMock.Object);
+        _systemUnderTest = new DeclarationWithFullNameController(_submissionServiceMock.Object, _sessionManagerMock.Object, _registrationApplicationServiceMock.Object, new NullLogger<DeclarationWithFullNameController>(), _registrationPeriodProviderMock.Object, _featureManagerMock.Object, _paymentCalculationServiceMock.Object);
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
@@ -496,6 +498,7 @@ public class DeclarationWithFullNameControllerTests
             HasValidFile = true
         };
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        SetupSubmitDetails(applicationReferenceNumber: null);
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
         {
             RegistrationSession = new RegistrationSession
@@ -931,13 +934,14 @@ public class DeclarationWithFullNameControllerTests
     }
 
     [Test]
-    public async Task Post_UsesSessionRegulatorNation_WhenPresent()
+    public async Task Post_SubmitsValuesResolvedForTheSubmission()
     {
         // Arrange
         var submission = new RegistrationSubmission
         {
             Id = Guid.NewGuid(),
             IsSubmitted = false,
+            SubmissionPeriod = "January to December 2025",
             LastUploadedValidFiles = new UploadedRegistrationFilesInformation
             {
                 CompanyDetailsFileName = "FileName",
@@ -950,121 +954,43 @@ public class DeclarationWithFullNameControllerTests
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
         {
-            RegistrationSession = new RegistrationSession { ApplicationReferenceNumber = "test" },
+            RegistrationSession = new RegistrationSession { ApplicationReferenceNumber = "PEPR17583027P1" },
         });
-        _registrationApplicationSessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new RegistrationApplicationSession
-        {
-            RegulatorNation = "GB-SCT",
-        });
+        SetupSubmitDetails("PEPR17583025P2", isResubmission: false, submissionPeriodId: 2, regulatorNation: "GB-ENG");
 
         var request = new DeclarationWithFullNameViewModel
         {
             FullName = DeclarationName,
             OrganisationDetailsFileId = Guid.NewGuid().ToString(),
-            IsCso = false,
+            RegistrationYear = 2025,
         };
-        _claimsPrincipalMock.Setup(x => x.Claims).Returns(CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer, nationId: (int)Nation.England));
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer));
 
         // Act
         await _systemUnderTest.Post(submission.Id, request);
 
-        // Assert - the session-hydrated "GB-SCT" is passed, not the England value derivable from userData.
+        // Assert - values resolved for the submission are sent, not the session's other-year reference.
+        _registrationApplicationServiceMock.Verify(x => x.ResolveRegistrationSubmitDetailsAsync(
+            It.IsAny<ISession>(), It.IsAny<Organisation>(), submission, null, 2025), Times.Once);
         _submissionServiceMock.Verify(x => x.SubmitAsync(
-            It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
-            It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
-            It.Is<RegistrationSubmitContext>(c => c.RegulatorNation == "GB-SCT")), Times.Once);
+            submission.Id, It.IsAny<Guid>(), DeclarationName,
+            "PEPR17583025P2", false, It.IsAny<RegistrationJourney?>(),
+            It.Is<RegistrationSubmitContext>(c => c.SubmissionPeriodId == 2 && c.RegulatorNation == "GB-ENG")), Times.Once);
     }
 
-    [Test]
-    public async Task Post_DerivesRegulatorNationFromComplianceScheme_WhenCsoAndSessionMissingIt()
-    {
-        // Arrange
-        var submission = new RegistrationSubmission
-        {
-            Id = Guid.NewGuid(),
-            IsSubmitted = false,
-            LastUploadedValidFiles = new UploadedRegistrationFilesInformation
-            {
-                CompanyDetailsFileName = "FileName",
-                CompanyDetailsUploadDatetime = DateTime.Now,
-                CompanyDetailsUploadedBy = Guid.NewGuid(),
-                CompanyDetailsFileId = Guid.NewGuid(),
-            },
-            HasValidFile = true,
-        };
-        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
-        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
-        {
-            RegistrationSession = new RegistrationSession
-            {
-                ApplicationReferenceNumber = "test",
-                SelectedComplianceScheme = new ComplianceSchemeDto { NationId = (int)Nation.Wales },
-            },
-        });
-
-        var request = new DeclarationWithFullNameViewModel
-        {
-            FullName = DeclarationName,
-            OrganisationDetailsFileId = Guid.NewGuid().ToString(),
-            IsCso = true,
-        };
-        _claimsPrincipalMock.Setup(x => x.Claims).Returns(CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.ComplianceScheme, nationId: (int)Nation.England));
-
-        // Act
-        await _systemUnderTest.Post(submission.Id, request);
-
-        // Assert - Wales derived from the selected compliance scheme, not England from the user's own org.
-        _submissionServiceMock.Verify(x => x.SubmitAsync(
-            It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
-            It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
-            It.Is<RegistrationSubmitContext>(c => c.RegulatorNation == "GB-WLS")), Times.Once);
-    }
-
-    [Test]
-    public async Task Post_DerivesRegulatorNationFromOrganisation_WhenProducerAndSessionMissingIt()
-    {
-        // Arrange
-        var submission = new RegistrationSubmission
-        {
-            Id = Guid.NewGuid(),
-            IsSubmitted = false,
-            LastUploadedValidFiles = new UploadedRegistrationFilesInformation
-            {
-                CompanyDetailsFileName = "FileName",
-                CompanyDetailsUploadDatetime = DateTime.Now,
-                CompanyDetailsUploadedBy = Guid.NewGuid(),
-                CompanyDetailsFileId = Guid.NewGuid(),
-            },
-            HasValidFile = true,
-        };
-        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
-        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
-        {
-            RegistrationSession = new RegistrationSession { ApplicationReferenceNumber = "test" },
-        });
-
-        var request = new DeclarationWithFullNameViewModel
-        {
-            FullName = DeclarationName,
-            OrganisationDetailsFileId = Guid.NewGuid().ToString(),
-            IsCso = false,
-        };
-        _claimsPrincipalMock.Setup(x => x.Claims).Returns(CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer, nationId: (int)Nation.NorthernIreland));
-
-        // Act
-        await _systemUnderTest.Post(submission.Id, request);
-
-        // Assert
-        _submissionServiceMock.Verify(x => x.SubmitAsync(
-            It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
-            It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
-            It.Is<RegistrationSubmitContext>(c => c.RegulatorNation == "GB-NIR")), Times.Once);
-    }
+    private void SetupSubmitDetails(
+        string? applicationReferenceNumber = "test",
+        bool isResubmission = false,
+        int? submissionPeriodId = null,
+        string? regulatorNation = "GB-ENG") =>
+        _registrationApplicationServiceMock
+            .Setup(x => x.ResolveRegistrationSubmitDetailsAsync(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<RegistrationSubmission>(), It.IsAny<RegistrationJourney?>(), It.IsAny<int?>()))
+            .ReturnsAsync(new RegistrationSubmitDetails(applicationReferenceNumber, isResubmission, submissionPeriodId, regulatorNation));
 
     [Test]
     public async Task Post_RedirectsToOrganisationDetailsSubmissionFailed_WhenRegulatorNationCannotBeResolved()
     {
-        // Arrange - producer with no NationId on their organisation and no hydrated session.
+        // Arrange
         var submission = new RegistrationSubmission
         {
             Id = Guid.NewGuid(),
@@ -1079,6 +1005,7 @@ public class DeclarationWithFullNameControllerTests
             HasValidFile = true,
         };
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        SetupSubmitDetails(regulatorNation: null);
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
         {
             RegistrationSession = new RegistrationSession { ApplicationReferenceNumber = "test" },
@@ -1091,50 +1018,6 @@ public class DeclarationWithFullNameControllerTests
             IsCso = false,
         };
         _claimsPrincipalMock.Setup(x => x.Claims).Returns(CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer, nationId: null));
-
-        // Act
-        var result = await _systemUnderTest.Post(submission.Id, request) as RedirectToActionResult;
-
-        // Assert
-        result.ActionName.Should().Be("Get");
-        result.ControllerName.Should().Be("OrganisationDetailsSubmissionFailed");
-        _submissionServiceMock.Verify(x => x.SubmitAsync(
-            It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
-            It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
-            It.IsAny<RegistrationSubmitContext?>()), Times.Never);
-    }
-
-    [Test]
-    public async Task Post_RedirectsToOrganisationDetailsSubmissionFailed_WhenCsoAndComplianceSchemeMissing()
-    {
-        // Arrange - CSO submitter with no selected compliance scheme on session and no hydrated session RegulatorNation,
-        // so the compliance-scheme branch of ResolveRegulatorNation yields a null NationId.
-        var submission = new RegistrationSubmission
-        {
-            Id = Guid.NewGuid(),
-            IsSubmitted = false,
-            LastUploadedValidFiles = new UploadedRegistrationFilesInformation
-            {
-                CompanyDetailsFileName = "FileName",
-                CompanyDetailsUploadDatetime = DateTime.Now,
-                CompanyDetailsUploadedBy = Guid.NewGuid(),
-                CompanyDetailsFileId = Guid.NewGuid(),
-            },
-            HasValidFile = true,
-        };
-        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
-        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
-        {
-            RegistrationSession = new RegistrationSession { ApplicationReferenceNumber = "test" },
-        });
-
-        var request = new DeclarationWithFullNameViewModel
-        {
-            FullName = DeclarationName,
-            OrganisationDetailsFileId = Guid.NewGuid().ToString(),
-            IsCso = true,
-        };
-        _claimsPrincipalMock.Setup(x => x.Claims).Returns(CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.ComplianceScheme, nationId: (int)Nation.England));
 
         // Act
         var result = await _systemUnderTest.Post(submission.Id, request) as RedirectToActionResult;
@@ -1207,6 +1090,7 @@ public class DeclarationWithFullNameControllerTests
             HasValidFile = true,
         };
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        SetupSubmitDetails(isResubmission: true);
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
         {
             RegistrationSession = new RegistrationSession { ApplicationReferenceNumber = "test", IsResubmission = true },
@@ -1252,6 +1136,7 @@ public class DeclarationWithFullNameControllerTests
             HasValidFile = true,
         };
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        SetupSubmitDetails(isResubmission: true);
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
         {
             RegistrationSession = new RegistrationSession { ApplicationReferenceNumber = "test", IsResubmission = true },
@@ -1298,6 +1183,7 @@ public class DeclarationWithFullNameControllerTests
             HasValidFile = true,
         };
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        SetupSubmitDetails(isResubmission: true);
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
         {
             RegistrationSession = new RegistrationSession { ApplicationReferenceNumber = "test", IsResubmission = true },
