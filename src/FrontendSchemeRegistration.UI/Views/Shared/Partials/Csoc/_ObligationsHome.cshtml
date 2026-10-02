@@ -17,6 +17,7 @@
     {
         ComplianceDeclarationStatus.Submitted or ComplianceDeclarationStatus.Accepted => "submitted",
         ComplianceDeclarationStatus.Cancelled => "cancelled",
+        _ when Model.IsSubmissionDeadlinePassed => "deadline_passed",
         _ => "submit"
     };
 
@@ -34,10 +35,11 @@
         <div class="govuk-card govuk-!-margin-bottom-6">
             <div class="govuk-card-body">
 
-                <h3 class="govuk-heading-m">@Localizer[$"{statusKey}_heading_{actorKey}"]</h3>
+                <h3 class="govuk-heading-m">@Localizer[$"{(statusKey == "deadline_passed" ? "submit" : statusKey)}_heading_{actorKey}"]</h3>
                 <p class="govuk-body">@Localizer[$"{statusKey}_paragraph_{actorKey}", regulator.Value, complianceYear.ToString(), Model.SubmissionDeadline]</p>
                 @{
                     var showAction = Model.WasteObligationsBaseAddress is not null
+                        && statusKey != "deadline_passed"
                         && (statusKey == "submitted" || Model.IsApprovedUser);
                 }
                 @if (showAction)

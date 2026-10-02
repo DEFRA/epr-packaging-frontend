@@ -102,6 +102,27 @@ public class CsocHelperTests
             .Be($"https://understanding-obligations/producer/{organisationId}/compliance/certificate?year={complianceYear}");
     }
 
+    [TestCase("2027-01-31T23:00:00", 2026, false)]
+    [TestCase("2027-02-01T00:00:00", 2026, true)]
+    [TestCase("2027-02-01T09:00:00", 2026, true)]
+    [TestCase("2026-12-01", 2027, false)]
+    public async Task CreateViewModel_ShouldSetIsSubmissionDeadlinePassed(string now, int complianceYear, bool expected)
+    {
+        var result = await CsocHelper.CreateViewModel(
+            MockFeatureManager.Object,
+            isApprovedUser: true,
+            new Organisation
+            {
+                Id = Guid.NewGuid(),
+                OrganisationRole = OrganisationRoles.Producer
+            },
+            DateTime.Parse(now),
+            new CsocOptions { WasteObligationsBaseAddress = "https://understanding-obligations" },
+            new PrnObligationViewModel { ComplianceYear = complianceYear });
+
+        result!.IsSubmissionDeadlinePassed.Should().Be(expected);
+    }
+
     [TestCase(null, false)]
     [TestCase(ObligationStatus.NoDataYet, false)]
     [TestCase(ObligationStatus.Met, true)]
