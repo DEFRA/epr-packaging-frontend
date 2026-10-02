@@ -4057,6 +4057,223 @@ public class RegistrationApplicationServiceTests
                 opening, deadline, closing);
     }
 
+    [Test]
+    public async Task ResolveRegistrationSubmitDetailsAsync_BuildsApplicationReferenceNumberForSubmissionYear_WhenSessionHoldsDifferentYear()
+    {
+        // Arrange - 2025 submission declared while the session holds the 2027 reference from another tab.
+        _dateTimeProvider.SetUtcNow(new DateTime(2026, 10, 2));
+        var submission = CreateSubmitDetailsSubmission("January to December 2025", registrationJourney: null);
+        SetupSubmitDetailsSessions(new RegistrationSession
+        {
+            ApplicationReferenceNumber = "PEPR17583027P1",
+            SubmissionPeriod = "January to December 2027",
+        });
+
+        // Act
+        var result = await _service.ResolveRegistrationSubmitDetailsAsync(_httpSession, CreateSubmitDetailsOrganisation(), submission, null, 2025);
+
+        // Assert
+        result.ApplicationReferenceNumber.Should().Be("PEPR17583025P2");
+    }
+
+    [Test]
+    public async Task ResolveRegistrationSubmitDetailsAsync_UsesPersistedApplicationReferenceNumber_WhenSubmissionAlreadyHasOne()
+    {
+        // Arrange
+        var submission = CreateSubmitDetailsSubmission("January to December 2027", RegistrationJourney.DirectLargeProducer);
+        SetupSubmitDetailsSessions(new RegistrationSession { ApplicationReferenceNumber = "SESSION-REF" });
+        _submissionServiceMock.Setup(x => x.GetRegistrationApplicationDetails(It.Is<GetRegistrationApplicationDetailsRequest>(r =>
+                r.SubmissionPeriod == "January to December 2027"
+                && r.OrganisationNumber == 175830
+                && r.RegistrationJourney == nameof(RegistrationJourney.DirectLargeProducer))))
+            .ReturnsAsync(new RegistrationApplicationDetails { SubmissionId = submission.Id, ApplicationReferenceNumber = "PERSISTED-REF" });
+
+        // Act
+        var result = await _service.ResolveRegistrationSubmitDetailsAsync(_httpSession, CreateSubmitDetailsOrganisation(), submission, RegistrationJourney.DirectLargeProducer, 2027);
+
+        // Assert
+        result.ApplicationReferenceNumber.Should().Be("PERSISTED-REF");
+    }
+
+    [Test]
+    public async Task ResolveRegistrationSubmitDetailsAsync_UsesSessionApplicationReferenceNumber_WhenNoRegistrationYearAvailable()
+    {
+        // Arrange
+        var submission = CreateSubmitDetailsSubmission(null, registrationJourney: null);
+        SetupSubmitDetailsSessions(new RegistrationSession { ApplicationReferenceNumber = "SESSION-REF" });
+
+        // Act
+        var result = await _service.ResolveRegistrationSubmitDetailsAsync(_httpSession, CreateSubmitDetailsOrganisation(), submission, null, null);
+
+        // Assert
+        result.ApplicationReferenceNumber.Should().Be("SESSION-REF");
+    }
+
+    [Test]
+    public async Task ResolveRegistrationSubmitDetailsAsync_UsesSubmissionIsResubmission_WhenSessionHoldsDifferentYear()
+    {
+        // Arrange - session flagged a resubmission left over from another year's application.
+        var submission = CreateSubmitDetailsSubmission("January to December 2027", RegistrationJourney.DirectLargeProducer);
+        SetupSubmitDetailsSessions(new RegistrationSession { IsResubmission = true });
+        _submissionServiceMock.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(new RegistrationApplicationDetails { SubmissionId = submission.Id, IsResubmission = null });
+
+        // Act
+        var result = await _service.ResolveRegistrationSubmitDetailsAsync(_httpSession, CreateSubmitDetailsOrganisation(), submission, RegistrationJourney.DirectLargeProducer, 2027);
+
+        // Assert
+        result.IsResubmission.Should().BeFalse();
+    }
+
+    [Test]
+    public async Task ResolveRegistrationSubmitDetailsAsync_UsesSessionIsResubmission_WhenApplicationDetailsAreForDifferentSubmission()
+    {
+        // Arrange
+        var submission = CreateSubmitDetailsSubmission("January to December 2027", RegistrationJourney.DirectLargeProducer);
+        SetupSubmitDetailsSessions(new RegistrationSession { IsResubmission = true });
+        _submissionServiceMock.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(new RegistrationApplicationDetails { SubmissionId = Guid.NewGuid(), IsResubmission = false, ApplicationReferenceNumber = "OTHER-REF" });
+
+        // Act
+        var result = await _service.ResolveRegistrationSubmitDetailsAsync(_httpSession, CreateSubmitDetailsOrganisation(), submission, RegistrationJourney.DirectLargeProducer, 2027);
+
+        // Assert
+        result.IsResubmission.Should().BeTrue();
+        result.ApplicationReferenceNumber.Should().NotBe("OTHER-REF");
+    }
+
+    [Test]
+    public async Task ResolveRegistrationSubmitDetailsAsync_DerivesSubmissionPeriodIdFromSubmission_WhenSessionHoldsDifferentYear()
+    {
+        // Arrange - session was last hydrated by the 2026 task list (period 5), but the submission is for 2027.
+        var submission = CreateSubmitDetailsSubmission("January to December 2027", RegistrationJourney.DirectLargeProducer);
+        SetupSubmitDetailsSessions(new RegistrationSession(), new RegistrationApplicationSession { SubmissionPeriodId = 5 });
+        _mockRegistrationPeriodProvider
+            .Setup(x => x.GetRegistrationWindow(false, false, 2027))
+            .Returns(new RegistrationWindow(_dateTimeProvider, 9, WindowType.DirectLargeProducer, 2027,
+                new DateTime(2026, 7, 1), new DateTime(2026, 10, 2), new DateTime(2028, 1, 1)));
+
+        // Act - the fallback year (2026) is also ignored in favour of the submission's own period.
+        var result = await _service.ResolveRegistrationSubmitDetailsAsync(_httpSession, CreateSubmitDetailsOrganisation(), submission, RegistrationJourney.DirectLargeProducer, 2026);
+
+        // Assert
+        result.SubmissionPeriodId.Should().Be(9);
+    }
+
+    [Test]
+    public async Task ResolveRegistrationSubmitDetailsAsync_DerivesSubmissionPeriodIdFromFallbackYear_WhenSubmissionPeriodHasNoYear()
+    {
+        // Arrange
+        var submission = CreateSubmitDetailsSubmission(null, RegistrationJourney.CsoSmallProducer);
+        SetupSubmitDetailsSessions(
+            new RegistrationSession { SelectedComplianceScheme = new ComplianceSchemeDto { NationId = (int)Nation.England } },
+            new RegistrationApplicationSession { SubmissionPeriodId = 4 });
+        _mockRegistrationPeriodProvider
+            .Setup(x => x.GetRegistrationWindow(true, true, 2027))
+            .Returns(new RegistrationWindow(_dateTimeProvider, 8, WindowType.CsoSmallProducer, 2027,
+                new DateTime(2027, 1, 1), new DateTime(2027, 4, 2), new DateTime(2028, 1, 29)));
+
+        // Act
+        var result = await _service.ResolveRegistrationSubmitDetailsAsync(_httpSession, CreateSubmitDetailsOrganisation(OrganisationRoles.ComplianceScheme), submission, RegistrationJourney.CsoSmallProducer, 2027);
+
+        // Assert
+        result.SubmissionPeriodId.Should().Be(8);
+    }
+
+    [Test]
+    public async Task ResolveRegistrationSubmitDetailsAsync_UsesSessionSubmissionPeriodId_WhenNoRegistrationYearAvailable()
+    {
+        // Arrange
+        var submission = CreateSubmitDetailsSubmission(null, registrationJourney: null);
+        SetupSubmitDetailsSessions(new RegistrationSession(), new RegistrationApplicationSession { SubmissionPeriodId = 9 });
+
+        // Act
+        var result = await _service.ResolveRegistrationSubmitDetailsAsync(_httpSession, CreateSubmitDetailsOrganisation(), submission, null, null);
+
+        // Assert
+        result.SubmissionPeriodId.Should().Be(9);
+        _mockRegistrationPeriodProvider.Verify(x => x.GetRegistrationWindow(It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<int>()), Times.Never);
+    }
+
+    [Test]
+    public async Task ResolveRegistrationSubmitDetailsAsync_UsesSessionRegulatorNation_WhenPresent()
+    {
+        // Arrange
+        var submission = CreateSubmitDetailsSubmission(null, registrationJourney: null);
+        SetupSubmitDetailsSessions(new RegistrationSession(), new RegistrationApplicationSession { RegulatorNation = "GB-SCT" });
+
+        // Act
+        var result = await _service.ResolveRegistrationSubmitDetailsAsync(_httpSession, CreateSubmitDetailsOrganisation(nationId: (int)Nation.England), submission, null, null);
+
+        // Assert - the session-hydrated value wins over the England value derivable from the organisation.
+        result.RegulatorNation.Should().Be("GB-SCT");
+    }
+
+    [Test]
+    public async Task ResolveRegistrationSubmitDetailsAsync_DerivesRegulatorNationFromComplianceScheme_WhenCsoAndSessionMissingIt()
+    {
+        // Arrange
+        var submission = CreateSubmitDetailsSubmission(null, registrationJourney: null);
+        SetupSubmitDetailsSessions(new RegistrationSession { SelectedComplianceScheme = new ComplianceSchemeDto { NationId = (int)Nation.Wales } });
+
+        // Act
+        var result = await _service.ResolveRegistrationSubmitDetailsAsync(_httpSession, CreateSubmitDetailsOrganisation(OrganisationRoles.ComplianceScheme, (int)Nation.England), submission, null, null);
+
+        // Assert
+        result.RegulatorNation.Should().Be("GB-WLS");
+    }
+
+    [Test]
+    public async Task ResolveRegistrationSubmitDetailsAsync_DerivesRegulatorNationFromOrganisation_WhenProducerAndSessionMissingIt()
+    {
+        // Arrange
+        var submission = CreateSubmitDetailsSubmission(null, registrationJourney: null);
+        SetupSubmitDetailsSessions(new RegistrationSession());
+
+        // Act
+        var result = await _service.ResolveRegistrationSubmitDetailsAsync(_httpSession, CreateSubmitDetailsOrganisation(nationId: (int)Nation.NorthernIreland), submission, null, null);
+
+        // Assert
+        result.RegulatorNation.Should().Be("GB-NIR");
+    }
+
+    [Test]
+    public async Task ResolveRegistrationSubmitDetailsAsync_ReturnsNullRegulatorNation_WhenCsoAndComplianceSchemeMissing()
+    {
+        // Arrange
+        var submission = CreateSubmitDetailsSubmission(null, registrationJourney: null);
+        SetupSubmitDetailsSessions(new RegistrationSession());
+
+        // Act
+        var result = await _service.ResolveRegistrationSubmitDetailsAsync(_httpSession, CreateSubmitDetailsOrganisation(OrganisationRoles.ComplianceScheme), submission, null, null);
+
+        // Assert
+        result.RegulatorNation.Should().BeNull();
+    }
+
+    private static RegistrationSubmission CreateSubmitDetailsSubmission(string? submissionPeriod, RegistrationJourney? registrationJourney) => new()
+    {
+        Id = Guid.NewGuid(),
+        SubmissionPeriod = submissionPeriod,
+        RegistrationJourney = registrationJourney,
+    };
+
+    private static Organisation CreateSubmitDetailsOrganisation(string organisationRole = OrganisationRoles.Producer, int? nationId = (int)Nation.England) => new()
+    {
+        Id = Guid.NewGuid(),
+        OrganisationNumber = "175830",
+        OrganisationRole = organisationRole,
+        NationId = nationId,
+    };
+
+    private void SetupSubmitDetailsSessions(RegistrationSession registrationSession, RegistrationApplicationSession? registrationApplicationSession = null)
+    {
+        _frontEndSessionManagerMock.Setup(x => x.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession { RegistrationSession = registrationSession });
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(_httpSession))
+            .ReturnsAsync(registrationApplicationSession ?? new RegistrationApplicationSession());
+    }
+
     private RegistrationApplicationService CreateServiceWithPollingOptions(int timeoutSeconds, int intervalSeconds)
     {
         var options = Options.Create(new RegistrationFeeSnapshotPollingOptions

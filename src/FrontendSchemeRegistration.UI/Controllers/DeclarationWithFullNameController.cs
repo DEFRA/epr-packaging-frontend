@@ -23,7 +23,7 @@ using Constants;
 public class DeclarationWithFullNameController(
     ISubmissionService submissionService,
     ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
-    ISessionManager<RegistrationApplicationSession> registrationApplicationSessionManager,
+    IRegistrationApplicationService registrationApplicationService,
     ILogger<DeclarationWithFullNameController> logger,
     IRegistrationPeriodProvider registrationPeriodProvider,
     IFeatureManager featureManager,
@@ -144,14 +144,10 @@ public class DeclarationWithFullNameController(
                     throw new InvalidOperationException($"RegistrationSession not found for submission ID {submissionId}");
                 }
 
-                var registrationYear = ParseRegistrationYear(submission.SubmissionPeriod) ?? model.RegistrationYear;
-                var applicationDetails = await GetApplicationDetailsForSubmissionAsync(submission, regJourney, userData, session);
-                var isResubmission = applicationDetails is not null
-                    ? applicationDetails.IsResubmission ?? false
-                    : session.RegistrationSession.IsResubmission;
-                var applicationReferenceNumber = ResolveApplicationReferenceNumber(submission, session, applicationDetails);
+                var submitDetails = await registrationApplicationService.ResolveRegistrationSubmitDetailsAsync(
+                    HttpContext.Session, userData.Organisations[0], submission, regJourney, model.RegistrationYear);
 
-                if (string.IsNullOrWhiteSpace(applicationReferenceNumber))
+                if (string.IsNullOrWhiteSpace(submitDetails.ApplicationReferenceNumber))
                 {
                     logger.LogError("Application reference number is missing for submission ID {SubmissionId}", submissionId);
                     throw new ArgumentException($"Application reference number is missing for submission ID {submissionId}");
@@ -161,29 +157,23 @@ public class DeclarationWithFullNameController(
 
                 var organisationDetailsFileId = new Guid(model.OrganisationDetailsFileId);
 
-                var registrationApplicationSession = await registrationApplicationSessionManager.GetSessionAsync(HttpContext.Session);
-
-                var regulatorNation = ResolveRegulatorNation(model, session, userData, registrationApplicationSession);
-
-                if (string.IsNullOrWhiteSpace(regulatorNation))
+                if (string.IsNullOrWhiteSpace(submitDetails.RegulatorNation))
                 {
                     logger.LogError("RegulatorNation could not be resolved for submission ID {SubmissionId}", submissionId);
                     throw new ArgumentException($"RegulatorNation could not be resolved for submission ID {submissionId}");
                 }
 
-                var notifyPaymentService = await ShouldNotifyPaymentServiceAsync(isResubmission, submission, submissionId);
-
-                var submissionPeriodId = ResolveSubmissionPeriodId(registrationYear, regJourney, userData, registrationApplicationSession);
+                var notifyPaymentService = await ShouldNotifyPaymentServiceAsync(submitDetails.IsResubmission, submission, submissionId);
 
                 await submissionService.SubmitAsync(submissionId, organisationDetailsFileId,
                     model.FullName,
-                    applicationReferenceNumber,
-                    isResubmission,
+                    submitDetails.ApplicationReferenceNumber,
+                    submitDetails.IsResubmission,
                     regJourney,
                     new RegistrationSubmitContext
                     {
-                        SubmissionPeriodId = submissionPeriodId,
-                        RegulatorNation = regulatorNation,
+                        SubmissionPeriodId = submitDetails.SubmissionPeriodId,
+                        RegulatorNation = submitDetails.RegulatorNation,
                         NotifyPaymentService = notifyPaymentService
                     });
 
@@ -206,96 +196,6 @@ public class DeclarationWithFullNameController(
                 return RedirectToAction("Get", SubmissionErrorViewName, new { submissionId });
             }
         }
-    }
-
-    private static string? ResolveRegulatorNation(
-        DeclarationWithFullNameViewModel model,
-        FrontendSchemeRegistrationSession session,
-        UserData userData,
-        RegistrationApplicationSession? registrationApplicationSession)
-    {
-        var regulatorNation = registrationApplicationSession?.RegulatorNation;
-        if (!string.IsNullOrWhiteSpace(regulatorNation))
-        {
-            return regulatorNation;
-        }
-
-        var nationId = model.IsCso
-            ? session.RegistrationSession.SelectedComplianceScheme?.NationId
-            : userData.Organisations[0].NationId;
-
-        return nationId.HasValue
-            ? NationExtensions.GetNationNameFromId(nationId.Value)
-            : null;
-    }
-
-    // The registration sessions are shared across registration years, so their values reflect whichever year's
-    // task list / file upload journey was last entered. Resolve per-submission values from the submission instead.
-    private async Task<RegistrationApplicationDetails?> GetApplicationDetailsForSubmissionAsync(
-        RegistrationSubmission submission,
-        RegistrationJourney? regJourney,
-        UserData userData,
-        FrontendSchemeRegistrationSession session)
-    {
-        var organisation = userData.Organisations[0];
-        if (string.IsNullOrWhiteSpace(submission.SubmissionPeriod)
-            || organisation.Id is null
-            || !int.TryParse(organisation.OrganisationNumber, out var organisationNumber))
-        {
-            return null;
-        }
-
-        var details = await submissionService.GetRegistrationApplicationDetails(new GetRegistrationApplicationDetailsRequest
-        {
-            OrganisationNumber = organisationNumber,
-            OrganisationId = organisation.Id.Value,
-            ComplianceSchemeId = session.RegistrationSession.SelectedComplianceScheme?.Id,
-            SubmissionPeriod = submission.SubmissionPeriod,
-            RegistrationJourney = regJourney?.ToString()
-        });
-
-        return details?.SubmissionId == submission.Id ? details : null;
-    }
-
-    // A session app ref cached for a different registration year must never be sent; leaving it unresolved
-    // routes the user to the error page so they re-enter this year's journey.
-    private static string? ResolveApplicationReferenceNumber(
-        RegistrationSubmission submission,
-        FrontendSchemeRegistrationSession session,
-        RegistrationApplicationDetails? applicationDetails)
-    {
-        if (!string.IsNullOrWhiteSpace(applicationDetails?.ApplicationReferenceNumber))
-        {
-            return applicationDetails.ApplicationReferenceNumber;
-        }
-
-        var sessionIsForSubmissionPeriod = string.IsNullOrWhiteSpace(submission.SubmissionPeriod)
-            || string.Equals(session.RegistrationSession.SubmissionPeriod, submission.SubmissionPeriod, StringComparison.Ordinal);
-
-        return sessionIsForSubmissionPeriod ? session.RegistrationSession.ApplicationReferenceNumber : null;
-    }
-
-    private int? ResolveSubmissionPeriodId(
-        int? registrationYear,
-        RegistrationJourney? regJourney,
-        UserData userData,
-        RegistrationApplicationSession? registrationApplicationSession)
-    {
-        if (registrationYear is null)
-        {
-            return registrationApplicationSession?.SubmissionPeriodId;
-        }
-
-        var isCso = userData.Organisations[0].OrganisationRole == OrganisationRoles.ComplianceScheme;
-        var isSmallProducer = regJourney?.ToString().Contains("Small", StringComparison.OrdinalIgnoreCase) ?? false;
-
-        return registrationPeriodProvider.GetRegistrationWindow(isCso, isSmallProducer, registrationYear.Value)?.Id;
-    }
-
-    private static int? ParseRegistrationYear(string? submissionPeriod)
-    {
-        var lastToken = submissionPeriod?.Trim().Split(' ').LastOrDefault();
-        return int.TryParse(lastToken, out var year) ? year : null;
     }
 
     private async Task<bool> ShouldNotifyPaymentServiceAsync(
