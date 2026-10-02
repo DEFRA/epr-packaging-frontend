@@ -27,8 +27,7 @@ public class DeclarationWithFullNameController(
     ILogger<DeclarationWithFullNameController> logger,
     IRegistrationPeriodProvider registrationPeriodProvider,
     IFeatureManager featureManager,
-    IPaymentCalculationService paymentCalculationService,
-    TimeProvider timeProvider) : Controller
+    IPaymentCalculationService paymentCalculationService) : Controller
 {
     private const string ViewName = "DeclarationWithFullName";
     private const string ConfirmationViewName = "CompanyDetailsConfirmation";
@@ -150,7 +149,7 @@ public class DeclarationWithFullNameController(
                 var isResubmission = applicationDetails is not null
                     ? applicationDetails.IsResubmission ?? false
                     : session.RegistrationSession.IsResubmission;
-                var applicationReferenceNumber = ResolveApplicationReferenceNumber(submission, regJourney, registrationYear, userData, session, applicationDetails);
+                var applicationReferenceNumber = ResolveApplicationReferenceNumber(submission, session, applicationDetails);
 
                 if (string.IsNullOrWhiteSpace(applicationReferenceNumber))
                 {
@@ -258,11 +257,10 @@ public class DeclarationWithFullNameController(
         return details?.SubmissionId == submission.Id ? details : null;
     }
 
-    private string? ResolveApplicationReferenceNumber(
+    // A session app ref cached for a different registration year must never be sent; leaving it unresolved
+    // routes the user to the error page so they re-enter this year's journey.
+    private static string? ResolveApplicationReferenceNumber(
         RegistrationSubmission submission,
-        RegistrationJourney? regJourney,
-        int? registrationYear,
-        UserData userData,
         FrontendSchemeRegistrationSession session,
         RegistrationApplicationDetails? applicationDetails)
     {
@@ -274,26 +272,7 @@ public class DeclarationWithFullNameController(
         var sessionIsForSubmissionPeriod = string.IsNullOrWhiteSpace(submission.SubmissionPeriod)
             || string.Equals(session.RegistrationSession.SubmissionPeriod, submission.SubmissionPeriod, StringComparison.Ordinal);
 
-        if (sessionIsForSubmissionPeriod && !string.IsNullOrWhiteSpace(session.RegistrationSession.ApplicationReferenceNumber))
-        {
-            return session.RegistrationSession.ApplicationReferenceNumber;
-        }
-
-        if (registrationYear is null)
-        {
-            return null;
-        }
-
-        var organisation = userData.Organisations[0];
-        var period = new SubmissionPeriod { DataPeriod = $"January to December {registrationYear}", StartMonth = "January", EndMonth = "December", Year = $"{registrationYear}" };
-
-        return ReferenceNumberBuilder.Build(
-            period,
-            organisation.OrganisationNumber,
-            timeProvider,
-            organisation.OrganisationRole == OrganisationRoles.ComplianceScheme,
-            session.RegistrationSession.SelectedComplianceScheme?.RowNumber ?? 0,
-            regJourney?.ToString());
+        return sessionIsForSubmissionPeriod ? session.RegistrationSession.ApplicationReferenceNumber : null;
     }
 
     private int? ResolveSubmissionPeriodId(

@@ -18,7 +18,6 @@ using FrontendSchemeRegistration.UI.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Time.Testing;
 using Microsoft.FeatureManagement;
 using Moq;
 
@@ -45,7 +44,6 @@ public class DeclarationWithFullNameControllerTests
     private Mock<IFeatureManager> _featureManagerMock;
     private Mock<IPaymentCalculationService> _paymentCalculationServiceMock;
     private Mock<ISessionManager<RegistrationApplicationSession>> _registrationApplicationSessionManagerMock;
-    private FakeTimeProvider _timeProvider;
 
     [SetUp]
     public void SetUp()
@@ -57,14 +55,13 @@ public class DeclarationWithFullNameControllerTests
         _registrationPeriodProviderMock = new Mock<IRegistrationPeriodProvider>();
         _featureManagerMock = new Mock<IFeatureManager>();
         _paymentCalculationServiceMock = new Mock<IPaymentCalculationService>();
-        _timeProvider = new FakeTimeProvider(new DateTimeOffset(2026, 9, 15, 0, 0, 0, TimeSpan.Zero));
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
             .ReturnsAsync(new FrontendSchemeRegistrationSession
             {
                 RegistrationSession = new RegistrationSession { IsResubmission = true }
             });
 
-        _systemUnderTest = new DeclarationWithFullNameController(_submissionServiceMock.Object, _sessionManagerMock.Object, _registrationApplicationSessionManagerMock.Object, new NullLogger<DeclarationWithFullNameController>(), _registrationPeriodProviderMock.Object, _featureManagerMock.Object, _paymentCalculationServiceMock.Object, _timeProvider);
+        _systemUnderTest = new DeclarationWithFullNameController(_submissionServiceMock.Object, _sessionManagerMock.Object, _registrationApplicationSessionManagerMock.Object, new NullLogger<DeclarationWithFullNameController>(), _registrationPeriodProviderMock.Object, _featureManagerMock.Object, _paymentCalculationServiceMock.Object);
         _systemUnderTest.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext
@@ -916,7 +913,7 @@ public class DeclarationWithFullNameControllerTests
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
         {
-            RegistrationSession = new RegistrationSession { ApplicationReferenceNumber = "test" },
+            RegistrationSession = new RegistrationSession { ApplicationReferenceNumber = "test", SubmissionPeriod = "January to December 2026" },
         });
         _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeParametersViaPaymentService)).ReturnsAsync(true);
 
@@ -1089,7 +1086,7 @@ public class DeclarationWithFullNameControllerTests
         _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
         {
-            RegistrationSession = new RegistrationSession { ApplicationReferenceNumber = "test" },
+            RegistrationSession = new RegistrationSession { ApplicationReferenceNumber = "test", SubmissionPeriod = "January to December 2027" },
         });
         _registrationApplicationSessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new RegistrationApplicationSession
         {
@@ -1224,7 +1221,7 @@ public class DeclarationWithFullNameControllerTests
     }
 
     [Test]
-    public async Task Post_BuildsApplicationReferenceNumberForSubmissionYear_WhenSessionHoldsDifferentYear()
+    public async Task Post_RedirectsToOrganisationDetailsSubmissionFailed_WhenSessionApplicationReferenceNumberIsForDifferentYear()
     {
         // Arrange - session app ref was cached for 2026, submission is for 2027 and has no persisted ref yet.
         var submission = Create2027DirectLargeSubmission();
@@ -1240,13 +1237,15 @@ public class DeclarationWithFullNameControllerTests
         SetupRegistrationApplicationSession();
 
         // Act
-        await _systemUnderTest.Post(submission.Id, CreateProducerDeclaration());
+        var result = await _systemUnderTest.Post(submission.Id, CreateProducerDeclaration()) as RedirectToActionResult;
 
         // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("OrganisationDetailsSubmissionFailed");
         _submissionServiceMock.Verify(x => x.SubmitAsync(
             It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
-            $"PEPR{OrganisationNumber}27P1L", It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
-            It.IsAny<RegistrationSubmitContext>()), Times.Once);
+            It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
+            It.IsAny<RegistrationSubmitContext?>()), Times.Never);
     }
 
     [Test]
