@@ -67,10 +67,10 @@
     <value>Ailgyflwyno eich tystysgrif</value>
   </data>
   <data name="deadline_passed_paragraph_compliance_scheme" xml:space="preserve">
-    <value>Y dyddiad cau ar gyfer cyflwyno eich {1} datganiad cydymffurfio oedd {2:d MMMM yyyy}.</value>
+    <value>The deadline to submit your {1} statement of compliance was {2:d MMMM yyyy}.</value>
   </data>
   <data name="deadline_passed_paragraph_direct_producer" xml:space="preserve">
-    <value>Y dyddiad cau ar gyfer cyflwyno eich {1} tystysgrif cydymffurfio oedd {2:d MMMM yyyy}.</value>
+    <value>The deadline to submit your {1} certificate of compliance was {2:d MMMM yyyy}.</value>
   </data>
   <data name="regulator" xml:space="preserve">
     <value>Rheoleiddiwr</value>
