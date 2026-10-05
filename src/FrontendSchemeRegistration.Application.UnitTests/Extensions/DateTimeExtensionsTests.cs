@@ -8,6 +8,25 @@ using FluentAssertions;
 public class DateTimeExtensionsTests
 {
     [Test]
+    [TestCase("2027-01-31T23:59:00Z", "2027-01-31", false)]
+    [TestCase("2027-02-01T00:00:00Z", "2027-01-31", true)]
+    // 31 Jul 23:30 UTC is 1 Aug 00:30 in the UK (BST), so it is already the day after
+    [TestCase("2026-07-31T23:30:00Z", "2026-07-31", true)]
+    [TestCase("2026-07-31T22:30:00Z", "2026-07-31", false)]
+    public void DateTime_IsAfterUkDate_UsesUkCalendarDate(string utcNow, string date, bool expected)
+    {
+        // Arrange
+        var now = DateTime.Parse(utcNow, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
+        var compareTo = DateTime.Parse(date, CultureInfo.InvariantCulture);
+
+        // Act
+        var result = now.IsAfterUkDate(compareTo);
+
+        // Assert
+        result.Should().Be(expected);
+    }
+
+    [Test]
     [TestCase(2024, 1, 1, 2023)]
     [TestCase(2024, 2, 1, 2024)]
     [TestCase(2024, 12, 31, 2024)]
