@@ -8,11 +8,12 @@ using FluentAssertions;
 public class DateTimeExtensionsTests
 {
     [Test]
-    [TestCase("2027-01-31T23:59:00Z", "2027-01-31", false)]
+    // The CSoC deadline is 31 January, when the UK is on GMT (UTC+0), so UTC and UK dates are the same
+    [TestCase("2027-01-15T12:00:00Z", "2027-01-31", false)]
+    [TestCase("2027-01-31T00:00:00Z", "2027-01-31", false)]
+    [TestCase("2027-01-31T23:59:59Z", "2027-01-31", false)]
     [TestCase("2027-02-01T00:00:00Z", "2027-01-31", true)]
-    // 31 Jul 23:30 UTC is 1 Aug 00:30 in the UK (BST), so it is already the day after
-    [TestCase("2026-07-31T23:30:00Z", "2026-07-31", true)]
-    [TestCase("2026-07-31T22:30:00Z", "2026-07-31", false)]
+    [TestCase("2027-03-15T12:00:00Z", "2027-01-31", true)]
     public void DateTime_IsAfterUkDate_UsesUkCalendarDate(string utcNow, string date, bool expected)
     {
         // Arrange
@@ -124,12 +125,15 @@ public class DateTimeExtensionsTests
         now.IsInDecemberJanuaryFlashWindow().Should().Be(expected);
     }
 
-    [TestCase(0, 2026)]
-    [TestCase(-1, 2026)]
-    [TestCase(1, 2027)]
-    public void GetCsocSubmissionDeadline_WhenNow_ShouldBeExpected(int offset, int expectedYear)
+    [TestCase("2026-01-30T23:59:59", 2026)]
+    [TestCase("2026-01-31T00:00:00", 2026)]
+    [TestCase("2026-01-31T12:00:00", 2026)]
+    [TestCase("2026-01-31T23:59:59.999", 2026)]
+    [TestCase("2026-02-01T00:00:00", 2027)]
+    [TestCase("2026-11-15T12:00:00", 2027)]
+    public void GetCsocSubmissionDeadline_WhenNow_ShouldBeExpected(string nowText, int expectedYear)
     {
-        var now = new DateTime(2026, 1, 31, 0, 0, 0, DateTimeKind.Unspecified).AddMilliseconds(offset);
+        var now = DateTime.Parse(nowText, CultureInfo.InvariantCulture);
 
         now.GetCsocSubmissionDeadline().Should().Be(new DateTime(expectedYear, 1, 31, 0, 0, 0, DateTimeKind.Unspecified));
     }

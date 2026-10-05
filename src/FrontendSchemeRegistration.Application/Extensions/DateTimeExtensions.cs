@@ -112,9 +112,13 @@ public static class DateTimeExtensions
         return ukNow.Month is 1 or 12;
     }
 
+    /// <summary>
+    ///     The next CSoC submission deadline: 31 January. Submissions are accepted until the end of that day,
+    ///     so the deadline only moves on to the following year from 1 February.
+    /// </summary>
     public static DateTime GetCsocSubmissionDeadline(this DateTime now)
     {
-        var year = now > new DateTime(now.Year, 1, 31, 0, 0, 0, DateTimeKind.Unspecified)
+        var year = now.Date > new DateTime(now.Year, 1, 31, 0, 0, 0, DateTimeKind.Unspecified)
             ? now.Year + 1
             : now.Year;
 
