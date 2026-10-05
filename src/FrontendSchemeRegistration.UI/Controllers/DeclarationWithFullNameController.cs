@@ -23,7 +23,7 @@ using Constants;
 public class DeclarationWithFullNameController(
     ISubmissionService submissionService,
     ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
-    ISessionManager<RegistrationApplicationSession> registrationApplicationSessionManager,
+    IRegistrationApplicationService registrationApplicationService,
     ILogger<DeclarationWithFullNameController> logger,
     IRegistrationPeriodProvider registrationPeriodProvider,
     IFeatureManager featureManager,
@@ -144,7 +144,10 @@ public class DeclarationWithFullNameController(
                     throw new InvalidOperationException($"RegistrationSession not found for submission ID {submissionId}");
                 }
 
-                if (string.IsNullOrWhiteSpace(session.RegistrationSession.ApplicationReferenceNumber))
+                var submitDetails = await registrationApplicationService.ResolveRegistrationSubmitDetailsAsync(
+                    HttpContext.Session, userData.Organisations[0], submission, regJourney, model.RegistrationYear);
+
+                if (string.IsNullOrWhiteSpace(submitDetails.ApplicationReferenceNumber))
                 {
                     logger.LogError("Application reference number is missing for submission ID {SubmissionId}", submissionId);
                     throw new ArgumentException($"Application reference number is missing for submission ID {submissionId}");
@@ -154,27 +157,23 @@ public class DeclarationWithFullNameController(
 
                 var organisationDetailsFileId = new Guid(model.OrganisationDetailsFileId);
 
-                var registrationApplicationSession = await registrationApplicationSessionManager.GetSessionAsync(HttpContext.Session);
-
-                var regulatorNation = ResolveRegulatorNation(model, session, userData, registrationApplicationSession);
-
-                if (string.IsNullOrWhiteSpace(regulatorNation))
+                if (string.IsNullOrWhiteSpace(submitDetails.RegulatorNation))
                 {
                     logger.LogError("RegulatorNation could not be resolved for submission ID {SubmissionId}", submissionId);
                     throw new ArgumentException($"RegulatorNation could not be resolved for submission ID {submissionId}");
                 }
 
-                var notifyPaymentService = await ShouldNotifyPaymentServiceAsync(session, submission, submissionId);
+                var notifyPaymentService = await ShouldNotifyPaymentServiceAsync(submitDetails.IsResubmission, submission, submissionId);
 
                 await submissionService.SubmitAsync(submissionId, organisationDetailsFileId,
                     model.FullName,
-                    session.RegistrationSession.ApplicationReferenceNumber,
-                    session.RegistrationSession.IsResubmission,
+                    submitDetails.ApplicationReferenceNumber,
+                    submitDetails.IsResubmission,
                     regJourney,
                     new RegistrationSubmitContext
                     {
-                        SubmissionPeriodId = registrationApplicationSession?.SubmissionPeriodId,
-                        RegulatorNation = regulatorNation,
+                        SubmissionPeriodId = submitDetails.SubmissionPeriodId,
+                        RegulatorNation = submitDetails.RegulatorNation,
                         NotifyPaymentService = notifyPaymentService
                     });
 
@@ -199,33 +198,12 @@ public class DeclarationWithFullNameController(
         }
     }
 
-    private static string? ResolveRegulatorNation(
-        DeclarationWithFullNameViewModel model,
-        FrontendSchemeRegistrationSession session,
-        UserData userData,
-        RegistrationApplicationSession? registrationApplicationSession)
-    {
-        var regulatorNation = registrationApplicationSession?.RegulatorNation;
-        if (!string.IsNullOrWhiteSpace(regulatorNation))
-        {
-            return regulatorNation;
-        }
-
-        var nationId = model.IsCso
-            ? session.RegistrationSession.SelectedComplianceScheme?.NationId
-            : userData.Organisations[0].NationId;
-
-        return nationId.HasValue
-            ? NationExtensions.GetNationNameFromId(nationId.Value)
-            : null;
-    }
-
     private async Task<bool> ShouldNotifyPaymentServiceAsync(
-        FrontendSchemeRegistrationSession session,
+        bool isResubmission,
         RegistrationSubmission submission,
         Guid submissionId)
     {
-        if (!session.RegistrationSession.IsResubmission || !submission.IsSubmitted)
+        if (!isResubmission || !submission.IsSubmitted)
         {
             return true;
         }
