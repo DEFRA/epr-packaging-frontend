@@ -16,8 +16,8 @@
     var statusKey = Model.ComplianceDeclarationStatus switch
     {
         ComplianceDeclarationStatus.Submitted or ComplianceDeclarationStatus.Accepted => "submitted",
-        ComplianceDeclarationStatus.Cancelled => "cancelled",
         _ when Model.IsSubmissionDeadlinePassed => "deadline_passed",
+        ComplianceDeclarationStatus.Cancelled => "cancelled",
         _ => "submit"
     };
 
