@@ -2,7 +2,11 @@
 @using FrontendSchemeRegistration.UI.ViewModels.Prns
 @model CsocViewModel?
 
-@if (Model is not null && Model.IsObligationDataSubmitted)
+@* Once the submission deadline has passed, only a submitted statement/certificate is still linked from this tile. *@
+@if (Model is not null
+    && Model.IsObligationDataSubmitted
+    && (!Model.IsSubmissionDeadlinePassed
+        || Model.ComplianceDeclarationStatus is ComplianceDeclarationStatus.Submitted or ComplianceDeclarationStatus.Accepted))
 {
     var complianceYear = ViewData["ComplianceYear"] as int? ?? Model.ComplianceYear;
 

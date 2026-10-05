@@ -8,6 +8,26 @@ using FluentAssertions;
 public class DateTimeExtensionsTests
 {
     [Test]
+    // The CSoC deadline is 31 January, when the UK is on GMT (UTC+0), so UTC and UK dates are the same
+    [TestCase("2027-01-15T12:00:00Z", "2027-01-31", false)]
+    [TestCase("2027-01-31T00:00:00Z", "2027-01-31", false)]
+    [TestCase("2027-01-31T23:59:59Z", "2027-01-31", false)]
+    [TestCase("2027-02-01T00:00:00Z", "2027-01-31", true)]
+    [TestCase("2027-03-15T12:00:00Z", "2027-01-31", true)]
+    public void DateTime_IsAfterUkDate_UsesUkCalendarDate(string utcNow, string date, bool expected)
+    {
+        // Arrange
+        var now = DateTime.Parse(utcNow, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
+        var compareTo = DateTime.Parse(date, CultureInfo.InvariantCulture);
+
+        // Act
+        var result = now.IsAfterUkDate(compareTo);
+
+        // Assert
+        result.Should().Be(expected);
+    }
+
+    [Test]
     [TestCase(2024, 1, 1, 2023)]
     [TestCase(2024, 2, 1, 2024)]
     [TestCase(2024, 12, 31, 2024)]
@@ -105,12 +125,15 @@ public class DateTimeExtensionsTests
         now.IsInDecemberJanuaryFlashWindow().Should().Be(expected);
     }
 
-    [TestCase(0, 2026)]
-    [TestCase(-1, 2026)]
-    [TestCase(1, 2027)]
-    public void GetCsocSubmissionDeadline_WhenNow_ShouldBeExpected(int offset, int expectedYear)
+    [TestCase("2026-01-30T23:59:59", 2026)]
+    [TestCase("2026-01-31T00:00:00", 2026)]
+    [TestCase("2026-01-31T12:00:00", 2026)]
+    [TestCase("2026-01-31T23:59:59.999", 2026)]
+    [TestCase("2026-02-01T00:00:00", 2027)]
+    [TestCase("2026-11-15T12:00:00", 2027)]
+    public void GetCsocSubmissionDeadline_WhenNow_ShouldBeExpected(string nowText, int expectedYear)
     {
-        var now = new DateTime(2026, 1, 31, 0, 0, 0, DateTimeKind.Unspecified).AddMilliseconds(offset);
+        var now = DateTime.Parse(nowText, CultureInfo.InvariantCulture);
 
         now.GetCsocSubmissionDeadline().Should().Be(new DateTime(expectedYear, 1, 31, 0, 0, 0, DateTimeKind.Unspecified));
     }

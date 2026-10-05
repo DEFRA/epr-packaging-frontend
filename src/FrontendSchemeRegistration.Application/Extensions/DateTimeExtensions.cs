@@ -16,13 +16,28 @@ public static class DateTimeExtensions
     /// </remarks>
     public static int GetComplianceYear(this DateTime dateTime)
     {
-        var ukDatetime = dateTime.Kind switch
+        return MapToComplianceYear(ToUkDateTime(dateTime));
+    }
+
+    /// <summary>
+    ///     Whether the UK calendar date of <paramref name="dateTime"/> is after the calendar date of <paramref name="date"/>.
+    ///     If the Kind of <paramref name="dateTime"/> is <see cref="DateTimeKind.Unspecified" />, it will be treated as UTC.
+    /// </summary>
+    /// <remarks>
+    ///     <paramref name="date"/> is already a UK calendar date (e.g. the CSoC submission deadline), so only its date part is used.
+    /// </remarks>
+    public static bool IsAfterUkDate(this DateTime dateTime, DateTime date)
+    {
+        return ToUkDateTime(dateTime).Date > date.Date;
+    }
+
+    private static DateTime ToUkDateTime(DateTime dateTime)
+    {
+        return dateTime.Kind switch
         {
             DateTimeKind.Local => TimeZoneInfo.ConvertTime(dateTime, UkZone),
             _ => TimeZoneInfo.ConvertTimeFromUtc(dateTime, UkZone)
         };
-
-        return MapToComplianceYear(ukDatetime);
     }
 
     /// <summary>
@@ -97,9 +112,13 @@ public static class DateTimeExtensions
         return ukNow.Month is 1 or 12;
     }
 
+    /// <summary>
+    ///     The next CSoC submission deadline: 31 January. Submissions are accepted until the end of that day,
+    ///     so the deadline only moves on to the following year from 1 February.
+    /// </summary>
     public static DateTime GetCsocSubmissionDeadline(this DateTime now)
     {
-        var year = now > new DateTime(now.Year, 1, 31, 0, 0, 0, DateTimeKind.Unspecified)
+        var year = now.Date > new DateTime(now.Year, 1, 31, 0, 0, 0, DateTimeKind.Unspecified)
             ? now.Year + 1
             : now.Year;
 

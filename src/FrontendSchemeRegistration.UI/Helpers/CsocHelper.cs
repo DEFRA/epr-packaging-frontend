@@ -47,6 +47,7 @@ public static class CsocHelper
             IsComplianceScheme = organisation.IsComplianceScheme(),
             SubmissionDeadline = submissionDeadline,
             ComplianceYear = year,
+            IsSubmissionDeadlinePassed = now.IsAfterUkDate(submissionDeadline),
             WasteObligationsBaseAddress = AppendLangQuery(
                 GetWasteObligationsBaseAddress(
                     options.WasteObligationsBaseAddress,
