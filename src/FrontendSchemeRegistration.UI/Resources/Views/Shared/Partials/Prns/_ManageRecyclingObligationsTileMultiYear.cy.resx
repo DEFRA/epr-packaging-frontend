@@ -13,18 +13,18 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="heading" xml:space="preserve">
-    <value>Manage recycling obligations</value>
+    <value>Rheoli rhwymedigaethau ailgylchu</value>
   </data>
   <data name="view_or_manage_by_year" xml:space="preserve">
-    <value>View or manage your recycling obligations by year (includes PRNs and PERNs).</value>
+    <value>Gweld neu reoli’ch rhwymedigaethau ailgylchu yn ôl blwyddyn (gan gynnwys PRNs a PERNs).</value>
   </data>
   <data name="submit_compliance_by_deadline_direct_producer" xml:space="preserve">
-    <value>An approved or delegated person must submit your {0} certificate of compliance on or before {1:d MMMM yyyy}.</value>
+    <value>Rhaid i berson wedi’i gymeradwyo neu wedi’i ddirprwyo gyflwyno’ch tystysgrif gydymffurfio {0} ar neu cyn {1:d MMMM yyyy}.</value>
   </data>
   <data name="submit_compliance_by_deadline_compliance_scheme" xml:space="preserve">
-    <value>An approved or delegated person must submit your {0} statement of compliance on or before {1:d MMMM yyyy}.</value>
+    <value>Rhaid i berson wedi’i gymeradwyo neu wedi’i ddirprwyo gyflwyno'ch datganiad cydymffurfio {0} ar neu cyn {1:d MMMM yyyy}.</value>
   </data>
   <data name="search_all_link" xml:space="preserve">
-    <value>Search all PRNs and PERNs</value>
+    <value>Chwilio pob PRN a PERN</value>
   </data>
 </root>

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <root>
 	<resheader name="resmimetype">
 		<value>text/microsoft-resx</value>
@@ -105,9 +106,9 @@
 		<value>Chwilio PRNs a PERNs</value>
 	</data>
 	<data name="acceptance_year" xml:space="preserve">
-		<value>Can be accepted towards {0}</value>
+		<value>Caniateir ei dderbyn tuag at {0}</value>
 	</data>
 	<data name="acceptance_years" xml:space="preserve">
-		<value>Can be accepted towards {0} or {1}</value>
+		<value>Caniateir ei dderbyn tuag at {0} neu {1}</value>
 	</data>
 </root>

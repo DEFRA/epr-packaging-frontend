@@ -157,7 +157,7 @@
     <value>Blwyddyn Cyhoeddi'r</value>
   </data>
   <data name="accepted_towards_recycling_obligations" xml:space="preserve">
-    <value>Accepted towards {0} recycling obligations</value>
+    <value>Wedi’u derbyn tuag at rwymedigaethau ailgylchu {0}</value>
   </data>
   <data name="packaging_recycling_note" xml:space="preserve">
     <value>Nodyn Ailgylchu Gwastraff Pecynwaith</value>
@@ -214,9 +214,9 @@
     <value>Derbyn y PRN yma</value>
   </data>
   <data name="acceptance_year" xml:space="preserve">
-    <value>Can be accepted towards {0}</value>
+    <value>Caniateir ei dderbyn tuag at {0}</value>
   </data>
   <data name="acceptance_years" xml:space="preserve">
-    <value>Can be accepted towards {0} or {1}</value>
+    <value>Caniateir ei dderbyn tuag at {0} neu {1}</value>
   </data>  
 </root>

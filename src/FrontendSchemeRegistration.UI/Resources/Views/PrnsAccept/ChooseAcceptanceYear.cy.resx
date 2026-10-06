@@ -59,18 +59,18 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="page_title_prn" xml:space="preserve">
-    <value>Which year’s recycling obligations do you want to accept this PRN towards?</value>
+    <value>At ba flwyddyn rwymedigaethau ailgylchu hoffech chi dderbyn y PRN yma?</value>
   </data>
   <data name="page_title_pern" xml:space="preserve">
-    <value>Which year’s recycling obligations do you want to accept this PERN towards?</value>
+    <value>At ba flwyddyn rwymedigaethau ailgylchu hoffech chi am dderbyn y PERN yma?</value>
   </data>
   <data name="heading_prn" xml:space="preserve">
-    <value>Which year’s recycling obligations do you want to accept this PRN towards?</value>
+    <value>At ba flwyddyn rwymedigaethau ailgylchu hoffech chi dderbyn y PRN yma?</value>
   </data>
   <data name="heading_pern" xml:space="preserve">
-    <value>Which year’s recycling obligations do you want to accept this PERN towards?</value>
+    <value>At ba flwyddyn rwymedigaethau ailgylchu hoffech chi am dderbyn y PERN yma?</value>
   </data>
   <data name="select_a_year" xml:space="preserve">
-    <value>Select a year</value>
+    <value>Dewiswch flwyddyn</value>
   </data>
 </root>
