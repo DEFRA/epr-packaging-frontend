@@ -10,6 +10,13 @@ public class WebApiOptions
     public PrnSearchDataType PrnSearchData { get; set; }
     public PrnOrganisationDataType PrnOrganisationData { get; set; }
     public string ServiceRole { get; set; } = "Approved Person";
+    public string OrganisationRole { get; set; } = "Compliance Scheme";
+
+    /// <summary>
+    ///     Registration applications served by the submission and registration application details endpoints, one per
+    ///     registration year. They take precedence over the default compliance scheme registration application details.
+    /// </summary>
+    public IReadOnlyList<RegistrationApplicationStub> RegistrationApplications { get; set; } = [];
 
     public string PrnObligationCalculationResponseFile =>
         $"v1_prn_obligationcalculation_{ObligationData.ToString().ToLower()}.json";
@@ -80,4 +87,14 @@ public class WebApiOptions
         /// </summary>
         DecemberWasteInFlashWindow
     }
+}
+
+[ExcludeFromCodeCoverage]
+public sealed record RegistrationApplicationStub(
+    Guid SubmissionId,
+    int RegistrationYear,
+    string ApplicationReferenceNumber,
+    string? RegistrationJourney = null)
+{
+    public string SubmissionPeriod => $"January to December {RegistrationYear}";
 }

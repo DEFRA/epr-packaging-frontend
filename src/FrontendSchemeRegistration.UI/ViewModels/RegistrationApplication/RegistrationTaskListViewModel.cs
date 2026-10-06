@@ -45,4 +45,6 @@ public class RegistrationTaskListViewModel
     
     public string CompletedSubmitRegistrationApplicationTask => IsResubmission ? "registration_resubmission_application_has_been_submitted" : "registration_application_has_been_submitted";
     public RegistrationJourney? RegistrationJourney { get; set; }
+
+    public Guid? SubmissionId { get; set; }
 }
