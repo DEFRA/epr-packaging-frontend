@@ -136,9 +136,15 @@
     <value>Bydd hyn yn credydu {0} tunnell tuag at eich rhwymedigaeth ailgylchu {1}.</value>
   </data>
   <data name="tonnage_in_words" xml:space="preserve">
-	  <value>Tunelli mewn geiriau</value>
+    <value>Tunelli mewn geiriau</value>
   </data>
   <data name="YesAcceptButton" xml:space="preserve">
     <value>Ie, derbyn</value>
   </data>
-<data name="Confirm_Title" xml:space="preserve"><value>Bydd hyn yn cyfrannu {0} o dunelli at eich rhwymedigaeth ailgylchu ar gyfer {1}.</value></data><data name="prn_confirm_heading" xml:space="preserve"><value>Ydych chi'n siŵr yr hoffech chi dderbyn y PRN yma at eich rhwymedigaethau ailgylchu {0}?</value></data></root>
+  <data name="Confirm_Title" xml:space="preserve">
+    <value>Bydd hyn yn cyfrannu {0} o dunelli at eich rhwymedigaeth ailgylchu ar gyfer {1}.</value>
+  </data>
+  <data name="prn_confirm_heading" xml:space="preserve">
+    <value>Ydych chi'n siŵr yr hoffech chi dderbyn y PRN yma at eich rhwymedigaethau ailgylchu {0}?</value>
+  </data>
+</root>
