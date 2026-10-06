@@ -489,6 +489,13 @@ public class RegistrationApplicationController(
         var submittedDate = application.RegistrationApplicationSubmittedDate;
         if (submittedDate is null)
         {
+            if (application.FileUploadStatus != RegistrationTaskListStatus.Completed ||
+                application.PaymentViewStatus != RegistrationTaskListStatus.Completed)
+            {
+                // An application that isn't ready to submit can't have been submitted, so there is nothing to confirm
+                return RedirectToAction(nameof(RegistrationTaskList), QueryStringExtensions.BuildRouteValues(registrationYear: application.RegistrationYear, registrationJourney: application.RegistrationJourney));
+            }
+
             // The gateway may not yet reflect a submission made moments ago
             logger.LogWarning("Registration application for submission {SubmissionId} is not yet reported as submitted; showing the current date", submissionId);
             submittedDate = timeProvider.GetLocalNow().DateTime;

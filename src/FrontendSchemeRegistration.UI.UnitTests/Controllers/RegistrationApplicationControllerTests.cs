@@ -1322,6 +1322,32 @@ public class RegistrationApplicationControllerTests
     }
 
     [Test]
+    [TestCase(RegistrationTaskListStatus.Pending, RegistrationTaskListStatus.CanNotStartYet)]
+    [TestCase(RegistrationTaskListStatus.Completed, RegistrationTaskListStatus.NotStarted)]
+    public async Task SubmitRegistrationRequest_WhenApplicationNotReadyAndNotSubmitted_RedirectsToTaskList(
+        RegistrationTaskListStatus fileUploadStatus,
+        RegistrationTaskListStatus paymentViewStatus)
+    {
+        // Arrange - e.g. a stale submit form posted after a new file was uploaded in another tab, so nothing was submitted
+        var submissionId = Guid.NewGuid();
+        SetupApplication(submissionId, CreateApplication(
+            submissionId,
+            fileUploadStatus: fileUploadStatus,
+            paymentViewStatus: paymentViewStatus,
+            additionalDetailsStatus: RegistrationTaskListStatus.CanNotStartYet,
+            submittedDate: null,
+            registrationJourney: RegistrationJourney.CsoLargeProducer));
+
+        // Act
+        var result = await SystemUnderTest.SubmitRegistrationRequest(submissionId, RegistrationJourney.CsoLargeProducer) as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be(nameof(RegistrationApplicationController.RegistrationTaskList));
+        result.RouteValues["registrationyear"].Should().Be(2025);
+        result.RouteValues["registrationjourney"].Should().Be(nameof(RegistrationJourney.CsoLargeProducer));
+    }
+
+    [Test]
     public async Task SubmitRegistrationRequest_WhenApplicationCannotBeResolved_RedirectsToAccountHome()
     {
         // Arrange
