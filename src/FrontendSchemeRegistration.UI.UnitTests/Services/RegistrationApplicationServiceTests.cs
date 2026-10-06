@@ -4267,6 +4267,22 @@ public class RegistrationApplicationServiceTests
         _submissionServiceMock.Verify(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()), Times.Never);
     }
 
+    [Test]
+    public async Task GetRegistrationApplicationForSubmissionAsync_ReturnsNull_WhenComplianceSchemeHasNoSchemeSelected()
+    {
+        // Arrange - e.g. a compliance scheme user who reaches the Submit page with a fresh session
+        var submission = SetupSubmission("January to December 2026", RegistrationJourney.CsoLargeProducer);
+        SetupSubmitDetailsSessions(new RegistrationSession());
+        SetupApplicationDetails(ReadyToSubmitDetails(submission.Id, "PEPR17583026P1"));
+
+        // Act
+        var result = await _service.GetRegistrationApplicationForSubmissionAsync(_httpSession, CreateSubmitDetailsOrganisation(OrganisationRoles.ComplianceScheme), submission.Id, RegistrationJourney.CsoLargeProducer);
+
+        // Assert
+        result.Should().BeNull();
+        _submissionServiceMock.Verify(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()), Times.Never);
+    }
+
     [TestCase(false)]
     [TestCase(true)]
     public async Task GetRegistrationApplicationForSubmissionAsync_ReturnsNull_WhenDetailsAreMissingOrForAnotherSubmission(bool detailsExist)

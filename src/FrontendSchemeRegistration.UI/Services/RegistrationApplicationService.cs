@@ -723,6 +723,13 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         var frontEndSession = await frontEndSessionManager.GetSessionAsync(httpSession) ?? new FrontendSchemeRegistrationSession();
         var selectedComplianceScheme = frontEndSession.RegistrationSession.SelectedComplianceScheme;
 
+        // Without a selected scheme the lookup isn't scoped to a scheme and the event would be sent without one
+        if (organisation.OrganisationRole == OrganisationRoles.ComplianceScheme && selectedComplianceScheme is null)
+        {
+            logger.LogWarning("No compliance scheme is selected for registration submission {SubmissionId}", submissionId);
+            return null;
+        }
+
         var details = await GetApplicationDetailsForSubmissionAsync(organisation, submission, submission.RegistrationJourney ?? registrationJourney, selectedComplianceScheme);
         var registrationYear = ParseRegistrationYear(submission.SubmissionPeriod);
         if (details is null || registrationYear is null)

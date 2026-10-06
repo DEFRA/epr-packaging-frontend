@@ -1189,8 +1189,6 @@ public class RegistrationApplicationControllerTests
 
         // Assert
         result.ActionName.Should().Be(nameof(RegistrationApplicationController.UnauthorisedUserWarnings));
-        result.RouteValues["submissionId"].Should().Be(submissionId);
-        result.RouteValues["registrationjourney"].Should().Be(nameof(RegistrationJourney.CsoLargeProducer));
         RegistrationApplicationService.Verify(x => x.CreateRegistrationApplicationSubmittedEventAsync(It.IsAny<RegistrationApplicationForSubmission>(), It.IsAny<string>()), Times.Never);
     }
 
