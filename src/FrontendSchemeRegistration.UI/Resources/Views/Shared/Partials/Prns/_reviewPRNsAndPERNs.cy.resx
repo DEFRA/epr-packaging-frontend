@@ -123,6 +123,6 @@
 	  <value>Lawrlwytho rhestr o'r holl PRNs a PERNs</value>
 	</data>
 	<data name="download_all_prns_and_perns_yyyy" xml:space="preserve">
-	  <value>Lawrlwytho rhestr o'r holl PRNs a PERNs ar gyfer {0} ar gyfer {0</value>
+	  <value>Lawrlwytho rhestr o'r holl PRNs a PERNs ar gyfer {0} (CSV)</value>
 	</data>
 </root>
