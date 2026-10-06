@@ -63,7 +63,7 @@
                 
                 @Html.TextAreaFor(model => model.AdditionalInformationText, new { @class = "govuk-textarea", @rows = "5", @id = "AdditionalInformation", aria_labelledby = "arialblAdditionalInfo2" })
 
-                <button class="govuk-button govuk-body" data-module="govuk-button" type="submit">
+                <button class="govuk-button govuk-body" data-module="govuk-button" data-prevent-double-click="true" type="submit">
                     @if (Model.IsResubmission)
                     {
                         @Localizer["submit_registration_update"]
