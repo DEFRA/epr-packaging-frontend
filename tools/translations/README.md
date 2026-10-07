@@ -27,6 +27,21 @@ visible `Figma link` column so translators can check layout, component context
 and nearby content. Use `null` only when no design URL is available yet, and fill
 it in before sending the workbook for translation whenever possible.
 
+## Keeping exports up to date
+
+`tools/translations/check-exports.sh` regenerates the export for every profile
+in `tools/translations/profiles` and fails if that changes, or creates, anything
+under `translations/welsh-translations`. When it fails the export has already
+regenerated the files, so commit them.
+
+The `check-translations` GitHub workflow runs it on pull requests that touch
+resource files, the translation tool or the exports. To run it before every
+commit, enable the tracked hook once per clone:
+
+```bash
+git config core.hooksPath .githooks
+```
+
 ## CSoC profile
 
 The first profile is `csoc`:
