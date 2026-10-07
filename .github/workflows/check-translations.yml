@@ -1,0 +1,26 @@
+name: Check translations
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'src/**/Resources/**'
+      - 'tools/translations/**'
+      - 'translations/**'
+
+jobs:
+  check-exports:
+    name: Translation exports are up to date
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Check exports
+        run: tools/translations/check-exports.sh
