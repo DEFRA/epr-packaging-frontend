@@ -55,7 +55,7 @@
 	  <value>Your PRNs and PERNs</value>
 	</data>  
   <data name="search_prns_and_perns" xml:space="preserve">
-    <value>Search PRNs and PERNs</value>
+    <value>Chwilio PRNs a PERNs</value>
   </data>
   <data name="download_prns_and_perns" xml:space="preserve">
     <value>Download a list of your PRNs and PERNs for 2025 (CSV)</value>

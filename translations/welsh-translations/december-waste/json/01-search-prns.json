@@ -12,7 +12,7 @@
       "route": "/report-data/view-awaiting-acceptance",
       "section": "December Waste acceptance-year message shown against awaiting-acceptance rows.",
       "english": "Can be accepted towards {0}",
-      "welsh": "",
+      "welsh": "Caniateir ei dderbyn tuag at {0}",
       "figmaUrl": "",
       "context": "Search PRNs and PERNs page: December Waste acceptance-year message shown against awaiting-acceptance rows.\nDecember Waste acceptance-year message shown against awaiting-acceptance rows.\nFeature flag(s): ShowPrn, ShowDecemberWaste"
     },
@@ -24,7 +24,7 @@
       "route": "/report-data/view-awaiting-acceptance",
       "section": "December Waste acceptance-year message shown against awaiting-acceptance rows.",
       "english": "Can be accepted towards {0} or {1}",
-      "welsh": "",
+      "welsh": "Caniateir ei dderbyn tuag at {0} neu {1}",
       "figmaUrl": "",
       "context": "Search PRNs and PERNs page: December Waste acceptance-year message shown against awaiting-acceptance rows.\nDecember Waste acceptance-year message shown against awaiting-acceptance rows.\nFeature flag(s): ShowPrn, ShowDecemberWaste"
     }

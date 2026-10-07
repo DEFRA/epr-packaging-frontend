@@ -42,6 +42,23 @@
           ]
         }
       ]
+    },
+    {
+      "id": "prns-select-multiple",
+      "fileName": "03-select-multiple-prns.xlsx",
+      "route": "/report-data/view-awaiting-acceptance",
+      "view": "src/FrontendSchemeRegistration.UI/Views/Prns/SelectMultiplePrns.cshtml",
+      "figmaUrl": null,
+      "notes": "Accept or reject PRNs and PERNs page: December Waste acceptance-year message shown against awaiting-acceptance rows.",
+      "featureFlags": ["ShowPrn", "ShowDecemberWaste"],
+      "appSettings": {},
+      "resources": [
+        {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/Prns/SelectMultiplePrns.en.resx",
+          "section": "December Waste acceptance-year message shown against awaiting-acceptance rows.",
+          "keys": ["acceptance_year", "acceptance_years"]
+        }
+      ]
     }
   ]
 }

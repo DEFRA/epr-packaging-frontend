@@ -12,7 +12,7 @@
       "route": "/report-data/choose-your-recycling-obligations-year",
       "section": "Choose a year page title and validation.",
       "english": "Choose a year",
-      "welsh": "",
+      "welsh": "Dewiswch flwyddyn",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-111839",
       "context": "Choose a year page: select historical, current or future recycling obligation year before managing obligations.\nChoose a year page title and validation.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -24,7 +24,7 @@
       "route": "/report-data/choose-your-recycling-obligations-year",
       "section": "Choose a year page title and validation.",
       "english": "Select a year",
-      "welsh": "",
+      "welsh": "Dewiswch flwyddyn",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-111839",
       "context": "Choose a year page: select historical, current or future recycling obligation year before managing obligations.\nChoose a year page title and validation.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     }
