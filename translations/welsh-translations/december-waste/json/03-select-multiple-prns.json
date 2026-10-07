@@ -10,11 +10,11 @@
       "resourceKey": "acceptance_year",
       "pageId": "prns-select-multiple",
       "route": "/report-data/view-awaiting-acceptance",
-      "section": "December Waste acceptance-year message shown against awaiting-acceptance rows.",
+      "section": "December Waste acceptance-year message shown against awaiting-acceptance rows, and the Apply filter button.",
       "english": "Can be accepted towards {0} recycling obligations",
       "welsh": "",
       "figmaUrl": "",
-      "context": "Accept or reject PRNs and PERNs page: December Waste acceptance-year message shown against awaiting-acceptance rows.\nDecember Waste acceptance-year message shown against awaiting-acceptance rows.\nFeature flag(s): ShowPrn, ShowDecemberWaste"
+      "context": "Accept or reject PRNs and PERNs page: December Waste acceptance-year message shown against awaiting-acceptance rows, and the Apply filter button (Welsh not yet supplied).\nDecember Waste acceptance-year message shown against awaiting-acceptance rows, and the Apply filter button.\nFeature flag(s): ShowPrn, ShowDecemberWaste"
     },
     {
       "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Prns/SelectMultiplePrns.en.resx::acceptance_years",
@@ -22,11 +22,23 @@
       "resourceKey": "acceptance_years",
       "pageId": "prns-select-multiple",
       "route": "/report-data/view-awaiting-acceptance",
-      "section": "December Waste acceptance-year message shown against awaiting-acceptance rows.",
+      "section": "December Waste acceptance-year message shown against awaiting-acceptance rows, and the Apply filter button.",
       "english": "Can be accepted towards {0} or {1} recycling obligations",
       "welsh": "",
       "figmaUrl": "",
-      "context": "Accept or reject PRNs and PERNs page: December Waste acceptance-year message shown against awaiting-acceptance rows.\nDecember Waste acceptance-year message shown against awaiting-acceptance rows.\nFeature flag(s): ShowPrn, ShowDecemberWaste"
+      "context": "Accept or reject PRNs and PERNs page: December Waste acceptance-year message shown against awaiting-acceptance rows, and the Apply filter button (Welsh not yet supplied).\nDecember Waste acceptance-year message shown against awaiting-acceptance rows, and the Apply filter button.\nFeature flag(s): ShowPrn, ShowDecemberWaste"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Prns/SelectMultiplePrns.en.resx::apply_filter",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Prns/SelectMultiplePrns.en.resx",
+      "resourceKey": "apply_filter",
+      "pageId": "prns-select-multiple",
+      "route": "/report-data/view-awaiting-acceptance",
+      "section": "December Waste acceptance-year message shown against awaiting-acceptance rows, and the Apply filter button.",
+      "english": "Apply filter",
+      "welsh": "",
+      "figmaUrl": "",
+      "context": "Accept or reject PRNs and PERNs page: December Waste acceptance-year message shown against awaiting-acceptance rows, and the Apply filter button (Welsh not yet supplied).\nDecember Waste acceptance-year message shown against awaiting-acceptance rows, and the Apply filter button.\nFeature flag(s): ShowPrn, ShowDecemberWaste"
     }
   ]
 }

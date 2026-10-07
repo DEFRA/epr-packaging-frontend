@@ -111,4 +111,7 @@
 	<data name="acceptance_years" xml:space="preserve">
 		<value>Caniateir ei dderbyn tuag at {0} neu {1}</value>
 	</data>
+	<data name="view_and_select_prns_table_description" xml:space="preserve">
+		<value>Rhestr o PRNs a PERNs i ddewis ohonynt.</value>
+	</data>
 </root>

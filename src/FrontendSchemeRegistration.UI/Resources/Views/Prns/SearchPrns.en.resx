@@ -110,4 +110,7 @@
 	<data name="acceptance_years" xml:space="preserve">
     	<value>Can be accepted towards {0} or {1}</value>
   	</data>
+	<data name="view_and_select_prns_table_description" xml:space="preserve">
+		<value>A list of PRNs and PERNs to select from.</value>
+	</data>
 </root>
