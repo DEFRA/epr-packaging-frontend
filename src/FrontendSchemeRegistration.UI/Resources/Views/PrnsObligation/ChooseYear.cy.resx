@@ -13,9 +13,9 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="title" xml:space="preserve">
-    <value>Choose a year</value>
+    <value>Dewiswch flwyddyn</value>
   </data>
   <data name="select_a_year" xml:space="preserve">
-    <value>Select a year</value>
+    <value>Dewiswch flwyddyn</value>
   </data>
 </root>

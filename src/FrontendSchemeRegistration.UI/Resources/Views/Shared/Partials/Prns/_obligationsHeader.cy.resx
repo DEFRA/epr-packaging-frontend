@@ -121,7 +121,7 @@
 	  <value>Cynllun Cydymffurfio</value>
   </data>
   <data name="january" xml:space="preserve">
-	  <value>31 Ionawr </value>
+	  <value>31 Ionawr</value>
   </data>
   <data name="producer" xml:space="preserve">
 	  <value>Cynhyrchydd</value>
@@ -130,15 +130,15 @@
 	  <value>Rheoleiddiwr</value>
   </data>
   <data name="regulator_england" xml:space="preserve">
-	  <value>Environment Agency (England)</value>
+	  <value>Asiantaeth yr Amgylchedd (Lloegr)</value>
   </data>
   <data name="regulator_northern_ireland" xml:space="preserve">
-	  <value>Environment Agency (Northern Ireland)</value>
+	  <value>Asiantaeth yr Amgylchedd (Gogledd Iwerddon)</value>
   </data>
   <data name="regulator_scotland" xml:space="preserve">
-	  <value>Environment Agency (Scotland)</value>
+	  <value>Asiantaeth yr Amgylchedd (Yr Alban)</value>
   </data>
   <data name="regulator_wales" xml:space="preserve">
-	  <value>Environment Agency (Wales)</value>
+	  <value>Asiantaeth yr Amgylchedd (Cymru)</value>
   </data>
 </root>

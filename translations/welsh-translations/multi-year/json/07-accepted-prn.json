@@ -1,0 +1,44 @@
+{
+  "translatorNotes": [
+    "Preserve placeholders such as {0}, {1}, and format suffixes such as {2:d MMMM yyyy}.",
+    "Preserve inline HTML tags such as <strong>...</strong> where they appear."
+  ],
+  "rows": [
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/AcceptedPrn.en.resx::prn_accepted_multi_year",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/AcceptedPrn.en.resx",
+      "resourceKey": "prn_accepted_multi_year",
+      "pageId": "prns-accepted-single",
+      "route": "/report-data/accepted-prn/{id}",
+      "section": "Multi-year single-accept confirmation panel and obligation year label.",
+      "english": "You accepted this {0} towards your {1} recycling obligations",
+      "welsh": "",
+      "figmaUrl": "",
+      "context": "Single PRN/PERN accepted confirmation page: multi-year heading, tonnage text and obligation year label.\nMulti-year single-accept confirmation panel and obligation year label.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/AcceptedPrn.en.resx::tonnage_credited_towards_your_obligation_multi_year",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/AcceptedPrn.en.resx",
+      "resourceKey": "tonnage_credited_towards_your_obligation_multi_year",
+      "pageId": "prns-accepted-single",
+      "route": "/report-data/accepted-prn/{id}",
+      "section": "Multi-year single-accept confirmation panel and obligation year label.",
+      "english": "You have contributed {0} tonnes towards your recycling obligation for {1}.",
+      "welsh": "",
+      "figmaUrl": "",
+      "context": "Single PRN/PERN accepted confirmation page: multi-year heading, tonnage text and obligation year label.\nMulti-year single-accept confirmation panel and obligation year label.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/AcceptedPrn.en.resx::accepted_towards_recycling_obligations",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/AcceptedPrn.en.resx",
+      "resourceKey": "accepted_towards_recycling_obligations",
+      "pageId": "prns-accepted-single",
+      "route": "/report-data/accepted-prn/{id}",
+      "section": "Multi-year single-accept confirmation panel and obligation year label.",
+      "english": "Accepted towards {0} recycling obligations",
+      "welsh": "Wedi’u derbyn tuag at rwymedigaethau ailgylchu {0}",
+      "figmaUrl": "",
+      "context": "Single PRN/PERN accepted confirmation page: multi-year heading, tonnage text and obligation year label.\nMulti-year single-accept confirmation panel and obligation year label.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    }
+  ]
+}

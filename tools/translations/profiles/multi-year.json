@@ -226,6 +226,62 @@
             "meeting_obligations_list_2_bullet_2",
             "meeting_obligations_table_below_statement"
           ]
+        },
+        {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ObligationsHome.en.resx",
+          "section": "Multi-year advisory text under the Manage obligations page heading.",
+          "keys": ["acquire_and_accept_advisory_text_multi_year"]
+        }
+      ]
+    },
+    {
+      "id": "prns-accepted-single",
+      "fileName": "07-accepted-prn.xlsx",
+      "route": "/report-data/accepted-prn/{id}",
+      "view": "src/FrontendSchemeRegistration.UI/Views/PrnsAccept/AcceptedPrn.cshtml",
+      "figmaUrl": null,
+      "notes": "Single PRN/PERN accepted confirmation page: multi-year heading, tonnage text and obligation year label.",
+      "featureFlags": ["ShowPrn", "ShowMultiYearObligations"],
+      "appSettings": {},
+      "resources": [
+        {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsAccept/AcceptedPrn.en.resx",
+          "section": "Multi-year single-accept confirmation panel and obligation year label.",
+          "keys": [
+            "prn_accepted_multi_year",
+            "tonnage_credited_towards_your_obligation_multi_year",
+            "accepted_towards_recycling_obligations"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "prns-compliance-certificate",
+      "fileName": "08-compliance-certificate.xlsx",
+      "route": "/report-data/certificate-of-compliance-record",
+      "view": "src/FrontendSchemeRegistration.UI/Views/PrnsObligation/ComplianceCertificate.cshtml",
+      "figmaUrl": null,
+      "notes": "Certificate/statement of compliance record page for past years that cannot be shown in the new service. Regulator email addresses are not translated.",
+      "featureFlags": ["ShowPrn", "ShowMultiYearObligations"],
+      "appSettings": {},
+      "resources": [
+        {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ComplianceCertificate.en.resx",
+          "section": "Compliance record explanation, regulator contact paragraph and PRN/PERN links.",
+          "keys": [
+            "title_direct_producer",
+            "title_compliance_scheme",
+            "can_show_paragraph_direct_producer",
+            "can_show_paragraph_compliance_scheme",
+            "cannot_show_paragraph_direct_producer",
+            "cannot_show_paragraph_compliance_scheme",
+            "queries_paragraph",
+            "queries_paragraph_wales",
+            "view_prns_paragraph",
+            "your_prns_and_perns",
+            "search_prns_and_perns",
+            "download_prns_and_perns"
+          ]
         }
       ]
     }

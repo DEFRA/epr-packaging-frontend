@@ -1,0 +1,152 @@
+{
+  "translatorNotes": [
+    "Preserve placeholders such as {0}, {1}, and format suffixes such as {2:d MMMM yyyy}.",
+    "Preserve inline HTML tags such as <strong>...</strong> where they appear."
+  ],
+  "rows": [
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ComplianceCertificate.en.resx::title_direct_producer",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ComplianceCertificate.en.resx",
+      "resourceKey": "title_direct_producer",
+      "pageId": "prns-compliance-certificate",
+      "route": "/report-data/certificate-of-compliance-record",
+      "section": "Compliance record explanation, regulator contact paragraph and PRN/PERN links.",
+      "english": "Your certificate of compliance record for 2025",
+      "welsh": "",
+      "figmaUrl": "",
+      "context": "Certificate/statement of compliance record page for past years that cannot be shown in the new service. Regulator email addresses are not translated.\nCompliance record explanation, regulator contact paragraph and PRN/PERN links.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ComplianceCertificate.en.resx::title_compliance_scheme",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ComplianceCertificate.en.resx",
+      "resourceKey": "title_compliance_scheme",
+      "pageId": "prns-compliance-certificate",
+      "route": "/report-data/certificate-of-compliance-record",
+      "section": "Compliance record explanation, regulator contact paragraph and PRN/PERN links.",
+      "english": "Your statement of compliance record for 2025",
+      "welsh": "",
+      "figmaUrl": "",
+      "context": "Certificate/statement of compliance record page for past years that cannot be shown in the new service. Regulator email addresses are not translated.\nCompliance record explanation, regulator contact paragraph and PRN/PERN links.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ComplianceCertificate.en.resx::can_show_paragraph_direct_producer",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ComplianceCertificate.en.resx",
+      "resourceKey": "can_show_paragraph_direct_producer",
+      "pageId": "prns-compliance-certificate",
+      "route": "/report-data/certificate-of-compliance-record",
+      "section": "Compliance record explanation, regulator contact paragraph and PRN/PERN links.",
+      "english": "We can only show certificate of compliance records for certificates that were processed by the ‘Report packaging data’ service.",
+      "welsh": "",
+      "figmaUrl": "",
+      "context": "Certificate/statement of compliance record page for past years that cannot be shown in the new service. Regulator email addresses are not translated.\nCompliance record explanation, regulator contact paragraph and PRN/PERN links.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ComplianceCertificate.en.resx::can_show_paragraph_compliance_scheme",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ComplianceCertificate.en.resx",
+      "resourceKey": "can_show_paragraph_compliance_scheme",
+      "pageId": "prns-compliance-certificate",
+      "route": "/report-data/certificate-of-compliance-record",
+      "section": "Compliance record explanation, regulator contact paragraph and PRN/PERN links.",
+      "english": "We can only show statement of compliance records for statements that were processed by the ‘Report packaging data’ service.",
+      "welsh": "",
+      "figmaUrl": "",
+      "context": "Certificate/statement of compliance record page for past years that cannot be shown in the new service. Regulator email addresses are not translated.\nCompliance record explanation, regulator contact paragraph and PRN/PERN links.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ComplianceCertificate.en.resx::cannot_show_paragraph_direct_producer",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ComplianceCertificate.en.resx",
+      "resourceKey": "cannot_show_paragraph_direct_producer",
+      "pageId": "prns-compliance-certificate",
+      "route": "/report-data/certificate-of-compliance-record",
+      "section": "Compliance record explanation, regulator contact paragraph and PRN/PERN links.",
+      "english": "We cannot show certificates of compliance for 2025, because they were processed outside the service.",
+      "welsh": "",
+      "figmaUrl": "",
+      "context": "Certificate/statement of compliance record page for past years that cannot be shown in the new service. Regulator email addresses are not translated.\nCompliance record explanation, regulator contact paragraph and PRN/PERN links.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ComplianceCertificate.en.resx::cannot_show_paragraph_compliance_scheme",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ComplianceCertificate.en.resx",
+      "resourceKey": "cannot_show_paragraph_compliance_scheme",
+      "pageId": "prns-compliance-certificate",
+      "route": "/report-data/certificate-of-compliance-record",
+      "section": "Compliance record explanation, regulator contact paragraph and PRN/PERN links.",
+      "english": "We cannot show statements of compliance for 2025, because they were processed outside the service.",
+      "welsh": "",
+      "figmaUrl": "",
+      "context": "Certificate/statement of compliance record page for past years that cannot be shown in the new service. Regulator email addresses are not translated.\nCompliance record explanation, regulator contact paragraph and PRN/PERN links.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ComplianceCertificate.en.resx::queries_paragraph",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ComplianceCertificate.en.resx",
+      "resourceKey": "queries_paragraph",
+      "pageId": "prns-compliance-certificate",
+      "route": "/report-data/certificate-of-compliance-record",
+      "section": "Compliance record explanation, regulator contact paragraph and PRN/PERN links.",
+      "english": "If you have any queries, contact the {0}:",
+      "welsh": "",
+      "figmaUrl": "",
+      "context": "Certificate/statement of compliance record page for past years that cannot be shown in the new service. Regulator email addresses are not translated.\nCompliance record explanation, regulator contact paragraph and PRN/PERN links.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ComplianceCertificate.en.resx::queries_paragraph_wales",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ComplianceCertificate.en.resx",
+      "resourceKey": "queries_paragraph_wales",
+      "pageId": "prns-compliance-certificate",
+      "route": "/report-data/certificate-of-compliance-record",
+      "section": "Compliance record explanation, regulator contact paragraph and PRN/PERN links.",
+      "english": "If you have any queries, contact {0}:",
+      "welsh": "",
+      "figmaUrl": "",
+      "context": "Certificate/statement of compliance record page for past years that cannot be shown in the new service. Regulator email addresses are not translated.\nCompliance record explanation, regulator contact paragraph and PRN/PERN links.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ComplianceCertificate.en.resx::view_prns_paragraph",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ComplianceCertificate.en.resx",
+      "resourceKey": "view_prns_paragraph",
+      "pageId": "prns-compliance-certificate",
+      "route": "/report-data/certificate-of-compliance-record",
+      "section": "Compliance record explanation, regulator contact paragraph and PRN/PERN links.",
+      "english": "You can view your PRNs and PERNs for 2025 below.",
+      "welsh": "",
+      "figmaUrl": "",
+      "context": "Certificate/statement of compliance record page for past years that cannot be shown in the new service. Regulator email addresses are not translated.\nCompliance record explanation, regulator contact paragraph and PRN/PERN links.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ComplianceCertificate.en.resx::your_prns_and_perns",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ComplianceCertificate.en.resx",
+      "resourceKey": "your_prns_and_perns",
+      "pageId": "prns-compliance-certificate",
+      "route": "/report-data/certificate-of-compliance-record",
+      "section": "Compliance record explanation, regulator contact paragraph and PRN/PERN links.",
+      "english": "Your PRNs and PERNs",
+      "welsh": "",
+      "figmaUrl": "",
+      "context": "Certificate/statement of compliance record page for past years that cannot be shown in the new service. Regulator email addresses are not translated.\nCompliance record explanation, regulator contact paragraph and PRN/PERN links.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ComplianceCertificate.en.resx::search_prns_and_perns",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ComplianceCertificate.en.resx",
+      "resourceKey": "search_prns_and_perns",
+      "pageId": "prns-compliance-certificate",
+      "route": "/report-data/certificate-of-compliance-record",
+      "section": "Compliance record explanation, regulator contact paragraph and PRN/PERN links.",
+      "english": "Search PRNs and PERNs",
+      "welsh": "Chwilio PRNs a PERNs",
+      "figmaUrl": "",
+      "context": "Certificate/statement of compliance record page for past years that cannot be shown in the new service. Regulator email addresses are not translated.\nCompliance record explanation, regulator contact paragraph and PRN/PERN links.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ComplianceCertificate.en.resx::download_prns_and_perns",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ComplianceCertificate.en.resx",
+      "resourceKey": "download_prns_and_perns",
+      "pageId": "prns-compliance-certificate",
+      "route": "/report-data/certificate-of-compliance-record",
+      "section": "Compliance record explanation, regulator contact paragraph and PRN/PERN links.",
+      "english": "Download a list of your PRNs and PERNs for 2025 (CSV)",
+      "welsh": "",
+      "figmaUrl": "",
+      "context": "Certificate/statement of compliance record page for past years that cannot be shown in the new service. Regulator email addresses are not translated.\nCompliance record explanation, regulator contact paragraph and PRN/PERN links.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    }
+  ]
+}

@@ -12,7 +12,7 @@
       "route": "/report-data/selected-prn/{id}",
       "section": "December Waste acceptance-year message and Accepted obligation-year line.",
       "english": "Accepted towards {0} recycling obligations",
-      "welsh": "",
+      "welsh": "Wedi’u derbyn tuag at rwymedigaethau ailgylchu {0}",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=2012-26252",
       "context": "Single PRN or PERN details page: December Waste acceptance-year message and Accepted obligation-year line.\nDecember Waste acceptance-year message and Accepted obligation-year line.\nFeature flag(s): ShowPrn, ShowDecemberWaste"
     },
@@ -24,7 +24,7 @@
       "route": "/report-data/selected-prn/{id}",
       "section": "December Waste acceptance-year message and Accepted obligation-year line.",
       "english": "Can be accepted towards {0}",
-      "welsh": "",
+      "welsh": "Caniateir ei dderbyn tuag at {0}",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=2012-26252",
       "context": "Single PRN or PERN details page: December Waste acceptance-year message and Accepted obligation-year line.\nDecember Waste acceptance-year message and Accepted obligation-year line.\nFeature flag(s): ShowPrn, ShowDecemberWaste"
     },
@@ -36,7 +36,7 @@
       "route": "/report-data/selected-prn/{id}",
       "section": "December Waste acceptance-year message and Accepted obligation-year line.",
       "english": "Can be accepted towards {0} or {1}",
-      "welsh": "",
+      "welsh": "Caniateir ei dderbyn tuag at {0} neu {1}",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=2012-26252",
       "context": "Single PRN or PERN details page: December Waste acceptance-year message and Accepted obligation-year line.\nDecember Waste acceptance-year message and Accepted obligation-year line.\nFeature flag(s): ShowPrn, ShowDecemberWaste"
     }

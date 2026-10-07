@@ -228,4 +228,10 @@
   <data name="acceptance_years" xml:space="preserve">
     <value>Can be accepted towards {0} or {1} recycling obligations</value>
   </data>
+  <data name="apply_filter" xml:space="preserve">
+    <value>Apply filter</value>
+  </data>
+  <data name="select_all_that_apply" xml:space="preserve">
+    <value>Select all that apply</value>
+  </data>
 </root>

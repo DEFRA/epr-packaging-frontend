@@ -341,7 +341,9 @@ public class ObligationsTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("accepted one PRN towards your 2026 recycling obligations");
+        content.Should().Contain(language == Language.Welsh
+            ? "Rydych chi wedi derbyn un PRN tuag at eich rhwymedigaethau ailgylchu 2026"
+            : "accepted one PRN towards your 2026 recycling obligations");
         content.Should().Contain("govuk-button--secondary");
         content.Should().NotContain("What happens next");
     }
@@ -380,8 +382,12 @@ public class ObligationsTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("accepted 2 PRNs and PERNs towards your 2026 recycling obligations");
-        content.Should().Contain("accepted towards your recycling obligation for");
+        content.Should().Contain(language == Language.Welsh
+            ? "Rydych chi wedi derbyn 2 PRNs a PERNs tuag at eich rhwymedigaethau ailgylchu 2026"
+            : "accepted 2 PRNs and PERNs towards your 2026 recycling obligations");
+        content.Should().Contain(language == Language.Welsh
+            ? "wedi’u derbyniwyd at eich rhwymedigaeth ailgylchu ar gyfer"
+            : "accepted towards your recycling obligation for");
         content.Should().Contain("govuk-button--secondary");
     }
 
