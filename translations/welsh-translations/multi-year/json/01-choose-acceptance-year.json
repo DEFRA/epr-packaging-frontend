@@ -12,7 +12,7 @@
       "route": "/report-data/choose-acceptance-year/{id}",
       "section": "Choose which year to accept into page.",
       "english": "Which year’s recycling obligations do you want to accept this PRN towards?",
-      "welsh": "",
+      "welsh": "At ba flwyddyn rwymedigaethau ailgylchu hoffech chi dderbyn y PRN yma?",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1932-66964",
       "context": "Choose which year to accept a December Waste PRN or PERN into when two obligation years are available.\nChoose which year to accept into page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -24,7 +24,7 @@
       "route": "/report-data/choose-acceptance-year/{id}",
       "section": "Choose which year to accept into page.",
       "english": "Which year’s recycling obligations do you want to accept this PERN towards?",
-      "welsh": "",
+      "welsh": "At ba flwyddyn rwymedigaethau ailgylchu hoffech chi am dderbyn y PERN yma?",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1932-66964",
       "context": "Choose which year to accept a December Waste PRN or PERN into when two obligation years are available.\nChoose which year to accept into page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -36,7 +36,7 @@
       "route": "/report-data/choose-acceptance-year/{id}",
       "section": "Choose which year to accept into page.",
       "english": "Which year’s recycling obligations do you want to accept this PRN towards?",
-      "welsh": "",
+      "welsh": "At ba flwyddyn rwymedigaethau ailgylchu hoffech chi dderbyn y PRN yma?",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1932-66964",
       "context": "Choose which year to accept a December Waste PRN or PERN into when two obligation years are available.\nChoose which year to accept into page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -48,7 +48,7 @@
       "route": "/report-data/choose-acceptance-year/{id}",
       "section": "Choose which year to accept into page.",
       "english": "Which year’s recycling obligations do you want to accept this PERN towards?",
-      "welsh": "",
+      "welsh": "At ba flwyddyn rwymedigaethau ailgylchu hoffech chi am dderbyn y PERN yma?",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1932-66964",
       "context": "Choose which year to accept a December Waste PRN or PERN into when two obligation years are available.\nChoose which year to accept into page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -60,7 +60,7 @@
       "route": "/report-data/choose-acceptance-year/{id}",
       "section": "Choose which year to accept into page.",
       "english": "Select a year",
-      "welsh": "",
+      "welsh": "Dewiswch flwyddyn",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1932-66964",
       "context": "Choose which year to accept a December Waste PRN or PERN into when two obligation years are available.\nChoose which year to accept into page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     }

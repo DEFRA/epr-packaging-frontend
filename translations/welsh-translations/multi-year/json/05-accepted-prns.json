@@ -12,7 +12,7 @@
       "route": "/report-data/accepted-prns",
       "section": "Multi-year multi-accept confirmation panel and material tiles.",
       "english": "accepted towards your recycling obligation for {0}",
-      "welsh": "",
+      "welsh": "wedi’u derbyniwyd at eich rhwymedigaeth ailgylchu ar gyfer {0}",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-113629",
       "context": "Multi-accept confirmation page: multi-year green panel heading and blue material tile text.\nMulti-year multi-accept confirmation panel and material tiles.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -24,7 +24,7 @@
       "route": "/report-data/accepted-prns",
       "section": "Multi-year multi-accept confirmation panel and material tiles.",
       "english": "You’ve accepted {0} {1} and {2} towards your {3} recycling obligations",
-      "welsh": "",
+      "welsh": "Rydych chi wedi derbyn {0} {1} a {2} tuag at eich rhwymedigaethau ailgylchu {3}",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-113629",
       "context": "Multi-accept confirmation page: multi-year green panel heading and blue material tile text.\nMulti-year multi-accept confirmation panel and material tiles.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -36,7 +36,7 @@
       "route": "/report-data/accepted-prns",
       "section": "Multi-year multi-accept confirmation panel and material tiles.",
       "english": "You’ve accepted {0} {1} towards your {2} recycling obligations",
-      "welsh": "",
+      "welsh": "Rydych chi wedi derbyn {0} {1} tuag at eich rhwymedigaethau ailgylchu {2}",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-113629",
       "context": "Multi-accept confirmation page: multi-year green panel heading and blue material tile text.\nMulti-year multi-accept confirmation panel and material tiles.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -48,7 +48,7 @@
       "route": "/report-data/accepted-prns",
       "section": "Multi-year multi-accept confirmation panel and material tiles.",
       "english": "You’ve accepted one {0} towards your {1} recycling obligations",
-      "welsh": "",
+      "welsh": "Rydych chi wedi derbyn un {0} tuag at eich rhwymedigaethau ailgylchu {1}",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-113629",
       "context": "Multi-accept confirmation page: multi-year green panel heading and blue material tile text.\nMulti-year multi-accept confirmation panel and material tiles.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     }

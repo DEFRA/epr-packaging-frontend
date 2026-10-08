@@ -12,7 +12,7 @@
       "route": "/report-data/home-self-managed",
       "section": "Multi-year Manage recycling obligations tile content and Search all PRNs and PERNs link.",
       "english": "Manage recycling obligations",
-      "welsh": "",
+      "welsh": "Rheoli rhwymedigaethau ailgylchu",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112333",
       "context": "Shared Manage recycling obligations tile (multi-year): used on direct producer and compliance scheme account home pages.\nMulti-year Manage recycling obligations tile content and Search all PRNs and PERNs link.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -24,7 +24,7 @@
       "route": "/report-data/home-self-managed",
       "section": "Multi-year Manage recycling obligations tile content and Search all PRNs and PERNs link.",
       "english": "View or manage your recycling obligations by year (includes PRNs and PERNs).",
-      "welsh": "",
+      "welsh": "Gweld neu reoli’ch rhwymedigaethau ailgylchu yn ôl blwyddyn (gan gynnwys PRNs a PERNs).",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112333",
       "context": "Shared Manage recycling obligations tile (multi-year): used on direct producer and compliance scheme account home pages.\nMulti-year Manage recycling obligations tile content and Search all PRNs and PERNs link.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -36,7 +36,7 @@
       "route": "/report-data/home-self-managed",
       "section": "Multi-year Manage recycling obligations tile content and Search all PRNs and PERNs link.",
       "english": "An approved or delegated person must submit your {0} certificate of compliance on or before {1:d MMMM yyyy}.",
-      "welsh": "",
+      "welsh": "Rhaid i berson wedi’i gymeradwyo neu wedi’i ddirprwyo gyflwyno’ch tystysgrif gydymffurfio {0} ar neu cyn {1:d MMMM yyyy}.",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112333",
       "context": "Shared Manage recycling obligations tile (multi-year): used on direct producer and compliance scheme account home pages.\nMulti-year Manage recycling obligations tile content and Search all PRNs and PERNs link.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -48,7 +48,7 @@
       "route": "/report-data/home-self-managed",
       "section": "Multi-year Manage recycling obligations tile content and Search all PRNs and PERNs link.",
       "english": "An approved or delegated person must submit your {0} statement of compliance on or before {1:d MMMM yyyy}.",
-      "welsh": "",
+      "welsh": "Rhaid i berson wedi’i gymeradwyo neu wedi’i ddirprwyo gyflwyno'ch datganiad cydymffurfio {0} ar neu cyn {1:d MMMM yyyy}.",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112333",
       "context": "Shared Manage recycling obligations tile (multi-year): used on direct producer and compliance scheme account home pages.\nMulti-year Manage recycling obligations tile content and Search all PRNs and PERNs link.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -60,7 +60,7 @@
       "route": "/report-data/home-self-managed",
       "section": "Multi-year Manage recycling obligations tile content and Search all PRNs and PERNs link.",
       "english": "Search all PRNs and PERNs",
-      "welsh": "",
+      "welsh": "Chwilio pob PRN a PERN",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112333",
       "context": "Shared Manage recycling obligations tile (multi-year): used on direct producer and compliance scheme account home pages.\nMulti-year Manage recycling obligations tile content and Search all PRNs and PERNs link.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     }

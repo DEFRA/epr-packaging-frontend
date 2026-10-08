@@ -42,7 +42,7 @@ public class ComplianceCertificateTests
         content.Should().Contain("You can view your PRNs and PERNs for 2025 below.");
         content.Should().Contain("Your PRNs and PERNs");
         content.Should().Contain("href=\"view-awaiting-acceptance\"");
-        content.Should().Contain("Search PRNs and PERNs");
+        content.Should().Contain(language == Language.Welsh ? "Chwilio PRNs a PERNs" : "Search PRNs and PERNs");
         content.Should().Contain("href=\"download-prns-csv\"");
         content.Should().Contain("Download a list of your PRNs and PERNs for 2025 (CSV)");
     }

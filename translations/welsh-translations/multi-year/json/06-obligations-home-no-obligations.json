@@ -24,7 +24,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Shared partial for review your PRNS and PERNS links, shown on Manage obligations page .",
       "english": "Review your PRNs and PERNs for {0}",
-      "welsh": "",
+      "welsh": "Adolygu’ch PRNs a’ch PERNs ar gyfer {0}",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
       "context": "\nShared partial for review your PRNS and PERNS links, shown on Manage obligations page .\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -72,7 +72,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Shared partial for review your PRNS and PERNS links, shown on Manage obligations page .",
       "english": "Accept or reject PRNs and PERNs for {0}",
-      "welsh": "",
+      "welsh": "Derbyn neu wrthod PRNs a PERNs ar gyfer {0}",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
       "context": "\nShared partial for review your PRNS and PERNS links, shown on Manage obligations page .\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -108,7 +108,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Shared partial for review your PRNS and PERNS links, shown on Manage obligations page .",
       "english": "Download a list of all PRNs and PERNs for {0} (CSV)",
-      "welsh": "",
+      "welsh": "Lawrlwytho rhestr o'r holl PRNs a PERNs ar gyfer {0} (CSV)",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
       "context": "\nShared partial for review your PRNS and PERNS links, shown on Manage obligations page .\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -132,7 +132,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Shared partial for producer and regulator, shown on Manage obligations page header.",
       "english": "31 January",
-      "welsh": "31 Ionawr ",
+      "welsh": "31 Ionawr",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
       "context": "\nShared partial for producer and regulator, shown on Manage obligations page header.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -168,7 +168,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Shared partial for producer and regulator, shown on Manage obligations page header.",
       "english": "Environment Agency (England)",
-      "welsh": "",
+      "welsh": "Asiantaeth yr Amgylchedd (Lloegr)",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
       "context": "\nShared partial for producer and regulator, shown on Manage obligations page header.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -180,7 +180,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Shared partial for producer and regulator, shown on Manage obligations page header.",
       "english": "Environment Agency (Northern Ireland)",
-      "welsh": "",
+      "welsh": "Asiantaeth yr Amgylchedd (Gogledd Iwerddon)",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
       "context": "\nShared partial for producer and regulator, shown on Manage obligations page header.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -192,7 +192,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Shared partial for producer and regulator, shown on Manage obligations page header.",
       "english": "Environment Agency (Scotland)",
-      "welsh": "",
+      "welsh": "Asiantaeth yr Amgylchedd (Yr Alban)",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
       "context": "\nShared partial for producer and regulator, shown on Manage obligations page header.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -204,7 +204,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Shared partial for producer and regulator, shown on Manage obligations page header.",
       "english": "Environment Agency (Wales)",
-      "welsh": "",
+      "welsh": "Asiantaeth yr Amgylchedd (Cymru)",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
       "context": "\nShared partial for producer and regulator, shown on Manage obligations page header.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -588,7 +588,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Shared partial for future-years details/summary element, shown on Manage obligations page.",
       "english": "Why does the recycling obligations table already have tonnage awaiting acceptance?",
-      "welsh": "",
+      "welsh": "Pam mae gan y tabl rhwymedigaethau ailgylchu dunelledd yn aros i gael ei dderbyn yn barod?",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
       "context": "\nShared partial for future-years details/summary element, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -600,7 +600,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Shared partial for future-years details/summary element, shown on Manage obligations page.",
       "english": "Tonnage awaiting acceptance is for PRNs or PERNs that have been issued to you but have not yet been accepted.",
-      "welsh": "",
+      "welsh": "Mae'r tunelledd sy'n aros i gael ei dderbyn yn ymwneud â PRNs neu PERNs sydd wedi'u rhoi i chi ond sydd heb gael eu derbyn eto.",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
       "context": "\nShared partial for future-years details/summary element, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -612,7 +612,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Shared partial for future-years details/summary element, shown on Manage obligations page.",
       "english": "You have been issued at least one December waste PRN or PERN.",
-      "welsh": "",
+      "welsh": "Rydych chi wedi cael o leiaf un PRN neu PERN gwastraff mis Rhagfyr.",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
       "context": "\nShared partial for future-years details/summary element, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -624,7 +624,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Shared partial for future-years details/summary element, shown on Manage obligations page.",
       "english": "These:",
-      "welsh": "",
+      "welsh": "Mae’r rhain:",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
       "context": "\nShared partial for future-years details/summary element, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -636,7 +636,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Shared partial for future-years details/summary element, shown on Manage obligations page.",
       "english": "are for packaging waste received for recycling at UK or overseas reprocessing sites in December",
-      "welsh": "",
+      "welsh": "ar gyfer gwastraff pecynwaith a ddaeth i law i'w ailgylchu mewn safleoedd ailbrosesu yn y DU neu dros y môr ym mis Rhagfyr",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
       "context": "\nShared partial for future-years details/summary element, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -648,7 +648,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Shared partial for future-years details/summary element, shown on Manage obligations page.",
       "english": "can be accepted towards either your {0} or {1} recycling obligations",
-      "welsh": "",
+      "welsh": "Yn gallu cael eu derbyn tuag at eich rhwymedigaethau ailgylchu {0} neu {1}",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
       "context": "\nShared partial for future-years details/summary element, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -660,7 +660,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Shared partial for future-years details/summary element, shown on Manage obligations page.",
       "english": "have a blue tag to show which years you can accept them towards",
-      "welsh": "",
+      "welsh": "â tag glas i ddangos pa flynyddoedd y cewch chi eu derbyn tuag atyn nhw",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
       "context": "\nShared partial for future-years details/summary element, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -672,7 +672,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Shared partial for future-years details/summary element, shown on Manage obligations page.",
       "english": "A December waste PRN or PERN will appear under ‘Tonnage awaiting acceptance’ for both {0} and {1} until you accept it towards a specific year’s recycling obligations.",
-      "welsh": "",
+      "welsh": "Bydd PRN neu PERN gwastraff Rhagfyr yn ymddangos o dan 'Tunelledd sy'n aros i gael ei dderbyn' ar gyfer {0} a {1} nes ichi ei dderbyn at rwymedigaethau ailgylchu blwyddyn benodol.",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
       "context": "\nShared partial for future-years details/summary element, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -684,7 +684,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Shared partial for future-years details/summary element, shown on Manage obligations page.",
       "english": "Once you accept the PRN or PERN towards a specific year, it is assigned to that year only and the blue tag is removed.",
-      "welsh": "",
+      "welsh": "Unwaith y byddwch chi'n derbyn y PRN neu'r PERN at flwyddyn benodol, mae'n cael ei ddyrannu i'r flwyddyn yna yn unig ac mae'r tag glas yn cael ei dynnu.",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
       "context": "\nShared partial for future-years details/summary element, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -696,7 +696,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Shared partial for future-years how to meet obligations content, shown on Manage obligations page.",
       "english": "Your {0} recycling obligations have not been calculated yet. They will be calculated after:",
-      "welsh": "",
+      "welsh": "Mae eich rhwymedigaethau ailgylchu {0} heb gael eu cyfrifo eto. Byddant yn cael eu cyfrifo:",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
       "context": "\nShared partial for future-years how to meet obligations content, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -708,7 +708,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Shared partial for future-years how to meet obligations content, shown on Manage obligations page.",
       "english": "you submit your packaging data for {0}",
-      "welsh": "",
+      "welsh": "ar ôl ichi'n cyflwyno'ch data pecynwaith ar gyfer {0}",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
       "context": "\nShared partial for future-years how to meet obligations content, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -720,7 +720,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Shared partial for future-years how to meet obligations content, shown on Manage obligations page.",
       "english": "your environmental regulator accepts your H1 and H2 packaging data submissions",
-      "welsh": "",
+      "welsh": "ar ôl i’ch rheoleiddiwr amgylcheddol dderbyn eich cyflwyniadau data pecynwaith H1 a H2",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
       "context": "\nShared partial for future-years how to meet obligations content, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -732,7 +732,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Shared partial for future-years how to meet obligations content, shown on Manage obligations page.",
       "english": "Until then, you can:",
-      "welsh": "",
+      "welsh": "Tan hynny, rydych chi’n gallu:",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
       "context": "\nShared partial for future-years how to meet obligations content, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -744,7 +744,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Shared partial for future-years how to meet obligations content, shown on Manage obligations page.",
       "english": "acquire packaging waste recycling notes (PRNs) and packaging waste export recycling notes (PERNs)",
-      "welsh": "",
+      "welsh": "caffael nodiadau ailgylchu gwastraff pecynwaith (PRNs) a nodiadau ailgylchu allforio gwastraff pecynwaith (PERNs)",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
       "context": "\nShared partial for future-years how to meet obligations content, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -756,7 +756,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Shared partial for future-years how to meet obligations content, shown on Manage obligations page.",
       "english": "accept your PRNs and PERNs towards your recycling obligations",
-      "welsh": "",
+      "welsh": "derbyn eich PRNs a’ch PERNs tuag at eich rhwymedigaethau ailgylchu",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
       "context": "\nShared partial for future-years how to meet obligations content, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -768,9 +768,21 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Shared partial for future-years how to meet obligations content, shown on Manage obligations page.",
       "english": "You will see data for PRNs and PERNs you have acquired in the table below. But you will only see progress against your actual recycling obligations once they have been calculated.",
-      "welsh": "",
+      "welsh": "Fe welwch chi ddata ar gyfer PRNs a PERNs rydych chi wedi'u caffael yn y tabl isod. Ond dim ond ar ôl iddyn nhw gael eu cyfrifo y byddwch chi’n gweld cynnydd yn erbyn eich rhwymedigaethau ailgylchu gwirioneddol.",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
       "context": "\nShared partial for future-years how to meet obligations content, shown on Manage obligations page.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ObligationsHome.en.resx::acquire_and_accept_advisory_text_multi_year",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/PrnsObligation/ObligationsHome.en.resx",
+      "resourceKey": "acquire_and_accept_advisory_text_multi_year",
+      "pageId": "prns-obligations-home-no-obligations",
+      "route": "/report-data/manage-your-recycling-obligations",
+      "section": "Multi-year advisory text under the Manage obligations page heading.",
+      "english": "Acquire and accept packaging waste recycling notes (PRNs) and packaging waste export recycling notes (PERNs) until your recycling obligations are fully met. Select a material for information on how the data was calculated and view your progress towards meeting your {0} recycling obligations.",
+      "welsh": "",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
+      "context": "\nMulti-year advisory text under the Manage obligations page heading.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     }
   ]
 }

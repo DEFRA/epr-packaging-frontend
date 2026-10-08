@@ -118,30 +118,30 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="obligations_details_summary_heading" xml:space="preserve">
-    <value>Why does the recycling obligations table already have tonnage awaiting acceptance?</value>
+    <value>Pam mae gan y tabl rhwymedigaethau ailgylchu dunelledd yn aros i gael ei dderbyn yn barod?</value>
   </data>
   <data name="obligations_details_summary_content_intro" xml:space="preserve">
-    <value>Tonnage awaiting acceptance is for PRNs or PERNs that have been issued to you but have not yet been accepted.</value>
+    <value>Mae'r tunelledd sy'n aros i gael ei dderbyn yn ymwneud â PRNs neu PERNs sydd wedi'u rhoi i chi ond sydd heb gael eu derbyn eto.</value>
   </data>
   <data name="obligations_details_summary_content_before_list_1" xml:space="preserve">
-    <value>You have been issued at least one December waste PRN or PERN.</value>
+    <value>Rydych chi wedi cael o leiaf un PRN neu PERN gwastraff mis Rhagfyr.</value>
   </data>
   <data name="obligations_details_summary_content_before_list_2" xml:space="preserve">
-    <value>These:</value>
+    <value>Mae’r rhain:</value>
   </data>
   <data name="obligations_details_summary_content_bullet_1" xml:space="preserve">
-    <value>are for packaging waste received for recycling at UK or overseas reprocessing sites in December</value>
+    <value>ar gyfer gwastraff pecynwaith a ddaeth i law i'w ailgylchu mewn safleoedd ailbrosesu yn y DU neu dros y môr ym mis Rhagfyr</value>
   </data>
   <data name="obligations_details_summary_content_bullet_2" xml:space="preserve"> 
-    <value>can be accepted towards either your {0} or {1} recycling obligations</value>
+    <value>Yn gallu cael eu derbyn tuag at eich rhwymedigaethau ailgylchu {0} neu {1}</value>
   </data>
   <data name="obligations_details_summary_content_bullet_3" xml:space="preserve">     
-    <value>have a blue tag to show which years you can accept them towards</value>
+    <value>â tag glas i ddangos pa flynyddoedd y cewch chi eu derbyn tuag atyn nhw</value>
  </data>
   <data name="obligations_details_summary_content_after_list" xml:space="preserve">     
-    <value>A December waste PRN or PERN will appear under ‘Tonnage awaiting acceptance’ for both {0} and {1} until you accept it towards a specific year’s recycling obligations.</value>
+    <value>Bydd PRN neu PERN gwastraff Rhagfyr yn ymddangos o dan 'Tunelledd sy'n aros i gael ei dderbyn' ar gyfer {0} a {1} nes ichi ei dderbyn at rwymedigaethau ailgylchu blwyddyn benodol.</value>
   </data>
   <data name="obligations_details_summary_content_end" xml:space="preserve">               
-    <value>Once you accept the PRN or PERN towards a specific year, it is assigned to that year only and the blue tag is removed.</value>
+    <value>Unwaith y byddwch chi'n derbyn y PRN neu'r PERN at flwyddyn benodol, mae'n cael ei ddyrannu i'r flwyddyn yna yn unig ac mae'r tag glas yn cael ei dynnu.</value>
   </data>
 </root>
