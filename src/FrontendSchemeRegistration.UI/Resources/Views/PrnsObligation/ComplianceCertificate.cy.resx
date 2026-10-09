@@ -13,28 +13,28 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="title_direct_producer" xml:space="preserve">
-    <value>Your certificate of compliance record for 2025</value>
+    <value>Eich cofnod o’r dystysgrif cydymffurfio ar gyfer 2025</value>
   </data>
     <data name="title_compliance_scheme" xml:space="preserve">
-    <value>Your statement of compliance record for 2025</value>
+    <value>Eich cofnod o’r datganiad cydymffurfio ar gyfer 2025</value>
   </data>
   <data name="can_show_paragraph_direct_producer" xml:space="preserve">
-    <value>We can only show certificate of compliance records for certificates that were processed by the ‘Report packaging data’ service.</value>
+    <value>Dim ond ar gyfer tystysgrifau a broseswyd gan y gwasanaeth 'Rhoi gwybod am ddata pecynwaith' y gallwn ni ddangos cofnodion o’r dystysgrif cydymffurfio.</value>
   </data>
   <data name="can_show_paragraph_compliance_scheme" xml:space="preserve">
-    <value>We can only show statement of compliance records for statements that were processed by the ‘Report packaging data’ service.</value>
+    <value>Dim ond ar gyfer datganiadau a broseswyd gan y gwasanaeth 'Rhoi gwybod am ddata pecynwaith' y gallwn ni ddangos cofnodion o’r datganiad cydymffurfio.</value>
   </data>
   <data name="cannot_show_paragraph_direct_producer" xml:space="preserve">
-    <value>We cannot show certificates of compliance for 2025, because they were processed outside the service.</value>
+    <value>Allwn ni ddim dangos tystysgrifau cydymffurfio ar gyfer 2025, am eu bod nhw wedi’u prosesu y tu allan i'r gwasanaeth.</value>
   </data>
   <data name="cannot_show_paragraph_compliance_scheme" xml:space="preserve">
-    <value>We cannot show statements of compliance for 2025, because they were processed outside the service.</value>
+    <value>Allwn ni ddim dangos datganiadau cydymffurfio ar gyfer 2025, am eu bod nhw wedi’u prosesu y tu allan i'r gwasanaeth.</value>
   </data>
   <data name="queries_paragraph" xml:space="preserve">
-    <value>If you have any queries, contact the {0}:</value>
+    <value>Os oes gennych unrhyw ymholiadau, cysylltwch â'r {0}:</value>
   </data>
   <data name="queries_paragraph_wales" xml:space="preserve">
-    <value>If you have any queries, contact {0}:</value>
+    <value>Os oes gennych unrhyw ymholiadau, cysylltwch â {0}:</value>
   </data>
   <data name="northernireland.packaging_daera" xml:space="preserve">
       <value>packaging@daera-ni.gov.uk</value>
@@ -49,15 +49,15 @@
       <value>packaging@naturalresourceswales.gov.uk</value>
   </data>
   <data name="view_prns_paragraph" xml:space="preserve">
-    <value>You can view your PRNs and PERNs for 2025 below.</value>
+    <value>Gallwch weld eich PRNs a’ch PERNs ar gyfer 2025 isod.</value>
   </data>
   <data name="your_prns_and_perns" xml:space="preserve">
-	  <value>Your PRNs and PERNs</value>
+	  <value>Eich PRNs a’ch PERNs</value>
 	</data>  
   <data name="search_prns_and_perns" xml:space="preserve">
     <value>Chwilio PRNs a PERNs</value>
   </data>
   <data name="download_prns_and_perns" xml:space="preserve">
-    <value>Download a list of your PRNs and PERNs for 2025 (CSV)</value>
+    <value>Lawrlwythwch restr o'ch PRNs a’ch PERNs ar gyfer 2025 (CSV)</value>
   </data>
 </root>

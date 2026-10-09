@@ -12,7 +12,7 @@
       "route": "/report-data/certificate-of-compliance-record",
       "section": "Compliance record explanation, regulator contact paragraph and PRN/PERN links.",
       "english": "Your certificate of compliance record for 2025",
-      "welsh": "",
+      "welsh": "Eich cofnod o’r dystysgrif cydymffurfio ar gyfer 2025",
       "figmaUrl": "",
       "context": "Certificate/statement of compliance record page for past years that cannot be shown in the new service. Regulator email addresses are not translated.\nCompliance record explanation, regulator contact paragraph and PRN/PERN links.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -24,7 +24,7 @@
       "route": "/report-data/certificate-of-compliance-record",
       "section": "Compliance record explanation, regulator contact paragraph and PRN/PERN links.",
       "english": "Your statement of compliance record for 2025",
-      "welsh": "",
+      "welsh": "Eich cofnod o’r datganiad cydymffurfio ar gyfer 2025",
       "figmaUrl": "",
       "context": "Certificate/statement of compliance record page for past years that cannot be shown in the new service. Regulator email addresses are not translated.\nCompliance record explanation, regulator contact paragraph and PRN/PERN links.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -36,7 +36,7 @@
       "route": "/report-data/certificate-of-compliance-record",
       "section": "Compliance record explanation, regulator contact paragraph and PRN/PERN links.",
       "english": "We can only show certificate of compliance records for certificates that were processed by the ‘Report packaging data’ service.",
-      "welsh": "",
+      "welsh": "Dim ond ar gyfer tystysgrifau a broseswyd gan y gwasanaeth 'Rhoi gwybod am ddata pecynwaith' y gallwn ni ddangos cofnodion o’r dystysgrif cydymffurfio.",
       "figmaUrl": "",
       "context": "Certificate/statement of compliance record page for past years that cannot be shown in the new service. Regulator email addresses are not translated.\nCompliance record explanation, regulator contact paragraph and PRN/PERN links.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -48,7 +48,7 @@
       "route": "/report-data/certificate-of-compliance-record",
       "section": "Compliance record explanation, regulator contact paragraph and PRN/PERN links.",
       "english": "We can only show statement of compliance records for statements that were processed by the ‘Report packaging data’ service.",
-      "welsh": "",
+      "welsh": "Dim ond ar gyfer datganiadau a broseswyd gan y gwasanaeth 'Rhoi gwybod am ddata pecynwaith' y gallwn ni ddangos cofnodion o’r datganiad cydymffurfio.",
       "figmaUrl": "",
       "context": "Certificate/statement of compliance record page for past years that cannot be shown in the new service. Regulator email addresses are not translated.\nCompliance record explanation, regulator contact paragraph and PRN/PERN links.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -60,7 +60,7 @@
       "route": "/report-data/certificate-of-compliance-record",
       "section": "Compliance record explanation, regulator contact paragraph and PRN/PERN links.",
       "english": "We cannot show certificates of compliance for 2025, because they were processed outside the service.",
-      "welsh": "",
+      "welsh": "Allwn ni ddim dangos tystysgrifau cydymffurfio ar gyfer 2025, am eu bod nhw wedi’u prosesu y tu allan i'r gwasanaeth.",
       "figmaUrl": "",
       "context": "Certificate/statement of compliance record page for past years that cannot be shown in the new service. Regulator email addresses are not translated.\nCompliance record explanation, regulator contact paragraph and PRN/PERN links.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -72,7 +72,7 @@
       "route": "/report-data/certificate-of-compliance-record",
       "section": "Compliance record explanation, regulator contact paragraph and PRN/PERN links.",
       "english": "We cannot show statements of compliance for 2025, because they were processed outside the service.",
-      "welsh": "",
+      "welsh": "Allwn ni ddim dangos datganiadau cydymffurfio ar gyfer 2025, am eu bod nhw wedi’u prosesu y tu allan i'r gwasanaeth.",
       "figmaUrl": "",
       "context": "Certificate/statement of compliance record page for past years that cannot be shown in the new service. Regulator email addresses are not translated.\nCompliance record explanation, regulator contact paragraph and PRN/PERN links.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -84,7 +84,7 @@
       "route": "/report-data/certificate-of-compliance-record",
       "section": "Compliance record explanation, regulator contact paragraph and PRN/PERN links.",
       "english": "If you have any queries, contact the {0}:",
-      "welsh": "",
+      "welsh": "Os oes gennych unrhyw ymholiadau, cysylltwch â'r {0}:",
       "figmaUrl": "",
       "context": "Certificate/statement of compliance record page for past years that cannot be shown in the new service. Regulator email addresses are not translated.\nCompliance record explanation, regulator contact paragraph and PRN/PERN links.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -96,7 +96,7 @@
       "route": "/report-data/certificate-of-compliance-record",
       "section": "Compliance record explanation, regulator contact paragraph and PRN/PERN links.",
       "english": "If you have any queries, contact {0}:",
-      "welsh": "",
+      "welsh": "Os oes gennych unrhyw ymholiadau, cysylltwch â {0}:",
       "figmaUrl": "",
       "context": "Certificate/statement of compliance record page for past years that cannot be shown in the new service. Regulator email addresses are not translated.\nCompliance record explanation, regulator contact paragraph and PRN/PERN links.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -108,7 +108,7 @@
       "route": "/report-data/certificate-of-compliance-record",
       "section": "Compliance record explanation, regulator contact paragraph and PRN/PERN links.",
       "english": "You can view your PRNs and PERNs for 2025 below.",
-      "welsh": "",
+      "welsh": "Gallwch weld eich PRNs a’ch PERNs ar gyfer 2025 isod.",
       "figmaUrl": "",
       "context": "Certificate/statement of compliance record page for past years that cannot be shown in the new service. Regulator email addresses are not translated.\nCompliance record explanation, regulator contact paragraph and PRN/PERN links.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -120,7 +120,7 @@
       "route": "/report-data/certificate-of-compliance-record",
       "section": "Compliance record explanation, regulator contact paragraph and PRN/PERN links.",
       "english": "Your PRNs and PERNs",
-      "welsh": "",
+      "welsh": "Eich PRNs a’ch PERNs",
       "figmaUrl": "",
       "context": "Certificate/statement of compliance record page for past years that cannot be shown in the new service. Regulator email addresses are not translated.\nCompliance record explanation, regulator contact paragraph and PRN/PERN links.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -144,7 +144,7 @@
       "route": "/report-data/certificate-of-compliance-record",
       "section": "Compliance record explanation, regulator contact paragraph and PRN/PERN links.",
       "english": "Download a list of your PRNs and PERNs for 2025 (CSV)",
-      "welsh": "",
+      "welsh": "Lawrlwythwch restr o'ch PRNs a’ch PERNs ar gyfer 2025 (CSV)",
       "figmaUrl": "",
       "context": "Certificate/statement of compliance record page for past years that cannot be shown in the new service. Regulator email addresses are not translated.\nCompliance record explanation, regulator contact paragraph and PRN/PERN links.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     }
