@@ -40,6 +40,11 @@
             "acceptance_years",
             "accepted_towards_recycling_obligations"
           ]
+        },
+        {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_recyclingNoteStatus.en.resx",
+          "section": "Reprocessing site label in the PRN or PERN details.",
+          "keys": ["reprocessing_site"]
         }
       ]
     },

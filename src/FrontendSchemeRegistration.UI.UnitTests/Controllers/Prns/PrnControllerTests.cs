@@ -470,6 +470,25 @@
         }
 
         [Test]
+        public async Task SelectSinglePrn_ClearsPreviouslyChosenAcceptanceYear_ForThatPrn()
+        {
+            var id = Guid.NewGuid();
+            var session = new FrontendSchemeRegistrationSession();
+            session.PrnSession.SelectedAcceptanceYearPrnId = id;
+            session.PrnSession.SelectedAcceptanceYear = 2027;
+            _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+            _prnServiceMock.Setup(x => x.GetPrnByExternalIdAsync(id)).ReturnsAsync(new PrnViewModel());
+
+            // Act
+            await _controller.SelectSinglePrn(id);
+
+            // Assert
+            session.PrnSession.SelectedAcceptanceYearPrnId.Should().BeNull();
+            session.PrnSession.SelectedAcceptanceYear.Should().BeNull();
+            _sessionManagerMock.Verify(x => x.SaveSessionAsync(It.IsAny<ISession>(), session), Times.Once);
+        }
+
+        [Test]
         public async Task DownloadPrnsToCsv_WhenZeroPrns_ReturnsEmptyView()
         {
             string data = string.Empty;

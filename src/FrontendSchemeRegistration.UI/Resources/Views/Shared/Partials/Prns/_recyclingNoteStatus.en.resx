@@ -24,8 +24,8 @@
   <data name="packaging_producer_or_compliance_scheme" xml:space="preserve">
     <value>Packaging producer or compliance scheme</value>
   </data>
-  <data name="reproccessing_site" xml:space="preserve">
-    <value>Reproccessing site</value>
+  <data name="reprocessing_site" xml:space="preserve">
+    <value>Reprocessing site</value>
   </data>
   <data name="status" xml:space="preserve">
     <value>Status</value>

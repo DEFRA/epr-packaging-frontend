@@ -130,6 +130,9 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
                 }
 
                 prn.SelectedAcceptanceYear = session.PrnSession.SelectedAcceptanceYear;
+
+                // Back returns to the year question (with the previous choice selected) so the year can be changed
+                ViewBag.BackLinkToDisplay = Url.Content($"~/{PagePaths.Prns.AskToChooseAcceptanceYear}/{id}");
             }
 
             return View("AcceptSinglePrn", prn);
