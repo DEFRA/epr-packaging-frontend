@@ -223,13 +223,13 @@
 	  <value>Dewiswch y PRNs yr hoffech eu derbyn neu eu gwrthod.</value>
   </data>
   <data name="acceptance_year" xml:space="preserve">
-    <value>Can be accepted towards {0} recycling obligations</value>
+    <value>Yn gallu cael eu derbyn tuag at rwymedigaethau ailgylchu {0}</value>
   </data>
   <data name="acceptance_years" xml:space="preserve">
-    <value>Can be accepted towards {0} or {1} recycling obligations</value>
+    <value>Yn gallu cael eu derbyn tuag at rwymedigaethau ailgylchu {0} neu {1}</value>
   </data>
   <data name="apply_filter" xml:space="preserve">
-    <value>Apply filter</value>
+    <value>Defnyddio hidlydd</value>
   </data>
   <data name="select_all_that_apply" xml:space="preserve">
     <value>Dewiswch bob un sy'n berthnasol</value>

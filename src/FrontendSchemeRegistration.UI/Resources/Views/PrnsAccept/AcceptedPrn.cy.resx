@@ -133,7 +133,7 @@
     <value>{0} yn cael ei dderbyn tuag at eich rhwymedigaeth ailgylchu {1}.</value>
   </data>
   <data name="prn_accepted_multi_year" xml:space="preserve">
-    <value>You accepted this {0} towards your {1} recycling obligations</value>
+    <value>Derbynioch chi y {0} yma at eich rhwymedigaethau ailgylchu {1}</value>
   </data>
   <data name="prn_number" xml:space="preserve">
     <value>{0} rhif</value>
@@ -142,7 +142,7 @@
     <value>{0} tunnell sy'n cael eu credydu tuag at eich rhwymedigaeth ailgylchu {1}.</value>
   </data>
   <data name="tonnage_credited_towards_your_obligation_multi_year" xml:space="preserve">
-    <value>You have contributed {0} tonnes towards your recycling obligation for {1}.</value>
+    <value>Rydych chi wedi cyfrannu {0} o dunelli at eich rhwymedigaeth ailgylchu ar gyfer {1}.</value>
   </data>
   <data name="year" xml:space="preserve">
     <value>Blwyddyn Cyhoeddi'r</value>

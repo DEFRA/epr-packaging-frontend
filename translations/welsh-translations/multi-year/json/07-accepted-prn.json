@@ -12,7 +12,7 @@
       "route": "/report-data/accepted-prn/{id}",
       "section": "Multi-year single-accept confirmation panel and obligation year label.",
       "english": "You accepted this {0} towards your {1} recycling obligations",
-      "welsh": "",
+      "welsh": "Derbynioch chi y {0} yma at eich rhwymedigaethau ailgylchu {1}",
       "figmaUrl": "",
       "context": "Single PRN/PERN accepted confirmation page: multi-year heading, tonnage text and obligation year label.\nMulti-year single-accept confirmation panel and obligation year label.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
@@ -24,7 +24,7 @@
       "route": "/report-data/accepted-prn/{id}",
       "section": "Multi-year single-accept confirmation panel and obligation year label.",
       "english": "You have contributed {0} tonnes towards your recycling obligation for {1}.",
-      "welsh": "",
+      "welsh": "Rydych chi wedi cyfrannu {0} o dunelli at eich rhwymedigaeth ailgylchu ar gyfer {1}.",
       "figmaUrl": "",
       "context": "Single PRN/PERN accepted confirmation page: multi-year heading, tonnage text and obligation year label.\nMulti-year single-accept confirmation panel and obligation year label.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     },
