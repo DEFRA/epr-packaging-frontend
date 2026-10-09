@@ -126,7 +126,7 @@
   <data name="issued_by" xml:space="preserve">
     <value>Issued by</value>
   </data>
-  <data name="reproccessing_site" xml:space="preserve">
+  <data name="reprocessing_site" xml:space="preserve">
     <value>Reprocessing site</value>
   </data>
   <data name="authorised_by" xml:space="preserve">
