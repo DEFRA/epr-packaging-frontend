@@ -4251,6 +4251,323 @@ public class RegistrationApplicationServiceTests
         result.RegulatorNation.Should().BeNull();
     }
 
+    [Test]
+    public async Task GetRegistrationApplicationForSubmissionAsync_ReturnsNull_WhenSubmissionNotFound()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(submissionId)).ReturnsAsync((RegistrationSubmission)null);
+        SetupSubmitDetailsSessions(new RegistrationSession());
+
+        // Act
+        var result = await _service.GetRegistrationApplicationForSubmissionAsync(_httpSession, CreateSubmitDetailsOrganisation(), submissionId, null);
+
+        // Assert
+        result.Should().BeNull();
+        _submissionServiceMock.Verify(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()), Times.Never);
+    }
+
+    [Test]
+    public async Task GetRegistrationApplicationForSubmissionAsync_ReturnsNull_WhenComplianceSchemeHasNoSchemeSelected()
+    {
+        // Arrange - e.g. a compliance scheme user who reaches the Submit page with a fresh session
+        var submission = SetupSubmission("January to December 2026", RegistrationJourney.CsoLargeProducer);
+        SetupSubmitDetailsSessions(new RegistrationSession());
+        SetupApplicationDetails(ReadyToSubmitDetails(submission.Id, "PEPR17583026P1"));
+
+        // Act
+        var result = await _service.GetRegistrationApplicationForSubmissionAsync(_httpSession, CreateSubmitDetailsOrganisation(OrganisationRoles.ComplianceScheme), submission.Id, RegistrationJourney.CsoLargeProducer);
+
+        // Assert
+        result.Should().BeNull();
+        _submissionServiceMock.Verify(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()), Times.Never);
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public async Task GetRegistrationApplicationForSubmissionAsync_ReturnsNull_WhenDetailsAreMissingOrForAnotherSubmission(bool detailsExist)
+    {
+        // Arrange - details for another submission mean this one isn't the organisation's current submission for the period
+        var submission = SetupSubmission("January to December 2025", registrationJourney: null);
+        SetupSubmitDetailsSessions(new RegistrationSession());
+        SetupApplicationDetails(detailsExist ? ReadyToSubmitDetails(Guid.NewGuid(), "PEPR17583025P1") : null);
+
+        // Act
+        var result = await _service.GetRegistrationApplicationForSubmissionAsync(_httpSession, CreateSubmitDetailsOrganisation(), submission.Id, null);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetRegistrationApplicationForSubmissionAsync_ResolvesTheRequestedSubmission_WhenSessionHoldsAnotherRegistration()
+    {
+        // Arrange - the session holds the 2026 registration opened in another tab
+        var submission = SetupSubmission("January to December 2025", registrationJourney: null);
+        SetupSubmitDetailsSessions(new RegistrationSession(), new RegistrationApplicationSession
+        {
+            SubmissionId = Guid.NewGuid(),
+            SubmissionPeriod = "January to December 2026",
+            ApplicationReferenceNumber = "PEPR17583026P1",
+            IsResubmission = true,
+            RegulatorNation = "GB-SCT",
+            RegistrationJourney = RegistrationJourney.CsoSmallProducer
+        });
+        var organisation = CreateSubmitDetailsOrganisation();
+        SetupApplicationDetails(ReadyToSubmitDetails(submission.Id, "PEPR17583025P1"));
+
+        // Act
+        var result = await _service.GetRegistrationApplicationForSubmissionAsync(_httpSession, organisation, submission.Id, null);
+
+        // Assert
+        result.Should().BeEquivalentTo(new RegistrationApplicationForSubmission
+        {
+            SubmissionId = submission.Id,
+            RegistrationYear = 2025,
+            RegistrationJourney = null,
+            IsComplianceScheme = false,
+            SelectedComplianceScheme = null,
+            ApplicationReferenceNumber = "PEPR17583025P1",
+            RegistrationReferenceNumber = null,
+            IsResubmission = false,
+            ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+            FileUploadStatus = RegistrationTaskListStatus.Completed,
+            PaymentViewStatus = RegistrationTaskListStatus.Completed,
+            AdditionalDetailsStatus = RegistrationTaskListStatus.NotStarted,
+            RegistrationApplicationSubmittedDate = null,
+            RegulatorNation = "GB-ENG"
+        });
+        _submissionServiceMock.Verify(x => x.GetRegistrationApplicationDetails(It.Is<GetRegistrationApplicationDetailsRequest>(r =>
+            r.SubmissionPeriod == "January to December 2025"
+            && r.OrganisationNumber == 175830
+            && r.OrganisationId == organisation.Id
+            && r.ComplianceSchemeId == null
+            && r.RegistrationJourney == null)), Times.Once);
+        _sessionManagerMock.Verify(x => x.GetSessionAsync(It.IsAny<ISession>()), Times.Never);
+    }
+
+    [TestCase(RegistrationJourney.CsoSmallProducer, RegistrationJourney.CsoLargeProducer, "CsoSmallProducer")]
+    [TestCase(null, RegistrationJourney.CsoLargeProducer, "CsoLargeProducer")]
+    [TestCase(null, null, null)]
+    public async Task GetRegistrationApplicationForSubmissionAsync_LooksUpDetailsWithSubmissionJourneyThenRequestedJourney(
+        RegistrationJourney? submissionJourney,
+        RegistrationJourney? requestedJourney,
+        string expectedLookupJourney)
+    {
+        // Arrange
+        var complianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), NationId = (int)Nation.Wales };
+        var submission = SetupSubmission("January to December 2026", submissionJourney);
+        SetupSubmitDetailsSessions(new RegistrationSession { SelectedComplianceScheme = complianceScheme });
+        SetupApplicationDetails(ReadyToSubmitDetails(submission.Id, "PEPR17583026P1"));
+
+        // Act
+        await _service.GetRegistrationApplicationForSubmissionAsync(_httpSession, CreateSubmitDetailsOrganisation(OrganisationRoles.ComplianceScheme), submission.Id, requestedJourney);
+
+        // Assert
+        _submissionServiceMock.Verify(x => x.GetRegistrationApplicationDetails(It.Is<GetRegistrationApplicationDetailsRequest>(r =>
+            r.RegistrationJourney == expectedLookupJourney
+            && r.ComplianceSchemeId == complianceScheme.Id)), Times.Once);
+    }
+
+    [TestCase(null, true, RegistrationTaskListStatus.Completed, RegistrationTaskListStatus.NotStarted, RegistrationTaskListStatus.CanNotStartYet)]
+    [TestCase("PayByPhone", false, RegistrationTaskListStatus.Pending, RegistrationTaskListStatus.CanNotStartYet, RegistrationTaskListStatus.CanNotStartYet)]
+    public async Task GetRegistrationApplicationForSubmissionAsync_ReportsNotReadyToSubmit_WhenFeeUnpaidOrFileNotProcessed(
+        string paymentMethod,
+        bool hasFeeDetails,
+        RegistrationTaskListStatus expectedFileUploadStatus,
+        RegistrationTaskListStatus expectedPaymentViewStatus,
+        RegistrationTaskListStatus expectedAdditionalDetailsStatus)
+    {
+        // Arrange - these statuses are what stop an application being submitted before its file is processed and fee paid
+        var submission = SetupSubmission("January to December 2025", registrationJourney: null);
+        SetupSubmitDetailsSessions(new RegistrationSession());
+        var details = ReadyToSubmitDetails(submission.Id, "PEPR17583025P1");
+        details.RegistrationFeePaymentMethod = paymentMethod;
+        details.RegistrationFeeCalculationDetails = hasFeeDetails ? details.RegistrationFeeCalculationDetails : null;
+        SetupApplicationDetails(details);
+
+        // Act
+        var result = await _service.GetRegistrationApplicationForSubmissionAsync(_httpSession, CreateSubmitDetailsOrganisation(), submission.Id, null);
+
+        // Assert
+        result.FileUploadStatus.Should().Be(expectedFileUploadStatus);
+        result.PaymentViewStatus.Should().Be(expectedPaymentViewStatus);
+        result.AdditionalDetailsStatus.Should().Be(expectedAdditionalDetailsStatus);
+    }
+
+    [Test]
+    public async Task GetRegistrationApplicationForSubmissionAsync_SendsNoJourney_ForDirectProducerEvenWhenDetailsHaveOne()
+    {
+        // Arrange - direct producers have never sent a journey with the submitted event
+        var submission = SetupSubmission("January to December 2026", RegistrationJourney.DirectLargeProducer);
+        SetupSubmitDetailsSessions(new RegistrationSession());
+        var details = ReadyToSubmitDetails(submission.Id, "PEPR17583026P1");
+        details.RegistrationJourney = RegistrationJourney.DirectLargeProducer;
+        SetupApplicationDetails(details);
+
+        // Act
+        var result = await _service.GetRegistrationApplicationForSubmissionAsync(_httpSession, CreateSubmitDetailsOrganisation(), submission.Id, RegistrationJourney.DirectLargeProducer);
+
+        // Assert
+        result.RegistrationJourney.Should().BeNull();
+    }
+
+    [TestCase(RegistrationJourney.CsoSmallProducer, null, RegistrationJourney.CsoSmallProducer)]
+    [TestCase(null, RegistrationJourney.CsoLargeProducer, RegistrationJourney.CsoLargeProducer)]
+    public async Task GetRegistrationApplicationForSubmissionAsync_UsesDetailsJourneyThenRequestedJourney_ForComplianceScheme(
+        RegistrationJourney? detailsJourney,
+        RegistrationJourney? requestedJourney,
+        RegistrationJourney expectedJourney)
+    {
+        // Arrange
+        var complianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), Name = "Compliance Ltd", NationId = (int)Nation.Wales };
+        var submission = SetupSubmission("January to December 2026", registrationJourney: null);
+        SetupSubmitDetailsSessions(new RegistrationSession { SelectedComplianceScheme = complianceScheme });
+        var details = ReadyToSubmitDetails(submission.Id, "PEPR17583026P1");
+        details.RegistrationJourney = detailsJourney;
+        SetupApplicationDetails(details);
+
+        // Act
+        var result = await _service.GetRegistrationApplicationForSubmissionAsync(_httpSession, CreateSubmitDetailsOrganisation(OrganisationRoles.ComplianceScheme), submission.Id, requestedJourney);
+
+        // Assert
+        result.RegistrationJourney.Should().Be(expectedJourney);
+        result.IsComplianceScheme.Should().BeTrue();
+        result.SelectedComplianceScheme.Should().BeSameAs(complianceScheme);
+    }
+
+    [Test]
+    public async Task GetRegistrationApplicationForSubmissionAsync_UsesComplianceSchemeNation_ForComplianceScheme()
+    {
+        // Arrange
+        var submission = SetupSubmission("January to December 2026", registrationJourney: null);
+        SetupSubmitDetailsSessions(new RegistrationSession { SelectedComplianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), NationId = (int)Nation.Wales } });
+        SetupApplicationDetails(ReadyToSubmitDetails(submission.Id, "PEPR17583026P1", (int)Nation.Scotland));
+
+        // Act
+        var result = await _service.GetRegistrationApplicationForSubmissionAsync(_httpSession, CreateSubmitDetailsOrganisation(OrganisationRoles.ComplianceScheme, (int)Nation.England), submission.Id, null);
+
+        // Assert
+        result.RegulatorNation.Should().Be("GB-WLS");
+    }
+
+    [TestCase(true, (int)Nation.Scotland, (int)Nation.England, "GB-SCT")]
+    [TestCase(false, (int)Nation.Scotland, (int)Nation.NorthernIreland, "GB-NIR")]
+    public async Task GetRegistrationApplicationForSubmissionAsync_UsesFeeDetailsNationThenOrganisationNation_ForDirectProducer(
+        bool hasFeeDetails,
+        int feeDetailsNationId,
+        int? organisationNationId,
+        string expectedNation)
+    {
+        // Arrange
+        var submission = SetupSubmission("January to December 2026", registrationJourney: null);
+        SetupSubmitDetailsSessions(new RegistrationSession());
+        var details = ReadyToSubmitDetails(submission.Id, "PEPR17583026P1", feeDetailsNationId);
+        details.RegistrationFeeCalculationDetails = hasFeeDetails ? details.RegistrationFeeCalculationDetails : null;
+        SetupApplicationDetails(details);
+
+        // Act
+        var result = await _service.GetRegistrationApplicationForSubmissionAsync(_httpSession, CreateSubmitDetailsOrganisation(nationId: organisationNationId), submission.Id, null);
+
+        // Assert
+        result.RegulatorNation.Should().Be(expectedNation);
+    }
+
+    [TestCase(true, true)]
+    [TestCase(false, false)]
+    [TestCase(null, false)]
+    public async Task GetRegistrationApplicationForSubmissionAsync_TakesIsResubmissionFromDetailsNotSession(bool? detailsIsResubmission, bool expected)
+    {
+        // Arrange
+        var submission = SetupSubmission("January to December 2026", registrationJourney: null);
+        SetupSubmitDetailsSessions(new RegistrationSession { IsResubmission = true }, new RegistrationApplicationSession { IsResubmission = true });
+        var details = ReadyToSubmitDetails(submission.Id, "PEPR17583026P1");
+        details.IsResubmission = detailsIsResubmission;
+        SetupApplicationDetails(details);
+
+        // Act
+        var result = await _service.GetRegistrationApplicationForSubmissionAsync(_httpSession, CreateSubmitDetailsOrganisation(), submission.Id, null);
+
+        // Assert
+        result.IsResubmission.Should().Be(expected);
+        result.RegistrationYear.Should().Be(2026);
+    }
+
+    [Test]
+    public async Task GetRegistrationApplicationForSubmissionAsync_ReportsSubmission_WhenDetailsHaveSubmittedDate()
+    {
+        // Arrange - the submitted date is what stops an application being submitted again
+        var submittedDate = new DateTime(2026, 3, 1, 9, 30, 0, DateTimeKind.Utc);
+        var submission = SetupSubmission("January to December 2026", registrationJourney: null);
+        SetupSubmitDetailsSessions(new RegistrationSession());
+        var details = ReadyToSubmitDetails(submission.Id, "PEPR17583026P1");
+        details.RegistrationApplicationSubmittedDate = submittedDate;
+        SetupApplicationDetails(details);
+
+        // Act
+        var result = await _service.GetRegistrationApplicationForSubmissionAsync(_httpSession, CreateSubmitDetailsOrganisation(), submission.Id, null);
+
+        // Assert
+        result.RegistrationApplicationSubmittedDate.Should().Be(submittedDate);
+        result.RegistrationApplicationSubmitted.Should().BeTrue();
+        result.AdditionalDetailsStatus.Should().Be(RegistrationTaskListStatus.Completed);
+    }
+
+    [Test]
+    public async Task CreateRegistrationApplicationSubmittedEventAsync_SubmitsTheResolvedRegistrationWithoutTouchingSession()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        var complianceSchemeId = Guid.NewGuid();
+        var application = new RegistrationApplicationForSubmission
+        {
+            SubmissionId = submissionId,
+            SelectedComplianceScheme = new ComplianceSchemeDto { Id = complianceSchemeId },
+            ApplicationReferenceNumber = "PEPR17583025P1",
+            IsResubmission = true,
+            RegistrationJourney = RegistrationJourney.CsoLargeProducer
+        };
+
+        // Act
+        await _service.CreateRegistrationApplicationSubmittedEventAsync(application, "Extra details");
+
+        // Assert
+        _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(
+            It.Is<RegistrationApplicationData>(d =>
+                d.SubmissionId == submissionId
+                && d.ComplianceSchemeId == complianceSchemeId
+                && d.Comments == "Extra details"
+                && d.PaymentMethod == null),
+            "PEPR17583025P1",
+            true,
+            SubmissionType.RegistrationApplicationSubmitted,
+            RegistrationJourney.CsoLargeProducer), Times.Once);
+        _sessionManagerMock.Verify(x => x.GetSessionAsync(It.IsAny<ISession>()), Times.Never);
+        _sessionManagerMock.Verify(x => x.SaveSessionAsync(It.IsAny<ISession>(), It.IsAny<RegistrationApplicationSession>()), Times.Never);
+    }
+
+    private RegistrationSubmission SetupSubmission(string submissionPeriod, RegistrationJourney? registrationJourney)
+    {
+        var submission = CreateSubmitDetailsSubmission(submissionPeriod, registrationJourney);
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(submission.Id)).ReturnsAsync(submission);
+        return submission;
+    }
+
+    private void SetupApplicationDetails(RegistrationApplicationDetails details) =>
+        _submissionServiceMock.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(details);
+
+    private static RegistrationApplicationDetails ReadyToSubmitDetails(Guid submissionId, string applicationReferenceNumber, int feeDetailsNationId = (int)Nation.England) => new()
+    {
+        SubmissionId = submissionId,
+        ApplicationReferenceNumber = applicationReferenceNumber,
+        ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+        RegistrationFeePaymentMethod = "PayByPhone",
+        IsResubmission = false,
+        RegistrationApplicationSubmittedDate = null,
+        RegistrationFeeCalculationDetails = [new RegistrationFeeCalculationDetails { OrganisationId = "175830", OrganisationSize = "Large", NationId = feeDetailsNationId }]
+    };
+
     private static RegistrationSubmission CreateSubmitDetailsSubmission(string? submissionPeriod, RegistrationJourney? registrationJourney) => new()
     {
         Id = Guid.NewGuid(),

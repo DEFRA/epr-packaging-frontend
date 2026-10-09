@@ -78,6 +78,11 @@ public static class WebApi
             .WithHeader("Content-Type", "application/json")
             .WithBodyFromFile("WebApi/Responses/RegistrationTaskList/LargeProducerRegistrationApplicationDetailsInProgress.json"));
 
+        foreach (var registrationApplication in options.RegistrationApplications)
+        {
+            server.WithRegistrationApplication(registrationApplication);
+        }
+
         // Producer validations
         server.Given(Request.Create()
                 .UsingGet()
@@ -277,6 +282,82 @@ public static class WebApi
     }
 
     
+
+    /// <summary>
+    ///     Serves a registration application that has its file uploaded and fee paid, so it is ready to submit.
+    /// </summary>
+    private static void WithRegistrationApplication(this WireMockServer server, RegistrationApplicationStub registrationApplication)
+    {
+        server.Given(Request.Create()
+                .UsingGet()
+                .WithPath($"/api/v1/submissions/{registrationApplication.SubmissionId}"))
+            .RespondWith(Response.Create()
+                .WithStatusCode(200)
+                .WithHeader("Content-Type", "application/json")
+                .WithBodyAsJson(new
+                {
+                    id = registrationApplication.SubmissionId,
+                    submissionPeriod = registrationApplication.SubmissionPeriod,
+                    registrationJourney = registrationApplication.RegistrationJourney,
+                    registrationYear = registrationApplication.RegistrationYear,
+                    isSubmitted = true,
+                    hasValidFile = true
+                }));
+
+        // Takes precedence over the default compliance scheme registration application details
+        server.Given(Request.Create()
+                .UsingGet()
+                .WithPath("/api/v1/registration/get-registration-application-details")
+                .WithParam(query => MatchRegistrationApplication(query, registrationApplication)))
+            .AtPriority(-1)
+            .RespondWith(Response.Create()
+                .WithStatusCode(200)
+                .WithHeader("Content-Type", "application/json")
+                .WithBodyAsJson(new
+                {
+                    submissionId = registrationApplication.SubmissionId,
+                    registrationJourney = registrationApplication.RegistrationJourney,
+                    isSubmitted = true,
+                    isResubmission = false,
+                    applicationReferenceNumber = registrationApplication.ApplicationReferenceNumber,
+                    registrationReferenceNumber = (string?)null,
+                    lastSubmittedFile = new
+                    {
+                        fileId = Guid.NewGuid(),
+                        submittedByName = "Auto test",
+                        submittedDateTime = $"{registrationApplication.RegistrationYear - 1}-12-16T17:38:37Z"
+                    },
+                    registrationFeePaymentMethod = "PayByPhone",
+                    registrationApplicationSubmittedDate = (DateTime?)null,
+                    applicationStatus = 3, // SubmittedToRegulator
+                    registrationFeeCalculationDetails = new[]
+                    {
+                        new
+                        {
+                            organisationId = "154977",
+                            numberOfSubsidiaries = 0,
+                            numberOfSubsidiariesBeingOnlineMarketPlace = 0,
+                            organisationSize = "Large",
+                            isOnlineMarketplace = false,
+                            isNewJoiner = false,
+                            nationId = 1
+                        }
+                    }
+                }));
+    }
+
+    private static bool MatchRegistrationApplication(IDictionary<string, WireMockList<string>> query, RegistrationApplicationStub registrationApplication)
+    {
+        var submissionPeriod = query.TryGetValue("SubmissionPeriod", out var periods) && periods.Count != 0
+            ? Uri.UnescapeDataString(periods[0])
+            : null;
+        var registrationJourney = query.TryGetValue("RegistrationJourney", out var journeys) && journeys.Count != 0
+            ? journeys[0]
+            : null;
+
+        return submissionPeriod == registrationApplication.SubmissionPeriod
+               && registrationJourney == registrationApplication.RegistrationJourney;
+    }
 
     private static bool MatchSmallProducerRegistrationJourney(IDictionary<string, WireMockList<string>> arg)
     {

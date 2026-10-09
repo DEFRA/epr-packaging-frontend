@@ -46,5 +46,21 @@
     "openingDate": "2026-07-01T00:00:00Z",
     "deadlineDate": "2027-04-01T23:59:00Z",
     "closingDate": "2028-02-01T00:00:00Z"
+  },
+  {
+    "id": 7,
+    "windowType": "DirectLargeProducer",
+    "registrationYear": 2025,
+    "openingDate": "2024-07-01T00:00:00Z",
+    "deadlineDate": "2025-04-01T23:59:00Z",
+    "closingDate": "2026-02-01T00:00:00Z"
+  },
+  {
+    "id": 8,
+    "windowType": "DirectLargeProducer",
+    "registrationYear": 2026,
+    "openingDate": "2025-07-01T00:00:00Z",
+    "deadlineDate": "2026-04-01T23:59:00Z",
+    "closingDate": "2027-02-01T00:00:00Z"
   }
 ]
