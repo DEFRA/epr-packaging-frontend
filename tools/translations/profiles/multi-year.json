@@ -252,6 +252,11 @@
             "tonnage_credited_towards_your_obligation_multi_year",
             "accepted_towards_recycling_obligations"
           ]
+        },
+        {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_recyclingNoteStatus.en.resx",
+          "section": "Reprocessing site label in the PRN or PERN details.",
+          "keys": ["reprocessing_site"]
         }
       ]
     },

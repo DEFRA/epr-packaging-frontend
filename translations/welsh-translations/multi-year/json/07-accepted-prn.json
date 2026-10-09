@@ -39,6 +39,18 @@
       "welsh": "Wedi’u derbyn tuag at rwymedigaethau ailgylchu {0}",
       "figmaUrl": "",
       "context": "Single PRN/PERN accepted confirmation page: multi-year heading, tonnage text and obligation year label.\nMulti-year single-accept confirmation panel and obligation year label.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_recyclingNoteStatus.en.resx::reprocessing_site",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_recyclingNoteStatus.en.resx",
+      "resourceKey": "reprocessing_site",
+      "pageId": "prns-accepted-single",
+      "route": "/report-data/accepted-prn/{id}",
+      "section": "Reprocessing site label in the PRN or PERN details.",
+      "english": "Reprocessing site",
+      "welsh": "Safle ailbrosesu",
+      "figmaUrl": "",
+      "context": "Single PRN/PERN accepted confirmation page: multi-year heading, tonnage text and obligation year label.\nReprocessing site label in the PRN or PERN details.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     }
   ]
 }
