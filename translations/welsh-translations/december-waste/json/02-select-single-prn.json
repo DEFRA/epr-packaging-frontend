@@ -39,6 +39,18 @@
       "welsh": "Caniateir ei dderbyn tuag at {0} neu {1}",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=2012-26252",
       "context": "Single PRN or PERN details page: December Waste acceptance-year message and Accepted obligation-year line.\nDecember Waste acceptance-year message and Accepted obligation-year line.\nFeature flag(s): ShowPrn, ShowDecemberWaste"
+    },
+    {
+      "translationKey": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_recyclingNoteStatus.en.resx::reprocessing_site",
+      "resourceFile": "src/FrontendSchemeRegistration.UI/Resources/Views/Shared/Partials/Prns/_recyclingNoteStatus.en.resx",
+      "resourceKey": "reprocessing_site",
+      "pageId": "prns-select-single",
+      "route": "/report-data/selected-prn/{id}",
+      "section": "Reprocessing site label in the PRN or PERN details.",
+      "english": "Reprocessing site",
+      "welsh": "Safle ailbrosesu",
+      "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=2012-26252",
+      "context": "Single PRN or PERN details page: December Waste acceptance-year message and Accepted obligation-year line.\nReprocessing site label in the PRN or PERN details.\nFeature flag(s): ShowPrn, ShowDecemberWaste"
     }
   ]
 }
