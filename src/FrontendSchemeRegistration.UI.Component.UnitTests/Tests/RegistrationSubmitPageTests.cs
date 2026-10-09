@@ -134,7 +134,7 @@ public class RegistrationSubmitPageTests
         var response = await Context.Client.GetAsync(url);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        return await GetAttribute(response, "a[href*='additional-information']", "href");
+        return await GetAttribute(response, "a[href^='/report-data/additional-information']", "href");
     }
 
     private async Task<string> OpenSubmitPage(string submitPageUrl)
@@ -142,7 +142,7 @@ public class RegistrationSubmitPageTests
         var response = await Context.Client.GetAsync(submitPageUrl);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        return await GetAttribute(response, "form[action*='additional-information']", "action");
+        return await GetAttribute(response, "form[action^='/report-data/additional-information']", "action");
     }
 
     private Task<HttpResponseMessage> Submit(string formAction, string additionalInformation) =>
