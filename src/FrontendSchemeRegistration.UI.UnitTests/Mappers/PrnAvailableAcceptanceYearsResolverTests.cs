@@ -30,7 +30,9 @@ public class PrnAvailableAcceptanceYearsResolverTests
         new(new DecemberWastePrnCase(2026, "2027-12-31 23:59:59", [2027])),
         new(new DecemberWastePrnCase(2026, "2028-01-31 23:59:59", [2027])),
         new(new DecemberWastePrnCase(2026, "2028-02-01", [])), // Expired
-        new(new DecemberWastePrnCase(2026, "2026-02-01", [2026, 2027])), // Future Dec Waste nonsense
+        new(new DecemberWastePrnCase(2026, "2026-02-01", [2026])), // Not yet Dec/Jan - no choice of year
+        new(new DecemberWastePrnCase(2026, "2026-10-08", [2026])), // Not yet Dec/Jan - no choice of year (MO-632)
+        new(new DecemberWastePrnCase(2026, "2026-11-30 23:59:59", [2026])), // Not yet Dec/Jan - no choice of year
         new(new DecemberWastePrnCase(2026, "2026-01-01", [])), // Future Dec Waste nonsense
 
         // 2025 Non-December Waste

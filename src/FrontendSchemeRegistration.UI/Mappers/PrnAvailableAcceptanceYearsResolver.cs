@@ -37,12 +37,18 @@ public class PrnAvailableAcceptanceYearsResolver(TimeProvider timeProvider)
             if (prnYear == 2025 && thisComplianceYear is 2025 or 2026)
                 return [thisComplianceYear];
 
-            // Define the time window where users should have a choice of year for December Waste PRNs.
+            // Define the time window where users should have a choice of year for December Waste PRNs:
+            // December of the PRN's year and January of the next (only).
+            var windowStart = new DateTime(prnYear, 12, 1, 0, 0, 0, DateTimeKind.Utc);
             var windowEnd = new DateTime(prnYear + 1, 2, 1, 0, 0, 0, DateTimeKind.Utc);
 
             // See if we're within the time window where either year can be chosen by the user.
-            if (now < windowEnd)
+            if (now >= windowStart && now < windowEnd)
                 return [prnYear, prnYear + 1];
+
+            // Before the window, the PRN can only be accepted against its own year.
+            if (prnYear == thisComplianceYear)
+                return [prnYear];
 
             // Otherwise, December Waste should still be valid for the next Compliance Year (if current).
             if (prnYear + 1 == thisComplianceYear)
