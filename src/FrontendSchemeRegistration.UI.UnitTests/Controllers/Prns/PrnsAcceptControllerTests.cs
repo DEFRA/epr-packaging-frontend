@@ -170,6 +170,7 @@ public class PrnsAcceptControllerTests
 
         result.ViewName.Should().Be("AcceptSinglePrn");
         ((PrnViewModel)result.Model!).SelectedAcceptanceYear.Should().Be(2027);
+        ((string)_sut.ViewBag.BackLinkToDisplay).Should().NotBeNullOrEmpty();
     }
 
     [Test]

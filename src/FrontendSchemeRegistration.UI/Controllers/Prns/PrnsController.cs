@@ -114,6 +114,15 @@ public class PrnsController : Controller
         var backLink = session.PrnSession.Backlinks[ShowPrnPageName];
         ViewBag.BackLinkToDisplay = (backLink != null)? backLink.ToString(): Url?.Content(string.Concat("~/", PagePaths.Prns.ShowAwaitingAcceptance));
 
+        // Arriving at the PRN details page (e.g. "No, go back" from the confirm page) restarts the accept journey,
+        // so any previously chosen acceptance year is discarded and the year question is asked again.
+        if (session.PrnSession.SelectedAcceptanceYearPrnId == id)
+        {
+            session.PrnSession.SelectedAcceptanceYearPrnId = null;
+            session.PrnSession.SelectedAcceptanceYear = null;
+            await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
+        }
+
         var prn = await _prnService.GetPrnByExternalIdAsync(id);
         return View(prn);
     }
