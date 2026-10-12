@@ -33,18 +33,19 @@ public class ComplianceCertificateTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("<title>Your certificate of compliance record for 2025");
-        content.Should().Contain("Your certificate of compliance record for 2025");
-        content.Should().Contain("We can only show certificate of compliance records for certificates that were processed by the ‘Report packaging data’ service.");
-        content.Should().Contain("We cannot show certificates of compliance for 2025, because they were processed outside the service.");
-        content.Should().Contain("If you have any queries, contact the Environment Agency:");
+        var certificateHeading = Text(language, "Your certificate of compliance record for 2025", "Eich cofnod o’r dystysgrif cydymffurfio ar gyfer 2025");
+        content.Should().Contain($"<title>{certificateHeading}");
+        content.Should().Contain(certificateHeading);
+        content.Should().Contain(Text(language, "We can only show certificate of compliance records for certificates that were processed by the ‘Report packaging data’ service.", "Dim ond ar gyfer tystysgrifau a broseswyd gan y gwasanaeth 'Rhoi gwybod am ddata pecynwaith' y gallwn ni ddangos cofnodion o’r dystysgrif cydymffurfio."));
+        content.Should().Contain(Text(language, "We cannot show certificates of compliance for 2025, because they were processed outside the service.", "Allwn ni ddim dangos tystysgrifau cydymffurfio ar gyfer 2025, am eu bod nhw wedi’u prosesu y tu allan i'r gwasanaeth."));
+        content.Should().Contain(Text(language, "If you have any queries, contact the Environment Agency:", "Os oes gennych unrhyw ymholiadau, cysylltwch â'r Environment Agency:"));
         content.Should().Contain("mailto:packagingproducers@environment-agency.gov.uk");
-        content.Should().Contain("You can view your PRNs and PERNs for 2025 below.");
-        content.Should().Contain("Your PRNs and PERNs");
+        content.Should().Contain(Text(language, "You can view your PRNs and PERNs for 2025 below.", "Gallwch weld eich PRNs a’ch PERNs ar gyfer 2025 isod."));
+        content.Should().Contain(Text(language, "Your PRNs and PERNs", "Eich PRNs a’ch PERNs"));
         content.Should().Contain("href=\"view-awaiting-acceptance\"");
         content.Should().Contain(language == Language.Welsh ? "Chwilio PRNs a PERNs" : "Search PRNs and PERNs");
         content.Should().Contain("href=\"download-prns-csv\"");
-        content.Should().Contain("Download a list of your PRNs and PERNs for 2025 (CSV)");
+        content.Should().Contain(Text(language, "Download a list of your PRNs and PERNs for 2025 (CSV)", "Lawrlwythwch restr o'ch PRNs a’ch PERNs ar gyfer 2025 (CSV)"));
     }
 
     [TestCase(Language.English)]
@@ -63,11 +64,12 @@ public class ComplianceCertificateTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("<title>Your certificate of compliance record for 2025");
-        content.Should().Contain("Your certificate of compliance record for 2025");
-        content.Should().Contain("We can only show certificate of compliance records for certificates that were processed by the ‘Report packaging data’ service.");
-        content.Should().Contain("We cannot show certificates of compliance for 2025, because they were processed outside the service.");
-        content.Should().NotContain("Your statement of compliance record for 2025");
+        var certificateHeading = Text(language, "Your certificate of compliance record for 2025", "Eich cofnod o’r dystysgrif cydymffurfio ar gyfer 2025");
+        content.Should().Contain($"<title>{certificateHeading}");
+        content.Should().Contain(certificateHeading);
+        content.Should().Contain(Text(language, "We can only show certificate of compliance records for certificates that were processed by the ‘Report packaging data’ service.", "Dim ond ar gyfer tystysgrifau a broseswyd gan y gwasanaeth 'Rhoi gwybod am ddata pecynwaith' y gallwn ni ddangos cofnodion o’r dystysgrif cydymffurfio."));
+        content.Should().Contain(Text(language, "We cannot show certificates of compliance for 2025, because they were processed outside the service.", "Allwn ni ddim dangos tystysgrifau cydymffurfio ar gyfer 2025, am eu bod nhw wedi’u prosesu y tu allan i'r gwasanaeth."));
+        content.Should().NotContain(Text(language, "Your statement of compliance record for 2025", "Eich cofnod o’r datganiad cydymffurfio ar gyfer 2025"));
     }
 
     [TestCase(Language.English)]
@@ -86,11 +88,12 @@ public class ComplianceCertificateTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("<title>Your statement of compliance record for 2025");
-        content.Should().Contain("Your statement of compliance record for 2025");
-        content.Should().Contain("We can only show statement of compliance records for statements that were processed by the ‘Report packaging data’ service.");
-        content.Should().Contain("We cannot show statements of compliance for 2025, because they were processed outside the service.");
-        content.Should().NotContain("Your certificate of compliance record for 2025");
+        var statementHeading = Text(language, "Your statement of compliance record for 2025", "Eich cofnod o’r datganiad cydymffurfio ar gyfer 2025");
+        content.Should().Contain($"<title>{statementHeading}");
+        content.Should().Contain(statementHeading);
+        content.Should().Contain(Text(language, "We can only show statement of compliance records for statements that were processed by the ‘Report packaging data’ service.", "Dim ond ar gyfer datganiadau a broseswyd gan y gwasanaeth 'Rhoi gwybod am ddata pecynwaith' y gallwn ni ddangos cofnodion o’r datganiad cydymffurfio."));
+        content.Should().Contain(Text(language, "We cannot show statements of compliance for 2025, because they were processed outside the service.", "Allwn ni ddim dangos datganiadau cydymffurfio ar gyfer 2025, am eu bod nhw wedi’u prosesu y tu allan i'r gwasanaeth."));
+        content.Should().NotContain(Text(language, "Your certificate of compliance record for 2025", "Eich cofnod o’r dystysgrif cydymffurfio ar gyfer 2025"));
     }
 
     [TestCase(null, "Environment Agency", "packagingproducers@environment-agency.gov.uk", false)]
@@ -164,6 +167,9 @@ public class ComplianceCertificateTests
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
+
+    private static string Text(string language, string english, string welsh) =>
+        language == Language.Welsh ? welsh : english;
 
     private void SetUp(bool showMultiYearObligations)
     {
