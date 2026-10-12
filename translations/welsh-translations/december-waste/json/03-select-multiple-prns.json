@@ -12,7 +12,7 @@
       "route": "/report-data/view-awaiting-acceptance",
       "section": "December Waste acceptance-year message shown against awaiting-acceptance rows, and the Apply filter button.",
       "english": "Can be accepted towards {0} recycling obligations",
-      "welsh": "",
+      "welsh": "Yn gallu cael eu derbyn tuag at rwymedigaethau ailgylchu {0}",
       "figmaUrl": "",
       "context": "Accept or reject PRNs and PERNs page: December Waste acceptance-year message shown against awaiting-acceptance rows, and the Apply filter button (Welsh not yet supplied).\nDecember Waste acceptance-year message shown against awaiting-acceptance rows, and the Apply filter button.\nFeature flag(s): ShowPrn, ShowDecemberWaste"
     },
@@ -24,7 +24,7 @@
       "route": "/report-data/view-awaiting-acceptance",
       "section": "December Waste acceptance-year message shown against awaiting-acceptance rows, and the Apply filter button.",
       "english": "Can be accepted towards {0} or {1} recycling obligations",
-      "welsh": "",
+      "welsh": "Yn gallu cael eu derbyn tuag at rwymedigaethau ailgylchu {0} neu {1}",
       "figmaUrl": "",
       "context": "Accept or reject PRNs and PERNs page: December Waste acceptance-year message shown against awaiting-acceptance rows, and the Apply filter button (Welsh not yet supplied).\nDecember Waste acceptance-year message shown against awaiting-acceptance rows, and the Apply filter button.\nFeature flag(s): ShowPrn, ShowDecemberWaste"
     },
@@ -36,7 +36,7 @@
       "route": "/report-data/view-awaiting-acceptance",
       "section": "December Waste acceptance-year message shown against awaiting-acceptance rows, and the Apply filter button.",
       "english": "Apply filter",
-      "welsh": "",
+      "welsh": "Defnyddio hidlydd",
       "figmaUrl": "",
       "context": "Accept or reject PRNs and PERNs page: December Waste acceptance-year message shown against awaiting-acceptance rows, and the Apply filter button (Welsh not yet supplied).\nDecember Waste acceptance-year message shown against awaiting-acceptance rows, and the Apply filter button.\nFeature flag(s): ShowPrn, ShowDecemberWaste"
     }

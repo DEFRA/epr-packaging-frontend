@@ -780,7 +780,7 @@
       "route": "/report-data/manage-your-recycling-obligations",
       "section": "Multi-year advisory text under the Manage obligations page heading.",
       "english": "Acquire and accept packaging waste recycling notes (PRNs) and packaging waste export recycling notes (PERNs) until your recycling obligations are fully met. Select a material for information on how the data was calculated and view your progress towards meeting your {0} recycling obligations.",
-      "welsh": "",
+      "welsh": "Ewch ati i gaffael a derbyn nodiadau ailgylchu gwastraff pecynwaith (PRNs) a nodiadau ailgylchu allforio gwastraff pecynwaith (PERNs) nes bod eich rhwymedigaethau ailgylchu wedi'u bodloni'n llawn. Dewiswch ddeunydd i gael gwybodaeth am sut y cyfrifwyd y data a gweld eich cynnydd tuag at fodloni’ch rhwymedigaethau ailgylchu {0}.",
       "figmaUrl": "https://www.figma.com/design/T6jnQSPgRrAAYGSykX5Fca/Multi-year-and-Dec-Waste?node-id=1915-112595",
       "context": "\nMulti-year advisory text under the Manage obligations page heading.\nFeature flag(s): ShowPrn, ShowMultiYearObligations"
     }
