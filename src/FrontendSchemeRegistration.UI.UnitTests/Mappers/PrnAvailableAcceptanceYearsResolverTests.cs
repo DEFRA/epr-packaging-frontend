@@ -78,6 +78,33 @@ public class PrnAvailableAcceptanceYearsResolverTests
         availableYears.Should().BeEquivalentTo(testCase.ExpectedYears);
     }
 
+    [Test]
+    public void DecemberWaste2026_OnFirstOfDecember_CanBeAcceptedTowards2026Or2027()
+    {
+        _fakeTimeProvider.SetUtcNow(DateTimeOffset.Parse("2026-12-01T00:00:00Z", CultureInfo.InvariantCulture));
+        var prn = new PrnModel { ObligationYear = "2026", DecemberWaste = true };
+
+        // Act
+        var availableYears = _sut.Resolve(prn, null!, null!, null!);
+
+        // Assert
+        availableYears.Should().Contain(2027);
+        availableYears.Should().BeEquivalentTo([2026, 2027]);
+    }
+
+    [Test]
+    public void DecemberWaste2026_OnLastDayOfNovember_CannotBeAcceptedTowards2027()
+    {
+        _fakeTimeProvider.SetUtcNow(DateTimeOffset.Parse("2026-11-30T23:59:59Z", CultureInfo.InvariantCulture));
+        var prn = new PrnModel { ObligationYear = "2026", DecemberWaste = true };
+
+        // Act
+        var availableYears = _sut.Resolve(prn, null!, null!, null!);
+
+        // Assert
+        availableYears.Should().BeEquivalentTo([2026]);
+    }
+
     public interface IResolverTestCase
     {
         int? PrnYear { get; }
