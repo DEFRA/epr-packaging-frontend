@@ -1192,9 +1192,47 @@ public class PrnsObligationControllerTests
         result.Should().NotBeNull();
         var model = result!.Model.Should().BeOfType<ChooseYearViewModel>().Subject;
         model.CurrentYear.Should().Be(2026);
-        model.Years.Should().Equal(2027, 2026, 2025);
+        model.Years.Should().Equal(2026, 2025);
         model.SelectedYear.Should().BeNull();
         ((string)controller.ViewBag.BackLinkToDisplay).Should().Be("BasePath");
+    }
+
+    [TestCase(2026, 6, 1, new[] { 2026, 2025 })]
+    [TestCase(2026, 11, 30, new[] { 2026, 2025 })]
+    [TestCase(2026, 12, 1, new[] { 2027, 2026, 2025 })]
+    [TestCase(2027, 1, 31, new[] { 2027, 2026, 2025 })]
+    [TestCase(2027, 2, 1, new[] { 2027, 2026, 2025 })]
+    public async Task ChooseYear_Get_Offers_Future_Year_Only_In_December_And_January(
+        int year, int month, int day, int[] expectedYears)
+    {
+        _fakeTimeProvider.SetUtcNow(new DateTimeOffset(year, month, day, 12, 0, 0, TimeSpan.Zero));
+        _featureManagerMock
+            .Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
+            .ReturnsAsync(true);
+        var controller = CreateController();
+
+        var result = await controller.ChooseYear() as ViewResult;
+
+        var model = result!.Model.Should().BeOfType<ChooseYearViewModel>().Subject;
+        model.Years.Should().Equal(expectedYears);
+    }
+
+    [Test]
+    public async Task ChooseYear_Post_Rejects_Future_Year_Outside_December_And_January()
+    {
+        _fakeTimeProvider.SetUtcNow(new DateTimeOffset(2026, 6, 1, 0, 0, 0, TimeSpan.Zero));
+        _featureManagerMock
+            .Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
+            .ReturnsAsync(true);
+        var controller = CreateController();
+
+        var result = await controller.ChooseYear(new ChooseYearViewModel { SelectedYear = 2027 }) as ViewResult;
+
+        result.Should().NotBeNull();
+        controller.ModelState.Should().ContainKey(nameof(ChooseYearViewModel.SelectedYear));
+        _sessionManagerMock.Verify(
+            m => m.SaveSessionAsync(It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()),
+            Times.Never);
     }
 
     [Test]

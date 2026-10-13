@@ -298,12 +298,14 @@ public class PrnsObligationController : Controller
 
     private ChooseYearViewModel BuildChooseYearViewModel(int? selectedYear = null)
     {
+        var includeFutureYear = _timeProvider.GetUtcNow().IsInDecemberJanuaryFlashWindow();
+
         return new ChooseYearViewModel
         {
             CsocUnavailablePastYear = _csocUnavailablePastYear,
             CurrentYear = _complianceYear,
             SelectedYear = selectedYear,
-            Years = ObligationYearOptions.GetSelectableYears(_complianceYear)
+            Years = ObligationYearOptions.GetSelectableYears(_complianceYear, includeFutureYear)
         };
     }
 }
