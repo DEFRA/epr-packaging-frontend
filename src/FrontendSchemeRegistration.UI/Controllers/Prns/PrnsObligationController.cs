@@ -66,9 +66,20 @@ public class PrnsObligationController : Controller
 
     [HttpGet]
     [Route(PagePaths.Prns.ObligationsHome)]
-    public async Task<IActionResult> ObligationsHome()
+    public async Task<IActionResult> ObligationsHome(int? year = null)
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+
+        // A year passed on the link (e.g. from the PRN accepted page) becomes the selected obligation year
+        if (year is { } requestedYear
+            && session is not null
+            && GetSelectableYears().Contains(requestedYear)
+            && await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
+        {
+            session.PrnSession.SelectedObligationYear = requestedYear;
+            await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
+        }
+
         var selectedYear = await GetSelectedObligationYearAsync(session);
 
         var isCsocEnabled = await _featureManager.IsEnabledAsync(FeatureFlags.CsocEnabled);
@@ -298,14 +309,22 @@ public class PrnsObligationController : Controller
 
     private ChooseYearViewModel BuildChooseYearViewModel(int? selectedYear = null)
     {
-        var includeFutureYear = _timeProvider.GetUtcNow().IsInDecemberJanuaryFlashWindow();
-
         return new ChooseYearViewModel
         {
             CsocUnavailablePastYear = _csocUnavailablePastYear,
             CurrentYear = _complianceYear,
             SelectedYear = selectedYear,
-            Years = ObligationYearOptions.GetSelectableYears(_complianceYear, includeFutureYear)
+            Years = GetSelectableYears()
         };
+    }
+
+    /// <summary>
+    ///     The years the user may manage: the future year is only available in December and January.
+    /// </summary>
+    private IReadOnlyList<int> GetSelectableYears()
+    {
+        var includeFutureYear = _timeProvider.GetUtcNow().IsInDecemberJanuaryFlashWindow();
+
+        return ObligationYearOptions.GetSelectableYears(_complianceYear, includeFutureYear);
     }
 }

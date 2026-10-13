@@ -1235,6 +1235,74 @@ public class PrnsObligationControllerTests
             Times.Never);
     }
 
+    [TestCase(2026, true, true)]
+    [TestCase(2027, true, true)]
+    [TestCase(2025, true, true)]
+    [TestCase(2028, true, false)]
+    [TestCase(2024, true, false)]
+    [TestCase(2027, false, false)]
+    public async Task ObligationsHome_With_Year_Query_Saves_Selected_Year_When_Valid(int year, bool multiYearEnabled, bool expectSaved)
+    {
+        _fakeTimeProvider.SetUtcNow(new DateTimeOffset(2026, 12, 15, 0, 0, 0, TimeSpan.Zero));
+        _featureManagerMock
+            .Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
+            .ReturnsAsync(multiYearEnabled);
+        var session = new FrontendSchemeRegistrationSession
+        {
+            UserData = new UserData
+            {
+                Organisations = [new Organisation { Id = Guid.NewGuid(), OrganisationRole = OrganisationRoles.Producer, Name = "Test Organisation", NationId = 1 }],
+                ServiceRole = "Basic User"
+            }
+        };
+        session.PrnSession.SelectedObligationYear = 2026;
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+        _prnServiceMock
+            .Setup(x => x.GetRecyclingObligationsCalculation(It.IsAny<int>(), It.IsAny<bool>()))
+            .ReturnsAsync(_fixture.Create<PrnObligationViewModel>());
+        var controller = CreateController();
+
+        await controller.ObligationsHome(year);
+
+        session.PrnSession.SelectedObligationYear.Should().Be(expectSaved ? year : 2026);
+        _sessionManagerMock.Verify(
+            m => m.SaveSessionAsync(It.IsAny<ISession>(), session),
+            expectSaved ? Times.Once : Times.Never);
+    }
+
+    [TestCase(2026, 6, 15, 2027)]
+    [TestCase(2026, 11, 30, 2027)]
+    [TestCase(2027, 2, 1, 2028)]
+    public async Task ObligationsHome_With_Future_Year_Query_Outside_December_And_January_Is_Ignored(
+        int nowYear, int nowMonth, int nowDay, int futureYear)
+    {
+        _fakeTimeProvider.SetUtcNow(new DateTimeOffset(nowYear, nowMonth, nowDay, 12, 0, 0, TimeSpan.Zero));
+        _featureManagerMock
+            .Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
+            .ReturnsAsync(true);
+        var session = new FrontendSchemeRegistrationSession
+        {
+            UserData = new UserData
+            {
+                Organisations = [new Organisation { Id = Guid.NewGuid(), OrganisationRole = OrganisationRoles.Producer, Name = "Test Organisation", NationId = 1 }],
+                ServiceRole = "Basic User"
+            }
+        };
+        session.PrnSession.SelectedObligationYear = nowYear;
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+        _prnServiceMock
+            .Setup(x => x.GetRecyclingObligationsCalculation(It.IsAny<int>(), It.IsAny<bool>()))
+            .ReturnsAsync(_fixture.Create<PrnObligationViewModel>());
+        var controller = CreateController();
+
+        await controller.ObligationsHome(futureYear);
+
+        session.PrnSession.SelectedObligationYear.Should().Be(nowYear);
+        _sessionManagerMock.Verify(
+            m => m.SaveSessionAsync(It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()),
+            Times.Never);
+    }
+
     [Test]
     public async Task ChooseYear_Get_Returns_NotFound_When_Feature_Flag_Disabled()
     {
