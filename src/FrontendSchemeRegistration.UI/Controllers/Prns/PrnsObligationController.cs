@@ -73,8 +73,7 @@ public class PrnsObligationController : Controller
         // A year passed on the link (e.g. from the PRN accepted page) becomes the selected obligation year
         if (year is { } requestedYear
             && session is not null
-            && requestedYear is >= ObligationYearOptions.EarliestHistoricalYear
-            && requestedYear <= _complianceYear + 1
+            && GetSelectableYears().Contains(requestedYear)
             && await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
         {
             session.PrnSession.SelectedObligationYear = requestedYear;
@@ -310,14 +309,22 @@ public class PrnsObligationController : Controller
 
     private ChooseYearViewModel BuildChooseYearViewModel(int? selectedYear = null)
     {
-        var includeFutureYear = _timeProvider.GetUtcNow().IsInDecemberJanuaryFlashWindow();
-
         return new ChooseYearViewModel
         {
             CsocUnavailablePastYear = _csocUnavailablePastYear,
             CurrentYear = _complianceYear,
             SelectedYear = selectedYear,
-            Years = ObligationYearOptions.GetSelectableYears(_complianceYear, includeFutureYear)
+            Years = GetSelectableYears()
         };
+    }
+
+    /// <summary>
+    ///     The years the user may manage: the future year is only available in December and January.
+    /// </summary>
+    private IReadOnlyList<int> GetSelectableYears()
+    {
+        var includeFutureYear = _timeProvider.GetUtcNow().IsInDecemberJanuaryFlashWindow();
+
+        return ObligationYearOptions.GetSelectableYears(_complianceYear, includeFutureYear);
     }
 }
