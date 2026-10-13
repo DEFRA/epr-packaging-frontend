@@ -1047,7 +1047,7 @@ public class RegistrationApplicationControllerTests
     {
         // Arrange
         var submissionId = Guid.NewGuid();
-        SetupApplication(submissionId, CreateApplication(submissionId, applicationStatusType, additionalDetailsStatus: RegistrationTaskListStatus.Completed, submittedDate: DateTime.Now));
+        SetupApplication(submissionId, CreateApplication(submissionId, applicationStatusType, additionalDetailsStatus: RegistrationTaskListStatus.Completed, submittedDate: TimeProvider.GetLocalNow().DateTime));
 
         // Act
         var result = await SystemUnderTest.AdditionalInformation(submissionId) as RedirectToActionResult;
@@ -1137,7 +1137,7 @@ public class RegistrationApplicationControllerTests
     [TestCase(RegistrationTaskListStatus.Pending, RegistrationTaskListStatus.CanNotStartYet, false)]
     [TestCase(RegistrationTaskListStatus.Completed, RegistrationTaskListStatus.NotStarted, false)]
     [TestCase(RegistrationTaskListStatus.Completed, RegistrationTaskListStatus.Completed, true)]
-    public async Task WhenApplicationNotReadyOrAlreadySubmitted_AdditionalInformationPostAction_NeverCallSubmitRegistrationApplicationAsync(
+    public async Task WhenApplicationNotReadyOrAlreadySubmitted_AdditionalInformationPostAction_DoesNotSendSubmittedEvent(
         RegistrationTaskListStatus fileUploadStatus,
         RegistrationTaskListStatus paymentViewStatus,
         bool alreadySubmitted)
@@ -1150,7 +1150,7 @@ public class RegistrationApplicationControllerTests
             fileUploadStatus: fileUploadStatus,
             paymentViewStatus: paymentViewStatus,
             additionalDetailsStatus: alreadySubmitted ? RegistrationTaskListStatus.Completed : RegistrationTaskListStatus.CanNotStartYet,
-            submittedDate: alreadySubmitted ? DateTime.Now.AddMinutes(-5) : null));
+            submittedDate: alreadySubmitted ? TimeProvider.GetLocalNow().DateTime.AddMinutes(-5) : null));
 
         // Act
         var result = await SystemUnderTest.AdditionalInformation(submissionId, null, new AdditionalInformationViewModel { AdditionalInformationText = "Extra details" }) as RedirectToActionResult;
@@ -1201,7 +1201,7 @@ public class RegistrationApplicationControllerTests
         SetupApplication(submissionId, CreateApplication(
             submissionId,
             additionalDetailsStatus: RegistrationTaskListStatus.Completed,
-            submittedDate: DateTime.Today,
+            submittedDate: TimeProvider.GetLocalNow().Date,
             registrationJourney: RegistrationJourney.CsoLargeProducer));
 
         // Act
@@ -1278,7 +1278,7 @@ public class RegistrationApplicationControllerTests
             submissionId,
             ApplicationStatusType.AcceptedByRegulator,
             additionalDetailsStatus: RegistrationTaskListStatus.Completed,
-            submittedDate: DateTime.Today,
+            submittedDate: TimeProvider.GetLocalNow().Date,
             applicationReferenceNumber: "1234EFGH",
             regulatorNation: nationCode);
         SetupApplication(submissionId, application);
@@ -1298,7 +1298,7 @@ public class RegistrationApplicationControllerTests
             RegulatorNation = nationCode,
             ApplicationReferenceNumber = "1234EFGH",
             RegistrationReferenceNumber = application.RegistrationReferenceNumber,
-            RegistrationApplicationSubmittedDate = DateTime.Today,
+            RegistrationApplicationSubmittedDate = TimeProvider.GetLocalNow().Date,
             RegistrationYear = 2025
         });
         SessionManagerMock.Verify(x => x.GetSessionAsync(It.IsAny<ISession>()), Times.Never);
