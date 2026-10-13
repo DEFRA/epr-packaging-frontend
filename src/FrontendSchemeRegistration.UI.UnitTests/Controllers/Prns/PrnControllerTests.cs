@@ -319,6 +319,25 @@
             view.ViewName.Should().BeNull();
         }
 
+        [Test]
+        public async Task SelectMultiplePrns_WhenObligationYearSelected_LoadsPrnsForThatYear()
+        {
+            var request = _fixture.Create<SearchPrnsViewModel>();
+            var awaitingPrns = _fixture.Create<AwaitingAcceptancePrnsViewModel>();
+            var session = new FrontendSchemeRegistrationSession();
+            session.PrnSession.SelectedObligationYear = 2027;
+            _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+            _prnServiceMock
+                .Setup(x => x.GetPrnAwaitingAcceptanceSearchResultsForYearAsync(request, 2027))
+                .ReturnsAsync(awaitingPrns);
+
+            var result = await _controller.SelectMultiplePrns(request);
+
+            result.Should().BeOfType<ViewResult>().Which.Model.Should().BeSameAs(awaitingPrns);
+            _prnServiceMock.Verify(x => x.GetPrnAwaitingAcceptanceSearchResultsForYearAsync(request, 2027), Times.Once);
+            _prnServiceMock.Verify(x => x.GetPrnAwaitingAcceptanceSearchResultsAsync(It.IsAny<SearchPrnsViewModel>()), Times.Never);
+        }
+
         // Accept or reject single or multiple Prns. Step 1 of 5 zero selections
         [Test]
         public async Task SelectMultiplePrns_AddErrorsIntoModelStateIfAnyErrors()

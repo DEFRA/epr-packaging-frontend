@@ -235,6 +235,56 @@ public class PrnServiceTests
     }
 
     [Test]
+    public async Task GetPrnAwaitingAcceptanceSearchResultsForYearAsync_KeepsOnlyPrnsAcceptableIntoYearAndPagesThem()
+    {
+        var request = new SearchPrnsViewModel { Page = 2, PageSize = 2, FilterBy = "all" };
+        var models = Enumerable.Range(0, 5).Select(_ => new PrnModel()).ToList();
+        _webApiGatewayClientMock
+            .Setup(x => x.GetSearchPrnsAsync(It.IsAny<PaginatedRequest>()))
+            .ReturnsAsync(new PaginatedResponse<PrnModel> { Items = models, CurrentPage = 1, TotalItems = 5, PageSize = 100 });
+        var viewModels = new List<AwaitingAcceptanceResultViewModel>
+        {
+            new() { AvailableAcceptanceYears = [2026, 2027] },
+            new() { AvailableAcceptanceYears = [2026] },
+            new() { AvailableAcceptanceYears = [2026, 2027] },
+            new() { AvailableAcceptanceYears = [] },
+            new() { AvailableAcceptanceYears = [2026, 2027] }
+        };
+        _mapperMock.Setup(m => m.Map<List<AwaitingAcceptanceResultViewModel>>(It.IsAny<object>())).Returns(viewModels);
+
+        var result = await _systemUnderTest.GetPrnAwaitingAcceptanceSearchResultsForYearAsync(request, 2027);
+
+        result.Prns.Should().ContainSingle().Which.Should().BeSameAs(viewModels[4]);
+        result.PagingDetail.TotalItems.Should().Be(3);
+        result.PagingDetail.TotalPages.Should().Be(2);
+        result.PagingDetail.CurrentPage.Should().Be(2);
+        result.PagingDetail.PageSize.Should().Be(2);
+        _webApiGatewayClientMock.Verify(
+            x => x.GetSearchPrnsAsync(It.Is<PaginatedRequest>(r => r.Page == 1 && r.PageSize == 100 && r.FilterBy == "all")),
+            Times.Once);
+    }
+
+    [Test]
+    public async Task GetPrnAwaitingAcceptanceSearchResultsForYearAsync_LoadsEveryBackendPage()
+    {
+        var request = new SearchPrnsViewModel();
+        _webApiGatewayClientMock
+            .Setup(x => x.GetSearchPrnsAsync(It.Is<PaginatedRequest>(r => r.Page == 1)))
+            .ReturnsAsync(new PaginatedResponse<PrnModel> { Items = Enumerable.Range(0, 100).Select(_ => new PrnModel()).ToList(), TotalItems = 101 });
+        _webApiGatewayClientMock
+            .Setup(x => x.GetSearchPrnsAsync(It.Is<PaginatedRequest>(r => r.Page == 2)))
+            .ReturnsAsync(new PaginatedResponse<PrnModel> { Items = [new PrnModel()], TotalItems = 101 });
+        _mapperMock
+            .Setup(m => m.Map<List<AwaitingAcceptanceResultViewModel>>(It.IsAny<object>()))
+            .Returns((object source) => ((List<PrnModel>)source).Select(_ => new AwaitingAcceptanceResultViewModel { AvailableAcceptanceYears = [2026] }).ToList());
+
+        var result = await _systemUnderTest.GetPrnAwaitingAcceptanceSearchResultsForYearAsync(request, 2026);
+
+        result.PagingDetail.TotalItems.Should().Be(101);
+        _webApiGatewayClientMock.Verify(x => x.GetSearchPrnsAsync(It.IsAny<PaginatedRequest>()), Times.Exactly(2));
+    }
+
+    [Test]
     public async Task GetPrnsCsvStreamAsync_WhenZeroPrns_ReturnsEmpty()
     {
         var data = new List<PrnModel>();
