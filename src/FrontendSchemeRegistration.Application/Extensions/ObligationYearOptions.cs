@@ -6,12 +6,19 @@ public static class ObligationYearOptions
 
     /// <summary>
     ///     Years shown on the Choose a year page for <paramref name="currentComplianceYear"/>,
-    ///     newest first: future year, current year, then historical years back to
-    ///     <see cref="EarliestHistoricalYear"/>.
+    ///     newest first: future year (when <paramref name="includeFutureYear"/>), current year,
+    ///     then historical years back to <see cref="EarliestHistoricalYear"/>.
     /// </summary>
-    public static IReadOnlyList<int> GetSelectableYears(int currentComplianceYear)
+    public static IReadOnlyList<int> GetSelectableYears(int currentComplianceYear, bool includeFutureYear = true)
     {
-        var years = new List<int> { currentComplianceYear + 1, currentComplianceYear };
+        var years = new List<int>();
+
+        if (includeFutureYear)
+        {
+            years.Add(currentComplianceYear + 1);
+        }
+
+        years.Add(currentComplianceYear);
 
         for (var year = currentComplianceYear - 1; year >= EarliestHistoricalYear; year--)
         {
