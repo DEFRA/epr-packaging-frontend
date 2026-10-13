@@ -87,7 +87,12 @@ public class PrnsController : Controller
             request.FilterBy = PrnConstants.Filters.AwaitingAll;
         }
 
-        var awaitingAcceptanceViewModel = await _prnService.GetPrnAwaitingAcceptanceSearchResultsAsync(request);
+        // The Manage Obligations year (set on the Choose a year page) limits the list to PRNs that can be accepted into it
+        var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+        var selectedYear = session?.PrnSession.SelectedObligationYear;
+        var awaitingAcceptanceViewModel = selectedYear is { } year
+            ? await _prnService.GetPrnAwaitingAcceptanceSearchResultsForYearAsync(request, year)
+            : await _prnService.GetPrnAwaitingAcceptanceSearchResultsAsync(request);
 
         // stop, there are zero PRNs awaiting acceptance
         if ((awaitingAcceptanceViewModel.Prns.Count == 0) && (request.FilterBy == PrnConstants.Filters.AwaitingAll))

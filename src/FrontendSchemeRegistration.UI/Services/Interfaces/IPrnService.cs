@@ -23,6 +23,13 @@ namespace FrontendSchemeRegistration.UI.Services.Interfaces
 		Task<PrnSearchResultListViewModel> GetPrnSearchResultsAsync(SearchPrnsViewModel request);
 
         Task<AwaitingAcceptancePrnsViewModel> GetPrnAwaitingAcceptanceSearchResultsAsync(SearchPrnsViewModel request);
+
+        /// <summary>
+        ///     As <see cref="GetPrnAwaitingAcceptanceSearchResultsAsync(SearchPrnsViewModel)"/>, but only for PRNs that
+        ///     can be accepted into <paramref name="obligationYear"/>. The backend cannot filter by acceptance year, so
+        ///     every page is loaded, filtered and then paged here.
+        /// </summary>
+        Task<AwaitingAcceptancePrnsViewModel> GetPrnAwaitingAcceptanceSearchResultsForYearAsync(SearchPrnsViewModel request, int obligationYear);
         
         Task<Stream> GetPrnsCsvStreamAsync(int? obligationYear);
 
