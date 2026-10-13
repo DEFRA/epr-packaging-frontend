@@ -72,7 +72,7 @@
                                      @class = "govuk-button"
                                  })
                         @Html.ActionLink(Localizer["manage_obligation_home"].Value, nameof(PrnsObligationController.ObligationsHome), "PrnsObligation",
-                                 null,
+                                 multiYearEnabled ? new { year = Model.ObligationYear } : null,
                                  new
                                  {
                                      @class = "govuk-button govuk-button--secondary"
