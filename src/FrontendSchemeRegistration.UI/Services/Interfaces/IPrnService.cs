@@ -24,7 +24,7 @@ namespace FrontendSchemeRegistration.UI.Services.Interfaces
 
         Task<AwaitingAcceptancePrnsViewModel> GetPrnAwaitingAcceptanceSearchResultsAsync(SearchPrnsViewModel request);
         
-        Task<Stream> GetPrnsCsvStreamAsync();
+        Task<Stream> GetPrnsCsvStreamAsync(int? obligationYear);
 
         Task<PrnObligationViewModel> GetRecyclingObligationsCalculation(int year, bool includeComplianceDeclarationStatus = false);
 	}

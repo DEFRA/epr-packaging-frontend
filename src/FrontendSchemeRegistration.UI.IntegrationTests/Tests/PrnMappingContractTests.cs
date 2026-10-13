@@ -238,7 +238,7 @@ public class PrnMappingContractTests : TestBase
         var headerRow = content.Split('\n')[0].TrimEnd('\r');
 
         headerRow.Should().Be(
-            "PRN or PERN number,PRN or PERN,Status,Issued by,Issued to,Accreditation number,Date issued,December waste,Material,Recycling process,Tonnes,Date accepted,Date cancelled,Issuer note",
+            "PRN or PERN number,PRN or PERN,Status,Issued by,Issued to,Accreditation number,Date issued,December waste,Obligation year,Material,Recycling process,Tonnes,Date accepted,Date cancelled,Issuer note",
             because: "all renamed fields should appear under their mapped display names in the CSV header");
     }
 
@@ -265,7 +265,7 @@ public class PrnMappingContractTests : TestBase
     // CSV data row: verify field renames appear in the correct column positions
     //   prnNumber    → column 1  (PRN or PERN number)
     //   isExport     → column 2  (PRN or PERN: "PRN" when false, "PERN" when true)
-    //   tonnageValue → column 11 (Tonnes)
+    //   tonnageValue → column 12 (Tonnes)
     [Test]
     [Category("IntegrationTest")]
     public async Task CsvDownload_ReturnsOk_WithFieldsMappedToCorrectColumnPositions()
@@ -285,6 +285,6 @@ public class PrnMappingContractTests : TestBase
         var columns = dataRow!.Split(',');
         columns[0].Should().Be("CONTRACT-PRN-007", because: "prnNumber maps to PrnOrPernNumber in column 1");
         columns[1].Should().Be("PRN",              because: "isExport=false maps to NoteType 'PRN' in column 2");
-        columns[10].Should().Be("999",             because: "tonnageValue=999 maps to Tonnes in column 11");
+        columns[11].Should().Be("999",             because: "tonnageValue=999 maps to Tonnes in column 12");
     }
 }

@@ -493,7 +493,7 @@
         {
             string data = string.Empty;
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
-            _prnServiceMock.Setup(x => x.GetPrnsCsvStreamAsync()).ReturnsAsync(stream);
+            _prnServiceMock.Setup(x => x.GetPrnsCsvStreamAsync(null)).ReturnsAsync(stream);
 
             var response = await _controller.DownloadPrnsToCsv() as ViewResult;
 
@@ -501,11 +501,23 @@
             view.ViewName.Should().Be("CsvEmpty");
         }
 
+        [Test]
+        public async Task DownloadPrnsToCsv_WithYear_PassesYearToService()
+        {
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes("csv"));
+            _prnServiceMock.Setup(x => x.GetPrnsCsvStreamAsync(2027)).ReturnsAsync(stream);
+
+            var response = await _controller.DownloadPrnsToCsv(2027);
+
+            response.Should().BeOfType<FileStreamResult>();
+            _prnServiceMock.Verify(x => x.GetPrnsCsvStreamAsync(2027), Times.Once);
+        }
+
         [TestCase("this,is,csv,test,string")]
         public async Task DownloadPrnsToCsv_ReturnsCsvFile(string data)
         {
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(data));
-            _prnServiceMock.Setup(x => x.GetPrnsCsvStreamAsync()).ReturnsAsync(stream);
+            _prnServiceMock.Setup(x => x.GetPrnsCsvStreamAsync(null)).ReturnsAsync(stream);
 
             var response = await _controller.DownloadPrnsToCsv();
             var file = response.Should().BeOfType<FileStreamResult>().Which;
