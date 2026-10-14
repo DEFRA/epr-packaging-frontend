@@ -509,7 +509,8 @@
 
             var response = await _controller.DownloadPrnsToCsv(2027);
 
-            response.Should().BeOfType<FileStreamResult>();
+            var file = response.Should().BeOfType<FileStreamResult>().Which;
+            file.FileDownloadName.Should().Be("PRNDetail_2027.csv");
             _prnServiceMock.Verify(x => x.GetPrnsCsvStreamAsync(2027), Times.Once);
         }
 

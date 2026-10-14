@@ -147,7 +147,7 @@ public class PrnsController : Controller
             return View("CsvEmpty");
         }
 
-        return File(stream, MimeType, FileName);
+        return File(stream, MimeType, year is { } fileYear ? $"PRNDetail_{fileYear}.csv" : FileName);
     }
 
     private async Task SetSessionBackLinkForShowPrnPage(string backLink)
