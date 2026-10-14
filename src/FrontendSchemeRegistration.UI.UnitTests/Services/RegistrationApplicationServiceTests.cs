@@ -3330,6 +3330,53 @@ public class RegistrationApplicationServiceTests
 
         IReadOnlyCollection<RegistrationWindow> registrationWindows =
         [
+            CreateRegistrationWindow(WindowType.DirectLargeProducer, 2025),
+            CreateRegistrationWindow(WindowType.DirectLargeProducer, 2027),
+            CreateRegistrationWindow(WindowType.DirectLargeProducer, 2026)
+        ];
+
+        _dateTimeProvider.SetUtcNow(new DateTime(2026, 6, 1));
+
+        _mockRegistrationPeriodProvider.Setup(x => x.GetAllRegistrationWindows(false))
+            .Returns(registrationWindows);
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(_session);
+
+        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(new RegistrationApplicationDetails());
+
+        // Act
+        var result = await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation, userData);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().HaveCount(3);
+        result[0].Year.Should().Be(2027);
+        result[1].Year.Should().Be(2026);
+        result[2].Year.Should().Be(2025);
+    }
+
+    [Test]
+    public async Task BuildRegistrationYearApplicationsViewModels_ShouldExcludeRegistrationYear2024_ForDirectProducer()
+    {
+        // Arrange
+        var organisation = new Organisation
+        {
+            Id = Guid.NewGuid(),
+            Name = "Test Organisation",
+            OrganisationNumber = "123456",
+            OrganisationRole = OrganisationRoles.Producer
+        };
+
+        var userData = new UserData
+        {
+            Id = Guid.NewGuid(),
+            Organisations = [new Organisation { Id = Guid.NewGuid() }]
+        };
+
+        IReadOnlyCollection<RegistrationWindow> registrationWindows =
+        [
             CreateRegistrationWindow(WindowType.DirectLargeProducer, 2024),
             CreateRegistrationWindow(WindowType.DirectLargeProducer, 2026),
             CreateRegistrationWindow(WindowType.DirectLargeProducer, 2025)
@@ -3350,11 +3397,50 @@ public class RegistrationApplicationServiceTests
         var result = await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation, userData);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().HaveCount(3);
-        result[0].Year.Should().Be(2026);
-        result[1].Year.Should().Be(2025);
-        result[2].Year.Should().Be(2024);
+        result.Select(r => r.Year).Should().Equal(2026, 2025);
+    }
+
+    [Test]
+    public async Task BuildRegistrationYearApplicationsViewModels_ShouldExcludeRegistrationYear2024_ForCso()
+    {
+        // Arrange
+        var organisation = new Organisation
+        {
+            Id = Guid.NewGuid(),
+            Name = "Test CSO",
+            OrganisationNumber = "999999",
+            OrganisationRole = OrganisationRoles.ComplianceScheme
+        };
+
+        var userData = new UserData
+        {
+            Id = Guid.NewGuid(),
+            Organisations = [new Organisation { Id = Guid.NewGuid() }]
+        };
+
+        IReadOnlyCollection<RegistrationWindow> registrationWindows =
+        [
+            CreateRegistrationWindow(WindowType.CsoLargeProducer, 2024),
+            CreateRegistrationWindow(WindowType.CsoLargeProducer, 2026)
+        ];
+
+        _mockRegistrationPeriodProvider.Setup(x => x.GetActiveRegistrationWindows(true))
+            .Returns(registrationWindows);
+
+        _sessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(_session);
+
+        _frontEndSessionManagerMock.Setup(sm => sm.GetSessionAsync(_httpSession))
+            .ReturnsAsync(new FrontendSchemeRegistrationSession { RegistrationSession = new RegistrationSession() });
+
+        _submissionServiceMock.Setup(ss => ss.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(new RegistrationApplicationDetails());
+
+        // Act
+        var result = await _service.BuildRegistrationYearApplicationsViewModels(_httpSession, organisation, userData);
+
+        // Assert
+        result.Select(r => r.Year).Should().Equal(2026);
     }
 
     [Test]
