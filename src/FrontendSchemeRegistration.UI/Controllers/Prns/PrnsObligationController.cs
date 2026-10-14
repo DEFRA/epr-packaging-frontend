@@ -72,7 +72,6 @@ public class PrnsObligationController : Controller
 
         // A year passed on the link (e.g. from the PRN accepted page) becomes the selected obligation year
         if (year is { } requestedYear
-            && session is not null
             && GetSelectableYears().Contains(requestedYear)
             && await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
         {
