@@ -4142,6 +4142,57 @@ public class RegistrationApplicationServiceTests
         result.ApplicationReferenceNumber.Should().NotBe("OTHER-REF");
     }
 
+    [TestCase(true, true)]
+    [TestCase(false, false)]
+    public async Task ResolveRegistrationSubmitDetailsAsync_SetsHasPreviousApplicationSubmission_FromApplicationDetails(
+        bool hasApplicationSubmittedEvent,
+        bool expected)
+    {
+        // Arrange - a queried submission: IsResubmission is false but an application was already submitted.
+        var submission = CreateSubmitDetailsSubmission("January to December 2026", RegistrationJourney.DirectLargeProducer);
+        SetupSubmitDetailsSessions(new RegistrationSession());
+        _submissionServiceMock.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(new RegistrationApplicationDetails
+            {
+                SubmissionId = submission.Id,
+                IsResubmission = false,
+                FirstApplicationSubmittedEventCreatedDatetime = hasApplicationSubmittedEvent ? new DateTime(2026, 9, 18) : null,
+            });
+
+        // Act
+        var result = await _service.ResolveRegistrationSubmitDetailsAsync(_httpSession, CreateSubmitDetailsOrganisation(), submission, RegistrationJourney.DirectLargeProducer, 2026);
+
+        // Assert
+        result.IsResubmission.Should().BeFalse();
+        result.HasPreviousApplicationSubmission.Should().Be(expected);
+    }
+
+    [TestCase(true, true)]
+    [TestCase(false, false)]
+    public async Task ResolveRegistrationSubmitDetailsAsync_FallsBackToSessionForHasPreviousApplicationSubmission_OnlyForSameSubmission(
+        bool sessionIsForSubmission,
+        bool expected)
+    {
+        // Arrange - no application details for the submission, so the registration application session is used,
+        // but only when it was hydrated for this submission (it can be left over from another year).
+        var submission = CreateSubmitDetailsSubmission("January to December 2026", RegistrationJourney.DirectLargeProducer);
+        SetupSubmitDetailsSessions(
+            new RegistrationSession(),
+            new RegistrationApplicationSession
+            {
+                SubmissionId = sessionIsForSubmission ? submission.Id : Guid.NewGuid(),
+                FirstApplicationSubmittedEventCreatedDatetime = new DateTime(2026, 9, 18),
+            });
+        _submissionServiceMock.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync((RegistrationApplicationDetails?)null);
+
+        // Act
+        var result = await _service.ResolveRegistrationSubmitDetailsAsync(_httpSession, CreateSubmitDetailsOrganisation(), submission, RegistrationJourney.DirectLargeProducer, 2026);
+
+        // Assert
+        result.HasPreviousApplicationSubmission.Should().Be(expected);
+    }
+
     [Test]
     public async Task ResolveRegistrationSubmitDetailsAsync_DerivesSubmissionPeriodIdFromSubmission_WhenSessionHoldsDifferentYear()
     {

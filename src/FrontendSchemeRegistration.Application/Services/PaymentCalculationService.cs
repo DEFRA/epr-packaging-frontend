@@ -152,6 +152,22 @@ public class PaymentCalculationService(
         }
     }
 
+    public async Task<bool> IsSubmissionKnownToPaymentServiceAsync(Guid submissionId)
+    {
+        var endpoint = options.Value.Endpoints.RegistrationFeeCalculationDetailsEndpoint.Replace("{submissionId}", submissionId.ToString());
+
+        var result = await paymentCalculationServiceApiClient.SendGetRequest(endpoint);
+        if (result.StatusCode == HttpStatusCode.NotFound)
+        {
+            return false;
+        }
+
+        result.EnsureSuccessStatusCode();
+
+        var details = await result.Content.ReadFromJsonAsync<RegistrationFeeCalculationDetails[]>();
+        return details is { Length: > 0 };
+    }
+
     public async Task<ComplianceSchemePaymentCalculationResponse?> GetComplianceSchemeRegistrationFeesBySubmissionId(Guid submissionId)
     {
         var endpoint = options.Value.Endpoints.ComplianceSchemeRegistrationFeesBySubmissionEndpoint.Replace("{submissionId}", submissionId.ToString());

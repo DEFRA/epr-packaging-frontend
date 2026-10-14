@@ -20,5 +20,11 @@ public interface IPaymentCalculationService
 
     Task<RegistrationFeeCalculationDetails[]?> GetRegistrationFeeCalculationDetails(Guid submissionId);
 
+    /// <summary>
+    /// Whether the payment service holds registration data for the submission. Only a 404 means "not known";
+    /// any other failure throws, so an outage is never mistaken for a submission the payment service has not seen.
+    /// </summary>
+    Task<bool> IsSubmissionKnownToPaymentServiceAsync(Guid submissionId);
+
     Task<SubmissionPeriodDetails[]> GetSubmissionPeriods();
 }

@@ -163,7 +163,7 @@ public class DeclarationWithFullNameController(
                     throw new ArgumentException($"RegulatorNation could not be resolved for submission ID {submissionId}");
                 }
 
-                var notifyPaymentService = await ShouldNotifyPaymentServiceAsync(submitDetails.IsResubmission, submission, submissionId);
+                var notifyPaymentService = await ShouldNotifyPaymentServiceAsync(submitDetails, submission, submissionId);
 
                 await submissionService.SubmitAsync(submissionId, organisationDetailsFileId,
                     model.FullName,
@@ -198,21 +198,26 @@ public class DeclarationWithFullNameController(
         }
     }
 
+    // A declaration whose fees depend on earlier history - a resubmission, or any declaration after an application was
+    // already submitted (e.g. after a regulator query, where IsResubmission stays false) - is only sent to the payment
+    // service if it already holds this submission. Otherwise the payment service would start from a partial history
+    // and treat this cycle as the first, so the submission stays on the legacy fee path instead.
     private async Task<bool> ShouldNotifyPaymentServiceAsync(
-        bool isResubmission,
+        RegistrationSubmitDetails submitDetails,
         RegistrationSubmission submission,
         Guid submissionId)
     {
-        if (!isResubmission || !submission.IsSubmitted)
+        if (!submission.IsSubmitted || (!submitDetails.IsResubmission && !submitDetails.HasPreviousApplicationSubmission))
         {
             return true;
         }
 
-        var feeParams = await paymentCalculationService.GetRegistrationFeeCalculationDetails(submissionId);
-        var notify = feeParams is { Length: > 0 };
+        // Throws on anything other than a 404, so the declaration fails and can be retried rather than
+        // being moved to the legacy path because the payment service was briefly unavailable.
+        var notify = await paymentCalculationService.IsSubmissionKnownToPaymentServiceAsync(submissionId);
         if (!notify)
         {
-            logger.SuppressingPaymentServiceNotification(submissionId);
+            logger.SuppressingPaymentServiceNotification(submissionId, submitDetails.IsResubmission, submitDetails.HasPreviousApplicationSubmission);
         }
 
         return notify;
@@ -234,6 +239,6 @@ internal static partial class DeclarationWithFullNameControllerLog
     [LoggerMessage(
         EventId = 5001,
         Level = LogLevel.Information,
-        Message = "Suppressing payment-service notification for legacy resubmission {SubmissionId} with no payment-service snapshot")]
-    public static partial void SuppressingPaymentServiceNotification(this ILogger logger, Guid submissionId);
+        Message = "Suppressing payment-service notification for submission {SubmissionId} not known to the payment service (IsResubmission {IsResubmission}, HasPreviousApplicationSubmission {HasPreviousApplicationSubmission})")]
+    public static partial void SuppressingPaymentServiceNotification(this ILogger logger, Guid submissionId, bool isResubmission, bool hasPreviousApplicationSubmission);
 }

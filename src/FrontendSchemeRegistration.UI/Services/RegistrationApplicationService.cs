@@ -626,6 +626,13 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             ? applicationDetails.IsResubmission ?? false
             : frontEndSession.RegistrationSession.IsResubmission;
 
+        // An application was already submitted for this submission (IsResubmission stays false after a regulator
+        // query, so it cannot be relied on to say the declaration follows earlier history).
+        var hasPreviousApplicationSubmission = applicationDetails is not null
+            ? applicationDetails.FirstApplicationSubmittedEventCreatedDatetime is not null
+            : registrationSession?.SubmissionId == submission.Id
+              && registrationSession.FirstApplicationSubmittedEventCreatedDatetime is not null;
+
         string? applicationReferenceNumber;
         if (!string.IsNullOrWhiteSpace(applicationDetails?.ApplicationReferenceNumber))
         {
@@ -665,7 +672,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             regulatorNation = nationId.HasValue ? NationExtensions.GetNationNameFromId(nationId.Value) : null;
         }
 
-        return new RegistrationSubmitDetails(applicationReferenceNumber, isResubmission, submissionPeriodId, regulatorNation);
+        return new RegistrationSubmitDetails(applicationReferenceNumber, isResubmission, submissionPeriodId, regulatorNation, hasPreviousApplicationSubmission);
     }
 
     private async Task<RegistrationApplicationDetails?> GetApplicationDetailsForSubmissionAsync(
@@ -893,7 +900,7 @@ public interface IRegistrationApplicationService
     Task<RegistrationSubmitDetails> ResolveRegistrationSubmitDetailsAsync(ISession httpSession, Organisation organisation, RegistrationSubmission submission, RegistrationJourney? registrationJourney, int? fallbackRegistrationYear);
 }
 
-public sealed record RegistrationSubmitDetails(string? ApplicationReferenceNumber, bool IsResubmission, int? SubmissionPeriodId, string? RegulatorNation);
+public sealed record RegistrationSubmitDetails(string? ApplicationReferenceNumber, bool IsResubmission, int? SubmissionPeriodId, string? RegulatorNation, bool HasPreviousApplicationSubmission);
 
 
 public sealed class RegistrationApplicationServiceDependencies

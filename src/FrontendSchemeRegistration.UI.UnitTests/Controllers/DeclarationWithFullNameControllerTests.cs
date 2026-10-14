@@ -889,7 +889,7 @@ public class DeclarationWithFullNameControllerTests
         await _systemUnderTest.Post(submission.Id, request);
 
         // Assert
-        _paymentCalculationServiceMock.Verify(s => s.GetRegistrationFeeCalculationDetails(It.IsAny<Guid>()), Times.Never);
+        _paymentCalculationServiceMock.Verify(s => s.IsSubmissionKnownToPaymentServiceAsync(It.IsAny<Guid>()), Times.Never);
     }
 
     [Test]
@@ -982,10 +982,11 @@ public class DeclarationWithFullNameControllerTests
         string? applicationReferenceNumber = "test",
         bool isResubmission = false,
         int? submissionPeriodId = null,
-        string? regulatorNation = "GB-ENG") =>
+        string? regulatorNation = "GB-ENG",
+        bool hasPreviousApplicationSubmission = false) =>
         _registrationApplicationServiceMock
             .Setup(x => x.ResolveRegistrationSubmitDetailsAsync(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<RegistrationSubmission>(), It.IsAny<RegistrationJourney?>(), It.IsAny<int?>()))
-            .ReturnsAsync(new RegistrationSubmitDetails(applicationReferenceNumber, isResubmission, submissionPeriodId, regulatorNation));
+            .ReturnsAsync(new RegistrationSubmitDetails(applicationReferenceNumber, isResubmission, submissionPeriodId, regulatorNation, hasPreviousApplicationSubmission));
 
     [Test]
     public async Task Post_RedirectsToOrganisationDetailsSubmissionFailed_WhenRegulatorNationCannotBeResolved()
@@ -1065,7 +1066,7 @@ public class DeclarationWithFullNameControllerTests
         await _systemUnderTest.Post(submission.Id, request);
 
         // Assert
-        _paymentCalculationServiceMock.Verify(s => s.GetRegistrationFeeCalculationDetails(It.IsAny<Guid>()), Times.Never);
+        _paymentCalculationServiceMock.Verify(s => s.IsSubmissionKnownToPaymentServiceAsync(It.IsAny<Guid>()), Times.Never);
         _submissionServiceMock.Verify(x => x.SubmitAsync(
             It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
             It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
@@ -1096,8 +1097,8 @@ public class DeclarationWithFullNameControllerTests
             RegistrationSession = new RegistrationSession { ApplicationReferenceNumber = "test", IsResubmission = true },
         });
         _paymentCalculationServiceMock
-            .Setup(x => x.GetRegistrationFeeCalculationDetails(It.IsAny<Guid>()))
-            .ReturnsAsync(new[] { new RegistrationFeeCalculationDetails { OrganisationId = "abc" } });
+            .Setup(x => x.IsSubmissionKnownToPaymentServiceAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(true);
 
         var request = new DeclarationWithFullNameViewModel
         {
@@ -1110,7 +1111,7 @@ public class DeclarationWithFullNameControllerTests
         await _systemUnderTest.Post(submission.Id, request);
 
         // Assert
-        _paymentCalculationServiceMock.Verify(s => s.GetRegistrationFeeCalculationDetails(submission.Id), Times.Once);
+        _paymentCalculationServiceMock.Verify(s => s.IsSubmissionKnownToPaymentServiceAsync(submission.Id), Times.Once);
         _submissionServiceMock.Verify(x => x.SubmitAsync(
             It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
             It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
@@ -1121,7 +1122,7 @@ public class DeclarationWithFullNameControllerTests
     public async Task Post_Resubmission_WithoutPaymentServiceSnapshot_SuppressesPaymentServiceNotification()
     {
         // Arrange - IsSubmitted=true (already-submitted, i.e. a genuine resubmit of a legacy Synapse-only
-        // submission id) AND the payment-service probe returns null (404) - so we suppress.
+        // submission id) AND the payment service does not know the submission (404) - so we suppress.
         var submission = new RegistrationSubmission
         {
             Id = Guid.NewGuid(),
@@ -1142,8 +1143,8 @@ public class DeclarationWithFullNameControllerTests
             RegistrationSession = new RegistrationSession { ApplicationReferenceNumber = "test", IsResubmission = true },
         });
         _paymentCalculationServiceMock
-            .Setup(x => x.GetRegistrationFeeCalculationDetails(It.IsAny<Guid>()))
-            .ReturnsAsync((RegistrationFeeCalculationDetails[]?)null);
+            .Setup(x => x.IsSubmissionKnownToPaymentServiceAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(false);
 
         var request = new DeclarationWithFullNameViewModel
         {
@@ -1156,7 +1157,7 @@ public class DeclarationWithFullNameControllerTests
         await _systemUnderTest.Post(submission.Id, request);
 
         // Assert
-        _paymentCalculationServiceMock.Verify(s => s.GetRegistrationFeeCalculationDetails(submission.Id), Times.Once);
+        _paymentCalculationServiceMock.Verify(s => s.IsSubmissionKnownToPaymentServiceAsync(submission.Id), Times.Once);
         _submissionServiceMock.Verify(x => x.SubmitAsync(
             It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
             It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
@@ -1200,10 +1201,133 @@ public class DeclarationWithFullNameControllerTests
         await _systemUnderTest.Post(submission.Id, request);
 
         // Assert
-        _paymentCalculationServiceMock.Verify(s => s.GetRegistrationFeeCalculationDetails(It.IsAny<Guid>()), Times.Never);
+        _paymentCalculationServiceMock.Verify(s => s.IsSubmissionKnownToPaymentServiceAsync(It.IsAny<Guid>()), Times.Never);
         _submissionServiceMock.Verify(x => x.SubmitAsync(
             It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
             It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
             It.Is<RegistrationSubmitContext>(c => c.NotifyPaymentService)), Times.Once);
     }
+
+    [TestCase(false, false)]
+    [TestCase(true, true)]
+    public async Task Post_AfterPreviousApplicationSubmission_NotResubmission_NotifiesOnlyWhenKnownToPaymentService(
+        bool knownToPaymentService,
+        bool expectedNotify)
+    {
+        // Arrange - a declaration following a regulator query: IsResubmission stays false, but an application was
+        // already submitted, so the payment service must already hold the submission's history.
+        var submission = CreateSubmittedRegistrationSubmission();
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        SetupSubmitDetails(isResubmission: false, hasPreviousApplicationSubmission: true);
+        SetupRegistrationSession(isResubmission: false);
+        _paymentCalculationServiceMock
+            .Setup(x => x.IsSubmissionKnownToPaymentServiceAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(knownToPaymentService);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer));
+
+        // Act
+        await _systemUnderTest.Post(submission.Id, CreateDeclarationRequest());
+
+        // Assert
+        _paymentCalculationServiceMock.Verify(s => s.IsSubmissionKnownToPaymentServiceAsync(submission.Id), Times.Once);
+        _submissionServiceMock.Verify(x => x.SubmitAsync(
+            It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
+            It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
+            It.Is<RegistrationSubmitContext>(c => c.NotifyPaymentService == expectedNotify)), Times.Once);
+    }
+
+    [Test]
+    public async Task Post_AlreadySubmitted_NoPreviousApplicationSubmission_NotResubmission_NotifiesWithoutProbing()
+    {
+        // Arrange - a file re-declared before any application was submitted: no lateness history can be lost.
+        var submission = CreateSubmittedRegistrationSubmission();
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        SetupSubmitDetails(isResubmission: false, hasPreviousApplicationSubmission: false);
+        SetupRegistrationSession(isResubmission: false);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer));
+
+        // Act
+        await _systemUnderTest.Post(submission.Id, CreateDeclarationRequest());
+
+        // Assert
+        _paymentCalculationServiceMock.Verify(s => s.IsSubmissionKnownToPaymentServiceAsync(It.IsAny<Guid>()), Times.Never);
+        _submissionServiceMock.Verify(x => x.SubmitAsync(
+            It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
+            It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
+            It.Is<RegistrationSubmitContext>(c => c.NotifyPaymentService)), Times.Once);
+    }
+
+    [Test]
+    public async Task Post_FirstSubmitOfId_WithPreviousApplicationSubmission_NotifiesWithoutProbing()
+    {
+        // Arrange - IsSubmitted=false: the submission id has never been declared, so it is always notified.
+        var submission = CreateSubmittedRegistrationSubmission();
+        submission.IsSubmitted = false;
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        SetupSubmitDetails(isResubmission: false, hasPreviousApplicationSubmission: true);
+        SetupRegistrationSession(isResubmission: false);
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer));
+
+        // Act
+        await _systemUnderTest.Post(submission.Id, CreateDeclarationRequest());
+
+        // Assert
+        _paymentCalculationServiceMock.Verify(s => s.IsSubmissionKnownToPaymentServiceAsync(It.IsAny<Guid>()), Times.Never);
+        _submissionServiceMock.Verify(x => x.SubmitAsync(
+            It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
+            It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
+            It.Is<RegistrationSubmitContext>(c => c.NotifyPaymentService)), Times.Once);
+    }
+
+    [TestCase(true, false)]
+    [TestCase(false, true)]
+    public async Task Post_PaymentServiceLookupFails_DoesNotSubmitAndShowsSubmissionFailed(bool isResubmission, bool hasPreviousApplicationSubmission)
+    {
+        // Arrange - an outage must not be mistaken for "not known" and silently move the submission to the legacy path.
+        var submission = CreateSubmittedRegistrationSubmission();
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(It.IsAny<Guid>())).ReturnsAsync(submission);
+        SetupSubmitDetails(isResubmission: isResubmission, hasPreviousApplicationSubmission: hasPreviousApplicationSubmission);
+        SetupRegistrationSession(isResubmission: isResubmission);
+        _paymentCalculationServiceMock
+            .Setup(x => x.IsSubmissionKnownToPaymentServiceAsync(It.IsAny<Guid>()))
+            .ThrowsAsync(new HttpRequestException("payment service unavailable"));
+        _claimsPrincipalMock.Setup(x => x.Claims).Returns(CreateUserDataClaim(ServiceRoles.ApprovedPerson, EnrolmentStatuses.Approved, OrganisationRoles.Producer));
+
+        // Act
+        var result = await _systemUnderTest.Post(submission.Id, CreateDeclarationRequest()) as RedirectToActionResult;
+
+        // Assert
+        result.ActionName.Should().Be("Get");
+        result.ControllerName.Should().Be("OrganisationDetailsSubmissionFailed");
+        _submissionServiceMock.Verify(x => x.SubmitAsync(
+            It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<string>(),
+            It.IsAny<string?>(), It.IsAny<bool?>(), It.IsAny<RegistrationJourney?>(),
+            It.IsAny<RegistrationSubmitContext?>()), Times.Never);
+    }
+
+    private static RegistrationSubmission CreateSubmittedRegistrationSubmission() => new()
+    {
+        Id = Guid.NewGuid(),
+        IsSubmitted = true,
+        LastUploadedValidFiles = new UploadedRegistrationFilesInformation
+        {
+            CompanyDetailsFileName = "FileName",
+            CompanyDetailsUploadDatetime = DateTime.Now,
+            CompanyDetailsUploadedBy = Guid.NewGuid(),
+            CompanyDetailsFileId = Guid.NewGuid(),
+        },
+        HasValidFile = true,
+    };
+
+    private void SetupRegistrationSession(bool isResubmission) =>
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new FrontendSchemeRegistrationSession
+        {
+            RegistrationSession = new RegistrationSession { ApplicationReferenceNumber = "test", IsResubmission = isResubmission },
+        });
+
+    private static DeclarationWithFullNameViewModel CreateDeclarationRequest() => new()
+    {
+        FullName = DeclarationName,
+        OrganisationDetailsFileId = Guid.NewGuid().ToString(),
+    };
 }
