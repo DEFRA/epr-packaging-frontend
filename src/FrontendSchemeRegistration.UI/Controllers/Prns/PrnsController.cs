@@ -144,7 +144,7 @@ public class PrnsController : Controller
         // stop, there are zero PRNs to download
         if (stream.Length == 0)
         {
-            return View("CsvEmpty");
+            return View("CsvEmpty", year);
         }
 
         return File(stream, MimeType, year is { } fileYear ? $"PRNDetail_{fileYear}.csv" : FileName);

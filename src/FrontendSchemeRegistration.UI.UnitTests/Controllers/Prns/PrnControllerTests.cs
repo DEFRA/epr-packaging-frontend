@@ -514,6 +514,19 @@
             _prnServiceMock.Verify(x => x.GetPrnsCsvStreamAsync(2027), Times.Once);
         }
 
+        [Test]
+        public async Task DownloadPrnsToCsv_WhenNoPrnsForSelectedYear_ReturnsEmptyViewForThatYear()
+        {
+            // the user has notes for 2026 but none for 2027, so the service returns an empty stream for 2027
+            _prnServiceMock.Setup(x => x.GetPrnsCsvStreamAsync(2027)).ReturnsAsync(new MemoryStream());
+
+            var response = await _controller.DownloadPrnsToCsv(2027);
+
+            var view = response.Should().BeOfType<ViewResult>().Which;
+            view.ViewName.Should().Be("CsvEmpty");
+            view.Model.Should().Be(2027);
+        }
+
         [TestCase("this,is,csv,test,string")]
         public async Task DownloadPrnsToCsv_ReturnsCsvFile(string data)
         {
