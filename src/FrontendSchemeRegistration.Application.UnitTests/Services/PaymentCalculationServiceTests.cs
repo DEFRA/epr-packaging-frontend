@@ -653,6 +653,77 @@ public class PaymentCalculationServiceTests
     }
 
     [Test]
+    public async Task IsSubmissionKnownToPaymentServiceAsync_OkWithDetails_ReturnsTrue()
+    {
+        var submissionId = Guid.NewGuid();
+        var payload = new[] { new FrontendSchemeRegistration.Application.DTOs.RegistrationFeeCalculationDetails { OrganisationId = "ORG-1" } };
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(JsonSerializer.Serialize(payload, _jsonOptions), Encoding.UTF8, "application/json"),
+            });
+
+        var result = await _systemUnderTest.IsSubmissionKnownToPaymentServiceAsync(submissionId);
+
+        result.Should().BeTrue();
+        _paymentServiceApiClientMock.Verify(
+            x => x.SendGetRequest($"registration-submission-data/{submissionId}/fee-calculation-details"),
+            Times.Once);
+    }
+
+    [Test]
+    public async Task IsSubmissionKnownToPaymentServiceAsync_OkWithEmptyArray_ReturnsFalse()
+    {
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent("[]", Encoding.UTF8, "application/json"),
+            });
+
+        var result = await _systemUnderTest.IsSubmissionKnownToPaymentServiceAsync(Guid.NewGuid());
+
+        result.Should().BeFalse();
+    }
+
+    [Test]
+    public async Task IsSubmissionKnownToPaymentServiceAsync_NotFound_ReturnsFalse()
+    {
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.NotFound));
+
+        var result = await _systemUnderTest.IsSubmissionKnownToPaymentServiceAsync(Guid.NewGuid());
+
+        result.Should().BeFalse();
+    }
+
+    [Test]
+    public async Task IsSubmissionKnownToPaymentServiceAsync_ServerError_Throws()
+    {
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.InternalServerError));
+
+        var act = () => _systemUnderTest.IsSubmissionKnownToPaymentServiceAsync(Guid.NewGuid());
+
+        await act.Should().ThrowAsync<HttpRequestException>();
+    }
+
+    [Test]
+    public async Task IsSubmissionKnownToPaymentServiceAsync_ClientThrows_Throws()
+    {
+        _paymentServiceApiClientMock
+            .Setup(x => x.SendGetRequest(It.IsAny<string>()))
+            .ThrowsAsync(new HttpRequestException("unreachable"));
+
+        var act = () => _systemUnderTest.IsSubmissionKnownToPaymentServiceAsync(Guid.NewGuid());
+
+        await act.Should().ThrowAsync<HttpRequestException>();
+    }
+
+    [Test]
     public async Task GetComplianceSchemeRegistrationFeesBySubmissionId_Ok_ReturnsResponse_AndSubstitutesSubmissionId()
     {
         var submissionId = Guid.NewGuid();
