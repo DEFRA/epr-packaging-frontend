@@ -289,6 +289,25 @@
           ]
         }
       ]
+    },
+    {
+      "id": "prns-csv-download",
+      "fileName": "09-prns-csv-download.xlsx",
+      "route": "/report-data/download-prns-csv?year={year}",
+      "view": "src/FrontendSchemeRegistration.UI/Controllers/Prns/PrnsController.cs",
+      "figmaUrl": null,
+      "notes": "CSV download of all PRNs and PERNs for the selected obligation year. Only the new Obligation year column header is listed; this is a file, not a page.",
+      "featureFlags": ["ShowPrn", "ShowMultiYearObligations"],
+      "appSettings": {},
+      "resources": [
+        {
+          "source": "src/FrontendSchemeRegistration.UI/Resources/PrnCsvResources.en.resx",
+          "section": "PRN and PERN CSV download column header.",
+          "keys": [
+            "column_header_obligation_year"
+          ]
+        }
+      ]
     }
   ]
 }
