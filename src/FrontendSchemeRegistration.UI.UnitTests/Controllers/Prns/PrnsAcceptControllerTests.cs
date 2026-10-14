@@ -748,6 +748,20 @@ public class PrnsAcceptControllerTests
     }
 
     [Test]
+    public async Task AcceptMultiplePrnsPassThrough_RetainsSelectedObligationYear()
+    {
+        var model = _fixture.Create<PrnListViewModel>();
+        model.Prns[0].IsSelected = true;
+        var session = new FrontendSchemeRegistrationSession { PrnSession = new PrnSession { SelectedObligationYear = 2026 } };
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+
+        await _sut.AcceptMultiplePrnsPassThrough(model);
+
+        _sessionManagerMock.Verify(x => x.SaveSessionAsync(It.IsAny<ISession>(),
+            It.Is<FrontendSchemeRegistrationSession>(s => s.PrnSession.SelectedObligationYear == 2026)), Times.Once);
+    }
+
+    [Test]
     public async Task AcceptMultiplePrnsPassThrough_RedirectToAcceptMultiplePrnsByCallingGetAllPrnsAndSavingThemOnSession_IfAllPrnsIsSelected()
     {
         var model = _fixture.Create<PrnListViewModel>();

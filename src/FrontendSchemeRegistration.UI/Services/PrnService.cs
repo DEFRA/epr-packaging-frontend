@@ -192,6 +192,7 @@ public class PrnService : IPrnService
         _logger.LogInformation("{Logprefix}: PrnService - GetPrnAwaitingAcceptanceSearchResultsForYearAsync: Get Prn awaiting acceptance for year {Year} and search criteria {Request}", logPrefix, obligationYear, JsonConvert.SerializeObject(request));
 
         const int fetchPageSize = 100;
+        var pageSize = request.PageSize > 0 ? request.PageSize : SearchPrnsViewModel.DefaultPageSize;
         var items = new List<PrnModel>();
         var page = 1;
         PaginatedResponse<PrnModel> response;
@@ -216,7 +217,6 @@ public class PrnService : IPrnService
             .Where(prn => prn.AvailableAcceptanceYears.Contains(obligationYear))
             .ToList();
 
-        var pageSize = request.PageSize;
         var totalPages = (matching.Count + pageSize - 1) / pageSize;
 
         return new AwaitingAcceptancePrnsViewModel
