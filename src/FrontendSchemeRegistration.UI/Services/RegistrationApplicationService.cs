@@ -742,7 +742,10 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             registrationWindows = _registrationPeriodProvider.GetAllRegistrationWindows(isCso);
         }
 
-        var windowKeyInformationList = GetRegistrationWindowKeyInformationList(isCso, registrationWindows);
+        // 2024 submission periods exist in the payment service lookup for fee calculation only; never show a 2024 tile
+        var windowKeyInformationList = GetRegistrationWindowKeyInformationList(
+            isCso,
+            registrationWindows.Where(w => w.RegistrationYear > 2024).ToList());
 
         foreach (var window in windowKeyInformationList)
         {
