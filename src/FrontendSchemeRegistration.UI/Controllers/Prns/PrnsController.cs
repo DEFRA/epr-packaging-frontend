@@ -137,17 +137,17 @@ public class PrnsController : Controller
 
     [HttpGet]
     [Route(PagePaths.Prns.DownloadAllPRNsAndPERNs)]
-    public async Task<IActionResult> DownloadPrnsToCsv()
+    public async Task<IActionResult> DownloadPrnsToCsv(int? year = null)
     {
-        var stream = await _prnService.GetPrnsCsvStreamAsync();
+        var stream = await _prnService.GetPrnsCsvStreamAsync(year);
 
         // stop, there are zero PRNs to download
         if (stream.Length == 0)
         {
-            return View("CsvEmpty");
+            return View("CsvEmpty", year);
         }
 
-        return File(stream, MimeType, FileName);
+        return File(stream, MimeType, year is { } fileYear ? $"PRNDetail_{fileYear}.csv" : FileName);
     }
 
     private async Task SetSessionBackLinkForShowPrnPage(string backLink)

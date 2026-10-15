@@ -67,6 +67,7 @@ public class PrnServiceTests
                     AccreditationNumber = p.AccreditationNumber,
                     DateIssued = p.IssueDate,
                     IsDecemberWaste = p.DecemberWaste,
+                    ObligationYear = int.TryParse(p.ObligationYear, out var obligationYear) ? obligationYear : 0,
                     Material = p.MaterialName,
                     RecyclingProcess = p.ProcessToBeUsed,
                     Tonnage = p.TonnageValue,
@@ -240,7 +241,7 @@ public class PrnServiceTests
 
         _webApiGatewayClientMock.Setup(x => x.GetPrnsForLoggedOnUserAsync()).ReturnsAsync(data);
 
-        var result = await _systemUnderTest.GetPrnsCsvStreamAsync();
+        var result = await _systemUnderTest.GetPrnsCsvStreamAsync(null);
 
         using (var reader = new StreamReader(result))
         {
@@ -263,6 +264,7 @@ public class PrnServiceTests
         sb.Append("column_header_accreditation_number").Append(',');
         sb.Append("column_header_date_issued").Append(',');
         sb.Append("column_header_december_waste").Append(',');
+        sb.Append("column_header_obligation_year").Append(',');
         sb.Append("column_header_material").Append(',');
         sb.Append("column_header_recycling_process").Append(',');
         sb.Append("column_header_tonnes").Append(',');
@@ -273,7 +275,7 @@ public class PrnServiceTests
 
         _webApiGatewayClientMock.Setup(x => x.GetPrnsForLoggedOnUserAsync()).ReturnsAsync([data]);
 
-        var result = await _systemUnderTest.GetPrnsCsvStreamAsync();
+        var result = await _systemUnderTest.GetPrnsCsvStreamAsync(null);
 
         using (var reader = new StreamReader(result))
         {
@@ -315,11 +317,11 @@ public class PrnServiceTests
 
         var issueDate = data.IssueDate.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
 
-        var expectedDataCsv = $@"{data.PrnNumber},PERN,{displayStatus},{data.IssuedByOrg},{data.OrganisationName},{data.AccreditationNumber},{issueDate},Yes,{data.MaterialName},{data.ProcessToBeUsed},{data.TonnageValue},{whenAccepted},{whenCancelled},{data.IssuerNotes}";
+        var expectedDataCsv = $@"{data.PrnNumber},PERN,{displayStatus},{data.IssuedByOrg},{data.OrganisationName},{data.AccreditationNumber},{issueDate},Yes,2024,{data.MaterialName},{data.ProcessToBeUsed},{data.TonnageValue},{whenAccepted},{whenCancelled},{data.IssuerNotes}";
 
         _webApiGatewayClientMock.Setup(x => x.GetPrnsForLoggedOnUserAsync()).ReturnsAsync([data]);
 
-        var result = await _systemUnderTest.GetPrnsCsvStreamAsync();
+        var result = await _systemUnderTest.GetPrnsCsvStreamAsync(null);
 
         using (var reader = new StreamReader(result))
         {
@@ -342,13 +344,44 @@ public class PrnServiceTests
 
         _webApiGatewayClientMock.Setup(x => x.GetPrnsForLoggedOnUserAsync()).ReturnsAsync([data]);
 
-        var result = await _systemUnderTest.GetPrnsCsvStreamAsync();
+        var result = await _systemUnderTest.GetPrnsCsvStreamAsync(null);
 
         using (var reader = new StreamReader(result))
         {
             await reader.ReadLineAsync(); // skip the header row
             reader.ReadLine().Should().EndWith(expectedResult);
         }
+    }
+
+    [Test]
+    public async Task GetPrnsCsvStreamAsync_WithObligationYear_ReturnsOnlyPrnsForThatYear()
+    {
+        var prn2026 = Fixture.Create<PrnModel>();
+        prn2026.ObligationYear = "2026";
+        var prn2027 = Fixture.Create<PrnModel>();
+        prn2027.ObligationYear = "2027";
+
+        _webApiGatewayClientMock.Setup(x => x.GetPrnsForLoggedOnUserAsync()).ReturnsAsync([prn2026, prn2027]);
+
+        var result = await _systemUnderTest.GetPrnsCsvStreamAsync(2027);
+
+        using var reader = new StreamReader(result);
+        var csv = await reader.ReadToEndAsync();
+        csv.Should().Contain(prn2027.PrnNumber);
+        csv.Should().NotContain(prn2026.PrnNumber);
+    }
+
+    [Test]
+    public async Task GetPrnsCsvStreamAsync_WithObligationYearAndNoMatchingPrns_ReturnsEmpty()
+    {
+        var prn = Fixture.Create<PrnModel>();
+        prn.ObligationYear = "2026";
+
+        _webApiGatewayClientMock.Setup(x => x.GetPrnsForLoggedOnUserAsync()).ReturnsAsync([prn]);
+
+        var result = await _systemUnderTest.GetPrnsCsvStreamAsync(2027);
+
+        result.Length.Should().Be(0);
     }
 
     [Test]

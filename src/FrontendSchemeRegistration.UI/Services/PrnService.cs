@@ -187,7 +187,7 @@ public class PrnService : IPrnService
         return awaitingAcceptancePrnsViewModel;
     }
 
-    public async Task<Stream> GetPrnsCsvStreamAsync()
+    public async Task<Stream> GetPrnsCsvStreamAsync(int? obligationYear)
     {
         _logger.LogInformation("{Logprefix}: PrnService - GetPrnsCsvStreamAsync: Get Prns Csv Stream", logPrefix);
 
@@ -195,6 +195,12 @@ public class PrnService : IPrnService
         _logger.LogInformation("{Logprefix}: PrnService - GetPrnsCsvStreamAsync: Get Prns for logged on user server response: {PrnDtos}", logPrefix, JsonConvert.SerializeObject(prnDtos));
 
         var prns = _mapper.Map<List<PrnViewModel>>(prnDtos);
+
+        if (obligationYear is { } year)
+        {
+            prns = prns.Where(prn => prn.ObligationYear == year).ToList();
+        }
+
         var stream = new MemoryStream();
 
         if (prns.Count > 0)
@@ -209,6 +215,7 @@ public class PrnService : IPrnService
                 await writer.WriteCsvCellAsync(_csvLocalizer["column_header_accreditation_number"]);
                 await writer.WriteCsvCellAsync(_csvLocalizer["column_header_date_issued"]);
                 await writer.WriteCsvCellAsync(_csvLocalizer["column_header_december_waste"]);
+                await writer.WriteCsvCellAsync(_csvLocalizer["column_header_obligation_year"]);
                 await writer.WriteCsvCellAsync(_csvLocalizer["column_header_material"]);
                 await writer.WriteCsvCellAsync(_csvLocalizer["column_header_recycling_process"]);
                 await writer.WriteCsvCellAsync(_csvLocalizer["column_header_tonnes"]);
@@ -226,6 +233,7 @@ public class PrnService : IPrnService
                     await writer.WriteCsvCellAsync(prn.AccreditationNumber);
                     await writer.WriteCsvCellAsync(prn.DateIssued.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture));
                     await writer.WriteCsvCellAsync(_csvLocalizer[prn.DecemberWasteDisplay]);
+                    await writer.WriteCsvCellAsync(prn.ObligationYear.ToString(CultureInfo.InvariantCulture));
                     await writer.WriteCsvCellAsync(_prnDataResourcesLocalizer.Material(prn));
                     await writer.WriteCsvCellAsync(prn.RecyclingProcess);
                     await writer.WriteCsvCellAsync(prn.Tonnage.ToString());

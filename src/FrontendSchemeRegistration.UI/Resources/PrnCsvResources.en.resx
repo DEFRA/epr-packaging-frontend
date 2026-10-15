@@ -141,6 +141,9 @@
   <data name="column_header_december_waste" xml:space="preserve">
     <value>December waste</value>
   </data>
+  <data name="column_header_obligation_year" xml:space="preserve">
+    <value>Obligation year</value>
+  </data>
   <data name="column_header_material" xml:space="preserve">
     <value>Material</value>
   </data>

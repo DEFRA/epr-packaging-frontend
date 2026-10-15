@@ -39,8 +39,8 @@
             </a>
         </p>
         <p class="govuk-body">
-            <span id="arialblDownloadListAll" class="govuk-visually-hidden">@Localizer["download_all_prns_and_perns"]</span>
-            <a href="@PagePaths.Prns.DownloadAllPRNsAndPERNs" class="govuk-link govuk-link--no-visited-state" aria-labelledby="arialblDownloadListAll">
+            <span id="arialblDownloadListAll" class="govuk-visually-hidden">@(showMultiYearObligations ? Localizer["download_all_prns_and_perns_yyyy", complianceYear.ToString()] : Localizer["download_all_prns_and_perns"])</span>
+            <a href="@(showMultiYearObligations ? $"{PagePaths.Prns.DownloadAllPRNsAndPERNs}?year={complianceYear}" : PagePaths.Prns.DownloadAllPRNsAndPERNs)" class="govuk-link govuk-link--no-visited-state" aria-labelledby="arialblDownloadListAll">
                     @if (showMultiYearObligations) {
                         @Localizer["download_all_prns_and_perns_yyyy", complianceYear.ToString()]
                     } else {
