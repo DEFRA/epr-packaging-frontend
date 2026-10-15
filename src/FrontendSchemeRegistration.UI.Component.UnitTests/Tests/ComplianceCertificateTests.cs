@@ -44,7 +44,7 @@ public class ComplianceCertificateTests
         content.Should().Contain(Text(language, "Your PRNs and PERNs", "Eich PRNs a’ch PERNs"));
         content.Should().Contain("href=\"view-awaiting-acceptance\"");
         content.Should().Contain(language == Language.Welsh ? "Chwilio PRNs a PERNs" : "Search PRNs and PERNs");
-        content.Should().Contain("href=\"download-prns-csv\"");
+        content.Should().Contain("href=\"download-prns-csv?year=2025\"");
         content.Should().Contain(Text(language, "Download a list of your PRNs and PERNs for 2025 (CSV)", "Lawrlwythwch restr o'ch PRNs a’ch PERNs ar gyfer 2025 (CSV)"));
     }
 
