@@ -56,8 +56,8 @@ public class PrnAvailableAcceptanceYearsResolverTests
     [TestCase("2026", "2027", "2027-01-15", new[] { 2026, 2027 })]
     [TestCase("2026", "2025", "2027-03-01", new[] { 2027 })]
     [TestCase("2026", null, "2026-12-15", new[] { 2026, 2027 })]
-    [TestCase(null, "2026", "2026-12-15", new[] { 2026, 2027 })] // Falls back to Obligation Year
-    [TestCase("not-a-year", "2026", "2026-12-15", new[] { 2026, 2027 })]
+    [TestCase(null, "2026", "2026-12-15", new int[0])] // No fallback to Obligation Year
+    [TestCase("not-a-year", "2026", "2026-12-15", new int[0])]
     public void DecemberWaste_uses_accreditation_year(string? accreditationYear, string? obligationYear, string now, int[] expected)
     {
         _fakeTimeProvider.SetUtcNow(DateTimeOffset.Parse(now + "T12:00:00Z", DateTimeFormatInfo.InvariantInfo));
@@ -108,7 +108,7 @@ public class PrnAvailableAcceptanceYearsResolverTests
     public void DecemberWaste2026_OnFirstOfDecember_CanBeAcceptedTowards2026Or2027()
     {
         _fakeTimeProvider.SetUtcNow(DateTimeOffset.Parse("2026-12-01T00:00:00Z", CultureInfo.InvariantCulture));
-        var prn = new PrnModel { ObligationYear = "2026", DecemberWaste = true };
+        var prn = new PrnModel { ObligationYear = "2026", AccreditationYear = "2026", DecemberWaste = true };
 
         // Act
         var availableYears = _sut.Resolve(prn, null!, null!, null!);
@@ -122,7 +122,7 @@ public class PrnAvailableAcceptanceYearsResolverTests
     public void DecemberWaste2026_OnLastDayOfNovember_CannotBeAcceptedTowards2027()
     {
         _fakeTimeProvider.SetUtcNow(DateTimeOffset.Parse("2026-11-30T23:59:59Z", CultureInfo.InvariantCulture));
-        var prn = new PrnModel { ObligationYear = "2026", DecemberWaste = true };
+        var prn = new PrnModel { ObligationYear = "2026", AccreditationYear = "2026", DecemberWaste = true };
 
         // Act
         var availableYears = _sut.Resolve(prn, null!, null!, null!);

@@ -162,6 +162,7 @@ public static class WebApi
                     prnStatus = "AWAITINGACCEPTANCE",
                     tonnageValue = 1,
                     obligationYear = "2026",
+                    accreditationYear = "2026",
                     decemberWaste = true,
                     issuedByOrg = "Test Reprocessor"
                 }));

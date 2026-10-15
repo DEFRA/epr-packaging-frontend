@@ -19,11 +19,8 @@ public class PrnAvailableAcceptanceYearsResolver(TimeProvider timeProvider)
     /// </remarks>
     public int[] Resolve(PrnModel source, object _, int[] __, ResolutionContext context)
     {
-        // December Waste is driven by its Accreditation Year; falling back to the Obligation Year only when
-        // that is missing, so such a PRN is never left with no year to be accepted against.
-        var yearText = source.DecemberWaste && int.TryParse(source.AccreditationYear, out var accreditationYear)
-            ? source.AccreditationYear
-            : source.ObligationYear;
+        // December Waste is driven by its Accreditation Year; all other PRNs by their Obligation Year.
+        var yearText = source.DecemberWaste ? source.AccreditationYear : source.ObligationYear;
 
         if (!int.TryParse(yearText, out var prnYear))
             return [];
