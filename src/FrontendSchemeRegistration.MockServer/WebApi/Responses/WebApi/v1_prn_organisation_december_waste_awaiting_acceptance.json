@@ -43,7 +43,6 @@
     "issueDate": "2026-05-01T13:15:15",
     "prnStatus": "ACCEPTED",
     "obligationYear": "2026",
-    "accreditationYear": "2026",
     "tonnageValue": 1
   },
   {
@@ -54,7 +53,6 @@
     "issueDate": "2026-03-01T13:15:15",
     "prnStatus": "ACCEPTED",
     "obligationYear": "2026",
-    "accreditationYear": "2026",
     "tonnageValue": 2
   },
   {
@@ -65,7 +63,6 @@
     "issueDate": "2026-05-01T13:15:15",
     "prnStatus": "ACCEPTED",
     "obligationYear": "2026",
-    "accreditationYear": "2026",
     "tonnageValue": 5,
     "isExport": true
   },
@@ -77,7 +74,6 @@
     "issueDate": "2026-12-01T13:15:15",
     "prnStatus": "AWAITINGACCEPTANCE",
     "obligationYear": "2026",
-    "accreditationYear": "2026",
     "tonnageValue": 3,
     "decemberWaste": true
   }
