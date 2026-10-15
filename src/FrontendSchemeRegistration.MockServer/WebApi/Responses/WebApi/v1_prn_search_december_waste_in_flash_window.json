@@ -9,6 +9,7 @@
       "prnStatus": "AWAITINGACCEPTANCE",
       "decemberWaste": true,
       "obligationYear": "2026",
+      "accreditationYear": "2026",
       "issuedByOrg": "Test Reprocessor",
       "tonnageValue": 1
     },
@@ -21,6 +22,7 @@
       "prnStatus": "AWAITINGACCEPTANCE",
       "decemberWaste": false,
       "obligationYear": "2026",
+      "accreditationYear": "2026",
       "issuedByOrg": "Test Reprocessor",
       "tonnageValue": 2
     }
