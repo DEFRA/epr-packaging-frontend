@@ -35,7 +35,7 @@
 
 @if (ShowAccordion) {
     @await Html.PartialAsync("../Shared/Partials/Govuk/_DetailsSummary", new ViewDataDictionary(ViewData) {
-        { "InitialState", true },
+        { "InitialState", false },
         { "Heading", Localizer["obligations_details_summary_heading"].Value },
         { "Content", HtmlContent },
         { "ExtendDetailsClassNames", "govuk-grid-column-two-thirds govuk-!-margin-bottom-6" }
