@@ -52,6 +52,31 @@ public class PrnAvailableAcceptanceYearsResolverTests
         new(new DecemberWastePrnCase(null, "2025-12-01", [])),
     ];
 
+    [TestCase("2026", "2099", "2026-12-15", new[] { 2026, 2027 })] // Accreditation year wins over a differing Obligation Year
+    [TestCase("2026", "2027", "2027-01-15", new[] { 2026, 2027 })]
+    [TestCase("2026", "2025", "2027-03-01", new[] { 2027 })]
+    [TestCase("2026", null, "2026-12-15", new[] { 2026, 2027 })]
+    [TestCase(null, "2026", "2026-12-15", new[] { 2026, 2027 })] // Falls back to Obligation Year
+    [TestCase("not-a-year", "2026", "2026-12-15", new[] { 2026, 2027 })]
+    public void DecemberWaste_uses_accreditation_year(string? accreditationYear, string? obligationYear, string now, int[] expected)
+    {
+        _fakeTimeProvider.SetUtcNow(DateTimeOffset.Parse(now + "T12:00:00Z", DateTimeFormatInfo.InvariantInfo));
+
+        var prn = new PrnModel { AccreditationYear = accreditationYear!, ObligationYear = obligationYear!, DecemberWaste = true };
+
+        _sut.Resolve(prn, null!, null!, null!).Should().BeEquivalentTo(expected);
+    }
+
+    [Test]
+    public void NonDecemberWaste_ignores_accreditation_year()
+    {
+        _fakeTimeProvider.SetUtcNow(DateTimeOffset.Parse("2026-06-15T12:00:00Z", DateTimeFormatInfo.InvariantInfo));
+
+        var prn = new PrnModel { AccreditationYear = "2099", ObligationYear = "2026", DecemberWaste = false };
+
+        _sut.Resolve(prn, null!, null!, null!).Should().BeEquivalentTo(new[] { 2026 });
+    }
+
     [SetUp]
     public void Setup()
     {
@@ -68,6 +93,7 @@ public class PrnAvailableAcceptanceYearsResolverTests
         var prn = new PrnModel
         {
             ObligationYear = testCase.PrnYear.ToString(),
+            AccreditationYear = testCase.PrnYear.ToString(),
             DecemberWaste = testCase.IsDecemberWaste
         };
 

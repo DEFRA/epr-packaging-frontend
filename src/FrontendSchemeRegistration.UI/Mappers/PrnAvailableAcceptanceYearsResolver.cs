@@ -15,11 +15,17 @@ public class PrnAvailableAcceptanceYearsResolver(TimeProvider timeProvider)
     ///     a static sense; this is explicitly returning what years (if any) are available for users action the PRN against
     ///     at this precise moment.
     ///     Generally, this will just resolve to a single year unless the PRN has expired - but December Waste PRNs may
-    ///     have two.
+    ///     have two. December Waste PRNs are resolved from their Accreditation Year; all others from their Obligation Year.
     /// </remarks>
     public int[] Resolve(PrnModel source, object _, int[] __, ResolutionContext context)
     {
-        if (!int.TryParse(source.ObligationYear, out var prnYear))
+        // December Waste is driven by its Accreditation Year; falling back to the Obligation Year only when
+        // that is missing, so such a PRN is never left with no year to be accepted against.
+        var yearText = source.DecemberWaste && int.TryParse(source.AccreditationYear, out var accreditationYear)
+            ? source.AccreditationYear
+            : source.ObligationYear;
+
+        if (!int.TryParse(yearText, out var prnYear))
             return [];
 
         var now = timeProvider.GetUtcNow();
