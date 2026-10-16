@@ -219,12 +219,15 @@ public class PrnService : IPrnService
 
         var totalPages = (matching.Count + pageSize - 1) / pageSize;
 
+        // A page past the last one (stale link, edited URL) shows the last page, not an empty list
+        var currentPage = Math.Clamp(request.Page, 1, Math.Max(totalPages, 1));
+
         return new AwaitingAcceptancePrnsViewModel
         {
-            Prns = matching.Skip((request.Page - 1) * pageSize).Take(pageSize).ToList(),
+            Prns = matching.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList(),
             PagingDetail = new PagingDetail
             {
-                CurrentPage = request.Page,
+                CurrentPage = currentPage,
                 PageSize = pageSize,
                 TotalItems = matching.Count,
                 TotalPages = totalPages

@@ -305,6 +305,23 @@ public class PrnServiceTests
     }
 
     [Test]
+    public async Task GetPrnAwaitingAcceptanceSearchResultsForYearAsync_PageBeyondLast_ReturnsLastPage()
+    {
+        var request = new SearchPrnsViewModel { Page = 9, PageSize = 10 };
+        _webApiGatewayClientMock
+            .Setup(x => x.GetSearchPrnsAsync(It.IsAny<PaginatedRequest>()))
+            .ReturnsAsync(new PaginatedResponse<PrnModel> { Items = Enumerable.Range(0, 15).Select(_ => new PrnModel()).ToList(), TotalItems = 15 });
+        _mapperMock
+            .Setup(m => m.Map<List<AwaitingAcceptanceResultViewModel>>(It.IsAny<object>()))
+            .Returns((object source) => ((List<PrnModel>)source).Select(_ => new AwaitingAcceptanceResultViewModel { AvailableAcceptanceYears = [2026] }).ToList());
+
+        var result = await _systemUnderTest.GetPrnAwaitingAcceptanceSearchResultsForYearAsync(request, 2026);
+
+        result.PagingDetail.CurrentPage.Should().Be(2);
+        result.Prns.Should().HaveCount(5);
+    }
+
+    [Test]
     public async Task GetPrnsCsvStreamAsync_WhenZeroPrns_ReturnsEmpty()
     {
         var data = new List<PrnModel>();
