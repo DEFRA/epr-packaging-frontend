@@ -23,5 +23,6 @@ public class AdditionalInformationViewModel : OrganisationNationViewModel
 
     public int RegistrationYear { get; set; }
     public RegistrationJourney? RegistrationJourney { get; set; }
+    public Guid SubmissionId { get; set; }
     public bool ShowRegistrationCaption => RegistrationJourney != null;
 }

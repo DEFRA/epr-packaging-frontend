@@ -167,7 +167,7 @@ public static class Accounts
                                     id = orgId,
                                     name = "SUPER TEST LTD",
                                     tradingName = (string?)null,
-                                    organisationRole = "Compliance Scheme",
+                                    organisationRole = options.OrganisationRole,
                                     organisationType = "Companies House Company",
                                     OrganisationNumber = "154977",
                                     companiesHouseNumber = "CS_GENERATED_3603716",

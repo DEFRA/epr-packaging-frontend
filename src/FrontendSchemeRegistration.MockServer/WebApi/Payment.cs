@@ -20,8 +20,8 @@ public static class Payment
         MapFeeEndpoint(server, "/v1/compliance-scheme/registration-fee", "WebApi/Responses/payment/compliance-default.json", "WebApi/Responses/payment/compliance-latefee.json");
 
         // Registration windows used by RegistrationPeriodProviderWarmupService at startup
-        MapSubmissionPeriodsEndpoint(server, "/submission-periods", "WebApi/Responses/payment/submission-periods.json");
-        MapSubmissionPeriodsEndpoint(server, "/v1/submission-periods", "WebApi/Responses/payment/submission-periods.json");
+        MapSubmissionPeriodsEndpoint(server, "/submission-periods", "WebApi/Responses/Payment/submission-periods.json");
+        MapSubmissionPeriodsEndpoint(server, "/v1/submission-periods", "WebApi/Responses/Payment/submission-periods.json");
 
         return server;
     }
