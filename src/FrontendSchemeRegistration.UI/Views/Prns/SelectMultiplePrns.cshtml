@@ -199,6 +199,19 @@
     <script type="text/javascript" nonce="@scriptNonce">
         window.onload = function () {
 
+            // Selections kept from another year's list can't be accepted into this one, so start afresh when the year changes
+            const selectionYearKey = "prnSelectionYear";
+            const pageYear = "@Model?.SelectedObligationYear";
+            if (sessionStorage.getItem(selectionYearKey) !== pageYear) {
+                for (let i = sessionStorage.length - 1; i >= 0; i--) {
+                    const key = sessionStorage.key(i);
+                    if (key.startsWith("chkBoxSelectPrn_")) {
+                        sessionStorage.removeItem(key);
+                    }
+                }
+                sessionStorage.setItem(selectionYearKey, pageYear);
+            }
+
             const acceptButton = document.getElementById('acceptSelectedPrns');
             if (acceptButton && acceptButton.hidden) {
                 for (let i = 0; i < sessionStorage.length; i++) {
