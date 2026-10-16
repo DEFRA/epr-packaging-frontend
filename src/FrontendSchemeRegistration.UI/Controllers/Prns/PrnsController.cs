@@ -1,11 +1,13 @@
 ﻿using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
+using FrontendSchemeRegistration.Application.Extensions;
 using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
 using FrontendSchemeRegistration.UI.Constants;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels.Prns;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.FeatureManagement;
 using Microsoft.FeatureManagement.Mvc;
 using Newtonsoft.Json;
 
@@ -22,10 +24,14 @@ public class PrnsController : Controller
     private readonly IPrnService _prnService;
     private readonly IDownloadPrnService _downloadPrnService;
     private readonly ISessionManager<FrontendSchemeRegistrationSession> _sessionManager;
+    private readonly IFeatureManager _featureManager;
+    private readonly TimeProvider _timeProvider;
 
     public PrnsController(IPrnService prnService, ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
-                          IDownloadPrnService downloadPrnService)
+                          IDownloadPrnService downloadPrnService, IFeatureManager featureManager, TimeProvider timeProvider)
     {
+        _featureManager = featureManager;
+        _timeProvider = timeProvider;
         _prnService = prnService;
         _sessionManager = sessionManager;
         _downloadPrnService = downloadPrnService;
@@ -87,7 +93,18 @@ public class PrnsController : Controller
             request.FilterBy = PrnConstants.Filters.AwaitingAll;
         }
 
-        var awaitingAcceptanceViewModel = await _prnService.GetPrnAwaitingAcceptanceSearchResultsAsync(request);
+        // The Manage Obligations year (set on the Choose a year page) limits the list to PRNs that can be accepted into it
+        var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+        // Reaching the list without choosing a year (bookmark, fresh sign-in) falls back to the current compliance year
+        var selectedYear = session?.PrnSession.SelectedObligationYear;
+        if (selectedYear is null && await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
+        {
+            selectedYear = _timeProvider.GetUtcNow().GetComplianceYear();
+        }
+
+        var awaitingAcceptanceViewModel = selectedYear is { } year
+            ? await _prnService.GetPrnAwaitingAcceptanceSearchResultsForYearAsync(request, year)
+            : await _prnService.GetPrnAwaitingAcceptanceSearchResultsAsync(request);
 
         // stop, there are zero PRNs awaiting acceptance
         if ((awaitingAcceptanceViewModel.Prns.Count == 0) && (request.FilterBy == PrnConstants.Filters.AwaitingAll))
@@ -98,6 +115,7 @@ public class PrnsController : Controller
 		await SetSessionBackLinkForShowPrnPage(Url?.Content(string.Concat("~/", PagePaths.Prns.ShowAwaitingAcceptance)));
         ViewBag.BackLinkToDisplay = Url.Content($"~/{PagePaths.Prns.ObligationsHome}");
 
+        awaitingAcceptanceViewModel.SelectedObligationYear = selectedYear;
         awaitingAcceptanceViewModel.SelectedFilter = request.FilterBy;
         awaitingAcceptanceViewModel.SelectedSort = request.SortBy;
         var qs = $"?sortBy={request.SortBy}&filterBy={request.FilterBy}&page=";

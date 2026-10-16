@@ -6,6 +6,8 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
     [ExcludeFromCodeCoverage]
     public class SearchPrnsViewModel
     {
+        public const int DefaultPageSize = 10;
+
         public int Page
         {
             get => _page < 1 ? 1 : _page;
@@ -14,7 +16,7 @@ namespace FrontendSchemeRegistration.UI.ViewModels.Prns
         
         private int _page = 1;
 
-        public int PageSize { get; set; } = 10;
+        public int PageSize { get; set; } = DefaultPageSize;
 
         public string? Search { get; set; }
 
