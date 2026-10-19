@@ -422,7 +422,7 @@ public class RegistrationApplicationController(
             await registrationApplicationService.CreateRegistrationApplicationEvent(HttpContext.Session, model.AdditionalInformationText, null, SubmissionType.RegistrationApplicationSubmitted);
         }
 
-        return RedirectToAction(nameof(SubmitRegistrationRequest), new { registrationyear = registrationYear });
+        return RedirectToAction(nameof(SubmitRegistrationRequest), new { registrationyear = registrationYear, submissionId });
     }
 
     [HttpGet]
@@ -577,7 +577,6 @@ public class RegistrationApplicationController(
             logger.LogWarning("Registration application submitted without a submission id; using the session");
             return await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
         }
-
 
         // Reload the session from the gateway as the task list does, and only use it if it is for the requested submission
         var isResubmission = !string.IsNullOrWhiteSpace(HttpContext.Request.Query["IsResubmission"]);

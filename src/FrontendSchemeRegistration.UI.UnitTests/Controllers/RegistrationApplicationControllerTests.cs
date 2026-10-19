@@ -1118,7 +1118,9 @@ public class RegistrationApplicationControllerTests
         var result = await SystemUnderTest.AdditionalInformation(new AdditionalInformationViewModel { AdditionalInformationText = "Extra details" }, submissionId, RegistrationJourney.DirectSmallProducer);
 
         // Assert
-        result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be(nameof(RegistrationApplicationController.SubmitRegistrationRequest));
+        var redirect = result.Should().BeOfType<RedirectToActionResult>().Subject;
+        redirect.ActionName.Should().Be(nameof(RegistrationApplicationController.SubmitRegistrationRequest));
+        redirect.RouteValues.Should().Contain("submissionId", submissionId);
         RegistrationApplicationService.Verify(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), 2026, RegistrationJourney.DirectSmallProducer, It.IsAny<bool?>()), Times.Once);
         RegistrationApplicationService.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<ISession>(), "Extra details", null, SubmissionType.RegistrationApplicationSubmitted), Times.Once);
     }
@@ -1211,6 +1213,39 @@ public class RegistrationApplicationControllerTests
         // Assert
         result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be(nameof(RegistrationApplicationController.UnauthorisedUserWarnings));
         RegistrationApplicationService.Verify(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<RegistrationJourney?>(), It.IsAny<bool?>()), Times.Never);
+        RegistrationApplicationService.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<ISession>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<SubmissionType>()), Times.Never);
+    }
+
+    [Test]
+    public async Task AdditionalInformationPost_DoesNotSendTheEvent_WhenTheGatewayHasNoSubmissionForTheRegistration()
+    {
+        // Arrange - e.g. a submission id edited into the url for a registration that hasn't been started
+        _userData.ServiceRole = "Approved Person";
+        SetupUserData(_userData);
+        SetupRegistrationYear(2026);
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<RegistrationJourney?>(), It.IsAny<bool?>()))
+            .ReturnsAsync(new RegistrationApplicationSession());
+
+        // Act
+        var result = await SystemUnderTest.AdditionalInformation(new AdditionalInformationViewModel { AdditionalInformationText = "Extra details" }, Guid.NewGuid());
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>().Which.Url.Should().Be($"~{PagePaths.Root}");
+        RegistrationApplicationService.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<ISession>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<SubmissionType>()), Times.Never);
+    }
+
+    [Test]
+    public async Task AdditionalInformationPost_WithoutSubmissionId_DoesNotSendTheEvent_WhenThereIsNoSession()
+    {
+        // Arrange
+        SetupUserData(new UserData { ServiceRole = "Approved Person" });
+        SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync((RegistrationApplicationSession)null);
+
+        // Act
+        var result = await SystemUnderTest.AdditionalInformation(new AdditionalInformationViewModel { AdditionalInformationText = "Extra details" });
+
+        // Assert
+        result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be(nameof(RegistrationApplicationController.SubmitRegistrationRequest));
         RegistrationApplicationService.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<ISession>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<SubmissionType>()), Times.Never);
     }
 
