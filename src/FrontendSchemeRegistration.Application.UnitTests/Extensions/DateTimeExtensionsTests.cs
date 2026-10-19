@@ -86,29 +86,30 @@ public class DateTimeExtensionsTests
         result.Should().Be(expectedComplianceYear);
     }
 
-    [TestCase("2025-12-15", "2025-12-18", true)]
-    [TestCase("2025-12-15", "2026-01-14", true)]
-    [TestCase("2025-12-15", "2025-01-10", false)]
-    [TestCase("2026-01-31", "2025-12-18", true)]
-    [TestCase("2026-01-31", "2026-01-14", true)]
-    [TestCase("2026-01-31", "2025-01-10", false)]
-    [TestCase("2026-01-31", "2024-12-15", false)]
-    [TestCase("2026-02-01", "2025-12-18", false)]
-    [TestCase("2026-06-15", "2026-06-15", false)]
-    [TestCase("2026-12-15", "2026-12-15", true)]
-    [TestCase("2026-12-15", "2026-01-14", false)]
-    [TestCase("2027-01-12", "2026-12-15", true)]
-    [TestCase("2027-01-12", "2026-01-14", false)]
-    public void IsInImmediateDecemberJanuaryFlashWindow_Returns_Expected(
-        string nowText, string issueDateText, bool expected)
+    [TestCase("2026-11-30", 2026, false)]
+    [TestCase("2026-12-01", 2026, true)]
+    [TestCase("2026-12-31", 2026, true)]
+    [TestCase("2027-01-01", 2026, true)]
+    [TestCase("2027-01-31", 2026, true)]
+    [TestCase("2027-02-01", 2026, false)]
+    [TestCase("2026-06-15", 2026, false)]
+    [TestCase("2026-12-15", 2025, false)]
+    [TestCase("2027-01-12", 2025, false)]
+    [TestCase("2026-12-15", 2027, false)]
+    public void IsInDecemberJanuaryFlashWindow_ForAccreditationYear_Returns_Expected(
+        string nowText, int accreditationYear, bool expected)
     {
         var now = DateTimeOffset.Parse(nowText + "T12:00:00Z", DateTimeFormatInfo.InvariantInfo);
-        var issueDate = DateTime.Parse(
-            issueDateText,
-            DateTimeFormatInfo.InvariantInfo,
-            DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
 
-        now.IsInImmediateDecemberJanuaryFlashWindow(issueDate).Should().Be(expected);
+        now.IsInDecemberJanuaryFlashWindow(accreditationYear).Should().Be(expected);
+    }
+
+    [Test]
+    public void IsInDecemberJanuaryFlashWindow_ForAccreditationYear_UsesUkTime()
+    {
+        // 23:30 UTC on 31 Jan 2027 is still 31 Jan in the UK (GMT); 00:30 UTC on 1 Feb is not.
+        new DateTimeOffset(2027, 1, 31, 23, 30, 0, TimeSpan.Zero).IsInDecemberJanuaryFlashWindow(2026).Should().BeTrue();
+        new DateTimeOffset(2027, 2, 1, 0, 30, 0, TimeSpan.Zero).IsInDecemberJanuaryFlashWindow(2026).Should().BeFalse();
     }
 
     [TestCase("2025-11-30", false)]

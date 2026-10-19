@@ -62,38 +62,18 @@ public static class DateTimeExtensions
     }
 
     /// <summary>
-    ///     Whether <paramref name="issueDate"/> falls in the immediate UK December/January flash window
-    ///     for <paramref name="now"/>.
+    ///     Whether <paramref name="now"/> falls in the UK December/January flash window that starts in
+    ///     December of <paramref name="accreditationYear"/>: from 1 Dec Y through end of Jan Y+1.
     /// </summary>
-    /// <remarks>
-    ///     Flash only applies while <paramref name="now"/> is in December or January.
-    ///     The immediate window is:
-    ///     <list type="bullet">
-    ///         <item>In December Y: from 1 Dec Y through end of Jan Y+1</item>
-    ///         <item>In January Y: from 1 Dec Y-1 through end of Jan Y</item>
-    ///     </list>
-    ///     So a January issue from the previous window (e.g. Jan 2025 when now is Jan 2026) is excluded.
-    /// </remarks>
-    public static bool IsInImmediateDecemberJanuaryFlashWindow(
+    public static bool IsInDecemberJanuaryFlashWindow(
         this DateTimeOffset now,
-        DateTime issueDate)
+        int accreditationYear)
     {
-        if (!now.IsInDecemberJanuaryFlashWindow())
-            return false;
-
         var ukNow = TimeZoneInfo.ConvertTime(now, UkZone).DateTime;
-        var ukIssue = issueDate.Kind switch
-        {
-            DateTimeKind.Local => TimeZoneInfo.ConvertTime(issueDate, UkZone),
-            DateTimeKind.Utc => TimeZoneInfo.ConvertTimeFromUtc(issueDate, UkZone),
-            _ => TimeZoneInfo.ConvertTimeFromUtc(DateTime.SpecifyKind(issueDate, DateTimeKind.Utc), UkZone)
-        };
+        var windowStart = new DateTime(accreditationYear, 12, 1, 0, 0, 0, DateTimeKind.Unspecified);
+        var windowEnd = new DateTime(accreditationYear + 1, 2, 1, 0, 0, 0, DateTimeKind.Unspecified);
 
-        var windowStartYear = ukNow.Month == 12 ? ukNow.Year : ukNow.Year - 1;
-        var windowStart = new DateTime(windowStartYear, 12, 1, 0, 0, 0, DateTimeKind.Unspecified);
-        var windowEnd = new DateTime(windowStartYear + 1, 2, 1, 0, 0, 0, DateTimeKind.Unspecified);
-
-        return ukIssue >= windowStart && ukIssue < windowEnd;
+        return ukNow >= windowStart && ukNow < windowEnd;
     }
 
     /// <summary>
@@ -101,10 +81,9 @@ public static class DateTimeExtensions
     ///     i.e. whether the UK calendar month is December or January.
     /// </summary>
     /// <remarks>
-    ///     Use this when there is no specific PRN issue date to check against (e.g. deciding
-    ///     whether to show flash-related UI at the page level). To check whether a specific
-    ///     PRN's issue date falls in the immediate window, use
-    ///     <see cref="IsInImmediateDecemberJanuaryFlashWindow(DateTimeOffset, DateTime)"/> instead.
+    ///     Use this when there is no specific PRN accreditation year to check against (e.g. deciding
+    ///     whether to show flash-related UI at the page level). To check a specific PRN's
+    ///     accreditation year, use <see cref="IsInDecemberJanuaryFlashWindow(DateTimeOffset, int)"/> instead.
     /// </remarks>
     public static bool IsInDecemberJanuaryFlashWindow(this DateTimeOffset now)
     {
