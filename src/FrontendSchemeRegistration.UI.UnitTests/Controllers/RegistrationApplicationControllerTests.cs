@@ -1059,17 +1059,69 @@ public class RegistrationApplicationControllerTests
     }
 
     [Test]
-    public async Task AdditionalInformation_PutsTheSubmissionIdFromTheQueryOnTheForm()
+    public async Task AdditionalInformation_WithSubmissionId_ShowsThatSubmission_WhenTheSessionHoldsAnotherAlreadySubmittedRegistration()
+    {
+        // Arrange - e.g. another tab has just submitted its registration, then the user returns to this one with the back button
+        var submissionId = Guid.NewGuid();
+        var otherSubmission = CreateReadyToSubmitSession(Guid.NewGuid());
+        otherSubmission.RegistrationApplicationSubmittedDate = DateTime.UtcNow;
+        SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(otherSubmission);
+        SetupRegistrationYear(2026);
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), 2026, RegistrationJourney.CsoLargeProducer, It.IsAny<bool?>()))
+            .ReturnsAsync(CreateReadyToSubmitSession(submissionId));
+
+        // Act
+        var result = await SystemUnderTest.AdditionalInformation(submissionId, RegistrationJourney.CsoLargeProducer);
+
+        // Assert
+        result.Should().BeOfType<ViewResult>().Which.Model.As<AdditionalInformationViewModel>().SubmissionId.Should().Be(submissionId);
+    }
+
+    [Test]
+    public async Task AdditionalInformation_RedirectsToRoot_WhenTheSessionHoldsAnotherRegistrationAndSubmissionIdIsNotTheCurrentSubmission()
+    {
+        // Arrange
+        SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(CreateReadyToSubmitSession(Guid.NewGuid()));
+        SetupRegistrationYear(2026);
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<RegistrationJourney?>(), It.IsAny<bool?>()))
+            .ReturnsAsync(CreateReadyToSubmitSession(Guid.NewGuid()));
+
+        // Act
+        var result = await SystemUnderTest.AdditionalInformation(Guid.NewGuid());
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>().Which.Url.Should().Be($"~{PagePaths.Root}");
+    }
+
+    [Test]
+    public async Task AdditionalInformation_WithSubmissionId_LoadsThatSubmission_WhenThereIsNoSession()
+    {
+        // Arrange - e.g. the session has expired
+        var submissionId = Guid.NewGuid();
+        SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync((RegistrationApplicationSession)null);
+        SetupRegistrationYear(2026);
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), 2026, It.IsAny<RegistrationJourney?>(), It.IsAny<bool?>()))
+            .ReturnsAsync(CreateReadyToSubmitSession(submissionId));
+
+        // Act
+        var result = await SystemUnderTest.AdditionalInformation(submissionId);
+
+        // Assert
+        result.Should().BeOfType<ViewResult>().Which.Model.As<AdditionalInformationViewModel>().SubmissionId.Should().Be(submissionId);
+    }
+
+    [Test]
+    public async Task AdditionalInformation_UsesTheSession_WhenItHoldsTheRequestedSubmission()
     {
         // Arrange
         var submissionId = Guid.NewGuid();
-        SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(CreateReadyToSubmitSession(Guid.NewGuid()));
+        SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(CreateReadyToSubmitSession(submissionId));
 
         // Act
-        var result = await SystemUnderTest.AdditionalInformation(submissionId) as ViewResult;
+        var result = await SystemUnderTest.AdditionalInformation(submissionId);
 
         // Assert
-        result.Model.As<AdditionalInformationViewModel>().SubmissionId.Should().Be(submissionId);
+        result.Should().BeOfType<ViewResult>().Which.Model.As<AdditionalInformationViewModel>().SubmissionId.Should().Be(submissionId);
         RegistrationApplicationService.Verify(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<RegistrationJourney?>(), It.IsAny<bool?>()), Times.Never);
     }
 

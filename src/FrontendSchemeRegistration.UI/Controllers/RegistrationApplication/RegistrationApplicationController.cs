@@ -353,13 +353,22 @@ public class RegistrationApplicationController(
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
     [Route(PagePaths.AdditionalInformation)]
-    public async Task<IActionResult> AdditionalInformation([FromQuery] Guid? submissionId = null)
+    public async Task<IActionResult> AdditionalInformation([FromQuery] Guid? submissionId = null, [FromQuery] RegistrationJourney? registrationJourney = null)
     {
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
         var registrationYear = registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
 
         var session = await sessionManager.GetSessionAsync(HttpContext.Session);
+        if (submissionId is not null && session?.SubmissionId != submissionId)
+        {
+            // Another tab or a back link has put a different registration in the session, so load this one from the gateway
+            session = await GetSessionForSubmission(userData, submissionId, registrationYear, registrationJourney);
+            if (session is null)
+            {
+                return Redirect($"~{PagePaths.Root}");
+            }
+        }
         
         session.Journey = [PagePaths.RegistrationTaskList, PagePaths.AdditionalInformation];
         SetBackLink(session, PagePaths.AdditionalInformation, registrationYear, session.RegistrationJourney);
@@ -422,7 +431,7 @@ public class RegistrationApplicationController(
             await registrationApplicationService.CreateRegistrationApplicationEvent(HttpContext.Session, model.AdditionalInformationText, null, SubmissionType.RegistrationApplicationSubmitted);
         }
 
-        return RedirectToAction(nameof(SubmitRegistrationRequest), new { registrationyear = registrationYear, submissionId });
+        return RedirectToAction(nameof(SubmitRegistrationRequest), new { submissionId, registrationyear = registrationYear });
     }
 
     [HttpGet]
