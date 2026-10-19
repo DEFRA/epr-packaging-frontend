@@ -353,17 +353,13 @@ public class RegistrationApplicationController(
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
     [Route(PagePaths.AdditionalInformation)]
-    public async Task<IActionResult> AdditionalInformation([FromQuery] Guid? submissionId = null, [FromQuery] RegistrationJourney? registrationJourney = null)
+    public async Task<IActionResult> AdditionalInformation([FromQuery] Guid? submissionId = null)
     {
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
         var registrationYear = registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
 
-        var session = await GetSessionForSubmission(userData, submissionId, registrationJourney);
-        if (session is null)
-        {
-            return Redirect($"~{PagePaths.Root}");
-        }
+        var session = await sessionManager.GetSessionAsync(HttpContext.Session);
         
         session.Journey = [PagePaths.RegistrationTaskList, PagePaths.AdditionalInformation];
         SetBackLink(session, PagePaths.AdditionalInformation, registrationYear, session.RegistrationJourney);
@@ -388,7 +384,7 @@ public class RegistrationApplicationController(
 
         return View(new AdditionalInformationViewModel
         {
-            SubmissionId = session.SubmissionId,
+            SubmissionId = submissionId,
             RegulatorNation = session.RegulatorNation,
             OrganisationName = organisation.Name!,
             OrganisationNumber = organisation.OrganisationNumber.ToReferenceNumberFormat(),
@@ -415,7 +411,7 @@ public class RegistrationApplicationController(
         }
 
         // Load the submission being submitted from the gateway, so the event isn't sent for whichever registration another tab or a back link last put in the session
-        var session = await GetSessionForSubmission(userData, submissionId, registrationJourney);
+        var session = await GetSessionForSubmission(userData, submissionId, registrationYear, registrationJourney);
         if (session is null)
         {
             return Redirect($"~{PagePaths.Root}");
@@ -573,16 +569,26 @@ public class RegistrationApplicationController(
         await sessionManager.SaveSessionAsync(HttpContext.Session, session);
     }
 
-    private async Task<RegistrationApplicationSession?> GetSessionForSubmission(UserData userData, Guid? submissionId, RegistrationJourney? registrationJourney)
+    private async Task<RegistrationApplicationSession?> GetSessionForSubmission(UserData userData, Guid? submissionId, int? registrationYear, RegistrationJourney? registrationJourney)
     {
         if (submissionId is null)
         {
-            // Pages rendered before the submission id was added to the link still post without one
-            logger.LogWarning("Submit registration page requested without a submission id; using the session");
+            // Pages rendered before the submission id was added to the form still post without one
+            logger.LogWarning("Registration application submitted without a submission id; using the session");
             return await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
         }
 
-        return await registrationApplicationService.GetRegistrationApplicationSessionForSubmissionAsync(HttpContext.Session, userData.Organisations[0], submissionId.Value, registrationJourney);
+
+        // Reload the session from the gateway as the task list does, and only use it if it is for the requested submission
+        var isResubmission = !string.IsNullOrWhiteSpace(HttpContext.Request.Query["IsResubmission"]);
+        var session = await registrationApplicationService.GetRegistrationApplicationSession(HttpContext.Session, userData.Organisations[0], registrationYear.GetValueOrDefault(), registrationJourney, isResubmission);
+        if (session.SubmissionId != submissionId)
+        {
+            logger.LogWarning("Submission {SubmissionId} is not the current registration submission for {RegistrationYear}; found {CurrentSubmissionId}", submissionId, registrationYear, session.SubmissionId);
+            return null;
+        }
+
+        return session;
     }
 
     private void SetBackLink(RegistrationApplicationSession session, string currentPagePath, int? registrationYear = null, RegistrationJourney? registrationJourney = null, string? nation = null)
