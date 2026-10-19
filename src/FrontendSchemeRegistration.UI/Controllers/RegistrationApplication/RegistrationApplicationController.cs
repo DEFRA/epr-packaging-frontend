@@ -1,4 +1,5 @@
 using EPR.Common.Authorization.Constants;
+using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
@@ -93,6 +94,7 @@ public class RegistrationApplicationController(
 
         return View(new RegistrationTaskListViewModel
         {
+            SubmissionId = session.SubmissionId,
             IsResubmission = session.IsResubmission,
             OrganisationName = organisation.Name,
             IsComplianceScheme = session.IsComplianceScheme,
@@ -351,13 +353,17 @@ public class RegistrationApplicationController(
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
     [Route(PagePaths.AdditionalInformation)]
-    public async Task<IActionResult> AdditionalInformation()
+    public async Task<IActionResult> AdditionalInformation([FromQuery] Guid? submissionId = null, [FromQuery] RegistrationJourney? registrationJourney = null)
     {
         var userData = User.GetUserData();
         var organisation = userData.Organisations[0];
         var registrationYear = registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
 
-        var session = await sessionManager.GetSessionAsync(HttpContext.Session);
+        var session = await GetSessionForSubmission(userData, submissionId, registrationJourney);
+        if (session is null)
+        {
+            return Redirect($"~{PagePaths.Root}");
+        }
         
         session.Journey = [PagePaths.RegistrationTaskList, PagePaths.AdditionalInformation];
         SetBackLink(session, PagePaths.AdditionalInformation, registrationYear, session.RegistrationJourney);
@@ -382,6 +388,7 @@ public class RegistrationApplicationController(
 
         return View(new AdditionalInformationViewModel
         {
+            SubmissionId = session.SubmissionId,
             RegulatorNation = session.RegulatorNation,
             OrganisationName = organisation.Name!,
             OrganisationNumber = organisation.OrganisationNumber.ToReferenceNumberFormat(),
@@ -396,16 +403,22 @@ public class RegistrationApplicationController(
     [HttpPost]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
     [Route(PagePaths.AdditionalInformation)]
-    public async Task<IActionResult> AdditionalInformation(AdditionalInformationViewModel model)
+    public async Task<IActionResult> AdditionalInformation(AdditionalInformationViewModel model, [FromQuery] Guid? submissionId = null, [FromQuery] RegistrationJourney? registrationJourney = null)
     {
         var registrationYear = registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
 
-        var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
-
-        var isAuthorisedUser = User.GetUserData().ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved);
+        var userData = User.GetUserData();
+        var isAuthorisedUser = userData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved);
         if (!isAuthorisedUser)
         {
             return RedirectToAction(nameof(UnauthorisedUserWarnings));
+        }
+
+        // Load the submission being submitted from the gateway, so the event isn't sent for whichever registration another tab or a back link last put in the session
+        var session = await GetSessionForSubmission(userData, submissionId, registrationJourney);
+        if (session is null)
+        {
+            return Redirect($"~{PagePaths.Root}");
         }
 
         if (session is { RegistrationApplicationSubmitted: false, FileUploadStatus: RegistrationTaskListStatus.Completed, PaymentViewStatus: RegistrationTaskListStatus.Completed })
@@ -558,6 +571,18 @@ public class RegistrationApplicationController(
         session.Journey.AddIfNotExists(nextPagePath);
 
         await sessionManager.SaveSessionAsync(HttpContext.Session, session);
+    }
+
+    private async Task<RegistrationApplicationSession?> GetSessionForSubmission(UserData userData, Guid? submissionId, RegistrationJourney? registrationJourney)
+    {
+        if (submissionId is null)
+        {
+            // Pages rendered before the submission id was added to the link still post without one
+            logger.LogWarning("Submit registration page requested without a submission id; using the session");
+            return await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
+        }
+
+        return await registrationApplicationService.GetRegistrationApplicationSessionForSubmissionAsync(HttpContext.Session, userData.Organisations[0], submissionId.Value, registrationJourney);
     }
 
     private void SetBackLink(RegistrationApplicationSession session, string currentPagePath, int? registrationYear = null, RegistrationJourney? registrationJourney = null, string? nation = null)

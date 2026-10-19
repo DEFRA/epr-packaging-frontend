@@ -384,6 +384,7 @@ public class RegistrationApplicationControllerTests
 
         result.Model.As<RegistrationTaskListViewModel>().Should().BeEquivalentTo(new RegistrationTaskListViewModel
         {
+            SubmissionId = registrationApplicationDetails.SubmissionId,
             OrganisationName = _userData.Organisations[0].Name!,
             OrganisationNumber = _userData.Organisations[0].OrganisationNumber.ToReferenceNumberFormat(),
             FileUploadStatus = RegistrationTaskListStatus.Pending,
@@ -444,6 +445,7 @@ public class RegistrationApplicationControllerTests
 
         result.Model.As<RegistrationTaskListViewModel>().Should().BeEquivalentTo(new RegistrationTaskListViewModel
         {
+            SubmissionId = registrationApplicationDetails.SubmissionId,
             OrganisationName = _userData.Organisations[0].Name,
             OrganisationNumber = _userData.Organisations[0].OrganisationNumber.ToReferenceNumberFormat(),
             FileUploadStatus = RegistrationTaskListStatus.Completed,
@@ -500,6 +502,7 @@ public class RegistrationApplicationControllerTests
 
         result.Model.As<RegistrationTaskListViewModel>().Should().BeEquivalentTo(new RegistrationTaskListViewModel
         {
+            SubmissionId = registrationApplicationDetails.SubmissionId,
             OrganisationName = _userData.Organisations[0].Name,
             OrganisationNumber = _userData.Organisations[0].OrganisationNumber.ToReferenceNumberFormat(),
             FileUploadStatus = RegistrationTaskListStatus.Completed,
@@ -566,6 +569,7 @@ public class RegistrationApplicationControllerTests
 
         result.Model.As<RegistrationTaskListViewModel>().Should().BeEquivalentTo(new RegistrationTaskListViewModel
         {
+            SubmissionId = registrationApplicationDetails.SubmissionId,
             OrganisationName = _userData.Organisations[0].Name,
             OrganisationNumber = _userData.Organisations[0].OrganisationNumber.ToReferenceNumberFormat(),
             FileUploadStatus = RegistrationTaskListStatus.Completed,
@@ -608,6 +612,7 @@ public class RegistrationApplicationControllerTests
 
         result.Model.As<RegistrationTaskListViewModel>().Should().BeEquivalentTo(new RegistrationTaskListViewModel
         {
+            SubmissionId = registrationApplicationDetails.SubmissionId,
             OrganisationName = _userData.Organisations[0].Name,
             OrganisationNumber = _userData.Organisations[0].OrganisationNumber.ToReferenceNumberFormat(),
             FileUploadStatus = RegistrationTaskListStatus.NotStarted,
@@ -1044,6 +1049,7 @@ public class RegistrationApplicationControllerTests
 
         result.Model.As<AdditionalInformationViewModel>().Should().BeEquivalentTo(new AdditionalInformationViewModel
         {
+            SubmissionId = Session.SubmissionId,
             IsComplianceScheme = false,
             RegulatorNation = Session.RegulatorNation,
             OrganisationName = _userData.Organisations[0].Name,
@@ -1052,6 +1058,102 @@ public class RegistrationApplicationControllerTests
             RegistrationJourney = Session.RegistrationJourney
         });
     }
+
+    [Test]
+    public async Task AdditionalInformation_WithSubmissionId_ShowsTheRequestedSubmissionRatherThanTheSession()
+    {
+        // Arrange - the session holds another registration, e.g. from another tab
+        var submissionId = Guid.NewGuid();
+        SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new RegistrationApplicationSession { SubmissionId = Guid.NewGuid(), RegulatorNation = "GB-WLS" });
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSessionForSubmissionAsync(It.IsAny<ISession>(), It.IsAny<Organisation>(), submissionId, RegistrationJourney.DirectLargeProducer))
+            .ReturnsAsync(CreateReadyToSubmitSession(submissionId));
+
+        // Act
+        var result = await SystemUnderTest.AdditionalInformation(submissionId, RegistrationJourney.DirectLargeProducer) as ViewResult;
+
+        // Assert
+        var model = result.Model.As<AdditionalInformationViewModel>();
+        model.SubmissionId.Should().Be(submissionId);
+        model.RegulatorNation.Should().Be("GB-SCT");
+    }
+
+    [Test]
+    public async Task AdditionalInformation_RedirectsToRoot_WhenSubmissionIdIsNotTheOrganisationsCurrentSubmission()
+    {
+        // Arrange
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSessionForSubmissionAsync(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<Guid>(), It.IsAny<RegistrationJourney?>()))
+            .ReturnsAsync((RegistrationApplicationSession?)null);
+
+        // Act
+        var result = await SystemUnderTest.AdditionalInformation(Guid.NewGuid());
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>().Which.Url.Should().Be($"~{PagePaths.Root}");
+    }
+
+    [Test]
+    [TestCase("Approved Person")]
+    [TestCase("Delegated Person")]
+    public async Task AdditionalInformationPost_WithSubmissionId_ReloadsTheSubmissionFromTheGatewayBeforeSendingTheEvent(string role)
+    {
+        // Arrange - the session holds another registration, e.g. from another tab or a back link
+        var submissionId = Guid.NewGuid();
+        _userData.ServiceRole = role;
+        SetupUserData(_userData);
+        SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new RegistrationApplicationSession { SubmissionId = Guid.NewGuid() });
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSessionForSubmissionAsync(It.IsAny<ISession>(), It.IsAny<Organisation>(), submissionId, It.IsAny<RegistrationJourney?>()))
+            .ReturnsAsync(CreateReadyToSubmitSession(submissionId));
+
+        // Act
+        var result = await SystemUnderTest.AdditionalInformation(new AdditionalInformationViewModel { AdditionalInformationText = "Extra details" }, submissionId);
+
+        // Assert
+        result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be(nameof(RegistrationApplicationController.SubmitRegistrationRequest));
+        RegistrationApplicationService.Verify(x => x.GetRegistrationApplicationSessionForSubmissionAsync(It.IsAny<ISession>(), It.IsAny<Organisation>(), submissionId, It.IsAny<RegistrationJourney?>()), Times.Once);
+        RegistrationApplicationService.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<ISession>(), "Extra details", null, SubmissionType.RegistrationApplicationSubmitted), Times.Once);
+    }
+
+    [Test]
+    public async Task AdditionalInformationPost_DoesNotSendTheEvent_WhenSubmissionIdIsNotTheOrganisationsCurrentSubmission()
+    {
+        // Arrange
+        _userData.ServiceRole = "Approved Person";
+        SetupUserData(_userData);
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSessionForSubmissionAsync(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<Guid>(), It.IsAny<RegistrationJourney?>()))
+            .ReturnsAsync((RegistrationApplicationSession?)null);
+
+        // Act
+        var result = await SystemUnderTest.AdditionalInformation(new AdditionalInformationViewModel { AdditionalInformationText = "Extra details" }, Guid.NewGuid());
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>().Which.Url.Should().Be($"~{PagePaths.Root}");
+        RegistrationApplicationService.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<ISession>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<SubmissionType>()), Times.Never);
+    }
+
+    [Test]
+    public async Task AdditionalInformationPost_WithoutSubmissionId_UsesTheSession()
+    {
+        // Arrange - a page rendered before the submission id was added to the form
+        SetupUserData(new UserData { ServiceRole = "Approved Person" });
+        SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(CreateReadyToSubmitSession(Guid.NewGuid()));
+
+        // Act
+        await SystemUnderTest.AdditionalInformation(new AdditionalInformationViewModel { AdditionalInformationText = "Extra details" });
+
+        // Assert
+        RegistrationApplicationService.Verify(x => x.GetRegistrationApplicationSessionForSubmissionAsync(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<Guid>(), It.IsAny<RegistrationJourney?>()), Times.Never);
+        RegistrationApplicationService.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<ISession>(), "Extra details", null, SubmissionType.RegistrationApplicationSubmitted), Times.Once);
+    }
+
+    private static RegistrationApplicationSession CreateReadyToSubmitSession(Guid submissionId) => new()
+    {
+        SubmissionId = submissionId,
+        Journey = [PagePaths.RegistrationTaskList, PagePaths.AdditionalInformation],
+        ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+        RegistrationFeePaymentMethod = "PayByPhone",
+        RegulatorNation = "GB-SCT",
+        RegistrationFeeCalculationDetails = [new RegistrationFeeCalculationDetails { OrganisationId = "1", OrganisationSize = "Large" }]
+    };
 
     [Test]
     [TestCase("Approved Person")]

@@ -253,6 +253,32 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         return session;
     }
 
+    /// <summary>
+    /// Reloads the registration application session from the gateway for the given submission, so pages that act on a
+    /// submission don't rely on whichever registration was last loaded into the shared session (another tab or a back
+    /// link can have replaced it). Returns null when the submission isn't the organisation's current submission for its
+    /// registration period.
+    /// </summary>
+    public async Task<RegistrationApplicationSession?> GetRegistrationApplicationSessionForSubmissionAsync(ISession httpSession, Organisation organisation, Guid submissionId, RegistrationJourney? registrationJourney)
+    {
+        var submission = await _submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
+        var registrationYear = ParseRegistrationYear(submission?.SubmissionPeriod);
+        if (submission is null || registrationYear is null)
+        {
+            logger.LogWarning("Registration submission {SubmissionId} was not found or has no registration period", submissionId);
+            return null;
+        }
+
+        var session = await GetRegistrationApplicationSession(httpSession, organisation, registrationYear.Value, registrationJourney ?? submission.RegistrationJourney);
+        if (session.SubmissionId != submissionId)
+        {
+            logger.LogWarning("Registration submission {SubmissionId} is not the current submission for {SubmissionPeriod}; found {CurrentSubmissionId}", submissionId, submission.SubmissionPeriod, session.SubmissionId);
+            return null;
+        }
+
+        return session;
+    }
+
     public async Task<FeeCalculationBreakdownViewModel?> GetProducerRegistrationFees(ISession httpSession)
     {
         var session = await sessionManager.GetSessionAsync(httpSession);
@@ -884,6 +910,8 @@ public class RegistrationApplicationService : IRegistrationApplicationService
 public interface IRegistrationApplicationService
 {
     Task<RegistrationApplicationSession> GetRegistrationApplicationSession(ISession httpSession, Organisation organisation, int registrationYear, RegistrationJourney? registrationJourney, bool? isResubmission = null);
+
+    Task<RegistrationApplicationSession?> GetRegistrationApplicationSessionForSubmissionAsync(ISession httpSession, Organisation organisation, Guid submissionId, RegistrationJourney? registrationJourney);
 
     Task<FeeCalculationBreakdownViewModel?> GetProducerRegistrationFees(ISession httpSession);
 

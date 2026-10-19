@@ -4388,6 +4388,122 @@ public class RegistrationApplicationServiceTests
         result.RegulatorNation.Should().BeNull();
     }
 
+    [Test]
+    public async Task GetRegistrationApplicationSessionForSubmissionAsync_SendsEventForRequestedSubmission_WhenSessionHoldsAnotherRegistration()
+    {
+        // Arrange - another tab (or a back link) left a different registration in the session
+        var organisation = CreateSubmitDetailsOrganisation();
+        var submission = CreateSubmitDetailsSubmission("January to December 2026", RegistrationJourney.DirectLargeProducer);
+        var storedSession = new RegistrationApplicationSession { SubmissionId = Guid.NewGuid(), ApplicationReferenceNumber = "OTHER-TAB-REF", RegistrationJourney = RegistrationJourney.DirectSmallProducer };
+        SetupForSubmissionGateway(submission, new RegistrationApplicationDetails { SubmissionId = submission.Id, ApplicationReferenceNumber = "REQUESTED-REF", IsResubmission = false });
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(_httpSession)).ReturnsAsync(() => storedSession);
+        _sessionManagerMock.Setup(x => x.SaveSessionAsync(_httpSession, It.IsAny<RegistrationApplicationSession>()))
+            .Callback<ISession, RegistrationApplicationSession>((_, saved) => storedSession = saved)
+            .Returns(Task.CompletedTask);
+
+        // Act
+        var result = await _service.GetRegistrationApplicationSessionForSubmissionAsync(_httpSession, organisation, submission.Id, null);
+        await _service.CreateRegistrationApplicationEvent(_httpSession, "comments", null, SubmissionType.RegistrationApplicationSubmitted);
+
+        // Assert
+        result.Should().NotBeNull();
+        result!.SubmissionId.Should().Be(submission.Id);
+        _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(
+            It.Is<RegistrationApplicationData>(d => d.SubmissionId == submission.Id),
+            "REQUESTED-REF",
+            false,
+            SubmissionType.RegistrationApplicationSubmitted,
+            It.IsAny<RegistrationJourney?>()), Times.Once);
+    }
+
+    [Test]
+    public async Task GetRegistrationApplicationSessionForSubmissionAsync_LoadsDetailsForSubmissionYearAndJourney()
+    {
+        // Arrange
+        var submission = CreateSubmitDetailsSubmission("January to December 2026", RegistrationJourney.DirectSmallProducer);
+        SetupForSubmissionGateway(submission, new RegistrationApplicationDetails { SubmissionId = submission.Id });
+        SetupSubmitDetailsSessions(new RegistrationSession());
+
+        // Act
+        var result = await _service.GetRegistrationApplicationSessionForSubmissionAsync(_httpSession, CreateSubmitDetailsOrganisation(), submission.Id, null);
+
+        // Assert
+        result.Should().NotBeNull();
+        _submissionServiceMock.Verify(x => x.GetRegistrationApplicationDetails(It.Is<GetRegistrationApplicationDetailsRequest>(r =>
+            r.SubmissionPeriod == "January to December 2026"
+            && r.RegistrationJourney == nameof(RegistrationJourney.DirectSmallProducer))), Times.Once);
+    }
+
+    [Test]
+    public async Task GetRegistrationApplicationSessionForSubmissionAsync_UsesRequestedJourney_WhenGiven()
+    {
+        // Arrange
+        var submission = CreateSubmitDetailsSubmission("January to December 2026", registrationJourney: null);
+        SetupForSubmissionGateway(submission, new RegistrationApplicationDetails { SubmissionId = submission.Id });
+        SetupSubmitDetailsSessions(new RegistrationSession());
+
+        // Act
+        await _service.GetRegistrationApplicationSessionForSubmissionAsync(_httpSession, CreateSubmitDetailsOrganisation(), submission.Id, RegistrationJourney.CsoLargeProducer);
+
+        // Assert
+        _submissionServiceMock.Verify(x => x.GetRegistrationApplicationDetails(It.Is<GetRegistrationApplicationDetailsRequest>(r =>
+            r.RegistrationJourney == nameof(RegistrationJourney.CsoLargeProducer))), Times.Once);
+    }
+
+    [Test]
+    public async Task GetRegistrationApplicationSessionForSubmissionAsync_ReturnsNull_WhenSubmissionNotFound()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(submissionId)).ReturnsAsync((RegistrationSubmission?)null);
+
+        // Act
+        var result = await _service.GetRegistrationApplicationSessionForSubmissionAsync(_httpSession, CreateSubmitDetailsOrganisation(), submissionId, null);
+
+        // Assert
+        result.Should().BeNull();
+        _submissionServiceMock.Verify(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()), Times.Never);
+    }
+
+    [Test]
+    public async Task GetRegistrationApplicationSessionForSubmissionAsync_ReturnsNull_WhenSubmissionHasNoRegistrationPeriod()
+    {
+        // Arrange
+        var submission = CreateSubmitDetailsSubmission(null, registrationJourney: null);
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(submission.Id)).ReturnsAsync(submission);
+
+        // Act
+        var result = await _service.GetRegistrationApplicationSessionForSubmissionAsync(_httpSession, CreateSubmitDetailsOrganisation(), submission.Id, null);
+
+        // Assert
+        result.Should().BeNull();
+        _submissionServiceMock.Verify(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()), Times.Never);
+    }
+
+    [Test]
+    public async Task GetRegistrationApplicationSessionForSubmissionAsync_ReturnsNull_WhenSubmissionIsNotTheCurrentOneForItsPeriod()
+    {
+        // Arrange
+        var submission = CreateSubmitDetailsSubmission("January to December 2026", RegistrationJourney.DirectLargeProducer);
+        SetupForSubmissionGateway(submission, new RegistrationApplicationDetails { SubmissionId = Guid.NewGuid() });
+        SetupSubmitDetailsSessions(new RegistrationSession());
+
+        // Act
+        var result = await _service.GetRegistrationApplicationSessionForSubmissionAsync(_httpSession, CreateSubmitDetailsOrganisation(), submission.Id, null);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    private void SetupForSubmissionGateway(RegistrationSubmission submission, RegistrationApplicationDetails details)
+    {
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(submission.Id)).ReturnsAsync(submission);
+        _submissionServiceMock.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>())).ReturnsAsync(details);
+        _frontEndSessionManagerMock.Setup(x => x.GetSessionAsync(_httpSession)).ReturnsAsync(new FrontendSchemeRegistrationSession());
+        _mockRegistrationPeriodProvider.Setup(x => x.GetRegistrationWindow(It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<int>()))
+            .Returns(CreateRegistrationWindow(WindowType.DirectLargeProducer));
+    }
+
     private static RegistrationSubmission CreateSubmitDetailsSubmission(string? submissionPeriod, RegistrationJourney? registrationJourney) => new()
     {
         Id = Guid.NewGuid(),
