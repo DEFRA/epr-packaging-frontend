@@ -307,6 +307,7 @@
 
             var view = result.Should().BeOfType<ViewResult>().Which;
             view.ViewName.Should().Be("SelectMultiplePrnsEmpty");
+            view.Model.Should().BeSameAs(zeroAwaitngPrns);
         }
 
         [Test]
@@ -333,6 +334,7 @@
             var session = new FrontendSchemeRegistrationSession();
             session.PrnSession.SelectedObligationYear = 2027;
             _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+            _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)).ReturnsAsync(true);
             _prnServiceMock
                 .Setup(x => x.GetPrnAwaitingAcceptanceSearchResultsForYearAsync(request, 2027))
                 .ReturnsAsync(awaitingPrns);
@@ -360,6 +362,47 @@
             result.Should().BeOfType<ViewResult>().Which.Model.Should().BeSameAs(awaitingPrns);
             awaitingPrns.SelectedObligationYear.Should().Be(2026);
             _prnServiceMock.Verify(x => x.GetPrnAwaitingAcceptanceSearchResultsAsync(It.IsAny<SearchPrnsViewModel>()), Times.Never);
+        }
+
+        [Test]
+        public async Task SelectMultiplePrns_WhenMultiYearDisabled_IgnoresSelectedObligationYear()
+        {
+            var request = _fixture.Create<SearchPrnsViewModel>();
+            var awaitingPrns = _fixture.Create<AwaitingAcceptancePrnsViewModel>();
+            var session = new FrontendSchemeRegistrationSession();
+            session.PrnSession.SelectedObligationYear = 2027;
+            _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+            _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)).ReturnsAsync(false);
+            _prnServiceMock.Setup(x => x.GetPrnAwaitingAcceptanceSearchResultsAsync(request)).ReturnsAsync(awaitingPrns);
+
+            var result = await _controller.SelectMultiplePrns(request);
+
+            result.Should().BeOfType<ViewResult>().Which.Model.Should().BeSameAs(awaitingPrns);
+            awaitingPrns.SelectedObligationYear.Should().BeNull();
+            _prnServiceMock.Verify(x => x.GetPrnAwaitingAcceptanceSearchResultsForYearAsync(It.IsAny<SearchPrnsViewModel>(), It.IsAny<int>()), Times.Never);
+        }
+
+        [Test]
+        public async Task SelectMultiplePrns_WhenMultiYearEnabledAndNoMatches_EmptyViewKeepsTheYear()
+        {
+            var request = new SearchPrnsViewModel();
+            var session = new FrontendSchemeRegistrationSession();
+            session.PrnSession.SelectedObligationYear = 2027;
+            var zeroAwaitingPrns = new AwaitingAcceptancePrnsViewModel
+            {
+                Prns = new List<AwaitingAcceptanceResultViewModel>()
+            };
+            _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+            _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)).ReturnsAsync(true);
+            _prnServiceMock
+                .Setup(x => x.GetPrnAwaitingAcceptanceSearchResultsForYearAsync(request, 2027))
+                .ReturnsAsync(zeroAwaitingPrns);
+
+            var view = (await _controller.SelectMultiplePrns(request)).Should().BeOfType<ViewResult>().Which;
+
+            view.ViewName.Should().Be("SelectMultiplePrnsEmpty");
+            view.Model.Should().BeSameAs(zeroAwaitingPrns);
+            zeroAwaitingPrns.SelectedObligationYear.Should().Be(2027);
         }
 
         // Accept or reject single or multiple Prns. Step 1 of 5 zero selections

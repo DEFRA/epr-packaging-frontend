@@ -1,0 +1,16 @@
+@*
+    Selections kept from another year's list can't be accepted into this one, so start afresh when the year changes.
+    Included inside the page's onload script. The empty list uses it too: that view has no checkboxes, but a later
+    year must not inherit ticks stored for this one.
+*@
+const selectionYearKey = "prnSelectionYear";
+const pageYear = "@Model?.SelectedObligationYear";
+if (sessionStorage.getItem(selectionYearKey) !== pageYear) {
+    for (let i = sessionStorage.length - 1; i >= 0; i--) {
+        const key = sessionStorage.key(i);
+        if (key.startsWith("chkBoxSelectPrn_")) {
+            sessionStorage.removeItem(key);
+        }
+    }
+    sessionStorage.setItem(selectionYearKey, pageYear);
+}

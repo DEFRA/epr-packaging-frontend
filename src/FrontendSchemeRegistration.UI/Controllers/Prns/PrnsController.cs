@@ -93,29 +93,31 @@ public class PrnsController : Controller
             request.FilterBy = PrnConstants.Filters.AwaitingAll;
         }
 
-        // The Manage Obligations year (set on the Choose a year page) limits the list to PRNs that can be accepted into it
+        // The Manage Obligations year (set on the Choose a year page) limits the list to PRNs that can be accepted into it.
+        // With multi-year obligations off, a year left in the session must not filter the list: the obligations page
+        // ignores it and shows the compliance year.
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-        // Reaching the list without choosing a year (bookmark, fresh sign-in) falls back to the current compliance year
-        var selectedYear = session?.PrnSession.SelectedObligationYear;
-        if (selectedYear is null && await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
+        int? selectedYear = null;
+        if (await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
         {
-            selectedYear = _timeProvider.GetUtcNow().GetComplianceYear();
+            // Reaching the list without choosing a year (bookmark, fresh sign-in) falls back to the current compliance year
+            selectedYear = session?.PrnSession.SelectedObligationYear ?? _timeProvider.GetUtcNow().GetComplianceYear();
         }
 
         var awaitingAcceptanceViewModel = selectedYear is { } year
             ? await _prnService.GetPrnAwaitingAcceptanceSearchResultsForYearAsync(request, year)
             : await _prnService.GetPrnAwaitingAcceptanceSearchResultsAsync(request);
 
+        awaitingAcceptanceViewModel.SelectedObligationYear = selectedYear;
+
         // stop, there are zero PRNs awaiting acceptance
         if ((awaitingAcceptanceViewModel.Prns.Count == 0) && (request.FilterBy == PrnConstants.Filters.AwaitingAll))
         {
-            return View("SelectMultiplePrnsEmpty");
+            return View("SelectMultiplePrnsEmpty", awaitingAcceptanceViewModel);
         }
 
 		await SetSessionBackLinkForShowPrnPage(Url?.Content(string.Concat("~/", PagePaths.Prns.ShowAwaitingAcceptance)));
         ViewBag.BackLinkToDisplay = Url.Content($"~/{PagePaths.Prns.ObligationsHome}");
-
-        awaitingAcceptanceViewModel.SelectedObligationYear = selectedYear;
         awaitingAcceptanceViewModel.SelectedFilter = request.FilterBy;
         awaitingAcceptanceViewModel.SelectedSort = request.SortBy;
         var qs = $"?sortBy={request.SortBy}&filterBy={request.FilterBy}&page=";
