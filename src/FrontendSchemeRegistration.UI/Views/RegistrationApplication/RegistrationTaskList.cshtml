@@ -77,8 +77,7 @@
                     <dt class="govuk-summary-list__value">
                         @if (canStartSubmitRegistrationApplicationStep)
                         {
-                            <a asp-controller="RegistrationApplication" asp-action="AdditionalInformation" asp-route-registrationyear="@Model.RegistrationYear"
-                               asp-route-registrationjourney="@Context.Request.Query["registrationjourney"]"
+                            <a asp-controller="RegistrationApplication" asp-action="AdditionalInformation" asp-route-submissionId="@Model.SubmissionId"
                                class="govuk-link govuk-link--no-visited-state">
                                 @Localizer[Model.SubmitRegistrationApplicationTask]
                             </a>
