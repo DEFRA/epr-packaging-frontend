@@ -84,6 +84,18 @@ public class PrnsObligationController : Controller
         var isCsocEnabled = await _featureManager.IsEnabledAsync(FeatureFlags.CsocEnabled);
         var viewModel = await _prnService.GetRecyclingObligationsCalculation(selectedYear, includeComplianceDeclarationStatus: isCsocEnabled);
 
+        // The backend counts awaiting notes by obligation year; the list only shows those acceptable into the year,
+        // so use the list's own total to keep the two in step
+        if (await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
+        {
+            var acceptableIntoYear = await _prnService.GetPrnAwaitingAcceptanceSearchResultsForYearAsync(
+                new SearchPrnsViewModel { PageSize = 1, FilterBy = PrnConstants.Filters.AwaitingAll }, selectedYear);
+            if (acceptableIntoYear?.PagingDetail != null)
+            {
+                viewModel.NumberOfPrnsAwaitingAcceptance = acceptableIntoYear.PagingDetail.TotalItems;
+            }
+        }
+
         if (selectedYear > _complianceYear && _timeProvider.GetUtcNow().IsInDecemberJanuaryFlashWindow())
         {
             var awaitingAcceptance = await _prnService.GetPrnsAwaitingAcceptanceAsync();

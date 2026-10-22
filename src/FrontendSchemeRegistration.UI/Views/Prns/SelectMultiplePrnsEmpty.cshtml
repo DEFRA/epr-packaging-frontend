@@ -1,7 +1,11 @@
 ﻿@using FrontendSchemeRegistration.UI.Controllers.Prns
+@using FrontendSchemeRegistration.UI.ViewModels.Prns
+
+@model AwaitingAcceptancePrnsViewModel
 
 @{
     ViewData["Title"] = Localizer["page_title"];
+    var scriptNonce = (string?)Context.Items[ContextKeys.ScriptNonceKey];
 }
 
 <main class="govuk-main-wrapper govuk-!-padding-top-4" id="select-multiple-prns">
@@ -24,3 +28,11 @@
         </div>
     </div>
 </main>
+@section Scripts
+{
+    <script type="text/javascript" nonce="@scriptNonce">
+        window.onload = function () {
+            @await Html.PartialAsync("_ClearPrnSelectionOnYearChange")
+        };
+    </script>
+}
