@@ -58,12 +58,12 @@
                 <p class="govuk-body govuk-!-margin-bottom-2">@Localizer["use_comment_box_for_additional_info_to_assist_regulator"]</p>
             }
 
-            <form asp-controller="RegistrationApplication" asp-action="AdditionalInformation" asp-route-registrationyear="@Model.RegistrationYear" asp-route-registrationjourney="@Model.RegistrationJourney" method="post">
+            <form asp-controller="RegistrationApplication" asp-action="AdditionalInformation" asp-route-registrationyear="@Model.RegistrationYear" asp-route-registrationjourney="@Model.RegistrationJourney" asp-route-submissionId="@Model.SubmissionId" method="post">
                 <span id="arialblAdditionalInfo2" class="govuk-visually-hidden">@Localizer["additional_information"]</span>
                 
                 @Html.TextAreaFor(model => model.AdditionalInformationText, new { @class = "govuk-textarea", @rows = "5", @id = "AdditionalInformation", aria_labelledby = "arialblAdditionalInfo2" })
 
-                <button class="govuk-button govuk-body" data-module="govuk-button" type="submit">
+                <button class="govuk-button govuk-body" data-module="govuk-button" data-prevent-double-click="true" type="submit">
                     @if (Model.IsResubmission)
                     {
                         @Localizer["submit_registration_update"]

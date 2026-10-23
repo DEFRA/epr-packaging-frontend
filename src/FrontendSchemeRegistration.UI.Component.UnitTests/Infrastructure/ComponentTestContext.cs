@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using MockServer;
 using MockServer.WebApi;
+using WireMock;
 using WireMock.Server;
 
 public class ComponentTestContext : IDisposable
@@ -43,6 +44,16 @@ public class ComponentTestContext : IDisposable
     }
     
     public SessionStore GetSessionStore() => _server.Services.GetRequiredService<ISessionStore>() as SessionStore;
+
+    /// <summary>
+    /// Returns the requests the mock API server has received for the given method and path.
+    /// </summary>
+    public IReadOnlyList<IRequestMessage> GetMockApiRequests(string method, string path) =>
+        _staticMockApiServer.LogEntries
+            .Select(entry => entry.RequestMessage)
+            .Where(request => string.Equals(request.Method, method, StringComparison.OrdinalIgnoreCase)
+                              && string.Equals(request.Path, path, StringComparison.OrdinalIgnoreCase))
+            .ToList();
 
     public void Dispose()
     {
