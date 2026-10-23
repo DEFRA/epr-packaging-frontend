@@ -384,6 +384,7 @@ public class RegistrationApplicationControllerTests
 
         result.Model.As<RegistrationTaskListViewModel>().Should().BeEquivalentTo(new RegistrationTaskListViewModel
         {
+            SubmissionId = registrationApplicationDetails.SubmissionId,
             OrganisationName = _userData.Organisations[0].Name!,
             OrganisationNumber = _userData.Organisations[0].OrganisationNumber.ToReferenceNumberFormat(),
             FileUploadStatus = RegistrationTaskListStatus.Pending,
@@ -444,6 +445,7 @@ public class RegistrationApplicationControllerTests
 
         result.Model.As<RegistrationTaskListViewModel>().Should().BeEquivalentTo(new RegistrationTaskListViewModel
         {
+            SubmissionId = registrationApplicationDetails.SubmissionId,
             OrganisationName = _userData.Organisations[0].Name,
             OrganisationNumber = _userData.Organisations[0].OrganisationNumber.ToReferenceNumberFormat(),
             FileUploadStatus = RegistrationTaskListStatus.Completed,
@@ -500,6 +502,7 @@ public class RegistrationApplicationControllerTests
 
         result.Model.As<RegistrationTaskListViewModel>().Should().BeEquivalentTo(new RegistrationTaskListViewModel
         {
+            SubmissionId = registrationApplicationDetails.SubmissionId,
             OrganisationName = _userData.Organisations[0].Name,
             OrganisationNumber = _userData.Organisations[0].OrganisationNumber.ToReferenceNumberFormat(),
             FileUploadStatus = RegistrationTaskListStatus.Completed,
@@ -566,6 +569,7 @@ public class RegistrationApplicationControllerTests
 
         result.Model.As<RegistrationTaskListViewModel>().Should().BeEquivalentTo(new RegistrationTaskListViewModel
         {
+            SubmissionId = registrationApplicationDetails.SubmissionId,
             OrganisationName = _userData.Organisations[0].Name,
             OrganisationNumber = _userData.Organisations[0].OrganisationNumber.ToReferenceNumberFormat(),
             FileUploadStatus = RegistrationTaskListStatus.Completed,
@@ -608,6 +612,7 @@ public class RegistrationApplicationControllerTests
 
         result.Model.As<RegistrationTaskListViewModel>().Should().BeEquivalentTo(new RegistrationTaskListViewModel
         {
+            SubmissionId = registrationApplicationDetails.SubmissionId,
             OrganisationName = _userData.Organisations[0].Name,
             OrganisationNumber = _userData.Organisations[0].OrganisationNumber.ToReferenceNumberFormat(),
             FileUploadStatus = RegistrationTaskListStatus.NotStarted,
@@ -1052,6 +1057,262 @@ public class RegistrationApplicationControllerTests
             RegistrationJourney = Session.RegistrationJourney
         });
     }
+
+    [Test]
+    public async Task AdditionalInformation_WithSubmissionId_ShowsThatSubmission_WhenTheSessionHoldsAnotherAlreadySubmittedRegistration()
+    {
+        // Arrange - e.g. another tab has just submitted its registration, then the user returns to this one with the back button
+        var submissionId = Guid.NewGuid();
+        var otherSubmission = CreateReadyToSubmitSession(Guid.NewGuid());
+        otherSubmission.RegistrationApplicationSubmittedDate = DateTime.UtcNow;
+        SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(otherSubmission);
+        SetupRegistrationYear(2026);
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), 2026, RegistrationJourney.CsoLargeProducer, It.IsAny<bool?>()))
+            .ReturnsAsync(CreateReadyToSubmitSession(submissionId));
+
+        // Act
+        var result = await SystemUnderTest.AdditionalInformation(submissionId, RegistrationJourney.CsoLargeProducer);
+
+        // Assert
+        result.Should().BeOfType<ViewResult>().Which.Model.As<AdditionalInformationViewModel>().SubmissionId.Should().Be(submissionId);
+    }
+
+    [Test]
+    public async Task AdditionalInformation_RedirectsToRoot_WhenTheSessionHoldsAnotherRegistrationAndSubmissionIdIsNotTheCurrentSubmission()
+    {
+        // Arrange
+        SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(CreateReadyToSubmitSession(Guid.NewGuid()));
+        SetupRegistrationYear(2026);
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<RegistrationJourney?>(), It.IsAny<bool?>()))
+            .ReturnsAsync(CreateReadyToSubmitSession(Guid.NewGuid()));
+
+        // Act
+        var result = await SystemUnderTest.AdditionalInformation(Guid.NewGuid());
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>().Which.Url.Should().Be($"~{PagePaths.Root}");
+    }
+
+    [Test]
+    public async Task AdditionalInformation_WithSubmissionId_LoadsThatSubmission_WhenThereIsNoSession()
+    {
+        // Arrange - e.g. the session has expired
+        var submissionId = Guid.NewGuid();
+        SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync((RegistrationApplicationSession)null);
+        SetupRegistrationYear(2026);
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), 2026, It.IsAny<RegistrationJourney?>(), It.IsAny<bool?>()))
+            .ReturnsAsync(CreateReadyToSubmitSession(submissionId));
+
+        // Act
+        var result = await SystemUnderTest.AdditionalInformation(submissionId);
+
+        // Assert
+        result.Should().BeOfType<ViewResult>().Which.Model.As<AdditionalInformationViewModel>().SubmissionId.Should().Be(submissionId);
+    }
+
+    [Test]
+    public async Task AdditionalInformation_UsesTheSession_WhenItHoldsTheRequestedSubmission()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(CreateReadyToSubmitSession(submissionId));
+
+        // Act
+        var result = await SystemUnderTest.AdditionalInformation(submissionId);
+
+        // Assert
+        result.Should().BeOfType<ViewResult>().Which.Model.As<AdditionalInformationViewModel>().SubmissionId.Should().Be(submissionId);
+        RegistrationApplicationService.Verify(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<RegistrationJourney?>(), It.IsAny<bool?>()), Times.Never);
+    }
+
+    [Test]
+    [TestCase("true", true)]
+    [TestCase(null, false)]
+    public async Task AdditionalInformationPost_WithSubmissionId_PassesTheResubmissionFlagFromTheQueryAsTheTaskListDoes(string? isResubmissionQuery, bool expected)
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        _userData.ServiceRole = "Approved Person";
+        SetupUserData(_userData);
+        SetupRegistrationYear(2026);
+        var query = new Dictionary<string, StringValues> { { "registrationyear", "2026" } };
+        if (isResubmissionQuery is not null)
+        {
+            query["IsResubmission"] = isResubmissionQuery;
+        }
+        _httpRequestMock.Setup(x => x.Query).Returns(new QueryCollection(query));
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), 2026, It.IsAny<RegistrationJourney?>(), expected))
+            .ReturnsAsync(CreateReadyToSubmitSession(submissionId));
+
+        // Act
+        await SystemUnderTest.AdditionalInformation(new AdditionalInformationViewModel { AdditionalInformationText = "Extra details" }, submissionId);
+
+        // Assert
+        RegistrationApplicationService.Verify(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), 2026, It.IsAny<RegistrationJourney?>(), expected), Times.Once);
+        RegistrationApplicationService.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<ISession>(), "Extra details", null, SubmissionType.RegistrationApplicationSubmitted), Times.Once);
+    }
+
+    [Test]
+    [TestCase("Approved Person")]
+    [TestCase("Delegated Person")]
+    public async Task AdditionalInformationPost_WithSubmissionId_ReloadsTheSubmissionFromTheGatewayBeforeSendingTheEvent(string role)
+    {
+        // Arrange - the session holds another registration, e.g. from another tab or a back link
+        var submissionId = Guid.NewGuid();
+        _userData.ServiceRole = role;
+        SetupUserData(_userData);
+        SetupRegistrationYear(2026);
+        SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(new RegistrationApplicationSession { SubmissionId = Guid.NewGuid() });
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), 2026, RegistrationJourney.DirectSmallProducer, It.IsAny<bool?>()))
+            .ReturnsAsync(CreateReadyToSubmitSession(submissionId));
+
+        // Act
+        var result = await SystemUnderTest.AdditionalInformation(new AdditionalInformationViewModel { AdditionalInformationText = "Extra details" }, submissionId, RegistrationJourney.DirectSmallProducer);
+
+        // Assert
+        var redirect = result.Should().BeOfType<RedirectToActionResult>().Subject;
+        redirect.ActionName.Should().Be(nameof(RegistrationApplicationController.SubmitRegistrationRequest));
+        redirect.RouteValues.Should().Contain("submissionId", submissionId);
+        RegistrationApplicationService.Verify(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), 2026, RegistrationJourney.DirectSmallProducer, It.IsAny<bool?>()), Times.Once);
+        RegistrationApplicationService.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<ISession>(), "Extra details", null, SubmissionType.RegistrationApplicationSubmitted), Times.Once);
+    }
+
+    [Test]
+    public async Task AdditionalInformationPost_DoesNotSendTheEvent_WhenSubmissionIdIsNotTheCurrentSubmissionForTheRegistration()
+    {
+        // Arrange
+        _userData.ServiceRole = "Approved Person";
+        SetupUserData(_userData);
+        SetupRegistrationYear(2026);
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<RegistrationJourney?>(), It.IsAny<bool?>()))
+            .ReturnsAsync(CreateReadyToSubmitSession(Guid.NewGuid()));
+
+        // Act
+        var result = await SystemUnderTest.AdditionalInformation(new AdditionalInformationViewModel { AdditionalInformationText = "Extra details" }, Guid.NewGuid());
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>().Which.Url.Should().Be($"~{PagePaths.Root}");
+        RegistrationApplicationService.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<ISession>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<SubmissionType>()), Times.Never);
+    }
+
+    [Test]
+    public async Task AdditionalInformationPost_WithoutSubmissionId_UsesTheSession()
+    {
+        // Arrange - a page rendered before the submission id was added to the form
+        SetupUserData(new UserData { ServiceRole = "Approved Person" });
+        SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(CreateReadyToSubmitSession(Guid.NewGuid()));
+
+        // Act
+        await SystemUnderTest.AdditionalInformation(new AdditionalInformationViewModel { AdditionalInformationText = "Extra details" });
+
+        // Assert
+        RegistrationApplicationService.Verify(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<RegistrationJourney?>(), It.IsAny<bool?>()), Times.Never);
+        RegistrationApplicationService.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<ISession>(), "Extra details", null, SubmissionType.RegistrationApplicationSubmitted), Times.Once);
+    }
+
+    [Test]
+    public async Task AdditionalInformationPost_WithSubmissionId_DoesNotSendTheEventAgain_WhenTheGatewayShowsItIsAlreadySubmitted()
+    {
+        // Arrange - e.g. the user went back after submitting and pressed Submit again
+        var submissionId = Guid.NewGuid();
+        _userData.ServiceRole = "Approved Person";
+        SetupUserData(_userData);
+        SetupRegistrationYear(2026);
+        var session = CreateReadyToSubmitSession(submissionId);
+        session.RegistrationApplicationSubmittedDate = DateTime.UtcNow;
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), 2026, It.IsAny<RegistrationJourney?>(), It.IsAny<bool?>()))
+            .ReturnsAsync(session);
+
+        // Act
+        var result = await SystemUnderTest.AdditionalInformation(new AdditionalInformationViewModel { AdditionalInformationText = "Extra details" }, submissionId);
+
+        // Assert
+        result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be(nameof(RegistrationApplicationController.SubmitRegistrationRequest));
+        RegistrationApplicationService.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<ISession>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<SubmissionType>()), Times.Never);
+    }
+
+    [Test]
+    public async Task AdditionalInformationPost_WithSubmissionId_DoesNotSendTheEvent_WhenTheGatewayShowsTheFeeIsNotPaid()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        _userData.ServiceRole = "Approved Person";
+        SetupUserData(_userData);
+        SetupRegistrationYear(2026);
+        var session = CreateReadyToSubmitSession(submissionId);
+        session.RegistrationFeePaymentMethod = null;
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), 2026, It.IsAny<RegistrationJourney?>(), It.IsAny<bool?>()))
+            .ReturnsAsync(session);
+
+        // Act
+        await SystemUnderTest.AdditionalInformation(new AdditionalInformationViewModel { AdditionalInformationText = "Extra details" }, submissionId);
+
+        // Assert
+        RegistrationApplicationService.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<ISession>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<SubmissionType>()), Times.Never);
+    }
+
+    [Test]
+    public async Task AdditionalInformationPost_WithSubmissionId_RedirectsBasicUserWithoutLoadingTheSubmission()
+    {
+        // Arrange
+        _userData.ServiceRole = "Basic User";
+        SetupUserData(_userData);
+        SetupRegistrationYear(2026);
+
+        // Act
+        var result = await SystemUnderTest.AdditionalInformation(new AdditionalInformationViewModel { AdditionalInformationText = "Extra details" }, Guid.NewGuid());
+
+        // Assert
+        result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be(nameof(RegistrationApplicationController.UnauthorisedUserWarnings));
+        RegistrationApplicationService.Verify(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<RegistrationJourney?>(), It.IsAny<bool?>()), Times.Never);
+        RegistrationApplicationService.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<ISession>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<SubmissionType>()), Times.Never);
+    }
+
+    [Test]
+    public async Task AdditionalInformationPost_DoesNotSendTheEvent_WhenTheGatewayHasNoSubmissionForTheRegistration()
+    {
+        // Arrange - e.g. a submission id edited into the url for a registration that hasn't been started
+        _userData.ServiceRole = "Approved Person";
+        SetupUserData(_userData);
+        SetupRegistrationYear(2026);
+        RegistrationApplicationService.Setup(x => x.GetRegistrationApplicationSession(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<int>(), It.IsAny<RegistrationJourney?>(), It.IsAny<bool?>()))
+            .ReturnsAsync(new RegistrationApplicationSession());
+
+        // Act
+        var result = await SystemUnderTest.AdditionalInformation(new AdditionalInformationViewModel { AdditionalInformationText = "Extra details" }, Guid.NewGuid());
+
+        // Assert
+        result.Should().BeOfType<RedirectResult>().Which.Url.Should().Be($"~{PagePaths.Root}");
+        RegistrationApplicationService.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<ISession>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<SubmissionType>()), Times.Never);
+    }
+
+    [Test]
+    public async Task AdditionalInformationPost_WithoutSubmissionId_DoesNotSendTheEvent_WhenThereIsNoSession()
+    {
+        // Arrange
+        SetupUserData(new UserData { ServiceRole = "Approved Person" });
+        SessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync((RegistrationApplicationSession)null);
+
+        // Act
+        var result = await SystemUnderTest.AdditionalInformation(new AdditionalInformationViewModel { AdditionalInformationText = "Extra details" });
+
+        // Assert
+        result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be(nameof(RegistrationApplicationController.SubmitRegistrationRequest));
+        RegistrationApplicationService.Verify(x => x.CreateRegistrationApplicationEvent(It.IsAny<ISession>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<SubmissionType>()), Times.Never);
+    }
+
+    private void SetupRegistrationYear(int registrationYear) =>
+        RegistrationPeriodProvider.Setup(x => x.ValidateRegistrationYear(It.IsAny<string>(), It.IsAny<bool>())).Returns(registrationYear);
+
+    private static RegistrationApplicationSession CreateReadyToSubmitSession(Guid submissionId) => new()
+    {
+        SubmissionId = submissionId,
+        Journey = [PagePaths.RegistrationTaskList, PagePaths.AdditionalInformation],
+        ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+        RegistrationFeePaymentMethod = "PayByPhone",
+        RegulatorNation = "GB-SCT",
+        RegistrationFeeCalculationDetails = [new RegistrationFeeCalculationDetails { OrganisationId = "1", OrganisationSize = "Large" }]
+    };
 
     [Test]
     [TestCase("Approved Person")]
