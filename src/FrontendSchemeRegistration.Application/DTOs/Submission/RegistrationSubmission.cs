@@ -43,10 +43,18 @@ public class RegistrationSubmission : AbstractSubmission
 
     public int? RowErrorCount { get; set; }
 
+    public bool HasMaxRowErrors { get; set; }
+
+    public bool CompanyDetailsFileIsValid { get; set; }
+
+    public bool BrandsDataIsValid { get; set; }
+
+    public bool PartnersDataIsValid { get; set; }
+
     public int? OrganisationMemberCount { get; set; }
     
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public RegistrationJourney? RegistrationJourney { get; set; }
     
-    public int RegistrationYear { get; set; }
+    public int? RegistrationYear { get; set; }
 }

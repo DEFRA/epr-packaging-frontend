@@ -42,6 +42,7 @@ public class RegistrationApplicationServiceTests
     private RegistrationApplicationService _service;
     private Mock<IFeatureManager> _featureManagerMock;
     private Mock<IRegistrationPeriodProvider> _mockRegistrationPeriodProvider;
+    private Mock<IComplianceSchemeService> _complianceSchemeServiceMock;
     private FakeTimeProvider _dateTimeProvider;
     private const int RegistrationYear = 2026;
 
@@ -61,6 +62,7 @@ public class RegistrationApplicationServiceTests
         _loggerMock = new Mock<ILogger<RegistrationApplicationService>>();
         _featureManagerMock = new Mock<IFeatureManager>();
         _mockRegistrationPeriodProvider = new Mock<IRegistrationPeriodProvider>();
+        _complianceSchemeServiceMock = new Mock<IComplianceSchemeService>();
 
         _fixture = new Fixture();
 
@@ -72,7 +74,8 @@ public class RegistrationApplicationServiceTests
             FrontendSessionManager = _frontEndSessionManagerMock.Object,
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            ComplianceSchemeService = _complianceSchemeServiceMock.Object
         };
 
         _service = new RegistrationApplicationService(deps, _dateTimeProvider);
@@ -3900,7 +3903,8 @@ public class RegistrationApplicationServiceTests
             FrontendSessionManager = _frontEndSessionManagerMock.Object,
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            ComplianceSchemeService = _complianceSchemeServiceMock.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -3919,7 +3923,8 @@ public class RegistrationApplicationServiceTests
             FrontendSessionManager = _frontEndSessionManagerMock.Object,
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            ComplianceSchemeService = _complianceSchemeServiceMock.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -3937,7 +3942,8 @@ public class RegistrationApplicationServiceTests
             FrontendSessionManager = _frontEndSessionManagerMock.Object,
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            ComplianceSchemeService = _complianceSchemeServiceMock.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -3955,7 +3961,8 @@ public class RegistrationApplicationServiceTests
             FrontendSessionManager = null!,
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            ComplianceSchemeService = _complianceSchemeServiceMock.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -3973,7 +3980,8 @@ public class RegistrationApplicationServiceTests
             FrontendSessionManager = _frontEndSessionManagerMock.Object,
             Logger = null!,
             FeatureManager = _featureManagerMock.Object,
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            ComplianceSchemeService = _complianceSchemeServiceMock.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -3991,7 +3999,8 @@ public class RegistrationApplicationServiceTests
             FrontendSessionManager = _frontEndSessionManagerMock.Object,
             Logger = _loggerMock.Object,
             FeatureManager = null!,
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            ComplianceSchemeService = _complianceSchemeServiceMock.Object
         };
 
         var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -4008,7 +4017,8 @@ public class RegistrationApplicationServiceTests
             FrontendSessionManager = _frontEndSessionManagerMock.Object,
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            ComplianceSchemeService = _complianceSchemeServiceMock.Object
         };
 
         Assert.DoesNotThrow(() => new RegistrationApplicationService(deps, _dateTimeProvider));
@@ -4388,6 +4398,221 @@ public class RegistrationApplicationServiceTests
         result.RegulatorNation.Should().BeNull();
     }
 
+    [Test]
+    public void Constructor_ShouldThrow_InvalidOperation_When_ComplianceSchemeService_IsNull()
+    {
+        var deps = new RegistrationApplicationServiceDependencies
+        {
+            SubmissionService = _submissionServiceMock.Object,
+            PaymentCalculationService = _paymentCalculationServiceMock.Object,
+            RegistrationSessionManager = _sessionManagerMock.Object,
+            FrontendSessionManager = _frontEndSessionManagerMock.Object,
+            Logger = _loggerMock.Object,
+            FeatureManager = _featureManagerMock.Object,
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            ComplianceSchemeService = null!
+        };
+
+        var ex = Assert.Throws<InvalidOperationException>(() => new RegistrationApplicationService(deps, _dateTimeProvider));
+        ex.Message.Should().Be($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(RegistrationApplicationServiceDependencies.ComplianceSchemeService)} cannot be null.");
+    }
+
+    [Test]
+    public async Task GetRegistrationSubmitStateAsync_ReturnsNull_WhenSubmissionNotFound()
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(submissionId)).ReturnsAsync((RegistrationSubmission?)null);
+
+        // Act
+        var result = await _service.GetRegistrationSubmitStateAsync(CreateSubmitDetailsOrganisation(), submissionId);
+
+        // Assert
+        result.Should().BeNull();
+        _submissionServiceMock.Verify(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()), Times.Never);
+    }
+
+    [Test]
+    public async Task GetRegistrationSubmitStateAsync_ReturnsNull_WhenSubmissionBelongsToAnotherOrganisation()
+    {
+        // Arrange
+        var organisation = CreateSubmitDetailsOrganisation();
+        var submission = CreateSubmitStateSubmission(Guid.NewGuid(), RegistrationJourney.DirectLargeProducer);
+
+        // Act
+        var result = await _service.GetRegistrationSubmitStateAsync(organisation, submission.Id);
+
+        // Assert
+        result.Should().BeNull();
+        _submissionServiceMock.Verify(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()), Times.Never);
+    }
+
+    [Test]
+    public async Task GetRegistrationSubmitStateAsync_ReturnsNull_WhenComplianceSchemeIsNotOperatedByOrganisation()
+    {
+        // Arrange
+        var organisation = CreateSubmitDetailsOrganisation(OrganisationRoles.ComplianceScheme);
+        var submission = CreateSubmitStateSubmission(organisation.Id!.Value, RegistrationJourney.CsoLargeProducer, complianceSchemeId: Guid.NewGuid());
+        _complianceSchemeServiceMock.Setup(x => x.GetOperatorComplianceSchemes(organisation.Id.Value))
+            .ReturnsAsync([new ComplianceSchemeDto { Id = Guid.NewGuid(), Name = "Other scheme", NationId = (int)Nation.England }]);
+
+        // Act
+        var result = await _service.GetRegistrationSubmitStateAsync(organisation, submission.Id);
+
+        // Assert
+        result.Should().BeNull();
+        _submissionServiceMock.Verify(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()), Times.Never);
+    }
+
+    [Test]
+    public async Task GetRegistrationSubmitStateAsync_ReturnsNull_WhenSubmissionIsNotTheCurrentRegistrationSubmission()
+    {
+        // Arrange
+        var organisation = CreateSubmitDetailsOrganisation();
+        var submission = CreateSubmitStateSubmission(organisation.Id!.Value, RegistrationJourney.DirectLargeProducer);
+        _submissionServiceMock.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(new RegistrationApplicationDetails { SubmissionId = Guid.NewGuid() });
+
+        // Act
+        var result = await _service.GetRegistrationSubmitStateAsync(organisation, submission.Id);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetRegistrationSubmitStateAsync_LoadsComplianceSchemeSubmissionFromGatewayWithoutSession()
+    {
+        // Arrange
+        var organisation = CreateSubmitDetailsOrganisation(OrganisationRoles.ComplianceScheme);
+        var complianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), Name = "Scheme A", NationId = (int)Nation.Scotland };
+        var submission = CreateSubmitStateSubmission(organisation.Id!.Value, RegistrationJourney.CsoSmallProducer, complianceSchemeId: complianceScheme.Id);
+        _complianceSchemeServiceMock.Setup(x => x.GetOperatorComplianceSchemes(organisation.Id.Value))
+            .ReturnsAsync([new ComplianceSchemeDto { Id = Guid.NewGuid(), Name = "Scheme B", NationId = (int)Nation.Wales }, complianceScheme]);
+        _submissionServiceMock.Setup(x => x.GetRegistrationApplicationDetails(It.Is<GetRegistrationApplicationDetailsRequest>(r =>
+                r.OrganisationId == organisation.Id
+                && r.OrganisationNumber == 175830
+                && r.ComplianceSchemeId == complianceScheme.Id
+                && r.SubmissionPeriod == "January to December 2027"
+                && r.RegistrationJourney == nameof(RegistrationJourney.CsoSmallProducer))))
+            .ReturnsAsync(new RegistrationApplicationDetails
+            {
+                SubmissionId = submission.Id,
+                ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+                ApplicationReferenceNumber = "PEPR17583027S1",
+                IsResubmission = true,
+                RegistrationFeePaymentMethod = "PayOnline",
+                RegistrationFeeCalculationDetails = [new RegistrationFeeCalculationDetails { NationId = (int)Nation.England }],
+                RegistrationJourney = RegistrationJourney.CsoSmallProducer
+            });
+
+        // Act
+        var result = await _service.GetRegistrationSubmitStateAsync(organisation, submission.Id);
+
+        // Assert
+        result.Should().NotBeNull();
+        result!.SubmissionId.Should().Be(submission.Id);
+        result.ComplianceScheme.Should().Be(complianceScheme);
+        result.RegulatorNation.Should().Be("GB-SCT");
+        result.RegistrationYear.Should().Be(2027);
+        result.RegistrationJourney.Should().Be(RegistrationJourney.CsoSmallProducer);
+        result.IsResubmission.Should().BeTrue();
+        result.FileUploadStatus.Should().Be(RegistrationTaskListStatus.Completed);
+        result.PaymentViewStatus.Should().Be(RegistrationTaskListStatus.Completed);
+        result.AdditionalDetailsStatus.Should().Be(RegistrationTaskListStatus.NotStarted);
+        _sessionManagerMock.VerifyNoOtherCalls();
+        _frontEndSessionManagerMock.VerifyNoOtherCalls();
+    }
+
+    [Test]
+    public async Task GetRegistrationSubmitStateAsync_UsesFeeNationAndNoJourney_ForDirectProducer()
+    {
+        // Arrange
+        var organisation = CreateSubmitDetailsOrganisation();
+        var submission = CreateSubmitStateSubmission(organisation.Id!.Value, RegistrationJourney.DirectLargeProducer);
+        _submissionServiceMock.Setup(x => x.GetRegistrationApplicationDetails(It.Is<GetRegistrationApplicationDetailsRequest>(r =>
+                r.ComplianceSchemeId == null && r.RegistrationJourney == nameof(RegistrationJourney.DirectLargeProducer))))
+            .ReturnsAsync(new RegistrationApplicationDetails
+            {
+                SubmissionId = submission.Id,
+                ApplicationStatus = ApplicationStatusType.SubmittedToRegulator,
+                RegistrationFeeCalculationDetails = [new RegistrationFeeCalculationDetails { NationId = (int)Nation.Wales }]
+            });
+
+        // Act
+        var result = await _service.GetRegistrationSubmitStateAsync(organisation, submission.Id);
+
+        // Assert
+        result.Should().NotBeNull();
+        result!.IsComplianceScheme.Should().BeFalse();
+        result.RegulatorNation.Should().Be("GB-WLS");
+        result.RegistrationJourney.Should().BeNull();
+        result.PaymentViewStatus.Should().Be(RegistrationTaskListStatus.NotStarted);
+        _complianceSchemeServiceMock.Verify(x => x.GetOperatorComplianceSchemes(It.IsAny<Guid>()), Times.Never);
+    }
+
+    [Test]
+    public async Task GetRegistrationSubmitStateAsync_UsesFeeSnapshot_WhenPaymentServiceFeesAreEnabled()
+    {
+        // Arrange
+        var organisation = CreateSubmitDetailsOrganisation();
+        var submission = CreateSubmitStateSubmission(organisation.Id!.Value, RegistrationJourney.DirectSmallProducer);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeParametersViaPaymentService)).ReturnsAsync(true);
+        _paymentCalculationServiceMock.Setup(x => x.GetRegistrationFeeCalculationDetails(submission.Id))
+            .ReturnsAsync([new RegistrationFeeCalculationDetails { NationId = (int)Nation.NorthernIreland }]);
+        _submissionServiceMock.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync(new RegistrationApplicationDetails { SubmissionId = submission.Id, ApplicationStatus = ApplicationStatusType.SubmittedToRegulator });
+
+        // Act
+        var result = await _service.GetRegistrationSubmitStateAsync(organisation, submission.Id);
+
+        // Assert
+        result!.FileUploadStatus.Should().Be(RegistrationTaskListStatus.Completed);
+        result.RegulatorNation.Should().Be("GB-NIR");
+    }
+
+    [Test]
+    public async Task SubmitRegistrationApplicationAsync_SendsEventForTheLoadedSubmission()
+    {
+        // Arrange
+        var complianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), Name = "Scheme A" };
+        var state = new RegistrationSubmitState
+        {
+            SubmissionId = Guid.NewGuid(),
+            ComplianceScheme = complianceScheme,
+            RegistrationJourney = RegistrationJourney.CsoLargeProducer,
+            RegulatorNation = "GB-ENG",
+            ApplicationDetails = new RegistrationApplicationDetails { ApplicationReferenceNumber = "PEPR17583027L1", IsResubmission = true }
+        };
+
+        // Act
+        await _service.SubmitRegistrationApplicationAsync(state, "comments");
+
+        // Assert
+        _submissionServiceMock.Verify(x => x.CreateRegistrationApplicationEvent(
+            It.Is<RegistrationApplicationData>(d => d.SubmissionId == state.SubmissionId && d.ComplianceSchemeId == complianceScheme.Id && d.Comments == "comments" && d.PaymentMethod == null),
+            "PEPR17583027L1",
+            true,
+            SubmissionType.RegistrationApplicationSubmitted,
+            RegistrationJourney.CsoLargeProducer), Times.Once);
+        _sessionManagerMock.VerifyNoOtherCalls();
+    }
+
+    private RegistrationSubmission CreateSubmitStateSubmission(Guid organisationId, RegistrationJourney? registrationJourney, Guid? complianceSchemeId = null)
+    {
+        var submission = new RegistrationSubmission
+        {
+            Id = Guid.NewGuid(),
+            OrganisationId = organisationId,
+            ComplianceSchemeId = complianceSchemeId,
+            SubmissionPeriod = "January to December 2027",
+            RegistrationYear = 2027,
+            RegistrationJourney = registrationJourney
+        };
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(submission.Id)).ReturnsAsync(submission);
+        return submission;
+    }
+
     private static RegistrationSubmission CreateSubmitDetailsSubmission(string? submissionPeriod, RegistrationJourney? registrationJourney) => new()
     {
         Id = Guid.NewGuid(),
@@ -4426,7 +4651,8 @@ public class RegistrationApplicationServiceTests
             FrontendSessionManager = _frontEndSessionManagerMock.Object,
             Logger = _loggerMock.Object,
             FeatureManager = _featureManagerMock.Object,
-            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object
+            RegistrationPeriodProvider = _mockRegistrationPeriodProvider.Object,
+            ComplianceSchemeService = _complianceSchemeServiceMock.Object
         };
         return new RegistrationApplicationService(deps, _dateTimeProvider);
     }

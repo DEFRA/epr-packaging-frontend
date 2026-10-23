@@ -7,6 +7,8 @@ using Application.Enums;
 [ExcludeFromCodeCoverage]
 public class AdditionalInformationViewModel : OrganisationNationViewModel
 {
+    public Guid? SubmissionId { get; set; }
+
     public bool IsComplianceScheme { get; set; } = false;
 
     public string ComplianceScheme { get; set; }

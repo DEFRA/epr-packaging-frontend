@@ -1,4 +1,5 @@
 using EPR.Common.Authorization.Constants;
+using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
 using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.DTOs.Submission;
@@ -93,6 +94,7 @@ public class RegistrationApplicationController(
 
         return View(new RegistrationTaskListViewModel
         {
+            SubmissionId = session.SubmissionId,
             IsResubmission = session.IsResubmission,
             OrganisationName = organisation.Name,
             IsComplianceScheme = session.IsComplianceScheme,
@@ -351,69 +353,75 @@ public class RegistrationApplicationController(
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
     [Route(PagePaths.AdditionalInformation)]
-    public async Task<IActionResult> AdditionalInformation()
+    public async Task<IActionResult> AdditionalInformation([FromQuery] Guid? submissionId = null)
     {
-        var userData = User.GetUserData();
-        var organisation = userData.Organisations[0];
-        var registrationYear = registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
+        var organisation = User.GetUserData().Organisations[0];
 
-        var session = await sessionManager.GetSessionAsync(HttpContext.Session);
-        
-        session.Journey = [PagePaths.RegistrationTaskList, PagePaths.AdditionalInformation];
-        SetBackLink(session, PagePaths.AdditionalInformation, registrationYear, session.RegistrationJourney);
+        // Loaded by submission id rather than from the session, which another tab or the back button may have changed
+        var state = await GetSubmitStateAsync(organisation, submissionId);
+        if (state is null)
+        {
+            return Redirect($"~{PagePaths.Root}");
+        }
 
-        if (session is
+        SetBackLink([PagePaths.RegistrationTaskList, PagePaths.AdditionalInformation], PagePaths.AdditionalInformation, state.RegistrationYear, state.RegistrationJourney);
+
+        if (state is
             {
                 AdditionalDetailsStatus: RegistrationTaskListStatus.Completed,
-                ApplicationStatus: ApplicationStatusType.AcceptedByRegulator or
+                ApplicationDetails.ApplicationStatus: ApplicationStatusType.AcceptedByRegulator or
                 ApplicationStatusType.ApprovedByRegulator or
                 ApplicationStatusType.SubmittedToRegulator
             })
         {
-            return RedirectToAction(nameof(SubmitRegistrationRequest), new { registrationyear = registrationYear });
+            return RedirectToAction(nameof(SubmitRegistrationRequest), new { submissionId });
         }
 
-        if (session.FileUploadStatus != RegistrationTaskListStatus.Completed ||
-            session.PaymentViewStatus != RegistrationTaskListStatus.Completed ||
-            session.AdditionalDetailsStatus == RegistrationTaskListStatus.Completed)
+        if (state.FileUploadStatus != RegistrationTaskListStatus.Completed ||
+            state.PaymentViewStatus != RegistrationTaskListStatus.Completed ||
+            state.AdditionalDetailsStatus == RegistrationTaskListStatus.Completed)
         {
-            return RedirectToAction(nameof(RegistrationTaskList), new { registrationyear = registrationYear, registrationJourney = session.RegistrationJourney });
+            return RedirectToAction(nameof(RegistrationTaskList), new { registrationyear = state.RegistrationYear, registrationJourney = state.RegistrationJourney });
         }
 
         return View(new AdditionalInformationViewModel
         {
-            RegulatorNation = session.RegulatorNation,
+            SubmissionId = submissionId,
+            RegulatorNation = state.RegulatorNation,
             OrganisationName = organisation.Name!,
             OrganisationNumber = organisation.OrganisationNumber.ToReferenceNumberFormat(),
             IsComplianceScheme = organisation.OrganisationRole == OrganisationRoles.ComplianceScheme,
-            ComplianceScheme = session.SelectedComplianceScheme?.Name!,
-            IsResubmission = session.IsResubmission,
-            RegistrationYear = registrationYear.GetValueOrDefault(),
-            RegistrationJourney = session.RegistrationJourney
+            ComplianceScheme = state.ComplianceScheme?.Name!,
+            IsResubmission = state.IsResubmission,
+            RegistrationYear = state.RegistrationYear.GetValueOrDefault(),
+            RegistrationJourney = state.RegistrationJourney
         });
     }
 
     [HttpPost]
     [Authorize(Policy = PolicyConstants.EprFileUploadPolicy)]
     [Route(PagePaths.AdditionalInformation)]
-    public async Task<IActionResult> AdditionalInformation(AdditionalInformationViewModel model)
+    public async Task<IActionResult> AdditionalInformation(AdditionalInformationViewModel model, [FromQuery] Guid? submissionId = null)
     {
-        var registrationYear = registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
-
-        var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
-
-        var isAuthorisedUser = User.GetUserData().ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved);
+        var userData = User.GetUserData();
+        var isAuthorisedUser = userData.ServiceRole.Parse<ServiceRole>().In(ServiceRole.Delegated, ServiceRole.Approved);
         if (!isAuthorisedUser)
         {
             return RedirectToAction(nameof(UnauthorisedUserWarnings));
         }
 
-        if (session is { RegistrationApplicationSubmitted: false, FileUploadStatus: RegistrationTaskListStatus.Completed, PaymentViewStatus: RegistrationTaskListStatus.Completed })
+        var state = await GetSubmitStateAsync(userData.Organisations[0], submissionId);
+        if (state is null)
         {
-            await registrationApplicationService.CreateRegistrationApplicationEvent(HttpContext.Session, model.AdditionalInformationText, null, SubmissionType.RegistrationApplicationSubmitted);
+            return Redirect($"~{PagePaths.Root}");
         }
 
-        return RedirectToAction(nameof(SubmitRegistrationRequest), new { registrationyear = registrationYear });
+        if (state is { RegistrationApplicationSubmitted: false, FileUploadStatus: RegistrationTaskListStatus.Completed, PaymentViewStatus: RegistrationTaskListStatus.Completed })
+        {
+            await registrationApplicationService.SubmitRegistrationApplicationAsync(state, model.AdditionalInformationText);
+        }
+
+        return RedirectToAction(nameof(SubmitRegistrationRequest), new { submissionId });
     }
 
     [HttpGet]
@@ -465,28 +473,32 @@ public class RegistrationApplicationController(
     [HttpGet]
     [Authorize(Policy = PolicyConstants.EprSelectSchemePolicy)]
     [Route(PagePaths.SubmitRegistrationRequest)]
-    public async Task<IActionResult> SubmitRegistrationRequest()
+    public async Task<IActionResult> SubmitRegistrationRequest([FromQuery] Guid? submissionId = null)
     {
-        var registrationYear = registrationPeriodProvider.ValidateRegistrationYear(HttpContext.Request.Query["registrationyear"],false);
-        var session = await sessionManager.GetSessionAsync(HttpContext.Session) ?? new RegistrationApplicationSession();
-
-        if (session.AdditionalDetailsStatus == RegistrationTaskListStatus.Completed)
+        var state = await GetSubmitStateAsync(User.GetUserData().Organisations[0], submissionId);
+        if (state is null)
         {
-            session.Journey = [PagePaths.RegistrationTaskList, PagePaths.SubmitRegistrationRequest];
+            return Redirect($"~{PagePaths.Root}");
+        }
+
+        if (!state.RegistrationApplicationSubmitted)
+        {
+            // Nothing has been submitted for this registration yet, so show where it is up to
+            return RedirectToAction(nameof(RegistrationTaskList), new { registrationyear = state.RegistrationYear, registrationJourney = state.RegistrationJourney });
         }
 
         return View("ApplicationSubmissionConfirmation",
             new ApplicationSubmissionConfirmationViewModel
             {
-                IsComplianceScheme = session.IsComplianceScheme,
-                RegulatorNation = session.RegulatorNation,
-                ApplicationReferenceNumber = session.ApplicationReferenceNumber!,
-                RegistrationApplicationSubmittedDate = session.RegistrationApplicationSubmittedDate.Value,
-                RegistrationReferenceNumber = session.RegistrationReferenceNumber!,
-                ApplicationStatus = session.ApplicationStatus,
-                isResubmission = session.IsResubmission,
-                RegistrationYear = registrationYear.GetValueOrDefault(),
-                RegistrationJourney = session.RegistrationJourney
+                IsComplianceScheme = state.IsComplianceScheme,
+                RegulatorNation = state.RegulatorNation,
+                ApplicationReferenceNumber = state.ApplicationDetails.ApplicationReferenceNumber!,
+                RegistrationApplicationSubmittedDate = state.ApplicationDetails.RegistrationApplicationSubmittedDate,
+                RegistrationReferenceNumber = state.ApplicationDetails.RegistrationReferenceNumber!,
+                ApplicationStatus = state.ApplicationDetails.ApplicationStatus,
+                isResubmission = state.IsResubmission,
+                RegistrationYear = state.RegistrationYear.GetValueOrDefault(),
+                RegistrationJourney = state.RegistrationJourney
             }
         );
     }
@@ -560,9 +572,25 @@ public class RegistrationApplicationController(
         await sessionManager.SaveSessionAsync(HttpContext.Session, session);
     }
 
+    private async Task<RegistrationSubmitState?> GetSubmitStateAsync(Organisation organisation, Guid? submissionId)
+    {
+        if (submissionId is null)
+        {
+            logger.LogWarning("Registration Submit page requested without a submission id");
+            return null;
+        }
+
+        return await registrationApplicationService.GetRegistrationSubmitStateAsync(organisation, submissionId.Value);
+    }
+
     private void SetBackLink(RegistrationApplicationSession session, string currentPagePath, int? registrationYear = null, RegistrationJourney? registrationJourney = null, string? nation = null)
     {
-        var previousPage = session.Journey.PreviousOrDefault(currentPagePath) ?? string.Empty;
+        SetBackLink(session.Journey, currentPagePath, registrationYear, registrationJourney, nation);
+    }
+
+    private void SetBackLink(List<string> journey, string currentPagePath, int? registrationYear = null, RegistrationJourney? registrationJourney = null, string? nation = null)
+    {
+        var previousPage = journey.PreviousOrDefault(currentPagePath) ?? string.Empty;
         if (registrationYear > 0 && !string.IsNullOrWhiteSpace(previousPage))
         {
             previousPage = QueryHelpers.AddQueryString(previousPage, "registrationyear", registrationYear.ToString());
