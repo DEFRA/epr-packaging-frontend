@@ -236,7 +236,8 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
             if (selectedPrns.Count != 0)
             {
                 var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
-                session.PrnSession = new PrnSession();
+                var selectedYear = session.PrnSession?.SelectedObligationYear;
+                session.PrnSession = new PrnSession { SelectedObligationYear = selectedYear };
                 session.PrnSession.SelectedPrnIds = selectedPrns.Select(x => x.ExternalId).ToList();
                 session.PrnSession.InitialNoteTypes = model.GetPluralNoteType(selectedPrns);
                 await _sessionManager.SaveSessionAsync(HttpContext.Session, session);

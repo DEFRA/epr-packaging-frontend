@@ -187,6 +187,54 @@ public class PrnService : IPrnService
         return awaitingAcceptancePrnsViewModel;
     }
 
+    public async Task<AwaitingAcceptancePrnsViewModel> GetPrnAwaitingAcceptanceSearchResultsForYearAsync(SearchPrnsViewModel request, int obligationYear)
+    {
+        _logger.LogInformation("{Logprefix}: PrnService - GetPrnAwaitingAcceptanceSearchResultsForYearAsync: Get Prn awaiting acceptance for year {Year} and search criteria {Request}", logPrefix, obligationYear, JsonConvert.SerializeObject(request));
+
+        const int fetchPageSize = 100;
+        var pageSize = request.PageSize > 0 ? request.PageSize : SearchPrnsViewModel.DefaultPageSize;
+        var items = new List<PrnModel>();
+        var page = 1;
+        PaginatedResponse<PrnModel> response;
+
+        do
+        {
+            response = await _webApiGatewayClient.GetSearchPrnsAsync(new PaginatedRequest
+            {
+                Page = page,
+                PageSize = fetchPageSize,
+                Search = request.Search,
+                FilterBy = request.FilterBy,
+                SortBy = request.SortBy
+            });
+
+            items.AddRange(response.Items ?? []);
+            page++;
+        }
+        while (response.Items is { Count: > 0 } && items.Count < response.TotalItems);
+
+        var matching = _mapper.Map<List<AwaitingAcceptanceResultViewModel>>(items)
+            .Where(prn => prn.AvailableAcceptanceYears.Contains(obligationYear))
+            .ToList();
+
+        var totalPages = (matching.Count + pageSize - 1) / pageSize;
+
+        // A page past the last one (stale link, edited URL) shows the last page, not an empty list
+        var currentPage = Math.Clamp(request.Page, 1, Math.Max(totalPages, 1));
+
+        return new AwaitingAcceptancePrnsViewModel
+        {
+            Prns = matching.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList(),
+            PagingDetail = new PagingDetail
+            {
+                CurrentPage = currentPage,
+                PageSize = pageSize,
+                TotalItems = matching.Count,
+                TotalPages = totalPages
+            }
+        };
+    }
+
     public async Task<Stream> GetPrnsCsvStreamAsync(int? obligationYear)
     {
         _logger.LogInformation("{Logprefix}: PrnService - GetPrnsCsvStreamAsync: Get Prns Csv Stream", logPrefix);

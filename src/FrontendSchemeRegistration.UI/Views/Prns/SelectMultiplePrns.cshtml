@@ -199,6 +199,8 @@
     <script type="text/javascript" nonce="@scriptNonce">
         window.onload = function () {
 
+            @await Html.PartialAsync("_ClearPrnSelectionOnYearChange")
+
             const acceptButton = document.getElementById('acceptSelectedPrns');
             if (acceptButton && acceptButton.hidden) {
                 for (let i = 0; i < sessionStorage.length; i++) {

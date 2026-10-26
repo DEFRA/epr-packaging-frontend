@@ -165,6 +165,36 @@ public class PrnsObligationControllerTests
     }
 
     [Test]
+    public async Task ObligationsHome_WhenMultiYearObligationsEnabled_AwaitingCountMatchesListForTheYear()
+    {
+        var session = new FrontendSchemeRegistrationSession
+        {
+            UserData = new UserData
+            {
+                Organisations = new List<Organisation>
+                {
+                    new() { Id = Guid.NewGuid(), OrganisationRole = OrganisationRoles.Producer, Name = "Test Organisation", NationId = 1 }
+                },
+                ServiceRole = "Basic User"
+            }
+        };
+        session.PrnSession.SelectedObligationYear = 2027;
+        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)).ReturnsAsync(true);
+
+        var viewModel = _fixture.Create<PrnObligationViewModel>();
+        viewModel.NumberOfPrnsAwaitingAcceptance = 10;
+        _prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(2027, It.IsAny<bool>())).ReturnsAsync(viewModel);
+        _prnServiceMock
+            .Setup(x => x.GetPrnAwaitingAcceptanceSearchResultsForYearAsync(It.Is<SearchPrnsViewModel>(r => r.FilterBy == PrnConstants.Filters.AwaitingAll), 2027))
+            .ReturnsAsync(new AwaitingAcceptancePrnsViewModel { Prns = [], PagingDetail = new PagingDetail { TotalItems = 5 } });
+
+        await _controller.ObligationsHome();
+
+        viewModel.NumberOfPrnsAwaitingAcceptance.Should().Be(5);
+    }
+
+    [Test]
     public async Task ObligationsHome_WhenMultiYearObligationsEnabled_AndNoSelectedYear_UsesComplianceYear()
     {
         // Arrange
