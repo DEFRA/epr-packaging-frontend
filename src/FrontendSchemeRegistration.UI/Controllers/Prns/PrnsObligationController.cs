@@ -75,7 +75,7 @@ public class PrnsObligationController : Controller
 
         // A year left in the session (e.g. chosen earlier) can be 2025 or earlier, which has no obligations to show
         if (await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)
-            && selectedYear <= _csocUnavailablePastYear)
+            && session?.PrnSession.SelectedObligationYear <= _csocUnavailablePastYear)
         {
             return RedirectToAction(nameof(ComplianceCertificate));
         }
@@ -156,7 +156,7 @@ public class PrnsObligationController : Controller
 
         // A year left in the session (e.g. chosen earlier) can be 2025 or earlier, which has no obligations to show
         if (await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)
-            && selectedYear <= _csocUnavailablePastYear)
+            && session?.PrnSession.SelectedObligationYear <= _csocUnavailablePastYear)
         {
             return RedirectToAction(nameof(ComplianceCertificate));
         }
