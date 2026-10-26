@@ -83,6 +83,32 @@ public class RequestedObligationYearAttributeTests
     }
 
     [Test]
+    public async Task OnActionExecutionAsync_CallsNextWithoutRedirecting_WhenRequestIsNotGet()
+    {
+        var context = CreateContext("year=2025", HttpMethods.Post);
+
+        await _systemUnderTest.OnActionExecutionAsync(context, _delegateMock.Object);
+
+        _delegateMock.Verify(next => next(), Times.Once);
+        context.Result.Should().BeNull();
+        _session.PrnSession.SelectedObligationYear.Should().BeNull();
+        _sessionManagerMock.Verify(x => x.SaveSessionAsync(It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()), Times.Never);
+    }
+
+    [Test]
+    public async Task OnActionExecutionAsync_CallsNextWithoutSelectingYear_WhenSessionIsMissing()
+    {
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync((FrontendSchemeRegistrationSession?)null);
+        var context = CreateContext("year=2025");
+
+        await _systemUnderTest.OnActionExecutionAsync(context, _delegateMock.Object);
+
+        _delegateMock.Verify(next => next(), Times.Once);
+        context.Result.Should().BeNull();
+        _sessionManagerMock.Verify(x => x.SaveSessionAsync(It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()), Times.Never);
+    }
+
+    [Test]
     public async Task OnActionExecutionAsync_CallsNextWithoutRedirecting_WhenMultiYearObligationsDisabled()
     {
         _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)).ReturnsAsync(false);
@@ -178,12 +204,13 @@ public class RequestedObligationYearAttributeTests
     private RequestedObligationYearFilter CreateFilterAt(DateTimeOffset now) =>
         new(_sessionManagerMock.Object, _featureManagerMock.Object, new FakeTimeProvider(now));
 
-    private static ActionExecutingContext CreateContext(string? query)
+    private static ActionExecutingContext CreateContext(string? query, string method = "GET")
     {
         var httpContext = new DefaultHttpContext
         {
             Session = Mock.Of<ISession>()
         };
+        httpContext.Request.Method = method;
         httpContext.Request.QueryString = new QueryString(query is null ? string.Empty : $"?{query}");
 
         return new ActionExecutingContext(

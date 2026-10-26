@@ -59,23 +59,26 @@ public class PrnsObligationController : Controller
         _csocOptions = csocOptions;
         _logPrefix = _globalVariables.Value.LogPrefix;
         _complianceYear = timeProvider.GetUtcNow().GetComplianceYear();
-        _csocUnavailablePastYear = 2025;
+        _csocUnavailablePastYear = ObligationYearOptions.CsocUnavailablePastYear;
     }
 
     private const string GlassOrNonGlassResource = "GlassOrNonGlassResource";
 
     [HttpGet]
     [Route(PagePaths.Prns.ObligationsHome)]
-    public async Task<IActionResult> ObligationsHome(int? year = null)
+    [RequestedObligationYear]
+    public async Task<IActionResult> ObligationsHome()
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
 
-        if (await ApplyRequestedYearAsync(session, year) is { } redirect)
-        {
-            return redirect;
-        }
-
         var selectedYear = await GetSelectedObligationYearAsync(session);
+
+        // A year left in the session (e.g. chosen earlier) can be 2025 or earlier, which has no obligations to show
+        if (await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)
+            && selectedYear <= _csocUnavailablePastYear)
+        {
+            return RedirectToAction(nameof(ComplianceCertificate));
+        }
 
         var isCsocEnabled = await _featureManager.IsEnabledAsync(FeatureFlags.CsocEnabled);
         var viewModel = await _prnService.GetRecyclingObligationsCalculation(selectedYear, includeComplianceDeclarationStatus: isCsocEnabled);
@@ -142,18 +145,21 @@ public class PrnsObligationController : Controller
 
     [HttpGet]
     [Route(PagePaths.Prns.ObligationPerMaterial + "/{material}")]
-    public async Task<IActionResult> ObligationPerMaterial(string material, int? year = null)
+    [RequestedObligationYear]
+    public async Task<IActionResult> ObligationPerMaterial(string material)
     {
         PrnObligationViewModel viewModel = new();
 
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
 
-        if (await ApplyRequestedYearAsync(session, year) is { } redirect)
-        {
-            return redirect;
-        }
-
         var selectedYear = await GetSelectedObligationYearAsync(session);
+
+        // A year left in the session (e.g. chosen earlier) can be 2025 or earlier, which has no obligations to show
+        if (await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)
+            && selectedYear <= _csocUnavailablePastYear)
+        {
+            return RedirectToAction(nameof(ComplianceCertificate));
+        }
 
         _logger.LogInformation(
             "{LogPrefix}: PrnsObligationController - ObligationPerMaterial: Get Recycling Obligations Calculation request for year {Year}, material {Material}",
@@ -231,18 +237,12 @@ public class PrnsObligationController : Controller
     [HttpGet]
     [Route(PagePaths.Prns.ChooseYear)]
     [FeatureGate(FeatureFlags.ShowMultiYearObligations)]
-    public async Task<IActionResult> ChooseYear(int? year = null)
+    [RequestedObligationYear]
+    public async Task<IActionResult> ChooseYear()
     {
         if (!await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
         {
             return NotFound();
-        }
-
-        var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-
-        if (await ApplyRequestedYearAsync(session, year) is { } redirect)
-        {
-            return redirect;
         }
 
         ViewBag.BackLinkToDisplay = _globalVariables.Value.BasePath;
@@ -312,36 +312,6 @@ public class PrnsObligationController : Controller
         };
 
         return View(viewModel);
-    }
-
-    /// <summary>
-    ///     A year passed on the query string (e.g. from the PRN accepted page, or changed by the user)
-    ///     becomes the selected obligation year. 2025 and earlier have no obligations to show, so they
-    ///     redirect to the compliance certificate page, as choosing 2025 does.
-    /// </summary>
-    private async Task<IActionResult?> ApplyRequestedYearAsync(FrontendSchemeRegistrationSession session, int? year)
-    {
-        if (year is not { } requestedYear
-            || !await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
-        {
-            return null;
-        }
-
-        if (requestedYear <= _csocUnavailablePastYear)
-        {
-            session.PrnSession.SelectedObligationYear = _csocUnavailablePastYear;
-            await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
-
-            return RedirectToAction(nameof(ComplianceCertificate));
-        }
-
-        if (GetSelectableYears().Contains(requestedYear))
-        {
-            session.PrnSession.SelectedObligationYear = requestedYear;
-            await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
-        }
-
-        return null;
     }
 
     /// <summary>
