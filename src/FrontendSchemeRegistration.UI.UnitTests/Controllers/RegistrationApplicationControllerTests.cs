@@ -972,13 +972,13 @@ public class RegistrationApplicationControllerTests
     }
 
     [Test]
-    [TestCase(RegistrationTaskListStatus.Pending, RegistrationTaskListStatus.CanNotStartYet, RegistrationTaskListStatus.CanNotStartYet)]
-    [TestCase(RegistrationTaskListStatus.Completed, RegistrationTaskListStatus.NotStarted, RegistrationTaskListStatus.CanNotStartYet)]
+    [TestCase(ApplicationStatusType.FileUploaded, false, "PayByPhone")]
+    [TestCase(ApplicationStatusType.SubmittedToRegulator, true, null)]
     public async Task WhenRegistrationDataNotSubmittedOrFeeNotPaid_AdditionalInformation_RedirectsToTaskListView(
-        RegistrationTaskListStatus fileUploadStatus, RegistrationTaskListStatus paymentViewStatus, RegistrationTaskListStatus additionalDetailsStatus)
+        ApplicationStatusType applicationStatus, bool feesCalculated, string? paymentMethod)
     {
         // Arrange
-        var state = SetupSubmitState(ApplicationStatusType.FileUploaded, fileUploadStatus, paymentViewStatus, additionalDetailsStatus, registrationJourney: RegistrationJourney.CsoLargeProducer);
+        var state = SetupSubmitState(applicationStatus, feesCalculated: feesCalculated, paymentMethod: paymentMethod, registrationJourney: RegistrationJourney.CsoLargeProducer);
 
         // Act
         var result = await SystemUnderTest.AdditionalInformation(state.SubmissionId);
@@ -998,7 +998,7 @@ public class RegistrationApplicationControllerTests
     public async Task WhenRegistrationApplicationAlreadySubmitted_AdditionalInformation_RedirectsToSubmitRegistrationRequestView(ApplicationStatusType applicationStatusType)
     {
         // Arrange
-        var state = SetupSubmitState(applicationStatusType, RegistrationTaskListStatus.Completed, RegistrationTaskListStatus.Completed, RegistrationTaskListStatus.Completed, DateTime.Now);
+        var state = SetupSubmitState(applicationStatusType, submittedDate: DateTime.Now);
 
         // Act
         var result = await SystemUnderTest.AdditionalInformation(state.SubmissionId);
@@ -1017,7 +1017,7 @@ public class RegistrationApplicationControllerTests
         _userData.Organisations[0].OrganisationRole = OrganisationRoles.ComplianceScheme;
         SetupBase(_userData);
         var complianceScheme = new ComplianceSchemeDto { Id = Guid.NewGuid(), Name = "Scheme A" };
-        var state = SetupSubmitState(ApplicationStatusType.SubmittedToRegulator, RegistrationTaskListStatus.Completed, RegistrationTaskListStatus.Completed, RegistrationTaskListStatus.NotStarted,
+        var state = SetupSubmitState(ApplicationStatusType.SubmittedToRegulator,
             complianceScheme: complianceScheme, registrationJourney: RegistrationJourney.CsoSmallProducer, isResubmission: true);
 
         // Act
@@ -1047,7 +1047,7 @@ public class RegistrationApplicationControllerTests
     {
         // Arrange
         SetupUserData(new UserData { ServiceRole = role, Organisations = _userData.Organisations });
-        var state = SetupSubmitState(ApplicationStatusType.SubmittedToRegulator, RegistrationTaskListStatus.Completed, RegistrationTaskListStatus.Completed, RegistrationTaskListStatus.NotStarted);
+        var state = SetupSubmitState(ApplicationStatusType.SubmittedToRegulator);
 
         // Act
         var result = await SystemUnderTest.AdditionalInformation(new AdditionalInformationViewModel { AdditionalInformationText = "Extra details" }, state.SubmissionId);
@@ -1062,16 +1062,16 @@ public class RegistrationApplicationControllerTests
     }
 
     [Test]
-    [TestCase(RegistrationTaskListStatus.Completed, RegistrationTaskListStatus.Completed, true)]
-    [TestCase(RegistrationTaskListStatus.Completed, RegistrationTaskListStatus.NotStarted, false)]
-    [TestCase(RegistrationTaskListStatus.Pending, RegistrationTaskListStatus.CanNotStartYet, false)]
+    [TestCase(true, "PayByPhone", true)]
+    [TestCase(true, null, false)]
+    [TestCase(false, "PayByPhone", false)]
     public async Task WhenApplicationAlreadySubmittedOrNotReady_AdditionalInformationPostAction_DoesNotSubmit(
-        RegistrationTaskListStatus fileUploadStatus, RegistrationTaskListStatus paymentViewStatus, bool alreadySubmitted)
+        bool feesCalculated, string? paymentMethod, bool alreadySubmitted)
     {
         // Arrange
         SetupUserData(new UserData { ServiceRole = "Approved Person", Organisations = _userData.Organisations });
-        var state = SetupSubmitState(ApplicationStatusType.SubmittedToRegulator, fileUploadStatus, paymentViewStatus, RegistrationTaskListStatus.CanNotStartYet,
-            alreadySubmitted ? DateTime.Now.AddMinutes(-5) : null);
+        var state = SetupSubmitState(ApplicationStatusType.SubmittedToRegulator, feesCalculated: feesCalculated, paymentMethod: paymentMethod,
+            submittedDate: alreadySubmitted ? DateTime.Now.AddMinutes(-5) : null);
 
         // Act
         var result = await SystemUnderTest.AdditionalInformation(new AdditionalInformationViewModel { AdditionalInformationText = "Extra details" }, state.SubmissionId);
@@ -1188,8 +1188,7 @@ public class RegistrationApplicationControllerTests
     {
         // Arrange
         const string viewName = "ApplicationSubmissionConfirmation";
-        var state = SetupSubmitState(ApplicationStatusType.AcceptedByRegulator, RegistrationTaskListStatus.Completed, RegistrationTaskListStatus.Completed, RegistrationTaskListStatus.Completed,
-            DateTime.Today, regulatorNation: nationCode);
+        var state = SetupSubmitState(ApplicationStatusType.AcceptedByRegulator, submittedDate: DateTime.Today, regulatorNation: nationCode);
 
         // Act
         var result = await SystemUnderTest.SubmitRegistrationRequest(state.SubmissionId) as ViewResult;
@@ -1231,7 +1230,7 @@ public class RegistrationApplicationControllerTests
     public async Task SubmitRegistrationRequest_RedirectsToTaskList_WhenApplicationNotSubmitted()
     {
         // Arrange
-        var state = SetupSubmitState(ApplicationStatusType.SubmittedToRegulator, RegistrationTaskListStatus.Completed, RegistrationTaskListStatus.Completed, RegistrationTaskListStatus.NotStarted);
+        var state = SetupSubmitState(ApplicationStatusType.SubmittedToRegulator);
 
         // Act
         var result = await SystemUnderTest.SubmitRegistrationRequest(state.SubmissionId);
@@ -1240,11 +1239,44 @@ public class RegistrationApplicationControllerTests
         result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be(nameof(RegistrationApplicationController.RegistrationTaskList));
     }
 
+    [Test]
+    public async Task SubmitRegistrationRequest_ShowsConfirmation_WhenJustSubmittedButGatewayNotYetUpdated()
+    {
+        // Arrange
+        SetupUserData(new UserData { ServiceRole = "Approved Person", Organisations = _userData.Organisations });
+        SystemUnderTest.TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>());
+        var state = SetupSubmitState(ApplicationStatusType.SubmittedToRegulator);
+        await SystemUnderTest.AdditionalInformation(new AdditionalInformationViewModel(), state.SubmissionId);
+
+        // Act
+        var result = await SystemUnderTest.SubmitRegistrationRequest(state.SubmissionId) as ViewResult;
+
+        // Assert
+        result!.ViewName.Should().Be("ApplicationSubmissionConfirmation");
+        result.Model.As<ApplicationSubmissionConfirmationViewModel>().RegistrationApplicationSubmittedDate.Should().BeCloseTo(DateTime.Now, TimeSpan.FromMinutes(1));
+    }
+
+    [Test]
+    public async Task SubmitRegistrationRequest_RedirectsToTaskList_WhenAnotherSubmissionWasJustSubmitted()
+    {
+        // Arrange
+        SetupUserData(new UserData { ServiceRole = "Approved Person", Organisations = _userData.Organisations });
+        SystemUnderTest.TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>());
+        var submitted = SetupSubmitState(ApplicationStatusType.SubmittedToRegulator);
+        var other = SetupSubmitState(ApplicationStatusType.SubmittedToRegulator);
+        await SystemUnderTest.AdditionalInformation(new AdditionalInformationViewModel(), submitted.SubmissionId);
+
+        // Act
+        var result = await SystemUnderTest.SubmitRegistrationRequest(other.SubmissionId);
+
+        // Assert
+        result.Should().BeOfType<RedirectToActionResult>().Which.ActionName.Should().Be(nameof(RegistrationApplicationController.RegistrationTaskList));
+    }
+
     private RegistrationSubmitState SetupSubmitState(
         ApplicationStatusType applicationStatus,
-        RegistrationTaskListStatus fileUploadStatus,
-        RegistrationTaskListStatus paymentViewStatus,
-        RegistrationTaskListStatus additionalDetailsStatus,
+        bool feesCalculated = true,
+        string? paymentMethod = "PayByPhone",
         DateTime? submittedDate = null,
         ComplianceSchemeDto? complianceScheme = null,
         RegistrationJourney? registrationJourney = null,
@@ -1256,6 +1288,7 @@ public class RegistrationApplicationControllerTests
             SubmissionId = Guid.NewGuid(),
             RegistrationYear = 2027,
             RegistrationJourney = registrationJourney,
+            ComplianceSchemeId = complianceScheme?.Id,
             ComplianceScheme = complianceScheme,
             RegulatorNation = regulatorNation,
             ApplicationDetails = new RegistrationApplicationDetails
@@ -1263,12 +1296,11 @@ public class RegistrationApplicationControllerTests
                 ApplicationStatus = applicationStatus,
                 ApplicationReferenceNumber = "PEPR12345627P1",
                 RegistrationReferenceNumber = "R27EP123456",
+                RegistrationFeeCalculationDetails = feesCalculated ? [new RegistrationFeeCalculationDetails()] : null,
+                RegistrationFeePaymentMethod = paymentMethod,
                 RegistrationApplicationSubmittedDate = submittedDate,
                 IsResubmission = isResubmission
-            },
-            FileUploadStatus = fileUploadStatus,
-            PaymentViewStatus = paymentViewStatus,
-            AdditionalDetailsStatus = additionalDetailsStatus
+            }
         };
         RegistrationApplicationService.Setup(x => x.GetRegistrationSubmitStateAsync(It.Is<Organisation>(o => o.Id == _organisationId), state.SubmissionId))
             .ReturnsAsync(state);

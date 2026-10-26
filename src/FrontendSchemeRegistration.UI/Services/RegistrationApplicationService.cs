@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Net;
 using System.Security.Claims;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
@@ -534,28 +535,33 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     }
 
     /// <summary>
-    /// Loads what the registration Submit and confirmation pages need from the gateway, using only the submission id,
-    /// so that another tab or the back button can't swap in a different registration through the shared session.
-    /// Returns null when the submission doesn't exist, belongs to another organisation or compliance scheme, or is not
-    /// the current registration submission for its period and journey.
+    /// Loads the registration Submit and confirmation page data from the gateway by submission id, so another tab or the
+    /// back button can't swap in a different registration through the shared session. Returns null when the submission
+    /// isn't this organisation's current registration submission.
     /// </summary>
     public async Task<RegistrationSubmitState?> GetRegistrationSubmitStateAsync(Organisation organisation, Guid submissionId)
     {
-        var submission = await _submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
-        if (submission is null
-            || organisation.Id is null
-            || submission.OrganisationId != organisation.Id
-            || string.IsNullOrWhiteSpace(submission.SubmissionPeriod)
-            || !int.TryParse(organisation.OrganisationNumber, out var organisationNumber))
+        RegistrationSubmission? submission;
+        try
+        {
+            submission = await _submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+        {
+            // The submission service refuses another organisation's submission
+            submission = null;
+        }
+
+        if (submission is null || submission.OrganisationId != organisation.Id)
         {
             logger.LogWarning("Registration submission {SubmissionId} was not found for organisation {OrganisationId}", submissionId, organisation.Id);
             return null;
         }
 
         ComplianceSchemeDto? complianceScheme = null;
-        if (submission.ComplianceSchemeId is not null)
+        if (organisation.OrganisationRole == OrganisationRoles.ComplianceScheme)
         {
-            var complianceSchemes = await complianceSchemeService.GetOperatorComplianceSchemes(organisation.Id.Value);
+            var complianceSchemes = await complianceSchemeService.GetOperatorComplianceSchemes(organisation.Id!.Value);
             complianceScheme = complianceSchemes?.Find(x => x.Id == submission.ComplianceSchemeId);
             if (complianceScheme is null)
             {
@@ -564,27 +570,18 @@ public class RegistrationApplicationService : IRegistrationApplicationService
             }
         }
 
-        var details = await _submissionService.GetRegistrationApplicationDetails(new GetRegistrationApplicationDetailsRequest
+        // Null here means the gateway call failed (it logs and returns null), not that the submission was replaced
+        var details = await GetRegistrationApplicationDetailsAsync(organisation, submission.SubmissionPeriod, submission.RegistrationJourney, submission.ComplianceSchemeId)
+            ?? throw new InvalidOperationException($"Registration application details could not be loaded for submission {submissionId}");
+        if (details.SubmissionId != submissionId)
         {
-            OrganisationNumber = organisationNumber,
-            OrganisationId = organisation.Id.Value,
-            ComplianceSchemeId = submission.ComplianceSchemeId,
-            SubmissionPeriod = submission.SubmissionPeriod,
-            RegistrationJourney = submission.RegistrationJourney?.ToString()
-        });
-        if (details?.SubmissionId != submissionId)
-        {
-            logger.LogWarning("Submission {SubmissionId} is not the current registration submission for {SubmissionPeriod}; found {CurrentSubmissionId}", submissionId, submission.SubmissionPeriod, details?.SubmissionId);
+            logger.LogWarning("Submission {SubmissionId} is not the current registration submission for {SubmissionPeriod}; found {CurrentSubmissionId}", submissionId, submission.SubmissionPeriod, details.SubmissionId);
             return null;
         }
 
         details.RegistrationFeeCalculationDetails = await GetRegistrationFeeSnapshotAsync(submissionId) ?? details.RegistrationFeeCalculationDetails;
 
-        var fileUploadStatus = RegistrationApplicationStatusCalculator.CalculateFileUploadStatus(details);
-        var paymentViewStatus = RegistrationApplicationStatusCalculator.CalculatePaymentViewStatus(
-            fileUploadStatus, RegistrationApplicationStatusCalculator.IsRegistrationFeePaid(details.RegistrationFeePaymentMethod));
-
-        // Same nation rule as GetRegistrationApplicationSession
+        // Same nation and journey rules as GetRegistrationApplicationSession
         int? nationId;
         if (complianceScheme is not null)
             nationId = complianceScheme.NationId;
@@ -596,22 +593,19 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         return new RegistrationSubmitState
         {
             SubmissionId = submissionId,
-            RegistrationYear = submission.RegistrationYear ?? ParseRegistrationYear(submission.SubmissionPeriod),
-            // The session only holds a journey for compliance schemes, and the submit event and pages have always used that
-            RegistrationJourney = complianceScheme is not null ? details.RegistrationJourney ?? submission.RegistrationJourney : null,
+            ComplianceSchemeId = submission.ComplianceSchemeId,
             ComplianceScheme = complianceScheme,
+            RegistrationYear = submission.RegistrationYear ?? ParseRegistrationYear(submission.SubmissionPeriod),
+            RegistrationJourney = complianceScheme is not null ? details.RegistrationJourney ?? submission.RegistrationJourney : null,
             RegulatorNation = ToRegulatorNation(nationId),
-            ApplicationDetails = details,
-            FileUploadStatus = fileUploadStatus,
-            PaymentViewStatus = paymentViewStatus,
-            AdditionalDetailsStatus = RegistrationApplicationStatusCalculator.CalculateAdditionalDetailsStatus(paymentViewStatus, details)
+            ApplicationDetails = details
         };
     }
 
     public async Task SubmitRegistrationApplicationAsync(RegistrationSubmitState state, string? comments)
     {
         await _submissionService.CreateRegistrationApplicationEvent(
-            new RegistrationApplicationData(state.SubmissionId, state.ComplianceScheme?.Id, comments, null),
+            new RegistrationApplicationData(state.SubmissionId, state.ComplianceSchemeId, comments, null),
             state.ApplicationDetails.ApplicationReferenceNumber,
             state.IsResubmission,
             SubmissionType.RegistrationApplicationSubmitted,
@@ -783,23 +777,32 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         RegistrationJourney? registrationJourney,
         ComplianceSchemeDto? selectedComplianceScheme)
     {
-        if (string.IsNullOrWhiteSpace(submission.SubmissionPeriod)
+        var details = await GetRegistrationApplicationDetailsAsync(organisation, submission.SubmissionPeriod, registrationJourney, selectedComplianceScheme?.Id);
+
+        return details?.SubmissionId == submission.Id ? details : null;
+    }
+
+    private async Task<RegistrationApplicationDetails?> GetRegistrationApplicationDetailsAsync(
+        Organisation organisation,
+        string? submissionPeriod,
+        RegistrationJourney? registrationJourney,
+        Guid? complianceSchemeId)
+    {
+        if (string.IsNullOrWhiteSpace(submissionPeriod)
             || organisation.Id is null
             || !int.TryParse(organisation.OrganisationNumber, out var organisationNumber))
         {
             return null;
         }
 
-        var details = await _submissionService.GetRegistrationApplicationDetails(new GetRegistrationApplicationDetailsRequest
+        return await _submissionService.GetRegistrationApplicationDetails(new GetRegistrationApplicationDetailsRequest
         {
             OrganisationNumber = organisationNumber,
             OrganisationId = organisation.Id.Value,
-            ComplianceSchemeId = selectedComplianceScheme?.Id,
-            SubmissionPeriod = submission.SubmissionPeriod,
+            ComplianceSchemeId = complianceSchemeId,
+            SubmissionPeriod = submissionPeriod,
             RegistrationJourney = registrationJourney?.ToString()
         });
-
-        return details?.SubmissionId == submission.Id ? details : null;
     }
 
     private static int? ParseRegistrationYear(string? submissionPeriod)
@@ -1018,29 +1021,30 @@ public sealed record RegistrationSubmitState
 {
     public required Guid SubmissionId { get; init; }
 
+    public Guid? ComplianceSchemeId { get; init; }
+
+    public ComplianceSchemeDto? ComplianceScheme { get; init; }
+
     public int? RegistrationYear { get; init; }
 
     public RegistrationJourney? RegistrationJourney { get; init; }
 
-    public ComplianceSchemeDto? ComplianceScheme { get; init; }
-
     public required string RegulatorNation { get; init; }
 
     public required RegistrationApplicationDetails ApplicationDetails { get; init; }
-
-    public RegistrationTaskListStatus FileUploadStatus { get; init; }
-
-    public RegistrationTaskListStatus PaymentViewStatus { get; init; }
-
-    public RegistrationTaskListStatus AdditionalDetailsStatus { get; init; }
 
     public bool IsComplianceScheme => ComplianceScheme is not null;
 
     public bool IsResubmission => ApplicationDetails.IsResubmission ?? false;
 
     public bool RegistrationApplicationSubmitted => ApplicationDetails.RegistrationApplicationSubmittedDate is not null;
-}
 
+    public RegistrationTaskListStatus FileUploadStatus => RegistrationApplicationStatusCalculator.CalculateFileUploadStatus(ApplicationDetails);
+
+    public RegistrationTaskListStatus PaymentViewStatus => RegistrationApplicationStatusCalculator.CalculatePaymentViewStatus(FileUploadStatus, ApplicationDetails);
+
+    public RegistrationTaskListStatus AdditionalDetailsStatus => RegistrationApplicationStatusCalculator.CalculateAdditionalDetailsStatus(PaymentViewStatus, ApplicationDetails);
+}
 
 public sealed class RegistrationApplicationServiceDependencies
 {

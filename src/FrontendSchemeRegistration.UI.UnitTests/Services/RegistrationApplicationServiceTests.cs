@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Net;
 using System.Security.Claims;
 using AutoFixture;
 using EPR.Common.Authorization.Models;
@@ -4448,6 +4449,60 @@ public class RegistrationApplicationServiceTests
     }
 
     [Test]
+    [TestCase(HttpStatusCode.Unauthorized)]
+    [TestCase(HttpStatusCode.Forbidden)]
+    public async Task GetRegistrationSubmitStateAsync_ReturnsNull_WhenSubmissionServiceRefusesTheSubmission(HttpStatusCode statusCode)
+    {
+        // Arrange
+        var submissionId = Guid.NewGuid();
+        _submissionServiceMock.Setup(x => x.GetSubmissionAsync<RegistrationSubmission>(submissionId))
+            .ThrowsAsync(new HttpRequestException("refused", null, statusCode));
+
+        // Act
+        var result = await _service.GetRegistrationSubmitStateAsync(CreateSubmitDetailsOrganisation(), submissionId);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public async Task GetRegistrationSubmitStateAsync_Throws_WhenApplicationDetailsCannotBeLoaded()
+    {
+        // Arrange
+        var organisation = CreateSubmitDetailsOrganisation();
+        var submission = CreateSubmitStateSubmission(organisation.Id!.Value, RegistrationJourney.DirectLargeProducer);
+        _submissionServiceMock.Setup(x => x.GetRegistrationApplicationDetails(It.IsAny<GetRegistrationApplicationDetailsRequest>()))
+            .ReturnsAsync((RegistrationApplicationDetails?)null);
+
+        // Act
+        var act = () => _service.GetRegistrationSubmitStateAsync(organisation, submission.Id);
+
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>();
+    }
+
+    [Test]
+    public async Task GetRegistrationSubmitStateAsync_UsesSubmissionComplianceSchemeWithoutOperatorLookup_ForProducer()
+    {
+        // Arrange
+        var organisation = CreateSubmitDetailsOrganisation();
+        var complianceSchemeId = Guid.NewGuid();
+        var submission = CreateSubmitStateSubmission(organisation.Id!.Value, RegistrationJourney.DirectLargeProducer, complianceSchemeId: complianceSchemeId);
+        _submissionServiceMock.Setup(x => x.GetRegistrationApplicationDetails(It.Is<GetRegistrationApplicationDetailsRequest>(r => r.ComplianceSchemeId == complianceSchemeId)))
+            .ReturnsAsync(new RegistrationApplicationDetails { SubmissionId = submission.Id, ApplicationStatus = ApplicationStatusType.SubmittedToRegulator });
+
+        // Act
+        var result = await _service.GetRegistrationSubmitStateAsync(organisation, submission.Id);
+
+        // Assert
+        result.Should().NotBeNull();
+        result!.IsComplianceScheme.Should().BeFalse();
+        result.ComplianceSchemeId.Should().Be(complianceSchemeId);
+        result.RegulatorNation.Should().Be("GB-ENG");
+        _complianceSchemeServiceMock.Verify(x => x.GetOperatorComplianceSchemes(It.IsAny<Guid>()), Times.Never);
+    }
+
+    [Test]
     public async Task GetRegistrationSubmitStateAsync_ReturnsNull_WhenComplianceSchemeIsNotOperatedByOrganisation()
     {
         // Arrange
@@ -4579,6 +4634,7 @@ public class RegistrationApplicationServiceTests
         var state = new RegistrationSubmitState
         {
             SubmissionId = Guid.NewGuid(),
+            ComplianceSchemeId = complianceScheme.Id,
             ComplianceScheme = complianceScheme,
             RegistrationJourney = RegistrationJourney.CsoLargeProducer,
             RegulatorNation = "GB-ENG",

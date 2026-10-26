@@ -1,3 +1,4 @@
+using System.Globalization;
 using EPR.Common.Authorization.Constants;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
@@ -419,6 +420,9 @@ public class RegistrationApplicationController(
         if (state is { RegistrationApplicationSubmitted: false, FileUploadStatus: RegistrationTaskListStatus.Completed, PaymentViewStatus: RegistrationTaskListStatus.Completed })
         {
             await registrationApplicationService.SubmitRegistrationApplicationAsync(state, model.AdditionalInformationText);
+
+            // The gateway may not return the submitted date straight away, so the confirmation page is told about this submit
+            TempData[JustSubmittedTempDataKey(submissionId)] = DateTime.Now.ToString("O", CultureInfo.InvariantCulture);
         }
 
         return RedirectToAction(nameof(SubmitRegistrationRequest), new { submissionId });
@@ -481,7 +485,8 @@ public class RegistrationApplicationController(
             return Redirect($"~{PagePaths.Root}");
         }
 
-        if (!state.RegistrationApplicationSubmitted)
+        var submittedDate = state.ApplicationDetails.RegistrationApplicationSubmittedDate ?? GetJustSubmittedDate(submissionId);
+        if (submittedDate is null)
         {
             // Nothing has been submitted for this registration yet, so show where it is up to
             return RedirectToAction(nameof(RegistrationTaskList), new { registrationyear = state.RegistrationYear, registrationJourney = state.RegistrationJourney });
@@ -493,7 +498,7 @@ public class RegistrationApplicationController(
                 IsComplianceScheme = state.IsComplianceScheme,
                 RegulatorNation = state.RegulatorNation,
                 ApplicationReferenceNumber = state.ApplicationDetails.ApplicationReferenceNumber!,
-                RegistrationApplicationSubmittedDate = state.ApplicationDetails.RegistrationApplicationSubmittedDate,
+                RegistrationApplicationSubmittedDate = submittedDate.Value,
                 RegistrationReferenceNumber = state.ApplicationDetails.RegistrationReferenceNumber!,
                 ApplicationStatus = state.ApplicationDetails.ApplicationStatus,
                 isResubmission = state.IsResubmission,
@@ -571,6 +576,13 @@ public class RegistrationApplicationController(
 
         await sessionManager.SaveSessionAsync(HttpContext.Session, session);
     }
+
+    private static string JustSubmittedTempDataKey(Guid? submissionId) => $"RegistrationSubmitted-{submissionId}";
+
+    private DateTime? GetJustSubmittedDate(Guid? submissionId) =>
+        DateTime.TryParse(TempData[JustSubmittedTempDataKey(submissionId)] as string, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var submittedDate)
+            ? submittedDate
+            : null;
 
     private async Task<RegistrationSubmitState?> GetSubmitStateAsync(Organisation organisation, Guid? submissionId)
     {
