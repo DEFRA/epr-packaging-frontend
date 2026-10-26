@@ -25,6 +25,7 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         // Reject single Prn. Step 3 of 5, are you sure?
         [HttpGet]
         [Route(PagePaths.Prns.AskToReject + "/{id:guid}")]
+        [RequestedObligationYear]
         public async Task<IActionResult> RejectSinglePrn(Guid id)
         {
             var prn = await _prnService.GetPrnByExternalIdAsync(id);
@@ -35,6 +36,7 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         // Unexpected hit, assume user has timed out and been redirected here after relogin
         [HttpGet]
         [Route(PagePaths.Prns.ConfirmReject)]
+        [RequestedObligationYear]
         public async Task<ActionResult> ConfirmRejectSinglePrnPassThrough()
         {
             return RedirectToAction(nameof(PrnsController.SelectMultiplePrns), nameof(PrnsController).RemoveControllerFromName());
@@ -53,6 +55,7 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         // Reject single Prn. Step 5 of 5 show updated PRN details following rejection
         [HttpGet]
         [Route(PagePaths.Prns.Rejected + "/{id:guid}")]
+        [RequestedObligationYear]
         public async Task<IActionResult> RejectedPrn(Guid id)
         {
             var model = await _prnService.GetPrnByExternalIdAsync(id);
