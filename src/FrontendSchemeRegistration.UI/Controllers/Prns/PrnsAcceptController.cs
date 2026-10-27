@@ -38,6 +38,7 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         // Choose obligation year for December Waste PRNs with a two-year choice
         [HttpGet]
         [Route(PagePaths.Prns.AskToChooseAcceptanceYear + "/{id:guid}")]
+        [RequestedObligationYear]
         public async Task<IActionResult> ChooseAcceptanceYear(Guid id)
         {
             if (!await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
@@ -110,6 +111,7 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         // Accept single Prn. Step 3 of 5, are you sure?
         [HttpGet]
         [Route(PagePaths.Prns.AskToAccept + "/{id:guid}")]
+        [RequestedObligationYear]
         public async Task<IActionResult> AcceptSinglePrn(Guid id)
         {
             var prn = await _prnService.GetPrnByExternalIdAsync(id);
@@ -141,6 +143,7 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         // Unexpected hit, assume user has timed out and been redirected here after relogin
         [HttpGet]
         [Route(PagePaths.Prns.ConfirmAccept)]
+        [RequestedObligationYear]
         public async Task<ActionResult> ConfirmAcceptSinglePrnPassThrough()
         {
             return RedirectToAction(nameof(PrnsController.SelectMultiplePrns), nameof(PrnsController).RemoveControllerFromName());
@@ -190,6 +193,7 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         // Accept single Prn. Step 5 of 5, show updated PRN details following acceptance
         [HttpGet]
         [Route(PagePaths.Prns.Accepted + "/{id:guid}")]
+        [RequestedObligationYear]
         public async Task<IActionResult> AcceptedPrn(Guid id)
         {
             var model = await _prnService.GetPrnByExternalIdAsync(id);
@@ -214,6 +218,7 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         // Unexpected hit, assume user has timed out and been redirected here after relogin
         [HttpGet]
         [Route(PagePaths.Prns.BeforeAskToAcceptMany)]
+        [RequestedObligationYear]
         public async Task<ActionResult> AcceptMultiplePrnsPassThrough()
         {
             return RedirectToAction(nameof(PrnsController.SelectMultiplePrns), nameof(PrnsController).RemoveControllerFromName());
@@ -250,6 +255,7 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         // Accept multiple Prns. Step 3 of 5 display chosen PRNs with option to deselect
         [HttpGet]
         [Route(PagePaths.Prns.AskToAcceptMany + "/{id?}")]
+        [RequestedObligationYear]
         public async Task<ActionResult> AcceptMultiplePrns(Guid id)
         {
             var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
@@ -284,6 +290,7 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         // Unexpected hit, assume user has timed out and been redirected here after relogin
         [HttpGet]
         [Route(PagePaths.Prns.ConfirmAcceptMany)]
+        [RequestedObligationYear]
         public async Task<ActionResult> ConfirmAcceptMultiplePrnsPassThrough()
         {
             return RedirectToAction(nameof(PrnsController.SelectMultiplePrns), nameof(PrnsController).RemoveControllerFromName());
@@ -321,6 +328,7 @@ namespace FrontendSchemeRegistration.UI.Controllers.Prns
         // Accept multiple Prns. Step 5 of 5 display newly accepted PRN summary details
         [HttpGet]
         [Route(PagePaths.Prns.AcceptedMany)]
+        [RequestedObligationYear]
         public async Task<IActionResult> AcceptedPrns()
         {
             var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();

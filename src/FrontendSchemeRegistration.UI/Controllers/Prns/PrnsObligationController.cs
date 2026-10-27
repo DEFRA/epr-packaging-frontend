@@ -4,6 +4,7 @@ using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
 using FrontendSchemeRegistration.UI.Constants;
+using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
@@ -37,8 +38,6 @@ public class PrnsObligationController : Controller
     private readonly IFeatureManager _featureManager;
     private readonly IOptions<CsocOptions> _csocOptions;
     private readonly string _logPrefix;
-    private readonly int _complianceYear;
-    private readonly int _csocUnavailablePastYear;
 
     public PrnsObligationController(ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
         IPrnService prnService,
@@ -58,26 +57,17 @@ public class PrnsObligationController : Controller
         _featureManager = featureManager;
         _csocOptions = csocOptions;
         _logPrefix = _globalVariables.Value.LogPrefix;
-        _complianceYear = timeProvider.GetUtcNow().GetComplianceYear();
-        _csocUnavailablePastYear = 2025;
     }
 
     private const string GlassOrNonGlassResource = "GlassOrNonGlassResource";
 
     [HttpGet]
     [Route(PagePaths.Prns.ObligationsHome)]
-    public async Task<IActionResult> ObligationsHome(int? year = null)
+    [RequestedObligationYear]
+    [RedirectPastObligationYear]
+    public async Task<IActionResult> ObligationsHome()
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-
-        // A year passed on the link (e.g. from the PRN accepted page) becomes the selected obligation year
-        if (year is { } requestedYear
-            && GetSelectableYears().Contains(requestedYear)
-            && await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
-        {
-            session.PrnSession.SelectedObligationYear = requestedYear;
-            await _sessionManager.SaveSessionAsync(HttpContext.Session, session);
-        }
 
         var selectedYear = await GetSelectedObligationYearAsync(session);
 
@@ -96,7 +86,7 @@ public class PrnsObligationController : Controller
             }
         }
 
-        if (selectedYear > _complianceYear && _timeProvider.GetUtcNow().IsInDecemberJanuaryFlashWindow())
+        if (selectedYear > ComplianceYear && _timeProvider.GetUtcNow().IsInDecemberJanuaryFlashWindow())
         {
             var awaitingAcceptance = await _prnService.GetPrnsAwaitingAcceptanceAsync();
             viewModel.HasDecemberWasteMultiYearPrnAwaitingAcceptance = awaitingAcceptance.Prns
@@ -146,6 +136,8 @@ public class PrnsObligationController : Controller
 
     [HttpGet]
     [Route(PagePaths.Prns.ObligationPerMaterial + "/{material}")]
+    [RequestedObligationYear]
+    [RedirectPastObligationYear]
     public async Task<IActionResult> ObligationPerMaterial(string material)
     {
         PrnObligationViewModel viewModel = new();
@@ -221,7 +213,7 @@ public class PrnsObligationController : Controller
         viewModel.NationId = isDirectProducer
             ? organisation.NationId
             : session.RegistrationSession.SelectedComplianceScheme?.NationId ?? 0;
-        viewModel.ComplianceYear = complianceYear ?? _complianceYear;
+        viewModel.ComplianceYear = complianceYear ?? ComplianceYear;
 
         return session;
     }
@@ -229,6 +221,7 @@ public class PrnsObligationController : Controller
     [HttpGet]
     [Route(PagePaths.Prns.ChooseYear)]
     [FeatureGate(FeatureFlags.ShowMultiYearObligations)]
+    [RequestedObligationYear]
     public async Task<IActionResult> ChooseYear()
     {
         if (!await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
@@ -269,10 +262,18 @@ public class PrnsObligationController : Controller
 
         if (model.SelectedYear.Value == model.CsocUnavailablePastYear)
         {
-            return RedirectToAction(nameof(ComplianceCertificate));
+            return RedirectToComplianceCertificate();
         }
 
         return RedirectToAction(nameof(ObligationsHome));
+    }
+
+    /// <summary>
+    ///     The redirect for 2025 and earlier, which have no obligations and show the compliance certificate page.
+    /// </summary>
+    public static RedirectToActionResult RedirectToComplianceCertificate()
+    {
+        return new RedirectToActionResult(nameof(ComplianceCertificate), nameof(PrnsObligationController).RemoveControllerFromName(), null);
     }
 
     [HttpGet]
@@ -315,15 +316,15 @@ public class PrnsObligationController : Controller
 
         return isMultiYearObligationsEnabled && session?.PrnSession.SelectedObligationYear is { } selectedYear
             ? selectedYear
-            : _complianceYear;
+            : ComplianceYear;
     }
 
     private ChooseYearViewModel BuildChooseYearViewModel(int? selectedYear = null)
     {
         return new ChooseYearViewModel
         {
-            CsocUnavailablePastYear = _csocUnavailablePastYear,
-            CurrentYear = _complianceYear,
+            CsocUnavailablePastYear = ObligationYearOptions.CsocUnavailablePastYear,
+            CurrentYear = ComplianceYear,
             SelectedYear = selectedYear,
             Years = GetSelectableYears()
         };
@@ -332,10 +333,10 @@ public class PrnsObligationController : Controller
     /// <summary>
     ///     The years the user may manage: the future year is only available in December and January.
     /// </summary>
+    private int ComplianceYear => _timeProvider.GetUtcNow().GetComplianceYear();
+
     private IReadOnlyList<int> GetSelectableYears()
     {
-        var includeFutureYear = _timeProvider.GetUtcNow().IsInDecemberJanuaryFlashWindow();
-
-        return ObligationYearOptions.GetSelectableYears(_complianceYear, includeFutureYear);
+        return ObligationYearOptions.GetSelectableYears(_timeProvider.GetUtcNow());
     }
 }

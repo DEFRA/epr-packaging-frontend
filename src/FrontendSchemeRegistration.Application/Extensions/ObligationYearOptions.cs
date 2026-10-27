@@ -5,6 +5,21 @@ public static class ObligationYearOptions
     public const int EarliestHistoricalYear = 2025;
 
     /// <summary>
+    ///     The last year whose obligations were calculated before CSOC: 2025 and earlier have no obligations
+    ///     to show, so choosing them leads to the compliance certificate page.
+    /// </summary>
+    public const int CsocUnavailablePastYear = 2025;
+
+    /// <summary>
+    ///     The years that can be selected at <paramref name="now"/>: the future year is only available in the
+    ///     December and January flash window.
+    /// </summary>
+    public static IReadOnlyList<int> GetSelectableYears(DateTimeOffset now)
+    {
+        return GetSelectableYears(now.GetComplianceYear(), now.IsInDecemberJanuaryFlashWindow());
+    }
+
+    /// <summary>
     ///     Years shown on the Choose a year page for <paramref name="currentComplianceYear"/>,
     ///     newest first: future year (when <paramref name="includeFutureYear"/>), current year,
     ///     then historical years back to <see cref="EarliestHistoricalYear"/>.

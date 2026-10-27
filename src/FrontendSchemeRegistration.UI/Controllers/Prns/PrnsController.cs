@@ -39,6 +39,7 @@ public class PrnsController : Controller
 
 	[HttpGet]
 	[Route(PagePaths.Prns.Search)]
+	[RequestedObligationYear]
 	public async Task<IActionResult> SearchPrns([FromQuery] SearchPrnsViewModel request)
 	{
 		var prnsResultViewModel = await _prnService.GetPrnSearchResultsAsync(request);
@@ -81,6 +82,8 @@ public class PrnsController : Controller
     [HttpGet]
     [HttpPost]
     [Route(PagePaths.Prns.ShowAwaitingAcceptance)]
+    [RequestedObligationYear]
+    [RedirectPastObligationYear]
     public async Task<IActionResult> SelectMultiplePrns(SearchPrnsViewModel request)
     {
         if (TempData[NoPrnsSelected] != null)
@@ -128,6 +131,7 @@ public class PrnsController : Controller
     // Accept or reject single Prn. Step 2 of 5 for single PRN not multiple PRNS, show details of PRN
     [HttpGet]
     [Route(PagePaths.Prns.ShowSelected + "/{id:guid}")]
+    [RequestedObligationYear]
     public async Task<IActionResult> SelectSinglePrn(Guid id)
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session) ?? new FrontendSchemeRegistrationSession();
