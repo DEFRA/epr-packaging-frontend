@@ -1246,6 +1246,48 @@ public class WebApiGatewayClientTests
     }
 
     [Test]
+    public async Task GetSearchPrnsAsync_SendsAcceptableIntoYear_WhenSpecified()
+    {
+        HttpRequestMessage sent = null;
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .Callback<HttpRequestMessage, CancellationToken>((message, _) => sent = message)
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonSerializer.Serialize(_fixture.Create<PaginatedResponse<PrnModel>>())),
+            });
+
+        await _webApiGatewayClient.GetSearchPrnsAsync(new PaginatedRequest { Page = 1, PageSize = 10, AcceptableIntoYear = 2027 });
+
+        sent.RequestUri.Query.Should().Contain("AcceptableIntoYear=2027");
+    }
+
+    [Test]
+    public async Task GetSearchPrnsAsync_OmitsAcceptableIntoYear_WhenNotSpecified()
+    {
+        HttpRequestMessage sent = null;
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .Callback<HttpRequestMessage, CancellationToken>((message, _) => sent = message)
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = new StringContent(JsonSerializer.Serialize(_fixture.Create<PaginatedResponse<PrnModel>>())),
+            });
+
+        await _webApiGatewayClient.GetSearchPrnsAsync(new PaginatedRequest { Page = 1, PageSize = 10 });
+
+        sent.RequestUri.Query.Should().NotContain("AcceptableIntoYear");
+    }
+
+    [Test]
     public async Task GetSearchPrnsAsync_ThrowsException_WhenResponseCodeIsNotSuccessful()
     {
         // Arrange

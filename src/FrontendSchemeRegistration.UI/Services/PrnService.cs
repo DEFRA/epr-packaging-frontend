@@ -191,48 +191,48 @@ public class PrnService : IPrnService
     {
         _logger.LogInformation("{Logprefix}: PrnService - GetPrnAwaitingAcceptanceSearchResultsForYearAsync: Get Prn awaiting acceptance for year {Year} and search criteria {Request}", logPrefix, obligationYear, JsonConvert.SerializeObject(request));
 
-        const int fetchPageSize = 100;
         var pageSize = request.PageSize > 0 ? request.PageSize : SearchPrnsViewModel.DefaultPageSize;
-        var items = new List<PrnModel>();
-        var page = 1;
-        PaginatedResponse<PrnModel> response;
+        var currentPage = Math.Max(request.Page, 1);
 
-        do
-        {
-            response = await _webApiGatewayClient.GetSearchPrnsAsync(new PaginatedRequest
-            {
-                Page = page,
-                PageSize = fetchPageSize,
-                Search = request.Search,
-                FilterBy = request.FilterBy,
-                SortBy = request.SortBy
-            });
-
-            items.AddRange(response.Items ?? []);
-            page++;
-        }
-        while (response.Items is { Count: > 0 } && items.Count < response.TotalItems);
-
-        var matching = _mapper.Map<List<AwaitingAcceptanceResultViewModel>>(items)
-            .Where(prn => prn.AvailableAcceptanceYears.Contains(obligationYear))
-            .ToList();
-
-        var totalPages = (matching.Count + pageSize - 1) / pageSize;
+        // The backend owns which notes can be accepted into the year, so its total is the count shown on Manage obligations
+        var response = await SearchAwaitingAcceptanceForYearAsync(request, obligationYear, currentPage, pageSize);
+        var totalPages = (response.TotalItems + pageSize - 1) / pageSize;
 
         // A page past the last one (stale link, edited URL) shows the last page, not an empty list
-        var currentPage = Math.Clamp(request.Page, 1, Math.Max(totalPages, 1));
+        var lastPage = Math.Max(totalPages, 1);
+        if (currentPage > lastPage)
+        {
+            currentPage = lastPage;
+            if (totalPages > 0)
+            {
+                response = await SearchAwaitingAcceptanceForYearAsync(request, obligationYear, currentPage, pageSize);
+            }
+        }
 
         return new AwaitingAcceptancePrnsViewModel
         {
-            Prns = matching.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList(),
+            Prns = _mapper.Map<List<AwaitingAcceptanceResultViewModel>>(response.Items ?? []),
             PagingDetail = new PagingDetail
             {
                 CurrentPage = currentPage,
                 PageSize = pageSize,
-                TotalItems = matching.Count,
+                TotalItems = response.TotalItems,
                 TotalPages = totalPages
             }
         };
+    }
+
+    private Task<PaginatedResponse<PrnModel>> SearchAwaitingAcceptanceForYearAsync(SearchPrnsViewModel request, int obligationYear, int page, int pageSize)
+    {
+        return _webApiGatewayClient.GetSearchPrnsAsync(new PaginatedRequest
+        {
+            Page = page,
+            PageSize = pageSize,
+            Search = request.Search,
+            FilterBy = request.FilterBy,
+            SortBy = request.SortBy,
+            AcceptableIntoYear = obligationYear
+        });
     }
 
     public async Task<Stream> GetPrnsCsvStreamAsync(int? obligationYear)

@@ -14,5 +14,7 @@ namespace FrontendSchemeRegistration.Application.DTOs
         public string? FilterBy { get; set; }
 
         public string? SortBy { get; set; }
+
+        public int? AcceptableIntoYear { get; set; }
     }
 }
