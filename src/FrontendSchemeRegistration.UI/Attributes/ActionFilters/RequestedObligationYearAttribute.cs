@@ -57,7 +57,7 @@ public class RequestedObligationYearFilter(
             session.PrnSession.SelectedObligationYear = ObligationYearOptions.CsocUnavailablePastYear;
             await sessionManager.SaveSessionAsync(context.HttpContext.Session, session);
 
-            context.Result = new RedirectToActionResult(nameof(PrnsObligationController.ComplianceCertificate), nameof(PrnsObligationController).RemoveControllerFromName(), null);
+            context.Result = PrnsObligationController.RedirectToComplianceCertificate();
             return;
         }
 

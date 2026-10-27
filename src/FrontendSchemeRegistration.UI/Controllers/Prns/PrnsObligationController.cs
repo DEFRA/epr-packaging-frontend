@@ -4,6 +4,7 @@ using FrontendSchemeRegistration.Application.Enums;
 using FrontendSchemeRegistration.Application.Options;
 using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
 using FrontendSchemeRegistration.UI.Constants;
+using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels;
@@ -265,10 +266,18 @@ public class PrnsObligationController : Controller
 
         if (model.SelectedYear.Value == model.CsocUnavailablePastYear)
         {
-            return RedirectToAction(nameof(ComplianceCertificate));
+            return RedirectToComplianceCertificate();
         }
 
         return RedirectToAction(nameof(ObligationsHome));
+    }
+
+    /// <summary>
+    ///     The redirect for 2025 and earlier, which have no obligations and show the compliance certificate page.
+    /// </summary>
+    public static RedirectToActionResult RedirectToComplianceCertificate()
+    {
+        return new RedirectToActionResult(nameof(ComplianceCertificate), nameof(PrnsObligationController).RemoveControllerFromName(), null);
     }
 
     [HttpGet]

@@ -38,10 +38,7 @@ public class RedirectPastObligationYearFilter(
 
             if (session?.PrnSession.SelectedObligationYear <= ObligationYearOptions.CsocUnavailablePastYear)
             {
-                context.Result = new RedirectToActionResult(
-                    nameof(PrnsObligationController.ComplianceCertificate),
-                    nameof(PrnsObligationController).RemoveControllerFromName(),
-                    null);
+                context.Result = PrnsObligationController.RedirectToComplianceCertificate();
                 return;
             }
         }
