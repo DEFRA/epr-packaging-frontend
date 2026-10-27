@@ -1268,48 +1268,6 @@ public class PrnsObligationControllerTests
     }
 
     [Test]
-    public async Task ObligationsHome_WhenSessionYearIs2025AndNoYearQuery_RedirectsToComplianceCertificate()
-    {
-        _fakeTimeProvider.SetUtcNow(new DateTimeOffset(2026, 10, 26, 0, 0, 0, TimeSpan.Zero));
-        _featureManagerMock
-            .Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
-            .ReturnsAsync(true);
-        var session = new FrontendSchemeRegistrationSession();
-        session.PrnSession.SelectedObligationYear = 2025;
-        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
-        var controller = CreateController();
-
-        var result = await controller.ObligationsHome();
-
-        result.Should().BeOfType<RedirectToActionResult>()
-            .Which.ActionName.Should().Be(nameof(PrnsObligationController.ComplianceCertificate));
-        _prnServiceMock.Verify(
-            x => x.GetRecyclingObligationsCalculation(It.IsAny<int>(), It.IsAny<bool>()),
-            Times.Never);
-    }
-
-    [Test]
-    public async Task ObligationPerMaterial_WhenSessionYearIs2025AndNoYearQuery_RedirectsToComplianceCertificate()
-    {
-        _fakeTimeProvider.SetUtcNow(new DateTimeOffset(2026, 10, 26, 0, 0, 0, TimeSpan.Zero));
-        _featureManagerMock
-            .Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
-            .ReturnsAsync(true);
-        var session = new FrontendSchemeRegistrationSession();
-        session.PrnSession.SelectedObligationYear = 2025;
-        _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
-        var controller = CreateController();
-
-        var result = await controller.ObligationPerMaterial("Plastic");
-
-        result.Should().BeOfType<RedirectToActionResult>()
-            .Which.ActionName.Should().Be(nameof(PrnsObligationController.ComplianceCertificate));
-        _prnServiceMock.Verify(
-            x => x.GetRecyclingObligationsCalculation(It.IsAny<int>(), It.IsAny<bool>()),
-            Times.Never);
-    }
-
-    [Test]
     public async Task ChooseYear_Get_Returns_NotFound_When_Feature_Flag_Disabled()
     {
         _featureManagerMock

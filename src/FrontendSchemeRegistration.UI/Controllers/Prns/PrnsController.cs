@@ -3,7 +3,6 @@ using FrontendSchemeRegistration.Application.Constants;
 using FrontendSchemeRegistration.Application.Extensions;
 using FrontendSchemeRegistration.UI.Attributes.ActionFilters;
 using FrontendSchemeRegistration.UI.Constants;
-using FrontendSchemeRegistration.UI.Controllers.ControllerExtensions;
 using FrontendSchemeRegistration.UI.Services.Interfaces;
 using FrontendSchemeRegistration.UI.Sessions;
 using FrontendSchemeRegistration.UI.ViewModels.Prns;
@@ -84,6 +83,7 @@ public class PrnsController : Controller
     [HttpPost]
     [Route(PagePaths.Prns.ShowAwaitingAcceptance)]
     [RequestedObligationYear]
+    [RedirectPastObligationYear]
     public async Task<IActionResult> SelectMultiplePrns(SearchPrnsViewModel request)
     {
         if (TempData[NoPrnsSelected] != null)
@@ -100,14 +100,6 @@ public class PrnsController : Controller
         // With multi-year obligations off, a year left in the session must not filter the list: the obligations page
         // ignores it and shows the compliance year.
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-
-        // 2025 and earlier have no obligations to accept PRNs into, so the list leads to the compliance certificate page
-        if (await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)
-            && session?.PrnSession.SelectedObligationYear <= ObligationYearOptions.CsocUnavailablePastYear)
-        {
-            return RedirectToAction(nameof(PrnsObligationController.ComplianceCertificate),
-                nameof(PrnsObligationController).RemoveControllerFromName());
-        }
 
         int? selectedYear = null;
         if (await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))

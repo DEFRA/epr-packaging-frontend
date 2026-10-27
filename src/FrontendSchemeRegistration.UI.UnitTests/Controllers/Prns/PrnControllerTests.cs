@@ -365,23 +365,6 @@
         }
 
         [Test]
-        public async Task SelectMultiplePrns_WhenSelectedYearIs2025_RedirectsToComplianceCertificate()
-        {
-            var session = new FrontendSchemeRegistrationSession();
-            session.PrnSession.SelectedObligationYear = 2025;
-            _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
-            _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)).ReturnsAsync(true);
-
-            var result = await _controller.SelectMultiplePrns(_fixture.Create<SearchPrnsViewModel>());
-
-            var redirect = result.Should().BeOfType<RedirectToActionResult>().Which;
-            redirect.ActionName.Should().Be(nameof(PrnsObligationController.ComplianceCertificate));
-            redirect.ControllerName.Should().Be("PrnsObligation");
-            _prnServiceMock.Verify(x => x.GetPrnAwaitingAcceptanceSearchResultsForYearAsync(It.IsAny<SearchPrnsViewModel>(), It.IsAny<int>()), Times.Never);
-            _prnServiceMock.Verify(x => x.GetPrnAwaitingAcceptanceSearchResultsAsync(It.IsAny<SearchPrnsViewModel>()), Times.Never);
-        }
-
-        [Test]
         public async Task SelectMultiplePrns_WhenMultiYearDisabled_IgnoresSelectedObligationYear()
         {
             var request = _fixture.Create<SearchPrnsViewModel>();

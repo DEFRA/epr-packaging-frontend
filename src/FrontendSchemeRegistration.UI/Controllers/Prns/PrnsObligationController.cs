@@ -67,18 +67,12 @@ public class PrnsObligationController : Controller
     [HttpGet]
     [Route(PagePaths.Prns.ObligationsHome)]
     [RequestedObligationYear]
+    [RedirectPastObligationYear]
     public async Task<IActionResult> ObligationsHome()
     {
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
 
         var selectedYear = await GetSelectedObligationYearAsync(session);
-
-        // A year left in the session (e.g. chosen earlier) can be 2025 or earlier, which has no obligations to show
-        if (await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)
-            && session?.PrnSession.SelectedObligationYear <= _csocUnavailablePastYear)
-        {
-            return RedirectToAction(nameof(ComplianceCertificate));
-        }
 
         var isCsocEnabled = await _featureManager.IsEnabledAsync(FeatureFlags.CsocEnabled);
         var viewModel = await _prnService.GetRecyclingObligationsCalculation(selectedYear, includeComplianceDeclarationStatus: isCsocEnabled);
@@ -146,6 +140,7 @@ public class PrnsObligationController : Controller
     [HttpGet]
     [Route(PagePaths.Prns.ObligationPerMaterial + "/{material}")]
     [RequestedObligationYear]
+    [RedirectPastObligationYear]
     public async Task<IActionResult> ObligationPerMaterial(string material)
     {
         PrnObligationViewModel viewModel = new();
@@ -153,13 +148,6 @@ public class PrnsObligationController : Controller
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
 
         var selectedYear = await GetSelectedObligationYearAsync(session);
-
-        // A year left in the session (e.g. chosen earlier) can be 2025 or earlier, which has no obligations to show
-        if (await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)
-            && session?.PrnSession.SelectedObligationYear <= _csocUnavailablePastYear)
-        {
-            return RedirectToAction(nameof(ComplianceCertificate));
-        }
 
         _logger.LogInformation(
             "{LogPrefix}: PrnsObligationController - ObligationPerMaterial: Get Recycling Obligations Calculation request for year {Year}, material {Material}",
