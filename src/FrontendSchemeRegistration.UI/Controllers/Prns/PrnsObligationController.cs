@@ -38,7 +38,6 @@ public class PrnsObligationController : Controller
     private readonly IFeatureManager _featureManager;
     private readonly IOptions<CsocOptions> _csocOptions;
     private readonly string _logPrefix;
-    private readonly int _complianceYear;
 
     public PrnsObligationController(ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
         IPrnService prnService,
@@ -58,7 +57,6 @@ public class PrnsObligationController : Controller
         _featureManager = featureManager;
         _csocOptions = csocOptions;
         _logPrefix = _globalVariables.Value.LogPrefix;
-        _complianceYear = timeProvider.GetUtcNow().GetComplianceYear();
     }
 
     private const string GlassOrNonGlassResource = "GlassOrNonGlassResource";
@@ -88,7 +86,7 @@ public class PrnsObligationController : Controller
             }
         }
 
-        if (selectedYear > _complianceYear && _timeProvider.GetUtcNow().IsInDecemberJanuaryFlashWindow())
+        if (selectedYear > ComplianceYear && _timeProvider.GetUtcNow().IsInDecemberJanuaryFlashWindow())
         {
             var awaitingAcceptance = await _prnService.GetPrnsAwaitingAcceptanceAsync();
             viewModel.HasDecemberWasteMultiYearPrnAwaitingAcceptance = awaitingAcceptance.Prns
@@ -215,7 +213,7 @@ public class PrnsObligationController : Controller
         viewModel.NationId = isDirectProducer
             ? organisation.NationId
             : session.RegistrationSession.SelectedComplianceScheme?.NationId ?? 0;
-        viewModel.ComplianceYear = complianceYear ?? _complianceYear;
+        viewModel.ComplianceYear = complianceYear ?? ComplianceYear;
 
         return session;
     }
@@ -318,7 +316,7 @@ public class PrnsObligationController : Controller
 
         return isMultiYearObligationsEnabled && session?.PrnSession.SelectedObligationYear is { } selectedYear
             ? selectedYear
-            : _complianceYear;
+            : ComplianceYear;
     }
 
     private ChooseYearViewModel BuildChooseYearViewModel(int? selectedYear = null)
@@ -326,7 +324,7 @@ public class PrnsObligationController : Controller
         return new ChooseYearViewModel
         {
             CsocUnavailablePastYear = ObligationYearOptions.CsocUnavailablePastYear,
-            CurrentYear = _complianceYear,
+            CurrentYear = ComplianceYear,
             SelectedYear = selectedYear,
             Years = GetSelectableYears()
         };
@@ -335,6 +333,8 @@ public class PrnsObligationController : Controller
     /// <summary>
     ///     The years the user may manage: the future year is only available in December and January.
     /// </summary>
+    private int ComplianceYear => _timeProvider.GetUtcNow().GetComplianceYear();
+
     private IReadOnlyList<int> GetSelectableYears()
     {
         return ObligationYearOptions.GetSelectableYears(_timeProvider.GetUtcNow());
