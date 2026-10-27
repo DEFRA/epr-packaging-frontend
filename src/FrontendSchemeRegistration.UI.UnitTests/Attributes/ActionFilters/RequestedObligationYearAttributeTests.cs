@@ -70,6 +70,25 @@ public class RequestedObligationYearAttributeTests
         _sessionManagerMock.Verify(x => x.SaveSessionAsync(It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()), Times.Never);
     }
 
+    [TestCase("year=2025&year=2026", 2026)]
+    [TestCase("year=2026&year=2025", 2025)]
+    public async Task OnActionExecutionAsync_UsesLastYear_WhenYearIsRepeated(string query, int expectedYear)
+    {
+        var context = CreateContext(query);
+
+        await _systemUnderTest.OnActionExecutionAsync(context, _delegateMock.Object);
+
+        if (expectedYear <= 2025)
+        {
+            context.Result.Should().BeOfType<RedirectToActionResult>();
+        }
+        else
+        {
+            _session.PrnSession.SelectedObligationYear.Should().Be(expectedYear);
+            _delegateMock.Verify(next => next(), Times.Once);
+        }
+    }
+
     [Test]
     public async Task OnActionExecutionAsync_CallsNext_WhenYearIsNotANumber()
     {

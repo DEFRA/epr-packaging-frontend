@@ -26,8 +26,11 @@ public class RequestedObligationYearFilter(
 {
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
+        // A repeated year parameter is read as its last value, as model binding does
+        var yearQuery = context.HttpContext.Request.Query["year"].LastOrDefault();
+
         if (!HttpMethods.IsGet(context.HttpContext.Request.Method)
-            || !int.TryParse(context.HttpContext.Request.Query["year"], out var requestedYear)
+            || !int.TryParse(yearQuery, out var requestedYear)
             || !await featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
         {
             await next();
