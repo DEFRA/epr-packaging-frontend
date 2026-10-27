@@ -51,8 +51,7 @@ public class RequestedObligationYearFilter(
             return;
         }
 
-        var now = timeProvider.GetUtcNow();
-        var selectableYears = ObligationYearOptions.GetSelectableYears(now.GetComplianceYear(), now.IsInDecemberJanuaryFlashWindow());
+        var selectableYears = ObligationYearOptions.GetSelectableYears(timeProvider.GetUtcNow());
 
         if (selectableYears.Contains(requestedYear))
         {

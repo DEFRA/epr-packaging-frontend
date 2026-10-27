@@ -331,8 +331,6 @@ public class PrnsObligationController : Controller
     /// </summary>
     private IReadOnlyList<int> GetSelectableYears()
     {
-        var includeFutureYear = _timeProvider.GetUtcNow().IsInDecemberJanuaryFlashWindow();
-
-        return ObligationYearOptions.GetSelectableYears(_complianceYear, includeFutureYear);
+        return ObligationYearOptions.GetSelectableYears(_timeProvider.GetUtcNow());
     }
 }
