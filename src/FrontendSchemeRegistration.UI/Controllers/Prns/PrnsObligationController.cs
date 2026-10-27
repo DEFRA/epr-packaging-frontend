@@ -39,7 +39,6 @@ public class PrnsObligationController : Controller
     private readonly IOptions<CsocOptions> _csocOptions;
     private readonly string _logPrefix;
     private readonly int _complianceYear;
-    private readonly int _csocUnavailablePastYear;
 
     public PrnsObligationController(ISessionManager<FrontendSchemeRegistrationSession> sessionManager,
         IPrnService prnService,
@@ -60,7 +59,6 @@ public class PrnsObligationController : Controller
         _csocOptions = csocOptions;
         _logPrefix = _globalVariables.Value.LogPrefix;
         _complianceYear = timeProvider.GetUtcNow().GetComplianceYear();
-        _csocUnavailablePastYear = ObligationYearOptions.CsocUnavailablePastYear;
     }
 
     private const string GlassOrNonGlassResource = "GlassOrNonGlassResource";
@@ -327,7 +325,7 @@ public class PrnsObligationController : Controller
     {
         return new ChooseYearViewModel
         {
-            CsocUnavailablePastYear = _csocUnavailablePastYear,
+            CsocUnavailablePastYear = ObligationYearOptions.CsocUnavailablePastYear,
             CurrentYear = _complianceYear,
             SelectedYear = selectedYear,
             Years = GetSelectableYears()
