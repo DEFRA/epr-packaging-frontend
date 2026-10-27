@@ -26,7 +26,7 @@ public class RequestedObligationYearFilter(
 {
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        // A repeated year parameter is read as its last value, as model binding does
+        // Read the last value when the year is repeated. Model binding does not do this: it joins the values and fails to parse them
         var yearQuery = context.HttpContext.Request.Query["year"].LastOrDefault();
 
         if (!HttpMethods.IsGet(context.HttpContext.Request.Method)
