@@ -38,6 +38,13 @@ public class RequestedObligationYearFilter(
 
         if (session is null)
         {
+            // Without a session the year cannot be stored, so a past year cannot be shown: return to the start instead
+            if (requestedYear <= ObligationYearOptions.CsocUnavailablePastYear)
+            {
+                context.Result = new RedirectResult($"~{PagePaths.Root}");
+                return;
+            }
+
             await next();
             return;
         }

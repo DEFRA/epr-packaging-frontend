@@ -96,10 +96,23 @@ public class RequestedObligationYearAttributeTests
     }
 
     [Test]
-    public async Task OnActionExecutionAsync_CallsNextWithoutSelectingYear_WhenSessionIsMissing()
+    public async Task OnActionExecutionAsync_RedirectsToRoot_WhenSessionIsMissingAndYearIs2025OrEarlier()
     {
         _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync((FrontendSchemeRegistrationSession?)null);
         var context = CreateContext("year=2025");
+
+        await _systemUnderTest.OnActionExecutionAsync(context, _delegateMock.Object);
+
+        context.Result.Should().BeOfType<RedirectResult>().Subject.Url.Should().Be($"~{PagePaths.Root}");
+        _delegateMock.Verify(next => next(), Times.Never);
+        _sessionManagerMock.Verify(x => x.SaveSessionAsync(It.IsAny<ISession>(), It.IsAny<FrontendSchemeRegistrationSession>()), Times.Never);
+    }
+
+    [Test]
+    public async Task OnActionExecutionAsync_CallsNextWithoutSelectingYear_WhenSessionIsMissingAndYearIsSelectable()
+    {
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync((FrontendSchemeRegistrationSession?)null);
+        var context = CreateContext("year=2026");
 
         await _systemUnderTest.OnActionExecutionAsync(context, _delegateMock.Object);
 

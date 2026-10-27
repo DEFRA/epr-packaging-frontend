@@ -149,19 +149,19 @@ public class PrnsObligationControllerTests
                 ServiceRole = "Basic User"
             }
         };
-        session.PrnSession.SelectedObligationYear = 2026;
+        session.PrnSession.SelectedObligationYear = 2025;
         _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
         _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)).ReturnsAsync(true);
 
         var viewModel = _fixture.Create<PrnObligationViewModel>();
-        _prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(2026, It.IsAny<bool>())).ReturnsAsync(viewModel);
+        _prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(2025, It.IsAny<bool>())).ReturnsAsync(viewModel);
 
         // Act
         var result = await _controller.ObligationsHome() as ViewResult;
 
         // Assert
         result.Should().NotBeNull();
-        _prnServiceMock.Verify(x => x.GetRecyclingObligationsCalculation(2026, It.IsAny<bool>()), Times.Once);
+        _prnServiceMock.Verify(x => x.GetRecyclingObligationsCalculation(2025, It.IsAny<bool>()), Times.Once);
     }
 
     [Test]
@@ -197,7 +197,6 @@ public class PrnsObligationControllerTests
     [Test]
     public async Task ObligationsHome_WhenMultiYearObligationsEnabled_AndNoSelectedYear_UsesComplianceYear()
     {
-        _fakeTimeProvider.SetUtcNow(new DateTimeOffset(2026, 10, 26, 0, 0, 0, TimeSpan.Zero));
         // Arrange
         var session = new FrontendSchemeRegistrationSession
         {
@@ -225,7 +224,7 @@ public class PrnsObligationControllerTests
         _prnServiceMock.Setup(x => x.GetRecyclingObligationsCalculation(complianceYear, It.IsAny<bool>())).ReturnsAsync(viewModel);
 
         // Act
-        var result = await CreateController().ObligationsHome() as ViewResult;
+        var result = await _controller.ObligationsHome() as ViewResult;
 
         // Assert
         result.Should().NotBeNull();
@@ -468,19 +467,19 @@ public class PrnsObligationControllerTests
                 ],
                 ServiceRole = "Basic User"
             },
-            PrnSession = new PrnSession { SelectedObligationYear = 2026 }
+            PrnSession = new PrnSession { SelectedObligationYear = 2025 }
         };
         _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
         _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)).ReturnsAsync(true);
         _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowPrnsOnCdp)).ReturnsAsync(true);
         _prnServiceMock
-            .Setup(x => x.GetRecyclingObligationsCalculation(2026, It.IsAny<bool>()))
+            .Setup(x => x.GetRecyclingObligationsCalculation(2025, It.IsAny<bool>()))
             .ReturnsAsync(_fixture.Create<PrnObligationViewModel>());
 
         var result = await _controller.ObligationsHome() as ViewResult;
 
         (result!.Model as PrnObligationViewModel)!.AcceptRejectPrnsHref
-            .Should().Be($"https://understanding-obligations/producer/{organisationId}/prns?year=2026");
+            .Should().Be($"https://understanding-obligations/producer/{organisationId}/prns?year=2025");
     }
 
     [Test]
@@ -502,25 +501,24 @@ public class PrnsObligationControllerTests
                 ],
                 ServiceRole = "Basic User"
             },
-            PrnSession = new PrnSession { SelectedObligationYear = 2026 }
+            PrnSession = new PrnSession { SelectedObligationYear = 2025 }
         };
         _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
         _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)).ReturnsAsync(true);
         _prnServiceMock
-            .Setup(x => x.GetRecyclingObligationsCalculation(2026, It.IsAny<bool>()))
+            .Setup(x => x.GetRecyclingObligationsCalculation(2025, It.IsAny<bool>()))
             .ReturnsAsync(_fixture.Create<PrnObligationViewModel>());
 
         var result = await _controller.ObligationsHome() as ViewResult;
 
-        _prnServiceMock.Verify(x => x.GetRecyclingObligationsCalculation(2026, It.IsAny<bool>()), Times.Once);
+        _prnServiceMock.Verify(x => x.GetRecyclingObligationsCalculation(2025, It.IsAny<bool>()), Times.Once);
         result.Should().NotBeNull();
-        (result!.Model as PrnObligationViewModel)!.ComplianceYear.Should().Be(2026);
+        (result!.Model as PrnObligationViewModel)!.ComplianceYear.Should().Be(2025);
     }
 
     [Test]
     public async Task ObligationsHome_WhenMultiYearObligationsEnabledButNoYearSelected_UsesCurrentComplianceYear()
     {
-        _fakeTimeProvider.SetUtcNow(new DateTimeOffset(2026, 10, 26, 0, 0, 0, TimeSpan.Zero));
         var currentYear = _fakeTimeProvider.GetUtcNow().GetComplianceYear();
         var session = new FrontendSchemeRegistrationSession
         {
@@ -546,7 +544,7 @@ public class PrnsObligationControllerTests
             .Setup(x => x.GetRecyclingObligationsCalculation(currentYear, It.IsAny<bool>()))
             .ReturnsAsync(_fixture.Create<PrnObligationViewModel>());
 
-        var result = await CreateController().ObligationsHome() as ViewResult;
+        var result = await _controller.ObligationsHome() as ViewResult;
 
         _prnServiceMock.Verify(x => x.GetRecyclingObligationsCalculation(currentYear, It.IsAny<bool>()), Times.Once);
         result.Should().NotBeNull();
@@ -663,7 +661,7 @@ public class PrnsObligationControllerTests
     public async Task ObligationsHome_WhenSelectedYearNotInFuture_DoesNotCheckPrnsAwaitingAcceptance()
     {
         // Arrange
-        _fakeTimeProvider.SetUtcNow(new DateTimeOffset(2026, 6, 15, 0, 0, 0, TimeSpan.Zero));
+        _fakeTimeProvider.SetUtcNow(new DateTimeOffset(2026, 1, 15, 0, 0, 0, TimeSpan.Zero));
         var session = new FrontendSchemeRegistrationSession
         {
             UserData = new UserData
@@ -680,14 +678,14 @@ public class PrnsObligationControllerTests
                 ],
                 ServiceRole = "Basic User"
             },
-            PrnSession = new PrnSession { SelectedObligationYear = 2026 }
+            PrnSession = new PrnSession { SelectedObligationYear = 2025 }
         };
         _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(session);
         _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations)).ReturnsAsync(true);
         var expectedViewModel = _fixture.Create<PrnObligationViewModel>();
         expectedViewModel.HasDecemberWasteMultiYearPrnAwaitingAcceptance = false;
         _prnServiceMock
-            .Setup(x => x.GetRecyclingObligationsCalculation(2026, It.IsAny<bool>()))
+            .Setup(x => x.GetRecyclingObligationsCalculation(2025, It.IsAny<bool>()))
             .ReturnsAsync(expectedViewModel);
         var controller = CreateController();
 
@@ -782,7 +780,7 @@ public class PrnsObligationControllerTests
     }
 
     [TestCase(true, 2027)]
-    [TestCase(true, 2026)]
+    [TestCase(true, 2025)]
     [TestCase(false, 2027)]
     public async Task ObligationPerMaterial_UsesSelectedYear_OnlyWhenMultiYearObligationsEnabled(bool multiYearEnabled, int selectedYear)
     {
