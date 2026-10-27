@@ -100,7 +100,6 @@ public class PrnsController : Controller
         // With multi-year obligations off, a year left in the session must not filter the list: the obligations page
         // ignores it and shows the compliance year.
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-
         int? selectedYear = null;
         if (await _featureManager.IsEnabledAsync(FeatureFlags.ShowMultiYearObligations))
         {

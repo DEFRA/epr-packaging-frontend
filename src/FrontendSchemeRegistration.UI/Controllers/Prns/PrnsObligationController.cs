@@ -146,7 +146,6 @@ public class PrnsObligationController : Controller
         PrnObligationViewModel viewModel = new();
 
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
-
         var selectedYear = await GetSelectedObligationYearAsync(session);
 
         _logger.LogInformation(
