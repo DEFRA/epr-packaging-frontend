@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Net;
 using System.Security.Claims;
 using EPR.Common.Authorization.Models;
 using EPR.Common.Authorization.Sessions;
@@ -35,6 +36,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
     private readonly IFeatureManager featureManager;
     private readonly TimeProvider _timeProvider;
     private readonly IRegistrationPeriodProvider _registrationPeriodProvider;
+    private readonly IComplianceSchemeService complianceSchemeService;
 
     public RegistrationApplicationService(RegistrationApplicationServiceDependencies dependencies, TimeProvider timeProvider)
     {
@@ -54,21 +56,35 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         featureManager = dependencies.FeatureManager
                          ?? throw new InvalidOperationException($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(dependencies.FeatureManager)} cannot be null.");
         _registrationPeriodProvider = dependencies.RegistrationPeriodProvider;
+        complianceSchemeService = dependencies.ComplianceSchemeService
+            ?? throw new InvalidOperationException($"{nameof(RegistrationApplicationServiceDependencies)}.{nameof(dependencies.ComplianceSchemeService)} cannot be null.");
     }
     private async Task TryHydrateRegistrationFeeFromSnapshot(RegistrationApplicationSession session)
     {
-        if (!session.SubmissionId.HasValue
-            || session.SubmissionId.Value == Guid.Empty
-            || !await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeParametersViaPaymentService))
+        if (!session.SubmissionId.HasValue)
         {
             return;
         }
 
-        var submissionId = session.SubmissionId.Value;
+        var snapshotDetails = await GetRegistrationFeeSnapshotAsync(session.SubmissionId.Value);
+        if (snapshotDetails is not null)
+        {
+            session.RegistrationFeeCalculationDetails = snapshotDetails;
+        }
+    }
+
+    private async Task<RegistrationFeeCalculationDetails[]?> GetRegistrationFeeSnapshotAsync(Guid submissionId)
+    {
+        if (submissionId == Guid.Empty
+            || !await featureManager.IsEnabledAsync(FeatureFlags.EnableRegistrationFeeParametersViaPaymentService))
+        {
+            return null;
+        }
+
         var snapshotDetails = await paymentCalculationService.GetRegistrationFeeCalculationDetails(submissionId);
         if (snapshotDetails is null)
         {
-            return;
+            return null;
         }
 
         var returnedBlob = snapshotDetails.FirstOrDefault()?.RegistrationBlobName;
@@ -76,10 +92,10 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         if (!SnapshotIsForExpectedBlob(returnedBlob, expectedBlob))
         {
             logger.IgnoringStaleFeeSnapshot(submissionId, expectedBlob, returnedBlob);
-            return;
+            return null;
         }
 
-        session.RegistrationFeeCalculationDetails = snapshotDetails;
+        return snapshotDetails;
     }
 
     // Authoritative source for the file the frontend is currently expecting fees for:
@@ -209,14 +225,7 @@ public class RegistrationApplicationService : IRegistrationApplicationService
 
         session.SubmissionPeriodId = ResolveSubmissionPeriodId(session, registrationJourney, registrationYear);
 
-        session.RegulatorNation = nationId switch
-        {
-            (int) Nation.England => "GB-ENG",
-            (int) Nation.Scotland => "GB-SCT",
-            (int) Nation.Wales => "GB-WLS",
-            (int) Nation.NorthernIreland => "GB-NIR",
-            _ => "regulator"
-        };
+        session.RegulatorNation = ToRegulatorNation(nationId);
 
         if (session.ApplicationStatus
                 is ApplicationStatusType.AcceptedByRegulator
@@ -525,6 +534,93 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         await sessionManager.SaveSessionAsync(httpSession, session);
     }
 
+    /// <summary>
+    /// Loads the registration Submit and confirmation page data from the gateway by submission id, so another tab or the
+    /// back button can't swap in a different registration through the shared session. Returns null when the submission
+    /// isn't this organisation's current registration submission.
+    /// </summary>
+    public async Task<RegistrationSubmitState?> GetRegistrationSubmitStateAsync(Organisation organisation, Guid submissionId)
+    {
+        RegistrationSubmission? submission;
+        try
+        {
+            submission = await _submissionService.GetSubmissionAsync<RegistrationSubmission>(submissionId);
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
+        {
+            // The submission service refuses another organisation's submission
+            submission = null;
+        }
+
+        if (submission is null || submission.OrganisationId != organisation.Id)
+        {
+            logger.LogWarning("Registration submission {SubmissionId} was not found for organisation {OrganisationId}", submissionId, organisation.Id);
+            return null;
+        }
+
+        ComplianceSchemeDto? complianceScheme = null;
+        if (organisation.OrganisationRole == OrganisationRoles.ComplianceScheme)
+        {
+            var complianceSchemes = await complianceSchemeService.GetOperatorComplianceSchemes(organisation.Id!.Value);
+            complianceScheme = complianceSchemes?.Find(x => x.Id == submission.ComplianceSchemeId);
+            if (complianceScheme is null)
+            {
+                logger.LogWarning("Compliance scheme {ComplianceSchemeId} for registration submission {SubmissionId} is not operated by organisation {OrganisationId}", submission.ComplianceSchemeId, submissionId, organisation.Id);
+                return null;
+            }
+        }
+
+        // Null here means the gateway call failed (it logs and returns null), not that the submission was replaced
+        var details = await GetRegistrationApplicationDetailsAsync(organisation, submission.SubmissionPeriod, submission.RegistrationJourney, submission.ComplianceSchemeId)
+            ?? throw new InvalidOperationException($"Registration application details could not be loaded for submission {submissionId}");
+        if (details.SubmissionId != submissionId)
+        {
+            logger.LogWarning("Submission {SubmissionId} is not the current registration submission for {SubmissionPeriod}; found {CurrentSubmissionId}", submissionId, submission.SubmissionPeriod, details.SubmissionId);
+            return null;
+        }
+
+        details.RegistrationFeeCalculationDetails = await GetRegistrationFeeSnapshotAsync(submissionId) ?? details.RegistrationFeeCalculationDetails;
+
+        // Same nation and journey rules as GetRegistrationApplicationSession
+        int? nationId;
+        if (complianceScheme is not null)
+            nationId = complianceScheme.NationId;
+        else if (RegistrationApplicationStatusCalculator.ReadyToCalculateFees(details.RegistrationFeeCalculationDetails))
+            nationId = details.RegistrationFeeCalculationDetails![0].NationId;
+        else
+            nationId = organisation.NationId;
+
+        return new RegistrationSubmitState
+        {
+            SubmissionId = submissionId,
+            ComplianceSchemeId = submission.ComplianceSchemeId,
+            ComplianceScheme = complianceScheme,
+            RegistrationYear = submission.RegistrationYear ?? ParseRegistrationYear(submission.SubmissionPeriod),
+            RegistrationJourney = complianceScheme is not null ? details.RegistrationJourney ?? submission.RegistrationJourney : null,
+            RegulatorNation = ToRegulatorNation(nationId),
+            ApplicationDetails = details
+        };
+    }
+
+    public async Task SubmitRegistrationApplicationAsync(RegistrationSubmitState state, string? comments)
+    {
+        await _submissionService.CreateRegistrationApplicationEvent(
+            new RegistrationApplicationData(state.SubmissionId, state.ComplianceSchemeId, comments, null),
+            state.ApplicationDetails.ApplicationReferenceNumber,
+            state.IsResubmission,
+            SubmissionType.RegistrationApplicationSubmitted,
+            state.RegistrationJourney);
+    }
+
+    private static string ToRegulatorNation(int? nationId) => nationId switch
+    {
+        (int) Nation.England => "GB-ENG",
+        (int) Nation.Scotland => "GB-SCT",
+        (int) Nation.Wales => "GB-WLS",
+        (int) Nation.NorthernIreland => "GB-NIR",
+        _ => "regulator"
+    };
+
     public async Task<bool> TryPopulateRegistrationFeeSnapshotAsync(ISession httpSession, Guid submissionId, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -681,23 +777,32 @@ public class RegistrationApplicationService : IRegistrationApplicationService
         RegistrationJourney? registrationJourney,
         ComplianceSchemeDto? selectedComplianceScheme)
     {
-        if (string.IsNullOrWhiteSpace(submission.SubmissionPeriod)
+        var details = await GetRegistrationApplicationDetailsAsync(organisation, submission.SubmissionPeriod, registrationJourney, selectedComplianceScheme?.Id);
+
+        return details?.SubmissionId == submission.Id ? details : null;
+    }
+
+    private async Task<RegistrationApplicationDetails?> GetRegistrationApplicationDetailsAsync(
+        Organisation organisation,
+        string? submissionPeriod,
+        RegistrationJourney? registrationJourney,
+        Guid? complianceSchemeId)
+    {
+        if (string.IsNullOrWhiteSpace(submissionPeriod)
             || organisation.Id is null
             || !int.TryParse(organisation.OrganisationNumber, out var organisationNumber))
         {
             return null;
         }
 
-        var details = await _submissionService.GetRegistrationApplicationDetails(new GetRegistrationApplicationDetailsRequest
+        return await _submissionService.GetRegistrationApplicationDetails(new GetRegistrationApplicationDetailsRequest
         {
             OrganisationNumber = organisationNumber,
             OrganisationId = organisation.Id.Value,
-            ComplianceSchemeId = selectedComplianceScheme?.Id,
-            SubmissionPeriod = submission.SubmissionPeriod,
+            ComplianceSchemeId = complianceSchemeId,
+            SubmissionPeriod = submissionPeriod,
             RegistrationJourney = registrationJourney?.ToString()
         });
-
-        return details?.SubmissionId == submission.Id ? details : null;
     }
 
     private static int? ParseRegistrationYear(string? submissionPeriod)
@@ -901,10 +1006,45 @@ public interface IRegistrationApplicationService
     Task<bool> TryPopulateRegistrationFeeSnapshotAsync(ISession httpSession, Guid submissionId, CancellationToken cancellationToken);
 
     Task<RegistrationSubmitDetails> ResolveRegistrationSubmitDetailsAsync(ISession httpSession, Organisation organisation, RegistrationSubmission submission, RegistrationJourney? registrationJourney, int? fallbackRegistrationYear);
+
+    Task<RegistrationSubmitState?> GetRegistrationSubmitStateAsync(Organisation organisation, Guid submissionId);
+
+    Task SubmitRegistrationApplicationAsync(RegistrationSubmitState state, string? comments);
 }
 
 public sealed record RegistrationSubmitDetails(string? ApplicationReferenceNumber, bool IsResubmission, int? SubmissionPeriodId, string? RegulatorNation, bool HasPreviousApplicationSubmission);
 
+/// <summary>
+/// A registration submission and its application details, loaded from the gateway by submission id rather than from the session.
+/// </summary>
+public sealed record RegistrationSubmitState
+{
+    public required Guid SubmissionId { get; init; }
+
+    public Guid? ComplianceSchemeId { get; init; }
+
+    public ComplianceSchemeDto? ComplianceScheme { get; init; }
+
+    public int? RegistrationYear { get; init; }
+
+    public RegistrationJourney? RegistrationJourney { get; init; }
+
+    public required string RegulatorNation { get; init; }
+
+    public required RegistrationApplicationDetails ApplicationDetails { get; init; }
+
+    public bool IsComplianceScheme => ComplianceScheme is not null;
+
+    public bool IsResubmission => ApplicationDetails.IsResubmission ?? false;
+
+    public bool RegistrationApplicationSubmitted => ApplicationDetails.RegistrationApplicationSubmittedDate is not null;
+
+    public RegistrationTaskListStatus FileUploadStatus => RegistrationApplicationStatusCalculator.CalculateFileUploadStatus(ApplicationDetails);
+
+    public RegistrationTaskListStatus PaymentViewStatus => RegistrationApplicationStatusCalculator.CalculatePaymentViewStatus(FileUploadStatus, ApplicationDetails);
+
+    public RegistrationTaskListStatus AdditionalDetailsStatus => RegistrationApplicationStatusCalculator.CalculateAdditionalDetailsStatus(PaymentViewStatus, ApplicationDetails);
+}
 
 public sealed class RegistrationApplicationServiceDependencies
 {
@@ -915,6 +1055,7 @@ public sealed class RegistrationApplicationServiceDependencies
     public required ILogger<RegistrationApplicationService> Logger { get; init; }
     public required IFeatureManager FeatureManager { get; init; }
     public required IRegistrationPeriodProvider RegistrationPeriodProvider { get; init; }
+    public required IComplianceSchemeService ComplianceSchemeService { get; init; }
 }
 
 internal static partial class RegistrationApplicationServiceLog
