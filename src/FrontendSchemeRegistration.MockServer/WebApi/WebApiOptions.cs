@@ -1,10 +1,17 @@
 namespace FrontendSchemeRegistration.MockServer.WebApi;
 
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 
 [ExcludeFromCodeCoverage]
 public class WebApiOptions
 {
+    /// <summary>
+    /// The clock the stub uses for <c>acceptableIntoYear</c>. Matches the component-test host default.
+    /// </summary>
+    public DateTimeOffset UtcNow { get; set; } =
+        DateTimeOffset.Parse("2026-03-27T08:58:00Z", CultureInfo.InvariantCulture);
+
     public ObligationDataType ObligationData { get; set; }
     public ComplianceDeclarationStatusType ComplianceDeclarationStatus { get; set; }
     public PrnSearchDataType PrnSearchData { get; set; }

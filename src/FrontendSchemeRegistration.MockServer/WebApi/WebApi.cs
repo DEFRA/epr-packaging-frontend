@@ -130,9 +130,8 @@ public static class WebApi
                 .WithBodyFromFile($"WebApi/Responses/WebApi/{options.PrnOrganisationResponseFile}"));
 
         server.Given(Request.Create().UsingGet().WithPath("/api/v1/prn/search"))
-            .RespondWith(Response.Create().WithStatusCode(200)
-                .WithHeader("Content-Type", "application/json")
-                .WithBodyFromFile($"WebApi/Responses/WebApi/{options.PrnSearchResponseFile}"));
+            .RespondWith(Response.Create().WithCallback(request =>
+                PrnSearchResponses.For(request, options)));
 
         server.Given(Request.Create().UsingGet().WithPath("/api/v1/prn/00000000-0000-0000-0000-000000000001"))
             .RespondWith(Response.Create().WithStatusCode(200)

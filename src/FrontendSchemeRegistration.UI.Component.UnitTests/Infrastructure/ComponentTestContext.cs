@@ -1,5 +1,6 @@
 namespace FrontendSchemeRegistration.UI.Component.UnitTests.Infrastructure;
 
+using System.Globalization;
 using Controllers.FrontendSchemeRegistration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Session;
@@ -21,6 +22,8 @@ public class ComponentTestContext : IDisposable
         Dictionary<string, string?>? additionalConfig = null, 
         WebApiOptions? webApiOptions = null)
     {
+        webApiOptions ??= new WebApiOptions();
+        ApplyClock(webApiOptions, additionalConfig);
         _staticMockApiServer = MockApiServer.Start(webApiOptions);
         
         var factory = new CustomWebApplicationFactory<FrontendSchemeRegistrationController>();
@@ -43,6 +46,18 @@ public class ComponentTestContext : IDisposable
     }
     
     public SessionStore GetSessionStore() => _server.Services.GetRequiredService<ISessionStore>() as SessionStore;
+
+    private static void ApplyClock(WebApiOptions options, Dictionary<string, string?>? additionalConfig)
+    {
+        if (additionalConfig is null
+            || !additionalConfig.TryGetValue("StartupUtcTimestampOverride", out var value)
+            || string.IsNullOrWhiteSpace(value))
+        {
+            return;
+        }
+
+        options.UtcNow = DateTimeOffset.Parse(value, CultureInfo.InvariantCulture);
+    }
 
     public void Dispose()
     {
