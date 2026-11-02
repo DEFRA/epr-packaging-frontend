@@ -10,6 +10,12 @@ public abstract class AbstractSubmission
 
     public abstract SubmissionType Type { get; }
 
+    public Guid OrganisationId { get; set; }
+
+    public Guid UserId { get; set; }
+
+    public Guid? ComplianceSchemeId { get; set; }
+
     public string SubmissionPeriod { get; set; }
 
     public DateTime Created { get; set; }

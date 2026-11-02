@@ -9,6 +9,8 @@ using Application.Enums;
 [ExcludeFromCodeCoverage]
 public class RegistrationTaskListViewModel
 {
+    public Guid? SubmissionId { get; set; }
+
     public bool IsResubmission { get; set; }
     
     public string OrganisationName { get; set; } = string.Empty;

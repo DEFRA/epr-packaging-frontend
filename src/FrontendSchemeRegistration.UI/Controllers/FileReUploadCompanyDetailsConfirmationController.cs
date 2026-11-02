@@ -61,7 +61,7 @@ public class FileReUploadCompanyDetailsConfirmationController : Controller
 
         this.SetBackLink(isFileUploadJourneyInvokedViaRegistration, session.RegistrationSession.IsResubmission, submission.RegistrationYear, submission.RegistrationJourney);
 
-        var model = await GetViewModel(submission, session, submission.RegistrationYear, submission.RegistrationJourney);
+        var model = await GetViewModel(submission, session, submission.RegistrationYear.GetValueOrDefault(), submission.RegistrationJourney);
 
         session.RegistrationSession.Journey.AddIfNotExists(PagePaths.FileUploadCompanyDetailsSubLanding);
         await _sessionManager.SaveSessionAsync(HttpContext.Session, session);

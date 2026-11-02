@@ -258,6 +258,52 @@ public class WebApiGatewayClientTests
     }
 
     [Test]
+    public async Task GetSubmissionAsync_ReadsRegistrationSubmissionOwnershipFields_AndNullRegistrationYear()
+    {
+        // Arrange - shaped like RegistrationSubmissionGetResponse from the submission status API
+        var submissionId = Guid.NewGuid();
+        var organisationId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var complianceSchemeId = Guid.NewGuid();
+        var json = $$"""
+            {
+              "id": "{{submissionId}}",
+              "submissionPeriod": "January to December 2025",
+              "organisationId": "{{organisationId}}",
+              "userId": "{{userId}}",
+              "complianceSchemeId": "{{complianceSchemeId}}",
+              "registrationJourney": "CsoLargeProducer",
+              "registrationYear": null,
+              "hasMaxRowErrors": true,
+              "companyDetailsFileIsValid": true,
+              "brandsDataIsValid": true,
+              "partnersDataIsValid": true
+            }
+            """;
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.OK, Content = new StringContent(json) });
+
+        // Act
+        var result = await _webApiGatewayClient.GetSubmissionAsync<RegistrationSubmission>(submissionId);
+
+        // Assert
+        result.Should().NotBeNull();
+        result!.OrganisationId.Should().Be(organisationId);
+        result.UserId.Should().Be(userId);
+        result.ComplianceSchemeId.Should().Be(complianceSchemeId);
+        result.RegistrationJourney.Should().Be(RegistrationJourney.CsoLargeProducer);
+        result.RegistrationYear.Should().BeNull();
+        result.HasMaxRowErrors.Should().BeTrue();
+        result.CompanyDetailsFileIsValid.Should().BeTrue();
+        result.BrandsDataIsValid.Should().BeTrue();
+        result.PartnersDataIsValid.Should().BeTrue();
+    }
+
+    [Test]
     public async Task GetSubmissionAsync_ReturnsNull_WhenResponseCodeIsNotFound()
     {
         // Arrange

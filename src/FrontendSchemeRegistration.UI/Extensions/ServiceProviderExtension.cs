@@ -174,7 +174,8 @@ public static class ServiceProviderExtension
             FrontendSessionManager = sp.GetRequiredService<ISessionManager<FrontendSchemeRegistrationSession>>(),
             Logger = sp.GetRequiredService<ILogger<RegistrationApplicationService>>(),
             FeatureManager = sp.GetRequiredService<IFeatureManager>(),
-            RegistrationPeriodProvider = sp.GetRequiredService<IRegistrationPeriodProvider>()
+            RegistrationPeriodProvider = sp.GetRequiredService<IRegistrationPeriodProvider>(),
+            ComplianceSchemeService = sp.GetRequiredService<IComplianceSchemeService>()
         });
         services.AddScoped<IRegistrationApplicationService, RegistrationApplicationService>();
         services.AddSingleton<IPatchService, PatchService>();
