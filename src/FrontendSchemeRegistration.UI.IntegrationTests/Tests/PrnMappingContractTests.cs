@@ -74,6 +74,22 @@ public class PrnMappingContractTests : TestBase
         decemberWaste = true
     };
 
+    private const string AcceptedDecemberWastePrnId = "00000000-0000-0000-0000-000000000011";
+
+    private static object AcceptedDecemberWastePrn => new
+    {
+        id = 11,
+        externalId = AcceptedDecemberWastePrnId,
+        prnNumber = "CONTRACT-PRN-011",
+        materialName = "Aluminium",
+        issueDate = "2025-06-15T10:30:00",
+        prnStatus = "ACCEPTED",
+        tonnageValue = 999,
+        obligationYear = "2025",
+        isExport = false,
+        decemberWaste = true
+    };
+
     // prnNumber → PrnOrPernNumber
     // issuedByOrg → IssuedBy
     // prnSignatory → AuthorisedBy
@@ -194,10 +210,10 @@ public class PrnMappingContractTests : TestBase
             because: "null PrnSignatoryPosition and ProcessToBeUsed should map to empty string, not throw");
     }
 
-    // decemberWaste true → IsDecemberWaste=true → December waste warning rendered with the obligation year
+    // decemberWaste true, awaiting acceptance → the December waste warning is not shown on the page
     [Test]
     [Category("IntegrationTest")]
-    public async Task SelectedPrn_ReturnsOk_WithDecemberWasteWarning_WhenDecemberWasteIsTrue()
+    public async Task SelectedPrn_ReturnsOk_WithoutDecemberWasteWarning_WhenDecemberWasteIsTrueAndAwaitingAcceptance()
     {
         SetupPrnById(DecemberWastePrnId, DecemberWastePrn);
 
@@ -205,8 +221,25 @@ public class PrnMappingContractTests : TestBase
 
         response.Should().HaveStatusCode(HttpStatusCode.OK);
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("This PRN relates to waste received for reprocessing in December 2025",
-            because: "decemberWaste=true should map to IsDecemberWaste and render the December waste warning for the obligation year");
+        content.Should().NotContain("relates to waste received for reprocessing in December",
+            because: "the December waste warning text is removed from the page for December Waste PRNs");
+        content.Should().NotContain("relates to waste exported for reprocessing in December",
+            because: "the December waste warning text is removed from the page for December Waste PERNs too");
+    }
+
+    // decemberWaste true, accepted → the December waste warning is not shown on the page either
+    [Test]
+    [Category("IntegrationTest")]
+    public async Task SelectedPrn_ReturnsOk_WithoutDecemberWasteWarning_WhenDecemberWasteIsTrueAndAccepted()
+    {
+        SetupPrnById(AcceptedDecemberWastePrnId, AcceptedDecemberWastePrn);
+
+        var response = await Client.GetAsync($"/report-data/selected-prn/{AcceptedDecemberWastePrnId}");
+
+        response.Should().HaveStatusCode(HttpStatusCode.OK);
+        var content = await response.Content.ReadAsStringAsync();
+        content.Should().NotContain("relates to waste received for reprocessing in December",
+            because: "the December waste warning text is removed from the page for every status");
     }
 
     // decemberWaste false → IsDecemberWaste=false → no December waste warning rendered

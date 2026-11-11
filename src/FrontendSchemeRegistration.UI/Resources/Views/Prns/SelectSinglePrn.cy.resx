@@ -201,12 +201,6 @@
 	<data name="download_this_pern_awaiting_acceptance" xml:space="preserve">
     <value>Lawrlwytho'r PERN yma sy'n aros i gael ei dderbyn fel PDF</value>
   </data>
-  <data name="this_prn_relates_to_waste_received_for_reprocessing_in_December" xml:space="preserve">
-    <value>Mae'r PRN yma yn ymwneud â gwastraff a gafodd ei allforio i'w ailbrosesu ym mis Rhagfyr {0}.</value>
-  </data>
-  <data name="this_pern_relates_to_waste_exported_for_reprocessing_in_December" xml:space="preserve">
-    <value>Mae'r PERN yma yn ymwneud â gwastraff a gafodd ei allforio i'w ailbrosesu ym mis Rhagfyr {0}.</value>
-  </data>
   <data name="page_title_pern" xml:space="preserve">
     <value>Derbyn y PERN yma</value>
   </data>
