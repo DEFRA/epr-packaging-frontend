@@ -221,10 +221,8 @@ public class PrnMappingContractTests : TestBase
 
         response.Should().HaveStatusCode(HttpStatusCode.OK);
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().NotContain("relates to waste received for reprocessing in December",
-            because: "the December waste warning text is removed from the page for December Waste PRNs");
-        content.Should().NotContain("relates to waste exported for reprocessing in December",
-            because: "the December waste warning text is removed from the page for December Waste PERNs too");
+        content.Should().NotContain("govuk-warning-text",
+            because: "the December waste warning block is removed from the page for December Waste PRNs");
     }
 
     // decemberWaste true, accepted → the December waste warning is not shown on the page either
@@ -238,11 +236,11 @@ public class PrnMappingContractTests : TestBase
 
         response.Should().HaveStatusCode(HttpStatusCode.OK);
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().NotContain("relates to waste received for reprocessing in December",
-            because: "the December waste warning text is removed from the page for every status");
+        content.Should().NotContain("govuk-warning-text",
+            because: "the December waste warning block is removed from the page for every status");
     }
 
-    // decemberWaste false → IsDecemberWaste=false → no December waste warning rendered
+    // decemberWaste false → no December waste warning block rendered
     [Test]
     [Category("IntegrationTest")]
     public async Task SelectedPrn_ReturnsOk_WithoutDecemberWasteWarning_WhenDecemberWasteIsFalse()
@@ -253,8 +251,8 @@ public class PrnMappingContractTests : TestBase
 
         response.Should().HaveStatusCode(HttpStatusCode.OK);
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().NotContain("relates to waste received for reprocessing in December",
-            because: "decemberWaste=false should map to IsDecemberWaste=false and not render the warning");
+        content.Should().NotContain("govuk-warning-text",
+            because: "decemberWaste=false should not render the December waste warning block");
     }
 
     // CSV column headers: all renamed fields should appear under their mapped names
