@@ -231,7 +231,7 @@ public class PrnMappingContractTests : TestBase
     private static string DecemberWasteRowValue(string content) =>
         Regex.Match(content, "id=\"relates-to-waste-received-in-december\"[^>]*>\\s*<strong>([^<]*)</strong>").Groups[1].Value;
 
-    // The class of the warning component's text. No other element on these pages uses it.
+    // The class of the warning component's text. The fixtures in these tests render no other element with it.
     private const string DecemberWasteWarningBlock = "govuk-warning-text__text";
 
     // decemberWaste true, awaiting acceptance → the row says Yes and the warning is not shown
