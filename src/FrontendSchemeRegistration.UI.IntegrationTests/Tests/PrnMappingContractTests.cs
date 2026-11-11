@@ -1,6 +1,7 @@
 namespace FrontendSchemeRegistration.UI.IntegrationTests.Tests;
 
 using System.Net;
+using System.Text.RegularExpressions;
 using FluentAssertions;
 
 [TestFixture]
@@ -210,7 +211,13 @@ public class PrnMappingContractTests : TestBase
             because: "null PrnSignatoryPosition and ProcessToBeUsed should map to empty string, not throw");
     }
 
-    // decemberWaste true, awaiting acceptance → the December waste warning is not shown on the page
+    // The December Waste row (decemberWaste mapped to IsDecemberWaste) shows the value, and no warning text is rendered
+    private static string DecemberWasteRowValue(string content) =>
+        Regex.Match(content, "id=\"relates-to-waste-received-in-december\"[^>]*>\\s*<strong>([^<]*)</strong>").Groups[1].Value;
+
+    private const string DecemberWasteWarningText = "relates to waste received for reprocessing in December";
+
+    // decemberWaste true, awaiting acceptance → the row says Yes and the warning is not shown
     [Test]
     [Category("IntegrationTest")]
     public async Task SelectedPrn_ReturnsOk_WithoutDecemberWasteWarning_WhenDecemberWasteIsTrueAndAwaitingAcceptance()
@@ -221,11 +228,13 @@ public class PrnMappingContractTests : TestBase
 
         response.Should().HaveStatusCode(HttpStatusCode.OK);
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().NotContain("govuk-warning-text",
-            because: "the December waste warning block is removed from the page for December Waste PRNs");
+        DecemberWasteRowValue(content).Should().Be("Yes",
+            because: "decemberWaste=true should map to IsDecemberWaste and show Yes in the December Waste row");
+        content.Should().NotContain(DecemberWasteWarningText,
+            because: "the December waste warning text is removed from the page for December Waste PRNs");
     }
 
-    // decemberWaste true, accepted → the December waste warning is not shown on the page either
+    // decemberWaste true, accepted → the row says Yes and the warning is not shown on the page either
     [Test]
     [Category("IntegrationTest")]
     public async Task SelectedPrn_ReturnsOk_WithoutDecemberWasteWarning_WhenDecemberWasteIsTrueAndAccepted()
@@ -236,11 +245,13 @@ public class PrnMappingContractTests : TestBase
 
         response.Should().HaveStatusCode(HttpStatusCode.OK);
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().NotContain("govuk-warning-text",
-            because: "the December waste warning block is removed from the page for every status");
+        DecemberWasteRowValue(content).Should().Be("Yes",
+            because: "decemberWaste=true should map to IsDecemberWaste for accepted PRNs too");
+        content.Should().NotContain(DecemberWasteWarningText,
+            because: "the December waste warning text is removed from the page for every status");
     }
 
-    // decemberWaste false → no December waste warning block rendered
+    // decemberWaste false → the row says No and no warning is rendered
     [Test]
     [Category("IntegrationTest")]
     public async Task SelectedPrn_ReturnsOk_WithoutDecemberWasteWarning_WhenDecemberWasteIsFalse()
@@ -251,8 +262,10 @@ public class PrnMappingContractTests : TestBase
 
         response.Should().HaveStatusCode(HttpStatusCode.OK);
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().NotContain("govuk-warning-text",
-            because: "decemberWaste=false should not render the December waste warning block");
+        DecemberWasteRowValue(content).Should().Be("No",
+            because: "decemberWaste=false should map to IsDecemberWaste=false and show No");
+        content.Should().NotContain(DecemberWasteWarningText,
+            because: "decemberWaste=false should not render the December waste warning text");
     }
 
     // CSV column headers: all renamed fields should appear under their mapped names
