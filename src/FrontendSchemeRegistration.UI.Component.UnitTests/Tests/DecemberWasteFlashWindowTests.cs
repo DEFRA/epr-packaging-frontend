@@ -40,7 +40,8 @@ public class DecemberWasteFlashWindowTests
         var content = await GetOk(SelectMultiplePath);
 
         content.Should().Contain("december-waste-flash-row");
-        content.Should().Contain("Can be accepted towards 2026 or 2027 recycling obligations");
+        content.Should().Contain("Can be accepted towards 2026 or 2027");
+        content.Should().NotContain("Can be accepted towards 2026 or 2027 recycling obligations");
         content.Should().Contain($"href=\"/report-data/selected-prn/{FlashPrnId}\"");
         CountCheckboxes(content).Should().Be(1, "only the standard PRN can be selected");
         AcceptButtonIsNotMarkedHidden(content).Should().BeTrue();
