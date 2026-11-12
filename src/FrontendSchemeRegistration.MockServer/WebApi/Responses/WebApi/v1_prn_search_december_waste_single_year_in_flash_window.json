@@ -1,0 +1,21 @@
+{
+  "items": [
+    {
+      "id": 203,
+      "externalId": "00000000-0000-0000-0000-000000000203",
+      "prnNumber": "PRN-203",
+      "materialName": "Paper/board",
+      "issueDate": "2026-12-01T13:15:15",
+      "prnStatus": "AWAITINGACCEPTANCE",
+      "decemberWaste": true,
+      "obligationYear": "2025",
+      "accreditationYear": "2026",
+      "issuedByOrg": "Test Reprocessor",
+      "tonnageValue": 1
+    }
+  ],
+  "pageNumber": 1,
+  "pageSize": 50,
+  "totalItems": 1,
+  "totalPages": 1
+}
