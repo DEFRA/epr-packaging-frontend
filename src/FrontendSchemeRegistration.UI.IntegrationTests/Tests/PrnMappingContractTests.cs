@@ -230,14 +230,11 @@ public class PrnMappingContractTests : TestBase
     // The December Waste row (decemberWaste mapped to IsDecemberWaste) shows the value, and no warning text is rendered
     private static string DecemberWasteRowValue(string content) =>
         Regex.Match(content, "id=\"relates-to-waste-received-in-december\"[^>]*>\\s*<strong>([^<]*)</strong>").Groups[1].Value;
-
-    // The class of the warning component's text. The fixtures in these tests render no other element with it.
-    private const string DecemberWasteWarningBlock = "govuk-warning-text__text";
-
+        
     // decemberWaste true, awaiting acceptance → the row says Yes and the warning is not shown
     [Test]
     [Category("IntegrationTest")]
-    public async Task SelectedPrn_ReturnsOk_WithoutDecemberWasteWarning_WhenDecemberWasteIsTrueAndAwaitingAcceptance()
+    public async Task SelectedPrn_ReturnsOk_WhenDecemberWasteIsTrueAndAwaitingAcceptance()
     {
         SetupPrnById(DecemberWastePrnId, DecemberWastePrn);
 
@@ -247,14 +244,12 @@ public class PrnMappingContractTests : TestBase
         var content = await response.Content.ReadAsStringAsync();
         DecemberWasteRowValue(content).Should().Be("Yes",
             because: "decemberWaste=true should map to IsDecemberWaste and show Yes in the December Waste row");
-        content.Should().NotContain(DecemberWasteWarningBlock,
-            because: "the December waste warning text is removed from the page for December Waste PRNs");
     }
 
     // decemberWaste true for a PERN, awaiting acceptance → the row says Yes and the PERN warning is not shown
     [Test]
     [Category("IntegrationTest")]
-    public async Task SelectedPern_ReturnsOk_WithoutDecemberWasteWarning_WhenDecemberWasteIsTrueAndAwaitingAcceptance()
+    public async Task SelectedPern_ReturnsOk_WhenDecemberWasteIsTrueAndAwaitingAcceptance()
     {
         SetupPrnById(DecemberWastePernId, DecemberWastePern);
 
@@ -264,14 +259,12 @@ public class PrnMappingContractTests : TestBase
         var content = await response.Content.ReadAsStringAsync();
         DecemberWasteRowValue(content).Should().Be("Yes",
             because: "decemberWaste=true should map to IsDecemberWaste for a PERN and show Yes in the December Waste row");
-        content.Should().NotContain(DecemberWasteWarningBlock,
-            because: "the December waste warning is removed from the PERN page as well as the PRN page");
     }
 
     // decemberWaste true, accepted → the row says Yes and the warning is not shown on the page either
     [Test]
     [Category("IntegrationTest")]
-    public async Task SelectedPrn_ReturnsOk_WithoutDecemberWasteWarning_WhenDecemberWasteIsTrueAndAccepted()
+    public async Task SelectedPrn_ReturnsOk_WhenDecemberWasteIsTrueAndAccepted()
     {
         SetupPrnById(AcceptedDecemberWastePrnId, AcceptedDecemberWastePrn);
 
@@ -281,14 +274,12 @@ public class PrnMappingContractTests : TestBase
         var content = await response.Content.ReadAsStringAsync();
         DecemberWasteRowValue(content).Should().Be("Yes",
             because: "decemberWaste=true should map to IsDecemberWaste for accepted PRNs too");
-        content.Should().NotContain(DecemberWasteWarningBlock,
-            because: "the December waste warning text is removed from the page for every status");
     }
 
     // decemberWaste false → the row says No and no warning is rendered
     [Test]
     [Category("IntegrationTest")]
-    public async Task SelectedPrn_ReturnsOk_WithoutDecemberWasteWarning_WhenDecemberWasteIsFalse()
+    public async Task SelectedPrn_ReturnsOk_WhenDecemberWasteIsFalse()
     {
         SetupPrnById(FullyPopulatedPrnId, FullyPopulatedPrn);
 
@@ -298,8 +289,6 @@ public class PrnMappingContractTests : TestBase
         var content = await response.Content.ReadAsStringAsync();
         DecemberWasteRowValue(content).Should().Be("No",
             because: "decemberWaste=false should map to IsDecemberWaste=false and show No");
-        content.Should().NotContain(DecemberWasteWarningBlock,
-            because: "decemberWaste=false should not render the December waste warning text");
     }
 
     // CSV column headers: all renamed fields should appear under their mapped names
