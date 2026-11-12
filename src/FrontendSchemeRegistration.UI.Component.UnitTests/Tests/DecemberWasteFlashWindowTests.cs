@@ -47,6 +47,32 @@ public class DecemberWasteFlashWindowTests
         AcceptButtonIsNotMarkedHidden(content).Should().BeTrue();
     }
 
+    [TestCase(Language.English, "Can be accepted towards 2026")]
+    [TestCase(Language.Welsh, "Caniateir ei dderbyn tuag at 2026")]
+    public async Task SelectMultiplePrns_SingleYearDecemberWaste_FlashReadsOneYear(string language, string expectedFlash)
+    {
+        await SetUp(decemberWaste: true, multiYear: true, WebApiOptions.PrnSearchDataType.DecemberWasteSingleYearInFlashWindow);
+        SetLanguage(language);
+
+        var content = await GetOk(SelectMultiplePath);
+
+        content.Should().Contain("december-waste-flash-row");
+        content.Should().Contain(expectedFlash);
+        content.Should().NotContain("2026 or 2027", "only 2026 can be chosen for this PRN");
+    }
+
+    [Test]
+    public async Task SelectMultiplePrns_TwoYearDecemberWasteFlash_ReadsInWelsh()
+    {
+        await SetUp(decemberWaste: true, multiYear: true, WebApiOptions.PrnSearchDataType.DecemberWasteInFlashWindow);
+        SetLanguage(Language.Welsh);
+
+        var content = await GetOk(SelectMultiplePath);
+
+        content.Should().Contain("Caniateir ei dderbyn tuag at 2026 neu 2027");
+        content.Should().NotContain("rwymedigaethau ailgylchu");
+    }
+
     [Test]
     public async Task SelectMultiplePrns_WhenDecemberWasteEnabled_AndAllPrnsInFlashWindow_HidesAcceptSelectedButton()
     {

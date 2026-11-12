@@ -26,6 +26,7 @@ public class WebApiOptions
         PrnSearchDataType.AllDecemberWasteOutsideFlashWindow => "v1_prn_search_all_december_waste_outside_flash_window.json",
         PrnSearchDataType.DecemberWasteInFlashWindow => "v1_prn_search_december_waste_in_flash_window.json",
         PrnSearchDataType.AllDecemberWasteInFlashWindow => "v1_prn_search_all_december_waste_in_flash_window.json",
+        PrnSearchDataType.DecemberWasteSingleYearInFlashWindow => "v1_prn_search_december_waste_single_year_in_flash_window.json",
         _ => "v1_prn_search.json"
     };
 
@@ -61,7 +62,13 @@ public class WebApiOptions
         /// <summary>
         ///     Only December Waste PRNs issued in Dec 2026 (in the Dec/Jan flash window when the clock is Dec 2026/Jan 2027).
         /// </summary>
-        AllDecemberWasteInFlashWindow
+        AllDecemberWasteInFlashWindow,
+
+        /// <summary>
+        ///     One December Waste PRN issued in Dec 2026 with obligation year 2025, so only 2026 can be chosen: the flash
+        ///     reads a single year, not a choice of two (in the Dec/Jan flash window when the clock is Dec 2026).
+        /// </summary>
+        DecemberWasteSingleYearInFlashWindow
     }
 
     public enum ComplianceDeclarationStatusType
