@@ -1,6 +1,7 @@
 namespace FrontendSchemeRegistration.UI.IntegrationTests.Tests;
 
 using System.Net;
+using System.Text.RegularExpressions;
 using FluentAssertions;
 
 [TestFixture]
@@ -71,6 +72,38 @@ public class PrnMappingContractTests : TestBase
         tonnageValue = 999,
         obligationYear = "2025",
         isExport = false,
+        decemberWaste = true
+    };
+
+    private const string AcceptedDecemberWastePrnId = "00000000-0000-0000-0000-000000000011";
+
+    private static object AcceptedDecemberWastePrn => new
+    {
+        id = 11,
+        externalId = AcceptedDecemberWastePrnId,
+        prnNumber = "CONTRACT-PRN-011",
+        materialName = "Aluminium",
+        issueDate = "2025-06-15T10:30:00",
+        prnStatus = "ACCEPTED",
+        tonnageValue = 999,
+        obligationYear = "2025",
+        isExport = false,
+        decemberWaste = true
+    };
+
+    private const string DecemberWastePernId = "00000000-0000-0000-0000-000000000012";
+
+    private static object DecemberWastePern => new
+    {
+        id = 12,
+        externalId = DecemberWastePernId,
+        prnNumber = "CONTRACT-PERN-012",
+        materialName = "Glass remelt",
+        issueDate = "2025-06-15T10:30:00",
+        prnStatus = "AWAITINGACCEPTANCE",
+        tonnageValue = 500,
+        obligationYear = "2025",
+        isExport = true,
         decemberWaste = true
     };
 
@@ -194,10 +227,14 @@ public class PrnMappingContractTests : TestBase
             because: "null PrnSignatoryPosition and ProcessToBeUsed should map to empty string, not throw");
     }
 
-    // decemberWaste true → IsDecemberWaste=true → December waste warning rendered with the obligation year
+    // The December Waste row (decemberWaste mapped to IsDecemberWaste) shows the value, and no warning text is rendered
+    private static string DecemberWasteRowValue(string content) =>
+        Regex.Match(content, "id=\"relates-to-waste-received-in-december\"[^>]*>\\s*<strong>([^<]*)</strong>").Groups[1].Value;
+        
+    // decemberWaste true, awaiting acceptance → the row says Yes and the warning is not shown
     [Test]
     [Category("IntegrationTest")]
-    public async Task SelectedPrn_ReturnsOk_WithDecemberWasteWarning_WhenDecemberWasteIsTrue()
+    public async Task SelectedPrn_ReturnsOk_WhenDecemberWasteIsTrueAndAwaitingAcceptance()
     {
         SetupPrnById(DecemberWastePrnId, DecemberWastePrn);
 
@@ -205,14 +242,44 @@ public class PrnMappingContractTests : TestBase
 
         response.Should().HaveStatusCode(HttpStatusCode.OK);
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("This PRN relates to waste received for reprocessing in December 2025",
-            because: "decemberWaste=true should map to IsDecemberWaste and render the December waste warning for the obligation year");
+        DecemberWasteRowValue(content).Should().Be("Yes",
+            because: "decemberWaste=true should map to IsDecemberWaste and show Yes in the December Waste row");
     }
 
-    // decemberWaste false → IsDecemberWaste=false → no December waste warning rendered
+    // decemberWaste true for a PERN, awaiting acceptance → the row says Yes and the PERN warning is not shown
     [Test]
     [Category("IntegrationTest")]
-    public async Task SelectedPrn_ReturnsOk_WithoutDecemberWasteWarning_WhenDecemberWasteIsFalse()
+    public async Task SelectedPern_ReturnsOk_WhenDecemberWasteIsTrueAndAwaitingAcceptance()
+    {
+        SetupPrnById(DecemberWastePernId, DecemberWastePern);
+
+        var response = await Client.GetAsync($"/report-data/selected-prn/{DecemberWastePernId}");
+
+        response.Should().HaveStatusCode(HttpStatusCode.OK);
+        var content = await response.Content.ReadAsStringAsync();
+        DecemberWasteRowValue(content).Should().Be("Yes",
+            because: "decemberWaste=true should map to IsDecemberWaste for a PERN and show Yes in the December Waste row");
+    }
+
+    // decemberWaste true, accepted → the row says Yes and the warning is not shown on the page either
+    [Test]
+    [Category("IntegrationTest")]
+    public async Task SelectedPrn_ReturnsOk_WhenDecemberWasteIsTrueAndAccepted()
+    {
+        SetupPrnById(AcceptedDecemberWastePrnId, AcceptedDecemberWastePrn);
+
+        var response = await Client.GetAsync($"/report-data/selected-prn/{AcceptedDecemberWastePrnId}");
+
+        response.Should().HaveStatusCode(HttpStatusCode.OK);
+        var content = await response.Content.ReadAsStringAsync();
+        DecemberWasteRowValue(content).Should().Be("Yes",
+            because: "decemberWaste=true should map to IsDecemberWaste for accepted PRNs too");
+    }
+
+    // decemberWaste false → the row says No and no warning is rendered
+    [Test]
+    [Category("IntegrationTest")]
+    public async Task SelectedPrn_ReturnsOk_WhenDecemberWasteIsFalse()
     {
         SetupPrnById(FullyPopulatedPrnId, FullyPopulatedPrn);
 
@@ -220,8 +287,8 @@ public class PrnMappingContractTests : TestBase
 
         response.Should().HaveStatusCode(HttpStatusCode.OK);
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().NotContain("relates to waste received for reprocessing in December",
-            because: "decemberWaste=false should map to IsDecemberWaste=false and not render the warning");
+        DecemberWasteRowValue(content).Should().Be("No",
+            because: "decemberWaste=false should map to IsDecemberWaste=false and show No");
     }
 
     // CSV column headers: all renamed fields should appear under their mapped names
