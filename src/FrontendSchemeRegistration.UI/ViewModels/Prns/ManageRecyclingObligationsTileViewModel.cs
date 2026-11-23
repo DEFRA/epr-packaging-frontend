@@ -12,4 +12,9 @@ public class ManageRecyclingObligationsTileViewModel
     public CsocViewModel? CsocViewModel { get; set; }
 
     public bool IsComplianceScheme { get; set; }
+
+    /// <summary>
+    ///     The EPR Next Gen link when ShowPrnsOnCdp is on; null keeps the packaging page.
+    /// </summary>
+    public string? ManageObligationsHref { get; set; }
 }

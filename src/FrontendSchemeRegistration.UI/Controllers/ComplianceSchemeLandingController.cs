@@ -90,6 +90,11 @@ public class ComplianceSchemeLandingController(
                 now,
                 csocOptions.Value,
                 csocObligationViewModel,
+                session.RegistrationSession),
+            ManageObligationsHref = await CsocHelper.GetManageObligationsHrefAsync(
+                featureManager,
+                csocOptions.Value,
+                organisation,
                 session.RegistrationSession)
         };
 

@@ -37,6 +37,12 @@ public class HomePageSelfManagedViewModel
     public SubmissionPeriod PackagingResubmissionPeriod { get; set; }
     
     public CsocViewModel? CsocViewModel { get; set; }
+
+    /// <summary>
+    ///     The 'Manage recycling obligations' tile's link to EPR Next Gen when ShowPrnsOnCdp is on; null keeps the
+    ///     packaging link.
+    /// </summary>
+    public string? ManageObligationsHref { get; set; }
 }
 
 [ExcludeFromCodeCoverage]

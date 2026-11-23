@@ -472,7 +472,11 @@ public class FrontendSchemeRegistrationController(
                 organisation,
                 now,
                 csocOptions.Value,
-                csocObligationViewModel)
+                csocObligationViewModel),
+            ManageObligationsHref = await CsocHelper.GetManageObligationsHrefAsync(
+                featureManager,
+                csocOptions.Value,
+                organisation)
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id!.Value);
