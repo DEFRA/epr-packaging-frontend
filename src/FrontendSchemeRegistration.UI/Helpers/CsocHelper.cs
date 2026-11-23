@@ -108,7 +108,42 @@ public static class CsocHelper
         string? baseEndpoint,
         Organisation organisation,
         int year,
-        RegistrationSession? registrationSession)
+        RegistrationSession? registrationSession) =>
+        GetWasteObligationsOrganisationUrl(baseEndpoint, organisation, registrationSession, $"/prns?year={year}");
+
+    /// <summary>
+    ///     The account home tile's link to EPR Next Gen Manage Obligations (its 'Choose a year' page) when
+    ///     ShowPrnsOnCdp is on, or null to keep the packaging link.
+    /// </summary>
+    public static async Task<string?> GetManageObligationsHrefAsync(
+        IFeatureManager featureManager,
+        CsocOptions options,
+        Organisation organisation,
+        RegistrationSession? registrationSession = null)
+    {
+        if (!await featureManager.IsEnabledAsync(FeatureFlags.ShowPrnsOnCdp))
+        {
+            return null;
+        }
+
+        return GetChooseObligationYearUrl(options.WasteObligationsBaseAddress, organisation, registrationSession);
+    }
+
+    /// <summary>
+    ///     The EPR Next Gen 'Choose a year' page for the organisation (producer) or selected compliance scheme, which
+    ///     leads on to that year's Manage Obligations page.
+    /// </summary>
+    public static string? GetChooseObligationYearUrl(
+        string? baseEndpoint,
+        Organisation organisation,
+        RegistrationSession? registrationSession) =>
+        GetWasteObligationsOrganisationUrl(baseEndpoint, organisation, registrationSession, "/obligations/choose-year");
+
+    private static string? GetWasteObligationsOrganisationUrl(
+        string? baseEndpoint,
+        Organisation organisation,
+        RegistrationSession? registrationSession,
+        string pathSuffix)
     {
         if (string.IsNullOrWhiteSpace(baseEndpoint) || !organisation.Id.HasValue)
         {
@@ -121,11 +156,11 @@ public static class CsocHelper
         string path;
         if (organisation.IsComplianceScheme())
         {
-            path = $"{CsoPathPrefix}/{GetSchemeId(organisationId, registrationSession)}/prns?year={year}";
+            path = $"{CsoPathPrefix}/{GetSchemeId(organisationId, registrationSession)}{pathSuffix}";
         }
         else if (organisation.IsDirectProducer())
         {
-            path = $"{ProducerPathPrefix}/{organisationId}/prns?year={year}";
+            path = $"{ProducerPathPrefix}/{organisationId}{pathSuffix}";
         }
         else
         {
