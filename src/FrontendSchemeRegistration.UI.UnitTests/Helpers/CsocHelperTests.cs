@@ -788,4 +788,85 @@ public class CsocHelperTests
 
         result.Should().Be($"https://understanding-obligations/producer/{organisationId}/obligations/choose-year?lang=cy");
     }
+
+    [Test]
+    public void GetPrnUrl_WhenDirectProducer_ShouldBuildProducerPrnUrlForTheYear()
+    {
+        var organisationId = Guid.NewGuid();
+        var prnId = Guid.NewGuid();
+
+        var result = CsocHelper.GetPrnUrl(
+            "https://understanding-obligations/",
+            new Organisation
+            {
+                Id = organisationId,
+                OrganisationRole = OrganisationRoles.Producer
+            },
+            null,
+            prnId,
+            2026);
+
+        result.Should().Be($"https://understanding-obligations/producer/{organisationId}/prns/{prnId}?year=2026");
+    }
+
+    [Test]
+    public void GetPrnUrl_WhenComplianceScheme_ShouldUseSelectedComplianceScheme()
+    {
+        var complianceSchemeId = Guid.NewGuid();
+        var prnId = Guid.NewGuid();
+
+        var result = CsocHelper.GetPrnUrl(
+            "https://understanding-obligations",
+            new Organisation
+            {
+                Id = Guid.NewGuid(),
+                OrganisationRole = OrganisationRoles.ComplianceScheme
+            },
+            new RegistrationSession
+            {
+                SelectedComplianceScheme = new ComplianceSchemeDto { Id = complianceSchemeId }
+            },
+            prnId,
+            2025);
+
+        result.Should().Be($"https://understanding-obligations/cso/{complianceSchemeId}/prns/{prnId}?year=2025");
+    }
+
+    [Test]
+    public void GetPrnUrl_WhenBaseAddressMissing_ShouldBeNull()
+    {
+        var result = CsocHelper.GetPrnUrl(
+            "",
+            new Organisation
+            {
+                Id = Guid.NewGuid(),
+                OrganisationRole = OrganisationRoles.Producer
+            },
+            null,
+            Guid.NewGuid(),
+            2026);
+
+        result.Should().BeNull();
+    }
+
+    [Test]
+    [SetUICulture(Language.Welsh)]
+    public void GetPrnUrl_WhenWelsh_ShouldAppendLang()
+    {
+        var organisationId = Guid.NewGuid();
+        var prnId = Guid.NewGuid();
+
+        var result = CsocHelper.GetPrnUrl(
+            "https://understanding-obligations",
+            new Organisation
+            {
+                Id = organisationId,
+                OrganisationRole = OrganisationRoles.Producer
+            },
+            null,
+            prnId,
+            2026);
+
+        result.Should().Be($"https://understanding-obligations/producer/{organisationId}/prns/{prnId}?year=2026&lang=cy");
+    }
 }

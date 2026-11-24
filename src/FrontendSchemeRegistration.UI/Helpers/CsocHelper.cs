@@ -139,6 +139,17 @@ public static class CsocHelper
         RegistrationSession? registrationSession) =>
         GetWasteObligationsOrganisationUrl(baseEndpoint, organisation, registrationSession, "/obligations/choose-year");
 
+    /// <summary>
+    ///     The EPR Next Gen PRN page for one PRN or PERN (by its external id), for the year the user is in.
+    /// </summary>
+    public static string? GetPrnUrl(
+        string? baseEndpoint,
+        Organisation organisation,
+        RegistrationSession? registrationSession,
+        Guid prnId,
+        int year) =>
+        GetWasteObligationsOrganisationUrl(baseEndpoint, organisation, registrationSession, $"/prns/{prnId}?year={year}");
+
     private static string? GetWasteObligationsOrganisationUrl(
         string? baseEndpoint,
         Organisation organisation,
