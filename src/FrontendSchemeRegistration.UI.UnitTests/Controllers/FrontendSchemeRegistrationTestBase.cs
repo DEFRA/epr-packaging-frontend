@@ -113,6 +113,10 @@ public abstract class FrontendSchemeRegistrationTestBase
     protected Mock<IOptions<GlobalVariables>> globalVariables { get; set; }
     protected FakeTimeProvider FakeTimeProvider { get; } = new();
 
+    protected Mock<IFeatureManager> FeatureManagerMock { get; private set; }
+
+    protected CsocOptions CsocOptions { get; private set; }
+
     protected static void AssertBackLink(ViewResult viewResult, string expectedBackLink)
     {
         var hasBackLinkKey = viewResult.ViewData.TryGetValue(BackLinkViewDataKey, out var gotBackLinkObject);
@@ -150,6 +154,8 @@ public abstract class FrontendSchemeRegistrationTestBase
         PaymentCalculationService = new Mock<IPaymentCalculationService>();
         ResubmissionApplicationService = new Mock<IResubmissionApplicationService>();
         WebApiGatewayClient = new Mock<IWebApiGatewayClient>();
+        FeatureManagerMock = new Mock<IFeatureManager>();
+        CsocOptions = new CsocOptions();
 
         SystemUnderTest = new FrontendSchemeRegistrationController(
             SessionManagerMock.Object,
@@ -160,8 +166,8 @@ public abstract class FrontendSchemeRegistrationTestBase
             AuthorizationService.Object,
             NotificationService.Object,
             FakeTimeProvider,
-            new Mock<IFeatureManager>().Object,
-            new OptionsWrapper<CsocOptions>(new CsocOptions()),
+            FeatureManagerMock.Object,
+            new OptionsWrapper<CsocOptions>(CsocOptions),
             WebApiGatewayClient.Object);
         SystemUnderTest.ControllerContext.HttpContext = _httpContextMock.Object;
         SystemUnderTest.TempData = tempDataDictionaryMock.Object;

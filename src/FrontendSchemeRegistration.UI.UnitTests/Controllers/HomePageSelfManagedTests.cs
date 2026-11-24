@@ -514,4 +514,51 @@ public class HomePageSelfManagedTests : FrontendSchemeRegistrationTestBase
                 ObligationDeadline = obligationDeadline
             });
     }
+
+    [Test]
+    public async Task VisitHomePageSelfManaged_WhenShowPrnsOnCdpEnabled_LinksManageObligationsToWasteObligationsChooseYear()
+    {
+        FeatureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowPrnsOnCdp)).ReturnsAsync(true);
+        CsocOptions.WasteObligationsBaseAddress = "https://waste-obligations/";
+        ArrangeHomePage();
+
+        var result = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
+
+        result!.Model.As<HomePageSelfManagedViewModel>().ManageObligationsHref
+            .Should().Be($"https://waste-obligations/producer/{_organisationId}/obligations/choose-year");
+    }
+
+    [Test]
+    public async Task VisitHomePageSelfManaged_WhenShowPrnsOnCdpDisabled_KeepsPackagingManageObligationsLink()
+    {
+        FeatureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowPrnsOnCdp)).ReturnsAsync(false);
+        CsocOptions.WasteObligationsBaseAddress = "https://waste-obligations/";
+        ArrangeHomePage();
+
+        var result = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
+
+        result!.Model.As<HomePageSelfManagedViewModel>().ManageObligationsHref.Should().BeNull();
+    }
+
+    [Test]
+    public async Task VisitHomePageSelfManaged_WhenShowPrnsOnCdpEnabledWithoutWasteObligationsAddress_KeepsPackagingManageObligationsLink()
+    {
+        FeatureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowPrnsOnCdp)).ReturnsAsync(true);
+        CsocOptions.WasteObligationsBaseAddress = null;
+        ArrangeHomePage();
+
+        var result = await SystemUnderTest.VisitHomePageSelfManaged() as ViewResult;
+
+        result!.Model.As<HomePageSelfManagedViewModel>().ManageObligationsHref.Should().BeNull();
+    }
+
+    private void ArrangeHomePage()
+    {
+        RegistrationApplicationService
+            .Setup(x => x.BuildRegistrationYearApplicationsViewModels(It.IsAny<ISession>(), It.IsAny<Organisation>(), It.IsAny<UserData>()))
+            .ReturnsAsync(_fixture.CreateMany<RegistrationYearApplicationsViewModel>().ToList());
+        NotificationService
+            .Setup(x => x.GetCurrentUserNotifications(It.IsAny<Guid>(), It.IsAny<Guid>()))
+            .ReturnsAsync(new List<NotificationDto>());
+    }
 }

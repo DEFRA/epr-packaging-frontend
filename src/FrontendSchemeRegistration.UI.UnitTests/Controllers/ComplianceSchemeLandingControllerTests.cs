@@ -49,6 +49,7 @@ public class ComplianceSchemeLandingControllerTests
     private readonly Mock<IFeatureManager> _featureManagerMock = new();
     private readonly Mock<IWebApiGatewayClient> _webApiGatewayClientMock = new();
     private FakeTimeProvider _testTimeProvider;
+    private CsocOptions _csocOptions;
 
     private Mock<ISessionManager<FrontendSchemeRegistrationSession>> _sessionManagerMock = new();
     private ComplianceSchemeLandingController _complianceSchemeLandingController;
@@ -138,7 +139,7 @@ public class ComplianceSchemeLandingControllerTests
                 {
                     Id = _organisationId,
                     Name = OrganisationName,
-                    OrganisationRole = "ComplianceScheme",
+                    OrganisationRole = OrganisationRoles.ComplianceScheme,
                     OrganisationNumber = "552555"
                 }
             ],
@@ -156,6 +157,7 @@ public class ComplianceSchemeLandingControllerTests
         _notificationServiceMock.Setup(x => x.GetCurrentUserNotifications(It.IsAny<Guid>(), It.IsAny<Guid>()));
         _sessionManagerMock = new Mock<ISessionManager<FrontendSchemeRegistrationSession>>();
         _testTimeProvider = new FakeTimeProvider();
+        _csocOptions = new CsocOptions();
         _testTimeProvider.SetUtcNow(new DateTimeOffset(2025, 03, 31, 0, 0, 0, TimeSpan.Zero));
 
         _resubmissionApplicationService.Setup(x => x.PackagingResubmissionPeriod(It.IsAny<string[]>(), It.IsAny<DateTime>()))
@@ -169,7 +171,7 @@ public class ComplianceSchemeLandingControllerTests
             _nullLogger,
             _featureManagerMock.Object,
             _testTimeProvider,
-            new OptionsWrapper<CsocOptions>(new CsocOptions()),
+            new OptionsWrapper<CsocOptions>(_csocOptions),
             _webApiGatewayClientMock.Object)
         {
             ControllerContext = { HttpContext = _httpContextMock.Object }
@@ -869,6 +871,55 @@ public class ComplianceSchemeLandingControllerTests
         _sessionManagerMock.Verify(
             x => x.UpdateSessionAsync(
                 It.IsAny<ISession>(), It.IsAny<Action<FrontendSchemeRegistrationSession>>()), Times.Never);
+    }
+
+    [Test]
+    public async Task Get_WhenShowPrnsOnCdpEnabled_LinksManageObligationsToSelectedSchemeChooseYear()
+    {
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowPrnsOnCdp)).ReturnsAsync(true);
+        _csocOptions.WasteObligationsBaseAddress = "https://waste-obligations";
+        ArrangeLandingWithSelectedScheme();
+
+        var response = await _complianceSchemeLandingController.Get() as ViewResult;
+
+        response!.Model.As<ComplianceSchemeLandingViewModel>().ManageObligationsHref
+            .Should().Be($"https://waste-obligations/cso/{_complianceSchemeTwoId}/obligations/choose-year");
+    }
+
+    [Test]
+    public async Task Get_WhenShowPrnsOnCdpDisabled_KeepsPackagingManageObligationsLink()
+    {
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowPrnsOnCdp)).ReturnsAsync(false);
+        _csocOptions.WasteObligationsBaseAddress = "https://waste-obligations";
+        ArrangeLandingWithSelectedScheme();
+
+        var response = await _complianceSchemeLandingController.Get() as ViewResult;
+
+        response!.Model.As<ComplianceSchemeLandingViewModel>().ManageObligationsHref.Should().BeNull();
+    }
+
+    [Test]
+    public async Task Get_WhenShowPrnsOnCdpEnabledWithoutWasteObligationsAddress_KeepsPackagingManageObligationsLink()
+    {
+        _featureManagerMock.Setup(x => x.IsEnabledAsync(FeatureFlags.ShowPrnsOnCdp)).ReturnsAsync(true);
+        _csocOptions.WasteObligationsBaseAddress = null;
+        ArrangeLandingWithSelectedScheme();
+
+        var response = await _complianceSchemeLandingController.Get() as ViewResult;
+
+        response!.Model.As<ComplianceSchemeLandingViewModel>().ManageObligationsHref.Should().BeNull();
+    }
+
+    private void ArrangeLandingWithSelectedScheme()
+    {
+        _complianceSchemeServiceMock
+            .Setup(service => service.GetOperatorComplianceSchemes(It.IsAny<Guid>()))
+            .ReturnsAsync(GetComplianceSchemes());
+        _complianceSchemeServiceMock
+            .Setup(service => service.GetComplianceSchemeSummary(It.IsAny<Guid>(), It.IsAny<Guid>()))
+            .ReturnsAsync(new ComplianceSchemeSummary());
+        _sessionManagerMock.Setup(x => x.GetSessionAsync(It.IsAny<ISession>()))
+            .ReturnsAsync(GetSessionWithSelectedScheme());
     }
 
     private List<ComplianceSchemeDto> GetComplianceSchemes() => new()

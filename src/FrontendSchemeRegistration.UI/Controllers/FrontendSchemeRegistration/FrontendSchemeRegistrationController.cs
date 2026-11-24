@@ -472,7 +472,13 @@ public class FrontendSchemeRegistrationController(
                 organisation,
                 now,
                 csocOptions.Value,
-                csocObligationViewModel)
+                csocObligationViewModel),
+            // A direct producer has no selected compliance scheme, so the link uses the organisation id.
+            ManageObligationsHref = await CsocHelper.GetManageObligationsHrefAsync(
+                featureManager,
+                csocOptions.Value,
+                organisation,
+                registrationSession: null)
         };
 
         var notificationsList = await notificationService.GetCurrentUserNotifications(organisation.Id.Value, userData.Id!.Value);

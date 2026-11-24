@@ -10,7 +10,7 @@
 }
 
 <h2 class="govuk-heading-m">
-    <a href="@FrontendSchemeRegistration.Application.Constants.PagePaths.Prns.ObligationsHome"
+    <a href="@(Model.ManageObligationsHref ?? FrontendSchemeRegistration.Application.Constants.PagePaths.Prns.ObligationsHome)"
        class="govuk-link--no-visited-state">@Localizer[headingKey, Model.ComplianceYear]</a>
 </h2>
 <p class="govuk-body">@Localizer[paragraphKey]</p>

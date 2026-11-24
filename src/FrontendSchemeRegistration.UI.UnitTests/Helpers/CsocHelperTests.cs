@@ -675,4 +675,117 @@ public class CsocHelperTests
 
         result.Should().Be($"https://understanding-obligations/producer/{organisationId}/prns?year=2026&lang=cy");
     }
+
+    [Test]
+    public void GetChooseObligationYearUrl_WhenBaseAddressMissing_ShouldBeNull()
+    {
+        var result = CsocHelper.GetChooseObligationYearUrl(
+            " ",
+            new Organisation
+            {
+                Id = Guid.NewGuid(),
+                OrganisationRole = OrganisationRoles.Producer
+            },
+            null);
+
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public void GetChooseObligationYearUrl_WhenOrganisationIdMissing_ShouldBeNull()
+    {
+        var result = CsocHelper.GetChooseObligationYearUrl(
+            "https://understanding-obligations",
+            new Organisation { OrganisationRole = OrganisationRoles.Producer },
+            null);
+
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public void GetChooseObligationYearUrl_WhenNeitherProducerNorComplianceScheme_ShouldBeNull()
+    {
+        var result = CsocHelper.GetChooseObligationYearUrl(
+            "https://understanding-obligations",
+            new Organisation
+            {
+                Id = Guid.NewGuid(),
+                OrganisationRole = "Regulator"
+            },
+            null);
+
+        result.Should().BeNull();
+    }
+
+    [Test]
+    public void GetChooseObligationYearUrl_WhenDirectProducer_ShouldBuildProducerChooseYearUrl()
+    {
+        var organisationId = Guid.NewGuid();
+
+        var result = CsocHelper.GetChooseObligationYearUrl(
+            "https://understanding-obligations/",
+            new Organisation
+            {
+                Id = organisationId,
+                OrganisationRole = OrganisationRoles.Producer
+            },
+            null);
+
+        result.Should().Be($"https://understanding-obligations/producer/{organisationId}/obligations/choose-year");
+    }
+
+    [Test]
+    public void GetChooseObligationYearUrl_WhenComplianceScheme_ShouldUseSelectedComplianceScheme()
+    {
+        var complianceSchemeId = Guid.NewGuid();
+
+        var result = CsocHelper.GetChooseObligationYearUrl(
+            "https://understanding-obligations",
+            new Organisation
+            {
+                Id = Guid.NewGuid(),
+                OrganisationRole = OrganisationRoles.ComplianceScheme
+            },
+            new RegistrationSession
+            {
+                SelectedComplianceScheme = new ComplianceSchemeDto { Id = complianceSchemeId }
+            });
+
+        result.Should().Be($"https://understanding-obligations/cso/{complianceSchemeId}/obligations/choose-year");
+    }
+
+    [Test]
+    public void GetChooseObligationYearUrl_WhenComplianceSchemeNotSelected_ShouldUseOrganisationId()
+    {
+        var organisationId = Guid.NewGuid();
+
+        var result = CsocHelper.GetChooseObligationYearUrl(
+            "https://understanding-obligations",
+            new Organisation
+            {
+                Id = organisationId,
+                OrganisationRole = OrganisationRoles.ComplianceScheme
+            },
+            new RegistrationSession());
+
+        result.Should().Be($"https://understanding-obligations/cso/{organisationId}/obligations/choose-year");
+    }
+
+    [Test]
+    [SetUICulture(Language.Welsh)]
+    public void GetChooseObligationYearUrl_WhenWelsh_ShouldAppendLang()
+    {
+        var organisationId = Guid.NewGuid();
+
+        var result = CsocHelper.GetChooseObligationYearUrl(
+            "https://understanding-obligations",
+            new Organisation
+            {
+                Id = organisationId,
+                OrganisationRole = OrganisationRoles.Producer
+            },
+            null);
+
+        result.Should().Be($"https://understanding-obligations/producer/{organisationId}/obligations/choose-year?lang=cy");
+    }
 }
