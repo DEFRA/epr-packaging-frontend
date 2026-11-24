@@ -663,7 +663,7 @@
             ]
         };
 
-        private void GivenSignedInAs(Organisation organisation, RegistrationSession registrationSession = null)
+        private void GivenSignedInAs(Organisation organisation, RegistrationSession registrationSession = null, int? selectedObligationYear = null)
         {
             var userData = new UserData { Organisations = [organisation] };
             _controller.ControllerContext.HttpContext.User = new System.Security.Claims.ClaimsPrincipal(
@@ -676,7 +676,8 @@
             _sessionManagerMock.Setup(m => m.GetSessionAsync(It.IsAny<ISession>())).ReturnsAsync(
                 new FrontendSchemeRegistrationSession
                 {
-                    RegistrationSession = registrationSession ?? new RegistrationSession()
+                    RegistrationSession = registrationSession ?? new RegistrationSession(),
+                    PrnSession = new PrnSession { SelectedObligationYear = selectedObligationYear }
                 });
         }
 
@@ -723,6 +724,31 @@
             _featureManagerMock.Setup(f => f.IsEnabledAsync(FeatureFlags.ShowPrnsOnCdp)).ReturnsAsync(false);
             var results = SearchResultsWithEachStatus(2026);
             _prnServiceMock.Setup(x => x.GetPrnSearchResultsAsync(It.IsAny<SearchPrnsViewModel>())).ReturnsAsync(results);
+
+            var response = await _controller.SearchPrns(new SearchPrnsViewModel());
+
+            response.Should().BeOfType<ViewResult>().Which.Model.Should().BeOfType<PrnSearchResultListViewModel>()
+                .Which.ActivePageOfResults.Should().OnlyContain(prn => prn.PrnHref == null);
+        }
+        [Test]
+        public async Task SearchPrns_WhenAYearWasChosen_LinksToTheChosenYearNotTheCurrentOne()
+        {
+            var organisationId = Guid.NewGuid();
+            GivenSignedInAs(new Organisation { Id = organisationId, OrganisationRole = OrganisationRoles.Producer }, selectedObligationYear: 2025);
+            _featureManagerMock.Setup(f => f.IsEnabledAsync(FeatureFlags.ShowPrnsOnCdp)).ReturnsAsync(true);
+            _prnServiceMock.Setup(x => x.GetPrnSearchResultsAsync(It.IsAny<SearchPrnsViewModel>())).ReturnsAsync(SearchResultsWithEachStatus(2026));
+
+            var response = await _controller.SearchPrns(new SearchPrnsViewModel());
+
+            var prns = response.Should().BeOfType<ViewResult>().Which.Model.Should().BeOfType<PrnSearchResultListViewModel>().Which.ActivePageOfResults;
+            prns[0].PrnHref.Should().Be($"{WasteObligationsBaseAddress}/producer/{organisationId}/prns/{prns[0].ExternalId}?year=2025");
+        }
+
+        [Test]
+        public async Task SearchPrns_WhenTheUserHasNoUserData_KeepsThePackagingLinks()
+        {
+            _featureManagerMock.Setup(f => f.IsEnabledAsync(FeatureFlags.ShowPrnsOnCdp)).ReturnsAsync(true);
+            _prnServiceMock.Setup(x => x.GetPrnSearchResultsAsync(It.IsAny<SearchPrnsViewModel>())).ReturnsAsync(SearchResultsWithEachStatus(2026));
 
             var response = await _controller.SearchPrns(new SearchPrnsViewModel());
 

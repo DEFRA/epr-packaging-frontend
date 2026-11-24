@@ -183,8 +183,9 @@ public class PrnsController : Controller
         return File(stream, MimeType, year is { } fileYear ? $"PRNDetail_{fileYear}.csv" : FileName);
     }
 
-    // With ShowPrnsOnCdp on, awaiting acceptance, accepted and rejected notes open on EPR Next Gen, for the year being
-    // searched. Cancelled notes have no EPR Next Gen view, so they keep the packaging PRN page.
+    // With ShowPrnsOnCdp on, awaiting acceptance, accepted and rejected notes open on EPR Next Gen, for the year the
+    // user chose (the current compliance year if none). Cancelled notes have no EPR Next Gen view, so they keep the
+    // packaging PRN page.
     private async Task SetEprNextGenPrnLinksAsync(PrnSearchResultListViewModel searchResults)
     {
         if (!await _featureManager.IsEnabledAsync(FeatureFlags.ShowPrnsOnCdp))
@@ -201,6 +202,7 @@ public class PrnsController : Controller
         }
 
         var session = await _sessionManager.GetSessionAsync(HttpContext.Session);
+        var year = session?.PrnSession?.SelectedObligationYear ?? searchResults.ComplianceYear;
 
         foreach (var prn in searchResults.ActivePageOfResults.Where(prn =>
                      prn.ApprovalStatus is PrnStatus.AwaitingAcceptance or PrnStatus.Accepted or PrnStatus.Rejected))
@@ -210,7 +212,7 @@ public class PrnsController : Controller
                 organisation,
                 session?.RegistrationSession,
                 prn.ExternalId,
-                searchResults.ComplianceYear);
+                year);
         }
     }
 
